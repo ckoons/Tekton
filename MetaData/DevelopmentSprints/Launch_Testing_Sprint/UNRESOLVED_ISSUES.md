@@ -151,6 +151,34 @@ There are inconsistencies in how components implement the Single Port Architectu
 3. Implement consistent error handling and response formats
 4. Add validation tests for architecture compliance
 
+## 6. UI Component Integration Issues
+
+There are issues with how UI components integrate within the Hephaestus interface:
+
+### 6.1 Athena Component UI Integration
+
+The Athena knowledge graph component doesn't display properly in the Hephaestus UI:
+
+```
+Component renders in the HTML panel (side panel) instead of the main terminal panel
+```
+
+**Root Cause**:
+- Mismatch between the UI architecture and component loading mechanism
+- Confusion between terminal mode and HTML mode in the UI manager
+- The `usesTerminal` flag controls which panel is used, but its behavior is counterintuitive
+- Components rendered in the HTML panel are placed in a smaller side area instead of the main content area
+
+**Affected Components**:
+- Athena
+- Potentially other HTML-based components
+
+**Recommended Fix**:
+1. Revise the UI architecture to make panel behavior more intuitive
+2. Update the component loading mechanism to properly handle HTML components in the main content area
+3. Consider a responsive design that adapts to different component types
+4. Create a standardized component layout system for Hephaestus
+
 ## Next Steps
 
 These issues should be addressed in the MCP Integration Sprint as outlined in the [TEST_PLAN.md](../MCP_Integration_Sprint/TEST_PLAN.md) document. The main focus areas should be:
@@ -160,3 +188,4 @@ These issues should be addressed in the MCP Integration Sprint as outlined in th
 3. Implement missing endpoints in components
 4. Standardize the Single Port Architecture implementation
 5. Add comprehensive testing for cross-component communication
+6. Resolve UI component integration issues and standardize the UI architecture

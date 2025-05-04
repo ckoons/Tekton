@@ -19,6 +19,8 @@ This document tracks the issues found during the Launch Testing Sprint and their
 | Multiple coroutine warnings | Hermes | ✅ Fixed | `coroutine 'MessageBus.subscribe' was never awaited` | Added proper async implementations |
 | Health check method missing | Engram | 🟡 Needs Improvement | `'MemoryService' object has no attribute 'get_storage_info'` | Implement missing method |
 | Legacy WebSocket port usage | Terma | 🟡 In Progress | Uses separate port (8767) for WebSocket | Needs path-based routing (/ws) |
+| Athena UI panel placement | Hephaestus | 🔴 Blocked | Component renders in side panel instead of main area | Needs UI architecture revision |
+| HTML vs Terminal panel confusion | Hephaestus | 🔴 Blocked | Component flags cause counterintuitive panel behavior | Redesign panel system |
 
 ## Fixed Issues
 
