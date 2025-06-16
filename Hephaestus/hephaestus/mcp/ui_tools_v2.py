@@ -299,35 +299,63 @@ def _extract_element_info(element: Tag) -> Dict[str, Any]:
     return info
 
 
-def _html_to_structured_data(html: str, selector: Optional[str] = None) -> Dict[str, Any]:
-    """Convert HTML to structured data representation"""
+def _html_to_structured_data(html: str, selector: Optional[str] = None, max_depth: int = 3) -> Dict[str, Any]:
+    """Convert HTML to structured data representation with proper DOM traversal"""
     soup = BeautifulSoup(html, 'html.parser')
     
     # If selector provided, find matching elements
     if selector:
-        if selector.startswith("#"):
-            element = soup.find(id=selector[1:])
-            elements = [element] if element else []
-        elif selector.startswith("."):
-            elements = soup.find_all(class_=selector[1:])
-        else:
-            try:
-                doc = lxml.html.fromstring(html)
-                xpath = GenericTranslator().css_to_xpath(selector)
-                lxml_elements = doc.xpath(xpath)
-                
-                elements = []
-                for lxml_el in lxml_elements:
-                    el_html = lxml.html.tostring(lxml_el, encoding='unicode')
-                    el_soup = BeautifulSoup(el_html, 'html.parser')
-                    if el_soup.body:
-                        elements.extend(el_soup.body.children)
-                    else:
-                        elements.extend(el_soup.children)
-            except:
+        try:
+            # Use CSS select for better selector support
+            elements = soup.select(selector)
+        except:
+            # Fallback for simple selectors
+            if selector.startswith("#"):
+                element = soup.find(id=selector[1:])
+                elements = [element] if element else []
+            elif selector.startswith("."):
+                elements = soup.find_all(class_=selector[1:])
+            else:
                 elements = soup.find_all(selector)
     else:
-        elements = [soup.body if soup.body else soup]
+        # Get the root element (body or document)
+        root = soup.body if soup.body else soup
+        elements = [root]
+    
+    def extract_element_tree(element: Tag, depth: int = 0) -> Dict[str, Any]:
+        """Recursively extract element information"""
+        if not isinstance(element, Tag) or depth > max_depth:
+            return None
+            
+        info = {
+            "tag": element.name,
+            "id": element.get("id"),
+            "classes": element.get("class", []),
+            "attributes": {}
+        }
+        
+        # Extract data attributes and other relevant attributes
+        for attr_name, attr_value in element.attrs.items():
+            if attr_name.startswith("data-") or attr_name in ["href", "src", "alt", "title", "placeholder", "value", "type", "name"]:
+                info["attributes"][attr_name] = attr_value
+        
+        # Get direct text content (not from children)
+        direct_text = "".join([str(s) for s in element.children if isinstance(s, NavigableString)]).strip()
+        if direct_text:
+            info["text"] = direct_text[:100] + "..." if len(direct_text) > 100 else direct_text
+        
+        # Process children
+        child_elements = [child for child in element.children if isinstance(child, Tag)]
+        if child_elements and depth < max_depth:
+            info["children"] = []
+            for child in child_elements[:10]:  # Limit to 10 children per level
+                child_info = extract_element_tree(child, depth + 1)
+                if child_info:
+                    info["children"].append(child_info)
+        else:
+            info["child_count"] = len(child_elements)
+        
+        return info
     
     result = {
         "element_count": len(elements),
@@ -336,14 +364,9 @@ def _html_to_structured_data(html: str, selector: Optional[str] = None) -> Dict[
     
     for element in elements:
         if isinstance(element, Tag):
-            el_info = _extract_element_info(element)
-            
-            # Add child count
-            children = [child for child in element.children if isinstance(child, Tag)]
-            if children:
-                el_info["child_count"] = len(children)
-            
-            result["elements"].append(el_info)
+            el_tree = extract_element_tree(element)
+            if el_tree:
+                result["elements"].append(el_tree)
     
     return result
 
@@ -406,12 +429,8 @@ async def ui_capture(
     # Apply additional selector if provided
     if selector:
         result["selector"] = selector
-        try:
-            element = await page.wait_for_selector(selector, timeout=5000)
-            html = await element.inner_html()
-        except:
-            result["error"] = f"Selector '{selector}' not found within {area}"
-            return result
+        # Parse the HTML we already have instead of waiting for selector on page
+        # This is more reliable and works with the area concept
     
     # Convert to structured data
     result["structure"] = _html_to_structured_data(html, selector)
@@ -663,30 +682,33 @@ async def ui_sandbox(
         action = change.get("action", "replace")
         
         try:
-            if change_type == "html":
+            if change_type in ["html", "text"]:
+                # Escape content properly
+                escaped_content = content.replace('\\', '\\\\').replace('`', '\\`').replace('${', '\\${')
+                
                 js_code = f"""
                 (function() {{
                     const elements = document.querySelectorAll('{selector}');
-                    if (elements.length === 0) return {{ success: false, error: 'No elements found' }};
+                    if (elements.length === 0) return {{ success: false, error: 'No elements found for selector: {selector}' }};
                     
                     elements.forEach(el => {{
-                        const content = `{content.replace('`', '\\`')}`;
+                        const content = `{escaped_content}`;
                         
                         switch('{action}') {{
                             case 'replace':
-                                el.innerHTML = content;
+                                {f'el.textContent = content;' if change_type == 'text' else 'el.innerHTML = content;'}
                                 break;
                             case 'append':
-                                el.innerHTML += content;
+                                {f'el.textContent += content;' if change_type == 'text' else 'el.innerHTML += content;'}
                                 break;
                             case 'prepend':
-                                el.innerHTML = content + el.innerHTML;
+                                {f'el.textContent = content + el.textContent;' if change_type == 'text' else 'el.innerHTML = content + el.innerHTML;'}
                                 break;
                             case 'after':
-                                el.insertAdjacentHTML('afterend', content);
+                                el.insertAdjacentHTML('afterend', {f'"<span>" + content + "</span>"' if change_type == 'text' else 'content'});
                                 break;
                             case 'before':
-                                el.insertAdjacentHTML('beforebegin', content);
+                                el.insertAdjacentHTML('beforebegin', {f'"<span>" + content + "</span>"' if change_type == 'text' else 'content'});
                                 break;
                         }}
                     }});
@@ -704,12 +726,20 @@ async def ui_sandbox(
                 })
             
             elif change_type == "css":
-                css_content = f"<style>{content}</style>"
-                await page.add_style_tag(content=content)
+                # Support both full CSS rules and single property changes
+                if "property" in change and "value" in change:
+                    # Single property format
+                    css_rule = f"{selector} {{ {change['property']}: {change['value']}; }}"
+                else:
+                    # Full CSS content
+                    css_rule = content
+                
+                await page.add_style_tag(content=css_rule)
                 sandbox_results.append({
                     "change_index": i,
                     "success": True,
-                    "type": "css_injected"
+                    "type": "css_injected",
+                    "css": css_rule
                 })
             
             elif change_type == "js":

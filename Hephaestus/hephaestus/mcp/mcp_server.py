@@ -385,7 +385,7 @@ async def get_help(format: str = "json"):
                 },
                 "example": 'curl -X POST http://localhost:8088/api/mcp/v2/execute -d \'{"tool_name":"ui_capture","arguments":{"area":"rhetor"}}\'',
                 "common_uses": ["Check current UI state", "Find elements", "Verify changes"],
-                "note": "Use 'component':'all' to capture entire UI (legacy compatibility)"
+                "note": "Use 'area':'hephaestus' to capture entire UI"
             },
             "ui_sandbox": {
                 "description": "Test UI changes safely with preview mode",
@@ -401,8 +401,12 @@ async def get_help(format: str = "json"):
                 },
                 "example": 'curl -X POST http://localhost:8088/api/mcp/v2/execute -d \'{"tool_name":"ui_sandbox","arguments":{"area":"hephaestus","changes":[{"type":"text","selector":".nav-label","content":"New Text","action":"replace"}],"preview":true}}\'',
                 "note": "⚠️ Use 'area' not 'component' - this is the #1 mistake!",
-                "change_types": ["text", "html", "attribute", "style"],
-                "actions": ["replace", "append", "prepend", "remove", "update"]
+                "change_types": {
+                    "text": "Replace/modify text content only",
+                    "html": "Replace/modify HTML structure", 
+                    "css": "Add CSS rules (use 'content' for full CSS or 'property'/'value' for single rule)"
+                },
+                "actions": ["replace", "append", "prepend", "after", "before"]
             },
             "ui_interact": {
                 "description": "Interact with UI elements (click, type, focus)",
@@ -458,12 +462,13 @@ async def get_help(format: str = "json"):
             }
         },
         "gotchas": {
-            "area_vs_component": "ui_sandbox uses 'area', ui_capture can use either 'area' or 'component' (legacy)",
+            "area_only": "ALL tools use 'area' parameter, NOT 'component'",
             "preview_default": "ui_sandbox defaults to preview=true, changes won't apply unless preview=false",
-            "selector_escaping": "Quotes in selectors need escaping: '[data-component=\"rhetor\"]'"
+            "selector_escaping": "Quotes in selectors need escaping: '[data-component=\"rhetor\"]'",
+            "css_format": "CSS changes can use either full rules or property/value pairs"
         },
         "quick_reference": {
-            "capture_all": 'curl -X POST http://localhost:8088/api/mcp/v2/execute -d \'{"tool_name":"ui_capture","arguments":{"component":"all"}}\'',
+            "capture_all": 'curl -X POST http://localhost:8088/api/mcp/v2/execute -d \'{"tool_name":"ui_capture","arguments":{"area":"hephaestus"}}\'',
             "preview_change": 'curl -X POST http://localhost:8088/api/mcp/v2/execute -d \'{"tool_name":"ui_sandbox","arguments":{"area":"hephaestus","changes":[{"type":"text","selector":".nav-label","content":"Test","action":"replace"}],"preview":true}}\'',
             "check_health": 'curl http://localhost:8088/health',
             "list_areas": 'curl -X POST http://localhost:8088/api/mcp/v2/execute -d \'{"tool_name":"ui_list_areas","arguments":{}}\''

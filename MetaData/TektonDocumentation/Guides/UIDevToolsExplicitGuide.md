@@ -46,6 +46,7 @@ curl -X POST http://localhost:8088/api/mcp/v2/execute \
 
 ### 2. ui_sandbox - Test Changes
 ```json
+// HTML changes
 {
   "tool_name": "ui_sandbox",
   "arguments": {
@@ -57,6 +58,49 @@ curl -X POST http://localhost:8088/api/mcp/v2/execute \
       "action": "append"
     }],
     "preview": true  // ALWAYS true first!
+  }
+}
+
+// Text changes (safer than HTML)
+{
+  "tool_name": "ui_sandbox",
+  "arguments": {
+    "area": "rhetor",
+    "changes": [{
+      "type": "text",
+      "selector": ".nav-label",
+      "content": "New Text Content",
+      "action": "replace"
+    }],
+    "preview": true
+  }
+}
+
+// CSS changes - Format 1: Property/Value
+{
+  "tool_name": "ui_sandbox",
+  "arguments": {
+    "area": "rhetor",
+    "changes": [{
+      "type": "css",
+      "selector": ".nav-item",
+      "property": "background-color",
+      "value": "rgba(255,255,255,0.1)"
+    }],
+    "preview": true
+  }
+}
+
+// CSS changes - Format 2: Full Rules
+{
+  "tool_name": "ui_sandbox",
+  "arguments": {
+    "area": "rhetor",
+    "changes": [{
+      "type": "css",
+      "content": ".nav-item:hover { background-color: rgba(255,255,255,0.2); }"
+    }],
+    "preview": true
   }
 }
 ```

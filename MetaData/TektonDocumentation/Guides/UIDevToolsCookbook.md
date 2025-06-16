@@ -27,25 +27,28 @@ curl -s http://localhost:8088/health
 
 ### 2. Capture Current State (Know What You're Working With)
 ```bash
-# This failed (but taught me about selectors):
+# Capture with specific selector:
 curl -X POST http://localhost:8088/api/mcp/v2/execute \
   -H "Content-Type: application/json" \
   -d '{
     "tool_name": "ui_capture",
     "arguments": {
+      "area": "hephaestus",
       "selector": "[data-component=\"budget\"]"
     }
   }'
 
-# This worked (captured entire UI):
+# Capture entire UI:
 curl -X POST http://localhost:8088/api/mcp/v2/execute \
   -H "Content-Type: application/json" \
   -d '{
     "tool_name": "ui_capture", 
     "arguments": {
-      "component": "all"
+      "area": "hephaestus"
     }
   }'
+
+# Important: All tools use 'area' parameter, never 'component'!
 ```
 
 ### 3. Preview Changes in Sandbox
@@ -209,7 +212,42 @@ The response `"successful": 1, "failed": 1` tells you exactly which changes work
 
 ## Working Examples
 
-### Example 1: Simple Text Change (Success)
+### Example 1: CSS Changes (Two Formats)
+```bash
+# Format 1: Property/Value (for single CSS property)
+curl -X POST http://localhost:8088/api/mcp/v2/execute \
+  -H "Content-Type: application/json" \
+  -d '{
+    "tool_name": "ui_sandbox",
+    "arguments": {
+      "area": "hephaestus",
+      "changes": [{
+        "type": "css",
+        "selector": ".nav-item",
+        "property": "border",
+        "value": "2px solid blue"
+      }],
+      "preview": true
+    }
+  }'
+
+# Format 2: Full CSS Rules (for multiple properties)
+curl -X POST http://localhost:8088/api/mcp/v2/execute \
+  -H "Content-Type: application/json" \
+  -d '{
+    "tool_name": "ui_sandbox",
+    "arguments": {
+      "area": "hephaestus",
+      "changes": [{
+        "type": "css",
+        "content": ".nav-item { border: 2px solid blue; padding: 10px; }"
+      }],
+      "preview": true
+    }
+  }'
+```
+
+### Example 2: Simple Text Change (Success)
 ```bash
 # This works perfectly for in-place text updates
 curl -X POST http://localhost:8088/api/mcp/v2/execute \
@@ -233,7 +271,7 @@ curl -X POST http://localhost:8088/api/mcp/v2/execute \
 ```bash
 # FAILS - Wrong parameter name
 curl -X POST http://localhost:8088/api/mcp/v2/execute \
-  -d '{"tool_name": "ui_capture", "arguments": {"component": "all"}}'
+  -d '{"tool_name": "ui_capture", "arguments": {"component": "all"}}'  # ❌ No 'component' param!
 # Error: 400: Required parameter 'area' not provided
 
 # SUCCEEDS - Correct parameter
