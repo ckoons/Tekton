@@ -299,6 +299,113 @@ def _extract_element_info(element: Tag) -> Dict[str, Any]:
     return info
 
 
+def _suggest_similar_selectors(html: str, failed_selector: str, max_suggestions: int = 5) -> List[str]:
+    """Suggest similar selectors when one fails to match"""
+    import re
+    
+    soup = BeautifulSoup(html, 'html.parser')
+    suggestions = []
+    
+    # Parse the failed selector to understand what was being looked for
+    selector_lower = failed_selector.lower()
+    
+    # Extract key parts from the selector
+    # Check if it's looking for an ID
+    if failed_selector.startswith("#"):
+        target_id = failed_selector[1:]
+        # Find IDs that contain similar words
+        for element in soup.find_all(id=True):
+            elem_id = element.get("id", "")
+            if target_id.lower() in elem_id.lower() or elem_id.lower() in target_id.lower():
+                suggestions.append(f"#{elem_id}")
+    
+    # Check if it's looking for a class
+    elif failed_selector.startswith("."):
+        target_class = failed_selector[1:]
+        # Find classes that contain similar words
+        seen_classes = set()
+        for element in soup.find_all(class_=True):
+            for cls in element.get("class", []):
+                if cls in seen_classes:
+                    continue
+                if target_class.lower() in cls.lower() or cls.lower() in target_class.lower():
+                    suggestions.append(f".{cls}")
+                    seen_classes.add(cls)
+    
+    # Check for data attributes
+    elif "[data-" in failed_selector:
+        # Extract data attribute name
+        match = re.search(r'\[data-([^=\]]+)', failed_selector)
+        if match:
+            data_attr = f"data-{match.group(1)}"
+            # Find all elements with data attributes
+            for element in soup.find_all():
+                for attr, value in element.attrs.items():
+                    if attr.startswith("data-") and (data_attr in attr or attr in data_attr):
+                        if value:
+                            suggestions.append(f'[{attr}="{value}"]')
+                        else:
+                            suggestions.append(f'[{attr}]')
+    
+    # For any selector, also look for elements with similar text content or structure
+    # Extract meaningful words from the selector
+    words = re.findall(r'[a-zA-Z]+', failed_selector.lower())
+    if words:
+        # Look for elements containing these words in class, id, or data attributes
+        for word in words:
+            if len(word) > 2:  # Skip very short words
+                # Check classes
+                for element in soup.find_all(class_=re.compile(word, re.I)):
+                    for cls in element.get("class", []):
+                        if word in cls.lower():
+                            suggestions.append(f".{cls}")
+                
+                # Check IDs
+                for element in soup.find_all(id=re.compile(word, re.I)):
+                    suggestions.append(f"#{element.get('id')}")
+                
+                # Check data attributes
+                for element in soup.find_all():
+                    for attr, value in element.attrs.items():
+                        if attr.startswith("data-") and word in attr.lower():
+                            if value:
+                                suggestions.append(f'[{attr}="{value}"]')
+    
+    # Remove duplicates while preserving order
+    seen = set()
+    unique_suggestions = []
+    for s in suggestions:
+        if s not in seen and s != failed_selector:
+            seen.add(s)
+            unique_suggestions.append(s)
+    
+    # If we have very few suggestions, add some generic ones based on the area
+    if len(unique_suggestions) < 3:
+        # Add common structural selectors
+        for element in soup.find_all(['header', 'nav', 'main', 'footer', 'section', 'article', 'div']):
+            if element.get('class'):
+                for cls in element.get('class'):
+                    if cls not in seen:
+                        unique_suggestions.append(f".{cls}")
+                        seen.add(cls)
+            if element.get('id'):
+                id_sel = f"#{element.get('id')}"
+                if id_sel not in seen:
+                    unique_suggestions.append(id_sel)
+                    seen.add(id_sel)
+        
+        # Also look for any data-tekton attributes as fallback
+        for element in soup.find_all(attrs=lambda x: x and any(k.startswith('data-tekton') for k in x)):
+            for attr, value in element.attrs.items():
+                if attr.startswith('data-tekton') and value:
+                    attr_sel = f'[{attr}="{value}"]'
+                    if attr_sel not in seen and len(unique_suggestions) < max_suggestions:
+                        unique_suggestions.append(attr_sel)
+                        seen.add(attr_sel)
+    
+    return unique_suggestions[:max_suggestions]
+
+
 def _html_to_structured_data(html: str, selector: Optional[str] = None, max_depth: int = 3) -> Dict[str, Any]:
     """Convert HTML to structured data representation with proper DOM traversal"""
     soup = BeautifulSoup(html, 'html.parser')
@@ -317,6 +424,18 @@ def _html_to_structured_data(html: str, selector: Optional[str] = None, max_dept
                 elements = soup.find_all(class_=selector[1:])
             else:
                 elements = soup.find_all(selector)
+        
+        # If no elements found, provide helpful suggestions
+        if not elements:
+            suggestions = _suggest_similar_selectors(html, selector)
+            return {
+                "element_count": 0,
+                "elements": [],
+                "selector_not_found": True,
+                "failed_selector": selector,
+                "suggestions": suggestions,
+                "suggestion_message": f"No matches for '{selector}'. Try: " + ", ".join(suggestions) if suggestions else f"No matches for '{selector}'. No similar selectors found."
+            }
     else:
         # Get the root element (body or document)
         root = soup.body if soup.body else soup
@@ -434,6 +553,13 @@ async def ui_capture(
     
     # Convert to structured data
     result["structure"] = _html_to_structured_data(html, selector)
+    
+    # If selector was not found, add the suggestions to the main result for visibility
+    if result["structure"].get("selector_not_found"):
+        result["selector_error"] = result["structure"]["suggestion_message"]
+        result["suggestions"] = result["structure"]["suggestions"]
+        # Return early since there's no point extracting forms/buttons/etc from non-existent elements
+        return result
     
     # Extract common UI elements
     soup = BeautifulSoup(html, 'html.parser')
