@@ -9,6 +9,7 @@ import asyncio
 import json
 import os
 import re
+from datetime import datetime
 from typing import Any, Dict, List, Optional, Tuple, Union
 from urllib.parse import urlparse
 
@@ -19,6 +20,10 @@ from cssselect import GenericTranslator
 
 # Import configuration properly
 from shared.utils.global_config import GlobalConfig
+from shared.utils.logging_setup import setup_component_logging
+
+# Initialize logger
+logger = setup_component_logging("ui_devtools")
 
 # The MAIN UI is always Hephaestus at port 8080
 global_config = GlobalConfig.get_instance()
@@ -528,14 +533,10 @@ async def ui_capture(
         "viewport": page.viewport_size,
     }
     
-    # Detect current component state
+    # Detect current component state (ignoring unreliable nav state)
     component_state = await page.evaluate("""
         () => {
-            // Find active nav item
-            const activeNav = document.querySelector('.nav-item.active[data-component]');
-            const activeNavItem = activeNav ? activeNav.getAttribute('data-component') : null;
-            
-            // Find loaded component in content area
+            // Find loaded component in content area - this is what matters
             let loadedComponent = null;
             const contentArea = document.querySelector('[data-tekton-area="content"], .main-content, #center-content');
             if (contentArea) {
@@ -550,7 +551,7 @@ async def ui_capture(
                     const divWithClass = contentArea.querySelector('div[class*="__"]');
                     if (divWithClass) {
                         const className = divWithClass.className;
-                        const match = className.match(/^(\w+)__/);
+                        const match = className.match(/^(\\w+)__/);
                         if (match) {
                             loadedComponent = match[1];
                         }
@@ -569,22 +570,14 @@ async def ui_capture(
             }
             
             return {
-                active_nav_item: activeNavItem,
                 loaded_component: loadedComponent || currentView,
-                state_mismatch: activeNavItem && loadedComponent && activeNavItem !== loadedComponent,
                 detection_method: loadedComponent ? 'data-attribute' : (currentView ? 'special-view' : 'none')
             };
         }
     """)
     
     # Add component state to result
-    result["active_nav_item"] = component_state["active_nav_item"]
     result["loaded_component"] = component_state["loaded_component"]
-    result["state_mismatch"] = component_state["state_mismatch"]
-    
-    # Add note about state
-    if component_state["state_mismatch"]:
-        result["state_note"] = f"Navigation shows '{component_state['active_nav_item']}' but content shows '{component_state['loaded_component']}'"
     
     # What really matters is what's loaded
     if component_state["loaded_component"]:
@@ -867,15 +860,7 @@ async def ui_navigate(
             # Wait a moment for click to register
             await page.wait_for_timeout(500)
             
-            # Method 1: Check if nav item has 'active' class (more reliable than data attribute)
-            nav_item_active = await page.evaluate(f"""
-                () => {{
-                    const navItem = document.querySelector('[data-tekton-nav-item="{component}"]');
-                    return navItem && navItem.classList.contains('active');
-                }}
-            """)
-            
-            # Method 2: Wait for the component area to be present in content
+            # Wait for the component area to be present in content (ignore nav state)
             component_selectors = [
                 f'[data-tekton-area="{component}"]',
                 f'[data-tekton-component="{component}"]', 
@@ -929,9 +914,6 @@ async def ui_navigate(
                     result["navigation_completed"] = True
                     result["message"] = f"Successfully navigated to {component}"
                     result["component_info"] = component_verification
-                    result["nav_item_active"] = nav_item_active
-                    if not nav_item_active:
-                        result["note"] = "Nav item may not show as active due to UI implementation, but component is loaded"
                 else:
                     result["warning"] = f"Component loaded but verification failed"
                     result["component_info"] = component_verification
@@ -1236,6 +1218,364 @@ async def ui_analyze(
     return result
 
 
+async def ui_validate(
+    scope: str = "current",
+    checks: Optional[List[str]] = None,
+    detailed: bool = False
+) -> Dict[str, Any]:
+    """
+    Validate UI instrumentation and semantic tagging
+    
+    Args:
+        scope: 'current' (loaded component), 'navigation', or 'all' (all components)
+        checks: List of specific checks to run (defaults to all)
+        detailed: Whether to include detailed findings
+        
+    Returns:
+        Validation report with coverage metrics and recommendations
+    """
+    await browser_manager.initialize()
+    page = await browser_manager.get_page()
+    
+    # Default checks if none specified
+    if checks is None:
+        checks = ["semantic-tags", "navigation", "data-attributes", "component-structure"]
+    
+    result = {
+        "scope": scope,
+        "timestamp": datetime.now().isoformat(),
+        "checks_performed": checks,
+        "summary": {},
+        "findings": [],
+        "recommendations": []
+    }
+    
+    # Get current component state (only trust loaded component)
+    component_state = await page.evaluate("""
+        () => {
+            // Find loaded component in content area - this is what matters
+            let loadedComponent = null;
+            const contentArea = document.querySelector('[data-tekton-area="content"], .main-content, #center-content');
+            if (contentArea) {
+                // Look for component indicators in content
+                const componentElement = contentArea.querySelector('[data-tekton-area], [data-tekton-component], [data-component]');
+                if (componentElement) {
+                    loadedComponent = componentElement.getAttribute('data-tekton-area') || 
+                                    componentElement.getAttribute('data-tekton-component') ||
+                                    componentElement.getAttribute('data-component');
+                } else {
+                    // Try to detect by class name
+                    const divWithClass = contentArea.querySelector('div[class*="__"]');
+                    if (divWithClass) {
+                        const className = divWithClass.className;
+                        const match = className.match(/^(\\w+)__/);
+                        if (match) {
+                            loadedComponent = match[1];
+                        }
+                    }
+                }
+            }
+            
+            return { 
+                loadedComponent: loadedComponent || 'unknown',
+                hasContentArea: !!contentArea 
+            };
+        }
+    """)
+    
+    # Validate based on scope
+    if scope == "current":
+        # Validate currently loaded component
+        if not component_state["loadedComponent"] or component_state["loadedComponent"] == "unknown":
+            result["error"] = "No component currently loaded"
+            return result
+            
+        validation = await _validate_component(page, component_state["loadedComponent"], checks)
+        result["component"] = component_state["loadedComponent"]
+        result["summary"] = validation["summary"]
+        result["findings"] = validation["findings"]
+        result["recommendations"] = validation["recommendations"]
+        
+    elif scope == "navigation":
+        # Validate navigation structure
+        nav_validation = await _validate_navigation(page, checks)
+        result["summary"] = nav_validation["summary"]
+        result["findings"] = nav_validation["findings"]
+        result["recommendations"] = nav_validation["recommendations"]
+        
+    elif scope == "all":
+        # Get all components from navigation
+        all_components = await page.evaluate("""
+            () => {
+                const navItems = document.querySelectorAll('.nav-item[data-component]');
+                return Array.from(navItems).map(item => item.getAttribute('data-component'));
+            }
+        """)
+        
+        result["components_checked"] = []
+        result["progress"] = []
+        total_score = 0
+        
+        # Log start
+        logger.info(f"Starting validation of {len(all_components)} components")
+        
+        # Skip certain utility components if desired
+        skip_components = ['settings', 'profile']  # Can be made configurable
+        
+        for idx, component in enumerate(all_components):
+            if component in skip_components:
+                logger.info(f"Skipping utility component: {component}")
+                continue
+                
+            progress_msg = f"Validating {component} ({idx+1}/{len(all_components)})"
+            logger.info(progress_msg)
+            result["progress"].append({
+                "component": component,
+                "status": "started",
+                "timestamp": datetime.now().isoformat()
+            })
+            
+            try:
+                # Navigate to component with shorter timeout
+                nav_result = await ui_navigate(component, wait_for_load=True, timeout=2000)
+                
+                if nav_result.get("navigation_completed"):
+                    # Navigation worked - trust it and validate the component
+                    validation = await _validate_component(page, component, checks)
+                    
+                    component_result = {
+                        "component": component,
+                        "score": validation["summary"].get("score", 0),
+                        "issues": len(validation["findings"])
+                    }
+                    
+                    if detailed:
+                        component_result["findings"] = validation["findings"]
+                    
+                    result["components_checked"].append(component_result)
+                    total_score += component_result["score"]
+                    
+                    result["progress"][-1]["status"] = "completed"
+                else:
+                    result["progress"][-1]["status"] = "navigation_failed"
+                    logger.warning(f"Failed to navigate to {component}")
+                    
+            except asyncio.TimeoutError:
+                result["progress"][-1]["status"] = "timeout"
+                logger.warning(f"Timeout navigating to {component}")
+            except Exception as e:
+                result["progress"][-1]["status"] = "error"
+                result["progress"][-1]["error"] = str(e)
+                logger.error(f"Error validating {component}: {e}")
+        
+        # Calculate overall score
+        if result["components_checked"]:
+            result["summary"]["overall_score"] = total_score / len(result["components_checked"])
+            result["summary"]["components_validated"] = len(result["components_checked"])
+            result["summary"]["total_issues"] = sum(c["issues"] for c in result["components_checked"])
+            result["summary"]["components_attempted"] = len(all_components)
+            result["summary"]["validation_time"] = f"{(datetime.now() - datetime.fromisoformat(result['timestamp'])).total_seconds():.1f}s"
+    
+    # Add general recommendations based on findings
+    if result["findings"] or (scope == "all" and result["summary"].get("total_issues", 0) > 0):
+        result["recommendations"].append({
+            "priority": "high",
+            "message": "Review and add missing semantic tags using the instrumentation template"
+        })
+    
+    return result
+
+
+async def _validate_component(page: Page, component: str, checks: List[str]) -> Dict[str, Any]:
+    """Validate a single component's instrumentation"""
+    validation = {
+        "summary": {"score": 100},
+        "findings": [],
+        "recommendations": []
+    }
+    
+    # Check if component is loaded
+    component_html = await page.evaluate(f"""
+        () => {{
+            const component = document.querySelector('[data-tekton-area="{component}"], [data-tekton-component="{component}"], .{component}');
+            return component ? component.outerHTML : null;
+        }}
+    """)
+    
+    if not component_html:
+        validation["findings"].append({
+            "type": "error",
+            "check": "component-presence",
+            "message": f"Component '{component}' not found in DOM"
+        })
+        validation["summary"]["score"] = 0
+        return validation
+    
+    # Parse component HTML
+    soup = BeautifulSoup(component_html, 'html.parser')
+    root = soup.find()
+    
+    # Check semantic tags
+    if "semantic-tags" in checks:
+        semantic_score = 100
+        
+        # Check root has data-tekton-area
+        if not root.get("data-tekton-area"):
+            validation["findings"].append({
+                "type": "missing",
+                "check": "semantic-tags",
+                "element": "root",
+                "message": f"Root element missing data-tekton-area=\"{component}\""
+            })
+            semantic_score -= 20
+        
+        # Check for zone tags
+        zones = ["header", "menu", "content", "footer"]
+        for zone in zones:
+            zone_element = soup.find(attrs={"data-tekton-zone": zone})
+            if not zone_element:
+                # Try common class patterns
+                zone_class = soup.find(class_=re.compile(f"{component}.*__{zone}"))
+                if zone_class:
+                    validation["findings"].append({
+                        "type": "missing",
+                        "check": "semantic-tags",
+                        "element": f"{zone}",
+                        "message": f"Found .{zone_class.get('class', [''])[0]} but missing data-tekton-zone=\"{zone}\""
+                    })
+                    semantic_score -= 10
+        
+        # Check for action tags on interactive elements
+        buttons = soup.find_all(['button', 'a'])
+        tabs = soup.find_all(class_=re.compile(r'.*__tab'))
+        interactive = buttons + tabs
+        
+        if interactive:
+            missing_actions = 0
+            for elem in interactive[:10]:  # Check first 10
+                if not elem.get("data-tekton-action"):
+                    missing_actions += 1
+            
+            if missing_actions > 0:
+                validation["findings"].append({
+                    "type": "missing",
+                    "check": "semantic-tags",
+                    "element": "interactive",
+                    "message": f"{missing_actions} interactive elements missing data-tekton-action"
+                })
+                semantic_score -= min(15, missing_actions * 3)
+        
+        validation["summary"]["semantic_score"] = max(0, semantic_score)
+        validation["summary"]["score"] = min(validation["summary"]["score"], semantic_score)
+    
+    # Check data attributes
+    if "data-attributes" in checks:
+        data_attrs = {}
+        for element in soup.find_all():
+            for attr, value in element.attrs.items():
+                if attr.startswith("data-"):
+                    data_attrs[attr] = data_attrs.get(attr, 0) + 1
+        
+        validation["summary"]["data_attributes_count"] = len(data_attrs)
+        validation["summary"]["data_tekton_coverage"] = sum(1 for k in data_attrs if k.startswith("data-tekton"))
+    
+    # Check component structure
+    if "component-structure" in checks:
+        structure_score = 100
+        
+        # Check BEM naming
+        bem_pattern = re.compile(f"^{component}(__[a-z-]+)?(--[a-z-]+)?$")
+        non_bem_classes = []
+        
+        for element in soup.find_all(class_=True):
+            for cls in element.get("class", []):
+                if cls.startswith(component) and not bem_pattern.match(cls):
+                    non_bem_classes.append(cls)
+        
+        if non_bem_classes:
+            validation["findings"].append({
+                "type": "warning",
+                "check": "component-structure",
+                "message": f"Non-BEM classes found: {', '.join(set(non_bem_classes[:5]))}"
+            })
+            structure_score -= 10
+        
+        validation["summary"]["structure_score"] = structure_score
+        validation["summary"]["score"] = min(validation["summary"]["score"], structure_score)
+    
+    # Add recommendations
+    if validation["findings"]:
+        validation["recommendations"].append({
+            "component": component,
+            "action": "Add missing semantic tags following the instrumentation template"
+        })
+    
+    return validation
+
+
+async def _validate_navigation(page: Page, checks: List[str]) -> Dict[str, Any]:
+    """Validate navigation structure"""
+    validation = {
+        "summary": {"score": 100},
+        "findings": [],
+        "recommendations": []
+    }
+    
+    nav_data = await page.evaluate("""
+        () => {
+            const navItems = document.querySelectorAll('.nav-item');
+            const results = [];
+            
+            navItems.forEach(item => {
+                results.push({
+                    hasDataComponent: !!item.getAttribute('data-component'),
+                    hasDataTektonNavItem: !!item.getAttribute('data-tekton-nav-item'),
+                    hasDataTektonState: !!item.getAttribute('data-tekton-state'),
+                    component: item.getAttribute('data-component'),
+                    classes: Array.from(item.classList)
+                });
+            });
+            
+            return {
+                totalItems: navItems.length,
+                items: results,
+                hasMainNav: !!document.querySelector('[data-tekton-nav="main"]')
+            };
+        }
+    """)
+    
+    if "navigation" in checks:
+        nav_score = 100
+        
+        if not nav_data["hasMainNav"]:
+            validation["findings"].append({
+                "type": "missing",
+                "check": "navigation",
+                "message": "Main navigation missing data-tekton-nav=\"main\""
+            })
+            nav_score -= 20
+        
+        # Check each nav item
+        missing_attrs = 0
+        for item in nav_data["items"]:
+            if not item["hasDataTektonNavItem"]:
+                missing_attrs += 1
+        
+        if missing_attrs > 0:
+            validation["findings"].append({
+                "type": "missing",
+                "check": "navigation",
+                "message": f"{missing_attrs} nav items missing data-tekton-nav-item"
+            })
+            nav_score -= min(30, missing_attrs * 5)
+        
+        validation["summary"]["navigation_score"] = nav_score
+        validation["summary"]["score"] = nav_score
+        validation["summary"]["nav_items_checked"] = nav_data["totalItems"]
+    
+    return validation
+
+
 async def ui_help(topic: Optional[str] = None) -> Dict[str, Any]:
     """
     Get help about UI DevTools usage
@@ -1528,6 +1868,7 @@ __all__ = [
     "ui_interact", 
     "ui_sandbox",
     "ui_analyze",
+    "ui_validate",
     "ui_help",
     "browser_manager"
 ]

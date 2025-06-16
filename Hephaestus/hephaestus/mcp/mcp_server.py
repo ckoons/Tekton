@@ -28,7 +28,7 @@ from shared.utils.logging_setup import setup_component_logging
 logger = setup_component_logging("hephaestus_mcp")
 
 from hephaestus.mcp.ui_tools_v2 import (
-    ui_capture, ui_navigate, ui_interact, ui_sandbox, ui_analyze, ui_list_areas, ui_help, browser_manager
+    ui_capture, ui_navigate, ui_interact, ui_sandbox, ui_analyze, ui_validate, ui_list_areas, ui_help, browser_manager
 )
 
 # Debug imports
@@ -208,6 +208,33 @@ TOOL_METADATA = {
             }
         }
     },
+    "ui_validate": {
+        "name": "ui_validate",
+        "description": "Validate UI instrumentation and semantic tagging",
+        "category": "ui",
+        "tags": ["ui", "validation", "testing", "quality"],
+        "parameters": {
+            "scope": {
+                "type": "string",
+                "description": "Validation scope: 'current', 'navigation', or 'all'",
+                "required": False,
+                "default": "current",
+                "enum": ["current", "navigation", "all"]
+            },
+            "checks": {
+                "type": "array",
+                "description": "Specific checks to run (defaults to all)",
+                "required": False,
+                "items": {"type": "string"}
+            },
+            "detailed": {
+                "type": "boolean",
+                "description": "Include detailed findings in report",
+                "required": False,
+                "default": False
+            }
+        }
+    },
     "ui_help": {
         "name": "ui_help",
         "description": "Get help about UI DevTools usage - your guide to success!",
@@ -309,6 +336,7 @@ async def execute_tool(request_data: Dict[str, Any]):
         "ui_interact": ui_interact,
         "ui_sandbox": ui_sandbox,
         "ui_analyze": ui_analyze,
+        "ui_validate": ui_validate,
         "ui_help": ui_help
     }
     
@@ -474,6 +502,20 @@ async def get_help(format: str = "json"):
                 },
                 "example": 'curl -X POST http://localhost:8088/api/mcp/v2/execute -d \'{"tool_name":"ui_analyze","arguments":{"area":"rhetor","deep_scan":false}}\''
             },
+            "ui_validate": {
+                "description": "Validate UI instrumentation and semantic tagging",
+                "parameters": {
+                    "required": [],
+                    "optional": ["scope", "checks", "detailed"],
+                    "types": {
+                        "scope": "string: 'current', 'navigation', or 'all'",
+                        "checks": "array: ['semantic-tags', 'navigation', 'data-attributes', 'component-structure']",
+                        "detailed": "boolean: false (default) - include detailed findings"
+                    }
+                },
+                "example": 'curl -X POST http://localhost:8088/api/mcp/v2/execute -d \'{"tool_name":"ui_validate","arguments":{"scope":"current"}}\'',
+                "note": "Essential for verifying instrumentation quality"
+            },
             "ui_list_areas": {
                 "description": "List all available UI areas",
                 "parameters": {
@@ -526,6 +568,7 @@ async def get_help(format: str = "json"):
         "ui_interact": ui_interact,
         "ui_sandbox": ui_sandbox,
         "ui_analyze": ui_analyze,
+        "ui_validate": ui_validate,
         "ui_help": ui_help
     }
     
