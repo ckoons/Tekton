@@ -1,0 +1,515 @@
+#!/usr/bin/env python3
+"""
+Tekton Git Revert Tool
+
+A safety-first tool for reverting uncommitted changes in the Tekton project.
+Handles both the main repository and all submodules.
+
+Usage:
+    tekton-revert              # Show files that would be reverted, then exit
+    tekton-revert -s           # Show files and prompt for confirmation
+    tekton-revert -i           # Interactive mode - choose each file
+    tekton-revert -c COMPONENT # Only revert changes in specific component
+    tekton-revert --nuclear-destruction  # Revert all changes without confirmation
+"""
+
+import os
+import sys
+import json
+import subprocess
+import argparse
+from pathlib import Path
+from typing import List, Dict, Tuple, Optional
+from collections import defaultdict
+
+
+class TektonReverter:
+    """Manages reverting uncommitted changes in Tekton repository."""
+    
+    def __init__(self):
+        self.tekton_root = self._find_tekton_root()
+        self.structure = self._load_structure()
+        self.changes = defaultdict(list)
+        
+    def _find_tekton_root(self) -> Path:
+        """Find the Tekton root directory."""
+        # Start from current working directory
+        current = Path.cwd()
+        
+        # Search upward for Tekton indicators
+        for path in [current] + list(current.parents):
+            # Look for .env.tekton file (most reliable indicator)
+            if (path / ".env.tekton").exists():
+                return path
+            
+            # Look for the scripts directory with tekton scripts
+            if (path / "scripts" / "enhanced_tekton_launcher.py").exists():
+                return path
+                
+        # Check TEKTON_ROOT environment variable
+        if 'TEKTON_ROOT' in os.environ:
+            tekton_root = Path(os.environ['TEKTON_ROOT'])
+            if tekton_root.exists():
+                return tekton_root
+                
+        raise RuntimeError("Could not find Tekton root directory")
+        
+    def _load_structure(self) -> Dict:
+        """Load Tekton structure configuration."""
+        structure_file = self.tekton_root / "config" / "tekton_structure.json"
+        if not structure_file.exists():
+            # Fallback to hardcoded structure
+            return {
+                "components": [
+                    "Apollo", "Athena", "Budget", "Codex", "Engram",
+                    "Ergon", "Harmonia", "Hephaestus", "Hermes", "Metis",
+                    "Prometheus", "Rhetor", "Sophia", "Synthesis", "Telos",
+                    "Terma", "tekton-core"
+                ],
+                "core_directories": [
+                    "shared", "scripts", "config", "MetaData", "tests", "examples"
+                ]
+            }
+        
+        with open(structure_file, 'r') as f:
+            return json.load(f)
+            
+    def get_all_components(self) -> List[str]:
+        """Get list of all Tekton components."""
+        return self.structure.get("components", [])
+        
+    def get_file_type(self, file_path: str) -> str:
+        """Determine the type of file."""
+        path = Path(file_path)
+        ext = path.suffix.lower()
+        
+        if ext in ['.py']:
+            return "Python source"
+        elif ext in ['.yaml', '.yml', '.json', '.toml']:
+            return "Configuration"
+        elif ext in ['.md', '.rst', '.txt']:
+            return "Documentation"
+        elif ext in ['.sh', '.bash']:
+            return "Shell script"
+        elif ext in ['.js', '.ts', '.jsx', '.tsx']:
+            return "JavaScript/TypeScript"
+        elif ext in ['.html', '.css']:
+            return "Web asset"
+        else:
+            return "Other"
+            
+    def get_git_changes(self, path: Path, components: Optional[List[str]] = None) -> List[Tuple[str, str]]:
+        """Get uncommitted changes in a directory."""
+        changes = []
+        
+        try:
+            # Get both staged and unstaged changes
+            result = subprocess.run(
+                ["git", "status", "--porcelain"],
+                cwd=path,
+                capture_output=True,
+                text=True,
+                check=True
+            )
+            
+            for line in result.stdout.strip().split('\n'):
+                if not line:
+                    continue
+                    
+                # Git status --porcelain format: XY filename
+                # Where X is staged status, Y is unstaged status
+                if len(line) < 3:
+                    continue
+                    
+                status = line[:2]
+                file_path = line[2:].strip()
+                
+                # Skip untracked files completely
+                if status == '??':
+                    continue
+                    
+                # Check if this is a submodule change in main repo
+                if path == self.tekton_root:
+                    # Check if this is a submodule reference
+                    # Submodules show up as regular files in git status
+                    submodule_path = self.tekton_root / file_path
+                    if (submodule_path.is_dir() and 
+                        (submodule_path / ".git").exists() and
+                        file_path in self.get_all_components()):
+                        # This is a submodule, skip it here
+                        continue
+                    
+                    # If component filter is specified, check if file belongs to it
+                    if components:
+                        file_in_component = False
+                        for comp in components:
+                            if any(file_path.startswith(f"{c}/") 
+                                   for c in self.get_all_components() 
+                                   if c.lower() == comp.lower()):
+                                file_in_component = True
+                                break
+                        if not file_in_component:
+                            continue
+                        
+                changes.append((status, file_path))
+                
+        except subprocess.CalledProcessError:
+            pass
+            
+        return changes
+        
+    def collect_all_changes(self, components: Optional[List[str]] = None) -> Dict[str, List[Tuple[str, str]]]:
+        """Collect all uncommitted changes across repository and submodules."""
+        all_changes = {}
+        all_components = self.get_all_components()
+        
+        # Get git status output
+        status_result = subprocess.run(
+            ["git", "status", "--porcelain"],
+            cwd=self.tekton_root,
+            capture_output=True,
+            text=True
+        )
+        
+        # Parse status to find submodules with changes and main repo files
+        submodules_with_changes = set()
+        main_changes = []
+        
+        for line in status_result.stdout.strip().split('\n'):
+            if not line or len(line) < 3:
+                continue
+                
+            # Check if this line indicates a submodule with changes
+            if '(untracked content)' in line or '(modified content)' in line:
+                # Find the component name before the parentheses
+                for comp in all_components:
+                    if comp in line and line.find(comp) < line.find('('):
+                        submodules_with_changes.add(comp)
+                        break
+            else:
+                # Regular file change
+                # Git porcelain format: XY<space>filename
+                status = line[:2]
+                file_path = line[2:].strip()  # Strip to remove the space separator
+                
+                # Skip empty file paths
+                if not file_path:
+                    continue
+                
+                # Skip if it's a component directory (submodule)
+                # This handles cases like " M Harmonia" where Harmonia is a submodule
+                if file_path in all_components:
+                    # This is a submodule showing as modified, track it
+                    submodules_with_changes.add(file_path)
+                    continue
+                    
+                # Skip if it's inside a submodule directory
+                if any(file_path.startswith(comp + '/') for comp in all_components):
+                    continue
+                    
+                main_changes.append((status, file_path))
+        
+        # Add main changes if any
+        if main_changes:
+            all_changes["main"] = main_changes
+            
+        # Process each submodule that has changes
+        for comp in all_components:
+            # Apply component filter if specified
+            if components and comp.lower() not in [c.lower() for c in components]:
+                continue
+                
+            # Only process submodules with changes
+            if comp not in submodules_with_changes:
+                continue
+                
+            comp_path = self.tekton_root / comp
+            if not comp_path.exists() or not (comp_path / ".git").exists():
+                continue
+                
+            # Get all changes in this submodule
+            comp_changes = []
+            
+            # Get tracked file changes
+            status_result = subprocess.run(
+                ["git", "status", "--porcelain"],
+                cwd=comp_path,
+                capture_output=True,
+                text=True
+            )
+            
+            for line in status_result.stdout.strip().split('\n'):
+                if line and len(line) > 2:
+                    status = line[:2]
+                    file_path = line[2:].strip()
+                    comp_changes.append((status, file_path))
+            
+            if comp_changes:
+                all_changes[comp] = comp_changes
+                    
+        return all_changes
+        
+    def display_changes(self, changes: Dict[str, List[Tuple[str, str]]]) -> int:
+        """Display changes in a formatted way. Returns total file count."""
+        if not changes:
+            print("No uncommitted changes found.")
+            return 0
+            
+        # Separate counting for main vs submodules
+        main_files = 0
+        submodule_files = 0
+        main_file_types = defaultdict(int)
+        
+        print("Uncommitted changes in Tekton repository:")
+        
+        # Show main repository changes first
+        if "main" in changes:
+            print("\nMain repository (Tekton level):")
+            for status, file_path in changes["main"]:
+                status_map = {
+                    'M ': 'Modified (staged)',
+                    ' M': 'Modified',
+                    'MM': 'Modified (staged+unstaged)',
+                    'A ': 'Added',
+                    ' A': 'Added (unstaged)',
+                    'D ': 'Deleted',
+                    ' D': 'Deleted (unstaged)',
+                    'R ': 'Renamed',
+                    'C ': 'Copied',
+                    'U ': 'Updated but unmerged',
+                    '??': 'Untracked'
+                }
+                status_text = status_map.get(status, f"Status: {status}")
+                print(f"  {status_text:20} {file_path}")
+                
+                main_files += 1
+                file_type = self.get_file_type(file_path)
+                main_file_types[file_type] += 1
+            
+            # Show summary for main repo
+            print(f"\nTekton level: {main_files} files")
+            for file_type, count in sorted(main_file_types.items()):
+                print(f"  - {count} {file_type} file{'s' if count != 1 else ''}")
+        
+        # Count submodule changes
+        submodule_names = []
+        for location, files in sorted(changes.items()):
+            if location != "main" and files:
+                submodule_names.append(location)
+                submodule_files += len(files)
+        
+        if submodule_names:
+            print(f"\nSubmodules with changes:")
+            for submodule in submodule_names:
+                file_count = len(changes[submodule]) if submodule in changes else 0
+                print(f"  - {submodule}: {file_count} file(s)")
+            print(f"Total files in submodules: {submodule_files}")
+                
+        return main_files + submodule_files
+        
+    def revert_changes(self, changes: Dict[str, List[Tuple[str, str]]], interactive: bool = False):
+        """Revert uncommitted changes."""
+        reverted = 0
+        skipped = 0
+        
+        for location, files in sorted(changes.items()):
+            if location == "main":
+                repo_path = self.tekton_root
+            else:
+                repo_path = self.tekton_root / location
+                
+            for status, file_path in files:
+                full_path = repo_path / file_path
+                
+                if interactive:
+                    # Interactive mode
+                    while True:
+                        response = input(f"Revert {location}/{file_path}? [y/n/Y/N]: ").strip()
+                        if response == 'Y':
+                            # Revert this and all remaining
+                            interactive = False
+                            break
+                        elif response == 'N':
+                            # Skip this and all remaining
+                            print("Skipping remaining files.")
+                            return reverted, skipped + len(files) - files.index((status, file_path))
+                        elif response == 'y':
+                            break
+                        elif response == 'n':
+                            skipped += 1
+                            continue
+                            
+                # Revert the file based on its status
+                try:
+                    if status == '??':
+                        # Untracked file - remove it
+                        file_to_remove = repo_path / file_path
+                        if file_to_remove.exists():
+                            file_to_remove.unlink()
+                            reverted += 1
+                    else:
+                        # Tracked file - use git checkout
+                        subprocess.run(
+                            ["git", "checkout", "HEAD", "--", file_path],
+                            cwd=repo_path,
+                            check=True,
+                            capture_output=True
+                        )
+                        reverted += 1
+                except (subprocess.CalledProcessError, OSError) as e:
+                    print(f"Error reverting {file_path}: {e}")
+                    
+        return reverted, skipped
+        
+    def run(self, args):
+        """Main execution logic."""
+        # Parse component argument
+        components = None
+        if args.component:
+            # Split by comma and validate
+            components = [c.strip() for c in args.component.split(',')]
+            valid_components = [c.lower() for c in self.get_all_components()]
+            
+            invalid = [c for c in components if c.lower() not in valid_components]
+            if invalid:
+                print(f"Error: Unknown component(s): {', '.join(invalid)}")
+                print(f"Valid components: {', '.join(self.get_all_components())}")
+                sys.exit(1)
+        
+        # Collect changes
+        changes = self.collect_all_changes(components)
+        
+        # Display changes
+        total_files = self.display_changes(changes)
+        
+        if total_files == 0:
+            return
+            
+        # Separate main and submodule changes
+        main_changes = {"main": changes.get("main", [])} if "main" in changes else {}
+        submodule_changes = {k: v for k, v in changes.items() if k != "main"}
+        
+        # Handle different modes
+        if args.nuclear_destruction:
+            # No confirmation needed
+            print("\nInitiating nuclear destruction...")
+            reverted, skipped = self.revert_changes(changes)
+            print(f"\nReverted {reverted} files.")
+            
+        elif args.show or args.interactive:
+            # Handle main repository changes first
+            if main_changes.get("main"):
+                if args.interactive:
+                    response = input("\nRevert Individual Tekton Level Changes [y/n/Y/N]? ").strip()
+                else:
+                    response = input("\nRevert All Tekton Level Changes [y/n]? ").strip()
+                
+                if response.lower() == 'y':
+                    if args.interactive:
+                        print("\ny = revert this file")
+                        print("n = skip this file")
+                        print("Y = revert all remaining files")
+                        print("N = skip all remaining files\n")
+                        
+                    reverted, skipped = self.revert_changes(main_changes, interactive=args.interactive)
+                    print(f"\nReverted {reverted} Tekton level files, skipped {skipped} files.")
+                else:
+                    print("Skipped Tekton level changes.")
+            
+            # Handle submodule changes
+            if submodule_changes:
+                print("\n" + "="*60)
+                print("Submodule changes detected:")
+                for submodule, files in sorted(submodule_changes.items()):
+                    print(f"\n{submodule} submodule has {len(files)} changed file(s):")
+                    for status, file_path in files:
+                        status_text = "Untracked" if status == "??" else "Modified"
+                        print(f"  {status_text}: {file_path}")
+                
+                response = input("\nRevert Submodule Changes [y/n/Y/N]? ").strip()
+                
+                if response == 'Y':
+                    # Revert all submodules
+                    sub_reverted, sub_skipped = self.revert_changes(submodule_changes, interactive=False)
+                    print(f"\nReverted {sub_reverted} files in all submodules.")
+                elif response == 'y':
+                    # Go through each submodule
+                    total_reverted = 0
+                    total_skipped = 0
+                    
+                    for submodule, files in sorted(submodule_changes.items()):
+                        print(f"\n{submodule} submodule:")
+                        for status, file_path in files:
+                            status_text = "Untracked" if status == "??" else "Modified"
+                            print(f"  {status_text}: {file_path}")
+                        
+                        sub_response = input(f"\nRevert {submodule} changes [y/n/Y/N]? ").strip()
+                        
+                        if sub_response == 'Y':
+                            # Revert all remaining submodules
+                            remaining = {k: v for k, v in submodule_changes.items() 
+                                       if k >= submodule}
+                            sub_reverted, sub_skipped = self.revert_changes(remaining, interactive=False)
+                            total_reverted += sub_reverted
+                            total_skipped += sub_skipped
+                            break
+                        elif sub_response == 'y':
+                            # Revert this submodule
+                            sub_reverted, sub_skipped = self.revert_changes(
+                                {submodule: files}, 
+                                interactive=args.interactive
+                            )
+                            total_reverted += sub_reverted
+                            total_skipped += sub_skipped
+                        elif sub_response == 'N':
+                            # Skip all remaining
+                            break
+                        else:
+                            # Skip this submodule
+                            total_skipped += len(files)
+                    
+                    print(f"\nTotal: Reverted {total_reverted} submodule files, skipped {total_skipped} files.")
+                else:
+                    print("Skipped all submodule changes.")
+        else:
+            # Default mode - just show and exit
+            print("\nNo changes made.")
+
+
+def main():
+    """Main entry point."""
+    parser = argparse.ArgumentParser(
+        description="Safely revert uncommitted changes in Tekton repository",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Examples:
+  tekton-revert                    # Show what would be reverted
+  tekton-revert -s                 # Show and confirm before reverting
+  tekton-revert -i                 # Interactive mode
+  tekton-revert -c hermes          # Only show Hermes changes
+  tekton-revert -c apollo,hermes   # Only show Apollo and Hermes changes
+  tekton-revert --nuclear-destruction  # Revert without confirmation
+        """
+    )
+    
+    parser.add_argument('-s', '--show', action='store_true',
+                       help='Show files and prompt for confirmation')
+    parser.add_argument('-i', '--interactive', action='store_true',
+                       help='Interactive mode - choose each file')
+    parser.add_argument('-c', '--component', type=str,
+                       help='Only revert changes in specific component(s), comma-separated')
+    parser.add_argument('--nuclear-destruction', action='store_true',
+                       help='Revert all changes without confirmation')
+    
+    args = parser.parse_args()
+    
+    try:
+        reverter = TektonReverter()
+        reverter.run(args)
+    except Exception as e:
+        print(f"Error: {e}", file=sys.stderr)
+        sys.exit(1)
+
+
+if __name__ == "__main__":
+    main()
