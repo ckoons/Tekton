@@ -1,0 +1,5 @@
+{
+  "name": "agent_coordination",
+  "template": "You are coordinating multiple agents to work together on a complex task.\n\nTask: {{ task_description }}\n\nAgents:\n{{ agents }}\n\n{% if previous_steps %}\nPrevious steps completed:\n{{ previous_steps }}\n{% endif %}\n\n{% if current_state %}\nCurrent state:\n{{ current_state }}\n{% endif %}\n\nPlease determine:\n1. Which agent should perform the next step\n2. What specific action they should take\n3. What information they need\n4. How their output should be used by other agents\n\nProvide clear instructions that can be passed to the selected agent.",
+  "description": "Template for coordinating multiple agents on a task"
+}

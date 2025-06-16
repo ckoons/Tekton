@@ -1,0 +1,7 @@
+{
+  "name": "code_review",
+  "template": "You are a senior software engineer conducting a code review. Focus on identifying bugs, security issues, performance problems, and architectural concerns.\n\nReview this {{ language }} code with a focus on {{ focus_area }}:\n\n```{{ language }}\n{{ code }}\n```\n\nProvide your feedback organized into these sections:\n- Critical issues (bugs, security vulnerabilities)\n- Performance concerns\n- Style and readability\n- Architecture and design\n- Recommended improvements",
+  "description": "Template for code review tasks, with customizable language and focus area.",
+  "version": "1.0.0",
+  "tags": ["code", "review", "software engineering"]
+}

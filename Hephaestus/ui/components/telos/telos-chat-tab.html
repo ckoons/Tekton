@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Telos Chat</title>
+    <link rel="stylesheet" href="../../styles/shared/chat-interface.css">
+</head>
+<body>
+    <!-- Telos Chat Tab Component -->
+    <template id="telos-chat-template">
+        <div class="telos-chat-tab">
+            <header class="telos-chat-header">
+                <h2 class="telos-chat-title">Requirements Chat</h2>
+                <div class="telos-chat-actions">
+                    <button id="chat-help-btn" class="telos__btn telos__btn--icon" title="Chat Help">
+                        <span class="icon-help"></span>
+                    </button>
+                </div>
+            </header>
+            
+            <div class="telos-context-panel">
+                <label for="active-requirement">Active Requirement:</label>
+                <select id="active-requirement">
+                    <option value="">None (General Chat)</option>
+                    <!-- Requirements will be loaded dynamically -->
+                </select>
+            </div>
+            
+            <div class="telos-chat-container" id="chat-container">
+                <!-- Chat interface will be inserted here -->
+            </div>
+        </div>
+    </template>
+    
+    <script>
+        /**
+         * Telos Requirements Chat component for the Hephaestus UI.
+         * 
+         * This component provides a chat interface specifically designed for requirements
+         * analysis and management, with context-awareness of the current requirement.
+         */
+        class TelosChatComponent extends HTMLElement {
+            constructor() {
+                super();
+                
+                // Create shadow DOM
+                this.attachShadow({ mode: 'open' });
+                
+                // Load template
+                const template = document.getElementById('telos-chat-template');
+                this.shadowRoot.appendChild(template.content.cloneNode(true));
+                
+                // Component state
+                this.state = {
+                    projects: [],
+                    requirements: [],
+                    activeRequirementId: null,
+                    chatInterface: null,
+                    llmClient: null
+                };
+                
+                // Bind methods
+                this.initChat = this.initChat.bind(this);
+                this.handleRequirementChange = this.handleRequirementChange.bind(this);
+                this.loadRequirements = this.loadRequirements.bind(this);
+                this.handleChatMessageSend = this.handleChatMessageSend.bind(this);
+            }
+            
+            /**
+             * Called when the component is connected to the DOM.
+             */
+            connectedCallback() {
+                // Import shared scripts
+                this.importScripts()
+                    .then(() => {
+                        // Initialize the component
+                        this.initialize();
+                    })
+                    .catch(error => {
+                        console.error('Error loading TelosChat scripts:', error);
+                    });
+            }
+            
+            /**
+             * Import required scripts.
+             * 
+             * @returns {Promise} - Promise that resolves when scripts are loaded
+             */
+            async importScripts() {
+                // Create script loading promises
+                const scriptPromises = [
+                    this.loadScript('../../scripts/shared/llm_adapter_client.js'),
+                    this.loadScript('../../scripts/shared/chat-interface.js')
+                ];
+                
+                // Wait for all scripts to load
+                return Promise.all(scriptPromises);
+            }
+            
+            /**
+             * Load a script and return a promise.
+             * 
+             * @param {string} src - Script source URL
+             * @returns {Promise} - Promise that resolves when the script is loaded
+             */
+            loadScript(src) {
+                return new Promise((resolve, reject) => {
+                    const script = document.createElement('script');
+                    script.src = src;
+                    script.onload = resolve;
+                    script.onerror = reject;
+                    this.shadowRoot.appendChild(script);
+                });
+            }
+            
+            /**
+             * Initialize the component.
+             */
+            initialize() {
+                // Get DOM elements
+                this.elements = {
+                    chatContainer: this.shadowRoot.getElementById('chat-container'),
+                    activeRequirementSelect: this.shadowRoot.getElementById('active-requirement'),
+                    helpButton: this.shadowRoot.getElementById('chat-help-btn')
+                };
+                
+                // Set up event listeners
+                this.elements.activeRequirementSelect.addEventListener('change', this.handleRequirementChange);
+                
+                if (this.elements.helpButton) {
+                    this.elements.helpButton.addEventListener('click', () => this.showHelpMessage());
+                }
+                
+                // Initialize the LLM client
+                this.initLLMClient();
+                
+                // Initialize the chat interface
+                this.initChat();
+                
+                // Load requirements
+                this.loadRequirements();
+            }
+            
+            /**
+             * Initialize the LLM adapter client.
+             */
+            initLLMClient() {
+                // Create LLM adapter client
+                const LLMAdapterClient = window.LLMAdapterClient;
+                
+                if (!LLMAdapterClient) {
+                    console.error('LLMAdapterClient not found');
+                    return;
+                }
+                
+                const apiUrl = window.RHETOR_API_URL || 'http://localhost:8003';
+                
+                this.state.llmClient = new LLMAdapterClient({
+                    apiUrl,
+                    defaultModel: window.DEFAULT_LLM_MODEL || 'claude-3-sonnet-20240229',
+                    timeout: 60,
+                    defaultHeaders: {
+                        'Content-Type': 'application/json',
+                        'X-Component-ID': 'telos-requirements'
+                    }
+                });
+            }
+            
+            /**
+             * Initialize the chat interface.
+             */
+            initChat() {
+                if (!this.state.llmClient) {
+                    console.error('LLM client not initialized');
+                    return;
+                }
+                
+                const createChatInterface = window.createChatInterface;
+                
+                if (!createChatInterface) {
+                    console.error('createChatInterface not found');
+                    return;
+                }
+                
+                // System prompt for requirements analysis
+                const systemPrompt = `You are an AI assistant specialized in software requirements analysis and engineering.
+                
+                Your expertise includes:
+                - Analyzing and improving requirements for clarity, completeness, and testability
+                - Helping break down high-level requirements into more specific ones
+                - Suggesting validation criteria for requirements
+                - Identifying potential issues, ambiguities, or conflicts in requirements
+                - Providing best practices for requirements documentation
+                
+                When discussing a specific requirement, focus on improving it through questions and suggestions.
+                For general requirements engineering questions, provide helpful guidance based on industry standards.
+                
+                Always provide clear, actionable advice that helps improve the quality of requirements.`;
+                
+                // Create chat interface
+                this.state.chatInterface = createChatInterface(this.elements.chatContainer, {
+                    llmAdapterClient: this.state.llmClient,
+                    systemPrompt,
+                    placeholder: 'Ask about requirements or discuss the active requirement...',
+                    showModelSelector: true,
+                    enableMarkdown: true,
+                    onSend: this.handleChatMessageSend
+                });
+                
+                // Add welcome message
+                this.state.chatInterface.addMessage('assistant', 'Welcome to the Requirements Chat! I can help you analyze and improve your requirements. Select a requirement from the dropdown above to discuss it specifically, or ask me general questions about requirements engineering.');
+            }
+            
+            /**
+             * Handle requirement selection change.
+             * 
+             * @param {Event} event - Change event
+             */
+            handleRequirementChange(event) {
+                const requirementId = event.target.value;
+                this.state.activeRequirementId = requirementId;
+                
+                if (requirementId) {
+                    // Find the requirement
+                    const requirement = this.state.requirements.find(r => r.id === requirementId);
+                    
+                    if (requirement) {
+                        // Update system prompt with requirement context
+                        const systemPrompt = `You are an AI assistant specialized in software requirements analysis and engineering.
+                        
+                        You are currently analyzing the following requirement:
+                        
+                        ID: ${requirement.id}
+                        Title: ${requirement.title}
+                        Type: ${requirement.type || 'Not specified'}
+                        Priority: ${requirement.priority || 'Not specified'}
+                        Description: ${requirement.description}
+                        
+                        Your task is to help analyze and improve this requirement. Focus on:
+                        - Clarity: Is the requirement clear and unambiguous?
+                        - Completeness: Does it contain all necessary information?
+                        - Testability: Can it be verified and tested?
+                        - Feasibility: Is it technically feasible?
+                        - Consistency: Might it conflict with other requirements?
+                        
+                        When the user asks questions, assume they're talking about this specific requirement unless they clearly indicate otherwise.
+                        
+                        Provide constructive feedback and suggest specific improvements.`;
+                        
+                        this.state.chatInterface.setSystemPrompt(systemPrompt);
+                        
+                        // Add a message about the active requirement
+                        this.state.chatInterface.addMessage('assistant', `Now discussing requirement **${requirement.title}** (ID: ${requirement.id}). Ask me anything about this requirement or how to improve it.`);
+                    }
+                } else {
+                    // Reset to general requirements chat
+                    const generalSystemPrompt = `You are an AI assistant specialized in software requirements analysis and engineering.
+                    
+                    Your expertise includes:
+                    - Analyzing and improving requirements for clarity, completeness, and testability
+                    - Helping break down high-level requirements into more specific ones
+                    - Suggesting validation criteria for requirements
+                    - Identifying potential issues, ambiguities, or conflicts in requirements
+                    - Providing best practices for requirements documentation
+                    
+                    When discussing a specific requirement, focus on improving it through questions and suggestions.
+                    For general requirements engineering questions, provide helpful guidance based on industry standards.
+                    
+                    Always provide clear, actionable advice that helps improve the quality of requirements.`;
+                    
+                    this.state.chatInterface.setSystemPrompt(generalSystemPrompt);
+                    
+                    // Add a message about switching to general chat
+                    this.state.chatInterface.addMessage('assistant', 'Switched to general requirements chat. Ask me anything about requirements engineering or best practices.');
+                }
+                
+                // Focus the input field
+                this.state.chatInterface.focusInput();
+            }
+            
+            /**
+             * Load requirements from the Telos API.
+             */
+            async loadRequirements() {
+                try {
+                    // Get TelosService from the global scope
+                    const TelosService = window.TelosService;
+                    
+                    if (!TelosService) {
+                        console.error('TelosService not found');
+                        return;
+                    }
+                    
+                    // Get projects
+                    const projectsResponse = await TelosService.getProjects();
+                    
+                    if (projectsResponse.success) {
+                        this.state.projects = projectsResponse.projects || [];
+                        
+                        // Load requirements from all projects
+                        const requirements = [];
+                        
+                        for (const project of this.state.projects) {
+                            const requirementsResponse = await TelosService.getRequirements(project.id);
+                            
+                            if (requirementsResponse.success) {
+                                requirements.push(...(requirementsResponse.requirements || []));
+                            }
+                        }
+                        
+                        this.state.requirements = requirements;
+                        
+                        // Populate the requirements dropdown
+                        this.populateRequirementsDropdown();
+                    }
+                } catch (error) {
+                    console.error('Error loading requirements:', error);
+                }
+            }
+            
+            /**
+             * Populate the requirements dropdown.
+             */
+            populateRequirementsDropdown() {
+                const select = this.elements.activeRequirementSelect;
+                
+                // Clear existing options (except the first one)
+                while (select.options.length > 1) {
+                    select.options.remove(1);
+                }
+                
+                // Group requirements by project
+                const requirementsByProject = {};
+                
+                this.state.requirements.forEach(requirement => {
+                    const projectId = requirement.project_id;
+                    
+                    if (!requirementsByProject[projectId]) {
+                        requirementsByProject[projectId] = [];
+                    }
+                    
+                    requirementsByProject[projectId].push(requirement);
+                });
+                
+                // Add requirements to dropdown grouped by project
+                for (const project of this.state.projects) {
+                    const projectRequirements = requirementsByProject[project.id] || [];
+                    
+                    if (projectRequirements.length > 0) {
+                        // Add project as optgroup
+                        const optgroup = document.createElement('optgroup');
+                        optgroup.label = project.name;
+                        select.appendChild(optgroup);
+                        
+                        // Add requirements
+                        projectRequirements.forEach(requirement => {
+                            const option = document.createElement('option');
+                            option.value = requirement.id;
+                            option.textContent = `${requirement.title} (ID: ${requirement.id})`;
+                            optgroup.appendChild(option);
+                        });
+                    }
+                }
+            }
+            
+            /**
+             * Handle a chat message being sent.
+             * 
+             * @param {string} message - Message content
+             */
+            handleChatMessageSend(message) {
+                // If message contains a command to create or update a requirement, handle it
+                if (/create requirement|add requirement|new requirement/i.test(message) && !this.state.activeRequirementId) {
+                    // Add a setTimeout to allow the user's message to be displayed first
+                    setTimeout(() => {
+                        this.state.chatInterface.addMessage('assistant', "I can help you create a new requirement. Let's work through it step by step. Please provide the following information:\n\n1. What's the title for this requirement?\n2. What type of requirement is it? (functional, non-functional, constraint)\n3. What's the priority? (low, medium, high, critical)\n4. Please provide a detailed description of the requirement.");
+                    }, 100);
+                    
+                    return;
+                }
+                
+                // If discussing an active requirement and message suggests refinement
+                if (this.state.activeRequirementId && /refine|improve|update|enhance|modify/i.test(message)) {
+                    // Add a custom thinking message for requirement refinement
+                    setTimeout(() => {
+                        const requirement = this.state.requirements.find(r => r.id === this.state.activeRequirementId);
+                        
+                        if (requirement) {
+                            // Let the regular LLM processing continue, but with additional context
+                            const refinementContext = `Based on your request to refine requirement "${requirement.title}", I'm analyzing it for potential improvements.`;
+                            
+                            if (this.state.chatInterface && typeof this.state.chatInterface.addMessage === 'function') {
+                                this.state.chatInterface.addMessage('thinking', refinementContext);
+                            }
+                        }
+                    }, 100);
+                }
+            }
+            
+            /**
+             * Show a help message in the chat.
+             */
+            showHelpMessage() {
+                if (this.state.chatInterface) {
+                    this.state.chatInterface.addMessage('assistant', `# Requirements Chat Help
+
+Here are some ways you can use this chat interface:
+
+## General Usage
+- Ask questions about requirements engineering
+- Get help with best practices
+- Learn about requirement types and structures
+
+## Working with Requirements
+- Select a requirement from the dropdown to focus on it
+- Ask for analysis of the selected requirement
+- Request suggestions for improvement
+- Ask about validation criteria
+
+## Example Questions
+- "What makes a good requirement?"
+- "How can I make this requirement more testable?"
+- "What's the difference between functional and non-functional requirements?"
+- "How can I break down this requirement into smaller parts?"
+- "What validation criteria would you suggest for this requirement?"
+
+## Commands
+- Type "create requirement" to start creating a new requirement
+- Type "refine requirement" to get suggestions for improving the current requirement`);
+                }
+            }
+        }
+        
+        // Register the custom element
+        if (!customElements.get('telos-chat')) {
+            customElements.define('telos-chat', TelosChatComponent);
+        }
+    </script>
+</body>
+</html>

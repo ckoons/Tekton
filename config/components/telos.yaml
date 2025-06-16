@@ -1,0 +1,172 @@
+component:
+  id: telos
+  name: Telos
+  version: 0.1.0
+  description: Requirements management system for Tekton
+  port: 8008
+
+capabilities:
+  - id: requirements_management
+    name: Requirements Management
+    description: Management of project requirements
+    methods:
+      - id: create_requirement
+        name: Create Requirement
+        description: Create a new requirement
+        parameters:
+          - name: project_id
+            type: string
+            required: true
+            description: The ID of the project
+          - name: title
+            type: string
+            required: true
+            description: The title of the requirement
+          - name: description
+            type: string
+            required: true
+            description: The description of the requirement
+          - name: priority
+            type: string
+            required: false
+            description: The priority of the requirement
+            default: medium
+          - name: status
+            type: string
+            required: false
+            description: The status of the requirement
+            default: draft
+        returns:
+          type: object
+          description: The created requirement
+
+      - id: get_requirement
+        name: Get Requirement
+        description: Get a requirement by ID
+        parameters:
+          - name: requirement_id
+            type: string
+            required: true
+            description: The ID of the requirement to get
+        returns:
+          type: object
+          description: The requirement
+
+      - id: update_requirement
+        name: Update Requirement
+        description: Update a requirement
+        parameters:
+          - name: requirement_id
+            type: string
+            required: true
+            description: The ID of the requirement to update
+          - name: updates
+            type: object
+            required: true
+            description: The updates to apply to the requirement
+        returns:
+          type: object
+          description: The updated requirement
+
+      - id: delete_requirement
+        name: Delete Requirement
+        description: Delete a requirement
+        parameters:
+          - name: requirement_id
+            type: string
+            required: true
+            description: The ID of the requirement to delete
+        returns:
+          type: boolean
+          description: Whether the requirement was deleted successfully
+
+  - id: project_management
+    name: Project Management
+    description: Management of projects
+    methods:
+      - id: create_project
+        name: Create Project
+        description: Create a new project
+        parameters:
+          - name: name
+            type: string
+            required: true
+            description: The name of the project
+          - name: description
+            type: string
+            required: true
+            description: The description of the project
+        returns:
+          type: object
+          description: The created project
+
+      - id: get_project
+        name: Get Project
+        description: Get a project by ID
+        parameters:
+          - name: project_id
+            type: string
+            required: true
+            description: The ID of the project to get
+        returns:
+          type: object
+          description: The project
+
+      - id: list_projects
+        name: List Projects
+        description: List all projects
+        parameters: []
+        returns:
+          type: array
+          description: List of projects
+
+      - id: delete_project
+        name: Delete Project
+        description: Delete a project
+        parameters:
+          - name: project_id
+            type: string
+            required: true
+            description: The ID of the project to delete
+        returns:
+          type: boolean
+          description: Whether the project was deleted successfully
+
+  - id: validation
+    name: Requirement Validation
+    description: Validation of requirements against implementation
+    methods:
+      - id: validate_requirement
+        name: Validate Requirement
+        description: Validate a requirement against implementation
+        parameters:
+          - name: requirement_id
+            type: string
+            required: true
+            description: The ID of the requirement to validate
+          - name: implementation_id
+            type: string
+            required: true
+            description: The ID of the implementation to validate against
+        returns:
+          type: object
+          description: Validation result
+
+      - id: list_validations
+        name: List Validations
+        description: List all validations for a requirement
+        parameters:
+          - name: requirement_id
+            type: string
+            required: true
+            description: The ID of the requirement
+        returns:
+          type: array
+          description: List of validations
+
+config:
+  storage_type: sqlite
+  database_path: ~/.tekton/data/telos.db
+  enable_prometheus_integration: true
+  enable_metrics: true
+  logging_level: info

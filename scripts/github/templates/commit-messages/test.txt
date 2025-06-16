@@ -1,0 +1,9 @@
+test: {title}
+
+- {what_was_tested}
+- {testing_approach}
+- {test_coverage}
+
+🤖 Generated with [Claude Code](https://claude.ai/code)
+Design & Engineering Guidance by Casey Koons <cskoons@gmail.com>
+Co-Authored-By: Casey Koons <cskoons@gmail.com> & Claude <noreply@anthropic.com>

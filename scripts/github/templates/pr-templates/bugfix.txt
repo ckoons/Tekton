@@ -1,0 +1,21 @@
+## Bugfix: {title}
+
+### Issue Description
+{issue_description}
+
+### Root Cause
+{root_cause}
+
+### Fix Implementation
+{fix_implementation}
+
+### Testing
+- [ ] Unit tests added/updated to prevent regression
+- [ ] Integration tests added/updated
+- [ ] Edge cases validated
+- [ ] Manual testing performed
+
+### Related Issues
+Fixes #{issue_number}
+
+🤖 Generated with [Claude Code](https://claude.ai/code)

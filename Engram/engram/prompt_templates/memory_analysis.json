@@ -1,0 +1,5 @@
+{
+  "template": "Please analyze the following content and extract key information, entities, and relationships:\n\n{content}\n\n{context_prompt}",
+  "output_format": "text",
+  "description": "Detailed analysis of memory content"
+}

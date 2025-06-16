@@ -1,0 +1,40 @@
+{
+  "service_id": "ergon-fastmcp",
+  "name": "Ergon FastMCP Service",
+  "version": "0.1.0",
+  "endpoint": null,
+  "capabilities": [
+    "a2a",
+    "agent_management",
+    "workflow_management",
+    "task_management"
+  ],
+  "metadata": {
+    "a2a_agent": true,
+    "agent_card": {
+      "id": "ergon-fastmcp",
+      "name": "Ergon FastMCP Service",
+      "description": "Ergon FastMCP Service - Workflow and task execution agent",
+      "version": "0.1.0",
+      "capabilities": [
+        "agent_management",
+        "workflow_management",
+        "task_management"
+      ],
+      "supportedMethods": [],
+      "endpoint": "http://localhost:8002/api/a2a/v1/",
+      "tags": [
+        "ergon",
+        "workflow",
+        "task"
+      ],
+      "metadata": {
+        "component": "ergon",
+        "protocolVersion": "0.2.1"
+      }
+    }
+  },
+  "instance_uuid": "a6af32e8-f154-4c2c-95fe-3182c92b4d1a",
+  "registration_time": 1750009331.39619,
+  "status": "active"
+}

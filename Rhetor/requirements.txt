@@ -1,0 +1,14 @@
+# Rhetor requirements - LLM prompt optimization and conversation management
+# This component handles prompt engineering and LLM interaction optimization
+
+# Core requirements
+-r ../shared/requirements/base.txt
+-r ../shared/requirements/web.txt
+-r ../shared/requirements/ai.txt
+-r ../shared/requirements/vector.txt
+
+# Additional component-specific dependencies
+uuid>=1.30
+json5>=0.9.6
+
+# Note: tiktoken and litellm are already included in ai.txt

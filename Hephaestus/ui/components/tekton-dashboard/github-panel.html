@@ -1,0 +1,841 @@
+<!-- GitHub Integration Panel for Tekton Dashboard -->
+<div class="tekton-dashboard__github-panel">
+  <div class="tekton-dashboard__panel-header">
+    <div class="tekton-dashboard__panel-title">GitHub Integration</div>
+    <div class="tekton-dashboard__auth-status" id="github-auth-status">
+      <span class="tekton-dashboard__auth-indicator tekton-dashboard__auth-indicator--unauthenticated" id="github-auth-indicator"></span>
+      <span class="tekton-dashboard__auth-label" id="github-auth-label">Not authenticated</span>
+    </div>
+    <div class="tekton-dashboard__panel-actions">
+      <button class="tekton-dashboard__action-button tekton-dashboard__action-button--primary" id="github-authenticate">
+        <span class="tekton-dashboard__action-icon">🔐</span>
+        Authenticate
+      </button>
+      <button class="tekton-dashboard__action-button" id="github-refresh" style="display: none;">
+        <span class="tekton-dashboard__action-icon">🔄</span>
+        Refresh
+      </button>
+    </div>
+  </div>
+  
+  <!-- GitHub Tabs -->
+  <div class="tekton-dashboard__tabs github-tabs" id="github-tabs">
+    <button class="tekton-dashboard__tab-button tekton-dashboard__tab-button--active" data-tab="repositories">
+      <span class="tekton-dashboard__tab-icon">📦</span>
+      <span class="tekton-dashboard__tab-label">Repositories</span>
+    </button>
+    <button class="tekton-dashboard__tab-button" data-tab="project-links">
+      <span class="tekton-dashboard__tab-icon">🔗</span>
+      <span class="tekton-dashboard__tab-label">Project Links</span>
+    </button>
+    <button class="tekton-dashboard__tab-button" data-tab="issues">
+      <span class="tekton-dashboard__tab-icon">🐛</span>
+      <span class="tekton-dashboard__tab-label">Issues</span>
+    </button>
+    <button class="tekton-dashboard__tab-button" data-tab="pull-requests">
+      <span class="tekton-dashboard__tab-icon">🔄</span>
+      <span class="tekton-dashboard__tab-label">Pull Requests</span>
+    </button>
+    <button class="tekton-dashboard__tab-button" data-tab="settings">
+      <span class="tekton-dashboard__tab-icon">⚙️</span>
+      <span class="tekton-dashboard__tab-label">Settings</span>
+    </button>
+  </div>
+  
+  <!-- Tab Content -->
+  <div class="tekton-dashboard__tab-content github-tab-content">
+    <!-- Repositories Tab -->
+    <div class="tekton-dashboard__tab-panel tekton-dashboard__tab-panel--active" data-panel="repositories">
+      <div class="tekton-dashboard__search-bar">
+        <input type="text" class="tekton-dashboard__search-input" id="repo-search" placeholder="Search repositories...">
+        <select class="tekton-dashboard__select" id="repo-type-filter">
+          <option value="all">All Repositories</option>
+          <option value="owner">Your Repositories</option>
+          <option value="member">Member Repositories</option>
+          <option value="public">Public Repositories</option>
+          <option value="private">Private Repositories</option>
+        </select>
+        <select class="tekton-dashboard__select" id="repo-language-filter">
+          <option value="all">All Languages</option>
+          <!-- Languages will be populated dynamically -->
+        </select>
+        <button class="tekton-dashboard__button tekton-dashboard__button--primary" id="create-repo-button">
+          <span class="tekton-dashboard__button-icon">+</span>
+          New Repository
+        </button>
+      </div>
+      
+      <div class="tekton-dashboard__repositories-view">
+        <div class="tekton-dashboard__loading" id="repositories-loading">Loading repositories...</div>
+        <div class="tekton-dashboard__repositories-grid" id="repositories-grid">
+          <!-- Repository cards will be added dynamically -->
+        </div>
+      </div>
+      
+      <div class="tekton-dashboard__pagination" id="repositories-pagination">
+        <button class="tekton-dashboard__pagination-button" id="repo-prev-page" disabled>Previous</button>
+        <span class="tekton-dashboard__pagination-info" id="repo-pagination-info">Page 1</span>
+        <button class="tekton-dashboard__pagination-button" id="repo-next-page">Next</button>
+      </div>
+    </div>
+    
+    <!-- Project Links Tab -->
+    <div class="tekton-dashboard__tab-panel" data-panel="project-links">
+      <div class="tekton-dashboard__project-links-header">
+        <h3 class="tekton-dashboard__section-title">Repository-Project Links</h3>
+        <button class="tekton-dashboard__button tekton-dashboard__button--primary" id="create-link-button">
+          <span class="tekton-dashboard__button-icon">🔗</span>
+          Link Repository
+        </button>
+      </div>
+      
+      <div class="tekton-dashboard__project-links-list" id="project-links-list">
+        <div class="tekton-dashboard__loading" id="project-links-loading">Loading project links...</div>
+        <!-- Project links will be added dynamically -->
+      </div>
+      
+      <div class="tekton-dashboard__sync-section">
+        <h3 class="tekton-dashboard__section-title">Synchronization</h3>
+        <div class="tekton-dashboard__sync-options">
+          <button class="tekton-dashboard__button tekton-dashboard__button--secondary" id="sync-all-repos">
+            <span class="tekton-dashboard__button-icon">🔄</span>
+            Sync All Repositories
+          </button>
+          <div class="tekton-dashboard__sync-status" id="sync-status"></div>
+        </div>
+        <div class="tekton-dashboard__sync-history" id="sync-history">
+          <h4 class="tekton-dashboard__subsection-title">Recent Synchronizations</h4>
+          <div class="tekton-dashboard__sync-history-list" id="sync-history-list">
+            <!-- Sync history will be added dynamically -->
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Issues Tab -->
+    <div class="tekton-dashboard__tab-panel" data-panel="issues">
+      <div class="tekton-dashboard__issues-header">
+        <div class="tekton-dashboard__search-filters">
+          <select class="tekton-dashboard__select" id="issues-repository-filter">
+            <option value="all">All Repositories</option>
+            <!-- Repositories will be populated dynamically -->
+          </select>
+          <select class="tekton-dashboard__select" id="issues-state-filter">
+            <option value="open">Open Issues</option>
+            <option value="closed">Closed Issues</option>
+            <option value="all">All Issues</option>
+          </select>
+          <input type="text" class="tekton-dashboard__search-input" id="issues-search" placeholder="Search issues...">
+        </div>
+        <button class="tekton-dashboard__button tekton-dashboard__button--primary" id="create-issue-button">
+          <span class="tekton-dashboard__button-icon">+</span>
+          New Issue
+        </button>
+      </div>
+      
+      <div class="tekton-dashboard__issues-view">
+        <div class="tekton-dashboard__loading" id="issues-loading">Loading issues...</div>
+        <div class="tekton-dashboard__issues-list" id="issues-list">
+          <!-- Issues will be added dynamically -->
+        </div>
+      </div>
+      
+      <div class="tekton-dashboard__pagination" id="issues-pagination">
+        <button class="tekton-dashboard__pagination-button" id="issues-prev-page" disabled>Previous</button>
+        <span class="tekton-dashboard__pagination-info" id="issues-pagination-info">Page 1</span>
+        <button class="tekton-dashboard__pagination-button" id="issues-next-page">Next</button>
+      </div>
+    </div>
+    
+    <!-- Pull Requests Tab -->
+    <div class="tekton-dashboard__tab-panel" data-panel="pull-requests">
+      <div class="tekton-dashboard__prs-header">
+        <div class="tekton-dashboard__search-filters">
+          <select class="tekton-dashboard__select" id="prs-repository-filter">
+            <option value="all">All Repositories</option>
+            <!-- Repositories will be populated dynamically -->
+          </select>
+          <select class="tekton-dashboard__select" id="prs-state-filter">
+            <option value="open">Open PRs</option>
+            <option value="closed">Closed PRs</option>
+            <option value="all">All PRs</option>
+          </select>
+          <input type="text" class="tekton-dashboard__search-input" id="prs-search" placeholder="Search pull requests...">
+        </div>
+        <button class="tekton-dashboard__button tekton-dashboard__button--primary" id="create-pr-button">
+          <span class="tekton-dashboard__button-icon">+</span>
+          New Pull Request
+        </button>
+      </div>
+      
+      <div class="tekton-dashboard__prs-view">
+        <div class="tekton-dashboard__loading" id="prs-loading">Loading pull requests...</div>
+        <div class="tekton-dashboard__prs-list" id="prs-list">
+          <!-- Pull requests will be added dynamically -->
+        </div>
+      </div>
+      
+      <div class="tekton-dashboard__pagination" id="prs-pagination">
+        <button class="tekton-dashboard__pagination-button" id="prs-prev-page" disabled>Previous</button>
+        <span class="tekton-dashboard__pagination-info" id="prs-pagination-info">Page 1</span>
+        <button class="tekton-dashboard__pagination-button" id="prs-next-page">Next</button>
+      </div>
+    </div>
+    
+    <!-- Settings Tab -->
+    <div class="tekton-dashboard__tab-panel" data-panel="settings">
+      <div class="tekton-dashboard__settings-section">
+        <h3 class="tekton-dashboard__section-title">GitHub Authentication</h3>
+        <div class="tekton-dashboard__settings-form">
+          <div class="tekton-dashboard__form-field">
+            <label class="tekton-dashboard__form-label">Authentication Status</label>
+            <div class="tekton-dashboard__form-value">
+              <span class="tekton-dashboard__auth-indicator" id="settings-auth-indicator"></span>
+              <span id="settings-auth-status">Not authenticated</span>
+            </div>
+          </div>
+          <div class="tekton-dashboard__form-field" id="github-user-info" style="display: none;">
+            <label class="tekton-dashboard__form-label">GitHub User</label>
+            <div class="tekton-dashboard__form-value" id="github-username"></div>
+          </div>
+          <div class="tekton-dashboard__form-actions">
+            <button class="tekton-dashboard__button tekton-dashboard__button--primary" id="settings-auth-button">
+              Authenticate
+            </button>
+            <button class="tekton-dashboard__button tekton-dashboard__button--secondary" id="settings-logout-button" style="display: none;">
+              Logout
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <div class="tekton-dashboard__settings-section">
+        <h3 class="tekton-dashboard__section-title">GitHub Enterprise</h3>
+        <div class="tekton-dashboard__settings-form">
+          <div class="tekton-dashboard__form-field">
+            <label class="tekton-dashboard__form-label">GitHub Enterprise URL</label>
+            <input type="text" class="tekton-dashboard__form-input" id="github-enterprise-url" placeholder="https://github.example.com">
+            <div class="tekton-dashboard__form-description">Leave empty for GitHub.com</div>
+          </div>
+          <div class="tekton-dashboard__form-field">
+            <label class="tekton-dashboard__form-label">API Path</label>
+            <input type="text" class="tekton-dashboard__form-input" id="github-api-path" value="/api/v3" disabled>
+          </div>
+          <div class="tekton-dashboard__form-actions">
+            <button class="tekton-dashboard__button tekton-dashboard__button--primary" id="save-enterprise-settings">
+              Save Enterprise Settings
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <div class="tekton-dashboard__settings-section">
+        <h3 class="tekton-dashboard__section-title">Synchronization Settings</h3>
+        <div class="tekton-dashboard__settings-form">
+          <div class="tekton-dashboard__form-field">
+            <label class="tekton-dashboard__form-label">Auto-sync Frequency</label>
+            <select class="tekton-dashboard__form-select" id="auto-sync-frequency">
+              <option value="0">Manual only</option>
+              <option value="15">Every 15 minutes</option>
+              <option value="30">Every 30 minutes</option>
+              <option value="60">Every hour</option>
+              <option value="240">Every 4 hours</option>
+              <option value="720">Every 12 hours</option>
+              <option value="1440">Every 24 hours</option>
+            </select>
+          </div>
+          <div class="tekton-dashboard__form-field">
+            <label class="tekton-dashboard__form-label">Webhook Secret</label>
+            <div class="tekton-dashboard__form-input-group">
+              <input type="password" class="tekton-dashboard__form-input" id="webhook-secret" placeholder="Webhook secret key">
+              <button class="tekton-dashboard__form-button" id="generate-webhook-secret">Generate</button>
+            </div>
+            <div class="tekton-dashboard__form-description">Used to verify GitHub webhook payloads</div>
+          </div>
+          <div class="tekton-dashboard__form-actions">
+            <button class="tekton-dashboard__button tekton-dashboard__button--primary" id="save-sync-settings">
+              Save Sync Settings
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Repository Detail Modal -->
+  <div class="tekton-dashboard__modal" id="repository-detail-modal" style="display: none;">
+    <div class="tekton-dashboard__modal-overlay"></div>
+    <div class="tekton-dashboard__modal-content tekton-dashboard__modal-content--large">
+      <div class="tekton-dashboard__modal-header">
+        <h3 class="tekton-dashboard__modal-title" id="repository-modal-title">Repository Details</h3>
+        <button class="tekton-dashboard__modal-close" id="close-repository-modal">&times;</button>
+      </div>
+      <div class="tekton-dashboard__modal-body">
+        <div class="tekton-dashboard__repository-detail" id="repository-detail">
+          <!-- Repository details tabs -->
+          <div class="tekton-dashboard__tabs repo-detail-tabs" id="repo-detail-tabs">
+            <button class="tekton-dashboard__tab-button tekton-dashboard__tab-button--active" data-tab="repo-overview">
+              Overview
+            </button>
+            <button class="tekton-dashboard__tab-button" data-tab="repo-files">
+              Files
+            </button>
+            <button class="tekton-dashboard__tab-button" data-tab="repo-branches">
+              Branches
+            </button>
+            <button class="tekton-dashboard__tab-button" data-tab="repo-commits">
+              Commits
+            </button>
+            <button class="tekton-dashboard__tab-button" data-tab="repo-issues">
+              Issues
+            </button>
+            <button class="tekton-dashboard__tab-button" data-tab="repo-prs">
+              Pull Requests
+            </button>
+          </div>
+          
+          <div class="tekton-dashboard__tab-content repo-detail-content">
+            <!-- Overview Tab -->
+            <div class="tekton-dashboard__tab-panel tekton-dashboard__tab-panel--active" data-panel="repo-overview">
+              <div class="tekton-dashboard__repo-overview" id="repo-overview">
+                <!-- Repository overview will be added dynamically -->
+              </div>
+            </div>
+            
+            <!-- Files Tab -->
+            <div class="tekton-dashboard__tab-panel" data-panel="repo-files">
+              <div class="tekton-dashboard__repo-files" id="repo-files">
+                <div class="tekton-dashboard__file-browser-header">
+                  <div class="tekton-dashboard__file-path" id="repo-file-path">
+                    <!-- File path breadcrumbs will be added dynamically -->
+                  </div>
+                  <select class="tekton-dashboard__select" id="repo-branch-selector">
+                    <!-- Branches will be populated dynamically -->
+                  </select>
+                </div>
+                
+                <div class="tekton-dashboard__file-browser-content" id="repo-file-browser">
+                  <div class="tekton-dashboard__loading">Loading files...</div>
+                  <!-- File list will be added dynamically -->
+                </div>
+              </div>
+            </div>
+            
+            <!-- Branches Tab -->
+            <div class="tekton-dashboard__tab-panel" data-panel="repo-branches">
+              <div class="tekton-dashboard__repo-branches" id="repo-branches">
+                <div class="tekton-dashboard__loading">Loading branches...</div>
+                <!-- Branches will be added dynamically -->
+              </div>
+            </div>
+            
+            <!-- Commits Tab -->
+            <div class="tekton-dashboard__tab-panel" data-panel="repo-commits">
+              <div class="tekton-dashboard__repo-commits" id="repo-commits">
+                <div class="tekton-dashboard__commit-browser-header">
+                  <select class="tekton-dashboard__select" id="commit-branch-selector">
+                    <!-- Branches will be populated dynamically -->
+                  </select>
+                </div>
+                
+                <div class="tekton-dashboard__commit-list" id="repo-commit-list">
+                  <div class="tekton-dashboard__loading">Loading commits...</div>
+                  <!-- Commit list will be added dynamically -->
+                </div>
+              </div>
+            </div>
+            
+            <!-- Issues Tab -->
+            <div class="tekton-dashboard__tab-panel" data-panel="repo-issues">
+              <div class="tekton-dashboard__repo-issues" id="repo-detail-issues">
+                <div class="tekton-dashboard__repo-issues-header">
+                  <select class="tekton-dashboard__select" id="repo-issues-state-filter">
+                    <option value="open">Open Issues</option>
+                    <option value="closed">Closed Issues</option>
+                    <option value="all">All Issues</option>
+                  </select>
+                  <button class="tekton-dashboard__button tekton-dashboard__button--primary" id="repo-create-issue">
+                    New Issue
+                  </button>
+                </div>
+                
+                <div class="tekton-dashboard__issues-list" id="repo-issues-list">
+                  <div class="tekton-dashboard__loading">Loading issues...</div>
+                  <!-- Issue list will be added dynamically -->
+                </div>
+              </div>
+            </div>
+            
+            <!-- Pull Requests Tab -->
+            <div class="tekton-dashboard__tab-panel" data-panel="repo-prs">
+              <div class="tekton-dashboard__repo-prs" id="repo-detail-prs">
+                <div class="tekton-dashboard__repo-prs-header">
+                  <select class="tekton-dashboard__select" id="repo-prs-state-filter">
+                    <option value="open">Open PRs</option>
+                    <option value="closed">Closed PRs</option>
+                    <option value="all">All PRs</option>
+                  </select>
+                  <button class="tekton-dashboard__button tekton-dashboard__button--primary" id="repo-create-pr">
+                    New Pull Request
+                  </button>
+                </div>
+                
+                <div class="tekton-dashboard__pr-list" id="repo-pr-list">
+                  <div class="tekton-dashboard__loading">Loading pull requests...</div>
+                  <!-- PR list will be added dynamically -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="tekton-dashboard__modal-footer">
+        <button class="tekton-dashboard__button tekton-dashboard__button--secondary" id="repository-modal-close">Close</button>
+        <button class="tekton-dashboard__button tekton-dashboard__button--primary" id="repository-clone-button">Clone Repository</button>
+        <button class="tekton-dashboard__button" id="repository-link-button">Link to Project</button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Create Repository Modal -->
+  <div class="tekton-dashboard__modal" id="create-repository-modal" style="display: none;">
+    <div class="tekton-dashboard__modal-overlay"></div>
+    <div class="tekton-dashboard__modal-content">
+      <div class="tekton-dashboard__modal-header">
+        <h3 class="tekton-dashboard__modal-title">Create New Repository</h3>
+        <button class="tekton-dashboard__modal-close" id="close-create-repository-modal">&times;</button>
+      </div>
+      <div class="tekton-dashboard__modal-body">
+        <form id="create-repository-form" class="tekton-dashboard__form">
+          <div class="tekton-dashboard__form-field">
+            <label class="tekton-dashboard__form-label">Repository Name</label>
+            <input type="text" id="repository-name" class="tekton-dashboard__form-input" required>
+            <div class="tekton-dashboard__form-error" id="repository-name-error"></div>
+          </div>
+          <div class="tekton-dashboard__form-field">
+            <label class="tekton-dashboard__form-label">Description</label>
+            <textarea id="repository-description" class="tekton-dashboard__form-textarea" rows="3"></textarea>
+          </div>
+          <div class="tekton-dashboard__form-field">
+            <label class="tekton-dashboard__form-label">Visibility</label>
+            <div class="tekton-dashboard__radio-group">
+              <label class="tekton-dashboard__radio-label">
+                <input type="radio" name="repository-visibility" value="public" checked>
+                Public
+              </label>
+              <label class="tekton-dashboard__radio-label">
+                <input type="radio" name="repository-visibility" value="private">
+                Private
+              </label>
+            </div>
+          </div>
+          <div class="tekton-dashboard__form-field">
+            <label class="tekton-dashboard__form-label">Initialize Repository</label>
+            <div class="tekton-dashboard__checkbox-group">
+              <label class="tekton-dashboard__checkbox-label">
+                <input type="checkbox" id="repository-init" checked>
+                Initialize with README
+              </label>
+            </div>
+          </div>
+          <div class="tekton-dashboard__form-field">
+            <label class="tekton-dashboard__form-label">Git Ignore Template</label>
+            <select id="repository-gitignore" class="tekton-dashboard__form-select">
+              <option value="">None</option>
+              <option value="Node">Node</option>
+              <option value="Python">Python</option>
+              <option value="Java">Java</option>
+              <option value="Go">Go</option>
+              <option value="Ruby">Ruby</option>
+              <option value="Rust">Rust</option>
+            </select>
+          </div>
+          <div class="tekton-dashboard__form-field">
+            <label class="tekton-dashboard__form-label">License</label>
+            <select id="repository-license" class="tekton-dashboard__form-select">
+              <option value="">None</option>
+              <option value="mit">MIT License</option>
+              <option value="apache-2.0">Apache License 2.0</option>
+              <option value="gpl-3.0">GNU GPLv3</option>
+              <option value="bsd-3-clause">BSD 3-Clause</option>
+            </select>
+          </div>
+        </form>
+      </div>
+      <div class="tekton-dashboard__modal-footer">
+        <button class="tekton-dashboard__button tekton-dashboard__button--secondary" id="create-repository-cancel">Cancel</button>
+        <button class="tekton-dashboard__button tekton-dashboard__button--primary" id="create-repository-submit">Create Repository</button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Create Issue Modal -->
+  <div class="tekton-dashboard__modal" id="create-issue-modal" style="display: none;">
+    <div class="tekton-dashboard__modal-overlay"></div>
+    <div class="tekton-dashboard__modal-content">
+      <div class="tekton-dashboard__modal-header">
+        <h3 class="tekton-dashboard__modal-title">Create New Issue</h3>
+        <button class="tekton-dashboard__modal-close" id="close-create-issue-modal">&times;</button>
+      </div>
+      <div class="tekton-dashboard__modal-body">
+        <form id="create-issue-form" class="tekton-dashboard__form">
+          <div class="tekton-dashboard__form-field">
+            <label class="tekton-dashboard__form-label">Repository</label>
+            <select id="issue-repository" class="tekton-dashboard__form-select" required>
+              <!-- Repositories will be populated dynamically -->
+            </select>
+          </div>
+          <div class="tekton-dashboard__form-field">
+            <label class="tekton-dashboard__form-label">Title</label>
+            <input type="text" id="issue-title" class="tekton-dashboard__form-input" required>
+          </div>
+          <div class="tekton-dashboard__form-field">
+            <label class="tekton-dashboard__form-label">Description</label>
+            <textarea id="issue-description" class="tekton-dashboard__form-textarea" rows="6"></textarea>
+          </div>
+          <div class="tekton-dashboard__form-field">
+            <label class="tekton-dashboard__form-label">Labels</label>
+            <div class="tekton-dashboard__labels-input" id="issue-labels-container">
+              <div class="tekton-dashboard__labels-selected" id="issue-labels-selected"></div>
+              <input type="text" id="issue-labels" class="tekton-dashboard__form-input" placeholder="Type to add labels">
+              <div class="tekton-dashboard__labels-suggestions" id="issue-labels-suggestions" style="display: none;"></div>
+            </div>
+          </div>
+          <div class="tekton-dashboard__form-field">
+            <label class="tekton-dashboard__form-label">Assignees</label>
+            <div class="tekton-dashboard__assignees-input" id="issue-assignees-container">
+              <div class="tekton-dashboard__assignees-selected" id="issue-assignees-selected"></div>
+              <input type="text" id="issue-assignees" class="tekton-dashboard__form-input" placeholder="Type to add assignees">
+              <div class="tekton-dashboard__assignees-suggestions" id="issue-assignees-suggestions" style="display: none;"></div>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="tekton-dashboard__modal-footer">
+        <button class="tekton-dashboard__button tekton-dashboard__button--secondary" id="create-issue-cancel">Cancel</button>
+        <button class="tekton-dashboard__button tekton-dashboard__button--primary" id="create-issue-submit">Create Issue</button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Link Repository Modal -->
+  <div class="tekton-dashboard__modal" id="link-repository-modal" style="display: none;">
+    <div class="tekton-dashboard__modal-overlay"></div>
+    <div class="tekton-dashboard__modal-content">
+      <div class="tekton-dashboard__modal-header">
+        <h3 class="tekton-dashboard__modal-title">Link Repository to Project</h3>
+        <button class="tekton-dashboard__modal-close" id="close-link-repository-modal">&times;</button>
+      </div>
+      <div class="tekton-dashboard__modal-body">
+        <form id="link-repository-form" class="tekton-dashboard__form">
+          <div class="tekton-dashboard__form-field">
+            <label class="tekton-dashboard__form-label">Tekton Project</label>
+            <select id="link-project" class="tekton-dashboard__form-select" required>
+              <!-- Projects will be populated dynamically -->
+            </select>
+          </div>
+          <div class="tekton-dashboard__form-field">
+            <label class="tekton-dashboard__form-label">GitHub Repository</label>
+            <select id="link-repository" class="tekton-dashboard__form-select" required>
+              <!-- Repositories will be populated dynamically -->
+            </select>
+          </div>
+          <div class="tekton-dashboard__form-field">
+            <label class="tekton-dashboard__form-label">Synchronization Options</label>
+            <div class="tekton-dashboard__checkbox-group">
+              <label class="tekton-dashboard__checkbox-label">
+                <input type="checkbox" id="link-sync-issues" checked>
+                Sync Issues
+              </label>
+              <label class="tekton-dashboard__checkbox-label">
+                <input type="checkbox" id="link-sync-prs" checked>
+                Sync Pull Requests
+              </label>
+              <label class="tekton-dashboard__checkbox-label">
+                <input type="checkbox" id="link-auto-sync" checked>
+                Enable Automatic Sync
+              </label>
+            </div>
+          </div>
+          <div class="tekton-dashboard__form-field">
+            <label class="tekton-dashboard__form-label">Setup Webhook</label>
+            <div class="tekton-dashboard__checkbox-group">
+              <label class="tekton-dashboard__checkbox-label">
+                <input type="checkbox" id="link-create-webhook" checked>
+                Create GitHub Webhook
+              </label>
+            </div>
+            <div class="tekton-dashboard__form-description">
+              Creates a webhook to receive real-time notifications about repository events
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="tekton-dashboard__modal-footer">
+        <button class="tekton-dashboard__button tekton-dashboard__button--secondary" id="link-repository-cancel">Cancel</button>
+        <button class="tekton-dashboard__button tekton-dashboard__button--primary" id="link-repository-submit">Link Repository</button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Issue Detail Modal -->
+  <div class="tekton-dashboard__modal" id="issue-detail-modal" style="display: none;">
+    <div class="tekton-dashboard__modal-overlay"></div>
+    <div class="tekton-dashboard__modal-content tekton-dashboard__modal-content--large">
+      <div class="tekton-dashboard__modal-header">
+        <h3 class="tekton-dashboard__modal-title" id="issue-modal-title">Issue Detail</h3>
+        <button class="tekton-dashboard__modal-close" id="close-issue-modal">&times;</button>
+      </div>
+      <div class="tekton-dashboard__modal-body">
+        <div class="tekton-dashboard__issue-detail" id="issue-detail">
+          <!-- Issue details will be added dynamically -->
+        </div>
+        <div class="tekton-dashboard__issue-comments" id="issue-comments">
+          <h4 class="tekton-dashboard__section-title">Comments</h4>
+          <div class="tekton-dashboard__comments-list" id="issue-comments-list">
+            <!-- Comments will be added dynamically -->
+          </div>
+          <div class="tekton-dashboard__comment-form">
+            <textarea class="tekton-dashboard__comment-input" id="issue-comment-input" placeholder="Write a comment..."></textarea>
+            <button class="tekton-dashboard__button tekton-dashboard__button--primary" id="issue-comment-submit">Add Comment</button>
+          </div>
+        </div>
+      </div>
+      <div class="tekton-dashboard__modal-footer">
+        <button class="tekton-dashboard__button tekton-dashboard__button--secondary" id="issue-modal-close">Close</button>
+        <button class="tekton-dashboard__button" id="issue-edit-button">Edit Issue</button>
+        <button class="tekton-dashboard__button tekton-dashboard__button--primary" id="issue-state-toggle">Close Issue</button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Pull Request Detail Modal -->
+  <div class="tekton-dashboard__modal" id="pr-detail-modal" style="display: none;">
+    <div class="tekton-dashboard__modal-overlay"></div>
+    <div class="tekton-dashboard__modal-content tekton-dashboard__modal-content--large">
+      <div class="tekton-dashboard__modal-header">
+        <h3 class="tekton-dashboard__modal-title" id="pr-modal-title">Pull Request Detail</h3>
+        <button class="tekton-dashboard__modal-close" id="close-pr-modal">&times;</button>
+      </div>
+      <div class="tekton-dashboard__modal-body">
+        <div class="tekton-dashboard__pr-detail" id="pr-detail">
+          <!-- PR details tabs -->
+          <div class="tekton-dashboard__tabs pr-detail-tabs" id="pr-detail-tabs">
+            <button class="tekton-dashboard__tab-button tekton-dashboard__tab-button--active" data-tab="pr-overview">
+              Overview
+            </button>
+            <button class="tekton-dashboard__tab-button" data-tab="pr-commits">
+              Commits
+            </button>
+            <button class="tekton-dashboard__tab-button" data-tab="pr-files">
+              Files Changed
+            </button>
+            <button class="tekton-dashboard__tab-button" data-tab="pr-checks">
+              Checks
+            </button>
+          </div>
+          
+          <div class="tekton-dashboard__tab-content pr-detail-content">
+            <!-- Overview Tab -->
+            <div class="tekton-dashboard__tab-panel tekton-dashboard__tab-panel--active" data-panel="pr-overview">
+              <div class="tekton-dashboard__pr-overview" id="pr-overview">
+                <!-- PR overview will be added dynamically -->
+              </div>
+              <div class="tekton-dashboard__pr-comments" id="pr-comments">
+                <h4 class="tekton-dashboard__section-title">Comments</h4>
+                <div class="tekton-dashboard__comments-list" id="pr-comments-list">
+                  <!-- Comments will be added dynamically -->
+                </div>
+                <div class="tekton-dashboard__comment-form">
+                  <textarea class="tekton-dashboard__comment-input" id="pr-comment-input" placeholder="Write a comment..."></textarea>
+                  <button class="tekton-dashboard__button tekton-dashboard__button--primary" id="pr-comment-submit">Add Comment</button>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Commits Tab -->
+            <div class="tekton-dashboard__tab-panel" data-panel="pr-commits">
+              <div class="tekton-dashboard__pr-commits" id="pr-commits">
+                <div class="tekton-dashboard__commit-list" id="pr-commit-list">
+                  <div class="tekton-dashboard__loading">Loading commits...</div>
+                  <!-- Commit list will be added dynamically -->
+                </div>
+              </div>
+            </div>
+            
+            <!-- Files Tab -->
+            <div class="tekton-dashboard__tab-panel" data-panel="pr-files">
+              <div class="tekton-dashboard__pr-files" id="pr-files">
+                <div class="tekton-dashboard__file-changes" id="pr-file-changes">
+                  <div class="tekton-dashboard__loading">Loading file changes...</div>
+                  <!-- File changes will be added dynamically -->
+                </div>
+              </div>
+            </div>
+            
+            <!-- Checks Tab -->
+            <div class="tekton-dashboard__tab-panel" data-panel="pr-checks">
+              <div class="tekton-dashboard__pr-checks" id="pr-checks">
+                <div class="tekton-dashboard__checks-list" id="pr-checks-list">
+                  <div class="tekton-dashboard__loading">Loading check runs...</div>
+                  <!-- Check runs will be added dynamically -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="tekton-dashboard__modal-footer">
+        <button class="tekton-dashboard__button tekton-dashboard__button--secondary" id="pr-modal-close">Close</button>
+        <button class="tekton-dashboard__button" id="pr-edit-button">Edit PR</button>
+        <div class="tekton-dashboard__button-group">
+          <button class="tekton-dashboard__button" id="pr-approve-button">Approve</button>
+          <button class="tekton-dashboard__button tekton-dashboard__button--primary" id="pr-merge-button">Merge</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Clone Repository Modal -->
+  <div class="tekton-dashboard__modal" id="clone-repository-modal" style="display: none;">
+    <div class="tekton-dashboard__modal-overlay"></div>
+    <div class="tekton-dashboard__modal-content">
+      <div class="tekton-dashboard__modal-header">
+        <h3 class="tekton-dashboard__modal-title">Clone Repository</h3>
+        <button class="tekton-dashboard__modal-close" id="close-clone-repository-modal">&times;</button>
+      </div>
+      <div class="tekton-dashboard__modal-body">
+        <form id="clone-repository-form" class="tekton-dashboard__form">
+          <div class="tekton-dashboard__form-field">
+            <label class="tekton-dashboard__form-label">Repository</label>
+            <div class="tekton-dashboard__form-value" id="clone-repository-name"></div>
+          </div>
+          <div class="tekton-dashboard__form-field">
+            <label class="tekton-dashboard__form-label">Clone Method</label>
+            <div class="tekton-dashboard__radio-group">
+              <label class="tekton-dashboard__radio-label">
+                <input type="radio" name="clone-method" value="https" checked>
+                HTTPS
+              </label>
+              <label class="tekton-dashboard__radio-label">
+                <input type="radio" name="clone-method" value="ssh">
+                SSH
+              </label>
+            </div>
+          </div>
+          <div class="tekton-dashboard__form-field">
+            <label class="tekton-dashboard__form-label">Clone URL</label>
+            <div class="tekton-dashboard__form-input-group">
+              <input type="text" id="clone-url" class="tekton-dashboard__form-input" readonly>
+              <button type="button" class="tekton-dashboard__form-button" id="copy-clone-url">Copy</button>
+            </div>
+          </div>
+          <div class="tekton-dashboard__form-field">
+            <label class="tekton-dashboard__form-label">Destination Directory</label>
+            <input type="text" id="clone-directory" class="tekton-dashboard__form-input" required>
+          </div>
+          <div class="tekton-dashboard__form-field">
+            <label class="tekton-dashboard__form-label">Clone Options</label>
+            <div class="tekton-dashboard__checkbox-group">
+              <label class="tekton-dashboard__checkbox-label">
+                <input type="checkbox" id="clone-recursive" checked>
+                Clone submodules recursively
+              </label>
+              <label class="tekton-dashboard__checkbox-label">
+                <input type="checkbox" id="clone-single-branch">
+                Clone single branch only
+              </label>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="tekton-dashboard__modal-footer">
+        <button class="tekton-dashboard__button tekton-dashboard__button--secondary" id="clone-repository-cancel">Cancel</button>
+        <button class="tekton-dashboard__button tekton-dashboard__button--primary" id="clone-repository-submit">Clone Repository</button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Clone Progress Modal -->
+  <div class="tekton-dashboard__modal" id="clone-progress-modal" style="display: none;">
+    <div class="tekton-dashboard__modal-overlay"></div>
+    <div class="tekton-dashboard__modal-content">
+      <div class="tekton-dashboard__modal-header">
+        <h3 class="tekton-dashboard__modal-title">Cloning Repository</h3>
+      </div>
+      <div class="tekton-dashboard__modal-body">
+        <div class="tekton-dashboard__clone-progress">
+          <div class="tekton-dashboard__progress-indicator">
+            <div class="tekton-dashboard__progress-bar" id="clone-progress-bar"></div>
+          </div>
+          <div class="tekton-dashboard__progress-status" id="clone-progress-status">Initializing clone...</div>
+          <div class="tekton-dashboard__progress-details" id="clone-progress-details"></div>
+        </div>
+      </div>
+      <div class="tekton-dashboard__modal-footer">
+        <button class="tekton-dashboard__button tekton-dashboard__button--secondary" id="clone-progress-cancel">Cancel</button>
+        <button class="tekton-dashboard__button tekton-dashboard__button--primary" id="clone-progress-done" style="display: none;">Done</button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- GitHub Authentication Modal -->
+  <div class="tekton-dashboard__modal" id="github-auth-modal" style="display: none;">
+    <div class="tekton-dashboard__modal-overlay"></div>
+    <div class="tekton-dashboard__modal-content">
+      <div class="tekton-dashboard__modal-header">
+        <h3 class="tekton-dashboard__modal-title">GitHub Authentication</h3>
+        <button class="tekton-dashboard__modal-close" id="close-github-auth-modal">&times;</button>
+      </div>
+      <div class="tekton-dashboard__modal-body">
+        <div class="tekton-dashboard__auth-instructions">
+          <p>To authenticate with GitHub, you need to authorize Tekton Dashboard to access your GitHub account.</p>
+          <p>Click the button below to start the OAuth authentication process.</p>
+        </div>
+        <div class="tekton-dashboard__auth-options">
+          <div class="tekton-dashboard__form-field">
+            <label class="tekton-dashboard__form-label">GitHub Instance</label>
+            <div class="tekton-dashboard__radio-group">
+              <label class="tekton-dashboard__radio-label">
+                <input type="radio" name="github-instance" value="github.com" checked>
+                GitHub.com
+              </label>
+              <label class="tekton-dashboard__radio-label">
+                <input type="radio" name="github-instance" value="enterprise">
+                GitHub Enterprise
+              </label>
+            </div>
+          </div>
+          <div class="tekton-dashboard__form-field" id="github-enterprise-field" style="display: none;">
+            <label class="tekton-dashboard__form-label">GitHub Enterprise URL</label>
+            <input type="text" id="auth-enterprise-url" class="tekton-dashboard__form-input" placeholder="https://github.example.com">
+          </div>
+          <div class="tekton-dashboard__form-field">
+            <label class="tekton-dashboard__form-label">Permissions</label>
+            <div class="tekton-dashboard__checkbox-group">
+              <label class="tekton-dashboard__checkbox-label">
+                <input type="checkbox" id="auth-scope-repo" checked disabled>
+                Repository access (required)
+              </label>
+              <label class="tekton-dashboard__checkbox-label">
+                <input type="checkbox" id="auth-scope-user" checked>
+                User information
+              </label>
+              <label class="tekton-dashboard__checkbox-label">
+                <input type="checkbox" id="auth-scope-workflow" checked>
+                Workflow
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="tekton-dashboard__modal-footer">
+        <button class="tekton-dashboard__button tekton-dashboard__button--secondary" id="github-auth-cancel">Cancel</button>
+        <button class="tekton-dashboard__button tekton-dashboard__button--primary" id="github-auth-start">Authenticate with GitHub</button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Toast notifications container -->
+  <div class="tekton-dashboard__github-notifications" id="github-notifications"></div>
+</div>

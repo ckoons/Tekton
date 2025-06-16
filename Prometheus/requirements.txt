@@ -1,0 +1,11 @@
+# Include shared requirements
+-r ../shared/requirements/base.txt
+-r ../shared/requirements/web.txt
+-r ../shared/requirements/data.txt      # For pandas, matplotlib
+
+# Tekton dependencies
+tekton-core>=0.1.0
+
+# Component-specific dependencies (not in shared)
+networkx>=2.6.0
+python-dateutil>=2.8.0

@@ -1,0 +1,149 @@
+<!-- Synthesis Component for Hephaestus UI -->
+<div id="synthesis-component" class="tekton-component">
+    <div class="component-header">
+        <h2>Synthesis: Execution Engine</h2>
+        <div class="component-actions">
+            <button id="synthesis-new-execution" class="btn btn-primary">New Execution</button>
+            <button id="synthesis-refresh" class="btn btn-secondary">Refresh</button>
+        </div>
+    </div>
+
+    <div class="component-tabs">
+        <ul class="nav nav-tabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="executions-tab" data-bs-toggle="tab" data-bs-target="#executions-content" type="button" role="tab" aria-selected="true">Executions</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="monitoring-tab" data-bs-toggle="tab" data-bs-target="#monitoring-content" type="button" role="tab" aria-selected="false">Monitoring</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="history-tab" data-bs-toggle="tab" data-bs-target="#history-content" type="button" role="tab" aria-selected="false">History</button>
+            </li>
+        </ul>
+    </div>
+
+    <div class="tab-content component-content">
+        <!-- Executions Tab -->
+        <div class="tab-pane fade show active" id="executions-content" role="tabpanel" aria-labelledby="executions-tab">
+            <div class="executions-list-container">
+                <h3>Active Executions</h3>
+                <div id="synthesis-active-executions" class="executions-list">
+                    <div class="loading-indicator">Loading executions...</div>
+                </div>
+            </div>
+
+            <div class="execution-details-container" id="synthesis-execution-details">
+                <div class="empty-state">
+                    <p>Select an execution to view details</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Monitoring Tab -->
+        <div class="tab-pane fade" id="monitoring-content" role="tabpanel" aria-labelledby="monitoring-tab">
+            <div class="monitoring-dashboard">
+                <div class="metrics-container">
+                    <div class="metric-card" id="synthesis-active-count">
+                        <div class="metric-value">0</div>
+                        <div class="metric-label">Active Executions</div>
+                    </div>
+                    <div class="metric-card" id="synthesis-capacity">
+                        <div class="metric-value">10</div>
+                        <div class="metric-label">Execution Capacity</div>
+                    </div>
+                    <div class="metric-card" id="synthesis-load">
+                        <div class="metric-value">0%</div>
+                        <div class="metric-label">System Load</div>
+                    </div>
+                    <div class="metric-card" id="synthesis-total-executions">
+                        <div class="metric-value">0</div>
+                        <div class="metric-label">Total Executions</div>
+                    </div>
+                </div>
+                
+                <div class="chart-container">
+                    <canvas id="synthesis-execution-chart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- History Tab -->
+        <div class="tab-pane fade" id="history-content" role="tabpanel" aria-labelledby="history-tab">
+            <div class="history-filters">
+                <div class="filter-group">
+                    <label for="synthesis-history-status">Status:</label>
+                    <select id="synthesis-history-status" class="form-select">
+                        <option value="">All</option>
+                        <option value="completed">Completed</option>
+                        <option value="failed">Failed</option>
+                        <option value="cancelled">Cancelled</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="synthesis-history-limit">Limit:</label>
+                    <select id="synthesis-history-limit" class="form-select">
+                        <option value="10">10</option>
+                        <option value="25" selected>25</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                    </select>
+                </div>
+                <button id="synthesis-apply-filters" class="btn btn-secondary">Apply Filters</button>
+            </div>
+
+            <div class="history-table-container">
+                <table id="synthesis-history-table" class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Execution ID</th>
+                            <th>Name</th>
+                            <th>Status</th>
+                            <th>Started</th>
+                            <th>Duration</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="synthesis-history-rows">
+                        <tr>
+                            <td colspan="6" class="text-center">Loading execution history...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Execution Modal -->
+    <div class="modal fade" id="synthesis-execution-modal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">New Execution</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="synthesis-plan-name" class="form-label">Plan Name</label>
+                        <input type="text" class="form-control" id="synthesis-plan-name" placeholder="Enter plan name">
+                    </div>
+                    <div class="mb-3">
+                        <label for="synthesis-plan-description" class="form-label">Description</label>
+                        <textarea class="form-control" id="synthesis-plan-description" rows="2" placeholder="Enter plan description"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="synthesis-plan-steps" class="form-label">Steps (JSON)</label>
+                        <textarea class="form-control code-editor" id="synthesis-plan-steps" rows="10" placeholder="Enter plan steps as JSON array"></textarea>
+                    </div>
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" id="synthesis-wait-completion">
+                        <label class="form-check-label" for="synthesis-wait-completion">Wait for completion</label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="synthesis-execute-plan">Execute</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

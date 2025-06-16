@@ -1,0 +1,84 @@
+{
+  "code": {
+    "provider": "anthropic",
+    "model": "claude-3-opus-20240229",
+    "options": {
+      "temperature": 0.2,
+      "max_tokens": 4000,
+      "fallback_provider": "openai",
+      "fallback_model": "gpt-4-turbo"
+    }
+  },
+  "planning": {
+    "provider": "anthropic",
+    "model": "claude-3-sonnet-20240229",
+    "options": {
+      "temperature": 0.7,
+      "max_tokens": 4000,
+      "fallback_provider": "openai",
+      "fallback_model": "gpt-4o"
+    }
+  },
+  "reasoning": {
+    "provider": "anthropic",
+    "model": "claude-3-sonnet-20240229",
+    "options": {
+      "temperature": 0.5,
+      "max_tokens": 4000,
+      "fallback_provider": "openai",
+      "fallback_model": "gpt-4o"
+    }
+  },
+  "chat": {
+    "provider": "anthropic",
+    "model": "claude-3-haiku-20240307",
+    "options": {
+      "temperature": 0.8,
+      "max_tokens": 2000,
+      "fallback_provider": "openai",
+      "fallback_model": "gpt-3.5-turbo"
+    }
+  },
+  "default": {
+    "provider": "anthropic",
+    "model": "claude-3-sonnet-20240229",
+    "options": {
+      "temperature": 0.7,
+      "max_tokens": 4000,
+      "fallback_provider": "openai",
+      "fallback_model": "gpt-4o"
+    }
+  },
+  "ergon": {
+    "provider": "anthropic",
+    "model": "claude-3-sonnet-20240229",
+    "options": {
+      "temperature": 0.7,
+      "max_tokens": 4000
+    }
+  },
+  "hermes": {
+    "provider": "anthropic",
+    "model": "claude-3-haiku-20240307",
+    "options": {
+      "temperature": 0.7,
+      "max_tokens": 2000
+    }
+  },
+  "telos": {
+    "provider": "anthropic",
+    "model": "claude-3-opus-20240229",
+    "options": {
+      "temperature": 0.7,
+      "max_tokens": 4000
+    }
+  },
+  "engram": {
+    "provider": "anthropic",
+    "model": "claude-3-haiku-20240307",
+    "options": {
+      "temperature": 0.5,
+      "max_tokens": 2000
+    }
+  }
+}

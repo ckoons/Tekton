@@ -1,0 +1,9 @@
+chore: {title}
+
+- {what_was_done}
+- {why_it_was_necessary}
+- {additional_context}
+
+🤖 Generated with [Claude Code](https://claude.ai/code)
+Design & Engineering Guidance by Casey Koons <cskoons@gmail.com>
+Co-Authored-By: Casey Koons <cskoons@gmail.com> & Claude <noreply@anthropic.com>

@@ -1,0 +1,29 @@
+{
+  "components": [
+    "Apollo",
+    "Athena", 
+    "Budget",
+    "Codex",
+    "Engram",
+    "Ergon",
+    "Harmonia",
+    "Hephaestus",
+    "Hermes",
+    "Metis",
+    "Prometheus",
+    "Rhetor",
+    "Sophia",
+    "Synthesis",
+    "Telos",
+    "Terma",
+    "tekton-core"
+  ],
+  "core_directories": [
+    "shared",
+    "scripts",
+    "config",
+    "MetaData",
+    "tests",
+    "examples"
+  ]
+}

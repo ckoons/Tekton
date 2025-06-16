@@ -1,0 +1,236 @@
+#!/usr/bin/env bash
+#
+# tekton-branch-create - Create branches across Tekton components
+#
+# This script creates a new branch with consistent naming across the main
+# Tekton repository and all component repositories.
+
+# Exit on error, undefined variables, and pipe failures
+set -euo pipefail
+
+# Source common utilities
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+LIB_DIR="${SCRIPT_DIR}/lib"
+
+# shellcheck source=lib/github-utils.sh
+source "${LIB_DIR}/github-utils.sh"
+# shellcheck source=lib/error-utils.sh
+source "${LIB_DIR}/error-utils.sh"
+# shellcheck source=lib/component-utils.sh
+source "${LIB_DIR}/component-utils.sh"
+
+# Function to display usage information
+usage() {
+  cat <<EOF
+Usage: $(basename "$0") [OPTIONS] BRANCH_NAME
+
+Create a new branch with consistent naming across the main Tekton repository
+and all component repositories.
+
+Options:
+  -h, --help           Display this help message and exit
+  -v, --verbose        Enable verbose output
+  -b, --base BRANCH    Base branch to create new branch from (default: main)
+  -p, --push           Push the new branch to remote repositories
+  -c, --components     Only create branches in component repositories
+  -m, --main-only      Only create branch in the main repository
+  -f, --force          Force branch creation even if it already exists
+  
+Arguments:
+  BRANCH_NAME          Name of the branch to create (e.g., sprint/feature-name-YYMMDD)
+
+Examples:
+  $(basename "$0") sprint/github-support-250430
+    Create a branch named 'sprint/github-support-250430' in all repositories
+
+  $(basename "$0") -b develop -p sprint/feature-name-250430
+    Create a branch from 'develop' and push it to remote repositories
+
+EOF
+  exit 1
+}
+
+# Parse arguments
+verbose=false
+base_branch=""
+push_branches=false
+components_only=false
+main_only=false
+force_creation=false
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    -h|--help)
+      usage
+      ;;
+    -v|--verbose)
+      verbose=true
+      enable_debug
+      shift
+      ;;
+    -b|--base)
+      base_branch="$2"
+      shift 2
+      ;;
+    -p|--push)
+      push_branches=true
+      shift
+      ;;
+    -c|--components)
+      components_only=true
+      shift
+      ;;
+    -m|--main-only)
+      main_only=true
+      shift
+      ;;
+    -f|--force)
+      force_creation=true
+      shift
+      ;;
+    -*)
+      error_exit "Unknown option: $1"
+      ;;
+    *)
+      break
+      ;;
+  esac
+done
+
+# Validate arguments
+if [[ $# -lt 1 ]]; then
+  error_exit "Missing required branch name"
+fi
+
+branch_name="$1"
+
+# Validate branch name
+if ! validate_branch_name "${branch_name}"; then
+  warn "Branch name '${branch_name}' does not follow Tekton naming conventions"
+  read -p "Continue with this branch name? (y/n): " confirm
+  if [[ "${confirm}" != "y" && "${confirm}" != "Y" ]]; then
+    error_exit "Branch creation cancelled"
+  fi
+fi
+
+# Get Tekton root directory
+tekton_root="$(detect_tekton_root)"
+if [[ -z "${tekton_root}" ]]; then
+  error_exit "Not in a Tekton repository. Please run this script from within the Tekton project directory."
+fi
+
+# If no base branch specified, use main or master
+if [[ -z "${base_branch}" ]]; then
+  # Try to determine the main branch
+  if [[ -d "${tekton_root}/.git" || -f "${tekton_root}/.git" ]]; then
+    pushd "${tekton_root}" > /dev/null
+    base_branch="$(get_main_branch)"
+    popd > /dev/null
+  else
+    base_branch="main"  # Default to main if can't determine
+  fi
+fi
+
+# Check if both --components and --main-only are specified
+if [[ "${components_only}" == "true" && "${main_only}" == "true" ]]; then
+  error_exit "Cannot specify both --components and --main-only"
+fi
+
+# Function to create branch in a repository
+create_branch_in_repo() {
+  local repo_dir="$1"
+  local repo_name="$2"
+  
+  pushd "${repo_dir}" > /dev/null
+  
+  # Check if already on the target branch
+  local current_branch
+  current_branch="$(get_current_branch)"
+  if [[ "${current_branch}" == "${branch_name}" ]]; then
+    info "Repository ${repo_name} already on branch '${branch_name}'"
+    
+    # Push if requested
+    if [[ "${push_branches}" == "true" ]]; then
+      info "Pushing branch '${branch_name}' in ${repo_name}"
+      push_branch "${branch_name}"
+    fi
+    
+    popd > /dev/null
+    return 0
+  fi
+  
+  # Check if branch already exists
+  if branch_exists_local "${branch_name}"; then
+    if [[ "${force_creation}" == "true" ]]; then
+      warn "Branch '${branch_name}' already exists in ${repo_name}, forcing checkout"
+      git checkout "${branch_name}" --quiet || error_exit "Failed to checkout existing branch '${branch_name}' in ${repo_name}"
+    else
+      warn "Branch '${branch_name}' already exists in ${repo_name}, skipping creation"
+    fi
+  else
+    # Create the branch
+    info "Creating branch '${branch_name}' in ${repo_name} from '${base_branch}'"
+    if create_branch "${branch_name}" "${base_branch}"; then
+      success "Created branch '${branch_name}' in ${repo_name}"
+    else
+      error_exit "Failed to create branch '${branch_name}' in ${repo_name}"
+    fi
+  fi
+  
+  # Push if requested
+  if [[ "${push_branches}" == "true" ]]; then
+    info "Pushing branch '${branch_name}' in ${repo_name}"
+    push_branch "${branch_name}"
+  fi
+  
+  popd > /dev/null
+  return 0
+}
+
+# Create branch in main repository if requested
+if [[ "${components_only}" != "true" ]]; then
+  info "Creating branch in main Tekton repository"
+  create_branch_in_repo "${tekton_root}" "Tekton"
+fi
+
+# Create branches in component repositories if requested
+if [[ "${main_only}" != "true" ]]; then
+  info "Creating branches in component repositories"
+  
+  # Get list of component repositories
+  component_repos=($(list_component_repos))
+  
+  if [[ ${#component_repos[@]} -eq 0 ]]; then
+    warn "No component repositories found"
+  else
+    for component in "${component_repos[@]}"; do
+      component_dir="$(get_component_directory "${component}")"
+      if [[ -z "${component_dir}" ]]; then
+        warn "Component directory not found for ${component}, skipping"
+        continue
+      fi
+      
+      info "Processing component: ${component}"
+      create_branch_in_repo "${component_dir}" "${component}"
+    done
+  fi
+fi
+
+success "Branch creation process completed"
+
+# Summary
+cat <<EOF
+
+Branch Creation Summary:
+-----------------------
+Branch Name:    ${branch_name}
+Base Branch:    ${base_branch}
+Pushed:         $(if [[ "${push_branches}" == "true" ]]; then echo "Yes"; else echo "No"; fi)
+Scope:          $(if [[ "${components_only}" == "true" ]]; then echo "Components only"; elif [[ "${main_only}" == "true" ]]; then echo "Main repository only"; else echo "All repositories"; fi)
+
+To check branch status across all repositories:
+  ${SCRIPT_DIR}/tekton-branch-status ${branch_name}
+
+EOF
+
+exit 0

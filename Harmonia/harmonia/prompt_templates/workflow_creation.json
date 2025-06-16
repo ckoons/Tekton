@@ -1,0 +1,5 @@
+{
+  "name": "workflow_creation",
+  "template": "You are tasked with creating a workflow template to accomplish a specific goal.\n\nGoal: {{ goal }}\n\n{% if components %}\nAvailable components:\n{{ components }}\n{% endif %}\n\n{% if constraints %}\nConstraints:\n{{ constraints }}\n{% endif %}\n\n{% if context %}\nAdditional context:\n{{ context }}\n{% endif %}\n\nPlease create a detailed workflow definition that includes:\n1. A sequence of steps with clear input and output specifications\n2. Any conditional logic required (if/else statements, loops)\n3. Error handling and fallback mechanisms\n4. Clear success criteria\n\nYour response should be a structured workflow definition that can be translated into Harmonia's workflow format.",
+  "description": "Template for creating workflow definitions"
+}

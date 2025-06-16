@@ -1,0 +1,69 @@
+{
+  "name": "task_decomposition",
+  "version": "1.0.0",
+  "description": "Decompose high-level tasks into actionable subtasks",
+  "variables": ["task_title", "task_description", "depth", "max_subtasks"],
+  "template": "Given the following task, decompose it into smaller, actionable subtasks.\n\nTask Title: {{task_title}}\nTask Description: {{task_description}}\nMaximum Depth: {{depth}}\nMaximum Subtasks: {{max_subtasks}}\n\nPlease break down this task into concrete, specific subtasks that:\n1. Are actionable and measurable\n2. Have clear deliverables\n3. Can be estimated in hours\n4. Follow a logical execution order\n\nProvide the response in JSON format:\n{\n  \"subtasks\": [\n    {\n      \"title\": \"Subtask title\",\n      \"description\": \"Clear description of what needs to be done\",\n      \"estimated_hours\": 2,\n      \"complexity\": \"low|medium|high\",\n      \"dependencies\": [\"other subtask titles if any\"],\n      \"order\": 1\n    }\n  ]\n}",
+  "examples": [
+    {
+      "input": {
+        "task_title": "Implement User Authentication System",
+        "task_description": "Build complete auth with login, registration, password reset, JWT",
+        "depth": 2,
+        "max_subtasks": 10
+      },
+      "output": {
+        "subtasks": [
+          {
+            "title": "Design Authentication Schema",
+            "description": "Design database schema for users, sessions, and auth tokens",
+            "estimated_hours": 2,
+            "complexity": "low",
+            "dependencies": [],
+            "order": 1
+          },
+          {
+            "title": "Implement User Model and Database",
+            "description": "Create user model with fields for email, password hash, profile data",
+            "estimated_hours": 3,
+            "complexity": "medium",
+            "dependencies": ["Design Authentication Schema"],
+            "order": 2
+          },
+          {
+            "title": "Create Registration Endpoint",
+            "description": "Implement POST /register endpoint with validation and password hashing",
+            "estimated_hours": 4,
+            "complexity": "medium",
+            "dependencies": ["Implement User Model and Database"],
+            "order": 3
+          },
+          {
+            "title": "Implement Login with JWT",
+            "description": "Create POST /login endpoint that returns JWT tokens",
+            "estimated_hours": 4,
+            "complexity": "medium",
+            "dependencies": ["Implement User Model and Database"],
+            "order": 4
+          },
+          {
+            "title": "Add Password Reset Flow",
+            "description": "Implement forgot password and reset password endpoints with email verification",
+            "estimated_hours": 3,
+            "complexity": "medium",
+            "dependencies": ["Implement User Model and Database"],
+            "order": 5
+          },
+          {
+            "title": "Write Authentication Tests",
+            "description": "Create comprehensive test suite for all auth endpoints",
+            "estimated_hours": 4,
+            "complexity": "low",
+            "dependencies": ["Create Registration Endpoint", "Implement Login with JWT", "Add Password Reset Flow"],
+            "order": 6
+          }
+        ]
+      }
+    }
+  ]
+}

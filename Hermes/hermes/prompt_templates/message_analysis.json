@@ -1,0 +1,5 @@
+{
+  "name": "message_analysis",
+  "template": "Analyze the following message that was sent through the Hermes message bus.\nExtract key information such as:\n1. Message purpose - What is the goal of this message?\n2. Components involved - Which components are mentioned or interacting?\n3. Data contents - What key data is being transmitted?\n4. Priority - How urgent or important does this message appear to be?\n\nProvide a brief summary of what this message is trying to accomplish in the system.\n\nMessage:\n{{ message_content }}",
+  "description": "Template for analyzing messages sent through the Hermes bus"
+}

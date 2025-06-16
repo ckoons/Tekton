@@ -1,0 +1,800 @@
+/* Tekton Dashboard Component Styles */
+
+/* BEM naming convention used throughout */
+/* Root container */
+.tekton-dashboard {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  color: var(--text-primary);
+  font-family: var(--font-family-sans);
+  overflow: hidden;
+}
+
+/* Header */
+.tekton-dashboard__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-md);
+  background-color: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.tekton-dashboard__title {
+  font-size: var(--font-size-xl);
+  margin: 0;
+  font-weight: 500;
+}
+
+.tekton-dashboard__controls {
+  display: flex;
+  gap: var(--spacing-sm);
+  align-items: center;
+}
+
+/* Tabs Navigation */
+.tekton-dashboard__tabs {
+  display: flex;
+  background-color: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.tekton-dashboard__tab-button {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-md);
+  background: none;
+  border: none;
+  border-bottom: 3px solid transparent;
+  color: var(--text-secondary);
+  font-size: var(--font-size-md);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tekton-dashboard__tab-button:hover {
+  color: var(--text-primary);
+  background-color: rgba(var(--primary-rgb), 0.05);
+}
+
+.tekton-dashboard__tab-button--active {
+  color: var(--text-primary);
+  border-bottom-color: var(--color-primary);
+  background-color: rgba(var(--primary-rgb), 0.05);
+}
+
+.tekton-dashboard__tab-icon {
+  font-size: var(--font-size-lg);
+}
+
+/* Tab content */
+.tekton-dashboard__tab-content {
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+}
+
+.tekton-dashboard__tab-panel {
+  display: none;
+  height: 100%;
+  overflow-y: auto;
+  flex-direction: column;
+}
+
+.tekton-dashboard__tab-panel--active {
+  display: flex;
+}
+
+/* Panel header */
+.tekton-dashboard__panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-md);
+  background-color: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.tekton-dashboard__panel-title {
+  font-size: var(--font-size-lg);
+  font-weight: 500;
+}
+
+.tekton-dashboard__panel-actions {
+  display: flex;
+  gap: var(--spacing-sm);
+}
+
+/* Search */
+.tekton-dashboard__search {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.tekton-dashboard__search-input {
+  padding: var(--spacing-sm);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-sm);
+  background-color: var(--bg-tertiary);
+  color: var(--text-primary);
+  min-width: 250px;
+}
+
+/* Buttons */
+.tekton-dashboard__button {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--border-radius-sm);
+  border: 1px solid var(--border-color);
+  background-color: var(--bg-tertiary);
+  color: var(--text-primary);
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tekton-dashboard__button:hover {
+  background-color: var(--bg-hover);
+}
+
+.tekton-dashboard__button--primary {
+  background-color: var(--color-primary);
+  color: white;
+  border-color: var(--color-primary);
+}
+
+.tekton-dashboard__button--primary:hover {
+  background-color: var(--color-primary-hover);
+  border-color: var(--color-primary-hover);
+}
+
+.tekton-dashboard__button--secondary {
+  background-color: var(--color-secondary);
+  color: white;
+  border-color: var(--color-secondary);
+}
+
+.tekton-dashboard__action-button {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--border-radius-sm);
+  border: 1px solid var(--border-color);
+  background-color: var(--bg-tertiary);
+  color: var(--text-primary);
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tekton-dashboard__action-button:hover {
+  background-color: var(--bg-hover);
+}
+
+.tekton-dashboard__action-button--primary {
+  background-color: var(--color-primary);
+  color: white;
+  border-color: var(--color-primary);
+}
+
+.tekton-dashboard__action-icon {
+  font-size: var(--font-size-md);
+}
+
+/* Select */
+.tekton-dashboard__select {
+  padding: var(--spacing-sm);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-sm);
+  background-color: var(--bg-tertiary);
+  color: var(--text-primary);
+}
+
+.tekton-dashboard__small-select {
+  padding: var(--spacing-xs);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-sm);
+  background-color: var(--bg-tertiary);
+  color: var(--text-primary);
+  font-size: var(--font-size-sm);
+}
+
+/* Section titles */
+.tekton-dashboard__section-title {
+  margin: var(--spacing-md) 0 var(--spacing-sm);
+  font-size: var(--font-size-lg);
+  font-weight: 500;
+  color: var(--text-primary);
+  padding: 0 var(--spacing-md);
+}
+
+/* System Overview */
+.tekton-dashboard__system-overview {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md);
+}
+
+.tekton-dashboard__system-metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: var(--spacing-md);
+}
+
+.tekton-dashboard__metric-card {
+  background-color: var(--bg-card);
+  border-radius: var(--border-radius-md);
+  padding: var(--spacing-md);
+  box-shadow: var(--box-shadow-sm);
+  display: flex;
+  flex-direction: column;
+}
+
+.tekton-dashboard__metric-title {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  margin-bottom: var(--spacing-xs);
+}
+
+.tekton-dashboard__metric-value {
+  font-size: var(--font-size-xl);
+  font-weight: 600;
+  margin-bottom: var(--spacing-sm);
+}
+
+.tekton-dashboard__metric-chart {
+  flex: 1;
+  min-height: 80px;
+}
+
+/* Component Grid */
+.tekton-dashboard__component-grid {
+  padding: 0 var(--spacing-md) var(--spacing-md);
+}
+
+.tekton-dashboard__component-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--spacing-md);
+}
+
+/* Alerts */
+.tekton-dashboard__system-alerts {
+  background-color: var(--bg-card);
+  border-radius: var(--border-radius-md);
+  padding: var(--spacing-md);
+  box-shadow: var(--box-shadow-sm);
+}
+
+.tekton-dashboard__alerts-container {
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+/* Components Tab */
+.tekton-dashboard__components {
+  padding: var(--spacing-md);
+  flex: 1;
+  overflow: auto;
+}
+
+.tekton-dashboard__components-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: var(--spacing-md);
+}
+
+.tekton-dashboard__components-list {
+  padding: 0;
+}
+
+.tekton-dashboard__view-controls {
+  display: flex;
+  gap: var(--spacing-xs);
+}
+
+.tekton-dashboard__view-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--border-radius-sm);
+  border: 1px solid var(--border-color);
+  background-color: var(--bg-tertiary);
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tekton-dashboard__view-button:hover {
+  background-color: var(--bg-hover);
+}
+
+.tekton-dashboard__view-button--active {
+  background-color: var(--color-primary);
+  color: white;
+  border-color: var(--color-primary);
+}
+
+/* Resources Tab */
+.tekton-dashboard__resources {
+  padding: var(--spacing-md);
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+
+.tekton-dashboard__resources-charts {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--spacing-md);
+}
+
+.tekton-dashboard__chart-container {
+  background-color: var(--bg-card);
+  border-radius: var(--border-radius-md);
+  padding: var(--spacing-md);
+  box-shadow: var(--box-shadow-sm);
+}
+
+.tekton-dashboard__chart-title {
+  font-size: var(--font-size-md);
+  margin-top: 0;
+  margin-bottom: var(--spacing-md);
+}
+
+.tekton-dashboard__chart {
+  height: 250px;
+  width: 100%;
+}
+
+.tekton-dashboard__resources-tables {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.tekton-dashboard__resource-section {
+  background-color: var(--bg-card);
+  border-radius: var(--border-radius-md);
+  padding: var(--spacing-md);
+  box-shadow: var(--box-shadow-sm);
+}
+
+/* Logs Tab */
+.tekton-dashboard__logs {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.tekton-dashboard__log-controls {
+  display: flex;
+  gap: var(--spacing-md);
+  padding: var(--spacing-sm) var(--spacing-md);
+  background-color: var(--bg-tertiary);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.tekton-dashboard__control-label {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  font-size: var(--font-size-sm);
+}
+
+.tekton-dashboard__log-viewer {
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+}
+
+.tekton-dashboard__log-content {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  padding: var(--spacing-md);
+  font-family: var(--font-family-mono);
+  font-size: var(--font-size-sm);
+  line-height: 1.5;
+  white-space: pre;
+  background-color: var(--bg-tertiary);
+}
+
+/* Projects Tab */
+.tekton-dashboard__projects {
+  padding: var(--spacing-md);
+  overflow: auto;
+  flex: 1;
+}
+
+.tekton-dashboard__projects-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: var(--spacing-md);
+}
+
+/* Table styles */
+.tekton-dashboard__table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: var(--spacing-md);
+}
+
+.tekton-dashboard__table th,
+.tekton-dashboard__table td {
+  text-align: left;
+  padding: var(--spacing-sm);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.tekton-dashboard__table th {
+  background-color: var(--bg-tertiary);
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.tekton-dashboard__table tr:nth-child(even) {
+  background-color: rgba(var(--bg-hover-rgb), 0.3);
+}
+
+.tekton-dashboard__table tr:hover {
+  background-color: var(--bg-hover);
+}
+
+/* Modal */
+.tekton-dashboard__modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tekton-dashboard__modal-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.tekton-dashboard__modal-content {
+  position: relative;
+  width: 600px;
+  max-width: 90%;
+  max-height: 90%;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--bg-card);
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--box-shadow-lg);
+  overflow: hidden;
+  z-index: 1;
+}
+
+.tekton-dashboard__modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-md);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.tekton-dashboard__modal-title {
+  margin: 0;
+  font-size: var(--font-size-lg);
+  font-weight: 500;
+}
+
+.tekton-dashboard__modal-close {
+  background: none;
+  border: none;
+  font-size: var(--font-size-xl);
+  line-height: 1;
+  padding: 0;
+  margin: 0;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.tekton-dashboard__modal-close:hover {
+  color: var(--text-primary);
+}
+
+.tekton-dashboard__modal-body {
+  flex: 1;
+  padding: var(--spacing-md);
+  overflow-y: auto;
+}
+
+.tekton-dashboard__modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-md);
+  border-top: 1px solid var(--border-color);
+}
+
+/* Forms */
+.tekton-dashboard__form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.tekton-dashboard__form-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.tekton-dashboard__form-label {
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+}
+
+.tekton-dashboard__form-input,
+.tekton-dashboard__form-textarea,
+.tekton-dashboard__form-select {
+  padding: var(--spacing-sm);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-sm);
+  background-color: var(--bg-tertiary);
+  color: var(--text-primary);
+  font-family: var(--font-family-sans);
+  font-size: var(--font-size-md);
+}
+
+.tekton-dashboard__form-textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+/* Notifications */
+.tekton-dashboard__notifications {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 350px;
+}
+
+/* Placeholder and Loading */
+.tekton-dashboard__placeholder-message {
+  padding: var(--spacing-lg);
+  text-align: center;
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+.tekton-dashboard__loading {
+  padding: var(--spacing-lg);
+  text-align: center;
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+/* Status indicators */
+.tekton-dashboard__status-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+}
+
+.tekton-dashboard__status-indicator--running {
+  color: var(--color-success);
+}
+
+.tekton-dashboard__status-indicator--stopped {
+  color: var(--color-secondary);
+}
+
+.tekton-dashboard__status-indicator--error {
+  color: var(--color-danger);
+}
+
+.tekton-dashboard__status-indicator--warning {
+  color: var(--color-warning);
+}
+
+/* Component Card */
+.tekton-dashboard__component-card {
+  background-color: var(--bg-card);
+  border-radius: var(--border-radius-md);
+  padding: var(--spacing-md);
+  box-shadow: var(--box-shadow-sm);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  cursor: pointer;
+}
+
+.tekton-dashboard__component-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--box-shadow-md);
+}
+
+.tekton-dashboard__component-header {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.tekton-dashboard__component-icon {
+  font-size: var(--font-size-xl);
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--bg-tertiary);
+  border-radius: var(--border-radius-sm);
+}
+
+.tekton-dashboard__component-title {
+  font-size: var(--font-size-md);
+  font-weight: 600;
+  margin: 0;
+}
+
+.tekton-dashboard__component-type {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+}
+
+.tekton-dashboard__component-status {
+  margin-top: var(--spacing-xs);
+}
+
+.tekton-dashboard__component-metrics {
+  display: flex;
+  gap: var(--spacing-md);
+  margin-top: var(--spacing-sm);
+  font-size: var(--font-size-sm);
+}
+
+.tekton-dashboard__component-metric {
+  display: flex;
+  flex-direction: column;
+}
+
+.tekton-dashboard__metric-label {
+  color: var(--text-secondary);
+}
+
+.tekton-dashboard__component-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--spacing-xs);
+  margin-top: var(--spacing-sm);
+}
+
+/* Project Card */
+.tekton-dashboard__project-card {
+  background-color: var(--bg-card);
+  border-radius: var(--border-radius-md);
+  padding: var(--spacing-md);
+  box-shadow: var(--box-shadow-sm);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  cursor: pointer;
+}
+
+.tekton-dashboard__project-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--box-shadow-md);
+}
+
+.tekton-dashboard__project-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.tekton-dashboard__project-title {
+  font-size: var(--font-size-md);
+  font-weight: 600;
+  margin: 0;
+}
+
+.tekton-dashboard__project-desc {
+  color: var(--text-secondary);
+  font-size: var(--font-size-sm);
+  margin: var(--spacing-xs) 0;
+}
+
+.tekton-dashboard__project-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-xs) var(--spacing-md);
+  margin-top: var(--spacing-sm);
+  font-size: var(--font-size-sm);
+}
+
+.tekton-dashboard__project-meta-item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  color: var(--text-secondary);
+}
+
+.tekton-dashboard__project-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--spacing-xs);
+  margin-top: var(--spacing-sm);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .tekton-dashboard__resources-charts {
+    grid-template-columns: 1fr;
+  }
+  
+  .tekton-dashboard__tab-label {
+    display: none;
+  }
+  
+  .tekton-dashboard__search-input {
+    min-width: 150px;
+  }
+  
+  .tekton-dashboard__panel-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-sm);
+  }
+  
+  .tekton-dashboard__panel-actions {
+    align-self: flex-end;
+  }
+}
+
+/* Animations */
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.tekton-dashboard__fade-in {
+  animation: fade-in 0.3s ease;
+}
+
+@keyframes slide-up {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.tekton-dashboard__slide-up {
+  animation: slide-up 0.3s ease;
+}

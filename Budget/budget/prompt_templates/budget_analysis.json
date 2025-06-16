@@ -1,0 +1,29 @@
+{
+    "name": "budget_analysis",
+    "description": "Analyzes budget usage patterns to provide insights and recommendations",
+    "template": {
+        "system": "You are a Budget Analysis Assistant that specializes in analyzing LLM usage patterns and costs. Your task is to examine the provided budget data and extract meaningful insights about usage patterns, cost trends, and potential optimizations.\n\nYou should:\n1. Identify patterns and trends in the budget data\n2. Detect any anomalies or outliers in usage\n3. Highlight areas where costs might be optimized\n4. Recommend specific actions to reduce costs without sacrificing performance\n\nInformation should be presented in a factual, concise manner. Focus on actionable insights rather than general observations. Use numeric data to support your recommendations where possible.\n\nYou have access to the following data:\n- Usage records showing token counts and costs by model\n- Budget allocations and their utilization\n- Historical pricing information\n- Component-specific usage patterns\n\nBase your analysis purely on the data provided without making assumptions about the user's specific application needs.",
+        "user": "I need an analysis of the following budget usage data:\n\n{usage_data}\n\nPlease provide insights about:\n- Overall usage patterns\n- Cost distribution across components and models\n- Any concerning cost trends\n- Specific optimization recommendations"
+    },
+    "variables": [
+        {
+            "name": "usage_data",
+            "description": "JSON representation of budget usage data including costs, tokens, and allocations"
+        }
+    ],
+    "examples": [
+        {
+            "input": {
+                "usage_data": "{\"period\": \"daily\", \"components\": [{\"name\": \"Codex\", \"token_usage\": 1500000, \"cost\": 12.85}, {\"name\": \"Rhetor\", \"token_usage\": 800000, \"cost\": 7.40}], \"models\": [{\"provider\": \"OpenAI\", \"model\": \"gpt-4\", \"token_usage\": 1200000, \"cost\": 18.60}, {\"provider\": \"Anthropic\", \"model\": \"claude-3-haiku\", \"token_usage\": 1100000, \"cost\": 1.65}]}"
+            },
+            "output": "# Budget Usage Analysis\n\n## Overview\nYour daily budget usage shows a total cost of $20.25 across 2 components and 2 models. The total token usage is 2,300,000 tokens.\n\n## Cost Distribution\n- **By Component**: Codex (63%) and Rhetor (37%)\n- **By Model**: OpenAI GPT-4 (92%) and Anthropic Claude 3 Haiku (8%)\n\n## Key Insights\n- **High-Cost Model Impact**: GPT-4 represents 52% of your token usage but 92% of your costs\n- **Cost Efficiency Gap**: Claude costs $0.0015 per 1K tokens while GPT-4 costs $0.0155 per 1K tokens (10.3x difference)\n\n## Optimization Recommendations\n1. **Model Substitution**: Consider shifting non-critical GPT-4 workloads to Claude 3 Haiku where possible\n2. **Prompt Engineering**: Reduce input tokens for GPT-4 by refining prompts (potential 20% savings)\n3. **Batch Processing**: Implement batching for Codex operations to reduce redundant context\n\n## Projected Savings\nImplementing these recommendations could reduce daily costs by approximately $5.20-$7.80 (25-38%)."
+            }
+        }
+    ],
+    "version": "1.0.0",
+    "model_requirements": {
+        "minimum_context_length": 8000,
+        "required_features": ["code_understanding"],
+        "preferred_models": ["claude-3-sonnet"]
+    }
+}

@@ -1,0 +1,361 @@
+<!-- Component Template - Replace 'component' with your component name throughout this file
+     IMPORTANT: This template follows the Component Implementation Standard in /Tekton/MetaData/UI/ComponentImplementationStandard.md
+     This is the REQUIRED implementation pattern for all Tekton components as demonstrated in:
+     - /components/athena/athena-component.html
+     - /components/ergon/ergon-component.html -->
+<div class="component">
+    <!-- Component Header with Title -->
+    <div class="component__header">
+        <div class="component__title-container">
+            <img src="/images/Tekton.png" alt="Tekton" class="component__icon">
+            <h2 class="component__title">
+                <span class="component__title-main">Component Name</span>
+                <span class="component__title-sub">Descriptive Subtitle</span>
+            </h2>
+        </div>
+    </div>
+    
+    <!-- Component Menu Bar with Tab Navigation -->
+    <div class="component__menu-bar">
+        <div class="component__tabs">
+            <div class="component__tab component__tab--active" data-tab="main" onclick="component_switchTab('main'); return false;">
+                <span class="component__tab-label">Main</span>
+            </div>
+            <div class="component__tab" data-tab="details" onclick="component_switchTab('details'); return false;">
+                <span class="component__tab-label">Details</span>
+            </div>
+            <div class="component__tab" data-tab="settings" onclick="component_switchTab('settings'); return false;">
+                <span class="component__tab-label">Settings</span>
+            </div>
+        </div>
+        <div class="component__actions">
+            <button id="component-refresh-btn" class="component__action-button">
+                <span class="component__button-label">Refresh</span>
+            </button>
+        </div>
+    </div>
+    
+    <!-- Component Content Area -->
+    <div class="component__content">
+        <!-- Main Tab (Default Active Tab) -->
+        <div id="main-panel" class="component__panel component__panel--active" style="display: block;">
+            <div class="component__main">
+                <h3 class="component__section-title">Main Content</h3>
+                <p class="component__text">This is the main content of the component. Replace this with your component-specific content.</p>
+            </div>
+        </div>
+        
+        <!-- Details Tab -->
+        <div id="details-panel" class="component__panel" style="display: none;">
+            <div class="component__details">
+                <h3 class="component__section-title">Details</h3>
+                <p class="component__text">This tab shows details about this component.</p>
+            </div>
+        </div>
+        
+        <!-- Settings Tab -->
+        <div id="settings-panel" class="component__panel" style="display: none;">
+            <div class="component__settings">
+                <h3 class="component__section-title">Settings</h3>
+                <p class="component__text">This tab contains settings for this component.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add component-specific styles -->
+<style>
+    /* BEM-style component styles */
+    
+    /* Component Container */
+    .component {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        width: 100%;
+        background-color: var(--bg-primary, #1e1e2e);
+        color: var(--text-primary, #f0f0f0);
+        /* No absolute positioning - proper component containment */
+    }
+    
+    /* Header Styles */
+    .component__header {
+        display: flex;
+        align-items: center;
+        padding: 10px 16px;
+        background-color: var(--bg-secondary, #252535);
+        border-bottom: 1px solid var(--border-color, #444444);
+    }
+    
+    .component__title-container {
+        display: flex;
+        align-items: center;
+    }
+    
+    .component__icon {
+        height: 30px;
+        width: auto;
+        margin-right: 12px;
+    }
+    
+    .component__title {
+        margin: 0;
+        font-size: 1.2rem;
+        font-weight: 500;
+    }
+    
+    .component__title-sub {
+        margin-left: 8px;
+        opacity: 0.8;
+        font-weight: normal;
+    }
+    
+    /* Menu Bar Styles */
+    .component__menu-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 6px 16px;
+        background-color: var(--bg-secondary, #252535);
+        border-bottom: 1px solid var(--border-color, #444444);
+    }
+    
+    .component__tabs {
+        display: flex;
+        gap: 8px;
+    }
+    
+    .component__tab {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 16px;
+        background-color: transparent;
+        border: none;
+        border-bottom: 2px solid transparent;
+        color: var(--text-primary, #f0f0f0);
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    
+    .component__tab:hover {
+        background-color: var(--bg-hover, #3a3a4a);
+    }
+    
+    .component__tab--active {
+        border-bottom-color: var(--color-primary, #7B1FA2);
+        font-weight: 500;
+    }
+    
+    .component__actions {
+        display: flex;
+        gap: 8px;
+    }
+    
+    .component__action-button {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 12px;
+        background-color: var(--bg-tertiary, #333345);
+        border: 1px solid var(--border-color, #444444);
+        border-radius: 4px;
+        color: var(--text-primary, #f0f0f0);
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    
+    .component__action-button:hover {
+        background-color: var(--bg-hover, #3a3a4a);
+    }
+    
+    /* Content Area Styles */
+    .component__content {
+        flex: 1;
+        overflow: hidden;
+        position: relative;
+    }
+    
+    .component__panel {
+        display: none;
+        height: 100%;
+        width: 100%;
+        overflow: auto;
+        padding: 16px;
+    }
+    
+    .component__panel--active {
+        display: block;
+    }
+    
+    /* Typography */
+    .component__section-title {
+        margin-top: 0;
+        margin-bottom: 16px;
+        font-size: 1.3rem;
+        font-weight: 500;
+    }
+    
+    .component__text {
+        margin-bottom: 16px;
+        line-height: 1.5;
+    }
+</style>
+
+<!-- Self-contained component script with no shared dependencies -->
+<script type="text/javascript">
+// COMPONENT SCRIPT - FULLY SELF-CONTAINED
+// This prevents interference with other components
+
+// IMMEDIATELY SET UP UI MANAGER PROTECTION
+// Tell UI Manager to ignore this component - must be done IMMEDIATELY to avoid races
+if (window.uiManager) {
+    window.uiManager._ignoreComponent = 'component';
+    console.log('[COMPONENT] Set UI Manager to ignore component');
+}
+
+// DEFINE TAB SWITCHING FUNCTION
+// CRITICAL: This uses no shared code/utilities to avoid conflicts
+window.component_switchTab = function(tabId) {
+    console.log('[COMPONENT] Switching to tab:', tabId);
+    
+    // Force HTML panel visibility
+    const htmlPanelElements = document.querySelectorAll('#html-panel');
+    htmlPanelElements.forEach(panel => {
+        if (panel) panel.style.display = 'block';
+    });
+    
+    try {
+        // Only select elements within this component to avoid conflicts
+        const componentContainer = document.querySelector('.component');
+        if (!componentContainer) {
+            console.error('[COMPONENT] Tab Switch: Cannot find component container');
+            return false;
+        }
+        
+        // Update tab active state - ONLY WITHIN THIS COMPONENT'S CONTAINER
+        const tabs = componentContainer.querySelectorAll('.component__tab');
+        tabs.forEach(tab => {
+            if (tab.getAttribute('data-tab') === tabId) {
+                tab.classList.add('component__tab--active');
+            } else {
+                tab.classList.remove('component__tab--active');
+            }
+        });
+        
+        // Update panel visibility - ONLY WITHIN THIS COMPONENT'S CONTAINER
+        const panels = componentContainer.querySelectorAll('.component__panel');
+        panels.forEach(panel => {
+            const panelId = panel.id;
+            if (panelId === tabId + '-panel') {
+                panel.style.display = 'block';
+                panel.classList.add('component__panel--active');
+            } else {
+                panel.style.display = 'none';
+                panel.classList.remove('component__panel--active');
+            }
+        });
+        
+        // Update component state
+        if (window.componentComponent) {
+            window.componentComponent.state = window.componentComponent.state || {};
+            window.componentComponent.state.activeTab = tabId;
+            
+            // Call component-specific methods if available
+            if (typeof window.componentComponent.saveComponentState === 'function') {
+                window.componentComponent.saveComponentState();
+            }
+        }
+    } catch (err) {
+        console.error('[COMPONENT] Error in tab switching:', err);
+    }
+    
+    return false; // Stop event propagation
+};
+
+// LOAD COMPONENT
+// Load after defining tab switching to ensure it's available
+function component_loadComponent() {
+    console.log('[COMPONENT] Loading component script...');
+    
+    const timestamp = new Date().getTime();
+    const scriptPath = `/scripts/component/component-component.js?t=${timestamp}`;
+    
+    const script = document.createElement('script');
+    script.src = scriptPath;
+    script.async = false;
+    script.onload = function() {
+        console.log('[COMPONENT] Component script loaded successfully');
+        
+        if (window.componentComponent && typeof window.componentComponent.init === 'function') {
+            try {
+                window.componentComponent.init();
+                console.log('[COMPONENT] Component initialized');
+            } catch (err) {
+                console.error('[COMPONENT] Component initialization error:', err);
+            }
+        } else {
+            console.warn('[COMPONENT] Component init function not found');
+        }
+    };
+    script.onerror = function() {
+        console.error('[COMPONENT] Failed to load component script');
+    };
+    
+    document.body.appendChild(script);
+}
+
+// HTML PANEL PROTECTION
+// Setup explicit protection for the HTML panel to prevent it being hidden
+function component_protectHtmlPanel() {
+    const htmlPanel = document.getElementById('html-panel');
+    if (!htmlPanel) {
+        console.error('[COMPONENT] Cannot find HTML panel to protect');
+        return;
+    }
+    
+    console.log('[COMPONENT] Protecting HTML panel from being hidden');
+    htmlPanel.style.display = 'block'; // Force it to be visible
+    
+    // Store the original display value
+    if (!htmlPanel.hasOwnProperty('_componentOriginalDisplay')) {
+        Object.defineProperty(htmlPanel, '_componentOriginalDisplay', {
+            value: 'block',
+            writable: true,
+            configurable: true
+        });
+    }
+    
+    // Only define the getter/setter if it hasn't already been defined by this component
+    if (!htmlPanel.style._componentProtected) {
+        // Mark the display property as protected by this component
+        Object.defineProperty(htmlPanel.style, '_componentProtected', {
+            value: true,
+            writable: false,
+            configurable: true
+        });
+        
+        // Protect the display property
+        Object.defineProperty(htmlPanel.style, 'display', {
+            get: function() { 
+                return htmlPanel._componentOriginalDisplay; 
+            },
+            set: function(value) {
+                console.log(`[COMPONENT] Intercepted attempt to set HTML panel display to: ${value}`);
+                if (value === 'none') {
+                    console.log('[COMPONENT] Blocked attempt to hide HTML panel');
+                    htmlPanel._componentOriginalDisplay = 'block';
+                } else {
+                    htmlPanel._componentOriginalDisplay = value;
+                }
+            },
+            configurable: true
+        });
+    }
+}
+
+// SETUP
+// Do immediate initialization on script load
+component_protectHtmlPanel();
+component_loadComponent();
+</script>

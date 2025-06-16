@@ -1,0 +1,82 @@
+component:
+  id: "ergon-core"
+  name: "Ergon Agent Builder"
+  version: "0.1.0"
+  description: "AI agent creation and management system"
+  port: 8002
+  metadata:
+    component_type: "core"
+    ui_enabled: true
+    ui_component: "ergon"
+
+capabilities:
+  - id: "agent_building"
+    name: "Agent Building"
+    description: "Create and configure AI agents"
+    methods:
+      - id: "create_agent"
+        name: "Create Agent"
+        description: "Create a new AI agent"
+        parameters:
+          - name: "agent_type"
+            type: "string"
+            required: true
+          - name: "config"
+            type: "object"
+            required: true
+        returns:
+          type: "object"
+          
+      - id: "update_agent"
+        name: "Update Agent"
+        description: "Update an existing agent"
+        parameters:
+          - name: "agent_id"
+            type: "string"
+            required: true
+          - name: "config"
+            type: "object"
+            required: true
+        returns:
+          type: "object"
+          
+  - id: "agent_management"
+    name: "Agent Management"
+    description: "Manage existing AI agents"
+    methods:
+      - id: "list_agents"
+        name: "List Agents"
+        description: "List all available agents"
+        parameters: []
+        returns:
+          type: "array"
+          
+      - id: "get_agent"
+        name: "Get Agent"
+        description: "Get details of a specific agent"
+        parameters:
+          - name: "agent_id"
+            type: "string"
+            required: true
+        returns:
+          type: "object"
+          
+  - id: "agent_execution"
+    name: "Agent Execution"
+    description: "Execute agent tasks"
+    methods:
+      - id: "run_agent"
+        name: "Run Agent"
+        description: "Execute an agent with specific instructions"
+        parameters:
+          - name: "agent_id"
+            type: "string"
+            required: true
+          - name: "instructions"
+            type: "string"
+            required: true
+          - name: "context"
+            type: "object"
+            required: false
+        returns:
+          type: "object"

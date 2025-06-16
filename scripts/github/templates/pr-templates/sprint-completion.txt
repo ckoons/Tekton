@@ -1,0 +1,29 @@
+## Sprint Completion: {sprint_name}
+
+### Sprint Goals
+{sprint_goals}
+
+### Deliverables
+- {deliverable_1}
+- {deliverable_2}
+- {deliverable_3}
+
+### Implementation Details
+{implementation_details}
+
+### Testing
+- [ ] Unit tests completed
+- [ ] Integration tests completed
+- [ ] Documentation updated
+- [ ] End-to-end testing performed
+
+### Known Issues
+{known_issues}
+
+### Next Steps
+{next_steps}
+
+### Related Issues
+Resolves #{issue_number}
+
+🤖 Generated with [Claude Code](https://claude.ai/code)

@@ -1,0 +1,21 @@
+{
+  "apollo": "tekton-core",
+  "telos": "tekton-core",
+  "terma": "tekton-core",
+  "harmonia": "tekton-data",
+  "prometheus": "tekton-core",
+  "budget": "tekton-ai",
+  "rhetor": "tekton-ai",
+  "synthesis": "tekton-ai",
+  "engram": "tekton-ml",
+  "hermes": "tekton-ml",
+  "sophia": "tekton-ml",
+  "athena": "tekton-ml",
+  "ergon": "tekton-data",
+  "metis": "tekton-data",
+  "development": "tekton-dev",
+  "testing": "tekton-dev",
+  "linting": "tekton-dev",
+  "codex": "tekton-core",
+  "llmadapter": "tekton-ai"
+}

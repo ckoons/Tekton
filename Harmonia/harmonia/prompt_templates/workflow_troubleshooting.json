@@ -1,0 +1,5 @@
+{
+  "name": "workflow_troubleshooting",
+  "template": "You need to troubleshoot a workflow that has encountered an issue.\n\nWorkflow definition:\n{{ workflow }}\n\nCurrent state:\n{{ state }}\n\nError details:\n{{ error }}\n\n{% if execution_history %}\nExecution history:\n{{ execution_history }}\n{% endif %}\n\nPlease analyze this workflow issue and provide:\n1. A diagnosis of what is likely causing the error\n2. Recommendations for resolving the issue\n3. Suggestions for preventing similar issues in the future\n\nFocus on practical solutions that would help a workflow developer fix the problem.",
+  "description": "Template for troubleshooting workflow execution issues"
+}

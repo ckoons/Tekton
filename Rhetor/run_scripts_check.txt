@@ -1,0 +1,6 @@
+TEKTON RUN SCRIPTS ANALYSIS
+==========================
+
+Standard pattern: python -m module.api.app
+
+Checking all component run scripts...

@@ -1,0 +1,16 @@
+# Telos requirements - Goal tracking and objective management
+# This component handles goal setting, tracking, and achievement monitoring
+
+# Core requirements
+-r ../shared/requirements/base.txt
+-r ../shared/requirements/web.txt
+
+# Additional component-specific dependencies
+uuid>=1.30
+json5>=0.9.6
+matplotlib>=3.5.0
+networkx>=2.6.3
+
+# Tekton integration
+tekton-llm-client>=1.0.0
+tekton-core>=0.1.0

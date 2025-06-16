@@ -1,0 +1,111 @@
+# Instructions for patching ComponentView.js
+
+To integrate Ergon with the Tekton UI, follow these steps to modify ComponentView.js:
+
+1. Add the import for Ergon tabs at the top of the file, under the other imports:
+
+```javascript
+// Import Ergon-specific components
+let ErgonTabs = null;
+try {
+  const ErgonModule = require('../components/ergon/ui_connector');
+  ErgonTabs = ErgonModule.ErgonTabs;
+} catch (error) {
+  console.warn('Ergon UI connector not found', error);
+}
+```
+
+2. Add the ErgonComponentTabs function before the main ComponentView function:
+
+```javascript
+// Ergon component tabs render helper
+const ErgonComponentTabs = ({ tabValue }) => {
+  if (!ErgonTabs) {
+    return (
+      <Box sx={{ p: 3 }}>
+        <Alert severity="warning">
+          Ergon UI components not found. Please check your installation.
+        </Alert>
+      </Box>
+    );
+  }
+  
+  // Map the tab value to the appropriate Ergon component
+  switch(tabValue) {
+    case 0: // Console tab
+      return <ErgonTabs.console />;
+    case 1: // Data tab
+      return <ErgonTabs.data />;
+    case 2: // Visualization tab
+      return <ErgonTabs.visualization />;
+    case 3: // Settings tab
+      return <ErgonTabs.settings />;
+    default:
+      return <ErgonTabs.console />;
+  }
+};
+```
+
+3. Modify each TabPanel in ComponentView.js to include Ergon-specific rendering:
+
+For the Console tab (around line 324):
+```javascript
+{/* Console tab - Chat interface */}
+<TabPanel value={tabValue} index={0}>
+  {id === 'ergon' && ErgonTabs ? (
+    <ErgonComponentTabs tabValue={0} />
+  ) : (
+    <ChatWindow componentId={id} />
+  )}
+</TabPanel>
+```
+
+For the Data tab (around line 329):
+```javascript
+{/* Data tab - Component data browser */}
+<TabPanel value={tabValue} index={1}>
+  {id === 'ergon' && ErgonTabs ? (
+    <ErgonComponentTabs tabValue={1} />
+  ) : (
+    <Box sx={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <Typography color="text.secondary">
+        Data browser for {component.name} will be displayed here
+      </Typography>
+    </Box>
+  )}
+</TabPanel>
+```
+
+For the Visualization tab (around line 338):
+```javascript
+{/* Visualization tab */}
+<TabPanel value={tabValue} index={2}>
+  {id === 'ergon' && ErgonTabs ? (
+    <ErgonComponentTabs tabValue={2} />
+  ) : (
+    <Box sx={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <Typography color="text.secondary">
+        Visualization tools for {component.name} will be displayed here
+      </Typography>
+    </Box>
+  )}
+</TabPanel>
+```
+
+For the Settings tab (around line 347):
+```javascript
+{/* Settings tab */}
+<TabPanel value={tabValue} index={3}>
+  {id === 'ergon' && ErgonTabs ? (
+    <ErgonComponentTabs tabValue={3} />
+  ) : (
+    <Box sx={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <Typography color="text.secondary">
+        Settings for {component.name} will be displayed here
+      </Typography>
+    </Box>
+  )}
+</TabPanel>
+```
+
+These changes will allow the Ergon-specific UI components to be displayed in the right panel when the Ergon component is selected, while maintaining the default behavior for other components.

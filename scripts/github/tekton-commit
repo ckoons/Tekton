@@ -1,0 +1,373 @@
+#!/usr/bin/env bash
+#
+# tekton-commit - Generate and apply standardized commit messages
+#
+# This script generates commit messages using templates and applies them
+# to staged changes, ensuring consistency across the Tekton project.
+
+# Exit on error, undefined variables, and pipe failures
+set -euo pipefail
+
+# Source common utilities
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# Determine Tekton root directory - prefer environment variable if set
+if [[ -n "${TEKTON_ROOT:-}" ]]; then
+  REPO_ROOT="${TEKTON_ROOT}"
+else
+  # Fall back to relative path detection
+  REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+  echo "Warning: TEKTON_ROOT environment variable not set. Using detected path: ${REPO_ROOT}"
+  echo "For reliable operation, please set TEKTON_ROOT to the root of your Tekton repository."
+fi
+
+LIB_DIR="${REPO_ROOT}/scripts/github/lib"
+TEMPLATE_DIR="${REPO_ROOT}/scripts/github/templates/commit-messages"
+
+# shellcheck source=lib/github-utils.sh
+source "${LIB_DIR}/github-utils.sh"
+# shellcheck source=lib/error-utils.sh
+source "${LIB_DIR}/error-utils.sh"
+# shellcheck source=lib/component-utils.sh
+source "${LIB_DIR}/component-utils.sh"
+
+# Function to display usage information
+usage() {
+  cat <<EOF
+Usage: $(basename "$0") [OPTIONS] [COMMIT_TYPE]
+
+Generate and apply standardized commit messages to staged changes,
+ensuring consistency across the Tekton project.
+
+Options:
+  -h, --help           Display this help message and exit
+  -v, --verbose        Enable verbose output
+  -l, --list           List available commit types and templates
+  -p, --preview        Preview the commit message without applying it
+  -t, --title TITLE    Commit title (required unless using --preview)
+  -m, --message TEXT   Custom message (replaces template bullets)
+  -c, --components     Include list of affected components in commit
+  -i, --issue NUM      Reference issue number in commit
+  -e, --edit           Open commit message in editor before committing
+  
+Arguments:
+  COMMIT_TYPE          Type of commit: feature, fix, docs, refactor, etc.
+                       (Defaults to "feature" if not specified)
+
+Available commit types:
+  feature, feat        New feature implementation
+  fix, bugfix          Bug fixes
+  docs                 Documentation updates
+  refactor             Code refactoring without functionality changes
+  test                 Adding or updating tests
+  chore                Maintenance tasks, dependency updates, etc.
+
+Examples:
+  $(basename "$0") --title "Add branch management utilities" feature
+    Create a feature commit with the given title
+
+  $(basename "$0") --title "Fix component detection" --issue 123 fix
+    Create a bugfix commit that references issue #123
+
+  $(basename "$0") --preview --title "Update documentation" docs
+    Preview a documentation commit message without applying it
+
+EOF
+  exit 1
+}
+
+# Function to list available commit types
+list_commit_types() {
+  echo "Available commit types and templates:"
+  echo ""
+  
+  for template in "${TEMPLATE_DIR}"/*.txt; do
+    if [[ -f "${template}" ]]; then
+      template_name=$(basename "${template}" .txt)
+      echo "- ${template_name}"
+      awk 'NR <= 5' "${template}" | sed 's/^/  /'
+      echo ""
+    fi
+  done
+  
+  exit 0
+}
+
+# Function to prompt for text input
+prompt_for_input() {
+  local prompt="$1"
+  local variable_name="$2"
+  local default_value="${3:-}"
+  
+  if [[ -n "${default_value}" ]]; then
+    read -p "${prompt} [${default_value}]: " input
+    input="${input:-${default_value}}"
+  else
+    read -p "${prompt}: " input
+    
+    # Validate non-empty input if default is empty
+    while [[ -z "${input}" ]]; do
+      echo "Input cannot be empty."
+      read -p "${prompt}: " input
+    done
+  fi
+  
+  eval "${variable_name}=\"${input}\""
+}
+
+# Function to replace template variables
+replace_template_vars() {
+  local template="$1"
+  local title="$2"
+  local output="${template}"
+  
+  # Replace title placeholder
+  output="${output//\{title\}/${title}}"
+  
+  # Get current component if in a component directory
+  local current_component=""
+  current_component="$(get_current_component)" || true
+  if [[ -n "${current_component}" ]]; then
+    output="${output//\{component\}/${current_component}}"
+  fi
+  
+  # Return modified template
+  echo "${output}"
+}
+
+# Function to interactively fill template
+fill_template_interactive() {
+  local template="$1"
+  local title="$2"
+  local output
+  
+  # Initial replacement of known variables
+  output=$(replace_template_vars "${template}" "${title}")
+  
+  # Find remaining placeholders and prompt for values
+  local placeholders
+  placeholders=$(echo "${output}" | grep -o '{[^}]*}' | sort | uniq)
+  
+  if [[ -n "${placeholders}" ]]; then
+    echo -e "\nPlease provide values for the following placeholders:"
+    
+    for placeholder in ${placeholders}; do
+      # Remove braces for variable name display
+      local name="${placeholder//\{/}"
+      name="${name//\}/}"
+      
+      # Convert placeholder to a more readable format for prompting
+      local prompt_name="${name//_/ }"
+      prompt_name="$(tr '[:lower:]' '[:upper:]' <<< "${prompt_name:0:1}")${prompt_name:1}"
+      
+      # Prompt for value
+      local value=""
+      prompt_for_input "${prompt_name}" value
+      
+      # Replace placeholder with value
+      output="${output//${placeholder}/${value}}"
+    done
+  fi
+  
+  echo "${output}"
+}
+
+# Parse arguments
+verbose=false
+list_mode=false
+preview_mode=false
+commit_title=""
+custom_message=""
+include_components=false
+issue_number=""
+edit_message=false
+commit_type="feature"  # Default commit type
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    -h|--help)
+      usage
+      ;;
+    -v|--verbose)
+      verbose=true
+      enable_debug
+      shift
+      ;;
+    -l|--list)
+      list_mode=true
+      shift
+      ;;
+    -p|--preview)
+      preview_mode=true
+      shift
+      ;;
+    -t|--title)
+      commit_title="$2"
+      shift 2
+      ;;
+    -m|--message)
+      custom_message="$2"
+      shift 2
+      ;;
+    -c|--components)
+      include_components=true
+      shift
+      ;;
+    -i|--issue)
+      issue_number="$2"
+      shift 2
+      ;;
+    -e|--edit)
+      edit_message=true
+      shift
+      ;;
+    -*)
+      error_exit "Unknown option: $1"
+      ;;
+    *)
+      commit_type="$1"
+      shift
+      break
+      ;;
+  esac
+done
+
+# List commit types if requested
+if [[ "${list_mode}" == "true" ]]; then
+  list_commit_types
+fi
+
+# Map shorthand commit types to full names
+case "${commit_type}" in
+  "feat")
+    commit_type="feature"
+    ;;
+  "bugfix")
+    commit_type="fix"
+    ;;
+  "feature"|"fix"|"docs"|"refactor"|"test"|"chore")
+    # These are already valid, no mapping needed
+    ;;
+  *)
+    warn "Unknown commit type: ${commit_type}, defaulting to 'feature'"
+    commit_type="feature"
+    ;;
+esac
+
+# Check if template exists
+template_file="${TEMPLATE_DIR}/${commit_type}.txt"
+if [[ ! -f "${template_file}" ]]; then
+  error_exit "Commit template not found: ${commit_type}"
+fi
+
+# If not in preview mode, ensure we have a title
+if [[ "${preview_mode}" != "true" && -z "${commit_title}" ]]; then
+  prompt_for_input "Commit title" commit_title
+fi
+
+# Read template file
+template=$(cat "${template_file}")
+
+# Check if in a git repository
+if ! check_git_repo; then
+  error_exit "Not in a git repository"
+fi
+
+# Generate commit message
+if [[ -n "${custom_message}" ]]; then
+  # Use custom message instead of template bullets
+  commit_message=$(replace_template_vars "${template}" "${commit_title}")
+  
+  # Replace bullet points with custom message (assumes template has bullet points)
+  commit_message=$(echo "${commit_message}" | awk -v msg="${custom_message}" '{
+    if ($0 ~ /^- \{.*\}$/) {
+      if (!msg_printed) {
+        print msg;
+        msg_printed = 1;
+      }
+    } else {
+      print $0;
+    }
+  }')
+else
+  # Interactive template filling
+  commit_message=$(fill_template_interactive "${template}" "${commit_title}")
+fi
+
+# Add issue reference if provided
+if [[ -n "${issue_number}" ]]; then
+  if ! echo "${commit_message}" | grep -q "Resolves #"; then
+    commit_message="${commit_message}\n\nResolves #${issue_number}"
+  fi
+fi
+
+# Add affected components if requested
+if [[ "${include_components}" == "true" ]]; then
+  # Get current component or detect affected components from staged files
+  component=$(get_current_component)
+  if [[ -z "${component}" ]]; then
+    # Try to detect affected components from staged files
+    readarray -t staged_files < <(git diff --cached --name-only)
+    declare -A affected_components
+    
+    for file in "${staged_files[@]}"; do
+      # Check if file is in a component directory
+      for comp in $(list_tekton_components); do
+        if [[ "${file}" == "${comp}/"* ]]; then
+          affected_components["${comp}"]=1
+          break
+        fi
+      done
+    done
+    
+    if [[ ${#affected_components[@]} -gt 0 ]]; then
+      components_list=$(printf ", %s" "${!affected_components[@]}")
+      components_list=${components_list:2}  # Remove leading ", "
+      commit_message="${commit_message}\n\nAffected components: ${components_list}"
+    fi
+  else
+    commit_message="${commit_message}\n\nComponent: ${component}"
+  fi
+fi
+
+# Preview or apply the commit message
+if [[ "${preview_mode}" == "true" ]]; then
+  echo -e "Preview of commit message:"
+  echo -e "------------------------"
+  echo -e "${commit_message}"
+  echo -e "------------------------"
+  exit 0
+fi
+
+# Check if there are staged changes
+if [[ -z "$(git diff --cached --name-only)" ]]; then
+  warn "No staged changes found. Stage your changes with 'git add' first."
+  read -p "Do you want to stage all changes? [y/N] " stage_all
+  if [[ "${stage_all}" == "y" || "${stage_all}" == "Y" ]]; then
+    git add -A
+  else
+    exit 1
+  fi
+fi
+
+# Create temporary file for commit message
+commit_file=$(mktemp)
+echo -e "${commit_message}" > "${commit_file}"
+
+# Edit commit message if requested
+if [[ "${edit_message}" == "true" ]]; then
+  # Use default editor
+  "${EDITOR:-vi}" "${commit_file}"
+fi
+
+# Create commit
+if git commit -F "${commit_file}"; then
+  success "Commit created successfully"
+else
+  error_exit "Failed to create commit"
+fi
+
+# Clean up temporary file
+rm -f "${commit_file}"
+
+exit 0

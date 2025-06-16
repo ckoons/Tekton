@@ -1,0 +1,27 @@
+{
+  "default_model": "claude-3-sonnet-20240229",
+  "models": {
+    "claude-3-sonnet-20240229": {
+      "description": "Claude 3 Sonnet - balanced model with strong reasoning",
+      "temperature": 0.7,
+      "max_tokens": 4000
+    },
+    "claude-3-haiku-20240307": {
+      "description": "Claude 3 Haiku - fast and efficient for simpler tasks",
+      "temperature": 0.7,
+      "max_tokens": 2000
+    },
+    "claude-3-opus-20240229": {
+      "description": "Claude 3 Opus - highest capability model for complex requirements",
+      "temperature": 0.7,
+      "max_tokens": 4000
+    }
+  },
+  "fallback_sequence": [
+    "claude-3-sonnet-20240229",
+    "claude-3-haiku-20240307"
+  ],
+  "request_timeout": 60,
+  "retry_attempts": 3,
+  "retry_delay": 2
+}

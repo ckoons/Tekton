@@ -1,0 +1,41 @@
+{
+  "context_id": "default",
+  "created_at": "2025-06-11T15:42:43.569774",
+  "updated_at": "2025-06-11T17:06:16.944586",
+  "messages": [
+    {
+      "id": "215ea3ce-929a-403a-ac29-745fe5d3f5f9",
+      "role": "user",
+      "content": "Hi",
+      "timestamp": "2025-06-11T15:42:43.570088",
+      "metadata": {
+        "task_type": "chat"
+      }
+    },
+    {
+      "id": "8b842525-e3ef-44c8-a319-5b008bd396bb",
+      "role": "user",
+      "content": "what is your name?",
+      "timestamp": "2025-06-11T16:04:09.515761",
+      "metadata": {
+        "task_type": "chat"
+      }
+    },
+    {
+      "id": "ae97bbcf-df72-4585-a1a3-f4429c84780b",
+      "role": "user",
+      "content": "What is your name",
+      "timestamp": "2025-06-11T17:06:16.944478",
+      "metadata": {
+        "task_type": "chat"
+      }
+    }
+  ],
+  "summaries": [],
+  "metadata": {
+    "component": "unknown"
+  },
+  "total_token_count": 22,
+  "max_tokens": 4000,
+  "archived_messages": []
+}

@@ -1,0 +1,1077 @@
+<!-- Telos Component - Requirements Management -->
+<div class="telos" data-tekton-area="telos" data-tekton-component="telos" data-tekton-type="component-workspace" data-tekton-ai="telos-assistant" data-tekton-ai-ready="false">
+    <!-- Component Header with Title -->
+    <div class="telos__header">
+        <div class="telos__title-container">
+            <img src="/images/hexagon.jpg" alt="Tekton" class="telos__icon">
+            <h2 class="telos__title">
+                <span class="telos__title-main">Telos</span>
+                <span class="telos__title-sub">Requirements Manager</span>
+            </h2>
+        </div>
+    </div>
+    
+    <!-- Telos Menu Bar with Tab Navigation -->
+    <div class="telos__menu-bar">
+        <div class="telos__tabs">
+            <div class="telos__tab telos__tab--active" data-tab="projects" onclick="telos_switchTab('projects'); return false;">
+                <span class="telos__tab-label">Projects</span>
+            </div>
+            <div class="telos__tab" data-tab="requirements" onclick="telos_switchTab('requirements'); return false;">
+                <span class="telos__tab-label">Requirements</span>
+            </div>
+            <div class="telos__tab" data-tab="traceability" onclick="telos_switchTab('traceability'); return false;">
+                <span class="telos__tab-label">Traceability</span>
+            </div>
+            <div class="telos__tab" data-tab="validation" onclick="telos_switchTab('validation'); return false;">
+                <span class="telos__tab-label">Validation</span>
+            </div>
+            <div class="telos__tab" data-tab="reqchat" onclick="telos_switchTab('reqchat'); return false;">
+                <span class="telos__tab-label">Requirements Chat</span>
+            </div>
+            <div class="telos__tab" data-tab="teamchat" onclick="telos_switchTab('teamchat'); return false;">
+                <span class="telos__tab-label">Team Chat</span>
+            </div>
+        </div>
+        <div class="telos__actions">
+            <button id="clear-chat-btn" class="telos__action-button" style="display: none;" onclick="telos_clearChat(); return false;">
+                <span class="telos__button-label">Clear</span>
+            </button>
+        </div>
+    </div>
+    
+    <!-- Telos Content Area -->
+    <div class="telos__content">
+        <!-- Projects Tab (Default Active Tab) -->
+        <div id="projects-panel" class="telos__panel telos__panel--active">
+            <div class="telos__projects">
+                <div class="telos__control-bar">
+                    <div class="telos__search-container">
+                        <input type="text" id="project-search" class="telos__search-input" placeholder="Search projects...">
+                        <button id="project-search-btn" class="telos__search-button">Search</button>
+                    </div>
+                    <div class="telos__actions">
+                        <button id="add-project-btn" class="telos__action-button">
+                            <span class="telos__button-icon">+</span>
+                            <span class="telos__button-label">New Project</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="telos__project-list-container">
+                    <div id="project-list-loading" class="telos__loading-indicator">
+                        <div class="telos__spinner"></div>
+                        <div class="telos__loading-text">Loading projects...</div>
+                    </div>
+                    <div id="project-list" class="telos__project-list" style="display: none;">
+                        <!-- Sample projects for UI testing -->
+                        <div class="telos__project-item">
+                            <div class="telos__project-info">
+                                <div class="telos__project-name">Tekton UI Refactoring</div>
+                                <div class="telos__project-meta">
+                                    <span class="telos__project-count">24 requirements</span>
+                                    <span class="telos__project-status">Active</span>
+                                </div>
+                            </div>
+                            <div class="telos__project-actions">
+                                <button class="telos__project-action-btn">View</button>
+                                <button class="telos__project-action-btn">Edit</button>
+                            </div>
+                        </div>
+                        <div class="telos__project-item">
+                            <div class="telos__project-info">
+                                <div class="telos__project-name">Engram Memory System</div>
+                                <div class="telos__project-meta">
+                                    <span class="telos__project-count">18 requirements</span>
+                                    <span class="telos__project-status">Active</span>
+                                </div>
+                            </div>
+                            <div class="telos__project-actions">
+                                <button class="telos__project-action-btn">View</button>
+                                <button class="telos__project-action-btn">Edit</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Requirements Tab -->
+        <div id="requirements-panel" class="telos__panel">
+            <div class="telos__requirements">
+                <div class="telos__control-bar">
+                    <div class="telos__search-container">
+                        <input type="text" id="requirement-search" class="telos__search-input" placeholder="Search requirements...">
+                        <button id="requirement-search-btn" class="telos__search-button">Search</button>
+                    </div>
+                    <div class="telos__filter-container">
+                        <select id="project-filter" class="telos__filter-select">
+                            <option value="all">All Projects</option>
+                            <option value="tekton-ui">Tekton UI Refactoring</option>
+                            <option value="engram">Engram Memory System</option>
+                        </select>
+                        <select id="status-filter" class="telos__filter-select">
+                            <option value="all">All Statuses</option>
+                            <option value="new">New</option>
+                            <option value="in-progress">In Progress</option>
+                            <option value="completed">Completed</option>
+                            <option value="rejected">Rejected</option>
+                        </select>
+                        <select id="type-filter" class="telos__filter-select">
+                            <option value="all">All Types</option>
+                            <option value="functional">Functional</option>
+                            <option value="non-functional">Non-Functional</option>
+                            <option value="constraint">Constraint</option>
+                        </select>
+                        <button id="apply-filters-btn" class="telos__filter-button">Apply</button>
+                    </div>
+                    <div class="telos__actions">
+                        <button id="new-requirement-btn" class="telos__action-button">
+                            <span class="telos__button-icon">+</span>
+                            <span class="telos__button-label">New Requirement</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="telos__requirements-list-container">
+                    <div id="requirements-list-loading" class="telos__loading-indicator">
+                        <div class="telos__spinner"></div>
+                        <div class="telos__loading-text">Loading requirements...</div>
+                    </div>
+                    <div id="requirements-list" class="telos__requirements-list" style="display: none;">
+                        <table class="telos__requirements-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Title</th>
+                                    <th>Project</th>
+                                    <th>Type</th>
+                                    <th>Priority</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Sample requirements for UI testing -->
+                                <tr class="telos__requirement-row">
+                                    <td>REQ-001</td>
+                                    <td>Component Isolation</td>
+                                    <td>Tekton UI Refactoring</td>
+                                    <td>Functional</td>
+                                    <td>High</td>
+                                    <td>In Progress</td>
+                                    <td>
+                                        <button class="telos__table-action-btn">View</button>
+                                        <button class="telos__table-action-btn">Edit</button>
+                                    </td>
+                                </tr>
+                                <tr class="telos__requirement-row">
+                                    <td>REQ-002</td>
+                                    <td>BEM Naming Convention</td>
+                                    <td>Tekton UI Refactoring</td>
+                                    <td>Constraint</td>
+                                    <td>Medium</td>
+                                    <td>Completed</td>
+                                    <td>
+                                        <button class="telos__table-action-btn">View</button>
+                                        <button class="telos__table-action-btn">Edit</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Traceability Tab -->
+        <div id="traceability-panel" class="telos__panel">
+            <div class="telos__traceability">
+                <div class="telos__control-bar">
+                    <div class="telos__filter-container">
+                        <select id="trace-project-filter" class="telos__filter-select">
+                            <option value="all">All Projects</option>
+                            <option value="tekton-ui">Tekton UI Refactoring</option>
+                            <option value="engram">Engram Memory System</option>
+                        </select>
+                        <button id="trace-apply-filter-btn" class="telos__filter-button">Apply</button>
+                    </div>
+                    <div class="telos__view-controls">
+                        <button id="trace-matrix-btn" class="telos__view-button telos__view-button--active">Matrix View</button>
+                        <button id="trace-graph-btn" class="telos__view-button">Graph View</button>
+                    </div>
+                </div>
+                <div class="telos__traceability-container">
+                    <div id="traceability-matrix" class="telos__traceability-matrix">
+                        <div class="telos__trace-placeholder">
+                            <div class="telos__placeholder-content">
+                                <h3 class="telos__placeholder-title">Traceability Matrix</h3>
+                                <p class="telos__placeholder-text">Select a project and visualization type to view traceability information.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Validation Tab -->
+        <div id="validation-panel" class="telos__panel">
+            <div class="telos__validation">
+                <h3 class="telos__section-title">Requirements Validation</h3>
+                <p class="telos__text">Validate requirements against quality criteria and standards.</p>
+
+                <div class="telos__validation-form">
+                    <div class="telos__form-group">
+                        <label class="telos__form-label">Project</label>
+                        <select class="telos__form-select" id="validation-project-select">
+                            <option value="">Select a project...</option>
+                            <option value="tekton-ui">Tekton UI Refactoring</option>
+                            <option value="engram">Engram Memory System</option>
+                        </select>
+                    </div>
+
+                    <div class="telos__form-group">
+                        <label class="telos__form-label">Validation Type</label>
+                        <select class="telos__form-select" id="validation-type-select">
+                            <option value="all">All Requirements</option>
+                            <option value="selected">Selected Requirements</option>
+                            <option value="new">New Requirements</option>
+                            <option value="changed">Recently Changed</option>
+                        </select>
+                    </div>
+
+                    <div class="telos__form-group">
+                        <label class="telos__form-label">Validation Criteria</label>
+                        <div class="telos__checkbox-group">
+                            <label class="telos__checkbox-label">
+                                <input type="checkbox" class="telos__checkbox" id="validate-completeness" checked> Completeness
+                            </label>
+                            <label class="telos__checkbox-label">
+                                <input type="checkbox" class="telos__checkbox" id="validate-clarity" checked> Clarity
+                            </label>
+                            <label class="telos__checkbox-label">
+                                <input type="checkbox" class="telos__checkbox" id="validate-consistency" checked> Consistency
+                            </label>
+                            <label class="telos__checkbox-label">
+                                <input type="checkbox" class="telos__checkbox" id="validate-testability" checked> Testability
+                            </label>
+                            <label class="telos__checkbox-label">
+                                <input type="checkbox" class="telos__checkbox" id="validate-feasibility"> Feasibility
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="telos__form-actions">
+                        <button class="telos__button telos__button--secondary" id="reset-validation-btn">Reset</button>
+                        <button class="telos__button telos__button--primary" id="run-validation-btn">Run Validation</button>
+                    </div>
+                </div>
+
+                <div class="telos__validation-result" style="margin-top: 20px; display: none;" id="validation-result-container">
+                    <h4 class="telos__result-title">Validation Results</h4>
+                    <div class="telos__result-content" id="validation-results">
+                        <!-- Validation results will appear here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Requirements Chat Tab -->
+        <div id="reqchat-panel" class="telos__panel">
+            <div id="reqchat-messages" class="telos__chat-messages">
+                <!-- Welcome message -->
+                <div class="telos__message telos__message--system">
+                    <div class="telos__message-content">
+                        <div class="telos__message-text">
+                            <h3 class="telos__message-title">Requirements Assistant</h3>
+                            <p>This chat provides assistance with requirements engineering. Ask questions about:</p>
+                            <ul>
+                                <li>Requirements drafting and refinement</li>
+                                <li>Requirements validation and analysis</li>
+                                <li>Traceability and relationships</li>
+                                <li>Best practices for requirements management</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Team Chat Tab -->
+        <div id="teamchat-panel" class="telos__panel">
+            <div id="teamchat-messages" class="telos__chat-messages">
+                <!-- Welcome message -->
+                <div class="telos__message telos__message--system">
+                    <div class="telos__message-content">
+                        <div class="telos__message-text">
+                            <h3 class="telos__message-title">Tekton Team Chat</h3>
+                            <p>This chat is shared across all Tekton components. Use this for team communication and coordination.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Footer with Chat Input -->
+    <div class="telos__footer">
+        <div class="telos__chat-input-container">
+            <div class="telos__chat-prompt">></div>
+            <input type="text" id="chat-input" class="telos__chat-input" 
+                   placeholder="Enter chat message, requirements query, or validation request">
+            <button id="send-button" class="telos__send-button">Send</button>
+        </div>
+    </div>
+</div>
+
+<!-- Add component-specific styles -->
+<style>
+    /* Telos component styles using BEM naming convention */
+    
+    /* Container */
+    .telos {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        width: 100%;
+        background-color: var(--bg-primary, #1e1e2e);
+        color: var(--text-primary, #f0f0f0);
+        /* No absolute positioning - proper component containment */
+    }
+    
+    /* Header */
+    .telos__header {
+        display: flex;
+        align-items: center;
+        padding: 10px 16px;
+        background-color: var(--bg-secondary, #252535);
+        border-bottom: 1px solid var(--border-color, #444444);
+        height: 46px; /* Standardized header height */
+    }
+    
+    .telos__title-container {
+        display: flex;
+        align-items: center;
+    }
+    
+    .telos__icon {
+        height: 30px;
+        width: auto;
+        margin-right: 12px;
+    }
+    
+    .telos__title {
+        margin: 0;
+        font-size: 1.2rem;
+        font-weight: 500;
+    }
+    
+    .telos__title-sub {
+        margin-left: 8px;
+        opacity: 0.8;
+        font-weight: normal;
+    }
+    
+    /* Menu Bar */
+    .telos__menu-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 6px 16px;
+        background-color: var(--bg-secondary, #252535);
+        border-bottom: 1px solid var(--border-color, #444444);
+        height: 46px; /* Match menu bar height from Athena */
+    }
+    
+    .telos__tabs {
+        display: flex;
+        gap: 8px;
+    }
+    
+    .telos__tab {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 16px;
+        background-color: transparent;
+        border: none;
+        border-bottom: 2px solid transparent;
+        color: var(--text-primary, #f0f0f0);
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    
+    .telos__tab:hover {
+        background-color: var(--bg-hover, #3a3a4a);
+    }
+    
+    .telos__tab--active {
+        border-bottom-color: var(--color-primary, #3498db); /* Telos blue color */
+        font-weight: 500;
+    }
+    
+    .telos__actions {
+        display: flex;
+        gap: 8px;
+    }
+    
+    .telos__action-button {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 12px;
+        background-color: var(--bg-tertiary, #333345);
+        border: 1px solid var(--border-color, #444444);
+        border-radius: 4px;
+        color: var(--text-primary, #f0f0f0);
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    
+    .telos__action-button:hover {
+        background-color: var(--bg-hover, #3a3a4a);
+    }
+    
+    /* Content Area */
+    .telos__content {
+        flex: 1;
+        overflow: hidden;
+        position: relative;
+    }
+    
+    .telos__panel {
+        display: none;
+        height: 100%;
+        width: 100%;
+        overflow: auto;
+    }
+    
+    .telos__panel--active {
+        display: block;
+    }
+    
+    /* Control Bar */
+    .telos__control-bar {
+        display: flex;
+        justify-content: space-between;
+        padding: 16px;
+        background-color: var(--bg-secondary, #252535);
+        border-bottom: 1px solid var(--border-color, #444444);
+        height: 46px; /* Standard control bar height */
+    }
+    
+    .telos__search-container {
+        display: flex;
+        gap: 8px;
+    }
+    
+    .telos__search-input {
+        padding: 8px 12px;
+        min-width: 260px;
+        background-color: var(--bg-tertiary, #333345);
+        border: 1px solid var(--border-color, #444444);
+        border-radius: 4px;
+        color: var(--text-primary, #f0f0f0);
+    }
+    
+    .telos__filter-container {
+        display: flex;
+        gap: 8px;
+    }
+    
+    .telos__filter-select {
+        padding: 8px 12px;
+        background-color: var(--bg-tertiary, #333345);
+        border: 1px solid var(--border-color, #444444);
+        border-radius: 4px;
+        color: var(--text-primary, #f0f0f0);
+    }
+    
+    .telos__filter-button,
+    .telos__search-button {
+        padding: 8px 12px;
+        background-color: var(--bg-tertiary, #333345);
+        border: 1px solid var(--border-color, #444444);
+        border-radius: 4px;
+        color: var(--text-primary, #f0f0f0);
+        cursor: pointer;
+    }
+    
+    /* Project list */
+    .telos__project-list-container {
+        padding: 16px;
+    }
+    
+    .telos__project-list {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+    
+    .telos__project-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px;
+        background-color: var(--bg-secondary, #252535);
+        border: 1px solid var(--border-color, #444444);
+        border-radius: 8px;
+        transition: all 0.2s ease;
+    }
+    
+    .telos__project-item:hover {
+        background-color: var(--bg-hover, #3a3a4a);
+    }
+    
+    .telos__project-info {
+        flex: 1;
+    }
+    
+    .telos__project-name {
+        font-weight: 500;
+        margin-bottom: 4px;
+    }
+    
+    .telos__project-meta {
+        color: var(--text-secondary, #aaaaaa);
+        font-size: 0.9em;
+    }
+    
+    .telos__project-actions {
+        display: flex;
+        gap: 8px;
+    }
+    
+    .telos__project-action-btn {
+        padding: 4px 10px;
+        background-color: var(--bg-tertiary, #333345);
+        border: 1px solid var(--border-color, #444444);
+        border-radius: 4px;
+        color: var(--text-primary, #f0f0f0);
+        cursor: pointer;
+    }
+    
+    /* Requirements table */
+    .telos__requirements-list-container {
+        padding: 16px;
+    }
+    
+    .telos__requirements-table {
+        width: 100%;
+        border-collapse: collapse;
+        border: 1px solid var(--border-color, #444444);
+    }
+    
+    .telos__requirements-table th,
+    .telos__requirements-table td {
+        padding: 10px 12px;
+        text-align: left;
+        border-bottom: 1px solid var(--border-color, #444444);
+    }
+    
+    .telos__requirements-table th {
+        background-color: var(--bg-secondary, #252535);
+        font-weight: 500;
+    }
+    
+    .telos__requirement-row:hover {
+        background-color: var(--bg-hover, #3a3a4a);
+    }
+    
+    .telos__table-action-btn {
+        padding: 4px 8px;
+        margin: 0 2px;
+        background-color: var(--bg-tertiary, #333345);
+        border: 1px solid var(--border-color, #444444);
+        border-radius: 4px;
+        color: var(--text-primary, #f0f0f0);
+        cursor: pointer;
+        font-size: 0.8em;
+    }
+    
+    /* Loading indicator */
+    .telos__loading-indicator {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 200px;
+    }
+    
+    .telos__spinner {
+        width: 40px;
+        height: 40px;
+        border: 4px solid rgba(255, 255, 255, 0.1);
+        border-radius: 50%;
+        border-top: 4px solid var(--color-primary, #3498db);
+        animation: telos-spin 1s linear infinite;
+        margin-bottom: 16px;
+    }
+    
+    .telos__loading-text {
+        color: var(--text-secondary, #aaaaaa);
+    }
+    
+    /* Traceability Panel */
+    .telos__traceability-container {
+        height: calc(100% - 68px);
+        overflow: hidden;
+        position: relative;
+    }
+    
+    .telos__trace-placeholder {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
+        width: 100%;
+        padding: 20px;
+        text-align: center;
+    }
+    
+    .telos__view-controls {
+        display: flex;
+        gap: 8px;
+    }
+    
+    .telos__view-button {
+        padding: 8px 12px;
+        background-color: var(--bg-tertiary, #333345);
+        border: 1px solid var(--border-color, #444444);
+        border-radius: 4px;
+        color: var(--text-primary, #f0f0f0);
+        cursor: pointer;
+    }
+    
+    .telos__view-button--active {
+        background-color: var(--color-primary, #3498db);
+        color: white;
+    }
+    
+    /* Validation Panel */
+    .telos__validation {
+        padding: 20px;
+    }
+    
+    .telos__section-title {
+        margin-top: 0;
+        margin-bottom: 16px;
+        font-size: 24px;
+        color: var(--text-primary, #f0f0f0);
+    }
+    
+    .telos__text {
+        margin-bottom: 24px;
+        color: var(--text-secondary, #aaaaaa);
+    }
+    
+    .telos__validation-form {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        margin-bottom: 24px;
+    }
+    
+    .telos__form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .telos__form-label {
+        font-weight: 500;
+        color: var(--text-primary, #f0f0f0);
+    }
+    
+    .telos__form-select,
+    .telos__form-input {
+        padding: 10px;
+        background-color: var(--bg-tertiary, #333345);
+        border: 1px solid var(--border-color, #444444);
+        border-radius: 6px;
+        color: var(--text-primary, #f0f0f0);
+        font-size: 14px;
+    }
+    
+    .telos__checkbox-group {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .telos__checkbox-label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--text-primary, #f0f0f0);
+    }
+    
+    .telos__form-actions {
+        display: flex;
+        gap: 12px;
+        justify-content: flex-end;
+        margin-top: 8px;
+    }
+    
+    .telos__button {
+        padding: 10px 16px;
+        border: none;
+        border-radius: 6px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    
+    .telos__button--primary {
+        background-color: var(--color-primary, #3498db);
+        color: white;
+    }
+    
+    .telos__button--primary:hover {
+        background-color: var(--color-primary-hover, #2980b9);
+    }
+    
+    .telos__button--secondary {
+        background-color: var(--bg-tertiary, #333345);
+        border: 1px solid var(--border-color, #444444);
+        color: var(--text-primary, #f0f0f0);
+    }
+    
+    .telos__button--secondary:hover {
+        background-color: var(--bg-hover, #3a3a4a);
+    }
+    
+    .telos__result-title {
+        margin-bottom: 12px;
+        font-size: 18px;
+        color: var(--text-primary, #f0f0f0);
+    }
+    
+    /* Chat Panels */
+    #reqchat-panel, #teamchat-panel {
+        position: relative; /* Needed for footer positioning */
+        overflow: hidden; /* Prevent double scrollbars */
+    }
+    
+    .telos__chat-messages {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 70px; /* Height of the footer */
+        overflow-y: auto;
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+    
+    .telos__message {
+        border-radius: 16px;
+        padding: 12px 16px;
+        max-width: 85%;
+        word-wrap: break-word;
+        line-height: 1.4;
+    }
+    
+    .telos__message--system {
+        background-color: var(--bg-tertiary, #333345);
+        align-self: center;
+        max-width: 90%;
+        width: 600px;
+        margin: 8px 0;
+        border-radius: 8px;
+        padding: 16px 24px;
+    }
+    
+    .telos__message--user {
+        background-color: var(--color-primary, #3498db);
+        color: white;
+        align-self: flex-end;
+        border-radius: 16px 16px 0 16px;
+    }
+    
+    .telos__message--ai {
+        background-color: var(--bg-secondary, #252535);
+        align-self: flex-start;
+        border-radius: 16px 16px 16px 0;
+    }
+    
+    /* Chat Input */
+    .telos__footer {
+        background-color: var(--bg-secondary, #252535);
+        border-top: 1px solid var(--border-color, #444444);
+        padding: 12px 16px;
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 70px; /* Fixed height to match bottom value in chat messages */
+    }
+    
+    .telos__chat-input-container {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        width: 100%;
+    }
+    
+    .telos__chat-prompt {
+        font-size: 18px;
+        font-weight: bold;
+        color: #4CAF50;
+    }
+    
+    .telos__chat-input {
+        flex: 1;
+        height: 44px;
+        padding: 8px 16px;
+        background-color: var(--bg-tertiary, #333345);
+        border: 1px solid var(--border-color, #444444);
+        border-radius: 8px;
+        color: var(--text-primary, #f0f0f0);
+        font-size: 14px;
+    }
+    
+    .telos__send-button {
+        height: 44px;
+        padding: 0 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: var(--color-primary, #3498db);
+        border: none;
+        border-radius: 8px;
+        color: white;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    
+    .telos__send-button:hover {
+        background-color: var(--color-primary-hover, #2980b9);
+    }
+    
+    @keyframes telos-spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+</style>
+
+<script type="text/javascript">
+// SIMPLIFIED COMPONENT SCRIPT - FULLY SELF-CONTAINED
+// This version minimizes interference with other components
+
+// IMMEDIATELY SET UP UI MANAGER PROTECTION
+// Tell UI Manager to ignore this component - must be done IMMEDIATELY to avoid races
+if (window.uiManager) {
+    window.uiManager._ignoreComponent = 'telos';
+    console.log('[TELOS] Set UI Manager to ignore telos component');
+}
+
+// DEFINE TAB SWITCHING FUNCTION
+// CRITICAL: This uses no shared code/utilities to avoid conflicts
+window.telos_switchTab = function(tabId) {
+    console.log('[TELOS] Switching to tab:', tabId);
+    
+    // Force HTML panel visibility
+    const htmlPanelElements = document.querySelectorAll('#html-panel');
+    htmlPanelElements.forEach(panel => {
+        if (panel) panel.style.display = 'block';
+    });
+    
+    try {
+        // Only select elements within telos component to avoid conflicts with other components
+        const telosContainer = document.querySelector('.telos');
+        if (!telosContainer) {
+            console.error('[TELOS] Tab Switch: Cannot find telos container');
+            return false;
+        }
+        
+        // Update tab active state - ONLY WITHIN TELOS CONTAINER
+        const tabs = telosContainer.querySelectorAll('.telos__tab');
+        tabs.forEach(tab => {
+            if (tab.getAttribute('data-tab') === tabId) {
+                tab.classList.add('telos__tab--active');
+            } else {
+                tab.classList.remove('telos__tab--active');
+            }
+        });
+        
+        // Update panel visibility - ONLY WITHIN TELOS CONTAINER
+        const panels = telosContainer.querySelectorAll('.telos__panel');
+        panels.forEach(panel => {
+            const panelId = panel.id;
+            if (panelId === tabId + '-panel') {
+                panel.style.display = 'block';
+                panel.classList.add('telos__panel--active');
+            } else {
+                panel.style.display = 'none';
+                panel.classList.remove('telos__panel--active');
+            }
+        });
+        
+        // Update clear button visibility for chat tabs
+        const clearButton = telosContainer.querySelector('#clear-chat-btn');
+        if (clearButton) {
+            clearButton.style.display = (tabId === 'reqchat' || tabId === 'teamchat') ? 'block' : 'none';
+        }
+        
+        // Update component state
+        if (window.telosComponent) {
+            window.telosComponent.state = window.telosComponent.state || {};
+            window.telosComponent.state.activeTab = tabId;
+            
+            // Call component-specific methods if available
+            if (typeof window.telosComponent.updateChatPlaceholder === 'function') {
+                window.telosComponent.updateChatPlaceholder(tabId);
+            }
+            
+            if (typeof window.telosComponent.loadTabContent === 'function') {
+                window.telosComponent.loadTabContent(tabId);
+            }
+            
+            if (typeof window.telosComponent.saveComponentState === 'function') {
+                window.telosComponent.saveComponentState();
+            }
+        }
+    } catch (err) {
+        console.error('[TELOS] Error in tab switching:', err);
+    }
+    
+    return false; // Stop event propagation
+};
+
+// CHAT CLEARING FUNCTION
+window.telos_clearChat = function() {
+    console.log('[TELOS] Clear chat clicked');
+    
+    try {
+        // Get active tab ID within telos container
+        const telosContainer = document.querySelector('.telos');
+        if (!telosContainer) {
+            console.error('[TELOS] Clear Chat: Cannot find telos container');
+            return false;
+        }
+        
+        const activeTab = telosContainer.querySelector('.telos__tab--active');
+        const tabId = activeTab ? activeTab.getAttribute('data-tab') : '';
+        
+        if (tabId === 'reqchat' || tabId === 'teamchat') {
+            // Get message container within telos container only
+            const panel = telosContainer.querySelector('#' + tabId + '-messages');
+            if (panel) {
+                // Keep welcome message
+                const welcomeMsg = panel.querySelector('.telos__message--system');
+                if (welcomeMsg) {
+                    panel.innerHTML = '';
+                    panel.appendChild(welcomeMsg);
+                    console.log('[TELOS] Cleared chat, kept welcome message');
+                } else {
+                    panel.innerHTML = '';
+                    console.log('[TELOS] Cleared chat completely');
+                }
+            }
+        }
+    } catch (err) {
+        console.error('[TELOS] Error clearing chat:', err);
+    }
+    
+    return false; // Stop event propagation
+};
+
+// LOAD COMPONENT
+// Load after defining tab switching to ensure it's available
+function telos_loadComponent() {
+    console.log('[TELOS] Loading component script...');
+    
+    const timestamp = new Date().getTime();
+    const scriptPath = `/scripts/telos/telos-component.js?t=${timestamp}`;
+    
+    const script = document.createElement('script');
+    script.src = scriptPath;
+    script.async = false;
+    script.onload = function() {
+        console.log('[TELOS] Component script loaded successfully');
+        
+        if (window.telosComponent && typeof window.telosComponent.init === 'function') {
+            try {
+                window.telosComponent.init();
+                console.log('[TELOS] Component initialized');
+            } catch (err) {
+                console.error('[TELOS] Component initialization error:', err);
+            }
+        } else {
+            console.warn('[TELOS] Component init function not found');
+        }
+    };
+    script.onerror = function() {
+        console.error('[TELOS] Failed to load component script');
+    };
+    
+    document.body.appendChild(script);
+}
+
+// HTML PANEL PROTECTION
+// Setup explicit protection for the HTML panel to prevent it being hidden
+function telos_protectHtmlPanel() {
+    const htmlPanel = document.getElementById('html-panel');
+    if (!htmlPanel) {
+        console.error('[TELOS] Cannot find HTML panel to protect');
+        return;
+    }
+    
+    console.log('[TELOS] Protecting HTML panel from being hidden');
+    htmlPanel.style.display = 'block'; // Force it to be visible
+    
+    // Store the original display value
+    if (!htmlPanel.hasOwnProperty('_telosOriginalDisplay')) {
+        Object.defineProperty(htmlPanel, '_telosOriginalDisplay', {
+            value: 'block',
+            writable: true,
+            configurable: true
+        });
+    }
+    
+    // Only define the getter/setter if it hasn't already been defined by this component
+    if (!htmlPanel.style._telosProtected) {
+        // Mark the display property as protected by this component
+        Object.defineProperty(htmlPanel.style, '_telosProtected', {
+            value: true,
+            writable: false,
+            configurable: true
+        });
+        
+        // Protect the display property
+        Object.defineProperty(htmlPanel.style, 'display', {
+            get: function() { 
+                return htmlPanel._telosOriginalDisplay; 
+            },
+            set: function(value) {
+                console.log(`[TELOS] Intercepted attempt to set HTML panel display to: ${value}`);
+                if (value === 'none') {
+                    console.log('[TELOS] Blocked attempt to hide HTML panel');
+                    htmlPanel._telosOriginalDisplay = 'block';
+                } else {
+                    htmlPanel._telosOriginalDisplay = value;
+                }
+            },
+            configurable: true
+        });
+    }
+}
+
+// SETUP DONE AFTER PAGE LOAD
+// This ensures the functions are available before the tab events need them
+window.addEventListener('DOMContentLoaded', function() {
+    console.log('[TELOS] DOM loaded, setting up Telos component');
+    telos_protectHtmlPanel();
+    telos_loadComponent();
+});
+
+// IMMEDIATE PROTECTION
+// In case the DOM is already loaded
+if (document.readyState === 'complete' || document.readyState === 'interactive') {
+    console.log('[TELOS] Document already loaded, setting up Telos component immediately');
+    telos_protectHtmlPanel();
+    telos_loadComponent();
+}
+</script>

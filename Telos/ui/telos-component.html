@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Telos Requirements Manager</title>
+    <link rel="stylesheet" href="../styles/telos.css">
+    <link rel="stylesheet" href="../styles/shared/chat-interface.css">
+</head>
+<body>
+    <!-- Telos Requirements Manager Component -->
+    <template id="telos-template">
+        <div class="telos">
+            <div class="telos__header">
+                <div class="telos__title">
+                    <h2>Requirements Management</h2>
+                </div>
+                <div class="telos__toolbar">
+                    <button class="telos__btn telos__btn--create" id="new-project-btn">New Project</button>
+                    <button class="telos__btn" id="import-btn">Import</button>
+                    <div class="telos__search">
+                        <input type="text" id="search-input" class="telos__search-input" placeholder="Search requirements...">
+                        <button class="telos__search-btn" id="search-btn"><span class="icon-search"></span></button>
+                    </div>
+                </div>
+                <!-- Main navigation tabs -->
+                <div class="telos__nav-tabs">
+                    <button class="telos__tab active" data-tab="requirements">Requirements</button>
+                    <button class="telos__tab" data-tab="chat">Chat</button>
+                </div>
+            </div>
+
+            <div class="telos__main">
+                <!-- Sidebar for projects and navigation -->
+                <div class="telos__sidebar">
+                    <div class="telos__sidebar-header">
+                        <h3>Projects</h3>
+                        <div class="telos__sidebar-actions">
+                            <button class="telos__btn telos__btn--icon" id="refresh-projects-btn"><span class="icon-refresh"></span></button>
+                        </div>
+                    </div>
+                    <div class="telos__project-list" id="project-list">
+                        <!-- Projects will be added here dynamically -->
+                    </div>
+                </div>
+
+                <!-- Main content area -->
+                <div class="telos__content">
+                    <!-- Project overview (shown when a project is selected) -->
+                    <div class="telos__project-view" id="project-view">
+                        <div class="telos__project-header">
+                            <h3 class="telos__project-title" id="project-title">Select a project</h3>
+                            <div class="telos__project-actions">
+                                <button class="telos__btn" id="add-requirement-btn">Add Requirement</button>
+                                <button class="telos__btn" id="validate-btn">Validate</button>
+                                <button class="telos__btn" id="export-btn">Export</button>
+                                <button class="telos__btn telos__btn--icon" id="project-settings-btn"><span class="icon-settings"></span></button>
+                            </div>
+                        </div>
+                        
+                        <div class="telos__project-summary" id="project-summary">
+                            <!-- Project metrics will be displayed here -->
+                        </div>
+                        
+                        <div class="telos__requirement-filters">
+                            <div class="telos__filter-group">
+                                <label for="status-filter">Status:</label>
+                                <select id="status-filter" class="telos__filter-select">
+                                    <option value="">All</option>
+                                    <option value="new">New</option>
+                                    <option value="in-progress">In Progress</option>
+                                    <option value="completed">Completed</option>
+                                    <option value="rejected">Rejected</option>
+                                </select>
+                            </div>
+                            <div class="telos__filter-group">
+                                <label for="type-filter">Type:</label>
+                                <select id="type-filter" class="telos__filter-select">
+                                    <option value="">All</option>
+                                    <option value="functional">Functional</option>
+                                    <option value="non-functional">Non-Functional</option>
+                                    <option value="constraint">Constraint</option>
+                                </select>
+                            </div>
+                            <div class="telos__filter-group">
+                                <label for="priority-filter">Priority:</label>
+                                <select id="priority-filter" class="telos__filter-select">
+                                    <option value="">All</option>
+                                    <option value="critical">Critical</option>
+                                    <option value="high">High</option>
+                                    <option value="medium">Medium</option>
+                                    <option value="low">Low</option>
+                                </select>
+                            </div>
+                            <div class="telos__filter-group">
+                                <label for="view-mode">View:</label>
+                                <select id="view-mode" class="telos__filter-select">
+                                    <option value="list">List</option>
+                                    <option value="board">Board</option>
+                                    <option value="hierarchy">Hierarchy</option>
+                                    <option value="trace">Trace Map</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="telos__requirements-container">
+                            <!-- List view (default) -->
+                            <div class="telos__requirements-list" id="requirements-list">
+                                <table class="telos__requirements-table">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Title</th>
+                                            <th>Type</th>
+                                            <th>Priority</th>
+                                            <th>Status</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="requirements-table-body">
+                                        <!-- Requirements will be added here dynamically -->
+                                    </tbody>
+                                </table>
+                            </div>
+                            
+                            <!-- Board view -->
+                            <div class="telos__requirements-board hidden" id="requirements-board">
+                                <div class="telos__board-column" data-status="new">
+                                    <h4 class="telos__board-header">New</h4>
+                                    <div class="telos__board-items" id="board-new">
+                                        <!-- New requirements will be added here -->
+                                    </div>
+                                </div>
+                                <div class="telos__board-column" data-status="in-progress">
+                                    <h4 class="telos__board-header">In Progress</h4>
+                                    <div class="telos__board-items" id="board-in-progress">
+                                        <!-- In Progress requirements will be added here -->
+                                    </div>
+                                </div>
+                                <div class="telos__board-column" data-status="completed">
+                                    <h4 class="telos__board-header">Completed</h4>
+                                    <div class="telos__board-items" id="board-completed">
+                                        <!-- Completed requirements will be added here -->
+                                    </div>
+                                </div>
+                                <div class="telos__board-column" data-status="rejected">
+                                    <h4 class="telos__board-header">Rejected</h4>
+                                    <div class="telos__board-items" id="board-rejected">
+                                        <!-- Rejected requirements will be added here -->
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Hierarchy view -->
+                            <div class="telos__requirements-hierarchy hidden" id="requirements-hierarchy">
+                                <div class="telos__hierarchy-controls">
+                                    <button class="telos__btn telos__btn--small" id="expand-all-btn">Expand All</button>
+                                    <button class="telos__btn telos__btn--small" id="collapse-all-btn">Collapse All</button>
+                                </div>
+                                <div class="telos__hierarchy-tree" id="requirements-tree">
+                                    <!-- Hierarchy tree will be added here -->
+                                </div>
+                            </div>
+                            
+                            <!-- Trace view -->
+                            <div class="telos__requirements-trace hidden" id="requirements-trace">
+                                <div class="telos__trace-controls">
+                                    <button class="telos__btn telos__btn--small" id="create-trace-btn">Create Trace</button>
+                                    <button class="telos__btn telos__btn--small" id="export-trace-btn">Export Trace Map</button>
+                                </div>
+                                <div class="telos__trace-visualization" id="trace-visualization">
+                                    <!-- Trace visualization will be added here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Requirement detail view (shown when a requirement is selected) -->
+                    <div class="telos__requirement-view hidden" id="requirement-view">
+                        <div class="telos__requirement-header">
+                            <button class="telos__btn telos__btn--icon" id="back-to-project-btn"><span class="icon-back"></span></button>
+                            <h3 class="telos__requirement-title" id="requirement-title">Requirement Details</h3>
+                            <div class="telos__requirement-actions">
+                                <button class="telos__btn" id="edit-requirement-btn">Edit</button>
+                                <button class="telos__btn" id="refine-requirement-btn">Refine</button>
+                                <button class="telos__btn" id="validate-requirement-btn">Validate</button>
+                                <button class="telos__btn telos__btn--icon" id="requirement-settings-btn"><span class="icon-settings"></span></button>
+                            </div>
+                        </div>
+                        
+                        <div class="telos__requirement-content" id="requirement-content">
+                            <!-- Requirement details will be displayed here -->
+                        </div>
+                        
+                        <div class="telos__requirement-tabs">
+                            <button class="telos__tab active" data-tab="details">Details</button>
+                            <button class="telos__tab" data-tab="traces">Traces</button>
+                            <button class="telos__tab" data-tab="history">History</button>
+                            <button class="telos__tab" data-tab="validation">Validation</button>
+                        </div>
+                        
+                        <div class="telos__tab-content">
+                            <div class="telos__tab-pane active" id="details-tab">
+                                <!-- Requirement details tab content -->
+                            </div>
+                            <div class="telos__tab-pane" id="traces-tab">
+                                <!-- Traces tab content -->
+                            </div>
+                            <div class="telos__tab-pane" id="history-tab">
+                                <!-- History tab content -->
+                            </div>
+                            <div class="telos__tab-pane" id="validation-tab">
+                                <!-- Validation tab content -->
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Chat view (shown when the chat tab is selected) -->
+                    <div class="telos__chat-view hidden" id="chat-view">
+                        <telos-chat></telos-chat>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Dialogs -->
+        <!-- New Project Dialog -->
+        <div class="telos__dialog" id="new-project-dialog">
+            <div class="telos__dialog-content">
+                <div class="telos__dialog-header">
+                    <h3>Create New Project</h3>
+                    <button class="telos__dialog-close" id="close-new-project-dialog"><span class="icon-close"></span></button>
+                </div>
+                <div class="telos__dialog-body">
+                    <form id="new-project-form">
+                        <div class="telos__form-group">
+                            <label for="project-name">Project Name</label>
+                            <input type="text" id="project-name" class="telos__form-input" required>
+                        </div>
+                        <div class="telos__form-group">
+                            <label for="project-description">Description</label>
+                            <textarea id="project-description" class="telos__form-textarea" rows="4"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="telos__dialog-footer">
+                    <button class="telos__btn" id="cancel-new-project">Cancel</button>
+                    <button class="telos__btn telos__btn--primary" id="create-project">Create Project</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- New Requirement Dialog -->
+        <div class="telos__dialog" id="new-requirement-dialog">
+            <div class="telos__dialog-content">
+                <div class="telos__dialog-header">
+                    <h3>Create New Requirement</h3>
+                    <button class="telos__dialog-close" id="close-new-requirement-dialog"><span class="icon-close"></span></button>
+                </div>
+                <div class="telos__dialog-body">
+                    <form id="new-requirement-form">
+                        <div class="telos__form-group">
+                            <label for="requirement-title">Title</label>
+                            <input type="text" id="requirement-title" class="telos__form-input" required>
+                        </div>
+                        <div class="telos__form-group">
+                            <label for="requirement-description">Description</label>
+                            <textarea id="requirement-description" class="telos__form-textarea" rows="4" required></textarea>
+                        </div>
+                        <div class="telos__form-row">
+                            <div class="telos__form-group">
+                                <label for="requirement-type">Type</label>
+                                <select id="requirement-type" class="telos__form-select">
+                                    <option value="functional">Functional</option>
+                                    <option value="non-functional">Non-Functional</option>
+                                    <option value="constraint">Constraint</option>
+                                </select>
+                            </div>
+                            <div class="telos__form-group">
+                                <label for="requirement-priority">Priority</label>
+                                <select id="requirement-priority" class="telos__form-select">
+                                    <option value="low">Low</option>
+                                    <option value="medium" selected>Medium</option>
+                                    <option value="high">High</option>
+                                    <option value="critical">Critical</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="telos__form-group">
+                            <label for="requirement-parent">Parent Requirement (Optional)</label>
+                            <select id="requirement-parent" class="telos__form-select">
+                                <option value="">None</option>
+                                <!-- Parent options will be added dynamically -->
+                            </select>
+                        </div>
+                        <div class="telos__form-group">
+                            <label for="requirement-tags">Tags (comma-separated)</label>
+                            <input type="text" id="requirement-tags" class="telos__form-input" placeholder="e.g., security, mobile, api">
+                        </div>
+                    </form>
+                </div>
+                <div class="telos__dialog-footer">
+                    <button class="telos__btn" id="cancel-new-requirement">Cancel</button>
+                    <button class="telos__btn telos__btn--primary" id="create-requirement">Create Requirement</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Confirmation Dialog -->
+        <div class="telos__dialog" id="confirmation-dialog">
+            <div class="telos__dialog-content">
+                <div class="telos__dialog-header">
+                    <h3 id="confirmation-title">Confirm Action</h3>
+                    <button class="telos__dialog-close" id="close-confirmation-dialog"><span class="icon-close"></span></button>
+                </div>
+                <div class="telos__dialog-body">
+                    <p id="confirmation-message">Are you sure you want to proceed?</p>
+                </div>
+                <div class="telos__dialog-footer">
+                    <button class="telos__btn" id="cancel-confirmation">Cancel</button>
+                    <button class="telos__btn telos__btn--primary" id="confirm-action">Confirm</button>
+                </div>
+            </div>
+        </div>
+    </template>
+</body>
+</html>

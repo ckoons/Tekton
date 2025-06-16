@@ -1,0 +1,7 @@
+{
+  "name": "retrospective_analysis",
+  "template": "Analyze the following retrospective data to identify patterns, root causes, and improvement opportunities.\n\n{{ retrospective_data }}\n\nProvide the following in your analysis:\n1. Key themes and patterns identified\n2. Root causes of issues\n3. Strengths to maintain\n4. Opportunities for improvement\n5. Recommendations for future sprints/projects\n\nReturn the analysis in a structured format.",
+  "description": "Template for retrospective analysis",
+  "output_format": "text",
+  "version": "1.0.0"
+}

@@ -1,0 +1,14 @@
+# Include shared requirements
+-r ../shared/requirements/base.txt
+-r ../shared/requirements/web.txt
+-r ../shared/requirements/vector.txt
+
+# MCP framework
+fastmcp>=1.0.0
+
+# Resource monitoring dependencies not in shared
+psutil>=5.9.0
+py-cpuinfo>=8.0.0
+
+# Optional GPU monitoring
+# pynvml>=11.0.0  # Uncomment to enable NVIDIA GPU monitoring

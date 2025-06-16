@@ -1,0 +1,70 @@
+component:
+  id: "ergon-workflow"
+  name: "Ergon Workflow Engine"
+  version: "0.1.0"
+  description: "AI workflow planning and execution"
+  port: 8002
+  metadata:
+    component_type: "core"
+
+capabilities:
+  - id: "workflow_execution"
+    name: "Workflow Execution"
+    description: "Execute AI workflows"
+    methods:
+      - id: "create_workflow"
+        name: "Create Workflow"
+        description: "Create a new workflow definition"
+        parameters:
+          - name: "workflow_definition"
+            type: "object"
+            required: true
+        returns:
+          type: "object"
+          
+      - id: "execute_workflow"
+        name: "Execute Workflow"
+        description: "Execute a workflow with specific inputs"
+        parameters:
+          - name: "workflow_id"
+            type: "string"
+            required: true
+          - name: "inputs"
+            type: "object"
+            required: false
+        returns:
+          type: "object"
+          
+  - id: "task_planning"
+    name: "Task Planning"
+    description: "Plan AI task sequences"
+    methods:
+      - id: "plan_tasks"
+        name: "Plan Tasks"
+        description: "Generate a task plan for a goal"
+        parameters:
+          - name: "goal"
+            type: "string"
+            required: true
+          - name: "constraints"
+            type: "object"
+            required: false
+        returns:
+          type: "object"
+          
+  - id: "task_delegation"
+    name: "Task Delegation"
+    description: "Delegate tasks to appropriate AI agents"
+    methods:
+      - id: "delegate_task"
+        name: "Delegate Task"
+        description: "Assign a task to an appropriate agent"
+        parameters:
+          - name: "task"
+            type: "object"
+            required: true
+          - name: "requirements"
+            type: "object"
+            required: false
+        returns:
+          type: "object"

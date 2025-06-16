@@ -1,0 +1,104 @@
+@startuml Prometheus Architecture
+
+' Set styles
+skinparam backgroundColor white
+skinparam componentStyle uml2
+skinparam defaultFontName Arial
+skinparam arrowColor #333333
+skinparam componentBorderColor #666666
+
+' Title
+title Prometheus Architecture
+
+' Components
+package "Prometheus" {
+  component [API Layer] as API {
+    component [FastAPI App] as FastAPI
+    component [Endpoints] as Endpoints
+    component [API Models] as APIModels
+  }
+  
+  component [Core Engine] as Core {
+    component [Planning Engine] as PlanningEngine
+    component [Critical Path Analyzer] as CPAnalyzer
+  }
+  
+  component [Domain Models] as Models {
+    component [Plan] as Plan
+    component [Task] as Task
+    component [Resource] as Resource
+    component [Retrospective] as Retrospective
+  }
+  
+  component [Utils] as Utils {
+    component [Hermes Helper] as HermesHelper
+    component [Engram Connector] as EngramConnector
+    component [Rhetor Adapter] as RhetorAdapter
+    component [Telos Connector] as TelosConnector
+  }
+  
+  component [Client] as Client {
+    component [Prometheus Client] as PrometheusClient
+  }
+}
+
+' External Components
+component [Hermes] as Hermes
+component [Engram] as Engram
+component [Rhetor] as Rhetor
+component [Telos] as Telos
+component [Hephaestus UI] as HephaestusUI
+
+' Relationships
+FastAPI -down-> Endpoints
+Endpoints -right-> APIModels
+Endpoints -down-> PlanningEngine
+Endpoints -down-> CPAnalyzer
+PlanningEngine -right-> Plan
+CPAnalyzer -right-> Task
+PrometheusClient -up-> FastAPI : HTTP/WebSocket
+
+' External Relationships
+HermesHelper -down-> Hermes : Register Capabilities
+EngramConnector -down-> Engram : Store/Retrieve Memory
+RhetorAdapter -down-> Rhetor : LLM Integration
+TelosConnector -down-> Telos : Get Requirements
+HephaestusUI -down-> FastAPI : UI Integration
+
+' Main Data Flow
+PlanningEngine -down-> [Latent Reasoning]
+CPAnalyzer -right-> [Network Graph]
+
+note right of PrometheusClient
+  Client library for accessing
+  Prometheus functionality from
+  other components and applications
+end note
+
+note right of PlanningEngine
+  Leverages Latent Reasoning
+  for iterative plan refinement
+  and complexity-based processing
+end note
+
+note right of CPAnalyzer
+  Implements Critical Path Method
+  for identifying task sequences
+  that determine project duration
+end note
+
+note bottom of HermesHelper
+  Registers Prometheus capabilities
+  with Hermes for service discovery
+end note
+
+' Legend
+legend right
+  **Prometheus Components**
+  --
+  Forward-looking planning and
+  retrospective analysis system
+  for Tekton ecosystem
+end legend
+
+@enduml

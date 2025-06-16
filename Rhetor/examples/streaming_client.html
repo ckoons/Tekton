@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rhetor SSE Streaming Client Example</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        h1 { color: #333; }
+        h2 { color: #666; margin-top: 30px; }
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            background: #007bff;
+            color: white;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover { background: #0056b3; }
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        .output {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 15px;
+            height: 400px;
+            overflow-y: auto;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 14px;
+        }
+        .event {
+            margin-bottom: 8px;
+            padding: 8px;
+            border-radius: 4px;
+        }
+        .event-connected { background: #d4edda; color: #155724; }
+        .event-progress { background: #d1ecf1; color: #0c5460; }
+        .event-chunk { background: #fff3cd; color: #856404; }
+        .event-message { background: #e2e3e5; color: #383d41; }
+        .event-complete { background: #d4edda; color: #155724; }
+        .event-error { background: #f8d7da; color: #721c24; }
+        .timestamp { 
+            color: #666; 
+            font-size: 12px; 
+            margin-right: 10px;
+        }
+        code {
+            background: #f1f1f1;
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+        .config {
+            margin-bottom: 20px;
+        }
+        input, select {
+            padding: 8px;
+            margin: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Rhetor SSE Streaming Client Example</h1>
+        <p>This example demonstrates how to use Server-Sent Events (SSE) to stream real-time AI responses from Rhetor MCP tools.</p>
+    </div>
+
+    <div class="container">
+        <h2>Configuration</h2>
+        <div class="config">
+            <label>Rhetor URL: <input type="text" id="baseUrl" value="http://localhost:8003" style="width: 300px;"></label>
+        </div>
+    </div>
+
+    <div class="container">
+        <h2>Test SSE Streaming</h2>
+        <div class="controls">
+            <button onclick="testBasicStreaming()">Test Basic Streaming</button>
+            <button onclick="testSpecialistStreaming()">Test Specialist Message</button>
+            <button onclick="testTeamChatStreaming()">Test Team Chat</button>
+            <button onclick="clearOutput()" style="background: #6c757d;">Clear Output</button>
+        </div>
+        <div id="output" class="output"></div>
+    </div>
+
+    <div class="container">
+        <h2>JavaScript Example Code</h2>
+        <pre><code>// Example: Stream a message to an AI specialist
+async function streamToSpecialist(specialistId, message) {
+    const baseUrl = document.getElementById('baseUrl').value;
+    const url = `${baseUrl}/api/mcp/v2/stream`;
+    
+    const payload = {
+        tool_name: "SendMessageToSpecialistStream",
+        arguments: {
+            specialist_id: specialistId,
+            message: message,
+            message_type: "chat"
+        },
+        stream_options: {
+            include_progress: true
+        }
+    };
+    
+    const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload)
+    });
+    
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+    
+    while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        
+        const chunk = decoder.decode(value);
+        const lines = chunk.split('\\n');
+        
+        for (const line of lines) {
+            if (line.startsWith('data:')) {
+                const data = JSON.parse(line.slice(5));
+                // Handle the streaming data
+                console.log('Received:', data);
+            }
+        }
+    }
+}</code></pre>
+    </div>
+
+    <script>
+        let eventSource = null;
+
+        function log(message, type = 'info') {
+            const output = document.getElementById('output');
+            const timestamp = new Date().toLocaleTimeString();
+            const event = document.createElement('div');
+            event.className = `event event-${type}`;
+            event.innerHTML = `<span class="timestamp">${timestamp}</span>${message}`;
+            output.appendChild(event);
+            output.scrollTop = output.scrollHeight;
+        }
+
+        function clearOutput() {
+            document.getElementById('output').innerHTML = '';
+        }
+
+        async function testBasicStreaming() {
+            const baseUrl = document.getElementById('baseUrl').value;
+            const url = `${baseUrl}/api/mcp/v2/stream/test`;
+            
+            log('🔗 Connecting to basic streaming test...', 'connected');
+            
+            eventSource = new EventSource(url);
+            
+            eventSource.onopen = () => {
+                log('✅ Connection established', 'connected');
+            };
+            
+            eventSource.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+                log(`📨 ${data.message}`, 'message');
+            };
+            
+            eventSource.addEventListener('test', (event) => {
+                const data = JSON.parse(event.data);
+                log(`🧪 Test Event: ${data.message}`, 'progress');
+            });
+            
+            eventSource.addEventListener('complete', (event) => {
+                const data = JSON.parse(event.data);
+                log(`✅ ${data.message}`, 'complete');
+                eventSource.close();
+            });
+            
+            eventSource.onerror = (error) => {
+                log(`❌ Connection error`, 'error');
+                eventSource.close();
+            };
+        }
+
+        async function streamMCPTool(toolName, arguments) {
+            const baseUrl = document.getElementById('baseUrl').value;
+            const url = `${baseUrl}/api/mcp/v2/stream`;
+            
+            const payload = {
+                tool_name: toolName,
+                arguments: arguments,
+                stream_options: {
+                    include_progress: true
+                }
+            };
+            
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'text/event-stream'
+                    },
+                    body: JSON.stringify(payload)
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+                let buffer = '';
+                
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+                    
+                    buffer += decoder.decode(value, { stream: true });
+                    const lines = buffer.split('\n');
+                    
+                    // Keep the last line if it's incomplete
+                    buffer = lines.pop() || '';
+                    
+                    for (const line of lines) {
+                        if (line.startsWith('event:')) {
+                            currentEvent = line.slice(6).trim();
+                        } else if (line.startsWith('data:')) {
+                            try {
+                                const data = JSON.parse(line.slice(5));
+                                handleStreamEvent(currentEvent, data);
+                            } catch (e) {
+                                console.error('Failed to parse:', line);
+                            }
+                        }
+                    }
+                }
+            } catch (error) {
+                log(`❌ Error: ${error.message}`, 'error');
+            }
+        }
+
+        function handleStreamEvent(eventType, data) {
+            switch (eventType) {
+                case 'connected':
+                    log(`🔗 ${data.message}`, 'connected');
+                    break;
+                case 'progress':
+                    log(`📊 [${data.stage}] ${data.percentage || 0}%: ${data.message}`, 'progress');
+                    break;
+                case 'chunk':
+                    const content = data.content || {};
+                    log(`💬 [${content.specialist || 'AI'}]: ${content.content}`, 'chunk');
+                    break;
+                case 'message':
+                    log(`🗣️ [${data.speaker}] Round ${data.round}: ${data.content}`, 'message');
+                    break;
+                case 'complete':
+                    log(`✅ Complete! Execution time: ${data.execution_time?.toFixed(2) || 'N/A'}s`, 'complete');
+                    if (data.result) {
+                        log(`📋 Result: ${JSON.stringify(data.result, null, 2)}`, 'complete');
+                    }
+                    break;
+                case 'error':
+                    log(`❌ Error: ${data.error}`, 'error');
+                    break;
+                case 'disconnect':
+                    log(`🔌 ${data.message}`, 'message');
+                    break;
+                default:
+                    log(`📨 ${eventType}: ${JSON.stringify(data)}`, 'message');
+            }
+        }
+
+        async function testSpecialistStreaming() {
+            log('🚀 Testing specialist message streaming...', 'connected');
+            await streamMCPTool("SendMessageToSpecialistStream", {
+                specialist_id: "rhetor-orchestrator",
+                message: "Please analyze the current system performance and provide optimization recommendations.",
+                message_type: "chat"
+            });
+        }
+
+        async function testTeamChatStreaming() {
+            log('🚀 Testing team chat streaming...', 'connected');
+            await streamMCPTool("OrchestrateTeamChatStream", {
+                topic: "Optimizing Tekton Performance",
+                specialists: ["rhetor-orchestrator", "apollo-coordinator", "engram-memory"],
+                initial_prompt: "What are the key areas we should focus on for performance improvements?",
+                max_rounds: 2,
+                orchestration_style: "collaborative"
+            });
+        }
+
+        // Add keyboard shortcut for clearing output
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                clearOutput();
+            }
+        });
+    </script>
+</body>
+</html>

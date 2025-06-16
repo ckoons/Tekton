@@ -1,0 +1,17 @@
+# AI/LLM integration requirements for Tekton components
+# Used by: Apollo, Budget, Engram, Ergon, LLMAdapter, Rhetor, tekton-llm-client
+
+# Core LLM providers
+anthropic>=0.52.0         # Anthropic Claude API (latest stable)
+openai>=1.1.0            # OpenAI GPT API
+litellm>=1.63.0          # Unified LLM interface
+
+# LLM utilities
+tiktoken>=0.9.0          # Token counting for OpenAI models
+langchain>=0.1.0         # LLM application framework
+langchain-community>=0.0.10  # Community integrations for LangChain
+pydantic-ai>=0.0.35      # Pydantic-based AI utilities
+
+# Additional AI/ML utilities
+tenacity>=8.2.0          # Retry logic for API calls
+backoff>=2.2.0           # Exponential backoff for retries

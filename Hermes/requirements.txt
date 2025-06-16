@@ -1,0 +1,14 @@
+# Include shared requirements
+-r ../shared/requirements/base.txt
+-r ../shared/requirements/web.txt
+-r ../shared/requirements/database.txt
+-r ../shared/requirements/vector.txt
+-r ../shared/requirements/utilities.txt
+-r ../shared/requirements/dev.txt
+
+# Tekton components
+tekton-llm-client>=1.0.0
+fastmcp>=1.0.0
+
+# Component-specific dependencies only
+tqdm>=4.66.0  # Progress bars - not in shared utilities

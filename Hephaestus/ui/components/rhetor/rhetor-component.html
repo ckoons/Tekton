@@ -1,0 +1,1308 @@
+<!-- 
+  Rhetor LLM/Prompt/Context Management Component
+  This component provides a web interface for LLM management, prompt templates, context management,
+  agency/alignment controls, and chat interfaces.
+  
+  IMPORTANT: Follows Component Implementation Standard in /MetaData/UI/ComponentImplementationStandard.md
+-->
+<div class="rhetor" data-tekton-area="rhetor" data-tekton-type="component-workspace">
+  <!-- Component Header with Title -->
+  <div class="rhetor__header" data-tekton-element="component-header">
+    <div class="rhetor__title-container">
+      <img src="/images/hexagon.jpg" alt="Tekton" class="rhetor__icon">
+      <h2 class="rhetor__title">
+        <span class="rhetor__title-main">Rhetor</span>
+        <span class="rhetor__title-sub">LLM/Prompt/Context</span>
+      </h2>
+    </div>
+  </div>
+  
+  <!-- Tab Navigation - DIRECT ONCLICK HANDLERS -->
+  <div class="rhetor__menu-bar" data-tekton-element="component-menu">
+    <div class="rhetor__tabs">
+      <div class="rhetor__tab rhetor__tab--active" data-tab="specialists" onclick="rhetor_switchTab('specialists'); return false;">
+        <span class="rhetor__tab-label">AI Specialists</span>
+      </div>
+      <div class="rhetor__tab" data-tab="orchestration" onclick="rhetor_switchTab('orchestration'); return false;">
+        <span class="rhetor__tab-label">Orchestration</span>
+      </div>
+      <div class="rhetor__tab" data-tab="sessions" onclick="rhetor_switchTab('sessions'); return false;">
+        <span class="rhetor__tab-label">Active Sessions</span>
+      </div>
+      <div class="rhetor__tab" data-tab="configuration" onclick="rhetor_switchTab('configuration'); return false;">
+        <span class="rhetor__tab-label">Configuration</span>
+      </div>
+      <div class="rhetor__tab" data-tab="llmchat" onclick="rhetor_switchTab('llmchat'); return false;">
+        <span class="rhetor__tab-label">LLM Chat</span>
+      </div>
+      <div class="rhetor__tab" data-tab="teamchat" onclick="rhetor_switchTab('teamchat'); return false;">
+        <span class="rhetor__tab-label">Team Chat</span>
+      </div>
+    </div>
+    <div class="rhetor__actions">
+      <button id="clear-chat-btn" class="rhetor__action-button" style="display: none;" onclick="rhetor_clearChat(); return false;">
+        <span class="rhetor__button-label">Clear</span>
+      </button>
+    </div>
+  </div>
+  
+  <!-- Content Area with Panels -->
+  <div class="rhetor__content">
+    <!-- AI Specialists Tab (Default Active Tab) -->
+    <div id="specialists-panel" class="rhetor__panel rhetor__panel--active" style="display: block;">
+      <div class="rhetor__section-header">
+        <h2>AI Specialists</h2>
+        <div class="rhetor__controls">
+          <button class="rhetor__button rhetor__button--primary" onclick="rhetor_createSpecialist()">Create Specialist</button>
+          <button class="rhetor__button" onclick="rhetor_refreshSpecialists()">Refresh</button>
+        </div>
+      </div>
+      
+      <div class="rhetor__specialists-grid" id="specialists-grid">
+        <!-- AI Specialist cards will be dynamically inserted here -->
+        <div class="rhetor__loading">Loading AI specialists...</div>
+      </div>
+    </div>
+    
+    <!-- Orchestration Tab -->
+    <div id="orchestration-panel" class="rhetor__panel" style="display: none;">
+      <div class="rhetor__section-header">
+        <h2>Orchestration Settings</h2>
+      </div>
+      
+      <div class="rhetor__settings-section">
+        <h3>Message Routing</h3>
+        <div class="rhetor__form-group">
+          <label class="rhetor__form-label">Orchestration Mode</label>
+          <select class="rhetor__form-select" id="orchestration-mode">
+            <option value="passive">Passive Monitor</option>
+            <option value="active" selected>Active Coordinator</option>
+            <option value="translator">Universal Translator</option>
+          </select>
+        </div>
+        
+        <div class="rhetor__form-group">
+          <label class="rhetor__form-label">Auto-Translation</label>
+          <div class="rhetor__checkbox-group">
+            <label class="rhetor__checkbox">
+              <input type="checkbox" id="auto-translate" checked> Enable automatic translation between AI specialists
+            </label>
+          </div>
+        </div>
+        
+        <div class="rhetor__form-group">
+          <label class="rhetor__form-label">Message Filtering</label>
+          <div class="rhetor__checkbox-group">
+            <label class="rhetor__checkbox">
+              <input type="checkbox" id="filter-redundant" checked> Filter redundant messages
+            </label>
+            <label class="rhetor__checkbox">
+              <input type="checkbox" id="filter-errors"> Filter error messages
+            </label>
+            <label class="rhetor__checkbox">
+              <input type="checkbox" id="summarize-verbose"> Summarize verbose exchanges
+            </label>
+          </div>
+        </div>
+        
+        <div class="rhetor__form-actions">
+          <button class="rhetor__button rhetor__button--primary" onclick="rhetor_saveOrchestration()">Save Settings</button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Active Sessions Tab -->
+    <div id="sessions-panel" class="rhetor__panel" style="display: none;">
+      <div class="rhetor__section-header">
+        <h2>Active AI Sessions</h2>
+        <div class="rhetor__controls">
+          <button class="rhetor__button rhetor__button--primary" onclick="rhetor_createSession()">New Session</button>
+          <button class="rhetor__button" onclick="rhetor_refreshSessions()">Refresh</button>
+        </div>
+      </div>
+      
+      <div class="rhetor__sessions-list" id="sessions-list">
+        <!-- Active sessions will be dynamically inserted here -->
+        <div class="rhetor__empty-state">No active AI sessions. Create a new session to begin.</div>
+      </div>
+    </div>
+    
+    <!-- Configuration Tab -->
+    <div id="configuration-panel" class="rhetor__panel" style="display: none;">
+      <div class="rhetor__section-header">
+        <h2>AI Configuration</h2>
+      </div>
+      
+      <div class="rhetor__settings-section">
+        <h3>Model Settings</h3>
+        <div class="rhetor__form-group">
+          <label class="rhetor__form-label">Anthropic Max Account</label>
+          <div class="rhetor__checkbox-group">
+            <label class="rhetor__checkbox">
+              <input type="checkbox" id="anthropic-max" onchange="rhetor_toggleAnthropicMax()"> Use Anthropic Max (Unlimited tokens for testing)
+            </label>
+          </div>
+        </div>
+        
+        <h3>Default Models by Specialist Type</h3>
+        <div class="rhetor__model-config">
+          <div class="rhetor__form-group">
+            <label class="rhetor__form-label">Orchestrator (Meta-AI)</label>
+            <select class="rhetor__form-select" id="model-orchestrator">
+              <option value="claude-3-opus-20240229" selected>Claude 3 Opus</option>
+              <option value="claude-3-sonnet-20240229">Claude 3 Sonnet</option>
+              <option value="claude-3-haiku-20240307">Claude 3 Haiku</option>
+            </select>
+          </div>
+          
+          <div class="rhetor__form-group">
+            <label class="rhetor__form-label">Memory Specialist</label>
+            <select class="rhetor__form-select" id="model-memory">
+              <option value="claude-3-haiku-20240307" selected>Claude 3 Haiku</option>
+              <option value="claude-3-sonnet-20240229">Claude 3 Sonnet</option>
+            </select>
+          </div>
+          
+          <div class="rhetor__form-group">
+            <label class="rhetor__form-label">Executive Coordinator</label>
+            <select class="rhetor__form-select" id="model-coordinator">
+              <option value="claude-3-sonnet-20240229" selected>Claude 3 Sonnet</option>
+              <option value="claude-3-opus-20240229">Claude 3 Opus</option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="rhetor__form-actions">
+          <button class="rhetor__button rhetor__button--primary" onclick="rhetor_saveConfiguration()">Save Configuration</button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- LLM Chat Tab -->
+    <div id="llmchat-panel" class="rhetor__panel" style="display: none;" data-tekton-chat="rhetor-llm" data-tekton-ai="rhetor-orchestrator" data-tekton-ai-ready="false">
+      <div id="llmchat-messages" class="rhetor__chat-messages" data-tekton-element="chat-messages">
+        <div class="rhetor__message rhetor__message--system">
+          <div class="rhetor__message-content">
+            <div class="rhetor__message-text">
+              <h3 class="rhetor__message-title">Rhetor LLM Chat</h3>
+              <p>You can ask questions about LLM capabilities, prompt templates, and context management. Try questions like:</p>
+              <ul>
+                <li>What models are currently available?</li>
+                <li>How can I optimize prompts for specific tasks?</li>
+                <li>What context management features are available?</li>
+                <li>How can I adjust model parameters for different use cases?</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Team Chat Tab -->
+    <div id="teamchat-panel" class="rhetor__panel" style="display: none;">
+      <div id="teamchat-messages" class="rhetor__chat-messages">
+        <!-- Welcome message -->
+        <div class="rhetor__message rhetor__message--system">
+          <div class="rhetor__message-content">
+            <div class="rhetor__message-text">
+              <h3 class="rhetor__message-title">Tekton Team Chat</h3>
+              <p>This chat is shared across all Tekton components. Use this for team communication and coordination.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Footer with Chat Input -->
+  <div class="rhetor__footer" data-tekton-element="component-footer">
+    <div class="rhetor__chat-input-container" data-tekton-element="chat-input-container">
+      <div class="rhetor__chat-prompt">></div>
+      <input type="text" class="rhetor__chat-input" id="chat-input"
+             placeholder="Enter chat message for LLM context management, prompts, or team communication"
+             onkeydown="if(event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); rhetor_sendLLMChat(); }">
+      <button class="rhetor__send-button" id="send-button" onclick="rhetor_sendLLMChat(); return false;">Send</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add component-specific styles -->
+<style>
+  /* Rhetor component styles using BEM naming convention */
+  
+  /* Container */
+  .rhetor {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+    background-color: var(--bg-primary, #1e1e2e);
+    color: var(--text-primary, #f0f0f0);
+    /* No absolute positioning - proper component containment */
+  }
+  
+  /* Header */
+  .rhetor__header {
+    display: flex;
+    align-items: center;
+    padding: 10px 16px;
+    background-color: var(--bg-secondary, #252535);
+    border-bottom: 1px solid var(--border-color, #444444);
+  }
+  
+  .rhetor__title-container {
+    display: flex;
+    align-items: center;
+  }
+  
+  .rhetor__icon {
+    height: 30px;
+    width: auto;
+    margin-right: 12px;
+  }
+  
+  .rhetor__title {
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: 500;
+  }
+  
+  .rhetor__title-sub {
+    margin-left: 8px;
+    opacity: 0.8;
+    font-weight: normal;
+  }
+  
+  /* Menu Bar */
+  .rhetor__menu-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 16px;
+    background-color: var(--bg-secondary, #252535);
+    border-bottom: 1px solid var(--border-color, #444444);
+    height: 46px; /* Match standard control bar height */
+  }
+  
+  .rhetor__tabs {
+    display: flex;
+    gap: 8px;
+  }
+  
+  .rhetor__tab {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background-color: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    color: var(--text-primary, #f0f0f0);
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  
+  .rhetor__tab:hover {
+    background-color: var(--bg-hover, #3a3a4a);
+  }
+  
+  .rhetor__tab--active {
+    border-bottom-color: var(--color-primary, #673AB7);
+    font-weight: 500;
+  }
+  
+  /* Actions */
+  .rhetor__actions {
+    display: flex;
+    gap: 8px;
+  }
+  
+  .rhetor__action-button {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    background-color: var(--bg-tertiary, #333345);
+    border: 1px solid var(--border-color, #444444);
+    border-radius: 4px;
+    color: var(--text-primary, #f0f0f0);
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  
+  .rhetor__action-button:hover {
+    background-color: var(--bg-hover, #3a3a4a);
+  }
+  
+  /* Content Area */
+  .rhetor__content {
+    flex: 1;
+    overflow: hidden;
+    position: relative;
+  }
+  
+  .rhetor__panel {
+    display: none;
+    height: 100%;
+    width: 100%;
+    overflow: auto;
+    padding: 16px;
+  }
+  
+  .rhetor__panel--active {
+    display: block;
+  }
+  
+  /* Section Headers */
+  .rhetor__section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+  }
+  
+  .rhetor__section-header h2 {
+    margin: 0;
+    color: var(--text-primary, #f0f0f0);
+    font-size: 1.25rem;
+  }
+  
+  .rhetor__controls {
+    display: flex;
+    gap: 8px;
+  }
+  
+  /* Form Elements */
+  .rhetor__form-group {
+    margin-bottom: 16px;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .rhetor__form-label {
+    margin-bottom: 4px;
+    color: var(--text-secondary, #aaaaaa);
+    font-weight: 500;
+  }
+  
+  .rhetor__form-select,
+  .rhetor__form-input,
+  .rhetor__form-textarea {
+    padding: 8px;
+    border: 1px solid var(--border-color, #444444);
+    border-radius: 4px;
+    background-color: var(--bg-tertiary, #333345);
+    color: var(--text-primary, #f0f0f0);
+    font-size: 1rem;
+    outline: none;
+  }
+  
+  .rhetor__form-select:focus,
+  .rhetor__form-input:focus,
+  .rhetor__form-textarea:focus {
+    border-color: var(--color-primary, #673AB7);
+    box-shadow: 0 0 0 2px rgba(103, 58, 183, 0.2);
+  }
+  
+  .rhetor__form-textarea {
+    min-height: 200px;
+    resize: vertical;
+  }
+  
+  .rhetor__slider-container {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  
+  .rhetor__form-slider {
+    flex: 1;
+  }
+  
+  .rhetor__slider-value {
+    font-family: monospace;
+    color: var(--text-secondary, #aaaaaa);
+    min-width: 3ch;
+    text-align: right;
+  }
+  
+  .rhetor__form-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 24px;
+    justify-content: flex-end;
+  }
+  
+  /* Buttons */
+  .rhetor__button {
+    padding: 8px 16px;
+    border: 1px solid var(--border-color, #444444);
+    border-radius: 4px;
+    background-color: var(--bg-tertiary, #333345);
+    color: var(--text-secondary, #aaaaaa);
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    outline: none;
+  }
+  
+  .rhetor__button:hover {
+    background-color: var(--bg-hover, #3a3a4a);
+    color: var(--text-primary, #f0f0f0);
+  }
+  
+  .rhetor__button--primary {
+    background-color: var(--color-primary, #673AB7);
+    border-color: var(--color-primary, #673AB7);
+    color: white;
+  }
+  
+  .rhetor__button--primary:hover {
+    background-color: var(--color-primary-hover, #5E35B1);
+    color: white;
+  }
+  
+  /* Template List */
+  .rhetor__template-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+  
+  .rhetor__template-item {
+    background-color: var(--bg-tertiary, #333345);
+    border: 1px solid var(--border-color, #444444);
+    border-radius: 8px;
+    padding: 16px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    transition: all 0.2s ease;
+  }
+  
+  .rhetor__template-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .rhetor__template-item-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  
+  .rhetor__template-item-name {
+    font-weight: 600;
+    color: var(--text-primary, #f0f0f0);
+  }
+  
+  .rhetor__template-item-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    color: white;
+    font-weight: 500;
+  }
+  
+  .rhetor__template-item-badge--system {
+    background-color: #17a2b8;
+  }
+  
+  .rhetor__template-item-badge--task {
+    background-color: #28a745;
+  }
+  
+  .rhetor__template-item-description {
+    color: var(--text-secondary, #aaaaaa);
+    margin-bottom: 16px;
+    font-size: 1rem;
+    line-height: 1.4;
+  }
+  
+  .rhetor__template-item-footer {
+    display: flex;
+    gap: 4px;
+  }
+  
+  .rhetor__template-item-button {
+    padding: 4px 8px;
+    border: 1px solid var(--border-color, #444444);
+    border-radius: 4px;
+    background-color: var(--bg-secondary, #252535);
+    color: var(--text-secondary, #aaaaaa);
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  
+  .rhetor__template-item-button:hover {
+    background-color: var(--bg-hover, #3a3a4a);
+    color: var(--text-primary, #f0f0f0);
+  }
+  
+  /* Settings Section */
+  .rhetor__settings-section {
+    background-color: var(--bg-tertiary, #333345);
+    border: 1px solid var(--border-color, #444444);
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 24px;
+  }
+  
+  .rhetor__settings-section h3 {
+    margin-top: 0;
+    margin-bottom: 16px;
+    color: var(--text-primary, #f0f0f0);
+    border-bottom: 1px solid var(--border-color, #444444);
+    padding-bottom: 4px;
+  }
+  
+  /* Chat Panels */
+  #llmchat-panel, #teamchat-panel {
+    position: relative; /* Needed for footer positioning */
+    overflow: hidden; /* Prevent double scrollbars */
+  }
+  
+  /* Chat Messages */
+  .rhetor__chat-messages {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 70px; /* Height of the footer */
+    overflow-y: auto;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .rhetor__message {
+    border-radius: 16px;
+    padding: 12px 16px;
+    max-width: 85%;
+    word-wrap: break-word;
+    line-height: 1.4;
+  }
+  
+  .rhetor__message--system {
+    background-color: var(--bg-tertiary, #333345);
+    align-self: center;
+    max-width: 90%;
+    width: 600px;
+    margin: 8px 0;
+    border-radius: 8px;
+    padding: 16px 24px;
+  }
+  
+  .rhetor__message--user {
+    background-color: var(--color-primary, #673AB7);
+    color: white;
+    align-self: flex-end;
+    border-radius: 16px 16px 0 16px;
+  }
+  
+  .rhetor__message--ai {
+    background-color: var(--bg-secondary, #252535);
+    align-self: flex-start;
+    border-radius: 16px 16px 16px 0;
+  }
+  
+  /* Footer with Chat Input */
+  .rhetor__footer {
+    background-color: var(--bg-secondary, #252535);
+    border-top: 1px solid var(--border-color, #444444);
+    padding: 12px 16px;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 70px; /* Fixed height to match bottom value in chat messages */
+  }
+  
+  .rhetor__chat-input-container {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+  }
+  
+  .rhetor__chat-prompt {
+    font-size: 18px;
+    font-weight: bold;
+    color: #4CAF50;
+  }
+  
+  .rhetor__chat-input {
+    flex: 1;
+    height: 44px;
+    padding: 8px 16px;
+    background-color: var(--bg-tertiary, #333345);
+    border: 1px solid var(--border-color, #444444);
+    border-radius: 8px;
+    color: var(--text-primary, #f0f0f0);
+    font-size: 14px;
+  }
+  
+  .rhetor__send-button {
+    height: 44px;
+    padding: 0 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--color-primary, #673AB7);
+    border: none;
+    border-radius: 8px;
+    color: white;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  
+  .rhetor__send-button:hover {
+    background-color: var(--color-primary-hover, #5E35B1);
+  }
+  
+  /* AI Specialists Grid */
+  .rhetor__specialists-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+    padding: 16px 0;
+  }
+  
+  .rhetor__specialist-card {
+    background-color: var(--bg-tertiary, #333345);
+    border: 1px solid var(--border-color, #444444);
+    border-radius: 8px;
+    padding: 16px;
+    transition: all 0.2s ease;
+    position: relative;
+  }
+  
+  .rhetor__specialist-card--active {
+    border-color: var(--color-primary, #673AB7);
+    box-shadow: 0 0 0 1px var(--color-primary, #673AB7);
+  }
+  
+  .rhetor__specialist-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+  
+  .rhetor__specialist-status {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background-color: var(--bg-secondary, #252535);
+    border: 2px solid var(--border-color, #444444);
+  }
+  
+  .rhetor__specialist-status--active {
+    background-color: #28a745;
+    border-color: #28a745;
+    box-shadow: 0 0 4px #28a745;
+  }
+  
+  .rhetor__specialist-status--processing {
+    background-color: #ffc107;
+    border-color: #ffc107;
+    animation: pulse 1.5s ease-in-out infinite;
+  }
+  
+  @keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
+  }
+  
+  .rhetor__specialist-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+  
+  .rhetor__specialist-icon {
+    font-size: 32px;
+    margin-right: 12px;
+  }
+  
+  .rhetor__specialist-info {
+    flex: 1;
+  }
+  
+  .rhetor__specialist-name {
+    font-weight: 600;
+    color: var(--text-primary, #f0f0f0);
+    margin: 0;
+    font-size: 1.1rem;
+  }
+  
+  .rhetor__specialist-type {
+    color: var(--text-secondary, #aaaaaa);
+    font-size: 0.85rem;
+  }
+  
+  .rhetor__specialist-stats {
+    display: flex;
+    gap: 16px;
+    margin: 12px 0;
+    padding: 8px 0;
+    border-top: 1px solid var(--border-color, #444444);
+    border-bottom: 1px solid var(--border-color, #444444);
+  }
+  
+  .rhetor__specialist-stat {
+    flex: 1;
+    text-align: center;
+  }
+  
+  .rhetor__specialist-stat-value {
+    display: block;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--text-primary, #f0f0f0);
+  }
+  
+  .rhetor__specialist-stat-label {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--text-secondary, #aaaaaa);
+    margin-top: 2px;
+  }
+  
+  .rhetor__specialist-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+  }
+  
+  .rhetor__specialist-action {
+    flex: 1;
+    padding: 6px 12px;
+    border: 1px solid var(--border-color, #444444);
+    border-radius: 4px;
+    background-color: var(--bg-secondary, #252535);
+    color: var(--text-secondary, #aaaaaa);
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: center;
+  }
+  
+  .rhetor__specialist-action:hover {
+    background-color: var(--bg-hover, #3a3a4a);
+    color: var(--text-primary, #f0f0f0);
+  }
+  
+  .rhetor__specialist-action--primary {
+    background-color: var(--color-primary, #673AB7);
+    border-color: var(--color-primary, #673AB7);
+    color: white;
+  }
+  
+  .rhetor__specialist-action--primary:hover {
+    background-color: var(--color-primary-hover, #5E35B1);
+  }
+  
+  /* Active Sessions */
+  .rhetor__sessions-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 16px 0;
+  }
+  
+  .rhetor__session-item {
+    background-color: var(--bg-tertiary, #333345);
+    border: 1px solid var(--border-color, #444444);
+    border-radius: 8px;
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    transition: all 0.2s ease;
+  }
+  
+  .rhetor__session-item:hover {
+    background-color: var(--bg-hover, #3a3a4a);
+  }
+  
+  .rhetor__session-participants {
+    display: flex;
+    gap: -8px;
+  }
+  
+  .rhetor__session-participant {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-color: var(--bg-secondary, #252535);
+    border: 2px solid var(--bg-tertiary, #333345);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    position: relative;
+    z-index: 1;
+  }
+  
+  .rhetor__session-info {
+    flex: 1;
+  }
+  
+  .rhetor__session-title {
+    font-weight: 600;
+    color: var(--text-primary, #f0f0f0);
+    margin: 0 0 4px 0;
+  }
+  
+  .rhetor__session-meta {
+    font-size: 0.85rem;
+    color: var(--text-secondary, #aaaaaa);
+  }
+  
+  .rhetor__session-actions {
+    display: flex;
+    gap: 8px;
+  }
+  
+  .rhetor__session-action {
+    padding: 6px 12px;
+    border: 1px solid var(--border-color, #444444);
+    border-radius: 4px;
+    background-color: var(--bg-secondary, #252535);
+    color: var(--text-secondary, #aaaaaa);
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  
+  .rhetor__session-action:hover {
+    background-color: var(--bg-hover, #3a3a4a);
+    color: var(--text-primary, #f0f0f0);
+  }
+  
+  /* Loading and Empty States */
+  .rhetor__loading {
+    text-align: center;
+    padding: 48px;
+    color: var(--text-secondary, #aaaaaa);
+  }
+  
+  .rhetor__empty-state {
+    text-align: center;
+    padding: 48px;
+    color: var(--text-secondary, #aaaaaa);
+    background-color: var(--bg-tertiary, #333345);
+    border: 1px dashed var(--border-color, #444444);
+    border-radius: 8px;
+  }
+  
+  /* Model Configuration */
+  .rhetor__model-config {
+    display: grid;
+    gap: 16px;
+    margin-top: 16px;
+  }
+  
+  /* Typing indicator */
+  .rhetor__typing-indicator .rhetor__message-text {
+    display: flex;
+    gap: 4px;
+    padding: 8px 12px;
+  }
+  
+  .typing-dot {
+    width: 8px;
+    height: 8px;
+    background-color: var(--text-secondary, #aaaaaa);
+    border-radius: 50%;
+    animation: typing 1.4s infinite;
+  }
+  
+  .typing-dot:nth-child(2) {
+    animation-delay: 0.2s;
+  }
+  
+  .typing-dot:nth-child(3) {
+    animation-delay: 0.4s;
+  }
+  
+  @keyframes typing {
+    0%, 60%, 100% {
+      opacity: 0.3;
+      transform: translateY(0);
+    }
+    30% {
+      opacity: 1;
+      transform: translateY(-10px);
+    }
+  }
+  
+  /* AI message sender name */
+  .rhetor__message-sender {
+    font-size: 0.85rem;
+    color: var(--color-primary, #673AB7);
+    margin-bottom: 4px;
+    font-weight: 500;
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .rhetor__template-list {
+      grid-template-columns: 1fr;
+    }
+    
+    .rhetor__specialists-grid {
+      grid-template-columns: 1fr;
+    }
+    
+    .rhetor__tabs {
+      overflow-x: auto;
+      white-space: nowrap;
+    }
+  }
+</style>
+
+<!-- Self-contained component script with no shared dependencies -->
+<script type="text/javascript">
+// SIMPLIFIED COMPONENT SCRIPT - FULLY SELF-CONTAINED
+// This prevents interference with other components
+
+// IMMEDIATELY SET UP UI MANAGER PROTECTION
+// Tell UI Manager to ignore this component - must be done IMMEDIATELY to avoid races
+if (window.uiManager) {
+    window.uiManager._ignoreComponent = 'rhetor';
+    console.log('[RHETOR] Set UI Manager to ignore rhetor component');
+}
+
+// DEFINE TAB SWITCHING FUNCTION
+// CRITICAL: This uses no shared code/utilities to avoid conflicts
+window.rhetor_switchTab = function(tabId) {
+    console.log('[RHETOR] Switching to tab:', tabId);
+    
+    // Force HTML panel visibility
+    const htmlPanelElements = document.querySelectorAll('#html-panel');
+    htmlPanelElements.forEach(panel => {
+        if (panel) panel.style.display = 'block';
+    });
+    
+    try {
+        // Only select elements within rhetor component to avoid conflicts with other components
+        const rhetorContainer = document.querySelector('.rhetor');
+        if (!rhetorContainer) {
+            console.error('[RHETOR] Tab Switch: Cannot find rhetor container');
+            return false;
+        }
+        
+        // Update tab active state - ONLY WITHIN RHETOR CONTAINER
+        const tabs = rhetorContainer.querySelectorAll('.rhetor__tab');
+        tabs.forEach(tab => {
+            if (tab.getAttribute('data-tab') === tabId) {
+                tab.classList.add('rhetor__tab--active');
+            } else {
+                tab.classList.remove('rhetor__tab--active');
+            }
+        });
+        
+        // Update panel visibility - ONLY WITHIN RHETOR CONTAINER
+        const panels = rhetorContainer.querySelectorAll('.rhetor__panel');
+        panels.forEach(panel => {
+            const panelId = panel.id;
+            if (panelId === tabId + '-panel') {
+                panel.style.display = 'block';
+                panel.classList.add('rhetor__panel--active');
+            } else {
+                panel.style.display = 'none';
+                panel.classList.remove('rhetor__panel--active');
+            }
+        });
+        
+        // Update clear button visibility for chat tabs
+        const clearButton = rhetorContainer.querySelector('#clear-chat-btn');
+        if (clearButton) {
+            clearButton.style.display = (tabId === 'llmchat' || tabId === 'teamchat') ? 'block' : 'none';
+        }
+        
+        // Update component state
+        if (window.rhetorComponent) {
+            window.rhetorComponent.state = window.rhetorComponent.state || {};
+            window.rhetorComponent.state.activeTab = tabId;
+            
+            // Call component-specific methods if available
+            if (typeof window.rhetorComponent.updateChatPlaceholder === 'function') {
+                window.rhetorComponent.updateChatPlaceholder(tabId);
+            }
+            
+            if (typeof window.rhetorComponent.loadTabContent === 'function') {
+                window.rhetorComponent.loadTabContent(tabId);
+            }
+            
+            if (typeof window.rhetorComponent.saveComponentState === 'function') {
+                window.rhetorComponent.saveComponentState();
+            }
+        }
+    } catch (err) {
+        console.error('[RHETOR] Error in tab switching:', err);
+    }
+    
+    return false; // Stop event propagation
+};
+
+// SEND LLM CHAT FUNCTION
+window.rhetor_sendLLMChat = function() {
+    console.log('[RHETOR] Send LLM chat clicked');
+    
+    const chatInput = document.getElementById('chat-input');
+    const activeTab = document.querySelector('.rhetor__tab--active');
+    
+    if (!chatInput || !activeTab) return;
+    
+    const message = chatInput.value.trim();
+    if (!message) return;
+    
+    const tabId = activeTab.getAttribute('data-tab');
+    console.log('[RHETOR] Active tab:', tabId, 'Message:', message);
+    
+    // Only process for llmchat tab
+    if (tabId === 'llmchat') {
+        // Clear input
+        chatInput.value = '';
+        
+        // Add user message to chat
+        const chatContainer = document.getElementById('llmchat-messages');
+        if (chatContainer) {
+            const userMsg = document.createElement('div');
+            userMsg.className = 'rhetor__message rhetor__message--user';
+            userMsg.innerHTML = '<div class="rhetor__message-content"><div class="rhetor__message-text">' + 
+                              message.replace(/</g, '&lt;').replace(/>/g, '&gt;') + 
+                              '</div></div>';
+            chatContainer.appendChild(userMsg);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+            
+            // Send to AI
+            fetch('/api/ai/specialists/rhetor-orchestrator/message', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    message: message,
+                    context_id: 'rhetor-llm-chat',
+                    streaming: false
+                })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('[RHETOR] AI response:', data);
+                const aiMsg = document.createElement('div');
+                aiMsg.className = 'rhetor__message rhetor__message--ai';
+                aiMsg.innerHTML = '<div class="rhetor__message-content"><div class="rhetor__message-text">' + 
+                                (data.response || data.message || 'No response').replace(/</g, '&lt;').replace(/>/g, '&gt;') + 
+                                '</div></div>';
+                chatContainer.appendChild(aiMsg);
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+            })
+            .catch(err => {
+                console.error('[RHETOR] Error:', err);
+                const errorMsg = document.createElement('div');
+                errorMsg.className = 'rhetor__message rhetor__message--system';
+                errorMsg.innerHTML = '<div class="rhetor__message-content"><div class="rhetor__message-text" style="color:#ff6b6b;">Error: ' + 
+                                   err.message + '</div></div>';
+                chatContainer.appendChild(errorMsg);
+            });
+        }
+    }
+    
+    return false;
+};
+
+// CHAT CLEARING FUNCTION
+window.rhetor_clearChat = function() {
+    console.log('[RHETOR] Clear chat clicked');
+    
+    try {
+        // Get active tab ID within rhetor container
+        const rhetorContainer = document.querySelector('.rhetor');
+        if (!rhetorContainer) {
+            console.error('[RHETOR] Clear Chat: Cannot find rhetor container');
+            return false;
+        }
+        
+        const activeTab = rhetorContainer.querySelector('.rhetor__tab--active');
+        const tabId = activeTab ? activeTab.getAttribute('data-tab') : '';
+        
+        if (tabId === 'llmchat' || tabId === 'teamchat') {
+            // Get message container within rhetor container only
+            const panel = rhetorContainer.querySelector('#' + tabId + '-messages');
+            if (panel) {
+                // Keep welcome message
+                const welcomeMsg = panel.querySelector('.rhetor__message--system');
+                if (welcomeMsg) {
+                    panel.innerHTML = '';
+                    panel.appendChild(welcomeMsg);
+                    console.log('[RHETOR] Cleared chat, kept welcome message');
+                } else {
+                    panel.innerHTML = '';
+                    console.log('[RHETOR] Cleared chat completely');
+                }
+            }
+        }
+    } catch (err) {
+        console.error('[RHETOR] Error clearing chat:', err);
+    }
+    
+    return false; // Stop event propagation
+};
+
+// AI ORCHESTRATION FUNCTIONS
+window.rhetor_refreshSpecialists = function() {
+    console.log('[RHETOR] Refreshing AI specialists');
+    if (window.rhetorComponent && window.rhetorComponent.refreshSpecialists) {
+        window.rhetorComponent.refreshSpecialists();
+    }
+    return false;
+};
+
+window.rhetor_createSpecialist = function() {
+    console.log('[RHETOR] Creating new AI specialist');
+    if (window.rhetorComponent && window.rhetorComponent.createSpecialist) {
+        window.rhetorComponent.createSpecialist();
+    }
+    return false;
+};
+
+window.rhetor_saveOrchestration = function() {
+    console.log('[RHETOR] Saving orchestration settings');
+    if (window.rhetorComponent && window.rhetorComponent.saveOrchestration) {
+        window.rhetorComponent.saveOrchestration();
+    }
+    return false;
+};
+
+window.rhetor_refreshSessions = function() {
+    console.log('[RHETOR] Refreshing active sessions');
+    if (window.rhetorComponent && window.rhetorComponent.refreshSessions) {
+        window.rhetorComponent.refreshSessions();
+    }
+    return false;
+};
+
+window.rhetor_createSession = function() {
+    console.log('[RHETOR] Creating new AI session');
+    if (window.rhetorComponent && window.rhetorComponent.createSession) {
+        window.rhetorComponent.createSession();
+    }
+    return false;
+};
+
+window.rhetor_toggleAnthropicMax = function() {
+    console.log('[RHETOR] Toggling Anthropic Max');
+    if (window.rhetorComponent && window.rhetorComponent.toggleAnthropicMax) {
+        window.rhetorComponent.toggleAnthropicMax();
+    }
+    return false;
+};
+
+window.rhetor_saveConfiguration = function() {
+    console.log('[RHETOR] Saving AI configuration');
+    if (window.rhetorComponent && window.rhetorComponent.saveConfiguration) {
+        window.rhetorComponent.saveConfiguration();
+    }
+    return false;
+};
+
+// LOAD COMPONENT
+// Load after defining tab switching to ensure it's available
+function rhetor_loadComponent() {
+    console.log('[RHETOR] Loading component script...');
+    
+    const timestamp = new Date().getTime();
+    const scriptPath = `/scripts/rhetor/rhetor-component.js?t=${timestamp}`;
+    
+    const script = document.createElement('script');
+    script.src = scriptPath;
+    script.async = false;
+    script.onload = function() {
+        console.log('[RHETOR] Component script loaded successfully');
+        
+        if (window.rhetorComponent && typeof window.rhetorComponent.init === 'function') {
+            try {
+                window.rhetorComponent.init();
+                console.log('[RHETOR] Component initialized');
+            } catch (err) {
+                console.error('[RHETOR] Component initialization error:', err);
+            }
+        } else {
+            console.warn('[RHETOR] Component init function not found');
+        }
+    };
+    script.onerror = function() {
+        console.error('[RHETOR] Failed to load component script');
+    };
+    
+    document.body.appendChild(script);
+}
+
+// HTML PANEL PROTECTION
+// Setup explicit protection for the HTML panel to prevent it being hidden
+function rhetor_protectHtmlPanel() {
+    const htmlPanel = document.getElementById('html-panel');
+    if (!htmlPanel) {
+        console.error('[RHETOR] Cannot find HTML panel to protect');
+        return;
+    }
+    
+    console.log('[RHETOR] Protecting HTML panel from being hidden');
+    htmlPanel.style.display = 'block'; // Force it to be visible
+    
+    // Store the original display value
+    if (!htmlPanel.hasOwnProperty('_rhetorOriginalDisplay')) {
+        Object.defineProperty(htmlPanel, '_rhetorOriginalDisplay', {
+            value: 'block',
+            writable: true,
+            configurable: true
+        });
+    }
+    
+    // Only define the getter/setter if it hasn't already been defined by this component
+    if (!htmlPanel.style._rhetorProtected) {
+        // Mark the display property as protected by this component
+        Object.defineProperty(htmlPanel.style, '_rhetorProtected', {
+            value: true,
+            writable: false,
+            configurable: true
+        });
+        
+        // Protect the display property
+        Object.defineProperty(htmlPanel.style, 'display', {
+            get: function() { 
+                return htmlPanel._rhetorOriginalDisplay; 
+            },
+            set: function(value) {
+                console.log(`[RHETOR] Intercepted attempt to set HTML panel display to: ${value}`);
+                if (value === 'none') {
+                    console.log('[RHETOR] Blocked attempt to hide HTML panel');
+                    htmlPanel._rhetorOriginalDisplay = 'block';
+                } else {
+                    htmlPanel._rhetorOriginalDisplay = value;
+                }
+            },
+            configurable: true
+        });
+    }
+}
+
+// SETUP
+// Do immediate initialization on script load
+rhetor_protectHtmlPanel();
+rhetor_loadComponent();
+</script>

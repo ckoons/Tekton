@@ -1,0 +1,7 @@
+{
+  "name": "risk_analysis",
+  "template": "Analyze the following project plan to identify potential risks and suggest mitigation strategies.\n\n{{ project_data }}\n\nFor each identified risk, provide:\n1. Risk name\n2. Description\n3. Impact (high, medium, low)\n4. Probability (high, medium, low)\n5. Mitigation strategy\n\nReturn the risk analysis in a structured JSON format with this schema:\n```json\n[\n  {\n    \"name\": \"Risk name\",\n    \"description\": \"Risk description\",\n    \"impact\": \"high|medium|low\",\n    \"probability\": \"high|medium|low\",\n    \"mitigation\": \"Mitigation strategy\"\n  }\n]\n```",
+  "description": "Template for risk analysis",
+  "output_format": "json",
+  "version": "1.0.0"
+}

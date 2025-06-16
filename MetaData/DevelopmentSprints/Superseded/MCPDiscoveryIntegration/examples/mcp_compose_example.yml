@@ -1,0 +1,194 @@
+# Example MCP Compose Configuration
+# This file demonstrates a multi-server configuration for Tekton MCP Server Integration
+
+version: "1.0"
+
+# Global settings that apply to all servers
+global:
+  # Base installation directory for all servers
+  install_dir: "${TEKTON_ROOT}/mcp_servers"
+  
+  # Default settings for authentication and security
+  security:
+    verify_signatures: true
+    sandbox_execution: true
+    permission_level: "standard"
+  
+  # Default environment variables
+  environment:
+    MCP_LOG_LEVEL: "info"
+
+# Server configurations
+servers:
+  # Filesystem server configuration
+  filesystem:
+    # Server identification
+    name: "filesystem"
+    package: "@modelcontextprotocol/server-filesystem"
+    version: "0.6.2"
+    source: "npm"
+    
+    # Installation options
+    installation:
+      type: "node"
+      method: "npx"
+      
+    # Server configuration
+    configuration:
+      directories:
+        - "${TEKTON_ROOT}/data"
+        - "${HOME}/Documents/tekton"
+      readonly_directories:
+        - "/etc/tekton"
+      
+    # Registration with Ergon
+    registration:
+      auto_register: true
+      capabilities:
+        - "filesystem"
+        - "file_read"
+        - "file_write"
+        - "file_search"
+    
+    # Integration settings for Ergon
+    integration:
+      command: "npx"
+      args:
+        - "-y"
+        - "@modelcontextprotocol/server-filesystem"
+        - "${TEKTON_ROOT}/data"
+        - "${HOME}/Documents/tekton"
+  
+  # Git server configuration
+  git:
+    name: "git"
+    package: "mcp-server-git"
+    version: "latest"
+    source: "pypi"
+    
+    installation:
+      type: "python"
+      method: "uv"
+      
+    configuration:
+      repositories:
+        - "${TEKTON_ROOT}"
+        - "${HOME}/projects"
+      
+    registration:
+      auto_register: true
+      capabilities:
+        - "git"
+        - "version_control"
+    
+    integration:
+      command: "uvx"
+      args:
+        - "mcp-server-git"
+  
+  # GitHub server configuration
+  github:
+    name: "github"
+    package: "@modelcontextprotocol/server-github"
+    version: "2025.4.8"
+    source: "npm"
+    
+    installation:
+      type: "node"
+      method: "npx"
+      
+    configuration:
+      # Credentials should be provided via environment variables or secure storage
+      token_variable: "GITHUB_TOKEN"
+      
+    registration:
+      auto_register: true
+      capabilities:
+        - "github"
+        - "pull_request"
+        - "issue"
+        - "repository"
+    
+    integration:
+      command: "npx"
+      args:
+        - "-y"
+        - "@modelcontextprotocol/server-github"
+      environment:
+        GITHUB_TOKEN: "${env:GITHUB_TOKEN}"
+  
+  # Time server configuration
+  time:
+    name: "time"
+    package: "mcp-server-time"
+    version: "0.6.2"
+    source: "pypi"
+    
+    installation:
+      type: "python"
+      method: "uv"
+      
+    configuration:
+      local_timezone: "America/Los_Angeles"
+      
+    registration:
+      auto_register: true
+      capabilities:
+        - "time"
+        - "timezone"
+    
+    integration:
+      command: "uvx"
+      args:
+        - "mcp-server-time"
+        - "--local-timezone=America/Los_Angeles"
+  
+  # Memory server configuration
+  memory:
+    name: "memory"
+    package: "@modelcontextprotocol/server-memory"
+    version: "latest"
+    source: "npm"
+    
+    installation:
+      type: "node"
+      method: "npx"
+      
+    configuration:
+      storage_path: "${TEKTON_ROOT}/data/memory"
+      
+    registration:
+      auto_register: true
+      capabilities:
+        - "memory"
+        - "storage"
+    
+    integration:
+      command: "npx"
+      args:
+        - "-y"
+        - "@modelcontextprotocol/server-memory"
+        - "--storage-path=${TEKTON_ROOT}/data/memory"
+
+# Dependencies between servers
+dependencies:
+  # Example of dependency declaration
+  github:
+    depends_on:
+      - git
+  
+  memory:
+    depends_on:
+      - filesystem
+
+# Custom installation scripts
+scripts:
+  # Pre-installation hooks
+  pre_install:
+    - "mkdir -p ${TEKTON_ROOT}/data/memory"
+    - "mkdir -p ${TEKTON_ROOT}/mcp_servers"
+  
+  # Post-installation hooks
+  post_install:
+    - "echo 'MCP servers installed successfully'"
+    - "chmod -R 755 ${TEKTON_ROOT}/mcp_servers"

@@ -1,0 +1,152 @@
+<!-- Terma Terminal Component with Shadow DOM Isolation -->
+<div class="terma">
+  <!-- Terminal Header -->
+  <div class="terma__header">
+    <div class="terma__title" id="terma-title" data-greek-name="Terma - Terminal" data-functional-name="Terminal">Terma - Terminal</div>
+    <div class="terma__controls">
+      <select id="terma-session-selector" class="terma__select" title="Select Session">
+        <option value="new">New Session</option>
+        <!-- Sessions will be populated dynamically -->
+      </select>
+      <select id="terma-terminal-type" class="terma__select" title="Terminal Type">
+        <option value="default">Default Shell</option>
+        <option value="bash">Bash</option>
+        <option value="python">Python</option>
+        <option value="node">Node.js</option>
+      </select>
+      <select id="terma-llm-provider-model" class="terma__select" title="AI Model">
+        <!-- Provider:Model options will be populated dynamically -->
+        <option value="loading">Loading AI models...</option>
+      </select>
+      <button id="terma-detach-btn" class="terma__btn" title="Detach Terminal">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+          <path d="M6 3V1H1v5h2V4.5l2.5 2.5L7 5.5 4.5 3H6zm8-2v5h-2V4.5L9.5 7 8 5.5 10.5 3H9V1h5zM1 9h2v1.5L5.5 8 7 9.5 4.5 12H6v2H1V9zm8 5v-2h1.5L13 9.5 14.5 11 12 13.5V12h-2v5h5v-5h-2v1.5L10.5 11 12 9.5 14.5 12H16V7h-5v2h2v1.5L10.5 13 9 11.5 11.5 9H10v2H9v3z"></path>
+        </svg>
+      </button>
+      <button id="terma-settings-btn" class="terma__btn" title="Terminal Settings">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+          <path d="M9.405 1.05c-.413-1.4-2.397-1.4-2.81 0l-.1.34a1.464 1.464 0 0 1-2.105.872l-.31-.17c-1.283-.698-2.686.705-1.987 1.987l.169.311c.446.82.023 1.841-.872 2.105l-.34.1c-1.4.413-1.4 2.397 0 2.81l.34.1a1.464 1.464 0 0 1 .872 2.105l-.17.31c-.698 1.283.705 2.686 1.987 1.987l.311-.169a1.464 1.464 0 0 1 2.105.872l.1.34c.413 1.4 2.397 1.4 2.81 0l.1-.34a1.464 1.464 0 0 1 2.105-.872l.31.17c1.283.698 2.686-.705 1.987-1.987l-.169-.311a1.464 1.464 0 0 1 .872-2.105l.34-.1c1.4-.413 1.4-2.397 0-2.81l-.34-.1a1.464 1.464 0 0 1-.872-2.105l.17-.31c.698-1.283-.705-2.686-1.987-1.987l-.311.169a1.464 1.464 0 0 1-2.105-.872l-.1-.34zM8 10.93a2.929 2.929 0 1 1 0-5.86 2.929 2.929 0 0 1 0 5.858z"></path>
+        </svg>
+      </button>
+      <button id="terma-toggle-mode-btn" class="terma__btn" title="Toggle Terminal Mode">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+          <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+          <path d="M11.251.068a.5.5 0 0 1 .227.58L9.677 6.5H13a.5.5 0 0 1 .364.843l-8 8.5a.5.5 0 0 1-.842-.49L6.323 9.5H3a.5.5 0 0 1-.364-.843l8-8.5a.5.5 0 0 1 .615-.09z"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+  
+  <!-- Terminal Content Area -->
+  <div class="terma__content">
+    <div id="terma-terminal" class="terma__terminal"></div>
+    <div id="simple-terminal" class="terma__simple-terminal"></div>
+  </div>
+  
+  <!-- LLM Assistance Panel -->
+  <div class="terma__llm-panel">
+    <div class="terma__llm-header">
+      <div class="terma__llm-title">AI Assistant</div>
+      <button id="terma-llm-toggle" class="terma__btn" title="Toggle AI Assistant">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+          <path d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"></path>
+        </svg>
+      </button>
+    </div>
+    <div id="terma-llm-content" class="terma__llm-content">
+      <div id="terma-llm-output" class="terma__llm-output">
+        <p>Ask for help by typing <code>?command</code> or run command followed by <code>?</code> to analyze output.</p>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Terminal Settings Dialog -->
+  <div id="terma-settings-dialog" class="terma__dialog">
+    <div class="terma__dialog-content">
+      <div class="terma__dialog-header">
+        <h3 class="terma__dialog-title">Terminal Settings</h3>
+        <button class="terma__dialog-close" aria-label="Close">&times;</button>
+      </div>
+      <div class="terma__dialog-body">
+        <div class="terma__settings-group">
+          <label for="terma-font-size" class="terma__settings-label">Font Size</label>
+          <div class="terma__settings-control">
+            <input type="range" id="terma-font-size" class="terma__range" min="10" max="24" step="1" value="14">
+            <span id="terma-font-size-value" class="terma__settings-value">14px</span>
+          </div>
+        </div>
+        
+        <div class="terma__settings-group">
+          <label for="terma-font-family" class="terma__settings-label">Font Family</label>
+          <select id="terma-font-family" class="terma__select terma__select--full">
+            <option value="'Courier New', monospace">Courier New</option>
+            <option value="'Source Code Pro', monospace">Source Code Pro</option>
+            <option value="'Ubuntu Mono', monospace">Ubuntu Mono</option>
+            <option value="'Fira Code', monospace">Fira Code</option>
+            <option value="'Consolas', monospace">Consolas</option>
+          </select>
+        </div>
+        
+        <div class="terma__settings-group">
+          <label for="terma-theme" class="terma__settings-label">Terminal Theme</label>
+          <select id="terma-theme" class="terma__select terma__select--full">
+            <option value="default">Default Dark</option>
+            <option value="light">Light</option>
+            <option value="solarized">Solarized Dark</option>
+            <option value="monokai">Monokai</option>
+          </select>
+        </div>
+        
+        <div class="terma__settings-group">
+          <label for="terma-cursor-style" class="terma__settings-label">Cursor Style</label>
+          <select id="terma-cursor-style" class="terma__select terma__select--full">
+            <option value="block">Block</option>
+            <option value="underline">Underline</option>
+            <option value="bar">Bar</option>
+          </select>
+        </div>
+        
+        <div class="terma__settings-group terma__settings-group--checkbox">
+          <input type="checkbox" id="terma-cursor-blink" class="terma__checkbox" checked>
+          <label for="terma-cursor-blink" class="terma__settings-label terma__settings-label--inline">Cursor Blink</label>
+        </div>
+        
+        <div class="terma__settings-group terma__settings-group--checkbox">
+          <input type="checkbox" id="terma-scrollback" class="terma__checkbox" checked>
+          <label for="terma-scrollback" class="terma__settings-label terma__settings-label--inline">Enable Scrollback</label>
+        </div>
+        
+        <div id="terma-scrollback-container" class="terma__settings-group terma__settings-group--indented">
+          <label for="terma-scrollback-lines" class="terma__settings-label">Scrollback Lines</label>
+          <input type="number" id="terma-scrollback-lines" class="terma__input" min="100" max="10000" step="100" value="1000">
+        </div>
+      </div>
+      <div class="terma__dialog-footer">
+        <button id="terma-settings-reset" class="terma__btn terma__btn--secondary">Reset to Defaults</button>
+        <button id="terma-settings-save" class="terma__btn terma__btn--primary">Save Settings</button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Connection Status Bar -->
+  <div id="terma-status-bar" class="terma__status-bar">
+    <div id="terma-connection-status" class="terma__status-item terma__status-item--connecting">
+      <span class="terma__status-indicator"></span>
+      <span class="terma__status-text">Connecting...</span>
+    </div>
+    <div id="terma-session-info" class="terma__status-item">
+      <span class="terma__status-text">No active session</span>
+    </div>
+  </div>
+  
+  <!-- Terminal Loading Overlay -->
+  <div id="terma-loading" class="terma__loading">
+    <div class="terma__loading-spinner"></div>
+    <div class="terma__loading-text">Initializing terminal...</div>
+  </div>
+</div>
+
+<!-- Reference external libraries through CDN -->
+<script src="https://cdn.jsdelivr.net/npm/marked@4.3.0/marked.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.7.0/build/styles/github-dark.min.css">
+<script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.7.0/build/highlight.min.js"></script>

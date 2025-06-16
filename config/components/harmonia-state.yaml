@@ -1,0 +1,48 @@
+component:
+  id: "harmonia.state"
+  name: "Harmonia State Manager"
+  version: "0.1.0"
+  description: "State management for workflow engine"
+  port: 5006
+  metadata:
+    description: "State management for workflow engine"
+    version: "0.1.0"
+    parent_component: "harmonia.workflow"
+
+capabilities:
+  - id: "state_management"
+    name: "State Management"
+    description: "Manage workflow state"
+    methods:
+      - id: "save_state"
+        name: "Save State"
+        description: "Save workflow state"
+        parameters:
+          - name: "execution_id"
+            type: "string"
+            required: true
+          - name: "state"
+            type: "object"
+            required: true
+        returns:
+          type: "object"
+          
+      - id: "load_state"
+        name: "Load State"
+        description: "Load workflow state"
+        parameters:
+          - name: "execution_id"
+            type: "string"
+            required: true
+        returns:
+          type: "object"
+          
+      - id: "create_checkpoint"
+        name: "Create Checkpoint"
+        description: "Create a checkpoint of workflow state"
+        parameters:
+          - name: "execution_id"
+            type: "string"
+            required: true
+        returns:
+          type: "object"

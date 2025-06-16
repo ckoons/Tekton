@@ -1,0 +1,6 @@
+# Base requirements for all Tekton components
+# These are the absolute essentials that nearly every component needs
+
+python-dotenv>=1.0.0        # Environment variable management
+pydantic>=2.11.5           # Data validation and settings management (latest v2)
+pydantic-settings>=2.9.1   # Settings management with Pydantic v2 (latest)

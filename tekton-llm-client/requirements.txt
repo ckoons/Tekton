@@ -1,0 +1,7 @@
+# Include shared requirements
+-r ../shared/requirements/base.txt
+-r ../shared/requirements/web.txt
+-r ../shared/requirements/ai.txt
+
+# Component-specific dependencies only
+# None - all dependencies are covered by shared requirements

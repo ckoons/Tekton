@@ -1,0 +1,6 @@
+# Browser agent requirements
+browser-use==0.1.40
+playwright==1.49.1
+
+# For visual processing
+Pillow>=11.0.0

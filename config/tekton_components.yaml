@@ -1,0 +1,161 @@
+# Tekton Components Configuration
+# This is the single source of truth for all Tekton component definitions
+
+components:
+  # Core Infrastructure
+  tekton_core:
+    name: "Tekton Core"
+    port: 8010
+    description: "Core orchestration and startup management"
+    category: "infrastructure"
+    startup_priority: 6  # Move to end - utility component
+    dependencies: []
+    
+  hermes:
+    name: "Hermes"
+    port: 8001
+    description: "Service registry, messaging, and component coordination"
+    category: "infrastructure"
+    startup_priority: 1
+    dependencies: []
+    
+  # Memory and Knowledge
+  engram:
+    name: "Engram"
+    port: 8000
+    description: "Persistent memory and knowledge management system"
+    category: "memory"
+    startup_priority: 2
+    dependencies: ["hermes"]
+    
+  athena:
+    name: "Athena"
+    port: 8005
+    description: "Knowledge graph and relationship management"
+    category: "knowledge"
+    startup_priority: 3
+    dependencies: ["hermes", "engram"]
+    
+  # AI and Intelligence
+  rhetor:
+    name: "Rhetor"
+    port: 8003
+    description: "Multi-provider LLM orchestration and management"
+    category: "ai"
+    startup_priority: 3
+    dependencies: ["hermes", "engram"]
+    capabilities:
+      - "llm_orchestration"
+      - "multi_provider_support"
+      - "intelligent_routing"
+      - "context_management"
+    
+  sophia:
+    name: "Sophia"
+    port: 8014
+    description: "Machine learning and system intelligence measurement"
+    category: "ai"
+    startup_priority: 4
+    dependencies: ["hermes"]
+    capabilities:
+      - "intelligence_measurement"
+      - "component_health_monitoring"
+      - "ml_analysis"
+      
+  apollo:
+    name: "Apollo"
+    port: 8012
+    description: "Local attention and prediction system"
+    category: "ai"
+    startup_priority: 4
+    dependencies: ["hermes", "rhetor"]
+    
+  # Planning and Execution
+  prometheus:
+    name: "Prometheus"
+    port: 8006
+    description: "Strategic planning and goal management"
+    category: "planning"
+    startup_priority: 4
+    dependencies: ["hermes", "telos"]
+    
+  telos:
+    name: "Telos"
+    port: 8008
+    description: "Requirements tracking and validation"
+    category: "planning"
+    startup_priority: 3
+    dependencies: ["hermes"]
+    
+  metis:
+    name: "Metis"
+    port: 8011
+    description: "Task breakdown and management"
+    category: "planning"
+    startup_priority: 4
+    dependencies: ["hermes", "telos"]
+    
+  # Workflow and Execution
+  harmonia:
+    name: "Harmonia"
+    port: 8007
+    description: "Workflow orchestration and state management"
+    category: "workflow"
+    startup_priority: 4
+    dependencies: ["hermes"]
+    
+  synthesis:
+    name: "Synthesis"
+    port: 8009
+    description: "Code synthesis and execution engine"
+    category: "execution"
+    startup_priority: 5
+    dependencies: ["hermes", "harmonia"]
+    
+  ergon:
+    name: "Ergon"
+    port: 8002
+    description: "Agent system for specialized task execution"
+    category: "execution"
+    startup_priority: 4
+    dependencies: ["hermes", "engram"]
+    
+  # Resource Management
+  budget:
+    name: "Budget"
+    port: 8013
+    description: "Token usage and cost management"
+    category: "resources"
+    startup_priority: 3
+    dependencies: ["hermes"]
+    capabilities:
+      - "budget_allocation"
+      - "cost_tracking"
+      - "assistant_service"
+    
+  # User Interface
+  hephaestus:
+    name: "Hephaestus"
+    port: 8080
+    description: "Web-based user interface"
+    category: "ui"
+    startup_priority: 5
+    dependencies: ["hermes"]
+    
+  terma:
+    name: "Terma"
+    port: 8004
+    description: "Terminal interface and command execution"
+    category: "ui"
+    startup_priority: 5
+    dependencies: ["hermes"]
+    
+# Specialized Services (not primary components)
+services:
+  # LLMAdapter removed - use Rhetor (port 8003) with tekton-llm-client instead
+  
+  terma_ws:
+    name: "Terma WebSocket"
+    port: 8767
+    description: "Legacy WebSocket service for Terma"
+    category: "service"

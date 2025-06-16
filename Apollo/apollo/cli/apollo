@@ -1,0 +1,22 @@
+#!/usr/bin/env python3
+"""
+Apollo CLI executable.
+
+This script provides a command-line interface to manage and interact with
+the Apollo executive coordinator component.
+"""
+
+import asyncio
+import sys
+
+from apollo.cli.main import main
+
+if __name__ == "__main__":
+    try:
+        asyncio.run(main())
+    except KeyboardInterrupt:
+        print("Operation cancelled by user")
+        sys.exit(130)
+    except Exception as e:
+        print(f"Error: {str(e)}")
+        sys.exit(1)

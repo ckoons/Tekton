@@ -1,0 +1,5 @@
+{
+  "name": "agent_task_execution",
+  "template": "You are an intelligent agent tasked with executing the following:\n\nTask: {{ task_description }}\n\n{% if context %}\nContext:\n{{ context }}\n{% endif %}\n\n{% if constraints %}\nConstraints:\n{{ constraints }}\n{% endif %}\n\n{% if tools %}\nAvailable tools:\n{{ tools }}\n{% endif %}\n\nPlease respond with a detailed plan to accomplish this task and then execute it step by step.\nThink through the problem carefully before acting.\n\nYour response should include:\n1. Your analysis of the task\n2. A step-by-step plan\n3. Execution of each step\n4. A summary of what was accomplished",
+  "description": "Template for autonomous agent task execution"
+}

@@ -1,0 +1,356 @@
+/**
+ * Apollo Executive Coordinator Component Styles
+ * 
+ * This stylesheet provides styles for the Apollo UI component.
+ * It follows BEM naming conventions for CSS class naming.
+ */
+
+/* Root element styles */
+.apollo {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+/* Header styles */
+.apollo__header {
+  padding: 1rem;
+  border-bottom: 1px solid #dee2e6;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.apollo__title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.apollo__title h1 {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.apollo__logo {
+  height: 2rem;
+  width: auto;
+}
+
+.apollo__controls {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.apollo__stats {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-right: 1rem;
+  font-size: 0.875rem;
+}
+
+.apollo__stat-item {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.apollo__stat-value {
+  font-weight: bold;
+}
+
+/* Menu bar styles */
+.apollo__menu-bar {
+  border-bottom: 1px solid #dee2e6;
+}
+
+.apollo__chat-options {
+  display: flex;
+  padding: 0.5rem 1rem;
+}
+
+.apollo__chat-option {
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  background-color: #ffffff;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  margin-right: 0.5rem;
+}
+
+.apollo__chat-option:hover {
+  background-color: #f8f9fa;
+}
+
+.apollo__chat-option--active {
+  background-color: #4a86e8;
+  color: white;
+  border-color: #4a86e8;
+}
+
+/* Tab navigation styles */
+.apollo__tabs {
+  display: flex;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.apollo__tab {
+  padding: 0.75rem 1.5rem;
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.apollo__tab:hover {
+  background-color: #f8f9fa;
+}
+
+.apollo__tab--active {
+  border-bottom-color: #4a86e8;
+  font-weight: bold;
+}
+
+/* Content panel styles */
+.apollo__content {
+  flex: 1;
+  overflow: hidden;
+}
+
+.apollo__panel {
+  display: none;
+  height: 100%;
+  width: 100%;
+  overflow: auto;
+}
+
+.apollo__panel--active {
+  display: block;
+}
+
+/* Dashboard styles */
+.apollo__dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1rem;
+  padding: 1rem;
+}
+
+.apollo__card {
+  background-color: #ffffff;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  padding: 1rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.apollo__card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.apollo__card-title {
+  font-weight: bold;
+  margin: 0;
+}
+
+.apollo__card-body {
+  margin-bottom: 0.5rem;
+}
+
+.apollo__card-footer {
+  font-size: 0.875rem;
+  color: #6c757d;
+}
+
+/* Health indicators */
+.apollo__health-indicator {
+  display: inline-block;
+  height: 12px;
+  width: 12px;
+  border-radius: 50%;
+  margin-right: 0.5rem;
+}
+
+.apollo__health-indicator--healthy {
+  background-color: #34A853;
+}
+
+.apollo__health-indicator--warning {
+  background-color: #FBBC05;
+}
+
+.apollo__health-indicator--critical {
+  background-color: #EA4335;
+}
+
+/* Token budget visualization */
+.apollo__token-budget {
+  height: 8px;
+  background-color: #f8f9fa;
+  border-radius: 4px;
+  margin: 0.5rem 0;
+  overflow: hidden;
+}
+
+.apollo__token-budget-used {
+  height: 100%;
+  background-color: #4a86e8;
+  width: 0%; /* Will be set dynamically */
+}
+
+/* Session list */
+.apollo__session-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.apollo__session-item {
+  padding: 0.75rem;
+  border-bottom: 1px solid #dee2e6;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.apollo__session-item:last-child {
+  border-bottom: none;
+}
+
+.apollo__session-name {
+  font-weight: bold;
+}
+
+.apollo__session-status {
+  display: flex;
+  align-items: center;
+}
+
+/* Button styles */
+.apollo__btn {
+  padding: 0.375rem 0.75rem;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  background-color: #ffffff;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.apollo__btn:hover {
+  background-color: #f8f9fa;
+}
+
+.apollo__btn--primary {
+  background-color: #4a86e8;
+  color: white;
+  border-color: #4a86e8;
+}
+
+.apollo__btn--primary:hover {
+  opacity: 0.9;
+}
+
+.apollo__btn--warning {
+  background-color: #FBBC05;
+  color: white;
+  border-color: #FBBC05;
+}
+
+.apollo__btn--danger {
+  background-color: #EA4335;
+  color: white;
+  border-color: #EA4335;
+}
+
+/* Settings panel */
+.apollo__settings-panel {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 300px;
+  height: 100%;
+  background-color: #ffffff;
+  border-left: 1px solid #dee2e6;
+  transform: translateX(100%);
+  transition: transform 0.3s ease;
+  z-index: 1000;
+  overflow-y: auto;
+}
+
+.apollo__settings-panel--open {
+  transform: translateX(0);
+}
+
+.apollo__settings-header {
+  padding: 1rem;
+  border-bottom: 1px solid #dee2e6;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.apollo__settings-content {
+  padding: 1rem;
+}
+
+.apollo__settings-section {
+  margin-bottom: 1.5rem;
+}
+
+.apollo__settings-section h3 {
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+  border-bottom: 1px solid #dee2e6;
+  padding-bottom: 0.5rem;
+}
+
+.apollo__setting-item {
+  margin-bottom: 1rem;
+}
+
+.apollo__setting-label {
+  display: block;
+  margin-bottom: 0.25rem;
+  font-weight: bold;
+}
+
+.apollo__setting-input {
+  width: 100%;
+  padding: 0.375rem;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+}
+
+/* Notifications */
+.apollo__error-message {
+  position: fixed;
+  bottom: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #EA4335;
+  color: white;
+  padding: 0.75rem 1rem;
+  border-radius: 4px;
+  z-index: 1001;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.apollo__success-message {
+  position: fixed;
+  bottom: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #34A853;
+  color: white;
+  padding: 0.75rem 1rem;
+  border-radius: 4px;
+  z-index: 1001;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}

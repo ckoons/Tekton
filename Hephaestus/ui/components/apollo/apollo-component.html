@@ -1,0 +1,4232 @@
+<!-- Apollo Component - Attention and Prediction System -->
+<div class="apollo" data-tekton-area="apollo" data-tekton-component="apollo" data-tekton-type="component-workspace" data-tekton-ai="apollo-assistant" data-tekton-ai-ready="false">
+    <!-- Component Header with Title -->
+    <div class="apollo__header">
+        <div class="apollo__title-container">
+            <img src="/images/hexagon.jpg" alt="Tekton" class="apollo__icon">
+            <h2 class="apollo__title">
+                <span id="apollo-title-text" class="apollo__title-main">Apollo</span>
+                <span class="apollo__title-sub">Attention/Prediction</span>
+            </h2>
+        </div>
+    </div>
+    
+    <!-- Apollo Menu Bar with Tab Navigation -->
+    <div class="apollo__menu-bar">
+        <div class="apollo__tabs">
+            <div class="apollo__tab apollo__tab--active" data-tab="dashboard" onclick="apollo_switchTab('dashboard'); return false;">
+                <span class="apollo__tab-label">Dashboard</span>
+            </div>
+            <div class="apollo__tab" data-tab="sessions" onclick="apollo_switchTab('sessions'); return false;">
+                <span class="apollo__tab-label">Sessions</span>
+            </div>
+            <div class="apollo__tab" data-tab="tokens" onclick="apollo_switchTab('tokens'); return false;">
+                <span class="apollo__tab-label">Token Budgets</span>
+            </div>
+            <div class="apollo__tab" data-tab="protocols" onclick="apollo_switchTab('protocols'); return false;">
+                <span class="apollo__tab-label">Protocols</span>
+            </div>
+            <div class="apollo__tab" data-tab="forecasting" onclick="apollo_switchTab('forecasting'); return false;">
+                <span class="apollo__tab-label">Forecasting</span>
+            </div>
+            <div class="apollo__tab" data-tab="actions" onclick="apollo_switchTab('actions'); return false;">
+                <span class="apollo__tab-label">Actions</span>
+            </div>
+            <div class="apollo__tab" data-tab="attention" onclick="apollo_switchTab('attention'); return false;">
+                <span class="apollo__tab-label">Attention Chat</span>
+            </div>
+            <div class="apollo__tab" data-tab="teamchat" onclick="apollo_switchTab('teamchat'); return false;">
+                <span class="apollo__tab-label">Team Chat</span>
+            </div>
+        </div>
+        <div class="apollo__actions">
+            <button id="clear-chat-btn" class="apollo__action-button" style="display: none;" onclick="apollo_clearChat(); return false;">
+                <span class="apollo__button-label">Clear</span>
+            </button>
+        </div>
+    </div>
+    
+    <!-- Apollo Content Area -->
+    <div class="apollo__content">
+        <!-- Dashboard Tab (Default Active Tab) -->
+        <div id="dashboard-panel" class="apollo__panel apollo__panel--active">
+            <div class="apollo__dashboard">
+                <div class="apollo__control-bar">
+                    <div class="apollo__stats-container">
+                        <div class="apollo__stat-item">
+                            <span class="apollo__stat-label">Active Sessions:</span>
+                            <span class="apollo__stat-value" id="active-sessions-count">4</span>
+                        </div>
+                        <div class="apollo__stat-item">
+                            <span class="apollo__stat-label">Total Tokens:</span>
+                            <span class="apollo__stat-value" id="total-tokens">102,536</span>
+                        </div>
+                    </div>
+                    <div class="apollo__refresh-container">
+                        <button id="refresh-dashboard-btn" class="apollo__refresh-button">Refresh</button>
+                    </div>
+                </div>
+                <div class="apollo__dashboard-grid">
+                    <div class="apollo__card">
+                        <div class="apollo__card-header">
+                            <h3 class="apollo__card-title">System Status</h3>
+                            <div class="apollo__health-indicator apollo__health-indicator--healthy"></div>
+                        </div>
+                        <div class="apollo__card-body">
+                            <p>All LLM systems operational</p>
+                            <p>4 active sessions monitored</p>
+                        </div>
+                        <div class="apollo__card-footer">
+                            Last updated: Just now
+                        </div>
+                    </div>
+
+                    <div class="apollo__card">
+                        <div class="apollo__card-header">
+                            <h3 class="apollo__card-title">Token Usage</h3>
+                        </div>
+                        <div class="apollo__card-body">
+                            <p>Total allocation: 100,000 tokens</p>
+                            <p>Used: 38,420 tokens (38.4%)</p>
+                            <div class="apollo__token-budget">
+                                <div class="apollo__token-budget-used" style="width: 38.4%"></div>
+                            </div>
+                        </div>
+                        <div class="apollo__card-footer">
+                            Current compression level: None
+                        </div>
+                    </div>
+
+                    <div class="apollo__card">
+                        <div class="apollo__card-header">
+                            <h3 class="apollo__card-title">Active Sessions</h3>
+                        </div>
+                        <div class="apollo__card-body">
+                            <ul class="apollo__session-list">
+                                <li class="apollo__session-item">
+                                    <span class="apollo__session-name">Codex</span>
+                                    <span class="apollo__session-status">
+                                        <div class="apollo__health-indicator apollo__health-indicator--healthy"></div>
+                                        Healthy
+                                    </span>
+                                </li>
+                                <li class="apollo__session-item">
+                                    <span class="apollo__session-name">Athena</span>
+                                    <span class="apollo__session-status">
+                                        <div class="apollo__health-indicator apollo__health-indicator--healthy"></div>
+                                        Healthy
+                                    </span>
+                                </li>
+                                <li class="apollo__session-item">
+                                    <span class="apollo__session-name">Rhetor</span>
+                                    <span class="apollo__session-status">
+                                        <div class="apollo__health-indicator apollo__health-indicator--warning"></div>
+                                        High Usage
+                                    </span>
+                                </li>
+                                <li class="apollo__session-item">
+                                    <span class="apollo__session-name">Engram</span>
+                                    <span class="apollo__session-status">
+                                        <div class="apollo__health-indicator apollo__health-indicator--healthy"></div>
+                                        Healthy
+                                    </span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Sessions Tab -->
+        <div id="sessions-panel" class="apollo__panel">
+            <div class="apollo__sessions">
+                <div class="apollo__control-bar">
+                    <div class="apollo__search-container">
+                        <input type="text" id="session-search" class="apollo__search-input" placeholder="Search sessions...">
+                        <button id="session-search-btn" class="apollo__search-button">Search</button>
+                    </div>
+                    <div class="apollo__filter-container">
+                        <select id="session-status-filter" class="apollo__filter-select">
+                            <option value="all">All Status</option>
+                            <option value="healthy">Healthy</option>
+                            <option value="warning">Warning</option>
+                            <option value="critical">Critical</option>
+                        </select>
+                        <button id="apply-filter-btn" class="apollo__filter-button">Apply</button>
+                    </div>
+                </div>
+                <div class="apollo__sessions-grid">
+                    <div class="apollo__session-card">
+                        <div class="apollo__session-card-header">
+                            <h3 class="apollo__session-card-title">Codex</h3>
+                            <div class="apollo__health-indicator apollo__health-indicator--healthy"></div>
+                        </div>
+                        <div class="apollo__session-details">
+                            <div class="apollo__detail-item">
+                                <span class="apollo__detail-label">Model:</span>
+                                <span class="apollo__detail-value">claude-3-opus</span>
+                            </div>
+                            <div class="apollo__detail-item">
+                                <span class="apollo__detail-label">Tokens Used:</span>
+                                <span class="apollo__detail-value">12,420 / 30,000</span>
+                            </div>
+                            <div class="apollo__detail-item">
+                                <span class="apollo__detail-label">Health Score:</span>
+                                <span class="apollo__detail-value">98%</span>
+                            </div>
+                            <div class="apollo__detail-item">
+                                <span class="apollo__detail-label">Last Active:</span>
+                                <span class="apollo__detail-value">Just now</span>
+                            </div>
+                        </div>
+                        <div class="apollo__token-budget">
+                            <div class="apollo__token-budget-used" style="width: 41.4%"></div>
+                        </div>
+                        <div class="apollo__session-actions">
+                            <button class="apollo__session-action-btn">Refresh</button>
+                            <button class="apollo__session-action-btn">Reset</button>
+                            <button class="apollo__session-action-btn">Compress</button>
+                        </div>
+                    </div>
+
+                    <div class="apollo__session-card">
+                        <div class="apollo__session-card-header">
+                            <h3 class="apollo__session-card-title">Athena</h3>
+                            <div class="apollo__health-indicator apollo__health-indicator--healthy"></div>
+                        </div>
+                        <div class="apollo__session-details">
+                            <div class="apollo__detail-item">
+                                <span class="apollo__detail-label">Model:</span>
+                                <span class="apollo__detail-value">claude-3-sonnet</span>
+                            </div>
+                            <div class="apollo__detail-item">
+                                <span class="apollo__detail-label">Tokens Used:</span>
+                                <span class="apollo__detail-value">8,765 / 25,000</span>
+                            </div>
+                            <div class="apollo__detail-item">
+                                <span class="apollo__detail-label">Health Score:</span>
+                                <span class="apollo__detail-value">95%</span>
+                            </div>
+                            <div class="apollo__detail-item">
+                                <span class="apollo__detail-label">Last Active:</span>
+                                <span class="apollo__detail-value">1 minute ago</span>
+                            </div>
+                        </div>
+                        <div class="apollo__token-budget">
+                            <div class="apollo__token-budget-used" style="width: 35.1%"></div>
+                        </div>
+                        <div class="apollo__session-actions">
+                            <button class="apollo__session-action-btn">Refresh</button>
+                            <button class="apollo__session-action-btn">Reset</button>
+                            <button class="apollo__session-action-btn">Compress</button>
+                        </div>
+                    </div>
+
+                    <div class="apollo__session-card">
+                        <div class="apollo__session-card-header">
+                            <h3 class="apollo__session-card-title">Rhetor</h3>
+                            <div class="apollo__health-indicator apollo__health-indicator--warning"></div>
+                        </div>
+                        <div class="apollo__session-details">
+                            <div class="apollo__detail-item">
+                                <span class="apollo__detail-label">Model:</span>
+                                <span class="apollo__detail-value">claude-3-opus</span>
+                            </div>
+                            <div class="apollo__detail-item">
+                                <span class="apollo__detail-label">Tokens Used:</span>
+                                <span class="apollo__detail-value">21,584 / 25,000</span>
+                            </div>
+                            <div class="apollo__detail-item">
+                                <span class="apollo__detail-label">Health Score:</span>
+                                <span class="apollo__detail-value">72%</span>
+                            </div>
+                            <div class="apollo__detail-item">
+                                <span class="apollo__detail-label">Last Active:</span>
+                                <span class="apollo__detail-value">Just now</span>
+                            </div>
+                        </div>
+                        <div class="apollo__token-budget">
+                            <div class="apollo__token-budget-used apollo__token-budget-used--warning" style="width: 86.3%"></div>
+                        </div>
+                        <div class="apollo__session-actions">
+                            <button class="apollo__session-action-btn">Refresh</button>
+                            <button class="apollo__session-action-btn">Reset</button>
+                            <button class="apollo__session-action-btn apollo__session-action-btn--warning">Compress</button>
+                        </div>
+                    </div>
+
+                    <div class="apollo__session-card">
+                        <div class="apollo__session-card-header">
+                            <h3 class="apollo__session-card-title">Engram</h3>
+                            <div class="apollo__health-indicator apollo__health-indicator--healthy"></div>
+                        </div>
+                        <div class="apollo__session-details">
+                            <div class="apollo__detail-item">
+                                <span class="apollo__detail-label">Model:</span>
+                                <span class="apollo__detail-value">gpt-4</span>
+                            </div>
+                            <div class="apollo__detail-item">
+                                <span class="apollo__detail-label">Tokens Used:</span>
+                                <span class="apollo__detail-value">5,651 / 20,000</span>
+                            </div>
+                            <div class="apollo__detail-item">
+                                <span class="apollo__detail-label">Health Score:</span>
+                                <span class="apollo__detail-value">94%</span>
+                            </div>
+                            <div class="apollo__detail-item">
+                                <span class="apollo__detail-label">Last Active:</span>
+                                <span class="apollo__detail-value">2 minutes ago</span>
+                            </div>
+                        </div>
+                        <div class="apollo__token-budget">
+                            <div class="apollo__token-budget-used" style="width: 28.3%"></div>
+                        </div>
+                        <div class="apollo__session-actions">
+                            <button class="apollo__session-action-btn">Refresh</button>
+                            <button class="apollo__session-action-btn">Reset</button>
+                            <button class="apollo__session-action-btn">Compress</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Token Budgets Tab -->
+        <div id="tokens-panel" class="apollo__panel">
+            <div class="apollo__token-budgets">
+                <div class="apollo__control-bar">
+                    <div class="apollo__stats-container">
+                        <div class="apollo__stat-item">
+                            <span class="apollo__stat-label">Total Allocation:</span>
+                            <span class="apollo__stat-value">100,000</span>
+                        </div>
+                        <div class="apollo__stat-item">
+                            <span class="apollo__stat-label">Total Used:</span>
+                            <span class="apollo__stat-value">38,420</span>
+                        </div>
+                        <div class="apollo__stat-item">
+                            <span class="apollo__stat-label">Compression Threshold:</span>
+                            <span class="apollo__stat-value">85%</span>
+                        </div>
+                    </div>
+                    <div class="apollo__refresh-container">
+                        <button id="refresh-tokens-btn" class="apollo__refresh-button">Refresh</button>
+                    </div>
+                </div>
+                
+                <div class="apollo__budget-grid">
+                    <!-- Token Overview Card -->
+                    <div class="apollo__budget-card">
+                        <div class="apollo__card-header">
+                            <h3 class="apollo__card-title">Overall Token Usage</h3>
+                        </div>
+                        <div class="apollo__card-body">
+                            <div class="apollo__usage-summary">
+                                <div class="apollo__usage-circle">
+                                    <div class="apollo__usage-circle-inner">
+                                        <span class="apollo__usage-percentage">38.4%</span>
+                                        <span class="apollo__usage-label">Used</span>
+                                    </div>
+                                </div>
+                                <div class="apollo__usage-stats">
+                                    <div class="apollo__usage-stat">
+                                        <span class="apollo__usage-stat-label">Used:</span>
+                                        <span class="apollo__usage-stat-value">38,420</span>
+                                    </div>
+                                    <div class="apollo__usage-stat">
+                                        <span class="apollo__usage-stat-label">Remaining:</span>
+                                        <span class="apollo__usage-stat-value">61,580</span>
+                                    </div>
+                                    <div class="apollo__usage-stat">
+                                        <span class="apollo__usage-stat-label">Rate:</span>
+                                        <span class="apollo__usage-stat-value">2,500/hr</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="apollo__budget-timeline">
+                                <h4 class="apollo__subsection-title">Projected Usage</h4>
+                                <div class="apollo__timeline-chart">
+                                    <div class="apollo__timeline-marker" style="left: 38.4%">
+                                        <div class="apollo__timeline-marker-label">Now</div>
+                                    </div>
+                                    <div class="apollo__timeline-marker apollo__timeline-marker--warning" style="left: 85%">
+                                        <div class="apollo__timeline-marker-label">Compression</div>
+                                    </div>
+                                    <div class="apollo__timeline-marker apollo__timeline-marker--critical" style="left: 95%">
+                                        <div class="apollo__timeline-marker-label">Critical</div>
+                                    </div>
+                                    <div class="apollo__timeline-projection" style="width: 62%"></div>
+                                </div>
+                                <div class="apollo__timeline-estimate">
+                                    <span class="apollo__estimate-label">Estimated depletion:</span>
+                                    <span class="apollo__estimate-value">~24.7 hours</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                
+                    <!-- Budget Configuration Card -->
+                    <div class="apollo__budget-card">
+                        <div class="apollo__card-header">
+                            <h3 class="apollo__card-title">Token Budget Configuration</h3>
+                        </div>
+                        <div class="apollo__card-body">
+                            <div class="apollo__budget-form">
+                                <div class="apollo__form-group">
+                                    <label class="apollo__form-label">Budget Strategy</label>
+                                    <select class="apollo__form-select" id="budget-strategy-select">
+                                        <option value="fixed">Fixed Allocation</option>
+                                        <option value="dynamic" selected>Dynamic Allocation</option>
+                                        <option value="priority">Priority-Based</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="apollo__form-group">
+                                    <label class="apollo__form-label">Compression Threshold</label>
+                                    <div class="apollo__range-container">
+                                        <input type="range" min="50" max="95" step="5" value="85" class="apollo__range-input" id="compression-threshold">
+                                        <span class="apollo__range-value">85%</span>
+                                        <div class="apollo__range-labels">
+                                            <span>50%</span>
+                                            <span>95%</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="apollo__form-actions">
+                                    <button class="apollo__button apollo__button--secondary" id="reset-budget-btn">Reset</button>
+                                    <button class="apollo__button apollo__button--primary" id="save-budget-btn">Save Settings</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="apollo__budget-grid apollo__budget-grid--fullwidth">
+                    <!-- Component Budgets Card -->
+                    <div class="apollo__budget-card">
+                        <div class="apollo__card-header">
+                            <h3 class="apollo__card-title">Component Token Budgets</h3>
+                            <button class="apollo__card-action">Edit All</button>
+                        </div>
+                        <div class="apollo__card-body">
+                            <div class="apollo__component-budgets">
+                                <div class="apollo__component-budget-headers">
+                                    <div class="apollo__component-header">Component</div>
+                                    <div class="apollo__component-header">Allocation</div>
+                                    <div class="apollo__component-header">Usage</div>
+                                    <div class="apollo__component-header">Status</div>
+                                    <div class="apollo__component-header">Actions</div>
+                                </div>
+                                
+                                <div class="apollo__component-budget-rows">
+                                    <!-- Codex Row -->
+                                    <div class="apollo__component-budget-row">
+                                        <div class="apollo__component-name">Codex</div>
+                                        <div class="apollo__component-allocation">
+                                            <input type="number" class="apollo__budget-input" value="30000">
+                                        </div>
+                                        <div class="apollo__component-usage">
+                                            <div class="apollo__usage-track">
+                                                <div class="apollo__usage-fill" style="width: 41.4%"></div>
+                                            </div>
+                                            <div class="apollo__usage-text">12,420 (41.4%)</div>
+                                        </div>
+                                        <div class="apollo__component-status apollo__component-status--healthy">Healthy</div>
+                                        <div class="apollo__component-actions">
+                                            <button class="apollo__component-action-btn">Reset</button>
+                                            <button class="apollo__component-action-btn">Compress</button>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Athena Row -->
+                                    <div class="apollo__component-budget-row">
+                                        <div class="apollo__component-name">Athena</div>
+                                        <div class="apollo__component-allocation">
+                                            <input type="number" class="apollo__budget-input" value="25000">
+                                        </div>
+                                        <div class="apollo__component-usage">
+                                            <div class="apollo__usage-track">
+                                                <div class="apollo__usage-fill" style="width: 35.1%"></div>
+                                            </div>
+                                            <div class="apollo__usage-text">8,765 (35.1%)</div>
+                                        </div>
+                                        <div class="apollo__component-status apollo__component-status--healthy">Healthy</div>
+                                        <div class="apollo__component-actions">
+                                            <button class="apollo__component-action-btn">Reset</button>
+                                            <button class="apollo__component-action-btn">Compress</button>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Rhetor Row -->
+                                    <div class="apollo__component-budget-row">
+                                        <div class="apollo__component-name">Rhetor</div>
+                                        <div class="apollo__component-allocation">
+                                            <input type="number" class="apollo__budget-input" value="25000">
+                                        </div>
+                                        <div class="apollo__component-usage">
+                                            <div class="apollo__usage-track">
+                                                <div class="apollo__usage-fill apollo__usage-fill--warning" style="width: 86.3%"></div>
+                                            </div>
+                                            <div class="apollo__usage-text">21,584 (86.3%)</div>
+                                        </div>
+                                        <div class="apollo__component-status apollo__component-status--warning">Warning</div>
+                                        <div class="apollo__component-actions">
+                                            <button class="apollo__component-action-btn">Reset</button>
+                                            <button class="apollo__component-action-btn apollo__component-action-btn--warning">Compress</button>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Engram Row -->
+                                    <div class="apollo__component-budget-row">
+                                        <div class="apollo__component-name">Engram</div>
+                                        <div class="apollo__component-allocation">
+                                            <input type="number" class="apollo__budget-input" value="20000">
+                                        </div>
+                                        <div class="apollo__component-usage">
+                                            <div class="apollo__usage-track">
+                                                <div class="apollo__usage-fill" style="width: 28.3%"></div>
+                                            </div>
+                                            <div class="apollo__usage-text">5,651 (28.3%)</div>
+                                        </div>
+                                        <div class="apollo__component-status apollo__component-status--healthy">Healthy</div>
+                                        <div class="apollo__component-actions">
+                                            <button class="apollo__component-action-btn">Reset</button>
+                                            <button class="apollo__component-action-btn">Compress</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="apollo__card-footer">
+                            <button class="apollo__button apollo__button--secondary">Add Component</button>
+                            <button class="apollo__button apollo__button--primary">Save Allocations</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Protocols Tab -->
+        <div id="protocols-panel" class="apollo__panel">
+            <div class="apollo__protocols">
+                <div class="apollo__control-bar">
+                    <div class="apollo__filter-container">
+                        <select id="protocol-filter" class="apollo__filter-select">
+                            <option value="all" selected>All Protocols</option>
+                            <option value="active">Active Only</option>
+                            <option value="memory">Memory Related</option>
+                            <option value="context">Context Related</option>
+                            <option value="safety">Safety Related</option>
+                        </select>
+                        <button id="apply-protocol-filter-btn" class="apollo__filter-button">Apply</button>
+                    </div>
+                    <div class="apollo__actions">
+                        <button id="add-protocol-btn" class="apollo__action-button">
+                            <span class="apollo__button-icon">+</span>
+                            <span class="apollo__button-label">New Protocol</span>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="apollo__protocols-grid">
+                    <!-- Memory Management Protocol Card -->
+                    <div class="apollo__protocol-card">
+                        <div class="apollo__protocol-card-header">
+                            <div class="apollo__protocol-info">
+                                <h3 class="apollo__protocol-title">Memory Management</h3>
+                                <span class="apollo__protocol-type">System</span>
+                            </div>
+                            <div class="apollo__protocol-status apollo__protocol-status--active">
+                                <span class="apollo__status-dot"></span>
+                                <span class="apollo__status-text">Active</span>
+                            </div>
+                        </div>
+                        <div class="apollo__protocol-card-body">
+                            <div class="apollo__protocol-description">
+                                <p>Controls memory fetch and compression operations across all LLM sessions.</p>
+                            </div>
+                            <div class="apollo__protocol-metrics">
+                                <div class="apollo__metric-item">
+                                    <div class="apollo__metric-label">Effectiveness:</div>
+                                    <div class="apollo__metric-value apollo__metric-value--good">92%</div>
+                                </div>
+                                <div class="apollo__metric-item">
+                                    <div class="apollo__metric-label">Last Triggered:</div>
+                                    <div class="apollo__metric-value">2 min ago</div>
+                                </div>
+                                <div class="apollo__metric-item">
+                                    <div class="apollo__metric-label">Application:</div>
+                                    <div class="apollo__metric-value">Global</div>
+                                </div>
+                            </div>
+                            <div class="apollo__protocol-settings">
+                                <div class="apollo__settings-table">
+                                    <div class="apollo__settings-row">
+                                        <div class="apollo__setting-name">Prefetch Threshold:</div>
+                                        <div class="apollo__setting-control">
+                                            <div class="apollo__range-with-value">
+                                                <input type="range" min="0" max="1" step="0.05" value="0.75" class="apollo__setting-range">
+                                                <span class="apollo__setting-value">0.75</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="apollo__settings-row">
+                                        <div class="apollo__setting-name">Compression Levels:</div>
+                                        <div class="apollo__setting-control">
+                                            <div class="apollo__settings-tags">
+                                                <span class="apollo__settings-tag">0.85</span>
+                                                <span class="apollo__settings-tag">0.92</span>
+                                                <span class="apollo__settings-tag">0.98</span>
+                                                <button class="apollo__tag-add">+</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="apollo__settings-row">
+                                        <div class="apollo__setting-name">Memory Priority:</div>
+                                        <div class="apollo__setting-control">
+                                            <div class="apollo__settings-tags">
+                                                <span class="apollo__settings-tag">recent</span>
+                                                <span class="apollo__settings-tag apollo__settings-tag--primary">relevant</span>
+                                                <span class="apollo__settings-tag">foundational</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="apollo__protocol-card-footer">
+                            <button class="apollo__card-button apollo__card-button--secondary">View History</button>
+                            <button class="apollo__card-button apollo__card-button--secondary">Edit</button>
+                            <button class="apollo__card-button apollo__card-button--secondary">Disable</button>
+                        </div>
+                    </div>
+                    
+                    <!-- LLM Reset Protocol Card -->
+                    <div class="apollo__protocol-card">
+                        <div class="apollo__protocol-card-header">
+                            <div class="apollo__protocol-info">
+                                <h3 class="apollo__protocol-title">LLM Reset</h3>
+                                <span class="apollo__protocol-type">System</span>
+                            </div>
+                            <div class="apollo__protocol-status apollo__protocol-status--active">
+                                <span class="apollo__status-dot"></span>
+                                <span class="apollo__status-text">Active</span>
+                            </div>
+                        </div>
+                        <div class="apollo__protocol-card-body">
+                            <div class="apollo__protocol-description">
+                                <p>Manages when to reset LLM context based on tokens and content quality metrics.</p>
+                            </div>
+                            <div class="apollo__protocol-metrics">
+                                <div class="apollo__metric-item">
+                                    <div class="apollo__metric-label">Effectiveness:</div>
+                                    <div class="apollo__metric-value apollo__metric-value--good">89%</div>
+                                </div>
+                                <div class="apollo__metric-item">
+                                    <div class="apollo__metric-label">Last Triggered:</div>
+                                    <div class="apollo__metric-value">15 min ago</div>
+                                </div>
+                                <div class="apollo__metric-item">
+                                    <div class="apollo__metric-label">Application:</div>
+                                    <div class="apollo__metric-value">Per Model</div>
+                                </div>
+                            </div>
+                            <div class="apollo__protocol-settings">
+                                <div class="apollo__settings-table">
+                                    <div class="apollo__settings-row">
+                                        <div class="apollo__setting-name">Token Threshold:</div>
+                                        <div class="apollo__setting-control">
+                                            <div class="apollo__range-with-value">
+                                                <input type="range" min="0" max="1" step="0.05" value="0.95" class="apollo__setting-range">
+                                                <span class="apollo__setting-value">0.95</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="apollo__settings-row">
+                                        <div class="apollo__setting-name">Hallucination Threshold:</div>
+                                        <div class="apollo__setting-control">
+                                            <div class="apollo__range-with-value">
+                                                <input type="range" min="0" max="1" step="0.05" value="0.8" class="apollo__setting-range">
+                                                <span class="apollo__setting-value">0.8</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="apollo__settings-row">
+                                        <div class="apollo__setting-name">Memory Refresh:</div>
+                                        <div class="apollo__setting-control">
+                                            <label class="apollo__toggle">
+                                                <input type="checkbox" checked>
+                                                <span class="apollo__toggle-slider"></span>
+                                                <span class="apollo__toggle-label">Enabled</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="apollo__protocol-card-footer">
+                            <button class="apollo__card-button apollo__card-button--secondary">View History</button>
+                            <button class="apollo__card-button apollo__card-button--secondary">Edit</button>
+                            <button class="apollo__card-button apollo__card-button--secondary">Disable</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Context Compression Protocol Card -->
+                    <div class="apollo__protocol-card">
+                        <div class="apollo__protocol-card-header">
+                            <div class="apollo__protocol-info">
+                                <h3 class="apollo__protocol-title">Context Compression</h3>
+                                <span class="apollo__protocol-type">System</span>
+                            </div>
+                            <div class="apollo__protocol-status apollo__protocol-status--active">
+                                <span class="apollo__status-dot"></span>
+                                <span class="apollo__status-text">Active</span>
+                            </div>
+                        </div>
+                        <div class="apollo__protocol-card-body">
+                            <div class="apollo__protocol-description">
+                                <p>Handles dynamic context compression based on token usage and importance metrics.</p>
+                            </div>
+                            <div class="apollo__protocol-metrics">
+                                <div class="apollo__metric-item">
+                                    <div class="apollo__metric-label">Effectiveness:</div>
+                                    <div class="apollo__metric-value apollo__metric-value--good">95%</div>
+                                </div>
+                                <div class="apollo__metric-item">
+                                    <div class="apollo__metric-label">Last Triggered:</div>
+                                    <div class="apollo__metric-value">5 min ago</div>
+                                </div>
+                                <div class="apollo__metric-item">
+                                    <div class="apollo__metric-label">Application:</div>
+                                    <div class="apollo__metric-value">Per Model</div>
+                                </div>
+                            </div>
+                            <div class="apollo__protocol-settings">
+                                <div class="apollo__settings-table">
+                                    <div class="apollo__settings-row">
+                                        <div class="apollo__setting-name">Light Compression:</div>
+                                        <div class="apollo__setting-control">
+                                            <div class="apollo__range-with-value">
+                                                <input type="range" min="0" max="1" step="0.05" value="0.85" class="apollo__setting-range">
+                                                <span class="apollo__setting-value">0.85</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="apollo__settings-row">
+                                        <div class="apollo__setting-name">Medium Compression:</div>
+                                        <div class="apollo__setting-control">
+                                            <div class="apollo__range-with-value">
+                                                <input type="range" min="0" max="1" step="0.05" value="0.92" class="apollo__setting-range">
+                                                <span class="apollo__setting-value">0.92</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="apollo__settings-row">
+                                        <div class="apollo__setting-name">Heavy Compression:</div>
+                                        <div class="apollo__setting-control">
+                                            <div class="apollo__range-with-value">
+                                                <input type="range" min="0" max="1" step="0.05" value="0.98" class="apollo__setting-range">
+                                                <span class="apollo__setting-value">0.98</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="apollo__protocol-card-footer">
+                            <button class="apollo__card-button apollo__card-button--secondary">View History</button>
+                            <button class="apollo__card-button apollo__card-button--secondary">Edit</button>
+                            <button class="apollo__card-button apollo__card-button--secondary">Disable</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Hallucination Prevention Protocol Card -->
+                    <div class="apollo__protocol-card">
+                        <div class="apollo__protocol-card-header">
+                            <div class="apollo__protocol-info">
+                                <h3 class="apollo__protocol-title">Hallucination Prevention</h3>
+                                <span class="apollo__protocol-type">Safety</span>
+                            </div>
+                            <div class="apollo__protocol-status apollo__protocol-status--idle">
+                                <span class="apollo__status-dot"></span>
+                                <span class="apollo__status-text">Idle</span>
+                            </div>
+                        </div>
+                        <div class="apollo__protocol-card-body">
+                            <div class="apollo__protocol-description">
+                                <p>Monitors and prevents hallucinations by detecting inconsistencies and triggering verification.</p>
+                            </div>
+                            <div class="apollo__protocol-metrics">
+                                <div class="apollo__metric-item">
+                                    <div class="apollo__metric-label">Effectiveness:</div>
+                                    <div class="apollo__metric-value apollo__metric-value--moderate">78%</div>
+                                </div>
+                                <div class="apollo__metric-item">
+                                    <div class="apollo__metric-label">Last Triggered:</div>
+                                    <div class="apollo__metric-value">1 hr ago</div>
+                                </div>
+                                <div class="apollo__metric-item">
+                                    <div class="apollo__metric-label">Application:</div>
+                                    <div class="apollo__metric-value">Per Session</div>
+                                </div>
+                            </div>
+                            <div class="apollo__protocol-settings">
+                                <div class="apollo__settings-table">
+                                    <div class="apollo__settings-row">
+                                        <div class="apollo__setting-name">Confidence Threshold:</div>
+                                        <div class="apollo__setting-control">
+                                            <div class="apollo__range-with-value">
+                                                <input type="range" min="0" max="1" step="0.05" value="0.6" class="apollo__setting-range">
+                                                <span class="apollo__setting-value">0.6</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="apollo__settings-row">
+                                        <div class="apollo__setting-name">Memory Verification:</div>
+                                        <div class="apollo__setting-control">
+                                            <label class="apollo__toggle">
+                                                <input type="checkbox" checked>
+                                                <span class="apollo__toggle-slider"></span>
+                                                <span class="apollo__toggle-label">Enabled</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="apollo__settings-row">
+                                        <div class="apollo__setting-name">Auto-correction:</div>
+                                        <div class="apollo__setting-control">
+                                            <label class="apollo__toggle">
+                                                <input type="checkbox" checked>
+                                                <span class="apollo__toggle-slider"></span>
+                                                <span class="apollo__toggle-label">Enabled</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="apollo__protocol-card-footer">
+                            <button class="apollo__card-button apollo__card-button--secondary">View History</button>
+                            <button class="apollo__card-button apollo__card-button--secondary">Edit</button>
+                            <button class="apollo__card-button apollo__card-button--primary">Enable</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="apollo__protocols-summary">
+                    <div class="apollo__summary-header">
+                        <h3 class="apollo__summary-title">Protocol Summary</h3>
+                    </div>
+                    <div class="apollo__summary-content">
+                        <div class="apollo__summary-stats">
+                            <div class="apollo__summary-stat">
+                                <div class="apollo__summary-value">4</div>
+                                <div class="apollo__summary-label">Total Protocols</div>
+                            </div>
+                            <div class="apollo__summary-stat">
+                                <div class="apollo__summary-value">3</div>
+                                <div class="apollo__summary-label">Active</div>
+                            </div>
+                            <div class="apollo__summary-stat">
+                                <div class="apollo__summary-value">1</div>
+                                <div class="apollo__summary-label">Idle</div>
+                            </div>
+                        </div>
+                        <div class="apollo__summary-health">
+                            <div class="apollo__health-indicator apollo__health-indicator--healthy"></div>
+                            <div class="apollo__health-text">All Systems Operational</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Forecasting Tab -->
+        <div id="forecasting-panel" class="apollo__panel">
+            <div class="apollo__forecasting">
+                <div class="apollo__control-bar">
+                    <div class="apollo__filter-container">
+                        <select id="forecast-session-filter" class="apollo__filter-select">
+                            <option value="all">All Sessions</option>
+                            <option value="codex">Codex</option>
+                            <option value="athena">Athena</option>
+                            <option value="rhetor">Rhetor</option>
+                            <option value="engram">Engram</option>
+                        </select>
+                        <select id="forecast-time-scale" class="apollo__filter-select">
+                            <option value="1h">1 Hour</option>
+                            <option value="6h">6 Hours</option>
+                            <option value="12h" selected>12 Hours</option>
+                            <option value="24h">24 Hours</option>
+                        </select>
+                        <button id="apply-forecast-filter-btn" class="apollo__filter-button">Apply</button>
+                    </div>
+                    <div class="apollo__refresh-container">
+                        <button id="refresh-forecast-btn" class="apollo__refresh-button">Refresh</button>
+                    </div>
+                </div>
+                
+                <!-- Forecasting Overview Section -->
+                <div class="apollo__forecasting-overview">
+                    <div class="apollo__overview-card">
+                        <div class="apollo__card-header">
+                            <h3 class="apollo__card-title">System-Wide Forecast</h3>
+                        </div>
+                        <div class="apollo__overview-content">
+                            <div class="apollo__overview-visualization">
+                                <!-- Visualization of overall system token usage -->
+                                <div class="apollo__visualization-container">
+                                    <div class="apollo__usage-chart">
+                                        <div class="apollo__chart-axis apollo__chart-axis--y">
+                                            <span class="apollo__axis-label">100k</span>
+                                            <span class="apollo__axis-label">75k</span>
+                                            <span class="apollo__axis-label">50k</span>
+                                            <span class="apollo__axis-label">25k</span>
+                                            <span class="apollo__axis-label">0</span>
+                                        </div>
+                                        <div class="apollo__chart-grid">
+                                            <div class="apollo__chart-line apollo__chart-line--total"></div>
+                                            <div class="apollo__chart-line apollo__chart-line--projected"></div>
+                                            <div class="apollo__chart-marker apollo__chart-marker--now">
+                                                <span class="apollo__marker-label">Now</span>
+                                            </div>
+                                            <div class="apollo__chart-marker apollo__chart-marker--warning">
+                                                <span class="apollo__marker-label">Warning</span>
+                                            </div>
+                                            <div class="apollo__chart-marker apollo__chart-marker--critical">
+                                                <span class="apollo__marker-label">Critical</span>
+                                            </div>
+                                            <div class="apollo__chart-area"></div>
+                                        </div>
+                                        <div class="apollo__chart-axis apollo__chart-axis--x">
+                                            <span class="apollo__axis-label">Now</span>
+                                            <span class="apollo__axis-label">+3h</span>
+                                            <span class="apollo__axis-label">+6h</span>
+                                            <span class="apollo__axis-label">+9h</span>
+                                            <span class="apollo__axis-label">+12h</span>
+                                        </div>
+                                    </div>
+                                    <div class="apollo__chart-legend">
+                                        <div class="apollo__legend-item">
+                                            <div class="apollo__legend-color apollo__legend-color--total"></div>
+                                            <div class="apollo__legend-label">Current Usage</div>
+                                        </div>
+                                        <div class="apollo__legend-item">
+                                            <div class="apollo__legend-color apollo__legend-color--projected"></div>
+                                            <div class="apollo__legend-label">Projected Usage</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="apollo__overview-stats">
+                                <div class="apollo__stat-group">
+                                    <h4 class="apollo__stat-group-title">Current Status</h4>
+                                    <div class="apollo__stat-row">
+                                        <div class="apollo__stat-label">Total Used:</div>
+                                        <div class="apollo__stat-value">38,420 tokens</div>
+                                    </div>
+                                    <div class="apollo__stat-row">
+                                        <div class="apollo__stat-label">Current Rate:</div>
+                                        <div class="apollo__stat-value">2,500 tokens/hour</div>
+                                    </div>
+                                    <div class="apollo__stat-row">
+                                        <div class="apollo__stat-label">Active Sessions:</div>
+                                        <div class="apollo__stat-value">4</div>
+                                    </div>
+                                </div>
+                                <div class="apollo__stat-group">
+                                    <h4 class="apollo__stat-group-title">Projections</h4>
+                                    <div class="apollo__stat-row">
+                                        <div class="apollo__stat-label">Warning Threshold:</div>
+                                        <div class="apollo__stat-value">9h 42m remaining</div>
+                                    </div>
+                                    <div class="apollo__stat-row">
+                                        <div class="apollo__stat-label">Critical Threshold:</div>
+                                        <div class="apollo__stat-value">16h 20m remaining</div>
+                                    </div>
+                                    <div class="apollo__stat-row">
+                                        <div class="apollo__stat-label">Projected Depletion:</div>
+                                        <div class="apollo__stat-value">24h 30m remaining</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Component Forecasts Section -->
+                <div class="apollo__component-forecasts">
+                    <div class="apollo__section-header">
+                        <h3 class="apollo__section-title">Component Forecasts</h3>
+                    </div>
+                    
+                    <div class="apollo__forecast-grid">
+                        <!-- Codex Forecast Card -->
+                        <div class="apollo__forecast-card">
+                            <div class="apollo__forecast-header">
+                                <div class="apollo__forecast-title-container">
+                                    <h3 class="apollo__forecast-title">Codex</h3>
+                                    <div class="apollo__forecast-model">claude-3-opus</div>
+                                </div>
+                                <div class="apollo__forecast-status apollo__forecast-status--stable">Stable</div>
+                            </div>
+                            <div class="apollo__forecast-content">
+                                <!-- Mini visualization -->
+                                <div class="apollo__mini-chart">
+                                    <div class="apollo__mini-chart-line"></div>
+                                    <div class="apollo__mini-chart-marker" style="left: 41.4%"></div>
+                                    <div class="apollo__mini-chart-projection" style="left: 41.4%; width: 25%"></div>
+                                </div>
+                                
+                                <div class="apollo__forecast-metrics">
+                                    <div class="apollo__forecast-metric">
+                                        <span class="apollo__metric-label">Time Remaining:</span>
+                                        <span class="apollo__metric-value">6h 42m</span>
+                                    </div>
+                                    <div class="apollo__forecast-metric">
+                                        <span class="apollo__metric-label">Tokens Remaining:</span>
+                                        <span class="apollo__metric-value">17,580</span>
+                                    </div>
+                                    <div class="apollo__forecast-metric">
+                                        <span class="apollo__metric-label">Usage Rate:</span>
+                                        <span class="apollo__metric-value">2,600/hour</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="apollo__forecast-recommendations">
+                                    <h4 class="apollo__recommendations-title">Recommendations</h4>
+                                    <div class="apollo__no-recommendations">No recommendations at this time</div>
+                                </div>
+                            </div>
+                            <div class="apollo__forecast-footer">
+                                <button class="apollo__forecast-action-btn">View Details</button>
+                                <button class="apollo__forecast-action-btn">Optimize</button>
+                            </div>
+                        </div>
+                        
+                        <!-- Athena Forecast Card -->
+                        <div class="apollo__forecast-card">
+                            <div class="apollo__forecast-header">
+                                <div class="apollo__forecast-title-container">
+                                    <h3 class="apollo__forecast-title">Athena</h3>
+                                    <div class="apollo__forecast-model">claude-3-sonnet</div>
+                                </div>
+                                <div class="apollo__forecast-status apollo__forecast-status--stable">Stable</div>
+                            </div>
+                            <div class="apollo__forecast-content">
+                                <!-- Mini visualization -->
+                                <div class="apollo__mini-chart">
+                                    <div class="apollo__mini-chart-line"></div>
+                                    <div class="apollo__mini-chart-marker" style="left: 35.1%"></div>
+                                    <div class="apollo__mini-chart-projection" style="left: 35.1%; width: 22%"></div>
+                                </div>
+                                
+                                <div class="apollo__forecast-metrics">
+                                    <div class="apollo__forecast-metric">
+                                        <span class="apollo__metric-label">Time Remaining:</span>
+                                        <span class="apollo__metric-value">8h 15m</span>
+                                    </div>
+                                    <div class="apollo__forecast-metric">
+                                        <span class="apollo__metric-label">Tokens Remaining:</span>
+                                        <span class="apollo__metric-value">16,235</span>
+                                    </div>
+                                    <div class="apollo__forecast-metric">
+                                        <span class="apollo__metric-label">Usage Rate:</span>
+                                        <span class="apollo__metric-value">1,900/hour</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="apollo__forecast-recommendations">
+                                    <h4 class="apollo__recommendations-title">Recommendations</h4>
+                                    <div class="apollo__no-recommendations">No recommendations at this time</div>
+                                </div>
+                            </div>
+                            <div class="apollo__forecast-footer">
+                                <button class="apollo__forecast-action-btn">View Details</button>
+                                <button class="apollo__forecast-action-btn">Optimize</button>
+                            </div>
+                        </div>
+                        
+                        <!-- Rhetor Forecast Card -->
+                        <div class="apollo__forecast-card apollo__forecast-card--warning">
+                            <div class="apollo__forecast-header">
+                                <div class="apollo__forecast-title-container">
+                                    <h3 class="apollo__forecast-title">Rhetor</h3>
+                                    <div class="apollo__forecast-model">claude-3-opus</div>
+                                </div>
+                                <div class="apollo__forecast-status apollo__forecast-status--degrading">Degrading</div>
+                            </div>
+                            <div class="apollo__forecast-content">
+                                <!-- Mini visualization -->
+                                <div class="apollo__mini-chart">
+                                    <div class="apollo__mini-chart-line"></div>
+                                    <div class="apollo__mini-chart-marker" style="left: 86.3%"></div>
+                                    <div class="apollo__mini-chart-projection apollo__mini-chart-projection--warning" style="left: 86.3%; width: 28%"></div>
+                                </div>
+                                
+                                <div class="apollo__forecast-metrics">
+                                    <div class="apollo__forecast-metric">
+                                        <span class="apollo__metric-label">Time Remaining:</span>
+                                        <span class="apollo__metric-value apollo__metric-value--warning">45m</span>
+                                    </div>
+                                    <div class="apollo__forecast-metric">
+                                        <span class="apollo__metric-label">Tokens Remaining:</span>
+                                        <span class="apollo__metric-value apollo__metric-value--warning">3,416</span>
+                                    </div>
+                                    <div class="apollo__forecast-metric">
+                                        <span class="apollo__metric-label">Usage Rate:</span>
+                                        <span class="apollo__metric-value apollo__metric-value--warning">4,500/hour</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="apollo__forecast-recommendations">
+                                    <h4 class="apollo__recommendations-title">Recommendations</h4>
+                                    <div class="apollo__recommendations-list">
+                                        <div class="apollo__recommendation apollo__recommendation--warning">
+                                            <div class="apollo__recommendation-type">Medium Compression</div>
+                                            <div class="apollo__recommendation-reason">High token usage rate</div>
+                                            <button class="apollo__recommendation-action">Apply</button>
+                                        </div>
+                                        <div class="apollo__recommendation apollo__recommendation--warning">
+                                            <div class="apollo__recommendation-type">Reset Session</div>
+                                            <div class="apollo__recommendation-reason">Context nearing exhaustion</div>
+                                            <button class="apollo__recommendation-action">Apply</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="apollo__forecast-footer">
+                                <button class="apollo__forecast-action-btn">View Details</button>
+                                <button class="apollo__forecast-action-btn apollo__forecast-action-btn--warning">Optimize Now</button>
+                            </div>
+                        </div>
+                        
+                        <!-- Engram Forecast Card -->
+                        <div class="apollo__forecast-card">
+                            <div class="apollo__forecast-header">
+                                <div class="apollo__forecast-title-container">
+                                    <h3 class="apollo__forecast-title">Engram</h3>
+                                    <div class="apollo__forecast-model">gpt-4</div>
+                                </div>
+                                <div class="apollo__forecast-status apollo__forecast-status--stable">Stable</div>
+                            </div>
+                            <div class="apollo__forecast-content">
+                                <!-- Mini visualization -->
+                                <div class="apollo__mini-chart">
+                                    <div class="apollo__mini-chart-line"></div>
+                                    <div class="apollo__mini-chart-marker" style="left: 28.3%"></div>
+                                    <div class="apollo__mini-chart-projection" style="left: 28.3%; width: 12%"></div>
+                                </div>
+                                
+                                <div class="apollo__forecast-metrics">
+                                    <div class="apollo__forecast-metric">
+                                        <span class="apollo__metric-label">Time Remaining:</span>
+                                        <span class="apollo__metric-value">12h 22m</span>
+                                    </div>
+                                    <div class="apollo__forecast-metric">
+                                        <span class="apollo__metric-label">Tokens Remaining:</span>
+                                        <span class="apollo__metric-value">14,349</span>
+                                    </div>
+                                    <div class="apollo__forecast-metric">
+                                        <span class="apollo__metric-label">Usage Rate:</span>
+                                        <span class="apollo__metric-value">1,100/hour</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="apollo__forecast-recommendations">
+                                    <h4 class="apollo__recommendations-title">Recommendations</h4>
+                                    <div class="apollo__no-recommendations">No recommendations at this time</div>
+                                </div>
+                            </div>
+                            <div class="apollo__forecast-footer">
+                                <button class="apollo__forecast-action-btn">View Details</button>
+                                <button class="apollo__forecast-action-btn">Optimize</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Advanced Analytics Section -->
+                <div class="apollo__advanced-analytics">
+                    <div class="apollo__section-header">
+                        <h3 class="apollo__section-title">Advanced Analytics</h3>
+                    </div>
+                    
+                    <div class="apollo__analytics-grid">
+                        <!-- Usage Patterns Card -->
+                        <div class="apollo__analytics-card">
+                            <div class="apollo__card-header">
+                                <h3 class="apollo__card-title">Usage Patterns</h3>
+                                <div class="apollo__card-actions">
+                                    <button class="apollo__card-action-btn">
+                                        <span class="apollo__card-action-icon">⚙️</span>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="apollo__card-body">
+                                <div class="apollo__patterns-visualization">
+                                    <div class="apollo__heatmap">
+                                        <div class="apollo__heatmap-row">
+                                            <div class="apollo__heatmap-label">Codex</div>
+                                            <div class="apollo__heatmap-cells">
+                                                <div class="apollo__heatmap-cell" style="opacity: 0.2"></div>
+                                                <div class="apollo__heatmap-cell" style="opacity: 0.5"></div>
+                                                <div class="apollo__heatmap-cell" style="opacity: 0.7"></div>
+                                                <div class="apollo__heatmap-cell" style="opacity: 0.9"></div>
+                                                <div class="apollo__heatmap-cell" style="opacity: 0.6"></div>
+                                                <div class="apollo__heatmap-cell" style="opacity: 0.4"></div>
+                                            </div>
+                                        </div>
+                                        <div class="apollo__heatmap-row">
+                                            <div class="apollo__heatmap-label">Athena</div>
+                                            <div class="apollo__heatmap-cells">
+                                                <div class="apollo__heatmap-cell" style="opacity: 0.1"></div>
+                                                <div class="apollo__heatmap-cell" style="opacity: 0.3"></div>
+                                                <div class="apollo__heatmap-cell" style="opacity: 0.4"></div>
+                                                <div class="apollo__heatmap-cell" style="opacity: 0.6"></div>
+                                                <div class="apollo__heatmap-cell" style="opacity: 0.5"></div>
+                                                <div class="apollo__heatmap-cell" style="opacity: 0.3"></div>
+                                            </div>
+                                        </div>
+                                        <div class="apollo__heatmap-row">
+                                            <div class="apollo__heatmap-label">Rhetor</div>
+                                            <div class="apollo__heatmap-cells">
+                                                <div class="apollo__heatmap-cell" style="opacity: 0.3"></div>
+                                                <div class="apollo__heatmap-cell" style="opacity: 0.6"></div>
+                                                <div class="apollo__heatmap-cell" style="opacity: 0.9"></div>
+                                                <div class="apollo__heatmap-cell" style="opacity: 1.0"></div>
+                                                <div class="apollo__heatmap-cell" style="opacity: 0.8"></div>
+                                                <div class="apollo__heatmap-cell" style="opacity: 0.7"></div>
+                                            </div>
+                                        </div>
+                                        <div class="apollo__heatmap-row">
+                                            <div class="apollo__heatmap-label">Engram</div>
+                                            <div class="apollo__heatmap-cells">
+                                                <div class="apollo__heatmap-cell" style="opacity: 0.1"></div>
+                                                <div class="apollo__heatmap-cell" style="opacity: 0.2"></div>
+                                                <div class="apollo__heatmap-cell" style="opacity: 0.3"></div>
+                                                <div class="apollo__heatmap-cell" style="opacity: 0.4"></div>
+                                                <div class="apollo__heatmap-cell" style="opacity: 0.3"></div>
+                                                <div class="apollo__heatmap-cell" style="opacity: 0.2"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="apollo__heatmap-legend">
+                                        <div class="apollo__heatmap-legend-item" style="opacity: 0.2">Low</div>
+                                        <div class="apollo__heatmap-legend-item" style="opacity: 0.5">Medium</div>
+                                        <div class="apollo__heatmap-legend-item" style="opacity: 0.8">High</div>
+                                    </div>
+                                </div>
+                                <div class="apollo__patterns-insights">
+                                    <h4 class="apollo__insights-title">Key Insights</h4>
+                                    <ul class="apollo__insights-list">
+                                        <li class="apollo__insight-item">Rhetor shows consistently high token consumption</li>
+                                        <li class="apollo__insight-item">Codex usage peaks during active development hours</li>
+                                        <li class="apollo__insight-item">Engram shows the most efficient token usage overall</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Prediction Accuracy Card -->
+                        <div class="apollo__analytics-card">
+                            <div class="apollo__card-header">
+                                <h3 class="apollo__card-title">Prediction Accuracy</h3>
+                                <div class="apollo__card-actions">
+                                    <button class="apollo__card-action-btn">
+                                        <span class="apollo__card-action-icon">⚙️</span>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="apollo__card-body">
+                                <div class="apollo__accuracy-metrics">
+                                    <div class="apollo__accuracy-metric">
+                                        <div class="apollo__accuracy-value">92%</div>
+                                        <div class="apollo__accuracy-label">Token Prediction</div>
+                                    </div>
+                                    <div class="apollo__accuracy-metric">
+                                        <div class="apollo__accuracy-value">87%</div>
+                                        <div class="apollo__accuracy-label">Time Estimation</div>
+                                    </div>
+                                    <div class="apollo__accuracy-metric">
+                                        <div class="apollo__accuracy-value">95%</div>
+                                        <div class="apollo__accuracy-label">Optimization Effect</div>
+                                    </div>
+                                </div>
+                                <div class="apollo__accuracy-history">
+                                    <h4 class="apollo__history-title">Recent Predictions</h4>
+                                    <div class="apollo__history-items">
+                                        <div class="apollo__history-item">
+                                            <div class="apollo__history-time">13:05</div>
+                                            <div class="apollo__history-description">Rhetor token exhaustion prediction</div>
+                                            <div class="apollo__history-accuracy apollo__history-accuracy--good">+5%</div>
+                                        </div>
+                                        <div class="apollo__history-item">
+                                            <div class="apollo__history-time">12:30</div>
+                                            <div class="apollo__history-description">Codex compression impact</div>
+                                            <div class="apollo__history-accuracy apollo__history-accuracy--excellent">+2%</div>
+                                        </div>
+                                        <div class="apollo__history-item">
+                                            <div class="apollo__history-time">11:45</div>
+                                            <div class="apollo__history-description">Athena usage rate</div>
+                                            <div class="apollo__history-accuracy apollo__history-accuracy--moderate">-12%</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Actions Tab -->
+        <div id="actions-panel" class="apollo__panel">
+            <div class="apollo__actions-panel">
+                <div class="apollo__control-bar">
+                    <div class="apollo__filter-container">
+                        <select id="action-session-filter" class="apollo__filter-select">
+                            <option value="all">All Sessions</option>
+                            <option value="codex">Codex</option>
+                            <option value="athena">Athena</option>
+                            <option value="rhetor">Rhetor</option>
+                            <option value="engram">Engram</option>
+                        </select>
+                        <button id="apply-action-filter-btn" class="apollo__filter-button">Apply</button>
+                    </div>
+                    <div class="apollo__actions">
+                        <button id="view-history-btn" class="apollo__action-button">
+                            <span class="apollo__button-label">View History</span>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Action Dashboard -->
+                <div class="apollo__action-dashboard">
+                    <div class="apollo__section-header">
+                        <h3 class="apollo__section-title">LLM Control Actions</h3>
+                        <p class="apollo__section-description">Execute commands to manage LLM sessions and optimize performance.</p>
+                    </div>
+                    
+                    <div class="apollo__action-cards">
+                        <!-- Reset Action Card -->
+                        <div class="apollo__action-card">
+                            <div class="apollo__action-card-header">
+                                <div class="apollo__action-icon">🔄</div>
+                                <h3 class="apollo__action-title">Reset Session</h3>
+                            </div>
+                            <div class="apollo__action-card-body">
+                                <p class="apollo__action-description">Reset an LLM session to clear its context and start fresh.</p>
+                                
+                                <div class="apollo__action-form">
+                                    <div class="apollo__form-group">
+                                        <label class="apollo__form-label">Target Session</label>
+                                        <select class="apollo__form-select" id="reset-session-select">
+                                            <option value="">Select a session</option>
+                                            <option value="codex">Codex</option>
+                                            <option value="athena">Athena</option>
+                                            <option value="rhetor">Rhetor</option>
+                                            <option value="engram">Engram</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="apollo__form-group">
+                                        <label class="apollo__form-label">Reset Options</label>
+                                        <div class="apollo__option-toggles">
+                                            <label class="apollo__option-toggle">
+                                                <input type="checkbox" checked id="preserve-memory-check">
+                                                <span class="apollo__option-toggle-label">Preserve Memory</span>
+                                            </label>
+                                            <label class="apollo__option-toggle">
+                                                <input type="checkbox" id="restart-model-check">
+                                                <span class="apollo__option-toggle-label">Restart Model</span>
+                                            </label>
+                                            <label class="apollo__option-toggle">
+                                                <input type="checkbox" checked id="reload-protocols-check">
+                                                <span class="apollo__option-toggle-label">Reload Protocols</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="apollo__form-group apollo__form-group--confirmation">
+                                        <label class="apollo__checkbox-label apollo__checkbox-label--warning">
+                                            <input type="checkbox" class="apollo__checkbox" id="reset-confirm-check">
+                                            <span class="apollo__confirmation-text">I understand this will clear the LLM context</span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="apollo__action-card-footer">
+                                <button class="apollo__action-button apollo__action-button--primary" id="execute-reset-btn" disabled>Execute Reset</button>
+                            </div>
+                        </div>
+                        
+                        <!-- Compress Action Card -->
+                        <div class="apollo__action-card">
+                            <div class="apollo__action-card-header">
+                                <div class="apollo__action-icon">📦</div>
+                                <h3 class="apollo__action-title">Compress Context</h3>
+                            </div>
+                            <div class="apollo__action-card-body">
+                                <p class="apollo__action-description">Compress an LLM's context to reduce token usage while preserving important information.</p>
+                                
+                                <div class="apollo__action-form">
+                                    <div class="apollo__form-group">
+                                        <label class="apollo__form-label">Target Session</label>
+                                        <select class="apollo__form-select" id="compress-session-select">
+                                            <option value="">Select a session</option>
+                                            <option value="codex">Codex</option>
+                                            <option value="athena">Athena</option>
+                                            <option value="rhetor" selected>Rhetor</option>
+                                            <option value="engram">Engram</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="apollo__form-group">
+                                        <label class="apollo__form-label">Compression Level</label>
+                                        <div class="apollo__compression-level-selector">
+                                            <label class="apollo__compression-option">
+                                                <input type="radio" name="compression-level" value="light">
+                                                <span class="apollo__compression-label">Light</span>
+                                                <span class="apollo__compression-value">15%</span>
+                                            </label>
+                                            <label class="apollo__compression-option apollo__compression-option--active">
+                                                <input type="radio" name="compression-level" value="medium" checked>
+                                                <span class="apollo__compression-label">Medium</span>
+                                                <span class="apollo__compression-value">25%</span>
+                                            </label>
+                                            <label class="apollo__compression-option">
+                                                <input type="radio" name="compression-level" value="heavy">
+                                                <span class="apollo__compression-label">Heavy</span>
+                                                <span class="apollo__compression-value">40%</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="apollo__form-group">
+                                        <label class="apollo__form-label">Compression Options</label>
+                                        <div class="apollo__option-toggles">
+                                            <label class="apollo__option-toggle">
+                                                <input type="checkbox" checked id="preserve-latest-check">
+                                                <span class="apollo__option-toggle-label">Preserve Latest Exchange</span>
+                                            </label>
+                                            <label class="apollo__option-toggle">
+                                                <input type="checkbox" checked id="preserve-important-check">
+                                                <span class="apollo__option-toggle-label">Preserve Important Context</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="apollo__action-card-footer">
+                                <button class="apollo__action-button apollo__action-button--primary apollo__action-button--warning" id="execute-compress-btn">Execute Compression</button>
+                            </div>
+                        </div>
+                        
+                        <!-- Rebuild Action Card -->
+                        <div class="apollo__action-card">
+                            <div class="apollo__action-card-header">
+                                <div class="apollo__action-icon">🔧</div>
+                                <h3 class="apollo__action-title">Rebuild Prompt</h3>
+                            </div>
+                            <div class="apollo__action-card-body">
+                                <p class="apollo__action-description">Rebuild an LLM's prompt to optimize context structure and improve responses.</p>
+                                
+                                <div class="apollo__action-form">
+                                    <div class="apollo__form-group">
+                                        <label class="apollo__form-label">Target Session</label>
+                                        <select class="apollo__form-select" id="rebuild-session-select">
+                                            <option value="">Select a session</option>
+                                            <option value="codex">Codex</option>
+                                            <option value="athena">Athena</option>
+                                            <option value="rhetor">Rhetor</option>
+                                            <option value="engram">Engram</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="apollo__form-group">
+                                        <label class="apollo__form-label">Rebuild Strategy</label>
+                                        <div class="apollo__strategy-selector">
+                                            <label class="apollo__strategy-option">
+                                                <input type="radio" name="rebuild-strategy" value="summarize">
+                                                <span class="apollo__strategy-icon">📝</span>
+                                                <span class="apollo__strategy-label">Summarize History</span>
+                                            </label>
+                                            <label class="apollo__strategy-option apollo__strategy-option--active">
+                                                <input type="radio" name="rebuild-strategy" value="restructure" checked>
+                                                <span class="apollo__strategy-icon">🔄</span>
+                                                <span class="apollo__strategy-label">Restructure Prompt</span>
+                                            </label>
+                                            <label class="apollo__strategy-option">
+                                                <input type="radio" name="rebuild-strategy" value="refocus">
+                                                <span class="apollo__strategy-icon">🎯</span>
+                                                <span class="apollo__strategy-label">Refocus Context</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="apollo__form-group">
+                                        <label class="apollo__form-label">Priority Elements</label>
+                                        <div class="apollo__priority-elements">
+                                            <div class="apollo__priority-element">
+                                                <input type="checkbox" checked id="include-system-check">
+                                                <span class="apollo__priority-label">System Instructions</span>
+                                                <div class="apollo__priority-slider">
+                                                    <input type="range" min="1" max="5" value="5" class="apollo__priority-range">
+                                                    <div class="apollo__priority-value">High</div>
+                                                </div>
+                                            </div>
+                                            <div class="apollo__priority-element">
+                                                <input type="checkbox" checked id="include-memory-check">
+                                                <span class="apollo__priority-label">Memory References</span>
+                                                <div class="apollo__priority-slider">
+                                                    <input type="range" min="1" max="5" value="4" class="apollo__priority-range">
+                                                    <div class="apollo__priority-value">Medium-High</div>
+                                                </div>
+                                            </div>
+                                            <div class="apollo__priority-element">
+                                                <input type="checkbox" checked id="include-recent-check">
+                                                <span class="apollo__priority-label">Recent Exchanges</span>
+                                                <div class="apollo__priority-slider">
+                                                    <input type="range" min="1" max="5" value="3" class="apollo__priority-range">
+                                                    <div class="apollo__priority-value">Medium</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="apollo__action-card-footer">
+                                <button class="apollo__action-button apollo__action-button--primary" id="execute-rebuild-btn">Execute Rebuild</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Action History Section -->
+                <div class="apollo__action-history">
+                    <div class="apollo__section-header">
+                        <h3 class="apollo__section-title">Action History</h3>
+                        <div class="apollo__section-actions">
+                            <button class="apollo__section-action-btn" id="refresh-history-btn">
+                                <span class="apollo__section-action-icon">🔄</span>
+                                <span class="apollo__section-action-label">Refresh</span>
+                            </button>
+                            <button class="apollo__section-action-btn" id="auto-refresh-history-btn">
+                                <span class="apollo__section-action-icon">⚡</span>
+                                <span class="apollo__section-action-label">Auto-Refresh</span>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="apollo__history-table-container">
+                        <table class="apollo__history-table">
+                            <thead>
+                                <tr>
+                                    <th class="apollo__history-header apollo__history-header--timestamp">Timestamp</th>
+                                    <th class="apollo__history-header apollo__history-header--action">Action</th>
+                                    <th class="apollo__history-header apollo__history-header--target">Target</th>
+                                    <th class="apollo__history-header apollo__history-header--details">Details</th>
+                                    <th class="apollo__history-header apollo__history-header--status">Status</th>
+                                    <th class="apollo__history-header apollo__history-header--actions">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="apollo__history-row">
+                                    <td class="apollo__history-cell apollo__history-cell--timestamp">2025-05-18 13:05:22</td>
+                                    <td class="apollo__history-cell apollo__history-cell--action">Compression</td>
+                                    <td class="apollo__history-cell apollo__history-cell--target">Rhetor</td>
+                                    <td class="apollo__history-cell apollo__history-cell--details">Medium (25%) - Preserved latest exchange</td>
+                                    <td class="apollo__history-cell apollo__history-cell--status">
+                                        <span class="apollo__status-pill apollo__status-pill--success">Successful</span>
+                                    </td>
+                                    <td class="apollo__history-cell apollo__history-cell--actions">
+                                        <button class="apollo__history-action-btn">View</button>
+                                        <button class="apollo__history-action-btn">Repeat</button>
+                                    </td>
+                                </tr>
+                                <tr class="apollo__history-row">
+                                    <td class="apollo__history-cell apollo__history-cell--timestamp">2025-05-18 12:58:15</td>
+                                    <td class="apollo__history-cell apollo__history-cell--action">Reset</td>
+                                    <td class="apollo__history-cell apollo__history-cell--target">Codex</td>
+                                    <td class="apollo__history-cell apollo__history-cell--details">Preserved memory, Reloaded protocols</td>
+                                    <td class="apollo__history-cell apollo__history-cell--status">
+                                        <span class="apollo__status-pill apollo__status-pill--success">Successful</span>
+                                    </td>
+                                    <td class="apollo__history-cell apollo__history-cell--actions">
+                                        <button class="apollo__history-action-btn">View</button>
+                                        <button class="apollo__history-action-btn">Repeat</button>
+                                    </td>
+                                </tr>
+                                <tr class="apollo__history-row">
+                                    <td class="apollo__history-cell apollo__history-cell--timestamp">2025-05-18 12:45:33</td>
+                                    <td class="apollo__history-cell apollo__history-cell--action">Rebuild</td>
+                                    <td class="apollo__history-cell apollo__history-cell--target">Athena</td>
+                                    <td class="apollo__history-cell apollo__history-cell--details">Restructured prompt, Prioritized system instructions</td>
+                                    <td class="apollo__history-cell apollo__history-cell--status">
+                                        <span class="apollo__status-pill apollo__status-pill--success">Successful</span>
+                                    </td>
+                                    <td class="apollo__history-cell apollo__history-cell--actions">
+                                        <button class="apollo__history-action-btn">View</button>
+                                        <button class="apollo__history-action-btn">Repeat</button>
+                                    </td>
+                                </tr>
+                                <tr class="apollo__history-row">
+                                    <td class="apollo__history-cell apollo__history-cell--timestamp">2025-05-18 12:30:07</td>
+                                    <td class="apollo__history-cell apollo__history-cell--action">Compression</td>
+                                    <td class="apollo__history-cell apollo__history-cell--target">Engram</td>
+                                    <td class="apollo__history-cell apollo__history-cell--details">Light (15%) - Preserved important context</td>
+                                    <td class="apollo__history-cell apollo__history-cell--status">
+                                        <span class="apollo__status-pill apollo__status-pill--success">Successful</span>
+                                    </td>
+                                    <td class="apollo__history-cell apollo__history-cell--actions">
+                                        <button class="apollo__history-action-btn">View</button>
+                                        <button class="apollo__history-action-btn">Repeat</button>
+                                    </td>
+                                </tr>
+                                <tr class="apollo__history-row">
+                                    <td class="apollo__history-cell apollo__history-cell--timestamp">2025-05-18 12:15:42</td>
+                                    <td class="apollo__history-cell apollo__history-cell--action">Auto-Optimize</td>
+                                    <td class="apollo__history-cell apollo__history-cell--target">Rhetor</td>
+                                    <td class="apollo__history-cell apollo__history-cell--details">Triggered by token threshold (90%)</td>
+                                    <td class="apollo__history-cell apollo__history-cell--status">
+                                        <span class="apollo__status-pill apollo__status-pill--warning">Partial</span>
+                                    </td>
+                                    <td class="apollo__history-cell apollo__history-cell--actions">
+                                        <button class="apollo__history-action-btn">View</button>
+                                        <button class="apollo__history-action-btn">Retry</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="apollo__history-pagination">
+                        <button class="apollo__pagination-btn apollo__pagination-btn--disabled">Previous</button>
+                        <div class="apollo__pagination-info">Page 1 of 1</div>
+                        <button class="apollo__pagination-btn apollo__pagination-btn--disabled">Next</button>
+                    </div>
+                </div>
+                
+                <!-- Action Metrics Section -->
+                <div class="apollo__action-metrics">
+                    <div class="apollo__section-header">
+                        <h3 class="apollo__section-title">Optimization Metrics</h3>
+                    </div>
+                    
+                    <div class="apollo__metrics-grid">
+                        <div class="apollo__metric-card">
+                            <div class="apollo__metric-card-header">
+                                <h4 class="apollo__metric-card-title">Token Savings</h4>
+                            </div>
+                            <div class="apollo__metric-card-body">
+                                <div class="apollo__metric-value">48,765</div>
+                                <div class="apollo__metric-label">Tokens Saved Today</div>
+                                <div class="apollo__metric-chart">
+                                    <div class="apollo__chart-bar" style="height: 30%"></div>
+                                    <div class="apollo__chart-bar" style="height: 45%"></div>
+                                    <div class="apollo__chart-bar" style="height: 60%"></div>
+                                    <div class="apollo__chart-bar" style="height: 75%"></div>
+                                    <div class="apollo__chart-bar" style="height: 90%"></div>
+                                    <div class="apollo__chart-bar apollo__chart-bar--highlight" style="height: 65%"></div>
+                                    <div class="apollo__chart-bar" style="height: 40%"></div>
+                                </div>
+                                <div class="apollo__metric-comparison">
+                                    <span class="apollo__comparison-value apollo__comparison-value--positive">+12%</span>
+                                    <span class="apollo__comparison-label">vs. Last Week</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="apollo__metric-card">
+                            <div class="apollo__metric-card-header">
+                                <h4 class="apollo__metric-card-title">Effectiveness</h4>
+                            </div>
+                            <div class="apollo__metric-card-body">
+                                <div class="apollo__metric-value">94.2%</div>
+                                <div class="apollo__metric-label">Action Success Rate</div>
+                                <div class="apollo__effectiveness-chart">
+                                    <div class="apollo__effectiveness-segment apollo__effectiveness-segment--excellent" style="width: 65%"></div>
+                                    <div class="apollo__effectiveness-segment apollo__effectiveness-segment--good" style="width: 25%"></div>
+                                    <div class="apollo__effectiveness-segment apollo__effectiveness-segment--moderate" style="width: 8%"></div>
+                                    <div class="apollo__effectiveness-segment apollo__effectiveness-segment--poor" style="width: 2%"></div>
+                                </div>
+                                <div class="apollo__effectiveness-legend">
+                                    <div class="apollo__legend-item">
+                                        <div class="apollo__legend-color apollo__legend-color--excellent"></div>
+                                        <div class="apollo__legend-label">Excellent</div>
+                                    </div>
+                                    <div class="apollo__legend-item">
+                                        <div class="apollo__legend-color apollo__legend-color--good"></div>
+                                        <div class="apollo__legend-label">Good</div>
+                                    </div>
+                                    <div class="apollo__legend-item">
+                                        <div class="apollo__legend-color apollo__legend-color--moderate"></div>
+                                        <div class="apollo__legend-label">Moderate</div>
+                                    </div>
+                                    <div class="apollo__legend-item">
+                                        <div class="apollo__legend-color apollo__legend-color--poor"></div>
+                                        <div class="apollo__legend-label">Poor</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="apollo__metric-card">
+                            <div class="apollo__metric-card-header">
+                                <h4 class="apollo__metric-card-title">Top Actions</h4>
+                            </div>
+                            <div class="apollo__metric-card-body">
+                                <div class="apollo__top-actions">
+                                    <div class="apollo__top-action">
+                                        <div class="apollo__top-action-label">Compression</div>
+                                        <div class="apollo__top-action-bar">
+                                            <div class="apollo__top-action-fill" style="width: 65%"></div>
+                                        </div>
+                                        <div class="apollo__top-action-value">65%</div>
+                                    </div>
+                                    <div class="apollo__top-action">
+                                        <div class="apollo__top-action-label">Reset</div>
+                                        <div class="apollo__top-action-bar">
+                                            <div class="apollo__top-action-fill" style="width: 20%"></div>
+                                        </div>
+                                        <div class="apollo__top-action-value">20%</div>
+                                    </div>
+                                    <div class="apollo__top-action">
+                                        <div class="apollo__top-action-label">Rebuild</div>
+                                        <div class="apollo__top-action-bar">
+                                            <div class="apollo__top-action-fill" style="width: 12%"></div>
+                                        </div>
+                                        <div class="apollo__top-action-value">12%</div>
+                                    </div>
+                                    <div class="apollo__top-action">
+                                        <div class="apollo__top-action-label">Auto-Optimize</div>
+                                        <div class="apollo__top-action-bar">
+                                            <div class="apollo__top-action-fill" style="width: 3%"></div>
+                                        </div>
+                                        <div class="apollo__top-action-value">3%</div>
+                                    </div>
+                                </div>
+                                <div class="apollo__action-insights">
+                                    <h5 class="apollo__insights-title">Key Insight</h5>
+                                    <p class="apollo__insights-text">Compression actions provide the most significant token savings with minimal impact on LLM quality.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Attention Chat Tab -->
+        <div id="attention-panel" class="apollo__panel">
+            <div id="attention-messages" class="apollo__chat-messages">
+                <!-- Welcome message -->
+                <div class="apollo__message apollo__message--system">
+                    <div class="apollo__message-content">
+                        <div class="apollo__message-text">
+                            <h3 class="apollo__message-title">Apollo Attention Chat</h3>
+                            <p>This chat interface focuses Apollo's attention on specific LLM operational concerns. Use this to:</p>
+                            <ul>
+                                <li>Request attention analysis for any LLM session</li>
+                                <li>Get token usage predictions and optimization recommendations</li>
+                                <li>Receive early warnings about potential context issues</li>
+                                <li>Request specific protocol activation or adjustments</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Team Chat Tab -->
+        <div id="teamchat-panel" class="apollo__panel">
+            <div id="teamchat-messages" class="apollo__chat-messages">
+                <!-- Welcome message -->
+                <div class="apollo__message apollo__message--system">
+                    <div class="apollo__message-content">
+                        <div class="apollo__message-text">
+                            <h3 class="apollo__message-title">Tekton Team Chat</h3>
+                            <p>This chat is shared across all Tekton components. Use this for team communication and coordination.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Footer with Chat Input -->
+    <div class="apollo__footer">
+        <div class="apollo__chat-input-container">
+            <div class="apollo__chat-prompt">></div>
+            <input type="text" id="chat-input" class="apollo__chat-input" 
+                   placeholder="Enter chat message for LLM attention, awareness, prioritization or prediction">
+            <button id="send-button" class="apollo__send-button">Send</button>
+        </div>
+    </div>
+</div>
+
+<!-- Add component-specific styles -->
+<style>
+    /* Apollo component styles using BEM naming convention */
+    
+    /* Container */
+    .apollo {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        width: 100%;
+        background-color: var(--bg-primary, #1e1e2e);
+        color: var(--text-primary, #f0f0f0);
+        /* No absolute positioning - proper component containment */
+    }
+    
+    /* Header */
+    .apollo__header {
+        display: flex;
+        align-items: center;
+        padding: 10px 16px;
+        background-color: var(--bg-secondary, #252535);
+        border-bottom: 1px solid var(--border-color, #444444);
+        height: 46px; /* Standardized header height */
+    }
+    
+    .apollo__title-container {
+        display: flex;
+        align-items: center;
+    }
+    
+    .apollo__icon {
+        height: 30px;
+        width: auto;
+        margin-right: 12px;
+    }
+    
+    .apollo__title {
+        margin: 0;
+        font-size: 1.2rem;
+        font-weight: 500;
+    }
+    
+    .apollo__title-sub {
+        margin-left: 8px;
+        opacity: 0.8;
+        font-weight: normal;
+    }
+    
+    /* Menu Bar */
+    .apollo__menu-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 6px 16px;
+        background-color: var(--bg-secondary, #252535);
+        border-bottom: 1px solid var(--border-color, #444444);
+        height: 46px; /* Standardized menu bar height */
+    }
+    
+    .apollo__tabs {
+        display: flex;
+        gap: 8px;
+    }
+    
+    .apollo__tab {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 16px;
+        background-color: transparent;
+        border: none;
+        border-bottom: 2px solid transparent;
+        color: var(--text-primary, #f0f0f0);
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    
+    .apollo__tab:hover {
+        background-color: var(--bg-hover, #3a3a4a);
+    }
+    
+    .apollo__tab--active {
+        border-bottom-color: var(--color-primary, #7B1FA2);
+        font-weight: 500;
+    }
+    
+    .apollo__actions {
+        display: flex;
+        gap: 8px;
+    }
+    
+    .apollo__action-button {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 12px;
+        background-color: var(--bg-tertiary, #333345);
+        border: 1px solid var(--border-color, #444444);
+        border-radius: 4px;
+        color: var(--text-primary, #f0f0f0);
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    
+    .apollo__action-button:hover {
+        background-color: var(--bg-hover, #3a3a4a);
+    }
+    
+    /* Content Area */
+    .apollo__content {
+        flex: 1;
+        overflow: hidden;
+        position: relative;
+    }
+    
+    .apollo__panel {
+        display: none;
+        height: 100%;
+        width: 100%;
+        overflow: auto;
+    }
+    
+    .apollo__panel--active {
+        display: block;
+    }
+    
+    /* Control Bar */
+    .apollo__control-bar {
+        display: flex;
+        justify-content: space-between;
+        padding: 16px;
+        background-color: var(--bg-secondary, #252535);
+        border-bottom: 1px solid var(--border-color, #444444);
+    }
+    
+    .apollo__search-container {
+        display: flex;
+        gap: 8px;
+    }
+    
+    .apollo__search-input {
+        padding: 8px 12px;
+        min-width: 260px;
+        background-color: var(--bg-tertiary, #333345);
+        border: 1px solid var(--border-color, #444444);
+        border-radius: 4px;
+        color: var(--text-primary, #f0f0f0);
+    }
+    
+    .apollo__filter-container {
+        display: flex;
+        gap: 8px;
+    }
+    
+    .apollo__filter-select {
+        padding: 8px 12px;
+        background-color: var(--bg-tertiary, #333345);
+        border: 1px solid var(--border-color, #444444);
+        border-radius: 4px;
+        color: var(--text-primary, #f0f0f0);
+    }
+    
+    .apollo__filter-button,
+    .apollo__search-button,
+    .apollo__refresh-button {
+        padding: 8px 12px;
+        background-color: var(--bg-tertiary, #333345);
+        border: 1px solid var(--border-color, #444444);
+        border-radius: 4px;
+        color: var(--text-primary, #f0f0f0);
+        cursor: pointer;
+    }
+    
+    /* Dashboard Grid */
+    .apollo__dashboard-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 16px;
+        padding: 16px;
+    }
+    
+    .apollo__stats-container {
+        display: flex;
+        gap: 16px;
+    }
+    
+    .apollo__stat-item {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+    
+    .apollo__stat-label {
+        font-weight: 500;
+    }
+    
+    .apollo__stat-value {
+        color: var(--color-primary, #7B1FA2);
+        font-weight: bold;
+    }
+    
+    .apollo__card {
+        background-color: var(--bg-secondary, #252535);
+        border: 1px solid var(--border-color, #444444);
+        border-radius: 8px;
+        overflow: hidden;
+    }
+    
+    .apollo__card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 16px;
+        border-bottom: 1px solid var(--border-color, #444444);
+    }
+    
+    .apollo__card-title {
+        margin: 0;
+        font-size: 1.1rem;
+    }
+    
+    .apollo__card-body {
+        padding: 16px;
+    }
+    
+    .apollo__card-footer {
+        padding: 8px 16px;
+        border-top: 1px solid var(--border-color, #444444);
+        font-size: 0.8rem;
+        color: var(--text-secondary, #aaaaaa);
+    }
+    
+    .apollo__health-indicator {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+    }
+    
+    .apollo__health-indicator--healthy {
+        background-color: #34A853;
+    }
+    
+    .apollo__health-indicator--warning {
+        background-color: #FBBC05;
+    }
+    
+    .apollo__health-indicator--critical {
+        background-color: #EA4335;
+    }
+    
+    .apollo__token-budget {
+        width: 100%;
+        height: 8px;
+        background-color: var(--bg-tertiary, #333345);
+        border-radius: 4px;
+        overflow: hidden;
+        margin: 8px 0;
+    }
+    
+    .apollo__token-budget-used {
+        height: 100%;
+        background-color: var(--color-primary, #7B1FA2);
+    }
+    
+    .apollo__token-budget-used--warning {
+        background-color: #FBBC05;
+    }
+    
+    .apollo__token-budget-used--critical {
+        background-color: #EA4335;
+    }
+    
+    .apollo__session-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    
+    .apollo__session-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px 0;
+        border-bottom: 1px solid var(--border-color, #444444);
+    }
+    
+    .apollo__session-item:last-child {
+        border-bottom: none;
+    }
+    
+    .apollo__session-status {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+    
+    /* Sessions Tab */
+    .apollo__sessions-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 16px;
+        padding: 16px;
+    }
+    
+    .apollo__session-card {
+        background-color: var(--bg-secondary, #252535);
+        border: 1px solid var(--border-color, #444444);
+        border-radius: 8px;
+        overflow: hidden;
+    }
+    
+    .apollo__session-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 16px;
+        border-bottom: 1px solid var(--border-color, #444444);
+    }
+    
+    .apollo__session-card-title {
+        margin: 0;
+        font-size: 1.1rem;
+    }
+    
+    .apollo__session-details {
+        padding: 16px;
+    }
+    
+    .apollo__detail-item {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 8px;
+    }
+    
+    .apollo__detail-label {
+        font-weight: 500;
+    }
+    
+    .apollo__session-actions {
+        display: flex;
+        gap: 8px;
+        padding: 12px 16px;
+        border-top: 1px solid var(--border-color, #444444);
+    }
+    
+    .apollo__session-action-btn {
+        flex: 1;
+        padding: 6px 12px;
+        background-color: var(--bg-tertiary, #333345);
+        border: 1px solid var(--border-color, #444444);
+        border-radius: 4px;
+        color: var(--text-primary, #f0f0f0);
+        cursor: pointer;
+    }
+    
+    .apollo__session-action-btn--warning {
+        background-color: #FBBC05;
+        color: #000000;
+    }
+    
+    /* Chat Panel */
+    #attention-panel, #teamchat-panel {
+        position: relative; /* Needed for footer positioning */
+        overflow: hidden; /* Prevent double scrollbars */
+    }
+
+    /* Chat Messages */
+    .apollo__chat-messages {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 70px; /* Height of the footer */
+        overflow-y: auto;
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+    
+    .apollo__message {
+        border-radius: 16px;
+        padding: 12px 16px;
+        max-width: 85%;
+        word-wrap: break-word;
+        line-height: 1.4;
+    }
+    
+    .apollo__message--system {
+        background-color: var(--bg-tertiary, #333345);
+        align-self: center;
+        max-width: 90%;
+        width: 600px;
+        margin: 8px 0;
+        border-radius: 8px;
+        padding: 16px 24px;
+    }
+    
+    .apollo__message--user {
+        background-color: var(--color-primary, #7B1FA2);
+        color: white;
+        align-self: flex-end;
+        border-radius: 16px 16px 0 16px;
+    }
+    
+    .apollo__message--ai {
+        background-color: var(--bg-secondary, #252535);
+        align-self: flex-start;
+        border-radius: 16px 16px 16px 0;
+    }
+    
+    /* Chat Input */
+    .apollo__footer {
+        background-color: var(--bg-secondary, #252535);
+        border-top: 1px solid var(--border-color, #444444);
+        padding: 12px 16px;
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 70px; /* Fixed height to match bottom value in chat messages */
+    }
+    
+    .apollo__chat-input-container {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        width: 100%;
+    }
+    
+    .apollo__chat-prompt {
+        font-size: 18px;
+        font-weight: bold;
+        color: #4CAF50;
+    }
+    
+    .apollo__chat-input {
+        flex: 1;
+        height: 44px;
+        padding: 8px 16px;
+        background-color: var(--bg-tertiary, #333345);
+        border: 1px solid var(--border-color, #444444);
+        border-radius: 8px;
+        color: var(--text-primary, #f0f0f0);
+        font-size: 14px;
+    }
+    
+    .apollo__send-button {
+        height: 44px;
+        padding: 0 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: var(--color-primary, #7B1FA2);
+        border: none;
+        border-radius: 8px;
+        color: white;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    
+    .apollo__send-button:hover {
+        background-color: var(--color-primary-hover, #6A1B9A);
+    }
+    
+    /* ======== NEW STYLES FOR ENHANCED TABS ======== */
+    
+    /* Common Section Styles */
+    .apollo__section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin: 16px 0;
+        padding: 0 16px;
+    }
+    
+    .apollo__section-title {
+        font-size: 1.4rem;
+        font-weight: 500;
+        margin: 0;
+        color: var(--text-primary, #f0f0f0);
+    }
+    
+    .apollo__section-description {
+        font-size: 0.9rem;
+        color: var(--text-secondary, #aaaaaa);
+        margin: 4px 0 0 0;
+    }
+    
+    .apollo__section-actions {
+        display: flex;
+        gap: 8px;
+    }
+    
+    .apollo__section-action-btn {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 12px;
+        background-color: var(--bg-tertiary, #333345);
+        border: 1px solid var(--border-color, #444444);
+        border-radius: 4px;
+        color: var(--text-primary, #f0f0f0);
+        cursor: pointer;
+    }
+    
+    .apollo__subsection-title {
+        font-size: 1.1rem;
+        font-weight: 500;
+        margin: 0 0 12px 0;
+        color: var(--text-primary, #f0f0f0);
+    }
+    
+    /* Token Budgets Tab Enhanced Styles */
+    .apollo__budget-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+        gap: 16px;
+        padding: 0 16px 16px;
+    }
+    
+    .apollo__budget-grid--fullwidth {
+        grid-template-columns: 1fr;
+    }
+    
+    .apollo__budget-card {
+        background-color: var(--bg-secondary, #252535);
+        border: 1px solid var(--border-color, #444444);
+        border-radius: 8px;
+        overflow: hidden;
+    }
+    
+    .apollo__usage-summary {
+        display: flex;
+        align-items: center;
+        gap: 24px;
+        margin-bottom: 24px;
+    }
+    
+    .apollo__usage-circle {
+        position: relative;
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        background: conic-gradient(
+            var(--color-primary, #7B1FA2) 0% 38.4%,
+            var(--bg-tertiary, #333345) 38.4% 100%
+        );
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .apollo__usage-circle-inner {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        background-color: var(--bg-secondary, #252535);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .apollo__usage-percentage {
+        font-size: 1.8rem;
+        font-weight: bold;
+        color: var(--text-primary, #f0f0f0);
+    }
+    
+    .apollo__usage-label {
+        font-size: 0.9rem;
+        color: var(--text-secondary, #aaaaaa);
+    }
+    
+    .apollo__usage-stats {
+        flex: 1;
+    }
+    
+    .apollo__usage-stat {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 10px;
+    }
+    
+    .apollo__usage-stat-label {
+        font-weight: 500;
+        color: var(--text-secondary, #aaaaaa);
+    }
+    
+    .apollo__usage-stat-value {
+        font-weight: 500;
+        color: var(--text-primary, #f0f0f0);
+    }
+    
+    .apollo__budget-timeline {
+        margin-top: 16px;
+    }
+    
+    .apollo__timeline-chart {
+        position: relative;
+        height: 30px;
+        background-color: var(--bg-tertiary, #333345);
+        border-radius: 4px;
+        margin: 24px 0 16px;
+    }
+    
+    .apollo__timeline-marker {
+        position: absolute;
+        top: -12px;
+        width: 2px;
+        height: 40px;
+        background-color: #4CAF50;
+    }
+    
+    .apollo__timeline-marker--warning {
+        background-color: #FBBC05;
+    }
+    
+    .apollo__timeline-marker--critical {
+        background-color: #EA4335;
+    }
+    
+    .apollo__timeline-marker-label {
+        position: absolute;
+        top: -18px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 0.8rem;
+        white-space: nowrap;
+        color: var(--text-secondary, #aaaaaa);
+    }
+    
+    .apollo__timeline-projection {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        background: linear-gradient(to right, 
+            rgba(123, 31, 162, 0.7),
+            rgba(123, 31, 162, 0.1)
+        );
+        border-radius: 4px 0 0 4px;
+    }
+    
+    .apollo__timeline-estimate {
+        display: flex;
+        justify-content: flex-end;
+        font-size: 0.9rem;
+    }
+    
+    .apollo__estimate-label {
+        color: var(--text-secondary, #aaaaaa);
+        margin-right: 8px;
+    }
+    
+    .apollo__estimate-value {
+        color: var(--text-primary, #f0f0f0);
+        font-weight: 500;
+    }
+    
+    .apollo__component-budgets {
+        width: 100%;
+    }
+    
+    .apollo__component-budget-headers {
+        display: grid;
+        grid-template-columns: 1fr 1fr 2fr 1fr 1fr;
+        padding: 12px 16px;
+        background-color: var(--bg-tertiary, #333345);
+        border-radius: 4px;
+        margin-bottom: 8px;
+    }
+    
+    .apollo__component-header {
+        font-weight: 500;
+        color: var(--text-secondary, #aaaaaa);
+        font-size: 0.9rem;
+    }
+    
+    .apollo__component-budget-rows {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .apollo__component-budget-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr 2fr 1fr 1fr;
+        padding: 12px 16px;
+        background-color: var(--bg-tertiary, #333345);
+        border-radius: 4px;
+        align-items: center;
+    }
+    
+    .apollo__component-name {
+        font-weight: 500;
+        color: var(--text-primary, #f0f0f0);
+    }
+    
+    .apollo__component-allocation {
+        padding-right: 16px;
+    }
+    
+    .apollo__budget-input {
+        width: 100%;
+        padding: 6px 8px;
+        background-color: var(--bg-secondary, #252535);
+        border: 1px solid var(--border-color, #444444);
+        border-radius: 4px;
+        color: var(--text-primary, #f0f0f0);
+    }
+    
+    .apollo__component-usage {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+    
+    .apollo__usage-track {
+        height: 8px;
+        background-color: var(--bg-secondary, #252535);
+        border-radius: 4px;
+        overflow: hidden;
+    }
+    
+    .apollo__usage-fill {
+        height: 100%;
+        background-color: var(--color-primary, #7B1FA2);
+    }
+    
+    .apollo__usage-fill--warning {
+        background-color: #FBBC05;
+    }
+    
+    .apollo__usage-text {
+        font-size: 0.85rem;
+        color: var(--text-secondary, #aaaaaa);
+    }
+    
+    .apollo__component-status {
+        font-weight: 500;
+        padding: 4px 8px;
+        border-radius: 4px;
+        text-align: center;
+    }
+    
+    .apollo__component-status--healthy {
+        background-color: rgba(52, 168, 83, 0.2);
+        color: #34A853;
+    }
+    
+    .apollo__component-status--warning {
+        background-color: rgba(251, 188, 5, 0.2);
+        color: #FBBC05;
+    }
+    
+    .apollo__component-actions {
+        display: flex;
+        gap: 6px;
+    }
+    
+    .apollo__component-action-btn {
+        padding: 4px 8px;
+        font-size: 0.85rem;
+        background-color: var(--bg-secondary, #252535);
+        border: 1px solid var(--border-color, #444444);
+        border-radius: 4px;
+        color: var(--text-primary, #f0f0f0);
+        cursor: pointer;
+    }
+    
+    .apollo__component-action-btn--warning {
+        background-color: rgba(251, 188, 5, 0.3);
+        border-color: #FBBC05;
+        color: #FBBC05;
+    }
+    
+    .apollo__card-footer {
+        display: flex;
+        justify-content: flex-end;
+        gap: 12px;
+        padding: 12px 16px;
+        border-top: 1px solid var(--border-color, #444444);
+    }
+    
+    /* Protocols Tab Enhanced Styles */
+    .apollo__protocols-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+        gap: 16px;
+        padding: 0 16px 16px;
+    }
+    
+    .apollo__protocol-card {
+        background-color: var(--bg-secondary, #252535);
+        border: 1px solid var(--border-color, #444444);
+        border-radius: 8px;
+        overflow: hidden;
+    }
+    
+    .apollo__protocol-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 16px;
+        border-bottom: 1px solid var(--border-color, #444444);
+    }
+    
+    .apollo__protocol-info {
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .apollo__protocol-title {
+        font-size: 1.1rem;
+        font-weight: 500;
+        margin: 0;
+    }
+    
+    .apollo__protocol-type {
+        font-size: 0.8rem;
+        color: var(--text-secondary, #aaaaaa);
+        margin-top: 4px;
+    }
+    
+    .apollo__protocol-status {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.9rem;
+        padding: 4px 10px;
+        border-radius: 16px;
+    }
+    
+    .apollo__protocol-status--active {
+        background-color: rgba(52, 168, 83, 0.2);
+        color: #34A853;
+    }
+    
+    .apollo__protocol-status--idle {
+        background-color: rgba(170, 170, 170, 0.2);
+        color: #aaaaaa;
+    }
+    
+    .apollo__status-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+    }
+    
+    .apollo__protocol-status--active .apollo__status-dot {
+        background-color: #34A853;
+    }
+    
+    .apollo__protocol-status--idle .apollo__status-dot {
+        background-color: #aaaaaa;
+    }
+    
+    .apollo__protocol-card-body {
+        padding: 16px;
+    }
+    
+    .apollo__protocol-description p {
+        margin: 0 0 16px 0;
+        color: var(--text-secondary, #aaaaaa);
+        line-height: 1.5;
+    }
+    
+    .apollo__protocol-metrics {
+        display: flex;
+        justify-content: space-between;
+        padding: 12px;
+        background-color: var(--bg-tertiary, #333345);
+        border-radius: 6px;
+        margin-bottom: 16px;
+    }
+    
+    .apollo__metric-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .apollo__metric-label {
+        font-size: 0.8rem;
+        color: var(--text-secondary, #aaaaaa);
+        margin-bottom: 4px;
+    }
+    
+    .apollo__metric-value {
+        font-weight: 500;
+        color: var(--text-primary, #f0f0f0);
+    }
+    
+    .apollo__metric-value--good {
+        color: #34A853;
+    }
+    
+    .apollo__metric-value--warning {
+        color: #FBBC05;
+    }
+    
+    .apollo__metric-value--moderate {
+        color: #FBBC05;
+    }
+    
+    .apollo__settings-table {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+    
+    .apollo__settings-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .apollo__setting-name {
+        flex: 1;
+        font-size: 0.9rem;
+        color: var(--text-primary, #f0f0f0);
+    }
+    
+    .apollo__setting-control {
+        flex: 2;
+    }
+    
+    .apollo__range-with-value {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+    
+    .apollo__setting-range {
+        flex: 1;
+        height: 6px;
+        -webkit-appearance: none;
+        appearance: none;
+        background-color: var(--bg-tertiary, #333345);
+        border-radius: 3px;
+        outline: none;
+    }
+    
+    .apollo__setting-range::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        background-color: var(--color-primary, #7B1FA2);
+        cursor: pointer;
+    }
+    
+    .apollo__setting-value {
+        min-width: 40px;
+        text-align: right;
+        font-size: 0.9rem;
+        color: var(--text-primary, #f0f0f0);
+    }
+    
+    .apollo__settings-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+    
+    .apollo__settings-tag {
+        padding: 4px 8px;
+        background-color: var(--bg-tertiary, #333345);
+        border: 1px solid var(--border-color, #444444);
+        border-radius: 4px;
+        font-size: 0.85rem;
+        color: var(--text-primary, #f0f0f0);
+    }
+    
+    .apollo__settings-tag--primary {
+        background-color: rgba(123, 31, 162, 0.3);
+        border-color: var(--color-primary, #7B1FA2);
+        color: var(--text-primary, #f0f0f0);
+    }
+    
+    .apollo__tag-add {
+        padding: 4px 8px;
+        background-color: var(--bg-tertiary, #333345);
+        border: 1px dashed var(--border-color, #444444);
+        border-radius: 4px;
+        font-size: 0.85rem;
+        color: var(--text-primary, #f0f0f0);
+        cursor: pointer;
+    }
+    
+    .apollo__protocol-card-footer {
+        display: flex;
+        justify-content: flex-end;
+        gap: 8px;
+        padding: 12px 16px;
+        border-top: 1px solid var(--border-color, #444444);
+    }
+    
+    .apollo__card-button {
+        padding: 6px 12px;
+        background-color: var(--bg-tertiary, #333345);
+        border: 1px solid var(--border-color, #444444);
+        border-radius: 4px;
+        color: var(--text-primary, #f0f0f0);
+        cursor: pointer;
+    }
+    
+    .apollo__card-button--primary {
+        background-color: var(--color-primary, #7B1FA2);
+        border-color: var(--color-primary, #7B1FA2);
+        color: white;
+    }
+    
+    .apollo__card-button--secondary {
+        background-color: var(--bg-tertiary, #333345);
+        border-color: var(--border-color, #444444);
+    }
+    
+    .apollo__protocols-summary {
+        margin: 16px;
+        padding: 16px;
+        background-color: var(--bg-secondary, #252535);
+        border: 1px solid var(--border-color, #444444);
+        border-radius: 8px;
+    }
+    
+    .apollo__summary-header {
+        margin-bottom: 16px;
+    }
+    
+    .apollo__summary-title {
+        font-size: 1.1rem;
+        font-weight: 500;
+        margin: 0;
+    }
+    
+    .apollo__summary-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .apollo__summary-stats {
+        display: flex;
+        gap: 24px;
+    }
+    
+    .apollo__summary-stat {
+        text-align: center;
+    }
+    
+    .apollo__summary-value {
+        font-size: 1.8rem;
+        font-weight: bold;
+        color: var(--text-primary, #f0f0f0);
+    }
+    
+    .apollo__summary-label {
+        font-size: 0.9rem;
+        color: var(--text-secondary, #aaaaaa);
+    }
+    
+    .apollo__summary-health {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .apollo__health-text {
+        font-weight: 500;
+        color: #34A853;
+    }
+    
+    /* Forecasting Tab Enhanced Styles */
+    .apollo__forecasting-overview {
+        padding: 0 16px 16px;
+    }
+    
+    .apollo__overview-card {
+        background-color: var(--bg-secondary, #252535);
+        border: 1px solid var(--border-color, #444444);
+        border-radius: 8px;
+        overflow: hidden;
+    }
+    
+    .apollo__overview-content {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 16px;
+        padding: 16px;
+    }
+    
+    .apollo__overview-visualization {
+        padding-right: 16px;
+        border-right: 1px solid var(--border-color, #444444);
+    }
+    
+    .apollo__visualization-container {
+        height: 250px;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .apollo__usage-chart {
+        flex: 1;
+        display: flex;
+        position: relative;
+    }
+    
+    .apollo__chart-axis {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        padding: 10px 0;
+    }
+    
+    .apollo__chart-axis--y {
+        width: 40px;
+    }
+    
+    .apollo__axis-label {
+        font-size: 0.8rem;
+        color: var(--text-secondary, #aaaaaa);
+    }
+    
+    .apollo__chart-axis--x {
+        height: 20px;
+        display: flex;
+        justify-content: space-between;
+    }
+    
+    .apollo__chart-grid {
+        flex: 1;
+        position: relative;
+        border: 1px solid var(--border-color, #444444);
+        border-radius: 4px;
+        margin: 10px;
+        background-color: var(--bg-tertiary, #333345);
+    }
+    
+    .apollo__chart-area {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 38.4%;
+        height: 70%;
+        background: linear-gradient(to top,
+            rgba(123, 31, 162, 0.6) 0%,
+            rgba(123, 31, 162, 0.1) 100%
+        );
+        border-radius: 0 0 0 4px;
+    }
+    
+    .apollo__chart-line {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 100%;
+    }
+    
+    .apollo__chart-line--total::after {
+        content: '';
+        position: absolute;
+        bottom: 30%;
+        left: 0;
+        width: 38.4%;
+        height: 2px;
+        background-color: var(--color-primary, #7B1FA2);
+    }
+    
+    .apollo__chart-line--projected::after {
+        content: '';
+        position: absolute;
+        bottom: 30%;
+        left: 38.4%;
+        width: 30%;
+        height: 2px;
+        background-color: rgba(123, 31, 162, 0.4);
+        border-left: 2px solid var(--color-primary, #7B1FA2);
+        border-right: 2px solid rgba(123, 31, 162, 0.1);
+    }
+    
+    .apollo__chart-marker {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        width: 2px;
+    }
+    
+    .apollo__chart-marker--now {
+        background-color: #4CAF50;
+        left: 38.4%;
+    }
+    
+    .apollo__chart-marker--warning {
+        background-color: #FBBC05;
+        left: 60%;
+    }
+    
+    .apollo__chart-marker--critical {
+        background-color: #EA4335;
+        left: 85%;
+    }
+    
+    .apollo__marker-label {
+        position: absolute;
+        top: 5px;
+        left: 4px;
+        font-size: 0.8rem;
+        color: var(--text-secondary, #aaaaaa);
+        white-space: nowrap;
+    }
+    
+    .apollo__chart-legend {
+        display: flex;
+        justify-content: center;
+        gap: 16px;
+    }
+    
+    .apollo__legend-item {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+    
+    .apollo__legend-color {
+        width: 16px;
+        height: 3px;
+    }
+    
+    .apollo__legend-color--total {
+        background-color: var(--color-primary, #7B1FA2);
+    }
+    
+    .apollo__legend-color--projected {
+        background-color: rgba(123, 31, 162, 0.4);
+    }
+    
+    .apollo__legend-label {
+        font-size: 0.85rem;
+        color: var(--text-secondary, #aaaaaa);
+    }
+    
+    .apollo__overview-stats {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 24px;
+    }
+    
+    .apollo__stat-group {
+        background-color: var(--bg-tertiary, #333345);
+        border-radius: 8px;
+        padding: 16px;
+    }
+    
+    .apollo__stat-group-title {
+        font-size: 1rem;
+        font-weight: 500;
+        margin: 0 0 12px 0;
+        color: var(--text-primary, #f0f0f0);
+    }
+    
+    .apollo__stat-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 8px;
+    }
+    
+    .apollo__stat-row:last-child {
+        margin-bottom: 0;
+    }
+    
+    .apollo__stat-label {
+        color: var(--text-secondary, #aaaaaa);
+    }
+    
+    .apollo__component-forecasts {
+        padding: 0 16px;
+    }
+    
+    .apollo__forecast-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 16px;
+        margin-bottom: 24px;
+    }
+    
+    .apollo__forecast-card {
+        background-color: var(--bg-secondary, #252535);
+        border: 1px solid var(--border-color, #444444);
+        border-radius: 8px;
+        overflow: hidden;
+    }
+    
+    .apollo__forecast-card--warning {
+        border-color: #FBBC05;
+    }
+    
+    .apollo__forecast-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 16px;
+        border-bottom: 1px solid var(--border-color, #444444);
+    }
+    
+    .apollo__forecast-title-container {
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .apollo__forecast-title {
+        font-size: 1.1rem;
+        font-weight: 500;
+        margin: 0;
+    }
+    
+    .apollo__forecast-model {
+        font-size: 0.8rem;
+        color: var(--text-secondary, #aaaaaa);
+        margin-top: 4px;
+    }
+    
+    .apollo__forecast-status {
+        font-weight: 500;
+        padding: 4px 10px;
+        border-radius: 16px;
+        font-size: 0.9rem;
+    }
+    
+    .apollo__forecast-status--stable {
+        background-color: rgba(52, 168, 83, 0.2);
+        color: #34A853;
+    }
+    
+    .apollo__forecast-status--degrading {
+        background-color: rgba(251, 188, 5, 0.2);
+        color: #FBBC05;
+    }
+    
+    .apollo__forecast-content {
+        padding: 16px;
+    }
+    
+    .apollo__mini-chart {
+        position: relative;
+        height: 12px;
+        background-color: var(--bg-tertiary, #333345);
+        border-radius: 6px;
+        margin-bottom: 16px;
+        overflow: hidden;
+    }
+    
+    .apollo__mini-chart-line {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 100%;
+    }
+    
+    .apollo__mini-chart-marker {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        width: 2px;
+        background-color: #4CAF50;
+    }
+    
+    .apollo__mini-chart-projection {
+        position: absolute;
+        top: 0;
+        height: 100%;
+        background: linear-gradient(to right, 
+            rgba(123, 31, 162, 0.7), 
+            rgba(123, 31, 162, 0.1)
+        );
+    }
+    
+    .apollo__mini-chart-projection--warning {
+        background: linear-gradient(to right, 
+            rgba(251, 188, 5, 0.7), 
+            rgba(251, 188, 5, 0.1)
+        );
+    }
+    
+    .apollo__forecast-metrics {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        margin-bottom: 16px;
+    }
+    
+    .apollo__forecast-metric {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+    
+    .apollo__forecast-metric:nth-child(3) {
+        grid-column: span 2;
+    }
+    
+    .apollo__forecast-recommendations {
+        margin-top: 16px;
+    }
+    
+    .apollo__recommendations-title {
+        font-size: 1rem;
+        font-weight: 500;
+        margin: 0 0 8px 0;
+    }
+    
+    .apollo__no-recommendations {
+        color: var(--text-secondary, #aaaaaa);
+        font-style: italic;
+        padding: 8px 0;
+    }
+    
+    .apollo__recommendations-list {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .apollo__recommendation {
+        background-color: var(--bg-tertiary, #333345);
+        border-left: 3px solid var(--color-primary, #7B1FA2);
+        border-radius: 4px;
+        padding: 8px 12px;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+    
+    .apollo__recommendation--warning {
+        border-left-color: #FBBC05;
+    }
+    
+    .apollo__recommendation-type {
+        font-weight: 500;
+        color: var(--text-primary, #f0f0f0);
+    }
+    
+    .apollo__recommendation-reason {
+        font-size: 0.85rem;
+        color: var(--text-secondary, #aaaaaa);
+    }
+    
+    .apollo__recommendation-action {
+        align-self: flex-end;
+        margin-top: 4px;
+        padding: 4px 8px;
+        background-color: var(--bg-secondary, #252535);
+        border: 1px solid var(--border-color, #444444);
+        border-radius: 4px;
+        color: var(--text-primary, #f0f0f0);
+        cursor: pointer;
+        font-size: 0.85rem;
+    }
+    
+    .apollo__forecast-footer {
+        display: flex;
+        justify-content: space-between;
+        gap: 8px;
+        padding: 12px 16px;
+        border-top: 1px solid var(--border-color, #444444);
+    }
+    
+    .apollo__forecast-action-btn {
+        flex: 1;
+        padding: 6px 12px;
+        background-color: var(--bg-tertiary, #333345);
+        border: 1px solid var(--border-color, #444444);
+        border-radius: 4px;
+        color: var(--text-primary, #f0f0f0);
+        cursor: pointer;
+    }
+    
+    .apollo__forecast-action-btn--warning {
+        background-color: rgba(251, 188, 5, 0.3);
+        border-color: #FBBC05;
+        color: #FBBC05;
+    }
+    
+    .apollo__advanced-analytics {
+        padding: 0 16px 16px;
+    }
+    
+    .apollo__analytics-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+        gap: 16px;
+    }
+    
+    .apollo__analytics-card {
+        background-color: var(--bg-secondary, #252535);
+        border: 1px solid var(--border-color, #444444);
+        border-radius: 8px;
+        overflow: hidden;
+    }
+    
+    .apollo__card-actions {
+        display: flex;
+        gap: 8px;
+    }
+    
+    .apollo__card-action-btn {
+        width: 24px;
+        height: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: var(--bg-tertiary, #333345);
+        border: 1px solid var(--border-color, #444444);
+        border-radius: 4px;
+        color: var(--text-primary, #f0f0f0);
+        cursor: pointer;
+    }
+    
+    .apollo__patterns-visualization {
+        margin-bottom: 16px;
+    }
+    
+    .apollo__heatmap {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+    
+    .apollo__heatmap-row {
+        display: flex;
+        align-items: center;
+        height: 32px;
+    }
+    
+    .apollo__heatmap-label {
+        width: 80px;
+        font-size: 0.9rem;
+        color: var(--text-primary, #f0f0f0);
+    }
+    
+    .apollo__heatmap-cells {
+        flex: 1;
+        display: flex;
+        gap: 2px;
+    }
+    
+    .apollo__heatmap-cell {
+        flex: 1;
+        height: 24px;
+        background-color: var(--color-primary, #7B1FA2);
+        border-radius: 2px;
+    }
+    
+    .apollo__heatmap-legend {
+        display: flex;
+        justify-content: flex-end;
+        gap: 16px;
+        margin-top: 8px;
+    }
+    
+    .apollo__heatmap-legend-item {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.8rem;
+        color: var(--text-secondary, #aaaaaa);
+        background-color: var(--color-primary, #7B1FA2);
+        padding: 0 8px;
+        border-radius: 2px;
+    }
+    
+    .apollo__patterns-insights {
+        background-color: var(--bg-tertiary, #333345);
+        border-radius: 6px;
+        padding: 12px;
+    }
+    
+    .apollo__insights-title {
+        font-size: 1rem;
+        font-weight: 500;
+        margin: 0 0 8px 0;
+        color: var(--text-primary, #f0f0f0);
+    }
+    
+    .apollo__insights-list {
+        margin: 0;
+        padding: 0 0 0 20px;
+        color: var(--text-secondary, #aaaaaa);
+    }
+    
+    .apollo__insight-item {
+        margin-bottom: 6px;
+    }
+    
+    .apollo__accuracy-metrics {
+        display: flex;
+        justify-content: space-around;
+        margin-bottom: 24px;
+    }
+    
+    .apollo__accuracy-metric {
+        text-align: center;
+    }
+    
+    .apollo__accuracy-value {
+        font-size: 1.8rem;
+        font-weight: bold;
+        color: var(--text-primary, #f0f0f0);
+    }
+    
+    .apollo__accuracy-label {
+        font-size: 0.9rem;
+        color: var(--text-secondary, #aaaaaa);
+    }
+    
+    .apollo__accuracy-history {
+        background-color: var(--bg-tertiary, #333345);
+        border-radius: 6px;
+        padding: 12px;
+    }
+    
+    .apollo__history-title {
+        font-size: 1rem;
+        font-weight: 500;
+        margin: 0 0 12px 0;
+        color: var(--text-primary, #f0f0f0);
+    }
+    
+    .apollo__history-items {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .apollo__history-item {
+        display: grid;
+        grid-template-columns: 60px 1fr auto;
+        gap: 12px;
+        align-items: center;
+    }
+    
+    .apollo__history-time {
+        font-weight: 500;
+        color: var(--text-primary, #f0f0f0);
+    }
+    
+    .apollo__history-description {
+        color: var(--text-secondary, #aaaaaa);
+    }
+    
+    .apollo__history-accuracy {
+        font-weight: 500;
+    }
+    
+    .apollo__history-accuracy--excellent {
+        color: #34A853;
+    }
+    
+    .apollo__history-accuracy--good {
+        color: #4CAF50;
+    }
+    
+    .apollo__history-accuracy--moderate {
+        color: #FBBC05;
+    }
+    
+    /* Actions Tab Enhanced Styles */
+    .apollo__action-dashboard {
+        padding: 0 16px;
+    }
+    
+    .apollo__action-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        gap: 16px;
+        margin-bottom: 24px;
+    }
+    
+    .apollo__action-card {
+        background-color: var(--bg-secondary, #252535);
+        border: 1px solid var(--border-color, #444444);
+        border-radius: 8px;
+        overflow: hidden;
+    }
+    
+    .apollo__action-card-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 16px;
+        border-bottom: 1px solid var(--border-color, #444444);
+    }
+    
+    .apollo__action-icon {
+        font-size: 1.5rem;
+    }
+    
+    .apollo__action-title {
+        font-size: 1.2rem;
+        font-weight: 500;
+        margin: 0;
+    }
+    
+    .apollo__action-card-body {
+        padding: 16px;
+    }
+    
+    .apollo__action-description {
+        color: var(--text-secondary, #aaaaaa);
+        margin: 0 0 16px 0;
+        line-height: 1.5;
+    }
+    
+    .apollo__action-form {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+    
+    .apollo__form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .apollo__form-label {
+        font-weight: 500;
+        color: var(--text-primary, #f0f0f0);
+    }
+    
+    .apollo__form-select {
+        padding: 8px 12px;
+        background-color: var(--bg-tertiary, #333345);
+        border: 1px solid var(--border-color, #444444);
+        border-radius: 4px;
+        color: var(--text-primary, #f0f0f0);
+    }
+    
+    .apollo__option-toggles {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+    
+    .apollo__option-toggle {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 10px;
+        background-color: var(--bg-tertiary, #333345);
+        border: 1px solid var(--border-color, #444444);
+        border-radius: 4px;
+        cursor: pointer;
+    }
+    
+    .apollo__option-toggle-label {
+        font-size: 0.9rem;
+        color: var(--text-primary, #f0f0f0);
+    }
+    
+    .apollo__form-group--confirmation {
+        margin-top: 8px;
+    }
+    
+    .apollo__checkbox-label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+    }
+    
+    .apollo__checkbox-label--warning {
+        color: #FBBC05;
+    }
+    
+    .apollo__confirmation-text {
+        font-size: 0.9rem;
+    }
+    
+    .apollo__compression-level-selector {
+        display: flex;
+        gap: 8px;
+    }
+    
+    .apollo__compression-option {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+        padding: 10px;
+        background-color: var(--bg-tertiary, #333345);
+        border: 1px solid var(--border-color, #444444);
+        border-radius: 4px;
+        cursor: pointer;
+    }
+    
+    .apollo__compression-option--active {
+        border-color: var(--color-primary, #7B1FA2);
+        background-color: rgba(123, 31, 162, 0.2);
+    }
+    
+    .apollo__compression-label {
+        font-weight: 500;
+        color: var(--text-primary, #f0f0f0);
+    }
+    
+    .apollo__compression-value {
+        font-size: 0.85rem;
+        color: var(--text-secondary, #aaaaaa);
+    }
+    
+    .apollo__strategy-selector {
+        display: flex;
+        gap: 8px;
+    }
+    
+    .apollo__strategy-option {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+        padding: 10px;
+        background-color: var(--bg-tertiary, #333345);
+        border: 1px solid var(--border-color, #444444);
+        border-radius: 4px;
+        cursor: pointer;
+    }
+    
+    .apollo__strategy-option--active {
+        border-color: var(--color-primary, #7B1FA2);
+        background-color: rgba(123, 31, 162, 0.2);
+    }
+    
+    .apollo__strategy-icon {
+        font-size: 1.5rem;
+    }
+    
+    .apollo__strategy-label {
+        font-size: 0.9rem;
+        text-align: center;
+        color: var(--text-primary, #f0f0f0);
+    }
+    
+    .apollo__priority-elements {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+    
+    .apollo__priority-element {
+        display: grid;
+        grid-template-columns: auto 2fr 3fr;
+        gap: 12px;
+        align-items: center;
+    }
+    
+    .apollo__priority-label {
+        font-size: 0.9rem;
+        color: var(--text-primary, #f0f0f0);
+    }
+    
+    .apollo__priority-slider {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+    
+    .apollo__priority-range {
+        flex: 1;
+        height: 6px;
+        -webkit-appearance: none;
+        appearance: none;
+        background-color: var(--bg-tertiary, #333345);
+        border-radius: 3px;
+        outline: none;
+    }
+    
+    .apollo__priority-range::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        background-color: var(--color-primary, #7B1FA2);
+        cursor: pointer;
+    }
+    
+    .apollo__priority-value {
+        min-width: 80px;
+        text-align: right;
+        font-size: 0.9rem;
+        color: var(--text-secondary, #aaaaaa);
+    }
+    
+    .apollo__action-card-footer {
+        display: flex;
+        justify-content: flex-end;
+        padding: 12px 16px;
+        border-top: 1px solid var(--border-color, #444444);
+    }
+    
+    .apollo__action-button--primary {
+        padding: 8px 16px;
+        background-color: var(--color-primary, #7B1FA2);
+        border: none;
+        border-radius: 4px;
+        color: white;
+        font-weight: 500;
+        cursor: pointer;
+    }
+    
+    .apollo__action-button--warning {
+        background-color: #FBBC05;
+        color: #000000;
+    }
+    
+    .apollo__action-history {
+        padding: 0 16px;
+        margin-bottom: 24px;
+    }
+    
+    .apollo__history-table-container {
+        margin-bottom: 16px;
+        border: 1px solid var(--border-color, #444444);
+        border-radius: 8px;
+        overflow: hidden;
+    }
+    
+    .apollo__history-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    
+    .apollo__history-header {
+        text-align: left;
+        padding: 12px 16px;
+        background-color: var(--bg-tertiary, #333345);
+        color: var(--text-secondary, #aaaaaa);
+        font-weight: 500;
+        border-bottom: 1px solid var(--border-color, #444444);
+    }
+    
+    .apollo__history-header--timestamp {
+        width: 160px;
+    }
+    
+    .apollo__history-header--action {
+        width: 120px;
+    }
+    
+    .apollo__history-header--target {
+        width: 100px;
+    }
+    
+    .apollo__history-header--status {
+        width: 100px;
+    }
+    
+    .apollo__history-header--actions {
+        width: 120px;
+    }
+    
+    .apollo__history-row {
+        border-bottom: 1px solid var(--border-color, #444444);
+    }
+    
+    .apollo__history-row:last-child {
+        border-bottom: none;
+    }
+    
+    .apollo__history-cell {
+        padding: 12px 16px;
+    }
+    
+    .apollo__history-cell--timestamp {
+        font-family: monospace;
+        color: var(--text-secondary, #aaaaaa);
+    }
+    
+    .apollo__history-cell--action {
+        font-weight: 500;
+    }
+    
+    .apollo__history-cell--details {
+        color: var(--text-secondary, #aaaaaa);
+    }
+    
+    .apollo__status-pill {
+        display: inline-block;
+        padding: 4px 8px;
+        border-radius: 12px;
+        font-size: 0.85rem;
+        font-weight: 500;
+    }
+    
+    .apollo__status-pill--success {
+        background-color: rgba(52, 168, 83, 0.2);
+        color: #34A853;
+    }
+    
+    .apollo__status-pill--warning {
+        background-color: rgba(251, 188, 5, 0.2);
+        color: #FBBC05;
+    }
+    
+    .apollo__history-action-btn {
+        padding: 4px 8px;
+        margin-right: 4px;
+        background-color: var(--bg-tertiary, #333345);
+        border: 1px solid var(--border-color, #444444);
+        border-radius: 4px;
+        color: var(--text-primary, #f0f0f0);
+        cursor: pointer;
+        font-size: 0.85rem;
+    }
+    
+    .apollo__history-pagination {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 16px;
+        margin-top: 16px;
+    }
+    
+    .apollo__pagination-btn {
+        padding: 6px 12px;
+        background-color: var(--bg-tertiary, #333345);
+        border: 1px solid var(--border-color, #444444);
+        border-radius: 4px;
+        color: var(--text-primary, #f0f0f0);
+        cursor: pointer;
+    }
+    
+    .apollo__pagination-btn--disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+    
+    .apollo__pagination-info {
+        color: var(--text-secondary, #aaaaaa);
+    }
+    
+    /* Action Metrics */
+    .apollo__action-metrics {
+        padding: 0 16px 16px;
+    }
+    
+    .apollo__metrics-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 16px;
+    }
+    
+    .apollo__metric-card {
+        background-color: var(--bg-secondary, #252535);
+        border: 1px solid var(--border-color, #444444);
+        border-radius: 8px;
+        overflow: hidden;
+    }
+    
+    .apollo__metric-card-header {
+        padding: 12px 16px;
+        border-bottom: 1px solid var(--border-color, #444444);
+    }
+    
+    .apollo__metric-card-title {
+        font-size: 1.1rem;
+        font-weight: 500;
+        margin: 0;
+    }
+    
+    .apollo__metric-card-body {
+        padding: 16px;
+        text-align: center;
+    }
+    
+    .apollo__metric-value {
+        font-size: 2rem;
+        font-weight: bold;
+        color: var(--text-primary, #f0f0f0);
+        margin-bottom: 4px;
+    }
+    
+    .apollo__metric-label {
+        font-size: 1rem;
+        color: var(--text-secondary, #aaaaaa);
+        margin-bottom: 16px;
+    }
+    
+    .apollo__metric-chart {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-around;
+        height: 100px;
+        margin: 16px 0;
+        padding: 0 16px;
+    }
+    
+    .apollo__chart-bar {
+        width: 24px;
+        background-color: var(--bg-tertiary, #333345);
+        border-radius: 4px 4px 0 0;
+    }
+    
+    .apollo__chart-bar--highlight {
+        background-color: var(--color-primary, #7B1FA2);
+    }
+    
+    .apollo__metric-comparison {
+        margin-top: 16px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 6px;
+    }
+    
+    .apollo__comparison-value {
+        font-weight: bold;
+    }
+    
+    .apollo__comparison-value--positive {
+        color: #34A853;
+    }
+    
+    .apollo__comparison-value--negative {
+        color: #EA4335;
+    }
+    
+    .apollo__comparison-label {
+        color: var(--text-secondary, #aaaaaa);
+    }
+    
+    .apollo__effectiveness-chart {
+        display: flex;
+        height: 20px;
+        border-radius: 4px;
+        overflow: hidden;
+        margin: 16px 0;
+    }
+    
+    .apollo__effectiveness-segment {
+        height: 100%;
+    }
+    
+    .apollo__effectiveness-segment--excellent {
+        background-color: #34A853;
+    }
+    
+    .apollo__effectiveness-segment--good {
+        background-color: #4CAF50;
+    }
+    
+    .apollo__effectiveness-segment--moderate {
+        background-color: #FBBC05;
+    }
+    
+    .apollo__effectiveness-segment--poor {
+        background-color: #EA4335;
+    }
+    
+    .apollo__effectiveness-legend {
+        display: flex;
+        justify-content: space-around;
+        margin-top: 8px;
+    }
+    
+    .apollo__legend-item {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+    
+    .apollo__legend-color {
+        width: 12px;
+        height: 12px;
+    }
+    
+    .apollo__legend-color--excellent {
+        background-color: #34A853;
+    }
+    
+    .apollo__legend-color--good {
+        background-color: #4CAF50;
+    }
+    
+    .apollo__legend-color--moderate {
+        background-color: #FBBC05;
+    }
+    
+    .apollo__legend-color--poor {
+        background-color: #EA4335;
+    }
+    
+    .apollo__top-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin-bottom: 16px;
+    }
+    
+    .apollo__top-action {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .apollo__top-action-label {
+        width: 100px;
+        text-align: right;
+        font-size: 0.9rem;
+        color: var(--text-primary, #f0f0f0);
+    }
+    
+    .apollo__top-action-bar {
+        flex: 1;
+        height: 8px;
+        background-color: var(--bg-tertiary, #333345);
+        border-radius: 4px;
+        overflow: hidden;
+    }
+    
+    .apollo__top-action-fill {
+        height: 100%;
+        background-color: var(--color-primary, #7B1FA2);
+    }
+    
+    .apollo__top-action-value {
+        width: 40px;
+        text-align: right;
+        font-size: 0.9rem;
+        color: var(--text-secondary, #aaaaaa);
+    }
+    
+    .apollo__action-insights {
+        background-color: var(--bg-tertiary, #333345);
+        border-radius: 6px;
+        padding: 12px;
+        margin-top: 16px;
+    }
+    
+    .apollo__insights-text {
+        margin: 0;
+        color: var(--text-secondary, #aaaaaa);
+        line-height: 1.4;
+    }
+</style>
+
+<script type="text/javascript">
+// COMPONENT SCRIPT - FULLY SELF-CONTAINED
+// This prevents interference with other components
+
+// IMMEDIATELY SET UP UI MANAGER PROTECTION
+// Tell UI Manager to ignore this component - must be done IMMEDIATELY to avoid races
+if (window.uiManager) {
+    window.uiManager._ignoreComponent = 'apollo';
+    console.log('[APOLLO] Set UI Manager to ignore apollo component');
+}
+
+// DEFINE TAB SWITCHING FUNCTION
+// CRITICAL: This uses no shared code/utilities to avoid conflicts
+window.apollo_switchTab = function(tabId) {
+    console.log('[APOLLO] Switching to tab:', tabId);
+    
+    // Force HTML panel visibility
+    const htmlPanelElements = document.querySelectorAll('#html-panel');
+    htmlPanelElements.forEach(panel => {
+        if (panel) panel.style.display = 'block';
+    });
+    
+    try {
+        // Only select elements within apollo component to avoid conflicts with other components
+        const apolloContainer = document.querySelector('.apollo');
+        if (!apolloContainer) {
+            console.error('[APOLLO] Tab Switch: Cannot find apollo container');
+            return false;
+        }
+        
+        // Update tab active state - ONLY WITHIN APOLLO CONTAINER
+        const tabs = apolloContainer.querySelectorAll('.apollo__tab');
+        tabs.forEach(tab => {
+            if (tab.getAttribute('data-tab') === tabId) {
+                tab.classList.add('apollo__tab--active');
+            } else {
+                tab.classList.remove('apollo__tab--active');
+            }
+        });
+        
+        // Update panel visibility - ONLY WITHIN APOLLO CONTAINER
+        const panels = apolloContainer.querySelectorAll('.apollo__panel');
+        panels.forEach(panel => {
+            const panelId = panel.id;
+            if (panelId === tabId + '-panel') {
+                panel.style.display = 'block';
+                panel.classList.add('apollo__panel--active');
+            } else {
+                panel.style.display = 'none';
+                panel.classList.remove('apollo__panel--active');
+            }
+        });
+        
+        // Update clear button visibility for chat tabs
+        const clearButton = apolloContainer.querySelector('#clear-chat-btn');
+        if (clearButton) {
+            clearButton.style.display = (tabId === 'attention' || tabId === 'teamchat') ? 'block' : 'none';
+        }
+        
+        // Update component state
+        if (window.apolloComponent) {
+            window.apolloComponent.state = window.apolloComponent.state || {};
+            window.apolloComponent.state.activeTab = tabId;
+            
+            // Call component-specific methods if available
+            if (typeof window.apolloComponent.updateChatPlaceholder === 'function') {
+                window.apolloComponent.updateChatPlaceholder(tabId);
+            }
+            
+            if (typeof window.apolloComponent.loadTabContent === 'function') {
+                window.apolloComponent.loadTabContent(tabId);
+            }
+            
+            if (typeof window.apolloComponent.saveComponentState === 'function') {
+                window.apolloComponent.saveComponentState();
+            }
+        }
+    } catch (err) {
+        console.error('[APOLLO] Error in tab switching:', err);
+    }
+    
+    return false; // Stop event propagation
+};
+
+// CHAT CLEARING FUNCTION
+window.apollo_clearChat = function() {
+    console.log('[APOLLO] Clear chat clicked');
+    
+    try {
+        // Get active tab ID within apollo container
+        const apolloContainer = document.querySelector('.apollo');
+        if (!apolloContainer) {
+            console.error('[APOLLO] Clear Chat: Cannot find apollo container');
+            return false;
+        }
+        
+        const activeTab = apolloContainer.querySelector('.apollo__tab--active');
+        const tabId = activeTab ? activeTab.getAttribute('data-tab') : '';
+        
+        if (tabId === 'attention' || tabId === 'teamchat') {
+            // Get message container within apollo container only
+            const panel = apolloContainer.querySelector('#' + tabId + '-messages');
+            if (panel) {
+                // Keep welcome message
+                const welcomeMsg = panel.querySelector('.apollo__message--system');
+                if (welcomeMsg) {
+                    panel.innerHTML = '';
+                    panel.appendChild(welcomeMsg);
+                    console.log('[APOLLO] Cleared chat, kept welcome message');
+                } else {
+                    panel.innerHTML = '';
+                    console.log('[APOLLO] Cleared chat completely');
+                }
+            }
+        }
+    } catch (err) {
+        console.error('[APOLLO] Error clearing chat:', err);
+    }
+    
+    return false; // Stop event propagation
+};
+
+// HTML PANEL PROTECTION
+// Setup explicit protection for the HTML panel to prevent it being hidden
+function apollo_protectHtmlPanel() {
+    const htmlPanel = document.getElementById('html-panel');
+    if (!htmlPanel) {
+        console.error('[APOLLO] Cannot find HTML panel to protect');
+        return;
+    }
+    
+    console.log('[APOLLO] Protecting HTML panel from being hidden');
+    htmlPanel.style.display = 'block'; // Force it to be visible
+    
+    // Store the original display value
+    if (!htmlPanel.hasOwnProperty('_apolloOriginalDisplay')) {
+        Object.defineProperty(htmlPanel, '_apolloOriginalDisplay', {
+            value: 'block',
+            writable: true,
+            configurable: true
+        });
+    }
+    
+    // Only define the getter/setter if it hasn't already been defined by this component
+    if (!htmlPanel.style._apolloProtected) {
+        // Mark the display property as protected by this component
+        Object.defineProperty(htmlPanel.style, '_apolloProtected', {
+            value: true,
+            writable: false,
+            configurable: true
+        });
+        
+        // Protect the display property
+        Object.defineProperty(htmlPanel.style, 'display', {
+            get: function() { 
+                return htmlPanel._apolloOriginalDisplay; 
+            },
+            set: function(value) {
+                console.log(`[APOLLO] Intercepted attempt to set HTML panel display to: ${value}`);
+                if (value === 'none') {
+                    console.log('[APOLLO] Blocked attempt to hide HTML panel');
+                    htmlPanel._apolloOriginalDisplay = 'block';
+                } else {
+                    htmlPanel._apolloOriginalDisplay = value;
+                }
+            },
+            configurable: true
+        });
+    }
+}
+
+// Initialize component
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('[APOLLO] Apollo component loaded');
+    apollo_protectHtmlPanel();
+    
+    // Update SHOW_GREEK_NAMES title display
+    const titleElement = document.getElementById('apollo-title-text');
+    if (titleElement) {
+        if (window.SHOW_GREEK_NAMES === false) {
+            titleElement.textContent = 'Attention/Prediction';
+        } else {
+            titleElement.textContent = 'Apollo';
+        }
+    }
+    
+    // For debugging purposes
+    if (window.TektonDebug) {
+        TektonDebug.log('apollo', 'Apollo component initialized', 'info');
+    }
+});
+
+// SETUP DONE AFTER PAGE LOAD
+// This ensures the functions are available before the tab events need them
+window.addEventListener('DOMContentLoaded', function() {
+    console.log('[APOLLO] DOM loaded, setting up Apollo component');
+    apollo_protectHtmlPanel();
+});
+
+// IMMEDIATE PROTECTION
+// In case the DOM is already loaded
+if (document.readyState === 'complete' || document.readyState === 'interactive') {
+    console.log('[APOLLO] Document already loaded, setting up Apollo component immediately');
+    apollo_protectHtmlPanel();
+}
+</script>

@@ -1,0 +1,7 @@
+{
+  "name": "improvement_suggestions",
+  "template": "Based on the following performance data, suggest improvements that could enhance future project execution.\n\n{{ performance_data }}\n\nProvide the following for each improvement suggestion:\n1. Title\n2. Description\n3. Priority (high, medium, low)\n4. Implementation plan\n5. Expected benefits\n\nReturn 3-5 improvement suggestions in a structured JSON format with this schema:\n```json\n[\n  {\n    \"title\": \"Improvement title\",\n    \"description\": \"Detailed description\",\n    \"priority\": \"high|medium|low\",\n    \"implementation_plan\": \"Step-by-step plan\",\n    \"expected_benefits\": \"Expected benefits\"\n  }\n]\n```",
+  "description": "Template for generating improvement suggestions",
+  "output_format": "json",
+  "version": "1.0.0"
+}

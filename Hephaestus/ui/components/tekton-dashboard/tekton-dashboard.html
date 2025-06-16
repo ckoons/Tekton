@@ -1,0 +1,407 @@
+<!-- Tekton Dashboard Component UI Template -->
+<div class="tekton-dashboard">
+  <div class="tekton-dashboard__header">
+    <h2 class="tekton-dashboard__title">Tekton System Dashboard</h2>
+    <div class="tekton-dashboard__controls">
+      <button class="tekton-dashboard__button tekton-dashboard__button--primary" id="refresh-system">
+        <span class="tekton-dashboard__button-icon">🔄</span>
+        <span class="tekton-dashboard__button-text">Refresh</span>
+      </button>
+      <select id="auto-refresh-interval" class="tekton-dashboard__select">
+        <option value="0">Manual Refresh</option>
+        <option value="5000">Refresh: 5s</option>
+        <option value="10000" selected>Refresh: 10s</option>
+        <option value="30000">Refresh: 30s</option>
+        <option value="60000">Refresh: 1m</option>
+      </select>
+    </div>
+  </div>
+  
+  <!-- Tabs -->
+  <div class="tekton-dashboard__tabs">
+    <button class="tekton-dashboard__tab-button tekton-dashboard__tab-button--active" data-tab="system-status">
+      <span class="tekton-dashboard__tab-icon">📊</span>
+      <span class="tekton-dashboard__tab-label">System Status</span>
+    </button>
+    <button class="tekton-dashboard__tab-button" data-tab="components">
+      <span class="tekton-dashboard__tab-icon">🧩</span>
+      <span class="tekton-dashboard__tab-label">Components</span>
+    </button>
+    <button class="tekton-dashboard__tab-button" data-tab="resources">
+      <span class="tekton-dashboard__tab-icon">📈</span>
+      <span class="tekton-dashboard__tab-label">Resources</span>
+    </button>
+    <button class="tekton-dashboard__tab-button" data-tab="logs">
+      <span class="tekton-dashboard__tab-icon">📝</span>
+      <span class="tekton-dashboard__tab-label">Logs</span>
+    </button>
+    <button class="tekton-dashboard__tab-button" data-tab="projects">
+      <span class="tekton-dashboard__tab-icon">📁</span>
+      <span class="tekton-dashboard__tab-label">Projects</span>
+    </button>
+    <button class="tekton-dashboard__tab-button" data-tab="github">
+      <span class="tekton-dashboard__tab-icon">🐙</span>
+      <span class="tekton-dashboard__tab-label">GitHub</span>
+    </button>
+  </div>
+  
+  <!-- Tab Content -->
+  <div class="tekton-dashboard__tab-content">
+    <!-- System Status Tab -->
+    <div class="tekton-dashboard__tab-panel tekton-dashboard__tab-panel--active" data-panel="system-status">
+      <div class="tekton-dashboard__panel-header">
+        <div class="tekton-dashboard__panel-title">System Health Overview</div>
+        <div class="tekton-dashboard__panel-actions">
+          <button class="tekton-dashboard__action-button" id="system-restart-all">
+            <span class="tekton-dashboard__action-icon">🔄</span>
+            Restart All
+          </button>
+          <button class="tekton-dashboard__action-button" id="system-health-check">
+            <span class="tekton-dashboard__action-icon">🩺</span>
+            Health Check
+          </button>
+        </div>
+      </div>
+      
+      <div class="tekton-dashboard__system-overview">
+        <div class="tekton-dashboard__system-metrics">
+          <div class="tekton-dashboard__metric-card">
+            <div class="tekton-dashboard__metric-title">CPU Usage</div>
+            <div class="tekton-dashboard__metric-value" id="cpu-usage">--</div>
+            <div class="tekton-dashboard__metric-chart" id="cpu-chart"></div>
+          </div>
+          <div class="tekton-dashboard__metric-card">
+            <div class="tekton-dashboard__metric-title">Memory Usage</div>
+            <div class="tekton-dashboard__metric-value" id="memory-usage">--</div>
+            <div class="tekton-dashboard__metric-chart" id="memory-chart"></div>
+          </div>
+          <div class="tekton-dashboard__metric-card">
+            <div class="tekton-dashboard__metric-title">Disk Space</div>
+            <div class="tekton-dashboard__metric-value" id="disk-usage">--</div>
+            <div class="tekton-dashboard__metric-chart" id="disk-chart"></div>
+          </div>
+          <div class="tekton-dashboard__metric-card">
+            <div class="tekton-dashboard__metric-title">Network I/O</div>
+            <div class="tekton-dashboard__metric-value" id="network-usage">--</div>
+            <div class="tekton-dashboard__metric-chart" id="network-chart"></div>
+          </div>
+        </div>
+        
+        <div class="tekton-dashboard__system-alerts">
+          <h3 class="tekton-dashboard__section-title">System Alerts</h3>
+          <div class="tekton-dashboard__alerts-container" id="system-alerts">
+            <div class="tekton-dashboard__placeholder-message">No active alerts</div>
+            <!-- Alerts will be dynamically added here -->
+          </div>
+        </div>
+      </div>
+      
+      <div class="tekton-dashboard__component-grid">
+        <h3 class="tekton-dashboard__section-title">Component Status</h3>
+        <div class="tekton-dashboard__component-cards" id="component-status-grid">
+          <!-- Component status cards will be dynamically added here -->
+          <div class="tekton-dashboard__loading">Loading component status...</div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Components Management Tab -->
+    <div class="tekton-dashboard__tab-panel" data-panel="components">
+      <div class="tekton-dashboard__panel-header">
+        <div class="tekton-dashboard__search">
+          <input type="text" id="component-search" class="tekton-dashboard__search-input" placeholder="Search components...">
+          <select id="component-filter" class="tekton-dashboard__select">
+            <option value="all">All Types</option>
+            <option value="core">Core</option>
+            <option value="service">Service</option>
+            <option value="ui">UI</option>
+          </select>
+        </div>
+        <div class="tekton-dashboard__view-controls">
+          <button class="tekton-dashboard__view-button tekton-dashboard__view-button--active" data-view="grid">
+            <span class="tekton-dashboard__view-icon">⊞</span>
+          </button>
+          <button class="tekton-dashboard__view-button" data-view="list">
+            <span class="tekton-dashboard__view-icon">≡</span>
+          </button>
+        </div>
+      </div>
+      
+      <div class="tekton-dashboard__components">
+        <!-- Component Grid View -->
+        <div class="tekton-dashboard__components-grid" id="components-grid-view">
+          <!-- Component cards will be dynamically inserted here -->
+          <div class="tekton-dashboard__loading">Loading components...</div>
+        </div>
+        
+        <!-- Component List View (Hidden by default) -->
+        <div class="tekton-dashboard__components-list" id="components-list-view" style="display: none;">
+          <table class="tekton-dashboard__table">
+            <thead>
+              <tr>
+                <th>Status</th>
+                <th>Component</th>
+                <th>Type</th>
+                <th>Version</th>
+                <th>Health</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="components-table-body">
+              <!-- Component rows will be dynamically inserted here -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Resources Tab -->
+    <div class="tekton-dashboard__tab-panel" data-panel="resources">
+      <div class="tekton-dashboard__panel-header">
+        <div class="tekton-dashboard__panel-title">System Resources</div>
+        <div class="tekton-dashboard__time-range">
+          <label class="tekton-dashboard__range-label">Time Range:</label>
+          <select id="resources-time-range" class="tekton-dashboard__select">
+            <option value="1h">Last Hour</option>
+            <option value="6h">Last 6 Hours</option>
+            <option value="24h" selected>Last 24 Hours</option>
+            <option value="7d">Last 7 Days</option>
+            <option value="30d">Last 30 Days</option>
+          </select>
+        </div>
+      </div>
+      
+      <div class="tekton-dashboard__resources">
+        <div class="tekton-dashboard__resources-charts">
+          <div class="tekton-dashboard__chart-container">
+            <h3 class="tekton-dashboard__chart-title">CPU Utilization</h3>
+            <div class="tekton-dashboard__chart" id="cpu-history-chart"></div>
+          </div>
+          <div class="tekton-dashboard__chart-container">
+            <h3 class="tekton-dashboard__chart-title">Memory Utilization</h3>
+            <div class="tekton-dashboard__chart" id="memory-history-chart"></div>
+          </div>
+          <div class="tekton-dashboard__chart-container">
+            <h3 class="tekton-dashboard__chart-title">Disk I/O</h3>
+            <div class="tekton-dashboard__chart" id="disk-io-chart"></div>
+          </div>
+          <div class="tekton-dashboard__chart-container">
+            <h3 class="tekton-dashboard__chart-title">Network Traffic</h3>
+            <div class="tekton-dashboard__chart" id="network-traffic-chart"></div>
+          </div>
+        </div>
+        
+        <div class="tekton-dashboard__resources-tables">
+          <div class="tekton-dashboard__resource-section">
+            <h3 class="tekton-dashboard__section-title">Top CPU Processes</h3>
+            <table class="tekton-dashboard__table">
+              <thead>
+                <tr>
+                  <th>Process</th>
+                  <th>Component</th>
+                  <th>CPU %</th>
+                  <th>Memory</th>
+                  <th>Runtime</th>
+                </tr>
+              </thead>
+              <tbody id="cpu-processes-table">
+                <!-- Process rows will be dynamically inserted here -->
+              </tbody>
+            </table>
+          </div>
+          
+          <div class="tekton-dashboard__resource-section">
+            <h3 class="tekton-dashboard__section-title">Top Memory Processes</h3>
+            <table class="tekton-dashboard__table">
+              <thead>
+                <tr>
+                  <th>Process</th>
+                  <th>Component</th>
+                  <th>Memory</th>
+                  <th>CPU %</th>
+                  <th>Runtime</th>
+                </tr>
+              </thead>
+              <tbody id="memory-processes-table">
+                <!-- Process rows will be dynamically inserted here -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Logs Tab -->
+    <div class="tekton-dashboard__tab-panel" data-panel="logs">
+      <div class="tekton-dashboard__panel-header">
+        <div class="tekton-dashboard__search">
+          <input type="text" id="logs-search" class="tekton-dashboard__search-input" placeholder="Search logs...">
+          <select id="logs-component-filter" class="tekton-dashboard__select">
+            <option value="all">All Components</option>
+            <!-- Component options will be added dynamically -->
+          </select>
+          <select id="logs-level-filter" class="tekton-dashboard__select">
+            <option value="all">All Levels</option>
+            <option value="error">Error</option>
+            <option value="warn">Warning</option>
+            <option value="info">Info</option>
+            <option value="debug">Debug</option>
+          </select>
+        </div>
+        <div class="tekton-dashboard__panel-actions">
+          <button class="tekton-dashboard__action-button" id="logs-download">
+            <span class="tekton-dashboard__action-icon">💾</span>
+            Download
+          </button>
+          <button class="tekton-dashboard__action-button" id="logs-clear">
+            <span class="tekton-dashboard__action-icon">🧹</span>
+            Clear
+          </button>
+        </div>
+      </div>
+      
+      <div class="tekton-dashboard__logs">
+        <div class="tekton-dashboard__log-controls">
+          <label class="tekton-dashboard__control-label">
+            <input type="checkbox" id="logs-auto-update" checked>
+            Auto-update
+          </label>
+          <label class="tekton-dashboard__control-label">
+            <input type="checkbox" id="logs-wrap-lines" checked>
+            Wrap lines
+          </label>
+          <label class="tekton-dashboard__control-label">
+            Max lines:
+            <select id="logs-max-lines" class="tekton-dashboard__small-select">
+              <option value="100">100</option>
+              <option value="500" selected>500</option>
+              <option value="1000">1,000</option>
+              <option value="5000">5,000</option>
+            </select>
+          </label>
+        </div>
+        
+        <div class="tekton-dashboard__log-viewer" id="log-viewer">
+          <div class="tekton-dashboard__log-content" id="log-content">
+            <!-- Log entries will be added dynamically -->
+            <div class="tekton-dashboard__placeholder-message">Select a component to view logs</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Projects Tab -->
+    <div class="tekton-dashboard__tab-panel" data-panel="projects">
+      <div class="tekton-dashboard__panel-header">
+        <div class="tekton-dashboard__search">
+          <input type="text" id="projects-search" class="tekton-dashboard__search-input" placeholder="Search projects...">
+          <select id="projects-filter" class="tekton-dashboard__select">
+            <option value="all">All Projects</option>
+            <option value="active">Active</option>
+            <option value="archived">Archived</option>
+          </select>
+        </div>
+        <div class="tekton-dashboard__panel-actions">
+          <button class="tekton-dashboard__action-button tekton-dashboard__action-button--primary" id="create-project">
+            <span class="tekton-dashboard__action-icon">➕</span>
+            New Project
+          </button>
+        </div>
+      </div>
+      
+      <div class="tekton-dashboard__projects">
+        <div class="tekton-dashboard__projects-list" id="projects-list">
+          <!-- Project cards will be added dynamically -->
+          <div class="tekton-dashboard__placeholder-message">No projects found. Create your first project using the "New Project" button.</div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- GitHub Tab -->
+    <div class="tekton-dashboard__tab-panel" data-panel="github">
+      <div id="github-panel-container">
+        <!-- GitHub panel will be loaded here -->
+        <div class="tekton-dashboard__loading">Loading GitHub integration...</div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Component Detail Modal -->
+  <div class="tekton-dashboard__modal" id="component-detail-modal" style="display: none;">
+    <div class="tekton-dashboard__modal-overlay"></div>
+    <div class="tekton-dashboard__modal-content">
+      <div class="tekton-dashboard__modal-header">
+        <h3 class="tekton-dashboard__modal-title" id="component-modal-title">Component Details</h3>
+        <button class="tekton-dashboard__modal-close" id="close-component-modal">&times;</button>
+      </div>
+      <div class="tekton-dashboard__modal-body" id="component-modal-body">
+        <!-- Component details will be added dynamically -->
+      </div>
+      <div class="tekton-dashboard__modal-footer">
+        <button class="tekton-dashboard__button tekton-dashboard__button--secondary" id="component-modal-cancel">Close</button>
+        <button class="tekton-dashboard__button tekton-dashboard__button--primary" id="component-modal-action">Restart</button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Project Detail Modal -->
+  <div class="tekton-dashboard__modal" id="project-detail-modal" style="display: none;">
+    <div class="tekton-dashboard__modal-overlay"></div>
+    <div class="tekton-dashboard__modal-content">
+      <div class="tekton-dashboard__modal-header">
+        <h3 class="tekton-dashboard__modal-title" id="project-modal-title">Project Details</h3>
+        <button class="tekton-dashboard__modal-close" id="close-project-modal">&times;</button>
+      </div>
+      <div class="tekton-dashboard__modal-body" id="project-modal-body">
+        <!-- Project details will be added dynamically -->
+      </div>
+      <div class="tekton-dashboard__modal-footer">
+        <button class="tekton-dashboard__button tekton-dashboard__button--secondary" id="project-modal-cancel">Close</button>
+        <button class="tekton-dashboard__button tekton-dashboard__button--primary" id="project-modal-action">Open Project</button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Create Project Modal -->
+  <div class="tekton-dashboard__modal" id="create-project-modal" style="display: none;">
+    <div class="tekton-dashboard__modal-overlay"></div>
+    <div class="tekton-dashboard__modal-content">
+      <div class="tekton-dashboard__modal-header">
+        <h3 class="tekton-dashboard__modal-title">Create New Project</h3>
+        <button class="tekton-dashboard__modal-close" id="close-create-project-modal">&times;</button>
+      </div>
+      <div class="tekton-dashboard__modal-body">
+        <form id="create-project-form" class="tekton-dashboard__form">
+          <div class="tekton-dashboard__form-field">
+            <label class="tekton-dashboard__form-label">Project Name</label>
+            <input type="text" id="project-name" class="tekton-dashboard__form-input" required>
+          </div>
+          <div class="tekton-dashboard__form-field">
+            <label class="tekton-dashboard__form-label">Description</label>
+            <textarea id="project-description" class="tekton-dashboard__form-textarea" rows="3"></textarea>
+          </div>
+          <div class="tekton-dashboard__form-field">
+            <label class="tekton-dashboard__form-label">Repository URL (optional)</label>
+            <input type="text" id="project-repo-url" class="tekton-dashboard__form-input">
+          </div>
+          <div class="tekton-dashboard__form-field">
+            <label class="tekton-dashboard__form-label">Template</label>
+            <select id="project-template" class="tekton-dashboard__form-select">
+              <option value="empty">Empty Project</option>
+              <option value="web">Web Application</option>
+              <option value="api">API Service</option>
+              <option value="ml">Machine Learning</option>
+            </select>
+          </div>
+        </form>
+      </div>
+      <div class="tekton-dashboard__modal-footer">
+        <button class="tekton-dashboard__button tekton-dashboard__button--secondary" id="create-project-cancel">Cancel</button>
+        <button class="tekton-dashboard__button tekton-dashboard__button--primary" id="create-project-submit">Create Project</button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Toast notifications container -->
+  <div class="tekton-dashboard__notifications" id="tekton-notifications"></div>
+</div>

@@ -1,0 +1,59 @@
+{
+    "name": "model_selection",
+    "description": "Recommends optimal LLM models based on task requirements and budget constraints",
+    "template": {
+        "system": "You are a Model Selection Assistant that helps users choose the most appropriate LLM for their specific task while considering budget constraints. Your goal is to recommend models that provide the best balance of capabilities and cost-effectiveness.\n\nYou have detailed knowledge of various language models including:\n- Token context length limits\n- Specialized capabilities (code generation, reasoning, etc.)\n- Pricing structures\n- Performance characteristics\n- Latency considerations\n\nWhen making recommendations, you should:\n1. Understand the specific requirements of the task\n2. Consider the budget constraints provided\n3. Evaluate necessary context length for the task\n4. Assess if specialized capabilities are required\n5. Recommend a primary model and alternatives\n6. Explain your reasoning for each recommendation\n\nAvoid recommending models that:\n- Exceed budget constraints significantly\n- Lack required capabilities for the task\n- Have insufficient context length for the described use case\n\nYour recommendations should be evidence-based and focused on helping the user select the most appropriate model for their specific needs.",
+        "user": "I need a recommendation for which LLM to use for the following task:\n\n{task_description}\n\nTask Parameters:\n- Expected input length: {input_length} tokens\n- Expected output length: {output_length} tokens\n- Daily usage frequency: {usage_frequency} times\n- Budget constraints: ${budget_limit} per day\n- Priority areas: {priority_areas}\n\nAvailable models and their prices:\n{model_data}\n\nPlease recommend the best model for this task, along with 1-2 alternatives. Explain your reasoning and provide estimated daily costs."
+    },
+    "variables": [
+        {
+            "name": "task_description",
+            "description": "Description of the task the LLM will be used for"
+        },
+        {
+            "name": "input_length",
+            "description": "Expected input length in tokens"
+        },
+        {
+            "name": "output_length",
+            "description": "Expected output length in tokens"
+        },
+        {
+            "name": "usage_frequency",
+            "description": "How many times the task will be performed daily"
+        },
+        {
+            "name": "budget_limit",
+            "description": "Maximum budget in USD per day"
+        },
+        {
+            "name": "priority_areas",
+            "description": "Areas of importance for the task (e.g., accuracy, speed, creativity)"
+        },
+        {
+            "name": "model_data",
+            "description": "JSON data of available models with their specifications and pricing"
+        }
+    ],
+    "examples": [
+        {
+            "input": {
+                "task_description": "Generate Python code for data processing tasks including pandas DataFrame operations, numpy calculations, and data visualization with matplotlib. The code needs to be correct and production-ready with proper error handling.",
+                "input_length": "2000",
+                "output_length": "1000",
+                "usage_frequency": "25",
+                "budget_limit": "10.00",
+                "priority_areas": "Code accuracy, error handling, efficiency",
+                "model_data": "{\"models\": [{\"name\": \"GPT-4\", \"provider\": \"OpenAI\", \"context_length\": 128000, \"input_price\": 0.03, \"output_price\": 0.06, \"capabilities\": [\"code_generation\", \"reasoning\", \"instruction_following\"]}, {\"name\": \"GPT-3.5-Turbo\", \"provider\": \"OpenAI\", \"context_length\": 16000, \"input_price\": 0.001, \"output_price\": 0.002, \"capabilities\": [\"code_generation\", \"instruction_following\"]}, {\"name\": \"Claude 3 Opus\", \"provider\": \"Anthropic\", \"context_length\": 200000, \"input_price\": 0.015, \"output_price\": 0.075, \"capabilities\": [\"code_generation\", \"reasoning\", \"instruction_following\"]}, {\"name\": \"Claude 3 Sonnet\", \"provider\": \"Anthropic\", \"context_length\": 100000, \"input_price\": 0.003, \"output_price\": 0.015, \"capabilities\": [\"code_generation\", \"reasoning\", \"instruction_following\"]}, {\"name\": \"Claude 3 Haiku\", \"provider\": \"Anthropic\", \"context_length\": 48000, \"input_price\": 0.00025, \"output_price\": 0.00125, \"capabilities\": [\"code_generation\", \"instruction_following\"]}]}"
+            },
+            "output": "# Model Recommendation Report\n\n## Task Analysis\n- Python code generation for data processing\n- Requires pandas, numpy, and matplotlib knowledge\n- Production-ready code with error handling needed\n- Input: 2,000 tokens | Output: 1,000 tokens\n- Daily usage: 25 runs | Budget limit: $10.00/day\n\n## Cost Calculations Per Run\n| Model | Input Cost | Output Cost | Total Cost | Daily Cost (25 runs) |\n|-------|------------|------------|------------|----------------------|\n| GPT-4 | $0.06 | $0.06 | $0.12 | $3.00 |\n| GPT-3.5-Turbo | $0.002 | $0.002 | $0.004 | $0.10 |\n| Claude 3 Opus | $0.03 | $0.075 | $0.105 | $2.63 |\n| Claude 3 Sonnet | $0.006 | $0.015 | $0.021 | $0.53 |\n| Claude 3 Haiku | $0.0005 | $0.00125 | $0.00175 | $0.04 |\n\n## Recommendations\n\n### Primary Recommendation: Claude 3 Sonnet\n- Daily cost: $0.53 (5.3% of budget limit)\n- Context length of 100K tokens is more than sufficient\n- Strong code generation and reasoning capabilities\n- Excellent at instruction following with proper error handling\n- Good balance of performance and cost\n\n### Alternative 1: GPT-3.5-Turbo\n- Daily cost: $0.10 (1% of budget limit)\n- Very cost-effective for straightforward code generation\n- Context length of 16K tokens is adequate for task\n- May require more detailed prompting for error handling\n\n### Alternative 2: Claude 3 Haiku\n- Daily cost: $0.04 (0.4% of budget limit)\n- Most economical option by far\n- Sufficient context window (48K tokens)\n- Appropriate for simpler code generation tasks\n- May require more iterations and testing for complex code\n\n## Reasoning\nI recommend Claude 3 Sonnet as the primary option because:\n1. It provides the best balance of quality and cost for code generation\n2. The daily cost of $0.53 is well below your $10 budget limit\n3. It has strong reasoning capabilities needed for proper error handling\n4. Its context length comfortably accommodates your requirements\n\nGPT-4 and Claude Opus would provide slightly better quality but at 5-6× the cost, which isn't justified for this task. GPT-3.5-Turbo and Claude Haiku are more economical but may require more iteration to achieve the same quality of code, particularly for complex data processing tasks.\n\nYou could even run a hybrid approach where you use Claude Haiku for initial development and then validate final code with Claude Sonnet, still keeping well under budget."
+            }
+        }
+    ],
+    "version": "1.0.0",
+    "model_requirements": {
+        "minimum_context_length": 8000,
+        "required_features": ["instruction_following"],
+        "preferred_models": ["claude-3-sonnet", "gpt-4"]
+    }
+}

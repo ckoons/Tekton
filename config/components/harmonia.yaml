@@ -1,0 +1,70 @@
+component:
+  id: "harmonia"
+  name: "Harmonia Workflow Engine"
+  version: "0.1.0"
+  description: "Workflow orchestration engine"
+  port: 8007
+  metadata:
+    description: "Workflow orchestration engine"
+    version: "0.1.0"
+    dependencies: ["hermes.core.database"]
+
+capabilities:
+  - id: "workflow_management"
+    name: "Workflow Management"
+    description: "Create and manage workflow definitions"
+    methods:
+      - id: "create_workflow"
+        name: "Create Workflow"
+        description: "Create a new workflow definition"
+        parameters:
+          - name: "name"
+            type: "string"
+            required: true
+          - name: "description"
+            type: "string"
+            required: false
+          - name: "tasks"
+            type: "array"
+            required: true
+          - name: "input"
+            type: "object"
+            required: false
+          - name: "output"
+            type: "object"
+            required: false
+        returns:
+          type: "object"
+          
+      - id: "execute_workflow"
+        name: "Execute Workflow"
+        description: "Execute a workflow"
+        parameters:
+          - name: "workflow_id"
+            type: "string"
+            required: true
+          - name: "input"
+            type: "object"
+            required: false
+        returns:
+          type: "object"
+          
+      - id: "get_workflow_status"
+        name: "Get Workflow Status"
+        description: "Get the status of a workflow execution"
+        parameters:
+          - name: "execution_id"
+            type: "string"
+            required: true
+        returns:
+          type: "object"
+          
+      - id: "cancel_workflow"
+        name: "Cancel Workflow"
+        description: "Cancel a workflow execution"
+        parameters:
+          - name: "execution_id"
+            type: "string"
+            required: true
+        returns:
+          type: "object"

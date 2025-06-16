@@ -1,0 +1,16 @@
+# Engram requirements - Memory system for Tekton
+# This component manages vector stores and persistent memory
+
+# Core requirements
+-r ../shared/requirements/base.txt
+-r ../shared/requirements/web.txt
+-r ../shared/requirements/vector.txt
+
+# Additional component-specific dependencies
+flask>=2.3.0
+flask-wtf>=1.2.0
+bootstrap-flask>=2.3.0
+cryptography>=44.0.0
+
+# Tekton integration
+tekton-core>=0.1.0

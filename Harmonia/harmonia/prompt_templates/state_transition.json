@@ -1,0 +1,5 @@
+{
+  "name": "state_transition",
+  "template": "You need to determine how to update the workflow state based on a completed step.\n\nCurrent state:\n{{ current_state }}\n\nStep that completed:\n{{ completed_step }}\n\nStep output:\n{{ step_output }}\n\n{% if next_steps %}\nPotential next steps:\n{{ next_steps }}\n{% endif %}\n\nPlease determine:\n1. How the state should be updated based on the completed step's output\n2. Which step(s) should be executed next\n3. Any conditions that should be evaluated\n\nReturn your recommendations for state updates and next steps in a clear, structured format.",
+  "description": "Template for determining state transitions in workflows"
+}

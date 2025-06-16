@@ -1,0 +1,365 @@
+/**
+ * Terma Terminal Component Stylesheet for Hephaestus UI
+ * 
+ * Styles for the Terma terminal component when integrated with Hephaestus UI.
+ * This ensures proper integration with the Hephaestus UI design system.
+ */
+
+/* Terminal container styles */
+.terma-container {
+    display: flex !important;
+    flex-direction: column !important;
+    height: 100% !important;
+    width: 100% !important;
+    background-color: var(--terminal-bg-color, #1a1a1a) !important;
+    color: var(--terminal-fg-color, #f0f0f0) !important;
+    font-family: var(--terminal-font-family, 'Courier New', monospace) !important;
+    border-radius: var(--component-border-radius, 6px) !important;
+    overflow: hidden !important;
+}
+
+/* Terminal header */
+.terma-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    background-color: var(--component-header-bg, #2a2a2a);
+    border-bottom: 1px solid var(--component-border-color, #3a3a3a);
+}
+
+.terma-title {
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--component-title-color, #f0f0f0);
+}
+
+.terma-controls {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.terma-select {
+    background-color: var(--control-bg-color, #333);
+    color: var(--control-fg-color, #fff);
+    border: 1px solid var(--control-border-color, #555);
+    border-radius: var(--control-border-radius, 4px);
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+    cursor: pointer;
+}
+
+.terma-select:hover, .terma-select:focus {
+    background-color: var(--control-hover-bg-color, #444);
+    border-color: var(--control-hover-border-color, #666);
+}
+
+.terma-btn {
+    background-color: var(--button-bg-color, #333);
+    color: var(--button-fg-color, #fff);
+    border: 1px solid var(--button-border-color, #555);
+    border-radius: var(--button-border-radius, 4px);
+    padding: 0.25rem 0.5rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.terma-btn:hover {
+    background-color: var(--button-hover-bg-color, #444);
+    border-color: var(--button-hover-border-color, #666);
+}
+
+.terma-btn svg {
+    width: 1rem;
+    height: 1rem;
+    fill: currentColor;
+}
+
+.terma-btn-primary {
+    background-color: var(--primary-button-bg-color, #0066cc);
+    border-color: var(--primary-button-border-color, #0077dd);
+    color: var(--primary-button-fg-color, #fff);
+}
+
+.terma-btn-primary:hover {
+    background-color: var(--primary-button-hover-bg-color, #0077dd);
+    border-color: var(--primary-button-hover-border-color, #0088ee);
+}
+
+/* Terminal content */
+.terma-content {
+    flex: 1 !important;
+    position: relative !important;
+    overflow: hidden !important;
+    background-color: var(--terminal-bg-color, #1a1a1a) !important;
+    min-height: 200px !important; /* Ensure minimum height */
+}
+
+.terma-terminal, .simple-terminal {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    overflow: auto !important;
+}
+
+/* LLM assistance panel */
+.terma-llm-assistance {
+    background-color: var(--secondary-panel-bg-color, #2a2a2a) !important;
+    border-top: 1px solid var(--component-border-color, #3a3a3a) !important;
+    max-height: 30% !important;
+    transition: max-height 0.3s ease !important;
+    position: relative !important;
+    z-index: 50 !important;
+    bottom: 0 !important;
+    width: 100% !important;
+}
+
+.terma-llm-collapsed {
+    max-height: 2.25rem !important;
+}
+
+.terma-llm-header {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    padding: 0.5rem 1rem !important;
+    background-color: var(--component-header-bg, #2a2a2a) !important;
+    cursor: pointer !important;
+    border-top: 1px solid #444 !important;
+}
+
+.terma-llm-title {
+    font-size: 0.875rem !important;
+    font-weight: 500 !important;
+    color: var(--component-title-color, #f0f0f0) !important;
+}
+
+.terma-llm-content {
+    padding: 0.5rem 1rem !important;
+    max-height: 100px !important;
+    overflow-y: auto !important;
+    background-color: var(--secondary-panel-bg-color, #2a2a2a) !important;
+}
+
+.terma-llm-output {
+    font-size: 0.875rem;
+    line-height: 1.5;
+    color: var(--text-color, #f0f0f0);
+}
+
+.terma-llm-output code {
+    background-color: var(--code-bg-color, #333);
+    padding: 0.125rem 0.25rem;
+    border-radius: 3px;
+    font-family: var(--code-font-family, 'Courier New', monospace);
+    color: var(--code-fg-color, #f0f0f0);
+}
+
+.terma-llm-output pre {
+    background-color: var(--code-block-bg-color, #333);
+    padding: 0.5rem;
+    border-radius: 3px;
+    overflow-x: auto;
+    margin: 0.5rem 0;
+}
+
+/* Modal */
+.terma-modal {
+    display: none;
+    position: fixed;
+    z-index: 9999;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+}
+
+.terma-modal-content {
+    background-color: var(--modal-bg-color, #2a2a2a);
+    margin: 10% auto;
+    padding: 0;
+    border: 1px solid var(--modal-border-color, #3a3a3a);
+    border-radius: var(--modal-border-radius, 8px);
+    width: 80%;
+    max-width: 500px;
+    max-height: 80%;
+    overflow-y: auto;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+}
+
+.terma-modal-header {
+    padding: 1rem;
+    border-bottom: 1px solid var(--modal-border-color, #3a3a3a);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.terma-modal-header h2 {
+    margin: 0;
+    font-size: 1.125rem;
+    color: var(--modal-title-color, #f0f0f0);
+}
+
+.terma-modal-close {
+    color: var(--modal-close-color, #aaa);
+    font-size: 1.5rem;
+    font-weight: bold;
+    background: none;
+    border: none;
+    cursor: pointer;
+    line-height: 1;
+}
+
+.terma-modal-close:hover {
+    color: var(--modal-close-hover-color, #fff);
+}
+
+.terma-modal-body {
+    padding: 1rem;
+}
+
+.terma-modal-footer {
+    padding: 1rem;
+    border-top: 1px solid var(--modal-border-color, #3a3a3a);
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+}
+
+.terma-settings-group {
+    margin-bottom: 1rem;
+}
+
+.terma-settings-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: var(--label-color, #f0f0f0);
+}
+
+.terma-settings-group input, .terma-settings-group select {
+    background-color: var(--input-bg-color, #333);
+    color: var(--input-fg-color, #fff);
+    border: 1px solid var(--input-border-color, #555);
+    border-radius: var(--input-border-radius, 4px);
+    padding: 0.5rem;
+    width: 100%;
+}
+
+.terma-settings-group input[type="checkbox"] {
+    width: auto;
+    margin-right: 0.5rem;
+}
+
+.terma-settings-group input[type="range"] {
+    padding: 0.25rem 0;
+}
+
+.terma-settings-help {
+    font-size: 0.75rem;
+    color: var(--help-text-color, #aaa);
+    margin-top: 0.25rem;
+}
+
+/* Terminal integration - ensure proper appearance in both modes */
+.terma-terminal .xterm {
+    padding: 0.5rem;
+}
+
+.simple-terminal {
+    font-family: var(--terminal-font-family, 'Courier New', monospace);
+    padding: 0.5rem;
+}
+
+/* Adaptations for Hephaestus themes */
+body.theme-dark .terma-container,
+body.theme-dark-blue .terma-container,
+body.theme-dark-green .terma-container,
+body.theme-dark-purple .terma-container {
+    --terminal-bg-color: #1a1a1a;
+    --terminal-fg-color: #f0f0f0;
+    --component-header-bg: #2a2a2a;
+    --component-border-color: #3a3a3a;
+    --component-title-color: #f0f0f0;
+    --control-bg-color: #333;
+    --control-fg-color: #fff;
+    --control-border-color: #555;
+    --control-hover-bg-color: #444;
+    --control-hover-border-color: #666;
+    --button-bg-color: #333;
+    --button-fg-color: #fff;
+    --button-border-color: #555;
+    --button-hover-bg-color: #444;
+    --button-hover-border-color: #666;
+}
+
+body.theme-light .terma-container,
+body.theme-light-blue .terma-container,
+body.theme-light-green .terma-container,
+body.theme-light-purple .terma-container {
+    --terminal-bg-color: #f5f5f5;
+    --terminal-fg-color: #333;
+    --component-header-bg: #e5e5e5;
+    --component-border-color: #ccc;
+    --component-title-color: #333;
+    --control-bg-color: #fff;
+    --control-fg-color: #333;
+    --control-border-color: #ccc;
+    --control-hover-bg-color: #f0f0f0;
+    --control-hover-border-color: #aaa;
+    --button-bg-color: #fff;
+    --button-fg-color: #333;
+    --button-border-color: #ccc;
+    --button-hover-bg-color: #f0f0f0;
+    --button-hover-border-color: #aaa;
+}
+
+/* Specific theme overrides for terminal colors */
+body.theme-dark-blue .terma-container {
+    --primary-button-bg-color: #1e88e5;
+    --primary-button-border-color: #1976d2;
+    --primary-button-hover-bg-color: #1976d2;
+    --primary-button-hover-border-color: #1565c0;
+}
+
+body.theme-dark-green .terma-container {
+    --primary-button-bg-color: #43a047;
+    --primary-button-border-color: #388e3c;
+    --primary-button-hover-bg-color: #388e3c;
+    --primary-button-hover-border-color: #2e7d32;
+}
+
+body.theme-dark-purple .terma-container {
+    --primary-button-bg-color: #8e24aa;
+    --primary-button-border-color: #7b1fa2;
+    --primary-button-hover-bg-color: #7b1fa2;
+    --primary-button-hover-border-color: #6a1b9a;
+}
+
+body.theme-light-blue .terma-container {
+    --primary-button-bg-color: #2196f3;
+    --primary-button-border-color: #1e88e5;
+    --primary-button-hover-bg-color: #1e88e5;
+    --primary-button-hover-border-color: #1976d2;
+}
+
+body.theme-light-green .terma-container {
+    --primary-button-bg-color: #4caf50;
+    --primary-button-border-color: #43a047;
+    --primary-button-hover-bg-color: #43a047;
+    --primary-button-hover-border-color: #388e3c;
+}
+
+body.theme-light-purple .terma-container {
+    --primary-button-bg-color: #9c27b0;
+    --primary-button-border-color: #8e24aa;
+    --primary-button-hover-bg-color: #8e24aa;
+    --primary-button-hover-border-color: #7b1fa2;
+}
+EOF < /dev/null

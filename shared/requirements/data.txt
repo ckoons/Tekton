@@ -1,0 +1,19 @@
+# Data processing requirements for Tekton components
+# Used by: Apollo, Sophia, Budget
+
+# Data manipulation
+pandas>=2.0.0            # Data analysis and manipulation
+numpy>=1.26.0           # Numerical computing (also in vector.txt)
+
+# Visualization
+plotly>=5.18.0          # Interactive visualizations
+matplotlib>=3.8.0       # Static plotting
+
+# Data parsing and extraction
+beautifulsoup4>=4.13.0  # HTML/XML parsing
+lxml>=5.0.0            # XML processing
+openpyxl>=3.1.0        # Excel file handling
+
+# Natural language processing
+nltk>=3.8.0            # Natural Language Toolkit
+spacy>=3.7.0           # Industrial-strength NLP

@@ -1,0 +1,5 @@
+{
+  "name": "workflow_planning",
+  "template": "You are designing a workflow to accomplish a specific goal.\n\nGoal: {{ goal }}\n\n{% if available_agents %}\nAvailable agents:\n{{ available_agents }}\n{% endif %}\n\n{% if constraints %}\nConstraints:\n{{ constraints }}\n{% endif %}\n\n{% if context %}\nAdditional context:\n{{ context }}\n{% endif %}\n\nPlease create a detailed workflow plan that includes:\n1. A sequence of steps to achieve the goal\n2. Assignment of agents to each step\n3. Input and output specifications for each step\n4. Error handling and contingency plans\n5. Success criteria for the overall workflow\n\nYour workflow should be efficient, robust, and take advantage of the strengths of each available agent.",
+  "description": "Template for planning multi-agent workflows"
+}

@@ -1,0 +1,7 @@
+{
+  "name": "critical_path_analysis",
+  "template": "Analyze the following project tasks and identify the critical path through the project.\n\nProject Tasks:\n{{ tasks }}\n\nProvide the following in your analysis:\n1. The tasks that form the critical path\n2. Key dependencies that could affect project completion\n3. Risks associated with the critical path\n4. Suggestions for optimizing the critical path\n\nStructure your analysis clearly.",
+  "description": "Template for critical path analysis",
+  "output_format": "text",
+  "version": "1.0.0"
+}

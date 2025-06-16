@@ -1,0 +1,26 @@
+# Ergon requirements - Agent coordination and workflow orchestration
+# This component manages multi-agent workflows and task coordination
+
+# Core requirements
+-r ../shared/requirements/base.txt
+-r ../shared/requirements/web.txt
+-r ../shared/requirements/database.txt
+-r ../shared/requirements/ai.txt
+-r ../shared/requirements/utilities.txt
+
+# Additional component-specific dependencies
+streamlit>=1.31.0
+
+# External Services
+PyGithub>=2.1.1
+google-api-python-client>=2.110.0
+google-auth-httplib2>=0.1.1
+google-auth-oauthlib>=1.1.0
+msal>=1.28.0
+
+# Tekton integration
+tekton-llm-client>=1.0.0
+tekton-core>=0.1.0
+
+# Testing (development only)
+-r ../shared/requirements/dev.txt

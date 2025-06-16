@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tekton - AI Orchestration System</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/themes/dark-blue.css" id="theme-stylesheet">
+    <link rel="stylesheet" href="styles/ergon.css">
+    <link rel="stylesheet" href="styles/settings.css">
+    <link rel="stylesheet" href="styles/profile.css">
+    
+    <!-- Debug instrumentation -->
+    <script src="scripts/debug-shim.js"></script>
+    <!-- Diagnostic tools for debugging component issues -->
+    <script src="scripts/shared/diagnostic.js"></script>
+    
+    <!-- Component-specific styles -->
+    <style>
+        /* Component color indicators */
+        .nav-item[data-component="tekton"] .status-indicator { 
+            background-color: #FBBC05; /* Yellow/Gold */
+        }
+        .nav-item[data-component="prometheus"] .status-indicator { 
+            background-color: #C2185B; /* Pink */
+        }
+        .nav-item[data-component="telos"] .status-indicator { 
+            background-color: #00796B; /* Dark Teal */
+        }
+        .nav-item[data-component="ergon"] .status-indicator { 
+            background-color: #0097A7; /* Teal */
+        }
+        .nav-item[data-component="metis"] .status-indicator { 
+            background-color: #00BFA5; /* Mint/Turquoise */
+        }
+        .nav-item[data-component="harmonia"] .status-indicator { 
+            background-color: #F57C00; /* Orange */
+        }
+        .nav-item[data-component="synthesis"] .status-indicator { 
+            background-color: #3949AB; /* Indigo */
+        }
+        .nav-item[data-component="athena"] .status-indicator { 
+            background-color: #7B1FA2; /* Purple */
+        }
+        .nav-item[data-component="sophia"] .status-indicator { 
+            background-color: #7CB342; /* Light Green */
+        }
+        .nav-item[data-component="engram"] .status-indicator { 
+            background-color: #34A853; /* Green */
+        }
+        .nav-item[data-component="apollo"] .status-indicator { 
+            background-color: #FFD600; /* Amber/Golden Yellow */
+        }
+        .nav-item[data-component="rhetor"] .status-indicator { 
+            background-color: #D32F2F; /* Red */
+        }
+        .nav-item[data-component="hermes"] .status-indicator { 
+            background-color: #4285F4; /* Blue */
+        }
+        .nav-item[data-component="codex"] .status-indicator { 
+            background-color: #00ACC1; /* Light Blue */
+        }
+        .nav-item[data-component="terma"] .status-indicator { 
+            background-color: #5D4037; /* Brown */
+        }
+        .nav-item[data-component="budget"] .status-indicator { 
+            background-color: #34A853; /* Green */
+        }
+        
+        /* Make status indicators always visible */
+        .nav-item .status-indicator {
+            opacity: 0.5;
+            width: 10px;
+            height: 10px;
+            display: block !important;
+            transition: all 0.3s ease;
+        }
+        
+        /* Active indicators (selected in UI) are fully opaque */
+        .nav-item .status-indicator.active {
+            opacity: 1;
+        }
+        
+        /* Connected indicators (backend available) have a glow effect */
+        .nav-item .status-indicator.connected {
+            opacity: 1;
+            box-shadow: 0 0 5px 2px rgba(255, 255, 255, 0.3);
+            animation: pulse-subtle 2s infinite;
+        }
+        
+        /* Connected and active indicators have stronger glow */
+        .nav-item .status-indicator.connected.active {
+            box-shadow: 0 0 8px 3px rgba(255, 255, 255, 0.5);
+        }
+        
+        @keyframes pulse-subtle {
+            0% { box-shadow: 0 0 5px 2px rgba(255, 255, 255, 0.3); }
+            50% { box-shadow: 0 0 7px 3px rgba(255, 255, 255, 0.4); }
+            100% { box-shadow: 0 0 5px 2px rgba(255, 255, 255, 0.3); }
+        }
+    </style>
+    <!-- Environment variables and configuration -->
+    <script src="scripts/env.js"></script>
+    <style>
+        /* Streamlined header styles */
+        .left-panel-header {
+            padding: 12px 16px !important;
+            height: 85px !important;
+        }
+        
+        /* Optimized navigation item height */
+        .nav-item {
+            padding: 11px 16px !important; /* Reduced from 12px vertical padding */
+            height: 18px !important; /* Reduced from 20px height */
+        }
+        
+        /* Adjust footer navigation buttons to match main navigation */
+        .footer-buttons .control-button {
+            padding: 11px 16px !important; /* Match main navigation padding */
+            height: 18px !important; /* Match main navigation height */
+        }
+        
+        /* Style the footer nav items */
+        .left-panel-footer .component-nav {
+            margin: 0 !important;
+            padding: 16px !important; /* Consistent padding all around */
+        }
+        
+        .left-panel-footer .nav-item {
+            padding: 8px 12px !important; /* Standard padding */
+            height: 18px !important;
+            display: flex !important;
+            align-items: center !important;
+            margin: 0 0 8px 0 !important; /* Consistent 8px spacing between items */
+            cursor: pointer !important;
+        }
+        
+        /* Remove margin from last nav item to align properly */
+        .left-panel-footer .nav-item:last-child {
+            margin-bottom: 0 !important;
+        }
+        
+        .left-panel-footer .button-icon {
+            margin-right: 12px !important; /* Standard spacing */
+            width: 20px !important; /* Fixed width for alignment */
+            text-align: center !important; /* Center icon */
+        }
+        
+        .left-panel-footer .nav-item:hover {
+            background-color: var(--bg-hover, #3a3a4a) !important;
+        }
+        
+        .left-panel-footer .nav-item.active {
+            background-color: var(--bg-hover, #3a3a4a) !important;
+        }
+        
+        /* Optimized navigation container padding */
+        .component-nav {
+            padding: 8px 0 !important; /* Reduced from 10px vertical padding */
+        }
+    </style>
+</head>
+<body data-theme="dark-blue">
+    <div class="app-container">
+        <!-- Left Panel -->
+        <div class="left-panel" data-tekton-nav="main" data-tekton-area="navigation">
+            <div class="left-panel-header" data-tekton-section="nav-header">
+                <div class="tekton-logo">
+                    <div class="logo-text">
+                        <h1 style="color: #007bff !important; font-size: 2.5rem !important;">Tekton</h1>
+                        <div class="subtitle" style="font-size: 0.9rem !important; color: #aaa !important;">Multi-AI Engineering</div>
+                    </div>
+                    <img src="images/Tekton.png" alt="Tekton Pillar" class="pillar-icon" style="height: 85px !important; margin-left: 10px !important; position: absolute !important; right: 0 !important; top: 0 !important; display: block !important; z-index: 5 !important;" onerror="this.src='images/icon.png'; this.onerror=null;">
+                </div>
+            </div>
+            
+            <div class="left-panel-nav" data-tekton-section="nav-main">
+                <ul class="component-nav" data-tekton-list="components">
+                    <li class="nav-item active" data-component="tekton" data-tekton-nav-item="tekton" data-tekton-nav-target="tekton" data-tekton-state="active">
+                        <span class="nav-label">Tekton - Projects</span>
+                        <span class="status-indicator"></span>
+                    </li>
+                    <li class="nav-item" data-component="prometheus" data-tekton-nav-item="prometheus" data-tekton-nav-target="prometheus" data-tekton-state="inactive">
+                        <span class="nav-label">Prometheus - Planning</span>
+                        <span class="status-indicator"></span>
+                    </li>
+                    <li class="nav-item" data-component="telos" data-tekton-nav-item="telos" data-tekton-nav-target="telos" data-tekton-state="inactive">
+                        <span class="nav-label">Telos - Requirements</span>
+                        <span class="status-indicator"></span>
+                    </li>
+                    <li class="nav-item" data-component="ergon" data-tekton-nav-item="ergon" data-tekton-nav-target="ergon" data-tekton-state="inactive">
+                        <span class="nav-label">Ergon - Agents/Tools/MCP</span>
+                        <span class="status-indicator"></span>
+                    </li>
+                    <li class="nav-item" data-component="metis" data-tekton-nav-item="metis" data-tekton-nav-target="metis" data-tekton-state="inactive">
+                        <span class="nav-label" data-greek-name="Metis - Workflows" data-functional-name="Workflows">Metis - Workflows</span>
+                        <span class="status-indicator"></span>
+                    </li>
+                    <li class="nav-item" data-component="harmonia" data-tekton-nav-item="harmonia" data-tekton-nav-target="harmonia" data-tekton-state="inactive">
+                        <span class="nav-label">Harmonia - Orchestration</span>
+                        <span class="status-indicator"></span>
+                    </li>
+                    <li class="nav-item" data-component="synthesis" data-tekton-nav-item="synthesis" data-tekton-nav-target="synthesis" data-tekton-state="inactive">
+                        <span class="nav-label">Synthesis - Integration</span>
+                        <span class="status-indicator"></span>
+                    </li>
+                    <li class="nav-item" data-component="athena" data-tekton-nav-item="athena" data-tekton-nav-target="athena" data-tekton-state="inactive">
+                        <span class="nav-label">Athena - Knowledge</span>
+                        <span class="status-indicator" style="background-color: #7B1FA2;"></span>
+                    </li>
+                    <li class="nav-item" data-component="sophia" data-tekton-nav-item="sophia" data-tekton-nav-target="sophia" data-tekton-state="inactive">
+                        <span class="nav-label">Sophia - Learning</span>
+                        <span class="status-indicator"></span>
+                    </li>
+                    <li class="nav-item" data-component="engram" data-tekton-nav-item="engram" data-tekton-nav-target="engram" data-tekton-state="inactive">
+                        <span class="nav-label">Engram - Memory</span>
+                        <span class="status-indicator"></span>
+                    </li>
+                    <li class="nav-item" data-component="apollo" data-tekton-nav-item="apollo" data-tekton-nav-target="apollo" data-tekton-state="inactive">
+                        <span class="nav-label" data-greek-name="Apollo - Attention/Prediction" data-functional-name="Attention/Prediction">Apollo - Attention/Prediction</span>
+                        <span class="status-indicator"></span>
+                    </li>
+                    <li class="nav-item" data-component="rhetor" data-tekton-nav-item="rhetor" data-tekton-nav-target="rhetor" data-tekton-state="inactive">
+                        <span class="nav-label" data-greek-name="Rhetor - LLM/Prompt/Context" data-functional-name="LLM/Prompt/Context">Rhetor - LLM/Prompt/Context</span>
+                        <span class="status-indicator"></span>
+                    </li>
+                    <li class="nav-item" data-component="hermes" data-tekton-nav-item="hermes" data-tekton-nav-target="hermes" data-tekton-state="inactive">
+                        <span class="nav-label">Hermes - Messages/Data</span>
+                        <span class="status-indicator"></span>
+                    </li>
+                    <li class="nav-item" data-component="codex" data-tekton-nav-item="codex" data-tekton-nav-target="codex" data-tekton-state="inactive">
+                        <span class="nav-label">Codex - Coding</span>
+                        <span class="status-indicator"></span>
+                    </li>
+                    <li class="nav-item" data-component="terma" data-tekton-nav-item="terma" data-tekton-nav-target="terma" data-tekton-state="inactive">
+                        <span class="nav-label" data-greek-name="Terma - Terminal" data-functional-name="Terminal">Terma - Terminal</span>
+                        <span class="status-indicator"></span>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="left-panel-footer" data-tekton-section="nav-footer">
+                <div class="footer-separator"></div>
+                <ul class="component-nav" data-tekton-list="utilities">
+                    <li class="nav-item" data-component="budget" data-tekton-nav-item="budget" data-tekton-nav-target="budget" data-tekton-state="inactive">
+                        <span class="button-icon">💰</span>
+                        <span class="nav-label" data-greek-name="Budget - LLM Cost" data-functional-name="LLM Cost">Budget - LLM Cost</span>
+                        <span class="status-indicator" style="background-color: #34A853;"></span>
+                    </li>
+                    <li class="nav-item" data-component="profile" data-tekton-nav-item="profile" data-tekton-nav-target="profile" data-tekton-state="inactive">
+                        <span class="button-icon">👤</span>
+                        <span class="nav-label" data-greek-name="Profile" data-functional-name="Profile">Profile</span>
+                        <span class="status-indicator"></span>
+                    </li>
+                    <li class="nav-item" data-component="settings" data-tekton-nav-item="settings" data-tekton-nav-target="settings" data-tekton-state="inactive">
+                        <span class="button-icon">⚙️</span>
+                        <span class="nav-label" data-greek-name="Settings" data-functional-name="Settings">Settings</span>
+                        <span class="status-indicator"></span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- Main Content Area -->
+        <div class="main-content" data-tekton-area="content" data-tekton-type="workspace">
+            <!-- Main Panel (full height) -->
+            <div class="content-main" data-tekton-section="content-container">
+                <div class="panel terminal-panel active" id="terminal-panel" data-tekton-panel="terminal" data-tekton-state="active">
+                    <div id="terminal" class="terminal">
+                        <div id="terminal-content" style="padding: 20px; flex: 1; overflow-y: auto;">
+                            <div style="color: white; font-size: 16px; margin-bottom: 15px;">
+                                <div style="font-size: 20px; color: #00ff00; margin-bottom: 10px;">Welcome to the Tekton Terminal</div>
+                                Type your commands below. The terminal provides access to all Tekton components.
+                                <br><br>
+                                <span style="color: #888;">Type 'help' for a list of available commands.</span>
+                            </div>
+                        </div>
+                        <!-- Fixed terminal input container with higher z-index and vivid styling -->
+                        <div id="terminal-input-fixed" style="display: flex; padding: 10px; background: #222; border-top: 2px solid #007bff; position: sticky; bottom: 0; z-index: 100; box-shadow: 0 -2px 10px rgba(0,0,0,0.5);">
+                            <span style="color: #00ff00; font-weight: bold; margin-right: 10px; font-size: 16px;">></span>
+                            <input id="simple-terminal-input" type="text" 
+                                style="flex: 1; background: #111; color: white; border: none; padding: 8px; font-size: 16px; outline: none; caret-color: #00ff00;" 
+                                placeholder="Type here and press Enter" autofocus>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel html-panel" id="html-panel" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow: auto;" data-tekton-panel="components" data-tekton-state="inactive">
+                    <!-- HTML controls will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for system messages and notifications -->
+    <div class="modal" id="system-modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2 id="modal-title">System Message</h2>
+            <div id="modal-body"></div>
+        </div>
+    </div>
+
+    <!-- Error container for displaying error messages -->
+    <div id="error-container"></div>
+    
+    <!-- No splash screen -->
+
+    <!-- Load scripts -->
+    <script src="scripts/minimal-loader.js"></script>
+    <script src="scripts/ui-utils.js"></script>
+    <!-- Removed direct component loading to prevent conflicts with component loader -->
+    <!-- <script src="scripts/athena-component.js"></script> -->
+    <!-- <script src="scripts/ergon-component.js"></script> -->
+    <script src="scripts/main.js"></script>
+    <script src="scripts/ui-manager-core.js"></script>
+    <script src="scripts/terminal.js"></script>
+    <script src="scripts/storage.js"></script>
+    <script src="scripts/websocket.js"></script>
+    
+    <!-- Direct load of terma-terminal.js script with cache busting -->
+    <script>
+        // Add cache busting timestamp
+        const terminalJsTimestamp = new Date().getTime();
+        const terminalJsScript = document.createElement('script');
+        terminalJsScript.src = `/scripts/terma/terma-terminal.js?t=${terminalJsTimestamp}`;
+        document.head.appendChild(terminalJsScript);
+    </script>
+    
+    <!-- Add direct Terma handling -->
+    <script>
+        // Wait for document to load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add direct click handler to Terma tab
+            const termaTab = document.querySelector('.nav-item[data-component="terma"]');
+            if (termaTab) {
+                console.log('Found Terma tab - adding direct click handler');
+                
+                termaTab.addEventListener('click', function(event) {
+                    // Prevent the default click handling first
+                    event.stopPropagation();
+                    
+                    console.log('Terma tab clicked directly');
+                    
+                    // Force the html panel to show
+                    const panels = document.querySelectorAll('.panel');
+                    panels.forEach(panel => {
+                        panel.classList.remove('active');
+                        if (panel.id === 'html-panel') {
+                            panel.classList.add('active');
+                            panel.style.display = 'block';
+                            console.log('Manually activated HTML panel');
+                        }
+                    });
+                    
+                    // Create terma container if needed
+                    let termaContainer = document.getElementById('terma-container');
+                    if (!termaContainer) {
+                        console.log('Creating terma-container');
+                        termaContainer = document.createElement('div');
+                        termaContainer.id = 'terma-container';
+                        termaContainer.style.height = '100%';
+                        document.getElementById('html-panel').appendChild(termaContainer);
+                    }
+                    
+                    // Load Terma component HTML
+                    console.log('Loading Terma component HTML');
+                    fetch('components/terma/terma-component.html')
+                        .then(response => response.text())
+                        .then(html => {
+                            document.getElementById('terma-container').innerHTML = html;
+                            console.log('Terma component HTML loaded');
+                            
+                            // Properly format and fix the AI Assistant panel content
+                            const llmOutput = document.getElementById('terma-llm-output');
+                            if (llmOutput) {
+                                llmOutput.innerHTML = `
+                                    <p style="margin: 5px 0; font-size: 14px; color: #f0f0f0;">
+                                        Ask for help by typing <code style="background: #333; padding: 2px 4px; border-radius: 3px;">?command</code> 
+                                        or run command followed by <code style="background: #333; padding: 2px 4px; border-radius: 3px;">?</code> to analyze output.
+                                    </p>
+                                `;
+                            }
+                            
+                            // Add toggle functionality for AI Assistant panel
+                            const toggleButton = document.getElementById('terma-llm-toggle');
+                            const assistantPanel = document.querySelector('.terma-llm-assistance');
+                            
+                            if (toggleButton && assistantPanel) {
+                                // Make sure the panel starts with proper styling
+                                assistantPanel.style.maxHeight = '36px';
+                                assistantPanel.style.overflow = 'hidden';
+                                
+                                // Add click event listener
+                                toggleButton.addEventListener('click', function() {
+                                    console.log('Toggle button clicked');
+                                    if (assistantPanel.style.maxHeight === '36px') {
+                                        assistantPanel.style.maxHeight = '200px';
+                                        // Rotate the arrow icon
+                                        this.querySelector('svg').style.transform = 'rotate(180deg)';
+                                    } else {
+                                        assistantPanel.style.maxHeight = '36px';
+                                        // Reset the arrow icon
+                                        this.querySelector('svg').style.transform = 'rotate(0deg)';
+                                    }
+                                })
+                            }
+                            
+                            // Add a simple terminal UI to the terma-terminal div
+                            const terminalDiv = document.getElementById('terma-terminal');
+                            if (terminalDiv) {
+                                // Add some basic terminal content that looks good
+                                terminalDiv.innerHTML = `
+                                    <div id="terma-output" style="height: calc(100% - 30px); background-color: #1a1a1a; color: #f0f0f0; font-family: 'Menlo', 'Monaco', 'Courier New', monospace; padding: 10px; overflow: auto;">
+                                        <div style="color: #4CAF50; font-weight: bold;">Welcome to Terma Terminal</div>
+                                        <div style="margin-bottom: 10px;">Type commands below to interact with the system.</div>
+                                    </div>
+                                    <div style="display: flex; height: 30px; padding: 0 10px; background-color: #1a1a1a; border-top: 1px solid #333; align-items: center;">
+                                        <span style="color: #4CAF50; font-weight: bold; margin-right: 5px;">$</span>
+                                        <input type="text" id="terma-input" style="flex: 1; background: transparent; border: none; color: white; outline: none; font-family: 'Menlo', 'Monaco', 'Courier New', monospace; font-size: 14px;" placeholder="Type your command here..." autofocus>
+                                    </div>
+                                `;
+                                
+                                // Add event listener for the input
+                                const input = document.getElementById('terma-input');
+                                if (input) {
+                                    // Focus the input when the terminal is clicked
+                                    terminalDiv.addEventListener('click', function() {
+                                        input.focus();
+                                    });
+                                    
+                                    // Focus the input immediately
+                                    setTimeout(() => input.focus(), 100);
+                                    
+                                    // Add key handler for commands
+                                    input.addEventListener('keydown', function(e) {
+                                        if (e.key === 'Enter') {
+                                            const command = this.value.trim();
+                                            if (command) {
+                                                // Get the terminal output container
+                                                const terminal = document.getElementById('terma-output');
+                                                
+                                                // Add the command to the terminal
+                                                const commandLine = document.createElement('div');
+                                                commandLine.innerHTML = `<span style="color: #4CAF50; font-weight: bold;">$ </span>${command}`;
+                                                commandLine.style.marginTop = '5px';
+                                                terminal.appendChild(commandLine);
+                                                
+                                                // Check if this is a help command
+                                                if (command.includes('?')) {
+                                                    // Show help in the AI Assistant panel
+                                                    const llmOutput = document.getElementById('terma-llm-output');
+                                                    const assistantPanel = document.querySelector('.terma-llm-assistance');
+                                                    
+                                                    if (llmOutput && assistantPanel) {
+                                                        // Expand the assistant panel
+                                                        assistantPanel.style.maxHeight = '200px';
+                                                        
+                                                        // Update the assistant content
+                                                        llmOutput.innerHTML = `
+                                                            <div style="margin: 5px 0; padding: 5px; background: #333; border-radius: 4px;">
+                                                                <div style="font-weight: bold; color: #4CAF50;">Help for command: ${command.replace('?', '')}</div>
+                                                                <p>This would show AI-generated help for the command.</p>
+                                                                <p>In a real implementation, this would connect to an LLM like Claude.</p>
+                                                            </div>
+                                                        `;
+                                                    }
+                                                    
+                                                    // Add a response to the terminal
+                                                    const responseDiv = document.createElement('div');
+                                                    responseDiv.innerHTML = `<span style="color: #4CAF50;">Help information available in the AI Assistant panel below.</span>`;
+                                                    responseDiv.style.marginBottom = '10px';
+                                                    terminal.appendChild(responseDiv);
+                                                } else {
+                                                    // Regular command
+                                                    const responseDiv = document.createElement('div');
+                                                    responseDiv.innerText = `Command '${command}' executed.`;
+                                                    responseDiv.style.marginBottom = '10px';
+                                                    terminal.appendChild(responseDiv);
+                                                }
+                                                
+                                                // Scroll to bottom
+                                                terminal.scrollTop = terminal.scrollHeight;
+                                                
+                                                // Clear the input
+                                                this.value = '';
+                                            }
+                                        }
+                                    });
+                                    
+                                    // Focus the input
+                                    setTimeout(() => input.focus(), 100);
+                                }
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error loading Terma component:', error);
+                            document.getElementById('terma-container').innerHTML = 
+                                '<div style="padding: 20px; color: red;">Error loading Terma component. See console for details.</div>';
+                        });
+                    
+                    // Prevent further event handling
+                    return false;
+                }, true); // Use capture phase to run before regular click handler
+            }
+        });
+    </script>
+    
+    <!-- Settings and theming system -->
+    <script src="scripts/settings/settings-manager.js"></script>
+    <script src="scripts/settings/settings-env-bridge.js"></script>
+    <script src="scripts/settings/settings-ui.js"></script>
+    <!-- Settings manager handles all label updates based on SHOW_GREEK_NAMES -->
+    
+    <!-- Profile management system -->
+    <script src="scripts/profile/profile-manager.js"></script>
+    <script src="scripts/profile/profile-ui.js"></script>
+    
+    <!-- Enhanced terminal chat system -->
+    <script src="scripts/terminal-chat.js"></script> <!-- For compatibility -->
+    <script src="scripts/terminal-chat-enhanced.js"></script>
+    <script src="scripts/hermes-connector.js"></script>
+    
+    <!-- We don't need to directly include component scripts since minimal-loader handles them -->
+    <script>
+      // Don't directly include component scripts anymore - the component HTML files
+      // will load their own scripts via a script tag and minimal-loader will handle
+      // script injection and initialization
+
+      document.addEventListener('DOMContentLoaded', function() {
+        console.log("Clean Slate components loading system initialized");
+
+        // If we need to pre-load any components, uncomment these lines:
+        // window.addEventListener('load', function() {
+        //  if (window.minimalLoader) {
+        //    console.log("Pre-loading common components...");
+        //    // Pre-load frequently used components
+        //  }
+        // });
+      });
+    </script>
+
+    <!-- Setup minimal component loader with navigation -->
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        // Handle navigation item clicks - this includes ALL components now, including profile and settings
+        const navItems = document.querySelectorAll('.nav-item');
+        navItems.forEach(item => {
+          item.addEventListener('click', function() {
+            const componentId = this.getAttribute('data-component');
+            if (!componentId) return;
+
+            console.log(`Navigation item clicked: ${componentId}`);
+
+            // Update active nav item
+            navItems.forEach(navItem => {
+              navItem.classList.remove('active');
+            });
+            this.classList.add('active');
+
+            // Update component title
+            const componentTitle = document.querySelector('.component-title');
+            if (componentTitle) {
+              componentTitle.textContent = this.querySelector('.nav-label').textContent;
+            }
+
+            // Special case for terma - it has a custom handler already
+            if (componentId === 'terma') {
+              // Let the special terma handler handle it
+              return;
+            }
+
+            // Make the HTML panel visible and active
+            const panels = document.querySelectorAll('.panel');
+            panels.forEach(panel => {
+              panel.classList.remove('active');
+              panel.style.display = 'none';
+            });
+
+            const htmlPanel = document.getElementById('html-panel');
+            if (htmlPanel) {
+              htmlPanel.classList.add('active');
+              htmlPanel.style.display = 'block';
+
+              // Use minimalLoader for all components - simple, standard, no special cases
+              if (window.minimalLoader) {
+                console.log(`index.html nav handler: Using minimalLoader for ${componentId}`);
+                minimalLoader.loadComponent(componentId);
+              }
+            }
+          });
+        });
+
+        // Load test component by default
+        if (window.minimalLoader) {
+          minimalLoader.loadComponent('test');
+        }
+      });
+    </script>
+
+    <!-- Direct script for simple terminal input -->
+    <script>
+      // Wait for DOM to be fully loaded
+      document.addEventListener('DOMContentLoaded', function() {
+        // Get the simple input element
+        const simpleInput = document.getElementById('simple-terminal-input');
+        
+        function focusInput() {
+          if (simpleInput) {
+            simpleInput.focus();
+            console.log('Simple input focused');
+          }
+        }
+        
+        if (simpleInput) {
+          console.log('Found simple terminal input:', simpleInput);
+          
+          // Focus it immediately and again after a delay
+          focusInput();
+          setTimeout(focusInput, 500);
+          setTimeout(focusInput, 1000);
+          
+          // Re-focus when clicked anywhere in the terminal
+          const terminal = document.getElementById('terminal');
+          if (terminal) {
+            terminal.addEventListener('click', function(event) {
+              if (event.target !== simpleInput) {
+                focusInput();
+              }
+            });
+          }
+          
+          // Add event listener for Enter key
+          simpleInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+              const command = this.value.trim();
+              console.log('Command entered:', command);
+              
+              if (command) {
+                // Get terminal content container
+                const terminalContent = document.getElementById('terminal-content');
+                
+                // Check if this is a chat message (starts with @ symbol)
+                if (command.startsWith('@')) {
+                  // Parse the chat target and message
+                  const chatMatch = command.match(/^@(\w+)\s+(.+)$/);
+                  
+                  if (chatMatch && chatMatch.length >= 3) {
+                    const chatTarget = chatMatch[1].toLowerCase();
+                    const chatMessage = chatMatch[2];
+                    let targetContext = null;
+                    
+                    // Map chat target to context
+                    if (chatTarget === 'ergon') {
+                      targetContext = 'ergon';
+                    } else if (chatTarget === 'awt' || chatTarget === 'team') {
+                      targetContext = 'awt-team';
+                    } else if (chatTarget === 'agora' || chatTarget === 'all') {
+                      targetContext = 'agora';
+                    }
+                    
+                    if (targetContext) {
+                      // Display the command in the terminal
+                      const outputDiv = document.createElement('div');
+                      outputDiv.style.color = 'white';
+                      outputDiv.style.padding = '5px 0';
+                      outputDiv.style.marginBottom = '5px';
+                      outputDiv.innerHTML = '<span style="color: #2962FF;">@' + chatTarget + ':</span> ' + chatMessage;
+                      
+                      // Append to the terminal content
+                      terminalContent.appendChild(outputDiv);
+                      
+                      // Add the message to the chat interface
+                      const chatMessages = document.getElementById(`${targetContext}-chat-messages`);
+                      if (chatMessages) {
+                        const messageDiv = document.createElement('div');
+                        messageDiv.className = 'chat-message user';
+                        messageDiv.innerHTML = `
+                          <div class="message-content">
+                            <div class="message-text">${chatMessage}</div>
+                            <div class="message-time">Just now</div>
+                          </div>
+                        `;
+                        
+                        chatMessages.appendChild(messageDiv);
+                        chatMessages.scrollTop = chatMessages.scrollHeight;
+                        
+                        // Display a "Processing..." message only in the target chat
+                        const typingDiv = document.createElement('div');
+                        typingDiv.className = 'chat-message system typing';
+                        typingDiv.innerHTML = `
+                          <div class="message-content">
+                            <div class="message-text">Processing...</div>
+                          </div>
+                        `;
+                        
+                        chatMessages.appendChild(typingDiv);
+                        
+                        // If the chat tab isn't active, activate it
+                        if (window.ergonComponent) {
+                          const tabButton = document.querySelector(`.tab-button[data-tab="${targetContext}"]`);
+                          if (tabButton && !tabButton.classList.contains('active')) {
+                            tabButton.click();
+                          }
+                        }
+                        
+                        // Simulate a response (this would be replaced with real backend communication)
+                        setTimeout(() => {
+                          // Remove typing indicator
+                          const typingIndicators = chatMessages.querySelectorAll('.typing');
+                          typingIndicators.forEach(indicator => indicator.remove());
+                          
+                          // Add AI response
+                          const responseDiv = document.createElement('div');
+                          responseDiv.className = 'chat-message agent';
+                          responseDiv.innerHTML = `
+                            <div class="message-content">
+                              <div class="message-text">I received your message: "${chatMessage}".<br>How can I assist you further?</div>
+                              <div class="message-time">Just now</div>
+                            </div>
+                          `;
+                          
+                          chatMessages.appendChild(responseDiv);
+                          chatMessages.scrollTop = chatMessages.scrollHeight;
+                          
+                          // Also show in terminal
+                          const terminalResponseDiv = document.createElement('div');
+                          terminalResponseDiv.style.color = '#00bfff';
+                          terminalResponseDiv.style.padding = '5px 0';
+                          terminalResponseDiv.style.marginBottom = '10px';
+                          terminalResponseDiv.innerHTML = `<span style="color: #00bfff;">[${targetContext}]</span> I received your message: "${chatMessage}". How can I assist you further?`;
+                          terminalContent.appendChild(terminalResponseDiv);
+                          terminalContent.scrollTop = terminalContent.scrollHeight;
+                        }, 1000);
+                      }
+                    } else {
+                      // Unrecognized chat target
+                      const outputDiv = document.createElement('div');
+                      outputDiv.style.color = 'white';
+                      outputDiv.style.padding = '5px 0';
+                      outputDiv.style.marginBottom = '5px';
+                      outputDiv.innerHTML = '<span style="color: cyan;">> ' + command + '</span>';
+                      terminalContent.appendChild(outputDiv);
+                      
+                      // Show error
+                      const errorDiv = document.createElement('div');
+                      errorDiv.style.color = '#ff3333';
+                      errorDiv.style.padding = '5px 0';
+                      errorDiv.style.marginBottom = '10px';
+                      errorDiv.innerText = `Unknown chat target: @${chatTarget}. Available targets: @ergon, @team, @agora`;
+                      terminalContent.appendChild(errorDiv);
+                    }
+                  } else {
+                    // Malformed chat command
+                    const outputDiv = document.createElement('div');
+                    outputDiv.style.color = 'white';
+                    outputDiv.style.padding = '5px 0';
+                    outputDiv.style.marginBottom = '5px';
+                    outputDiv.innerHTML = '<span style="color: cyan;">> ' + command + '</span>';
+                    terminalContent.appendChild(outputDiv);
+                    
+                    // Show error
+                    const errorDiv = document.createElement('div');
+                    errorDiv.style.color = '#ff3333';
+                    errorDiv.style.padding = '5px 0';
+                    errorDiv.style.marginBottom = '10px';
+                    errorDiv.innerText = 'Chat format: @target your message (example: @ergon help)';
+                    terminalContent.appendChild(errorDiv);
+                  }
+                } else {
+                  // Regular command, not a chat message
+                  // Display the command in the terminal
+                  const outputDiv = document.createElement('div');
+                  outputDiv.style.color = 'white';
+                  outputDiv.style.padding = '5px 0';
+                  outputDiv.style.marginBottom = '5px';
+                  outputDiv.innerHTML = '<span style="color: cyan;">> ' + command + '</span>';
+                  
+                  // Append to the terminal content
+                  terminalContent.appendChild(outputDiv);
+                  
+                  // Display a "Processing..." message
+                  const processingDiv = document.createElement('div');
+                  processingDiv.style.color = '#888';
+                  processingDiv.style.padding = '5px 0';
+                  processingDiv.style.marginBottom = '10px';
+                  processingDiv.innerText = 'Processing...';
+                  terminalContent.appendChild(processingDiv);
+                  
+                  // Send the command via WebSocket
+                  if (window.websocketManager) {
+                    websocketManager.sendMessage({
+                      type: "COMMAND",
+                      source: "UI",
+                      target: tektonUI.activeComponent || 'SYSTEM',
+                      timestamp: new Date().toISOString(),
+                      payload: {
+                        command: "process_message",
+                        message: command
+                      }
+                    });
+                  } else {
+                    // Fallback if websocket manager doesn't exist
+                    const responseDiv = document.createElement('div');
+                    responseDiv.style.color = '#00bfff';
+                    responseDiv.style.padding = '5px 0';
+                    responseDiv.style.marginBottom = '10px';
+                    responseDiv.innerText = 'Command received: ' + command + '\nWebSocket not connected, using demo mode.';
+                    terminalContent.appendChild(responseDiv);
+                  }
+                }
+                
+                // Clear the input field
+                this.value = '';
+                
+                // Scroll terminal content to bottom
+                terminalContent.scrollTop = terminalContent.scrollHeight;
+              }
+            }
+          });
+          
+          // Add click handler for input container to ensure focus works
+          const inputContainer = simpleInput.parentNode;
+          if (inputContainer) {
+            inputContainer.addEventListener('click', function(event) {
+              focusInput();
+              // Prevent event propagation
+              event.stopPropagation();
+            });
+          }
+        } else {
+          console.error('Simple terminal input not found!');
+        }
+        
+        // Add global click handler to focus input
+        document.body.addEventListener('click', function() {
+          // Check if we're on the terminal panel
+          const terminalPanel = document.getElementById('terminal-panel');
+          if (terminalPanel && terminalPanel.classList.contains('active')) {
+            focusInput();
+          }
+        });
+      });
+    </script>
+</body>
+</html>

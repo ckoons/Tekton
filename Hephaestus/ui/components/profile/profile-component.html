@@ -1,0 +1,703 @@
+<!-- Profile Component - User Information Management -->
+<div class="profile">
+    <!-- Component Header with Title -->
+    <div class="profile__header">
+        <div class="profile__title-container">
+            <img src="/images/hexagon.jpg" alt="Tekton" class="profile__icon">
+            <h2 class="profile__title">
+                <span class="profile__title-main">Profile</span>
+                <span class="profile__title-sub">User Information</span>
+            </h2>
+        </div>
+    </div>
+    
+    <!-- Profile Menu Bar with Tab Navigation -->
+    <div class="profile__menu-bar">
+        <div class="profile__tabs">
+            <div class="profile__tab profile__tab--active" data-tab="personal" onclick="profile_switchTab('personal'); return false;">
+                <span class="profile__tab-label">Personal Information</span>
+            </div>
+            <div class="profile__tab" data-tab="contact" onclick="profile_switchTab('contact'); return false;">
+                <span class="profile__tab-label">Contact</span>
+            </div>
+            <div class="profile__tab" data-tab="social" onclick="profile_switchTab('social'); return false;">
+                <span class="profile__tab-label">Social Accounts</span>
+            </div>
+            <div class="profile__tab" data-tab="security" onclick="profile_switchTab('security'); return false;">
+                <span class="profile__tab-label">Security</span>
+            </div>
+            <div class="profile__tab" data-tab="preferences" onclick="profile_switchTab('preferences'); return false;">
+                <span class="profile__tab-label">Preferences</span>
+            </div>
+        </div>
+        <div class="profile__actions">
+            <button id="save-profile-btn" class="profile__action-button" onclick="profile_saveProfile(); return false;">
+                <span class="profile__button-label">Save Profile</span>
+            </button>
+            <button id="reset-changes-btn" class="profile__action-button" onclick="profile_resetChanges(); return false;">
+                <span class="profile__button-label">Reset Changes</span>
+            </button>
+        </div>
+    </div>
+
+<script type="text/javascript">
+// PROFILE TAB SWITCHING FUNCTION
+// Define tab switching function to match budget_switchTab pattern
+window.profile_switchTab = function(tabId) {
+    console.log('[PROFILE] Switching to tab:', tabId);
+    console.log('[PROFILE] IMPORTANT DEBUG: profile_switchTab function called');
+    
+    // Force HTML panel visibility
+    const htmlPanelElements = document.querySelectorAll('#html-panel');
+    htmlPanelElements.forEach(panel => {
+        if (panel) panel.style.display = 'block';
+    });
+    
+    try {
+        // Only select elements within profile component to avoid conflicts with other components
+        const profileContainer = document.querySelector('.profile');
+        if (!profileContainer) {
+            console.error('[PROFILE] Tab Switch: Cannot find profile container');
+            return false;
+        }
+        
+        // Update tab active state - ONLY WITHIN PROFILE CONTAINER
+        const tabs = profileContainer.querySelectorAll('.profile__tab');
+        tabs.forEach(tab => {
+            if (tab.getAttribute('data-tab') === tabId) {
+                tab.classList.add('profile__tab--active');
+            } else {
+                tab.classList.remove('profile__tab--active');
+            }
+        });
+        
+        // Update panel visibility - ONLY WITHIN PROFILE CONTAINER
+        const panels = profileContainer.querySelectorAll('.profile__panel');
+        panels.forEach(panel => {
+            const panelId = panel.id;
+            if (panelId === tabId + '-panel') {
+                panel.style.display = 'block';
+                panel.classList.add('profile__panel--active');
+            } else {
+                panel.style.display = 'none';
+                panel.classList.remove('profile__panel--active');
+            }
+        });
+        
+        // Update component state if profileComponent is available
+        if (window.profileComponent) {
+            window.profileComponent.state = window.profileComponent.state || {};
+            window.profileComponent.state.activeTab = tabId;
+            
+            // Call component-specific methods if available
+            if (typeof window.profileComponent.loadTabContent === 'function') {
+                window.profileComponent.loadTabContent(tabId);
+            }
+            
+            if (typeof window.profileComponent.saveComponentState === 'function') {
+                window.profileComponent.saveComponentState();
+            }
+        }
+    } catch (err) {
+        console.error('[PROFILE] Error in tab switching:', err);
+    }
+    
+    return false; // Stop event propagation
+};
+
+// Profile Save Function
+window.profile_saveProfile = function() {
+    console.log('[PROFILE] Save profile button clicked');
+    
+    try {
+        if (window.profileComponent && typeof window.profileComponent.saveProfile === 'function') {
+            window.profileComponent.saveProfile();
+        } else {
+            console.log('[PROFILE] Component not available for saving, will try again');
+            setTimeout(window.profile_saveProfile, 1000); // Retry after 1 second
+        }
+    } catch (err) {
+        console.error('[PROFILE] Error saving profile:', err);
+    }
+    
+    return false; // Stop event propagation
+};
+
+// Reset Changes Function
+window.profile_resetChanges = function() {
+    console.log('[PROFILE] Reset changes button clicked');
+    
+    try {
+        if (window.profileComponent && typeof window.profileComponent.resetChanges === 'function') {
+            window.profileComponent.resetChanges();
+        } else {
+            console.log('[PROFILE] Component not available for reset, will try again');
+            setTimeout(window.profile_resetChanges, 1000); // Retry after 1 second
+        }
+    } catch (err) {
+        console.error('[PROFILE] Error resetting changes:', err);
+    }
+    
+    return false; // Stop event propagation
+};
+</script>
+    
+    <!-- Profile Content Area -->
+    <div class="profile__content">
+        <!-- Personal Info Tab (Default Active Tab) -->
+        <div id="personal-panel" class="profile__panel profile__panel--active">
+            <div class="profile__form">
+                <div class="profile__field">
+                    <div class="profile__field-label">Given Name</div>
+                    <div class="profile__field-control">
+                        <input type="text" id="given-name" placeholder="First/Given Name" class="profile__input">
+                    </div>
+                </div>
+                
+                <div class="profile__field">
+                    <div class="profile__field-label">Family Name</div>
+                    <div class="profile__field-control">
+                        <input type="text" id="family-name" placeholder="Last/Family Name" class="profile__input">
+                    </div>
+                </div>
+                
+                <div class="profile__field">
+                    <div class="profile__field-label">Display Name</div>
+                    <div class="profile__field-control">
+                        <input type="text" id="display-name" placeholder="Display Name" class="profile__input">
+                        <div class="profile__field-description">
+                            This is how your name will appear to other users in the system.
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="profile__field">
+                    <div class="profile__field-label">Profile Picture</div>
+                    <div class="profile__field-control">
+                        <div class="profile__avatar-container">
+                            <div class="profile__avatar-placeholder">
+                                <!-- User avatar will be displayed here -->
+                                <div class="profile__avatar-initials">CK</div>
+                            </div>
+                            <button class="profile__button profile__button--secondary" id="upload-avatar-btn">
+                                <span class="profile__button-label">Upload</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Contact Tab -->
+        <div id="contact-panel" class="profile__panel">
+            <div class="profile__form">
+                <div class="profile__field">
+                    <div class="profile__field-label">Email Addresses</div>
+                    <div class="profile__field-control">
+                        <div class="profile__field-description">
+                            Add one or more email addresses. The first one will be used as your primary email.
+                        </div>
+                        <div id="email-container" class="profile__emails">
+                            <div class="profile__emails-fields">
+                                <!-- Email fields will be added here -->
+                                <div class="profile__emails-item">
+                                    <input type="email" class="profile__input profile__input--email" placeholder="Email Address">
+                                    <button class="profile__button profile__button--remove">
+                                        <span class="profile__button-icon">-</span>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="profile__emails-header">
+                                <button class="profile__button profile__button--secondary" id="add-email">
+                                    <span class="profile__button-icon">+</span>
+                                    <span class="profile__button-label">Add Email</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="profile__field">
+                    <div class="profile__field-label">Phone Number</div>
+                    <div class="profile__field-control">
+                        <input type="tel" id="phone-number" placeholder="Phone Number" class="profile__input">
+                    </div>
+                </div>
+                
+                <div class="profile__field">
+                    <div class="profile__field-label">Address</div>
+                    <div class="profile__field-control">
+                        <textarea id="address" placeholder="Address" class="profile__textarea" rows="3"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Social Accounts Tab -->
+        <div id="social-panel" class="profile__panel">
+            <div class="profile__form">
+                <div class="profile__field">
+                    <div class="profile__field-label">X / Twitter</div>
+                    <div class="profile__field-control">
+                        <input type="text" id="x-account" placeholder="@username" class="profile__input">
+                    </div>
+                </div>
+                
+                <div class="profile__field">
+                    <div class="profile__field-label">BlueSky</div>
+                    <div class="profile__field-control">
+                        <input type="text" id="bluesky-account" placeholder="@username" class="profile__input">
+                    </div>
+                </div>
+                
+                <div class="profile__field">
+                    <div class="profile__field-label">LinkedIn</div>
+                    <div class="profile__field-control">
+                        <input type="text" id="linkedin-account" placeholder="LinkedIn URL or username" class="profile__input">
+                    </div>
+                </div>
+                
+                <div class="profile__field">
+                    <div class="profile__field-label">WeChat</div>
+                    <div class="profile__field-control">
+                        <input type="text" id="wechat-account" placeholder="WeChat ID" class="profile__input">
+                    </div>
+                </div>
+                
+                <div class="profile__field">
+                    <div class="profile__field-label">WhatsApp</div>
+                    <div class="profile__field-control">
+                        <input type="text" id="whatsapp-account" placeholder="WhatsApp ID" class="profile__input">
+                    </div>
+                </div>
+                
+                <div class="profile__field">
+                    <div class="profile__field-label">GitHub</div>
+                    <div class="profile__field-control">
+                        <input type="text" id="github-account" placeholder="GitHub username" class="profile__input">
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Security Tab -->
+        <div id="security-panel" class="profile__panel">
+            <div class="profile__form">
+                <div class="profile__field">
+                    <div class="profile__field-label">Current Password</div>
+                    <div class="profile__field-control">
+                        <input type="password" id="current-password" placeholder="Current Password" class="profile__input">
+                    </div>
+                </div>
+                
+                <div class="profile__field">
+                    <div class="profile__field-label">New Password</div>
+                    <div class="profile__field-control">
+                        <input type="password" id="new-password" placeholder="New Password" class="profile__input">
+                        <div class="profile__field-description">
+                            Password must be at least 8 characters and include numbers, uppercase and lowercase letters.
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="profile__field">
+                    <div class="profile__field-label">Confirm New Password</div>
+                    <div class="profile__field-control">
+                        <input type="password" id="confirm-password" placeholder="Confirm New Password" class="profile__input">
+                    </div>
+                </div>
+                
+                <div class="profile__field">
+                    <div class="profile__field-label">Two-Factor Authentication</div>
+                    <div class="profile__field-control">
+                        <div class="profile__switch">
+                            <input type="checkbox" id="tfa-toggle" class="profile__checkbox">
+                            <label for="tfa-toggle" class="profile__switch-label">Enable two-factor authentication for additional account security</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="profile__field">
+                    <div class="profile__field-label">Session Management</div>
+                    <div class="profile__field-control">
+                        <button class="profile__button profile__button--danger" id="logout-all-sessions-btn">
+                            <span class="profile__button-label">Logout All Sessions</span>
+                        </button>
+                        <div class="profile__field-description">
+                            This will log you out of all devices except the current one.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Preferences Tab -->
+        <div id="preferences-panel" class="profile__panel">
+            <div class="profile__form">
+                <div class="profile__field">
+                    <div class="profile__field-label">Default Start Page</div>
+                    <div class="profile__field-control">
+                        <select id="default-page" class="profile__select">
+                            <option value="dashboard">Dashboard</option>
+                            <option value="terma">Terma</option>
+                            <option value="athena">Athena</option>
+                            <option value="ergon">Ergon</option>
+                            <option value="tekton">Tekton</option>
+                        </select>
+                        <div class="profile__field-description">
+                            This page will be shown first when you log in.
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="profile__field">
+                    <div class="profile__field-label">Time Zone</div>
+                    <div class="profile__field-control">
+                        <select id="timezone" class="profile__select">
+                            <option value="UTC">UTC (Universal Time Coordinated)</option>
+                            <option value="EST">EST (Eastern Standard Time)</option>
+                            <option value="CST">CST (Central Standard Time)</option>
+                            <option value="MST">MST (Mountain Standard Time)</option>
+                            <option value="PST">PST (Pacific Standard Time)</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="profile__field">
+                    <div class="profile__field-label">Date Format</div>
+                    <div class="profile__field-control">
+                        <select id="date-format" class="profile__select">
+                            <option value="MM/DD/YYYY">MM/DD/YYYY</option>
+                            <option value="DD/MM/YYYY">DD/MM/YYYY</option>
+                            <option value="YYYY-MM-DD">YYYY-MM-DD</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="profile__field">
+                    <div class="profile__field-label">Email Notifications</div>
+                    <div class="profile__field-control">
+                        <div class="profile__switch">
+                            <input type="checkbox" id="email-notif-toggle" class="profile__checkbox" checked>
+                            <label for="email-notif-toggle" class="profile__switch-label">Receive notifications about system events via email</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="profile__field">
+                    <div class="profile__field-label">Chat Notifications</div>
+                    <div class="profile__field-control">
+                        <div class="profile__switch">
+                            <input type="checkbox" id="chat-notif-toggle" class="profile__checkbox" checked>
+                            <label for="chat-notif-toggle" class="profile__switch-label">Receive notifications for new chat messages</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add component-specific styles -->
+<style>
+    /* Profile component styles using BEM naming convention */
+    
+    /* Container */
+    .profile {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        width: 100%;
+        background-color: var(--bg-primary, #1e1e2e);
+        color: var(--text-primary, #f0f0f0);
+    }
+    
+    /* Header - Match Athena header */
+    .profile__header {
+        display: flex;
+        align-items: center;
+        padding: 10px 16px;
+        background-color: var(--bg-secondary, #252535);
+        border-bottom: 1px solid var(--border-color, #444444);
+        height: 46px; /* Standardized header height to match Athena */
+    }
+    
+    .profile__title-container {
+        display: flex;
+        align-items: center;
+    }
+    
+    .profile__icon {
+        height: 30px;
+        width: auto;
+        margin-right: 12px;
+    }
+    
+    .profile__title {
+        margin: 0;
+        font-size: 1.2rem;
+        font-weight: 500;
+    }
+    
+    .profile__title-sub {
+        margin-left: 8px;
+        opacity: 0.8;
+        font-weight: normal;
+    }
+    
+    /* Menu Bar - Match Athena menu bar */
+    .profile__menu-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 6px 16px;
+        background-color: var(--bg-secondary, #252535);
+        border-bottom: 1px solid var(--border-color, #444444);
+        height: 46px; /* Standardized menu bar height to match Athena */
+    }
+    
+    .profile__tabs {
+        display: flex;
+        gap: 8px;
+    }
+    
+    .profile__tab {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 16px;
+        background-color: transparent;
+        border: none;
+        border-bottom: 2px solid transparent;
+        color: var(--text-primary, #f0f0f0);
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    
+    .profile__tab:hover {
+        background-color: var(--bg-hover, #3a3a4a);
+    }
+    
+    .profile__tab--active {
+        border-bottom-color: var(--color-primary, #7B1FA2); /* Same purple as Athena */
+        font-weight: 500;
+    }
+    
+    .profile__actions {
+        display: flex;
+        gap: 8px;
+    }
+    
+    .profile__action-button {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 12px;
+        background-color: var(--bg-tertiary, #333345);
+        border: 1px solid var(--border-color, #444444);
+        border-radius: 4px;
+        color: var(--text-primary, #f0f0f0);
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    
+    .profile__action-button:hover {
+        background-color: var(--bg-hover, #3a3a4a);
+    }
+    
+    /* Content Area */
+    .profile__content {
+        flex: 1;
+        overflow: auto;
+        padding: 20px;
+    }
+    
+    .profile__panel {
+        display: none;
+        height: 100%;
+        width: 100%;
+    }
+    
+    .profile__panel--active {
+        display: block;
+    }
+    
+    /* Form styles */
+    .profile__form {
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+        max-width: 800px;
+        margin: 0 auto;
+    }
+    
+    .profile__field {
+        display: flex;
+        align-items: flex-start;
+    }
+    
+    .profile__field-label {
+        min-width: 180px;
+        padding-top: 2px;
+        font-weight: 500;
+        color: #7B1FA2; /* Purple color for labels */
+        line-height: 36px; /* Match the height of input fields */
+    }
+    
+    .profile__field-control {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .profile__input, 
+    .profile__select, 
+    .profile__textarea {
+        width: 100%;
+        min-width: 350px; /* At least twice as wide as before */
+        padding: 8px 12px;
+        background-color: var(--bg-tertiary, #333345);
+        border: 1px solid #1E88E5; /* Blue border for input fields */
+        border-radius: 4px;
+        color: var(--text-primary, #f0f0f0);
+        font-size: 14px;
+    }
+    
+    .profile__textarea {
+        resize: vertical;
+        min-height: 80px;
+    }
+    
+    .profile__field-description {
+        font-size: 0.9em;
+        color: var(--text-secondary, #f0f0f0); /* White color for descriptions */
+        margin-top: 4px;
+    }
+    
+    /* Avatar container */
+    .profile__avatar-container {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        align-items: flex-start;
+        width: 120px; /* Constrain width to match avatar */
+    }
+    
+    .profile__avatar-placeholder {
+        width: 120px;
+        height: 120px;
+        border-radius: 60px;
+        background-color: var(--bg-tertiary, #333345);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.5rem;
+        font-weight: bold;
+        color: var(--text-primary, #f0f0f0);
+        margin-bottom: 12px;
+    }
+    
+    /* Button styles */
+    .profile__button {
+        padding: 8px 16px;
+        background-color: var(--bg-tertiary, #333345);
+        border: 1px solid var(--border-color, #444444);
+        border-radius: 4px;
+        color: var(--text-primary, #f0f0f0);
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .profile__button--primary {
+        background-color: var(--color-primary, #7B1FA2); /* Same purple as Athena */
+        color: white;
+        border: none;
+    }
+    
+    .profile__button--danger {
+        background-color: #d32f2f;
+        color: white;
+        border: none;
+    }
+    
+    .profile__button--remove {
+        padding: 4px 8px;
+        background-color: transparent;
+        border: none;
+        color: #d32f2f;
+        font-weight: bold;
+        font-size: 1.2rem;
+    }
+    
+    /* Email container */
+    .profile__emails {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+    
+    .profile__emails-fields {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .profile__emails-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .profile__emails-header {
+        margin-top: 8px;
+    }
+    
+    /* Toggle switch */
+    .profile__switch {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+    
+    .profile__checkbox {
+        position: relative;
+        width: 40px;
+        height: 20px;
+        -webkit-appearance: none;
+        appearance: none;
+        background-color: var(--bg-tertiary, #333345);
+        border-radius: 20px;
+        border: 1px solid var(--border-color, #444444);
+        outline: none;
+        transition: .4s;
+        cursor: pointer;
+    }
+    
+    .profile__checkbox:checked {
+        background-color: var(--color-primary, #7B1FA2); /* Same purple as Athena */
+    }
+    
+    .profile__checkbox:before {
+        content: "";
+        position: absolute;
+        width: 16px;
+        height: 16px;
+        border-radius: 20px;
+        top: 1px;
+        left: 1px;
+        background-color: var(--text-primary, #f0f0f0);
+        transform: translateX(0);
+        transition: .4s;
+    }
+    
+    .profile__checkbox:checked:before {
+        transform: translateX(20px);
+    }
+    
+    .profile__switch-label {
+        color: var(--text-primary, #f0f0f0);
+    }
+</style>

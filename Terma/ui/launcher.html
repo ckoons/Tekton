@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Terma Terminal Launcher</title>
+    <link rel="stylesheet" href="css/terma-terminal.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm@5.3.0/css/xterm.min.css" />
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            overflow: hidden;
+            background-color: #1a1a1a;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .launcher-container {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        
+        .launcher-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+            background-color: #252525;
+            border-bottom: 1px solid #444;
+            color: #f0f0f0;
+        }
+        
+        .launcher-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .launcher-logo {
+            width: 24px;
+            height: 24px;
+        }
+        
+        .launcher-title h1 {
+            font-size: 18px;
+            margin: 0;
+            color: #007bff;
+        }
+        
+        .launcher-controls {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .launcher-content {
+            flex: 1;
+            position: relative;
+        }
+        
+        .loading-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #1a1a1a;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .loading-spinner {
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-left-color: #007bff;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        
+        .loading-text {
+            color: #f0f0f0;
+            font-size: 16px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="launcher-container">
+        <div class="launcher-header">
+            <div class="launcher-title">
+                <img src="images/icon.png" alt="Terma Logo" class="launcher-logo">
+                <h1>Terma Terminal</h1>
+            </div>
+            <div class="launcher-controls">
+                <button id="launcher-settings" class="terma-btn" title="Settings">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                        <path d="M9.405 1.05c-.413-1.4-2.397-1.4-2.81 0l-.1.34a1.464 1.464 0 0 1-2.105.872l-.31-.17c-1.283-.698-2.686.705-1.987 1.987l.169.311c.446.82.023 1.841-.872 2.105l-.34.1c-1.4.413-1.4 2.397 0 2.81l.34.1a1.464 1.464 0 0 1 .872 2.105l-.17.31c-.698 1.283.705 2.686 1.987 1.987l.311-.169a1.464 1.464 0 0 1 2.105.872l.1.34c.413 1.4 2.397 1.4 2.81 0l.1-.34a1.464 1.464 0 0 1 2.105-.872l.31.17c1.283.698 2.686-.705 1.987-1.987l-.169-.311a1.464 1.464 0 0 1 .872-2.105l.34-.1c1.4-.413 1.4-2.397 0-2.81l-.34-.1a1.464 1.464 0 0 1-.872-2.105l.17-.31c.698-1.283-.705-2.686-1.987-1.987l-.311.169a1.464 1.464 0 0 1-2.105-.872l-.1-.34zM8 10.93a2.929 2.929 0 1 1 0-5.86 2.929 2.929 0 0 1 0 5.858z"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        
+        <div class="launcher-content">
+            <div id="terma-terminal" class="terma-terminal"></div>
+            <div class="loading-container" id="loading-container">
+                <div class="loading-spinner"></div>
+                <div class="loading-text">Connecting to terminal session...</div>
+            </div>
+        </div>
+        
+        <!-- Terminal Settings Modal -->
+        <div id="terma-settings-modal" class="terma-modal">
+            <div class="terma-modal-content">
+                <div class="terma-modal-header">
+                    <h2>Terminal Settings</h2>
+                    <button id="terma-settings-close" class="terma-modal-close">&times;</button>
+                </div>
+                <div class="terma-modal-body">
+                    <div class="terma-settings-group">
+                        <label for="terma-font-size">Font Size:</label>
+                        <input type="range" id="terma-font-size" min="8" max="24" value="14">
+                        <span id="terma-font-size-value">14px</span>
+                    </div>
+                    <div class="terma-settings-group">
+                        <label for="terma-font-family">Font Family:</label>
+                        <select id="terma-font-family">
+                            <option value="'Courier New', monospace">Courier New</option>
+                            <option value="'Source Code Pro', monospace">Source Code Pro</option>
+                            <option value="'Fira Code', monospace">Fira Code</option>
+                            <option value="'JetBrains Mono', monospace">JetBrains Mono</option>
+                        </select>
+                    </div>
+                    <div class="terma-settings-group">
+                        <label for="terma-theme">Theme:</label>
+                        <select id="terma-theme">
+                            <option value="default">Default</option>
+                            <option value="light">Light</option>
+                            <option value="dark">Dark</option>
+                            <option value="monokai">Monokai</option>
+                            <option value="solarized">Solarized</option>
+                        </select>
+                    </div>
+                    <div class="terma-settings-group">
+                        <label for="terma-cursor-style">Cursor Style:</label>
+                        <select id="terma-cursor-style">
+                            <option value="block">Block</option>
+                            <option value="bar">Bar</option>
+                            <option value="underline">Underline</option>
+                        </select>
+                    </div>
+                    <div class="terma-settings-group">
+                        <label>
+                            <input type="checkbox" id="terma-cursor-blink" checked>
+                            Cursor Blink
+                        </label>
+                    </div>
+                    <div class="terma-settings-group">
+                        <label>
+                            <input type="checkbox" id="terma-scroll-back" checked>
+                            Enable Scrollback
+                        </label>
+                    </div>
+                    <div class="terma-settings-group">
+                        <label for="terma-scrollback-lines">Scrollback Lines:</label>
+                        <input type="number" id="terma-scrollback-lines" min="100" max="10000" value="1000">
+                    </div>
+                </div>
+                <div class="terma-modal-footer">
+                    <button id="terma-settings-save" class="terma-btn terma-btn-primary">Save Settings</button>
+                    <button id="terma-settings-reset" class="terma-btn">Reset to Defaults</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- xterm.js Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/xterm@5.3.0/lib/xterm.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xterm-addon-fit@0.8.0/lib/xterm-addon-fit.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xterm-addon-web-links@0.9.0/lib/xterm-addon-web-links.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xterm-addon-search@0.13.0/lib/xterm-addon-search.min.js"></script>
+    
+    <!-- Terma Terminal Scripts -->
+    <script>
+        // Parse URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const sessionId = urlParams.get('session_id');
+        const serverUrl = urlParams.get('server_url') || 'http://localhost:8765';
+        const wsUrl = urlParams.get('ws_url') || 'ws://localhost:8765/ws';
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initialize terminal
+            const terminal = new TermaLauncher({
+                containerId: 'terma-terminal',
+                sessionId: sessionId,
+                serverUrl: serverUrl,
+                wsUrl: wsUrl
+            });
+            
+            // Expose terminal to global scope for debugging
+            window.termaLauncher = terminal;
+        });
+        
+        class TermaLauncher {
+            constructor(options) {
+                this.options = options;
+                this.terminal = null;
+                this.socket = null;
+                this.fitAddon = null;
+                this.connected = false;
+                
+                // Initialize
+                this.init();
+            }
+            
+            async init() {
+                // Hide the terminal until connected
+                document.getElementById(this.options.containerId).style.display = 'none';
+                
+                // Create terminal
+                this.initTerminal();
+                
+                // Setup event listeners
+                this.setupEventListeners();
+                
+                // Connect to session
+                if (this.options.sessionId) {
+                    this.connectToSession(this.options.sessionId);
+                } else {
+                    await this.createSession();
+                }
+            }
+            
+            initTerminal() {
+                // Create terminal instance
+                this.terminal = new Terminal({
+                    fontSize: 14,
+                    fontFamily: "'Courier New', monospace",
+                    theme: {
+                        foreground: '#f0f0f0',
+                        background: '#1a1a1a',
+                        cursor: '#f0f0f0'
+                    },
+                    cursorStyle: 'block',
+                    cursorBlink: true,
+                    scrollback: 1000,
+                    allowTransparency: true,
+                    convertEol: true
+                });
+                
+                // Add addons
+                this.fitAddon = new FitAddon.FitAddon();
+                this.searchAddon = new SearchAddon.SearchAddon();
+                this.webLinksAddon = new WebLinksAddon.WebLinksAddon();
+                
+                this.terminal.loadAddon(this.fitAddon);
+                this.terminal.loadAddon(this.searchAddon);
+                this.terminal.loadAddon(this.webLinksAddon);
+                
+                // Open terminal
+                this.terminal.open(document.getElementById(this.options.containerId));
+                
+                // Handle user input
+                this.terminal.onData(data => {
+                    if (this.socket && this.socket.readyState === WebSocket.OPEN) {
+                        // Send data to the server
+                        this.socket.send(JSON.stringify({
+                            type: 'input',
+                            data: data
+                        }));
+                    }
+                });
+                
+                // Fit terminal to container
+                window.addEventListener('resize', () => this.fitTerminal());
+            }
+            
+            setupEventListeners() {
+                // Settings button
+                const settingsBtn = document.getElementById('launcher-settings');
+                const settingsModal = document.getElementById('terma-settings-modal');
+                const settingsClose = document.getElementById('terma-settings-close');
+                const settingsSave = document.getElementById('terma-settings-save');
+                const settingsReset = document.getElementById('terma-settings-reset');
+                
+                if (settingsBtn && settingsModal) {
+                    settingsBtn.addEventListener('click', () => {
+                        settingsModal.style.display = 'block';
+                    });
+                }
+                
+                if (settingsClose) {
+                    settingsClose.addEventListener('click', () => {
+                        settingsModal.style.display = 'none';
+                    });
+                }
+                
+                if (settingsSave) {
+                    settingsSave.addEventListener('click', () => {
+                        // Save settings logic would go here
+                        settingsModal.style.display = 'none';
+                    });
+                }
+                
+                if (settingsReset) {
+                    settingsReset.addEventListener('click', () => {
+                        // Reset settings logic would go here
+                    });
+                }
+                
+                // Font size input
+                const fontSizeInput = document.getElementById('terma-font-size');
+                const fontSizeValue = document.getElementById('terma-font-size-value');
+                
+                if (fontSizeInput && fontSizeValue) {
+                    fontSizeInput.addEventListener('input', () => {
+                        const value = fontSizeInput.value;
+                        fontSizeValue.textContent = `${value}px`;
+                        this.terminal.options.fontSize = parseInt(value, 10);
+                        this.fitTerminal();
+                    });
+                }
+            }
+            
+            fitTerminal() {
+                if (this.fitAddon) {
+                    try {
+                        this.fitAddon.fit();
+                        
+                        // Send terminal size to server
+                        if (this.socket && this.socket.readyState === WebSocket.OPEN) {
+                            this.socket.send(JSON.stringify({
+                                type: 'resize',
+                                cols: this.terminal.cols,
+                                rows: this.terminal.rows
+                            }));
+                        }
+                    } catch (err) {
+                        console.error('Error fitting terminal:', err);
+                    }
+                }
+            }
+            
+            async createSession() {
+                try {
+                    // Make API request to create session
+                    const response = await fetch(`${this.options.serverUrl}/api/sessions`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({})
+                    });
+                    
+                    if (response.ok) {
+                        const data = await response.json();
+                        this.options.sessionId = data.session_id;
+                        
+                        // Update URL with session ID
+                        const url = new URL(window.location.href);
+                        url.searchParams.set('session_id', this.options.sessionId);
+                        window.history.replaceState({}, '', url.toString());
+                        
+                        // Connect to the session
+                        this.connectToSession(this.options.sessionId);
+                    } else {
+                        const errorText = await response.text();
+                        console.error('Error creating session:', errorText);
+                        this.showError('Failed to create terminal session');
+                    }
+                } catch (err) {
+                    console.error('Error creating session:', err);
+                    this.showError('Failed to create terminal session');
+                }
+            }
+            
+            connectToSession(sessionId) {
+                // Connect to the WebSocket server
+                const wsUrl = `${this.options.wsUrl}/${sessionId}`;
+                this.socket = new WebSocket(wsUrl);
+                
+                // Handle WebSocket events
+                this.socket.onopen = () => {
+                    this.connected = true;
+                    console.log(`Connected to session: ${sessionId}`);
+                    
+                    // Show the terminal and hide the loading screen
+                    document.getElementById(this.options.containerId).style.display = 'block';
+                    document.getElementById('loading-container').style.display = 'none';
+                    
+                    // Fit the terminal
+                    this.fitTerminal();
+                };
+                
+                this.socket.onclose = () => {
+                    this.connected = false;
+                    console.log(`Disconnected from session: ${sessionId}`);
+                    
+                    // Show a message in the terminal
+                    this.terminal.writeln('\r\n\x1b[31mDisconnected from server\x1b[0m');
+                };
+                
+                this.socket.onerror = (error) => {
+                    console.error('WebSocket error:', error);
+                    this.showError('Failed to connect to terminal session');
+                };
+                
+                this.socket.onmessage = (event) => {
+                    try {
+                        const message = JSON.parse(event.data);
+                        
+                        switch (message.type) {
+                            case 'output':
+                                // Write output to terminal
+                                this.terminal.write(message.data);
+                                break;
+                                
+                            case 'error':
+                                // Write error message
+                                this.terminal.writeln(`\r\n\x1b[31mError: ${message.message}\x1b[0m`);
+                                break;
+                        }
+                    } catch (err) {
+                        console.error('Error handling message:', err);
+                    }
+                };
+            }
+            
+            showError(message) {
+                // Hide loading container
+                document.getElementById('loading-container').style.display = 'none';
+                
+                // Show terminal
+                document.getElementById(this.options.containerId).style.display = 'block';
+                
+                // Write error message
+                this.terminal.writeln(`\x1b[31m${message}\x1b[0m`);
+                this.terminal.writeln(`\x1b[31mPlease try again or contact support.\x1b[0m`);
+            }
+        }
+    </script>
+</body>
+</html>

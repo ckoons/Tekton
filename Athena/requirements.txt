@@ -1,0 +1,13 @@
+# Include shared requirements
+-r ../shared/requirements/base.txt
+-r ../shared/requirements/web.txt
+-r ../shared/requirements/database.txt
+-r ../shared/requirements/data.txt      # For pandas, numpy
+-r ../shared/requirements/ai.txt        # For jinja2
+
+# Tekton dependencies
+tekton-core>=0.1.0
+
+# Graph database dependencies (not in shared)
+neo4j>=5.0.0
+py2neo>=2021.2.0

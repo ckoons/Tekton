@@ -1,0 +1,16 @@
+# Include shared requirements
+-r ../shared/requirements/base.txt
+-r ../shared/requirements/web.txt
+
+# Component-specific dependencies
+# websockets is included in web.txt
+
+# UI DevTools dependencies
+beautifulsoup4>=4.12.0
+lxml>=5.0.0
+cssselect>=1.2.0
+
+# Note: Playwright installed separately via command line due to MCP issues
+# playwright>=1.40.0
+
+# All other dependencies (asyncio, json, logging, etc.) are part of Python standard library

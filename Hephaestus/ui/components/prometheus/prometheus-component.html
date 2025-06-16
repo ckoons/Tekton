@@ -1,0 +1,1015 @@
+<!-- Prometheus Component - Planning and Resource Management -->
+<div class="prometheus" data-tekton-area="prometheus" data-tekton-component="prometheus" data-tekton-type="component-workspace" data-tekton-ai="prometheus-assistant" data-tekton-ai-ready="false">
+    <!-- Component Header with Title -->
+    <div class="prometheus__header">
+        <div class="prometheus__title-container">
+            <img src="/images/hexagon.jpg" alt="Tekton" class="prometheus__icon">
+            <h2 class="prometheus__title">
+                <span class="prometheus__title-main">Prometheus</span>
+                <span class="prometheus__title-sub">Planning System</span>
+            </h2>
+        </div>
+    </div>
+    
+    <!-- Prometheus Menu Bar with Tab Navigation -->
+    <div class="prometheus__menu-bar">
+        <div class="prometheus__tabs">
+            <div class="prometheus__tab prometheus__tab--active" data-tab="planning" onclick="prometheus_switchTab('planning'); return false;">
+                <span class="prometheus__tab-label">Planning</span>
+            </div>
+            <div class="prometheus__tab" data-tab="timeline" onclick="prometheus_switchTab('timeline'); return false;">
+                <span class="prometheus__tab-label">Timeline</span>
+            </div>
+            <div class="prometheus__tab" data-tab="resources" onclick="prometheus_switchTab('resources'); return false;">
+                <span class="prometheus__tab-label">Resources</span>
+            </div>
+            <div class="prometheus__tab" data-tab="analysis" onclick="prometheus_switchTab('analysis'); return false;">
+                <span class="prometheus__tab-label">Analysis</span>
+            </div>
+            <div class="prometheus__tab" data-tab="planningchat" onclick="prometheus_switchTab('planningchat'); return false;">
+                <span class="prometheus__tab-label">Planning Chat</span>
+            </div>
+            <div class="prometheus__tab" data-tab="teamchat" onclick="prometheus_switchTab('teamchat'); return false;">
+                <span class="prometheus__tab-label">Team Chat</span>
+            </div>
+        </div>
+        <div class="prometheus__actions">
+            <button id="clear-chat-btn" class="prometheus__action-button" style="display: none;" onclick="prometheus_clearChat(); return false;">
+                <span class="prometheus__button-label">Clear</span>
+            </button>
+        </div>
+    </div>
+    
+    <!-- Prometheus Content Area -->
+    <div class="prometheus__content">
+        <!-- Planning Tab (Default Active Tab) -->
+        <div id="planning-panel" class="prometheus__panel prometheus__panel--active">
+            <div class="prometheus__planning">
+                <div class="prometheus__control-bar">
+                    <div class="prometheus__search-container">
+                        <input type="text" id="project-search" class="prometheus__search-input" placeholder="Search projects...">
+                        <button id="project-search-btn" class="prometheus__search-button">Search</button>
+                    </div>
+                    <div class="prometheus__actions">
+                        <button id="add-project-btn" class="prometheus__action-button">
+                            <span class="prometheus__button-icon">+</span>
+                            <span class="prometheus__button-label">Add Project</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="prometheus__project-list-container">
+                    <!-- Project list will be populated here -->
+                    <div id="project-list-loading" class="prometheus__loading-indicator">
+                        <div class="prometheus__spinner"></div>
+                        <div class="prometheus__loading-text">Loading projects...</div>
+                    </div>
+                    <div id="project-list-items" class="prometheus__project-list" style="display: none;">
+                        <!-- Sample projects for UI testing -->
+                        <div class="prometheus__project-item">
+                            <div class="prometheus__project-status prometheus__project-status--on-track"></div>
+                            <div class="prometheus__project-details">
+                                <div class="prometheus__project-name">Clean Slate UI Sprint</div>
+                                <div class="prometheus__project-dates">May 10 - May 17, 2025</div>
+                                <div class="prometheus__project-progress">
+                                    <div class="prometheus__progress-bar">
+                                        <div class="prometheus__progress-fill" style="width: 65%;"></div>
+                                    </div>
+                                    <div class="prometheus__progress-text">65% Complete</div>
+                                </div>
+                            </div>
+                            <div class="prometheus__project-actions">
+                                <button class="prometheus__project-action-btn">View</button>
+                                <button class="prometheus__project-action-btn">Edit</button>
+                            </div>
+                        </div>
+                        <div class="prometheus__project-item">
+                            <div class="prometheus__project-status prometheus__project-status--at-risk"></div>
+                            <div class="prometheus__project-details">
+                                <div class="prometheus__project-name">Component Integration</div>
+                                <div class="prometheus__project-dates">May 18 - May 25, 2025</div>
+                                <div class="prometheus__project-progress">
+                                    <div class="prometheus__progress-bar">
+                                        <div class="prometheus__progress-fill" style="width: 30%;"></div>
+                                    </div>
+                                    <div class="prometheus__progress-text">30% Complete</div>
+                                </div>
+                            </div>
+                            <div class="prometheus__project-actions">
+                                <button class="prometheus__project-action-btn">View</button>
+                                <button class="prometheus__project-action-btn">Edit</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Timeline Tab -->
+        <div id="timeline-panel" class="prometheus__panel">
+            <div class="prometheus__timeline">
+                <div class="prometheus__control-bar">
+                    <div class="prometheus__filter-container">
+                        <select id="timeline-view" class="prometheus__filter-select">
+                            <option value="day">Day View</option>
+                            <option value="week">Week View</option>
+                            <option value="month" selected>Month View</option>
+                            <option value="quarter">Quarter View</option>
+                        </select>
+                        <button id="apply-view-btn" class="prometheus__filter-button">Apply</button>
+                    </div>
+                    <div class="prometheus__filter-container">
+                        <select id="timeline-filter" class="prometheus__filter-select">
+                            <option value="all">All Projects</option>
+                            <option value="active">Active Projects</option>
+                            <option value="critical">Critical Path Only</option>
+                        </select>
+                        <button id="apply-filter-btn" class="prometheus__filter-button">Apply</button>
+                    </div>
+                </div>
+                <div id="timeline-container" class="prometheus__timeline-container">
+                    <div id="timeline-placeholder" class="prometheus__timeline-placeholder">
+                        <div class="prometheus__placeholder-content">
+                            <h3 class="prometheus__placeholder-title">Timeline Visualization</h3>
+                            <p class="prometheus__placeholder-text">The project timeline will be displayed here once loaded.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Resources Tab -->
+        <div id="resources-panel" class="prometheus__panel">
+            <div class="prometheus__resources">
+                <div class="prometheus__control-bar">
+                    <div class="prometheus__filter-container">
+                        <select id="resource-type-filter" class="prometheus__filter-select">
+                            <option value="all">All Resources</option>
+                            <option value="people">People</option>
+                            <option value="equipment">Equipment</option>
+                            <option value="budget">Budget</option>
+                        </select>
+                        <button id="apply-resource-filter-btn" class="prometheus__filter-button">Apply</button>
+                    </div>
+                    <div class="prometheus__actions">
+                        <button id="add-resource-btn" class="prometheus__action-button">
+                            <span class="prometheus__button-icon">+</span>
+                            <span class="prometheus__button-label">Add Resource</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="prometheus__resource-list-container">
+                    <div id="resource-list-loading" class="prometheus__loading-indicator">
+                        <div class="prometheus__spinner"></div>
+                        <div class="prometheus__loading-text">Loading resources...</div>
+                    </div>
+                    <div id="resource-allocation" class="prometheus__resource-allocation" style="display: none;">
+                        <!-- Sample resource allocation chart -->
+                        <div class="prometheus__chart-container">
+                            <h3 class="prometheus__section-title">Resource Allocation</h3>
+                            <div class="prometheus__chart-placeholder">
+                                <p>Resource allocation visualization will appear here</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Analysis Tab -->
+        <div id="analysis-panel" class="prometheus__panel">
+            <div class="prometheus__analysis">
+                <h3 class="prometheus__section-title">Critical Path Analysis</h3>
+                <p class="prometheus__text">Analyze project timelines and resource constraints to identify the critical path.</p>
+
+                <div class="prometheus__analysis-form">
+                    <div class="prometheus__form-group">
+                        <label class="prometheus__form-label">Project</label>
+                        <select class="prometheus__form-select" id="analysis-project-select">
+                            <option value="">Select a project...</option>
+                            <option value="clean-slate">Clean Slate UI Sprint</option>
+                            <option value="component-integration">Component Integration</option>
+                        </select>
+                    </div>
+
+                    <div class="prometheus__form-group">
+                        <label class="prometheus__form-label">Analysis Type</label>
+                        <select class="prometheus__form-select" id="analysis-type-select">
+                            <option value="critical-path">Critical Path</option>
+                            <option value="resource-constraints">Resource Constraints</option>
+                            <option value="risk-assessment">Risk Assessment</option>
+                            <option value="bottlenecks">Bottlenecks</option>
+                        </select>
+                    </div>
+
+                    <div class="prometheus__form-group">
+                        <label class="prometheus__form-label">Include Dependencies</label>
+                        <div class="prometheus__checkbox-group">
+                            <label class="prometheus__checkbox-label">
+                                <input type="checkbox" class="prometheus__checkbox" id="include-external"> Include external dependencies
+                            </label>
+                            <label class="prometheus__checkbox-label">
+                                <input type="checkbox" class="prometheus__checkbox" id="include-resource"> Include resource constraints
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="prometheus__form-actions">
+                        <button class="prometheus__button prometheus__button--secondary" id="clear-analysis-btn">Clear</button>
+                        <button class="prometheus__button prometheus__button--primary" id="run-analysis-btn">Run Analysis</button>
+                    </div>
+                </div>
+
+                <div class="prometheus__analysis-result" style="margin-top: 20px; display: none;" id="analysis-result-container">
+                    <h4 class="prometheus__result-title">Analysis Results</h4>
+                    <div class="prometheus__result-content" id="analysis-results">
+                        <!-- Analysis results will appear here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Planning Chat Tab -->
+        <div id="planningchat-panel" class="prometheus__panel">
+            <div id="planningchat-messages" class="prometheus__chat-messages">
+                <!-- Welcome message -->
+                <div class="prometheus__message prometheus__message--system">
+                    <div class="prometheus__message-content">
+                        <div class="prometheus__message-text">
+                            <h3 class="prometheus__message-title">Planning Assistant</h3>
+                            <p>This chat provides assistance with project planning and timeline management. Ask questions about:</p>
+                            <ul>
+                                <li>Project scheduling and dependencies</li>
+                                <li>Resource allocation optimization</li>
+                                <li>Timeline analysis and critical path</li>
+                                <li>Risk assessment and mitigation</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Team Chat Tab -->
+        <div id="teamchat-panel" class="prometheus__panel">
+            <div id="teamchat-messages" class="prometheus__chat-messages">
+                <!-- Welcome message -->
+                <div class="prometheus__message prometheus__message--system">
+                    <div class="prometheus__message-content">
+                        <div class="prometheus__message-text">
+                            <h3 class="prometheus__message-title">Tekton Team Chat</h3>
+                            <p>This chat is shared across all Tekton components. Use this for team communication and coordination.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Footer with Chat Input -->
+    <div class="prometheus__footer">
+        <div class="prometheus__chat-input-container">
+            <div class="prometheus__chat-prompt">></div>
+            <input type="text" id="chat-input" class="prometheus__chat-input" 
+                   placeholder="Enter chat message, project instructions, or planning queries">
+            <button id="send-button" class="prometheus__send-button">Send</button>
+        </div>
+    </div>
+</div>
+
+<!-- Add component-specific styles -->
+<style>
+    /* Prometheus component styles using BEM naming convention */
+    
+    /* Container */
+    .prometheus {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        width: 100%;
+        background-color: var(--bg-primary, #1e1e2e);
+        color: var(--text-primary, #f0f0f0);
+        /* No absolute positioning - proper component containment */
+    }
+    
+    /* Header */
+    .prometheus__header {
+        display: flex;
+        align-items: center;
+        padding: 10px 16px;
+        background-color: var(--bg-secondary, #252535);
+        border-bottom: 1px solid var(--border-color, #444444);
+        height: 46px; /* Standardized header height */
+    }
+    
+    .prometheus__title-container {
+        display: flex;
+        align-items: center;
+    }
+    
+    .prometheus__icon {
+        height: 30px;
+        width: auto;
+        margin-right: 12px;
+    }
+    
+    .prometheus__title {
+        margin: 0;
+        font-size: 1.2rem;
+        font-weight: 500;
+    }
+    
+    .prometheus__title-sub {
+        margin-left: 8px;
+        opacity: 0.8;
+        font-weight: normal;
+    }
+    
+    /* Menu Bar */
+    .prometheus__menu-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 6px 16px;
+        background-color: var(--bg-secondary, #252535);
+        border-bottom: 1px solid var(--border-color, #444444);
+        height: 46px; /* Match menu bar height from Athena */
+    }
+    
+    .prometheus__tabs {
+        display: flex;
+        gap: 8px;
+    }
+    
+    .prometheus__tab {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 16px;
+        background-color: transparent;
+        border: none;
+        border-bottom: 2px solid transparent;
+        color: var(--text-primary, #f0f0f0);
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    
+    .prometheus__tab:hover {
+        background-color: var(--bg-hover, #3a3a4a);
+    }
+    
+    .prometheus__tab--active {
+        border-bottom-color: var(--color-primary, #FF5722); /* Prometheus orange color */
+        font-weight: 500;
+    }
+    
+    .prometheus__actions {
+        display: flex;
+        gap: 8px;
+    }
+    
+    .prometheus__action-button {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 12px;
+        background-color: var(--bg-tertiary, #333345);
+        border: 1px solid var(--border-color, #444444);
+        border-radius: 4px;
+        color: var(--text-primary, #f0f0f0);
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    
+    .prometheus__action-button:hover {
+        background-color: var(--bg-hover, #3a3a4a);
+    }
+    
+    /* Content Area */
+    .prometheus__content {
+        flex: 1;
+        overflow: hidden;
+        position: relative;
+    }
+    
+    .prometheus__panel {
+        display: none;
+        height: 100%;
+        width: 100%;
+        overflow: auto;
+    }
+    
+    .prometheus__panel--active {
+        display: block;
+    }
+    
+    /* Control Bar */
+    .prometheus__control-bar {
+        display: flex;
+        justify-content: space-between;
+        padding: 16px;
+        background-color: var(--bg-secondary, #252535);
+        border-bottom: 1px solid var(--border-color, #444444);
+        height: 46px; /* Match standard control bar height */
+    }
+    
+    .prometheus__search-container {
+        display: flex;
+        gap: 8px;
+    }
+    
+    .prometheus__search-input {
+        padding: 8px 12px;
+        min-width: 260px;
+        background-color: var(--bg-tertiary, #333345);
+        border: 1px solid var(--border-color, #444444);
+        border-radius: 4px;
+        color: var(--text-primary, #f0f0f0);
+    }
+    
+    .prometheus__filter-container {
+        display: flex;
+        gap: 8px;
+    }
+    
+    .prometheus__filter-select {
+        padding: 8px 12px;
+        background-color: var(--bg-tertiary, #333345);
+        border: 1px solid var(--border-color, #444444);
+        border-radius: 4px;
+        color: var(--text-primary, #f0f0f0);
+    }
+    
+    .prometheus__filter-button,
+    .prometheus__search-button {
+        padding: 8px 12px;
+        background-color: var(--bg-tertiary, #333345);
+        border: 1px solid var(--border-color, #444444);
+        border-radius: 4px;
+        color: var(--text-primary, #f0f0f0);
+        cursor: pointer;
+    }
+    
+    /* Project Container */
+    .prometheus__project-list-container {
+        padding: 16px;
+    }
+    
+    .prometheus__project-list {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+    
+    .prometheus__project-item {
+        display: flex;
+        align-items: center;
+        padding: 12px;
+        background-color: var(--bg-secondary, #252535);
+        border: 1px solid var(--border-color, #444444);
+        border-radius: 8px;
+        transition: all 0.2s ease;
+    }
+    
+    .prometheus__project-item:hover {
+        background-color: var(--bg-hover, #3a3a4a);
+    }
+    
+    .prometheus__project-status {
+        width: 0.75rem;
+        height: 0.75rem;
+        border-radius: 50%;
+        margin-right: 16px;
+        flex-shrink: 0;
+    }
+    
+    .prometheus__project-status--on-track {
+        background-color: #4CAF50; /* Green */
+    }
+    
+    .prometheus__project-status--at-risk {
+        background-color: #FFC107; /* Amber */
+    }
+    
+    .prometheus__project-status--delayed {
+        background-color: #F44336; /* Red */
+    }
+    
+    .prometheus__project-details {
+        flex: 1;
+    }
+    
+    .prometheus__project-name {
+        font-weight: 500;
+        margin-bottom: 4px;
+    }
+    
+    .prometheus__project-dates {
+        color: var(--text-secondary, #aaaaaa);
+        margin-bottom: 8px;
+        font-size: 0.9em;
+    }
+    
+    .prometheus__progress-bar {
+        height: 6px;
+        background-color: var(--bg-tertiary, #333345);
+        border-radius: 3px;
+        overflow: hidden;
+        margin-bottom: 6px;
+    }
+    
+    .prometheus__progress-fill {
+        height: 100%;
+        background-color: var(--color-primary, #FF5722);
+    }
+    
+    .prometheus__progress-text {
+        color: var(--text-secondary, #aaaaaa);
+        font-size: 0.8em;
+    }
+    
+    .prometheus__project-actions {
+        display: flex;
+        gap: 8px;
+    }
+    
+    .prometheus__project-action-btn {
+        padding: 4px 10px;
+        background-color: var(--bg-tertiary, #333345);
+        border: 1px solid var(--border-color, #444444);
+        border-radius: 4px;
+        color: var(--text-primary, #f0f0f0);
+        cursor: pointer;
+    }
+    
+    /* Timeline Container */
+    .prometheus__timeline-container {
+        height: calc(100% - 68px);
+        overflow: hidden;
+        position: relative;
+    }
+    
+    .prometheus__timeline-placeholder {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
+        width: 100%;
+        padding: 20px;
+        text-align: center;
+    }
+    
+    /* Form styles */
+    .prometheus__section-title {
+        margin-bottom: 16px;
+        font-size: 24px;
+        color: var(--text-primary, #f0f0f0);
+    }
+    
+    .prometheus__text {
+        margin-bottom: 24px;
+        color: var(--text-secondary, #aaaaaa);
+    }
+    
+    .prometheus__analysis-form {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        margin-bottom: 24px;
+        padding: 0 16px;
+    }
+    
+    .prometheus__form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .prometheus__form-label {
+        font-weight: 500;
+        color: var(--text-primary, #f0f0f0);
+    }
+    
+    .prometheus__form-select {
+        padding: 10px;
+        background-color: var(--bg-tertiary, #333345);
+        border: 1px solid var(--border-color, #444444);
+        border-radius: 6px;
+        color: var(--text-primary, #f0f0f0);
+        font-size: 14px;
+    }
+    
+    .prometheus__checkbox-group {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .prometheus__checkbox-label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--text-primary, #f0f0f0);
+    }
+    
+    .prometheus__form-actions {
+        display: flex;
+        gap: 12px;
+        justify-content: flex-end;
+        margin-top: 8px;
+    }
+    
+    .prometheus__button {
+        padding: 10px 16px;
+        border: none;
+        border-radius: 6px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    
+    .prometheus__button--primary {
+        background-color: var(--color-primary, #FF5722);
+        color: white;
+    }
+    
+    .prometheus__button--primary:hover {
+        background-color: #E64A19; /* Darker orange */
+    }
+    
+    .prometheus__button--secondary {
+        background-color: var(--bg-tertiary, #333345);
+        border: 1px solid var(--border-color, #444444);
+        color: var(--text-primary, #f0f0f0);
+    }
+    
+    .prometheus__button--secondary:hover {
+        background-color: var(--bg-hover, #3a3a4a);
+    }
+    
+    /* Chat Messages */
+    #planningchat-panel, #teamchat-panel {
+        position: relative; /* Needed for footer positioning */
+        overflow: hidden; /* Prevent double scrollbars */
+    }
+    
+    .prometheus__chat-messages {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 70px; /* Height of the footer */
+        overflow-y: auto;
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+    
+    .prometheus__message {
+        border-radius: 16px;
+        padding: 12px 16px;
+        max-width: 85%;
+        word-wrap: break-word;
+        line-height: 1.4;
+    }
+    
+    .prometheus__message--system {
+        background-color: var(--bg-tertiary, #333345);
+        align-self: center;
+        max-width: 90%;
+        width: 600px;
+        margin: 8px 0;
+        border-radius: 8px;
+        padding: 16px 24px;
+    }
+    
+    .prometheus__message--user {
+        background-color: var(--color-primary, #FF5722);
+        color: white;
+        align-self: flex-end;
+        border-radius: 16px 16px 0 16px;
+    }
+    
+    .prometheus__message--ai {
+        background-color: var(--bg-secondary, #252535);
+        align-self: flex-start;
+        border-radius: 16px 16px 16px 0;
+    }
+    
+    /* Chat Input */
+    .prometheus__footer {
+        background-color: var(--bg-secondary, #252535);
+        border-top: 1px solid var(--border-color, #444444);
+        padding: 12px 16px;
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 70px; /* Fixed height to match bottom value in chat messages */
+    }
+    
+    .prometheus__chat-input-container {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        width: 100%;
+    }
+    
+    .prometheus__chat-prompt {
+        font-size: 18px;
+        font-weight: bold;
+        color: #4CAF50; /* Green */
+    }
+    
+    .prometheus__chat-input {
+        flex: 1;
+        height: 44px;
+        padding: 8px 16px;
+        background-color: var(--bg-tertiary, #333345);
+        border: 1px solid var(--border-color, #444444);
+        border-radius: 8px;
+        color: var(--text-primary, #f0f0f0);
+        font-size: 14px;
+    }
+    
+    .prometheus__send-button {
+        height: 44px;
+        padding: 0 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: var(--color-primary, #FF5722);
+        border: none;
+        border-radius: 8px;
+        color: white;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    
+    .prometheus__send-button:hover {
+        background-color: #E64A19; /* Darker orange */
+    }
+    
+    /* Loading Indicator */
+    .prometheus__loading-indicator {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 200px;
+    }
+
+    .prometheus__spinner {
+        width: 40px;
+        height: 40px;
+        border: 4px solid rgba(255, 255, 255, 0.1);
+        border-radius: 50%;
+        border-top: 4px solid var(--color-primary, #FF5722);
+        animation: prometheus-spin 1s linear infinite;
+        margin-bottom: 16px;
+    }
+
+    @keyframes prometheus-spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    
+    /* Resources specific styles */
+    .prometheus__chart-container {
+        background-color: var(--bg-secondary, #252535);
+        border-radius: 8px;
+        padding: 16px;
+        margin-top: 16px;
+    }
+    
+    .prometheus__chart-placeholder {
+        height: 200px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px dashed var(--border-color, #444444);
+        border-radius: 4px;
+        color: var(--text-secondary, #aaaaaa);
+    }
+</style>
+
+<script type="text/javascript">
+// SIMPLIFIED COMPONENT SCRIPT - FULLY SELF-CONTAINED
+// This version minimizes interference with other components
+
+// IMMEDIATELY SET UP UI MANAGER PROTECTION
+// Tell UI Manager to ignore this component - must be done IMMEDIATELY to avoid races
+if (window.uiManager) {
+    window.uiManager._ignoreComponent = 'prometheus';
+    console.log('[PROMETHEUS] Set UI Manager to ignore prometheus component');
+}
+
+// DEFINE TAB SWITCHING FUNCTION
+// CRITICAL: This uses no shared code/utilities to avoid conflicts
+window.prometheus_switchTab = function(tabId) {
+    console.log('[PROMETHEUS] Switching to tab:', tabId);
+    
+    // Force HTML panel visibility
+    const htmlPanelElements = document.querySelectorAll('#html-panel');
+    htmlPanelElements.forEach(panel => {
+        if (panel) panel.style.display = 'block';
+    });
+    
+    try {
+        // Only select elements within prometheus component to avoid conflicts with other components
+        const prometheusContainer = document.querySelector('.prometheus');
+        if (!prometheusContainer) {
+            console.error('[PROMETHEUS] Tab Switch: Cannot find prometheus container');
+            return false;
+        }
+        
+        // Update tab active state - ONLY WITHIN PROMETHEUS CONTAINER
+        const tabs = prometheusContainer.querySelectorAll('.prometheus__tab');
+        tabs.forEach(tab => {
+            if (tab.getAttribute('data-tab') === tabId) {
+                tab.classList.add('prometheus__tab--active');
+            } else {
+                tab.classList.remove('prometheus__tab--active');
+            }
+        });
+        
+        // Update panel visibility - ONLY WITHIN PROMETHEUS CONTAINER
+        const panels = prometheusContainer.querySelectorAll('.prometheus__panel');
+        panels.forEach(panel => {
+            const panelId = panel.id;
+            if (panelId === tabId + '-panel') {
+                panel.style.display = 'block';
+                panel.classList.add('prometheus__panel--active');
+            } else {
+                panel.style.display = 'none';
+                panel.classList.remove('prometheus__panel--active');
+            }
+        });
+        
+        // Update clear button visibility for chat tabs
+        const clearButton = prometheusContainer.querySelector('#clear-chat-btn');
+        if (clearButton) {
+            clearButton.style.display = (tabId === 'planningchat' || tabId === 'teamchat') ? 'block' : 'none';
+        }
+        
+        // Update component state
+        if (window.prometheusComponent) {
+            window.prometheusComponent.state = window.prometheusComponent.state || {};
+            window.prometheusComponent.state.activeTab = tabId;
+            
+            // Call component-specific methods if available
+            if (typeof window.prometheusComponent.updateChatPlaceholder === 'function') {
+                window.prometheusComponent.updateChatPlaceholder(tabId);
+            }
+            
+            if (typeof window.prometheusComponent.loadTabContent === 'function') {
+                window.prometheusComponent.loadTabContent(tabId);
+            }
+            
+            if (typeof window.prometheusComponent.saveComponentState === 'function') {
+                window.prometheusComponent.saveComponentState();
+            }
+        }
+    } catch (err) {
+        console.error('[PROMETHEUS] Error in tab switching:', err);
+    }
+    
+    return false; // Stop event propagation
+};
+
+// CHAT CLEARING FUNCTION
+window.prometheus_clearChat = function() {
+    console.log('[PROMETHEUS] Clear chat clicked');
+    
+    try {
+        // Get active tab ID within prometheus container
+        const prometheusContainer = document.querySelector('.prometheus');
+        if (!prometheusContainer) {
+            console.error('[PROMETHEUS] Clear Chat: Cannot find prometheus container');
+            return false;
+        }
+        
+        const activeTab = prometheusContainer.querySelector('.prometheus__tab--active');
+        const tabId = activeTab ? activeTab.getAttribute('data-tab') : '';
+        
+        if (tabId === 'planningchat' || tabId === 'teamchat') {
+            // Get message container within prometheus container only
+            const panel = prometheusContainer.querySelector('#' + tabId + '-messages');
+            if (panel) {
+                // Keep welcome message
+                const welcomeMsg = panel.querySelector('.prometheus__message--system');
+                if (welcomeMsg) {
+                    panel.innerHTML = '';
+                    panel.appendChild(welcomeMsg);
+                    console.log('[PROMETHEUS] Cleared chat, kept welcome message');
+                } else {
+                    panel.innerHTML = '';
+                    console.log('[PROMETHEUS] Cleared chat completely');
+                }
+            }
+        }
+    } catch (err) {
+        console.error('[PROMETHEUS] Error clearing chat:', err);
+    }
+    
+    return false; // Stop event propagation
+};
+
+// LOAD COMPONENT
+// Load after defining tab switching to ensure it's available
+function prometheus_loadComponent() {
+    console.log('[PROMETHEUS] Loading component script...');
+    
+    const timestamp = new Date().getTime();
+    const scriptPath = `/scripts/prometheus/prometheus-component.js?t=${timestamp}`;
+    
+    const script = document.createElement('script');
+    script.src = scriptPath;
+    script.async = false;
+    script.onload = function() {
+        console.log('[PROMETHEUS] Component script loaded successfully');
+        
+        if (window.prometheusComponent && typeof window.prometheusComponent.init === 'function') {
+            try {
+                window.prometheusComponent.init();
+                console.log('[PROMETHEUS] Component initialized');
+            } catch (err) {
+                console.error('[PROMETHEUS] Component initialization error:', err);
+            }
+        } else {
+            console.warn('[PROMETHEUS] Component init function not found');
+        }
+    };
+    script.onerror = function() {
+        console.error('[PROMETHEUS] Failed to load component script');
+    };
+    
+    document.body.appendChild(script);
+}
+
+// HTML PANEL PROTECTION
+// Setup explicit protection for the HTML panel to prevent it being hidden
+function prometheus_protectHtmlPanel() {
+    const htmlPanel = document.getElementById('html-panel');
+    if (!htmlPanel) {
+        console.error('[PROMETHEUS] Cannot find HTML panel to protect');
+        return;
+    }
+    
+    console.log('[PROMETHEUS] Protecting HTML panel from being hidden');
+    htmlPanel.style.display = 'block'; // Force it to be visible
+    
+    // Store the original display value
+    if (!htmlPanel.hasOwnProperty('_prometheusOriginalDisplay')) {
+        Object.defineProperty(htmlPanel, '_prometheusOriginalDisplay', {
+            value: 'block',
+            writable: true,
+            configurable: true
+        });
+    }
+    
+    // Only define the getter/setter if it hasn't already been defined by this component
+    if (!htmlPanel.style._prometheusProtected) {
+        // Mark the display property as protected by this component
+        Object.defineProperty(htmlPanel.style, '_prometheusProtected', {
+            value: true,
+            writable: false,
+            configurable: true
+        });
+        
+        // Protect the display property
+        Object.defineProperty(htmlPanel.style, 'display', {
+            get: function() { 
+                return htmlPanel._prometheusOriginalDisplay; 
+            },
+            set: function(value) {
+                console.log(`[PROMETHEUS] Intercepted attempt to set HTML panel display to: ${value}`);
+                if (value === 'none') {
+                    console.log('[PROMETHEUS] Blocked attempt to hide HTML panel');
+                    htmlPanel._prometheusOriginalDisplay = 'block';
+                } else {
+                    htmlPanel._prometheusOriginalDisplay = value;
+                }
+            },
+            configurable: true
+        });
+    }
+}
+
+// SETUP DONE AFTER PAGE LOAD
+// This ensures the functions are available before the tab events need them
+window.addEventListener('DOMContentLoaded', function() {
+    console.log('[PROMETHEUS] DOM loaded, setting up Prometheus component');
+    prometheus_protectHtmlPanel();
+    prometheus_loadComponent();
+});
+
+// IMMEDIATE PROTECTION
+// In case the DOM is already loaded
+if (document.readyState === 'complete' || document.readyState === 'interactive') {
+    console.log('[PROMETHEUS] Document already loaded, setting up Prometheus component immediately');
+    prometheus_protectHtmlPanel();
+    prometheus_loadComponent();
+}
+</script>

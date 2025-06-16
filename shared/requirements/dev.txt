@@ -1,0 +1,20 @@
+# Development and testing requirements for Tekton components
+# These should NOT be included in production deployments
+
+# Testing frameworks
+pytest>=8.0.0            # Testing framework
+pytest-asyncio>=0.21.0   # Async test support
+pytest-cov>=4.1.0       # Coverage reporting
+pytest-mock>=3.12.0     # Mocking support
+
+# Code quality tools
+flake8>=7.0.0           # Linting
+black>=23.0.0           # Code formatting
+isort>=5.13.0          # Import sorting
+mypy>=1.8.0            # Static type checking
+
+# Development utilities
+ipython>=8.18.0         # Enhanced Python shell
+ipdb>=0.13.0           # IPython debugger
+rich>=13.7.0           # Rich text and formatting
+typer>=0.9.0           # CLI building

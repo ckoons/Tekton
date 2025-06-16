@@ -1,0 +1,1317 @@
+<!-- Synthesis Component - Execution & Integration Engine -->
+<div class="synthesis" data-tekton-area="synthesis" data-tekton-component="synthesis" data-tekton-type="component-workspace" data-tekton-ai="synthesis-assistant" data-tekton-ai-ready="false">
+    <!-- Component Header with Title -->
+    <div class="synthesis__header">
+        <div class="synthesis__title-container">
+            <img src="/images/hexagon.jpg" alt="Tekton" class="synthesis__icon">
+            <h2 class="synthesis__title">
+                <span class="synthesis__title-main">Synthesis</span>
+                <span class="synthesis__title-sub">Execution Engine</span>
+            </h2>
+        </div>
+    </div>
+    
+    <!-- Synthesis Menu Bar with Tab Navigation -->
+    <div class="synthesis__menu-bar">
+        <div class="synthesis__tabs">
+            <div class="synthesis__tab synthesis__tab--active" data-tab="executions" onclick="synthesis_switchTab('executions'); return false;">
+                <span class="synthesis__tab-label">Executions</span>
+            </div>
+            <div class="synthesis__tab" data-tab="workflows" onclick="synthesis_switchTab('workflows'); return false;">
+                <span class="synthesis__tab-label">Workflows</span>
+            </div>
+            <div class="synthesis__tab" data-tab="monitoring" onclick="synthesis_switchTab('monitoring'); return false;">
+                <span class="synthesis__tab-label">Monitoring</span>
+            </div>
+            <div class="synthesis__tab" data-tab="history" onclick="synthesis_switchTab('history'); return false;">
+                <span class="synthesis__tab-label">History</span>
+            </div>
+            <div class="synthesis__tab" data-tab="execchat" onclick="synthesis_switchTab('execchat'); return false;">
+                <span class="synthesis__tab-label">Execution Chat</span>
+            </div>
+            <div class="synthesis__tab" data-tab="teamchat" onclick="synthesis_switchTab('teamchat'); return false;">
+                <span class="synthesis__tab-label">Team Chat</span>
+            </div>
+        </div>
+        <div class="synthesis__actions">
+            <button id="clear-chat-btn" class="synthesis__action-button" style="display: none;" onclick="synthesis_clearChat(); return false;">
+                <span class="synthesis__button-label">Clear</span>
+            </button>
+        </div>
+    </div>
+    
+    <!-- Synthesis Content Area -->
+    <div class="synthesis__content">
+        <!-- Executions Tab (Default Active Tab) -->
+        <div id="executions-panel" class="synthesis__panel synthesis__panel--active">
+            <div class="synthesis__executions">
+                <div class="synthesis__control-bar">
+                    <div class="synthesis__search-container">
+                        <input type="text" id="execution-search" class="synthesis__search-input" placeholder="Search executions...">
+                        <button id="execution-search-btn" class="synthesis__search-button">Search</button>
+                    </div>
+                    <div class="synthesis__actions">
+                        <button id="new-execution-btn" class="synthesis__action-button">
+                            <span class="synthesis__button-icon">+</span>
+                            <span class="synthesis__button-label">New Execution</span>
+                        </button>
+                        <button id="refresh-executions-btn" class="synthesis__action-button">
+                            <span class="synthesis__button-label">Refresh</span>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="synthesis__executions-list-container">
+                    <div id="executions-list-loading" class="synthesis__loading-indicator">
+                        <div class="synthesis__spinner"></div>
+                        <div class="synthesis__loading-text">Loading executions...</div>
+                    </div>
+                    <div id="executions-list" class="synthesis__executions-list" style="display: none;">
+                        <!-- Sample executions for UI testing -->
+                        <div class="synthesis__execution-item synthesis__execution-item--running">
+                            <div class="synthesis__execution-header">
+                                <div class="synthesis__execution-title">Document Processing Pipeline</div>
+                                <div class="synthesis__execution-meta">
+                                    <span class="synthesis__execution-id">exec-23a5f9d7</span>
+                                    <span class="synthesis__execution-status synthesis__execution-status--running">Running</span>
+                                </div>
+                            </div>
+                            <div class="synthesis__execution-progress">
+                                <div class="synthesis__progress-bar">
+                                    <div class="synthesis__progress-fill" style="width: 45%"></div>
+                                </div>
+                                <div class="synthesis__progress-text">45% (Step 5 of 11)</div>
+                            </div>
+                            <div class="synthesis__execution-actions">
+                                <button class="synthesis__button synthesis__button--small">View Details</button>
+                                <button class="synthesis__button synthesis__button--small">Cancel</button>
+                            </div>
+                        </div>
+                        
+                        <div class="synthesis__execution-item synthesis__execution-item--completed">
+                            <div class="synthesis__execution-header">
+                                <div class="synthesis__execution-title">System Health Check</div>
+                                <div class="synthesis__execution-meta">
+                                    <span class="synthesis__execution-id">exec-18e7c3b2</span>
+                                    <span class="synthesis__execution-status synthesis__execution-status--completed">Completed</span>
+                                </div>
+                            </div>
+                            <div class="synthesis__execution-progress">
+                                <div class="synthesis__progress-bar">
+                                    <div class="synthesis__progress-fill" style="width: 100%"></div>
+                                </div>
+                                <div class="synthesis__progress-text">Completed (8/8 steps)</div>
+                            </div>
+                            <div class="synthesis__execution-actions">
+                                <button class="synthesis__button synthesis__button--small">View Details</button>
+                                <button class="synthesis__button synthesis__button--small">Rerun</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="synthesis__execution-details-container" id="execution-details-panel">
+                    <div class="synthesis__empty-state">
+                        <div class="synthesis__empty-state-content">
+                            <h3 class="synthesis__empty-state-title">Select an execution to view details</h3>
+                            <p class="synthesis__empty-state-text">Choose an execution from the list above or create a new execution to get started.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Workflows Tab -->
+        <div id="workflows-panel" class="synthesis__panel">
+            <div class="synthesis__workflows">
+                <div class="synthesis__control-bar">
+                    <div class="synthesis__filter-container">
+                        <div class="synthesis__input-group">
+                            <span class="synthesis__input-label">Category</span>
+                            <select id="workflow-category-filter" class="synthesis__select">
+                                <option value="">All Categories</option>
+                                <option value="data-processing">Data Processing</option>
+                                <option value="system">System</option>
+                                <option value="integration">Integration</option>
+                                <option value="analysis">Analysis</option>
+                                <option value="deployment">Deployment</option>
+                            </select>
+                        </div>
+                        <div class="synthesis__input-group">
+                            <span class="synthesis__input-label">Show</span>
+                            <select id="workflow-status-filter" class="synthesis__select">
+                                <option value="">All Workflows</option>
+                                <option value="active">Active Only</option>
+                                <option value="archived">Archived Only</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="synthesis__actions">
+                        <button id="new-workflow-btn" class="synthesis__action-button">
+                            <span class="synthesis__button-icon">+</span>
+                            <span class="synthesis__button-label">New Workflow</span>
+                        </button>
+                        <button id="import-workflow-btn" class="synthesis__action-button">
+                            <span class="synthesis__button-icon">↓</span>
+                            <span class="synthesis__button-label">Import</span>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="synthesis__workflows-list-container">
+                    <div id="workflows-list-loading" class="synthesis__loading-indicator">
+                        <div class="synthesis__spinner"></div>
+                        <div class="synthesis__loading-text">Loading workflows...</div>
+                    </div>
+                    <div id="workflows-list" class="synthesis__workflows-list" style="display: none;">
+                        <table class="synthesis__table">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Category</th>
+                                    <th>Steps</th>
+                                    <th>Last Execution</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Sample workflows for UI testing -->
+                                <tr class="synthesis__workflow-row">
+                                    <td>Document Processing Pipeline</td>
+                                    <td>Data Processing</td>
+                                    <td>11</td>
+                                    <td>2025-05-14 09:45</td>
+                                    <td><span class="synthesis__status synthesis__status--active">Active</span></td>
+                                    <td>
+                                        <button class="synthesis__table-action-btn">Edit</button>
+                                        <button class="synthesis__table-action-btn">Run</button>
+                                        <button class="synthesis__table-action-btn">Export</button>
+                                    </td>
+                                </tr>
+                                <tr class="synthesis__workflow-row">
+                                    <td>System Health Check</td>
+                                    <td>System</td>
+                                    <td>8</td>
+                                    <td>2025-05-14 08:30</td>
+                                    <td><span class="synthesis__status synthesis__status--active">Active</span></td>
+                                    <td>
+                                        <button class="synthesis__table-action-btn">Edit</button>
+                                        <button class="synthesis__table-action-btn">Run</button>
+                                        <button class="synthesis__table-action-btn">Export</button>
+                                    </td>
+                                </tr>
+                                <tr class="synthesis__workflow-row">
+                                    <td>Data Backup Routine</td>
+                                    <td>System</td>
+                                    <td>5</td>
+                                    <td>2025-05-13 23:00</td>
+                                    <td><span class="synthesis__status synthesis__status--active">Active</span></td>
+                                    <td>
+                                        <button class="synthesis__table-action-btn">Edit</button>
+                                        <button class="synthesis__table-action-btn">Run</button>
+                                        <button class="synthesis__table-action-btn">Export</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Monitoring Tab -->
+        <div id="monitoring-panel" class="synthesis__panel">
+            <div class="synthesis__monitoring">
+                <div class="synthesis__control-bar">
+                    <div class="synthesis__filter-container">
+                        <div class="synthesis__input-group">
+                            <span class="synthesis__input-label">Time Range</span>
+                            <select id="monitoring-timerange" class="synthesis__select">
+                                <option value="1h">Last Hour</option>
+                                <option value="6h">Last 6 Hours</option>
+                                <option value="24h" selected>Last 24 Hours</option>
+                                <option value="7d">Last 7 Days</option>
+                                <option value="30d">Last 30 Days</option>
+                            </select>
+                        </div>
+                        <div class="synthesis__input-group">
+                            <span class="synthesis__input-label">Interval</span>
+                            <select id="monitoring-interval" class="synthesis__select">
+                                <option value="1m">1 Minute</option>
+                                <option value="5m" selected>5 Minutes</option>
+                                <option value="15m">15 Minutes</option>
+                                <option value="1h">1 Hour</option>
+                                <option value="6h">6 Hours</option>
+                                <option value="1d">1 Day</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="synthesis__actions">
+                        <button id="refresh-monitoring-btn" class="synthesis__action-button">
+                            <span class="synthesis__button-label">Refresh</span>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Metrics Dashboard -->
+                <div class="synthesis__dashboard">
+                    <div class="synthesis__metrics-grid">
+                        <div class="synthesis__metric-card">
+                            <div class="synthesis__metric-value">12</div>
+                            <div class="synthesis__metric-label">Active Executions</div>
+                        </div>
+                        <div class="synthesis__metric-card">
+                            <div class="synthesis__metric-value">158</div>
+                            <div class="synthesis__metric-label">Executions Today</div>
+                        </div>
+                        <div class="synthesis__metric-card">
+                            <div class="synthesis__metric-value">94.2%</div>
+                            <div class="synthesis__metric-label">Success Rate</div>
+                        </div>
+                        <div class="synthesis__metric-card">
+                            <div class="synthesis__metric-value">4.8s</div>
+                            <div class="synthesis__metric-label">Avg. Response Time</div>
+                        </div>
+                    </div>
+                    
+                    <div class="synthesis__charts-container">
+                        <div class="synthesis__chart-wrapper">
+                            <h3 class="synthesis__chart-title">Execution Volume</h3>
+                            <div id="execution-volume-chart" class="synthesis__chart"></div>
+                        </div>
+                        <div class="synthesis__chart-wrapper">
+                            <h3 class="synthesis__chart-title">Execution Duration</h3>
+                            <div id="execution-duration-chart" class="synthesis__chart"></div>
+                        </div>
+                        <div class="synthesis__chart-wrapper">
+                            <h3 class="synthesis__chart-title">Resource Usage</h3>
+                            <div id="resource-usage-chart" class="synthesis__chart"></div>
+                        </div>
+                        <div class="synthesis__chart-wrapper">
+                            <h3 class="synthesis__chart-title">Error Rate</h3>
+                            <div id="error-rate-chart" class="synthesis__chart"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- History Tab -->
+        <div id="history-panel" class="synthesis__panel">
+            <div class="synthesis__history">
+                <div class="synthesis__control-bar">
+                    <div class="synthesis__filter-container">
+                        <div class="synthesis__input-group">
+                            <span class="synthesis__input-label">Status</span>
+                            <select id="history-status-filter" class="synthesis__select">
+                                <option value="">All Statuses</option>
+                                <option value="completed">Completed</option>
+                                <option value="failed">Failed</option>
+                                <option value="cancelled">Cancelled</option>
+                            </select>
+                        </div>
+                        <div class="synthesis__input-group">
+                            <span class="synthesis__input-label">Workflow</span>
+                            <select id="history-workflow-filter" class="synthesis__select">
+                                <option value="">All Workflows</option>
+                                <!-- Dynamically populated -->
+                            </select>
+                        </div>
+                        <div class="synthesis__input-group">
+                            <span class="synthesis__input-label">Date Range</span>
+                            <select id="history-date-filter" class="synthesis__select">
+                                <option value="today">Today</option>
+                                <option value="yesterday">Yesterday</option>
+                                <option value="7days" selected>Last 7 Days</option>
+                                <option value="30days">Last 30 Days</option>
+                                <option value="custom">Custom Range</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="synthesis__actions">
+                        <button id="export-history-btn" class="synthesis__action-button">
+                            <span class="synthesis__button-label">Export</span>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="synthesis__history-table-container">
+                    <table class="synthesis__table synthesis__history-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Workflow</th>
+                                <th>Started</th>
+                                <th>Duration</th>
+                                <th>Steps</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="history-table-body">
+                            <!-- Sample history entries for UI testing -->
+                            <tr class="synthesis__history-row">
+                                <td>exec-18e7c3b2</td>
+                                <td>System Health Check</td>
+                                <td>2025-05-14 08:30</td>
+                                <td>2m 15s</td>
+                                <td>8/8</td>
+                                <td><span class="synthesis__status synthesis__status--completed">Completed</span></td>
+                                <td>
+                                    <button class="synthesis__table-action-btn">Details</button>
+                                    <button class="synthesis__table-action-btn">Rerun</button>
+                                </td>
+                            </tr>
+                            <tr class="synthesis__history-row">
+                                <td>exec-29b7d3a1</td>
+                                <td>Data Backup Routine</td>
+                                <td>2025-05-13 23:00</td>
+                                <td>12m 08s</td>
+                                <td>5/5</td>
+                                <td><span class="synthesis__status synthesis__status--completed">Completed</span></td>
+                                <td>
+                                    <button class="synthesis__table-action-btn">Details</button>
+                                    <button class="synthesis__table-action-btn">Rerun</button>
+                                </td>
+                            </tr>
+                            <tr class="synthesis__history-row">
+                                <td>exec-15f9e2c7</td>
+                                <td>API Integration Test</td>
+                                <td>2025-05-13 14:22</td>
+                                <td>3m 45s</td>
+                                <td>6/12</td>
+                                <td><span class="synthesis__status synthesis__status--failed">Failed</span></td>
+                                <td>
+                                    <button class="synthesis__table-action-btn">Details</button>
+                                    <button class="synthesis__table-action-btn">Rerun</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="synthesis__pagination">
+                    <button class="synthesis__pagination-btn synthesis__pagination-btn--disabled">&lt;&lt;</button>
+                    <button class="synthesis__pagination-btn synthesis__pagination-btn--active">1</button>
+                    <button class="synthesis__pagination-btn">2</button>
+                    <button class="synthesis__pagination-btn">3</button>
+                    <span class="synthesis__pagination-ellipsis">...</span>
+                    <button class="synthesis__pagination-btn">12</button>
+                    <button class="synthesis__pagination-btn">&gt;&gt;</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Execution Chat Tab -->
+        <div id="execchat-panel" class="synthesis__panel" style="position: relative; overflow: hidden;">
+            <div id="execchat-messages" class="synthesis__chat-messages">
+                <!-- Welcome message -->
+                <div class="synthesis__message synthesis__message--system">
+                    <div class="synthesis__message-content">
+                        <div class="synthesis__message-text">
+                            <h3 class="synthesis__message-title">Execution Assistant</h3>
+                            <p>This chat provides assistance with execution planning and workflow management. Ask questions about:</p>
+                            <ul>
+                                <li>Creating and managing execution plans</li>
+                                <li>Workflow optimization and debugging</li>
+                                <li>Integration with external systems</li>
+                                <li>Best practices for process execution</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Team Chat Tab -->
+        <div id="teamchat-panel" class="synthesis__panel" style="position: relative; overflow: hidden;">
+            <div id="teamchat-messages" class="synthesis__chat-messages">
+                <!-- Welcome message -->
+                <div class="synthesis__message synthesis__message--system">
+                    <div class="synthesis__message-content">
+                        <div class="synthesis__message-text">
+                            <h3 class="synthesis__message-title">Tekton Team Chat</h3>
+                            <p>This chat is shared across all Tekton components. Use this for team communication and coordination.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Footer with Chat Input -->
+    <div class="synthesis__footer">
+        <div class="synthesis__chat-input-container">
+            <div class="synthesis__chat-prompt">></div>
+            <input type="text" id="chat-input" class="synthesis__chat-input" 
+                   placeholder="Enter chat message, execution questions, or workflow commands">
+            <button id="send-button" class="synthesis__send-button">Send</button>
+        </div>
+    </div>
+</div>
+
+<!-- Add component-specific styles -->
+<style>
+    /* Synthesis component styles using BEM naming convention */
+
+    /* Container */
+    .synthesis {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        width: 100%;
+        background-color: var(--bg-primary, #1e1e2e);
+        color: var(--text-primary, #f0f0f0);
+        /* No absolute positioning - proper component containment */
+    }
+
+    /* Header */
+    .synthesis__header {
+        display: flex;
+        align-items: center;
+        padding: 10px 16px;
+        background-color: var(--bg-secondary, #252535);
+        border-bottom: 1px solid var(--border-color, #444444);
+        height: 50px; /* Match header height from Athena */
+    }
+
+    .synthesis__title-container {
+        display: flex;
+        align-items: center;
+    }
+
+    .synthesis__icon {
+        height: 30px;
+        width: auto;
+        margin-right: 12px;
+    }
+
+    .synthesis__title {
+        margin: 0;
+        font-size: 1.2rem;
+        font-weight: 500;
+    }
+
+    .synthesis__title-sub {
+        margin-left: 8px;
+        opacity: 0.8;
+        font-weight: normal;
+    }
+
+    /* Menu Bar */
+    .synthesis__menu-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 6px 16px;
+        background-color: var(--bg-secondary, #252535);
+        border-bottom: 1px solid var(--border-color, #444444);
+        height: 46px; /* Match menu bar height from Athena */
+    }
+
+    .synthesis__tabs {
+        display: flex;
+        gap: 8px;
+    }
+
+    .synthesis__tab {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 16px;
+        background-color: transparent;
+        border: none;
+        border-bottom: 2px solid transparent;
+        color: var(--text-primary, #f0f0f0);
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .synthesis__tab:hover {
+        background-color: var(--bg-hover, #3a3a4a);
+    }
+
+    .synthesis__tab--active {
+        border-bottom-color: var(--color-primary, #2196F3); /* Synthesis blue color */
+        font-weight: 500;
+    }
+
+    /* Content Area */
+    .synthesis__content {
+        flex: 1;
+        overflow: hidden;
+        position: relative;
+    }
+
+    .synthesis__panel {
+        display: none;
+        height: 100%;
+        width: 100%;
+        overflow: auto;
+        padding: 0; /* Remove padding to match Athena's fit */
+    }
+
+    .synthesis__panel--active {
+        display: block;
+    }
+
+    /* Control Bar */
+    .synthesis__control-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        margin: 0; /* Remove margin to match Athena */
+        padding: 16px; /* Match Athena's padding */
+        background-color: var(--bg-secondary, #252535);
+        border-bottom: 1px solid var(--border-color, #444444);
+        height: 46px; /* Match Athena's control bar height */
+    }
+
+    .synthesis__search-container {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex: 1;
+        min-width: 200px;
+    }
+
+    .synthesis__search-input {
+        flex: 1;
+        min-width: 200px;
+        padding: 6px 12px;
+        background-color: var(--bg-element, #2a2a3a);
+        border: 1px solid var(--border-color, #444444);
+        border-radius: 4px;
+        color: var(--text-primary, #f0f0f0);
+    }
+
+    .synthesis__search-button {
+        padding: 6px 12px;
+        background-color: var(--bg-tertiary, #333345);
+        border: 1px solid var(--border-color, #444444);
+        border-radius: 4px;
+        color: var(--text-primary, #f0f0f0);
+        cursor: pointer;
+    }
+
+    .synthesis__filter-container {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .synthesis__input-group {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .synthesis__input-label {
+        font-size: 0.9rem;
+        white-space: nowrap;
+    }
+
+    .synthesis__select {
+        padding: 6px 10px;
+        background-color: var(--bg-element, #2a2a3a);
+        border: 1px solid var(--border-color, #444444);
+        border-radius: 4px;
+        color: var(--text-primary, #f0f0f0);
+    }
+
+    .synthesis__actions {
+        display: flex;
+        gap: 8px;
+        margin-left: auto;
+    }
+
+    /* Execution List */
+    .synthesis__executions-list {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        padding: 16px;
+    }
+
+    .synthesis__execution-item {
+        padding: 12px;
+        background-color: var(--bg-secondary, #252535);
+        border-radius: 4px;
+        border-left: 4px solid transparent;
+    }
+
+    .synthesis__execution-item--running {
+        border-left-color: var(--status-running, #2196F3);
+    }
+
+    .synthesis__execution-item--completed {
+        border-left-color: var(--status-success, #4CAF50);
+    }
+
+    .synthesis__execution-item--failed {
+        border-left-color: var(--status-error, #F44336);
+    }
+
+    .synthesis__execution-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+
+    .synthesis__execution-title {
+        font-weight: 500;
+        font-size: 1rem;
+    }
+
+    .synthesis__execution-meta {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 0.9rem;
+    }
+
+    .synthesis__execution-id {
+        opacity: 0.7;
+        font-family: monospace;
+    }
+
+    .synthesis__execution-status {
+        padding: 3px 8px;
+        border-radius: 3px;
+        font-size: 0.85rem;
+    }
+
+    .synthesis__execution-status--running {
+        background-color: var(--status-running, #2196F3);
+        color: white;
+    }
+
+    .synthesis__execution-status--completed {
+        background-color: var(--status-success, #4CAF50);
+        color: white;
+    }
+
+    .synthesis__execution-status--failed {
+        background-color: var(--status-error, #F44336);
+        color: white;
+    }
+
+    .synthesis__execution-progress {
+        margin-bottom: 10px;
+    }
+
+    .synthesis__progress-bar {
+        height: 8px;
+        background-color: var(--bg-element, #2a2a3a);
+        border-radius: 4px;
+        overflow: hidden;
+        margin-bottom: 5px;
+    }
+
+    .synthesis__progress-fill {
+        height: 100%;
+        background-color: var(--color-primary, #2196F3);
+        border-radius: 4px;
+    }
+
+    .synthesis__progress-text {
+        font-size: 0.8rem;
+        opacity: 0.8;
+        text-align: right;
+    }
+
+    .synthesis__execution-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 8px;
+    }
+
+    /* Empty State */
+    .synthesis__empty-state {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 40px;
+        text-align: center;
+        background-color: var(--bg-secondary, #252535);
+        border-radius: 4px;
+        height: 300px;
+    }
+
+    .synthesis__empty-state-title {
+        margin-top: 0;
+        margin-bottom: 10px;
+        font-size: 1.1rem;
+        font-weight: 500;
+    }
+
+    .synthesis__empty-state-text {
+        margin: 0;
+        opacity: 0.8;
+    }
+
+    /* Table Styles */
+    .synthesis__table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+    }
+
+    .synthesis__table th,
+    .synthesis__table td {
+        padding: 10px;
+        text-align: left;
+        border-bottom: 1px solid var(--border-color, #444444);
+    }
+
+    .synthesis__table th {
+        font-weight: 500;
+        background-color: var(--bg-tertiary, #333345);
+    }
+
+    .synthesis__workflow-row:hover,
+    .synthesis__history-row:hover {
+        background-color: var(--bg-hover, #3a3a4a);
+    }
+
+    /* Status Indicators */
+    .synthesis__status {
+        padding: 3px 8px;
+        border-radius: 3px;
+        font-size: 0.8rem;
+        display: inline-block;
+    }
+
+    .synthesis__status--active { background-color: #2196F3; color: white; }
+    .synthesis__status--inactive { background-color: #9E9E9E; color: white; }
+    .synthesis__status--completed { background-color: #4CAF50; color: white; }
+    .synthesis__status--failed { background-color: #F44336; color: white; }
+    .synthesis__status--cancelled { background-color: #FFC107; color: black; }
+
+    /* Dashboard Cards */
+    .synthesis__metrics-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 16px;
+        margin-bottom: 24px;
+    }
+
+    .synthesis__metric-card {
+        padding: 16px;
+        background-color: var(--bg-secondary, #252535);
+        border-radius: 4px;
+        text-align: center;
+    }
+
+    .synthesis__metric-value {
+        font-size: 2rem;
+        font-weight: 500;
+        margin-bottom: 6px;
+        color: var(--color-primary, #2196F3);
+    }
+
+    .synthesis__metric-label {
+        font-size: 0.9rem;
+        opacity: 0.8;
+    }
+
+    /* Charts */
+    .synthesis__charts-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+        gap: 20px;
+    }
+
+    .synthesis__chart-wrapper {
+        background-color: var(--bg-secondary, #252535);
+        border-radius: 4px;
+        padding: 16px;
+    }
+
+    .synthesis__chart-title {
+        margin-top: 0;
+        margin-bottom: 16px;
+        font-size: 1rem;
+        font-weight: 500;
+    }
+
+    .synthesis__chart {
+        height: 200px;
+        width: 100%;
+        background-color: var(--bg-element, #2a2a3a);
+        border-radius: 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    /* Buttons */
+    .synthesis__action-button {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 12px;
+        background-color: var(--bg-tertiary, #333345);
+        border: 1px solid var(--border-color, #444444);
+        border-radius: 4px;
+        color: var(--text-primary, #f0f0f0);
+        cursor: pointer;
+    }
+
+    .synthesis__action-button:hover {
+        background-color: var(--bg-hover, #3a3a4a);
+    }
+
+    .synthesis__button {
+        padding: 6px 12px;
+        background-color: var(--bg-tertiary, #333345);
+        border: 1px solid var(--border-color, #444444);
+        border-radius: 4px;
+        color: var(--text-primary, #f0f0f0);
+        cursor: pointer;
+    }
+
+    .synthesis__button:hover {
+        background-color: var(--bg-hover, #3a3a4a);
+    }
+
+    .synthesis__button--small {
+        padding: 3px 8px;
+        font-size: 0.8rem;
+    }
+
+    .synthesis__button--primary {
+        background-color: var(--color-primary, #2196F3);
+        border-color: var(--color-primary, #2196F3);
+        color: white;
+    }
+
+    .synthesis__table-action-btn {
+        padding: 3px 8px;
+        background-color: var(--bg-tertiary, #333345);
+        border: 1px solid var(--border-color, #444444);
+        border-radius: 3px;
+        color: var(--text-primary, #f0f0f0);
+        font-size: 0.8rem;
+        cursor: pointer;
+        margin-right: 4px;
+    }
+
+    .synthesis__table-action-btn:hover {
+        background-color: var(--bg-hover, #3a3a4a);
+    }
+
+    /* Pagination */
+    .synthesis__pagination {
+        display: flex;
+        justify-content: center;
+        gap: 4px;
+        padding: 16px;
+    }
+
+    .synthesis__pagination-btn {
+        padding: 6px 10px;
+        background-color: var(--bg-tertiary, #333345);
+        border: 1px solid var(--border-color, #444444);
+        border-radius: 3px;
+        color: var(--text-primary, #f0f0f0);
+        cursor: pointer;
+    }
+
+    .synthesis__pagination-btn--active {
+        background-color: var(--color-primary, #2196F3);
+        border-color: var(--color-primary, #2196F3);
+        color: white;
+    }
+
+    .synthesis__pagination-btn--disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    .synthesis__pagination-ellipsis {
+        padding: 6px 4px;
+        opacity: 0.7;
+    }
+
+    /* Loading Indicator */
+    .synthesis__loading-indicator {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 40px 0;
+    }
+
+    .synthesis__spinner {
+        width: 40px;
+        height: 40px;
+        border: 3px solid rgba(33, 150, 243, 0.1);
+        border-top-color: var(--color-primary, #2196F3);
+        border-radius: 50%;
+        animation: synthesis-spin 1s linear infinite;
+    }
+
+    @keyframes synthesis-spin {
+        to { transform: rotate(360deg); }
+    }
+
+    .synthesis__loading-text {
+        margin-top: 12px;
+        font-size: 0.9rem;
+        color: var(--text-secondary, #aaaaaa);
+    }
+
+    /* Chat Areas */
+    .synthesis__chat-messages {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 70px; /* Height of the footer */
+        overflow-y: auto;
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .synthesis__message {
+        max-width: 80%;
+    }
+
+    .synthesis__message--user {
+        align-self: flex-end;
+    }
+
+    .synthesis__message--system {
+        align-self: center;
+        max-width: 600px;
+    }
+
+    .synthesis__message-content {
+        padding: 12px;
+        background-color: var(--bg-secondary, #252535);
+        border-radius: 12px;
+    }
+
+    .synthesis__message--user .synthesis__message-content {
+        background-color: var(--color-primary-dark, #1976D2);
+        color: white;
+        border-radius: 12px 12px 0 12px;
+    }
+
+    .synthesis__message--system .synthesis__message-content {
+        background-color: var(--bg-tertiary, #333345);
+        border-left: 3px solid var(--color-primary, #2196F3);
+        border-radius: 4px;
+    }
+
+    .synthesis__message-title {
+        margin-top: 0;
+        margin-bottom: 10px;
+        font-size: 1rem;
+        font-weight: 500;
+    }
+
+    .synthesis__message-text {
+        line-height: 1.4;
+    }
+
+    .synthesis__message-text ul {
+        margin-top: 6px;
+        margin-bottom: 6px;
+        padding-left: 20px;
+    }
+
+    /* Footer */
+    .synthesis__footer {
+        padding: 12px 16px;
+        background-color: var(--bg-secondary, #252535);
+        border-top: 1px solid var(--border-color, #444444);
+        height: 70px; /* Match footer height from Athena */
+    }
+
+    .synthesis__chat-input-container {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .synthesis__chat-prompt {
+        font-family: monospace;
+        font-size: 1.2rem;
+        color: #4CAF50; /* Match Athena's green terminal prompt */
+    }
+
+    .synthesis__chat-input {
+        flex: 1;
+        height: 44px;
+        padding: 8px 16px;
+        background-color: var(--bg-tertiary, #333345);
+        border: 1px solid var(--border-color, #444444);
+        border-radius: 8px;
+        color: var(--text-primary, #f0f0f0);
+        font-size: 14px;
+    }
+
+    .synthesis__chat-input:focus {
+        outline: none;
+        border-color: var(--color-primary, #7B1FA2); /* Match Athena's purple */
+    }
+
+    .synthesis__send-button {
+        height: 44px;
+        padding: 0 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: var(--color-primary, #7B1FA2); /* Match Athena's purple */
+        border: none;
+        border-radius: 8px;
+        color: white;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .synthesis__send-button:hover {
+        background-color: var(--color-primary-hover, #6A1B9A); /* Match Athena's hover color */
+    }
+</style>
+
+<script type="text/javascript">
+// SIMPLIFIED COMPONENT SCRIPT - FULLY SELF-CONTAINED
+// This version minimizes interference with other components
+
+// IMMEDIATELY SET UP UI MANAGER PROTECTION
+// Tell UI Manager to ignore this component - must be done IMMEDIATELY to avoid races
+if (window.uiManager) {
+    window.uiManager._ignoreComponent = 'synthesis';
+    console.log('[SYNTHESIS] Set UI Manager to ignore synthesis component');
+}
+
+// DEFINE TAB SWITCHING FUNCTION
+// CRITICAL: This uses no shared code/utilities to avoid conflicts
+window.synthesis_switchTab = function(tabId) {
+    console.log('[SYNTHESIS] Switching to tab:', tabId);
+    
+    // Force HTML panel visibility
+    const htmlPanelElements = document.querySelectorAll('#html-panel');
+    htmlPanelElements.forEach(panel => {
+        if (panel) panel.style.display = 'block';
+    });
+    
+    try {
+        // Only select elements within synthesis component to avoid conflicts with other components
+        const synthesisContainer = document.querySelector('.synthesis');
+        if (!synthesisContainer) {
+            console.error('[SYNTHESIS] Tab Switch: Cannot find synthesis container');
+            return false;
+        }
+        
+        // Update tab active state - ONLY WITHIN SYNTHESIS CONTAINER
+        const tabs = synthesisContainer.querySelectorAll('.synthesis__tab');
+        tabs.forEach(tab => {
+            if (tab.getAttribute('data-tab') === tabId) {
+                tab.classList.add('synthesis__tab--active');
+            } else {
+                tab.classList.remove('synthesis__tab--active');
+            }
+        });
+        
+        // Update panel visibility - ONLY WITHIN SYNTHESIS CONTAINER
+        const panels = synthesisContainer.querySelectorAll('.synthesis__panel');
+        panels.forEach(panel => {
+            const panelId = panel.id;
+            if (panelId === tabId + '-panel') {
+                panel.style.display = 'block';
+                panel.classList.add('synthesis__panel--active');
+            } else {
+                panel.style.display = 'none';
+                panel.classList.remove('synthesis__panel--active');
+            }
+        });
+        
+        // Update clear button visibility for chat tabs
+        const clearButton = synthesisContainer.querySelector('#clear-chat-btn');
+        if (clearButton) {
+            clearButton.style.display = (tabId === 'execchat' || tabId === 'teamchat') ? 'block' : 'none';
+        }
+        
+        // Update component state
+        if (window.synthesisComponent) {
+            window.synthesisComponent.state = window.synthesisComponent.state || {};
+            window.synthesisComponent.state.activeTab = tabId;
+            
+            // Call component-specific methods if available
+            if (typeof window.synthesisComponent.updateChatPlaceholder === 'function') {
+                window.synthesisComponent.updateChatPlaceholder(tabId);
+            }
+            
+            if (typeof window.synthesisComponent.loadTabContent === 'function') {
+                window.synthesisComponent.loadTabContent(tabId);
+            }
+            
+            if (typeof window.synthesisComponent.saveComponentState === 'function') {
+                window.synthesisComponent.saveComponentState();
+            }
+        }
+    } catch (err) {
+        console.error('[SYNTHESIS] Error in tab switching:', err);
+    }
+    
+    return false; // Stop event propagation
+};
+
+// CHAT CLEARING FUNCTION
+window.synthesis_clearChat = function() {
+    console.log('[SYNTHESIS] Clearing chat messages');
+    
+    try {
+        const synthesisContainer = document.querySelector('.synthesis');
+        if (!synthesisContainer) {
+            console.error('[SYNTHESIS] Clear Chat: Cannot find synthesis container');
+            return false;
+        }
+        
+        // Determine which chat to clear based on active tab
+        const activeTab = synthesisContainer.querySelector('.synthesis__tab--active');
+        if (!activeTab) {
+            console.error('[SYNTHESIS] Clear Chat: Cannot determine active tab');
+            return false;
+        }
+        
+        const chatType = activeTab.getAttribute('data-tab');
+        let chatContainer;
+        
+        if (chatType === 'execchat') {
+            chatContainer = synthesisContainer.querySelector('#execchat-messages');
+        } else if (chatType === 'teamchat') {
+            chatContainer = synthesisContainer.querySelector('#teamchat-messages');
+        }
+        
+        if (!chatContainer) {
+            console.error('[SYNTHESIS] Clear Chat: Cannot find chat container for', chatType);
+            return false;
+        }
+        
+        // Keep only the system welcome message
+        const welcomeMessage = chatContainer.querySelector('.synthesis__message--system');
+        if (welcomeMessage) {
+            chatContainer.innerHTML = '';
+            chatContainer.appendChild(welcomeMessage);
+        } else {
+            chatContainer.innerHTML = '';
+        }
+        
+        console.log('[SYNTHESIS] Chat messages cleared for', chatType);
+    } catch (err) {
+        console.error('[SYNTHESIS] Error in clearing chat:', err);
+    }
+    
+    return false; // Stop event propagation
+};
+
+// LOAD COMPONENT
+// Load after defining tab switching to ensure it's available
+function synthesis_loadComponent() {
+    console.log('[SYNTHESIS] Loading component script...');
+    
+    const timestamp = new Date().getTime();
+    const scriptPath = `/scripts/synthesis/synthesis-component.js?t=${timestamp}`;
+    
+    const script = document.createElement('script');
+    script.src = scriptPath;
+    script.async = false;
+    script.onload = function() {
+        console.log('[SYNTHESIS] Component script loaded successfully');
+        
+        if (window.synthesisComponent && typeof window.synthesisComponent.init === 'function') {
+            try {
+                window.synthesisComponent.init();
+                console.log('[SYNTHESIS] Component initialized');
+            } catch (err) {
+                console.error('[SYNTHESIS] Component initialization error:', err);
+            }
+        } else {
+            console.warn('[SYNTHESIS] Component init function not found');
+        }
+    };
+    script.onerror = function() {
+        console.error('[SYNTHESIS] Failed to load component script');
+    };
+    
+    document.body.appendChild(script);
+}
+
+// HTML PANEL PROTECTION
+// Setup explicit protection for the HTML panel to prevent it being hidden
+function synthesis_protectHtmlPanel() {
+    const htmlPanel = document.getElementById('html-panel');
+    if (!htmlPanel) {
+        console.error('[SYNTHESIS] Cannot find HTML panel to protect');
+        return;
+    }
+    
+    console.log('[SYNTHESIS] Protecting HTML panel from being hidden');
+    htmlPanel.style.display = 'block'; // Force it to be visible
+    
+    // Store the original display value
+    if (!htmlPanel.hasOwnProperty('_synthesisOriginalDisplay')) {
+        Object.defineProperty(htmlPanel, '_synthesisOriginalDisplay', {
+            value: 'block',
+            writable: true,
+            configurable: true
+        });
+    }
+    
+    // Only define the getter/setter if it hasn't already been defined by this component
+    if (!htmlPanel.style._synthesisProtected) {
+        // Mark the display property as protected by this component
+        Object.defineProperty(htmlPanel.style, '_synthesisProtected', {
+            value: true,
+            writable: false,
+            configurable: true
+        });
+        
+        // Protect the display property
+        Object.defineProperty(htmlPanel.style, 'display', {
+            get: function() { 
+                return htmlPanel._synthesisOriginalDisplay; 
+            },
+            set: function(value) {
+                console.log(`[SYNTHESIS] Intercepted attempt to set HTML panel display to: ${value}`);
+                if (value === 'none') {
+                    console.log('[SYNTHESIS] Blocked attempt to hide HTML panel');
+                    htmlPanel._synthesisOriginalDisplay = 'block';
+                } else {
+                    htmlPanel._synthesisOriginalDisplay = value;
+                }
+            },
+            configurable: true
+        });
+    }
+}
+
+// SETUP DONE AFTER PAGE LOAD
+// This ensures the functions are available before the tab events need them
+window.addEventListener('DOMContentLoaded', function() {
+    console.log('[SYNTHESIS] DOM loaded, setting up Synthesis component');
+    synthesis_protectHtmlPanel();
+    synthesis_loadComponent();
+});
+
+// IMMEDIATE PROTECTION
+// In case the DOM is already loaded
+if (document.readyState === 'complete' || document.readyState === 'interactive') {
+    console.log('[SYNTHESIS] Document already loaded, setting up Synthesis component immediately');
+    synthesis_protectHtmlPanel();
+    synthesis_loadComponent();
+}
+</script>

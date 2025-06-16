@@ -1,0 +1,5 @@
+{
+  "template": "Categorize this content into the most appropriate category:\n\n{content}",
+  "output_format": "text",
+  "description": "Categorization of memory content"
+}

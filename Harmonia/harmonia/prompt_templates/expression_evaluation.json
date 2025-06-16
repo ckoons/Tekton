@@ -1,0 +1,5 @@
+{
+  "name": "expression_evaluation",
+  "template": "You need to evaluate the following expression based on the current state:\n\nExpression: {{ expression }}\n\nCurrent state:\n{{ state }}\n\n{% if context %}\nAdditional context:\n{{ context }}\n{% endif %}\n\nThe expression may contain variables, logical operators, and functions.\nVariables in the expression are referenced using the ${variable_name} syntax.\n\nPlease evaluate this expression by:\n1. Replacing variables with their values from the current state\n2. Performing any logical operations\n3. Applying any functions\n\nReturn the final result of the evaluation along with your reasoning.",
+  "description": "Template for evaluating expressions with state variables"
+}

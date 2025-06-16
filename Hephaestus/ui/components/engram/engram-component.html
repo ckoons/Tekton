@@ -1,0 +1,1895 @@
+<!-- Engram Component - Memory and Knowledge Management -->
+<div class="engram" data-tekton-area="engram" data-tekton-component="engram" data-tekton-type="component-workspace" data-tekton-ai="engram-assistant" data-tekton-ai-ready="false">
+    <!-- Component Header with Title -->
+    <div class="engram__header">
+        <div class="engram__title-container">
+            <img src="/images/hexagon.jpg" alt="Tekton" class="engram__icon">
+            <h2 class="engram__title">
+                <span class="engram__title-main">Engram</span>
+                <span class="engram__title-sub">Memory System</span>
+            </h2>
+        </div>
+    </div>
+    
+    <!-- Engram Menu Bar with Tab Navigation -->
+    <div class="engram__menu-bar">
+        <div class="engram__tabs">
+            <!-- Memory Explorer Tab -->
+            <div class="engram__tab engram__tab--active" data-tab="explorer" onclick="engram_switchTab('explorer'); return false;">
+                <span class="engram__tab-label">Memory Explorer</span>
+            </div>
+            <!-- Memory Search Tab -->
+            <div class="engram__tab" data-tab="search" onclick="engram_switchTab('search'); return false;">
+                <span class="engram__tab-label">Memory Search</span>
+            </div>
+            <!-- Memory Stats Tab -->
+            <div class="engram__tab" data-tab="stats" onclick="engram_switchTab('stats'); return false;">
+                <span class="engram__tab-label">Memory Stats</span>
+            </div>
+            <!-- Memory Chat Tab -->
+            <div class="engram__tab" data-tab="chat" onclick="engram_switchTab('chat'); return false;">
+                <span class="engram__tab-label">Memory Chat</span>
+            </div>
+            <!-- Team Chat Tab -->
+            <div class="engram__tab" data-tab="teamchat" onclick="engram_switchTab('teamchat'); return false;">
+                <span class="engram__tab-label">Team Chat</span>
+            </div>
+        </div>
+        <div class="engram__actions">
+            <button id="clear-chat-btn" class="engram__action-button" style="display: none;" onclick="engram_clearChat(); return false;">
+                <span class="engram__button-label">Clear</span>
+            </button>
+        </div>
+    </div>
+    
+    <!-- Engram Content Area -->
+    <div class="engram__content">
+        <!-- Explorer Tab (Default Active Tab) -->
+        <div id="explorer-panel" class="engram__panel engram__panel--active">
+            <div class="engram__explorer">
+                <div class="engram__control-bar">
+                    <div class="engram__search-container">
+                        <input type="text" id="explorer-search" class="engram__search-input" placeholder="Search memories...">
+                        <button id="explorer-search-btn" class="engram__search-button">Search</button>
+                    </div>
+                    <div class="engram__filter-container">
+                        <select id="memory-type-filter" class="engram__filter-select">
+                            <option value="all">All Types</option>
+                            <option value="conversation">Conversation</option>
+                            <option value="document">Document</option>
+                            <option value="knowledge">Knowledge</option>
+                            <option value="task">Task</option>
+                            <option value="user">User</option>
+                        </select>
+                        <button id="apply-filter-btn" class="engram__filter-button">Apply</button>
+                    </div>
+                </div>
+                
+                <div class="engram__explorer-layout">
+                    <div class="engram__collections-panel">
+                        <h3 class="engram__panel-title">Memory Collections</h3>
+                        <div class="engram__collections-list">
+                            <div class="engram__collection-item engram__collection-item--active">
+                                <div class="engram__collection-name">All Memories</div>
+                                <div class="engram__collection-count">247</div>
+                            </div>
+                            <div class="engram__collection-item">
+                                <div class="engram__collection-name">Conversations</div>
+                                <div class="engram__collection-count">124</div>
+                            </div>
+                            <div class="engram__collection-item">
+                                <div class="engram__collection-name">Documents</div>
+                                <div class="engram__collection-count">57</div>
+                            </div>
+                            <div class="engram__collection-item">
+                                <div class="engram__collection-name">Knowledge Base</div>
+                                <div class="engram__collection-count">43</div>
+                            </div>
+                            <div class="engram__collection-item">
+                                <div class="engram__collection-name">Tasks</div>
+                                <div class="engram__collection-count">23</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="engram__memories-panel">
+                        <div class="engram__memories-header">
+                            <h3 class="engram__panel-title">Memories</h3>
+                            <div class="engram__view-controls">
+                                <button class="engram__view-button engram__view-button--active" data-view="list">
+                                    <span class="engram__view-icon">≡</span>
+                                </button>
+                                <button class="engram__view-button" data-view="grid">
+                                    <span class="engram__view-icon">⊞</span>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="engram__memories-list" id="memories-list-view">
+                            <!-- Sample memories for UI testing -->
+                            <div class="engram__memory-item">
+                                <div class="engram__memory-type-icon engram__memory-type-icon--conversation">💬</div>
+                                <div class="engram__memory-details">
+                                    <div class="engram__memory-name">Project Planning Discussion</div>
+                                    <div class="engram__memory-type">Conversation</div>
+                                    <div class="engram__memory-metadata">2023-05-15 • 3.2KB • Relevance: High</div>
+                                </div>
+                                <div class="engram__memory-actions">
+                                    <button class="engram__memory-action-btn">View</button>
+                                    <button class="engram__memory-action-btn">Edit</button>
+                                </div>
+                            </div>
+                            
+                            <div class="engram__memory-item">
+                                <div class="engram__memory-type-icon engram__memory-type-icon--document">📄</div>
+                                <div class="engram__memory-details">
+                                    <div class="engram__memory-name">System Architecture Spec</div>
+                                    <div class="engram__memory-type">Document</div>
+                                    <div class="engram__memory-metadata">2023-04-28 • 15.7KB • Relevance: High</div>
+                                </div>
+                                <div class="engram__memory-actions">
+                                    <button class="engram__memory-action-btn">View</button>
+                                    <button class="engram__memory-action-btn">Edit</button>
+                                </div>
+                            </div>
+                            
+                            <div class="engram__memory-item">
+                                <div class="engram__memory-type-icon engram__memory-type-icon--knowledge">💡</div>
+                                <div class="engram__memory-details">
+                                    <div class="engram__memory-name">Deployment Best Practices</div>
+                                    <div class="engram__memory-type">Knowledge</div>
+                                    <div class="engram__memory-metadata">2023-05-02 • 7.8KB • Relevance: Medium</div>
+                                </div>
+                                <div class="engram__memory-actions">
+                                    <button class="engram__memory-action-btn">View</button>
+                                    <button class="engram__memory-action-btn">Edit</button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="engram__memories-grid" id="memories-grid-view" style="display: none;">
+                            <!-- Grid view will be populated dynamically -->
+                        </div>
+                    </div>
+                    
+                    <div class="engram__memory-detail-panel">
+                        <div class="engram__detail-header">
+                            <h3 class="engram__panel-title">Memory Details</h3>
+                            <div class="engram__detail-actions">
+                                <button class="engram__detail-action-btn">Edit</button>
+                                <button class="engram__detail-action-btn">Delete</button>
+                            </div>
+                        </div>
+                        
+                        <div class="engram__memory-preview">
+                            <h4 class="engram__preview-title">Project Planning Discussion</h4>
+                            <div class="engram__preview-metadata">
+                                <div class="engram__metadata-item">
+                                    <span class="engram__metadata-label">Type:</span>
+                                    <span class="engram__metadata-value">Conversation</span>
+                                </div>
+                                <div class="engram__metadata-item">
+                                    <span class="engram__metadata-label">Created:</span>
+                                    <span class="engram__metadata-value">May 15, 2023</span>
+                                </div>
+                                <div class="engram__metadata-item">
+                                    <span class="engram__metadata-label">Last Accessed:</span>
+                                    <span class="engram__metadata-value">June 2, 2023</span>
+                                </div>
+                                <div class="engram__metadata-item">
+                                    <span class="engram__metadata-label">Size:</span>
+                                    <span class="engram__metadata-value">3.2 KB</span>
+                                </div>
+                                <div class="engram__metadata-item">
+                                    <span class="engram__metadata-label">Relevance:</span>
+                                    <span class="engram__metadata-value">High</span>
+                                </div>
+                            </div>
+                            
+                            <div class="engram__preview-content">
+                                <p>Discussion about the upcoming project milestones and resource allocation. Key points include:</p>
+                                <ul>
+                                    <li>Frontend development to start on May 20th</li>
+                                    <li>Backend API implementation to be completed by June 15th</li>
+                                    <li>Testing phase scheduled for June 16-30</li>
+                                    <li>Deployment planned for July 10th</li>
+                                </ul>
+                                <p>Team members assigned to various components, with regular check-ins scheduled every Thursday.</p>
+                            </div>
+                            
+                            <div class="engram__preview-relations">
+                                <h5 class="engram__relations-title">Related Memories</h5>
+                                <div class="engram__relations-list">
+                                    <div class="engram__relation-item">System Architecture Spec</div>
+                                    <div class="engram__relation-item">Development Timeline</div>
+                                    <div class="engram__relation-item">Resource Allocation Sheet</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Search Tab -->
+        <div id="search-panel" class="engram__panel">
+            <div class="engram__search-interface">
+                <div class="engram__search-controls">
+                    <div class="engram__search-bar">
+                        <input type="text" id="memory-search" class="engram__search-input engram__search-input--large" 
+                               placeholder="Search across all memories (natural language or keywords)">
+                        <select id="search-type" class="engram__search-select">
+                            <option value="semantic">Semantic</option>
+                            <option value="keyword">Keyword</option>
+                            <option value="combined">Combined</option>
+                        </select>
+                        <button id="memory-search-btn" class="engram__search-button engram__search-button--primary">Search</button>
+                    </div>
+                    
+                    <div class="engram__search-filters">
+                        <div class="engram__filter-group">
+                            <label class="engram__filter-label">Memory Types:</label>
+                            <div class="engram__checkbox-group">
+                                <label class="engram__checkbox">
+                                    <input type="checkbox" checked> Conversations
+                                </label>
+                                <label class="engram__checkbox">
+                                    <input type="checkbox" checked> Documents
+                                </label>
+                                <label class="engram__checkbox">
+                                    <input type="checkbox" checked> Knowledge
+                                </label>
+                                <label class="engram__checkbox">
+                                    <input type="checkbox" checked> Tasks
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="engram__filter-group">
+                            <label class="engram__filter-label">Date Range:</label>
+                            <div class="engram__date-inputs">
+                                <input type="date" class="engram__date-input" placeholder="From">
+                                <span class="engram__date-separator">to</span>
+                                <input type="date" class="engram__date-input" placeholder="To">
+                            </div>
+                        </div>
+                        
+                        <div class="engram__filter-group">
+                            <label class="engram__filter-label">Relevance:</label>
+                            <select class="engram__filter-select">
+                                <option value="all">All Relevance Levels</option>
+                                <option value="high">High</option>
+                                <option value="medium">Medium</option>
+                                <option value="low">Low</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="engram__search-results">
+                    <div class="engram__results-header">
+                        <h3 class="engram__results-title">Search Results</h3>
+                        <div class="engram__results-count">15 results</div>
+                        <select class="engram__sort-select">
+                            <option value="relevance">Sort by Relevance</option>
+                            <option value="date-new">Sort by Date (Newest)</option>
+                            <option value="date-old">Sort by Date (Oldest)</option>
+                            <option value="size">Sort by Size</option>
+                        </select>
+                    </div>
+                    
+                    <div class="engram__results-list">
+                        <!-- Sample search results -->
+                        <div class="engram__result-item">
+                            <div class="engram__result-title">System Architecture Document</div>
+                            <div class="engram__result-type">Document • May 10, 2023</div>
+                            <div class="engram__result-snippet">
+                                ...the <mark>system architecture</mark> follows a microservices approach with dedicated components for <mark>memory management</mark>...
+                            </div>
+                            <div class="engram__result-match">
+                                <span class="engram__match-label">Match:</span>
+                                <span class="engram__match-score">98% semantic match</span>
+                            </div>
+                        </div>
+                        
+                        <div class="engram__result-item">
+                            <div class="engram__result-title">Memory System Design Meeting</div>
+                            <div class="engram__result-type">Conversation • April 28, 2023</div>
+                            <div class="engram__result-snippet">
+                                ...discussed the <mark>memory architecture</mark> and decided on using a vector database for efficient semantic search capabilities...
+                            </div>
+                            <div class="engram__result-match">
+                                <span class="engram__match-label">Match:</span>
+                                <span class="engram__match-score">95% semantic match</span>
+                            </div>
+                        </div>
+                        
+                        <div class="engram__result-item">
+                            <div class="engram__result-title">Memory Optimization Techniques</div>
+                            <div class="engram__result-type">Knowledge • April 15, 2023</div>
+                            <div class="engram__result-snippet">
+                                ...various <mark>optimization techniques</mark> for the <mark>memory system</mark> including chunking strategies and embedding models...
+                            </div>
+                            <div class="engram__result-match">
+                                <span class="engram__match-label">Match:</span>
+                                <span class="engram__match-score">87% semantic match</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Stats Tab -->
+        <div id="stats-panel" class="engram__panel">
+            <div class="engram__stats-dashboard">
+                <div class="engram__stats-header">
+                    <h3 class="engram__section-title">Memory System Statistics</h3>
+                    <div class="engram__stats-controls">
+                        <select class="engram__stats-timeframe">
+                            <option value="day">Last 24 Hours</option>
+                            <option value="week" selected>Last 7 Days</option>
+                            <option value="month">Last 30 Days</option>
+                            <option value="year">Last Year</option>
+                            <option value="all">All Time</option>
+                        </select>
+                        <button class="engram__stats-refresh-btn">Refresh</button>
+                    </div>
+                </div>
+                
+                <div class="engram__stats-summary">
+                    <div class="engram__stat-card">
+                        <div class="engram__stat-title">Total Memories</div>
+                        <div class="engram__stat-value">247</div>
+                        <div class="engram__stat-trend engram__stat-trend--up">+12% ↑</div>
+                    </div>
+                    
+                    <div class="engram__stat-card">
+                        <div class="engram__stat-title">Memory Storage</div>
+                        <div class="engram__stat-value">1.3 GB</div>
+                        <div class="engram__stat-trend engram__stat-trend--up">+5% ↑</div>
+                    </div>
+                    
+                    <div class="engram__stat-card">
+                        <div class="engram__stat-title">Access Frequency</div>
+                        <div class="engram__stat-value">24/day</div>
+                        <div class="engram__stat-trend engram__stat-trend--down">-3% ↓</div>
+                    </div>
+                    
+                    <div class="engram__stat-card">
+                        <div class="engram__stat-title">Retrieval Latency</div>
+                        <div class="engram__stat-value">0.23 sec</div>
+                        <div class="engram__stat-trend engram__stat-trend--improved">-15% ↓</div>
+                    </div>
+                </div>
+                
+                <div class="engram__stats-detail">
+                    <div class="engram__stats-row">
+                        <div class="engram__stats-column">
+                            <div class="engram__chart-container">
+                                <h4 class="engram__chart-title">Memory Type Distribution</h4>
+                                <div class="engram__chart engram__chart--donut">
+                                    <!-- Chart will be rendered dynamically -->
+                                    <div class="engram__chart-placeholder">
+                                        <div class="engram__placeholder-text">Distribution Chart</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="engram__stats-column">
+                            <div class="engram__chart-container">
+                                <h4 class="engram__chart-title">Memory Usage Over Time</h4>
+                                <div class="engram__chart engram__chart--line">
+                                    <!-- Chart will be rendered dynamically -->
+                                    <div class="engram__chart-placeholder">
+                                        <div class="engram__placeholder-text">Line Chart</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="engram__stats-row">
+                        <div class="engram__chart-container engram__chart-container--full">
+                            <h4 class="engram__chart-title">Memory Access Patterns</h4>
+                            <div class="engram__chart engram__chart--heatmap">
+                                <!-- Chart will be rendered dynamically -->
+                                <div class="engram__chart-placeholder">
+                                    <div class="engram__placeholder-text">Heatmap Chart</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="engram__stats-table-section">
+                    <h4 class="engram__table-title">Top Accessed Memories</h4>
+                    <table class="engram__stats-table">
+                        <thead>
+                            <tr>
+                                <th>Memory Name</th>
+                                <th>Type</th>
+                                <th>Size</th>
+                                <th>Access Count</th>
+                                <th>Last Accessed</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>System Architecture Spec</td>
+                                <td>Document</td>
+                                <td>15.7 KB</td>
+                                <td>42</td>
+                                <td>2 hours ago</td>
+                            </tr>
+                            <tr>
+                                <td>Project Planning Discussion</td>
+                                <td>Conversation</td>
+                                <td>3.2 KB</td>
+                                <td>38</td>
+                                <td>4 hours ago</td>
+                            </tr>
+                            <tr>
+                                <td>Development Timeline</td>
+                                <td>Document</td>
+                                <td>8.5 KB</td>
+                                <td>29</td>
+                                <td>1 day ago</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Chat Tab -->
+        <div id="chat-panel" class="engram__panel">
+            <div id="chat-messages" class="engram__chat-messages">
+                <!-- Welcome message -->
+                <div class="engram__message engram__message--system">
+                    <div class="engram__message-content">
+                        <div class="engram__message-text">
+                            <h3 class="engram__message-title">Welcome to Engram Memory Chat</h3>
+                            <p>You can ask questions about any memories in the system or request specific information. Try questions like:</p>
+                            <ul>
+                                <li>What do you know about [topic]?</li>
+                                <li>Find information related to [keyword]</li>
+                                <li>Summarize our recent discussions about [topic]</li>
+                                <li>When did we last talk about [topic]?</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Team Chat Tab -->
+        <div id="teamchat-panel" class="engram__panel">
+            <div id="teamchat-messages" class="engram__chat-messages">
+                <!-- Welcome message -->
+                <div class="engram__message engram__message--system">
+                    <div class="engram__message-content">
+                        <div class="engram__message-text">
+                            <h3 class="engram__message-title">Tekton Team Chat</h3>
+                            <p>This chat is shared across all Tekton components. Use this for team communication and coordination.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Footer with Chat Input -->
+    <div class="engram__footer">
+        <div class="engram__chat-input-container">
+            <div class="engram__chat-prompt">></div>
+            <input type="text" id="chat-input" class="engram__chat-input" 
+                   placeholder="Enter chat message for Engram memory chat, searching, or memory operations">
+            <button id="send-button" class="engram__send-button">Send</button>
+        </div>
+    </div>
+</div>
+
+<!-- Add component-specific styles -->
+<style>
+    /* Engram component styles using BEM naming convention */
+    
+    /* Container */
+    .engram {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        width: 100%;
+        background-color: var(--bg-primary, #1e1e2e);
+        color: var(--text-primary, #f0f0f0);
+        /* No absolute positioning - proper component containment */
+    }
+    
+    /* Header */
+    .engram__header {
+        display: flex;
+        align-items: center;
+        padding: 10px 16px;
+        background-color: var(--bg-secondary, #252535);
+        border-bottom: 1px solid var(--border-color, #444444);
+        height: 50px; /* Match Athena's header height */
+    }
+    
+    .engram__title-container {
+        display: flex;
+        align-items: center;
+    }
+    
+    .engram__icon {
+        height: 30px;
+        width: auto;
+        margin-right: 12px;
+    }
+    
+    .engram__title {
+        margin: 0;
+        font-size: 1.2rem;
+        font-weight: 500;
+    }
+    
+    .engram__title-sub {
+        margin-left: 8px;
+        opacity: 0.8;
+        font-weight: normal;
+    }
+    
+    /* Menu Bar */
+    .engram__menu-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 6px 16px;
+        background-color: var(--bg-secondary, #252535);
+        border-bottom: 1px solid var(--border-color, #444444);
+        height: 46px; /* Match Athena's menu bar height */
+    }
+    
+    .engram__tabs {
+        display: flex;
+        gap: 8px;
+    }
+    
+    .engram__tab {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 16px;
+        background-color: transparent;
+        border: none;
+        border-bottom: 2px solid transparent;
+        color: var(--text-primary, #f0f0f0);
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    
+    .engram__tab:hover {
+        background-color: var(--bg-hover, #3a3a4a);
+    }
+    
+    .engram__tab--active {
+        border-bottom-color: var(--color-primary, #9C27B0); /* Purple for Engram */
+        font-weight: 500;
+    }
+    
+    .engram__actions {
+        display: flex;
+        gap: 8px;
+    }
+    
+    .engram__action-button {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 12px;
+        background-color: var(--bg-tertiary, #333345);
+        border: 1px solid var(--border-color, #444444);
+        border-radius: 4px;
+        color: var(--text-primary, #f0f0f0);
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    
+    .engram__action-button:hover {
+        background-color: var(--bg-hover, #3a3a4a);
+    }
+    
+    /* Content Area */
+    .engram__content {
+        flex: 1;
+        overflow: hidden;
+        position: relative;
+    }
+    
+    .engram__panel {
+        display: none;
+        height: 100%;
+        width: 100%;
+        overflow: auto;
+        position: relative;
+    }
+    
+    .engram__panel--active {
+        display: block;
+    }
+    
+    /* Control Bar */
+    .engram__control-bar {
+        display: flex;
+        justify-content: space-between;
+        padding: 16px;
+        background-color: var(--bg-secondary, #252535);
+        border-bottom: 1px solid var(--border-color, #444444);
+        height: 46px; /* Standard control bar height */
+    }
+    
+    .engram__search-container {
+        display: flex;
+        gap: 8px;
+    }
+    
+    .engram__search-input {
+        padding: 8px 12px;
+        min-width: 260px;
+        background-color: var(--bg-tertiary, #333345);
+        border: 1px solid var(--border-color, #444444);
+        border-radius: 4px;
+        color: var(--text-primary, #f0f0f0);
+    }
+    
+    .engram__search-input--large {
+        min-width: 400px;
+    }
+    
+    .engram__filter-container {
+        display: flex;
+        gap: 8px;
+    }
+    
+    .engram__filter-select {
+        padding: 8px 12px;
+        background-color: var(--bg-tertiary, #333345);
+        border: 1px solid var(--border-color, #444444);
+        border-radius: 4px;
+        color: var(--text-primary, #f0f0f0);
+    }
+    
+    .engram__filter-button,
+    .engram__search-button {
+        padding: 8px 12px;
+        background-color: var(--bg-tertiary, #333345);
+        border: 1px solid var(--border-color, #444444);
+        border-radius: 4px;
+        color: var(--text-primary, #f0f0f0);
+        cursor: pointer;
+    }
+    
+    .engram__search-button--primary {
+        background-color: var(--color-primary, #9C27B0);
+        border-color: var(--color-primary, #9C27B0);
+        color: white;
+    }
+    
+    /* Explorer Layout */
+    .engram__explorer-layout {
+        display: flex;
+        height: calc(100% - 57px); /* Adjust based on control bar height */
+    }
+    
+    .engram__collections-panel {
+        width: 220px;
+        padding: 16px;
+        background-color: var(--bg-tertiary, #333345);
+        border-right: 1px solid var(--border-color, #444444);
+        overflow-y: auto;
+    }
+    
+    .engram__memories-panel {
+        flex: 2;
+        display: flex;
+        flex-direction: column;
+        border-right: 1px solid var(--border-color, #444444);
+    }
+    
+    .engram__memory-detail-panel {
+        flex: 2;
+        padding: 16px;
+        overflow-y: auto;
+    }
+    
+    .engram__panel-title {
+        margin-top: 0;
+        margin-bottom: 16px;
+        font-size: 1.1rem;
+        font-weight: 500;
+    }
+    
+    .engram__collections-list {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .engram__collection-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 12px;
+        background-color: var(--bg-tertiary, #333345);
+        border: 1px solid var(--border-color, #444444);
+        border-radius: 4px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    
+    .engram__collection-item:hover {
+        background-color: var(--bg-hover, #3a3a4a);
+    }
+    
+    .engram__collection-item--active {
+        background-color: var(--color-primary, #9C27B0);
+        border-color: var(--color-primary, #9C27B0);
+    }
+    
+    .engram__collection-name {
+        font-weight: 500;
+    }
+    
+    .engram__collection-count {
+        color: var(--text-secondary, #aaaaaa);
+        font-size: 0.9em;
+    }
+    
+    .engram__collection-item--active .engram__collection-count {
+        color: rgba(255, 255, 255, 0.8);
+    }
+    
+    /* Memories List */
+    .engram__memories-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 16px;
+        border-bottom: 1px solid var(--border-color, #444444);
+    }
+    
+    .engram__view-controls {
+        display: flex;
+        gap: 4px;
+    }
+    
+    .engram__view-button {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 36px;
+        height: 36px;
+        background-color: var(--bg-tertiary, #333345);
+        border: 1px solid var(--border-color, #444444);
+        border-radius: 4px;
+        color: var(--text-primary, #f0f0f0);
+        cursor: pointer;
+    }
+    
+    .engram__view-button--active {
+        background-color: var(--color-primary, #9C27B0);
+        border-color: var(--color-primary, #9C27B0);
+    }
+    
+    .engram__memories-list {
+        flex: 1;
+        padding: 16px;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .engram__memory-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px;
+        background-color: var(--bg-secondary, #252535);
+        border: 1px solid var(--border-color, #444444);
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    
+    .engram__memory-item:hover {
+        background-color: var(--bg-hover, #3a3a4a);
+    }
+    
+    .engram__memory-type-icon {
+        width: 40px;
+        height: 40px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: var(--bg-tertiary, #333345);
+        border-radius: 6px;
+        font-size: 20px;
+    }
+    
+    .engram__memory-details {
+        flex: 1;
+    }
+    
+    .engram__memory-name {
+        font-weight: 500;
+        margin-bottom: 4px;
+    }
+    
+    .engram__memory-type {
+        color: var(--text-secondary, #aaaaaa);
+        font-size: 0.9em;
+        margin-bottom: 4px;
+    }
+    
+    .engram__memory-metadata {
+        color: var(--text-secondary, #aaaaaa);
+        font-size: 0.9em;
+    }
+    
+    .engram__memory-actions {
+        display: flex;
+        gap: 8px;
+    }
+    
+    .engram__memory-action-btn {
+        padding: 4px 8px;
+        background-color: var(--bg-tertiary, #333345);
+        border: 1px solid var(--border-color, #444444);
+        border-radius: 4px;
+        color: var(--text-primary, #f0f0f0);
+        cursor: pointer;
+    }
+    
+    /* Memory Detail */
+    .engram__detail-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 16px;
+    }
+    
+    .engram__detail-actions {
+        display: flex;
+        gap: 8px;
+    }
+    
+    .engram__detail-action-btn {
+        padding: 6px 12px;
+        background-color: var(--bg-tertiary, #333345);
+        border: 1px solid var(--border-color, #444444);
+        border-radius: 4px;
+        color: var(--text-primary, #f0f0f0);
+        cursor: pointer;
+    }
+    
+    .engram__preview-title {
+        margin-top: 0;
+        margin-bottom: 16px;
+        font-size: 1.2rem;
+    }
+    
+    .engram__preview-metadata {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+        gap: 12px;
+        margin-bottom: 20px;
+        padding: 12px;
+        background-color: var(--bg-tertiary, #333345);
+        border-radius: 6px;
+    }
+    
+    .engram__metadata-item {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+    
+    .engram__metadata-label {
+        color: var(--text-secondary, #aaaaaa);
+        font-size: 0.9em;
+    }
+    
+    .engram__preview-content {
+        margin-bottom: 20px;
+        line-height: 1.5;
+    }
+    
+    .engram__relations-title {
+        margin-top: 0;
+        margin-bottom: 8px;
+        font-size: 1rem;
+    }
+    
+    .engram__relations-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+    
+    .engram__relation-item {
+        padding: 6px 10px;
+        background-color: var(--bg-tertiary, #333345);
+        border-radius: 16px;
+        font-size: 0.9em;
+        cursor: pointer;
+    }
+    
+    .engram__relation-item:hover {
+        background-color: var(--color-primary, #9C27B0);
+    }
+    
+    /* Search Interface */
+    .engram__search-interface {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+    
+    .engram__search-controls {
+        padding: 16px;
+        background-color: var(--bg-secondary, #252535);
+        border-bottom: 1px solid var(--border-color, #444444);
+    }
+    
+    .engram__search-bar {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 16px;
+    }
+    
+    .engram__search-select {
+        padding: 8px 12px;
+        background-color: var(--bg-tertiary, #333345);
+        border: 1px solid var(--border-color, #444444);
+        border-radius: 4px;
+        color: var(--text-primary, #f0f0f0);
+    }
+    
+    .engram__search-filters {
+        display: flex;
+        gap: 20px;
+    }
+    
+    .engram__filter-group {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .engram__filter-label {
+        font-weight: 500;
+    }
+    
+    .engram__checkbox-group {
+        display: flex;
+        gap: 12px;
+    }
+    
+    .engram__checkbox {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        cursor: pointer;
+    }
+    
+    .engram__date-inputs {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .engram__date-input {
+        padding: 8px;
+        background-color: var(--bg-tertiary, #333345);
+        border: 1px solid var(--border-color, #444444);
+        border-radius: 4px;
+        color: var(--text-primary, #f0f0f0);
+    }
+    
+    .engram__date-separator {
+        color: var(--text-secondary, #aaaaaa);
+    }
+    
+    /* Search Results */
+    .engram__search-results {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+    }
+    
+    .engram__results-header {
+        display: flex;
+        align-items: center;
+        padding: 16px;
+        border-bottom: 1px solid var(--border-color, #444444);
+    }
+    
+    .engram__results-title {
+        margin: 0;
+        font-size: 1.1rem;
+        font-weight: 500;
+    }
+    
+    .engram__results-count {
+        margin-left: 12px;
+        color: var(--text-secondary, #aaaaaa);
+    }
+    
+    .engram__sort-select {
+        margin-left: auto;
+        padding: 6px 12px;
+        background-color: var(--bg-tertiary, #333345);
+        border: 1px solid var(--border-color, #444444);
+        border-radius: 4px;
+        color: var(--text-primary, #f0f0f0);
+    }
+    
+    .engram__results-list {
+        flex: 1;
+        padding: 16px;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+    
+    .engram__result-item {
+        padding: 16px;
+        background-color: var(--bg-secondary, #252535);
+        border: 1px solid var(--border-color, #444444);
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    
+    .engram__result-item:hover {
+        background-color: var(--bg-hover, #3a3a4a);
+    }
+    
+    .engram__result-title {
+        font-weight: 500;
+        margin-bottom: 4px;
+        font-size: 1.05rem;
+    }
+    
+    .engram__result-type {
+        color: var(--text-secondary, #aaaaaa);
+        font-size: 0.9em;
+        margin-bottom: 8px;
+    }
+    
+    .engram__result-snippet {
+        margin-bottom: 8px;
+        line-height: 1.5;
+    }
+    
+    .engram__result-snippet mark {
+        background-color: rgba(156, 39, 176, 0.3);
+        color: inherit;
+        border-radius: 3px;
+        padding: 0 2px;
+    }
+    
+    .engram__result-match {
+        font-size: 0.9em;
+    }
+    
+    .engram__match-label {
+        color: var(--text-secondary, #aaaaaa);
+    }
+    
+    .engram__match-score {
+        color: var(--color-primary, #9C27B0);
+        font-weight: 500;
+    }
+    
+    /* Stats Dashboard */
+    .engram__stats-dashboard {
+        padding: 16px;
+    }
+    
+    .engram__stats-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+    
+    .engram__section-title {
+        margin: 0;
+        font-size: 1.2rem;
+        font-weight: 500;
+    }
+    
+    .engram__stats-controls {
+        display: flex;
+        gap: 12px;
+    }
+    
+    .engram__stats-timeframe {
+        padding: 8px 12px;
+        background-color: var(--bg-tertiary, #333345);
+        border: 1px solid var(--border-color, #444444);
+        border-radius: 4px;
+        color: var(--text-primary, #f0f0f0);
+    }
+    
+    .engram__stats-refresh-btn {
+        padding: 8px 12px;
+        background-color: var(--bg-tertiary, #333345);
+        border: 1px solid var(--border-color, #444444);
+        border-radius: 4px;
+        color: var(--text-primary, #f0f0f0);
+        cursor: pointer;
+    }
+    
+    .engram__stats-summary {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 16px;
+        margin-bottom: 24px;
+    }
+    
+    .engram__stat-card {
+        padding: 16px;
+        background-color: var(--bg-secondary, #252535);
+        border: 1px solid var(--border-color, #444444);
+        border-radius: 8px;
+        text-align: center;
+    }
+    
+    .engram__stat-title {
+        margin-bottom: 8px;
+        color: var(--text-secondary, #aaaaaa);
+    }
+    
+    .engram__stat-value {
+        font-size: 1.8rem;
+        font-weight: 600;
+        margin-bottom: 8px;
+    }
+    
+    .engram__stat-trend {
+        font-size: 0.9rem;
+    }
+    
+    .engram__stat-trend--up {
+        color: #4CAF50;
+    }
+    
+    .engram__stat-trend--down {
+        color: #F44336;
+    }
+    
+    .engram__stat-trend--improved {
+        color: #4CAF50;
+    }
+    
+    .engram__stats-row {
+        display: flex;
+        gap: 16px;
+        margin-bottom: 24px;
+    }
+    
+    .engram__stats-column {
+        flex: 1;
+    }
+    
+    .engram__chart-container {
+        padding: 16px;
+        background-color: var(--bg-secondary, #252535);
+        border: 1px solid var(--border-color, #444444);
+        border-radius: 8px;
+    }
+    
+    .engram__chart-container--full {
+        width: 100%;
+    }
+    
+    .engram__chart-title {
+        margin-top: 0;
+        margin-bottom: 16px;
+        font-size: 1rem;
+        font-weight: 500;
+    }
+    
+    .engram__chart {
+        height: 200px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    
+    .engram__chart-placeholder {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
+        width: 100%;
+        background-color: var(--bg-tertiary, #333345);
+        border-radius: 4px;
+    }
+    
+    .engram__placeholder-text {
+        color: var(--text-secondary, #aaaaaa);
+    }
+    
+    .engram__stats-table-section {
+        margin-top: 24px;
+    }
+    
+    .engram__table-title {
+        margin-top: 0;
+        margin-bottom: 16px;
+        font-size: 1rem;
+        font-weight: 500;
+    }
+    
+    .engram__stats-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    
+    .engram__stats-table th,
+    .engram__stats-table td {
+        padding: 12px;
+        text-align: left;
+        border-bottom: 1px solid var(--border-color, #444444);
+    }
+    
+    .engram__stats-table th {
+        background-color: var(--bg-tertiary, #333345);
+        font-weight: 500;
+        color: var(--text-secondary, #aaaaaa);
+    }
+    
+    /* Chat Messages */
+    .engram__chat-messages {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 70px; /* Height of the footer */
+        overflow-y: auto;
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+    
+    .engram__message {
+        border-radius: 16px;
+        padding: 12px 16px;
+        max-width: 85%;
+        word-wrap: break-word;
+        line-height: 1.4;
+    }
+    
+    .engram__message--system {
+        background-color: var(--bg-tertiary, #333345);
+        align-self: center;
+        max-width: 90%;
+        width: 600px;
+        margin: 8px 0;
+        border-radius: 8px;
+        padding: 16px 24px;
+    }
+    
+    .engram__message--user {
+        background-color: var(--color-primary, #9C27B0);
+        color: white;
+        align-self: flex-end;
+        border-radius: 16px 16px 0 16px;
+    }
+    
+    .engram__message--ai {
+        background-color: var(--bg-secondary, #252535);
+        align-self: flex-start;
+        border-radius: 16px 16px 16px 0;
+    }
+    
+    .engram__message-content {
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .engram__message-text {
+        margin-bottom: 0.25rem;
+    }
+    
+    .engram__message-title {
+        margin-top: 0;
+        margin-bottom: 0.5rem;
+    }
+    
+    /* Chat Input */
+    .engram__footer {
+        background-color: var(--bg-secondary, #252535);
+        border-top: 1px solid var(--border-color, #444444);
+        padding: 12px 16px;
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 70px; /* Fixed height to match bottom value in chat messages */
+    }
+    
+    .engram__chat-input-container {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        width: 100%;
+    }
+    
+    .engram__chat-prompt {
+        font-size: 18px;
+        font-weight: bold;
+        color: #4CAF50;
+    }
+    
+    .engram__chat-input {
+        flex: 1;
+        height: 44px;
+        padding: 8px 16px;
+        background-color: var(--bg-tertiary, #333345);
+        border: 1px solid var(--border-color, #444444);
+        border-radius: 8px;
+        color: var(--text-primary, #f0f0f0);
+        font-size: 14px;
+    }
+    
+    .engram__send-button {
+        height: 44px;
+        padding: 0 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: var(--color-primary, #9C27B0);
+        border: none;
+        border-radius: 8px;
+        color: white;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    
+    .engram__send-button:hover {
+        background-color: var(--color-primary-hover, #7B1FA2);
+    }
+</style>
+
+<script type="text/javascript">
+// SIMPLIFIED COMPONENT SCRIPT - FULLY SELF-CONTAINED
+// This version minimizes interference with other components
+
+// IMMEDIATELY SET UP UI MANAGER PROTECTION
+// Tell UI Manager to ignore this component - must be done IMMEDIATELY to avoid races
+if (window.uiManager) {
+    window.uiManager._ignoreComponent = 'engram';
+    console.log('[ENGRAM] Set UI Manager to ignore engram component');
+}
+
+// DEFINE TAB SWITCHING FUNCTION
+// CRITICAL: This uses no shared code/utilities to avoid conflicts
+window.engram_switchTab = function(tabId) {
+    console.log('[ENGRAM] Switching to tab:', tabId);
+    
+    // Force HTML panel visibility
+    const htmlPanelElements = document.querySelectorAll('#html-panel');
+    htmlPanelElements.forEach(panel => {
+        if (panel) panel.style.display = 'block';
+    });
+    
+    try {
+        // Only select elements within engram component to avoid conflicts with other components
+        const engramContainer = document.querySelector('.engram');
+        if (!engramContainer) {
+            console.error('[ENGRAM] Tab Switch: Cannot find engram container');
+            return false;
+        }
+        
+        // Update tab active state - ONLY WITHIN ENGRAM CONTAINER
+        const tabs = engramContainer.querySelectorAll('.engram__tab');
+        tabs.forEach(tab => {
+            if (tab.getAttribute('data-tab') === tabId) {
+                tab.classList.add('engram__tab--active');
+            } else {
+                tab.classList.remove('engram__tab--active');
+            }
+        });
+        
+        // Update panel visibility - ONLY WITHIN ENGRAM CONTAINER
+        const panels = engramContainer.querySelectorAll('.engram__panel');
+        panels.forEach(panel => {
+            const panelId = panel.id;
+            if (panelId === tabId + '-panel') {
+                panel.style.display = 'block';
+                panel.classList.add('engram__panel--active');
+            } else {
+                panel.style.display = 'none';
+                panel.classList.remove('engram__panel--active');
+            }
+        });
+        
+        // Update clear button visibility for chat tabs
+        const clearButton = engramContainer.querySelector('#clear-chat-btn');
+        if (clearButton) {
+            clearButton.style.display = (tabId === 'chat' || tabId === 'teamchat') ? 'block' : 'none';
+        }
+        
+        // Update component state
+        if (window.engramComponent) {
+            window.engramComponent.state = window.engramComponent.state || {};
+            window.engramComponent.state.activeTab = tabId;
+            
+            // Call component-specific methods if available
+            if (typeof window.engramComponent.updateChatPlaceholder === 'function') {
+                window.engramComponent.updateChatPlaceholder(tabId);
+            }
+            
+            if (typeof window.engramComponent.loadTabContent === 'function') {
+                window.engramComponent.loadTabContent(tabId);
+            }
+            
+            if (typeof window.engramComponent.saveComponentState === 'function') {
+                window.engramComponent.saveComponentState();
+            }
+        }
+        
+        // Debug log for instrumentation
+        if (window.TektonDebug) {
+            window.TektonDebug.debug('engram', 'Tab switched', { tabId: tabId });
+        }
+    } catch (err) {
+        console.error('[ENGRAM] Error in tab switching:', err);
+        if (window.TektonDebug) {
+            window.TektonDebug.error('engram', 'Tab switch error', { tabId: tabId, error: err.message });
+        }
+    }
+    
+    return false; // Stop event propagation
+};
+
+// CLEAR CHAT FUNCTION
+window.engram_clearChat = function() {
+    console.log('[ENGRAM] Clear chat clicked');
+    
+    try {
+        // Get active tab ID within engram container
+        const engramContainer = document.querySelector('.engram');
+        if (!engramContainer) {
+            console.error('[ENGRAM] Clear Chat: Cannot find engram container');
+            return false;
+        }
+        
+        const activeTab = engramContainer.querySelector('.engram__tab--active');
+        const tabId = activeTab ? activeTab.getAttribute('data-tab') : '';
+        
+        if (tabId === 'chat' || tabId === 'teamchat') {
+            // Get message container within engram container only
+            const panel = engramContainer.querySelector('#' + tabId + '-messages');
+            if (panel) {
+                // Keep welcome message
+                const welcomeMsg = panel.querySelector('.engram__message--system');
+                if (welcomeMsg) {
+                    panel.innerHTML = '';
+                    panel.appendChild(welcomeMsg);
+                    console.log('[ENGRAM] Cleared chat, kept welcome message');
+                    
+                    if (window.TektonDebug) {
+                        window.TektonDebug.info('engram', 'Chat cleared', { tabId: tabId, keepWelcome: true });
+                    }
+                } else {
+                    panel.innerHTML = '';
+                    console.log('[ENGRAM] Cleared chat completely');
+                    
+                    if (window.TektonDebug) {
+                        window.TektonDebug.info('engram', 'Chat cleared', { tabId: tabId, keepWelcome: false });
+                    }
+                }
+            }
+        }
+    } catch (err) {
+        console.error('[ENGRAM] Error clearing chat:', err);
+        if (window.TektonDebug) {
+            window.TektonDebug.error('engram', 'Clear chat error', { error: err.message });
+        }
+    }
+    
+    return false; // Stop event propagation
+};
+
+// BASIC CHAT FUNCTIONALITY
+function engram_setupBasicChat() {
+    console.log('[ENGRAM] Setting up basic chat functionality');
+    
+    try {
+        // Get references to elements within engram container only
+        const engramContainer = document.querySelector('.engram');
+        if (!engramContainer) {
+            console.error('[ENGRAM] Setup Chat: Cannot find engram container');
+            return;
+        }
+        
+        const chatInput = engramContainer.querySelector('#chat-input');
+        const sendButton = engramContainer.querySelector('#send-button');
+        
+        if (!chatInput || !sendButton) {
+            console.error('[ENGRAM] Setup Chat: Cannot find chat input or send button');
+            return;
+        }
+        
+        // Send message function
+        function sendMessage() {
+            const messageText = chatInput.value.trim();
+            if (!messageText) return;
+            
+            // Clear input
+            chatInput.value = '';
+            
+            // Get active tab
+            const activeTab = engramContainer.querySelector('.engram__tab--active');
+            if (!activeTab) return;
+            
+            const tabId = activeTab.getAttribute('data-tab');
+            
+            // Find the right message container based on active tab
+            let messagesContainer;
+            if (tabId === 'chat') {
+                messagesContainer = engramContainer.querySelector('#chat-messages');
+            } else if (tabId === 'teamchat') {
+                messagesContainer = engramContainer.querySelector('#teamchat-messages');
+            } else {
+                // If not on a chat tab, default to the memory chat
+                messagesContainer = engramContainer.querySelector('#chat-messages');
+            }
+            
+            if (!messagesContainer) {
+                console.error('[ENGRAM] Cannot find messages container for tab:', tabId);
+                return;
+            }
+            
+            // Add user message
+            const userMessageElement = document.createElement('div');
+            userMessageElement.className = 'engram__message engram__message--user';
+            userMessageElement.innerHTML = `
+                <div class="engram__message-content">
+                    <div class="engram__message-text">${messageText}</div>
+                </div>
+            `;
+            messagesContainer.appendChild(userMessageElement);
+            
+            // Scroll to bottom
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            
+            // Debug log for instrumentation
+            if (window.TektonDebug) {
+                window.TektonDebug.info('engram', 'User message sent', { 
+                    tabId: tabId, 
+                    messageLength: messageText.length 
+                });
+            }
+            
+            // Placeholder for component-specific message handling
+            if (window.engramComponent && typeof window.engramComponent.handleChatMessage === 'function') {
+                // Let the component handle the response
+                window.engramComponent.handleChatMessage(messageText, tabId);
+            } else {
+                // Simple placeholder response
+                setTimeout(() => {
+                    const aiMessageElement = document.createElement('div');
+                    aiMessageElement.className = 'engram__message engram__message--ai';
+                    aiMessageElement.innerHTML = `
+                        <div class="engram__message-content">
+                            <div class="engram__message-text">
+                                This is a basic response to: "${messageText}"<br>
+                                For full functionality, the Engram component script needs to be loaded.
+                            </div>
+                        </div>
+                    `;
+                    messagesContainer.appendChild(aiMessageElement);
+                    
+                    // Scroll to bottom again
+                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                }, 500);
+            }
+        }
+        
+        // Add event listeners
+        sendButton.addEventListener('click', function() {
+            sendMessage();
+        });
+        
+        chatInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+        
+        console.log('[ENGRAM] Basic chat functionality set up');
+        
+        if (window.TektonDebug) {
+            window.TektonDebug.debug('engram', 'Basic chat functionality set up');
+        }
+    } catch (err) {
+        console.error('[ENGRAM] Error setting up basic chat:', err);
+        if (window.TektonDebug) {
+            window.TektonDebug.error('engram', 'Setup chat error', { error: err.message });
+        }
+    }
+}
+
+// SETUP VIEW CONTROLS
+function engram_setupViewControls() {
+    console.log('[ENGRAM] Setting up view controls');
+    
+    try {
+        // Get references to elements within engram container only
+        const engramContainer = document.querySelector('.engram');
+        if (!engramContainer) {
+            console.error('[ENGRAM] Setup View Controls: Cannot find engram container');
+            return;
+        }
+        
+        // Explorer view controls (list/grid toggle)
+        const viewButtons = engramContainer.querySelectorAll('.engram__view-button');
+        const listView = engramContainer.querySelector('#memories-list-view');
+        const gridView = engramContainer.querySelector('#memories-grid-view');
+        
+        if (viewButtons.length && listView && gridView) {
+            viewButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const viewType = this.getAttribute('data-view');
+                    
+                    // Update button state
+                    viewButtons.forEach(btn => {
+                        btn.classList.remove('engram__view-button--active');
+                    });
+                    this.classList.add('engram__view-button--active');
+                    
+                    // Update view
+                    if (viewType === 'list') {
+                        listView.style.display = 'flex';
+                        gridView.style.display = 'none';
+                    } else if (viewType === 'grid') {
+                        listView.style.display = 'none';
+                        gridView.style.display = 'grid';
+                    }
+                    
+                    console.log(`[ENGRAM] View switched to ${viewType}`);
+                    
+                    if (window.TektonDebug) {
+                        window.TektonDebug.debug('engram', 'View switched', { viewType: viewType });
+                    }
+                });
+            });
+        }
+        
+        // Collection item selection
+        const collectionItems = engramContainer.querySelectorAll('.engram__collection-item');
+        
+        if (collectionItems.length) {
+            collectionItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    // Remove active state from all items
+                    collectionItems.forEach(itm => {
+                        itm.classList.remove('engram__collection-item--active');
+                    });
+                    
+                    // Add active state to clicked item
+                    this.classList.add('engram__collection-item--active');
+                    
+                    const collectionName = this.querySelector('.engram__collection-name').textContent;
+                    console.log(`[ENGRAM] Collection selected: ${collectionName}`);
+                    
+                    if (window.TektonDebug) {
+                        window.TektonDebug.debug('engram', 'Collection selected', { collection: collectionName });
+                    }
+                });
+            });
+        }
+        
+        // Memory item selection
+        const memoryItems = engramContainer.querySelectorAll('.engram__memory-item');
+        
+        if (memoryItems.length) {
+            memoryItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    // Add selected state (could use a class for styling)
+                    memoryItems.forEach(mem => {
+                        mem.style.borderColor = '';
+                    });
+                    
+                    this.style.borderColor = 'var(--color-primary, #9C27B0)';
+                    
+                    const memoryName = this.querySelector('.engram__memory-name').textContent;
+                    console.log(`[ENGRAM] Memory selected: ${memoryName}`);
+                    
+                    if (window.TektonDebug) {
+                        window.TektonDebug.debug('engram', 'Memory selected', { memory: memoryName });
+                    }
+                });
+            });
+        }
+        
+        console.log('[ENGRAM] View controls set up');
+        
+        if (window.TektonDebug) {
+            window.TektonDebug.debug('engram', 'View controls set up');
+        }
+    } catch (err) {
+        console.error('[ENGRAM] Error setting up view controls:', err);
+        if (window.TektonDebug) {
+            window.TektonDebug.error('engram', 'Setup view controls error', { error: err.message });
+        }
+    }
+}
+
+// HTML PANEL PROTECTION
+// Setup explicit protection for the HTML panel to prevent it being hidden
+function engram_protectHtmlPanel() {
+    const htmlPanel = document.getElementById('html-panel');
+    if (!htmlPanel) {
+        console.error('[ENGRAM] Cannot find HTML panel to protect');
+        if (window.TektonDebug) {
+            window.TektonDebug.warn('engram', 'HTML panel not found for protection');
+        }
+        return;
+    }
+    
+    console.log('[ENGRAM] Protecting HTML panel from being hidden');
+    htmlPanel.style.display = 'block'; // Force it to be visible
+    
+    // Store the original display value
+    if (!htmlPanel.hasOwnProperty('_engramOriginalDisplay')) {
+        Object.defineProperty(htmlPanel, '_engramOriginalDisplay', {
+            value: 'block',
+            writable: true,
+            configurable: true
+        });
+    }
+    
+    // Only define the getter/setter if it hasn't already been defined by this component
+    if (!htmlPanel.style._engramProtected) {
+        // Mark the display property as protected by this component
+        Object.defineProperty(htmlPanel.style, '_engramProtected', {
+            value: true,
+            writable: false,
+            configurable: true
+        });
+        
+        // Protect the display property
+        Object.defineProperty(htmlPanel.style, 'display', {
+            get: function() { 
+                return htmlPanel._engramOriginalDisplay; 
+            },
+            set: function(value) {
+                console.log(`[ENGRAM] Intercepted attempt to set HTML panel display to: ${value}`);
+                if (value === 'none') {
+                    console.log('[ENGRAM] Blocked attempt to hide HTML panel');
+                    htmlPanel._engramOriginalDisplay = 'block';
+                    
+                    if (window.TektonDebug) {
+                        window.TektonDebug.warn('engram', 'Blocked attempt to hide HTML panel');
+                    }
+                } else {
+                    htmlPanel._engramOriginalDisplay = value;
+                }
+            },
+            configurable: true
+        });
+    }
+    
+    if (window.TektonDebug) {
+        window.TektonDebug.debug('engram', 'HTML panel protected');
+    }
+}
+
+// LOAD COMPONENT
+// Load after defining tab switching to ensure it's available
+function engram_loadComponent() {
+    console.log('[ENGRAM] Loading component script...');
+    
+    // Log debug info if debugging is available
+    if (window.TektonDebug) {
+        window.TektonDebug.info('engram', 'Component loading started');
+    }
+    
+    // Setup basic UI interactions that don't require the full component
+    engram_setupBasicChat();
+    engram_setupViewControls();
+    
+    const timestamp = new Date().getTime();
+    const scriptPath = `/scripts/engram/engram-component.js?t=${timestamp}`;
+    
+    const script = document.createElement('script');
+    script.src = scriptPath;
+    script.async = false;
+    script.onload = function() {
+        console.log('[ENGRAM] Component script loaded successfully');
+        
+        if (window.TektonDebug) {
+            window.TektonDebug.info('engram', 'Component script loaded successfully');
+        }
+        
+        if (window.engramComponent && typeof window.engramComponent.init === 'function') {
+            try {
+                window.engramComponent.init();
+                console.log('[ENGRAM] Component initialized');
+                
+                if (window.TektonDebug) {
+                    window.TektonDebug.info('engram', 'Component initialized successfully');
+                }
+            } catch (err) {
+                console.error('[ENGRAM] Component initialization error:', err);
+                
+                if (window.TektonDebug) {
+                    window.TektonDebug.error('engram', 'Component initialization error', { 
+                        error: err.message,
+                        stack: err.stack
+                    });
+                }
+            }
+        } else {
+            console.warn('[ENGRAM] Component init function not found');
+            
+            if (window.TektonDebug) {
+                window.TektonDebug.warn('engram', 'Component init function not found');
+            }
+        }
+    };
+    script.onerror = function() {
+        console.error('[ENGRAM] Failed to load component script');
+        
+        if (window.TektonDebug) {
+            window.TektonDebug.error('engram', 'Failed to load component script', {
+                script: scriptPath
+            });
+        }
+    };
+    
+    document.body.appendChild(script);
+}
+
+// SETUP DONE AFTER PAGE LOAD
+// This ensures the functions are available before the tab events need them
+window.addEventListener('DOMContentLoaded', function() {
+    console.log('[ENGRAM] DOM loaded, setting up Engram component');
+    
+    if (window.TektonDebug) {
+        window.TektonDebug.info('engram', 'DOM loaded, component setup starting');
+    }
+    
+    // Protect HTML panel first to avoid race conditions
+    engram_protectHtmlPanel();
+    
+    // Then load the component
+    engram_loadComponent();
+});
+
+// IMMEDIATE PROTECTION
+// In case the DOM is already loaded
+if (document.readyState === 'complete' || document.readyState === 'interactive') {
+    console.log('[ENGRAM] Document already loaded, setting up Engram component immediately');
+    
+    if (window.TektonDebug) {
+        window.TektonDebug.info('engram', 'Document already loaded, setting up component immediately');
+    }
+    
+    engram_protectHtmlPanel();
+    engram_loadComponent();
+}
+</script>

@@ -1,0 +1,9 @@
+# Include shared requirements
+-r ../shared/requirements/base.txt
+-r ../shared/requirements/web.txt
+
+# Tekton dependencies
+tekton-llm-client>=0.1.0
+
+# Component-specific dependencies
+# All dependencies are covered by shared requirements

@@ -1,0 +1,5 @@
+{
+  "name": "memory_query",
+  "template": "You are assisting with retrieving and organizing relevant information from a memory database.\n\nQuery: {{ query }}\n\n{% if retrieved_memories %}\nRetrieved memories:\n{{ retrieved_memories }}\n{% endif %}\n\n{% if context %}\nAdditional context:\n{{ context }}\n{% endif %}\n\nPlease analyze these memories and respond to the query by:\n1. Summarizing the most relevant information\n2. Organizing it in a coherent structure\n3. Identifying any gaps or inconsistencies\n4. Providing a clear answer to the original query",
+  "description": "Template for querying and synthesizing information from memory"
+}

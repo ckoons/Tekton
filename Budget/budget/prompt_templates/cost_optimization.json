@@ -1,0 +1,34 @@
+{
+    "name": "cost_optimization",
+    "description": "Provides specific recommendations for optimizing LLM usage costs",
+    "template": {
+        "system": "You are a Cost Optimization Assistant that specializes in reducing expenses related to Large Language Model (LLM) usage. Your purpose is to analyze usage patterns and suggest specific, actionable improvements to reduce costs while maintaining performance.\n\nGuidelines for your recommendations:\n1. Be specific and practical - suggest exact changes, not general principles\n2. Prioritize by impact - focus on changes that will have the biggest cost savings\n3. Consider tradeoffs - acknowledge any potential drawbacks of your recommendations\n4. Provide estimated savings - quantify the potential cost reduction when possible\n5. Be implementation-focused - include guidance on how to implement your suggestions\n\nYou have access to:\n- Current pricing for different models\n- Usage patterns and allocation by component\n- Token distribution (input vs. output)\n- Task types and their requirements\n\nFocus on actionable advice that can be implemented with minimal disruption to the user's system. Avoid generic suggestions like \"use a cheaper model\" without specifying which model for which use case.",
+        "user": "Please analyze the following LLM usage data and provide specific cost optimization recommendations:\n\n{usage_data}\n\nTake into account the current model pricing:\n{pricing_data}\n\nI need detailed suggestions for how to reduce costs while maintaining acceptable performance. For each recommendation, please include an estimated percentage cost reduction and any potential tradeoffs."
+    },
+    "variables": [
+        {
+            "name": "usage_data",
+            "description": "JSON representation of LLM usage data including costs, tokens, allocations by component and model"
+        },
+        {
+            "name": "pricing_data",
+            "description": "JSON representation of current pricing for different LLM models and providers"
+        }
+    ],
+    "examples": [
+        {
+            "input": {
+                "usage_data": "{\"daily_cost\": 42.30, \"components\": [{\"name\": \"Codex\", \"models\": [{\"name\": \"gpt-4\", \"usage\": {\"input_tokens\": 840000, \"output_tokens\": 260000, \"cost\": 27.60}}]}, {\"name\": \"Rhetor\", \"models\": [{\"name\": \"claude-3-opus\", \"usage\": {\"input_tokens\": 320000, \"output_tokens\": 120000, \"cost\": 14.70}}]}], \"task_types\": [{\"name\": \"code_generation\", \"token_count\": 680000, \"cost\": 21.40}, {\"name\": \"code_explanation\", \"token_count\": 420000, \"cost\": 12.80}, {\"name\": \"text_generation\", \"token_count\": 440000, \"cost\": 8.10}]}",
+                "pricing_data": "{\"models\": [{\"provider\": \"OpenAI\", \"model\": \"gpt-4\", \"input_cost\": 0.03, \"output_cost\": 0.06}, {\"provider\": \"OpenAI\", \"model\": \"gpt-3.5-turbo\", \"input_cost\": 0.001, \"output_cost\": 0.002}, {\"provider\": \"Anthropic\", \"model\": \"claude-3-opus\", \"input_cost\": 0.015, \"output_cost\": 0.075}, {\"provider\": \"Anthropic\", \"model\": \"claude-3-sonnet\", \"input_cost\": 0.003, \"output_cost\": 0.015}, {\"provider\": \"Anthropic\", \"model\": \"claude-3-haiku\", \"input_cost\": 0.00025, \"output_cost\": 0.00125}]}"
+            },
+            "output": "# Cost Optimization Recommendations\n\n## Current State\n- Daily LLM cost: $42.30\n- Codex using GPT-4: $27.60 (65.2% of total cost)\n- Rhetor using Claude 3 Opus: $14.70 (34.8% of total cost)\n\n## Key Recommendations\n\n### 1. Tiered Model Selection for Codex\nReplace GPT-4 with a tiered approach based on task complexity:\n\n```python\ndef select_model(task_complexity):\n    if task_complexity == \"high\":  # Complex code generation\n        return \"gpt-4\"\n    elif task_complexity == \"medium\":  # Standard code explanation\n        return \"gpt-3.5-turbo\"\n    else:  # Simple code completion\n        return \"claude-3-haiku\"\n```\n\n**Impact:** ~45% cost reduction for Codex ($12.40 savings)\n**Tradeoff:** Minor quality reduction for medium-complexity tasks\n**Implementation:** Add complexity estimation logic to route requests to appropriate models\n\n### 2. Optimize Input Prompts\nReduce token count by implementing the following prompt techniques:\n\n1. Remove redundant examples in prompts for code_explanation tasks\n2. Use shorter variable names in demonstration code\n3. Implement prompt templates with placeholders instead of repetitive instructions\n\n**Impact:** ~15% overall token reduction ($6.35 savings)\n**Tradeoff:** Requires one-time effort to optimize all prompts\n**Implementation:** Create a prompt library in `/budget/prompt_templates/optimized/`\n\n### 3. Replace Claude 3 Opus with Sonnet for Text Generation\nSwitch Rhetor's text_generation tasks from Opus to Sonnet:\n\n```python\n# Before\nllm_client.complete(model=\"claude-3-opus\", prompt=text_prompt)\n\n# After\nllm_client.complete(model=\"claude-3-sonnet\", prompt=text_prompt)\n```\n\n**Impact:** ~80% cost reduction for text_generation tasks ($6.48 savings)\n**Tradeoff:** Slightly lower creativity in open-ended generation\n**Implementation:** Update model selection in `/budget/adapters/rhetor.py`\n\n## Total Projected Savings\nImplementing all recommendations: **$25.23 daily (59.6% reduction)**\n\n## Implementation Priority\n1. Replace Claude Opus with Sonnet for text generation (quick win)\n2. Implement tiered model selection for Codex (highest impact)\n3. Optimize input prompts (requires more effort but compounds savings)\n\n## Monitoring Recommendation\nAfter implementing changes, monitor quality metrics for 7 days to ensure performance remains acceptable. Adjust model selection thresholds if needed."
+            }
+        }
+    ],
+    "version": "1.0.0",
+    "model_requirements": {
+        "minimum_context_length": 8000,
+        "required_features": ["code_understanding"],
+        "preferred_models": ["claude-3-sonnet", "gpt-4"]
+    }
+}

@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Terma Terminal Component</title>
+    <link rel="stylesheet" href="css/terma-terminal.css">
+    <!-- xterm.js CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm@5.3.0/css/xterm.min.css" />
+</head>
+<body>
+    <div class="terma-terminal-container">
+        <!-- Terminal Header -->
+        <div class="terma-terminal-header">
+            <div class="terma-terminal-title">Terma Terminal</div>
+            <div class="terma-terminal-controls">
+                <select id="terma-session-selector" class="terma-select" title="Select Session">
+                    <option value="new">New Session</option>
+                    <!-- Sessions will be populated dynamically -->
+                </select>
+                <select id="terma-terminal-type" class="terma-select" title="Terminal Type">
+                    <option value="default">Default Shell</option>
+                    <option value="bash">Bash</option>
+                    <option value="python">Python</option>
+                    <option value="node">Node.js</option>
+                </select>
+                <button id="terma-detach-btn" class="terma-btn" title="Detach Terminal">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                        <path d="M6 3V1H1v5h2V4.5l2.5 2.5L7 5.5 4.5 3H6zm8-2v5h-2V4.5L9.5 7 8 5.5 10.5 3H9V1h5zM1 9h2v1.5L5.5 8 7 9.5 4.5 12H6v2H1V9zm8 5v-2h1.5L13 9.5 14.5 11 12 13.5V12h-2v5h5v-5h-2v1.5L10.5 11 12 9.5 14.5 12H16V7h-5v2h2v1.5L10.5 13 9 11.5 11.5 9H10v2H9v3z"></path>
+                    </svg>
+                </button>
+                <button id="terma-settings-btn" class="terma-btn" title="Terminal Settings">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                        <path d="M9.405 1.05c-.413-1.4-2.397-1.4-2.81 0l-.1.34a1.464 1.464 0 0 1-2.105.872l-.31-.17c-1.283-.698-2.686.705-1.987 1.987l.169.311c.446.82.023 1.841-.872 2.105l-.34.1c-1.4.413-1.4 2.397 0 2.81l.34.1a1.464 1.464 0 0 1 .872 2.105l-.17.31c-.698 1.283.705 2.686 1.987 1.987l.311-.169a1.464 1.464 0 0 1 2.105.872l.1.34c.413 1.4 2.397 1.4 2.81 0l.1-.34a1.464 1.464 0 0 1 2.105-.872l.31.17c1.283.698 2.686-.705 1.987-1.987l-.169-.311a1.464 1.464 0 0 1 .872-2.105l.34-.1c1.4-.413 1.4-2.397 0-2.81l-.34-.1a1.464 1.464 0 0 1-.872-2.105l.17-.31c.698-1.283-.705-2.686-1.987-1.987l-.311.169a1.464 1.464 0 0 1-2.105-.872l-.1-.34zM8 10.93a2.929 2.929 0 1 1 0-5.86 2.929 2.929 0 0 1 0 5.858z"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Terminal Content -->
+        <div class="terma-terminal-content">
+            <div id="terma-terminal" class="terma-terminal"></div>
+        </div>
+        
+        <!-- LLM Assistance Panel (collapsible) -->
+        <div class="terma-llm-assistance">
+            <div class="terma-llm-header">
+                <div class="terma-llm-title">AI Assistant</div>
+                <button id="terma-llm-toggle" class="terma-btn" title="Toggle AI Assistant">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                        <path d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"></path>
+                    </svg>
+                </button>
+            </div>
+            <div id="terma-llm-content" class="terma-llm-content">
+                <div id="terma-llm-output" class="terma-llm-output">
+                    <p>Ask for help by typing <code>?command</code> or run command followed by <code>?</code> to analyze output.</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Terminal Settings Modal -->
+        <div id="terma-settings-modal" class="terma-modal">
+            <div class="terma-modal-content">
+                <div class="terma-modal-header">
+                    <h2>Terminal Settings</h2>
+                    <button id="terma-settings-close" class="terma-modal-close">&times;</button>
+                </div>
+                <div class="terma-modal-body">
+                    <div class="terma-settings-group">
+                        <label for="terma-font-size">Font Size:</label>
+                        <input type="range" id="terma-font-size" min="8" max="24" value="14">
+                        <span id="terma-font-size-value">14px</span>
+                    </div>
+                    <div class="terma-settings-group">
+                        <label for="terma-font-family">Font Family:</label>
+                        <select id="terma-font-family">
+                            <option value="'Courier New', monospace">Courier New</option>
+                            <option value="'Source Code Pro', monospace">Source Code Pro</option>
+                            <option value="'Fira Code', monospace">Fira Code</option>
+                            <option value="'JetBrains Mono', monospace">JetBrains Mono</option>
+                        </select>
+                    </div>
+                    <div class="terma-settings-group">
+                        <label for="terma-theme">Theme:</label>
+                        <select id="terma-theme">
+                            <option value="default">Default</option>
+                            <option value="light">Light</option>
+                            <option value="dark">Dark</option>
+                            <option value="monokai">Monokai</option>
+                            <option value="solarized">Solarized</option>
+                        </select>
+                    </div>
+                    <div class="terma-settings-group">
+                        <label for="terma-cursor-style">Cursor Style:</label>
+                        <select id="terma-cursor-style">
+                            <option value="block">Block</option>
+                            <option value="bar">Bar</option>
+                            <option value="underline">Underline</option>
+                        </select>
+                    </div>
+                    <div class="terma-settings-group">
+                        <label>
+                            <input type="checkbox" id="terma-cursor-blink" checked>
+                            Cursor Blink
+                        </label>
+                    </div>
+                    <div class="terma-settings-group">
+                        <label>
+                            <input type="checkbox" id="terma-scroll-back" checked>
+                            Enable Scrollback
+                        </label>
+                    </div>
+                    <div class="terma-settings-group">
+                        <label for="terma-scrollback-lines">Scrollback Lines:</label>
+                        <input type="number" id="terma-scrollback-lines" min="100" max="10000" value="1000">
+                    </div>
+                </div>
+                <div class="terma-modal-footer">
+                    <button id="terma-settings-save" class="terma-btn terma-btn-primary">Save Settings</button>
+                    <button id="terma-settings-reset" class="terma-btn">Reset to Defaults</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- xterm.js Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/xterm@5.3.0/lib/xterm.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xterm-addon-fit@0.8.0/lib/xterm-addon-fit.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xterm-addon-web-links@0.9.0/lib/xterm-addon-web-links.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xterm-addon-search@0.13.0/lib/xterm-addon-search.min.js"></script>
+    
+    <!-- Terma Terminal Scripts -->
+    <script src="js/terma-terminal.js"></script>
+</body>
+</html>

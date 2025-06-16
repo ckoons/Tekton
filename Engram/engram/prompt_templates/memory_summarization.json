@@ -1,0 +1,5 @@
+{
+  "template": "Create a concise summary that captures the key information across all these related memories:\n\n{memories}",
+  "output_format": "text",
+  "description": "Summarization of related memories"
+}

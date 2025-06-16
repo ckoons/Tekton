@@ -1,0 +1,5 @@
+{
+  "name": "system_prompt_base",
+  "template": "{{ base_instructions }}\n\n{% if constraints %}Constraints:\n{{ constraints }}\n\n{% endif %}{% if guidelines %}Guidelines:\n{{ guidelines }}\n\n{% endif %}{% if rules %}Rules:\n{{ rules }}\n{% endif %}",
+  "description": "Base template for system prompts with optional constraints, guidelines, and rules"
+}

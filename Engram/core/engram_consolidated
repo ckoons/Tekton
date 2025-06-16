@@ -1,0 +1,121 @@
+#!/bin/bash
+# engram-standalone (formerly engram_consolidated)
+# Launch Engram in standalone mode with its own HTTP server
+# This script maintains compatibility with the Tekton launch system
+# while implementing our streamlined architecture
+#
+# This script acts as a bridge to the new Engram architecture while
+# maintaining compatibility with existing Tekton launch scripts.
+
+# ANSI color codes for terminal output
+BLUE="\033[94m"
+GREEN="\033[92m"
+YELLOW="\033[93m"
+RED="\033[91m"
+BOLD="\033[1m"
+RESET="\033[0m"
+
+# Get the directory where the script is located
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+ENGRAM_DIR="$( cd "$SCRIPT_DIR/.." && pwd )"
+
+# Default settings
+CLIENT_ID="default"
+DATA_DIR="$HOME/.engram"
+HOST="127.0.0.1"
+PORT=8000
+USE_FALLBACK=false
+DEBUG=false
+
+# Parse command line arguments
+while [[ $# -gt 0 ]]; do
+  case $1 in
+    --client-id)
+      CLIENT_ID="$2"
+      shift 2
+      ;;
+    --data-dir)
+      DATA_DIR="$2"
+      shift 2
+      ;;
+    --host)
+      HOST="$2"
+      shift 2
+      ;;
+    --port)
+      PORT="$2"
+      shift 2
+      ;;
+    --fallback)
+      USE_FALLBACK=true
+      shift
+      ;;
+    --debug)
+      DEBUG=true
+      shift
+      ;;
+    --help)
+      echo "Usage: engram_consolidated [OPTIONS]"
+      echo ""
+      echo "Options:"
+      echo "  --client-id ID     Default client ID (default: default)"
+      echo "  --data-dir DIR     Data directory (default: ~/.engram)"
+      echo "  --host HOST        Host to bind server to (default: 127.0.0.1)"
+      echo "  --port PORT        Port to run server on (default: 8000)"
+      echo "  --fallback         Use file-based storage without vector DB"
+      echo "  --debug            Enable debug logging"
+      echo "  --help             Show this help message"
+      exit 0
+      ;;
+    *)
+      echo "Unknown option: $1"
+      echo "Try '$0 --help' for more information."
+      exit 1
+      ;;
+  esac
+done
+
+# Set environment variables for the Python process
+export ENGRAM_MODE="standalone"
+export ENGRAM_CLIENT_ID="$CLIENT_ID"
+export ENGRAM_DATA_DIR="$DATA_DIR"
+export ENGRAM_HOST="$HOST"
+export ENGRAM_PORT="$PORT"
+
+if [ "$USE_FALLBACK" = true ]; then
+  export ENGRAM_USE_FALLBACK="1"
+  echo -e "${YELLOW}Using file-based storage (fallback mode)${RESET}"
+fi
+
+if [ "$DEBUG" = true ]; then
+  export ENGRAM_DEBUG="1"
+  echo -e "${YELLOW}Debug mode enabled${RESET}"
+fi
+
+# Make sure data directory exists
+mkdir -p "$DATA_DIR"
+
+# Set up Python path to find Engram
+export PYTHONPATH="$ENGRAM_DIR:$PYTHONPATH"
+
+# Check for Python
+if ! command -v python3 &> /dev/null; then
+  echo -e "${RED}Python 3 not found. Please install Python 3.7 or later.${RESET}"
+  exit 1
+fi
+
+# Create log directory
+LOG_DIR="$HOME/.tekton/logs"
+mkdir -p "$LOG_DIR"
+
+echo -e "${BLUE}${BOLD}Starting Engram Memory Service${RESET}"
+echo -e "${BLUE}Host:${RESET} $HOST"
+echo -e "${BLUE}Port:${RESET} $PORT"
+echo -e "${BLUE}Data directory:${RESET} $DATA_DIR"
+echo -e "${BLUE}Default client ID:${RESET} $CLIENT_ID"
+
+# Start the server
+python3 -m engram.api.server --client-id "$CLIENT_ID" --data-dir "$DATA_DIR" --host "$HOST" --port "$PORT" ${USE_FALLBACK:+--fallback} ${DEBUG:+--debug} || {
+  echo -e "${RED}Failed to start Engram server${RESET}"
+  exit 1
+}

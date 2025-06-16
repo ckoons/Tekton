@@ -1,0 +1,369 @@
+#!/usr/bin/env bash
+#
+# tekton-branch-status - Check branch status across Tekton components
+#
+# This script checks the status of a branch across the main Tekton repository
+# and all component repositories, reporting on sync status with remote.
+
+# Exit on error, undefined variables, and pipe failures
+set -euo pipefail
+
+# Source common utilities
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+LIB_DIR="${SCRIPT_DIR}/lib"
+
+# shellcheck source=lib/github-utils.sh
+source "${LIB_DIR}/github-utils.sh"
+# shellcheck source=lib/error-utils.sh
+source "${LIB_DIR}/error-utils.sh"
+# shellcheck source=lib/component-utils.sh
+source "${LIB_DIR}/component-utils.sh"
+
+# Function to display usage information
+usage() {
+  cat <<EOF
+Usage: $(basename "$0") [OPTIONS] [BRANCH_NAME]
+
+Check the status of a branch across the main Tekton repository and all
+component repositories, reporting on sync status with remote repositories.
+
+Options:
+  -h, --help           Display this help message and exit
+  -v, --verbose        Enable verbose output
+  -j, --json           Output in JSON format
+  -c, --components     Only check component repositories
+  -m, --main-only      Only check main repository
+  -r, --remote REMOTE  Remote name to check against (default: origin)
+  
+Arguments:
+  BRANCH_NAME          Name of the branch to check (defaults to current branch)
+
+Examples:
+  $(basename "$0")
+    Check status of the current branch across all repositories
+
+  $(basename "$0") sprint/github-support-250430
+    Check status of the 'sprint/github-support-250430' branch
+
+  $(basename "$0") -j sprint/feature-name-250430
+    Check status and output in JSON format
+
+EOF
+  exit 1
+}
+
+# Parse arguments
+verbose=false
+json_output=false
+components_only=false
+main_only=false
+remote_name="origin"
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    -h|--help)
+      usage
+      ;;
+    -v|--verbose)
+      verbose=true
+      enable_debug
+      shift
+      ;;
+    -j|--json)
+      json_output=true
+      shift
+      ;;
+    -c|--components)
+      components_only=true
+      shift
+      ;;
+    -m|--main-only)
+      main_only=true
+      shift
+      ;;
+    -r|--remote)
+      remote_name="$2"
+      shift 2
+      ;;
+    -*)
+      error_exit "Unknown option: $1"
+      ;;
+    *)
+      break
+      ;;
+  esac
+done
+
+# Get branch name
+branch_name=""
+if [[ $# -ge 1 ]]; then
+  branch_name="$1"
+else
+  # Try to get current branch
+  branch_name="$(get_current_branch)"
+  if [[ -z "${branch_name}" ]]; then
+    error_exit "Not currently on a branch. Please specify a branch name."
+  fi
+fi
+
+# Get Tekton root directory
+tekton_root="$(detect_tekton_root)"
+if [[ -z "${tekton_root}" ]]; then
+  error_exit "Not in a Tekton repository. Please run this script from within the Tekton project directory."
+fi
+
+# Check if both --components and --main-only are specified
+if [[ "${components_only}" == "true" && "${main_only}" == "true" ]]; then
+  error_exit "Cannot specify both --components and --main-only"
+fi
+
+# Initialize arrays for storing results
+declare -a repositories
+declare -a statuses
+declare -a ahead_counts
+declare -a behind_counts
+declare -a exists_local
+declare -a exists_remote
+declare -a repo_types
+
+# Function to check branch status in a repository
+check_branch_in_repo() {
+  local repo_dir="$1"
+  local repo_name="$2"
+  local repo_type="$3"
+  
+  debug "Checking branch status in ${repo_name}"
+  
+  # Store repository name
+  repositories+=("${repo_name}")
+  repo_types+=("${repo_type}")
+  
+  pushd "${repo_dir}" > /dev/null
+  
+  # Check if this is a git repository
+  if ! check_git_repo; then
+    warn "${repo_name} is not a git repository, skipping"
+    statuses+=("not-a-repo")
+    ahead_counts+=("0")
+    behind_counts+=("0")
+    exists_local+=("false")
+    exists_remote+=("false")
+    popd > /dev/null
+    return
+  fi
+  
+  # Check if branch exists locally
+  local local_exists
+  if branch_exists_local "${branch_name}"; then
+    local_exists="true"
+  else
+    local_exists="false"
+  fi
+  exists_local+=("${local_exists}")
+  
+  # Check if branch exists on remote
+  local remote_exists
+  if branch_exists_remote "${branch_name}" "${remote_name}"; then
+    remote_exists="true"
+  else
+    remote_exists="false"
+  fi
+  exists_remote+=("${remote_exists}")
+  
+  # If branch doesn't exist anywhere, report not found
+  if [[ "${local_exists}" == "false" && "${remote_exists}" == "false" ]]; then
+    statuses+=("not-found")
+    ahead_counts+=("0")
+    behind_counts+=("0")
+    popd > /dev/null
+    return
+  fi
+  
+  # If branch only exists remotely, report remote-only
+  if [[ "${local_exists}" == "false" && "${remote_exists}" == "true" ]]; then
+    statuses+=("remote-only")
+    ahead_counts+=("0")
+    behind_counts+=("0")
+    popd > /dev/null
+    return
+  fi
+  
+  # If branch only exists locally, report local-only
+  if [[ "${local_exists}" == "true" && "${remote_exists}" == "false" ]]; then
+    statuses+=("local-only")
+    ahead_counts+=("0")
+    behind_counts+=("0")
+    popd > /dev/null
+    return
+  fi
+  
+  # If branch exists both locally and remotely, check sync status
+  local behind ahead
+  behind=$(git rev-list --count "${branch_name}..${remote_name}/${branch_name}" 2>/dev/null || echo "0")
+  ahead=$(git rev-list --count "${remote_name}/${branch_name}..${branch_name}" 2>/dev/null || echo "0")
+  
+  ahead_counts+=("${ahead}")
+  behind_counts+=("${behind}")
+  
+  if [[ "${ahead}" -eq 0 && "${behind}" -eq 0 ]]; then
+    statuses+=("up-to-date")
+  elif [[ "${ahead}" -gt 0 && "${behind}" -eq 0 ]]; then
+    statuses+=("ahead")
+  elif [[ "${ahead}" -eq 0 && "${behind}" -gt 0 ]]; then
+    statuses+=("behind")
+  else
+    statuses+=("diverged")
+  fi
+  
+  popd > /dev/null
+  return
+}
+
+# Check main repository if requested
+if [[ "${components_only}" != "true" ]]; then
+  check_branch_in_repo "${tekton_root}" "Tekton" "main"
+fi
+
+# Check component repositories if requested
+if [[ "${main_only}" != "true" ]]; then
+  # Get list of all components with repositories
+  component_repos=($(list_component_repos))
+  
+  if [[ ${#component_repos[@]} -eq 0 ]]; then
+    warn "No component repositories found"
+  else
+    for component in "${component_repos[@]}"; do
+      component_dir="$(get_component_directory "${component}")"
+      if [[ -z "${component_dir}" ]]; then
+        warn "Component directory not found for ${component}, skipping"
+        continue
+      fi
+      
+      check_branch_in_repo "${component_dir}" "${component}" "component"
+    done
+  fi
+fi
+
+# Output results
+if [[ "${json_output}" == "true" ]]; then
+  # Output in JSON format
+  echo "{"
+  echo "  \"branch\": \"${branch_name}\","
+  echo "  \"remote\": \"${remote_name}\","
+  echo "  \"repositories\": ["
+  
+  for i in "${!repositories[@]}"; do
+    echo "    {"
+    echo "      \"name\": \"${repositories[$i]}\","
+    echo "      \"type\": \"${repo_types[$i]}\","
+    echo "      \"status\": \"${statuses[$i]}\","
+    echo "      \"ahead\": ${ahead_counts[$i]},"
+    echo "      \"behind\": ${behind_counts[$i]},"
+    echo "      \"exists_local\": ${exists_local[$i]},"
+    echo "      \"exists_remote\": ${exists_remote[$i]}"
+    if [[ $i -eq $(( ${#repositories[@]} - 1 )) ]]; then
+      echo "    }"
+    else
+      echo "    },"
+    fi
+  done
+  
+  echo "  ]"
+  echo "}"
+else
+  # Output in human-readable format
+  printf "\nBranch Status: '%s'\n" "${branch_name}"
+  printf "Remote: %s\n\n" "${remote_name}"
+  
+  printf "%-20s %-12s %-15s %-10s %-10s\n" "REPOSITORY" "TYPE" "STATUS" "AHEAD" "BEHIND"
+  printf "%-20s %-12s %-15s %-10s %-10s\n" "--------------------" "------------" "---------------" "----------" "----------"
+  
+  for i in "${!repositories[@]}"; do
+    # Format status with color
+    local status_formatted
+    case "${statuses[$i]}" in
+      "up-to-date")
+        status_formatted="${GREEN}${statuses[$i]}${RESET}"
+        ;;
+      "ahead")
+        status_formatted="${BLUE}${statuses[$i]}${RESET}"
+        ;;
+      "behind")
+        status_formatted="${YELLOW}${statuses[$i]}${RESET}"
+        ;;
+      "diverged")
+        status_formatted="${RED}${statuses[$i]}${RESET}"
+        ;;
+      "local-only")
+        status_formatted="${YELLOW}${statuses[$i]}${RESET}"
+        ;;
+      "remote-only")
+        status_formatted="${YELLOW}${statuses[$i]}${RESET}"
+        ;;
+      "not-found")
+        status_formatted="${RED}${statuses[$i]}${RESET}"
+        ;;
+      *)
+        status_formatted="${statuses[$i]}"
+        ;;
+    esac
+    
+    printf "%-20s %-12s %-15b %-10s %-10s\n" \
+      "${repositories[$i]}" \
+      "${repo_types[$i]}" \
+      "${status_formatted}" \
+      "${ahead_counts[$i]}" \
+      "${behind_counts[$i]}"
+  done
+  
+  # Print summary and recommendations
+  echo -e "\nSummary:"
+  
+  # Count repositories by status
+  local up_to_date=0
+  local ahead=0
+  local behind=0
+  local diverged=0
+  local not_found=0
+  local local_only=0
+  local remote_only=0
+  
+  for status in "${statuses[@]}"; do
+    case "${status}" in
+      "up-to-date") ((up_to_date++)) ;;
+      "ahead") ((ahead++)) ;;
+      "behind") ((behind++)) ;;
+      "diverged") ((diverged++)) ;;
+      "not-found") ((not_found++)) ;;
+      "local-only") ((local_only++)) ;;
+      "remote-only") ((remote_only++)) ;;
+    esac
+  done
+  
+  echo "- Up-to-date: ${up_to_date}"
+  echo "- Ahead of remote: ${ahead}"
+  echo "- Behind remote: ${behind}"
+  echo "- Diverged: ${diverged}"
+  echo "- Local only: ${local_only}"
+  echo "- Remote only: ${remote_only}"
+  echo "- Not found: ${not_found}"
+  
+  # Print recommendations
+  if [[ ${behind} -gt 0 || ${diverged} -gt 0 ]]; then
+    echo -e "\nRecommendations:"
+    if [[ ${behind} -gt 0 ]]; then
+      echo "- Pull changes from remote for repositories that are behind"
+    fi
+    if [[ ${diverged} -gt 0 ]]; then
+      echo "- Resolve conflicts in diverged repositories"
+    fi
+    if [[ ${ahead} -gt 0 ]]; then
+      echo "- Push local changes to remote for repositories that are ahead"
+    fi
+    if [[ ${local_only} -gt 0 ]]; then
+      echo "- Push branches that exist only locally"
+    fi
+  fi
+fi
+
+exit 0

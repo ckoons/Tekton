@@ -1,0 +1,568 @@
+/**
+ * Terma Terminal Component Styles
+ * Follows BEM naming convention and is compatible with Shadow DOM isolation
+ */
+
+/* Terminal main container */
+.terma {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  background-color: var(--bg-primary, #1a1a1a);
+  color: var(--text-primary, #f0f0f0);
+  font-family: var(--font-family-sans, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif);
+  position: relative;
+}
+
+/* Terminal header */
+.terma__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-sm, 8px) var(--spacing-md, 16px);
+  background-color: var(--bg-secondary, #252525);
+  border-bottom: 1px solid var(--border-color, #444444);
+  min-height: 48px;
+}
+
+.terma__title {
+  font-size: var(--font-size-md, 1rem);
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.terma__controls {
+  display: flex;
+  gap: var(--spacing-xs, 4px);
+  align-items: center;
+}
+
+/* Terminal content area */
+.terma__content {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  background-color: var(--bg-primary, #1a1a1a);
+}
+
+.terma__terminal, 
+.terma__simple-terminal {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.terma__simple-terminal {
+  display: none;
+  padding: var(--spacing-sm, 8px);
+  font-family: 'Courier New', monospace;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--text-primary, #f0f0f0);
+  background-color: var(--bg-primary, #1a1a1a);
+}
+
+/* Controls elements */
+.terma__select {
+  background-color: var(--bg-tertiary, #333333);
+  color: var(--text-primary, #f0f0f0);
+  border: 1px solid var(--border-color, #444444);
+  border-radius: var(--border-radius-sm, 4px);
+  padding: 4px 8px;
+  font-size: var(--font-size-sm, 0.875rem);
+  min-height: 28px;
+  min-width: 80px;
+  max-width: 200px;
+}
+
+.terma__select--full {
+  width: 100%;
+}
+
+.terma__select:focus {
+  outline: none;
+  border-color: var(--color-primary, #007bff);
+}
+
+.terma__btn {
+  background-color: var(--bg-tertiary, #333333);
+  color: var(--text-primary, #f0f0f0);
+  border: 1px solid var(--border-color, #444444);
+  border-radius: var(--border-radius-sm, 4px);
+  padding: 4px 8px;
+  cursor: pointer;
+  min-height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.terma__btn:hover {
+  background-color: var(--bg-hover, #3a3a3a);
+  border-color: var(--color-primary, #007bff);
+}
+
+.terma__btn--primary {
+  background-color: var(--color-primary, #007bff);
+  color: white;
+  border-color: var(--color-primary, #007bff);
+}
+
+.terma__btn--primary:hover {
+  background-color: var(--color-primary-hover, #0056b3);
+}
+
+.terma__btn--secondary {
+  background-color: var(--bg-tertiary, #333333);
+  color: var(--text-primary, #f0f0f0);
+}
+
+/* LLM Assistance Panel */
+.terma__llm-panel {
+  background-color: var(--bg-secondary, #252525);
+  border-top: 1px solid var(--border-color, #444444);
+  max-height: 200px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: max-height 0.3s ease, opacity 0.2s ease;
+}
+
+.terma__llm-panel.terma__llm-panel--collapsed {
+  max-height: 36px;
+}
+
+.terma__llm-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-xs, 4px) var(--spacing-md, 16px);
+  cursor: pointer;
+  min-height: 36px;
+  background-color: var(--bg-secondary, #252525);
+  border-bottom: 1px solid var(--border-color, #444444);
+}
+
+.terma__llm-title {
+  font-size: var(--font-size-sm, 0.875rem);
+  font-weight: 500;
+}
+
+.terma__llm-content {
+  padding: var(--spacing-md, 16px);
+  overflow-y: auto;
+  height: calc(200px - 36px);
+  opacity: 1;
+  transition: opacity 0.2s ease;
+  background-color: var(--bg-tertiary, #333333);
+}
+
+.terma__llm-panel--collapsed .terma__llm-content {
+  opacity: 0;
+}
+
+.terma__llm-output {
+  font-size: var(--font-size-sm, 0.875rem);
+  line-height: 1.5;
+  color: var(--text-primary, #f0f0f0);
+}
+
+.terma__llm-output code {
+  background-color: rgba(255, 255, 255, 0.1);
+  padding: 2px 4px;
+  border-radius: 3px;
+  font-family: var(--font-family-mono, 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace);
+  color: var(--text-primary, #f0f0f0);
+}
+
+.terma__llm-output pre {
+  background-color: rgba(0, 0, 0, 0.2);
+  padding: 12px;
+  border-radius: var(--border-radius-sm, 4px);
+  margin: 10px 0;
+  overflow-x: auto;
+  border: 1px solid var(--border-color, #444444);
+}
+
+.terma__llm-output pre code {
+  background-color: transparent;
+  padding: 0;
+  border-radius: 0;
+}
+
+.terma__llm-output.terma__llm-output--loading {
+  color: var(--text-secondary, #aaaaaa);
+  font-style: italic;
+}
+
+.terma__llm-output.terma__llm-output--error {
+  color: var(--color-danger, #dc3545);
+  border-left: 3px solid var(--color-danger, #dc3545);
+  padding-left: var(--spacing-md, 16px);
+}
+
+/* Settings Dialog */
+.terma__dialog {
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+}
+
+.terma__dialog.terma__dialog--visible {
+  display: flex;
+}
+
+.terma__dialog-content {
+  background-color: var(--bg-card, #2d2d2d);
+  border-radius: var(--border-radius-md, 8px);
+  width: 90%;
+  max-width: 500px;
+  max-height: 90%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: var(--box-shadow-lg, 0 8px 16px rgba(0, 0, 0, 0.3));
+}
+
+.terma__dialog-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-md, 16px);
+  border-bottom: 1px solid var(--border-color, #444444);
+}
+
+.terma__dialog-title {
+  margin: 0;
+  font-size: var(--font-size-lg, 1.25rem);
+  font-weight: 500;
+  color: var(--text-primary, #f0f0f0);
+}
+
+.terma__dialog-close {
+  background: none;
+  border: none;
+  font-size: var(--font-size-xl, 1.5rem);
+  color: var(--text-secondary, #aaaaaa);
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+}
+
+.terma__dialog-body {
+  padding: var(--spacing-md, 16px);
+  overflow-y: auto;
+  flex: 1;
+}
+
+.terma__dialog-footer {
+  padding: var(--spacing-md, 16px);
+  border-top: 1px solid var(--border-color, #444444);
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--spacing-sm, 8px);
+}
+
+/* Settings groups */
+.terma__settings-group {
+  margin-bottom: var(--spacing-md, 16px);
+}
+
+.terma__settings-group--checkbox {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs, 4px);
+}
+
+.terma__settings-group--indented {
+  margin-left: var(--spacing-lg, 24px);
+  padding-left: var(--spacing-sm, 8px);
+  border-left: 2px solid var(--border-color, #444444);
+}
+
+.terma__settings-label {
+  display: block;
+  margin-bottom: var(--spacing-xs, 4px);
+  font-size: var(--font-size-sm, 0.875rem);
+}
+
+.terma__settings-label--inline {
+  margin-bottom: 0;
+  cursor: pointer;
+}
+
+.terma__settings-control {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md, 16px);
+}
+
+.terma__settings-value {
+  min-width: 50px;
+  font-family: var(--font-family-mono, 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace);
+  font-size: var(--font-size-sm, 0.875rem);
+}
+
+.terma__range {
+  flex: 1;
+  height: 5px;
+  -webkit-appearance: none;
+  background: var(--border-color, #444444);
+  outline: none;
+  border-radius: 5px;
+}
+
+.terma__range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background: var(--color-primary, #007bff);
+  cursor: pointer;
+}
+
+.terma__range::-moz-range-thumb {
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background: var(--color-primary, #007bff);
+  cursor: pointer;
+  border: none;
+}
+
+.terma__checkbox {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  cursor: pointer;
+}
+
+.terma__input {
+  width: 100%;
+  padding: 6px;
+  background-color: var(--bg-tertiary, #333333);
+  color: var(--text-primary, #f0f0f0);
+  border: 1px solid var(--border-color, #444444);
+  border-radius: var(--border-radius-sm, 4px);
+  font-size: var(--font-size-sm, 0.875rem);
+}
+
+/* Status bar */
+.terma__status-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-xs, 4px) var(--spacing-md, 16px);
+  background-color: var(--bg-secondary, #252525);
+  border-top: 1px solid var(--border-color, #444444);
+  font-size: var(--font-size-xs, 0.75rem);
+  height: 24px;
+}
+
+.terma__status-item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs, 4px);
+}
+
+.terma__status-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--color-success, #28a745);
+}
+
+.terma__status-item--disconnected .terma__status-indicator {
+  background-color: var(--color-danger, #dc3545);
+}
+
+.terma__status-item--connecting .terma__status-indicator {
+  background-color: var(--color-warning, #ffc107);
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% { opacity: 0.3; }
+  50% { opacity: 1; }
+  100% { opacity: 0.3; }
+}
+
+.terma__status-text {
+  color: var(--text-secondary, #aaaaaa);
+}
+
+/* Loading overlay */
+.terma__loading {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+.terma__loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: var(--color-primary, #007bff);
+  animation: spin 1s linear infinite;
+}
+
+.terma__loading-text {
+  margin-top: var(--spacing-md, 16px);
+  color: var(--text-primary, #f0f0f0);
+  font-size: var(--font-size-md, 1rem);
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Terminal themes - These will be used by JavaScript to set xterm.js themes */
+.terma-theme-vars {
+  /* These are not directly used in CSS but accessed via JS */
+  --terminal-theme-default-foreground: #f0f0f0;
+  --terminal-theme-default-background: #1a1a1a;
+  --terminal-theme-default-cursor: #f0f0f0;
+  --terminal-theme-default-black: #000000;
+  --terminal-theme-default-red: #ff5555;
+  --terminal-theme-default-green: #50fa7b;
+  --terminal-theme-default-yellow: #f1fa8c;
+  --terminal-theme-default-blue: #bd93f9;
+  --terminal-theme-default-magenta: #ff79c6;
+  --terminal-theme-default-cyan: #8be9fd;
+  --terminal-theme-default-white: #f8f8f2;
+  
+  --terminal-theme-light-foreground: #333333;
+  --terminal-theme-light-background: #f5f5f5;
+  --terminal-theme-light-cursor: #333333;
+  --terminal-theme-light-black: #000000;
+  --terminal-theme-light-red: #c91b00;
+  --terminal-theme-light-green: #00c200;
+  --terminal-theme-light-yellow: #c7c400;
+  --terminal-theme-light-blue: #0037da;
+  --terminal-theme-light-magenta: #c839c5;
+  --terminal-theme-light-cyan: #00c5c7;
+  --terminal-theme-light-white: #c7c7c7;
+  
+  --terminal-theme-solarized-foreground: #839496;
+  --terminal-theme-solarized-background: #002b36;
+  --terminal-theme-solarized-cursor: #839496;
+  --terminal-theme-solarized-black: #073642;
+  --terminal-theme-solarized-red: #dc322f;
+  --terminal-theme-solarized-green: #859900;
+  --terminal-theme-solarized-yellow: #b58900;
+  --terminal-theme-solarized-blue: #268bd2;
+  --terminal-theme-solarized-magenta: #d33682;
+  --terminal-theme-solarized-cyan: #2aa198;
+  --terminal-theme-solarized-white: #eee8d5;
+  
+  --terminal-theme-monokai-foreground: #f8f8f2;
+  --terminal-theme-monokai-background: #272822;
+  --terminal-theme-monokai-cursor: #f8f8f2;
+  --terminal-theme-monokai-black: #272822;
+  --terminal-theme-monokai-red: #f92672;
+  --terminal-theme-monokai-green: #a6e22e;
+  --terminal-theme-monokai-yellow: #f4bf75;
+  --terminal-theme-monokai-blue: #66d9ef;
+  --terminal-theme-monokai-magenta: #ae81ff;
+  --terminal-theme-monokai-cyan: #a1efe4;
+  --terminal-theme-monokai-white: #f8f8f2;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .terma__controls {
+    gap: 2px;
+  }
+  
+  .terma__select {
+    max-width: 120px;
+    min-width: 60px;
+    font-size: var(--font-size-xs, 0.75rem);
+    padding: 2px 4px;
+  }
+  
+  .terma__btn {
+    padding: 2px 4px;
+  }
+  
+  .terma__title {
+    font-size: var(--font-size-sm, 0.875rem);
+    max-width: 120px;
+  }
+}
+
+/* Active terminal mode styles */
+.terma--simple-mode .terma__terminal {
+  display: none;
+}
+
+.terma--simple-mode .terma__simple-terminal {
+  display: block;
+}
+
+/* Markdown and syntax highlighting styles for LLM output */
+.terma__llm-output h1, 
+.terma__llm-output h2, 
+.terma__llm-output h3 {
+  margin-top: var(--spacing-md, 16px);
+  margin-bottom: var(--spacing-sm, 8px);
+  color: var(--text-primary, #f0f0f0);
+}
+
+.terma__llm-output h1 {
+  font-size: var(--font-size-lg, 1.25rem);
+}
+
+.terma__llm-output h2 {
+  font-size: var(--font-size-md, 1rem);
+}
+
+.terma__llm-output h3 {
+  font-size: var(--font-size-sm, 0.875rem);
+}
+
+.terma__llm-output p {
+  margin: var(--spacing-sm, 8px) 0;
+}
+
+.terma__llm-output ul, 
+.terma__llm-output ol {
+  margin: var(--spacing-sm, 8px) 0;
+  padding-left: var(--spacing-lg, 24px);
+}
+
+.terma__llm-output li {
+  margin-bottom: var(--spacing-xs, 4px);
+}
+
+.terma__llm-output a {
+  color: var(--color-primary, #007bff);
+  text-decoration: none;
+}
+
+.terma__llm-output a:hover {
+  text-decoration: underline;
+}

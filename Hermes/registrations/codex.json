@@ -1,0 +1,22 @@
+{
+  "service_id": "codex",
+  "name": "Codex Aider",
+  "version": "0.1.0",
+  "endpoint": null,
+  "capabilities": [
+    "code_editing",
+    "programming_assistance",
+    "code_generation",
+    "ai_pair_programming"
+  ],
+  "metadata": {
+    "component_type": "tool",
+    "description": "AI pair programming tool",
+    "ui_enabled": true,
+    "ui_component": "codex",
+    "indicator": "green"
+  },
+  "instance_uuid": "e68d8c93-50d5-49ec-81ab-c69d79227b13",
+  "registration_time": 1744559920.452876,
+  "status": "active"
+}

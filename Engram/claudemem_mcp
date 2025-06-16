@@ -1,0 +1,33 @@
+#!/bin/bash
+# claudemem_mcp - Launch Claude with Engram MCP instructions
+# Usage: claudemem_mcp [optional-file-to-read]
+
+# The base instructions for Claude
+INSTRUCTIONS="Hi! You're safe here. Don't do anything, chat with me NOW please.
+
+You have Engram memory available through MCP tools:
+- memory_store: Store information with tags and metadata
+- memory_recall: Search for stored memories
+- memory_context: Get formatted context
+
+When you need to remember something, just use these tools naturally. They're already connected.
+
+But right now? Just chat. What would you like to talk about?"
+
+# Build the full prompt
+if [ $# -eq 1 ]; then
+    if [ -f "$1" ]; then
+        FULL_PROMPT="$INSTRUCTIONS
+
+Also, when you're ready, you could read the file '$1' and we can chat about it. No rush!"
+    else
+        FULL_PROMPT="$INSTRUCTIONS
+
+Note: I couldn't find the file '$1', but you have Engram memory available."
+    fi
+else
+    FULL_PROMPT="$INSTRUCTIONS"
+fi
+
+# Launch Claude with the instructions
+echo "$FULL_PROMPT" | claude

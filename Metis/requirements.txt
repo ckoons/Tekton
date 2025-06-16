@@ -1,0 +1,16 @@
+# Metis requirements - Task breakdown and project planning
+# This component handles task analysis and subtask generation
+
+# Core requirements
+-r ../shared/requirements/base.txt
+-r ../shared/requirements/web.txt
+-r ../shared/requirements/database.txt
+-r ../shared/requirements/utilities.txt
+
+# Additional component-specific dependencies
+python-jose[cryptography]>=3.3.0  # For JWT
+uuid>=1.30
+
+# Tekton integration
+tekton-llm-client>=1.0.0
+tekton-core>=0.1.0

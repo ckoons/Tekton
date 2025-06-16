@@ -1,0 +1,18 @@
+{
+  "service_id": "ergon-workflow",
+  "name": "Ergon Workflow Engine",
+  "version": "0.1.0",
+  "endpoint": null,
+  "capabilities": [
+    "workflow_execution",
+    "task_planning",
+    "task_delegation"
+  ],
+  "metadata": {
+    "component_type": "core",
+    "description": "AI workflow planning and execution"
+  },
+  "instance_uuid": "515d67d9-e986-4f7b-a1c6-860744a64c8a",
+  "registration_time": 1744310859.718858,
+  "status": "active"
+}

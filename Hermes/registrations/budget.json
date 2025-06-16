@@ -1,0 +1,143 @@
+{
+  "component_id": "budget",
+  "name": "Budget",
+  "type": "budget_manager",
+  "version": "0.1.0",
+  "capabilities": [
+    {
+      "name": "budget_management",
+      "description": "Manage token and cost budgets for LLM usage",
+      "parameters": {
+        "budget_id": "string",
+        "period": "string",
+        "tier": "string",
+        "limit": "integer"
+      }
+    },
+    {
+      "name": "allocation",
+      "description": "Allocate tokens from a budget",
+      "parameters": {
+        "context_id": "string",
+        "tokens": "integer",
+        "tier": "string",
+        "model": "string",
+        "provider": "string"
+      }
+    },
+    {
+      "name": "usage_tracking",
+      "description": "Track token and cost usage",
+      "parameters": {
+        "context_id": "string",
+        "input_tokens": "integer",
+        "output_tokens": "integer",
+        "provider": "string",
+        "model": "string"
+      }
+    },
+    {
+      "name": "pricing",
+      "description": "Manage and retrieve provider pricing information",
+      "parameters": {
+        "provider": "string",
+        "model": "string"
+      }
+    },
+    {
+      "name": "reporting",
+      "description": "Generate budget usage reports",
+      "parameters": {
+        "budget_id": "string",
+        "period": "string",
+        "start_date": "string",
+        "end_date": "string"
+      }
+    },
+    {
+      "name": "model_guidance",
+      "description": "Provide model recommendations based on budget constraints",
+      "parameters": {
+        "task_type": "string",
+        "context_id": "string",
+        "max_cost": "number"
+      }
+    }
+  ],
+  "mcp_capabilities": [
+    {
+      "protocol": "mcp",
+      "version": "1.0",
+      "message_types": [
+        {
+          "type": "budget.allocate_tokens",
+          "description": "Allocate tokens for a task",
+          "response_type": "budget.allocation_response"
+        },
+        {
+          "type": "budget.check_budget",
+          "description": "Check if a request is within budget",
+          "response_type": "budget.check_response"
+        },
+        {
+          "type": "budget.record_usage",
+          "description": "Record token usage",
+          "response_type": "budget.usage_response"
+        },
+        {
+          "type": "budget.get_budget_status",
+          "description": "Get budget status",
+          "response_type": "budget.status_response"
+        },
+        {
+          "type": "budget.get_model_recommendations",
+          "description": "Get model recommendations",
+          "response_type": "budget.recommendations_response"
+        },
+        {
+          "type": "budget.route_with_budget_awareness",
+          "description": "Route a request based on budget constraints",
+          "response_type": "budget.routing_response"
+        },
+        {
+          "type": "budget.get_usage_analytics",
+          "description": "Get usage analytics",
+          "response_type": "budget.analytics_response"
+        }
+      ],
+      "events": [
+        {
+          "type": "budget.limit_exceeded",
+          "description": "Budget limit exceeded"
+        },
+        {
+          "type": "budget.limit_approaching",
+          "description": "Budget limit approaching"
+        },
+        {
+          "type": "budget.price_update",
+          "description": "Provider pricing update"
+        }
+      ],
+      "endpoint": "/api/mcp/message"
+    }
+  ],
+  "dependencies": [],
+  "metadata": {
+    "description": "Budget management system for token and cost tracking",
+    "version": "0.1.0",
+    "ui_enabled": true,
+    "ui_component": "budget-dashboard",
+    "supports_mcp": true,
+    "websocket_endpoints": [
+      {
+        "path": "/ws/budget/updates",
+        "description": "WebSocket endpoint for real-time budget updates"
+      }
+    ]
+  },
+  "endpoint": "http://localhost:8013",
+  "instance_uuid": "e0b33b23-0069-456c-a2a0-bdca5323c770",
+  "registration_time": 1748877517.506685,
+  "status": "active"
+}

@@ -1,0 +1,1256 @@
+<!-- Hermes Component - Message and Data Handling -->
+<div class="hermes">
+    <!-- Component Header with Title -->
+    <div class="hermes__header">
+        <div class="hermes__title-container">
+            <img src="/images/hexagon.jpg" alt="Tekton" class="hermes__icon">
+            <h2 class="hermes__title">
+                <span class="hermes__title-main">Hermes</span>
+                <span class="hermes__title-sub">Messages/Data</span>
+            </h2>
+        </div>
+    </div>
+    
+    <!-- Hermes Menu Bar with Tab Navigation -->
+    <div class="hermes__menu-bar">
+        <div class="hermes__tabs">
+            <div class="hermes__tab hermes__tab--active" data-tab="registry" onclick="hermes_switchTab('registry'); return false;">
+                <span class="hermes__tab-label">Service Registry</span>
+            </div>
+            <div class="hermes__tab" data-tab="messaging" onclick="hermes_switchTab('messaging'); return false;">
+                <span class="hermes__tab-label">Message Monitor</span>
+            </div>
+            <div class="hermes__tab" data-tab="connections" onclick="hermes_switchTab('connections'); return false;">
+                <span class="hermes__tab-label">Connections</span>
+            </div>
+            <div class="hermes__tab" data-tab="history" onclick="hermes_switchTab('history'); return false;">
+                <span class="hermes__tab-label">Message History</span>
+            </div>
+            <div class="hermes__tab" data-tab="chat" onclick="hermes_switchTab('chat'); return false;">
+                <span class="hermes__tab-label">Message/Data Chat</span>
+            </div>
+            <div class="hermes__tab" data-tab="teamchat" onclick="hermes_switchTab('teamchat'); return false;">
+                <span class="hermes__tab-label">Team Chat</span>
+            </div>
+        </div>
+        <div class="hermes__actions">
+            <button id="clear-chat-btn" class="hermes__action-button" style="display: none;" onclick="hermes_clearChat(); return false;">
+                <span class="hermes__button-label">Clear</span>
+            </button>
+        </div>
+    </div>
+    
+    <!-- Hermes Content Area -->
+    <div class="hermes__content">
+        <!-- Registry Tab (Default Active Tab) -->
+        <div id="registry-panel" class="hermes__panel hermes__panel--active">
+            <div class="hermes__control-bar">
+                <div class="hermes__search-container">
+                    <input type="text" id="registry-search" class="hermes__search-input" placeholder="Search components...">
+                    <select id="filter-type" class="hermes__select">
+                        <option value="all">All Types</option>
+                        <option value="hermes">Hermes</option>
+                        <option value="rhetor">Rhetor</option>
+                        <option value="engram">Engram</option>
+                        <option value="terma">Terma</option>
+                    </select>
+                </div>
+                <div class="hermes__view-controls">
+                    <button class="hermes__view-button hermes__view-button--active" data-view="grid">
+                        <span class="hermes__view-icon">⊞</span>
+                    </button>
+                    <button class="hermes__view-button" data-view="list">
+                        <span class="hermes__view-icon">≡</span>
+                    </button>
+                    <button id="refresh-registry-btn" class="hermes__action-button">
+                        <span class="hermes__button-label">Refresh</span>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Service Registry Grid View -->
+            <div class="hermes__registry-grid" id="registry-grid-view">
+                <!-- Component cards will be dynamically inserted here -->
+                <div class="hermes__loading">
+                    Loading services...
+                </div>
+            </div>
+            
+            <!-- Service Registry List View (Hidden by default) -->
+            <div class="hermes__registry-list" id="registry-list-view" style="display: none;">
+                <table class="hermes__table">
+                    <thead>
+                        <tr>
+                            <th>Status</th>
+                            <th>Component</th>
+                            <th>Type</th>
+                            <th>Endpoint</th>
+                            <th>Capabilities</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="registry-table-body">
+                        <!-- Service rows will be dynamically inserted here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Messaging Tab -->
+        <div id="messaging-panel" class="hermes__panel">
+            <div class="hermes__control-bar">
+                <div class="hermes__search-container">
+                    <input type="text" id="message-search" class="hermes__search-input" placeholder="Search messages...">
+                    <button id="message-search-btn" class="hermes__search-button">Search</button>
+                </div>
+                <div class="hermes__actions">
+                    <button class="hermes__button" id="clear-messages">Clear</button>
+                    <button class="hermes__button" id="pause-messages">
+                        <span id="pause-icon">⏸️</span> Pause
+                    </button>
+                </div>
+            </div>
+            
+            <div class="hermes__messaging">
+                <div class="hermes__sidebar">
+                    <div class="hermes__filter-section">
+                        <h3 class="hermes__section-title">Message Filters</h3>
+                        <div class="hermes__filter-group">
+                            <label class="hermes__checkbox">
+                                <input type="checkbox" id="filter-registration" checked>
+                                <span class="hermes__checkbox-label">Registration</span>
+                            </label>
+                            <label class="hermes__checkbox">
+                                <input type="checkbox" id="filter-heartbeat" checked>
+                                <span class="hermes__checkbox-label">Heartbeat</span>
+                            </label>
+                            <label class="hermes__checkbox">
+                                <input type="checkbox" id="filter-query" checked>
+                                <span class="hermes__checkbox-label">Query</span>
+                            </label>
+                            <label class="hermes__checkbox">
+                                <input type="checkbox" id="filter-data" checked>
+                                <span class="hermes__checkbox-label">Data</span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="hermes__filter-section">
+                        <h3 class="hermes__section-title">Component Filters</h3>
+                        <div class="hermes__filter-group" id="component-filters">
+                            <!-- Component filters will be added dynamically -->
+                            <div class="hermes__loading">
+                                Loading components...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="hermes__message-display">
+                    <div class="hermes__message-container" id="message-container">
+                        <!-- Messages will be added dynamically -->
+                        <div class="hermes__placeholder">
+                            Messages will appear here. Start a component that uses Hermes to see messages.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Connections Tab -->
+        <div id="connections-panel" class="hermes__panel">
+            <div class="hermes__control-bar">
+                <div class="hermes__search-container">
+                    <input type="text" id="connection-search" class="hermes__search-input" placeholder="Search connections...">
+                    <button id="connection-search-btn" class="hermes__search-button">Search</button>
+                </div>
+                <div class="hermes__actions">
+                    <button class="hermes__button hermes__button--primary" id="add-connection">
+                        <span class="hermes__button-icon">+</span>
+                        <span class="hermes__button-text">Add Connection</span>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="hermes__connections">
+                <div class="hermes__connections-graph" id="connection-graph">
+                    <!-- Connection visualization will be rendered here -->
+                    <div class="hermes__placeholder">
+                        <div class="hermes__loading">Loading connection graph...</div>
+                    </div>
+                </div>
+                
+                <div class="hermes__connections-details" id="connection-details">
+                    <div class="hermes__placeholder">
+                        <p>Select a connection to view details</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- History Tab -->
+        <div id="history-panel" class="hermes__panel">
+            <div class="hermes__control-bar">
+                <div class="hermes__search-container">
+                    <input type="text" id="history-search" class="hermes__search-input" placeholder="Search messages...">
+                    <select id="history-filter" class="hermes__select">
+                        <option value="all">All Types</option>
+                        <option value="registration">Registration</option>
+                        <option value="heartbeat">Heartbeat</option>
+                        <option value="query">Query</option>
+                        <option value="data">Data</option>
+                    </select>
+                </div>
+                <div class="hermes__actions">
+                    <button class="hermes__button" id="export-history">Export</button>
+                    <button class="hermes__button hermes__button--danger" id="clear-history">Clear History</button>
+                </div>
+            </div>
+            
+            <div class="hermes__history">
+                <div class="hermes__history-filters">
+                    <div class="hermes__filter-group">
+                        <label class="hermes__filter-label">Date Range</label>
+                        <div class="hermes__date-range">
+                            <input type="datetime-local" id="history-start-date" class="hermes__date-input">
+                            <span class="hermes__date-separator">to</span>
+                            <input type="datetime-local" id="history-end-date" class="hermes__date-input">
+                        </div>
+                    </div>
+                    
+                    <div class="hermes__filter-group">
+                        <label class="hermes__filter-label">Components</label>
+                        <select id="history-component-filter" class="hermes__select" multiple>
+                            <!-- Component options will be added dynamically -->
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="hermes__history-results">
+                    <table class="hermes__table">
+                        <thead>
+                            <tr>
+                                <th>Time</th>
+                                <th>Type</th>
+                                <th>Source</th>
+                                <th>Target</th>
+                                <th>Status</th>
+                                <th>Details</th>
+                            </tr>
+                        </thead>
+                        <tbody id="history-table-body">
+                            <!-- History entries will be added dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Chat Tab -->
+        <div id="chat-panel" class="hermes__panel">
+            <div class="hermes__chat">
+                <div class="hermes__chat-messages" id="chat-messages" style="width: 100%; height: calc(100% - 0px);">
+                    <!-- Chat messages will be added dynamically -->
+                    <div class="hermes__message hermes__message--system">
+                        <div class="hermes__message-content">
+                            <p>Welcome to the Hermes Message/Data Chat Interface. I can help you with:</p>
+                            <ul>
+                                <li>Understanding service registration and discovery</li>
+                                <li>Debugging connection issues</li>
+                                <li>Message routing and formatting</li>
+                                <li>Integrating components with Hermes</li>
+                            </ul>
+                            <p>How can I assist you today?</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Team Chat Tab -->
+        <div id="teamchat-panel" class="hermes__panel">
+            <div id="teamchat-messages" class="hermes__chat-messages">
+                <!-- Welcome message -->
+                <div class="hermes__message hermes__message--system">
+                    <div class="hermes__message-content">
+                        <div class="hermes__message-text">
+                            <h3 class="hermes__message-title">Tekton Team Chat</h3>
+                            <p>This chat is shared across all Tekton components. Use this for team communication and coordination.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Footer with Chat Input -->
+    <div class="hermes__footer">
+        <div class="hermes__chat-input-container">
+            <div class="hermes__chat-prompt">></div>
+            <input type="text" id="chat-input" class="hermes__chat-input" 
+                   placeholder="Enter chat message for Hermes service registry, message monitoring or LLM chat">
+            <button id="send-button" class="hermes__send-button">Send</button>
+        </div>
+    </div>
+    
+    <!-- Modal for component details (hidden by default) -->
+    <div class="hermes__modal" id="detail-modal" style="display: none;">
+        <div class="hermes__modal-overlay"></div>
+        <div class="hermes__modal-content">
+            <div class="hermes__modal-header">
+                <h3 class="hermes__modal-title" id="modal-title">Component Details</h3>
+                <button class="hermes__modal-close" id="close-modal">&times;</button>
+            </div>
+            <div class="hermes__modal-body" id="modal-body">
+                <!-- Modal content will be added dynamically -->
+            </div>
+            <div class="hermes__modal-footer">
+                <button class="hermes__button hermes__button--secondary" id="modal-cancel">Close</button>
+                <button class="hermes__button hermes__button--primary" id="modal-action">View More</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Toast notifications container -->
+    <div class="hermes__notifications" id="notifications-container"></div>
+</div>
+
+<!-- Add component-specific styles -->
+<style>
+    /* Hermes component styles using BEM naming convention */
+    
+    /* Container */
+    .hermes {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        width: 100%;
+        background-color: var(--bg-primary, #1e1e2e);
+        color: var(--text-primary, #f0f0f0);
+        /* No absolute positioning - proper component containment */
+    }
+    
+    /* Header */
+    .hermes__header {
+        display: flex;
+        align-items: center;
+        padding: 10px 16px;
+        background-color: var(--bg-secondary, #252535);
+        border-bottom: 1px solid var(--border-color, #444444);
+        height: 50px; /* Match Athena's header height */
+    }
+    
+    .hermes__title-container {
+        display: flex;
+        align-items: center;
+    }
+    
+    .hermes__icon {
+        height: 30px;
+        width: auto;
+        margin-right: 12px;
+    }
+    
+    .hermes__title {
+        margin: 0;
+        font-size: 1.2rem;
+        font-weight: 500;
+    }
+    
+    .hermes__title-sub {
+        margin-left: 8px;
+        opacity: 0.8;
+        font-weight: normal;
+    }
+    
+    /* Menu Bar */
+    .hermes__menu-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 6px 16px;
+        background-color: var(--bg-secondary, #252535);
+        border-bottom: 1px solid var(--border-color, #444444);
+        height: 46px; /* Match Athena's menu bar height */
+    }
+    
+    .hermes__tabs {
+        display: flex;
+        gap: 8px;
+    }
+    
+    .hermes__tab {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 16px;
+        background-color: transparent;
+        border: none;
+        border-bottom: 2px solid transparent;
+        color: var(--text-primary, #f0f0f0);
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    
+    .hermes__tab:hover {
+        background-color: var(--bg-hover, #3a3a4a);
+    }
+    
+    .hermes__tab--active {
+        border-bottom-color: var(--color-primary, #4285F4); /* Blue for Hermes */
+        font-weight: 500;
+    }
+    
+    .hermes__actions {
+        display: flex;
+        gap: 8px;
+    }
+    
+    .hermes__action-button {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 12px;
+        background-color: var(--bg-tertiary, #333345);
+        border: 1px solid var(--border-color, #444444);
+        border-radius: 4px;
+        color: var(--text-primary, #f0f0f0);
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    
+    .hermes__action-button:hover {
+        background-color: var(--bg-hover, #3a3a4a);
+    }
+    
+    /* Content Area */
+    .hermes__content {
+        flex: 1;
+        overflow: hidden;
+        position: relative;
+    }
+    
+    .hermes__panel {
+        display: none;
+        height: 100%;
+        width: 100%;
+        overflow: auto;
+        position: relative;
+    }
+    
+    .hermes__panel--active {
+        display: block;
+    }
+    
+    /* Control Bar */
+    .hermes__control-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 16px;
+        background-color: var(--bg-secondary, #252535);
+        border-bottom: 1px solid var(--border-color, #444444);
+        height: 46px; /* Match standard control bar height */
+    }
+    
+    .hermes__panel-title {
+        font-size: 1.1rem;
+        font-weight: 500;
+    }
+    
+    .hermes__panel-controls {
+        display: flex;
+        gap: 8px;
+    }
+    
+    /* Search and Filters */
+    .hermes__search-container {
+        display: flex;
+        gap: 8px;
+        max-width: 500px;
+    }
+    
+    .hermes__search-input {
+        flex: 1;
+        min-width: 250px;
+        padding: 8px 12px;
+        background-color: var(--bg-tertiary, #333345);
+        border: 1px solid var(--border-color, #444444);
+        border-radius: 4px;
+        color: var(--text-primary, #f0f0f0);
+    }
+    
+    .hermes__select {
+        padding: 8px 12px;
+        background-color: var(--bg-tertiary, #333345);
+        border: 1px solid var(--border-color, #444444);
+        border-radius: 4px;
+        color: var(--text-primary, #f0f0f0);
+    }
+    
+    /* View Controls */
+    .hermes__view-controls {
+        display: flex;
+        gap: 4px;
+    }
+    
+    .hermes__view-button {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 36px;
+        height: 36px;
+        background-color: var(--bg-tertiary, #333345);
+        border: 1px solid var(--border-color, #444444);
+        border-radius: 4px;
+        color: var(--text-primary, #f0f0f0);
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    
+    .hermes__view-button:hover {
+        background-color: var(--bg-hover, #3a3a4a);
+    }
+    
+    .hermes__view-button--active {
+        background-color: var(--color-primary, #4285F4);
+        color: white;
+    }
+    
+    /* Registry Grid */
+    .hermes__registry-grid {
+        padding: 16px;
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 16px;
+    }
+    
+    /* Registry List */
+    .hermes__registry-list {
+        padding: 16px;
+    }
+    
+    /* Table */
+    .hermes__table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    
+    .hermes__table th,
+    .hermes__table td {
+        padding: 10px;
+        text-align: left;
+        border-bottom: 1px solid var(--border-color, #444444);
+    }
+    
+    .hermes__table th {
+        background-color: var(--bg-tertiary, #333345);
+        font-weight: 500;
+    }
+    
+    /* Messaging Layout */
+    .hermes__messaging {
+        display: flex;
+        height: calc(100% - 60px); /* Adjust based on header height */
+    }
+    
+    .hermes__sidebar {
+        width: 250px;
+        padding: 16px;
+        background-color: var(--bg-secondary, #252535);
+        border-right: 1px solid var(--border-color, #444444);
+        overflow-y: auto;
+    }
+    
+    .hermes__message-display {
+        flex: 1;
+        overflow: hidden;
+        position: relative;
+    }
+    
+    .hermes__message-container {
+        height: 100%;
+        padding: 16px;
+        overflow-y: auto;
+    }
+    
+    /* Filter Section */
+    .hermes__filter-section {
+        margin-bottom: 20px;
+    }
+    
+    .hermes__section-title {
+        margin-top: 0;
+        margin-bottom: 12px;
+        font-size: 1rem;
+        font-weight: 500;
+    }
+    
+    .hermes__filter-group {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    /* Checkbox */
+    .hermes__checkbox {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+    }
+    
+    .hermes__checkbox-label {
+        user-select: none;
+    }
+    
+    /* Connections Layout */
+    .hermes__connections {
+        display: flex;
+        flex-direction: column;
+        height: calc(100% - 60px);
+    }
+    
+    .hermes__connections-graph {
+        flex: 2;
+        min-height: 300px;
+        border-bottom: 1px solid var(--border-color, #444444);
+        padding: 16px;
+    }
+    
+    .hermes__connections-details {
+        flex: 1;
+        padding: 16px;
+        overflow-y: auto;
+    }
+    
+    /* History Layout */
+    .hermes__history {
+        display: flex;
+        flex-direction: column;
+        height: calc(100% - 60px);
+    }
+    
+    .hermes__history-filters {
+        padding: 16px;
+        background-color: var(--bg-secondary, #252535);
+        border-bottom: 1px solid var(--border-color, #444444);
+        display: flex;
+        flex-wrap: wrap;
+        gap: 16px;
+    }
+    
+    .hermes__history-results {
+        flex: 1;
+        overflow-y: auto;
+        padding: 16px;
+    }
+    
+    .hermes__filter-label {
+        display: block;
+        margin-bottom: 6px;
+        font-weight: 500;
+    }
+    
+    .hermes__date-range {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .hermes__date-input {
+        padding: 8px;
+        background-color: var(--bg-tertiary, #333345);
+        border: 1px solid var(--border-color, #444444);
+        border-radius: 4px;
+        color: var(--text-primary, #f0f0f0);
+    }
+    
+    .hermes__date-separator {
+        color: var(--text-secondary, #aaaaaa);
+    }
+    
+    /* Chat Layout */
+    .hermes__chat {
+        display: flex;
+        height: 100%;
+        width: 100%;
+    }
+    
+    .hermes__chat-messages {
+        height: 100%;
+        padding: 16px;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+    
+    .hermes__chat-settings {
+        margin-bottom: 24px;
+    }
+    
+    .hermes__setting-group {
+        margin-bottom: 12px;
+    }
+    
+    .hermes__setting-label {
+        display: block;
+        margin-bottom: 6px;
+        font-weight: 500;
+    }
+    
+    .hermes__chat-history {
+        margin-top: 24px;
+    }
+    
+    .hermes__chat-history-list {
+        margin-top: 12px;
+        margin-bottom: 12px;
+        max-height: 200px;
+        overflow-y: auto;
+    }
+    
+    .hermes__history-controls {
+        display: flex;
+        justify-content: flex-end;
+    }
+    
+    .hermes__empty-state {
+        color: var(--text-secondary, #aaaaaa);
+        font-style: italic;
+        text-align: center;
+        padding: 16px 0;
+    }
+    
+    /* Messages */
+    .hermes__message {
+        max-width: 85%;
+        border-radius: 12px;
+        padding: 12px 16px;
+        word-wrap: break-word;
+        line-height: 1.4;
+    }
+    
+    .hermes__message--system {
+        background-color: var(--bg-tertiary, #333345);
+        width: 90%;
+        max-width: 700px;
+        margin: 12px auto;
+        border-radius: 8px;
+    }
+    
+    .hermes__message--user {
+        background-color: var(--color-primary, #4285F4);
+        color: white;
+        align-self: flex-end;
+        border-radius: 16px 16px 0 16px;
+    }
+    
+    .hermes__message--ai {
+        background-color: var(--bg-secondary, #252535);
+        align-self: flex-start;
+        border-radius: 16px 16px 16px 0;
+    }
+    
+    /* Footer with Chat Input */
+    .hermes__footer {
+        background-color: var(--bg-secondary, #252535);
+        border-top: 1px solid var(--border-color, #444444);
+        padding: 12px 16px;
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 70px; /* Fixed height to match Athena's footer */
+    }
+    
+    .hermes__chat-input-container {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        width: 100%;
+    }
+    
+    .hermes__chat-prompt {
+        font-size: 18px;
+        font-weight: bold;
+        color: #4CAF50;
+    }
+    
+    .hermes__chat-input {
+        flex: 1;
+        height: 44px;
+        padding: 8px 16px;
+        background-color: var(--bg-tertiary, #333345);
+        border: 1px solid var(--border-color, #444444);
+        border-radius: 8px;
+        color: var(--text-primary, #f0f0f0);
+        font-size: 14px;
+    }
+    
+    .hermes__send-button {
+        height: 44px;
+        padding: 0 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: var(--color-primary, #4285F4);
+        border: none;
+        border-radius: 8px;
+        color: white;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    
+    .hermes__send-button:hover {
+        background-color: var(--color-primary-hover, #3367D6);
+    }
+    
+    .hermes__button-icon {
+        margin-right: 6px;
+    }
+    
+    /* Standard Buttons */
+    .hermes__button {
+        padding: 8px 12px;
+        background-color: var(--bg-tertiary, #333345);
+        border: 1px solid var(--border-color, #444444);
+        border-radius: 4px;
+        color: var(--text-primary, #f0f0f0);
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    
+    .hermes__button:hover {
+        background-color: var(--bg-hover, #3a3a4a);
+    }
+    
+    .hermes__button--primary {
+        background-color: var(--color-primary, #4285F4);
+        color: white;
+        border: none;
+    }
+    
+    .hermes__button--primary:hover {
+        background-color: var(--color-primary-hover, #3367D6);
+    }
+    
+    .hermes__button--danger {
+        background-color: var(--color-danger, #F44336);
+        color: white;
+        border: none;
+    }
+    
+    .hermes__button--danger:hover {
+        background-color: var(--color-danger-hover, #D32F2F);
+    }
+    
+    .hermes__button--small {
+        padding: 4px 8px;
+        font-size: 0.9em;
+    }
+    
+    /* Modal */
+    .hermes__modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 1000;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    
+    .hermes__modal-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, 0.7);
+    }
+    
+    .hermes__modal-content {
+        position: relative;
+        width: 90%;
+        max-width: 700px;
+        max-height: 80vh;
+        background-color: var(--bg-secondary, #252535);
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .hermes__modal-header {
+        padding: 16px;
+        background-color: var(--bg-tertiary, #333345);
+        border-bottom: 1px solid var(--border-color, #444444);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+    
+    .hermes__modal-title {
+        margin: 0;
+        font-size: 1.2rem;
+        font-weight: 500;
+    }
+    
+    .hermes__modal-close {
+        background: none;
+        border: none;
+        font-size: 24px;
+        color: var(--text-primary, #f0f0f0);
+        cursor: pointer;
+    }
+    
+    .hermes__modal-body {
+        padding: 16px;
+        overflow-y: auto;
+        flex: 1;
+    }
+    
+    .hermes__modal-footer {
+        padding: 16px;
+        border-top: 1px solid var(--border-color, #444444);
+        display: flex;
+        justify-content: flex-end;
+        gap: 12px;
+    }
+    
+    /* Loading & Placeholder */
+    .hermes__loading {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 24px;
+        color: var(--text-secondary, #aaaaaa);
+    }
+    
+    .hermes__placeholder {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
+        padding: 24px;
+        text-align: center;
+        color: var(--text-secondary, #aaaaaa);
+    }
+    
+    /* Notifications */
+    .hermes__notifications {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 1100;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        max-width: 350px;
+    }
+</style>
+
+<script type="text/javascript">
+// SIMPLIFIED COMPONENT SCRIPT - FULLY SELF-CONTAINED
+// This version minimizes interference with other components
+
+// ADD CLEAR CHAT FUNCTION
+window.hermes_clearChat = function() {
+    console.log('[HERMES] Clear chat clicked');
+    
+    try {
+        // Get active tab ID within hermes container
+        const hermesContainer = document.querySelector('.hermes');
+        if (!hermesContainer) {
+            console.error('[HERMES] Clear Chat: Cannot find hermes container');
+            return false;
+        }
+        
+        const activeTab = hermesContainer.querySelector('.hermes__tab--active');
+        const tabId = activeTab ? activeTab.getAttribute('data-tab') : '';
+        
+        if (tabId === 'chat' || tabId === 'teamchat') {
+            // Get message container within hermes container only
+            const panel = hermesContainer.querySelector('#' + tabId + '-messages');
+            if (panel) {
+                // Keep welcome message
+                const welcomeMsg = panel.querySelector('.hermes__message--system');
+                if (welcomeMsg) {
+                    panel.innerHTML = '';
+                    panel.appendChild(welcomeMsg);
+                    console.log('[HERMES] Cleared chat, kept welcome message');
+                } else {
+                    panel.innerHTML = '';
+                    console.log('[HERMES] Cleared chat completely');
+                }
+            }
+        }
+    } catch (err) {
+        console.error('[HERMES] Error clearing chat:', err);
+    }
+    
+    return false; // Stop event propagation
+};
+
+// IMMEDIATELY SET UP UI MANAGER PROTECTION
+// Tell UI Manager to ignore this component - must be done IMMEDIATELY to avoid races
+if (window.uiManager) {
+    window.uiManager._ignoreComponent = 'hermes';
+    console.log('[HERMES] Set UI Manager to ignore hermes component');
+}
+
+// DEFINE TAB SWITCHING FUNCTION
+// CRITICAL: This uses no shared code/utilities to avoid conflicts
+window.hermes_switchTab = function(tabId) {
+    console.log('[HERMES] Switching to tab:', tabId);
+    
+    // Force HTML panel visibility
+    const htmlPanelElements = document.querySelectorAll('#html-panel');
+    htmlPanelElements.forEach(panel => {
+        if (panel) panel.style.display = 'block';
+    });
+    
+    try {
+        // Only select elements within hermes component to avoid conflicts with other components
+        const hermesContainer = document.querySelector('.hermes');
+        if (!hermesContainer) {
+            console.error('[HERMES] Tab Switch: Cannot find hermes container');
+            return false;
+        }
+        
+        // Update tab active state - ONLY WITHIN HERMES CONTAINER
+        const tabs = hermesContainer.querySelectorAll('.hermes__tab');
+        tabs.forEach(tab => {
+            if (tab.getAttribute('data-tab') === tabId) {
+                tab.classList.add('hermes__tab--active');
+            } else {
+                tab.classList.remove('hermes__tab--active');
+            }
+        });
+        
+        // Update panel visibility - ONLY WITHIN HERMES CONTAINER
+        const panels = hermesContainer.querySelectorAll('.hermes__panel');
+        panels.forEach(panel => {
+            const panelId = panel.id;
+            if (panelId === tabId + '-panel') {
+                panel.style.display = 'block';
+                panel.classList.add('hermes__panel--active');
+            } else {
+                panel.style.display = 'none';
+                panel.classList.remove('hermes__panel--active');
+            }
+        });
+        
+        // Update clear button visibility for chat tabs
+        const clearButton = hermesContainer.querySelector('#clear-chat-btn');
+        if (clearButton) {
+            clearButton.style.display = (tabId === 'chat' || tabId === 'teamchat') ? 'block' : 'none';
+        }
+        
+        // Update component state
+        if (window.hermesComponent) {
+            window.hermesComponent.state = window.hermesComponent.state || {};
+            window.hermesComponent.state.activeTab = tabId;
+            
+            // Call component-specific methods if available
+            if (typeof window.hermesComponent.saveComponentState === 'function') {
+                window.hermesComponent.saveComponentState();
+            }
+        }
+    } catch (err) {
+        console.error('[HERMES] Error in tab switching:', err);
+    }
+    
+    return false; // Stop event propagation
+};
+
+// LOAD COMPONENT
+// Load after defining tab switching to ensure it's available
+function hermes_loadComponent() {
+    console.log('[HERMES] Loading component script...');
+    
+    const timestamp = new Date().getTime();
+    const scriptPath = `/scripts/hermes/hermes-component.js?t=${timestamp}`;
+    
+    // Setup basic chat functionality immediately, regardless of script loading
+    hermes_setupBasicChat();
+    
+    const script = document.createElement('script');
+    script.src = scriptPath;
+    script.async = false;
+    script.onload = function() {
+        console.log('[HERMES] Component script loaded successfully');
+        
+        if (window.hermesComponent && typeof window.hermesComponent.init === 'function') {
+            try {
+                window.hermesComponent.init();
+                console.log('[HERMES] Component initialized');
+            } catch (err) {
+                console.error('[HERMES] Component initialization error:', err);
+            }
+        } else {
+            console.warn('[HERMES] Component init function not found');
+        }
+    };
+    script.onerror = function() {
+        console.error('[HERMES] Failed to load component script');
+    };
+    
+    document.body.appendChild(script);
+}
+
+// Add basic chat functionality
+function hermes_setupBasicChat() {
+    console.log('[HERMES] Setting up basic chat functionality');
+    
+    try {
+        const chatInput = document.querySelector('.hermes__chat-input');
+        const sendButton = document.querySelector('.hermes__send-button');
+        
+        // Function to handle sending messages
+        function sendMessage() {
+            const messageText = chatInput.value.trim();
+            if (!messageText) return;
+            
+            // Clear input
+            chatInput.value = '';
+            
+            // Get active tab
+            const activeTab = document.querySelector('.hermes__tab--active');
+            const tabId = activeTab ? activeTab.getAttribute('data-tab') : '';
+            
+            // Find the right message container based on active tab
+            let messagesContainer;
+            if (tabId === 'chat') {
+                messagesContainer = document.getElementById('chat-messages');
+            } else if (tabId === 'teamchat') {
+                messagesContainer = document.getElementById('teamchat-messages');
+            }
+            
+            if (!messagesContainer) {
+                console.error('[HERMES] Cannot find messages container for tab:', tabId);
+                return;
+            }
+            
+            // Add user message
+            const userMessageElement = document.createElement('div');
+            userMessageElement.className = 'hermes__message hermes__message--user';
+            userMessageElement.innerHTML = `
+                <div class="hermes__message-content">
+                    <div class="hermes__message-text">${messageText}</div>
+                </div>
+            `;
+            messagesContainer.appendChild(userMessageElement);
+            
+            // Scroll to bottom
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            
+            // TODO: Here would be code to send the message to the server
+            // and handle the response. For now we'll just add a placeholder response
+            setTimeout(() => {
+                const aiMessageElement = document.createElement('div');
+                aiMessageElement.className = 'hermes__message hermes__message--ai';
+                aiMessageElement.innerHTML = `
+                    <div class="hermes__message-content">
+                        <div class="hermes__message-text">
+                            I've received your message: "${messageText}"<br>
+                            This is a placeholder response. Chat functionality requires the Hermes component script to be properly loaded.
+                        </div>
+                    </div>
+                `;
+                messagesContainer.appendChild(aiMessageElement);
+                
+                // Scroll to bottom again
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            }, 500);
+        }
+        
+        // Add event listeners
+        if (sendButton) {
+            sendButton.addEventListener('click', sendMessage);
+        }
+        
+        if (chatInput) {
+            chatInput.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    sendMessage();
+                }
+            });
+        }
+    } catch (err) {
+        console.error('[HERMES] Error setting up basic chat:', err);
+    }
+}
+
+// HTML PANEL PROTECTION
+// Setup explicit protection for the HTML panel to prevent it being hidden
+function hermes_protectHtmlPanel() {
+    const htmlPanel = document.getElementById('html-panel');
+    if (!htmlPanel) {
+        console.error('[HERMES] Cannot find HTML panel to protect');
+        return;
+    }
+    
+    console.log('[HERMES] Protecting HTML panel from being hidden');
+    htmlPanel.style.display = 'block'; // Force it to be visible
+    
+    // Store the original display value
+    if (!htmlPanel.hasOwnProperty('_hermesOriginalDisplay')) {
+        Object.defineProperty(htmlPanel, '_hermesOriginalDisplay', {
+            value: 'block',
+            writable: true,
+            configurable: true
+        });
+    }
+    
+    // Only define the getter/setter if it hasn't already been defined by this component
+    if (!htmlPanel.style._hermesProtected) {
+        // Mark the display property as protected by this component
+        Object.defineProperty(htmlPanel.style, '_hermesProtected', {
+            value: true,
+            writable: false,
+            configurable: true
+        });
+        
+        // Protect the display property
+        Object.defineProperty(htmlPanel.style, 'display', {
+            get: function() { 
+                return htmlPanel._hermesOriginalDisplay; 
+            },
+            set: function(value) {
+                console.log(`[HERMES] Intercepted attempt to set HTML panel display to: ${value}`);
+                if (value === 'none') {
+                    console.log('[HERMES] Blocked attempt to hide HTML panel');
+                    htmlPanel._hermesOriginalDisplay = 'block';
+                } else {
+                    htmlPanel._hermesOriginalDisplay = value;
+                }
+            },
+            configurable: true
+        });
+    }
+}
+
+// SETUP DONE AFTER PAGE LOAD
+// This ensures the functions are available before the tab events need them
+window.addEventListener('DOMContentLoaded', function() {
+    console.log('[HERMES] DOM loaded, setting up Hermes component');
+    hermes_protectHtmlPanel();
+    hermes_loadComponent();
+});
+
+// IMMEDIATE PROTECTION
+// In case the DOM is already loaded
+if (document.readyState === 'complete' || document.readyState === 'interactive') {
+    console.log('[HERMES] Document already loaded, setting up Hermes component immediately');
+    hermes_protectHtmlPanel();
+    hermes_loadComponent();
+}
+</script>

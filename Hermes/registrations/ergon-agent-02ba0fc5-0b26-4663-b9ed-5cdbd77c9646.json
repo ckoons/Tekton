@@ -1,0 +1,38 @@
+{
+  "service_id": "ergon-agent-02ba0fc5-0b26-4663-b9ed-5cdbd77c9646",
+  "name": "Ergon Agent",
+  "version": "0.1.0",
+  "endpoint": null,
+  "capabilities": [
+    "a2a",
+    "task_execution",
+    "workflow_management"
+  ],
+  "metadata": {
+    "a2a_agent": true,
+    "agent_card": {
+      "id": "ergon-agent-02ba0fc5-0b26-4663-b9ed-5cdbd77c9646",
+      "name": "Ergon Agent",
+      "description": "Ergon Agent - Workflow and task execution agent",
+      "version": "0.1.0",
+      "capabilities": [
+        "task_execution",
+        "workflow_management"
+      ],
+      "supportedMethods": [],
+      "endpoint": "http://localhost:8002/api/a2a/v1/",
+      "tags": [
+        "ergon",
+        "workflow",
+        "task"
+      ],
+      "metadata": {
+        "component": "ergon",
+        "protocolVersion": "0.2.1"
+      }
+    }
+  },
+  "instance_uuid": "b1ee2c11-408f-4a56-be6a-b0068544b7ea",
+  "registration_time": 1750006790.053571,
+  "status": "active"
+}

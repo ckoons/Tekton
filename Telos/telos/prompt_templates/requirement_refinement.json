@@ -1,0 +1,5 @@
+{
+  "name": "requirement_refinement",
+  "template": "I need help refining the following requirement to improve its quality:\n\n{{ requirement_text }}\n\n{% if feedback %}\nBased on the following feedback:\n{{ feedback }}\n{% endif %}\n\n{% if context %}\nConsider this project context:\n{{ context }}\n{% endif %}\n\nPlease rewrite the requirement to be:\n1. Clear and unambiguous\n2. Complete with all necessary details\n3. Testable with objective criteria\n4. Feasible within typical technical constraints\n5. Consistent with standard practices\n\nProvide the refined requirement along with brief explanations of what you improved and why. Format your response as follows:\n\nRefined Requirement: [Your rewritten requirement text here]\n\nExplanations:\n- [First improvement explanation]\n- [Second improvement explanation]\n- [Third improvement explanation]\n\nIf you need any additional information to properly refine this requirement, please indicate what specific information would be helpful.",
+  "description": "Template for refining requirements to improve quality"
+}

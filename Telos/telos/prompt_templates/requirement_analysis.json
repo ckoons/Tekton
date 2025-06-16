@@ -1,0 +1,5 @@
+{
+  "name": "requirement_analysis",
+  "template": "Please analyze this requirement:\n\n{{ requirement_text }}\n\n{% if context %}\nConsider this additional project context:\n\n{{ context }}\n{% endif %}\n\nAnalyze the requirement and evaluate it based on the following quality criteria:\n\n1. Clarity: Is the requirement clear and unambiguous?\n2. Completeness: Does the requirement include all necessary information?\n3. Testability: Can the requirement be verified or tested objectively?\n4. Feasibility: Is the requirement technically and practically achievable?\n5. Consistency: Is the requirement free from contradictions?\n\nProvide a score from 1-5 for each criterion, where 1 is poor and 5 is excellent.\nAlso provide specific suggestions for improvement and potential issues to address.\n\nFormat your response like this:\n\nClarity: X/5\nCompleteness: X/5\nTestability: X/5\nFeasibility: X/5\nConsistency: X/5\n\nIssues:\n- Issue 1\n- Issue 2\n- Issue 3\n\nSuggestions:\n- Suggestion 1\n- Suggestion 2\n- Suggestion 3",
+  "description": "Template for requirement analysis"
+}

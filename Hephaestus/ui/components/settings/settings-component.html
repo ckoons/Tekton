@@ -1,0 +1,850 @@
+<!-- Settings Component UI Template -->
+<div class="settings-container">
+  <div class="settings-header">
+    <div class="settings-title-container">
+      <img src="/images/hexagon.jpg" alt="Tekton" class="settings-icon">
+      <h2 class="settings-header__title">
+        <span class="settings-title-main">Settings</span>
+        <span class="settings-title-sub">Tekton Configuration</span>
+      </h2>
+    </div>
+  </div>
+  
+  <!-- Settings Menu Bar with Tab Navigation -->
+  <div class="settings-menu-bar">
+    <div class="settings-tabs">
+      <div class="settings-tab settings-tab--active" data-tab="theme" onclick="settings_switchTab('theme'); return false;">
+        <span class="settings-tab-label">Theme</span>
+      </div>
+      <div class="settings-tab" data-tab="interface" onclick="settings_switchTab('interface'); return false;">
+        <span class="settings-tab-label">Interface</span>
+      </div>
+    </div>
+    <div class="settings-actions">
+      <button class="settings-button settings-button--primary" id="save-all-settings" onclick="settings_saveAllSettings(); return false;">
+        Save Settings
+      </button>
+      <button class="settings-button" id="reset-all-settings" onclick="settings_resetAllSettings(); return false;">
+        Reset to Defaults
+      </button>
+    </div>
+  </div>
+
+<script type="text/javascript">
+// SETTINGS TAB SWITCHING FUNCTION
+// Define tab switching function to match budget_switchTab pattern
+window.settings_switchTab = function(tabId) {
+    console.log('[SETTINGS] Switching to tab:', tabId);
+    console.log('[SETTINGS] IMPORTANT DEBUG: settings_switchTab function called');
+    
+    // Force HTML panel visibility
+    const htmlPanelElements = document.querySelectorAll('#html-panel');
+    htmlPanelElements.forEach(panel => {
+        if (panel) panel.style.display = 'block';
+    });
+    
+    try {
+        // Only select elements within settings component to avoid conflicts with other components
+        const settingsContainer = document.querySelector('.settings-container');
+        if (!settingsContainer) {
+            console.error('[SETTINGS] Tab Switch: Cannot find settings container');
+            return false;
+        }
+        
+        // Initialize checkbox states when switching tabs
+        if (tabId === 'interface') {
+            setTimeout(function() {
+                const greekToggle = document.getElementById('greek-names-toggle');
+                if (greekToggle && window.settingsManager) {
+                    greekToggle.checked = window.settingsManager.settings.showGreekNames;
+                    console.log('[Settings] Initialized Greek names toggle to:', greekToggle.checked);
+                }
+            }, 50);
+        }
+        
+        // Update tab active state if there are settings tabs
+        const tabs = settingsContainer.querySelectorAll('.settings-tab');
+        tabs.forEach(tab => {
+            if (tab.getAttribute('data-tab') === tabId) {
+                tab.classList.add('settings-tab--active');
+            } else {
+                tab.classList.remove('settings-tab--active');
+            }
+        });
+        
+        // Update panel visibility
+        const panels = settingsContainer.querySelectorAll('.settings-panel');
+        panels.forEach(panel => {
+            const panelId = panel.id;
+            if (panelId === tabId + '-panel') {
+                panel.style.display = 'block';
+                panel.classList.add('settings-panel--active');
+            } else {
+                panel.style.display = 'none';
+                panel.classList.remove('settings-panel--active');
+            }
+        });
+        
+        // Update component state if settingsComponent is available
+        if (window.settingsComponent) {
+            window.settingsComponent.state = window.settingsComponent.state || {};
+            window.settingsComponent.state.activeTab = tabId;
+            
+            // Call component-specific methods if available
+            if (typeof window.settingsComponent.loadTabContent === 'function') {
+                window.settingsComponent.loadTabContent(tabId);
+            }
+            
+            if (typeof window.settingsComponent.saveComponentState === 'function') {
+                window.settingsComponent.saveComponentState();
+            }
+        }
+    } catch (err) {
+        console.error('[SETTINGS] Error in tab switching:', err);
+    }
+    
+    return false; // Stop event propagation
+};
+
+// Save All Settings Function
+window.settings_saveAllSettings = function() {
+    console.log('[SETTINGS] Save all settings button clicked');
+    
+    try {
+        if (window.settingsManager) {
+            // Save to localStorage
+            window.settingsManager.save();
+            
+            // Also save to environment if bridge is available
+            if (window.settingsEnvBridge) {
+                window.settingsEnvBridge.saveSettings();
+            }
+            
+            console.log('[SETTINGS] Settings saved successfully');
+            
+            // Show notification if available
+            if (window.notifications) {
+                window.notifications.show('Settings saved successfully', 'success');
+            }
+        } else {
+            console.error('[SETTINGS] SettingsManager not available');
+        }
+    } catch (err) {
+        console.error('[SETTINGS] Error saving all settings:', err);
+    }
+    
+    return false; // Stop event propagation
+};
+
+// Reset All Settings Function
+window.settings_resetAllSettings = function() {
+    console.log('[SETTINGS] Reset all settings button clicked');
+    
+    try {
+        if (window.settingsComponent && typeof window.settingsComponent.resetAllSettings === 'function') {
+            window.settingsComponent.resetAllSettings();
+        } else {
+            console.log('[SETTINGS] Component not available for reset, will try again');
+            setTimeout(window.settings_resetAllSettings, 1000); // Retry after 1 second
+        }
+    } catch (err) {
+        console.error('[SETTINGS] Error resetting all settings:', err);
+    }
+    
+    return false; // Stop event propagation
+};
+
+// Greek names toggle function
+window.settings_toggleGreekNames = function(checkbox) {
+    console.log('[Settings] Greek names toggle clicked, new value:', checkbox.checked);
+    
+    try {
+        if (window.settingsManager) {
+            window.settingsManager.settings.showGreekNames = checkbox.checked;
+            window.settingsManager.save();
+            window.settingsManager.applyNames();
+            console.log('[Settings] Greek names setting applied:', checkbox.checked);
+        } else {
+            console.error('[Settings] SettingsManager not available');
+        }
+    } catch (error) {
+        console.error('[Settings] Error in toggle handler:', error);
+    }
+    
+    // Don't prevent default - let the checkbox update
+    return true;
+};
+
+// Initialize settings UI when component loads
+// Run immediately since this script is inside the component HTML
+(function() {
+    // Small delay to ensure elements are rendered
+    setTimeout(function() {
+        // Initialize Greek names toggle
+        const greekNamesToggle = document.getElementById('greek-names-toggle');
+        if (greekNamesToggle && window.settingsManager) {
+            greekNamesToggle.checked = window.settingsManager.settings.showGreekNames;
+            console.log('[Settings] Initialized Greek names toggle to:', greekNamesToggle.checked);
+        }
+        
+        // Initialize theme mode buttons
+        const themeModeButtons = document.querySelectorAll('.settings-theme-mode__button');
+        if (window.settingsManager) {
+            themeModeButtons.forEach(button => {
+                const mode = button.getAttribute('data-mode');
+                if (mode === window.settingsManager.settings.themeMode) {
+                    button.classList.add('settings-theme-mode__button--active');
+                } else {
+                    button.classList.remove('settings-theme-mode__button--active');
+                }
+                
+                button.addEventListener('click', function() {
+                    if (mode && window.settingsManager) {
+                        window.settingsManager.settings.themeMode = mode;
+                        window.settingsManager.save();
+                        window.settingsManager.applyTheme();
+                        
+                        // Update active state
+                        themeModeButtons.forEach(btn => btn.classList.remove('settings-theme-mode__button--active'));
+                        button.classList.add('settings-theme-mode__button--active');
+                        
+                        console.log('[Settings] Theme mode changed to:', mode);
+                    }
+                });
+            });
+        }
+        
+        // Initialize theme color buttons
+        const themeColorButtons = document.querySelectorAll('.settings-theme-color__button');
+        if (window.settingsManager) {
+            themeColorButtons.forEach(button => {
+                const color = button.getAttribute('data-color');
+                if (color === window.settingsManager.settings.themeColor) {
+                    button.classList.add('settings-theme-color__button--active');
+                } else {
+                    button.classList.remove('settings-theme-color__button--active');
+                }
+                
+                button.addEventListener('click', function() {
+                    if (color && window.settingsManager) {
+                        window.settingsManager.setThemeColor(color);
+                        
+                        // Update active state
+                        themeColorButtons.forEach(btn => btn.classList.remove('settings-theme-color__button--active'));
+                        button.classList.add('settings-theme-color__button--active');
+                        
+                        console.log('[Settings] Theme color changed to:', color);
+                    }
+                });
+            });
+        }
+        
+        // Terminal font size
+        const terminalFontSize = document.getElementById('terminal-font-size');
+        if (terminalFontSize && window.settingsManager) {
+            terminalFontSize.value = window.settingsManager.settings.terminalFontSize;
+            terminalFontSize.addEventListener('change', function() {
+                window.settingsManager.settings.terminalFontSize = terminalFontSize.value;
+                window.settingsManager.save();
+                console.log('[Settings] Terminal font size changed to:', terminalFontSize.value);
+            });
+        }
+    }, 100); // Reduced delay since we're running immediately
+})();
+</script>
+  
+  <!-- Settings Content Area -->
+  <div class="settings-content">
+    <!-- Theme Tab (Default Active Tab) -->
+    <div id="theme-panel" class="settings-panel settings-panel--active">
+      <div class="settings-form">
+        <div class="settings-field">
+          <div class="settings-field-label">UI Mode</div>
+          <div class="settings-field-control">
+            <div class="settings-theme-mode">
+              <button class="settings-theme-mode__button" data-mode="light">
+                <span class="settings-theme-mode__icon">☀️</span>
+                <span class="settings-theme-mode__label">Light</span>
+              </button>
+              <button class="settings-theme-mode__button" data-mode="dark">
+                <span class="settings-theme-mode__icon">🌙</span>
+                <span class="settings-theme-mode__label">Dark</span>
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <div class="settings-field">
+          <div class="settings-field-label">Accent Color</div>
+          <div class="settings-field-control">
+            <div class="settings-theme-color">
+              <button class="settings-theme-color__button" data-color="blue" style="--color: #007bff">
+                <span class="settings-theme-color__dot"></span>
+                <span class="settings-theme-color__label">Blue</span>
+              </button>
+              <button class="settings-theme-color__button" data-color="green" style="--color: #28a745">
+                <span class="settings-theme-color__dot"></span>
+                <span class="settings-theme-color__label">Green</span>
+              </button>
+              <button class="settings-theme-color__button" data-color="purple" style="--color: #6f42c1">
+                <span class="settings-theme-color__dot"></span>
+                <span class="settings-theme-color__label">Purple</span>
+              </button>
+              <button class="settings-theme-color__button" data-color="custom" style="--color: #ff5722">
+                <span class="settings-theme-color__dot"></span>
+                <span class="settings-theme-color__label">Custom</span>
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Custom color area appears when Custom is selected -->
+        <div id="custom-color-area" class="settings-field" style="display: none; margin-top: 0;">
+          <div class="settings-field-label">Custom Color</div>
+          <div class="settings-field-control">
+            <div class="settings-custom-color">
+              <!-- Color picker -->
+              <div class="color-picker-container">
+                <input type="color" id="custom-color-input" value="#ff5722" class="settings-color-input">
+                <span id="custom-color-hex" class="color-hex-display">#FF5722</span>
+              </div>
+              
+              <!-- Color from image picker -->
+              <div class="settings-image-color-picker">
+                <div class="image-color-title">Pick color from image:</div>
+                <div class="image-color-container">
+                  <img src="/images/hexagon.jpg" id="color-sample-image" class="color-sample-image" alt="Sample image">
+                  <canvas id="color-canvas" class="color-canvas" width="20" height="20"></canvas>
+                </div>
+                <div class="image-color-instructions">Click anywhere on the image to sample color</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+      </div>
+    </div>
+    
+    <!-- Interface Tab -->
+    <div id="interface-panel" class="settings-panel">
+      <div class="settings-form">
+        <div class="settings-field">
+          <div class="settings-field-label">Show Greek Names</div>
+          <div class="settings-field-control">
+            <label class="settings-toggle">
+              <input type="checkbox" id="greek-names-toggle" onclick="settings_toggleGreekNames(this);">
+              <span class="settings-toggle__slider"></span>
+            </label>
+            <div class="settings-field-description">
+              When enabled, components will be displayed with their Greek names (e.g., "Ergon - Agents/Tools/MCP"). 
+              When disabled, only functional names will be shown (e.g., "Agents/Tools/MCP").
+            </div>
+          </div>
+        </div>
+        
+        <div class="settings-field">
+          <div class="settings-field-label">Terminal Font Size</div>
+          <div class="settings-field-control">
+            <select id="terminal-font-size" class="settings-select">
+              <option value="small">Small</option>
+              <option value="medium" selected>Medium</option>
+              <option value="large">Large</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Add component-specific styles -->
+<style>
+    /* Settings component styles using BEM naming convention */
+    
+    /* Container */
+    .settings-container {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        width: 100%;
+        background-color: var(--bg-primary, #1e1e2e);
+        color: var(--text-primary, #f0f0f0);
+    }
+    
+    /* Header */
+    .settings-header {
+        display: flex;
+        align-items: center;
+        padding: 10px 16px;
+        background-color: var(--bg-secondary, #252535);
+        border-bottom: 1px solid var(--border-color, #444444);
+        height: 46px; /* Match Athena header height */
+    }
+    
+    .settings-title-container {
+        display: flex;
+        align-items: center;
+    }
+    
+    .settings-icon {
+        height: 30px;
+        width: auto;
+        margin-right: 12px;
+    }
+    
+    .settings-header__title {
+        margin: 0;
+        font-size: 1.2rem;
+        font-weight: 500;
+    }
+    
+    .settings-title-sub {
+        margin-left: 8px;
+        opacity: 0.8;
+        font-weight: normal;
+    }
+    
+    /* Menu Bar */
+    .settings-menu-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 6px 16px;
+        background-color: var(--bg-secondary, #252535); /* Match Athena menu bar */
+        border-bottom: 1px solid var(--border-color, #444444);
+        height: 46px; /* Match Athena menu bar height */
+    }
+    
+    .settings-tabs {
+        display: flex;
+        gap: 8px;
+    }
+    
+    .settings-tab {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 16px;
+        background-color: transparent;
+        border: none;
+        border-bottom: 2px solid transparent;
+        color: var(--text-primary, #f0f0f0);
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    
+    .settings-tab:hover {
+        background-color: var(--bg-hover, #3a3a4a);
+    }
+    
+    .settings-tab--active {
+        border-bottom-color: var(--color-primary, #10A283); /* Teal color for Settings */
+        font-weight: 500;
+    }
+    
+    .settings-actions {
+        display: flex;
+        gap: 8px;
+    }
+    
+    /* Content Area */
+    .settings-content {
+        flex: 1;
+        overflow: auto;
+        padding: 20px;
+    }
+    
+    .settings-panel {
+        display: none;
+        padding: 0;
+        height: 100%;
+    }
+    
+    .settings-panel--active {
+        display: block;
+    }
+    
+    /* Form styles */
+    .settings-form {
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+        max-width: 800px;
+        margin: 0 auto;
+    }
+    
+    .settings-field {
+        display: flex;
+        align-items: flex-start;
+    }
+    
+    .settings-field-label {
+        min-width: 180px;
+        padding-top: 2px;
+        font-weight: 500;
+        color: #10A283; /* Teal color for labels */
+        line-height: 36px; /* Match the height of input fields */
+    }
+    
+    .settings-field-control {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .settings-select,
+    .settings-input {
+        width: 100%;
+        min-width: 350px; /* At least twice as wide as before */
+        padding: 8px 12px;
+        background-color: var(--bg-tertiary, #333345);
+        border: 1px solid #66BB6A; /* Mint color border */
+        border-radius: 4px;
+        color: var(--text-primary, #f0f0f0);
+        font-size: 14px;
+    }
+    
+    .settings-field-description {
+        font-size: 0.9em;
+        color: var(--text-secondary, #f0f0f0); /* White for descriptions */
+        margin-top: 4px;
+    }
+    
+    /* Theme mode selector */
+    .settings-theme-mode {
+        display: flex;
+        gap: 12px;
+    }
+    
+    .settings-theme-mode__button {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 16px;
+        background-color: var(--bg-tertiary, #333345);
+        border: 1px solid var(--border-color, #444444);
+        border-radius: 4px;
+        color: var(--text-primary, #f0f0f0);
+        cursor: pointer;
+    }
+    
+    .settings-theme-mode__button--active {
+        background-color: var(--color-primary, #10A283); /* Teal accent */
+        color: white;
+        border-color: var(--color-primary, #10A283);
+    }
+    
+    /* Theme color selector */
+    .settings-theme-color {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+    
+    .settings-theme-color__button {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 16px;
+        background-color: var(--bg-tertiary, #333345);
+        border: 1px solid var(--border-color, #444444);
+        border-radius: 4px;
+        color: var(--text-primary, #f0f0f0);
+        cursor: pointer;
+    }
+    
+    .settings-theme-color__button--active {
+        background-color: var(--bg-hover, #3a3a4a);
+        border-color: var(--color, #007bff);
+    }
+    
+    .settings-theme-color__dot {
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background-color: var(--color);
+    }
+    
+    /* Toggle switch */
+    .settings-toggle {
+        display: inline-flex;
+        position: relative;
+        width: 44px;
+        height: 22px;
+    }
+    
+    .settings-toggle input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+    
+    .settings-toggle__slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: var(--bg-tertiary, #333345);
+        border: 1px solid var(--border-color, #444444);
+        transition: .4s;
+        border-radius: 22px;
+    }
+    
+    .settings-toggle__slider:before {
+        position: absolute;
+        content: "";
+        height: 16px;
+        width: 16px;
+        left: 2px;
+        bottom: 2px;
+        background-color: var(--text-primary, #f0f0f0);
+        transition: .4s;
+        border-radius: 50%;
+    }
+    
+    input:checked + .settings-toggle__slider {
+        background-color: var(--color-primary, #10A283); /* Teal accent */
+        border-color: var(--color-primary, #10A283);
+    }
+    
+    input:checked + .settings-toggle__slider:before {
+        transform: translateX(22px);
+    }
+    
+    /* Button styles */
+    .settings-button {
+        padding: 6px 12px;
+        background-color: var(--bg-tertiary, #333345);
+        border: 1px solid var(--border-color, #444444);
+        border-radius: 4px;
+        color: var(--text-primary, #f0f0f0);
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        transition: all 0.2s ease;
+    }
+    
+    .settings-button:hover {
+        background-color: var(--bg-hover, #3a3a4a);
+    }
+    
+    .settings-button--primary {
+        background-color: var(--color-primary, #10A283); /* Teal accent */
+        color: white;
+        border-color: var(--color-primary, #10A283);
+    }
+    
+    .settings-button--primary:hover {
+        background-color: #0A8C6F; /* Darker teal */
+    }
+    
+    .settings-button--danger {
+        background-color: #d32f2f;
+        color: white;
+        border-color: #d32f2f;
+    }
+    
+    /* Custom color picker */
+    .settings-custom-color {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+    
+    .color-picker-container {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+    
+    .settings-color-input {
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        width: 50px;
+        height: 36px;
+        padding: 0;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        background-color: transparent;
+    }
+    
+    .settings-color-input::-webkit-color-swatch-wrapper {
+        padding: 0;
+    }
+    
+    .settings-color-input::-webkit-color-swatch {
+        border: none;
+        border-radius: 4px;
+    }
+    
+    .color-hex-display {
+        font-family: monospace;
+        font-size: 14px;
+        padding: 4px 8px;
+        background-color: var(--bg-tertiary, #333345);
+        border-radius: 4px;
+    }
+    
+    /* Image color picker */
+    .settings-image-color-picker {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin-top: 10px;
+    }
+    
+    .image-color-title {
+        font-weight: 500;
+        margin-bottom: 6px;
+    }
+    
+    .image-color-container {
+        display: flex;
+        align-items: flex-start;
+        gap: 16px;
+    }
+    
+    .color-sample-image {
+        width: 200px;
+        height: auto;
+        max-height: 200px;
+        object-fit: contain;
+        border-radius: 4px;
+        cursor: crosshair;
+    }
+    
+    .color-canvas {
+        width: 40px;
+        height: 40px;
+        border-radius: 4px;
+        border: 1px solid var(--border-color, #444444);
+    }
+    
+    .image-color-instructions {
+        font-size: 0.85em;
+        color: var(--text-secondary, #aaaaaa);
+        margin-top: 4px;
+    }
+</style>
+
+<script>
+    // Initialize color picker functionality
+    document.addEventListener('DOMContentLoaded', function() {
+        // Get color buttons and custom color picker elements
+        const colorButtons = document.querySelectorAll('.settings-theme-color__button');
+        const customColorArea = document.getElementById('custom-color-area');
+        const customColorInput = document.getElementById('custom-color-input');
+        const customColorHex = document.getElementById('custom-color-hex');
+        const colorSampleImage = document.getElementById('color-sample-image');
+        const colorCanvas = document.getElementById('color-canvas');
+        
+        // Initialize canvas context
+        const ctx = colorCanvas.getContext('2d', { willReadFrequently: true });
+        
+        // Add click event to all color buttons
+        colorButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                // Remove active class from all buttons
+                colorButtons.forEach(btn => btn.classList.remove('settings-theme-color__button--active'));
+                
+                // Add active class to clicked button
+                this.classList.add('settings-theme-color__button--active');
+                
+                // Show/hide custom color picker based on button clicked
+                if (this.getAttribute('data-color') === 'custom') {
+                    customColorArea.style.display = 'flex';
+                } else {
+                    customColorArea.style.display = 'none';
+                }
+            });
+        });
+        
+        // Update custom color hex value when color picker changes
+        if (customColorInput) {
+            customColorInput.addEventListener('input', function() {
+                const color = this.value.toUpperCase();
+                updateColorDisplay(color);
+            });
+        }
+        
+        // Initialize color canvas with initial color
+        if (colorCanvas && ctx && customColorInput) {
+            updateColorCanvas(customColorInput.value);
+        }
+        
+        // Enable color picking from image
+        if (colorSampleImage) {
+            colorSampleImage.addEventListener('click', function(e) {
+                // Get click position relative to image
+                const rect = this.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                // Create a temporary canvas to get the image data
+                const tempCanvas = document.createElement('canvas');
+                const tempCtx = tempCanvas.getContext('2d', { willReadFrequently: true });
+                tempCanvas.width = this.width;
+                tempCanvas.height = this.height;
+                tempCtx.drawImage(this, 0, 0, tempCanvas.width, tempCanvas.height);
+                
+                // Get pixel color
+                const pixelData = tempCtx.getImageData(x, y, 1, 1).data;
+                
+                // Convert RGB to hex
+                const hexColor = rgbToHex(pixelData[0], pixelData[1], pixelData[2]);
+                
+                // Update color picker and display
+                customColorInput.value = hexColor;
+                updateColorDisplay(hexColor);
+                
+                // Make sure custom button is active
+                const customButton = document.querySelector('.settings-theme-color__button[data-color="custom"]');
+                if (customButton) {
+                    colorButtons.forEach(btn => btn.classList.remove('settings-theme-color__button--active'));
+                    customButton.classList.add('settings-theme-color__button--active');
+                    customColorArea.style.display = 'flex';
+                }
+            });
+        }
+        
+        // Helper function to convert rgb to hex
+        function rgbToHex(r, g, b) {
+            return '#' + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1).toUpperCase();
+        }
+        
+        // Helper function to update color display
+        function updateColorDisplay(color) {
+            // Update hex display
+            if (customColorHex) {
+                customColorHex.textContent = color;
+            }
+            
+            // Update canvas
+            updateColorCanvas(color);
+            
+            // Update custom button color
+            const customButton = document.querySelector('.settings-theme-color__button[data-color="custom"]');
+            if (customButton) {
+                customButton.style.setProperty('--color', color);
+                const colorDot = customButton.querySelector('.settings-theme-color__dot');
+                if (colorDot) {
+                    colorDot.style.backgroundColor = color;
+                }
+            }
+        }
+        
+        // Helper function to update color canvas
+        function updateColorCanvas(color) {
+            if (ctx) {
+                ctx.fillStyle = color;
+                ctx.fillRect(0, 0, colorCanvas.width, colorCanvas.height);
+            }
+        }
+    });
+</script>

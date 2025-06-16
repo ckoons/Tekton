@@ -1,0 +1,41 @@
+/* Dark Theme for Tekton UI */
+
+.theme-dark {
+    --bg-primary: #121212;
+    --bg-secondary: #1e1e1e;
+    --bg-tertiary: #2d2d2d;
+    --text-primary: #e0e0e0;
+    --text-secondary: #a0a0a0;
+    --accent-primary: #4d84ff;
+    --accent-primary-dark: #3b6fd9;
+    --accent-secondary: #646464;
+    --border-color: #3a3a3a;
+    --shadow-color: rgba(0, 0, 0, 0.3);
+    
+    /* Terminal colors */
+    --terminal-bg: #0f0f0f;
+    --terminal-text: #f0f0f0;
+}
+
+.theme-dark #chat-input {
+    background-color: #252525;
+    color: var(--text-primary);
+    border-color: #3d3d3d;
+}
+
+.theme-dark .nav-item:not(.active):hover {
+    background-color: #333333;
+}
+
+.theme-dark .icon-button:hover {
+    background-color: #333333;
+}
+
+.theme-dark #error-container {
+    background-color: #d32f2f;
+}
+
+.theme-dark .modal-content {
+    background-color: #1e1e1e;
+    border: 1px solid #3a3a3a;
+}

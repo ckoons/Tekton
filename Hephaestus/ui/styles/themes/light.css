@@ -1,0 +1,30 @@
+/* Light Theme for Tekton UI */
+
+.theme-light {
+    --bg-primary: #ffffff;
+    --bg-secondary: #f0f2f5;
+    --bg-tertiary: #e4e6eb;
+    --text-primary: #1c1e21;
+    --text-secondary: #65676b;
+    --accent-primary: #1877f2;
+    --accent-primary-dark: #1464d9;
+    --accent-secondary: #9ba1a6;
+    --border-color: #dadde1;
+    --shadow-color: rgba(0, 0, 0, 0.1);
+    
+    /* Terminal colors */
+    --terminal-bg: #f5f5f5;
+    --terminal-text: #333333;
+}
+
+.theme-light .terminal {
+    border: 1px solid var(--border-color);
+}
+
+.theme-light #error-container {
+    background-color: #e53935;
+}
+
+.theme-light .nav-item.active {
+    color: white;
+}

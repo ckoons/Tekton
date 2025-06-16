@@ -1,0 +1,938 @@
+/* Engram Component Styles */
+
+:root {
+  /* Component-specific variables */
+  --engram-card-min-width: 280px;
+  --engram-card-max-width: 340px;
+  --engram-item-height: 60px;
+  --engram-message-line-height: 1.5;
+}
+
+/* Container */
+.engram-container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: var(--font-family-sans);
+}
+
+/* Header */
+.engram-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-md);
+  background-color: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.engram-header__title {
+  font-size: var(--font-size-lg);
+  margin: 0;
+  color: var(--color-primary);
+}
+
+.engram-header__controls {
+  display: flex;
+  gap: var(--spacing-sm);
+  align-items: center;
+}
+
+/* Tabs */
+.engram-tabs {
+  display: flex;
+  background-color: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.engram-tabs__button {
+  padding: var(--spacing-md);
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  font-size: var(--font-size-md);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  border-bottom: 3px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.engram-tabs__button:hover {
+  background-color: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.engram-tabs__button--active {
+  color: var(--color-primary);
+  border-bottom-color: var(--color-primary);
+}
+
+.engram-tabs__icon {
+  font-size: 1.2em;
+}
+
+/* Tab Content */
+.engram-tab-content {
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+}
+
+.engram-tab-panel {
+  display: none;
+  height: 100%;
+  overflow: auto;
+  flex-direction: column;
+}
+
+.engram-tab-panel--active {
+  display: flex;
+}
+
+/* Panel Header */
+.engram-panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-md);
+  background-color: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.engram-panel-controls {
+  display: flex;
+  gap: var(--spacing-sm);
+}
+
+/* Search */
+.engram-search {
+  display: flex;
+  gap: var(--spacing-sm);
+  width: 100%;
+  max-width: 600px;
+}
+
+.engram-search__input {
+  flex: 1;
+  padding: var(--spacing-sm);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-sm);
+  background-color: var(--bg-tertiary);
+  color: var(--text-primary);
+}
+
+/* Memory Container */
+.engram-memory-container {
+  padding: var(--spacing-md);
+  overflow: auto;
+}
+
+.engram-memory-container__placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 200px;
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+/* Memory Item */
+.engram-memory-item {
+  padding: var(--spacing-md);
+  margin-bottom: var(--spacing-md);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-md);
+  background-color: var(--bg-card);
+  transition: all 0.2s ease;
+}
+
+.engram-memory-item:hover {
+  box-shadow: var(--box-shadow-sm);
+}
+
+.engram-memory-item__header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: var(--spacing-sm);
+}
+
+.engram-memory-item__namespace {
+  font-size: var(--font-size-sm);
+  padding: 2px 8px;
+  background-color: var(--bg-tertiary);
+  border-radius: var(--border-radius-sm);
+  color: var(--color-primary);
+}
+
+.engram-memory-item__timestamp {
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+}
+
+.engram-memory-item__content {
+  margin-bottom: var(--spacing-md);
+  line-height: 1.5;
+}
+
+.engram-memory-item__footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--spacing-sm);
+}
+
+/* Structured Memory Container */
+.engram-structured-container {
+  padding: var(--spacing-md);
+  overflow: auto;
+}
+
+.engram-structured-container__placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 200px;
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+/* Structured Memory Item */
+.engram-structured-item {
+  padding: var(--spacing-md);
+  margin-bottom: var(--spacing-md);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-md);
+  background-color: var(--bg-card);
+  transition: all 0.2s ease;
+}
+
+.engram-structured-item:hover {
+  box-shadow: var(--box-shadow-sm);
+}
+
+.engram-structured-item__header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: var(--spacing-sm);
+}
+
+.engram-structured-item__category {
+  font-size: var(--font-size-sm);
+  padding: 2px 8px;
+  background-color: rgba(var(--color-primary-rgb), 0.1);
+  border-radius: var(--border-radius-sm);
+  color: var(--color-primary);
+}
+
+.engram-structured-item__importance {
+  font-size: var(--font-size-sm);
+  color: var(--color-warning);
+}
+
+.engram-structured-item__content {
+  margin-bottom: var(--spacing-md);
+  line-height: 1.5;
+}
+
+.engram-structured-item__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-xs);
+  margin-bottom: var(--spacing-md);
+}
+
+.engram-tag {
+  font-size: var(--font-size-xs);
+  padding: 2px 6px;
+  background-color: var(--bg-tertiary);
+  border-radius: var(--border-radius-sm);
+  color: var(--text-secondary);
+}
+
+.engram-structured-item__footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.engram-structured-item__timestamp {
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+}
+
+.engram-structured-item__actions {
+  display: flex;
+  gap: var(--spacing-sm);
+}
+
+/* Analytics Container */
+.engram-analytics-container {
+  padding: var(--spacing-md);
+  overflow: auto;
+}
+
+.engram-analytics-container__placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 200px;
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+/* Analytics Section */
+.engram-analytics-section {
+  margin-bottom: var(--spacing-lg);
+  padding: var(--spacing-md);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-md);
+  background-color: var(--bg-card);
+}
+
+.engram-analytics-section__title {
+  margin-top: 0;
+  margin-bottom: var(--spacing-md);
+  font-size: var(--font-size-md);
+  color: var(--text-primary);
+}
+
+/* Analytics Metrics */
+.engram-analytics-metrics {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-md);
+}
+
+.engram-analytics-metric {
+  flex: 1;
+  min-width: 150px;
+  padding: var(--spacing-md);
+  background-color: var(--bg-tertiary);
+  border-radius: var(--border-radius-sm);
+  text-align: center;
+}
+
+.engram-analytics-metric__label {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  margin-bottom: var(--spacing-xs);
+}
+
+.engram-analytics-metric__value {
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+  color: var(--color-primary);
+}
+
+/* Analytics Chart */
+.engram-analytics-chart {
+  margin-bottom: var(--spacing-md);
+}
+
+.engram-chart-placeholder {
+  height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--bg-tertiary);
+  border-radius: var(--border-radius-sm);
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+/* Analytics Info */
+.engram-analytics-info {
+  line-height: 1.5;
+}
+
+.engram-analytics-info p {
+  margin: var(--spacing-xs) 0;
+}
+
+/* Chat Interface */
+.engram-chat {
+  display: flex;
+  height: 100%;
+  overflow: hidden;
+}
+
+.engram-chat__sidebar {
+  width: 300px;
+  background-color: var(--bg-secondary);
+  border-right: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.engram-chat__main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.engram-chat-settings {
+  padding: var(--spacing-md);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.engram-chat-settings__title {
+  font-size: var(--font-size-sm);
+  margin: 0 0 var(--spacing-md) 0;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.engram-setting-group {
+  margin-bottom: var(--spacing-md);
+}
+
+.engram-setting-label {
+  display: block;
+  margin-bottom: var(--spacing-xs);
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+}
+
+.engram-chat-history {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  padding: var(--spacing-md);
+}
+
+.engram-chat-history__title {
+  font-size: var(--font-size-sm);
+  margin: 0 0 var(--spacing-md) 0;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.engram-chat-history__list {
+  flex: 1;
+  overflow-y: auto;
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-sm);
+  background-color: var(--bg-primary);
+}
+
+.engram-chat-history__empty {
+  padding: var(--spacing-md);
+  text-align: center;
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+.engram-chat-history__item {
+  padding: var(--spacing-sm);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.engram-chat-history__item:last-child {
+  border-bottom: none;
+}
+
+.engram-chat-history__item-name {
+  margin-bottom: var(--spacing-xs);
+  font-weight: 500;
+}
+
+.engram-chat-history__item-date {
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+  margin-bottom: var(--spacing-xs);
+}
+
+.engram-chat-history__item-actions {
+  display: flex;
+  gap: var(--spacing-xs);
+}
+
+.engram-chat-history__controls {
+  margin-top: var(--spacing-md);
+  display: flex;
+  justify-content: flex-end;
+}
+
+.engram-chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--spacing-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+/* Chat Messages */
+.engram-message {
+  max-width: 85%;
+  padding: var(--spacing-md);
+  border-radius: var(--border-radius-md);
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.engram-message--system {
+  background-color: var(--bg-secondary);
+  color: var(--text-secondary);
+  margin: 0 auto;
+  max-width: 90%;
+  border: 1px solid var(--border-color);
+}
+
+.engram-message--user {
+  background-color: var(--color-primary-light, rgba(0, 123, 255, 0.1));
+  color: var(--text-primary);
+  align-self: flex-end;
+  border: 1px solid var(--color-primary-light, rgba(0, 123, 255, 0.1));
+}
+
+.engram-message--assistant {
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+  align-self: flex-start;
+  border: 1px solid var(--border-color);
+}
+
+.engram-message__content {
+  font-size: var(--font-size-base);
+  line-height: 1.5;
+}
+
+.engram-message__content p {
+  margin: 0 0 var(--spacing-sm) 0;
+}
+
+.engram-message__content p:last-child {
+  margin-bottom: 0;
+}
+
+.engram-message__timestamp {
+  position: absolute;
+  bottom: -20px;
+  font-size: var(--font-size-xs);
+  color: var(--text-tertiary);
+}
+
+.engram-message--user .engram-message__timestamp {
+  right: 0;
+}
+
+.engram-message--assistant .engram-message__timestamp {
+  left: 0;
+}
+
+.engram-chat-input {
+  padding: var(--spacing-md);
+  background-color: var(--bg-secondary);
+  border-top: 1px solid var(--border-color);
+  display: flex;
+  gap: var(--spacing-md);
+}
+
+.engram-chat-input__textarea {
+  flex: 1;
+  resize: none;
+  background-color: var(--bg-input, var(--bg-tertiary));
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-md);
+  color: var(--text-primary);
+  font-size: var(--font-size-base);
+  padding: var(--spacing-md);
+  min-height: 40px;
+}
+
+/* Typing Indicator */
+.engram-typing-indicator {
+  display: flex;
+  gap: 5px;
+  padding: var(--spacing-sm);
+  align-self: flex-start;
+}
+
+.engram-typing-indicator__dot {
+  width: 8px;
+  height: 8px;
+  background-color: var(--text-secondary);
+  border-radius: 50%;
+  animation: typing-animation 1.4s infinite ease-in-out;
+}
+
+.engram-typing-indicator__dot:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.engram-typing-indicator__dot:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.engram-typing-indicator__dot:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes typing-animation {
+  0%, 60%, 100% {
+    transform: translateY(0);
+  }
+  30% {
+    transform: translateY(-5px);
+  }
+}
+
+/* Modal */
+.engram-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.engram-modal__overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.engram-modal__content {
+  position: relative;
+  background-color: var(--bg-card);
+  border-radius: var(--border-radius-md);
+  width: 80%;
+  max-width: 600px;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: var(--box-shadow-lg);
+}
+
+.engram-modal__header {
+  padding: var(--spacing-md);
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.engram-modal__title {
+  margin: 0;
+  font-size: var(--font-size-lg);
+}
+
+.engram-modal__close {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: var(--text-secondary);
+}
+
+.engram-modal__body {
+  padding: var(--spacing-md);
+  overflow-y: auto;
+  flex: 1;
+}
+
+.engram-modal__footer {
+  padding: var(--spacing-md);
+  border-top: 1px solid var(--border-color);
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--spacing-sm);
+}
+
+.engram-modal__section {
+  margin-bottom: var(--spacing-md);
+}
+
+.engram-modal__section:last-child {
+  margin-bottom: 0;
+}
+
+.engram-modal__section-title {
+  font-size: var(--font-size-md);
+  margin: 0 0 var(--spacing-sm) 0;
+  color: var(--text-primary);
+}
+
+.engram-modal__form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.engram-modal__form-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.engram-modal__label {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+}
+
+.engram-modal__content {
+  line-height: 1.5;
+}
+
+.engram-modal__metadata {
+  line-height: 1.5;
+}
+
+.engram-metadata-list {
+  margin: 0;
+  padding: 0;
+}
+
+.engram-metadata-list dt {
+  font-weight: 500;
+  margin-bottom: var(--spacing-xs);
+}
+
+.engram-metadata-list dd {
+  margin: 0 0 var(--spacing-sm) var(--spacing-md);
+}
+
+/* Notifications */
+.engram-notifications {
+  position: fixed;
+  bottom: var(--spacing-md);
+  right: var(--spacing-md);
+  z-index: 1001;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  max-width: 300px;
+}
+
+.engram-notification {
+  padding: var(--spacing-md);
+  border-radius: var(--border-radius-md);
+  background-color: var(--bg-card);
+  box-shadow: var(--box-shadow-md);
+  animation: notification-fade-in 0.3s ease;
+  display: flex;
+  justify-content: space-between;
+  border-left: 3px solid var(--color-primary);
+}
+
+.engram-notification--success {
+  border-left-color: var(--color-success);
+}
+
+.engram-notification--warning {
+  border-left-color: var(--color-warning);
+}
+
+.engram-notification--error {
+  border-left-color: var(--color-danger);
+}
+
+.engram-notification__content {
+  margin-right: var(--spacing-md);
+}
+
+.engram-notification__title {
+  font-weight: 500;
+  margin-bottom: var(--spacing-xs);
+}
+
+.engram-notification__message {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+}
+
+.engram-notification__close {
+  background: none;
+  border: none;
+  font-size: 1rem;
+  cursor: pointer;
+  color: var(--text-secondary);
+  align-self: flex-start;
+}
+
+@keyframes notification-fade-in {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Buttons */
+.engram-button {
+  padding: var(--spacing-sm) var(--spacing-md);
+  background-color: var(--bg-tertiary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-sm);
+  cursor: pointer;
+  font-size: var(--font-size-sm);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  transition: all 0.2s ease;
+}
+
+.engram-button:hover {
+  background-color: var(--bg-hover);
+}
+
+.engram-button--primary {
+  background-color: var(--color-primary);
+  color: white;
+  border-color: var(--color-primary);
+}
+
+.engram-button--primary:hover {
+  background-color: var(--color-primary-hover);
+  border-color: var(--color-primary-hover);
+}
+
+.engram-button--danger {
+  background-color: rgba(220, 53, 69, 0.1);
+  color: var(--color-danger);
+  border-color: rgba(220, 53, 69, 0.3);
+}
+
+.engram-button--danger:hover {
+  background-color: var(--color-danger);
+  color: white;
+}
+
+.engram-button--small {
+  padding: 2px 8px;
+  font-size: var(--font-size-xs);
+}
+
+/* Select */
+.engram-select {
+  padding: var(--spacing-sm);
+  background-color: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-sm);
+  color: var(--text-primary);
+  font-size: var(--font-size-sm);
+}
+
+/* Input */
+.engram-input {
+  padding: var(--spacing-sm);
+  background-color: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-sm);
+  color: var(--text-primary);
+  font-size: var(--font-size-sm);
+}
+
+/* Textarea */
+.engram-textarea {
+  padding: var(--spacing-sm);
+  background-color: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-sm);
+  color: var(--text-primary);
+  font-size: var(--font-size-sm);
+  resize: vertical;
+  min-height: 100px;
+}
+
+/* Checkbox */
+.engram-checkbox {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  cursor: pointer;
+}
+
+.engram-checkbox input {
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-sm);
+  background-color: var(--bg-tertiary);
+  position: relative;
+  cursor: pointer;
+}
+
+.engram-checkbox input:checked::after {
+  content: "✓";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: var(--color-primary);
+  font-size: 12px;
+}
+
+.engram-checkbox__label {
+  font-size: var(--font-size-sm);
+}
+
+/* Table */
+.engram-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.engram-table th,
+.engram-table td {
+  padding: var(--spacing-sm);
+  text-align: left;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.engram-table th {
+  background-color: var(--bg-secondary);
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .engram-chat {
+    flex-direction: column;
+  }
+  
+  .engram-chat__sidebar {
+    width: 100%;
+    height: 300px;
+    border-right: none;
+    border-bottom: 1px solid var(--border-color);
+  }
+  
+  .engram-search {
+    flex-direction: column;
+  }
+  
+  .engram-panel-header {
+    flex-direction: column;
+    gap: var(--spacing-md);
+  }
+  
+  .engram-analytics-metrics {
+    flex-direction: column;
+  }
+}
+EOF < /dev/null

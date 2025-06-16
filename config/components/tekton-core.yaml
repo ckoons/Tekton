@@ -1,0 +1,24 @@
+component:
+  id: tekton-core
+  name: Tekton Core
+  version: 0.1.0
+  description: The Tekton Core component of the Tekton ecosystem
+  port: 8010
+capabilities:
+- id: example_capability
+  name: Example Capability
+  description: An example capability
+  methods:
+  - id: example_method
+    name: Example Method
+    description: An example method
+    parameters:
+    - name: param_name
+      type: string
+      required: true
+      description: An example parameter
+    returns:
+      type: object
+      description: An example return value
+config:
+  example_config_key: example_value

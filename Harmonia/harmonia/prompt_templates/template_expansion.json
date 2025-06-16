@@ -1,0 +1,5 @@
+{
+  "name": "template_expansion",
+  "template": "You need to expand a template by filling in variables from the current state.\n\nTemplate:\n{{ template }}\n\nCurrent state:\n{{ state }}\n\n{% if functions %}\nAvailable functions:\n{{ functions }}\n{% endif %}\n\nTemplate variables are indicated using the ${variable_name} syntax.\nThese should be replaced with their corresponding values from the state.\n\nSome template variables may include function calls like ${functionName(param1, param2)}.\nFor these, apply the function to the parameters and use the result.\n\nPlease return the expanded template with all variables and functions replaced with their values.",
+  "description": "Template for expanding templates with state variables and functions"
+}

@@ -1,0 +1,8 @@
+# Include shared requirements
+-r ../shared/requirements/base.txt
+-r ../shared/requirements/web.txt
+-r ../shared/requirements/ai.txt     # For tiktoken
+-r ../shared/requirements/utilities.txt  # For click
+
+# MCP integration
+fastmcp>=1.0.0  # Decorator-based MCP implementation

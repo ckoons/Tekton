@@ -1,0 +1,66 @@
+<!-- Shared Chat Widget Template -->
+<!-- Place in: /Hephaestus/ui/components/shared/chat-widget.html -->
+<div class="chat-widget">
+  <!-- Chat Messages Area -->
+  <div class="chat-messages" id="chat-messages">
+    <!-- Messages will be dynamically inserted here -->
+    <!-- Example message structure:
+    <div class="chat-bubble ai">
+      <div class="speaker">Apollo</div>
+      <div class="message">Hello! I'm Apollo, your executive coordination AI.</div>
+      <div class="timestamp">10:23 AM</div>
+    </div>
+    <div class="chat-bubble human">
+      <div class="message">How can you help me?</div>
+      <div class="timestamp">10:24 AM</div>
+    </div>
+    -->
+  </div>
+  
+  <!-- Fixed Chat Input Footer -->
+  <div class="chat-input-footer">
+    <!-- Terminal-style prompt -->
+    <div class="chat-prompt">></div>
+    
+    <!-- Dynamic input with component-aware placeholder -->
+    <input 
+      type="text" 
+      class="chat-input" 
+      id="chat-input" 
+      placeholder="Chat with Rhetor AI" 
+      autocomplete="off"
+      onkeypress="if(event.key==='Enter' && !event.shiftKey) ChatWidget.handleSend()"
+    >
+    
+    <!-- Send button -->
+    <button class="chat-send" onclick="ChatWidget.handleSend()" title="Send message">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+        <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+    
+    <!-- Optional: Quick actions menu -->
+    <button class="chat-menu" onclick="ChatWidget.toggleMenu()" title="Quick actions">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+        <circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/>
+      </svg>
+    </button>
+  </div>
+  
+  <!-- Quick Actions Menu (hidden by default) -->
+  <div class="chat-quick-menu" id="chat-quick-menu" style="display: none;">
+    <div class="quick-action" onclick="ChatWidget.clearChat()">Clear Chat</div>
+    <div class="quick-action" onclick="ChatWidget.exportChat()">Export History</div>
+    <div class="quick-action" onclick="ChatWidget.switchToTeamChat()">Team Chat</div>
+    <div class="quick-action" onclick="ChatWidget.showHelp()">Help</div>
+  </div>
+  
+  <!-- Typing Indicator Template (hidden by default) -->
+  <div id="typing-indicator-template" style="display: none;">
+    <div class="chat-bubble ai typing">
+      <div class="typing-dots">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+  </div>
+</div>

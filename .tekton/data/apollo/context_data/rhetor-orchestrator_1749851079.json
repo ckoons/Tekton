@@ -1,0 +1,222 @@
+[
+  {
+    "context_id": "rhetor-orchestrator",
+    "metrics": {
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "total_tokens": 0,
+      "max_tokens": 4000,
+      "token_utilization": 0.0,
+      "input_token_rate": 0.0,
+      "output_token_rate": 0.0,
+      "token_rate_change": 0.0,
+      "repetition_score": 0.0,
+      "self_reference_score": 0.0,
+      "coherence_score": 1.0,
+      "latency": 0.0,
+      "processing_time": 0.0,
+      "timestamp": "2025-06-13 17:43:47.784173"
+    },
+    "health": "excellent",
+    "health_score": 1.0,
+    "timestamp": "2025-06-13 17:43:47.784191"
+  },
+  {
+    "context_id": "rhetor-orchestrator",
+    "metrics": {
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "total_tokens": 0,
+      "max_tokens": 4000,
+      "token_utilization": 0.0,
+      "input_token_rate": 0.0,
+      "output_token_rate": 0.0,
+      "token_rate_change": 0.0,
+      "repetition_score": 0.0,
+      "self_reference_score": 0.0,
+      "coherence_score": 1.0,
+      "latency": 0.0,
+      "processing_time": 0.0,
+      "timestamp": "2025-06-13 17:43:52.791057"
+    },
+    "health": "excellent",
+    "health_score": 1.0,
+    "timestamp": "2025-06-13 17:43:52.791309"
+  },
+  {
+    "context_id": "rhetor-orchestrator",
+    "metrics": {
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "total_tokens": 0,
+      "max_tokens": 4000,
+      "token_utilization": 0.0,
+      "input_token_rate": 0.0,
+      "output_token_rate": 0.0,
+      "token_rate_change": 0.0,
+      "repetition_score": 0.0,
+      "self_reference_score": 0.0,
+      "coherence_score": 1.0,
+      "latency": 0.0,
+      "processing_time": 0.0,
+      "timestamp": "2025-06-13 17:43:57.797550"
+    },
+    "health": "excellent",
+    "health_score": 1.0,
+    "timestamp": "2025-06-13 17:43:57.797648"
+  },
+  {
+    "context_id": "rhetor-orchestrator",
+    "metrics": {
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "total_tokens": 0,
+      "max_tokens": 4000,
+      "token_utilization": 0.0,
+      "input_token_rate": 0.0,
+      "output_token_rate": 0.0,
+      "token_rate_change": 0.0,
+      "repetition_score": 0.0,
+      "self_reference_score": 0.0,
+      "coherence_score": 1.0,
+      "latency": 0.0,
+      "processing_time": 0.0,
+      "timestamp": "2025-06-13 17:44:02.802562"
+    },
+    "health": "excellent",
+    "health_score": 1.0,
+    "timestamp": "2025-06-13 17:44:02.802643"
+  },
+  {
+    "context_id": "rhetor-orchestrator",
+    "metrics": {
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "total_tokens": 0,
+      "max_tokens": 4000,
+      "token_utilization": 0.0,
+      "input_token_rate": 0.0,
+      "output_token_rate": 0.0,
+      "token_rate_change": 0.0,
+      "repetition_score": 0.0,
+      "self_reference_score": 0.0,
+      "coherence_score": 1.0,
+      "latency": 0.0,
+      "processing_time": 0.0,
+      "timestamp": "2025-06-13 17:44:07.807603"
+    },
+    "health": "excellent",
+    "health_score": 1.0,
+    "timestamp": "2025-06-13 17:44:07.807685"
+  },
+  {
+    "context_id": "rhetor-orchestrator",
+    "metrics": {
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "total_tokens": 0,
+      "max_tokens": 4000,
+      "token_utilization": 0.0,
+      "input_token_rate": 0.0,
+      "output_token_rate": 0.0,
+      "token_rate_change": 0.0,
+      "repetition_score": 0.0,
+      "self_reference_score": 0.0,
+      "coherence_score": 1.0,
+      "latency": 0.0,
+      "processing_time": 0.0,
+      "timestamp": "2025-06-13 17:44:12.811750"
+    },
+    "health": "excellent",
+    "health_score": 1.0,
+    "timestamp": "2025-06-13 17:44:12.811874"
+  },
+  {
+    "context_id": "rhetor-orchestrator",
+    "metrics": {
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "total_tokens": 0,
+      "max_tokens": 4000,
+      "token_utilization": 0.0,
+      "input_token_rate": 0.0,
+      "output_token_rate": 0.0,
+      "token_rate_change": 0.0,
+      "repetition_score": 0.0,
+      "self_reference_score": 0.0,
+      "coherence_score": 1.0,
+      "latency": 0.0,
+      "processing_time": 0.0,
+      "timestamp": "2025-06-13 17:44:17.814981"
+    },
+    "health": "excellent",
+    "health_score": 1.0,
+    "timestamp": "2025-06-13 17:44:17.815032"
+  },
+  {
+    "context_id": "rhetor-orchestrator",
+    "metrics": {
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "total_tokens": 0,
+      "max_tokens": 4000,
+      "token_utilization": 0.0,
+      "input_token_rate": 0.0,
+      "output_token_rate": 0.0,
+      "token_rate_change": 0.0,
+      "repetition_score": 0.0,
+      "self_reference_score": 0.0,
+      "coherence_score": 1.0,
+      "latency": 0.0,
+      "processing_time": 0.0,
+      "timestamp": "2025-06-13 17:44:22.817104"
+    },
+    "health": "excellent",
+    "health_score": 1.0,
+    "timestamp": "2025-06-13 17:44:22.817143"
+  },
+  {
+    "context_id": "rhetor-orchestrator",
+    "metrics": {
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "total_tokens": 0,
+      "max_tokens": 4000,
+      "token_utilization": 0.0,
+      "input_token_rate": 0.0,
+      "output_token_rate": 0.0,
+      "token_rate_change": 0.0,
+      "repetition_score": 0.0,
+      "self_reference_score": 0.0,
+      "coherence_score": 1.0,
+      "latency": 0.0,
+      "processing_time": 0.0,
+      "timestamp": "2025-06-13 17:44:27.823046"
+    },
+    "health": "excellent",
+    "health_score": 1.0,
+    "timestamp": "2025-06-13 17:44:27.823145"
+  },
+  {
+    "context_id": "rhetor-orchestrator",
+    "metrics": {
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "total_tokens": 0,
+      "max_tokens": 4000,
+      "token_utilization": 0.0,
+      "input_token_rate": 0.0,
+      "output_token_rate": 0.0,
+      "token_rate_change": 0.0,
+      "repetition_score": 0.0,
+      "self_reference_score": 0.0,
+      "coherence_score": 1.0,
+      "latency": 0.0,
+      "processing_time": 0.0,
+      "timestamp": "2025-06-13 17:44:32.828347"
+    },
+    "health": "excellent",
+    "health_score": 1.0,
+    "timestamp": "2025-06-13 17:44:32.828451"
+  }
+]

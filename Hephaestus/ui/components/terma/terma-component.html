@@ -1,0 +1,44 @@
+<!-- Terma Component Stub -->
+<div class="terma-component">
+  <header class="terma-header">
+    <div class="terma-header-title">
+      <img src="/images/icon.jpg" alt="Terma" class="terma-logo">
+      <h1>Terma - Terminal System</h1>
+    </div>
+    <div class="terma-header-controls">
+      <button class="terma-clear">Clear</button>
+      <button class="terma-settings">Settings</button>
+    </div>
+  </header>
+  
+  <div class="terma-terminal-container">
+    <div id="terma-terminal" class="terma-terminal">
+      <div id="terma-output" class="terma-output">
+        <div class="terma-welcome">
+          <span class="terma-welcome-title">Welcome to Terma Terminal</span>
+          <span class="terma-welcome-message">Type commands below to interact with the system.</span>
+        </div>
+      </div>
+      <div class="terma-input-container">
+        <span class="terma-prompt">$</span>
+        <input type="text" id="terma-input" class="terma-input" placeholder="Type your command here...">
+      </div>
+    </div>
+  </div>
+  
+  <div class="terma-llm-assistance">
+    <div class="terma-llm-header">
+      <span>AI Assistant</span>
+      <button id="terma-llm-toggle" class="terma-llm-toggle">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M6 9L12 15L18 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+    </div>
+    <div id="terma-llm-output" class="terma-llm-output">
+      <p>
+        Ask for help by typing <code>?command</code> or run command followed by <code>?</code> to analyze output.
+      </p>
+    </div>
+  </div>
+</div>

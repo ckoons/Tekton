@@ -1,0 +1,1 @@
+# Rhetor configuration package

@@ -1,0 +1,365 @@
+<!-- 
+  Sophia Component for Hephaestus UI
+  This component provides the Sophia dashboard for the Tekton UI.
+-->
+
+<div id="sophia-dashboard" class="sophia-container">
+  <header class="sophia-header">
+    <h2>Sophia - Continuous Improvement & AI Research</h2>
+    <div class="sophia-controls">
+      <button id="sophia-refresh-btn" class="btn btn-secondary">Refresh</button>
+      <select id="sophia-view-selector" class="form-select">
+        <option value="metrics">Metrics Dashboard</option>
+        <option value="intelligence">Intelligence Profiles</option>
+        <option value="experiments">Experiments</option>
+        <option value="recommendations">Recommendations</option>
+        <option value="research">Research Projects</option>
+      </select>
+    </div>
+  </header>
+  
+  <div class="sophia-content">
+    <!-- Metrics Dashboard View -->
+    <div id="sophia-metrics-view" class="sophia-view">
+      <div class="sophia-metrics-controls">
+        <div class="sophia-filter-bar">
+          <div class="input-group">
+            <span class="input-group-text">Component</span>
+            <select id="sophia-metrics-component-filter" class="form-select">
+              <option value="">All Components</option>
+              <!-- Dynamically populated -->
+            </select>
+          </div>
+          <div class="input-group">
+            <span class="input-group-text">Metric Type</span>
+            <select id="sophia-metrics-type-filter" class="form-select">
+              <option value="">All Metrics</option>
+              <option value="performance">Performance</option>
+              <option value="resource">Resource</option>
+              <option value="accuracy">Accuracy</option>
+              <option value="behavioral">Behavioral</option>
+            </select>
+          </div>
+          <div class="input-group">
+            <span class="input-group-text">Time Range</span>
+            <select id="sophia-metrics-timerange" class="form-select">
+              <option value="1h">Last Hour</option>
+              <option value="6h">Last 6 Hours</option>
+              <option value="24h" selected>Last 24 Hours</option>
+              <option value="7d">Last 7 Days</option>
+              <option value="30d">Last 30 Days</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Metrics Charts -->
+      <div class="sophia-charts-container">
+        <div class="sophia-chart-wrapper">
+          <h3>Performance Metrics</h3>
+          <div id="sophia-performance-chart" class="sophia-chart"></div>
+        </div>
+        <div class="sophia-chart-wrapper">
+          <h3>Resource Usage</h3>
+          <div id="sophia-resource-chart" class="sophia-chart"></div>
+        </div>
+        <div class="sophia-chart-wrapper">
+          <h3>Component Communication</h3>
+          <div id="sophia-communication-chart" class="sophia-chart"></div>
+        </div>
+        <div class="sophia-chart-wrapper">
+          <h3>Error Rates</h3>
+          <div id="sophia-error-chart" class="sophia-chart"></div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Intelligence Profiles View -->
+    <div id="sophia-intelligence-view" class="sophia-view" style="display: none;">
+      <div class="sophia-intelligence-controls">
+        <div class="sophia-filter-bar">
+          <div class="input-group">
+            <span class="input-group-text">Component</span>
+            <select id="sophia-intelligence-component-filter" class="form-select">
+              <option value="">All Components</option>
+              <!-- Dynamically populated -->
+            </select>
+          </div>
+          <div class="input-group">
+            <span class="input-group-text">Dimension</span>
+            <select id="sophia-intelligence-dimension-filter" class="form-select">
+              <option value="">All Dimensions</option>
+              <option value="language_processing">Language Processing</option>
+              <option value="reasoning">Reasoning</option>
+              <option value="knowledge">Knowledge</option>
+              <option value="learning">Learning</option>
+              <option value="creativity">Creativity</option>
+              <option value="planning">Planning</option>
+              <option value="problem_solving">Problem Solving</option>
+              <option value="adaptation">Adaptation</option>
+              <option value="collaboration">Collaboration</option>
+              <option value="metacognition">Metacognition</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Intelligence Dashboard -->
+      <div class="sophia-intelligence-dashboard">
+        <div class="sophia-radar-chart-wrapper">
+          <h3>Component Intelligence Profile</h3>
+          <div id="sophia-radar-chart" class="sophia-chart"></div>
+        </div>
+        <div class="sophia-dimension-details">
+          <h3>Dimension Details</h3>
+          <div id="sophia-dimension-table" class="sophia-table"></div>
+        </div>
+      </div>
+      
+      <!-- Component Comparison -->
+      <div class="sophia-intelligence-comparison">
+        <h3>Component Comparison</h3>
+        <div class="sophia-comparison-controls">
+          <div class="input-group">
+            <span class="input-group-text">Compare</span>
+            <select id="sophia-comparison-component1" class="form-select">
+              <!-- Dynamically populated -->
+            </select>
+            <span class="input-group-text">with</span>
+            <select id="sophia-comparison-component2" class="form-select">
+              <!-- Dynamically populated -->
+            </select>
+            <button id="sophia-compare-btn" class="btn btn-primary">Compare</button>
+          </div>
+        </div>
+        <div id="sophia-comparison-chart" class="sophia-chart"></div>
+      </div>
+    </div>
+    
+    <!-- Experiments View -->
+    <div id="sophia-experiments-view" class="sophia-view" style="display: none;">
+      <div class="sophia-experiments-controls">
+        <div class="sophia-filter-bar">
+          <div class="input-group">
+            <span class="input-group-text">Status</span>
+            <select id="sophia-experiments-status-filter" class="form-select">
+              <option value="">All Statuses</option>
+              <option value="draft">Draft</option>
+              <option value="scheduled">Scheduled</option>
+              <option value="running">Running</option>
+              <option value="completed">Completed</option>
+              <option value="analyzing">Analyzing</option>
+              <option value="analyzed">Analyzed</option>
+            </select>
+          </div>
+          <div class="input-group">
+            <span class="input-group-text">Type</span>
+            <select id="sophia-experiments-type-filter" class="form-select">
+              <option value="">All Types</option>
+              <option value="a_b_test">A/B Test</option>
+              <option value="multivariate">Multivariate</option>
+              <option value="shadow_mode">Shadow Mode</option>
+              <option value="before_after">Before/After</option>
+            </select>
+          </div>
+          <button id="sophia-new-experiment-btn" class="btn btn-primary">New Experiment</button>
+        </div>
+      </div>
+      
+      <!-- Experiments List -->
+      <div class="sophia-experiments-list">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Type</th>
+              <th>Status</th>
+              <th>Components</th>
+              <th>Created</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="sophia-experiments-tbody">
+            <!-- Dynamically populated -->
+          </tbody>
+        </table>
+      </div>
+      
+      <!-- Experiment Details Modal -->
+      <div id="sophia-experiment-modal" class="modal">
+        <div class="modal-dialog modal-lg">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Experiment Details</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <div id="sophia-experiment-details">
+                <!-- Dynamically populated -->
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+              <button id="sophia-experiment-action-btn" type="button" class="btn btn-primary">Start</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Recommendations View -->
+    <div id="sophia-recommendations-view" class="sophia-view" style="display: none;">
+      <div class="sophia-recommendations-controls">
+        <div class="sophia-filter-bar">
+          <div class="input-group">
+            <span class="input-group-text">Status</span>
+            <select id="sophia-recommendations-status-filter" class="form-select">
+              <option value="">All Statuses</option>
+              <option value="pending">Pending</option>
+              <option value="approved">Approved</option>
+              <option value="in_progress">In Progress</option>
+              <option value="implemented">Implemented</option>
+              <option value="verified">Verified</option>
+              <option value="rejected">Rejected</option>
+            </select>
+          </div>
+          <div class="input-group">
+            <span class="input-group-text">Priority</span>
+            <select id="sophia-recommendations-priority-filter" class="form-select">
+              <option value="">All Priorities</option>
+              <option value="critical">Critical</option>
+              <option value="high">High</option>
+              <option value="medium">Medium</option>
+              <option value="low">Low</option>
+            </select>
+          </div>
+          <div class="input-group">
+            <span class="input-group-text">Component</span>
+            <select id="sophia-recommendations-component-filter" class="form-select">
+              <option value="">All Components</option>
+              <!-- Dynamically populated -->
+            </select>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Recommendations List -->
+      <div class="sophia-recommendations-list">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th>Title</th>
+              <th>Type</th>
+              <th>Priority</th>
+              <th>Components</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="sophia-recommendations-tbody">
+            <!-- Dynamically populated -->
+          </tbody>
+        </table>
+      </div>
+      
+      <!-- Recommendation Details Modal -->
+      <div id="sophia-recommendation-modal" class="modal">
+        <div class="modal-dialog modal-lg">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Recommendation Details</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <div id="sophia-recommendation-details">
+                <!-- Dynamically populated -->
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+              <button id="sophia-recommendation-action-btn" type="button" class="btn btn-primary">Approve</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Research View -->
+    <div id="sophia-research-view" class="sophia-view" style="display: none;">
+      <div class="sophia-research-controls">
+        <div class="sophia-filter-bar">
+          <div class="input-group">
+            <span class="input-group-text">Status</span>
+            <select id="sophia-research-status-filter" class="form-select">
+              <option value="">All Statuses</option>
+              <option value="proposed">Proposed</option>
+              <option value="planning">Planning</option>
+              <option value="active">Active</option>
+              <option value="analyzing">Analyzing</option>
+              <option value="concluded">Concluded</option>
+              <option value="published">Published</option>
+            </select>
+          </div>
+          <div class="input-group">
+            <span class="input-group-text">Approach</span>
+            <select id="sophia-research-approach-filter" class="form-select">
+              <option value="">All Approaches</option>
+              <option value="computational_spectral_analysis">Computational Spectral Analysis</option>
+              <option value="catastrophe_theory">Catastrophe Theory</option>
+              <option value="capability_emergence">Capability Emergence</option>
+              <option value="collaborative_intelligence">Collaborative Intelligence</option>
+            </select>
+          </div>
+          <button id="sophia-new-research-btn" class="btn btn-primary">New Research Project</button>
+        </div>
+      </div>
+      
+      <!-- Research Projects List -->
+      <div class="sophia-research-list">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th>Title</th>
+              <th>Approach</th>
+              <th>Status</th>
+              <th>Components</th>
+              <th>Created</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="sophia-research-tbody">
+            <!-- Dynamically populated -->
+          </tbody>
+        </table>
+      </div>
+      
+      <!-- Research Project Details Modal -->
+      <div id="sophia-research-modal" class="modal">
+        <div class="modal-dialog modal-lg">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Research Project Details</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <div id="sophia-research-details">
+                <!-- Dynamically populated -->
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+              <button id="sophia-research-action-btn" type="button" class="btn btn-primary">Start</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Load the Sophia UI script -->
+<script src="scripts/sophia-component.js"></script>
+<!-- Load the Sophia charts script -->
+<script src="scripts/sophia-charts.js"></script>
+<!-- Load the Sophia recommendations script -->
+<script src="scripts/sophia-recommendations.js"></script>

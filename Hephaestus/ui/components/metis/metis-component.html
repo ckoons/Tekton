@@ -1,0 +1,1864 @@
+<!-- Metis Component - Task Management and Visualization -->
+<div class="metis" data-tekton-area="metis" data-tekton-component="metis" data-tekton-type="component-workspace" data-tekton-ai="metis-assistant" data-tekton-ai-ready="false">
+    <!-- Component Header with Title -->
+    <div class="metis__header">
+        <div class="metis__title-container">
+            <img src="/images/hexagon.jpg" alt="Tekton" class="metis__icon">
+            <h2 class="metis__title">
+                <span class="metis__title-main">Metis</span>
+                <span class="metis__title-sub">Task Management</span>
+            </h2>
+        </div>
+    </div>
+    
+    <!-- Metis Menu Bar with Tab Navigation -->
+    <div class="metis__menu-bar">
+        <div class="metis__tabs">
+            <div class="metis__tab metis__tab--active" data-tab="tasks" onclick="metis_switchTab('tasks'); return false;">
+                <span class="metis__tab-label">Tasks</span>
+            </div>
+            <div class="metis__tab" data-tab="dependency" onclick="metis_switchTab('dependency'); return false;">
+                <span class="metis__tab-label">Dependency</span>
+            </div>
+            <div class="metis__tab" data-tab="complexity" onclick="metis_switchTab('complexity'); return false;">
+                <span class="metis__tab-label">Complexity</span>
+            </div>
+            <div class="metis__tab" data-tab="prd" onclick="metis_switchTab('prd'); return false;">
+                <span class="metis__tab-label">PRD Parser</span>
+            </div>
+            <div class="metis__tab" data-tab="workflow" onclick="metis_switchTab('workflow'); return false;">
+                <span class="metis__tab-label">Workflow Chat</span>
+            </div>
+            <div class="metis__tab" data-tab="teamchat" onclick="metis_switchTab('teamchat'); return false;">
+                <span class="metis__tab-label">Team Chat</span>
+            </div>
+        </div>
+        <div class="metis__actions">
+            <button id="task-add-btn" class="metis__action-button" onclick="metis_addTask(); return false;">
+                <span class="metis__button-label">Add Task</span>
+            </button>
+            <button id="clear-chat-btn" class="metis__action-button" style="display: none;" onclick="metis_clearChat(); return false;">
+                <span class="metis__button-label">Clear</span>
+            </button>
+        </div>
+    </div>
+    
+    <!-- Metis Content Area -->
+    <div class="metis__content">
+        <!-- Tasks Tab (Default Active Tab) -->
+        <div id="tasks-panel" class="metis__panel metis__panel--active">
+            <!-- View Toggle + Controls Bar (Secondary Menu Bar) -->
+            <div class="metis__control-bar">
+                <div class="metis__view-buttons">
+                    <div class="metis__view-button metis__view-button--active" data-view="list" onclick="metis_switchView('list'); return false;">
+                        <span class="metis__view-label">List</span>
+                    </div>
+                    <div class="metis__view-button" data-view="board" onclick="metis_switchView('board'); return false;">
+                        <span class="metis__view-label">Board</span>
+                    </div>
+                    <div class="metis__view-button" data-view="graph" onclick="metis_switchView('graph'); return false;">
+                        <span class="metis__view-label">Graph</span>
+                    </div>
+                </div>
+                
+                <div class="metis__search-container">
+                    <input type="text" id="task-search" class="metis__search-input" placeholder="Search tasks...">
+                    <button id="task-search-btn" class="metis__search-button">Search</button>
+                </div>
+                
+                <div class="metis__filter-container">
+                    <select id="task-status-filter" class="metis__filter-select">
+                        <option value="all">All Status</option>
+                        <option value="pending">Pending</option>
+                        <option value="in_progress">In Progress</option>
+                        <option value="completed">Completed</option>
+                        <option value="blocked">Blocked</option>
+                    </select>
+                    <select id="task-priority-filter" class="metis__filter-select">
+                        <option value="all">All Priorities</option>
+                        <option value="high">High</option>
+                        <option value="medium">Medium</option>
+                        <option value="low">Low</option>
+                    </select>
+                    <button id="apply-filter-btn" class="metis__filter-button">Apply</button>
+                </div>
+            </div>
+            
+            <!-- Tasks Main Area -->
+            <div class="metis__task-area">
+                
+                <!-- Task Views - Only one will be active at a time -->
+                <div id="list-view" class="metis__view metis__view--active">
+                    <div class="metis__list-container">
+                        <div id="task-list-loading" class="metis__loading-indicator">
+                            <div class="metis__spinner"></div>
+                            <div class="metis__loading-text">Loading tasks...</div>
+                        </div>
+                        <table class="metis__task-table" id="task-table" style="display: none;">
+                            <thead>
+                                <tr>
+                                    <th class="metis__task-header" data-sort="id">ID</th>
+                                    <th class="metis__task-header" data-sort="name">Name</th>
+                                    <th class="metis__task-header" data-sort="status">Status</th>
+                                    <th class="metis__task-header" data-sort="priority">Priority</th>
+                                    <th class="metis__task-header" data-sort="complexity">Complexity</th>
+                                    <th class="metis__task-header" data-sort="due_date">Due Date</th>
+                                    <th class="metis__task-header">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="task-list-items">
+                                <!-- Tasks will be populated here dynamically -->
+                                <!-- Sample task for UI testing -->
+                                <tr class="metis__task-row">
+                                    <td class="metis__task-cell">T-001</td>
+                                    <td class="metis__task-cell">Implement Metis UI Component</td>
+                                    <td class="metis__task-cell">
+                                        <span class="metis__status metis__status--in-progress">In Progress</span>
+                                    </td>
+                                    <td class="metis__task-cell">
+                                        <span class="metis__priority metis__priority--high">High</span>
+                                    </td>
+                                    <td class="metis__task-cell">8.5</td>
+                                    <td class="metis__task-cell">2025-06-01</td>
+                                    <td class="metis__task-cell metis__task-actions">
+                                        <button class="metis__task-action-btn" onclick="metis_viewTask('T-001')">View</button>
+                                        <button class="metis__task-action-btn" onclick="metis_editTask('T-001')">Edit</button>
+                                        <button class="metis__task-action-btn" onclick="metis_deleteTask('T-001')">Delete</button>
+                                    </td>
+                                </tr>
+                                <tr class="metis__task-row">
+                                    <td class="metis__task-cell">T-002</td>
+                                    <td class="metis__task-cell">Test Metis Component</td>
+                                    <td class="metis__task-cell">
+                                        <span class="metis__status metis__status--pending">Pending</span>
+                                    </td>
+                                    <td class="metis__task-cell">
+                                        <span class="metis__priority metis__priority--medium">Medium</span>
+                                    </td>
+                                    <td class="metis__task-cell">4.2</td>
+                                    <td class="metis__task-cell">2025-06-05</td>
+                                    <td class="metis__task-cell metis__task-actions">
+                                        <button class="metis__task-action-btn" onclick="metis_viewTask('T-002')">View</button>
+                                        <button class="metis__task-action-btn" onclick="metis_editTask('T-002')">Edit</button>
+                                        <button class="metis__task-action-btn" onclick="metis_deleteTask('T-002')">Delete</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <div id="board-view" class="metis__view">
+                    <div class="metis__board-container">
+                        <div class="metis__columns">
+                            <div class="metis__column" data-status="pending">
+                                <div class="metis__column-header">
+                                    <h3 class="metis__column-title">Pending</h3>
+                                    <span class="metis__column-count">0</span>
+                                </div>
+                                <div class="metis__column-content">
+                                    <!-- Task cards will be populated here -->
+                                    <div class="metis__task-card" draggable="true" data-task-id="T-002">
+                                        <div class="metis__card-header">
+                                            <span class="metis__task-id">T-002</span>
+                                            <span class="metis__priority metis__priority--medium">Medium</span>
+                                        </div>
+                                        <div class="metis__card-title">Test Metis Component</div>
+                                        <div class="metis__card-footer">
+                                            <span class="metis__due-date">Due: 2025-06-05</span>
+                                            <span class="metis__complexity">Complexity: 4.2</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="metis__column" data-status="in_progress">
+                                <div class="metis__column-header">
+                                    <h3 class="metis__column-title">In Progress</h3>
+                                    <span class="metis__column-count">0</span>
+                                </div>
+                                <div class="metis__column-content">
+                                    <!-- Task cards will be populated here -->
+                                    <div class="metis__task-card" draggable="true" data-task-id="T-001">
+                                        <div class="metis__card-header">
+                                            <span class="metis__task-id">T-001</span>
+                                            <span class="metis__priority metis__priority--high">High</span>
+                                        </div>
+                                        <div class="metis__card-title">Implement Metis UI Component</div>
+                                        <div class="metis__card-footer">
+                                            <span class="metis__due-date">Due: 2025-06-01</span>
+                                            <span class="metis__complexity">Complexity: 8.5</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="metis__column" data-status="completed">
+                                <div class="metis__column-header">
+                                    <h3 class="metis__column-title">Completed</h3>
+                                    <span class="metis__column-count">0</span>
+                                </div>
+                                <div class="metis__column-content">
+                                    <!-- Task cards will be populated here -->
+                                </div>
+                            </div>
+                            <div class="metis__column" data-status="blocked">
+                                <div class="metis__column-header">
+                                    <h3 class="metis__column-title">Blocked</h3>
+                                    <span class="metis__column-count">0</span>
+                                </div>
+                                <div class="metis__column-content">
+                                    <!-- Task cards will be populated here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="graph-view" class="metis__view">
+                    <div id="graph-container" class="metis__graph-container">
+                        <div id="graph-placeholder" class="metis__graph-placeholder">
+                            <div class="metis__placeholder-content">
+                                <h3 class="metis__placeholder-title">Task Dependency Graph</h3>
+                                <p class="metis__placeholder-text">The dependency graph will be displayed here once loaded.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Dependency Tab -->
+        <div id="dependency-panel" class="metis__panel">
+            <div class="metis__dependency">
+                <h3 class="metis__section-title">Task Dependencies</h3>
+                <p class="metis__text">Visualize and manage dependencies between tasks.</p>
+                
+                <div class="metis__dependency-controls">
+                    <div class="metis__dependency-form">
+                        <div class="metis__form-group">
+                            <label class="metis__form-label">Task</label>
+                            <select id="dependency-task-select" class="metis__form-select">
+                                <option value="">Select a task</option>
+                                <option value="T-001">T-001: Implement Metis UI Component</option>
+                                <option value="T-002">T-002: Test Metis Component</option>
+                            </select>
+                        </div>
+                        
+                        <div class="metis__form-group">
+                            <label class="metis__form-label">Depends On</label>
+                            <select id="dependency-depends-on-select" class="metis__form-select">
+                                <option value="">Select a task</option>
+                                <option value="T-001">T-001: Implement Metis UI Component</option>
+                                <option value="T-002">T-002: Test Metis Component</option>
+                            </select>
+                        </div>
+                        
+                        <div class="metis__form-group">
+                            <label class="metis__form-label">Dependency Type</label>
+                            <select id="dependency-type-select" class="metis__form-select">
+                                <option value="blocks">Blocks</option>
+                                <option value="required_by">Required By</option>
+                                <option value="related_to">Related To</option>
+                            </select>
+                        </div>
+                        
+                        <div class="metis__form-actions">
+                            <button id="add-dependency-btn" class="metis__button metis__button--primary">Add Dependency</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="dependency-graph-container" class="metis__graph-container">
+                    <div id="dependency-graph-placeholder" class="metis__graph-placeholder">
+                        <div class="metis__placeholder-content">
+                            <h3 class="metis__placeholder-title">Interactive Dependency Graph</h3>
+                            <p class="metis__placeholder-text">Select a task to see its dependencies here.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="metis__dependency-list-container">
+                    <h4 class="metis__subtitle">Current Dependencies</h4>
+                    <table class="metis__dependency-table" id="dependency-table">
+                        <thead>
+                            <tr>
+                                <th>Task</th>
+                                <th>Dependency Type</th>
+                                <th>Depends On</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="dependency-list-items">
+                            <!-- Sample dependency for UI testing -->
+                            <tr class="metis__dependency-row">
+                                <td>T-002: Test Metis Component</td>
+                                <td>Blocks</td>
+                                <td>T-001: Implement Metis UI Component</td>
+                                <td>
+                                    <button class="metis__dependency-action-btn" onclick="metis_removeDependency('1')">Remove</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Complexity Tab -->
+        <div id="complexity-panel" class="metis__panel">
+            <div class="metis__complexity">
+                <h3 class="metis__section-title">Task Complexity Analysis</h3>
+                <p class="metis__text">Analyze and understand task complexity factors.</p>
+                
+                <div class="metis__complexity-controls">
+                    <div class="metis__form-group">
+                        <label class="metis__form-label">Task</label>
+                        <select id="complexity-task-select" class="metis__form-select">
+                            <option value="">Select a task</option>
+                            <option value="T-001">T-001: Implement Metis UI Component</option>
+                            <option value="T-002">T-002: Test Metis Component</option>
+                        </select>
+                    </div>
+                    
+                    <div class="metis__form-actions">
+                        <button id="analyze-complexity-btn" class="metis__button metis__button--primary">Analyze Complexity</button>
+                    </div>
+                </div>
+                
+                <div class="metis__complexity-report">
+                    <div id="complexity-chart-container" class="metis__chart-container">
+                        <div class="metis__chart-placeholder">
+                            <div class="metis__placeholder-content">
+                                <h3 class="metis__placeholder-title">Complexity Breakdown</h3>
+                                <p class="metis__placeholder-text">Select a task and click Analyze to see complexity factors.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="metis__complexity-details">
+                        <h4 class="metis__subtitle">Complexity Factors</h4>
+                        <div class="metis__complexity-factors">
+                            <div class="metis__factor">
+                                <div class="metis__factor-name">Technical Complexity</div>
+                                <div class="metis__factor-bar-container">
+                                    <div class="metis__factor-bar" style="width: 75%;"></div>
+                                    <div class="metis__factor-value">7.5</div>
+                                </div>
+                            </div>
+                            <div class="metis__factor">
+                                <div class="metis__factor-name">Dependencies</div>
+                                <div class="metis__factor-bar-container">
+                                    <div class="metis__factor-bar" style="width: 60%;"></div>
+                                    <div class="metis__factor-value">6.0</div>
+                                </div>
+                            </div>
+                            <div class="metis__factor">
+                                <div class="metis__factor-name">Scope Size</div>
+                                <div class="metis__factor-bar-container">
+                                    <div class="metis__factor-bar" style="width: 90%;"></div>
+                                    <div class="metis__factor-value">9.0</div>
+                                </div>
+                            </div>
+                            <div class="metis__factor">
+                                <div class="metis__factor-name">Risk Level</div>
+                                <div class="metis__factor-bar-container">
+                                    <div class="metis__factor-bar" style="width: 55%;"></div>
+                                    <div class="metis__factor-value">5.5</div>
+                                </div>
+                            </div>
+                            <div class="metis__factor">
+                                <div class="metis__factor-name">Knowledge Requirements</div>
+                                <div class="metis__factor-bar-container">
+                                    <div class="metis__factor-bar" style="width: 80%;"></div>
+                                    <div class="metis__factor-value">8.0</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="metis__complexity-summary">
+                            <h4 class="metis__subtitle">Summary</h4>
+                            <div class="metis__summary-score">
+                                <div class="metis__summary-label">Overall Complexity:</div>
+                                <div class="metis__summary-value">8.5</div>
+                            </div>
+                            <div class="metis__summary-text">
+                                This task has high complexity primarily due to large scope and significant knowledge requirements. Consider breaking it into smaller subtasks or allocating additional resources.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- PRD Parser Tab -->
+        <div id="prd-panel" class="metis__panel">
+            <div class="metis__prd">
+                <h3 class="metis__section-title">PRD Parser</h3>
+                <p class="metis__text">Upload a PRD document and automatically generate tasks.</p>
+                
+                <div class="metis__prd-uploader">
+                    <div class="metis__upload-container">
+                        <div class="metis__upload-area" id="prd-upload-area">
+                            <div class="metis__upload-icon">📄</div>
+                            <div class="metis__upload-text">Drag & drop a PRD document here or</div>
+                            <label for="prd-file-input" class="metis__upload-button">Browse Files</label>
+                            <input type="file" id="prd-file-input" class="metis__file-input" accept=".md,.txt,.docx,.pdf">
+                        </div>
+                        
+                        <div class="metis__form-actions">
+                            <button id="parse-prd-btn" class="metis__button metis__button--primary" disabled>Parse Document</button>
+                        </div>
+                    </div>
+                    
+                    <div class="metis__prd-preview" id="prd-preview" style="display: none;">
+                        <h4 class="metis__subtitle">Document Preview</h4>
+                        <div class="metis__preview-content" id="prd-content">
+                            <!-- Document content will be displayed here -->
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="metis__parsed-tasks" id="parsed-tasks-container" style="display: none;">
+                    <h4 class="metis__subtitle">Generated Tasks</h4>
+                    <p class="metis__text">Review and refine the tasks extracted from the PRD document.</p>
+                    
+                    <div class="metis__task-list" id="parsed-task-list">
+                        <!-- Generated tasks will be displayed here -->
+                    </div>
+                    
+                    <div class="metis__form-actions">
+                        <button id="import-tasks-btn" class="metis__button metis__button--primary">Import Tasks</button>
+                        <button id="reset-parser-btn" class="metis__button metis__button--secondary">Reset Parser</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Workflow Chat Tab -->
+        <div id="workflow-panel" class="metis__panel">
+            <div id="workflow-messages" class="metis__chat-messages">
+                <!-- Welcome message -->
+                <div class="metis__message metis__message--system">
+                    <div class="metis__message-content">
+                        <div class="metis__message-text">
+                            <h3 class="metis__message-title">Welcome to Workflow Chat</h3>
+                            <p>You can ask questions about your tasks and workflows. Try questions like:</p>
+                            <ul>
+                                <li>What are the highest priority tasks?</li>
+                                <li>Show me the dependency chain for [task name]</li>
+                                <li>What's the status of the current sprint?</li>
+                                <li>Generate a report of completed tasks</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Team Chat Tab -->
+        <div id="teamchat-panel" class="metis__panel">
+            <div id="teamchat-messages" class="metis__chat-messages">
+                <!-- Welcome message -->
+                <div class="metis__message metis__message--system">
+                    <div class="metis__message-content">
+                        <div class="metis__message-text">
+                            <h3 class="metis__message-title">Tekton Team Chat</h3>
+                            <p>This chat is shared across all Tekton components. Use this for team communication and coordination.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Task Detail Modal -->
+    <div class="metis__modal" id="task-detail-modal" style="display: none;">
+        <div class="metis__modal-content">
+            <div class="metis__modal-header">
+                <h3 class="metis__modal-title" id="modal-title">Task Details</h3>
+                <button class="metis__modal-close" onclick="metis_closeModal()">×</button>
+            </div>
+            <div class="metis__modal-body">
+                <!-- Task form fields will be displayed here -->
+                <div class="metis__form-group">
+                    <label class="metis__form-label">Task Name</label>
+                    <input type="text" id="task-name-input" class="metis__form-input">
+                </div>
+                <div class="metis__form-group">
+                    <label class="metis__form-label">Description</label>
+                    <textarea id="task-description-input" class="metis__form-textarea"></textarea>
+                </div>
+                <div class="metis__form-row">
+                    <div class="metis__form-group metis__form-group--half">
+                        <label class="metis__form-label">Status</label>
+                        <select id="task-status-input" class="metis__form-select">
+                            <option value="pending">Pending</option>
+                            <option value="in_progress">In Progress</option>
+                            <option value="completed">Completed</option>
+                            <option value="blocked">Blocked</option>
+                        </select>
+                    </div>
+                    <div class="metis__form-group metis__form-group--half">
+                        <label class="metis__form-label">Priority</label>
+                        <select id="task-priority-input" class="metis__form-select">
+                            <option value="high">High</option>
+                            <option value="medium">Medium</option>
+                            <option value="low">Low</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="metis__form-row">
+                    <div class="metis__form-group metis__form-group--half">
+                        <label class="metis__form-label">Due Date</label>
+                        <input type="date" id="task-due-date-input" class="metis__form-input">
+                    </div>
+                    <div class="metis__form-group metis__form-group--half">
+                        <label class="metis__form-label">Assigned To</label>
+                        <input type="text" id="task-assigned-to-input" class="metis__form-input">
+                    </div>
+                </div>
+            </div>
+            <div class="metis__modal-footer">
+                <button id="save-task-btn" class="metis__button metis__button--primary">Save</button>
+                <button class="metis__button metis__button--secondary" onclick="metis_closeModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Footer with Chat Input -->
+    <div class="metis__footer">
+        <div class="metis__chat-input-container">
+            <div class="metis__chat-prompt">></div>
+            <input type="text" id="chat-input" class="metis__chat-input" 
+                   placeholder="Enter message for team or workflow chat">
+            <button id="send-button" class="metis__send-button">Send</button>
+        </div>
+    </div>
+</div>
+
+<!-- Add component-specific styles -->
+<style>
+    /* Metis component styles using BEM naming convention */
+    
+    /* Container */
+    .metis {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        width: 100%;
+        background-color: var(--bg-primary, #1e1e2e);
+        color: var(--text-primary, #f0f0f0);
+    }
+    
+    /* Header */
+    .metis__header {
+        display: flex;
+        align-items: center;
+        padding: 10px 16px;
+        background-color: var(--bg-secondary, #252535);
+        border-bottom: 1px solid var(--border-color, #444444);
+        height: 46px; /* Standardized header height */
+    }
+    
+    .metis__title-container {
+        display: flex;
+        align-items: center;
+    }
+    
+    .metis__icon {
+        height: 30px;
+        width: auto;
+        margin-right: 12px;
+    }
+    
+    .metis__title {
+        margin: 0;
+        font-size: 1.2rem;
+        font-weight: 500;
+    }
+    
+    .metis__title-sub {
+        margin-left: 8px;
+        opacity: 0.8;
+        font-weight: normal;
+    }
+    
+    /* Menu Bar */
+    .metis__menu-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 6px 16px;
+        background-color: var(--bg-secondary, #252535);
+        border-bottom: 1px solid var(--border-color, #444444);
+        height: 46px; /* Standardized menu bar height */
+    }
+    
+    .metis__tabs {
+        display: flex;
+        gap: 8px;
+    }
+    
+    .metis__tab {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 16px;
+        background-color: transparent;
+        border: none;
+        border-bottom: 2px solid transparent;
+        color: var(--text-primary, #f0f0f0);
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    
+    .metis__tab:hover {
+        background-color: var(--bg-hover, #3a3a4a);
+    }
+    
+    .metis__tab--active {
+        border-bottom-color: var(--color-primary, #7B1FA2);
+        font-weight: 500;
+    }
+    
+    .metis__actions {
+        display: flex;
+        gap: 8px;
+    }
+    
+    .metis__action-button {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 12px;
+        background-color: var(--bg-tertiary, #333345);
+        border: 1px solid var(--border-color, #444444);
+        border-radius: 4px;
+        color: var(--text-primary, #f0f0f0);
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    
+    .metis__action-button:hover {
+        background-color: var(--bg-hover, #3a3a4a);
+    }
+    
+    /* Content Area */
+    .metis__content {
+        flex: 1;
+        overflow: hidden;
+        position: relative;
+    }
+    
+    .metis__panel {
+        display: none;
+        height: 100%;
+        width: 100%;
+        overflow: auto;
+    }
+    
+    .metis__panel--active {
+        display: block;
+    }
+    
+    /* Chat panel special styling */
+    #workflow-panel, #teamchat-panel {
+        position: relative; /* Needed for footer positioning */
+        overflow: hidden; /* Prevent double scrollbars */
+    }
+    
+    /* Section Titles */
+    .metis__section-title {
+        margin-bottom: 16px;
+        font-size: 24px;
+        color: var(--text-primary, #f0f0f0);
+    }
+    
+    .metis__subtitle {
+        margin-bottom: 14px;
+        margin-top: 20px;
+        font-size: 18px;
+        color: var(--text-primary, #f0f0f0);
+    }
+    
+    .metis__text {
+        margin-bottom: 20px;
+        color: var(--text-secondary, #aaaaaa);
+    }
+    
+    /* Control Bar (Secondary Menu Bar) */
+    .metis__control-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 6px 16px;
+        background-color: var(--bg-secondary, #252535);
+        border-bottom: 1px solid var(--border-color, #444444);
+        height: 46px; /* Same height as menu bar */
+    }
+    
+    /* View Buttons */
+    .metis__view-buttons {
+        display: flex;
+        gap: 8px;
+    }
+    
+    .metis__view-button {
+        display: flex;
+        align-items: center;
+        padding: 6px 12px;
+        background-color: var(--bg-tertiary, #333345);
+        border: 1px solid var(--border-color, #444444);
+        border-radius: 4px;
+        color: var(--text-primary, #f0f0f0);
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    
+    .metis__view-button:hover {
+        background-color: var(--bg-hover, #3a3a4a);
+    }
+    
+    .metis__view-button--active {
+        background-color: var(--color-primary, #7B1FA2);
+        border-color: var(--color-primary, #7B1FA2);
+    }
+    
+    .metis__search-container {
+        display: flex;
+        gap: 8px;
+    }
+    
+    .metis__search-input {
+        padding: 8px 12px;
+        min-width: 260px;
+        background-color: var(--bg-tertiary, #333345);
+        border: 1px solid var(--border-color, #444444);
+        border-radius: 4px;
+        color: var(--text-primary, #f0f0f0);
+    }
+    
+    .metis__filter-container {
+        display: flex;
+        gap: 8px;
+    }
+    
+    .metis__filter-select {
+        padding: 8px 12px;
+        background-color: var(--bg-tertiary, #333345);
+        border: 1px solid var(--border-color, #444444);
+        border-radius: 4px;
+        color: var(--text-primary, #f0f0f0);
+    }
+    
+    .metis__filter-button,
+    .metis__search-button {
+        padding: 8px 12px;
+        background-color: var(--bg-tertiary, #333345);
+        border: 1px solid var(--border-color, #444444);
+        border-radius: 4px;
+        color: var(--text-primary, #f0f0f0);
+        cursor: pointer;
+    }
+    
+    /* Views */
+    .metis__view {
+        display: none;
+        height: calc(100% - 58px); /* Account for the view toggle */
+    }
+    
+    .metis__view--active {
+        display: block;
+    }
+    
+    /* Task List View */
+    .metis__list-container {
+        padding: 16px;
+    }
+    
+    .metis__task-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 16px;
+    }
+    
+    .metis__task-header {
+        text-align: left;
+        padding: 12px;
+        background-color: var(--bg-tertiary, #333345);
+        color: var(--text-primary, #f0f0f0);
+        border-bottom: 1px solid var(--border-color, #444444);
+        cursor: pointer;
+    }
+    
+    .metis__task-header:hover {
+        background-color: var(--bg-hover, #3a3a4a);
+    }
+    
+    .metis__task-row {
+        transition: background-color 0.2s ease;
+    }
+    
+    .metis__task-row:hover {
+        background-color: var(--bg-hover, #3a3a4a);
+    }
+    
+    .metis__task-cell {
+        padding: 12px;
+        border-bottom: 1px solid var(--border-color, #444444);
+    }
+    
+    .metis__task-actions {
+        display: flex;
+        gap: 6px;
+    }
+    
+    .metis__task-action-btn {
+        padding: 4px 10px;
+        background-color: var(--bg-tertiary, #333345);
+        border: 1px solid var(--border-color, #444444);
+        border-radius: 4px;
+        color: var(--text-primary, #f0f0f0);
+        cursor: pointer;
+    }
+    
+    /* Status and Priority Indicators */
+    .metis__status, .metis__priority {
+        display: inline-block;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 0.85em;
+    }
+    
+    .metis__status--pending {
+        background-color: #3949AB;
+    }
+    
+    .metis__status--in-progress {
+        background-color: #FF9800;
+    }
+    
+    .metis__status--completed {
+        background-color: #4CAF50;
+    }
+    
+    .metis__status--blocked {
+        background-color: #F44336;
+    }
+    
+    .metis__priority--high {
+        background-color: #F44336;
+    }
+    
+    .metis__priority--medium {
+        background-color: #FF9800;
+    }
+    
+    .metis__priority--low {
+        background-color: #4CAF50;
+    }
+    
+    /* Board View */
+    .metis__board-container {
+        height: 100%;
+        overflow: auto;
+        padding: 16px;
+    }
+    
+    .metis__columns {
+        display: flex;
+        gap: 16px;
+        height: 100%;
+        min-height: 500px;
+    }
+    
+    .metis__column {
+        flex: 1;
+        min-width: 280px;
+        background-color: var(--bg-secondary, #252535);
+        border-radius: 8px;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .metis__column-header {
+        padding: 12px 16px;
+        background-color: var(--bg-tertiary, #333345);
+        border-top-left-radius: 8px;
+        border-top-right-radius: 8px;
+        border-bottom: 1px solid var(--border-color, #444444);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .metis__column-title {
+        margin: 0;
+        font-size: 16px;
+    }
+    
+    .metis__column-count {
+        background-color: var(--bg-primary, #1e1e2e);
+        padding: 2px 8px;
+        border-radius: 12px;
+        font-size: 0.85em;
+    }
+    
+    .metis__column-content {
+        flex: 1;
+        padding: 16px;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+    
+    .metis__task-card {
+        padding: 12px;
+        background-color: var(--bg-tertiary, #333345);
+        border-radius: 8px;
+        cursor: move;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+    
+    .metis__card-header {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 8px;
+    }
+    
+    .metis__task-id {
+        font-size: 0.85em;
+        color: var(--text-secondary, #aaaaaa);
+    }
+    
+    .metis__card-title {
+        font-weight: 500;
+        margin-bottom: 12px;
+    }
+    
+    .metis__card-footer {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.85em;
+        color: var(--text-secondary, #aaaaaa);
+    }
+    
+    /* Graph View */
+    .metis__graph-container {
+        height: 100%;
+        overflow: hidden;
+    }
+    
+    .metis__graph-placeholder {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
+        padding: 20px;
+    }
+    
+    /* Dependency Tab */
+    .metis__dependency {
+        padding: 20px;
+    }
+    
+    .metis__dependency-controls {
+        background-color: var(--bg-secondary, #252535);
+        padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 24px;
+    }
+    
+    .metis__dependency-form {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 16px;
+    }
+    
+    .metis__form-group {
+        flex: 1;
+        min-width: 200px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .metis__dependency-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 16px;
+    }
+    
+    .metis__dependency-table th {
+        text-align: left;
+        padding: 12px;
+        background-color: var(--bg-tertiary, #333345);
+        color: var(--text-primary, #f0f0f0);
+        border-bottom: 1px solid var(--border-color, #444444);
+    }
+    
+    .metis__dependency-row {
+        transition: background-color 0.2s ease;
+    }
+    
+    .metis__dependency-row:hover {
+        background-color: var(--bg-hover, #3a3a4a);
+    }
+    
+    .metis__dependency-row td {
+        padding: 12px;
+        border-bottom: 1px solid var(--border-color, #444444);
+    }
+    
+    .metis__dependency-action-btn {
+        padding: 4px 10px;
+        background-color: var(--bg-tertiary, #333345);
+        border: 1px solid var(--border-color, #444444);
+        border-radius: 4px;
+        color: var(--text-primary, #f0f0f0);
+        cursor: pointer;
+    }
+    
+    /* Complexity Tab */
+    .metis__complexity {
+        padding: 20px;
+    }
+    
+    .metis__complexity-controls {
+        background-color: var(--bg-secondary, #252535);
+        padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 24px;
+        display: flex;
+        gap: 16px;
+        align-items: flex-end;
+    }
+    
+    .metis__chart-container {
+        background-color: var(--bg-secondary, #252535);
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 24px;
+        height: 300px;
+    }
+    
+    .metis__chart-placeholder {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
+    }
+    
+    .metis__complexity-details {
+        background-color: var(--bg-secondary, #252535);
+        border-radius: 8px;
+        padding: 20px;
+    }
+    
+    .metis__complexity-factors {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        margin-bottom: 24px;
+    }
+    
+    .metis__factor {
+        display: flex;
+        gap: 16px;
+    }
+    
+    .metis__factor-name {
+        width: 200px;
+    }
+    
+    .metis__factor-bar-container {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+    
+    .metis__factor-bar {
+        height: 16px;
+        background-color: var(--color-primary, #7B1FA2);
+        border-radius: 4px;
+    }
+    
+    .metis__factor-value {
+        width: 40px;
+        text-align: right;
+    }
+    
+    .metis__complexity-summary {
+        background-color: var(--bg-tertiary, #333345);
+        border-radius: 8px;
+        padding: 16px;
+    }
+    
+    .metis__summary-score {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 16px;
+    }
+    
+    .metis__summary-label {
+        font-weight: 500;
+    }
+    
+    .metis__summary-value {
+        font-size: 24px;
+        font-weight: bold;
+        color: var(--color-primary, #7B1FA2);
+    }
+    
+    /* PRD Parser Tab */
+    .metis__prd {
+        padding: 20px;
+    }
+    
+    .metis__prd-uploader {
+        margin-bottom: 24px;
+    }
+    
+    .metis__upload-container {
+        background-color: var(--bg-secondary, #252535);
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 24px;
+    }
+    
+    .metis__upload-area {
+        border: 2px dashed var(--border-color, #444444);
+        border-radius: 8px;
+        padding: 40px;
+        text-align: center;
+        cursor: pointer;
+        margin-bottom: 20px;
+    }
+    
+    .metis__upload-icon {
+        font-size: 48px;
+        margin-bottom: 16px;
+    }
+    
+    .metis__upload-text {
+        margin-bottom: 16px;
+    }
+    
+    .metis__upload-button {
+        display: inline-block;
+        padding: 8px 16px;
+        background-color: var(--bg-tertiary, #333345);
+        border: 1px solid var(--border-color, #444444);
+        border-radius: 4px;
+        color: var(--text-primary, #f0f0f0);
+        cursor: pointer;
+    }
+    
+    .metis__file-input {
+        display: none;
+    }
+    
+    .metis__prd-preview {
+        background-color: var(--bg-secondary, #252535);
+        border-radius: 8px;
+        padding: 20px;
+    }
+    
+    .metis__preview-content {
+        background-color: var(--bg-tertiary, #333345);
+        border-radius: 4px;
+        padding: 16px;
+        max-height: 300px;
+        overflow-y: auto;
+        white-space: pre-wrap;
+        font-family: monospace;
+    }
+    
+    .metis__parsed-tasks {
+        background-color: var(--bg-secondary, #252535);
+        border-radius: 8px;
+        padding: 20px;
+    }
+    
+    .metis__task-list {
+        margin-bottom: 20px;
+    }
+    
+    /* Form Elements */
+    .metis__form-label {
+        font-weight: 500;
+        color: var(--text-primary, #f0f0f0);
+    }
+    
+    .metis__form-select,
+    .metis__form-input,
+    .metis__form-textarea {
+        padding: 10px;
+        background-color: var(--bg-tertiary, #333345);
+        border: 1px solid var(--border-color, #444444);
+        border-radius: 6px;
+        color: var(--text-primary, #f0f0f0);
+        font-size: 14px;
+    }
+    
+    .metis__form-textarea {
+        min-height: 100px;
+        resize: vertical;
+    }
+    
+    .metis__form-row {
+        display: flex;
+        gap: 16px;
+        margin-bottom: 16px;
+    }
+    
+    .metis__form-group--half {
+        width: 50%;
+    }
+    
+    .metis__form-actions {
+        display: flex;
+        gap: 12px;
+        justify-content: flex-end;
+        margin-top: 16px;
+    }
+    
+    .metis__button {
+        padding: 10px 16px;
+        border: none;
+        border-radius: 6px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    
+    .metis__button--primary {
+        background-color: var(--color-primary, #7B1FA2);
+        color: white;
+    }
+    
+    .metis__button--primary:hover {
+        background-color: var(--color-primary-hover, #6A1B9A);
+    }
+    
+    .metis__button--secondary {
+        background-color: var(--bg-tertiary, #333345);
+        border: 1px solid var(--border-color, #444444);
+        color: var(--text-primary, #f0f0f0);
+    }
+    
+    .metis__button--secondary:hover {
+        background-color: var(--bg-hover, #3a3a4a);
+    }
+    
+    /* Modal */
+    .metis__modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+    }
+    
+    .metis__modal-content {
+        background-color: var(--bg-secondary, #252535);
+        border-radius: 8px;
+        width: 80%;
+        max-width: 600px;
+        max-height: 90vh;
+        overflow-y: auto;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    }
+    
+    .metis__modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 16px 20px;
+        border-bottom: 1px solid var(--border-color, #444444);
+    }
+    
+    .metis__modal-title {
+        margin: 0;
+    }
+    
+    .metis__modal-close {
+        background: transparent;
+        border: none;
+        font-size: 24px;
+        cursor: pointer;
+        color: var(--text-primary, #f0f0f0);
+    }
+    
+    .metis__modal-body {
+        padding: 20px;
+    }
+    
+    .metis__modal-footer {
+        padding: 16px 20px;
+        border-top: 1px solid var(--border-color, #444444);
+        display: flex;
+        justify-content: flex-end;
+        gap: 12px;
+    }
+    
+    /* Loading Indicator */
+    .metis__loading-indicator {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 200px;
+    }
+    
+    .metis__spinner {
+        width: 40px;
+        height: 40px;
+        border: 4px solid rgba(255, 255, 255, 0.1);
+        border-radius: 50%;
+        border-top: 4px solid var(--color-primary, #7B1FA2);
+        animation: metis-spin 1s linear infinite;
+        margin-bottom: 16px;
+    }
+    
+    .metis__loading-text {
+        color: var(--text-secondary, #aaaaaa);
+    }
+    
+    /* Placeholder Content */
+    .metis__placeholder-content {
+        text-align: center;
+        padding: 20px;
+    }
+    
+    .metis__placeholder-title {
+        margin-bottom: 12px;
+        color: var(--text-primary, #f0f0f0);
+    }
+    
+    .metis__placeholder-text {
+        color: var(--text-secondary, #aaaaaa);
+    }
+    
+    /* Chat Messages */
+    .metis__chat-messages {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 70px; /* Height of the footer */
+        overflow-y: auto;
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+    
+    .metis__message {
+        border-radius: 16px;
+        padding: 12px 16px;
+        max-width: 85%;
+        word-wrap: break-word;
+        line-height: 1.4;
+    }
+    
+    .metis__message--system {
+        background-color: var(--bg-tertiary, #333345);
+        align-self: center;
+        max-width: 90%;
+        width: 600px;
+        margin: 8px 0;
+        border-radius: 8px;
+        padding: 16px 24px;
+    }
+    
+    .metis__message--user {
+        background-color: var(--color-primary, #7B1FA2);
+        color: white;
+        align-self: flex-end;
+        border-radius: 16px 16px 0 16px;
+    }
+    
+    .metis__message--ai {
+        background-color: var(--bg-secondary, #252535);
+        align-self: flex-start;
+        border-radius: 16px 16px 16px 0;
+    }
+    
+    /* Footer with Chat Input */
+    .metis__footer {
+        background-color: var(--bg-secondary, #252535);
+        border-top: 1px solid var(--border-color, #444444);
+        padding: 12px 16px;
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 70px; /* Fixed height to match bottom value in chat messages */
+    }
+    
+    .metis__chat-input-container {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        width: 100%;
+    }
+    
+    .metis__chat-prompt {
+        font-size: 18px;
+        font-weight: bold;
+        color: #4CAF50;
+    }
+    
+    .metis__chat-input {
+        flex: 1;
+        height: 44px;
+        padding: 8px 16px;
+        background-color: var(--bg-tertiary, #333345);
+        border: 1px solid var(--border-color, #444444);
+        border-radius: 8px;
+        color: var(--text-primary, #f0f0f0);
+        font-size: 14px;
+    }
+    
+    .metis__send-button {
+        height: 44px;
+        padding: 0 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: var(--color-primary, #7B1FA2);
+        border: none;
+        border-radius: 8px;
+        color: white;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    
+    .metis__send-button:hover {
+        background-color: var(--color-primary-hover, #6A1B9A);
+    }
+    
+    @keyframes metis-spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+</style>
+
+<script type="text/javascript">
+// SIMPLIFIED COMPONENT SCRIPT - FULLY SELF-CONTAINED
+// This version minimizes interference with other components
+
+// IMMEDIATELY SET UP UI MANAGER PROTECTION
+// Tell UI Manager to ignore this component - must be done IMMEDIATELY to avoid races
+if (window.uiManager) {
+    window.uiManager._ignoreComponent = 'metis';
+    console.log('[METIS] Set UI Manager to ignore metis component');
+}
+
+// DEFINE TAB SWITCHING FUNCTION
+// CRITICAL: This uses no shared code/utilities to avoid conflicts
+window.metis_switchTab = function(tabId) {
+    console.log('[METIS] Switching to tab:', tabId);
+    
+    // Force HTML panel visibility
+    const htmlPanelElements = document.querySelectorAll('#html-panel');
+    htmlPanelElements.forEach(panel => {
+        if (panel) panel.style.display = 'block';
+    });
+    
+    try {
+        // Only select elements within metis component to avoid conflicts with other components
+        const metisContainer = document.querySelector('.metis');
+        if (!metisContainer) {
+            console.error('[METIS] Tab Switch: Cannot find metis container');
+            return false;
+        }
+        
+        // Update tab active state - ONLY WITHIN METIS CONTAINER
+        const tabs = metisContainer.querySelectorAll('.metis__tab');
+        tabs.forEach(tab => {
+            if (tab.getAttribute('data-tab') === tabId) {
+                tab.classList.add('metis__tab--active');
+            } else {
+                tab.classList.remove('metis__tab--active');
+            }
+        });
+        
+        // Update panel visibility - ONLY WITHIN METIS CONTAINER
+        const panels = metisContainer.querySelectorAll('.metis__panel');
+        panels.forEach(panel => {
+            const panelId = panel.id;
+            if (panelId === tabId + '-panel') {
+                panel.style.display = 'block';
+                panel.classList.add('metis__panel--active');
+            } else {
+                panel.style.display = 'none';
+                panel.classList.remove('metis__panel--active');
+            }
+        });
+        
+        // Update UI based on active tab
+        const chatInput = metisContainer.querySelector('.metis__footer');
+        if (chatInput) {
+            // Show chat input for chat tabs, otherwise hide it
+            chatInput.style.display = (tabId === 'workflow' || tabId === 'teamchat') ? 'block' : 'none';
+        }
+        
+        // Update clear button visibility for chat tabs
+        const clearButton = metisContainer.querySelector('#clear-chat-btn');
+        if (clearButton) {
+            clearButton.style.display = (tabId === 'workflow' || tabId === 'teamchat') ? 'block' : 'none';
+        }
+        
+        // Update chat panels layout when switching to chat tabs
+        if (tabId === 'workflow' || tabId === 'teamchat') {
+            // Make sure chat messages have the right bottom padding for the footer
+            const chatMessages = metisContainer.querySelector(`#${tabId}-messages`);
+            if (chatMessages) {
+                chatMessages.style.bottom = '70px';
+            }
+        }
+        
+        // Update component state
+        if (window.metisComponent) {
+            window.metisComponent.state = window.metisComponent.state || {};
+            window.metisComponent.state.activeTab = tabId;
+            
+            // Call component-specific methods if available
+            if (typeof window.metisComponent.loadTabContent === 'function') {
+                window.metisComponent.loadTabContent(tabId);
+            }
+            
+            if (typeof window.metisComponent.saveComponentState === 'function') {
+                window.metisComponent.saveComponentState();
+            }
+        }
+    } catch (err) {
+        console.error('[METIS] Error in tab switching:', err);
+    }
+    
+    return false; // Stop event propagation
+};
+
+// CHAT CLEARING FUNCTION
+window.metis_clearChat = function() {
+    console.log('[METIS] Clear chat clicked');
+    
+    try {
+        // Get active tab ID within metis container
+        const metisContainer = document.querySelector('.metis');
+        if (!metisContainer) {
+            console.error('[METIS] Clear Chat: Cannot find metis container');
+            return false;
+        }
+        
+        const activeTab = metisContainer.querySelector('.metis__tab--active');
+        const tabId = activeTab ? activeTab.getAttribute('data-tab') : '';
+        
+        if (tabId === 'workflow' || tabId === 'teamchat') {
+            // Get message container within metis container only
+            const panel = metisContainer.querySelector('#' + tabId + '-messages');
+            if (panel) {
+                // Keep welcome message
+                const welcomeMsg = panel.querySelector('.metis__message--system');
+                if (welcomeMsg) {
+                    panel.innerHTML = '';
+                    panel.appendChild(welcomeMsg);
+                    console.log('[METIS] Cleared chat, kept welcome message');
+                } else {
+                    panel.innerHTML = '';
+                    console.log('[METIS] Cleared chat completely');
+                }
+            }
+        }
+    } catch (err) {
+        console.error('[METIS] Error clearing chat:', err);
+    }
+    
+    return false; // Stop event propagation
+};
+
+// SWITCH VIEW FUNCTION
+window.metis_switchView = function(viewId) {
+    console.log('[METIS] Switching to view:', viewId);
+    
+    try {
+        const metisContainer = document.querySelector('.metis');
+        if (!metisContainer) {
+            console.error('[METIS] View Switch: Cannot find metis container');
+            return false;
+        }
+        
+        // Update view button active state
+        const viewButtons = metisContainer.querySelectorAll('.metis__view-button');
+        viewButtons.forEach(button => {
+            if (button.getAttribute('data-view') === viewId) {
+                button.classList.add('metis__view-button--active');
+            } else {
+                button.classList.remove('metis__view-button--active');
+            }
+        });
+        
+        // Update view visibility
+        const views = metisContainer.querySelectorAll('.metis__view');
+        views.forEach(view => {
+            const viewElementId = view.id;
+            if (viewElementId === viewId + '-view') {
+                view.classList.add('metis__view--active');
+            } else {
+                view.classList.remove('metis__view--active');
+            }
+        });
+        
+        // Update component state
+        if (window.metisComponent) {
+            window.metisComponent.state = window.metisComponent.state || {};
+            window.metisComponent.state.activeView = viewId;
+            
+            // Call component-specific methods if available
+            if (typeof window.metisComponent.loadViewContent === 'function') {
+                window.metisComponent.loadViewContent(viewId);
+            }
+            
+            if (typeof window.metisComponent.saveComponentState === 'function') {
+                window.metisComponent.saveComponentState();
+            }
+        }
+    } catch (err) {
+        console.error('[METIS] Error in view switching:', err);
+    }
+    
+    return false;
+};
+
+// TASK OPERATIONS
+window.metis_addTask = function() {
+    console.log('[METIS] Add task clicked');
+    
+    try {
+        const modal = document.getElementById('task-detail-modal');
+        const modalTitle = document.getElementById('modal-title');
+        
+        // Clear form fields
+        document.getElementById('task-name-input').value = '';
+        document.getElementById('task-description-input').value = '';
+        document.getElementById('task-status-input').value = 'pending';
+        document.getElementById('task-priority-input').value = 'medium';
+        document.getElementById('task-due-date-input').value = '';
+        document.getElementById('task-assigned-to-input').value = '';
+        
+        // Update modal title
+        modalTitle.textContent = 'Add New Task';
+        
+        // Show the modal
+        modal.style.display = 'flex';
+        
+        // Setup save button action
+        const saveButton = document.getElementById('save-task-btn');
+        saveButton.onclick = function() {
+            // In a real implementation, this would call the API to create a task
+            console.log('[METIS] Creating new task');
+            // For demo purposes, just close the modal
+            metis_closeModal();
+        };
+    } catch (err) {
+        console.error('[METIS] Error adding task:', err);
+    }
+    
+    return false;
+};
+
+window.metis_editTask = function(taskId) {
+    console.log('[METIS] Edit task clicked for:', taskId);
+    
+    try {
+        const modal = document.getElementById('task-detail-modal');
+        const modalTitle = document.getElementById('modal-title');
+        
+        // In a real implementation, this would fetch task details from the API
+        // For demo purposes, populate with sample data
+        document.getElementById('task-name-input').value = taskId === 'T-001' ? 'Implement Metis UI Component' : 'Test Metis Component';
+        document.getElementById('task-description-input').value = 'Task description would be loaded from API';
+        document.getElementById('task-status-input').value = taskId === 'T-001' ? 'in_progress' : 'pending';
+        document.getElementById('task-priority-input').value = taskId === 'T-001' ? 'high' : 'medium';
+        document.getElementById('task-due-date-input').value = taskId === 'T-001' ? '2025-06-01' : '2025-06-05';
+        document.getElementById('task-assigned-to-input').value = 'User';
+        
+        // Update modal title
+        modalTitle.textContent = 'Edit Task: ' + taskId;
+        
+        // Show the modal
+        modal.style.display = 'flex';
+        
+        // Setup save button action
+        const saveButton = document.getElementById('save-task-btn');
+        saveButton.onclick = function() {
+            // In a real implementation, this would call the API to update the task
+            console.log('[METIS] Updating task:', taskId);
+            // For demo purposes, just close the modal
+            metis_closeModal();
+        };
+    } catch (err) {
+        console.error('[METIS] Error editing task:', err);
+    }
+    
+    return false;
+};
+
+window.metis_viewTask = function(taskId) {
+    console.log('[METIS] View task clicked for:', taskId);
+    
+    // This function could show a read-only view of the task
+    // For now, just reuse the edit function but could be customized later
+    metis_editTask(taskId);
+    
+    return false;
+};
+
+window.metis_deleteTask = function(taskId) {
+    console.log('[METIS] Delete task clicked for:', taskId);
+    
+    // In a real implementation, this would show a confirmation dialog
+    // and then call the API to delete the task
+    if (confirm('Are you sure you want to delete task ' + taskId + '?')) {
+        console.log('[METIS] Confirmed deletion of task:', taskId);
+        // Task deletion logic would go here
+    }
+    
+    return false;
+};
+
+window.metis_closeModal = function() {
+    console.log('[METIS] Close modal clicked');
+    
+    try {
+        const modal = document.getElementById('task-detail-modal');
+        modal.style.display = 'none';
+    } catch (err) {
+        console.error('[METIS] Error closing modal:', err);
+    }
+    
+    return false;
+};
+
+// HTML PANEL PROTECTION
+// Setup explicit protection for the HTML panel to prevent it being hidden
+function metis_protectHtmlPanel() {
+    const htmlPanel = document.getElementById('html-panel');
+    if (!htmlPanel) {
+        console.error('[METIS] Cannot find HTML panel to protect');
+        return;
+    }
+    
+    console.log('[METIS] Protecting HTML panel from being hidden');
+    htmlPanel.style.display = 'block'; // Force it to be visible
+    
+    // Store the original display value
+    if (!htmlPanel.hasOwnProperty('_metisOriginalDisplay')) {
+        Object.defineProperty(htmlPanel, '_metisOriginalDisplay', {
+            value: 'block',
+            writable: true,
+            configurable: true
+        });
+    }
+    
+    // Only define the getter/setter if it hasn't already been defined by this component
+    if (!htmlPanel.style._metisProtected) {
+        // Mark the display property as protected by this component
+        Object.defineProperty(htmlPanel.style, '_metisProtected', {
+            value: true,
+            writable: false,
+            configurable: true
+        });
+        
+        // Protect the display property
+        Object.defineProperty(htmlPanel.style, 'display', {
+            get: function() { 
+                return htmlPanel._metisOriginalDisplay; 
+            },
+            set: function(value) {
+                console.log(`[METIS] Intercepted attempt to set HTML panel display to: ${value}`);
+                if (value === 'none') {
+                    console.log('[METIS] Blocked attempt to hide HTML panel');
+                    htmlPanel._metisOriginalDisplay = 'block';
+                } else {
+                    htmlPanel._metisOriginalDisplay = value;
+                }
+            },
+            configurable: true
+        });
+    }
+}
+
+// LOAD COMPONENT
+// Load after defining tab switching to ensure it's available
+function metis_loadComponent() {
+    console.log('[METIS] Loading component script...');
+    
+    const timestamp = new Date().getTime();
+    const scriptPath = `/scripts/metis/metis-component.js?t=${timestamp}`;
+    
+    const script = document.createElement('script');
+    script.src = scriptPath;
+    script.async = false;
+    script.onload = function() {
+        console.log('[METIS] Component script loaded successfully');
+        
+        if (window.metisComponent && typeof window.metisComponent.init === 'function') {
+            try {
+                window.metisComponent.init();
+                console.log('[METIS] Component initialized');
+            } catch (err) {
+                console.error('[METIS] Component initialization error:', err);
+            }
+        } else {
+            console.warn('[METIS] Component init function not found');
+        }
+    };
+    script.onerror = function() {
+        console.error('[METIS] Failed to load component script');
+    };
+    
+    document.body.appendChild(script);
+}
+
+// SETUP DONE AFTER PAGE LOAD
+// This ensures the functions are available before the tab events need them
+window.addEventListener('DOMContentLoaded', function() {
+    console.log('[METIS] DOM loaded, setting up Metis component');
+    metis_protectHtmlPanel();
+    metis_loadComponent();
+    
+    // Show the loading indicator initially, hide the task table
+    const loadingIndicator = document.getElementById('task-list-loading');
+    const taskTable = document.getElementById('task-table');
+    
+    if (loadingIndicator && taskTable) {
+        loadingIndicator.style.display = 'flex';
+        taskTable.style.display = 'none';
+        
+        // Simulate loading (in a real implementation, this would be an API call)
+        setTimeout(function() {
+            loadingIndicator.style.display = 'none';
+            taskTable.style.display = 'table';
+        }, 1500);
+    }
+});
+
+// IMMEDIATE PROTECTION
+// In case the DOM is already loaded
+if (document.readyState === 'complete' || document.readyState === 'interactive') {
+    console.log('[METIS] Document already loaded, setting up Metis component immediately');
+    metis_protectHtmlPanel();
+    metis_loadComponent();
+}
+</script>

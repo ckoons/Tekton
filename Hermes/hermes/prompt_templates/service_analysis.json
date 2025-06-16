@@ -1,0 +1,5 @@
+{
+  "name": "service_analysis",
+  "template": "Analyze the following service registration in the Tekton platform.\nExtract key information such as:\n1. Service capabilities - What functionality does this service provide?\n2. Dependencies - What other services might this service depend on?\n3. Integration points - How would other services interact with this one?\n4. Potential use cases - What problems does this service solve?\n\nProvide a brief summary of this service's role in the system.\n\nService Data:\n{{ service_data }}",
+  "description": "Template for analyzing service registrations"
+}

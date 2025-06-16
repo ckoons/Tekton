@@ -1,0 +1,18 @@
+{
+  "service_id": "ergon-memory",
+  "name": "Ergon Memory Service",
+  "version": "0.1.0",
+  "endpoint": null,
+  "capabilities": [
+    "document_storage",
+    "vector_search",
+    "memory_management"
+  ],
+  "metadata": {
+    "component_type": "service",
+    "description": "Document and memory management for agents"
+  },
+  "instance_uuid": "8641573d-fe66-45cf-90d1-17322105d326",
+  "registration_time": 1744310859.718961,
+  "status": "active"
+}

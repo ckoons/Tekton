@@ -1,0 +1,3 @@
+"""
+UI pages for Ergon
+"""

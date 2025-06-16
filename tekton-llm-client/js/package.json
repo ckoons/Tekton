@@ -1,0 +1,23 @@
+{
+  "name": "tekton-llm-client",
+  "version": "0.1.0",
+  "description": "JavaScript client for Tekton LLM services",
+  "main": "tekton-llm-client.js",
+  "types": "tekton-llm-client.d.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "tekton",
+    "llm",
+    "ai",
+    "client"
+  ],
+  "author": "Tekton Project",
+  "license": "MIT",
+  "files": [
+    "tekton-llm-client.js",
+    "tekton-llm-client.d.ts",
+    "README.md"
+  ]
+}

@@ -1,0 +1,7 @@
+{
+  "name": "task_breakdown",
+  "template": "Given the following requirements, break them down into specific implementation tasks.\nFor each task, provide the following:\n1. Task name\n2. Description\n3. Priority (high, medium, low)\n4. Estimated effort in hours\n5. Dependencies (references to other tasks)\n\nRequirements:\n{{ requirements }}\n\nReturn the tasks in a structured JSON format with this schema:\n```json\n[\n  {\n    \"name\": \"Task name\",\n    \"description\": \"Detailed description\",\n    \"priority\": \"high|medium|low\",\n    \"estimated_effort\": 4.0,\n    \"dependencies\": [\"Reference to other tasks\"]\n  }\n]\n```",
+  "description": "Template for breaking down requirements into tasks",
+  "output_format": "json",
+  "version": "1.0.0"
+}
