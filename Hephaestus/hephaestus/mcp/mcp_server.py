@@ -28,7 +28,7 @@ from shared.utils.logging_setup import setup_component_logging
 logger = setup_component_logging("hephaestus_mcp")
 
 from hephaestus.mcp.ui_tools_v2 import (
-    ui_capture, ui_interact, ui_sandbox, ui_analyze, ui_list_areas, ui_help, browser_manager
+    ui_capture, ui_navigate, ui_interact, ui_sandbox, ui_analyze, ui_list_areas, ui_help, browser_manager
 )
 
 # Debug imports
@@ -82,6 +82,31 @@ TOOL_METADATA = {
                 "description": "Whether to include a visual screenshot",
                 "required": False,
                 "default": False
+            }
+        }
+    },
+    "ui_navigate": {
+        "name": "ui_navigate",
+        "description": "Navigate to a specific component by clicking its nav item",
+        "category": "ui",
+        "tags": ["ui", "navigation", "components"],
+        "parameters": {
+            "component": {
+                "type": "string",
+                "description": "Component name to navigate to (e.g., 'rhetor', 'prometheus')",
+                "required": True
+            },
+            "wait_for_load": {
+                "type": "boolean",
+                "description": "Whether to wait for component to fully load",
+                "required": False,
+                "default": True
+            },
+            "timeout": {
+                "type": "integer",
+                "description": "Maximum time to wait for component load (ms)",
+                "required": False,
+                "default": 10000
             }
         }
     },
@@ -280,6 +305,7 @@ async def execute_tool(request_data: Dict[str, Any]):
     tool_functions = {
         "ui_list_areas": ui_list_areas,
         "ui_capture": ui_capture,
+        "ui_navigate": ui_navigate,
         "ui_interact": ui_interact,
         "ui_sandbox": ui_sandbox,
         "ui_analyze": ui_analyze,
@@ -408,6 +434,20 @@ async def get_help(format: str = "json"):
                 },
                 "actions": ["replace", "append", "prepend", "after", "before"]
             },
+            "ui_navigate": {
+                "description": "Navigate to a specific component by clicking its nav item",
+                "parameters": {
+                    "required": ["component"],
+                    "optional": ["wait_for_load", "timeout"],
+                    "types": {
+                        "component": "string: Component name (e.g., 'rhetor', 'prometheus')",
+                        "wait_for_load": "boolean: true (default) - wait for component to load",
+                        "timeout": "integer: 10000 (default) - max wait time in ms"
+                    }
+                },
+                "example": 'curl -X POST http://localhost:8088/api/mcp/v2/execute -d \'{"tool_name":"ui_navigate","arguments":{"component":"rhetor"}}\'',
+                "note": "Essential for working with components - must navigate before capture/modify"
+            },
             "ui_interact": {
                 "description": "Interact with UI elements (click, type, focus)",
                 "parameters": {
@@ -482,6 +522,7 @@ async def get_help(format: str = "json"):
     tool_functions = {
         "ui_list_areas": ui_list_areas,
         "ui_capture": ui_capture,
+        "ui_navigate": ui_navigate,
         "ui_interact": ui_interact,
         "ui_sandbox": ui_sandbox,
         "ui_analyze": ui_analyze,

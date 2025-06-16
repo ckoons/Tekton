@@ -625,6 +625,139 @@ async def ui_interact(
     return result
 
 
+async def ui_navigate(
+    component: str,
+    wait_for_load: bool = True,
+    timeout: int = 10000
+) -> Dict[str, Any]:
+    """
+    Navigate to a specific component by clicking its nav item
+    
+    Args:
+        component: Component name to navigate to (e.g., 'rhetor', 'prometheus')
+        wait_for_load: Whether to wait for component to fully load
+        timeout: Maximum time to wait for component load (ms)
+        
+    Returns:
+        Navigation result with loaded component confirmation
+    """
+    await browser_manager.initialize()
+    page = await browser_manager.get_page()
+    
+    result = {
+        "component": component,
+        "navigation_started": False,
+        "navigation_completed": False,
+        "current_component": None
+    }
+    
+    try:
+        # First, check what's currently active
+        active_nav = await page.query_selector('[data-tekton-nav-item][data-tekton-state="active"]')
+        if active_nav:
+            current = await active_nav.get_attribute("data-tekton-nav-item")
+            result["current_component"] = current
+            
+            if current == component:
+                result["message"] = f"Already on {component}"
+                result["navigation_completed"] = True
+                return result
+        
+        # Find the nav item for the requested component
+        nav_selector = f'[data-tekton-nav-item="{component}"]'
+        nav_item = await page.wait_for_selector(nav_selector, timeout=5000)
+        
+        if not nav_item:
+            result["error"] = f"Navigation item for '{component}' not found"
+            return result
+        
+        # Click the nav item
+        await nav_item.click()
+        result["navigation_started"] = True
+        
+        if wait_for_load:
+            # Wait a moment for click to register
+            await page.wait_for_timeout(500)
+            
+            # Method 1: Check if nav item has 'active' class (more reliable than data attribute)
+            nav_item_active = await page.evaluate(f"""
+                () => {{
+                    const navItem = document.querySelector('[data-tekton-nav-item="{component}"]');
+                    return navItem && navItem.classList.contains('active');
+                }}
+            """)
+            
+            # Method 2: Wait for the component area to be present in content
+            component_selectors = [
+                f'[data-tekton-area="{component}"]',
+                f'[data-tekton-component="{component}"]', 
+                f'[data-component="{component}"]',
+                f'.{component}',
+                f'#{component}-component'
+            ]
+            
+            component_found = False
+            component_element = None
+            
+            for selector in component_selectors:
+                try:
+                    component_element = await page.wait_for_selector(selector, timeout=2000)
+                    if component_element:
+                        component_found = True
+                        break
+                except:
+                    continue
+            
+            if component_found and component_element:
+                # Give it a moment for any dynamic content to load
+                await page.wait_for_load_state("networkidle", timeout=5000)
+                
+                # Verify it's the right component by checking for unique content
+                component_verification = await component_element.evaluate(f"""
+                    el => {{
+                        const text = el.textContent || '';
+                        const hasComponentName = text.toLowerCase().includes('{component.lower()}');
+                        const hasUniqueClass = el.className.includes('{component}');
+                        const hasDataAttribute = el.getAttribute('data-tekton-area') === '{component}' ||
+                                               el.getAttribute('data-tekton-component') === '{component}' ||
+                                               el.getAttribute('data-component') === '{component}';
+                        
+                        return {{
+                            tag: el.tagName,
+                            classes: el.className,
+                            hasContent: el.innerHTML.length > 0,
+                            isVisible: el.offsetWidth > 0 && el.offsetHeight > 0,
+                            verified: hasComponentName || hasUniqueClass || hasDataAttribute,
+                            verificationDetails: {{
+                                hasComponentName,
+                                hasUniqueClass,
+                                hasDataAttribute
+                            }}
+                        }};
+                    }}
+                """)
+                
+                if component_verification.get("verified"):
+                    result["navigation_completed"] = True
+                    result["message"] = f"Successfully navigated to {component}"
+                    result["component_info"] = component_verification
+                    result["nav_item_active"] = nav_item_active
+                else:
+                    result["warning"] = f"Component loaded but verification failed"
+                    result["component_info"] = component_verification
+            else:
+                result["warning"] = f"Navigation completed but {component} component not found in content area"
+                result["tried_selectors"] = component_selectors
+        else:
+            result["message"] = f"Navigation initiated to {component} (not waiting for load)"
+    
+    except Exception as e:
+        result["error"] = str(e)
+        result["navigation_completed"] = False
+    
+    return result
+
+
 async def ui_sandbox(
     area: str,
     changes: List[Dict[str, Any]],
@@ -1152,10 +1285,13 @@ ui_capture('rhetor')  # Gets Rhetor area from Hephaestus UI
 # 1. See what areas are available
 areas = await ui_list_areas()
 
-# 2. Capture an area to explore it
+# 2. Navigate to a component
+await ui_navigate('rhetor')
+
+# 3. Capture the area to explore it
 rhetor = await ui_capture('rhetor')
 
-# 3. Make a simple change (preview first!)
+# 4. Make a simple change (preview first!)
 await ui_sandbox('rhetor', [{
     'type': 'html',
     'selector': '#rhetor-footer',
@@ -1163,11 +1299,12 @@ await ui_sandbox('rhetor', [{
     'action': 'append'
 }], preview=True)
 
-# 4. Apply if it looks good
+# 5. Apply if it looks good
 await ui_sandbox('rhetor', [...], preview=False)
 """,
         "available_tools": {
             "ui_list_areas()": "Discover all UI areas in Hephaestus",
+            "ui_navigate(component)": "Navigate to a component by clicking its nav item",
             "ui_capture(area, selector?)": "Look at UI structure without screenshots",
             "ui_sandbox(area, changes, preview)": "Safely test UI modifications", 
             "ui_interact(area, action, selector, value?)": "Click, type, select elements",
@@ -1197,6 +1334,7 @@ await ui_sandbox('rhetor', [...], preview=False)
 __all__ = [
     "ui_list_areas",
     "ui_capture",
+    "ui_navigate",
     "ui_interact", 
     "ui_sandbox",
     "ui_analyze",
