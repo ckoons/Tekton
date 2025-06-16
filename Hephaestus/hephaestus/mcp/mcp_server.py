@@ -11,6 +11,7 @@ from contextlib import asynccontextmanager
 from typing import Any, Dict, List, Optional
 
 from fastapi import APIRouter, FastAPI, HTTPException
+from fastapi.responses import JSONResponse, PlainTextResponse
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 
@@ -351,6 +352,199 @@ async def ready_check():
             "browser": browser_ready
         }
     }
+
+
+@app.get("/help")
+async def get_help(format: str = "json"):
+    """Self-documenting help endpoint with runtime validation."""
+    
+    # Hardcoded documentation (source of truth)
+    help_data = {
+        "overview": "Hephaestus UI DevTools MCP Server",
+        "version": VERSION,
+        "base_url": f"http://localhost:{MCP_PORT}",
+        "endpoints": {
+            "/health": "Check if DevTools are running",
+            "/ready": "Check if browser is initialized", 
+            "/help": "This help message (add ?format=text for readable version)",
+            "/api/mcp/v2/execute": "Execute UI DevTools commands",
+            "/api/mcp/v2/capabilities": "Get MCP capabilities",
+            "/api/mcp/v2/tools": "List available tools"
+        },
+        "tools": {
+            "ui_capture": {
+                "description": "Capture UI structure and content (no screenshots by default)",
+                "parameters": {
+                    "required": [],
+                    "optional": ["area", "selector", "include_screenshot"],
+                    "types": {
+                        "area": "string: 'hephaestus' (default), 'rhetor', 'navigation', etc.",
+                        "selector": "string: CSS selector like '[data-component=\"budget\"]'",
+                        "include_screenshot": "boolean: false (default)"
+                    }
+                },
+                "example": 'curl -X POST http://localhost:8088/api/mcp/v2/execute -d \'{"tool_name":"ui_capture","arguments":{"area":"rhetor"}}\'',
+                "common_uses": ["Check current UI state", "Find elements", "Verify changes"],
+                "note": "Use 'component':'all' to capture entire UI (legacy compatibility)"
+            },
+            "ui_sandbox": {
+                "description": "Test UI changes safely with preview mode",
+                "parameters": {
+                    "required": ["area", "changes"],
+                    "optional": ["preview", "validate"],
+                    "types": {
+                        "area": "string: UI area (NOT 'component'!)",
+                        "changes": "array: List of change operations",
+                        "preview": "boolean: true (default) - test without applying",
+                        "validate": "boolean: false (default) - validate changes"
+                    }
+                },
+                "example": 'curl -X POST http://localhost:8088/api/mcp/v2/execute -d \'{"tool_name":"ui_sandbox","arguments":{"area":"hephaestus","changes":[{"type":"text","selector":".nav-label","content":"New Text","action":"replace"}],"preview":true}}\'',
+                "note": "⚠️ Use 'area' not 'component' - this is the #1 mistake!",
+                "change_types": ["text", "html", "attribute", "style"],
+                "actions": ["replace", "append", "prepend", "remove", "update"]
+            },
+            "ui_interact": {
+                "description": "Interact with UI elements (click, type, focus)",
+                "parameters": {
+                    "required": ["area", "action", "selector"],
+                    "optional": ["value"],
+                    "types": {
+                        "area": "string: UI area",
+                        "action": "string: 'click', 'type', 'focus', 'hover'",
+                        "selector": "string: CSS selector",
+                        "value": "string: For 'type' action"
+                    }
+                },
+                "example": 'curl -X POST http://localhost:8088/api/mcp/v2/execute -d \'{"tool_name":"ui_interact","arguments":{"area":"rhetor","action":"click","selector":"button[data-tekton-chat-send]"}}\'',
+            },
+            "ui_analyze": {
+                "description": "Check for frameworks and UI patterns",
+                "parameters": {
+                    "required": ["area"],
+                    "optional": ["deep_scan"],
+                    "types": {
+                        "area": "string: UI area to analyze",
+                        "deep_scan": "boolean: false (default)"
+                    }
+                },
+                "example": 'curl -X POST http://localhost:8088/api/mcp/v2/execute -d \'{"tool_name":"ui_analyze","arguments":{"area":"rhetor","deep_scan":false}}\''
+            },
+            "ui_list_areas": {
+                "description": "List all available UI areas",
+                "parameters": {
+                    "required": [],
+                    "optional": []
+                },
+                "example": 'curl -X POST http://localhost:8088/api/mcp/v2/execute -d \'{"tool_name":"ui_list_areas","arguments":{}}\''
+            }
+        },
+        "common_errors": {
+            "parameter_mismatch": {
+                "error": "ui_sandbox() got an unexpected keyword argument 'component'",
+                "fix": "Use 'area' instead of 'component' for ui_sandbox"
+            },
+            "empty_captures": {
+                "error": "element_count: 0",
+                "fix": "Try broader selector or use 'area': 'hephaestus' for full UI"
+            },
+            "moving_elements": {
+                "error": "Can't move elements between containers easily",
+                "fix": "For structural moves, edit HTML directly"
+            },
+            "browser_not_ready": {
+                "error": "Browser not initialized",
+                "fix": "Wait a moment or check /ready endpoint"
+            }
+        },
+        "gotchas": {
+            "area_vs_component": "ui_sandbox uses 'area', ui_capture can use either 'area' or 'component' (legacy)",
+            "preview_default": "ui_sandbox defaults to preview=true, changes won't apply unless preview=false",
+            "selector_escaping": "Quotes in selectors need escaping: '[data-component=\"rhetor\"]'"
+        },
+        "quick_reference": {
+            "capture_all": 'curl -X POST http://localhost:8088/api/mcp/v2/execute -d \'{"tool_name":"ui_capture","arguments":{"component":"all"}}\'',
+            "preview_change": 'curl -X POST http://localhost:8088/api/mcp/v2/execute -d \'{"tool_name":"ui_sandbox","arguments":{"area":"hephaestus","changes":[{"type":"text","selector":".nav-label","content":"Test","action":"replace"}],"preview":true}}\'',
+            "check_health": 'curl http://localhost:8088/health',
+            "list_areas": 'curl -X POST http://localhost:8088/api/mcp/v2/execute -d \'{"tool_name":"ui_list_areas","arguments":{}}\''
+        }
+    }
+    
+    # Runtime validation (simple but effective)
+    validation_results = {}
+    
+    # Map of actual tool functions
+    tool_functions = {
+        "ui_list_areas": ui_list_areas,
+        "ui_capture": ui_capture,
+        "ui_interact": ui_interact,
+        "ui_sandbox": ui_sandbox,
+        "ui_analyze": ui_analyze,
+        "ui_help": ui_help
+    }
+    
+    # Check if documented tools exist
+    for tool_name in help_data["tools"]:
+        if tool_name in tool_functions:
+            validation_results[tool_name] = "✓ Available"
+        else:
+            validation_results[tool_name] = "⚠️ Not found in runtime"
+            help_data["tools"][tool_name]["warning"] = "Tool may not be available"
+    
+    help_data["runtime_validation"] = validation_results
+    
+    # Format response
+    if format == "text":
+        return PlainTextResponse(format_help_as_text(help_data))
+    return JSONResponse(help_data)
+
+
+def format_help_as_text(help_data):
+    """Convert help data to readable text format."""
+    lines = [
+        f"# {help_data['overview']} v{help_data['version']}",
+        f"Base URL: {help_data['base_url']}\n",
+        "## Available Endpoints\n"
+    ]
+    
+    for endpoint, desc in help_data['endpoints'].items():
+        lines.append(f"  {endpoint:<30} - {desc}")
+    
+    lines.append("\n## Available Tools\n")
+    
+    for tool_name, tool_info in help_data['tools'].items():
+        validation = help_data['runtime_validation'].get(tool_name, "?")
+        lines.append(f"### {tool_name} {validation}")
+        lines.append(f"{tool_info['description']}")
+        
+        if tool_info['parameters']['required']:
+            lines.append(f"Required: {', '.join(tool_info['parameters']['required'])}")
+        else:
+            lines.append("Required: (none)")
+            
+        if tool_info['parameters']['optional']:
+            lines.append(f"Optional: {', '.join(tool_info['parameters']['optional'])}")
+            
+        if 'note' in tool_info:
+            lines.append(f"\n{tool_info['note']}")
+            
+        lines.append(f"\nExample:\n{tool_info['example']}\n")
+    
+    lines.append("\n## Common Errors\n")
+    for error_key, error_info in help_data['common_errors'].items():
+        lines.append(f"❌ {error_info['error']}")
+        lines.append(f"   ✅ Fix: {error_info['fix']}\n")
+    
+    lines.append("\n## Gotchas to Remember\n")
+    for gotcha_key, gotcha_text in help_data['gotchas'].items():
+        lines.append(f"⚠️  {gotcha_text}")
+    
+    lines.append("\n## Quick Reference (Copy & Paste)\n")
+    for ref_key, ref_cmd in help_data['quick_reference'].items():
+        lines.append(f"{ref_key}:")
+        lines.append(f"  {ref_cmd}\n")
+    
+    return "\n".join(lines)
 
 
 # Add MCP router to app
