@@ -45,7 +45,7 @@ fi
 
 # Start the Budget service
 echo -e "${YELLOW}Starting Budget API server on port $BUDGET_PORT...${RESET}"
-python -m budget > "$LOG_DIR/budget.log" 2>&1 &
+python -m budget > "$LOG_DIR/penia.log" 2>&1 &
 BUDGET_PID=$!
 
 # Trap signals for graceful shutdown
@@ -69,7 +69,7 @@ for i in {1..30}; do
     if ! kill -0 $BUDGET_PID 2>/dev/null; then
         echo -e "${RED}Budget process terminated unexpectedly${RESET}"
         echo -e "${RED}Last 20 lines of log:${RESET}"
-        tail -20 "$LOG_DIR/budget.log"
+        tail -20 "$LOG_DIR/penia.log"
         exit 1
     fi
     
