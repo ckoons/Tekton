@@ -438,11 +438,79 @@ Check UI consistency:
 }
 ```
 
+## New Features (Added 2025-06-16)
+
+### Navigation Tool
+Navigate to components before working with them:
+
+```bash
+# Navigate to a component
+curl -X POST http://localhost:8088/api/mcp/v2/execute \
+  -H "Content-Type: application/json" \
+  -d '{
+    "tool_name": "ui_navigate",
+    "arguments": {
+      "component": "prometheus"
+    }
+  }'
+```
+
+**Important**: The nav item might not show as "active" due to UI implementation, but the component will be loaded.
+
+### Component State Detection
+Every ui_capture now includes state information:
+
+```json
+{
+  "active_nav_item": "tekton",        // What nav shows as active
+  "loaded_component": "prometheus",    // What's actually loaded
+  "working_with": "prometheus",        // What you should work with
+  "state_mismatch": true,             // If nav and content don't match
+  "state_note": "Navigation shows 'tekton' but content shows 'prometheus'"
+}
+```
+
+### Better Selector Feedback
+When selectors fail, you now get suggestions:
+
+```bash
+# If selector not found
+{
+  "selector_error": "No matches for '.prometheus-header'. Try: .prometheus__header, .prometheus__title-container, .prometheus__menu-bar",
+  "suggestions": [
+    ".prometheus__header",
+    ".prometheus__title-container", 
+    ".prometheus__menu-bar"
+  ]
+}
+```
+
+### Updated Workflow
+The recommended workflow is now:
+
+1. **Navigate** to the component you want to work with
+2. **Capture** to see structure and verify state
+3. **Modify** using ui_sandbox
+4. **Verify** changes took effect
+
+```bash
+# Complete example
+# 1. Navigate
+curl -X POST http://localhost:8088/api/mcp/v2/execute -d '{"tool_name":"ui_navigate","arguments":{"component":"rhetor"}}'
+
+# 2. Capture and check state
+curl -X POST http://localhost:8088/api/mcp/v2/execute -d '{"tool_name":"ui_capture","arguments":{"area":"rhetor"}}' | jq '.result.working_with'
+
+# 3. Make changes
+curl -X POST http://localhost:8088/api/mcp/v2/execute -d '{"tool_name":"ui_sandbox","arguments":{"area":"rhetor","changes":[{"type":"text","selector":".rhetor__title","content":"Updated Title","action":"replace"}],"preview":true}}'
+```
+
 ## Related Documentation
 
 - [UI Navigation Patterns](../Patterns/UINavigationPatterns.md) - Component structure and naming conventions
 - [UI DevTools Explicit Guide](UIDevToolsExplicitGuide.md) - Complete tool reference
 - [Semantic UI Navigation Guide](SemanticUINavigationGuide.md) - Semantic tagging system
+- [Hephaestus UI Architecture](../../Architecture/HephaestusUIArchitecture.md) - How the UI works
 
 ---
 

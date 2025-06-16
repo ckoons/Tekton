@@ -528,6 +528,68 @@ async def ui_capture(
         "viewport": page.viewport_size,
     }
     
+    # Detect current component state
+    component_state = await page.evaluate("""
+        () => {
+            // Find active nav item
+            const activeNav = document.querySelector('.nav-item.active[data-component]');
+            const activeNavItem = activeNav ? activeNav.getAttribute('data-component') : null;
+            
+            // Find loaded component in content area
+            let loadedComponent = null;
+            const contentArea = document.querySelector('[data-tekton-area="content"], .main-content, #center-content');
+            if (contentArea) {
+                // Look for component indicators in content
+                const componentElement = contentArea.querySelector('[data-tekton-area], [data-tekton-component], [data-component]');
+                if (componentElement) {
+                    loadedComponent = componentElement.getAttribute('data-tekton-area') || 
+                                    componentElement.getAttribute('data-tekton-component') ||
+                                    componentElement.getAttribute('data-component');
+                } else {
+                    // Try to detect by class name
+                    const divWithClass = contentArea.querySelector('div[class*="__"]');
+                    if (divWithClass) {
+                        const className = divWithClass.className;
+                        const match = className.match(/^(\w+)__/);
+                        if (match) {
+                            loadedComponent = match[1];
+                        }
+                    }
+                }
+            }
+            
+            // Check if we're in a special view (settings, profile)
+            const specialViews = ['settings', 'profile'];
+            let currentView = null;
+            for (const view of specialViews) {
+                if (document.querySelector(`.${view}__container, #${view}-container, [data-component="${view}"]`)) {
+                    currentView = view;
+                    break;
+                }
+            }
+            
+            return {
+                active_nav_item: activeNavItem,
+                loaded_component: loadedComponent || currentView,
+                state_mismatch: activeNavItem && loadedComponent && activeNavItem !== loadedComponent,
+                detection_method: loadedComponent ? 'data-attribute' : (currentView ? 'special-view' : 'none')
+            };
+        }
+    """)
+    
+    # Add component state to result
+    result["active_nav_item"] = component_state["active_nav_item"]
+    result["loaded_component"] = component_state["loaded_component"]
+    result["state_mismatch"] = component_state["state_mismatch"]
+    
+    # Add note about state
+    if component_state["state_mismatch"]:
+        result["state_note"] = f"Navigation shows '{component_state['active_nav_item']}' but content shows '{component_state['loaded_component']}'"
+    
+    # What really matters is what's loaded
+    if component_state["loaded_component"]:
+        result["working_with"] = component_state["loaded_component"]
+    
     # Get HTML content for the specified area
     if area == "hephaestus":
         # Capture entire UI
@@ -868,6 +930,8 @@ async def ui_navigate(
                     result["message"] = f"Successfully navigated to {component}"
                     result["component_info"] = component_verification
                     result["nav_item_active"] = nav_item_active
+                    if not nav_item_active:
+                        result["note"] = "Nav item may not show as active due to UI implementation, but component is loaded"
                 else:
                     result["warning"] = f"Component loaded but verification failed"
                     result["component_info"] = component_verification
