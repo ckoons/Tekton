@@ -184,6 +184,223 @@ NOT separate UIs at different ports!
 3. **Sandbox** changes with preview=true
 4. **Apply** only if safe_to_apply=true
 
+## Parameter Discovery Issues
+
+### The "area" vs "component" Confusion
+This is the #1 issue every Claude encounters:
+
+```bash
+# ❌ WRONG - This will error
+curl -X POST http://localhost:8088/api/mcp/v2/execute \
+  -d '{"tool_name": "ui_sandbox", "arguments": {"component": "all", ...}}'
+# Error: ui_sandbox() got an unexpected keyword argument 'component'
+
+# ✅ CORRECT - Use 'area' for ui_sandbox
+curl -X POST http://localhost:8088/api/mcp/v2/execute \
+  -d '{"tool_name": "ui_sandbox", "arguments": {"area": "hephaestus", ...}}'
+```
+
+### Different Tools, Different Parameters
+```bash
+# ui_capture can use 'component' OR 'area'
+{"tool_name": "ui_capture", "arguments": {"component": "all"}}  # Works
+{"tool_name": "ui_capture", "arguments": {"area": "hephaestus"}}  # Also works
+
+# ui_sandbox ONLY uses 'area'
+{"tool_name": "ui_sandbox", "arguments": {"area": "hephaestus"}}  # Only way
+```
+
+## Debug Mode for Failed Selectors
+
+### Problem: Selector Returns Empty
+When your selector returns no results, you're flying blind:
+
+```bash
+# Current behavior - no helpful info
+curl -X POST http://localhost:8088/api/mcp/v2/execute \
+  -d '{"tool_name": "ui_capture", "arguments": {"selector": "[data-component=\"budget\"]"}}'
+# Returns: {"element_count": 0, "elements": []}
+```
+
+### Proposed Enhancement: Debug Mode
+```bash
+# Future enhancement - helpful debug info
+curl -X POST http://localhost:8088/api/mcp/v2/execute \
+  -d '{
+    "tool_name": "ui_capture",
+    "arguments": {
+      "selector": "[data-component=\"budget\"]",
+      "debug": true
+    }
+  }'
+
+# Would return:
+{
+  "element_count": 0,
+  "debug": {
+    "selector_valid": true,
+    "similar_elements": [
+      "[data-component=\"profile\"]",
+      "[data-component=\"settings\"]"
+    ],
+    "recommendation": "Element might be in footer section, try broader selector",
+    "page_state": "loaded",
+    "total_elements_scanned": 47
+  }
+}
+```
+
+## Validation Tool Concept
+
+### Proposed Tool: ui_validate
+Check UI consistency and find issues:
+
+```bash
+# Future enhancement
+curl -X POST http://localhost:8088/api/mcp/v2/execute \
+  -d '{
+    "tool_name": "ui_validate",
+    "arguments": {
+      "area": "hephaestus",
+      "checks": ["navigation", "semantic-tags", "data-attributes"]
+    }
+  }'
+
+# Would return:
+{
+  "status": "issues_found",
+  "validation_results": {
+    "navigation": {
+      "missing_attributes": [
+        "Element at line 245 missing data-tekton-zone",
+        "Nav item 'budget' has emoji but is in greek-chorus zone"
+      ],
+      "inconsistencies": [
+        "Component 'budget' displayed as 'Penia' - consider data-tekton-legacy-name"
+      ]
+    },
+    "semantic_tags": {
+      "coverage": "87%",
+      "missing": ["Main content area lacks data-tekton-area"]
+    }
+  },
+  "recommendations": [
+    "Add zone attributes to all nav items",
+    "Remove emoji from Greek components",
+    "Document component name migrations"
+  ]
+}
+```
+
+## Proposed Help Endpoint
+
+### Current Problem
+No way to discover available tools and parameters without reading docs:
+
+```bash
+# This doesn't exist yet but should
+curl http://localhost:8088/help
+```
+
+### Proposed Implementation
+Add to `/Hephaestus/hephaestus/mcp/mcp_server.py`:
+
+```python
+@app.get("/help")
+async def get_help():
+    """Return comprehensive help for all tools."""
+    return {
+        "version": "0.1.0",
+        "base_url": "http://localhost:8088",
+        "endpoints": {
+            "/health": "Check if DevTools are running",
+            "/help": "This help message",
+            "/api/mcp/v2/execute": "Execute UI DevTools commands"
+        },
+        "tools": {
+            "ui_capture": {
+                "description": "Capture UI structure and content",
+                "parameters": {
+                    "area": {
+                        "type": "string",
+                        "required": True,
+                        "description": "UI area to capture",
+                        "examples": ["hephaestus", "rhetor", "all"]
+                    },
+                    "selector": {
+                        "type": "string", 
+                        "required": False,
+                        "description": "CSS selector to filter results",
+                        "examples": ["[data-component='budget']", ".nav-item", "#footer"]
+                    },
+                    "debug": {
+                        "type": "boolean",
+                        "required": False,
+                        "description": "Enable debug mode for troubleshooting",
+                        "default": False
+                    }
+                },
+                "examples": [
+                    {
+                        "description": "Capture entire UI",
+                        "curl": "curl -X POST http://localhost:8088/api/mcp/v2/execute -d '{\"tool_name\": \"ui_capture\", \"arguments\": {\"area\": \"hephaestus\"}}'"
+                    }
+                ]
+            },
+            "ui_sandbox": {
+                "description": "Test UI changes safely with preview mode",
+                "parameters": {
+                    "area": {
+                        "type": "string",
+                        "required": True,
+                        "description": "UI area (NOT 'component'!)"
+                    },
+                    "changes": {
+                        "type": "array",
+                        "required": True,
+                        "description": "Array of change operations"
+                    },
+                    "preview": {
+                        "type": "boolean",
+                        "required": False,
+                        "description": "Preview without applying",
+                        "default": True
+                    }
+                },
+                "change_types": {
+                    "text": "Replace text content",
+                    "html": "Replace HTML content", 
+                    "attribute": "Update element attributes"
+                },
+                "actions": {
+                    "replace": "Replace entire content",
+                    "append": "Add to end",
+                    "prepend": "Add to beginning",
+                    "remove": "Remove element",
+                    "update": "Update attribute value"
+                }
+            }
+        },
+        "common_errors": {
+            "unexpected_keyword_argument": "You used 'component' instead of 'area' for ui_sandbox",
+            "area_not_provided": "The 'area' parameter is required",
+            "no_elements_found": "Your selector didn't match any elements"
+        }
+    }
+```
+
+### Usage Example
+```bash
+# Get help
+curl http://localhost:8088/help | jq '.tools.ui_sandbox'
+
+# See common errors
+curl http://localhost:8088/help | jq '.common_errors'
+
+# Get examples for specific tool
+curl http://localhost:8088/help | jq '.tools.ui_capture.examples'
+```
+
 ## Emergency Help
 
 If confused:
@@ -192,6 +409,10 @@ from ui_devtools_client import UIDevTools
 ui = UIDevTools()
 help_text = await ui.help()  # Read this!
 ```
+
+Or check the new resources:
+- [UI DevTools Cookbook](UIDevToolsCookbook.md) - Real examples that work
+- [UI Navigation Patterns](../Patterns/UINavigationPatterns.md) - Component structure
 
 ## Casey's Final Warning
 
