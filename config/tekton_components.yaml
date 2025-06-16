@@ -121,8 +121,8 @@ components:
     dependencies: ["hermes", "engram"]
     
   # Resource Management
-  budget:
-    name: "Budget"
+  penia:
+    name: "Penia"
     port: 8013
     description: "Token usage and cost management"
     category: "resources"

@@ -14,7 +14,7 @@ class BudgetComponent(StandardComponentBase):
     """Budget management component with financial tracking and MCP support."""
     
     def __init__(self):
-        super().__init__(component_name="budget", version="0.1.0")
+        super().__init__(component_name="penia", version="0.1.0")
         # Component-specific attributes
         self.budget_engine = None
         self.connection_manager = None

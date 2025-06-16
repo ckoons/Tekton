@@ -91,7 +91,7 @@ class TektonEnvManager:
             # Look for multiple component directories as a strong indicator
             # If we find several component directories, this is likely the Tekton root
             component_dirs = ["Apollo", "Hermes", "Engram", "Rhetor", "Athena", "Synthesis", 
-                             "Ergon", "Sophia", "Prometheus", "Harmonia", "Budget", "Metis", 
+                             "Ergon", "Sophia", "Prometheus", "Harmonia", "Penia", "Metis", 
                              "Telos", "Hephaestus", "tekton-core"]
             component_count = sum(1 for comp in component_dirs if (path / comp).exists())
             

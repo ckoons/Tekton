@@ -202,6 +202,24 @@ class BudgetConfig(BaseComponentConfig):
             limit=cls._get_env_value('BUDGET_LIMIT', 500.0, 'float')
         )
 
+class PeniaConfig(BaseComponentConfig):
+    """Configuration for Budget/Penia cost management."""
+    
+    port: int
+    tracking_enabled: bool = True
+    warning_threshold: float = 100.0
+    limit: float = 500.0
+    
+    @classmethod
+    def from_env(cls) -> 'PeniaConfig':
+        """Create BudgetConfig from environment variables."""
+        return cls(
+            port=cls._get_required_env('PENIA_PORT', 'int'),
+            tracking_enabled=cls._get_env_value('TEKTON_BUDGET_TRACKING', True, 'bool'),
+            warning_threshold=cls._get_env_value('BUDGET_WARNING_THRESHOLD', 100.0, 'float'),
+            limit=cls._get_env_value('BUDGET_LIMIT', 500.0, 'float')
+        )
+
 
 class ErgonConfig(BaseComponentConfig):
     """Configuration for Ergon agent system."""
@@ -430,6 +448,7 @@ class ComponentConfig:
         self.athena = AthenaConfig.from_env()
         self.apollo = ApolloConfig.from_env()
         self.budget = BudgetConfig.from_env()
+        self.penia = PeniaConfig.from_env()
         self.ergon = ErgonConfig.from_env()
         self.harmonia = HarmoniaConfig.from_env()
         self.hephaestus = HephaestusConfig.from_env()
