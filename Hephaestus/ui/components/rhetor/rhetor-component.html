@@ -5,9 +5,14 @@
   
   IMPORTANT: Follows Component Implementation Standard in /MetaData/UI/ComponentImplementationStandard.md
 -->
-<div class="rhetor" data-tekton-area="rhetor" data-tekton-type="component-workspace">
+<div class="rhetor" 
+     data-tekton-area="rhetor"
+     data-tekton-component="rhetor"
+     data-tekton-type="component-workspace"
+     data-tekton-ai="rhetor-orchestrator"
+     data-tekton-ai-ready="false">
   <!-- Component Header with Title -->
-  <div class="rhetor__header" data-tekton-element="component-header">
+  <div class="rhetor__header" data-tekton-zone="header" data-tekton-section="header">
     <div class="rhetor__title-container">
       <img src="/images/hexagon.jpg" alt="Tekton" class="rhetor__icon">
       <h2 class="rhetor__title">
@@ -18,24 +23,54 @@
   </div>
   
   <!-- Tab Navigation - DIRECT ONCLICK HANDLERS -->
-  <div class="rhetor__menu-bar" data-tekton-element="component-menu">
+  <div class="rhetor__menu-bar" data-tekton-zone="menu" data-tekton-nav="component-menu">
     <div class="rhetor__tabs">
-      <div class="rhetor__tab rhetor__tab--active" data-tab="specialists" onclick="rhetor_switchTab('specialists'); return false;">
+      <div class="rhetor__tab rhetor__tab--active" data-tab="specialists" 
+           data-tekton-menu-item="AI Specialists"
+           data-tekton-menu-component="rhetor"
+           data-tekton-menu-active="true"
+           data-tekton-menu-panel="specialists-panel"
+           onclick="rhetor_switchTab('specialists'); return false;">
         <span class="rhetor__tab-label">AI Specialists</span>
       </div>
-      <div class="rhetor__tab" data-tab="orchestration" onclick="rhetor_switchTab('orchestration'); return false;">
+      <div class="rhetor__tab" data-tab="orchestration" 
+           data-tekton-menu-item="Orchestration"
+           data-tekton-menu-component="rhetor"
+           data-tekton-menu-active="false"
+           data-tekton-menu-panel="orchestration-panel"
+           onclick="rhetor_switchTab('orchestration'); return false;">
         <span class="rhetor__tab-label">Orchestration</span>
       </div>
-      <div class="rhetor__tab" data-tab="sessions" onclick="rhetor_switchTab('sessions'); return false;">
+      <div class="rhetor__tab" data-tab="sessions" 
+           data-tekton-menu-item="Active Sessions"
+           data-tekton-menu-component="rhetor"
+           data-tekton-menu-active="false"
+           data-tekton-menu-panel="sessions-panel"
+           onclick="rhetor_switchTab('sessions'); return false;">
         <span class="rhetor__tab-label">Active Sessions</span>
       </div>
-      <div class="rhetor__tab" data-tab="configuration" onclick="rhetor_switchTab('configuration'); return false;">
+      <div class="rhetor__tab" data-tab="configuration" 
+           data-tekton-menu-item="Configuration"
+           data-tekton-menu-component="rhetor"
+           data-tekton-menu-active="false"
+           data-tekton-menu-panel="configuration-panel"
+           onclick="rhetor_switchTab('configuration'); return false;">
         <span class="rhetor__tab-label">Configuration</span>
       </div>
-      <div class="rhetor__tab" data-tab="llmchat" onclick="rhetor_switchTab('llmchat'); return false;">
+      <div class="rhetor__tab" data-tab="llmchat" 
+           data-tekton-menu-item="LLM Chat"
+           data-tekton-menu-component="rhetor"
+           data-tekton-menu-active="false"
+           data-tekton-menu-panel="llmchat-panel"
+           onclick="rhetor_switchTab('llmchat'); return false;">
         <span class="rhetor__tab-label">LLM Chat</span>
       </div>
-      <div class="rhetor__tab" data-tab="teamchat" onclick="rhetor_switchTab('teamchat'); return false;">
+      <div class="rhetor__tab" data-tab="teamchat" 
+           data-tekton-menu-item="Team Chat"
+           data-tekton-menu-component="rhetor"
+           data-tekton-menu-active="false"
+           data-tekton-menu-panel="teamchat-panel"
+           onclick="rhetor_switchTab('teamchat'); return false;">
         <span class="rhetor__tab-label">Team Chat</span>
       </div>
     </div>
@@ -47,9 +82,14 @@
   </div>
   
   <!-- Content Area with Panels -->
-  <div class="rhetor__content">
+  <div class="rhetor__content" data-tekton-zone="content" data-tekton-scrollable="true">
     <!-- AI Specialists Tab (Default Active Tab) -->
-    <div id="specialists-panel" class="rhetor__panel rhetor__panel--active" style="display: block;">
+    <div id="specialists-panel" class="rhetor__panel rhetor__panel--active" 
+         data-tekton-panel="specialists"
+         data-tekton-panel-for="AI Specialists"
+         data-tekton-panel-component="rhetor"
+         data-tekton-panel-active="true"
+         style="display: block;">
       <div class="rhetor__section-header">
         <h2>AI Specialists</h2>
         <div class="rhetor__controls">
@@ -215,8 +255,8 @@
   </div>
   
   <!-- Footer with Chat Input -->
-  <div class="rhetor__footer" data-tekton-element="component-footer">
-    <div class="rhetor__chat-input-container" data-tekton-element="chat-input-container">
+  <div class="rhetor__footer" data-tekton-zone="footer" data-tekton-section="footer">
+    <div class="rhetor__chat-input-container" data-tekton-chat="rhetor-llm" data-tekton-chat-component="rhetor">
       <div class="rhetor__chat-prompt">></div>
       <input type="text" class="rhetor__chat-input" id="chat-input"
              placeholder="Enter chat message for LLM context management, prompts, or team communication"
