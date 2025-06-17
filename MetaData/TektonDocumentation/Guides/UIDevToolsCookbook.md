@@ -323,6 +323,93 @@ curl -s http://localhost:8080 | grep -B2 -A2 "Penia"
 - Complex changes might need manual editing
 - Check browser console for JavaScript errors
 
+## Batch Operations (IMPLEMENTED)
+
+### ui_batch - Execute Multiple Operations
+
+The `ui_batch` tool allows you to perform multiple UI operations in a single call, with optional atomic rollback support.
+
+#### Basic Usage
+```bash
+curl -X POST http://localhost:8088/api/mcp/v2/execute \
+  -H "Content-Type: application/json" \
+  -d '{
+    "tool_name": "ui_batch",
+    "arguments": {
+      "area": "hephaestus",
+      "operations": [
+        {"action": "rename", "from": "Budget", "to": "Penia"},
+        {"action": "remove", "selector": "[data-component=\"penia\"] .button-icon"},
+        {"action": "style", "selector": ".penia", "styles": {"border": "2px solid green"}}
+      ],
+      "atomic": true
+    }
+  }'
+```
+
+#### Available Actions
+
+1. **rename** - Change text content
+   ```json
+   {"action": "rename", "from": "Old Text", "to": "New Text"}
+   ```
+
+2. **remove** - Remove elements
+   ```json
+   {"action": "remove", "selector": ".element-to-remove"}
+   ```
+
+3. **add_class** - Add CSS classes
+   ```json
+   {"action": "add_class", "selector": ".nav-item", "class": "highlight"}
+   ```
+
+4. **remove_class** - Remove CSS classes
+   ```json
+   {"action": "remove_class", "selector": ".nav-item", "class": "highlight"}
+   ```
+
+5. **style** - Apply CSS styles
+   ```json
+   {"action": "style", "selector": ".element", "styles": {"color": "red", "font-size": "16px"}}
+   ```
+
+6. **navigate** - Navigate to component
+   ```json
+   {"action": "navigate", "component": "rhetor"}
+   ```
+
+7. **click** - Click elements
+   ```json
+   {"action": "click", "selector": "button.submit"}
+   ```
+
+#### Atomic Mode
+
+- **atomic: true** (default) - All operations must succeed or all are rolled back
+- **atomic: false** - Each operation is independent, partial success allowed
+
+#### Example: Complete UI Refactoring
+```bash
+# Rename component, remove emoji, update styles - all atomic
+curl -X POST http://localhost:8088/api/mcp/v2/execute \
+  -H "Content-Type: application/json" \
+  -d '{
+    "tool_name": "ui_batch",
+    "arguments": {
+      "area": "hephaestus",
+      "operations": [
+        {"action": "navigate", "component": "budget"},
+        {"action": "rename", "from": "Budget", "to": "Penia - LLM Cost"},
+        {"action": "remove", "selector": "[data-component=\"budget\"] .button-icon"},
+        {"action": "add_class", "selector": "[data-component=\"budget\"]", "class": "updated"},
+        {"action": "style", "selector": ".updated", "styles": {"background": "rgba(0,255,0,0.1)"}}
+      ],
+      "atomic": true
+    }
+  }'
+```
+
 ## Proposed Enhancements
 
 ### 1. Help Endpoint
