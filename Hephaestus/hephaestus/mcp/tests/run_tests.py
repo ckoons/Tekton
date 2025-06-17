@@ -119,6 +119,20 @@ class SimpleTestRunner:
         result = await self.execute_tool("ui_navigate", {})  # Missing required param
         assert result["status"] == "error" or "error" in result, "Should handle missing params"
     
+    async def test_ui_batch(self):
+        """Test batch operations"""
+        result = await self.execute_tool("ui_batch", {
+            "area": "hephaestus",
+            "operations": [
+                {"action": "add_class", "selector": ".nav-item", "class": "test-class"},
+                {"action": "remove_class", "selector": ".nav-item", "class": "test-class"}
+            ],
+            "atomic": False
+        })
+        assert result["status"] == "success", "Batch should succeed"
+        assert result["result"]["completed"] >= 0, "Should have completed operations"
+        assert result["result"]["success"], "Batch operations should succeed"
+    
     async def run_all_tests(self):
         """Run all tests"""
         if not await self.check_server():
@@ -135,6 +149,7 @@ class SimpleTestRunner:
             ("UI Analysis", self.test_ui_analyze),
             ("No Nav State Dependency", self.test_no_nav_state_dependency),
             ("Error Handling", self.test_error_handling),
+            ("Batch Operations", self.test_ui_batch),
         ]
         
         start_time = time.time()

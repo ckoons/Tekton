@@ -1576,6 +1576,211 @@ async def _validate_navigation(page: Page, checks: List[str]) -> Dict[str, Any]:
     return validation
 
 
+async def ui_batch(
+    area: str,
+    operations: List[Dict[str, Any]],
+    atomic: bool = True
+) -> Dict[str, Any]:
+    """
+    Execute multiple UI operations in batch
+    
+    Args:
+        area: UI area to operate on (e.g., 'hephaestus')
+        operations: List of operations to perform
+        atomic: If True, all operations must succeed or all are rolled back
+        
+    Returns:
+        Result with success status and details of each operation
+    """
+    await browser_manager.initialize()
+    page = await browser_manager.get_page()
+    
+    result = {
+        "area": area,
+        "atomic": atomic,
+        "total_operations": len(operations),
+        "completed": 0,
+        "failed": 0,
+        "operations_results": [],
+        "rollback_performed": False
+    }
+    
+    # Capture initial state if atomic mode
+    initial_state = None
+    if atomic:
+        logger.info("Capturing initial state for atomic batch operation")
+        initial_capture = await ui_capture(area=area)
+        initial_state = await page.content()
+    
+    # Execute each operation
+    for idx, operation in enumerate(operations):
+        op_result = {
+            "index": idx,
+            "action": operation.get("action"),
+            "status": "pending",
+            "details": {}
+        }
+        
+        try:
+            action = operation.get("action")
+            logger.info(f"Executing batch operation {idx+1}/{len(operations)}: {action}")
+            
+            if action == "rename":
+                # Text replacement operation
+                from_text = operation.get("from")
+                to_text = operation.get("to")
+                selector = operation.get("selector", f"*:contains('{from_text}')")
+                
+                change = {
+                    "type": "text",
+                    "selector": selector,
+                    "content": to_text,
+                    "action": "replace"
+                }
+                
+                sandbox_result = await ui_sandbox(area=area, changes=[change], preview=False)
+                op_result["status"] = "success" if sandbox_result.get("summary", {}).get("successful", 0) > 0 else "failed"
+                op_result["details"] = sandbox_result
+                
+            elif action == "remove":
+                # Remove element operation
+                selector = operation.get("selector")
+                if not selector:
+                    # Build selector from component and target
+                    component = operation.get("component")
+                    target = operation.get("target", "emoji")
+                    if target == "emoji":
+                        selector = f"[data-component='{component}'] .button-icon"
+                    else:
+                        selector = f"[data-component='{component}'] .{target}"
+                
+                change = {
+                    "type": "html",
+                    "selector": selector,
+                    "content": "",
+                    "action": "replace"
+                }
+                
+                sandbox_result = await ui_sandbox(area=area, changes=[change], preview=False)
+                op_result["status"] = "success" if sandbox_result.get("summary", {}).get("successful", 0) > 0 else "failed"
+                op_result["details"] = sandbox_result
+                
+            elif action == "add_class":
+                # Add CSS class operation
+                selector = operation.get("selector")
+                class_name = operation.get("class")
+                
+                await page.evaluate(f"""
+                    () => {{
+                        const elements = document.querySelectorAll('{selector}');
+                        elements.forEach(el => el.classList.add('{class_name}'));
+                        return elements.length;
+                    }}
+                """)
+                
+                op_result["status"] = "success"
+                op_result["details"]["message"] = f"Added class '{class_name}' to elements"
+                
+            elif action == "remove_class":
+                # Remove CSS class operation
+                selector = operation.get("selector")
+                class_name = operation.get("class")
+                
+                await page.evaluate(f"""
+                    () => {{
+                        const elements = document.querySelectorAll('{selector}');
+                        elements.forEach(el => el.classList.remove('{class_name}'));
+                        return elements.length;
+                    }}
+                """)
+                
+                op_result["status"] = "success"
+                op_result["details"]["message"] = f"Removed class '{class_name}' from elements"
+                
+            elif action == "style":
+                # Apply CSS styles
+                selector = operation.get("selector")
+                styles = operation.get("styles", {})
+                
+                changes = []
+                for prop, value in styles.items():
+                    changes.append({
+                        "type": "css",
+                        "selector": selector,
+                        "property": prop,
+                        "value": value
+                    })
+                
+                sandbox_result = await ui_sandbox(area=area, changes=changes, preview=False)
+                op_result["status"] = "success" if sandbox_result.get("summary", {}).get("successful", 0) > 0 else "failed"
+                op_result["details"] = sandbox_result
+                
+            elif action == "navigate":
+                # Navigate to component
+                component = operation.get("component")
+                nav_result = await ui_navigate(component=component)
+                op_result["status"] = "success" if nav_result.get("navigation_completed") else "failed"
+                op_result["details"] = nav_result
+                
+            elif action == "click":
+                # Click element
+                selector = operation.get("selector")
+                interact_result = await ui_interact(area=area, action="click", selector=selector)
+                op_result["status"] = "success" if "error" not in interact_result else "failed"
+                op_result["details"] = interact_result
+                
+            else:
+                op_result["status"] = "failed"
+                op_result["error"] = f"Unknown action: {action}"
+            
+            # Update counters
+            if op_result["status"] == "success":
+                result["completed"] += 1
+            else:
+                result["failed"] += 1
+                
+            result["operations_results"].append(op_result)
+            
+            # Check atomic mode failure
+            if atomic and op_result["status"] == "failed":
+                logger.warning(f"Atomic batch operation failed at step {idx+1}")
+                break
+                
+        except Exception as e:
+            logger.error(f"Error in batch operation {idx+1}: {e}")
+            op_result["status"] = "error"
+            op_result["error"] = str(e)
+            result["failed"] += 1
+            result["operations_results"].append(op_result)
+            
+            if atomic:
+                break
+    
+    # Handle rollback if atomic and any failed
+    if atomic and result["failed"] > 0 and initial_state:
+        logger.info("Performing rollback due to atomic batch failure")
+        try:
+            # Restore initial state
+            await page.set_content(initial_state)
+            result["rollback_performed"] = True
+            result["rollback_status"] = "success"
+        except Exception as e:
+            logger.error(f"Rollback failed: {e}")
+            result["rollback_status"] = "failed"
+            result["rollback_error"] = str(e)
+    
+    # Summary
+    result["success"] = result["failed"] == 0
+    result["summary"] = {
+        "total": len(operations),
+        "completed": result["completed"],
+        "failed": result["failed"],
+        "success_rate": f"{(result['completed'] / len(operations) * 100):.1f}%" if operations else "0%"
+    }
+    
+    return result
+
+
 async def ui_help(topic: Optional[str] = None) -> Dict[str, Any]:
     """
     Get help about UI DevTools usage

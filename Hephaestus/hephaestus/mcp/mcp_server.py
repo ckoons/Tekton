@@ -28,7 +28,7 @@ from shared.utils.logging_setup import setup_component_logging
 logger = setup_component_logging("hephaestus_mcp")
 
 from hephaestus.mcp.ui_tools_v2 import (
-    ui_capture, ui_navigate, ui_interact, ui_sandbox, ui_analyze, ui_validate, ui_list_areas, ui_help, browser_manager
+    ui_capture, ui_navigate, ui_interact, ui_sandbox, ui_analyze, ui_validate, ui_batch, ui_list_areas, ui_help, browser_manager
 )
 
 # Debug imports
@@ -235,6 +235,39 @@ TOOL_METADATA = {
             }
         }
     },
+    "ui_batch": {
+        "name": "ui_batch",
+        "description": "Execute multiple UI operations in batch with atomic support",
+        "category": "ui",
+        "tags": ["ui", "batch", "atomic", "operations"],
+        "parameters": {
+            "area": {
+                "type": "string",
+                "description": "UI area to operate on (e.g., 'hephaestus')",
+                "required": True
+            },
+            "operations": {
+                "type": "array",
+                "description": "List of operations to perform",
+                "required": True,
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "action": {
+                            "type": "string",
+                            "enum": ["rename", "remove", "add_class", "remove_class", "style", "navigate", "click"]
+                        }
+                    }
+                }
+            },
+            "atomic": {
+                "type": "boolean",
+                "description": "If true, all operations must succeed or all are rolled back",
+                "required": False,
+                "default": True
+            }
+        }
+    },
     "ui_help": {
         "name": "ui_help",
         "description": "Get help about UI DevTools usage - your guide to success!",
@@ -337,6 +370,7 @@ async def execute_tool(request_data: Dict[str, Any]):
         "ui_sandbox": ui_sandbox,
         "ui_analyze": ui_analyze,
         "ui_validate": ui_validate,
+        "ui_batch": ui_batch,
         "ui_help": ui_help
     }
     
@@ -516,6 +550,20 @@ async def get_help(format: str = "json"):
                 "example": 'curl -X POST http://localhost:8088/api/mcp/v2/execute -d \'{"tool_name":"ui_validate","arguments":{"scope":"current"}}\'',
                 "note": "Essential for verifying instrumentation quality"
             },
+            "ui_batch": {
+                "description": "Execute multiple UI operations in batch with atomic support",
+                "parameters": {
+                    "required": ["area", "operations"],
+                    "optional": ["atomic"],
+                    "types": {
+                        "area": "string: UI area (e.g., 'hephaestus')",
+                        "operations": "array: List of operations to perform",
+                        "atomic": "boolean: true (default) - all succeed or all fail"
+                    }
+                },
+                "example": 'curl -X POST http://localhost:8088/api/mcp/v2/execute -d \'{"tool_name":"ui_batch","arguments":{"area":"hephaestus","operations":[{"action":"rename","from":"Budget","to":"Penia"}]}}\'',
+                "actions": ["rename", "remove", "add_class", "remove_class", "style", "navigate", "click"]
+            },
             "ui_list_areas": {
                 "description": "List all available UI areas",
                 "parameters": {
@@ -569,6 +617,7 @@ async def get_help(format: str = "json"):
         "ui_sandbox": ui_sandbox,
         "ui_analyze": ui_analyze,
         "ui_validate": ui_validate,
+        "ui_batch": ui_batch,
         "ui_help": ui_help
     }
     
