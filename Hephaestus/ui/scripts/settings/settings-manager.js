@@ -233,7 +233,8 @@ class SettingsManager {
             'codex': { main: this.settings.showGreekNames ? 'Codex' : '', sub: 'Coding' },
             'tekton': { main: this.settings.showGreekNames ? 'Tekton' : '', sub: this.settings.showGreekNames ? 'Project Management' : 'Projects' },
             'terma': { main: this.settings.showGreekNames ? 'Terma' : '', sub: 'Terminal' },
-            'budget': { main: this.settings.showGreekNames ? 'Budget' : '', sub: this.settings.showGreekNames ? 'LLM Cost Management' : 'LLM Cost' },
+            'budget': { main: this.settings.showGreekNames ? 'Penia' : '', sub: this.settings.showGreekNames ? 'LLM Cost Management' : 'LLM Cost' },
+            'penia': { main: this.settings.showGreekNames ? 'Penia' : '', sub: this.settings.showGreekNames ? 'LLM Cost Management' : 'LLM Cost' },
             'profile': { main: 'Profile', sub: this.settings.showGreekNames ? 'User Information' : '' },
             'settings': { main: 'Settings', sub: this.settings.showGreekNames ? 'Tekton Configuration' : '' }
         };
@@ -302,7 +303,8 @@ class SettingsManager {
                 case 'codex': return 'Codex - Coding';
                 case 'tekton': return 'Tekton - Projects';
                 case 'terma': return 'Terma - Terminal';
-                case 'budget': return 'Budget - LLM Cost';
+                case 'budget': return 'Penia - LLM Cost';
+                case 'penia': return 'Penia - LLM Cost';
                 case 'profile': return 'Profile';
                 case 'settings': return 'Settings';
                 default: return component;
@@ -326,6 +328,7 @@ class SettingsManager {
                 case 'tekton': return 'Projects';
                 case 'terma': return 'Terminal';
                 case 'budget': return 'LLM Cost';
+                case 'penia': return 'LLM Cost';
                 case 'profile': return 'Profile';
                 case 'settings': return 'Settings';
                 default: return component;

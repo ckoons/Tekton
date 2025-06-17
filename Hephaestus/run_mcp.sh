@@ -87,6 +87,12 @@ start_mcp_server() {
     
     echo -e "${GREEN}Logging to: $LOG_FILE${RESET}"
     
+    # Remove any existing log file
+    if [ -f "$LOG_FILE" ]; then
+	echo -e "${YELLOW}Removing existing log file...${RESET}"
+	rm "$LOG_FILE"
+    fi
+    
     # Change to script directory and start server
     cd "$SCRIPT_DIR"
     
