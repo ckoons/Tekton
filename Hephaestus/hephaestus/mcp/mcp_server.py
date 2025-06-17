@@ -28,7 +28,7 @@ from shared.utils.logging_setup import setup_component_logging
 logger = setup_component_logging("hephaestus_mcp")
 
 from hephaestus.mcp.ui_tools_v2 import (
-    ui_capture, ui_navigate, ui_interact, ui_sandbox, ui_analyze, ui_validate, ui_batch, ui_list_areas, ui_help, browser_manager
+    ui_capture, ui_navigate, ui_interact, ui_sandbox, ui_analyze, ui_validate, ui_batch, ui_list_areas, ui_help, ui_recommend_approach, browser_manager
 )
 
 # Debug imports
@@ -59,6 +59,30 @@ TOOL_METADATA = {
         "category": "ui",
         "tags": ["ui", "discovery", "areas"],
         "parameters": {}
+    },
+    "ui_recommend_approach": {
+        "name": "ui_recommend_approach",
+        "description": "Get intelligent recommendations for optimal tool path (Phase 1 enhancement)",
+        "category": "ui",
+        "tags": ["ui", "recommendation", "routing", "intelligence"],
+        "parameters": {
+            "target_description": {
+                "type": "string",
+                "description": "Description of what you want to modify (e.g., 'chat interface', 'navigation button')",
+                "required": True
+            },
+            "intended_change": {
+                "type": "string", 
+                "description": "What you want to do (e.g., 'add semantic tags', 'change text', 'add element')",
+                "required": True
+            },
+            "area": {
+                "type": "string",
+                "description": "UI area to work in",
+                "required": False,
+                "default": "hephaestus"
+            }
+        }
     },
     "ui_capture": {
         "name": "ui_capture",
@@ -364,6 +388,7 @@ async def execute_tool(request_data: Dict[str, Any]):
     # Map tool names to functions
     tool_functions = {
         "ui_list_areas": ui_list_areas,
+        "ui_recommend_approach": ui_recommend_approach,
         "ui_capture": ui_capture,
         "ui_navigate": ui_navigate,
         "ui_interact": ui_interact,
@@ -611,6 +636,7 @@ async def get_help(format: str = "json"):
     # Map of actual tool functions
     tool_functions = {
         "ui_list_areas": ui_list_areas,
+        "ui_recommend_approach": ui_recommend_approach,
         "ui_capture": ui_capture,
         "ui_navigate": ui_navigate,
         "ui_interact": ui_interact,

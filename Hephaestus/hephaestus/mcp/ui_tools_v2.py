@@ -513,6 +513,124 @@ def _html_to_structured_data(html: str, selector: Optional[str] = None, max_dept
     return result
 
 
+async def _analyze_dynamic_content(page: Page, area: str, html: str) -> Dict[str, Any]:
+    """
+    Phase 1: Analyze content for dynamic loading patterns and provide intelligent routing
+    """
+    soup = BeautifulSoup(html, 'html.parser')
+    
+    analysis = {
+        "content_type": "static",  # static|dynamic|hybrid
+        "confidence": 0.0,
+        "dynamic_areas": [],
+        "devtools_suitable": [],
+        "file_editing_recommended": [],
+        "recommendation": "devtools",  # devtools|file_editing|hybrid
+        "reasoning": ""
+    }
+    
+    # Detect dynamic content indicators
+    dynamic_indicators = {
+        "javascript_loading": 0,
+        "empty_containers": 0,
+        "component_scripts": 0,
+        "async_content": 0
+    }
+    
+    # Check for JavaScript-loaded content
+    scripts = soup.find_all("script")
+    for script in scripts:
+        src = script.get("src", "")
+        content = script.string or ""
+        
+        # Component-specific scripts indicate dynamic loading
+        if area in src or f"{area}-component" in src:
+            dynamic_indicators["component_scripts"] += 1
+        
+        # Look for loading patterns in script content
+        if any(keyword in content for keyword in ["innerHTML", "appendChild", "createElement", "fetch"]):
+            dynamic_indicators["javascript_loading"] += 1
+    
+    # Check for empty containers that should have content
+    empty_containers = soup.find_all(attrs={"data-tekton-area": True})
+    for container in empty_containers:
+        if not container.get_text(strip=True) and len(container.find_all()) < 3:
+            dynamic_indicators["empty_containers"] += 1
+            
+            # Identify specific dynamic area
+            tekton_area = container.get("data-tekton-area")
+            if tekton_area:
+                analysis["dynamic_areas"].append({
+                    "selector": f'[data-tekton-area="{tekton_area}"]',
+                    "reason": "Empty container with semantic tags - likely JavaScript populated",
+                    "file_location": f"{tekton_area}-component.html"
+                })
+    
+    # Check for loading indicators
+    loading_elements = soup.find_all(class_=lambda x: x and ("loading" in x or "spinner" in x))
+    if loading_elements:
+        dynamic_indicators["async_content"] += len(loading_elements)
+    
+    # Look for component-specific patterns
+    if area != "hephaestus":
+        component_container = soup.find(attrs={"data-tekton-area": area}) or \
+                            soup.find(attrs={"data-component": area}) or \
+                            soup.find(class_=lambda x: x and area in x)
+        
+        if component_container:
+            # Check if container has minimal content but complex structure
+            text_content = component_container.get_text(strip=True)
+            child_elements = len(component_container.find_all())
+            
+            if len(text_content) < 100 and child_elements > 5:
+                analysis["dynamic_areas"].append({
+                    "selector": f'[data-tekton-area="{area}"], [data-component="{area}"]',
+                    "reason": "Component container with minimal text but complex structure",
+                    "file_location": f"{area}-component.html"
+                })
+                dynamic_indicators["async_content"] += 1
+    
+    # Determine content type and confidence
+    total_indicators = sum(dynamic_indicators.values())
+    
+    if total_indicators == 0:
+        analysis["content_type"] = "static"
+        analysis["confidence"] = 0.9
+        analysis["recommendation"] = "devtools"
+        analysis["reasoning"] = "No dynamic content indicators detected. Safe for DevTools operations."
+    elif total_indicators <= 2:
+        analysis["content_type"] = "hybrid"
+        analysis["confidence"] = 0.7
+        analysis["recommendation"] = "hybrid"
+        analysis["reasoning"] = "Some dynamic content detected. DevTools suitable for navigation/static elements."
+    else:
+        analysis["content_type"] = "dynamic"
+        analysis["confidence"] = 0.8
+        analysis["recommendation"] = "file_editing"
+        analysis["reasoning"] = "Significant dynamic content detected. File editing recommended for component interiors."
+    
+    # Build specific recommendations
+    if area == "hephaestus" or analysis["content_type"] == "static":
+        # Main UI or static content - DevTools work well
+        analysis["devtools_suitable"] = [".nav-label", "[data-tekton-nav]", "[data-tekton-area]", "button", "a"]
+    
+    if analysis["dynamic_areas"] or analysis["content_type"] in ["dynamic", "hybrid"]:
+        # Dynamic content areas need file editing
+        analysis["file_editing_recommended"] = [
+            "component content areas",
+            "chat interfaces", 
+            "forms within components",
+            "dynamically loaded panels"
+        ]
+        
+        # Add specific file locations if we found them
+        if analysis["dynamic_areas"]:
+            file_locations = [da["file_location"] for da in analysis["dynamic_areas"]]
+            analysis["file_editing_recommended"].extend(file_locations)
+    
+    return analysis
+
+
 async def ui_list_areas() -> Dict[str, Any]:
     """
     List all available UI areas in Hephaestus
@@ -523,13 +641,140 @@ async def ui_list_areas() -> Dict[str, Any]:
     return list_ui_areas()
 
 
+async def ui_recommend_approach(
+    target_description: str,
+    intended_change: str,
+    area: str = "hephaestus"
+) -> Dict[str, Any]:
+    """
+    Phase 1: Analyze request and recommend optimal tool path with confidence scoring
+    
+    Args:
+        target_description: Description of what you want to modify (e.g., "chat interface", "navigation button")
+        intended_change: What you want to do (e.g., "add semantic tags", "change text", "add element")
+        area: UI area to work in
+    
+    Returns:
+        Recommendation with reasoning and specific guidance
+    """
+    await browser_manager.initialize()
+    page = await browser_manager.get_page()
+    
+    result = {
+        "target": target_description,
+        "change": intended_change,
+        "area": area,
+        "recommended_tool": "devtools",
+        "confidence": 0.0,
+        "reasoning": "",
+        "specific_guidance": "",
+        "fallback_strategy": "",
+        "file_locations": []
+    }
+    
+    # Capture current area to analyze
+    try:
+        capture_result = await ui_capture(area=area)
+        dynamic_analysis = capture_result.get("dynamic_analysis", {})
+    except Exception as e:
+        result["recommended_tool"] = "file_editing"
+        result["confidence"] = 0.9
+        result["reasoning"] = f"Could not access UI area '{area}': {str(e)}. File editing is safer."
+        result["specific_guidance"] = f"Edit the {area}-component.html file directly"
+        return result
+    
+    # Analyze the request
+    target_lower = target_description.lower()
+    change_lower = intended_change.lower()
+    
+    # Pattern matching for common scenarios
+    dynamic_keywords = ["chat", "form", "input", "panel", "content", "interface", "workspace"]
+    navigation_keywords = ["nav", "button", "link", "menu", "header", "footer"]
+    semantic_keywords = ["semantic", "tag", "attribute", "data-tekton"]
+    
+    # Check if target involves dynamic content
+    involves_dynamic = any(keyword in target_lower for keyword in dynamic_keywords)
+    involves_navigation = any(keyword in target_lower for keyword in navigation_keywords)
+    involves_semantics = any(keyword in change_lower for keyword in semantic_keywords)
+    
+    # Factor in dynamic analysis
+    content_type = dynamic_analysis.get("content_type", "static")
+    dynamic_areas = dynamic_analysis.get("dynamic_areas", [])
+    
+    # Decision logic
+    if content_type == "static" and not involves_dynamic:
+        # Static content, safe for DevTools
+        result["recommended_tool"] = "devtools"
+        result["confidence"] = 0.95
+        result["reasoning"] = "Static content area with no dynamic loading detected. DevTools are ideal."
+        result["specific_guidance"] = f"Use ui_sandbox with area='{area}' and appropriate selectors"
+    
+    elif involves_navigation and not involves_dynamic:
+        # Navigation elements, usually safe for DevTools
+        result["recommended_tool"] = "devtools"
+        result["confidence"] = 0.9
+        result["reasoning"] = "Navigation elements are typically static and well-suited for DevTools"
+        result["specific_guidance"] = "Target navigation elements with selectors like .nav-label or [data-tekton-nav]"
+    
+    elif involves_dynamic or content_type == "dynamic":
+        # Dynamic content, recommend file editing
+        result["recommended_tool"] = "file_editing"
+        result["confidence"] = 0.85
+        result["reasoning"] = "Target involves dynamic content areas that DevTools cannot see reliably"
+        result["specific_guidance"] = f"Edit {area}-component.html directly for component interior content"
+        
+        # Add specific file locations if available
+        if dynamic_areas:
+            for da in dynamic_areas:
+                if area in da.get("file_location", ""):
+                    result["file_locations"].append(da["file_location"])
+    
+    elif content_type == "hybrid":
+        # Hybrid content, depends on specific target
+        if involves_navigation or involves_semantics:
+            result["recommended_tool"] = "devtools"
+            result["confidence"] = 0.75
+            result["reasoning"] = "Hybrid content but targeting navigation/semantic elements that DevTools can handle"
+            result["specific_guidance"] = "Try DevTools first, fall back to file editing if elements not found"
+        else:
+            result["recommended_tool"] = "file_editing"
+            result["confidence"] = 0.8
+            result["reasoning"] = "Hybrid content and target description suggests component interior work"
+            result["specific_guidance"] = f"Edit {area}-component.html for better access to component internals"
+    
+    else:
+        # Default fallback
+        result["recommended_tool"] = "devtools"
+        result["confidence"] = 0.6
+        result["reasoning"] = "Default recommendation - try DevTools first as it's safer"
+        result["specific_guidance"] = "Start with DevTools, switch to file editing if needed"
+    
+    # Build fallback strategy
+    if result["recommended_tool"] == "devtools":
+        result["fallback_strategy"] = f"If DevTools fails to find elements, try file editing {area}-component.html"
+    else:
+        result["fallback_strategy"] = f"If file editing is too complex, try DevTools with area='{area}' first"
+    
+    # Add file locations if not already specified
+    if not result["file_locations"] and area != "hephaestus":
+        result["file_locations"] = [f"{area}-component.html"]
+    
+    # Time estimates
+    if result["recommended_tool"] == "devtools":
+        result["time_estimate"] = "~30 seconds with DevTools, ~5 minutes with file editing"
+    else:
+        result["time_estimate"] = "~5 minutes with file editing, DevTools may not work"
+    
+    return result
+
+
 async def ui_capture(
     area: str = "hephaestus",
     selector: Optional[str] = None,
     include_screenshot: bool = False
 ) -> Dict[str, Any]:
     """
-    Capture UI state from Hephaestus UI
+    Capture UI state from Hephaestus UI with enhanced dynamic content detection
     
     Args:
         area: UI area name (e.g., 'rhetor', 'navigation', 'content')
@@ -538,7 +783,7 @@ async def ui_capture(
         include_screenshot: Whether to include a visual screenshot
     
     Returns:
-        Structured data about the UI state
+        Structured data about the UI state with dynamic content analysis
     """
     await browser_manager.initialize()
     page = await browser_manager.get_page()
@@ -701,6 +946,9 @@ async def ui_capture(
                 "text": link.get_text(strip=True),
                 "id": link.get("id")
             })
+    
+    # PHASE 1 ENHANCEMENT: Dynamic Content Analysis
+    result["dynamic_analysis"] = await _analyze_dynamic_content(page, area, html)
     
     # Include screenshot if requested
     if include_screenshot:
@@ -1029,7 +1277,14 @@ async def ui_sandbox(
                 js_code = f"""
                 (function() {{
                     const elements = document.querySelectorAll('{escaped_selector}');
-                    if (elements.length === 0) return {{ success: false, error: 'No elements found for selector: {escaped_selector}' }};
+                    if (elements.length === 0) {{
+                        // Enhanced error message with file editing guidance
+                        return {{ 
+                            success: false, 
+                            error: 'No elements found for selector: {escaped_selector}',
+                            guidance: 'Element not visible to DevTools - try file editing: {area}-component.html'
+                        }};
+                    }}
                     
                     elements.forEach(el => {{
                         const content = `{escaped_content}`;
@@ -1062,7 +1317,8 @@ async def ui_sandbox(
                     "change_index": i,
                     "success": result_js.get("success", False),
                     "elements_modified": result_js.get("count", 0),
-                    "error": result_js.get("error")
+                    "error": result_js.get("error"),
+                    "guidance": result_js.get("guidance")  # Phase 1: Enhanced error guidance
                 })
             
             elif change_type == "css":
@@ -2103,6 +2359,7 @@ await ui_sandbox('rhetor', [...], preview=False)
 # Export functions for MCP registration
 __all__ = [
     "ui_list_areas",
+    "ui_recommend_approach",  # Phase 1: Intelligent routing
     "ui_capture",
     "ui_navigate",
     "ui_interact", 
