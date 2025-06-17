@@ -1,20 +1,27 @@
 # UI DevTools Cookbook
 
-*A practical guide for using the Hephaestus UI DevTools based on real experience*
+*A practical guide for using the Hephaestus UI DevTools - now with working tools!*
 
 Created: 2025-01-16  
-Last Updated: 2025-01-17  
-Status: Active - Reflects current tool capabilities and known issues
+Last Updated: 2025-06-17  
+Status: Active - Tools are functional with some limitations
 
-## 🚨 CRITICAL: Read This First
+## Welcome to UI DevTools!
 
-**The UI DevTools are REQUIRED for all Hephaestus UI work. NO BLIND CHANGES.**
+The Hephaestus UI DevTools help you modify and inspect the UI without diving into code files. They're designed with Casey's philosophy: **"Keep it simple, ask questions when unsure, and state clearly what you know and why."**
 
-### Known Major Issue: DynamicContentView Problem
-- **Issue**: DevTools cannot see dynamically loaded component content
-- **Symptom**: `ui_navigate` reports success but `ui_capture` only sees initial HTML
-- **Workaround**: Edit component HTML files directly for structural changes
-- **Status**: Under investigation
+### What's Working Well ✅
+- **ui_capture** returns full DOM structure with accurate element counts
+- **ui_capture** includes raw HTML for searching and debugging
+- **ui_sandbox** can successfully modify elements (text, attributes, CSS)
+- Clear error messages when selectors aren't found
+- Proper handling of complex selectors with quotes
+
+### Current Limitation 🔧
+- **DynamicContentView**: Components loaded via JavaScript aren't immediately visible
+- **Impact**: After navigating to a component, the content may not be captured
+- **Workaround**: For dynamically loaded content, edit component HTML files directly
+- **Status**: This is a known limitation we're working on
 
 ## Table of Contents
 1. [Quick Start](#quick-start)
@@ -55,8 +62,14 @@ async def devtools_request(tool_name, arguments):
 ```python
 # 1. Capture current state
 result = await devtools_request("ui_capture", {"area": "rhetor"})
+print(f"Found {result['result']['structure']['element_count']} elements")
+print(f"Available selectors: {result['result']['selectors_available']}")
 
-# 2. Test changes with preview
+# 2. Search the HTML if needed
+if ".nav-label" in result['result']['html']:
+    print("Found navigation labels!")
+
+# 3. Make changes (preview is optional but recommended)
 result = await devtools_request("ui_sandbox", {
     "area": "rhetor",
     "changes": [{
@@ -65,17 +78,27 @@ result = await devtools_request("ui_sandbox", {
         "content": "New Text",
         "action": "replace"
     }],
-    "preview": True  # ALWAYS preview first!
+    "preview": True  # Preview first to test
 })
 
-# 3. Apply if preview succeeds
-if result['status'] == 'success':
+# 4. Apply if preview succeeds
+if result['status'] == 'success' and result['result']['summary']['successful'] > 0:
     result = await devtools_request("ui_sandbox", {
         "area": "rhetor",
         "changes": [...],
         "preview": False
     })
 ```
+
+### When to Ask Questions
+
+Following Casey's guidance, if you're unsure about:
+- Which selector to use → Check `selectors_available` in ui_capture
+- Whether a change will work → Use preview mode
+- Why something failed → Check the error message
+- Whether to use DevTools or edit files → Try DevTools first for simple changes
+
+**Remember**: It's better to ask "Should I use DevTools or edit the HTML file directly?" than to guess!
 
 ## Common Operations
 
@@ -120,47 +143,34 @@ changes = [{
 }]
 ```
 
-## Known Issues & Workarounds
+## Things to Know
 
-### 1. DynamicContentView Problem ⚠️
-**Issue**: Cannot capture dynamically loaded components
+### 1. DynamicContentView Limitation 📋
+**What happens**: Components loaded via JavaScript aren't immediately visible to DevTools
 ```python
-# This sequence SHOULD work but doesn't:
+# Example scenario:
 await devtools_request("ui_navigate", {"component": "rhetor"})
 await asyncio.sleep(2)  # Wait for load
 result = await devtools_request("ui_capture", {"area": "rhetor"})
-# Result shows profile/initial page, not rhetor!
+# May still show the initial page content
 ```
 
-**Workaround**: Edit component files directly
-```python
-# Instead of DevTools, edit the file:
-with open('ui/components/rhetor/rhetor-component.html', 'r+') as f:
-    content = f.read()
-    # Make changes
-    f.write(content)
-```
+**What to do**: 
+- For static content in navigation/headers → DevTools work great!
+- For dynamic component content → Edit the component HTML file directly
+- Not sure which? Try DevTools first, then fall back to file editing
 
-### 2. Structural Changes Limited
-**Issue**: Moving elements between containers often fails
-```python
-# This typically fails:
-changes = [{
-    "type": "move",
-    "selector": "#element",
-    "target": "#new-container"
-}]
-```
+### 2. Complex DOM Manipulations 🔧
+**What works**: Text changes, attributes, CSS, simple HTML additions
+**What doesn't**: Moving elements between containers, complex restructuring
 
-**Workaround**: Use replace operations or edit HTML directly
+**Approach**: Start simple! If you need to restructure the DOM significantly, that's a good time to ask: "Would this be better done in the HTML file?"
 
-### 3. Framework Detection Overzealous
-**Issue**: Any mention of React/Vue/Angular triggers rejection
-```python
-# Even comments with "React" get rejected!
-```
+### 3. Framework Mentions 🚫
+**Current behavior**: The system blocks content containing "React", "Vue", "Angular"
+**Why**: Previous sessions tried to add frameworks when asked to keep things simple
 
-**Workaround**: Use alternative wording in content
+**If you need to**: Use alternative wording or ask Casey about the specific use case
 
 ## Pattern Library
 
@@ -206,35 +216,45 @@ result = await devtools_request("ui_capture", {
 })
 ```
 
-## Anti-Patterns
+## Tips for Success
 
-### ❌ DON'T: Use DevTools for Major Structural Changes
+### 💡 Start with ui_capture
+Before making changes, always capture first to see what's available:
 ```python
-# This won't work reliably
-# DON'T try to rebuild component structure via DevTools
+result = await devtools_request("ui_capture", {"area": "hephaestus"})
+# Check selectors_available to see what you can target
+# Search the HTML to verify your selector exists
 ```
 
-### ❌ DON'T: Skip Preview
+### 💡 Use Preview Mode for Testing
+Preview mode is your friend - it shows what will happen without applying changes:
 ```python
-# WRONG - Always preview first!
-await devtools_request("ui_sandbox", {
+# Test first
+result = await devtools_request("ui_sandbox", {
     "changes": [...],
-    "preview": False  # NO!
+    "preview": True  # See what will happen
 })
 ```
 
-### ❌ DON'T: Add Frameworks
+### 💡 Keep Selectors Simple
+Complex selectors are harder to debug:
 ```python
-# This gets rejected immediately
-content = '<script src="react.js"></script>'  # BLOCKED
+# Simple and clear:
+"#specific-id"
+".specific-class" 
+"[data-component='prometheus']"
+
+# Avoid unless necessary:
+":nth-child(3) > div:not(.hidden) + span"
 ```
 
-### ❌ DON'T: Use Complex Selectors
-```python
-# Keep selectors simple
-# BAD: ":nth-child(3) > div:not(.hidden) + span"
-# GOOD: "#specific-id" or ".specific-class"
-```
+### 💡 When to Switch to File Editing
+If you find yourself:
+- Needing to restructure large parts of the DOM
+- Working with dynamically loaded component content
+- Making changes that require multiple complex operations
+
+Consider asking: "Would this be simpler to do in the HTML file?"
 
 ## Troubleshooting
 
@@ -266,21 +286,51 @@ cd $TEKTON_ROOT/Hephaestus && ./run_mcp.sh
 
 ## Best Practices Summary
 
-1. **Always use preview mode first**
-2. **Keep changes simple and atomic**
-3. **Use semantic tags (data-tekton-*)**
-4. **Test one change at a time**
-5. **For structural changes, edit files directly**
-6. **Document what you did for next Claude session**
+### The DevTools Philosophy
+Following Casey's approach: **Keep it simple, be clear about what you know, and ask when unsure.**
 
-## When to Use What
+### Practical Guidelines
+1. **Start with ui_capture** - See what's available before making changes
+2. **Use the HTML search** - The raw HTML in responses is your friend
+3. **Preview when testing** - But don't be afraid to apply changes directly when confident
+4. **Keep changes focused** - One clear change is better than five complex ones
+5. **Ask when stuck** - "Should I use DevTools or edit the file?" is a great question
 
-- **ui_capture**: Understanding current state, finding elements
-- **ui_sandbox**: Text changes, attributes, simple HTML additions
-- **ui_analyze**: Checking for framework contamination
-- **Direct file editing**: Structural changes, new components, major updates
+### When to Use Each Tool
+
+**ui_capture** ✅ Great for:
+- Seeing the page structure and element counts
+- Finding available selectors
+- Searching for specific content in HTML
+- Understanding what you're working with
+
+**ui_sandbox** ✅ Great for:
+- Changing text content
+- Adding/modifying attributes
+- Applying CSS styles
+- Testing changes before applying
+
+**Direct file editing** 📝 Better for:
+- Major structural changes
+- Working with dynamically loaded components
+- Creating new components
+- Complex multi-step modifications
+
+### Success Metrics
+With the recent improvements, you should expect:
+- ✅ ui_capture to show actual element counts (not just 1)
+- ✅ ui_sandbox to successfully modify elements
+- ✅ Clear error messages when selectors aren't found
+- ✅ HTML content for searching and debugging
+
+If something seems broken, check the error message first - it's probably trying to tell you something helpful!
 
 ---
 
-For complete API reference, see: `UIDevToolsReference.md`  
-For semantic tagging standards, see: `SemanticUINavigationGuide.md`
+## Related Documentation
+
+- **What's New**: `UIDevToolsWhatsNew.md` - Recent improvements and fixes
+- **API Reference**: `UIDevToolsReference.md` - Complete tool documentation  
+- **Semantic Tags**: `SemanticUINavigationGuide.md` - UI tagging standards
+
+Remember: The tools are here to help you work efficiently. When in doubt, ask!

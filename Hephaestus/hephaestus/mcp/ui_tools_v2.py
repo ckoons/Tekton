@@ -411,6 +411,15 @@ def _suggest_similar_selectors(html: str, failed_selector: str, max_suggestions:
     return unique_suggestions[:max_suggestions]
 
 
+def _count_elements_in_tree(element_data: Dict[str, Any]) -> int:
+    """Recursively count all elements in a tree structure"""
+    count = 1  # Count this element
+    if "children" in element_data:
+        for child in element_data["children"]:
+            count += _count_elements_in_tree(child)
+    return count
+
+
 def _html_to_structured_data(html: str, selector: Optional[str] = None, max_depth: int = 3) -> Dict[str, Any]:
     """Convert HTML to structured data representation with proper DOM traversal"""
     soup = BeautifulSoup(html, 'html.parser')
@@ -481,8 +490,9 @@ def _html_to_structured_data(html: str, selector: Optional[str] = None, max_dept
         
         return info
     
+    # Build the structured result
     result = {
-        "element_count": len(elements),
+        "element_count": len(elements),  # This is the count of root elements
         "elements": []
     }
     
@@ -491,6 +501,14 @@ def _html_to_structured_data(html: str, selector: Optional[str] = None, max_dept
             el_tree = extract_element_tree(element)
             if el_tree:
                 result["elements"].append(el_tree)
+    
+    # Calculate the TOTAL element count when no selector is provided
+    if not selector and result["elements"]:
+        total_count = sum(_count_elements_in_tree(el) for el in result["elements"])
+        result["total_element_count"] = total_count
+        # For backward compatibility, update element_count to show the real total
+        result["element_count"] = total_count
+        result["root_element_count"] = len(elements)  # Preserve original count as well
     
     return result
 
@@ -606,8 +624,27 @@ async def ui_capture(
         # Parse the HTML we already have instead of waiting for selector on page
         # This is more reliable and works with the area concept
     
+    # Add raw HTML to result for better debugging and searching
+    result["html"] = html
+    result["html_length"] = len(html)
+    
     # Convert to structured data
     result["structure"] = _html_to_structured_data(html, selector)
+    
+    # Parse HTML once for all operations
+    soup = BeautifulSoup(html, 'html.parser')
+    
+    # Add common selector counts for quick reference
+    result["selectors_available"] = {
+        ".nav-label": len(soup.select(".nav-label")),
+        "[data-component]": len(soup.select("[data-component]")),
+        "[data-tekton-nav]": len(soup.select("[data-tekton-nav]")),
+        "[data-tekton-area]": len(soup.select("[data-tekton-area]")),
+        "button": len(soup.select("button")),
+        "input": len(soup.select("input")),
+        "form": len(soup.select("form")),
+        "a": len(soup.select("a"))
+    }
     
     # If selector was not found, add the suggestions to the main result for visibility
     if result["structure"].get("selector_not_found"):
@@ -615,9 +652,6 @@ async def ui_capture(
         result["suggestions"] = result["structure"]["suggestions"]
         # Return early since there's no point extracting forms/buttons/etc from non-existent elements
         return result
-    
-    # Extract common UI elements
-    soup = BeautifulSoup(html, 'html.parser')
     
     # Extract forms
     forms = soup.find_all("form")
@@ -988,13 +1022,14 @@ async def ui_sandbox(
         
         try:
             if change_type in ["html", "text"]:
-                # Escape content properly
+                # Escape content and selector properly
                 escaped_content = content.replace('\\', '\\\\').replace('`', '\\`').replace('${', '\\${')
+                escaped_selector = selector.replace('\\', '\\\\').replace("'", "\\'")
                 
                 js_code = f"""
                 (function() {{
-                    const elements = document.querySelectorAll('{selector}');
-                    if (elements.length === 0) return {{ success: false, error: 'No elements found for selector: {selector}' }};
+                    const elements = document.querySelectorAll('{escaped_selector}');
+                    if (elements.length === 0) return {{ success: false, error: 'No elements found for selector: {escaped_selector}' }};
                     
                     elements.forEach(el => {{
                         const content = `{escaped_content}`;
@@ -1010,10 +1045,10 @@ async def ui_sandbox(
                                 {f'el.textContent = content + el.textContent;' if change_type == 'text' else 'el.innerHTML = content + el.innerHTML;'}
                                 break;
                             case 'after':
-                                el.insertAdjacentHTML('afterend', {f'"<span>" + content + "</span>"' if change_type == 'text' else 'content'});
+                                el.insertAdjacentHTML('afterend', {'`<span>${content}</span>`' if change_type == 'text' else 'content'});
                                 break;
                             case 'before':
-                                el.insertAdjacentHTML('beforebegin', {f'"<span>" + content + "</span>"' if change_type == 'text' else 'content'});
+                                el.insertAdjacentHTML('beforebegin', {'`<span>${content}</span>`' if change_type == 'text' else 'content'});
                                 break;
                         }}
                     }});
