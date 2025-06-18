@@ -62,6 +62,9 @@ from .interaction_tools import ui_interact
 # Import recommendation functions
 from .recommendation_tools import ui_recommend_approach
 
+# Import semantic analysis tools (Phase 2)
+from .semantic_tools import ui_semantic_analysis, ui_semantic_scan, ui_semantic_patterns
+
 # Initialize logger
 logger = setup_component_logging("ui_devtools")
 
@@ -959,6 +962,11 @@ __all__ = [
     "ui_sandbox",
     "ui_analyze",
     "ui_validate",
+    "ui_batch",
     "ui_help",
+    # Phase 2: Semantic analysis
+    "ui_semantic_analysis",
+    "ui_semantic_scan",
+    "ui_semantic_patterns",
     "browser_manager"
 ]

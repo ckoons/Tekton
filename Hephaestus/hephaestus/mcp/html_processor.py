@@ -143,7 +143,13 @@ def suggest_similar_selectors(html: str, failed_selector: str, max_suggestions: 
                     seen.add(id_sel)
         
         # Also look for any data-tekton attributes as fallback
-        for element in soup.find_all(attrs=lambda x: x and any(k.startswith('data-tekton') for k in x)):
+        def has_data_tekton_attrs(attrs):
+            """Check if element has any data-tekton attributes"""
+            if not attrs:
+                return False
+            return any(k.startswith('data-tekton') for k in attrs.keys())
+        
+        for element in soup.find_all(attrs=has_data_tekton_attrs):
             for attr, value in element.attrs.items():
                 if attr.startswith('data-tekton') and value:
                     attr_sel = f'[{attr}="{value}"]'
@@ -310,7 +316,14 @@ async def analyze_dynamic_content(page: Page, area: str, html: str) -> Dict[str,
                 })
     
     # Check for loading indicators
-    loading_elements = soup.find_all(class_=lambda x: x and ("loading" in x or "spinner" in x))
+    def has_loading_class(class_attr):
+        """Check if element has loading or spinner class"""
+        if not class_attr:
+            return False
+        class_str = ' '.join(class_attr) if isinstance(class_attr, list) else str(class_attr)
+        return "loading" in class_str or "spinner" in class_str
+    
+    loading_elements = soup.find_all(class_=has_loading_class)
     if loading_elements:
         dynamic_indicators["async_content"] += len(loading_elements)
     
@@ -346,7 +359,14 @@ async def analyze_dynamic_content(page: Page, area: str, html: str) -> Dict[str,
             })
     
     # Identify static text elements that can be modified
-    text_elements = soup.find_all(text=lambda t: t and len(t.strip()) > 10 and len(t.strip()) < 100)
+    def is_suitable_text(text):
+        """Check if text is suitable for modification (not too short or too long)"""
+        if not text:
+            return False
+        stripped = text.strip()
+        return len(stripped) > 10 and len(stripped) < 100
+    
+    text_elements = soup.find_all(text=is_suitable_text)
     for text_elem in text_elements[:5]:
         parent = text_elem.parent
         if parent and parent.name not in ['script', 'style']:

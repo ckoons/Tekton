@@ -28,7 +28,8 @@ from shared.utils.logging_setup import setup_component_logging
 logger = setup_component_logging("hephaestus_mcp")
 
 from hephaestus.mcp.ui_tools_v2 import (
-    ui_capture, ui_navigate, ui_interact, ui_sandbox, ui_analyze, ui_validate, ui_batch, ui_list_areas, ui_help, ui_recommend_approach, browser_manager
+    ui_capture, ui_navigate, ui_interact, ui_sandbox, ui_analyze, ui_validate, ui_batch, ui_list_areas, ui_help, ui_recommend_approach, 
+    ui_semantic_analysis, ui_semantic_scan, ui_semantic_patterns, browser_manager
 )
 
 # Debug imports
@@ -305,6 +306,53 @@ TOOL_METADATA = {
                 "enum": ["areas", "selectors", "frameworks", "errors", "tasks", "architecture"]
             }
         }
+    },
+    # Phase 2 semantic analysis tools
+    "ui_semantic_analysis": {
+        "name": "ui_semantic_analysis",
+        "description": "Analyze semantic structure of a component HTML file (Phase 2)",
+        "category": "semantic",
+        "tags": ["semantic", "analysis", "structure", "validation"],
+        "parameters": {
+            "component": {
+                "type": "string",
+                "description": "Component name to analyze (e.g., 'rhetor')",
+                "required": True
+            },
+            "detailed": {
+                "type": "boolean",
+                "description": "Include detailed findings and recommendations",
+                "required": False,
+                "default": True
+            }
+        }
+    },
+    "ui_semantic_scan": {
+        "name": "ui_semantic_scan",
+        "description": "Scan multiple components for semantic health",
+        "category": "semantic",
+        "tags": ["semantic", "scan", "batch", "health"],
+        "parameters": {
+            "components": {
+                "type": "array",
+                "description": "List of components to scan (None = scan all)",
+                "required": False,
+                "items": {"type": "string"}
+            },
+            "min_score": {
+                "type": "number",
+                "description": "Minimum score threshold for reporting issues",
+                "required": False,
+                "default": 0.7
+            }
+        }
+    },
+    "ui_semantic_patterns": {
+        "name": "ui_semantic_patterns",
+        "description": "Get documentation of semantic patterns used by Tekton",
+        "category": "semantic",
+        "tags": ["semantic", "patterns", "documentation", "best-practices"],
+        "parameters": {}
     }
 }
 
@@ -396,7 +444,11 @@ async def execute_tool(request_data: Dict[str, Any]):
         "ui_analyze": ui_analyze,
         "ui_validate": ui_validate,
         "ui_batch": ui_batch,
-        "ui_help": ui_help
+        "ui_help": ui_help,
+        # Phase 2 semantic tools
+        "ui_semantic_analysis": ui_semantic_analysis,
+        "ui_semantic_scan": ui_semantic_scan,
+        "ui_semantic_patterns": ui_semantic_patterns
     }
     
     if tool_name not in tool_functions:
@@ -644,7 +696,11 @@ async def get_help(format: str = "json"):
         "ui_analyze": ui_analyze,
         "ui_validate": ui_validate,
         "ui_batch": ui_batch,
-        "ui_help": ui_help
+        "ui_help": ui_help,
+        # Phase 2 semantic tools
+        "ui_semantic_analysis": ui_semantic_analysis,
+        "ui_semantic_scan": ui_semantic_scan,
+        "ui_semantic_patterns": ui_semantic_patterns
     }
     
     # Check if documented tools exist
