@@ -91,12 +91,331 @@ async def find_component_element(page: Page, component: str) -> Optional[Any]:
     )
 
 
+def _suggest_similar_selectors(html: str, failed_selector: str, max_suggestions: int = 5) -> List[str]:
+    """Suggest similar selectors when one fails to match"""
+    import re
+    
+    soup = BeautifulSoup(html, 'html.parser')
+    suggestions = []
+    
+    # Parse the failed selector to understand what was being looked for
+    selector_lower = failed_selector.lower()
+    
+    # Extract key parts from the selector
+    # Check if it's looking for an ID
+    if failed_selector.startswith("#"):
+        target_id = failed_selector[1:]
+        # Find IDs that contain similar words
+        for element in soup.find_all(id=True):
+            elem_id = element.get("id", "")
+            if target_id.lower() in elem_id.lower() or elem_id.lower() in target_id.lower():
+                suggestions.append(f"#{elem_id}")
+    
+    # Check if it's looking for a class
+    elif failed_selector.startswith("."):
+        target_class = failed_selector[1:]
+        # Find classes that contain similar words
+        seen_classes = set()
+        for element in soup.find_all(class_=True):
+            for cls in element.get("class", []):
+                if cls in seen_classes:
+                    continue
+                if target_class.lower() in cls.lower() or cls.lower() in target_class.lower():
+                    suggestions.append(f".{cls}")
+                    seen_classes.add(cls)
+    
+    # Check for data attributes
+    elif "[data-" in failed_selector:
+        # Extract data attribute name
+        match = re.search(r'\[data-([^=\]]+)', failed_selector)
+        if match:
+            data_attr = f"data-{match.group(1)}"
+            # Find all elements with data attributes
+            for element in soup.find_all():
+                for attr, value in element.attrs.items():
+                    if attr.startswith("data-") and (data_attr in attr or attr in data_attr):
+                        if value:
+                            suggestions.append(f'[{attr}="{value}"]')
+                        else:
+                            suggestions.append(f'[{attr}]')
+    
+    # For any selector, also look for elements with similar text content or structure
+    # Extract meaningful words from the selector
+    words = re.findall(r'[a-zA-Z]+', failed_selector.lower())
+    if words:
+        # Look for elements containing these words in class, id, or data attributes
+        for word in words:
+            if len(word) > 2:  # Skip very short words
+                # Check classes
+                for element in soup.find_all(class_=re.compile(word, re.I)):
+                    for cls in element.get("class", []):
+                        if word in cls.lower():
+                            suggestions.append(f".{cls}")
+                
+                # Check IDs
+                for element in soup.find_all(id=re.compile(word, re.I)):
+                    suggestions.append(f"#{element.get('id')}")
+                
+                # Check data attributes
+                for element in soup.find_all():
+                    for attr, value in element.attrs.items():
+                        if attr.startswith("data-") and word in attr.lower():
+                            if value:
+                                suggestions.append(f'[{attr}="{value}"]')
+    
+    # Remove duplicates while preserving order
+    seen = set()
+    unique_suggestions = []
+    for s in suggestions:
+        if s not in seen and s != failed_selector:
+            seen.add(s)
+            unique_suggestions.append(s)
+    
+    # If we have very few suggestions, add some generic ones based on the area
+    if len(unique_suggestions) < 3:
+        # Add common structural selectors
+        for element in soup.find_all(['header', 'nav', 'main', 'footer', 'section', 'article', 'div']):
+            if element.get('class'):
+                for cls in element.get('class'):
+                    if cls not in seen:
+                        unique_suggestions.append(f".{cls}")
+                        seen.add(cls)
+            if element.get('id'):
+                id_sel = f"#{element.get('id')}"
+                if id_sel not in seen:
+                    unique_suggestions.append(id_sel)
+                    seen.add(id_sel)
+        
+        # Also look for any data-tekton attributes as fallback
+        for element in soup.find_all(attrs=lambda x: x and any(k.startswith('data-tekton') for k in x)):
+            for attr, value in element.attrs.items():
+                if attr.startswith('data-tekton') and value:
+                    attr_sel = f'[{attr}="{value}"]'
+                    if attr_sel not in seen and len(unique_suggestions) < max_suggestions:
+                        unique_suggestions.append(attr_sel)
+                        seen.add(attr_sel)
+    
+    return unique_suggestions[:max_suggestions]
 
 
+def _count_elements_in_tree(element_data: Dict[str, Any]) -> int:
+    """Recursively count all elements in a tree structure"""
+    count = 1  # Count this element
+    if "children" in element_data:
+        for child in element_data["children"]:
+            count += _count_elements_in_tree(child)
+    return count
 
 
+def _html_to_structured_data(html: str, selector: Optional[str] = None, max_depth: int = 3) -> Dict[str, Any]:
+    """Convert HTML to structured data representation with proper DOM traversal"""
+    soup = BeautifulSoup(html, 'html.parser')
+    
+    # If selector provided, find matching elements
+    if selector:
+        try:
+            # Use CSS select for better selector support
+            elements = soup.select(selector)
+        except:
+            # Fallback for simple selectors
+            if selector.startswith("#"):
+                element = soup.find(id=selector[1:])
+                elements = [element] if element else []
+            elif selector.startswith("."):
+                elements = soup.find_all(class_=selector[1:])
+            else:
+                elements = soup.find_all(selector)
+        
+        # If no elements found, provide helpful suggestions
+        if not elements:
+            suggestions = _suggest_similar_selectors(html, selector)
+            return {
+                "element_count": 0,
+                "elements": [],
+                "selector_not_found": True,
+                "failed_selector": selector,
+                "suggestions": suggestions,
+                "suggestion_message": f"No matches for '{selector}'. Try: " + ", ".join(suggestions) if suggestions else f"No matches for '{selector}'. No similar selectors found."
+            }
+    else:
+        # Get the root element (body or document)
+        root = soup.body if soup.body else soup
+        elements = [root]
+    
+    def extract_element_tree(element: Tag, depth: int = 0) -> Dict[str, Any]:
+        """Recursively extract element information"""
+        if not isinstance(element, Tag) or depth > max_depth:
+            return None
+            
+        info = {
+            "tag": element.name,
+            "id": element.get("id"),
+            "classes": element.get("class", []),
+            "attributes": {}
+        }
+        
+        # Extract data attributes and other relevant attributes
+        for attr_name, attr_value in element.attrs.items():
+            if attr_name.startswith("data-") or attr_name in ["href", "src", "alt", "title", "placeholder", "value", "type", "name"]:
+                info["attributes"][attr_name] = attr_value
+        
+        # Get direct text content (not from children)
+        direct_text = "".join([str(s) for s in element.children if isinstance(s, NavigableString)]).strip()
+        if direct_text:
+            info["text"] = direct_text[:100] + "..." if len(direct_text) > 100 else direct_text
+        
+        # Process children
+        child_elements = [child for child in element.children if isinstance(child, Tag)]
+        if child_elements and depth < max_depth:
+            info["children"] = []
+            for child in child_elements[:10]:  # Limit to 10 children per level
+                child_info = extract_element_tree(child, depth + 1)
+                if child_info:
+                    info["children"].append(child_info)
+        else:
+            info["child_count"] = len(child_elements)
+        
+        return info
+    
+    # Build the structured result
+    result = {
+        "element_count": len(elements),  # This is the count of root elements
+        "elements": []
+    }
+    
+    for element in elements:
+        if isinstance(element, Tag):
+            el_tree = extract_element_tree(element)
+            if el_tree:
+                result["elements"].append(el_tree)
+    
+    # Calculate the TOTAL element count when no selector is provided
+    if not selector and result["elements"]:
+        total_count = sum(_count_elements_in_tree(el) for el in result["elements"])
+        result["total_element_count"] = total_count
+        # For backward compatibility, update element_count to show the real total
+        result["element_count"] = total_count
+        result["root_element_count"] = len(elements)  # Preserve original count as well
+    
+    return result
 
 
+async def _analyze_dynamic_content(page: Page, area: str, html: str) -> Dict[str, Any]:
+    """
+    Phase 1: Analyze content for dynamic loading patterns and provide intelligent routing
+    """
+    soup = BeautifulSoup(html, 'html.parser')
+    
+    analysis = {
+        "content_type": "static",  # static|dynamic|hybrid
+        "confidence": 0.0,
+        "dynamic_areas": [],
+        "devtools_suitable": [],
+        "file_editing_recommended": [],
+        "recommendation": "devtools",  # devtools|file_editing|hybrid
+        "reasoning": ""
+    }
+    
+    # Detect dynamic content indicators
+    dynamic_indicators = {
+        "javascript_loading": 0,
+        "empty_containers": 0,
+        "component_scripts": 0,
+        "async_content": 0
+    }
+    
+    # Check for JavaScript-loaded content
+    scripts = soup.find_all("script")
+    for script in scripts:
+        src = script.get("src", "")
+        content = script.string or ""
+        
+        # Component-specific scripts indicate dynamic loading
+        if area in src or f"{area}-component" in src:
+            dynamic_indicators["component_scripts"] += 1
+        
+        # Look for loading patterns in script content
+        if any(keyword in content for keyword in ["innerHTML", "appendChild", "createElement", "fetch"]):
+            dynamic_indicators["javascript_loading"] += 1
+    
+    # Check for empty containers that should have content
+    empty_containers = soup.find_all(attrs={"data-tekton-area": True})
+    for container in empty_containers:
+        if not container.get_text(strip=True) and len(container.find_all()) < 3:
+            dynamic_indicators["empty_containers"] += 1
+            
+            # Identify specific dynamic area
+            tekton_area = container.get("data-tekton-area")
+            if tekton_area:
+                analysis["dynamic_areas"].append({
+                    "selector": f'[data-tekton-area="{tekton_area}"]',
+                    "reason": "Empty container with semantic tags - likely JavaScript populated",
+                    "file_location": f"{tekton_area}-component.html"
+                })
+    
+    # Check for loading indicators
+    loading_elements = soup.find_all(class_=lambda x: x and ("loading" in x or "spinner" in x))
+    if loading_elements:
+        dynamic_indicators["async_content"] += len(loading_elements)
+    
+    # Look for component-specific patterns
+    if area != "hephaestus":
+        component_container = soup.find(attrs={"data-tekton-area": area}) or \
+                            soup.find(attrs={"data-component": area}) or \
+                            soup.find(class_=lambda x: x and area in x)
+        
+        if component_container:
+            # Check if container has minimal content but complex structure
+            text_content = component_container.get_text(strip=True)
+            child_elements = len(component_container.find_all())
+            
+            if len(text_content) < 100 and child_elements > 5:
+                analysis["dynamic_areas"].append({
+                    "selector": f'[data-tekton-area="{area}"], [data-component="{area}"]',
+                    "reason": "Component container with minimal text but complex structure",
+                    "file_location": f"{area}-component.html"
+                })
+                dynamic_indicators["async_content"] += 1
+    
+    # Determine content type and confidence
+    total_indicators = sum(dynamic_indicators.values())
+    
+    if total_indicators == 0:
+        analysis["content_type"] = "static"
+        analysis["confidence"] = 0.9
+        analysis["recommendation"] = "devtools"
+        analysis["reasoning"] = "No dynamic content indicators detected. Safe for DevTools operations."
+    elif total_indicators <= 2:
+        analysis["content_type"] = "hybrid"
+        analysis["confidence"] = 0.7
+        analysis["recommendation"] = "hybrid"
+        analysis["reasoning"] = "Some dynamic content detected. DevTools suitable for navigation/static elements."
+    else:
+        analysis["content_type"] = "dynamic"
+        analysis["confidence"] = 0.8
+        analysis["recommendation"] = "file_editing"
+        analysis["reasoning"] = "Significant dynamic content detected. File editing recommended for component interiors."
+    
+    # Build specific recommendations
+    if area == "hephaestus" or analysis["content_type"] == "static":
+        # Main UI or static content - DevTools work well
+        analysis["devtools_suitable"] = [".nav-label", "[data-tekton-nav]", "[data-tekton-area]", "button", "a"]
+    
+    if analysis["dynamic_areas"] or analysis["content_type"] in ["dynamic", "hybrid"]:
+        # Dynamic content areas need file editing
+        analysis["file_editing_recommended"] = [
+            "component content areas",
+            "chat interfaces", 
+            "forms within components",
+            "dynamically loaded panels"
+        ]
+        
+        # Add specific file locations if we found them
+        if analysis["dynamic_areas"]:
+            file_locations = [da["file_location"] for da in analysis["dynamic_areas"]]
+            analysis["file_editing_recommended"].extend(file_locations)
+    
+    return analysis
 
 
 async def ui_list_areas() -> Dict[str, Any]:
@@ -342,7 +661,7 @@ async def ui_capture(
     result["html_length"] = len(html)
     
     # Convert to structured data
-    result["structure"] = html_to_structured_data(html, selector)
+    result["structure"] = _html_to_structured_data(html, selector)
     
     # Parse HTML once for all operations
     soup = BeautifulSoup(html, 'html.parser')
@@ -416,7 +735,7 @@ async def ui_capture(
             })
     
     # PHASE 1 ENHANCEMENT: Dynamic Content Analysis
-    result["dynamic_analysis"] = await analyze_dynamic_content(page, area, html)
+    result["dynamic_analysis"] = await _analyze_dynamic_content(page, area, html)
     
     # Include screenshot if requested
     if include_screenshot:
@@ -470,7 +789,7 @@ async def ui_interact(
     # Capture before state
     if capture_changes:
         before_html = await page.content()
-        result["before"] = html_to_structured_data(before_html)
+        result["before"] = _html_to_structured_data(before_html)
     
     # Set up monitoring
     console_messages = []
@@ -524,7 +843,7 @@ async def ui_interact(
         # Capture after state
         if capture_changes:
             after_html = await page.content()
-            result["after"] = html_to_structured_data(after_html)
+            result["after"] = _html_to_structured_data(after_html)
             
             # Simple change detection
             changes = []
@@ -709,7 +1028,7 @@ async def ui_sandbox(
     # Validate changes for dangerous patterns
     for i, change in enumerate(changes):
         change_content = change.get("content", "")
-        detected = detect_dangerous_patterns(change_content)
+        detected = _detect_dangerous_patterns(change_content)
         
         if detected:
             result["validations"].append({
@@ -725,7 +1044,7 @@ async def ui_sandbox(
     
     # Create snapshot
     original_html = await page.content()
-    result["original_snapshot"] = html_to_structured_data(original_html)
+    result["original_snapshot"] = _html_to_structured_data(original_html)
     
     # Apply changes
     sandbox_results = []
@@ -807,7 +1126,7 @@ async def ui_sandbox(
                 })
             
             elif change_type == "js":
-                if detect_dangerous_patterns(content):
+                if _detect_dangerous_patterns(content):
                     sandbox_results.append({
                         "change_index": i,
                         "success": False,
@@ -832,7 +1151,7 @@ async def ui_sandbox(
     
     # Capture final state
     final_html = await page.content()
-    result["final_snapshot"] = html_to_structured_data(final_html)
+    result["final_snapshot"] = _html_to_structured_data(final_html)
     
     # If preview mode, restore
     if preview:

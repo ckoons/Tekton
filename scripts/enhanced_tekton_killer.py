@@ -791,10 +791,31 @@ async def main():
         action="store_true",
         help="Verbose output"
     )
+    parser.add_argument(
+        "--ui-dev-tools", "-u",
+        action="store_true",
+        help="Kill UI DevTools MCP server only"
+    )
     
     args = parser.parse_args()
     
     async with EnhancedComponentKiller(verbose=args.verbose, dry_run=args.dry_run, skip_graceful=args.skip_graceful) as killer:
+        
+        # UI DevTools only option
+        if args.ui_dev_tools:
+            killer.log("🛠️  Killing UI DevTools MCP server", "info")
+            # Use the force kill approach since MCP doesn't have graceful shutdown
+            process_info = killer.get_detailed_process_info(8088)
+            if process_info:
+                killer.log(f"Found UI DevTools MCP on port 8088, PID {process_info.pid}", "info")
+                success, message = await killer.force_kill_process(process_info, "ui_dev_tools")
+                if success:
+                    killer.log("✅ UI DevTools MCP server terminated", "success")
+                else:
+                    killer.log(f"❌ Failed to kill UI DevTools MCP: {message}", "error")
+            else:
+                killer.log("UI DevTools MCP not running on port 8088", "info")
+            return
         
         # Nuclear option
         if args.nuclear:
@@ -818,8 +839,13 @@ async def main():
                 components = [c.strip().lower().replace("-", "_") 
                              for c in args.components.split(",")]
         else:
-            # Default to all running components
+            # Default to all running components + UI DevTools MCP
             components = killer.get_running_components()
+            
+            # Check if UI DevTools MCP is running on port 8088
+            ui_devtools_process = killer.get_detailed_process_info(8088)
+            if ui_devtools_process:
+                killer.log("🛠️  UI DevTools MCP detected on port 8088 - will be killed", "info")
             
         if not components:
             killer.log("No running components found", "info")
@@ -851,6 +877,17 @@ async def main():
         elapsed = time.time() - start_time
         print(f"\n🕐 Total operation time: {elapsed:.1f} seconds")
         print(killer.format_termination_report(results))
+        
+        # Kill UI DevTools MCP if no args or killing hephaestus
+        if not args.components or args.components.lower() == 'all' or 'hephaestus' in components:
+            ui_devtools_process = killer.get_detailed_process_info(8088)
+            if ui_devtools_process:
+                print("\n🛠️  Cleaning up UI DevTools MCP server...")
+                success, message = await killer.force_kill_process(ui_devtools_process, "ui_dev_tools")
+                if success:
+                    print("✅ UI DevTools MCP server terminated")
+                else:
+                    print(f"❌ Failed to kill UI DevTools MCP: {message}")
         
         # Final cleanup phase
         if args.nuclear or not args.components or args.components.lower() == 'all':
