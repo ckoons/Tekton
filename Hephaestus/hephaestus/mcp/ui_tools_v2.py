@@ -65,6 +65,9 @@ from .recommendation_tools import ui_recommend_approach
 # Import semantic analysis tools (Phase 2)
 from .semantic_tools import ui_semantic_analysis, ui_semantic_scan, ui_semantic_patterns
 
+# Import component mapper tools (Phase 3)
+from .component_mapper_tools import ui_component_map, ui_architecture_scan, ui_dependency_graph
+
 # Initialize logger
 logger = setup_component_logging("ui_devtools")
 
@@ -968,5 +971,9 @@ __all__ = [
     "ui_semantic_analysis",
     "ui_semantic_scan",
     "ui_semantic_patterns",
+    # Phase 3: Component architecture mapping
+    "ui_component_map",
+    "ui_architecture_scan",
+    "ui_dependency_graph",
     "browser_manager"
 ]

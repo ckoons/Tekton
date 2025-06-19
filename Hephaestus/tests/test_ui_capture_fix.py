@@ -7,9 +7,10 @@ import sys
 from pathlib import Path
 
 # Add parent directory to path for imports
-sys.path.append(str(Path(__file__).parent.parent))
+sys.path.insert(0, str(Path(__file__).parent.parent))  # Hephaestus root
+sys.path.insert(0, str(Path(__file__).parent.parent.parent))  # Tekton root
 
-from ui_tools_v2 import _html_to_structured_data
+from hephaestus.mcp.html_processor import html_to_structured_data as _html_to_structured_data
 
 
 class TestUICaptureParser:

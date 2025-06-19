@@ -20,7 +20,7 @@ async def test_component_validation():
             json={
                 "tool_name": "ui_capture",
                 "arguments": {
-                    "component": "invalid_component"
+                    "area": "invalid_area"
                 }
             }
         )
@@ -42,7 +42,7 @@ async def test_selector_helpers():
     print("\n=== Testing Selector Helpers ===")
     
     # Test that the common Tekton selectors work
-    component = "rhetor"
+    area = "rhetor"
     
     # These are the standard Tekton selectors
     selectors_to_test = [
@@ -60,7 +60,7 @@ async def test_selector_helpers():
                 json={
                     "tool_name": "ui_capture",
                     "arguments": {
-                        "component": component,
+                        "area": area,
                         "selector": selector
                     }
                 }
@@ -92,7 +92,7 @@ async def test_browser_recovery():
                 json={
                     "tool_name": "ui_capture",
                     "arguments": {
-                        "component": "rhetor"
+                        "area": "rhetor"
                     }
                 }
             )
@@ -119,7 +119,7 @@ async def test_env_config_integration():
             json={
                 "tool_name": "ui_capture",
                 "arguments": {
-                    "component": "hermes"
+                    "area": "hephaestus"
                 }
             }
         )
@@ -178,7 +178,7 @@ async def test_framework_detection_patterns():
                 json={
                     "tool_name": "ui_sandbox",
                     "arguments": {
-                        "component": "rhetor",
+                        "area": "rhetor",
                         "changes": [{
                             "type": "html",
                             "selector": "body",
@@ -225,13 +225,13 @@ async def test_performance():
     
     async with httpx.AsyncClient() as client:
         # Run multiple operations in parallel
-        for component in ["rhetor", "hermes", "athena"]:
+        for area in ["rhetor", "hermes", "athena"]:
             op = client.post(
                 f"{MCP_URL}/api/mcp/v2/execute",
                 json={
                     "tool_name": "ui_analyze",
                     "arguments": {
-                        "component": component,
+                        "area": area,
                         "deep_scan": False
                     }
                 }

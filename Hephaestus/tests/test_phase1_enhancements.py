@@ -15,11 +15,14 @@ from unittest.mock import Mock, patch, AsyncMock
 # Import the enhanced tools
 import sys
 import os
-sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
+# Add both paths to handle imports properly
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))  # Hephaestus root
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(__file__))))  # Tekton root
 
-from ui_tools_v2 import (
-    ui_capture, ui_recommend_approach, _analyze_dynamic_content, browser_manager
+from hephaestus.mcp.ui_tools_v2 import (
+    ui_capture, ui_recommend_approach, browser_manager
 )
+from hephaestus.mcp.html_processor import analyze_dynamic_content as _analyze_dynamic_content
 
 
 class TestDynamicContentDetection:

@@ -29,7 +29,9 @@ logger = setup_component_logging("hephaestus_mcp")
 
 from hephaestus.mcp.ui_tools_v2 import (
     ui_capture, ui_navigate, ui_interact, ui_sandbox, ui_analyze, ui_validate, ui_batch, ui_list_areas, ui_help, ui_recommend_approach, 
-    ui_semantic_analysis, ui_semantic_scan, ui_semantic_patterns, browser_manager
+    ui_semantic_analysis, ui_semantic_scan, ui_semantic_patterns,
+    ui_component_map, ui_architecture_scan, ui_dependency_graph,
+    browser_manager
 )
 
 # Debug imports
@@ -353,6 +355,60 @@ TOOL_METADATA = {
         "category": "semantic",
         "tags": ["semantic", "patterns", "documentation", "best-practices"],
         "parameters": {}
+    },
+    # Phase 3 component architecture mapping tools
+    "ui_component_map": {
+        "name": "ui_component_map",
+        "description": "Analyze relationships for a single component (Phase 3)",
+        "category": "architecture",
+        "tags": ["architecture", "relationships", "mapping", "dependencies"],
+        "parameters": {
+            "component": {
+                "type": "string",
+                "description": "Component name to analyze (e.g., 'rhetor', 'hermes')",
+                "required": True
+            }
+        }
+    },
+    "ui_architecture_scan": {
+        "name": "ui_architecture_scan",
+        "description": "Perform system-wide architecture scan",
+        "category": "architecture",
+        "tags": ["architecture", "system", "scan", "analysis"],
+        "parameters": {
+            "components": {
+                "type": "array",
+                "description": "List of components to analyze (None = scan all)",
+                "required": False,
+                "items": {"type": "string"}
+            },
+            "max_components": {
+                "type": "integer",
+                "description": "Maximum number of components to analyze",
+                "required": False,
+                "default": 20
+            }
+        }
+    },
+    "ui_dependency_graph": {
+        "name": "ui_dependency_graph",
+        "description": "Generate dependency graph visualization",
+        "category": "architecture",
+        "tags": ["architecture", "graph", "visualization", "dependencies"],
+        "parameters": {
+            "format": {
+                "type": "string",
+                "description": "Output format: 'ascii', 'json', or 'mermaid'",
+                "required": False,
+                "default": "ascii",
+                "enum": ["ascii", "json", "mermaid"]
+            },
+            "focus": {
+                "type": "string",
+                "description": "Optional component to focus on",
+                "required": False
+            }
+        }
     }
 }
 
@@ -448,7 +504,11 @@ async def execute_tool(request_data: Dict[str, Any]):
         # Phase 2 semantic tools
         "ui_semantic_analysis": ui_semantic_analysis,
         "ui_semantic_scan": ui_semantic_scan,
-        "ui_semantic_patterns": ui_semantic_patterns
+        "ui_semantic_patterns": ui_semantic_patterns,
+        # Phase 3 architecture mapping tools
+        "ui_component_map": ui_component_map,
+        "ui_architecture_scan": ui_architecture_scan,
+        "ui_dependency_graph": ui_dependency_graph
     }
     
     if tool_name not in tool_functions:
@@ -700,7 +760,11 @@ async def get_help(format: str = "json"):
         # Phase 2 semantic tools
         "ui_semantic_analysis": ui_semantic_analysis,
         "ui_semantic_scan": ui_semantic_scan,
-        "ui_semantic_patterns": ui_semantic_patterns
+        "ui_semantic_patterns": ui_semantic_patterns,
+        # Phase 3 architecture mapping tools
+        "ui_component_map": ui_component_map,
+        "ui_architecture_scan": ui_architecture_scan,
+        "ui_dependency_graph": ui_dependency_graph
     }
     
     # Check if documented tools exist
