@@ -71,6 +71,9 @@ from .component_mapper_tools import ui_component_map, ui_architecture_scan, ui_d
 # Import screenshot tools (Phase 4)
 from .screenshot_tools import ui_screenshot, ui_visual_diff, ui_capture_all_components
 
+# Import workflow tools (Phase 4 improvements)
+from .workflow_tools import ui_workflow
+
 # Initialize logger
 logger = setup_component_logging("ui_devtools")
 

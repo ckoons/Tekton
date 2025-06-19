@@ -5,13 +5,16 @@ This module contains functions for capturing UI state, including HTML content,
 forms, buttons, links, and screenshots.
 """
 
-from typing import Dict, Any, Optional
+from typing import Dict, Any, Optional, List
 from bs4 import BeautifulSoup
 
 from .constants import HEPHAESTUS_URL, UI_COMPONENTS, ComponentNotFoundError
 from .browser_manager import browser_manager
 from .navigation_tools import find_component_element
 from .html_processor import html_to_structured_data, analyze_dynamic_content
+from shared.utils.logging_setup import setup_component_logging
+
+logger = setup_component_logging("ui_capture")
 
 
 async def ui_capture(

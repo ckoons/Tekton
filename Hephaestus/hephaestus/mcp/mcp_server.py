@@ -32,6 +32,7 @@ from hephaestus.mcp.ui_tools_v2 import (
     ui_semantic_analysis, ui_semantic_scan, ui_semantic_patterns,
     ui_component_map, ui_architecture_scan, ui_dependency_graph,
     ui_screenshot, ui_visual_diff, ui_capture_all_components,
+    ui_workflow,
     browser_manager
 )
 
@@ -472,6 +473,52 @@ TOOL_METADATA = {
         "category": "capture",
         "tags": ["screenshot", "batch", "documentation", "all"],
         "parameters": {}
+    },
+    "ui_workflow": {
+        "name": "ui_workflow",
+        "description": "Smart UI workflow that handles common patterns automatically - eliminates area/component confusion!",
+        "category": "workflow",
+        "tags": ["workflow", "automation", "smart", "composite"],
+        "parameters": {
+            "workflow": {
+                "type": "string",
+                "description": "Type of workflow: modify_component, add_to_component, verify_component, debug_component",
+                "required": True,
+                "enum": ["modify_component", "add_to_component", "verify_component", "debug_component"]
+            },
+            "component": {
+                "type": "string",
+                "description": "Component to work with (rhetor, hermes, apollo, etc.)",
+                "required": True
+            },
+            "changes": {
+                "type": "array",
+                "description": "List of changes for modify/add workflows",
+                "required": False,
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "selector": {"type": "string"},
+                        "content": {"type": "string"},
+                        "action": {
+                            "type": "string",
+                            "enum": ["replace", "append", "prepend", "after", "before"]
+                        }
+                    }
+                }
+            },
+            "selector": {
+                "type": "string",
+                "description": "Optional specific selector to target",
+                "required": False
+            },
+            "debug": {
+                "type": "boolean",
+                "description": "Show detailed step-by-step progress",
+                "required": False,
+                "default": False
+            }
+        }
     }
 }
 
@@ -575,7 +622,9 @@ async def execute_tool(request_data: Dict[str, Any]):
         # Phase 4 screenshot tools
         "ui_screenshot": ui_screenshot,
         "ui_visual_diff": ui_visual_diff,
-        "ui_capture_all_components": ui_capture_all_components
+        "ui_capture_all_components": ui_capture_all_components,
+        # Phase 4 workflow improvements
+        "ui_workflow": ui_workflow
     }
     
     if tool_name not in tool_functions:
@@ -835,7 +884,9 @@ async def get_help(format: str = "json"):
         # Phase 4 screenshot tools
         "ui_screenshot": ui_screenshot,
         "ui_visual_diff": ui_visual_diff,
-        "ui_capture_all_components": ui_capture_all_components
+        "ui_capture_all_components": ui_capture_all_components,
+        # Phase 4 workflow improvements
+        "ui_workflow": ui_workflow
     }
     
     # Check if documented tools exist
