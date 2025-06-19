@@ -68,6 +68,9 @@ from .semantic_tools import ui_semantic_analysis, ui_semantic_scan, ui_semantic_
 # Import component mapper tools (Phase 3)
 from .component_mapper_tools import ui_component_map, ui_architecture_scan, ui_dependency_graph
 
+# Import screenshot tools (Phase 4)
+from .screenshot_tools import ui_screenshot, ui_visual_diff, ui_capture_all_components
+
 # Initialize logger
 logger = setup_component_logging("ui_devtools")
 
@@ -975,5 +978,9 @@ __all__ = [
     "ui_component_map",
     "ui_architecture_scan",
     "ui_dependency_graph",
+    # Phase 4: Screenshot capabilities
+    "ui_screenshot",
+    "ui_visual_diff",
+    "ui_capture_all_components",
     "browser_manager"
 ]

@@ -31,6 +31,7 @@ from hephaestus.mcp.ui_tools_v2 import (
     ui_capture, ui_navigate, ui_interact, ui_sandbox, ui_analyze, ui_validate, ui_batch, ui_list_areas, ui_help, ui_recommend_approach, 
     ui_semantic_analysis, ui_semantic_scan, ui_semantic_patterns,
     ui_component_map, ui_architecture_scan, ui_dependency_graph,
+    ui_screenshot, ui_visual_diff, ui_capture_all_components,
     browser_manager
 )
 
@@ -409,6 +410,68 @@ TOOL_METADATA = {
                 "required": False
             }
         }
+    },
+    # Phase 4 screenshot tools
+    "ui_screenshot": {
+        "name": "ui_screenshot",
+        "description": "Take a screenshot of the Tekton UI (Phase 4 - CIs can take their own screenshots!)",
+        "category": "capture",
+        "tags": ["screenshot", "visual", "capture", "image"],
+        "parameters": {
+            "component": {
+                "type": "string",
+                "description": "Specific component to capture (None = entire Hephaestus)",
+                "required": False
+            },
+            "full_page": {
+                "type": "boolean",
+                "description": "Capture full scrollable area or just viewport",
+                "required": False,
+                "default": True
+            },
+            "highlight": {
+                "type": "string",
+                "description": "CSS selector to highlight before capture",
+                "required": False
+            },
+            "save_to_file": {
+                "type": "boolean",
+                "description": "Save to file in addition to returning base64",
+                "required": False,
+                "default": False
+            }
+        }
+    },
+    "ui_visual_diff": {
+        "name": "ui_visual_diff",
+        "description": "Compare UI state before and after an action",
+        "category": "analysis",
+        "tags": ["visual", "diff", "comparison", "testing"],
+        "parameters": {
+            "before_action": {
+                "type": "object",
+                "description": "Action to perform before first screenshot",
+                "required": True
+            },
+            "after_action": {
+                "type": "object",
+                "description": "Action to perform before second screenshot",
+                "required": True
+            },
+            "highlight_changes": {
+                "type": "boolean",
+                "description": "Whether to highlight what changed",
+                "required": False,
+                "default": True
+            }
+        }
+    },
+    "ui_capture_all_components": {
+        "name": "ui_capture_all_components",
+        "description": "Take screenshots of all Tekton components in sequence",
+        "category": "capture",
+        "tags": ["screenshot", "batch", "documentation", "all"],
+        "parameters": {}
     }
 }
 
@@ -508,7 +571,11 @@ async def execute_tool(request_data: Dict[str, Any]):
         # Phase 3 architecture mapping tools
         "ui_component_map": ui_component_map,
         "ui_architecture_scan": ui_architecture_scan,
-        "ui_dependency_graph": ui_dependency_graph
+        "ui_dependency_graph": ui_dependency_graph,
+        # Phase 4 screenshot tools
+        "ui_screenshot": ui_screenshot,
+        "ui_visual_diff": ui_visual_diff,
+        "ui_capture_all_components": ui_capture_all_components
     }
     
     if tool_name not in tool_functions:
@@ -764,7 +831,11 @@ async def get_help(format: str = "json"):
         # Phase 3 architecture mapping tools
         "ui_component_map": ui_component_map,
         "ui_architecture_scan": ui_architecture_scan,
-        "ui_dependency_graph": ui_dependency_graph
+        "ui_dependency_graph": ui_dependency_graph,
+        # Phase 4 screenshot tools
+        "ui_screenshot": ui_screenshot,
+        "ui_visual_diff": ui_visual_diff,
+        "ui_capture_all_components": ui_capture_all_components
     }
     
     # Check if documented tools exist
