@@ -39,7 +39,9 @@ async def ui_recommend_approach(
         "reasoning": "",
         "specific_guidance": "",
         "fallback_strategy": "",
-        "file_locations": []
+        "file_locations": [],
+        "screenshot_recommendation": None,
+        "visual_verification": None
     }
     
     # Capture current area to analyze
@@ -134,5 +136,61 @@ async def ui_recommend_approach(
         result["time_estimate"] = "~30 seconds with DevTools, ~5 minutes with file editing"
     else:
         result["time_estimate"] = "~5 minutes with file editing, DevTools may not work"
+    
+    # Screenshot recommendations based on the type of change
+    visual_changes = ["color", "style", "layout", "position", "size", "spacing", "align", "margin", "padding"]
+    ui_modifications = ["add", "remove", "move", "hide", "show", "create", "delete"]
+    debugging_terms = ["broken", "missing", "wrong", "issue", "problem", "debug", "fix"]
+    
+    # Check if this is a visual change
+    involves_visual = any(term in change_lower for term in visual_changes)
+    involves_ui_mod = any(term in change_lower for term in ui_modifications)
+    involves_debugging = any(term in change_lower for term in debugging_terms)
+    
+    if involves_visual or involves_ui_mod:
+        result["screenshot_recommendation"] = "recommended"
+        result["visual_verification"] = {
+            "when": "after_change",
+            "purpose": "Verify visual changes match expectations",
+            "workflow": [
+                "1. Make your changes using the recommended tool",
+                "2. Use ui_screenshot() to capture the result",
+                "3. Review the screenshot to ensure changes look correct",
+                "4. If needed, use ui_visual_diff() to compare before/after"
+            ]
+        }
+    elif involves_debugging:
+        result["screenshot_recommendation"] = "highly_recommended" 
+        result["visual_verification"] = {
+            "when": "before_and_after",
+            "purpose": "Diagnose visual issues and verify fixes",
+            "workflow": [
+                "1. Take a screenshot to see current state: ui_screenshot()",
+                "2. Analyze what's wrong visually",
+                "3. Make your fixes",
+                "4. Take another screenshot to verify the fix",
+                "5. Use ui_visual_diff() to highlight what changed"
+            ]
+        }
+    elif "test" in change_lower or "verify" in change_lower:
+        result["screenshot_recommendation"] = "suggested"
+        result["visual_verification"] = {
+            "when": "after_testing",
+            "purpose": "Document test results visually",
+            "workflow": [
+                "1. Run your tests",
+                "2. Use ui_screenshot() to capture the test state",
+                "3. Include screenshot in your verification report"
+            ]
+        }
+    else:
+        result["screenshot_recommendation"] = "optional"
+        result["visual_verification"] = {
+            "when": "as_needed",
+            "purpose": "General visual confirmation",
+            "workflow": [
+                "Use ui_screenshot() anytime you want to visually confirm state"
+            ]
+        }
     
     return result
