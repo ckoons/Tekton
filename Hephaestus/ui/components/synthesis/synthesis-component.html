@@ -14,27 +14,27 @@
     <!-- Synthesis Menu Bar with Tab Navigation -->
     <div class="synthesis__menu-bar" data-tekton-zone="menu" data-tekton-zone="menu" data-tekton-nav="component-menu">
         <div class="synthesis__tabs" data-tekton-zone="menu">
-            <div class="synthesis__tab synthesis__tab--active" data-tab="executions" onclick="synthesis_switchTab('executions'); return false;">
+            <div class="synthesis__tab synthesis__tab--active" data-tab="executions" onclick="synthesis_switchTab('executions'); return false;" data-tekton-menu-item="Executions" data-tekton-menu-component="synthesis" data-tekton-menu-active="true" data-tekton-menu-panel="executions-panel" data-tekton-nav-target="executions-panel">
                 <span class="synthesis__tab-label">Executions</span>
             </div>
-            <div class="synthesis__tab" data-tab="workflows" onclick="synthesis_switchTab('workflows'); return false;">
+            <div class="synthesis__tab" data-tab="workflows" onclick="synthesis_switchTab('workflows'); return false;" data-tekton-menu-item="Workflows" data-tekton-menu-component="synthesis" data-tekton-menu-active="false" data-tekton-menu-panel="workflows-panel" data-tekton-nav-target="workflows-panel">
                 <span class="synthesis__tab-label">Workflows</span>
             </div>
-            <div class="synthesis__tab" data-tab="monitoring" onclick="synthesis_switchTab('monitoring'); return false;">
+            <div class="synthesis__tab" data-tab="monitoring" onclick="synthesis_switchTab('monitoring'); return false;" data-tekton-menu-item="Monitoring" data-tekton-menu-component="synthesis" data-tekton-menu-active="false" data-tekton-menu-panel="monitoring-panel" data-tekton-nav-target="monitoring-panel">
                 <span class="synthesis__tab-label">Monitoring</span>
             </div>
-            <div class="synthesis__tab" data-tab="history" onclick="synthesis_switchTab('history'); return false;">
+            <div class="synthesis__tab" data-tab="history" onclick="synthesis_switchTab('history'); return false;" data-tekton-menu-item="History" data-tekton-menu-component="synthesis" data-tekton-menu-active="false" data-tekton-menu-panel="history-panel" data-tekton-nav-target="history-panel">
                 <span class="synthesis__tab-label">History</span>
             </div>
-            <div class="synthesis__tab" data-tab="execchat" onclick="synthesis_switchTab('execchat'); return false;">
+            <div class="synthesis__tab" data-tab="execchat" onclick="synthesis_switchTab('execchat'); return false;" data-tekton-menu-item="Execution Chat" data-tekton-menu-component="synthesis" data-tekton-menu-active="false" data-tekton-menu-panel="execchat-panel" data-tekton-nav-target="execchat-panel">
                 <span class="synthesis__tab-label">Execution Chat</span>
             </div>
-            <div class="synthesis__tab" data-tab="teamchat" onclick="synthesis_switchTab('teamchat'); return false;">
+            <div class="synthesis__tab" data-tab="teamchat" onclick="synthesis_switchTab('teamchat'); return false;" data-tekton-menu-item="Team Chat" data-tekton-menu-component="synthesis" data-tekton-menu-active="false" data-tekton-menu-panel="teamchat-panel" data-tekton-nav-target="teamchat-panel">
                 <span class="synthesis__tab-label">Team Chat</span>
             </div>
         </div>
         <div class="synthesis__actions">
-            <button id="clear-chat-btn" class="synthesis__action-button" style="display: none;" onclick="synthesis_clearChat(); return false;">
+            <button id="clear-chat-btn" class="synthesis__action-button" style="display: none;" onclick="synthesis_clearChat(); return false;" data-tekton-action="clear-chat" data-tekton-action-type="secondary">
                 <span class="synthesis__button-label">Clear</span>
             </button>
         </div>
@@ -43,19 +43,19 @@
     <!-- Synthesis Content Area -->
     <div class="synthesis__content" data-tekton-zone="content" data-tekton-scrollable="true">
         <!-- Executions Tab (Default Active Tab) -->
-        <div id="executions-panel" class="synthesis__panel synthesis__panel--active">
+        <div id="executions-panel" class="synthesis__panel synthesis__panel--active" data-tekton-panel="executions" data-tekton-panel-for="Executions" data-tekton-panel-component="synthesis" data-tekton-panel-active="true">
             <div class="synthesis__executions">
                 <div class="synthesis__control-bar">
                     <div class="synthesis__search-container">
                         <input type="text" id="execution-search" class="synthesis__search-input" placeholder="Search executions...">
-                        <button id="execution-search-btn" class="synthesis__search-button">Search</button>
+                        <button id="execution-search-btn" class="synthesis__search-button" data-tekton-action="search-executions" data-tekton-action-type="primary">Search</button>
                     </div>
                     <div class="synthesis__actions">
-                        <button id="new-execution-btn" class="synthesis__action-button">
+                        <button id="new-execution-btn" class="synthesis__action-button" data-tekton-action="new-execution" data-tekton-action-type="primary">
                             <span class="synthesis__button-icon">+</span>
                             <span class="synthesis__button-label">New Execution</span>
                         </button>
-                        <button id="refresh-executions-btn" class="synthesis__action-button">
+                        <button id="refresh-executions-btn" class="synthesis__action-button" data-tekton-action="refresh-executions" data-tekton-action-type="secondary">
                             <span class="synthesis__button-label">Refresh</span>
                         </button>
                     </div>
@@ -83,8 +83,8 @@
                                 <div class="synthesis__progress-text">45% (Step 5 of 11)</div>
                             </div>
                             <div class="synthesis__execution-actions">
-                                <button class="synthesis__button synthesis__button--small">View Details</button>
-                                <button class="synthesis__button synthesis__button--small">Cancel</button>
+                                <button class="synthesis__button synthesis__button--small" data-tekton-action="view-details" data-tekton-action-type="secondary">View Details</button>
+                                <button class="synthesis__button synthesis__button--small" data-tekton-action="cancel-execution" data-tekton-action-type="secondary">Cancel</button>
                             </div>
                         </div>
                         
@@ -103,8 +103,8 @@
                                 <div class="synthesis__progress-text">Completed (8/8 steps)</div>
                             </div>
                             <div class="synthesis__execution-actions">
-                                <button class="synthesis__button synthesis__button--small">View Details</button>
-                                <button class="synthesis__button synthesis__button--small">Rerun</button>
+                                <button class="synthesis__button synthesis__button--small" data-tekton-action="view-details" data-tekton-action-type="secondary">View Details</button>
+                                <button class="synthesis__button synthesis__button--small" data-tekton-action="rerun-execution" data-tekton-action-type="primary">Rerun</button>
                             </div>
                         </div>
                     </div>
@@ -122,7 +122,7 @@
         </div>
         
         <!-- Workflows Tab -->
-        <div id="workflows-panel" class="synthesis__panel">
+        <div id="workflows-panel" class="synthesis__panel" data-tekton-panel="workflows" data-tekton-panel-for="Workflows" data-tekton-panel-component="synthesis" data-tekton-panel-active="false">
             <div class="synthesis__workflows">
                 <div class="synthesis__control-bar">
                     <div class="synthesis__filter-container">
@@ -147,11 +147,11 @@
                         </div>
                     </div>
                     <div class="synthesis__actions">
-                        <button id="new-workflow-btn" class="synthesis__action-button">
+                        <button id="new-workflow-btn" class="synthesis__action-button" data-tekton-action="new-workflow" data-tekton-action-type="primary">
                             <span class="synthesis__button-icon">+</span>
                             <span class="synthesis__button-label">New Workflow</span>
                         </button>
-                        <button id="import-workflow-btn" class="synthesis__action-button">
+                        <button id="import-workflow-btn" class="synthesis__action-button" data-tekton-action="import-workflow" data-tekton-action-type="primary">
                             <span class="synthesis__button-icon">↓</span>
                             <span class="synthesis__button-label">Import</span>
                         </button>
@@ -184,9 +184,9 @@
                                     <td>2025-05-14 09:45</td>
                                     <td><span class="synthesis__status synthesis__status--active">Active</span></td>
                                     <td>
-                                        <button class="synthesis__table-action-btn">Edit</button>
-                                        <button class="synthesis__table-action-btn">Run</button>
-                                        <button class="synthesis__table-action-btn">Export</button>
+                                        <button class="synthesis__table-action-btn" data-tekton-action="edit-workflow" data-tekton-action-type="secondary">Edit</button>
+                                        <button class="synthesis__table-action-btn" data-tekton-action="run-workflow" data-tekton-action-type="primary">Run</button>
+                                        <button class="synthesis__table-action-btn" data-tekton-action="export-workflow" data-tekton-action-type="secondary">Export</button>
                                     </td>
                                 </tr>
                                 <tr class="synthesis__workflow-row">
@@ -196,9 +196,9 @@
                                     <td>2025-05-14 08:30</td>
                                     <td><span class="synthesis__status synthesis__status--active">Active</span></td>
                                     <td>
-                                        <button class="synthesis__table-action-btn">Edit</button>
-                                        <button class="synthesis__table-action-btn">Run</button>
-                                        <button class="synthesis__table-action-btn">Export</button>
+                                        <button class="synthesis__table-action-btn" data-tekton-action="edit-workflow" data-tekton-action-type="secondary">Edit</button>
+                                        <button class="synthesis__table-action-btn" data-tekton-action="run-workflow" data-tekton-action-type="primary">Run</button>
+                                        <button class="synthesis__table-action-btn" data-tekton-action="export-workflow" data-tekton-action-type="secondary">Export</button>
                                     </td>
                                 </tr>
                                 <tr class="synthesis__workflow-row">
@@ -208,9 +208,9 @@
                                     <td>2025-05-13 23:00</td>
                                     <td><span class="synthesis__status synthesis__status--active">Active</span></td>
                                     <td>
-                                        <button class="synthesis__table-action-btn">Edit</button>
-                                        <button class="synthesis__table-action-btn">Run</button>
-                                        <button class="synthesis__table-action-btn">Export</button>
+                                        <button class="synthesis__table-action-btn" data-tekton-action="edit-workflow" data-tekton-action-type="secondary">Edit</button>
+                                        <button class="synthesis__table-action-btn" data-tekton-action="run-workflow" data-tekton-action-type="primary">Run</button>
+                                        <button class="synthesis__table-action-btn" data-tekton-action="export-workflow" data-tekton-action-type="secondary">Export</button>
                                     </td>
                                 </tr>
                             </tbody>
@@ -221,7 +221,7 @@
         </div>
         
         <!-- Monitoring Tab -->
-        <div id="monitoring-panel" class="synthesis__panel">
+        <div id="monitoring-panel" class="synthesis__panel" data-tekton-panel="monitoring" data-tekton-panel-for="Monitoring" data-tekton-panel-component="synthesis" data-tekton-panel-active="false">
             <div class="synthesis__monitoring">
                 <div class="synthesis__control-bar">
                     <div class="synthesis__filter-container">
@@ -248,7 +248,7 @@
                         </div>
                     </div>
                     <div class="synthesis__actions">
-                        <button id="refresh-monitoring-btn" class="synthesis__action-button">
+                        <button id="refresh-monitoring-btn" class="synthesis__action-button" data-tekton-action="refresh-monitoring" data-tekton-action-type="secondary">
                             <span class="synthesis__button-label">Refresh</span>
                         </button>
                     </div>
@@ -298,7 +298,7 @@
         </div>
         
         <!-- History Tab -->
-        <div id="history-panel" class="synthesis__panel">
+        <div id="history-panel" class="synthesis__panel" data-tekton-panel="history" data-tekton-panel-for="History" data-tekton-panel-component="synthesis" data-tekton-panel-active="false">
             <div class="synthesis__history">
                 <div class="synthesis__control-bar">
                     <div class="synthesis__filter-container">
@@ -330,7 +330,7 @@
                         </div>
                     </div>
                     <div class="synthesis__actions">
-                        <button id="export-history-btn" class="synthesis__action-button">
+                        <button id="export-history-btn" class="synthesis__action-button" data-tekton-action="export-history" data-tekton-action-type="secondary">
                             <span class="synthesis__button-label">Export</span>
                         </button>
                     </div>
@@ -359,7 +359,7 @@
                                 <td>8/8</td>
                                 <td><span class="synthesis__status synthesis__status--completed">Completed</span></td>
                                 <td>
-                                    <button class="synthesis__table-action-btn">Details</button>
+                                    <button class="synthesis__table-action-btn" data-tekton-action="view-history-details" data-tekton-action-type="secondary">Details</button>
                                     <button class="synthesis__table-action-btn">Rerun</button>
                                 </td>
                             </tr>
@@ -371,7 +371,7 @@
                                 <td>5/5</td>
                                 <td><span class="synthesis__status synthesis__status--completed">Completed</span></td>
                                 <td>
-                                    <button class="synthesis__table-action-btn">Details</button>
+                                    <button class="synthesis__table-action-btn" data-tekton-action="view-history-details" data-tekton-action-type="secondary">Details</button>
                                     <button class="synthesis__table-action-btn">Rerun</button>
                                 </td>
                             </tr>
@@ -383,7 +383,7 @@
                                 <td>6/12</td>
                                 <td><span class="synthesis__status synthesis__status--failed">Failed</span></td>
                                 <td>
-                                    <button class="synthesis__table-action-btn">Details</button>
+                                    <button class="synthesis__table-action-btn" data-tekton-action="view-history-details" data-tekton-action-type="secondary">Details</button>
                                     <button class="synthesis__table-action-btn">Rerun</button>
                                 </td>
                             </tr>
@@ -404,7 +404,7 @@
         </div>
         
         <!-- Execution Chat Tab -->
-        <div id="execchat-panel" class="synthesis__panel" style="position: relative; overflow: hidden;">
+        <div id="execchat-panel" class="synthesis__panel" style="position: relative; overflow: hidden;" data-tekton-panel="execchat" data-tekton-panel-for="Execution Chat" data-tekton-panel-component="synthesis" data-tekton-panel-active="false">
             <div id="execchat-messages" class="synthesis__chat-messages">
                 <!-- Welcome message -->
                 <div class="synthesis__message synthesis__message--system">
@@ -425,7 +425,7 @@
         </div>
         
         <!-- Team Chat Tab -->
-        <div id="teamchat-panel" class="synthesis__panel" style="position: relative; overflow: hidden;">
+        <div id="teamchat-panel" class="synthesis__panel" style="position: relative; overflow: hidden;" data-tekton-panel="teamchat" data-tekton-panel-for="Team Chat" data-tekton-panel-component="synthesis" data-tekton-panel-active="false">
             <div id="teamchat-messages" class="synthesis__chat-messages">
                 <!-- Welcome message -->
                 <div class="synthesis__message synthesis__message--system">
@@ -446,7 +446,7 @@
             <div class="synthesis__chat-prompt">></div>
             <input type="text" id="chat-input" class="synthesis__chat-input" 
                    placeholder="Enter chat message, execution questions, or workflow commands">
-            <button id="send-button" class="synthesis__send-button">Send</button>
+            <button id="send-button" class="synthesis__send-button" data-tekton-action="send-message" data-tekton-action-type="primary">Send</button>
         </div>
     </div>
 </div>

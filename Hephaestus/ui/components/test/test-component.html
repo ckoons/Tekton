@@ -14,19 +14,25 @@
             data-tekton-menu-component="test"
             data-tekton-menu-active="true"
             data-tekton-menu-panel="test-overview-panel"
-            data-tekton-nav-target="overview">Overview</button>
+            data-tekton-nav-target="overview"
+            data-tekton-action="switch-tab"
+            data-tekton-action-value="overview">Overview</button>
     <button class="test__tab-button" data-tab="features"
             data-tekton-menu-item="Features"
             data-tekton-menu-component="test"
             data-tekton-menu-active="false"
             data-tekton-menu-panel="test-features-panel"
-            data-tekton-nav-target="features">Features</button>
+            data-tekton-nav-target="features"
+            data-tekton-action="switch-tab"
+            data-tekton-action-value="features">Features</button>
     <button class="test__tab-button" data-tab="settings"
             data-tekton-menu-item="Settings"
             data-tekton-menu-component="test"
             data-tekton-menu-active="false"
             data-tekton-menu-panel="test-settings-panel"
-            data-tekton-nav-target="settings">Settings</button>
+            data-tekton-nav-target="settings"
+            data-tekton-action="switch-tab"
+            data-tekton-action-value="settings">Settings</button>
   </div>
 
   <!-- Tab Content -->
@@ -142,20 +148,30 @@
           <label class="test__form-label">Features</label>
           <div class="test__checkbox-group">
             <label class="test__checkbox-label">
-              <input type="checkbox" class="test__checkbox" checked> BEM Naming
+              <input type="checkbox" class="test__checkbox" checked
+                     data-tekton-input="feature-bem-naming"
+                     data-tekton-input-type="toggle"> BEM Naming
             </label>
             <label class="test__checkbox-label">
-              <input type="checkbox" class="test__checkbox" checked> Component Isolation
+              <input type="checkbox" class="test__checkbox" checked
+                     data-tekton-input="feature-component-isolation"
+                     data-tekton-input-type="toggle"> Component Isolation
             </label>
             <label class="test__checkbox-label">
-              <input type="checkbox" class="test__checkbox" checked> Theme Variables
+              <input type="checkbox" class="test__checkbox" checked
+                     data-tekton-input="feature-theme-variables"
+                     data-tekton-input-type="toggle"> Theme Variables
             </label>
           </div>
         </div>
 
         <div class="test__form-actions">
-          <button class="test__button test__button--secondary" id="test-reset-button">Reset</button>
-          <button class="test__button test__button--primary" id="test-save-button">Save Settings</button>
+          <button class="test__button test__button--secondary" id="test-reset-button"
+                  data-tekton-action="reset-settings"
+                  data-tekton-action-type="secondary">Reset</button>
+          <button class="test__button test__button--primary" id="test-save-button"
+                  data-tekton-action="save-settings"
+                  data-tekton-action-type="primary">Save Settings</button>
         </div>
       </div>
 

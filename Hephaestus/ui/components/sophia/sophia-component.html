@@ -14,27 +14,27 @@
     <!-- Sophia Menu Bar with Tab Navigation -->
     <div class="sophia__menu-bar" data-tekton-zone="menu" data-tekton-zone="menu" data-tekton-nav="component-menu">
         <div class="sophia__tabs" data-tekton-zone="menu">
-            <div class="sophia__tab sophia__tab--active" data-tab="metrics" onclick="sophia_switchTab('metrics'); return false;">
+            <div class="sophia__tab sophia__tab--active" data-tab="metrics" onclick="sophia_switchTab('metrics'); return false;" data-tekton-menu-item="Metrics" data-tekton-menu-component="sophia" data-tekton-menu-active="true" data-tekton-menu-panel="metrics-panel" data-tekton-nav-target="metrics-panel">
                 <span class="sophia__tab-label">Metrics</span>
             </div>
-            <div class="sophia__tab" data-tab="intelligence" onclick="sophia_switchTab('intelligence'); return false;">
+            <div class="sophia__tab" data-tab="intelligence" onclick="sophia_switchTab('intelligence'); return false;" data-tekton-menu-item="Intelligence" data-tekton-menu-component="sophia" data-tekton-menu-active="false" data-tekton-menu-panel="intelligence-panel" data-tekton-nav-target="intelligence-panel">
                 <span class="sophia__tab-label">Intelligence</span>
             </div>
-            <div class="sophia__tab" data-tab="experiments" onclick="sophia_switchTab('experiments'); return false;">
+            <div class="sophia__tab" data-tab="experiments" onclick="sophia_switchTab('experiments'); return false;" data-tekton-menu-item="Experiments" data-tekton-menu-component="sophia" data-tekton-menu-active="false" data-tekton-menu-panel="experiments-panel" data-tekton-nav-target="experiments-panel">
                 <span class="sophia__tab-label">Experiments</span>
             </div>
-            <div class="sophia__tab" data-tab="recommendations" onclick="sophia_switchTab('recommendations'); return false;">
+            <div class="sophia__tab" data-tab="recommendations" onclick="sophia_switchTab('recommendations'); return false;" data-tekton-menu-item="Recommendations" data-tekton-menu-component="sophia" data-tekton-menu-active="false" data-tekton-menu-panel="recommendations-panel" data-tekton-nav-target="recommendations-panel">
                 <span class="sophia__tab-label">Recommendations</span>
             </div>
-            <div class="sophia__tab" data-tab="researchchat" onclick="sophia_switchTab('researchchat'); return false;">
+            <div class="sophia__tab" data-tab="researchchat" onclick="sophia_switchTab('researchchat'); return false;" data-tekton-menu-item="Research Chat" data-tekton-menu-component="sophia" data-tekton-menu-active="false" data-tekton-menu-panel="researchchat-panel" data-tekton-nav-target="researchchat-panel">
                 <span class="sophia__tab-label">Research Chat</span>
             </div>
-            <div class="sophia__tab" data-tab="teamchat" onclick="sophia_switchTab('teamchat'); return false;">
+            <div class="sophia__tab" data-tab="teamchat" onclick="sophia_switchTab('teamchat'); return false;" data-tekton-menu-item="Team Chat" data-tekton-menu-component="sophia" data-tekton-menu-active="false" data-tekton-menu-panel="teamchat-panel" data-tekton-nav-target="teamchat-panel">
                 <span class="sophia__tab-label">Team Chat</span>
             </div>
         </div>
         <div class="sophia__actions">
-            <button id="clear-chat-btn" class="sophia__action-button" style="display: none;" onclick="sophia_clearChat(); return false;">
+            <button id="clear-chat-btn" class="sophia__action-button" style="display: none;" onclick="sophia_clearChat(); return false;" data-tekton-action="clear-chat" data-tekton-action-type="secondary">
                 <span class="sophia__button-label">Clear</span>
             </button>
         </div>
@@ -43,7 +43,7 @@
     <!-- Sophia Content Area -->
     <div class="sophia__content" data-tekton-zone="content" data-tekton-scrollable="true">
         <!-- Metrics Tab (Default Active Tab) -->
-        <div id="metrics-panel" class="sophia__panel sophia__panel--active">
+        <div id="metrics-panel" class="sophia__panel sophia__panel--active" data-tekton-panel="metrics" data-tekton-panel-for="Metrics" data-tekton-panel-component="sophia" data-tekton-panel-active="true">
             <div class="sophia__metrics">
                 <div class="sophia__control-bar">
                     <div class="sophia__filter-container">
@@ -76,7 +76,7 @@
                         </div>
                     </div>
                     <div class="sophia__actions">
-                        <button id="refresh-metrics-btn" class="sophia__action-button">
+                        <button id="refresh-metrics-btn" class="sophia__action-button" data-tekton-action="refresh-metrics" data-tekton-action-type="secondary">
                             <span class="sophia__button-label">Refresh</span>
                         </button>
                     </div>
@@ -105,7 +105,7 @@
         </div>
         
         <!-- Intelligence Tab -->
-        <div id="intelligence-panel" class="sophia__panel">
+        <div id="intelligence-panel" class="sophia__panel" data-tekton-panel="intelligence" data-tekton-panel-for="Intelligence" data-tekton-panel-component="sophia" data-tekton-panel-active="false">
             <div class="sophia__intelligence">
                 <div class="sophia__control-bar">
                     <div class="sophia__filter-container">
@@ -134,7 +134,7 @@
                         </div>
                     </div>
                     <div class="sophia__actions">
-                        <button id="add-measurement-btn" class="sophia__action-button">
+                        <button id="add-measurement-btn" class="sophia__action-button" data-tekton-action="add-measurement" data-tekton-action-type="primary">
                             <span class="sophia__button-icon">+</span>
                             <span class="sophia__button-label">New Measurement</span>
                         </button>
@@ -166,7 +166,7 @@
                             <select id="sophia-comparison-component2" class="sophia__select">
                                 <!-- Dynamically populated -->
                             </select>
-                            <button id="sophia-compare-btn" class="sophia__button sophia__button--primary">Compare</button>
+                            <button id="sophia-compare-btn" class="sophia__button sophia__button--primary" data-tekton-action="compare-intelligence" data-tekton-action-type="primary">Compare</button>
                         </div>
                     </div>
                     <div id="sophia-comparison-chart" class="sophia__chart"></div>
@@ -175,7 +175,7 @@
         </div>
         
         <!-- Experiments Tab -->
-        <div id="experiments-panel" class="sophia__panel">
+        <div id="experiments-panel" class="sophia__panel" data-tekton-panel="experiments" data-tekton-panel-for="Experiments" data-tekton-panel-component="sophia" data-tekton-panel-active="false">
             <div class="sophia__experiments">
                 <div class="sophia__control-bar">
                     <div class="sophia__filter-container">
@@ -203,7 +203,7 @@
                         </div>
                     </div>
                     <div class="sophia__actions">
-                        <button id="new-experiment-btn" class="sophia__action-button">
+                        <button id="new-experiment-btn" class="sophia__action-button" data-tekton-action="new-experiment" data-tekton-action-type="primary">
                             <span class="sophia__button-icon">+</span>
                             <span class="sophia__button-label">New Experiment</span>
                         </button>
@@ -236,8 +236,8 @@
                                 <td>Terma, Rhetor</td>
                                 <td>2025-04-22</td>
                                 <td>
-                                    <button class="sophia__button sophia__button--small">View</button>
-                                    <button class="sophia__button sophia__button--small">Results</button>
+                                    <button class="sophia__button sophia__button--small" data-tekton-action="view-item" data-tekton-action-type="secondary">View</button>
+                                    <button class="sophia__button sophia__button--small" data-tekton-action="view-results" data-tekton-action-type="secondary">Results</button>
                                 </td>
                             </tr>
                             <tr class="sophia__table-row">
@@ -247,8 +247,8 @@
                                 <td>Engram</td>
                                 <td>2025-05-01</td>
                                 <td>
-                                    <button class="sophia__button sophia__button--small">View</button>
-                                    <button class="sophia__button sophia__button--small">Monitor</button>
+                                    <button class="sophia__button sophia__button--small" data-tekton-action="view-item" data-tekton-action-type="secondary">View</button>
+                                    <button class="sophia__button sophia__button--small" data-tekton-action="monitor-item" data-tekton-action-type="secondary">Monitor</button>
                                 </td>
                             </tr>
                         </tbody>
@@ -258,7 +258,7 @@
         </div>
         
         <!-- Recommendations Tab -->
-        <div id="recommendations-panel" class="sophia__panel">
+        <div id="recommendations-panel" class="sophia__panel" data-tekton-panel="recommendations" data-tekton-panel-for="Recommendations" data-tekton-panel-component="sophia" data-tekton-panel-active="false">
             <div class="sophia__recommendations">
                 <div class="sophia__control-bar">
                     <div class="sophia__filter-container">
@@ -293,7 +293,7 @@
                         </div>
                     </div>
                     <div class="sophia__actions">
-                        <button id="new-recommendation-btn" class="sophia__action-button">
+                        <button id="new-recommendation-btn" class="sophia__action-button" data-tekton-action="new-recommendation" data-tekton-action-type="primary">
                             <span class="sophia__button-icon">+</span>
                             <span class="sophia__button-label">New Recommendation</span>
                         </button>
@@ -326,8 +326,8 @@
                                 <td>Engram</td>
                                 <td><span class="sophia__status sophia__status--in-progress">In Progress</span></td>
                                 <td>
-                                    <button class="sophia__button sophia__button--small">View</button>
-                                    <button class="sophia__button sophia__button--small">Update</button>
+                                    <button class="sophia__button sophia__button--small" data-tekton-action="view-item" data-tekton-action-type="secondary">View</button>
+                                    <button class="sophia__button sophia__button--small" data-tekton-action="update-item" data-tekton-action-type="secondary">Update</button>
                                 </td>
                             </tr>
                             <tr class="sophia__table-row">
@@ -337,8 +337,8 @@
                                 <td>Harmonia</td>
                                 <td><span class="sophia__status sophia__status--pending">Pending</span></td>
                                 <td>
-                                    <button class="sophia__button sophia__button--small">View</button>
-                                    <button class="sophia__button sophia__button--small">Approve</button>
+                                    <button class="sophia__button sophia__button--small" data-tekton-action="view-item" data-tekton-action-type="secondary">View</button>
+                                    <button class="sophia__button sophia__button--small" data-tekton-action="approve-item" data-tekton-action-type="primary">Approve</button>
                                 </td>
                             </tr>
                         </tbody>
@@ -348,7 +348,7 @@
         </div>
         
         <!-- Research Chat Tab -->
-        <div id="researchchat-panel" class="sophia__panel">
+        <div id="researchchat-panel" class="sophia__panel" data-tekton-panel="researchchat" data-tekton-panel-for="Research Chat" data-tekton-panel-component="sophia" data-tekton-panel-active="false">
             <div id="researchchat-messages" class="sophia__chat-messages">
                 <!-- Welcome message -->
                 <div class="sophia__message sophia__message--system">
@@ -369,7 +369,7 @@
         </div>
         
         <!-- Team Chat Tab -->
-        <div id="teamchat-panel" class="sophia__panel">
+        <div id="teamchat-panel" class="sophia__panel" data-tekton-panel="teamchat" data-tekton-panel-for="Team Chat" data-tekton-panel-component="sophia" data-tekton-panel-active="false">
             <div id="teamchat-messages" class="sophia__chat-messages">
                 <!-- Welcome message -->
                 <div class="sophia__message sophia__message--system">
@@ -390,7 +390,7 @@
             <div class="sophia__chat-prompt">></div>
             <input type="text" id="chat-input" class="sophia__chat-input" 
                    placeholder="Enter chat message, research questions, or experiment ideas">
-            <button id="send-button" class="sophia__send-button">Send</button>
+            <button id="send-button" class="sophia__send-button" data-tekton-action="send-message" data-tekton-action-type="primary">Send</button>
         </div>
     </div>
 </div>

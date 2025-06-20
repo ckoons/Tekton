@@ -75,7 +75,9 @@
       </div>
     </div>
     <div class="rhetor__actions">
-      <button id="clear-chat-btn" class="rhetor__action-button" style="display: none;" onclick="rhetor_clearChat(); return false;">
+      <button id="clear-chat-btn" class="rhetor__action-button" style="display: none;" onclick="rhetor_clearChat(); return false;"
+              data-tekton-action="clear-chat"
+              data-tekton-action-type="secondary">
         <span class="rhetor__button-label">Clear</span>
       </button>
     </div>
@@ -93,8 +95,12 @@
       <div class="rhetor__section-header">
         <h2>AI Specialists</h2>
         <div class="rhetor__controls">
-          <button class="rhetor__button rhetor__button--primary" onclick="rhetor_createSpecialist()">Create Specialist</button>
-          <button class="rhetor__button" onclick="rhetor_refreshSpecialists()">Refresh</button>
+          <button class="rhetor__button rhetor__button--primary" onclick="rhetor_createSpecialist()"
+                  data-tekton-action="create-specialist"
+                  data-tekton-action-type="primary">Create Specialist</button>
+          <button class="rhetor__button" onclick="rhetor_refreshSpecialists()"
+                  data-tekton-action="refresh-specialists"
+                  data-tekton-action-type="secondary">Refresh</button>
         </div>
       </div>
       
@@ -125,7 +131,9 @@
           <label class="rhetor__form-label">Auto-Translation</label>
           <div class="rhetor__checkbox-group">
             <label class="rhetor__checkbox">
-              <input type="checkbox" id="auto-translate" checked> Enable automatic translation between AI specialists
+              <input type="checkbox" id="auto-translate" checked
+                     data-tekton-input="auto-translate"
+                     data-tekton-input-type="toggle"> Enable automatic translation between AI specialists
             </label>
           </div>
         </div>
@@ -134,19 +142,27 @@
           <label class="rhetor__form-label">Message Filtering</label>
           <div class="rhetor__checkbox-group">
             <label class="rhetor__checkbox">
-              <input type="checkbox" id="filter-redundant" checked> Filter redundant messages
+              <input type="checkbox" id="filter-redundant" checked
+                     data-tekton-input="filter-redundant"
+                     data-tekton-input-type="toggle"> Filter redundant messages
             </label>
             <label class="rhetor__checkbox">
-              <input type="checkbox" id="filter-errors"> Filter error messages
+              <input type="checkbox" id="filter-errors"
+                     data-tekton-input="filter-errors"
+                     data-tekton-input-type="toggle"> Filter error messages
             </label>
             <label class="rhetor__checkbox">
-              <input type="checkbox" id="summarize-verbose"> Summarize verbose exchanges
+              <input type="checkbox" id="summarize-verbose"
+                     data-tekton-input="summarize-verbose"
+                     data-tekton-input-type="toggle"> Summarize verbose exchanges
             </label>
           </div>
         </div>
         
         <div class="rhetor__form-actions">
-          <button class="rhetor__button rhetor__button--primary" onclick="rhetor_saveOrchestration()">Save Settings</button>
+          <button class="rhetor__button rhetor__button--primary" onclick="rhetor_saveOrchestration()"
+                  data-tekton-action="save-orchestration"
+                  data-tekton-action-type="primary">Save Settings</button>
         </div>
       </div>
     </div>
@@ -156,8 +172,12 @@
       <div class="rhetor__section-header">
         <h2>Active AI Sessions</h2>
         <div class="rhetor__controls">
-          <button class="rhetor__button rhetor__button--primary" onclick="rhetor_createSession()">New Session</button>
-          <button class="rhetor__button" onclick="rhetor_refreshSessions()">Refresh</button>
+          <button class="rhetor__button rhetor__button--primary" onclick="rhetor_createSession()"
+                  data-tekton-action="create-session"
+                  data-tekton-action-type="primary">New Session</button>
+          <button class="rhetor__button" onclick="rhetor_refreshSessions()"
+                  data-tekton-action="refresh-sessions"
+                  data-tekton-action-type="secondary">Refresh</button>
         </div>
       </div>
       
@@ -179,7 +199,9 @@
           <label class="rhetor__form-label">Anthropic Max Account</label>
           <div class="rhetor__checkbox-group">
             <label class="rhetor__checkbox">
-              <input type="checkbox" id="anthropic-max" onchange="rhetor_toggleAnthropicMax()"> Use Anthropic Max (Unlimited tokens for testing)
+              <input type="checkbox" id="anthropic-max" onchange="rhetor_toggleAnthropicMax()"
+                     data-tekton-input="anthropic-max"
+                     data-tekton-input-type="toggle"> Use Anthropic Max (Unlimited tokens for testing)
             </label>
           </div>
         </div>
@@ -213,7 +235,9 @@
         </div>
         
         <div class="rhetor__form-actions">
-          <button class="rhetor__button rhetor__button--primary" onclick="rhetor_saveConfiguration()">Save Configuration</button>
+          <button class="rhetor__button rhetor__button--primary" onclick="rhetor_saveConfiguration()"
+                  data-tekton-action="save-configuration"
+                  data-tekton-action-type="primary">Save Configuration</button>
         </div>
       </div>
     </div>
@@ -259,9 +283,13 @@
     <div class="rhetor__chat-input-container" data-tekton-chat="rhetor-llm" data-tekton-chat-component="rhetor">
       <div class="rhetor__chat-prompt">></div>
       <input type="text" class="rhetor__chat-input" id="chat-input"
+             data-tekton-input="chat-input"
+             data-tekton-input-type="chat"
              placeholder="Enter chat message for LLM context management, prompts, or team communication"
              onkeydown="if(event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); rhetor_sendLLMChat(); }">
-      <button class="rhetor__send-button" id="send-button" onclick="rhetor_sendLLMChat(); return false;">Send</button>
+      <button class="rhetor__send-button" id="send-button" onclick="rhetor_sendLLMChat(); return false;"
+              data-tekton-action="send-message"
+              data-tekton-action-type="primary">Send</button>
     </div>
   </div>
 </div>

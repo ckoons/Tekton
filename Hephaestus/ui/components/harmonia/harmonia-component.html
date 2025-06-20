@@ -14,27 +14,27 @@
     <!-- Harmonia Menu Bar with Tab Navigation -->
     <div class="harmonia__menu-bar" data-tekton-zone="menu" data-tekton-zone="menu" data-tekton-nav="component-menu">
         <div class="harmonia__tabs" data-tekton-zone="menu">
-            <div class="harmonia__tab harmonia__tab--active" data-tab="workflows" onclick="harmonia_switchTab('workflows'); return false;">
+            <div class="harmonia__tab harmonia__tab--active" data-tab="workflows" onclick="harmonia_switchTab('workflows'); return false;" data-tekton-menu-item="Workflows" data-tekton-menu-component="harmonia" data-tekton-menu-active="true" data-tekton-menu-panel="workflows-panel" data-tekton-nav-target="workflows-panel">
                 <span class="harmonia__tab-label">Workflows</span>
             </div>
-            <div class="harmonia__tab" data-tab="templates" onclick="harmonia_switchTab('templates'); return false;">
+            <div class="harmonia__tab" data-tab="templates" onclick="harmonia_switchTab('templates'); return false;" data-tekton-menu-item="Templates" data-tekton-menu-component="harmonia" data-tekton-menu-active="false" data-tekton-menu-panel="templates-panel" data-tekton-nav-target="templates-panel">
                 <span class="harmonia__tab-label">Templates</span>
             </div>
-            <div class="harmonia__tab" data-tab="executions" onclick="harmonia_switchTab('executions'); return false;">
+            <div class="harmonia__tab" data-tab="executions" onclick="harmonia_switchTab('executions'); return false;" data-tekton-menu-item="Executions" data-tekton-menu-component="harmonia" data-tekton-menu-active="false" data-tekton-menu-panel="executions-panel" data-tekton-nav-target="executions-panel">
                 <span class="harmonia__tab-label">Executions</span>
             </div>
-            <div class="harmonia__tab" data-tab="monitor" onclick="harmonia_switchTab('monitor'); return false;">
+            <div class="harmonia__tab" data-tab="monitor" onclick="harmonia_switchTab('monitor'); return false;" data-tekton-menu-item="Monitor" data-tekton-menu-component="harmonia" data-tekton-menu-active="false" data-tekton-menu-panel="monitor-panel" data-tekton-nav-target="monitor-panel">
                 <span class="harmonia__tab-label">Monitor</span>
             </div>
-            <div class="harmonia__tab" data-tab="workflowchat" onclick="harmonia_switchTab('workflowchat'); return false;">
+            <div class="harmonia__tab" data-tab="workflowchat" onclick="harmonia_switchTab('workflowchat'); return false;" data-tekton-menu-item="Workflow Chat" data-tekton-menu-component="harmonia" data-tekton-menu-active="false" data-tekton-menu-panel="workflowchat-panel" data-tekton-nav-target="workflowchat-panel">
                 <span class="harmonia__tab-label">Workflow Chat</span>
             </div>
-            <div class="harmonia__tab" data-tab="teamchat" onclick="harmonia_switchTab('teamchat'); return false;">
+            <div class="harmonia__tab" data-tab="teamchat" onclick="harmonia_switchTab('teamchat'); return false;" data-tekton-menu-item="Team Chat" data-tekton-menu-component="harmonia" data-tekton-menu-active="false" data-tekton-menu-panel="teamchat-panel" data-tekton-nav-target="teamchat-panel">
                 <span class="harmonia__tab-label">Team Chat</span>
             </div>
         </div>
         <div class="harmonia__actions">
-            <button id="clear-chat-btn" class="harmonia__action-button" style="display: none;" onclick="harmonia_clearChat(); return false;">
+            <button id="clear-chat-btn" class="harmonia__action-button" style="display: none;" onclick="harmonia_clearChat(); return false;" data-tekton-action="clear-chat" data-tekton-action-type="secondary">
                 <span class="harmonia__button-label">Clear</span>
             </button>
         </div>
@@ -43,15 +43,15 @@
     <!-- Harmonia Content Area -->
     <div class="harmonia__content" data-tekton-zone="content" data-tekton-scrollable="true">
         <!-- Workflows Tab (Default Active Tab) -->
-        <div id="workflows-panel" class="harmonia__panel harmonia__panel--active">
+        <div id="workflows-panel" class="harmonia__panel harmonia__panel--active" data-tekton-panel="workflows" data-tekton-panel-for="Workflows" data-tekton-panel-component="harmonia" data-tekton-panel-active="true">
             <div class="harmonia__workflows">
                 <div class="harmonia__control-bar">
                     <div class="harmonia__search-container">
                         <input type="text" id="workflow-search" class="harmonia__search-input" placeholder="Search workflows...">
-                        <button id="workflow-search-btn" class="harmonia__search-button">Search</button>
+                        <button id="workflow-search-btn" class="harmonia__search-button" data-tekton-action="search-workflows" data-tekton-action-type="primary">Search</button>
                     </div>
                     <div class="harmonia__actions">
-                        <button id="add-workflow-btn" class="harmonia__action-button">
+                        <button id="add-workflow-btn" class="harmonia__action-button" data-tekton-action="add-workflow" data-tekton-action-type="primary">
                             <span class="harmonia__button-icon">+</span>
                             <span class="harmonia__button-label">New Workflow</span>
                         </button>
@@ -74,9 +74,9 @@
                                 <div class="harmonia__workflow-description">Process and analyze data from multiple sources</div>
                             </div>
                             <div class="harmonia__workflow-actions">
-                                <button class="harmonia__workflow-action-btn">View</button>
-                                <button class="harmonia__workflow-action-btn">Edit</button>
-                                <button class="harmonia__workflow-action-btn">Execute</button>
+                                <button class="harmonia__workflow-action-btn" data-tekton-action="view-workflow" data-tekton-action-type="secondary">View</button>
+                                <button class="harmonia__workflow-action-btn" data-tekton-action="edit-workflow" data-tekton-action-type="secondary">Edit</button>
+                                <button class="harmonia__workflow-action-btn" data-tekton-action="execute-workflow" data-tekton-action-type="primary">Execute</button>
                             </div>
                         </div>
                         <div class="harmonia__workflow-item">
@@ -89,9 +89,9 @@
                                 <div class="harmonia__workflow-description">Generate content using various LLM models</div>
                             </div>
                             <div class="harmonia__workflow-actions">
-                                <button class="harmonia__workflow-action-btn">View</button>
-                                <button class="harmonia__workflow-action-btn">Edit</button>
-                                <button class="harmonia__workflow-action-btn">Execute</button>
+                                <button class="harmonia__workflow-action-btn" data-tekton-action="view-workflow" data-tekton-action-type="secondary">View</button>
+                                <button class="harmonia__workflow-action-btn" data-tekton-action="edit-workflow" data-tekton-action-type="secondary">Edit</button>
+                                <button class="harmonia__workflow-action-btn" data-tekton-action="execute-workflow" data-tekton-action-type="primary">Execute</button>
                             </div>
                         </div>
                     </div>
@@ -100,12 +100,12 @@
         </div>
         
         <!-- Templates Tab -->
-        <div id="templates-panel" class="harmonia__panel">
+        <div id="templates-panel" class="harmonia__panel" data-tekton-panel="templates" data-tekton-panel-for="Templates" data-tekton-panel-component="harmonia" data-tekton-panel-active="false">
             <div class="harmonia__templates">
                 <div class="harmonia__control-bar">
                     <div class="harmonia__search-container">
                         <input type="text" id="template-search" class="harmonia__search-input" placeholder="Search templates...">
-                        <button id="template-search-btn" class="harmonia__search-button">Search</button>
+                        <button id="template-search-btn" class="harmonia__search-button" data-tekton-action="search-templates" data-tekton-action-type="primary">Search</button>
                     </div>
                     <div class="harmonia__filter-container">
                         <select id="template-category-filter" class="harmonia__filter-select">
@@ -115,10 +115,10 @@
                             <option value="deployment">Deployment</option>
                             <option value="analysis">Analysis</option>
                         </select>
-                        <button id="apply-template-filter-btn" class="harmonia__filter-button">Apply</button>
+                        <button id="apply-template-filter-btn" class="harmonia__filter-button" data-tekton-action="apply-template-filter" data-tekton-action-type="primary">Apply</button>
                     </div>
                     <div class="harmonia__actions">
-                        <button id="create-template-btn" class="harmonia__action-button">
+                        <button id="create-template-btn" class="harmonia__action-button" data-tekton-action="create-template" data-tekton-action-type="primary">
                             <span class="harmonia__button-icon">+</span>
                             <span class="harmonia__button-label">New Template</span>
                         </button>
@@ -141,9 +141,9 @@
                                 <div class="harmonia__template-description">Standard pipeline for processing and analyzing data</div>
                             </div>
                             <div class="harmonia__template-actions">
-                                <button class="harmonia__template-action-btn">View</button>
-                                <button class="harmonia__template-action-btn">Use</button>
-                                <button class="harmonia__template-action-btn">Edit</button>
+                                <button class="harmonia__template-action-btn" data-tekton-action="view-template" data-tekton-action-type="secondary">View</button>
+                                <button class="harmonia__template-action-btn" data-tekton-action="use-template" data-tekton-action-type="primary">Use</button>
+                                <button class="harmonia__template-action-btn" data-tekton-action="edit-template" data-tekton-action-type="secondary">Edit</button>
                             </div>
                         </div>
                         <div class="harmonia__template-item">
@@ -156,9 +156,9 @@
                                 <div class="harmonia__template-description">Template for generating content with various LLMs</div>
                             </div>
                             <div class="harmonia__template-actions">
-                                <button class="harmonia__template-action-btn">View</button>
-                                <button class="harmonia__template-action-btn">Use</button>
-                                <button class="harmonia__template-action-btn">Edit</button>
+                                <button class="harmonia__template-action-btn" data-tekton-action="view-template" data-tekton-action-type="secondary">View</button>
+                                <button class="harmonia__template-action-btn" data-tekton-action="use-template" data-tekton-action-type="primary">Use</button>
+                                <button class="harmonia__template-action-btn" data-tekton-action="edit-template" data-tekton-action-type="secondary">Edit</button>
                             </div>
                         </div>
                     </div>
@@ -167,7 +167,7 @@
         </div>
         
         <!-- Executions Tab -->
-        <div id="executions-panel" class="harmonia__panel">
+        <div id="executions-panel" class="harmonia__panel" data-tekton-panel="executions" data-tekton-panel-for="Executions" data-tekton-panel-component="harmonia" data-tekton-panel-active="false">
             <div class="harmonia__executions">
                 <div class="harmonia__control-bar">
                     <div class="harmonia__filter-container">
@@ -183,7 +183,7 @@
                             <option value="failed">Failed</option>
                             <option value="waiting">Waiting</option>
                         </select>
-                        <button id="apply-execution-filter-btn" class="harmonia__filter-button">Apply</button>
+                        <button id="apply-execution-filter-btn" class="harmonia__filter-button" data-tekton-action="apply-execution-filter" data-tekton-action-type="primary">Apply</button>
                     </div>
                     <div class="harmonia__date-filter">
                         <input type="date" id="execution-date-from" class="harmonia__date-input">
@@ -219,8 +219,8 @@
                                         <span class="harmonia__status harmonia__status--completed">Completed</span>
                                     </td>
                                     <td>
-                                        <button class="harmonia__table-action-btn">View</button>
-                                        <button class="harmonia__table-action-btn">Logs</button>
+                                        <button class="harmonia__table-action-btn" data-tekton-action="view-execution" data-tekton-action-type="secondary">View</button>
+                                        <button class="harmonia__table-action-btn" data-tekton-action="view-logs" data-tekton-action-type="secondary">Logs</button>
                                     </td>
                                 </tr>
                                 <tr class="harmonia__execution-row">
@@ -232,9 +232,9 @@
                                         <span class="harmonia__status harmonia__status--running">Running</span>
                                     </td>
                                     <td>
-                                        <button class="harmonia__table-action-btn">View</button>
-                                        <button class="harmonia__table-action-btn">Logs</button>
-                                        <button class="harmonia__table-action-btn">Stop</button>
+                                        <button class="harmonia__table-action-btn" data-tekton-action="view-execution" data-tekton-action-type="secondary">View</button>
+                                        <button class="harmonia__table-action-btn" data-tekton-action="view-logs" data-tekton-action-type="secondary">Logs</button>
+                                        <button class="harmonia__table-action-btn" data-tekton-action="stop-execution" data-tekton-action-type="secondary">Stop</button>
                                     </td>
                                 </tr>
                             </tbody>
@@ -245,7 +245,7 @@
         </div>
         
         <!-- Monitor Tab -->
-        <div id="monitor-panel" class="harmonia__panel">
+        <div id="monitor-panel" class="harmonia__panel" data-tekton-panel="monitor" data-tekton-panel-for="Monitor" data-tekton-panel-component="harmonia" data-tekton-panel-active="false">
             <div class="harmonia__monitor">
                 <div class="harmonia__control-bar">
                     <div class="harmonia__filter-container">
@@ -255,7 +255,7 @@
                             <option value="metrics">Metrics</option>
                             <option value="alerts">Alerts</option>
                         </select>
-                        <button id="apply-view-btn" class="harmonia__filter-button">Apply</button>
+                        <button id="apply-view-btn" class="harmonia__filter-button" data-tekton-action="apply-view" data-tekton-action-type="primary">Apply</button>
                     </div>
                     <div class="harmonia__refresh-controls">
                         <label for="auto-refresh">Auto-refresh:</label>
@@ -266,7 +266,7 @@
                             <option value="30">30s</option>
                             <option value="60">1m</option>
                         </select>
-                        <button id="refresh-now-btn" class="harmonia__action-button">
+                        <button id="refresh-now-btn" class="harmonia__action-button" data-tekton-action="refresh-now" data-tekton-action-type="secondary">
                             <span class="harmonia__button-label">Refresh</span>
                         </button>
                     </div>
@@ -286,7 +286,7 @@
         </div>
         
         <!-- Workflow Chat Tab -->
-        <div id="workflowchat-panel" class="harmonia__panel">
+        <div id="workflowchat-panel" class="harmonia__panel" data-tekton-panel="workflowchat" data-tekton-panel-for="Workflow Chat" data-tekton-panel-component="harmonia" data-tekton-panel-active="false">
             <div id="workflowchat-messages" class="harmonia__chat-messages">
                 <!-- Welcome message -->
                 <div class="harmonia__message harmonia__message--system">
@@ -307,7 +307,7 @@
         </div>
         
         <!-- Team Chat Tab -->
-        <div id="teamchat-panel" class="harmonia__panel">
+        <div id="teamchat-panel" class="harmonia__panel" data-tekton-panel="teamchat" data-tekton-panel-for="Team Chat" data-tekton-panel-component="harmonia" data-tekton-panel-active="false">
             <div id="teamchat-messages" class="harmonia__chat-messages">
                 <!-- Welcome message -->
                 <div class="harmonia__message harmonia__message--system">
@@ -328,7 +328,7 @@
             <div class="harmonia__chat-prompt">></div>
             <input type="text" id="chat-input" class="harmonia__chat-input" 
                    placeholder="Enter chat message, workflow questions, or execution queries">
-            <button id="send-button" class="harmonia__send-button">Send</button>
+            <button id="send-button" class="harmonia__send-button" data-tekton-action="send-message" data-tekton-action-type="primary">Send</button>
         </div>
     </div>
 </div>

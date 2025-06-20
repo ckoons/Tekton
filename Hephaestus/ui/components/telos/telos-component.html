@@ -14,27 +14,27 @@
     <!-- Telos Menu Bar with Tab Navigation -->
     <div class="telos__menu-bar" data-tekton-zone="menu" data-tekton-zone="menu" data-tekton-nav="component-menu">
         <div class="telos__tabs" data-tekton-zone="menu">
-            <div class="telos__tab telos__tab--active" data-tab="projects" onclick="telos_switchTab('projects'); return false;">
+            <div class="telos__tab telos__tab--active" data-tab="projects" onclick="telos_switchTab('projects'); return false;" data-tekton-menu-item="Projects" data-tekton-menu-component="telos" data-tekton-menu-active="true" data-tekton-menu-panel="projects-panel" data-tekton-nav-target="projects-panel">
                 <span class="telos__tab-label">Projects</span>
             </div>
-            <div class="telos__tab" data-tab="requirements" onclick="telos_switchTab('requirements'); return false;">
+            <div class="telos__tab" data-tab="requirements" onclick="telos_switchTab('requirements'); return false;" data-tekton-menu-item="Requirements" data-tekton-menu-component="telos" data-tekton-menu-active="false" data-tekton-menu-panel="requirements-panel" data-tekton-nav-target="requirements-panel">
                 <span class="telos__tab-label">Requirements</span>
             </div>
-            <div class="telos__tab" data-tab="traceability" onclick="telos_switchTab('traceability'); return false;">
+            <div class="telos__tab" data-tab="traceability" onclick="telos_switchTab('traceability'); return false;" data-tekton-menu-item="Traceability" data-tekton-menu-component="telos" data-tekton-menu-active="false" data-tekton-menu-panel="traceability-panel" data-tekton-nav-target="traceability-panel">
                 <span class="telos__tab-label">Traceability</span>
             </div>
-            <div class="telos__tab" data-tab="validation" onclick="telos_switchTab('validation'); return false;">
+            <div class="telos__tab" data-tab="validation" onclick="telos_switchTab('validation'); return false;" data-tekton-menu-item="Validation" data-tekton-menu-component="telos" data-tekton-menu-active="false" data-tekton-menu-panel="validation-panel" data-tekton-nav-target="validation-panel">
                 <span class="telos__tab-label">Validation</span>
             </div>
-            <div class="telos__tab" data-tab="reqchat" onclick="telos_switchTab('reqchat'); return false;">
+            <div class="telos__tab" data-tab="reqchat" onclick="telos_switchTab('reqchat'); return false;" data-tekton-menu-item="Requirements Chat" data-tekton-menu-component="telos" data-tekton-menu-active="false" data-tekton-menu-panel="reqchat-panel" data-tekton-nav-target="reqchat-panel">
                 <span class="telos__tab-label">Requirements Chat</span>
             </div>
-            <div class="telos__tab" data-tab="teamchat" onclick="telos_switchTab('teamchat'); return false;">
+            <div class="telos__tab" data-tab="teamchat" onclick="telos_switchTab('teamchat'); return false;" data-tekton-menu-item="Team Chat" data-tekton-menu-component="telos" data-tekton-menu-active="false" data-tekton-menu-panel="teamchat-panel" data-tekton-nav-target="teamchat-panel">
                 <span class="telos__tab-label">Team Chat</span>
             </div>
         </div>
         <div class="telos__actions">
-            <button id="clear-chat-btn" class="telos__action-button" style="display: none;" onclick="telos_clearChat(); return false;">
+            <button id="clear-chat-btn" class="telos__action-button" style="display: none;" onclick="telos_clearChat(); return false;" data-tekton-action="clear-chat" data-tekton-action-type="secondary">
                 <span class="telos__button-label">Clear</span>
             </button>
         </div>
@@ -43,15 +43,15 @@
     <!-- Telos Content Area -->
     <div class="telos__content" data-tekton-zone="content" data-tekton-scrollable="true">
         <!-- Projects Tab (Default Active Tab) -->
-        <div id="projects-panel" class="telos__panel telos__panel--active">
+        <div id="projects-panel" class="telos__panel telos__panel--active" data-tekton-panel="projects" data-tekton-panel-for="Projects" data-tekton-panel-component="telos" data-tekton-panel-active="true">
             <div class="telos__projects">
                 <div class="telos__control-bar">
                     <div class="telos__search-container">
                         <input type="text" id="project-search" class="telos__search-input" placeholder="Search projects...">
-                        <button id="project-search-btn" class="telos__search-button">Search</button>
+                        <button id="project-search-btn" class="telos__search-button" data-tekton-action="search-projects" data-tekton-action-type="primary">Search</button>
                     </div>
                     <div class="telos__actions">
-                        <button id="add-project-btn" class="telos__action-button">
+                        <button id="add-project-btn" class="telos__action-button" data-tekton-action="add-project" data-tekton-action-type="primary">
                             <span class="telos__button-icon">+</span>
                             <span class="telos__button-label">New Project</span>
                         </button>
@@ -73,8 +73,8 @@
                                 </div>
                             </div>
                             <div class="telos__project-actions">
-                                <button class="telos__project-action-btn">View</button>
-                                <button class="telos__project-action-btn">Edit</button>
+                                <button class="telos__project-action-btn" data-tekton-action="view-project" data-tekton-action-type="secondary">View</button>
+                                <button class="telos__project-action-btn" data-tekton-action="edit-project" data-tekton-action-type="secondary">Edit</button>
                             </div>
                         </div>
                         <div class="telos__project-item">
@@ -86,8 +86,8 @@
                                 </div>
                             </div>
                             <div class="telos__project-actions">
-                                <button class="telos__project-action-btn">View</button>
-                                <button class="telos__project-action-btn">Edit</button>
+                                <button class="telos__project-action-btn" data-tekton-action="view-project" data-tekton-action-type="secondary">View</button>
+                                <button class="telos__project-action-btn" data-tekton-action="edit-project" data-tekton-action-type="secondary">Edit</button>
                             </div>
                         </div>
                     </div>
@@ -96,12 +96,12 @@
         </div>
         
         <!-- Requirements Tab -->
-        <div id="requirements-panel" class="telos__panel">
+        <div id="requirements-panel" class="telos__panel" data-tekton-panel="requirements" data-tekton-panel-for="Requirements" data-tekton-panel-component="telos" data-tekton-panel-active="false">
             <div class="telos__requirements">
                 <div class="telos__control-bar">
                     <div class="telos__search-container">
                         <input type="text" id="requirement-search" class="telos__search-input" placeholder="Search requirements...">
-                        <button id="requirement-search-btn" class="telos__search-button">Search</button>
+                        <button id="requirement-search-btn" class="telos__search-button" data-tekton-action="search-requirements" data-tekton-action-type="primary">Search</button>
                     </div>
                     <div class="telos__filter-container">
                         <select id="project-filter" class="telos__filter-select">
@@ -122,10 +122,10 @@
                             <option value="non-functional">Non-Functional</option>
                             <option value="constraint">Constraint</option>
                         </select>
-                        <button id="apply-filters-btn" class="telos__filter-button">Apply</button>
+                        <button id="apply-filters-btn" class="telos__filter-button" data-tekton-action="apply-filters" data-tekton-action-type="primary">Apply</button>
                     </div>
                     <div class="telos__actions">
-                        <button id="new-requirement-btn" class="telos__action-button">
+                        <button id="new-requirement-btn" class="telos__action-button" data-tekton-action="new-requirement" data-tekton-action-type="primary">
                             <span class="telos__button-icon">+</span>
                             <span class="telos__button-label">New Requirement</span>
                         </button>
@@ -159,8 +159,8 @@
                                     <td>High</td>
                                     <td>In Progress</td>
                                     <td>
-                                        <button class="telos__table-action-btn">View</button>
-                                        <button class="telos__table-action-btn">Edit</button>
+                                        <button class="telos__table-action-btn" data-tekton-action="view-requirement" data-tekton-action-type="secondary">View</button>
+                                        <button class="telos__table-action-btn" data-tekton-action="edit-requirement" data-tekton-action-type="secondary">Edit</button>
                                     </td>
                                 </tr>
                                 <tr class="telos__requirement-row">
@@ -171,8 +171,8 @@
                                     <td>Medium</td>
                                     <td>Completed</td>
                                     <td>
-                                        <button class="telos__table-action-btn">View</button>
-                                        <button class="telos__table-action-btn">Edit</button>
+                                        <button class="telos__table-action-btn" data-tekton-action="view-requirement" data-tekton-action-type="secondary">View</button>
+                                        <button class="telos__table-action-btn" data-tekton-action="edit-requirement" data-tekton-action-type="secondary">Edit</button>
                                     </td>
                                 </tr>
                             </tbody>
@@ -183,7 +183,7 @@
         </div>
         
         <!-- Traceability Tab -->
-        <div id="traceability-panel" class="telos__panel">
+        <div id="traceability-panel" class="telos__panel" data-tekton-panel="traceability" data-tekton-panel-for="Traceability" data-tekton-panel-component="telos" data-tekton-panel-active="false">
             <div class="telos__traceability">
                 <div class="telos__control-bar">
                     <div class="telos__filter-container">
@@ -192,11 +192,11 @@
                             <option value="tekton-ui">Tekton UI Refactoring</option>
                             <option value="engram">Engram Memory System</option>
                         </select>
-                        <button id="trace-apply-filter-btn" class="telos__filter-button">Apply</button>
+                        <button id="trace-apply-filter-btn" class="telos__filter-button" data-tekton-action="apply-trace-filter" data-tekton-action-type="primary">Apply</button>
                     </div>
                     <div class="telos__view-controls">
-                        <button id="trace-matrix-btn" class="telos__view-button telos__view-button--active">Matrix View</button>
-                        <button id="trace-graph-btn" class="telos__view-button">Graph View</button>
+                        <button id="trace-matrix-btn" class="telos__view-button telos__view-button--active" data-tekton-action="matrix-view" data-tekton-action-type="secondary">Matrix View</button>
+                        <button id="trace-graph-btn" class="telos__view-button" data-tekton-action="graph-view" data-tekton-action-type="secondary">Graph View</button>
                     </div>
                 </div>
                 <div class="telos__traceability-container">
@@ -213,7 +213,7 @@
         </div>
         
         <!-- Validation Tab -->
-        <div id="validation-panel" class="telos__panel">
+        <div id="validation-panel" class="telos__panel" data-tekton-panel="validation" data-tekton-panel-for="Validation" data-tekton-panel-component="telos" data-tekton-panel-active="false">
             <div class="telos__validation">
                 <h3 class="telos__section-title">Requirements Validation</h3>
                 <p class="telos__text">Validate requirements against quality criteria and standards.</p>
@@ -260,8 +260,8 @@
                     </div>
 
                     <div class="telos__form-actions">
-                        <button class="telos__button telos__button--secondary" id="reset-validation-btn">Reset</button>
-                        <button class="telos__button telos__button--primary" id="run-validation-btn">Run Validation</button>
+                        <button class="telos__button telos__button--secondary" id="reset-validation-btn" data-tekton-action="reset-validation" data-tekton-action-type="secondary">Reset</button>
+                        <button class="telos__button telos__button--primary" id="run-validation-btn" data-tekton-action="run-validation" data-tekton-action-type="primary">Run Validation</button>
                     </div>
                 </div>
 
@@ -275,7 +275,7 @@
         </div>
         
         <!-- Requirements Chat Tab -->
-        <div id="reqchat-panel" class="telos__panel">
+        <div id="reqchat-panel" class="telos__panel" data-tekton-panel="reqchat" data-tekton-panel-for="Requirements Chat" data-tekton-panel-component="telos" data-tekton-panel-active="false">
             <div id="reqchat-messages" class="telos__chat-messages">
                 <!-- Welcome message -->
                 <div class="telos__message telos__message--system">
@@ -296,7 +296,7 @@
         </div>
         
         <!-- Team Chat Tab -->
-        <div id="teamchat-panel" class="telos__panel">
+        <div id="teamchat-panel" class="telos__panel" data-tekton-panel="teamchat" data-tekton-panel-for="Team Chat" data-tekton-panel-component="telos" data-tekton-panel-active="false">
             <div id="teamchat-messages" class="telos__chat-messages">
                 <!-- Welcome message -->
                 <div class="telos__message telos__message--system">
@@ -317,7 +317,7 @@
             <div class="telos__chat-prompt">></div>
             <input type="text" id="chat-input" class="telos__chat-input" 
                    placeholder="Enter chat message, requirements query, or validation request">
-            <button id="send-button" class="telos__send-button">Send</button>
+            <button id="send-button" class="telos__send-button" data-tekton-action="send-message" data-tekton-action-type="primary">Send</button>
         </div>
     </div>
 </div>

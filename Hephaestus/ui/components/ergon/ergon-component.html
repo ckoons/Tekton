@@ -14,27 +14,27 @@
     <!-- Ergon Menu Bar with Tab Navigation -->
     <div class="ergon__menu-bar" data-tekton-zone="menu" data-tekton-zone="menu" data-tekton-nav="component-menu">
         <div class="ergon__tabs" data-tekton-zone="menu">
-            <div class="ergon__tab ergon__tab--active" data-tab="agents" onclick="ergon_switchTab('agents'); return false;">
+            <div class="ergon__tab ergon__tab--active" data-tab="agents" onclick="ergon_switchTab('agents'); return false;" data-tekton-menu-item="Agents" data-tekton-menu-component="ergon" data-tekton-menu-active="true" data-tekton-menu-panel="agents-panel" data-tekton-nav-target="agents-panel">
                 <span class="ergon__tab-label">Agents</span>
             </div>
-            <div class="ergon__tab" data-tab="tools" onclick="ergon_switchTab('tools'); return false;">
+            <div class="ergon__tab" data-tab="tools" onclick="ergon_switchTab('tools'); return false;" data-tekton-menu-item="Tools" data-tekton-menu-component="ergon" data-tekton-menu-active="false" data-tekton-menu-panel="tools-panel" data-tekton-nav-target="tools-panel">
                 <span class="ergon__tab-label">Tools</span>
             </div>
-            <div class="ergon__tab" data-tab="mcp" onclick="ergon_switchTab('mcp'); return false;">
+            <div class="ergon__tab" data-tab="mcp" onclick="ergon_switchTab('mcp'); return false;" data-tekton-menu-item="MCP" data-tekton-menu-component="ergon" data-tekton-menu-active="false" data-tekton-menu-panel="mcp-panel" data-tekton-nav-target="mcp-panel">
                 <span class="ergon__tab-label">MCP</span>
             </div>
-            <div class="ergon__tab" data-tab="memory" onclick="ergon_switchTab('memory'); return false;">
+            <div class="ergon__tab" data-tab="memory" onclick="ergon_switchTab('memory'); return false;" data-tekton-menu-item="Memory" data-tekton-menu-component="ergon" data-tekton-menu-active="false" data-tekton-menu-panel="memory-panel" data-tekton-nav-target="memory-panel">
                 <span class="ergon__tab-label">Memory</span>
             </div>
-            <div class="ergon__tab" data-tab="ergon" onclick="ergon_switchTab('ergon'); return false;">
+            <div class="ergon__tab" data-tab="ergon" onclick="ergon_switchTab('ergon'); return false;" data-tekton-menu-item="Tool Chat" data-tekton-menu-component="ergon" data-tekton-menu-active="false" data-tekton-menu-panel="ergon-panel" data-tekton-nav-target="ergon-panel">
                 <span class="ergon__tab-label">Tool Chat</span>
             </div>
-            <div class="ergon__tab" data-tab="awt-team" onclick="ergon_switchTab('awt-team'); return false;">
+            <div class="ergon__tab" data-tab="awt-team" onclick="ergon_switchTab('awt-team'); return false;" data-tekton-menu-item="Team Chat" data-tekton-menu-component="ergon" data-tekton-menu-active="false" data-tekton-menu-panel="awt-team-panel" data-tekton-nav-target="awt-team-panel">
                 <span class="ergon__tab-label">Team Chat</span>
             </div>
         </div>
         <div class="ergon__actions">
-            <button id="create-agent-button" class="ergon__action-button">
+            <button id="create-agent-button" class="ergon__action-button" data-tekton-action="create-agent" data-tekton-action-type="primary">
                 <span class="ergon__button-label">Create Agent</span>
             </button>
         </div>
@@ -43,7 +43,7 @@
     <!-- Ergon Content Area -->
     <div class="ergon__content" data-tekton-zone="content" data-tekton-scrollable="true">
         <!-- Agents Tab (Default Active Tab) -->
-        <div id="agents-panel" class="ergon__panel ergon__panel--active">
+        <div id="agents-panel" class="ergon__panel ergon__panel--active" data-tekton-panel="agents" data-tekton-panel-for="Agents" data-tekton-panel-component="ergon" data-tekton-panel-active="true">
             <div class="ergon__agent-grid">
                 <!-- Sample Agent Cards -->
                 <div class="ergon__agent-card">
@@ -55,8 +55,8 @@
                         Helps with code optimization, bug fixing, and implementing new features.
                     </div>
                     <div class="ergon__agent-actions">
-                        <button class="ergon__agent-action-button" data-action="run">Run</button>
-                        <button class="ergon__agent-action-button" data-action="delete">Delete</button>
+                        <button class="ergon__agent-action-button" data-action="run" data-tekton-action="run-agent" data-tekton-action-type="primary">Run</button>
+                        <button class="ergon__agent-action-button" data-action="delete" data-tekton-action="delete-agent" data-tekton-action-type="secondary">Delete</button>
                     </div>
                 </div>
 
@@ -69,8 +69,8 @@
                         Performs data analysis, visualization, and pattern recognition.
                     </div>
                     <div class="ergon__agent-actions">
-                        <button class="ergon__agent-action-button" data-action="run">Run</button>
-                        <button class="ergon__agent-action-button" data-action="delete">Delete</button>
+                        <button class="ergon__agent-action-button" data-action="run" data-tekton-action="run-agent" data-tekton-action-type="primary">Run</button>
+                        <button class="ergon__agent-action-button" data-action="delete" data-tekton-action="delete-agent" data-tekton-action-type="secondary">Delete</button>
                     </div>
                 </div>
 
@@ -83,8 +83,8 @@
                         Finds information, summarizes articles, and performs literature reviews.
                     </div>
                     <div class="ergon__agent-actions">
-                        <button class="ergon__agent-action-button" data-action="run">Run</button>
-                        <button class="ergon__agent-action-button" data-action="delete">Delete</button>
+                        <button class="ergon__agent-action-button" data-action="run" data-tekton-action="run-agent" data-tekton-action-type="primary">Run</button>
+                        <button class="ergon__agent-action-button" data-action="delete" data-tekton-action="delete-agent" data-tekton-action-type="secondary">Delete</button>
                     </div>
                 </div>
             </div>
@@ -111,15 +111,15 @@
                         <textarea id="agent-description" class="ergon__form-textarea" placeholder="Describe the agent's purpose"></textarea>
                     </div>
                     <div class="ergon__form-actions">
-                        <button id="cancel-creation" class="ergon__button ergon__button--cancel">Cancel</button>
-                        <button id="submit-creation" class="ergon__button ergon__button--submit">Create</button>
+                        <button id="cancel-creation" class="ergon__button ergon__button--cancel" data-tekton-action="cancel-creation" data-tekton-action-type="secondary">Cancel</button>
+                        <button id="submit-creation" class="ergon__button ergon__button--submit" data-tekton-action="submit-creation" data-tekton-action-type="primary">Create</button>
                     </div>
                 </div>
             </div>
         </div>
         
         <!-- Tool Chat Tab -->
-        <div id="ergon-panel" class="ergon__panel">
+        <div id="ergon-panel" class="ergon__panel" data-tekton-panel="ergon" data-tekton-panel-for="Tool Chat" data-tekton-panel-component="ergon" data-tekton-panel-active="false">
             <div id="ergon-messages" class="ergon__chat-messages">
                 <!-- Welcome message -->
                 <div class="ergon__message ergon__message--system">
@@ -134,7 +134,7 @@
         </div>
         
         <!-- Team Chat Tab -->
-        <div id="awt-team-panel" class="ergon__panel">
+        <div id="awt-team-panel" class="ergon__panel" data-tekton-panel="awt-team" data-tekton-panel-for="Team Chat" data-tekton-panel-component="ergon" data-tekton-panel-active="false">
             <div id="awt-team-messages" class="ergon__chat-messages">
                 <!-- Welcome message -->
                 <div class="ergon__message ergon__message--system">
@@ -160,7 +160,7 @@
         </div>
         
         <!-- Memory Tab -->
-        <div id="memory-panel" class="ergon__panel">
+        <div id="memory-panel" class="ergon__panel" data-tekton-panel="memory" data-tekton-panel-for="Memory" data-tekton-panel-component="ergon" data-tekton-panel-active="false">
             <div class="ergon__panel-section">
                 <h3 class="ergon__section-title">Memory Management</h3>
                 <p class="ergon__section-description">This panel allows you to manage agent memory and context.</p>
@@ -181,14 +181,14 @@
                 </div>
                 
                 <div class="ergon__memory-actions">
-                    <button class="ergon__action-button">View Memories</button>
-                    <button class="ergon__action-button">Clear All</button>
+                    <button class="ergon__action-button" data-tekton-action="view-memories" data-tekton-action-type="secondary">View Memories</button>
+                    <button class="ergon__action-button" data-tekton-action="clear-all" data-tekton-action-type="secondary">Clear All</button>
                 </div>
             </div>
         </div>
         
         <!-- Tools Tab -->
-        <div id="tools-panel" class="ergon__panel">
+        <div id="tools-panel" class="ergon__panel" data-tekton-panel="tools" data-tekton-panel-for="Tools" data-tekton-panel-component="ergon" data-tekton-panel-active="false">
             <div class="ergon__panel-section">
                 <h3 class="ergon__section-title">Available Tools</h3>
                 <p class="ergon__section-description">Manage tools that agents can use.</p>
@@ -219,7 +219,7 @@
         </div>
         
         <!-- MCP Tab (Multi-Cloud Platform) -->
-        <div id="mcp-panel" class="ergon__panel">
+        <div id="mcp-panel" class="ergon__panel" data-tekton-panel="mcp" data-tekton-panel-for="MCP" data-tekton-panel-component="ergon" data-tekton-panel-active="false">
             <div class="ergon__panel-section">
                 <h3 class="ergon__section-title">MCP Connections</h3>
                 <p class="ergon__section-description">Configure and manage connections to Multi-Cloud Platforms.</p>
@@ -264,8 +264,8 @@
                 </div>
 
                 <div class="ergon__mcp-actions">
-                    <button class="ergon__action-button">Add Connection</button>
-                    <button class="ergon__action-button">Refresh Status</button>
+                    <button class="ergon__action-button" data-tekton-action="add-connection" data-tekton-action-type="primary">Add Connection</button>
+                    <button class="ergon__action-button" data-tekton-action="refresh-status" data-tekton-action-type="secondary">Refresh Status</button>
                 </div>
             </div>
         </div>
@@ -277,7 +277,7 @@
             <div class="ergon__chat-prompt">></div>
             <input type="text" id="chat-input" class="ergon__chat-input" 
                    placeholder="Enter chat message for Ergon agent management, tools configuration, or MCP">
-            <button id="send-button" class="ergon__send-button">Send</button>
+            <button id="send-button" class="ergon__send-button" data-tekton-action="send-message" data-tekton-action-type="primary">Send</button>
         </div>
     </div>
 </div>

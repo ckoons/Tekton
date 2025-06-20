@@ -15,28 +15,28 @@
     <div class="engram__menu-bar" data-tekton-zone="menu" data-tekton-zone="menu" data-tekton-nav="component-menu">
         <div class="engram__tabs" data-tekton-zone="menu">
             <!-- Memory Explorer Tab -->
-            <div class="engram__tab engram__tab--active" data-tab="explorer" onclick="engram_switchTab('explorer'); return false;">
+            <div class="engram__tab engram__tab--active" data-tab="explorer" onclick="engram_switchTab('explorer'); return false;" data-tekton-menu-item="Memory Explorer" data-tekton-menu-component="engram" data-tekton-menu-active="true" data-tekton-menu-panel="explorer-panel" data-tekton-nav-target="explorer-panel">
                 <span class="engram__tab-label">Memory Explorer</span>
             </div>
             <!-- Memory Search Tab -->
-            <div class="engram__tab" data-tab="search" onclick="engram_switchTab('search'); return false;">
+            <div class="engram__tab" data-tab="search" onclick="engram_switchTab('search'); return false;" data-tekton-menu-item="Memory Search" data-tekton-menu-component="engram" data-tekton-menu-active="false" data-tekton-menu-panel="search-panel" data-tekton-nav-target="search-panel">
                 <span class="engram__tab-label">Memory Search</span>
             </div>
             <!-- Memory Stats Tab -->
-            <div class="engram__tab" data-tab="stats" onclick="engram_switchTab('stats'); return false;">
+            <div class="engram__tab" data-tab="stats" onclick="engram_switchTab('stats'); return false;" data-tekton-menu-item="Memory Stats" data-tekton-menu-component="engram" data-tekton-menu-active="false" data-tekton-menu-panel="stats-panel" data-tekton-nav-target="stats-panel">
                 <span class="engram__tab-label">Memory Stats</span>
             </div>
             <!-- Memory Chat Tab -->
-            <div class="engram__tab" data-tab="chat" onclick="engram_switchTab('chat'); return false;">
+            <div class="engram__tab" data-tab="chat" onclick="engram_switchTab('chat'); return false;" data-tekton-menu-item="Memory Chat" data-tekton-menu-component="engram" data-tekton-menu-active="false" data-tekton-menu-panel="chat-panel" data-tekton-nav-target="chat-panel">
                 <span class="engram__tab-label">Memory Chat</span>
             </div>
             <!-- Team Chat Tab -->
-            <div class="engram__tab" data-tab="teamchat" onclick="engram_switchTab('teamchat'); return false;">
+            <div class="engram__tab" data-tab="teamchat" onclick="engram_switchTab('teamchat'); return false;" data-tekton-menu-item="Team Chat" data-tekton-menu-component="engram" data-tekton-menu-active="false" data-tekton-menu-panel="teamchat-panel" data-tekton-nav-target="teamchat-panel">
                 <span class="engram__tab-label">Team Chat</span>
             </div>
         </div>
         <div class="engram__actions">
-            <button id="clear-chat-btn" class="engram__action-button" style="display: none;" onclick="engram_clearChat(); return false;">
+            <button id="clear-chat-btn" class="engram__action-button" style="display: none;" onclick="engram_clearChat(); return false;" data-tekton-action="clear-chat" data-tekton-action-type="secondary">
                 <span class="engram__button-label">Clear</span>
             </button>
         </div>
@@ -45,12 +45,12 @@
     <!-- Engram Content Area -->
     <div class="engram__content" data-tekton-zone="content" data-tekton-scrollable="true">
         <!-- Explorer Tab (Default Active Tab) -->
-        <div id="explorer-panel" class="engram__panel engram__panel--active">
+        <div id="explorer-panel" class="engram__panel engram__panel--active" data-tekton-panel="explorer" data-tekton-panel-for="Memory Explorer" data-tekton-panel-component="engram" data-tekton-panel-active="true">
             <div class="engram__explorer">
                 <div class="engram__control-bar">
                     <div class="engram__search-container">
                         <input type="text" id="explorer-search" class="engram__search-input" placeholder="Search memories...">
-                        <button id="explorer-search-btn" class="engram__search-button">Search</button>
+                        <button id="explorer-search-btn" class="engram__search-button" data-tekton-action="search-explorer" data-tekton-action-type="primary">Search</button>
                     </div>
                     <div class="engram__filter-container">
                         <select id="memory-type-filter" class="engram__filter-select">
@@ -61,7 +61,7 @@
                             <option value="task">Task</option>
                             <option value="user">User</option>
                         </select>
-                        <button id="apply-filter-btn" class="engram__filter-button">Apply</button>
+                        <button id="apply-filter-btn" class="engram__filter-button" data-tekton-action="apply-filter" data-tekton-action-type="primary">Apply</button>
                     </div>
                 </div>
                 
@@ -96,10 +96,10 @@
                         <div class="engram__memories-header">
                             <h3 class="engram__panel-title">Memories</h3>
                             <div class="engram__view-controls">
-                                <button class="engram__view-button engram__view-button--active" data-view="list">
+                                <button class="engram__view-button engram__view-button--active" data-view="list" data-tekton-action="view-list" data-tekton-action-type="secondary">
                                     <span class="engram__view-icon">≡</span>
                                 </button>
-                                <button class="engram__view-button" data-view="grid">
+                                <button class="engram__view-button" data-view="grid" data-tekton-action="view-grid" data-tekton-action-type="secondary">
                                     <span class="engram__view-icon">⊞</span>
                                 </button>
                             </div>
@@ -115,8 +115,8 @@
                                     <div class="engram__memory-metadata">2023-05-15 • 3.2KB • Relevance: High</div>
                                 </div>
                                 <div class="engram__memory-actions">
-                                    <button class="engram__memory-action-btn">View</button>
-                                    <button class="engram__memory-action-btn">Edit</button>
+                                    <button class="engram__memory-action-btn" data-tekton-action="view-memory" data-tekton-action-type="secondary">View</button>
+                                    <button class="engram__memory-action-btn" data-tekton-action="edit-memory" data-tekton-action-type="secondary">Edit</button>
                                 </div>
                             </div>
                             
@@ -128,8 +128,8 @@
                                     <div class="engram__memory-metadata">2023-04-28 • 15.7KB • Relevance: High</div>
                                 </div>
                                 <div class="engram__memory-actions">
-                                    <button class="engram__memory-action-btn">View</button>
-                                    <button class="engram__memory-action-btn">Edit</button>
+                                    <button class="engram__memory-action-btn" data-tekton-action="view-memory" data-tekton-action-type="secondary">View</button>
+                                    <button class="engram__memory-action-btn" data-tekton-action="edit-memory" data-tekton-action-type="secondary">Edit</button>
                                 </div>
                             </div>
                             
@@ -141,8 +141,8 @@
                                     <div class="engram__memory-metadata">2023-05-02 • 7.8KB • Relevance: Medium</div>
                                 </div>
                                 <div class="engram__memory-actions">
-                                    <button class="engram__memory-action-btn">View</button>
-                                    <button class="engram__memory-action-btn">Edit</button>
+                                    <button class="engram__memory-action-btn" data-tekton-action="view-memory" data-tekton-action-type="secondary">View</button>
+                                    <button class="engram__memory-action-btn" data-tekton-action="edit-memory" data-tekton-action-type="secondary">Edit</button>
                                 </div>
                             </div>
                         </div>
@@ -156,8 +156,8 @@
                         <div class="engram__detail-header">
                             <h3 class="engram__panel-title">Memory Details</h3>
                             <div class="engram__detail-actions">
-                                <button class="engram__detail-action-btn">Edit</button>
-                                <button class="engram__detail-action-btn">Delete</button>
+                                <button class="engram__detail-action-btn" data-tekton-action="edit-detail" data-tekton-action-type="secondary">Edit</button>
+                                <button class="engram__detail-action-btn" data-tekton-action="delete-detail" data-tekton-action-type="secondary">Delete</button>
                             </div>
                         </div>
                         
@@ -212,7 +212,7 @@
         </div>
         
         <!-- Search Tab -->
-        <div id="search-panel" class="engram__panel">
+        <div id="search-panel" class="engram__panel" data-tekton-panel="search" data-tekton-panel-for="Memory Search" data-tekton-panel-component="engram" data-tekton-panel-active="false">
             <div class="engram__search-interface">
                 <div class="engram__search-controls">
                     <div class="engram__search-bar">
@@ -223,7 +223,7 @@
                             <option value="keyword">Keyword</option>
                             <option value="combined">Combined</option>
                         </select>
-                        <button id="memory-search-btn" class="engram__search-button engram__search-button--primary">Search</button>
+                        <button id="memory-search-btn" class="engram__search-button engram__search-button--primary" data-tekton-action="search-memory" data-tekton-action-type="primary">Search</button>
                     </div>
                     
                     <div class="engram__search-filters">
@@ -321,7 +321,7 @@
         </div>
         
         <!-- Stats Tab -->
-        <div id="stats-panel" class="engram__panel">
+        <div id="stats-panel" class="engram__panel" data-tekton-panel="stats" data-tekton-panel-for="Memory Stats" data-tekton-panel-component="engram" data-tekton-panel-active="false">
             <div class="engram__stats-dashboard">
                 <div class="engram__stats-header">
                     <h3 class="engram__section-title">Memory System Statistics</h3>
@@ -333,7 +333,7 @@
                             <option value="year">Last Year</option>
                             <option value="all">All Time</option>
                         </select>
-                        <button class="engram__stats-refresh-btn">Refresh</button>
+                        <button class="engram__stats-refresh-btn" data-tekton-action="refresh-stats" data-tekton-action-type="secondary">Refresh</button>
                     </div>
                 </div>
                 
@@ -444,7 +444,7 @@
         </div>
         
         <!-- Chat Tab -->
-        <div id="chat-panel" class="engram__panel">
+        <div id="chat-panel" class="engram__panel" data-tekton-panel="chat" data-tekton-panel-for="Memory Chat" data-tekton-panel-component="engram" data-tekton-panel-active="false">
             <div id="chat-messages" class="engram__chat-messages">
                 <!-- Welcome message -->
                 <div class="engram__message engram__message--system">
@@ -465,7 +465,7 @@
         </div>
         
         <!-- Team Chat Tab -->
-        <div id="teamchat-panel" class="engram__panel">
+        <div id="teamchat-panel" class="engram__panel" data-tekton-panel="teamchat" data-tekton-panel-for="Team Chat" data-tekton-panel-component="engram" data-tekton-panel-active="false">
             <div id="teamchat-messages" class="engram__chat-messages">
                 <!-- Welcome message -->
                 <div class="engram__message engram__message--system">
@@ -486,7 +486,7 @@
             <div class="engram__chat-prompt">></div>
             <input type="text" id="chat-input" class="engram__chat-input" 
                    placeholder="Enter chat message for Engram memory chat, searching, or memory operations">
-            <button id="send-button" class="engram__send-button">Send</button>
+            <button id="send-button" class="engram__send-button" data-tekton-action="send-message" data-tekton-action-type="primary">Send</button>
         </div>
     </div>
 </div>

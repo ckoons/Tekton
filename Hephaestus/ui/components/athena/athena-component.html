@@ -14,24 +14,24 @@
     <!-- Athena Menu Bar with Tab Navigation -->
     <div class="athena__menu-bar" data-tekton-zone="menu" data-tekton-zone="menu" data-tekton-nav="component-menu">
         <div class="athena__tabs" data-tekton-zone="menu">
-            <div class="athena__tab athena__tab--active" data-tab="graph" onclick="athena_switchTab('graph'); return false;">
+            <div class="athena__tab athena__tab--active" data-tab="graph" onclick="athena_switchTab('graph'); return false;" data-tekton-menu-item="Knowledge Graph" data-tekton-menu-component="athena" data-tekton-menu-active="true" data-tekton-menu-panel="graph-panel" data-tekton-nav-target="graph-panel">
                 <span class="athena__tab-label">Knowledge Graph</span>
             </div>
-            <div class="athena__tab" data-tab="entities" onclick="athena_switchTab('entities'); return false;">
+            <div class="athena__tab" data-tab="entities" onclick="athena_switchTab('entities'); return false;" data-tekton-menu-item="Entities" data-tekton-menu-component="athena" data-tekton-menu-active="false" data-tekton-menu-panel="entities-panel" data-tekton-nav-target="entities-panel">
                 <span class="athena__tab-label">Entities</span>
             </div>
-            <div class="athena__tab" data-tab="query" onclick="athena_switchTab('query'); return false;">
+            <div class="athena__tab" data-tab="query" onclick="athena_switchTab('query'); return false;" data-tekton-menu-item="Query Builder" data-tekton-menu-component="athena" data-tekton-menu-active="false" data-tekton-menu-panel="query-panel" data-tekton-nav-target="query-panel">
                 <span class="athena__tab-label">Query Builder</span>
             </div>
-            <div class="athena__tab" data-tab="chat" onclick="athena_switchTab('chat'); return false;">
+            <div class="athena__tab" data-tab="chat" onclick="athena_switchTab('chat'); return false;" data-tekton-menu-item="Knowledge Chat" data-tekton-menu-component="athena" data-tekton-menu-active="false" data-tekton-menu-panel="chat-panel" data-tekton-nav-target="chat-panel">
                 <span class="athena__tab-label">Knowledge Chat</span>
             </div>
-            <div class="athena__tab" data-tab="teamchat" onclick="athena_switchTab('teamchat'); return false;">
+            <div class="athena__tab" data-tab="teamchat" onclick="athena_switchTab('teamchat'); return false;" data-tekton-menu-item="Team Chat" data-tekton-menu-component="athena" data-tekton-menu-active="false" data-tekton-menu-panel="teamchat-panel" data-tekton-nav-target="teamchat-panel">
                 <span class="athena__tab-label">Team Chat</span>
             </div>
         </div>
         <div class="athena__actions">
-            <button id="clear-chat-btn" class="athena__action-button" style="display: none;" onclick="athena_clearChat(); return false;">
+            <button id="clear-chat-btn" class="athena__action-button" style="display: none;" onclick="athena_clearChat(); return false;" data-tekton-action="clear-chat" data-tekton-action-type="secondary">
                 <span class="athena__button-label">Clear</span>
             </button>
         </div>
@@ -40,12 +40,12 @@
     <!-- Athena Content Area -->
     <div class="athena__content" data-tekton-zone="content" data-tekton-scrollable="true">
         <!-- Graph Tab (Default Active Tab) -->
-        <div id="graph-panel" class="athena__panel athena__panel--active">
+        <div id="graph-panel" class="athena__panel athena__panel--active" data-tekton-panel="graph" data-tekton-panel-for="Knowledge Graph" data-tekton-panel-component="athena" data-tekton-panel-active="true">
             <div class="athena__graph">
                 <div class="athena__control-bar">
                     <div class="athena__search-container">
                         <input type="text" id="graph-search" class="athena__search-input" placeholder="Search entities...">
-                        <button id="graph-search-btn" class="athena__search-button">Search</button>
+                        <button id="graph-search-btn" class="athena__search-button" data-tekton-action="search-graph" data-tekton-action-type="primary">Search</button>
                     </div>
                     <div class="athena__filter-container">
                         <select id="entity-type-filter" class="athena__filter-select">
@@ -56,7 +56,7 @@
                             <option value="concept">Concept</option>
                             <option value="organization">Organization</option>
                         </select>
-                        <button id="apply-filter-btn" class="athena__filter-button">Apply</button>
+                        <button id="apply-filter-btn" class="athena__filter-button" data-tekton-action="apply-filter" data-tekton-action-type="primary">Apply</button>
                     </div>
                 </div>
                 <div id="graph-container" class="athena__graph-container">
@@ -71,15 +71,15 @@
         </div>
         
         <!-- Entities Tab -->
-        <div id="entities-panel" class="athena__panel">
+        <div id="entities-panel" class="athena__panel" data-tekton-panel="entities" data-tekton-panel-for="Entities" data-tekton-panel-component="athena" data-tekton-panel-active="false">
             <div class="athena__entities">
                 <div class="athena__control-bar">
                     <div class="athena__search-container">
                         <input type="text" id="entity-search" class="athena__search-input" placeholder="Search entities...">
-                        <button id="entity-search-btn" class="athena__search-button">Search</button>
+                        <button id="entity-search-btn" class="athena__search-button" data-tekton-action="search-entities" data-tekton-action-type="primary">Search</button>
                     </div>
                     <div class="athena__actions">
-                        <button id="add-entity-btn" class="athena__action-button">
+                        <button id="add-entity-btn" class="athena__action-button" data-tekton-action="add-entity" data-tekton-action-type="primary">
                             <span class="athena__button-icon">+</span>
                             <span class="athena__button-label">Add Entity</span>
                         </button>
@@ -100,8 +100,8 @@
                                 <div class="athena__entity-properties">Project Lead, Engineering</div>
                             </div>
                             <div class="athena__entity-actions">
-                                <button class="athena__entity-action-btn">View</button>
-                                <button class="athena__entity-action-btn">Edit</button>
+                                <button class="athena__entity-action-btn" data-tekton-action="view-entity" data-tekton-action-type="secondary">View</button>
+                                <button class="athena__entity-action-btn" data-tekton-action="edit-entity" data-tekton-action-type="secondary">Edit</button>
                             </div>
                         </div>
                         <div class="athena__entity-item">
@@ -112,8 +112,8 @@
                                 <div class="athena__entity-properties">AI Orchestration System</div>
                             </div>
                             <div class="athena__entity-actions">
-                                <button class="athena__entity-action-btn">View</button>
-                                <button class="athena__entity-action-btn">Edit</button>
+                                <button class="athena__entity-action-btn" data-tekton-action="view-entity" data-tekton-action-type="secondary">View</button>
+                                <button class="athena__entity-action-btn" data-tekton-action="edit-entity" data-tekton-action-type="secondary">Edit</button>
                             </div>
                         </div>
                     </div>
@@ -122,7 +122,7 @@
         </div>
         
         <!-- Query Builder Tab -->
-        <div id="query-panel" class="athena__panel">
+        <div id="query-panel" class="athena__panel" data-tekton-panel="query" data-tekton-panel-for="Query Builder" data-tekton-panel-component="athena" data-tekton-panel-active="false">
             <div class="athena__query-builder">
                 <h3 class="athena__section-title">Query Builder</h3>
                 <p class="athena__text">Construct queries to find entities and relationships in the knowledge graph.</p>
@@ -170,8 +170,8 @@
                     </div>
 
                     <div class="athena__form-actions">
-                        <button class="athena__button athena__button--secondary" id="clear-query-btn">Clear</button>
-                        <button class="athena__button athena__button--primary" id="build-query-btn">Build Query</button>
+                        <button class="athena__button athena__button--secondary" id="clear-query-btn" data-tekton-action="clear-query" data-tekton-action-type="secondary">Clear</button>
+                        <button class="athena__button athena__button--primary" id="build-query-btn" data-tekton-action="build-query" data-tekton-action-type="primary">Build Query</button>
                     </div>
                 </div>
 
@@ -182,15 +182,15 @@
                     </div>
 
                     <div class="athena__form-actions" style="margin-top: 15px;">
-                        <button class="athena__button athena__button--secondary" id="copy-query-btn">Copy Query</button>
-                        <button class="athena__button athena__button--primary" id="execute-query-btn">Execute Query</button>
+                        <button class="athena__button athena__button--secondary" id="copy-query-btn" data-tekton-action="copy-query" data-tekton-action-type="secondary">Copy Query</button>
+                        <button class="athena__button athena__button--primary" id="execute-query-btn" data-tekton-action="execute-query" data-tekton-action-type="primary">Execute Query</button>
                     </div>
                 </div>
             </div>
         </div>
         
         <!-- Chat Tab -->
-        <div id="chat-panel" class="athena__panel">
+        <div id="chat-panel" class="athena__panel" data-tekton-panel="chat" data-tekton-panel-for="Knowledge Chat" data-tekton-panel-component="athena" data-tekton-panel-active="false">
             <div id="chat-messages" class="athena__chat-messages">
                 <!-- Welcome message -->
                 <div class="athena__message athena__message--system">
@@ -211,7 +211,7 @@
         </div>
         
         <!-- Team Chat Tab -->
-        <div id="teamchat-panel" class="athena__panel">
+        <div id="teamchat-panel" class="athena__panel" data-tekton-panel="teamchat" data-tekton-panel-for="Team Chat" data-tekton-panel-component="athena" data-tekton-panel-active="false">
             <div id="teamchat-messages" class="athena__chat-messages">
                 <!-- Welcome message -->
                 <div class="athena__message athena__message--system">
@@ -232,7 +232,7 @@
             <div class="athena__chat-prompt">></div>
             <input type="text" id="chat-input" class="athena__chat-input" 
                    placeholder="Enter chat message for Athena knowledge graph queries, entities or information">
-            <button id="send-button" class="athena__send-button">Send</button>
+            <button id="send-button" class="athena__send-button" data-tekton-action="send-message" data-tekton-action-type="primary">Send</button>
         </div>
     </div>
 </div>

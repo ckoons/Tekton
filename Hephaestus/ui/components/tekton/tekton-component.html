@@ -167,15 +167,23 @@
             <div class="tekton__repositories">
                 <div class="tekton__control-bar">
                     <div class="tekton__search-container">
-                        <input type="text" id="repo-search" class="tekton__search-input" placeholder="Search repositories...">
-                        <button id="repo-search-btn" class="tekton__search-button">Search</button>
+                        <input type="text" id="repo-search" class="tekton__search-input" placeholder="Search repositories..."
+                               data-tekton-input="repo-search"
+                               data-tekton-input-type="search">
+                        <button id="repo-search-btn" class="tekton__search-button"
+                                data-tekton-action="search-repositories"
+                                data-tekton-action-type="primary">Search</button>
                     </div>
                     <div class="tekton__actions">
-                        <button id="clone-repo-btn" class="tekton__action-button">
+                        <button id="clone-repo-btn" class="tekton__action-button"
+                                data-tekton-action="clone-repository"
+                                data-tekton-action-type="primary">
                             <span class="tekton__button-icon">↓</span>
                             <span class="tekton__button-label">Clone</span>
                         </button>
-                        <button id="create-repo-btn" class="tekton__action-button">
+                        <button id="create-repo-btn" class="tekton__action-button"
+                                data-tekton-action="create-repository"
+                                data-tekton-action-type="primary">
                             <span class="tekton__button-icon">+</span>
                             <span class="tekton__button-label">Create</span>
                         </button>
@@ -205,8 +213,12 @@
                                     <td>4</td>
                                     <td>Today</td>
                                     <td>
-                                        <button class="tekton__table-action-btn">Open</button>
-                                        <button class="tekton__table-action-btn">Fork</button>
+                                        <button class="tekton__table-action-btn"
+                                                data-tekton-action="open-repository"
+                                                data-tekton-action-type="primary">Open</button>
+                                        <button class="tekton__table-action-btn"
+                                                data-tekton-action="fork-repository"
+                                                data-tekton-action-type="secondary">Fork</button>
                                     </td>
                                 </tr>
                                 <tr class="tekton__repository-row">
@@ -215,8 +227,12 @@
                                     <td>1</td>
                                     <td>Yesterday</td>
                                     <td>
-                                        <button class="tekton__table-action-btn">Open</button>
-                                        <button class="tekton__table-action-btn">Fork</button>
+                                        <button class="tekton__table-action-btn"
+                                                data-tekton-action="open-repository"
+                                                data-tekton-action-type="primary">Open</button>
+                                        <button class="tekton__table-action-btn"
+                                                data-tekton-action="fork-repository"
+                                                data-tekton-action-type="secondary">Fork</button>
                                     </td>
                                 </tr>
                             </tbody>
@@ -231,19 +247,27 @@
             <div class="tekton__branches">
                 <div class="tekton__control-bar">
                     <div class="tekton__filter-container">
-                        <select id="repo-filter" class="tekton__filter-select">
+                        <select id="repo-filter" class="tekton__filter-select"
+                                data-tekton-input="repo-filter"
+                                data-tekton-input-type="select">
                             <option value="all">All Repositories</option>
                             <option value="tekton">Tekton</option>
                             <option value="sample">sample-project</option>
                         </select>
-                        <button id="apply-filter-btn" class="tekton__filter-button">Apply</button>
+                        <button id="apply-filter-btn" class="tekton__filter-button"
+                                data-tekton-action="apply-filter"
+                                data-tekton-action-type="primary">Apply</button>
                     </div>
                     <div class="tekton__actions">
-                        <button id="create-branch-btn" class="tekton__action-button">
+                        <button id="create-branch-btn" class="tekton__action-button"
+                                data-tekton-action="create-branch"
+                                data-tekton-action-type="primary">
                             <span class="tekton__button-icon">+</span>
                             <span class="tekton__button-label">New Branch</span>
                         </button>
-                        <button id="merge-branch-btn" class="tekton__action-button">
+                        <button id="merge-branch-btn" class="tekton__action-button"
+                                data-tekton-action="merge-branch"
+                                data-tekton-action-type="secondary">
                             <span class="tekton__button-icon">⋈</span>
                             <span class="tekton__button-label">Merge</span>
                         </button>
@@ -273,8 +297,12 @@
                                     <td>Current</td>
                                     <td>2 days ago</td>
                                     <td>
-                                        <button class="tekton__table-action-btn">Checkout</button>
-                                        <button class="tekton__table-action-btn">Pull</button>
+                                        <button class="tekton__table-action-btn"
+                                                data-tekton-action="checkout-branch"
+                                                data-tekton-action-type="primary">Checkout</button>
+                                        <button class="tekton__table-action-btn"
+                                                data-tekton-action="pull-branch"
+                                                data-tekton-action-type="secondary">Pull</button>
                                     </td>
                                 </tr>
                                 <tr class="tekton__branch-row tekton__branch-row--active">
@@ -283,8 +311,12 @@
                                     <td>Active</td>
                                     <td>Today</td>
                                     <td>
-                                        <button class="tekton__table-action-btn">Checkout</button>
-                                        <button class="tekton__table-action-btn">Pull</button>
+                                        <button class="tekton__table-action-btn"
+                                                data-tekton-action="checkout-branch"
+                                                data-tekton-action-type="primary">Checkout</button>
+                                        <button class="tekton__table-action-btn"
+                                                data-tekton-action="pull-branch"
+                                                data-tekton-action-type="secondary">Pull</button>
                                     </td>
                                 </tr>
                             </tbody>
@@ -303,39 +335,69 @@
                     <div class="tekton__action-card">
                         <h4 class="tekton__action-card-title">Repository Operations</h4>
                         <div class="tekton__action-card-content">
-                            <button class="tekton__card-action-btn">Clone Repository</button>
-                            <button class="tekton__card-action-btn">Create Repository</button>
-                            <button class="tekton__card-action-btn">Fork Repository</button>
+                            <button class="tekton__card-action-btn"
+                                    data-tekton-action="clone-repository"
+                                    data-tekton-action-type="primary">Clone Repository</button>
+                            <button class="tekton__card-action-btn"
+                                    data-tekton-action="create-repository"
+                                    data-tekton-action-type="primary">Create Repository</button>
+                            <button class="tekton__card-action-btn"
+                                    data-tekton-action="fork-repository"
+                                    data-tekton-action-type="secondary">Fork Repository</button>
                         </div>
                     </div>
                     
                     <div class="tekton__action-card">
                         <h4 class="tekton__action-card-title">Branch Management</h4>
                         <div class="tekton__action-card-content">
-                            <button class="tekton__card-action-btn">Create Branch</button>
-                            <button class="tekton__card-action-btn">Merge Branch</button>
-                            <button class="tekton__card-action-btn">Sync Branch</button>
-                            <button class="tekton__card-action-btn">Delete Branch</button>
+                            <button class="tekton__card-action-btn"
+                                    data-tekton-action="create-branch"
+                                    data-tekton-action-type="primary">Create Branch</button>
+                            <button class="tekton__card-action-btn"
+                                    data-tekton-action="merge-branch"
+                                    data-tekton-action-type="primary">Merge Branch</button>
+                            <button class="tekton__card-action-btn"
+                                    data-tekton-action="sync-branch"
+                                    data-tekton-action-type="secondary">Sync Branch</button>
+                            <button class="tekton__card-action-btn"
+                                    data-tekton-action="delete-branch"
+                                    data-tekton-action-type="secondary">Delete Branch</button>
                         </div>
                     </div>
                     
                     <div class="tekton__action-card">
                         <h4 class="tekton__action-card-title">Commit Operations</h4>
                         <div class="tekton__action-card-content">
-                            <button class="tekton__card-action-btn">Create Commit</button>
-                            <button class="tekton__card-action-btn">Push Changes</button>
-                            <button class="tekton__card-action-btn">Pull Changes</button>
-                            <button class="tekton__card-action-btn">View History</button>
+                            <button class="tekton__card-action-btn"
+                                    data-tekton-action="create-commit"
+                                    data-tekton-action-type="primary">Create Commit</button>
+                            <button class="tekton__card-action-btn"
+                                    data-tekton-action="push-changes"
+                                    data-tekton-action-type="primary">Push Changes</button>
+                            <button class="tekton__card-action-btn"
+                                    data-tekton-action="pull-changes"
+                                    data-tekton-action-type="secondary">Pull Changes</button>
+                            <button class="tekton__card-action-btn"
+                                    data-tekton-action="view-history"
+                                    data-tekton-action-type="secondary">View History</button>
                         </div>
                     </div>
                     
                     <div class="tekton__action-card">
                         <h4 class="tekton__action-card-title">Pull Requests</h4>
                         <div class="tekton__action-card-content">
-                            <button class="tekton__card-action-btn">Create PR</button>
-                            <button class="tekton__card-action-btn">List PRs</button>
-                            <button class="tekton__card-action-btn">Review PR</button>
-                            <button class="tekton__card-action-btn">Merge PR</button>
+                            <button class="tekton__card-action-btn"
+                                    data-tekton-action="create-pr"
+                                    data-tekton-action-type="primary">Create PR</button>
+                            <button class="tekton__card-action-btn"
+                                    data-tekton-action="list-prs"
+                                    data-tekton-action-type="secondary">List PRs</button>
+                            <button class="tekton__card-action-btn"
+                                    data-tekton-action="review-pr"
+                                    data-tekton-action-type="secondary">Review PR</button>
+                            <button class="tekton__card-action-btn"
+                                    data-tekton-action="merge-pr"
+                                    data-tekton-action-type="primary">Merge PR</button>
                         </div>
                     </div>
                 </div>
@@ -384,8 +446,12 @@
         <div class="tekton__chat-input-container">
             <div class="tekton__chat-prompt">></div>
             <input type="text" id="chat-input" class="tekton__chat-input" 
-                   placeholder="Enter chat message, project query, or GitHub command">
-            <button id="send-button" class="tekton__send-button">Send</button>
+                   placeholder="Enter chat message, project query, or GitHub command"
+                   data-tekton-input="chat-input"
+                   data-tekton-input-type="chat">
+            <button id="send-button" class="tekton__send-button"
+                    data-tekton-action="send-chat"
+                    data-tekton-action-type="primary">Send</button>
         </div>
     </div>
 </div>

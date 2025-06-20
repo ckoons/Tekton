@@ -189,21 +189,27 @@ window.profile_resetChanges = function() {
                 <div class="profile__field">
                     <div class="profile__field-label">Given Name</div>
                     <div class="profile__field-control">
-                        <input type="text" id="given-name" placeholder="First/Given Name" class="profile__input">
+                        <input type="text" id="given-name" placeholder="First/Given Name" class="profile__input"
+                               data-tekton-input="given-name"
+                               data-tekton-input-type="text">
                     </div>
                 </div>
                 
                 <div class="profile__field">
                     <div class="profile__field-label">Family Name</div>
                     <div class="profile__field-control">
-                        <input type="text" id="family-name" placeholder="Last/Family Name" class="profile__input">
+                        <input type="text" id="family-name" placeholder="Last/Family Name" class="profile__input"
+                               data-tekton-input="family-name"
+                               data-tekton-input-type="text">
                     </div>
                 </div>
                 
                 <div class="profile__field">
                     <div class="profile__field-label">Display Name</div>
                     <div class="profile__field-control">
-                        <input type="text" id="display-name" placeholder="Display Name" class="profile__input">
+                        <input type="text" id="display-name" placeholder="Display Name" class="profile__input"
+                               data-tekton-input="display-name"
+                               data-tekton-input-type="text">
                         <div class="profile__field-description">
                             This is how your name will appear to other users in the system.
                         </div>
@@ -218,7 +224,9 @@ window.profile_resetChanges = function() {
                                 <!-- User avatar will be displayed here -->
                                 <div class="profile__avatar-initials">CK</div>
                             </div>
-                            <button class="profile__button profile__button--secondary" id="upload-avatar-btn">
+                            <button class="profile__button profile__button--secondary" id="upload-avatar-btn"
+                                    data-tekton-action="upload-avatar"
+                                    data-tekton-action-type="secondary">
                                 <span class="profile__button-label">Upload</span>
                             </button>
                         </div>
@@ -244,14 +252,20 @@ window.profile_resetChanges = function() {
                             <div class="profile__emails-fields">
                                 <!-- Email fields will be added here -->
                                 <div class="profile__emails-item">
-                                    <input type="email" class="profile__input profile__input--email" placeholder="Email Address">
-                                    <button class="profile__button profile__button--remove">
+                                    <input type="email" class="profile__input profile__input--email" placeholder="Email Address"
+                                           data-tekton-input="email-address"
+                                           data-tekton-input-type="email">
+                                    <button class="profile__button profile__button--remove"
+                                            data-tekton-action="remove-email"
+                                            data-tekton-action-type="danger">
                                         <span class="profile__button-icon">-</span>
                                     </button>
                                 </div>
                             </div>
                             <div class="profile__emails-header">
-                                <button class="profile__button profile__button--secondary" id="add-email">
+                                <button class="profile__button profile__button--secondary" id="add-email"
+                                        data-tekton-action="add-email"
+                                        data-tekton-action-type="secondary">
                                     <span class="profile__button-icon">+</span>
                                     <span class="profile__button-label">Add Email</span>
                                 </button>
@@ -263,7 +277,9 @@ window.profile_resetChanges = function() {
                 <div class="profile__field">
                     <div class="profile__field-label">Phone Number</div>
                     <div class="profile__field-control">
-                        <input type="tel" id="phone-number" placeholder="Phone Number" class="profile__input">
+                        <input type="tel" id="phone-number" placeholder="Phone Number" class="profile__input"
+                               data-tekton-input="phone-number"
+                               data-tekton-input-type="tel">
                     </div>
                 </div>
                 
@@ -286,42 +302,54 @@ window.profile_resetChanges = function() {
                 <div class="profile__field">
                     <div class="profile__field-label">X / Twitter</div>
                     <div class="profile__field-control">
-                        <input type="text" id="x-account" placeholder="@username" class="profile__input">
+                        <input type="text" id="x-account" placeholder="@username" class="profile__input"
+                               data-tekton-input="x-account"
+                               data-tekton-input-type="text">
                     </div>
                 </div>
                 
                 <div class="profile__field">
                     <div class="profile__field-label">BlueSky</div>
                     <div class="profile__field-control">
-                        <input type="text" id="bluesky-account" placeholder="@username" class="profile__input">
+                        <input type="text" id="bluesky-account" placeholder="@username" class="profile__input"
+                               data-tekton-input="bluesky-account"
+                               data-tekton-input-type="text">
                     </div>
                 </div>
                 
                 <div class="profile__field">
                     <div class="profile__field-label">LinkedIn</div>
                     <div class="profile__field-control">
-                        <input type="text" id="linkedin-account" placeholder="LinkedIn URL or username" class="profile__input">
+                        <input type="text" id="linkedin-account" placeholder="LinkedIn URL or username" class="profile__input"
+                               data-tekton-input="linkedin-account"
+                               data-tekton-input-type="text">
                     </div>
                 </div>
                 
                 <div class="profile__field">
                     <div class="profile__field-label">WeChat</div>
                     <div class="profile__field-control">
-                        <input type="text" id="wechat-account" placeholder="WeChat ID" class="profile__input">
+                        <input type="text" id="wechat-account" placeholder="WeChat ID" class="profile__input"
+                               data-tekton-input="wechat-account"
+                               data-tekton-input-type="text">
                     </div>
                 </div>
                 
                 <div class="profile__field">
                     <div class="profile__field-label">WhatsApp</div>
                     <div class="profile__field-control">
-                        <input type="text" id="whatsapp-account" placeholder="WhatsApp ID" class="profile__input">
+                        <input type="text" id="whatsapp-account" placeholder="WhatsApp ID" class="profile__input"
+                               data-tekton-input="whatsapp-account"
+                               data-tekton-input-type="text">
                     </div>
                 </div>
                 
                 <div class="profile__field">
                     <div class="profile__field-label">GitHub</div>
                     <div class="profile__field-control">
-                        <input type="text" id="github-account" placeholder="GitHub username" class="profile__input">
+                        <input type="text" id="github-account" placeholder="GitHub username" class="profile__input"
+                               data-tekton-input="github-account"
+                               data-tekton-input-type="text">
                     </div>
                 </div>
             </div>
@@ -333,14 +361,18 @@ window.profile_resetChanges = function() {
                 <div class="profile__field">
                     <div class="profile__field-label">Current Password</div>
                     <div class="profile__field-control">
-                        <input type="password" id="current-password" placeholder="Current Password" class="profile__input">
+                        <input type="password" id="current-password" placeholder="Current Password" class="profile__input"
+                               data-tekton-input="current-password"
+                               data-tekton-input-type="password">
                     </div>
                 </div>
                 
                 <div class="profile__field">
                     <div class="profile__field-label">New Password</div>
                     <div class="profile__field-control">
-                        <input type="password" id="new-password" placeholder="New Password" class="profile__input">
+                        <input type="password" id="new-password" placeholder="New Password" class="profile__input"
+                               data-tekton-input="new-password"
+                               data-tekton-input-type="password">
                         <div class="profile__field-description">
                             Password must be at least 8 characters and include numbers, uppercase and lowercase letters.
                         </div>
@@ -350,7 +382,9 @@ window.profile_resetChanges = function() {
                 <div class="profile__field">
                     <div class="profile__field-label">Confirm New Password</div>
                     <div class="profile__field-control">
-                        <input type="password" id="confirm-password" placeholder="Confirm New Password" class="profile__input">
+                        <input type="password" id="confirm-password" placeholder="Confirm New Password" class="profile__input"
+                               data-tekton-input="confirm-password"
+                               data-tekton-input-type="password">
                     </div>
                 </div>
                 
@@ -358,7 +392,9 @@ window.profile_resetChanges = function() {
                     <div class="profile__field-label">Two-Factor Authentication</div>
                     <div class="profile__field-control">
                         <div class="profile__switch">
-                            <input type="checkbox" id="tfa-toggle" class="profile__checkbox">
+                            <input type="checkbox" id="tfa-toggle" class="profile__checkbox"
+                                   data-tekton-input="tfa-toggle"
+                                   data-tekton-input-type="toggle">
                             <label for="tfa-toggle" class="profile__switch-label">Enable two-factor authentication for additional account security</label>
                         </div>
                     </div>
@@ -367,7 +403,9 @@ window.profile_resetChanges = function() {
                 <div class="profile__field">
                     <div class="profile__field-label">Session Management</div>
                     <div class="profile__field-control">
-                        <button class="profile__button profile__button--danger" id="logout-all-sessions-btn">
+                        <button class="profile__button profile__button--danger" id="logout-all-sessions-btn"
+                                data-tekton-action="logout-all-sessions"
+                                data-tekton-action-type="danger">
                             <span class="profile__button-label">Logout All Sessions</span>
                         </button>
                         <div class="profile__field-description">
@@ -384,7 +422,9 @@ window.profile_resetChanges = function() {
                 <div class="profile__field">
                     <div class="profile__field-label">Default Start Page</div>
                     <div class="profile__field-control">
-                        <select id="default-page" class="profile__select">
+                        <select id="default-page" class="profile__select"
+                                data-tekton-input="default-page"
+                                data-tekton-input-type="select">
                             <option value="dashboard">Dashboard</option>
                             <option value="terma">Terma</option>
                             <option value="athena">Athena</option>
@@ -400,7 +440,9 @@ window.profile_resetChanges = function() {
                 <div class="profile__field">
                     <div class="profile__field-label">Time Zone</div>
                     <div class="profile__field-control">
-                        <select id="timezone" class="profile__select">
+                        <select id="timezone" class="profile__select"
+                                data-tekton-input="timezone"
+                                data-tekton-input-type="select">
                             <option value="UTC">UTC (Universal Time Coordinated)</option>
                             <option value="EST">EST (Eastern Standard Time)</option>
                             <option value="CST">CST (Central Standard Time)</option>
@@ -413,7 +455,9 @@ window.profile_resetChanges = function() {
                 <div class="profile__field">
                     <div class="profile__field-label">Date Format</div>
                     <div class="profile__field-control">
-                        <select id="date-format" class="profile__select">
+                        <select id="date-format" class="profile__select"
+                                data-tekton-input="date-format"
+                                data-tekton-input-type="select">
                             <option value="MM/DD/YYYY">MM/DD/YYYY</option>
                             <option value="DD/MM/YYYY">DD/MM/YYYY</option>
                             <option value="YYYY-MM-DD">YYYY-MM-DD</option>
@@ -425,7 +469,9 @@ window.profile_resetChanges = function() {
                     <div class="profile__field-label">Email Notifications</div>
                     <div class="profile__field-control">
                         <div class="profile__switch">
-                            <input type="checkbox" id="email-notif-toggle" class="profile__checkbox" checked>
+                            <input type="checkbox" id="email-notif-toggle" class="profile__checkbox" checked
+                                   data-tekton-input="email-notif-toggle"
+                                   data-tekton-input-type="toggle">
                             <label for="email-notif-toggle" class="profile__switch-label">Receive notifications about system events via email</label>
                         </div>
                     </div>
@@ -435,7 +481,9 @@ window.profile_resetChanges = function() {
                     <div class="profile__field-label">Chat Notifications</div>
                     <div class="profile__field-control">
                         <div class="profile__switch">
-                            <input type="checkbox" id="chat-notif-toggle" class="profile__checkbox" checked>
+                            <input type="checkbox" id="chat-notif-toggle" class="profile__checkbox" checked
+                                   data-tekton-input="chat-notif-toggle"
+                                   data-tekton-input-type="toggle">
                             <label for="chat-notif-toggle" class="profile__switch-label">Receive notifications for new chat messages</label>
                         </div>
                     </div>

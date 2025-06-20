@@ -14,33 +14,33 @@
     <!-- Apollo Menu Bar with Tab Navigation -->
     <div class="apollo__menu-bar" data-tekton-zone="menu" data-tekton-zone="menu" data-tekton-nav="component-menu">
         <div class="apollo__tabs" data-tekton-zone="menu">
-            <div class="apollo__tab apollo__tab--active" data-tab="dashboard" onclick="apollo_switchTab('dashboard'); return false;">
+            <div class="apollo__tab apollo__tab--active" data-tab="dashboard" onclick="apollo_switchTab('dashboard'); return false;" data-tekton-menu-item="Dashboard" data-tekton-menu-component="apollo" data-tekton-menu-active="true" data-tekton-menu-panel="dashboard-panel" data-tekton-nav-target="dashboard-panel">
                 <span class="apollo__tab-label">Dashboard</span>
             </div>
-            <div class="apollo__tab" data-tab="sessions" onclick="apollo_switchTab('sessions'); return false;">
+            <div class="apollo__tab" data-tab="sessions" onclick="apollo_switchTab('sessions'); return false;" data-tekton-menu-item="Sessions" data-tekton-menu-component="apollo" data-tekton-menu-active="false" data-tekton-menu-panel="sessions-panel" data-tekton-nav-target="sessions-panel">
                 <span class="apollo__tab-label">Sessions</span>
             </div>
-            <div class="apollo__tab" data-tab="tokens" onclick="apollo_switchTab('tokens'); return false;">
+            <div class="apollo__tab" data-tab="tokens" onclick="apollo_switchTab('tokens'); return false;" data-tekton-menu-item="Token Budgets" data-tekton-menu-component="apollo" data-tekton-menu-active="false" data-tekton-menu-panel="tokens-panel" data-tekton-nav-target="tokens-panel">
                 <span class="apollo__tab-label">Token Budgets</span>
             </div>
-            <div class="apollo__tab" data-tab="protocols" onclick="apollo_switchTab('protocols'); return false;">
+            <div class="apollo__tab" data-tab="protocols" onclick="apollo_switchTab('protocols'); return false;" data-tekton-menu-item="Protocols" data-tekton-menu-component="apollo" data-tekton-menu-active="false" data-tekton-menu-panel="protocols-panel" data-tekton-nav-target="protocols-panel">
                 <span class="apollo__tab-label">Protocols</span>
             </div>
-            <div class="apollo__tab" data-tab="forecasting" onclick="apollo_switchTab('forecasting'); return false;">
+            <div class="apollo__tab" data-tab="forecasting" onclick="apollo_switchTab('forecasting'); return false;" data-tekton-menu-item="Forecasting" data-tekton-menu-component="apollo" data-tekton-menu-active="false" data-tekton-menu-panel="forecasting-panel" data-tekton-nav-target="forecasting-panel">
                 <span class="apollo__tab-label">Forecasting</span>
             </div>
-            <div class="apollo__tab" data-tab="actions" onclick="apollo_switchTab('actions'); return false;">
+            <div class="apollo__tab" data-tab="actions" onclick="apollo_switchTab('actions'); return false;" data-tekton-menu-item="Actions" data-tekton-menu-component="apollo" data-tekton-menu-active="false" data-tekton-menu-panel="actions-panel" data-tekton-nav-target="actions-panel">
                 <span class="apollo__tab-label">Actions</span>
             </div>
-            <div class="apollo__tab" data-tab="attention" onclick="apollo_switchTab('attention'); return false;">
+            <div class="apollo__tab" data-tab="attention" onclick="apollo_switchTab('attention'); return false;" data-tekton-menu-item="Attention Chat" data-tekton-menu-component="apollo" data-tekton-menu-active="false" data-tekton-menu-panel="attention-panel" data-tekton-nav-target="attention-panel">
                 <span class="apollo__tab-label">Attention Chat</span>
             </div>
-            <div class="apollo__tab" data-tab="teamchat" onclick="apollo_switchTab('teamchat'); return false;">
+            <div class="apollo__tab" data-tab="teamchat" onclick="apollo_switchTab('teamchat'); return false;" data-tekton-menu-item="Team Chat" data-tekton-menu-component="apollo" data-tekton-menu-active="false" data-tekton-menu-panel="teamchat-panel" data-tekton-nav-target="teamchat-panel">
                 <span class="apollo__tab-label">Team Chat</span>
             </div>
         </div>
         <div class="apollo__actions">
-            <button id="clear-chat-btn" class="apollo__action-button" style="display: none;" onclick="apollo_clearChat(); return false;">
+            <button id="clear-chat-btn" class="apollo__action-button" style="display: none;" onclick="apollo_clearChat(); return false;" data-tekton-action="clear-chat" data-tekton-action-type="secondary">
                 <span class="apollo__button-label">Clear</span>
             </button>
         </div>
@@ -49,7 +49,7 @@
     <!-- Apollo Content Area -->
     <div class="apollo__content" data-tekton-zone="content" data-tekton-scrollable="true">
         <!-- Dashboard Tab (Default Active Tab) -->
-        <div id="dashboard-panel" class="apollo__panel apollo__panel--active">
+        <div id="dashboard-panel" class="apollo__panel apollo__panel--active" data-tekton-panel="dashboard" data-tekton-panel-for="Dashboard" data-tekton-panel-component="apollo" data-tekton-panel-active="true">
             <div class="apollo__dashboard">
                 <div class="apollo__control-bar">
                     <div class="apollo__stats-container">
@@ -63,7 +63,7 @@
                         </div>
                     </div>
                     <div class="apollo__refresh-container">
-                        <button id="refresh-dashboard-btn" class="apollo__refresh-button">Refresh</button>
+                        <button id="refresh-dashboard-btn" class="apollo__refresh-button" data-tekton-action="refresh-dashboard" data-tekton-action-type="secondary">Refresh</button>
                     </div>
                 </div>
                 <div class="apollo__dashboard-grid">
@@ -139,12 +139,12 @@
         </div>
         
         <!-- Sessions Tab -->
-        <div id="sessions-panel" class="apollo__panel">
+        <div id="sessions-panel" class="apollo__panel" data-tekton-panel="sessions" data-tekton-panel-for="Sessions" data-tekton-panel-component="apollo" data-tekton-panel-active="false">
             <div class="apollo__sessions">
                 <div class="apollo__control-bar">
                     <div class="apollo__search-container">
                         <input type="text" id="session-search" class="apollo__search-input" placeholder="Search sessions...">
-                        <button id="session-search-btn" class="apollo__search-button">Search</button>
+                        <button id="session-search-btn" class="apollo__search-button" data-tekton-action="search-sessions" data-tekton-action-type="primary">Search</button>
                     </div>
                     <div class="apollo__filter-container">
                         <select id="session-status-filter" class="apollo__filter-select">
@@ -153,7 +153,7 @@
                             <option value="warning">Warning</option>
                             <option value="critical">Critical</option>
                         </select>
-                        <button id="apply-filter-btn" class="apollo__filter-button">Apply</button>
+                        <button id="apply-filter-btn" class="apollo__filter-button" data-tekton-action="apply-filter" data-tekton-action-type="primary">Apply</button>
                     </div>
                 </div>
                 <div class="apollo__sessions-grid">
@@ -184,9 +184,9 @@
                             <div class="apollo__token-budget-used" style="width: 41.4%"></div>
                         </div>
                         <div class="apollo__session-actions">
-                            <button class="apollo__session-action-btn">Refresh</button>
-                            <button class="apollo__session-action-btn">Reset</button>
-                            <button class="apollo__session-action-btn">Compress</button>
+                            <button class="apollo__session-action-btn" data-tekton-action="refresh-session" data-tekton-action-type="secondary">Refresh</button>
+                            <button class="apollo__session-action-btn" data-tekton-action="reset-session" data-tekton-action-type="secondary">Reset</button>
+                            <button class="apollo__session-action-btn" data-tekton-action="compress-session" data-tekton-action-type="secondary">Compress</button>
                         </div>
                     </div>
 
@@ -217,9 +217,9 @@
                             <div class="apollo__token-budget-used" style="width: 35.1%"></div>
                         </div>
                         <div class="apollo__session-actions">
-                            <button class="apollo__session-action-btn">Refresh</button>
-                            <button class="apollo__session-action-btn">Reset</button>
-                            <button class="apollo__session-action-btn">Compress</button>
+                            <button class="apollo__session-action-btn" data-tekton-action="refresh-session" data-tekton-action-type="secondary">Refresh</button>
+                            <button class="apollo__session-action-btn" data-tekton-action="reset-session" data-tekton-action-type="secondary">Reset</button>
+                            <button class="apollo__session-action-btn" data-tekton-action="compress-session" data-tekton-action-type="secondary">Compress</button>
                         </div>
                     </div>
 
@@ -250,9 +250,9 @@
                             <div class="apollo__token-budget-used apollo__token-budget-used--warning" style="width: 86.3%"></div>
                         </div>
                         <div class="apollo__session-actions">
-                            <button class="apollo__session-action-btn">Refresh</button>
-                            <button class="apollo__session-action-btn">Reset</button>
-                            <button class="apollo__session-action-btn apollo__session-action-btn--warning">Compress</button>
+                            <button class="apollo__session-action-btn" data-tekton-action="refresh-session" data-tekton-action-type="secondary">Refresh</button>
+                            <button class="apollo__session-action-btn" data-tekton-action="reset-session" data-tekton-action-type="secondary">Reset</button>
+                            <button class="apollo__session-action-btn apollo__session-action-btn--warning" data-tekton-action="compress-session-warning" data-tekton-action-type="secondary">Compress</button>
                         </div>
                     </div>
 
@@ -283,9 +283,9 @@
                             <div class="apollo__token-budget-used" style="width: 28.3%"></div>
                         </div>
                         <div class="apollo__session-actions">
-                            <button class="apollo__session-action-btn">Refresh</button>
-                            <button class="apollo__session-action-btn">Reset</button>
-                            <button class="apollo__session-action-btn">Compress</button>
+                            <button class="apollo__session-action-btn" data-tekton-action="refresh-session" data-tekton-action-type="secondary">Refresh</button>
+                            <button class="apollo__session-action-btn" data-tekton-action="reset-session" data-tekton-action-type="secondary">Reset</button>
+                            <button class="apollo__session-action-btn" data-tekton-action="compress-session" data-tekton-action-type="secondary">Compress</button>
                         </div>
                     </div>
                 </div>
@@ -293,7 +293,7 @@
         </div>
 
         <!-- Token Budgets Tab -->
-        <div id="tokens-panel" class="apollo__panel">
+        <div id="tokens-panel" class="apollo__panel" data-tekton-panel="tokens" data-tekton-panel-for="Token Budgets" data-tekton-panel-component="apollo" data-tekton-panel-active="false">
             <div class="apollo__token-budgets">
                 <div class="apollo__control-bar">
                     <div class="apollo__stats-container">
@@ -311,7 +311,7 @@
                         </div>
                     </div>
                     <div class="apollo__refresh-container">
-                        <button id="refresh-tokens-btn" class="apollo__refresh-button">Refresh</button>
+                        <button id="refresh-tokens-btn" class="apollo__refresh-button" data-tekton-action="refresh-tokens" data-tekton-action-type="secondary">Refresh</button>
                     </div>
                 </div>
                 
@@ -395,8 +395,8 @@
                                 </div>
                                 
                                 <div class="apollo__form-actions">
-                                    <button class="apollo__button apollo__button--secondary" id="reset-budget-btn">Reset</button>
-                                    <button class="apollo__button apollo__button--primary" id="save-budget-btn">Save Settings</button>
+                                    <button class="apollo__button apollo__button--secondary" id="reset-budget-btn" data-tekton-action="reset-budget" data-tekton-action-type="secondary">Reset</button>
+                                    <button class="apollo__button apollo__button--primary" id="save-budget-btn" data-tekton-action="save-budget" data-tekton-action-type="primary">Save Settings</button>
                                 </div>
                             </div>
                         </div>
@@ -408,7 +408,7 @@
                     <div class="apollo__budget-card">
                         <div class="apollo__card-header">
                             <h3 class="apollo__card-title">Component Token Budgets</h3>
-                            <button class="apollo__card-action">Edit All</button>
+                            <button class="apollo__card-action" data-tekton-action="edit-all-tokens" data-tekton-action-type="primary">Edit All</button>
                         </div>
                         <div class="apollo__card-body">
                             <div class="apollo__component-budgets">
@@ -435,8 +435,8 @@
                                         </div>
                                         <div class="apollo__component-status apollo__component-status--healthy">Healthy</div>
                                         <div class="apollo__component-actions">
-                                            <button class="apollo__component-action-btn">Reset</button>
-                                            <button class="apollo__component-action-btn">Compress</button>
+                                            <button class="apollo__component-action-btn" data-tekton-action="reset-component" data-tekton-action-type="secondary">Reset</button>
+                                            <button class="apollo__component-action-btn" data-tekton-action="compress-component" data-tekton-action-type="secondary">Compress</button>
                                         </div>
                                     </div>
                                     
@@ -454,8 +454,8 @@
                                         </div>
                                         <div class="apollo__component-status apollo__component-status--healthy">Healthy</div>
                                         <div class="apollo__component-actions">
-                                            <button class="apollo__component-action-btn">Reset</button>
-                                            <button class="apollo__component-action-btn">Compress</button>
+                                            <button class="apollo__component-action-btn" data-tekton-action="reset-component" data-tekton-action-type="secondary">Reset</button>
+                                            <button class="apollo__component-action-btn" data-tekton-action="compress-component" data-tekton-action-type="secondary">Compress</button>
                                         </div>
                                     </div>
                                     
@@ -473,8 +473,8 @@
                                         </div>
                                         <div class="apollo__component-status apollo__component-status--warning">Warning</div>
                                         <div class="apollo__component-actions">
-                                            <button class="apollo__component-action-btn">Reset</button>
-                                            <button class="apollo__component-action-btn apollo__component-action-btn--warning">Compress</button>
+                                            <button class="apollo__component-action-btn" data-tekton-action="reset-component" data-tekton-action-type="secondary">Reset</button>
+                                            <button class="apollo__component-action-btn apollo__component-action-btn--warning" data-tekton-action="compress-component-warning" data-tekton-action-type="secondary">Compress</button>
                                         </div>
                                     </div>
                                     
@@ -492,16 +492,16 @@
                                         </div>
                                         <div class="apollo__component-status apollo__component-status--healthy">Healthy</div>
                                         <div class="apollo__component-actions">
-                                            <button class="apollo__component-action-btn">Reset</button>
-                                            <button class="apollo__component-action-btn">Compress</button>
+                                            <button class="apollo__component-action-btn" data-tekton-action="reset-component" data-tekton-action-type="secondary">Reset</button>
+                                            <button class="apollo__component-action-btn" data-tekton-action="compress-component" data-tekton-action-type="secondary">Compress</button>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <div class="apollo__card-footer">
-                            <button class="apollo__button apollo__button--secondary">Add Component</button>
-                            <button class="apollo__button apollo__button--primary">Save Allocations</button>
+                            <button class="apollo__button apollo__button--secondary" data-tekton-action="add-component" data-tekton-action-type="secondary">Add Component</button>
+                            <button class="apollo__button apollo__button--primary" data-tekton-action="save-allocations" data-tekton-action-type="primary">Save Allocations</button>
                         </div>
                     </div>
                 </div>
@@ -509,7 +509,7 @@
         </div>
 
         <!-- Protocols Tab -->
-        <div id="protocols-panel" class="apollo__panel">
+        <div id="protocols-panel" class="apollo__panel" data-tekton-panel="protocols" data-tekton-panel-for="Protocols" data-tekton-panel-component="apollo" data-tekton-panel-active="false">
             <div class="apollo__protocols">
                 <div class="apollo__control-bar">
                     <div class="apollo__filter-container">
@@ -520,10 +520,10 @@
                             <option value="context">Context Related</option>
                             <option value="safety">Safety Related</option>
                         </select>
-                        <button id="apply-protocol-filter-btn" class="apollo__filter-button">Apply</button>
+                        <button id="apply-protocol-filter-btn" class="apollo__filter-button" data-tekton-action="apply-protocol-filter" data-tekton-action-type="primary">Apply</button>
                     </div>
                     <div class="apollo__actions">
-                        <button id="add-protocol-btn" class="apollo__action-button">
+                        <button id="add-protocol-btn" class="apollo__action-button" data-tekton-action="add-protocol" data-tekton-action-type="primary">
                             <span class="apollo__button-icon">+</span>
                             <span class="apollo__button-label">New Protocol</span>
                         </button>
@@ -579,7 +579,7 @@
                                                 <span class="apollo__settings-tag">0.85</span>
                                                 <span class="apollo__settings-tag">0.92</span>
                                                 <span class="apollo__settings-tag">0.98</span>
-                                                <button class="apollo__tag-add">+</button>
+                                                <button class="apollo__tag-add" data-tekton-action="add-tag" data-tekton-action-type="secondary">+</button>
                                             </div>
                                         </div>
                                     </div>
@@ -597,9 +597,9 @@
                             </div>
                         </div>
                         <div class="apollo__protocol-card-footer">
-                            <button class="apollo__card-button apollo__card-button--secondary">View History</button>
-                            <button class="apollo__card-button apollo__card-button--secondary">Edit</button>
-                            <button class="apollo__card-button apollo__card-button--secondary">Disable</button>
+                            <button class="apollo__card-button apollo__card-button--secondary" data-tekton-action="view-history" data-tekton-action-type="secondary">View History</button>
+                            <button class="apollo__card-button apollo__card-button--secondary" data-tekton-action="edit" data-tekton-action-type="secondary">Edit</button>
+                            <button class="apollo__card-button apollo__card-button--secondary" data-tekton-action="disable" data-tekton-action-type="secondary">Disable</button>
                         </div>
                     </div>
                     
@@ -667,9 +667,9 @@
                             </div>
                         </div>
                         <div class="apollo__protocol-card-footer">
-                            <button class="apollo__card-button apollo__card-button--secondary">View History</button>
-                            <button class="apollo__card-button apollo__card-button--secondary">Edit</button>
-                            <button class="apollo__card-button apollo__card-button--secondary">Disable</button>
+                            <button class="apollo__card-button apollo__card-button--secondary" data-tekton-action="view-history" data-tekton-action-type="secondary">View History</button>
+                            <button class="apollo__card-button apollo__card-button--secondary" data-tekton-action="edit" data-tekton-action-type="secondary">Edit</button>
+                            <button class="apollo__card-button apollo__card-button--secondary" data-tekton-action="disable" data-tekton-action-type="secondary">Disable</button>
                         </div>
                     </div>
                     
@@ -736,9 +736,9 @@
                             </div>
                         </div>
                         <div class="apollo__protocol-card-footer">
-                            <button class="apollo__card-button apollo__card-button--secondary">View History</button>
-                            <button class="apollo__card-button apollo__card-button--secondary">Edit</button>
-                            <button class="apollo__card-button apollo__card-button--secondary">Disable</button>
+                            <button class="apollo__card-button apollo__card-button--secondary" data-tekton-action="view-history" data-tekton-action-type="secondary">View History</button>
+                            <button class="apollo__card-button apollo__card-button--secondary" data-tekton-action="edit" data-tekton-action-type="secondary">Edit</button>
+                            <button class="apollo__card-button apollo__card-button--secondary" data-tekton-action="disable" data-tekton-action-type="secondary">Disable</button>
                         </div>
                     </div>
                     
@@ -807,9 +807,9 @@
                             </div>
                         </div>
                         <div class="apollo__protocol-card-footer">
-                            <button class="apollo__card-button apollo__card-button--secondary">View History</button>
-                            <button class="apollo__card-button apollo__card-button--secondary">Edit</button>
-                            <button class="apollo__card-button apollo__card-button--primary">Enable</button>
+                            <button class="apollo__card-button apollo__card-button--secondary" data-tekton-action="view-history" data-tekton-action-type="secondary">View History</button>
+                            <button class="apollo__card-button apollo__card-button--secondary" data-tekton-action="edit" data-tekton-action-type="secondary">Edit</button>
+                            <button class="apollo__card-button apollo__card-button--primary" data-tekton-action="enable" data-tekton-action-type="primary">Enable</button>
                         </div>
                     </div>
                 </div>
@@ -843,7 +843,7 @@
         </div>
 
         <!-- Forecasting Tab -->
-        <div id="forecasting-panel" class="apollo__panel">
+        <div id="forecasting-panel" class="apollo__panel" data-tekton-panel="forecasting" data-tekton-panel-for="Forecasting" data-tekton-panel-component="apollo" data-tekton-panel-active="false">
             <div class="apollo__forecasting">
                 <div class="apollo__control-bar">
                     <div class="apollo__filter-container">
@@ -860,10 +860,10 @@
                             <option value="12h" selected>12 Hours</option>
                             <option value="24h">24 Hours</option>
                         </select>
-                        <button id="apply-forecast-filter-btn" class="apollo__filter-button">Apply</button>
+                        <button id="apply-forecast-filter-btn" class="apollo__filter-button" data-tekton-action="apply-forecast-filter" data-tekton-action-type="primary">Apply</button>
                     </div>
                     <div class="apollo__refresh-container">
-                        <button id="refresh-forecast-btn" class="apollo__refresh-button">Refresh</button>
+                        <button id="refresh-forecast-btn" class="apollo__refresh-button" data-tekton-action="refresh-forecast" data-tekton-action-type="secondary">Refresh</button>
                     </div>
                 </div>
                 
@@ -1000,8 +1000,8 @@
                                 </div>
                             </div>
                             <div class="apollo__forecast-footer">
-                                <button class="apollo__forecast-action-btn">View Details</button>
-                                <button class="apollo__forecast-action-btn">Optimize</button>
+                                <button class="apollo__forecast-action-btn" data-tekton-action="view-forecast-details" data-tekton-action-type="secondary">View Details</button>
+                                <button class="apollo__forecast-action-btn" data-tekton-action="optimize-forecast" data-tekton-action-type="primary">Optimize</button>
                             </div>
                         </div>
                         
@@ -1043,8 +1043,8 @@
                                 </div>
                             </div>
                             <div class="apollo__forecast-footer">
-                                <button class="apollo__forecast-action-btn">View Details</button>
-                                <button class="apollo__forecast-action-btn">Optimize</button>
+                                <button class="apollo__forecast-action-btn" data-tekton-action="view-forecast-details" data-tekton-action-type="secondary">View Details</button>
+                                <button class="apollo__forecast-action-btn" data-tekton-action="optimize-forecast" data-tekton-action-type="primary">Optimize</button>
                             </div>
                         </div>
                         
@@ -1086,19 +1086,19 @@
                                         <div class="apollo__recommendation apollo__recommendation--warning">
                                             <div class="apollo__recommendation-type">Medium Compression</div>
                                             <div class="apollo__recommendation-reason">High token usage rate</div>
-                                            <button class="apollo__recommendation-action">Apply</button>
+                                            <button class="apollo__recommendation-action" data-tekton-action="apply-recommendation" data-tekton-action-type="primary">Apply</button>
                                         </div>
                                         <div class="apollo__recommendation apollo__recommendation--warning">
                                             <div class="apollo__recommendation-type">Reset Session</div>
                                             <div class="apollo__recommendation-reason">Context nearing exhaustion</div>
-                                            <button class="apollo__recommendation-action">Apply</button>
+                                            <button class="apollo__recommendation-action" data-tekton-action="apply-recommendation" data-tekton-action-type="primary">Apply</button>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                             <div class="apollo__forecast-footer">
-                                <button class="apollo__forecast-action-btn">View Details</button>
-                                <button class="apollo__forecast-action-btn apollo__forecast-action-btn--warning">Optimize Now</button>
+                                <button class="apollo__forecast-action-btn" data-tekton-action="view-forecast-details" data-tekton-action-type="secondary">View Details</button>
+                                <button class="apollo__forecast-action-btn apollo__forecast-action-btn--warning" data-tekton-action="optimize-now" data-tekton-action-type="primary">Optimize Now</button>
                             </div>
                         </div>
                         
@@ -1140,8 +1140,8 @@
                                 </div>
                             </div>
                             <div class="apollo__forecast-footer">
-                                <button class="apollo__forecast-action-btn">View Details</button>
-                                <button class="apollo__forecast-action-btn">Optimize</button>
+                                <button class="apollo__forecast-action-btn" data-tekton-action="view-forecast-details" data-tekton-action-type="secondary">View Details</button>
+                                <button class="apollo__forecast-action-btn" data-tekton-action="optimize-forecast" data-tekton-action-type="primary">Optimize</button>
                             </div>
                         </div>
                     </div>
@@ -1159,7 +1159,7 @@
                             <div class="apollo__card-header">
                                 <h3 class="apollo__card-title">Usage Patterns</h3>
                                 <div class="apollo__card-actions">
-                                    <button class="apollo__card-action-btn">
+                                    <button class="apollo__card-action-btn" data-tekton-action="settings" data-tekton-action-type="secondary">
                                         <span class="apollo__card-action-icon">⚙️</span>
                                     </button>
                                 </div>
@@ -1234,7 +1234,7 @@
                             <div class="apollo__card-header">
                                 <h3 class="apollo__card-title">Prediction Accuracy</h3>
                                 <div class="apollo__card-actions">
-                                    <button class="apollo__card-action-btn">
+                                    <button class="apollo__card-action-btn" data-tekton-action="settings" data-tekton-action-type="secondary">
                                         <span class="apollo__card-action-icon">⚙️</span>
                                     </button>
                                 </div>
@@ -1282,7 +1282,7 @@
         </div>
 
         <!-- Actions Tab -->
-        <div id="actions-panel" class="apollo__panel">
+        <div id="actions-panel" class="apollo__panel" data-tekton-panel="actions" data-tekton-panel-for="Actions" data-tekton-panel-component="apollo" data-tekton-panel-active="false">
             <div class="apollo__actions-panel">
                 <div class="apollo__control-bar">
                     <div class="apollo__filter-container">
@@ -1293,10 +1293,10 @@
                             <option value="rhetor">Rhetor</option>
                             <option value="engram">Engram</option>
                         </select>
-                        <button id="apply-action-filter-btn" class="apollo__filter-button">Apply</button>
+                        <button id="apply-action-filter-btn" class="apollo__filter-button" data-tekton-action="apply-action-filter" data-tekton-action-type="primary">Apply</button>
                     </div>
                     <div class="apollo__actions">
-                        <button id="view-history-btn" class="apollo__action-button">
+                        <button id="view-history-btn" class="apollo__action-button" data-tekton-action="view-history-main" data-tekton-action-type="secondary">
                             <span class="apollo__button-label">View History</span>
                         </button>
                     </div>
@@ -1358,7 +1358,7 @@
                                 </div>
                             </div>
                             <div class="apollo__action-card-footer">
-                                <button class="apollo__action-button apollo__action-button--primary" id="execute-reset-btn" disabled>Execute Reset</button>
+                                <button class="apollo__action-button apollo__action-button--primary" id="execute-reset-btn" disabled data-tekton-action="execute-reset" data-tekton-action-type="primary">Execute Reset</button>
                             </div>
                         </div>
                         
@@ -1420,7 +1420,7 @@
                                 </div>
                             </div>
                             <div class="apollo__action-card-footer">
-                                <button class="apollo__action-button apollo__action-button--primary apollo__action-button--warning" id="execute-compress-btn">Execute Compression</button>
+                                <button class="apollo__action-button apollo__action-button--primary apollo__action-button--warning" id="execute-compress-btn" data-tekton-action="execute-compression" data-tekton-action-type="primary">Execute Compression</button>
                             </div>
                         </div>
                         
@@ -1498,7 +1498,7 @@
                                 </div>
                             </div>
                             <div class="apollo__action-card-footer">
-                                <button class="apollo__action-button apollo__action-button--primary" id="execute-rebuild-btn">Execute Rebuild</button>
+                                <button class="apollo__action-button apollo__action-button--primary" id="execute-rebuild-btn" data-tekton-action="execute-rebuild" data-tekton-action-type="primary">Execute Rebuild</button>
                             </div>
                         </div>
                     </div>
@@ -1509,11 +1509,11 @@
                     <div class="apollo__section-header">
                         <h3 class="apollo__section-title">Action History</h3>
                         <div class="apollo__section-actions">
-                            <button class="apollo__section-action-btn" id="refresh-history-btn">
+                            <button class="apollo__section-action-btn" id="refresh-history-btn" data-tekton-action="refresh-history" data-tekton-action-type="secondary">
                                 <span class="apollo__section-action-icon">🔄</span>
                                 <span class="apollo__section-action-label">Refresh</span>
                             </button>
-                            <button class="apollo__section-action-btn" id="auto-refresh-history-btn">
+                            <button class="apollo__section-action-btn" id="auto-refresh-history-btn" data-tekton-action="auto-refresh-history" data-tekton-action-type="secondary">
                                 <span class="apollo__section-action-icon">⚡</span>
                                 <span class="apollo__section-action-label">Auto-Refresh</span>
                             </button>
@@ -1542,8 +1542,8 @@
                                         <span class="apollo__status-pill apollo__status-pill--success">Successful</span>
                                     </td>
                                     <td class="apollo__history-cell apollo__history-cell--actions">
-                                        <button class="apollo__history-action-btn">View</button>
-                                        <button class="apollo__history-action-btn">Repeat</button>
+                                        <button class="apollo__history-action-btn" data-tekton-action="view-history-item" data-tekton-action-type="secondary">View</button>
+                                        <button class="apollo__history-action-btn" data-tekton-action="repeat-action" data-tekton-action-type="secondary">Repeat</button>
                                     </td>
                                 </tr>
                                 <tr class="apollo__history-row">
@@ -1555,8 +1555,8 @@
                                         <span class="apollo__status-pill apollo__status-pill--success">Successful</span>
                                     </td>
                                     <td class="apollo__history-cell apollo__history-cell--actions">
-                                        <button class="apollo__history-action-btn">View</button>
-                                        <button class="apollo__history-action-btn">Repeat</button>
+                                        <button class="apollo__history-action-btn" data-tekton-action="view-history-item" data-tekton-action-type="secondary">View</button>
+                                        <button class="apollo__history-action-btn" data-tekton-action="repeat-action" data-tekton-action-type="secondary">Repeat</button>
                                     </td>
                                 </tr>
                                 <tr class="apollo__history-row">
@@ -1568,8 +1568,8 @@
                                         <span class="apollo__status-pill apollo__status-pill--success">Successful</span>
                                     </td>
                                     <td class="apollo__history-cell apollo__history-cell--actions">
-                                        <button class="apollo__history-action-btn">View</button>
-                                        <button class="apollo__history-action-btn">Repeat</button>
+                                        <button class="apollo__history-action-btn" data-tekton-action="view-history-item" data-tekton-action-type="secondary">View</button>
+                                        <button class="apollo__history-action-btn" data-tekton-action="repeat-action" data-tekton-action-type="secondary">Repeat</button>
                                     </td>
                                 </tr>
                                 <tr class="apollo__history-row">
@@ -1581,8 +1581,8 @@
                                         <span class="apollo__status-pill apollo__status-pill--success">Successful</span>
                                     </td>
                                     <td class="apollo__history-cell apollo__history-cell--actions">
-                                        <button class="apollo__history-action-btn">View</button>
-                                        <button class="apollo__history-action-btn">Repeat</button>
+                                        <button class="apollo__history-action-btn" data-tekton-action="view-history-item" data-tekton-action-type="secondary">View</button>
+                                        <button class="apollo__history-action-btn" data-tekton-action="repeat-action" data-tekton-action-type="secondary">Repeat</button>
                                     </td>
                                 </tr>
                                 <tr class="apollo__history-row">
@@ -1594,8 +1594,8 @@
                                         <span class="apollo__status-pill apollo__status-pill--warning">Partial</span>
                                     </td>
                                     <td class="apollo__history-cell apollo__history-cell--actions">
-                                        <button class="apollo__history-action-btn">View</button>
-                                        <button class="apollo__history-action-btn">Retry</button>
+                                        <button class="apollo__history-action-btn" data-tekton-action="view-history-item" data-tekton-action-type="secondary">View</button>
+                                        <button class="apollo__history-action-btn" data-tekton-action="retry-action" data-tekton-action-type="secondary">Retry</button>
                                     </td>
                                 </tr>
                             </tbody>
@@ -1603,9 +1603,9 @@
                     </div>
                     
                     <div class="apollo__history-pagination">
-                        <button class="apollo__pagination-btn apollo__pagination-btn--disabled">Previous</button>
+                        <button class="apollo__pagination-btn apollo__pagination-btn--disabled" data-tekton-action="previous-page" data-tekton-action-type="secondary">Previous</button>
                         <div class="apollo__pagination-info">Page 1 of 1</div>
-                        <button class="apollo__pagination-btn apollo__pagination-btn--disabled">Next</button>
+                        <button class="apollo__pagination-btn apollo__pagination-btn--disabled" data-tekton-action="next-page" data-tekton-action-type="secondary">Next</button>
                     </div>
                 </div>
                 
@@ -1720,7 +1720,7 @@
         </div>
         
         <!-- Attention Chat Tab -->
-        <div id="attention-panel" class="apollo__panel">
+        <div id="attention-panel" class="apollo__panel" data-tekton-panel="attention" data-tekton-panel-for="Attention Chat" data-tekton-panel-component="apollo" data-tekton-panel-active="false">
             <div id="attention-messages" class="apollo__chat-messages">
                 <!-- Welcome message -->
                 <div class="apollo__message apollo__message--system">
@@ -1741,7 +1741,7 @@
         </div>
         
         <!-- Team Chat Tab -->
-        <div id="teamchat-panel" class="apollo__panel">
+        <div id="teamchat-panel" class="apollo__panel" data-tekton-panel="teamchat" data-tekton-panel-for="Team Chat" data-tekton-panel-component="apollo" data-tekton-panel-active="false">
             <div id="teamchat-messages" class="apollo__chat-messages">
                 <!-- Welcome message -->
                 <div class="apollo__message apollo__message--system">
@@ -1762,7 +1762,7 @@
             <div class="apollo__chat-prompt">></div>
             <input type="text" id="chat-input" class="apollo__chat-input" 
                    placeholder="Enter chat message for LLM attention, awareness, prioritization or prediction">
-            <button id="send-button" class="apollo__send-button">Send</button>
+            <button id="send-button" class="apollo__send-button" data-tekton-action="send-message" data-tekton-action-type="primary">Send</button>
         </div>
     </div>
 </div>

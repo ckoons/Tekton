@@ -14,27 +14,27 @@
     <!-- Prometheus Menu Bar with Tab Navigation -->
     <div class="prometheus__menu-bar" data-tekton-zone="menu" data-tekton-zone="menu" data-tekton-nav="component-menu">
         <div class="prometheus__tabs" data-tekton-zone="menu">
-            <div class="prometheus__tab prometheus__tab--active" data-tab="planning" onclick="prometheus_switchTab('planning'); return false;">
+            <div class="prometheus__tab prometheus__tab--active" data-tab="planning" onclick="prometheus_switchTab('planning'); return false;" data-tekton-menu-item="Planning" data-tekton-menu-component="prometheus" data-tekton-menu-active="true" data-tekton-menu-panel="planning-panel" data-tekton-nav-target="planning-panel">
                 <span class="prometheus__tab-label">Planning</span>
             </div>
-            <div class="prometheus__tab" data-tab="timeline" onclick="prometheus_switchTab('timeline'); return false;">
+            <div class="prometheus__tab" data-tab="timeline" onclick="prometheus_switchTab('timeline'); return false;" data-tekton-menu-item="Timeline" data-tekton-menu-component="prometheus" data-tekton-menu-active="false" data-tekton-menu-panel="timeline-panel" data-tekton-nav-target="timeline-panel">
                 <span class="prometheus__tab-label">Timeline</span>
             </div>
-            <div class="prometheus__tab" data-tab="resources" onclick="prometheus_switchTab('resources'); return false;">
+            <div class="prometheus__tab" data-tab="resources" onclick="prometheus_switchTab('resources'); return false;" data-tekton-menu-item="Resources" data-tekton-menu-component="prometheus" data-tekton-menu-active="false" data-tekton-menu-panel="resources-panel" data-tekton-nav-target="resources-panel">
                 <span class="prometheus__tab-label">Resources</span>
             </div>
-            <div class="prometheus__tab" data-tab="analysis" onclick="prometheus_switchTab('analysis'); return false;">
+            <div class="prometheus__tab" data-tab="analysis" onclick="prometheus_switchTab('analysis'); return false;" data-tekton-menu-item="Analysis" data-tekton-menu-component="prometheus" data-tekton-menu-active="false" data-tekton-menu-panel="analysis-panel" data-tekton-nav-target="analysis-panel">
                 <span class="prometheus__tab-label">Analysis</span>
             </div>
-            <div class="prometheus__tab" data-tab="planningchat" onclick="prometheus_switchTab('planningchat'); return false;">
+            <div class="prometheus__tab" data-tab="planningchat" onclick="prometheus_switchTab('planningchat'); return false;" data-tekton-menu-item="Planning Chat" data-tekton-menu-component="prometheus" data-tekton-menu-active="false" data-tekton-menu-panel="planningchat-panel" data-tekton-nav-target="planningchat-panel">
                 <span class="prometheus__tab-label">Planning Chat</span>
             </div>
-            <div class="prometheus__tab" data-tab="teamchat" onclick="prometheus_switchTab('teamchat'); return false;">
+            <div class="prometheus__tab" data-tab="teamchat" onclick="prometheus_switchTab('teamchat'); return false;" data-tekton-menu-item="Team Chat" data-tekton-menu-component="prometheus" data-tekton-menu-active="false" data-tekton-menu-panel="teamchat-panel" data-tekton-nav-target="teamchat-panel">
                 <span class="prometheus__tab-label">Team Chat</span>
             </div>
         </div>
         <div class="prometheus__actions">
-            <button id="clear-chat-btn" class="prometheus__action-button" style="display: none;" onclick="prometheus_clearChat(); return false;">
+            <button id="clear-chat-btn" class="prometheus__action-button" style="display: none;" onclick="prometheus_clearChat(); return false;" data-tekton-action="clear-chat" data-tekton-action-type="secondary">
                 <span class="prometheus__button-label">Clear</span>
             </button>
         </div>
@@ -43,15 +43,15 @@
     <!-- Prometheus Content Area -->
     <div class="prometheus__content" data-tekton-zone="content" data-tekton-scrollable="true">
         <!-- Planning Tab (Default Active Tab) -->
-        <div id="planning-panel" class="prometheus__panel prometheus__panel--active">
+        <div id="planning-panel" class="prometheus__panel prometheus__panel--active" data-tekton-panel="planning" data-tekton-panel-for="Planning" data-tekton-panel-component="prometheus" data-tekton-panel-active="true">
             <div class="prometheus__planning">
                 <div class="prometheus__control-bar">
                     <div class="prometheus__search-container">
                         <input type="text" id="project-search" class="prometheus__search-input" placeholder="Search projects...">
-                        <button id="project-search-btn" class="prometheus__search-button">Search</button>
+                        <button id="project-search-btn" class="prometheus__search-button" data-tekton-action="search-projects" data-tekton-action-type="primary">Search</button>
                     </div>
                     <div class="prometheus__actions">
-                        <button id="add-project-btn" class="prometheus__action-button">
+                        <button id="add-project-btn" class="prometheus__action-button" data-tekton-action="add-project" data-tekton-action-type="primary">
                             <span class="prometheus__button-icon">+</span>
                             <span class="prometheus__button-label">Add Project</span>
                         </button>
@@ -78,8 +78,8 @@
                                 </div>
                             </div>
                             <div class="prometheus__project-actions">
-                                <button class="prometheus__project-action-btn">View</button>
-                                <button class="prometheus__project-action-btn">Edit</button>
+                                <button class="prometheus__project-action-btn" data-tekton-action="view-project" data-tekton-action-type="secondary">View</button>
+                                <button class="prometheus__project-action-btn" data-tekton-action="edit-project" data-tekton-action-type="secondary">Edit</button>
                             </div>
                         </div>
                         <div class="prometheus__project-item">
@@ -95,8 +95,8 @@
                                 </div>
                             </div>
                             <div class="prometheus__project-actions">
-                                <button class="prometheus__project-action-btn">View</button>
-                                <button class="prometheus__project-action-btn">Edit</button>
+                                <button class="prometheus__project-action-btn" data-tekton-action="view-project" data-tekton-action-type="secondary">View</button>
+                                <button class="prometheus__project-action-btn" data-tekton-action="edit-project" data-tekton-action-type="secondary">Edit</button>
                             </div>
                         </div>
                     </div>
@@ -105,7 +105,7 @@
         </div>
         
         <!-- Timeline Tab -->
-        <div id="timeline-panel" class="prometheus__panel">
+        <div id="timeline-panel" class="prometheus__panel" data-tekton-panel="timeline" data-tekton-panel-for="Timeline" data-tekton-panel-component="prometheus" data-tekton-panel-active="false">
             <div class="prometheus__timeline">
                 <div class="prometheus__control-bar">
                     <div class="prometheus__filter-container">
@@ -115,7 +115,7 @@
                             <option value="month" selected>Month View</option>
                             <option value="quarter">Quarter View</option>
                         </select>
-                        <button id="apply-view-btn" class="prometheus__filter-button">Apply</button>
+                        <button id="apply-view-btn" class="prometheus__filter-button" data-tekton-action="apply-view" data-tekton-action-type="primary">Apply</button>
                     </div>
                     <div class="prometheus__filter-container">
                         <select id="timeline-filter" class="prometheus__filter-select">
@@ -123,7 +123,7 @@
                             <option value="active">Active Projects</option>
                             <option value="critical">Critical Path Only</option>
                         </select>
-                        <button id="apply-filter-btn" class="prometheus__filter-button">Apply</button>
+                        <button id="apply-filter-btn" class="prometheus__filter-button" data-tekton-action="apply-filter" data-tekton-action-type="primary">Apply</button>
                     </div>
                 </div>
                 <div id="timeline-container" class="prometheus__timeline-container">
@@ -138,7 +138,7 @@
         </div>
         
         <!-- Resources Tab -->
-        <div id="resources-panel" class="prometheus__panel">
+        <div id="resources-panel" class="prometheus__panel" data-tekton-panel="resources" data-tekton-panel-for="Resources" data-tekton-panel-component="prometheus" data-tekton-panel-active="false">
             <div class="prometheus__resources">
                 <div class="prometheus__control-bar">
                     <div class="prometheus__filter-container">
@@ -148,10 +148,10 @@
                             <option value="equipment">Equipment</option>
                             <option value="budget">Budget</option>
                         </select>
-                        <button id="apply-resource-filter-btn" class="prometheus__filter-button">Apply</button>
+                        <button id="apply-resource-filter-btn" class="prometheus__filter-button" data-tekton-action="apply-resource-filter" data-tekton-action-type="primary">Apply</button>
                     </div>
                     <div class="prometheus__actions">
-                        <button id="add-resource-btn" class="prometheus__action-button">
+                        <button id="add-resource-btn" class="prometheus__action-button" data-tekton-action="add-resource" data-tekton-action-type="primary">
                             <span class="prometheus__button-icon">+</span>
                             <span class="prometheus__button-label">Add Resource</span>
                         </button>
@@ -176,7 +176,7 @@
         </div>
         
         <!-- Analysis Tab -->
-        <div id="analysis-panel" class="prometheus__panel">
+        <div id="analysis-panel" class="prometheus__panel" data-tekton-panel="analysis" data-tekton-panel-for="Analysis" data-tekton-panel-component="prometheus" data-tekton-panel-active="false">
             <div class="prometheus__analysis">
                 <h3 class="prometheus__section-title">Critical Path Analysis</h3>
                 <p class="prometheus__text">Analyze project timelines and resource constraints to identify the critical path.</p>
@@ -214,8 +214,8 @@
                     </div>
 
                     <div class="prometheus__form-actions">
-                        <button class="prometheus__button prometheus__button--secondary" id="clear-analysis-btn">Clear</button>
-                        <button class="prometheus__button prometheus__button--primary" id="run-analysis-btn">Run Analysis</button>
+                        <button class="prometheus__button prometheus__button--secondary" id="clear-analysis-btn" data-tekton-action="clear-analysis" data-tekton-action-type="secondary">Clear</button>
+                        <button class="prometheus__button prometheus__button--primary" id="run-analysis-btn" data-tekton-action="run-analysis" data-tekton-action-type="primary">Run Analysis</button>
                     </div>
                 </div>
 
@@ -229,7 +229,7 @@
         </div>
         
         <!-- Planning Chat Tab -->
-        <div id="planningchat-panel" class="prometheus__panel">
+        <div id="planningchat-panel" class="prometheus__panel" data-tekton-panel="planningchat" data-tekton-panel-for="Planning Chat" data-tekton-panel-component="prometheus" data-tekton-panel-active="false">
             <div id="planningchat-messages" class="prometheus__chat-messages">
                 <!-- Welcome message -->
                 <div class="prometheus__message prometheus__message--system">
@@ -250,7 +250,7 @@
         </div>
         
         <!-- Team Chat Tab -->
-        <div id="teamchat-panel" class="prometheus__panel">
+        <div id="teamchat-panel" class="prometheus__panel" data-tekton-panel="teamchat" data-tekton-panel-for="Team Chat" data-tekton-panel-component="prometheus" data-tekton-panel-active="false">
             <div id="teamchat-messages" class="prometheus__chat-messages">
                 <!-- Welcome message -->
                 <div class="prometheus__message prometheus__message--system">
@@ -271,7 +271,7 @@
             <div class="prometheus__chat-prompt">></div>
             <input type="text" id="chat-input" class="prometheus__chat-input" 
                    placeholder="Enter chat message, project instructions, or planning queries">
-            <button id="send-button" class="prometheus__send-button">Send</button>
+            <button id="send-button" class="prometheus__send-button" data-tekton-action="send-message" data-tekton-action-type="primary">Send</button>
         </div>
     </div>
 </div>

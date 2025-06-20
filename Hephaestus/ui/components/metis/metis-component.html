@@ -14,30 +14,30 @@
     <!-- Metis Menu Bar with Tab Navigation -->
     <div class="metis__menu-bar" data-tekton-zone="menu" data-tekton-zone="menu" data-tekton-nav="component-menu">
         <div class="metis__tabs" data-tekton-zone="menu">
-            <div class="metis__tab metis__tab--active" data-tab="tasks" onclick="metis_switchTab('tasks'); return false;">
+            <div class="metis__tab metis__tab--active" data-tab="tasks" onclick="metis_switchTab('tasks'); return false;" data-tekton-menu-item="Tasks" data-tekton-menu-component="metis" data-tekton-menu-active="true" data-tekton-menu-panel="tasks-panel" data-tekton-nav-target="tasks-panel">
                 <span class="metis__tab-label">Tasks</span>
             </div>
-            <div class="metis__tab" data-tab="dependency" onclick="metis_switchTab('dependency'); return false;">
+            <div class="metis__tab" data-tab="dependency" onclick="metis_switchTab('dependency'); return false;" data-tekton-menu-item="Dependency" data-tekton-menu-component="metis" data-tekton-menu-active="false" data-tekton-menu-panel="dependency-panel" data-tekton-nav-target="dependency-panel">
                 <span class="metis__tab-label">Dependency</span>
             </div>
-            <div class="metis__tab" data-tab="complexity" onclick="metis_switchTab('complexity'); return false;">
+            <div class="metis__tab" data-tab="complexity" onclick="metis_switchTab('complexity'); return false;" data-tekton-menu-item="Complexity" data-tekton-menu-component="metis" data-tekton-menu-active="false" data-tekton-menu-panel="complexity-panel" data-tekton-nav-target="complexity-panel">
                 <span class="metis__tab-label">Complexity</span>
             </div>
-            <div class="metis__tab" data-tab="prd" onclick="metis_switchTab('prd'); return false;">
+            <div class="metis__tab" data-tab="prd" onclick="metis_switchTab('prd'); return false;" data-tekton-menu-item="PRD Parser" data-tekton-menu-component="metis" data-tekton-menu-active="false" data-tekton-menu-panel="prd-panel" data-tekton-nav-target="prd-panel">
                 <span class="metis__tab-label">PRD Parser</span>
             </div>
-            <div class="metis__tab" data-tab="workflow" onclick="metis_switchTab('workflow'); return false;">
+            <div class="metis__tab" data-tab="workflow" onclick="metis_switchTab('workflow'); return false;" data-tekton-menu-item="Workflow Chat" data-tekton-menu-component="metis" data-tekton-menu-active="false" data-tekton-menu-panel="workflow-panel" data-tekton-nav-target="workflow-panel">
                 <span class="metis__tab-label">Workflow Chat</span>
             </div>
-            <div class="metis__tab" data-tab="teamchat" onclick="metis_switchTab('teamchat'); return false;">
+            <div class="metis__tab" data-tab="teamchat" onclick="metis_switchTab('teamchat'); return false;" data-tekton-menu-item="Team Chat" data-tekton-menu-component="metis" data-tekton-menu-active="false" data-tekton-menu-panel="teamchat-panel" data-tekton-nav-target="teamchat-panel">
                 <span class="metis__tab-label">Team Chat</span>
             </div>
         </div>
         <div class="metis__actions">
-            <button id="task-add-btn" class="metis__action-button" onclick="metis_addTask(); return false;">
+            <button id="task-add-btn" class="metis__action-button" onclick="metis_addTask(); return false;" data-tekton-action="add-task" data-tekton-action-type="primary">
                 <span class="metis__button-label">Add Task</span>
             </button>
-            <button id="clear-chat-btn" class="metis__action-button" style="display: none;" onclick="metis_clearChat(); return false;">
+            <button id="clear-chat-btn" class="metis__action-button" style="display: none;" onclick="metis_clearChat(); return false;" data-tekton-action="clear-chat" data-tekton-action-type="secondary">
                 <span class="metis__button-label">Clear</span>
             </button>
         </div>
@@ -46,7 +46,7 @@
     <!-- Metis Content Area -->
     <div class="metis__content" data-tekton-zone="content" data-tekton-scrollable="true">
         <!-- Tasks Tab (Default Active Tab) -->
-        <div id="tasks-panel" class="metis__panel metis__panel--active">
+        <div id="tasks-panel" class="metis__panel metis__panel--active" data-tekton-panel="tasks" data-tekton-panel-for="Tasks" data-tekton-panel-component="metis" data-tekton-panel-active="true">
             <!-- View Toggle + Controls Bar (Secondary Menu Bar) -->
             <div class="metis__control-bar">
                 <div class="metis__view-buttons">
@@ -63,7 +63,7 @@
                 
                 <div class="metis__search-container">
                     <input type="text" id="task-search" class="metis__search-input" placeholder="Search tasks...">
-                    <button id="task-search-btn" class="metis__search-button">Search</button>
+                    <button id="task-search-btn" class="metis__search-button" data-tekton-action="search-tasks" data-tekton-action-type="primary">Search</button>
                 </div>
                 
                 <div class="metis__filter-container">
@@ -80,7 +80,7 @@
                         <option value="medium">Medium</option>
                         <option value="low">Low</option>
                     </select>
-                    <button id="apply-filter-btn" class="metis__filter-button">Apply</button>
+                    <button id="apply-filter-btn" class="metis__filter-button" data-tekton-action="apply-filter" data-tekton-action-type="primary">Apply</button>
                 </div>
             </div>
             
@@ -121,9 +121,9 @@
                                     <td class="metis__task-cell">8.5</td>
                                     <td class="metis__task-cell">2025-06-01</td>
                                     <td class="metis__task-cell metis__task-actions">
-                                        <button class="metis__task-action-btn" onclick="metis_viewTask('T-001')">View</button>
-                                        <button class="metis__task-action-btn" onclick="metis_editTask('T-001')">Edit</button>
-                                        <button class="metis__task-action-btn" onclick="metis_deleteTask('T-001')">Delete</button>
+                                        <button class="metis__task-action-btn" onclick="metis_viewTask('T-001')" data-tekton-action="view-task" data-tekton-action-type="secondary">View</button>
+                                        <button class="metis__task-action-btn" onclick="metis_editTask('T-001')" data-tekton-action="edit-task" data-tekton-action-type="secondary">Edit</button>
+                                        <button class="metis__task-action-btn" onclick="metis_deleteTask('T-001')" data-tekton-action="delete-task" data-tekton-action-type="secondary">Delete</button>
                                     </td>
                                 </tr>
                                 <tr class="metis__task-row">
@@ -138,9 +138,9 @@
                                     <td class="metis__task-cell">4.2</td>
                                     <td class="metis__task-cell">2025-06-05</td>
                                     <td class="metis__task-cell metis__task-actions">
-                                        <button class="metis__task-action-btn" onclick="metis_viewTask('T-002')">View</button>
-                                        <button class="metis__task-action-btn" onclick="metis_editTask('T-002')">Edit</button>
-                                        <button class="metis__task-action-btn" onclick="metis_deleteTask('T-002')">Delete</button>
+                                        <button class="metis__task-action-btn" onclick="metis_viewTask('T-002')" data-tekton-action="view-task" data-tekton-action-type="secondary">View</button>
+                                        <button class="metis__task-action-btn" onclick="metis_editTask('T-002')" data-tekton-action="edit-task" data-tekton-action-type="secondary">Edit</button>
+                                        <button class="metis__task-action-btn" onclick="metis_deleteTask('T-002')" data-tekton-action="delete-task" data-tekton-action-type="secondary">Delete</button>
                                     </td>
                                 </tr>
                             </tbody>
@@ -227,7 +227,7 @@
         </div>
         
         <!-- Dependency Tab -->
-        <div id="dependency-panel" class="metis__panel">
+        <div id="dependency-panel" class="metis__panel" data-tekton-panel="dependency" data-tekton-panel-for="Dependency" data-tekton-panel-component="metis" data-tekton-panel-active="false">
             <div class="metis__dependency">
                 <h3 class="metis__section-title">Task Dependencies</h3>
                 <p class="metis__text">Visualize and manage dependencies between tasks.</p>
@@ -262,7 +262,7 @@
                         </div>
                         
                         <div class="metis__form-actions">
-                            <button id="add-dependency-btn" class="metis__button metis__button--primary">Add Dependency</button>
+                            <button id="add-dependency-btn" class="metis__button metis__button--primary" data-tekton-action="add-dependency" data-tekton-action-type="primary">Add Dependency</button>
                         </div>
                     </div>
                 </div>
@@ -294,7 +294,7 @@
                                 <td>Blocks</td>
                                 <td>T-001: Implement Metis UI Component</td>
                                 <td>
-                                    <button class="metis__dependency-action-btn" onclick="metis_removeDependency('1')">Remove</button>
+                                    <button class="metis__dependency-action-btn" onclick="metis_removeDependency('1')" data-tekton-action="remove-dependency" data-tekton-action-type="secondary">Remove</button>
                                 </td>
                             </tr>
                         </tbody>
@@ -304,7 +304,7 @@
         </div>
         
         <!-- Complexity Tab -->
-        <div id="complexity-panel" class="metis__panel">
+        <div id="complexity-panel" class="metis__panel" data-tekton-panel="complexity" data-tekton-panel-for="Complexity" data-tekton-panel-component="metis" data-tekton-panel-active="false">
             <div class="metis__complexity">
                 <h3 class="metis__section-title">Task Complexity Analysis</h3>
                 <p class="metis__text">Analyze and understand task complexity factors.</p>
@@ -320,7 +320,7 @@
                     </div>
                     
                     <div class="metis__form-actions">
-                        <button id="analyze-complexity-btn" class="metis__button metis__button--primary">Analyze Complexity</button>
+                        <button id="analyze-complexity-btn" class="metis__button metis__button--primary" data-tekton-action="analyze-complexity" data-tekton-action-type="primary">Analyze Complexity</button>
                     </div>
                 </div>
                 
@@ -390,7 +390,7 @@
         </div>
         
         <!-- PRD Parser Tab -->
-        <div id="prd-panel" class="metis__panel">
+        <div id="prd-panel" class="metis__panel" data-tekton-panel="prd" data-tekton-panel-for="PRD Parser" data-tekton-panel-component="metis" data-tekton-panel-active="false">
             <div class="metis__prd">
                 <h3 class="metis__section-title">PRD Parser</h3>
                 <p class="metis__text">Upload a PRD document and automatically generate tasks.</p>
@@ -405,7 +405,7 @@
                         </div>
                         
                         <div class="metis__form-actions">
-                            <button id="parse-prd-btn" class="metis__button metis__button--primary" disabled>Parse Document</button>
+                            <button id="parse-prd-btn" class="metis__button metis__button--primary" disabled data-tekton-action="parse-prd" data-tekton-action-type="primary">Parse Document</button>
                         </div>
                     </div>
                     
@@ -426,15 +426,15 @@
                     </div>
                     
                     <div class="metis__form-actions">
-                        <button id="import-tasks-btn" class="metis__button metis__button--primary">Import Tasks</button>
-                        <button id="reset-parser-btn" class="metis__button metis__button--secondary">Reset Parser</button>
+                        <button id="import-tasks-btn" class="metis__button metis__button--primary" data-tekton-action="import-tasks" data-tekton-action-type="primary">Import Tasks</button>
+                        <button id="reset-parser-btn" class="metis__button metis__button--secondary" data-tekton-action="reset-parser" data-tekton-action-type="secondary">Reset Parser</button>
                     </div>
                 </div>
             </div>
         </div>
         
         <!-- Workflow Chat Tab -->
-        <div id="workflow-panel" class="metis__panel">
+        <div id="workflow-panel" class="metis__panel" data-tekton-panel="workflow" data-tekton-panel-for="Workflow Chat" data-tekton-panel-component="metis" data-tekton-panel-active="false">
             <div id="workflow-messages" class="metis__chat-messages">
                 <!-- Welcome message -->
                 <div class="metis__message metis__message--system">
@@ -455,7 +455,7 @@
         </div>
         
         <!-- Team Chat Tab -->
-        <div id="teamchat-panel" class="metis__panel">
+        <div id="teamchat-panel" class="metis__panel" data-tekton-panel="teamchat" data-tekton-panel-for="Team Chat" data-tekton-panel-component="metis" data-tekton-panel-active="false">
             <div id="teamchat-messages" class="metis__chat-messages">
                 <!-- Welcome message -->
                 <div class="metis__message metis__message--system">
@@ -475,7 +475,7 @@
         <div class="metis__modal-content">
             <div class="metis__modal-header">
                 <h3 class="metis__modal-title" id="modal-title">Task Details</h3>
-                <button class="metis__modal-close" onclick="metis_closeModal()">×</button>
+                <button class="metis__modal-close" onclick="metis_closeModal()" data-tekton-action="close-modal" data-tekton-action-type="secondary">×</button>
             </div>
             <div class="metis__modal-body">
                 <!-- Task form fields will be displayed here -->
@@ -518,8 +518,8 @@
                 </div>
             </div>
             <div class="metis__modal-footer">
-                <button id="save-task-btn" class="metis__button metis__button--primary">Save</button>
-                <button class="metis__button metis__button--secondary" onclick="metis_closeModal()">Cancel</button>
+                <button id="save-task-btn" class="metis__button metis__button--primary" data-tekton-action="save-task" data-tekton-action-type="primary">Save</button>
+                <button class="metis__button metis__button--secondary" onclick="metis_closeModal()" data-tekton-action="cancel-modal" data-tekton-action-type="secondary">Cancel</button>
             </div>
         </div>
     </div>
@@ -530,7 +530,7 @@
             <div class="metis__chat-prompt">></div>
             <input type="text" id="chat-input" class="metis__chat-input" 
                    placeholder="Enter message for team or workflow chat">
-            <button id="send-button" class="metis__send-button">Send</button>
+            <button id="send-button" class="metis__send-button" data-tekton-action="send-message" data-tekton-action-type="primary">Send</button>
         </div>
     </div>
 </div>

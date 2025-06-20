@@ -17,30 +17,30 @@
     <!-- Budget Menu Bar with Tab Navigation -->
     <div class="budget__menu-bar" data-tekton-zone="menu" data-tekton-zone="menu" data-tekton-nav="component-menu">
         <div class="budget__tabs" data-tekton-zone="menu">
-            <div class="budget__tab budget__tab--active" data-tab="dashboard" onclick="budget_switchTab('dashboard'); return false;">
+            <div class="budget__tab budget__tab--active" data-tab="dashboard" onclick="budget_switchTab('dashboard'); return false;" data-tekton-menu-item="Dashboard" data-tekton-menu-component="budget" data-tekton-menu-active="true" data-tekton-menu-panel="dashboard-panel" data-tekton-nav-target="dashboard-panel">
                 <span class="budget__tab-label">Dashboard</span>
             </div>
-            <div class="budget__tab" data-tab="details" onclick="budget_switchTab('details'); return false;">
+            <div class="budget__tab" data-tab="details" onclick="budget_switchTab('details'); return false;" data-tekton-menu-item="Usage Details" data-tekton-menu-component="budget" data-tekton-menu-active="false" data-tekton-menu-panel="details-panel" data-tekton-nav-target="details-panel">
                 <span class="budget__tab-label">Usage Details</span>
             </div>
-            <div class="budget__tab" data-tab="settings" onclick="budget_switchTab('settings'); return false;">
+            <div class="budget__tab" data-tab="settings" onclick="budget_switchTab('settings'); return false;" data-tekton-menu-item="Settings" data-tekton-menu-component="budget" data-tekton-menu-active="false" data-tekton-menu-panel="settings-panel" data-tekton-nav-target="settings-panel">
                 <span class="budget__tab-label">Settings</span>
             </div>
-            <div class="budget__tab" data-tab="alerts" onclick="budget_switchTab('alerts'); return false;">
+            <div class="budget__tab" data-tab="alerts" onclick="budget_switchTab('alerts'); return false;" data-tekton-menu-item="Alerts" data-tekton-menu-component="budget" data-tekton-menu-active="false" data-tekton-menu-panel="alerts-panel" data-tekton-nav-target="alerts-panel">
                 <span class="budget__tab-label">Alerts</span>
             </div>
-            <div class="budget__tab" data-tab="budgetchat" onclick="budget_switchTab('budgetchat'); return false;">
+            <div class="budget__tab" data-tab="budgetchat" onclick="budget_switchTab('budgetchat'); return false;" data-tekton-menu-item="Budget Chat" data-tekton-menu-component="budget" data-tekton-menu-active="false" data-tekton-menu-panel="budgetchat-panel" data-tekton-nav-target="budgetchat-panel">
                 <span class="budget__tab-label">Budget Chat</span>
             </div>
-            <div class="budget__tab" data-tab="teamchat" onclick="budget_switchTab('teamchat'); return false;">
+            <div class="budget__tab" data-tab="teamchat" onclick="budget_switchTab('teamchat'); return false;" data-tekton-menu-item="Team Chat" data-tekton-menu-component="budget" data-tekton-menu-active="false" data-tekton-menu-panel="teamchat-panel" data-tekton-nav-target="teamchat-panel">
                 <span class="budget__tab-label">Team Chat</span>
             </div>
         </div>
         <div class="budget__actions">
-            <button id="clear-chat-btn" class="budget__action-button" style="display: none;" onclick="budget_clearChat(); return false;">
+            <button id="clear-chat-btn" class="budget__action-button" style="display: none;" onclick="budget_clearChat(); return false;" data-tekton-action="clear-chat" data-tekton-action-type="secondary">
                 <span class="budget__button-label">Clear</span>
             </button>
-            <button id="refresh-button" class="budget__action-button" onclick="budget_refreshData(); return false;">
+            <button id="refresh-button" class="budget__action-button" onclick="budget_refreshData(); return false;" data-tekton-action="refresh-data" data-tekton-action-type="secondary">
                 <span class="budget__button-label">Refresh</span>
             </button>
         </div>
@@ -49,7 +49,7 @@
     <!-- Budget Content Area -->
     <div class="budget__content" data-tekton-zone="content" data-tekton-scrollable="true">
         <!-- Dashboard Tab (Default Active Tab) -->
-        <div id="dashboard-panel" class="budget__panel budget__panel--active">
+        <div id="dashboard-panel" class="budget__panel budget__panel--active" data-tekton-panel="dashboard" data-tekton-panel-for="Dashboard" data-tekton-panel-component="budget" data-tekton-panel-active="true">
             <div class="budget__dashboard">
                 <div class="budget__control-bar">
                     <div class="budget__filter-container">
@@ -260,13 +260,13 @@
         </div>
 
         <!-- Usage Details Tab -->
-        <div id="details-panel" class="budget__panel">
+        <div id="details-panel" class="budget__panel" data-tekton-panel="details" data-tekton-panel-for="Usage Details" data-tekton-panel-component="budget" data-tekton-panel-active="false">
             <div class="budget__usage-details">
                 <div class="budget__control-bar">
                     <div class="budget__date-filter">
                         <input type="date" class="budget__input" id="start-date" value="2025-04-01">
                         <input type="date" class="budget__input" id="end-date" value="2025-04-21">
-                        <button class="budget__button" id="filter-usage" onclick="budget_filterUsage(); return false;">Apply Filter</button>
+                        <button class="budget__button" id="filter-usage" onclick="budget_filterUsage(); return false;" data-tekton-action="filter-usage" data-tekton-action-type="primary">Apply Filter</button>
                     </div>
                 </div>
                 
@@ -344,20 +344,20 @@
                 </div>
                 
                 <div class="budget__pagination">
-                    <button class="budget__button budget__button--small">Previous</button>
+                    <button class="budget__button budget__button--small" data-tekton-action="previous-page" data-tekton-action-type="secondary">Previous</button>
                     <span class="budget__pagination-indicator">Page 1 of 14</span>
-                    <button class="budget__button budget__button--small">Next</button>
+                    <button class="budget__button budget__button--small" data-tekton-action="next-page" data-tekton-action-type="secondary">Next</button>
                 </div>
             </div>
         </div>
 
         <!-- Budget Settings Tab -->
-        <div id="settings-panel" class="budget__panel">
+        <div id="settings-panel" class="budget__panel" data-tekton-panel="settings" data-tekton-panel-for="Settings" data-tekton-panel-component="budget" data-tekton-panel-active="false">
             <div class="budget__settings">
                 <div class="budget__control-bar">
                     <div class="budget__settings-header">
                         <div class="budget__settings-actions">
-                            <button class="budget__button budget__button--primary" id="save-budget-settings" onclick="budget_saveSettings(); return false;">Save Settings</button>
+                            <button class="budget__button budget__button--primary" id="save-budget-settings" onclick="budget_saveSettings(); return false;" data-tekton-action="save-settings" data-tekton-action-type="primary">Save Settings</button>
                         </div>
                     </div>
                 </div>
@@ -472,11 +472,11 @@
         </div>
 
         <!-- Alerts Tab -->
-        <div id="alerts-panel" class="budget__panel">
+        <div id="alerts-panel" class="budget__panel" data-tekton-panel="alerts" data-tekton-panel-for="Alerts" data-tekton-panel-component="budget" data-tekton-panel-active="false">
             <div class="budget__alerts">
                 <div class="budget__control-bar">
                     <div class="budget__alerts-actions">
-                        <button class="budget__button" id="clear-alerts" onclick="budget_clearAlerts(); return false;">Clear All</button>
+                        <button class="budget__button" id="clear-alerts" onclick="budget_clearAlerts(); return false;" data-tekton-action="clear-alerts" data-tekton-action-type="secondary">Clear All</button>
                     </div>
                 </div>
                 
@@ -495,7 +495,7 @@
                                 </div>
                             </div>
                             <div class="budget__alert-actions">
-                                <button class="budget__button budget__button--small">Dismiss</button>
+                                <button class="budget__button budget__button--small" data-tekton-action="dismiss-alert" data-tekton-action-type="secondary">Dismiss</button>
                             </div>
                         </div>
                         
@@ -508,7 +508,7 @@
                                 </div>
                             </div>
                             <div class="budget__alert-actions">
-                                <button class="budget__button budget__button--small">Dismiss</button>
+                                <button class="budget__button budget__button--small" data-tekton-action="dismiss-alert" data-tekton-action-type="secondary">Dismiss</button>
                             </div>
                         </div>
                     </div>
@@ -544,14 +544,14 @@
                     </div>
                     
                     <div class="budget__form-actions">
-                        <button class="budget__button budget__button--primary" id="save-alert-settings" onclick="budget_saveAlertSettings(); return false;">Save Alert Settings</button>
+                        <button class="budget__button budget__button--primary" id="save-alert-settings" onclick="budget_saveAlertSettings(); return false;" data-tekton-action="save-alert-settings" data-tekton-action-type="primary">Save Alert Settings</button>
                     </div>
                 </div>
             </div>
         </div>
 
         <!-- Budget Chat Tab -->
-        <div id="budgetchat-panel" class="budget__panel">
+        <div id="budgetchat-panel" class="budget__panel" data-tekton-panel="budgetchat" data-tekton-panel-for="Budget Chat" data-tekton-panel-component="budget" data-tekton-panel-active="false">
             <div id="budgetchat-messages" class="budget__chat-messages">
                 <!-- Welcome message -->
                 <div class="budget__message budget__message--system">
@@ -566,7 +566,7 @@
         </div>
         
         <!-- Team Chat Tab -->
-        <div id="teamchat-panel" class="budget__panel">
+        <div id="teamchat-panel" class="budget__panel" data-tekton-panel="teamchat" data-tekton-panel-for="Team Chat" data-tekton-panel-component="budget" data-tekton-panel-active="false">
             <div id="teamchat-messages" class="budget__chat-messages">
                 <!-- Welcome message -->
                 <div class="budget__message budget__message--system">
@@ -587,7 +587,7 @@
             <div class="budget__chat-prompt">></div>
             <input type="text" id="chat-input" class="budget__chat-input" 
                    placeholder="Ask about usage, costs, or budget settings">
-            <button id="send-button" class="budget__send-button">Send</button>
+            <button id="send-button" class="budget__send-button" data-tekton-action="send-message" data-tekton-action-type="primary">Send</button>
         </div>
     </div>
 </div>
