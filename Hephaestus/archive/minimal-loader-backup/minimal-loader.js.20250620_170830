@@ -97,18 +97,9 @@ class MinimalLoader {
       return;
     }
 
-    // Set initial loading state with timestamp
-    container.setAttribute('data-tekton-loading-state', 'pending');
-    container.setAttribute('data-tekton-loading-component', componentId);
-    container.setAttribute('data-tekton-loading-started', Date.now());
-    // Clear any previous error
-    container.removeAttribute('data-tekton-loading-error');
-    
     try {
-      // Show loading indicator and update state to loading
+      // Show loading indicator
       container.innerHTML = `<div style="padding: 20px; text-align: center;">Loading ${componentId}...</div>`;
-      container.setAttribute('data-tekton-loading-state', 'loading');
-      console.log(`MinimalLoader: Set loading state to 'loading' for ${componentId}`);
 
       // Determine component path
       const componentPath = this.componentPaths[componentId] || `/components/${componentId}/${componentId}-component.html`;
@@ -202,15 +193,6 @@ class MinimalLoader {
 
       console.log(`MinimalLoader: ${componentId} loaded successfully`);
       
-      // Set loaded state and clear any error attributes
-      container.setAttribute('data-tekton-loading-state', 'loaded');
-      container.removeAttribute('data-tekton-loading-error');
-      
-      // Calculate and log loading time
-      const startTime = parseInt(container.getAttribute('data-tekton-loading-started'));
-      const loadTime = Date.now() - startTime;
-      console.log(`MinimalLoader: ${componentId} loaded in ${loadTime}ms`);
-      
       // Update component headers based on current naming convention
       if (window.settingsManager && window.settingsManager.updateComponentHeaders) {
         setTimeout(() => {
@@ -220,16 +202,6 @@ class MinimalLoader {
       }
     } catch (error) {
       console.error(`MinimalLoader: Error loading ${componentId}:`, error);
-      
-      // Set error state with error details
-      container.setAttribute('data-tekton-loading-state', 'error');
-      container.setAttribute('data-tekton-loading-error', error.message);
-      
-      // Calculate loading time even for errors
-      const startTime = parseInt(container.getAttribute('data-tekton-loading-started'));
-      const loadTime = Date.now() - startTime;
-      console.log(`MinimalLoader: ${componentId} failed after ${loadTime}ms`);
-      
       container.innerHTML = `
         <div style="padding: 20px; margin: 20px; border: 1px solid #dc3545; border-radius: 8px;">
           <h3 style="color: #dc3545;">Error Loading ${componentId}</h3>

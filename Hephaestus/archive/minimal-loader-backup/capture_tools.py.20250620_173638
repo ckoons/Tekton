@@ -95,49 +95,6 @@ async def ui_capture(
     if component_state["loaded_component"]:
         result["working_with"] = component_state["loaded_component"]
     
-    # Check for loading states in the DOM
-    loading_state_check = await page.evaluate("""
-        () => {
-            const loadingElements = document.querySelectorAll('[data-tekton-loading-state]');
-            const loadingComponents = [];
-            
-            loadingElements.forEach(el => {
-                const state = el.getAttribute('data-tekton-loading-state');
-                const component = el.getAttribute('data-tekton-loading-component');
-                const started = el.getAttribute('data-tekton-loading-started');
-                
-                if (state && state !== 'loaded') {
-                    loadingComponents.push({
-                        component: component || 'unknown',
-                        state: state,
-                        started: started ? new Date(parseInt(started)).toLocaleString() : null,
-                        error: state === 'error' ? el.getAttribute('data-tekton-loading-error') : null
-                    });
-                }
-            });
-            
-            return {
-                hasLoadingComponents: loadingComponents.length > 0,
-                loadingComponents: loadingComponents,
-                allLoadingStates: Array.from(loadingElements).map(el => ({
-                    component: el.getAttribute('data-tekton-loading-component'),
-                    state: el.getAttribute('data-tekton-loading-state')
-                }))
-            };
-        }
-    """)
-    
-    # Add loading state info to result
-    if loading_state_check["hasLoadingComponents"]:
-        result["warnings"] = result.get("warnings", [])
-        result["warnings"].append({
-            "type": "components_loading",
-            "message": "Some components are still loading",
-            "loading_components": loading_state_check["loadingComponents"]
-        })
-    
-    result["loading_states"] = loading_state_check["allLoadingStates"]
-    
     # Get HTML content for the specified area
     if area == "hephaestus":
         # Capture entire UI

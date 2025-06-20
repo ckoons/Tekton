@@ -94,47 +94,7 @@ async def ui_navigate(
             # Wait a moment for click to register
             await page.wait_for_timeout(500)
             
-            # First, try to wait for the component to reach loaded state
-            # This leverages our new semantic loading state system
-            loaded_selector = f'[data-tekton-loading-component="{component}"][data-tekton-loading-state="loaded"]'
-            error_selector = f'[data-tekton-loading-component="{component}"][data-tekton-loading-state="error"]'
-            
-            try:
-                # Wait for either loaded or error state
-                await page.wait_for_selector(
-                    f'{loaded_selector}, {error_selector}',
-                    timeout=timeout
-                )
-                
-                # Check if it's an error state
-                error_element = await page.query_selector(error_selector)
-                if error_element:
-                    error_msg = await error_element.get_attribute('data-tekton-loading-error')
-                    result["error"] = f"Component failed to load: {error_msg}"
-                    result["navigation_completed"] = False
-                    return result
-                
-                # If we're here, it's loaded successfully
-                result["navigation_completed"] = True
-                result["message"] = f"Successfully navigated to {component} (loading state: loaded)"
-                
-                # Get loading time if available
-                container = await page.query_selector(f'[data-tekton-loading-component="{component}"]')
-                if container:
-                    start_time = await container.get_attribute('data-tekton-loading-started')
-                    if start_time:
-                        current_time = await page.evaluate("Date.now()")
-                        load_time = int(current_time) - int(start_time)
-                        result["load_time_ms"] = load_time
-                
-                return result
-                
-            except Exception as loading_state_error:
-                # Fallback to original detection method if loading states aren't available
-                result["loading_state_fallback"] = True
-                result["loading_state_error"] = str(loading_state_error)
-            
-            # Original component detection as fallback
+            # Wait for the component area to be present in content (ignore nav state)
             component_selectors = [
                 f'[data-tekton-area="{component}"]',
                 f'[data-tekton-component="{component}"]', 
