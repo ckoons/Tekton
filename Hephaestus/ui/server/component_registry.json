@@ -109,20 +109,6 @@
       "usesShadowDom": true
     },
     {
-      "id": "test",
-      "name": "BEM Test Component",
-      "description": "BEM pattern component isolation test",
-      "icon": "🧪",
-      "defaultMode": "html",
-      "capabilities": [
-        "testing",
-        "bem_naming",
-        "component_isolation"
-      ],
-      "componentPath": "components/test/test-component.html",
-      "usesShadowDom": false
-    },
-    {
       "id": "terma",
       "name": "Terma",
       "description": "Advanced terminal environment",

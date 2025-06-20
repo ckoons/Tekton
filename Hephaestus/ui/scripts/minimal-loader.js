@@ -12,7 +12,6 @@ class MinimalLoader {
   constructor() {
     // Standard component paths
     this.componentPaths = {
-      'test': '/components/test/test-component.html',
       'athena': '/components/athena/athena-component.html',
       'ergon': '/components/ergon/ergon-component.html',
       'rhetor': '/components/rhetor/rhetor-component.html',
