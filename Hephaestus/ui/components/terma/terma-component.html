@@ -1,17 +1,27 @@
-<!-- Terma Component Stub -->
-<div class="terma-component">
-  <header class="terma-header">
+<!-- Terma Component - Terminal System -->
+<div class="terma-component"
+     data-tekton-area="terma"
+     data-tekton-component="terma"
+     data-tekton-type="component-workspace"
+     data-tekton-description="Interactive terminal with AI assistance"
+     data-tekton-ai="terma-assistant"
+     data-tekton-ai-ready="false">
+  <header class="terma-header" data-tekton-zone="header" data-tekton-section="header">
     <div class="terma-header-title">
       <img src="/images/icon.jpg" alt="Terma" class="terma-logo">
       <h1>Terma - Terminal System</h1>
     </div>
     <div class="terma-header-controls">
-      <button class="terma-clear">Clear</button>
-      <button class="terma-settings">Settings</button>
+      <button class="terma-clear"
+              data-tekton-action="clear-terminal"
+              data-tekton-action-type="secondary">Clear</button>
+      <button class="terma-settings"
+              data-tekton-action="open-settings"
+              data-tekton-action-type="secondary">Settings</button>
     </div>
   </header>
   
-  <div class="terma-terminal-container">
+  <div class="terma-terminal-container" data-tekton-zone="content" data-tekton-scrollable="true">
     <div id="terma-terminal" class="terma-terminal">
       <div id="terma-output" class="terma-output">
         <div class="terma-welcome">
@@ -21,15 +31,20 @@
       </div>
       <div class="terma-input-container">
         <span class="terma-prompt">$</span>
-        <input type="text" id="terma-input" class="terma-input" placeholder="Type your command here...">
+        <input type="text" id="terma-input" class="terma-input" placeholder="Type your command here..."
+               data-tekton-input="terminal-input"
+               data-tekton-input-type="command">
       </div>
     </div>
   </div>
   
-  <div class="terma-llm-assistance">
+  <div class="terma-llm-assistance" data-tekton-zone="assistant" data-tekton-ai-panel="terma">
     <div class="terma-llm-header">
       <span>AI Assistant</span>
-      <button id="terma-llm-toggle" class="terma-llm-toggle">
+      <button id="terma-llm-toggle" class="terma-llm-toggle"
+              data-tekton-action="toggle-ai-assistant"
+              data-tekton-action-type="toggle"
+              data-tekton-state="collapsed">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M6 9L12 15L18 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>

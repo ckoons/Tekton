@@ -1,6 +1,10 @@
 <!-- Settings Component UI Template -->
-<div class="settings-container">
-  <div class="settings-header">
+<div class="settings-container"
+     data-tekton-area="settings"
+     data-tekton-component="settings"
+     data-tekton-type="component-workspace"
+     data-tekton-description="System configuration and preferences">
+  <div class="settings-header" data-tekton-zone="header" data-tekton-section="header">
     <div class="settings-title-container">
       <img src="/images/hexagon.jpg" alt="Tekton" class="settings-icon">
       <h2 class="settings-header__title">
@@ -11,20 +15,38 @@
   </div>
   
   <!-- Settings Menu Bar with Tab Navigation -->
-  <div class="settings-menu-bar">
+  <div class="settings-menu-bar" data-tekton-zone="menu" data-tekton-nav="component-menu">
     <div class="settings-tabs">
-      <div class="settings-tab settings-tab--active" data-tab="theme" onclick="settings_switchTab('theme'); return false;">
+      <div class="settings-tab settings-tab--active" data-tab="theme"
+           data-tekton-menu-item="Theme"
+           data-tekton-menu-component="settings"
+           data-tekton-menu-active="true"
+           data-tekton-menu-panel="theme-panel"
+           data-tekton-nav-target="theme"
+           onclick="settings_switchTab('theme'); return false;">
         <span class="settings-tab-label">Theme</span>
       </div>
-      <div class="settings-tab" data-tab="interface" onclick="settings_switchTab('interface'); return false;">
+      <div class="settings-tab" data-tab="interface"
+           data-tekton-menu-item="Interface"
+           data-tekton-menu-component="settings"
+           data-tekton-menu-active="false"
+           data-tekton-menu-panel="interface-panel"
+           data-tekton-nav-target="interface"
+           onclick="settings_switchTab('interface'); return false;">
         <span class="settings-tab-label">Interface</span>
       </div>
     </div>
     <div class="settings-actions">
-      <button class="settings-button settings-button--primary" id="save-all-settings" onclick="settings_saveAllSettings(); return false;">
+      <button class="settings-button settings-button--primary" id="save-all-settings"
+              data-tekton-action="save-settings"
+              data-tekton-action-type="primary"
+              onclick="settings_saveAllSettings(); return false;">
         Save Settings
       </button>
-      <button class="settings-button" id="reset-all-settings" onclick="settings_resetAllSettings(); return false;">
+      <button class="settings-button" id="reset-all-settings"
+              data-tekton-action="reset-settings"
+              data-tekton-action-type="secondary"
+              onclick="settings_resetAllSettings(); return false;">
         Reset to Defaults
       </button>
     </div>
@@ -254,19 +276,27 @@ window.settings_toggleGreekNames = function(checkbox) {
 </script>
   
   <!-- Settings Content Area -->
-  <div class="settings-content">
+  <div class="settings-content" data-tekton-zone="content" data-tekton-scrollable="true">
     <!-- Theme Tab (Default Active Tab) -->
-    <div id="theme-panel" class="settings-panel settings-panel--active">
+    <div id="theme-panel" class="settings-panel settings-panel--active"
+         data-tekton-panel="theme"
+         data-tekton-panel-for="Theme"
+         data-tekton-panel-component="settings"
+         data-tekton-panel-active="true">
       <div class="settings-form">
         <div class="settings-field">
           <div class="settings-field-label">UI Mode</div>
           <div class="settings-field-control">
             <div class="settings-theme-mode">
-              <button class="settings-theme-mode__button" data-mode="light">
+              <button class="settings-theme-mode__button" data-mode="light"
+                      data-tekton-action="set-theme-mode"
+                      data-tekton-action-value="light">
                 <span class="settings-theme-mode__icon">☀️</span>
                 <span class="settings-theme-mode__label">Light</span>
               </button>
-              <button class="settings-theme-mode__button" data-mode="dark">
+              <button class="settings-theme-mode__button" data-mode="dark"
+                      data-tekton-action="set-theme-mode"
+                      data-tekton-action-value="dark">
                 <span class="settings-theme-mode__icon">🌙</span>
                 <span class="settings-theme-mode__label">Dark</span>
               </button>
@@ -278,19 +308,27 @@ window.settings_toggleGreekNames = function(checkbox) {
           <div class="settings-field-label">Accent Color</div>
           <div class="settings-field-control">
             <div class="settings-theme-color">
-              <button class="settings-theme-color__button" data-color="blue" style="--color: #007bff">
+              <button class="settings-theme-color__button" data-color="blue" style="--color: #007bff"
+                      data-tekton-action="set-theme-color"
+                      data-tekton-action-value="blue">
                 <span class="settings-theme-color__dot"></span>
                 <span class="settings-theme-color__label">Blue</span>
               </button>
-              <button class="settings-theme-color__button" data-color="green" style="--color: #28a745">
+              <button class="settings-theme-color__button" data-color="green" style="--color: #28a745"
+                      data-tekton-action="set-theme-color"
+                      data-tekton-action-value="green">
                 <span class="settings-theme-color__dot"></span>
                 <span class="settings-theme-color__label">Green</span>
               </button>
-              <button class="settings-theme-color__button" data-color="purple" style="--color: #6f42c1">
+              <button class="settings-theme-color__button" data-color="purple" style="--color: #6f42c1"
+                      data-tekton-action="set-theme-color"
+                      data-tekton-action-value="purple">
                 <span class="settings-theme-color__dot"></span>
                 <span class="settings-theme-color__label">Purple</span>
               </button>
-              <button class="settings-theme-color__button" data-color="custom" style="--color: #ff5722">
+              <button class="settings-theme-color__button" data-color="custom" style="--color: #ff5722"
+                      data-tekton-action="set-theme-color"
+                      data-tekton-action-value="custom">
                 <span class="settings-theme-color__dot"></span>
                 <span class="settings-theme-color__label">Custom</span>
               </button>
@@ -305,7 +343,9 @@ window.settings_toggleGreekNames = function(checkbox) {
             <div class="settings-custom-color">
               <!-- Color picker -->
               <div class="color-picker-container">
-                <input type="color" id="custom-color-input" value="#ff5722" class="settings-color-input">
+                <input type="color" id="custom-color-input" value="#ff5722" class="settings-color-input"
+                       data-tekton-input="custom-color"
+                       data-tekton-input-type="color">
                 <span id="custom-color-hex" class="color-hex-display">#FF5722</span>
               </div>
               
@@ -326,13 +366,19 @@ window.settings_toggleGreekNames = function(checkbox) {
     </div>
     
     <!-- Interface Tab -->
-    <div id="interface-panel" class="settings-panel">
+    <div id="interface-panel" class="settings-panel"
+         data-tekton-panel="interface"
+         data-tekton-panel-for="Interface"
+         data-tekton-panel-component="settings"
+         data-tekton-panel-active="false">
       <div class="settings-form">
         <div class="settings-field">
           <div class="settings-field-label">Show Greek Names</div>
           <div class="settings-field-control">
             <label class="settings-toggle">
-              <input type="checkbox" id="greek-names-toggle" onclick="settings_toggleGreekNames(this);">
+              <input type="checkbox" id="greek-names-toggle" onclick="settings_toggleGreekNames(this);"
+                     data-tekton-input="greek-names"
+                     data-tekton-input-type="toggle">
               <span class="settings-toggle__slider"></span>
             </label>
             <div class="settings-field-description">
@@ -345,7 +391,9 @@ window.settings_toggleGreekNames = function(checkbox) {
         <div class="settings-field">
           <div class="settings-field-label">Terminal Font Size</div>
           <div class="settings-field-control">
-            <select id="terminal-font-size" class="settings-select">
+            <select id="terminal-font-size" class="settings-select"
+                    data-tekton-input="terminal-font-size"
+                    data-tekton-input-type="select">
               <option value="small">Small</option>
               <option value="medium" selected>Medium</option>
               <option value="large">Large</option>

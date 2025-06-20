@@ -1,7 +1,7 @@
 <!-- Harmonia Component - Workflow Orchestration -->
 <div class="harmonia" data-tekton-area="harmonia" data-tekton-component="harmonia" data-tekton-type="component-workspace" data-tekton-ai="harmonia-assistant" data-tekton-ai-ready="false">
     <!-- Component Header with Title -->
-    <div class="harmonia__header">
+    <div class="harmonia__header" data-tekton-zone="header" data-tekton-section="header">
         <div class="harmonia__title-container">
             <img src="/images/hexagon.jpg" alt="Tekton" class="harmonia__icon">
             <h2 class="harmonia__title">
@@ -12,8 +12,8 @@
     </div>
     
     <!-- Harmonia Menu Bar with Tab Navigation -->
-    <div class="harmonia__menu-bar">
-        <div class="harmonia__tabs">
+    <div class="harmonia__menu-bar" data-tekton-zone="menu" data-tekton-zone="menu" data-tekton-nav="component-menu">
+        <div class="harmonia__tabs" data-tekton-zone="menu">
             <div class="harmonia__tab harmonia__tab--active" data-tab="workflows" onclick="harmonia_switchTab('workflows'); return false;">
                 <span class="harmonia__tab-label">Workflows</span>
             </div>
@@ -41,7 +41,7 @@
     </div>
     
     <!-- Harmonia Content Area -->
-    <div class="harmonia__content">
+    <div class="harmonia__content" data-tekton-zone="content" data-tekton-scrollable="true">
         <!-- Workflows Tab (Default Active Tab) -->
         <div id="workflows-panel" class="harmonia__panel harmonia__panel--active">
             <div class="harmonia__workflows">
@@ -323,7 +323,7 @@
     </div>
     
     <!-- Footer with Chat Input -->
-    <div class="harmonia__footer">
+    <div class="harmonia__footer" data-tekton-zone="footer">
         <div class="harmonia__chat-input-container">
             <div class="harmonia__chat-prompt">></div>
             <input type="text" id="chat-input" class="harmonia__chat-input" 

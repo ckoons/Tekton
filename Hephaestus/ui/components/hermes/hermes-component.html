@@ -1,7 +1,11 @@
 <!-- Hermes Component - Message and Data Handling -->
-<div class="hermes">
+<div class="hermes"
+     data-tekton-area="hermes"
+     data-tekton-component="hermes"
+     data-tekton-type="component-workspace"
+     data-tekton-description="Inter-component messaging and data routing">
     <!-- Component Header with Title -->
-    <div class="hermes__header">
+    <div class="hermes__header" data-tekton-zone="header" data-tekton-section="header">
         <div class="hermes__title-container">
             <img src="/images/hexagon.jpg" alt="Tekton" class="hermes__icon">
             <h2 class="hermes__title">
@@ -12,42 +16,89 @@
     </div>
     
     <!-- Hermes Menu Bar with Tab Navigation -->
-    <div class="hermes__menu-bar">
+    <div class="hermes__menu-bar" data-tekton-zone="menu" data-tekton-nav="component-menu">
         <div class="hermes__tabs">
-            <div class="hermes__tab hermes__tab--active" data-tab="registry" onclick="hermes_switchTab('registry'); return false;">
+            <div class="hermes__tab hermes__tab--active" data-tab="registry"
+                 data-tekton-menu-item="Service Registry"
+                 data-tekton-menu-component="hermes"
+                 data-tekton-menu-active="true"
+                 data-tekton-menu-panel="registry-panel"
+                 data-tekton-nav-target="registry"
+                 onclick="hermes_switchTab('registry'); return false;">
                 <span class="hermes__tab-label">Service Registry</span>
             </div>
-            <div class="hermes__tab" data-tab="messaging" onclick="hermes_switchTab('messaging'); return false;">
+            <div class="hermes__tab" data-tab="messaging"
+                 data-tekton-menu-item="Message Monitor"
+                 data-tekton-menu-component="hermes"
+                 data-tekton-menu-active="false"
+                 data-tekton-menu-panel="messaging-panel"
+                 data-tekton-nav-target="messaging"
+                 onclick="hermes_switchTab('messaging'); return false;">
                 <span class="hermes__tab-label">Message Monitor</span>
             </div>
-            <div class="hermes__tab" data-tab="connections" onclick="hermes_switchTab('connections'); return false;">
+            <div class="hermes__tab" data-tab="connections"
+                 data-tekton-menu-item="Connections"
+                 data-tekton-menu-component="hermes"
+                 data-tekton-menu-active="false"
+                 data-tekton-menu-panel="connections-panel"
+                 data-tekton-nav-target="connections"
+                 onclick="hermes_switchTab('connections'); return false;">
                 <span class="hermes__tab-label">Connections</span>
             </div>
-            <div class="hermes__tab" data-tab="history" onclick="hermes_switchTab('history'); return false;">
+            <div class="hermes__tab" data-tab="history"
+                 data-tekton-menu-item="Message History"
+                 data-tekton-menu-component="hermes"
+                 data-tekton-menu-active="false"
+                 data-tekton-menu-panel="history-panel"
+                 data-tekton-nav-target="history"
+                 onclick="hermes_switchTab('history'); return false;">
                 <span class="hermes__tab-label">Message History</span>
             </div>
-            <div class="hermes__tab" data-tab="chat" onclick="hermes_switchTab('chat'); return false;">
+            <div class="hermes__tab" data-tab="chat"
+                 data-tekton-menu-item="Message/Data Chat"
+                 data-tekton-menu-component="hermes"
+                 data-tekton-menu-active="false"
+                 data-tekton-menu-panel="chat-panel"
+                 data-tekton-nav-target="chat"
+                 onclick="hermes_switchTab('chat'); return false;">
                 <span class="hermes__tab-label">Message/Data Chat</span>
             </div>
-            <div class="hermes__tab" data-tab="teamchat" onclick="hermes_switchTab('teamchat'); return false;">
+            <div class="hermes__tab" data-tab="teamchat"
+                 data-tekton-menu-item="Team Chat"
+                 data-tekton-menu-component="hermes"
+                 data-tekton-menu-active="false"
+                 data-tekton-menu-panel="teamchat-panel"
+                 data-tekton-nav-target="teamchat"
+                 onclick="hermes_switchTab('teamchat'); return false;">
                 <span class="hermes__tab-label">Team Chat</span>
             </div>
         </div>
         <div class="hermes__actions">
-            <button id="clear-chat-btn" class="hermes__action-button" style="display: none;" onclick="hermes_clearChat(); return false;">
+            <button id="clear-chat-btn" class="hermes__action-button" style="display: none;"
+                    data-tekton-action="clear-chat"
+                    data-tekton-action-type="secondary"
+                    onclick="hermes_clearChat(); return false;">
                 <span class="hermes__button-label">Clear</span>
             </button>
         </div>
     </div>
     
     <!-- Hermes Content Area -->
-    <div class="hermes__content">
+    <div class="hermes__content" data-tekton-zone="content" data-tekton-scrollable="true">
         <!-- Registry Tab (Default Active Tab) -->
-        <div id="registry-panel" class="hermes__panel hermes__panel--active">
+        <div id="registry-panel" class="hermes__panel hermes__panel--active"
+             data-tekton-panel="registry"
+             data-tekton-panel-for="Service Registry"
+             data-tekton-panel-component="hermes"
+             data-tekton-panel-active="true">
             <div class="hermes__control-bar">
                 <div class="hermes__search-container">
-                    <input type="text" id="registry-search" class="hermes__search-input" placeholder="Search components...">
-                    <select id="filter-type" class="hermes__select">
+                    <input type="text" id="registry-search" class="hermes__search-input" placeholder="Search components..."
+                           data-tekton-input="registry-search"
+                           data-tekton-input-type="search">
+                    <select id="filter-type" class="hermes__select"
+                            data-tekton-input="filter-type"
+                            data-tekton-input-type="select">
                         <option value="all">All Types</option>
                         <option value="hermes">Hermes</option>
                         <option value="rhetor">Rhetor</option>
@@ -56,13 +107,21 @@
                     </select>
                 </div>
                 <div class="hermes__view-controls">
-                    <button class="hermes__view-button hermes__view-button--active" data-view="grid">
+                    <button class="hermes__view-button hermes__view-button--active" data-view="grid"
+                            data-tekton-action="set-view"
+                            data-tekton-action-value="grid"
+                            data-tekton-state="active">
                         <span class="hermes__view-icon">⊞</span>
                     </button>
-                    <button class="hermes__view-button" data-view="list">
+                    <button class="hermes__view-button" data-view="list"
+                            data-tekton-action="set-view"
+                            data-tekton-action-value="list"
+                            data-tekton-state="inactive">
                         <span class="hermes__view-icon">≡</span>
                     </button>
-                    <button id="refresh-registry-btn" class="hermes__action-button">
+                    <button id="refresh-registry-btn" class="hermes__action-button"
+                            data-tekton-action="refresh-registry"
+                            data-tekton-action-type="primary">
                         <span class="hermes__button-label">Refresh</span>
                     </button>
                 </div>
@@ -97,15 +156,28 @@
         </div>
         
         <!-- Messaging Tab -->
-        <div id="messaging-panel" class="hermes__panel">
+        <div id="messaging-panel" class="hermes__panel"
+             data-tekton-panel="messaging"
+             data-tekton-panel-for="Message Monitor"
+             data-tekton-panel-component="hermes"
+             data-tekton-panel-active="false">
             <div class="hermes__control-bar">
                 <div class="hermes__search-container">
-                    <input type="text" id="message-search" class="hermes__search-input" placeholder="Search messages...">
-                    <button id="message-search-btn" class="hermes__search-button">Search</button>
+                    <input type="text" id="message-search" class="hermes__search-input" placeholder="Search messages..."
+                           data-tekton-input="message-search"
+                           data-tekton-input-type="search">
+                    <button id="message-search-btn" class="hermes__search-button"
+                            data-tekton-action="search-messages"
+                            data-tekton-action-type="primary">Search</button>
                 </div>
                 <div class="hermes__actions">
-                    <button class="hermes__button" id="clear-messages">Clear</button>
-                    <button class="hermes__button" id="pause-messages">
+                    <button class="hermes__button" id="clear-messages"
+                            data-tekton-action="clear-messages"
+                            data-tekton-action-type="secondary">Clear</button>
+                    <button class="hermes__button" id="pause-messages"
+                            data-tekton-action="pause-messages"
+                            data-tekton-action-type="secondary"
+                            data-tekton-state="playing">
                         <span id="pause-icon">⏸️</span> Pause
                     </button>
                 </div>
@@ -158,14 +230,24 @@
         </div>
         
         <!-- Connections Tab -->
-        <div id="connections-panel" class="hermes__panel">
+        <div id="connections-panel" class="hermes__panel"
+             data-tekton-panel="connections"
+             data-tekton-panel-for="Connections"
+             data-tekton-panel-component="hermes"
+             data-tekton-panel-active="false">
             <div class="hermes__control-bar">
                 <div class="hermes__search-container">
-                    <input type="text" id="connection-search" class="hermes__search-input" placeholder="Search connections...">
-                    <button id="connection-search-btn" class="hermes__search-button">Search</button>
+                    <input type="text" id="connection-search" class="hermes__search-input" placeholder="Search connections..."
+                           data-tekton-input="connection-search"
+                           data-tekton-input-type="search">
+                    <button id="connection-search-btn" class="hermes__search-button"
+                            data-tekton-action="search-connections"
+                            data-tekton-action-type="primary">Search</button>
                 </div>
                 <div class="hermes__actions">
-                    <button class="hermes__button hermes__button--primary" id="add-connection">
+                    <button class="hermes__button hermes__button--primary" id="add-connection"
+                            data-tekton-action="add-connection"
+                            data-tekton-action-type="primary">
                         <span class="hermes__button-icon">+</span>
                         <span class="hermes__button-text">Add Connection</span>
                     </button>
@@ -189,11 +271,19 @@
         </div>
         
         <!-- History Tab -->
-        <div id="history-panel" class="hermes__panel">
+        <div id="history-panel" class="hermes__panel"
+             data-tekton-panel="history"
+             data-tekton-panel-for="Message History"
+             data-tekton-panel-component="hermes"
+             data-tekton-panel-active="false">
             <div class="hermes__control-bar">
                 <div class="hermes__search-container">
-                    <input type="text" id="history-search" class="hermes__search-input" placeholder="Search messages...">
-                    <select id="history-filter" class="hermes__select">
+                    <input type="text" id="history-search" class="hermes__search-input" placeholder="Search messages..."
+                           data-tekton-input="history-search"
+                           data-tekton-input-type="search">
+                    <select id="history-filter" class="hermes__select"
+                            data-tekton-input="history-filter"
+                            data-tekton-input-type="select">
                         <option value="all">All Types</option>
                         <option value="registration">Registration</option>
                         <option value="heartbeat">Heartbeat</option>
@@ -202,8 +292,12 @@
                     </select>
                 </div>
                 <div class="hermes__actions">
-                    <button class="hermes__button" id="export-history">Export</button>
-                    <button class="hermes__button hermes__button--danger" id="clear-history">Clear History</button>
+                    <button class="hermes__button" id="export-history"
+                            data-tekton-action="export-history"
+                            data-tekton-action-type="secondary">Export</button>
+                    <button class="hermes__button hermes__button--danger" id="clear-history"
+                            data-tekton-action="clear-history"
+                            data-tekton-action-type="danger">Clear History</button>
                 </div>
             </div>
             
@@ -212,15 +306,21 @@
                     <div class="hermes__filter-group">
                         <label class="hermes__filter-label">Date Range</label>
                         <div class="hermes__date-range">
-                            <input type="datetime-local" id="history-start-date" class="hermes__date-input">
+                            <input type="datetime-local" id="history-start-date" class="hermes__date-input"
+                                   data-tekton-input="history-start-date"
+                                   data-tekton-input-type="datetime">
                             <span class="hermes__date-separator">to</span>
-                            <input type="datetime-local" id="history-end-date" class="hermes__date-input">
+                            <input type="datetime-local" id="history-end-date" class="hermes__date-input"
+                                   data-tekton-input="history-end-date"
+                                   data-tekton-input-type="datetime">
                         </div>
                     </div>
                     
                     <div class="hermes__filter-group">
                         <label class="hermes__filter-label">Components</label>
-                        <select id="history-component-filter" class="hermes__select" multiple>
+                        <select id="history-component-filter" class="hermes__select" multiple
+                                data-tekton-input="history-component-filter"
+                                data-tekton-input-type="multiselect">
                             <!-- Component options will be added dynamically -->
                         </select>
                     </div>
@@ -247,7 +347,11 @@
         </div>
         
         <!-- Chat Tab -->
-        <div id="chat-panel" class="hermes__panel">
+        <div id="chat-panel" class="hermes__panel"
+             data-tekton-panel="chat"
+             data-tekton-panel-for="Message/Data Chat"
+             data-tekton-panel-component="hermes"
+             data-tekton-panel-active="false">
             <div class="hermes__chat">
                 <div class="hermes__chat-messages" id="chat-messages" style="width: 100%; height: calc(100% - 0px);">
                     <!-- Chat messages will be added dynamically -->
@@ -268,7 +372,11 @@
         </div>
         
         <!-- Team Chat Tab -->
-        <div id="teamchat-panel" class="hermes__panel">
+        <div id="teamchat-panel" class="hermes__panel"
+             data-tekton-panel="teamchat"
+             data-tekton-panel-for="Team Chat"
+             data-tekton-panel-component="hermes"
+             data-tekton-panel-active="false">
             <div id="teamchat-messages" class="hermes__chat-messages">
                 <!-- Welcome message -->
                 <div class="hermes__message hermes__message--system">
@@ -284,29 +392,42 @@
     </div>
     
     <!-- Footer with Chat Input -->
-    <div class="hermes__footer">
+    <div class="hermes__footer" data-tekton-zone="footer">
         <div class="hermes__chat-input-container">
             <div class="hermes__chat-prompt">></div>
             <input type="text" id="chat-input" class="hermes__chat-input" 
-                   placeholder="Enter chat message for Hermes service registry, message monitoring or LLM chat">
-            <button id="send-button" class="hermes__send-button">Send</button>
+                   placeholder="Enter chat message for Hermes service registry, message monitoring or LLM chat"
+                   data-tekton-input="chat-input"
+                   data-tekton-input-type="chat">
+            <button id="send-button" class="hermes__send-button"
+                    data-tekton-action="send-message"
+                    data-tekton-action-type="primary">Send</button>
         </div>
     </div>
     
     <!-- Modal for component details (hidden by default) -->
-    <div class="hermes__modal" id="detail-modal" style="display: none;">
+    <div class="hermes__modal" id="detail-modal" style="display: none;"
+         data-tekton-modal="detail"
+         data-tekton-modal-component="hermes"
+         data-tekton-state="hidden">
         <div class="hermes__modal-overlay"></div>
         <div class="hermes__modal-content">
             <div class="hermes__modal-header">
                 <h3 class="hermes__modal-title" id="modal-title">Component Details</h3>
-                <button class="hermes__modal-close" id="close-modal">&times;</button>
+                <button class="hermes__modal-close" id="close-modal"
+                        data-tekton-action="close-modal"
+                        data-tekton-action-type="close">&times;</button>
             </div>
             <div class="hermes__modal-body" id="modal-body">
                 <!-- Modal content will be added dynamically -->
             </div>
             <div class="hermes__modal-footer">
-                <button class="hermes__button hermes__button--secondary" id="modal-cancel">Close</button>
-                <button class="hermes__button hermes__button--primary" id="modal-action">View More</button>
+                <button class="hermes__button hermes__button--secondary" id="modal-cancel"
+                        data-tekton-action="modal-cancel"
+                        data-tekton-action-type="secondary">Close</button>
+                <button class="hermes__button hermes__button--primary" id="modal-action"
+                        data-tekton-action="modal-view-more"
+                        data-tekton-action-type="primary">View More</button>
             </div>
         </div>
     </div>

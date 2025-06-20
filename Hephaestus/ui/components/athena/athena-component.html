@@ -1,7 +1,7 @@
 <!-- Athena Component - Knowledge Graph and Entity Management -->
 <div class="athena" data-tekton-area="athena" data-tekton-component="athena" data-tekton-type="component-workspace" data-tekton-ai="athena-assistant" data-tekton-ai-ready="false">
     <!-- Component Header with Title -->
-    <div class="athena__header">
+    <div class="athena__header" data-tekton-zone="header" data-tekton-section="header">
         <div class="athena__title-container">
             <img src="/images/hexagon.jpg" alt="Tekton" class="athena__icon">
             <h2 class="athena__title">
@@ -12,8 +12,8 @@
     </div>
     
     <!-- Athena Menu Bar with Tab Navigation -->
-    <div class="athena__menu-bar">
-        <div class="athena__tabs">
+    <div class="athena__menu-bar" data-tekton-zone="menu" data-tekton-zone="menu" data-tekton-nav="component-menu">
+        <div class="athena__tabs" data-tekton-zone="menu">
             <div class="athena__tab athena__tab--active" data-tab="graph" onclick="athena_switchTab('graph'); return false;">
                 <span class="athena__tab-label">Knowledge Graph</span>
             </div>
@@ -38,7 +38,7 @@
     </div>
     
     <!-- Athena Content Area -->
-    <div class="athena__content">
+    <div class="athena__content" data-tekton-zone="content" data-tekton-scrollable="true">
         <!-- Graph Tab (Default Active Tab) -->
         <div id="graph-panel" class="athena__panel athena__panel--active">
             <div class="athena__graph">
@@ -227,7 +227,7 @@
     </div>
     
     <!-- Footer with Chat Input -->
-    <div class="athena__footer">
+    <div class="athena__footer" data-tekton-zone="footer">
         <div class="athena__chat-input-container">
             <div class="athena__chat-prompt">></div>
             <input type="text" id="chat-input" class="athena__chat-input" 

@@ -4,7 +4,7 @@
 
 <div class="budget" data-tekton-area="budget" data-tekton-component="budget" data-tekton-type="component-workspace" data-tekton-ai="budget-assistant" data-tekton-ai-ready="false">
     <!-- Component Header with Title -->
-    <div class="budget__header">
+    <div class="budget__header" data-tekton-zone="header" data-tekton-section="header">
         <div class="budget__title-container">
             <img src="/images/hexagon.jpg" alt="Tekton" class="budget__icon">
             <h2 class="budget__title">
@@ -15,8 +15,8 @@
     </div>
     
     <!-- Budget Menu Bar with Tab Navigation -->
-    <div class="budget__menu-bar">
-        <div class="budget__tabs">
+    <div class="budget__menu-bar" data-tekton-zone="menu" data-tekton-zone="menu" data-tekton-nav="component-menu">
+        <div class="budget__tabs" data-tekton-zone="menu">
             <div class="budget__tab budget__tab--active" data-tab="dashboard" onclick="budget_switchTab('dashboard'); return false;">
                 <span class="budget__tab-label">Dashboard</span>
             </div>
@@ -47,7 +47,7 @@
     </div>
     
     <!-- Budget Content Area -->
-    <div class="budget__content">
+    <div class="budget__content" data-tekton-zone="content" data-tekton-scrollable="true">
         <!-- Dashboard Tab (Default Active Tab) -->
         <div id="dashboard-panel" class="budget__panel budget__panel--active">
             <div class="budget__dashboard">
@@ -582,7 +582,7 @@
     </div>
     
     <!-- Footer with Chat Input -->
-    <div class="budget__footer">
+    <div class="budget__footer" data-tekton-zone="footer">
         <div class="budget__chat-input-container">
             <div class="budget__chat-prompt">></div>
             <input type="text" id="chat-input" class="budget__chat-input" 

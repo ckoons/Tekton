@@ -1,7 +1,7 @@
 <!-- Metis Component - Task Management and Visualization -->
 <div class="metis" data-tekton-area="metis" data-tekton-component="metis" data-tekton-type="component-workspace" data-tekton-ai="metis-assistant" data-tekton-ai-ready="false">
     <!-- Component Header with Title -->
-    <div class="metis__header">
+    <div class="metis__header" data-tekton-zone="header" data-tekton-section="header">
         <div class="metis__title-container">
             <img src="/images/hexagon.jpg" alt="Tekton" class="metis__icon">
             <h2 class="metis__title">
@@ -12,8 +12,8 @@
     </div>
     
     <!-- Metis Menu Bar with Tab Navigation -->
-    <div class="metis__menu-bar">
-        <div class="metis__tabs">
+    <div class="metis__menu-bar" data-tekton-zone="menu" data-tekton-zone="menu" data-tekton-nav="component-menu">
+        <div class="metis__tabs" data-tekton-zone="menu">
             <div class="metis__tab metis__tab--active" data-tab="tasks" onclick="metis_switchTab('tasks'); return false;">
                 <span class="metis__tab-label">Tasks</span>
             </div>
@@ -44,7 +44,7 @@
     </div>
     
     <!-- Metis Content Area -->
-    <div class="metis__content">
+    <div class="metis__content" data-tekton-zone="content" data-tekton-scrollable="true">
         <!-- Tasks Tab (Default Active Tab) -->
         <div id="tasks-panel" class="metis__panel metis__panel--active">
             <!-- View Toggle + Controls Bar (Secondary Menu Bar) -->
@@ -525,7 +525,7 @@
     </div>
     
     <!-- Footer with Chat Input -->
-    <div class="metis__footer">
+    <div class="metis__footer" data-tekton-zone="footer">
         <div class="metis__chat-input-container">
             <div class="metis__chat-prompt">></div>
             <input type="text" id="chat-input" class="metis__chat-input" 

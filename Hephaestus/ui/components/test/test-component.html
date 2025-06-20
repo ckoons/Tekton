@@ -1,18 +1,42 @@
 <!-- Test Component UI Template using BEM naming -->
-<div class="test">
-  <h2 class="test__title">BEM Test Component</h2>
+<div class="test"
+     data-tekton-area="test"
+     data-tekton-component="test"
+     data-tekton-type="component-workspace"
+     data-tekton-description="Test component demonstrating BEM and theming"
+     data-tekton-purpose="development">
+  <h2 class="test__title" data-tekton-zone="header" data-tekton-section="header">BEM Test Component</h2>
 
   <!-- Tab Navigation -->
-  <div class="test__tabs">
-    <button class="test__tab-button test__tab-button--active" data-tab="overview">Overview</button>
-    <button class="test__tab-button" data-tab="features">Features</button>
-    <button class="test__tab-button" data-tab="settings">Settings</button>
+  <div class="test__tabs" data-tekton-zone="menu" data-tekton-nav="component-menu">
+    <button class="test__tab-button test__tab-button--active" data-tab="overview"
+            data-tekton-menu-item="Overview"
+            data-tekton-menu-component="test"
+            data-tekton-menu-active="true"
+            data-tekton-menu-panel="test-overview-panel"
+            data-tekton-nav-target="overview">Overview</button>
+    <button class="test__tab-button" data-tab="features"
+            data-tekton-menu-item="Features"
+            data-tekton-menu-component="test"
+            data-tekton-menu-active="false"
+            data-tekton-menu-panel="test-features-panel"
+            data-tekton-nav-target="features">Features</button>
+    <button class="test__tab-button" data-tab="settings"
+            data-tekton-menu-item="Settings"
+            data-tekton-menu-component="test"
+            data-tekton-menu-active="false"
+            data-tekton-menu-panel="test-settings-panel"
+            data-tekton-nav-target="settings">Settings</button>
   </div>
 
   <!-- Tab Content -->
-  <div class="test__tab-content">
+  <div class="test__tab-content" data-tekton-zone="content" data-tekton-scrollable="true">
     <!-- Overview Tab -->
-    <div class="test__tab-panel test__tab-panel--active" id="test-overview-panel">
+    <div class="test__tab-panel test__tab-panel--active" id="test-overview-panel"
+         data-tekton-panel="overview"
+         data-tekton-panel-for="Overview"
+         data-tekton-panel-component="test"
+         data-tekton-panel-active="true">
       <div class="test__card">
         <h3 class="test__card-title">BEM Naming Convention</h3>
         <p class="test__card-description">
@@ -40,7 +64,11 @@
     </div>
 
     <!-- Features Tab -->
-    <div class="test__tab-panel" id="test-features-panel">
+    <div class="test__tab-panel" id="test-features-panel"
+         data-tekton-panel="features"
+         data-tekton-panel-for="Features"
+         data-tekton-panel-component="test"
+         data-tekton-panel-active="false">
       <div class="test__feature-list">
         <div class="test__feature-item">
           <div class="test__feature-icon">🛡️</div>
@@ -78,22 +106,32 @@
       <div class="test__interaction-demo">
         <h3 class="test__section-title">Interaction Demo</h3>
         <p>Click the button below to update this component without affecting others:</p>
-        <button class="test__button" id="test-update-button">Update Component State</button>
+        <button class="test__button" id="test-update-button"
+                data-tekton-action="update-state"
+                data-tekton-action-type="primary">Update Component State</button>
         <div class="test__result-display" id="test-result">Click the button to see the result</div>
       </div>
     </div>
 
     <!-- Settings Tab -->
-    <div class="test__tab-panel" id="test-settings-panel">
+    <div class="test__tab-panel" id="test-settings-panel"
+         data-tekton-panel="settings"
+         data-tekton-panel-for="Settings"
+         data-tekton-panel-component="test"
+         data-tekton-panel-active="false">
       <div class="test__form">
         <div class="test__form-row">
           <label for="test-setting-name" class="test__form-label">Component Name</label>
-          <input type="text" id="test-setting-name" class="test__form-input" value="Test Component" placeholder="Enter component name">
+          <input type="text" id="test-setting-name" class="test__form-input" value="Test Component" placeholder="Enter component name"
+                 data-tekton-input="component-name"
+                 data-tekton-input-type="text">
         </div>
 
         <div class="test__form-row">
           <label for="test-setting-mode" class="test__form-label">Display Mode</label>
-          <select id="test-setting-mode" class="test__form-select">
+          <select id="test-setting-mode" class="test__form-select"
+                  data-tekton-input="display-mode"
+                  data-tekton-input-type="select">
             <option value="light">Light</option>
             <option value="dark" selected>Dark</option>
             <option value="system">System</option>

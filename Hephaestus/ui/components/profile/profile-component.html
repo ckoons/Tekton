@@ -1,7 +1,11 @@
 <!-- Profile Component - User Information Management -->
-<div class="profile">
+<div class="profile"
+     data-tekton-area="profile"
+     data-tekton-component="profile"
+     data-tekton-type="component-workspace"
+     data-tekton-description="User profile and preferences management">
     <!-- Component Header with Title -->
-    <div class="profile__header">
+    <div class="profile__header" data-tekton-zone="header" data-tekton-section="header">
         <div class="profile__title-container">
             <img src="/images/hexagon.jpg" alt="Tekton" class="profile__icon">
             <h2 class="profile__title">
@@ -12,29 +16,60 @@
     </div>
     
     <!-- Profile Menu Bar with Tab Navigation -->
-    <div class="profile__menu-bar">
+    <div class="profile__menu-bar" data-tekton-zone="menu" data-tekton-nav="component-menu">
         <div class="profile__tabs">
-            <div class="profile__tab profile__tab--active" data-tab="personal" onclick="profile_switchTab('personal'); return false;">
+            <div class="profile__tab profile__tab--active" data-tab="personal"
+                 data-tekton-menu-item="Personal Information"
+                 data-tekton-menu-component="profile"
+                 data-tekton-menu-active="true"
+                 data-tekton-menu-panel="personal-panel"
+                 onclick="profile_switchTab('personal'); return false;">
                 <span class="profile__tab-label">Personal Information</span>
             </div>
-            <div class="profile__tab" data-tab="contact" onclick="profile_switchTab('contact'); return false;">
+            <div class="profile__tab" data-tab="contact"
+                 data-tekton-menu-item="Contact"
+                 data-tekton-menu-component="profile"
+                 data-tekton-menu-active="false"
+                 data-tekton-menu-panel="contact-panel"
+                 onclick="profile_switchTab('contact'); return false;">
                 <span class="profile__tab-label">Contact</span>
             </div>
-            <div class="profile__tab" data-tab="social" onclick="profile_switchTab('social'); return false;">
+            <div class="profile__tab" data-tab="social"
+                 data-tekton-menu-item="Social Accounts"
+                 data-tekton-menu-component="profile"
+                 data-tekton-menu-active="false"
+                 data-tekton-menu-panel="social-panel"
+                 onclick="profile_switchTab('social'); return false;">
                 <span class="profile__tab-label">Social Accounts</span>
             </div>
-            <div class="profile__tab" data-tab="security" onclick="profile_switchTab('security'); return false;">
+            <div class="profile__tab" data-tab="security"
+                 data-tekton-menu-item="Security"
+                 data-tekton-menu-component="profile"
+                 data-tekton-menu-active="false"
+                 data-tekton-menu-panel="security-panel"
+                 onclick="profile_switchTab('security'); return false;">
                 <span class="profile__tab-label">Security</span>
             </div>
-            <div class="profile__tab" data-tab="preferences" onclick="profile_switchTab('preferences'); return false;">
+            <div class="profile__tab" data-tab="preferences"
+                 data-tekton-menu-item="Preferences"
+                 data-tekton-menu-component="profile"
+                 data-tekton-menu-active="false"
+                 data-tekton-menu-panel="preferences-panel"
+                 onclick="profile_switchTab('preferences'); return false;">
                 <span class="profile__tab-label">Preferences</span>
             </div>
         </div>
         <div class="profile__actions">
-            <button id="save-profile-btn" class="profile__action-button" onclick="profile_saveProfile(); return false;">
+            <button id="save-profile-btn" class="profile__action-button"
+                    data-tekton-action="save-profile"
+                    data-tekton-action-type="primary"
+                    onclick="profile_saveProfile(); return false;">
                 <span class="profile__button-label">Save Profile</span>
             </button>
-            <button id="reset-changes-btn" class="profile__action-button" onclick="profile_resetChanges(); return false;">
+            <button id="reset-changes-btn" class="profile__action-button"
+                    data-tekton-action="reset-changes"
+                    data-tekton-action-type="secondary"
+                    onclick="profile_resetChanges(); return false;">
                 <span class="profile__button-label">Reset Changes</span>
             </button>
         </div>
@@ -143,9 +178,13 @@ window.profile_resetChanges = function() {
 </script>
     
     <!-- Profile Content Area -->
-    <div class="profile__content">
+    <div class="profile__content" data-tekton-zone="content" data-tekton-scrollable="true">
         <!-- Personal Info Tab (Default Active Tab) -->
-        <div id="personal-panel" class="profile__panel profile__panel--active">
+        <div id="personal-panel" class="profile__panel profile__panel--active"
+             data-tekton-panel="personal"
+             data-tekton-panel-for="Personal Information"
+             data-tekton-panel-component="profile"
+             data-tekton-panel-active="true">
             <div class="profile__form">
                 <div class="profile__field">
                     <div class="profile__field-label">Given Name</div>
@@ -189,7 +228,11 @@ window.profile_resetChanges = function() {
         </div>
         
         <!-- Contact Tab -->
-        <div id="contact-panel" class="profile__panel">
+        <div id="contact-panel" class="profile__panel"
+             data-tekton-panel="contact"
+             data-tekton-panel-for="Contact"
+             data-tekton-panel-component="profile"
+             data-tekton-panel-active="false">
             <div class="profile__form">
                 <div class="profile__field">
                     <div class="profile__field-label">Email Addresses</div>
@@ -234,7 +277,11 @@ window.profile_resetChanges = function() {
         </div>
         
         <!-- Social Accounts Tab -->
-        <div id="social-panel" class="profile__panel">
+        <div id="social-panel" class="profile__panel"
+             data-tekton-panel="social"
+             data-tekton-panel-for="Social Accounts"
+             data-tekton-panel-component="profile"
+             data-tekton-panel-active="false">
             <div class="profile__form">
                 <div class="profile__field">
                     <div class="profile__field-label">X / Twitter</div>

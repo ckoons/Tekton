@@ -1,7 +1,7 @@
 <!-- Telos Component - Requirements Management -->
 <div class="telos" data-tekton-area="telos" data-tekton-component="telos" data-tekton-type="component-workspace" data-tekton-ai="telos-assistant" data-tekton-ai-ready="false">
     <!-- Component Header with Title -->
-    <div class="telos__header">
+    <div class="telos__header" data-tekton-zone="header" data-tekton-section="header">
         <div class="telos__title-container">
             <img src="/images/hexagon.jpg" alt="Tekton" class="telos__icon">
             <h2 class="telos__title">
@@ -12,8 +12,8 @@
     </div>
     
     <!-- Telos Menu Bar with Tab Navigation -->
-    <div class="telos__menu-bar">
-        <div class="telos__tabs">
+    <div class="telos__menu-bar" data-tekton-zone="menu" data-tekton-zone="menu" data-tekton-nav="component-menu">
+        <div class="telos__tabs" data-tekton-zone="menu">
             <div class="telos__tab telos__tab--active" data-tab="projects" onclick="telos_switchTab('projects'); return false;">
                 <span class="telos__tab-label">Projects</span>
             </div>
@@ -41,7 +41,7 @@
     </div>
     
     <!-- Telos Content Area -->
-    <div class="telos__content">
+    <div class="telos__content" data-tekton-zone="content" data-tekton-scrollable="true">
         <!-- Projects Tab (Default Active Tab) -->
         <div id="projects-panel" class="telos__panel telos__panel--active">
             <div class="telos__projects">
@@ -312,7 +312,7 @@
     </div>
     
     <!-- Footer with Chat Input -->
-    <div class="telos__footer">
+    <div class="telos__footer" data-tekton-zone="footer">
         <div class="telos__chat-input-container">
             <div class="telos__chat-prompt">></div>
             <input type="text" id="chat-input" class="telos__chat-input" 

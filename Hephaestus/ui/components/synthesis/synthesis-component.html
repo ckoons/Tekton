@@ -1,7 +1,7 @@
 <!-- Synthesis Component - Execution & Integration Engine -->
 <div class="synthesis" data-tekton-area="synthesis" data-tekton-component="synthesis" data-tekton-type="component-workspace" data-tekton-ai="synthesis-assistant" data-tekton-ai-ready="false">
     <!-- Component Header with Title -->
-    <div class="synthesis__header">
+    <div class="synthesis__header" data-tekton-zone="header" data-tekton-section="header">
         <div class="synthesis__title-container">
             <img src="/images/hexagon.jpg" alt="Tekton" class="synthesis__icon">
             <h2 class="synthesis__title">
@@ -12,8 +12,8 @@
     </div>
     
     <!-- Synthesis Menu Bar with Tab Navigation -->
-    <div class="synthesis__menu-bar">
-        <div class="synthesis__tabs">
+    <div class="synthesis__menu-bar" data-tekton-zone="menu" data-tekton-zone="menu" data-tekton-nav="component-menu">
+        <div class="synthesis__tabs" data-tekton-zone="menu">
             <div class="synthesis__tab synthesis__tab--active" data-tab="executions" onclick="synthesis_switchTab('executions'); return false;">
                 <span class="synthesis__tab-label">Executions</span>
             </div>
@@ -41,7 +41,7 @@
     </div>
     
     <!-- Synthesis Content Area -->
-    <div class="synthesis__content">
+    <div class="synthesis__content" data-tekton-zone="content" data-tekton-scrollable="true">
         <!-- Executions Tab (Default Active Tab) -->
         <div id="executions-panel" class="synthesis__panel synthesis__panel--active">
             <div class="synthesis__executions">
@@ -441,7 +441,7 @@
     </div>
     
     <!-- Footer with Chat Input -->
-    <div class="synthesis__footer">
+    <div class="synthesis__footer" data-tekton-zone="footer">
         <div class="synthesis__chat-input-container">
             <div class="synthesis__chat-prompt">></div>
             <input type="text" id="chat-input" class="synthesis__chat-input" 

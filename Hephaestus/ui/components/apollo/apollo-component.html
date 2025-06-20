@@ -1,7 +1,7 @@
 <!-- Apollo Component - Attention and Prediction System -->
 <div class="apollo" data-tekton-area="apollo" data-tekton-component="apollo" data-tekton-type="component-workspace" data-tekton-ai="apollo-assistant" data-tekton-ai-ready="false">
     <!-- Component Header with Title -->
-    <div class="apollo__header">
+    <div class="apollo__header" data-tekton-zone="header" data-tekton-section="header">
         <div class="apollo__title-container">
             <img src="/images/hexagon.jpg" alt="Tekton" class="apollo__icon">
             <h2 class="apollo__title">
@@ -12,8 +12,8 @@
     </div>
     
     <!-- Apollo Menu Bar with Tab Navigation -->
-    <div class="apollo__menu-bar">
-        <div class="apollo__tabs">
+    <div class="apollo__menu-bar" data-tekton-zone="menu" data-tekton-zone="menu" data-tekton-nav="component-menu">
+        <div class="apollo__tabs" data-tekton-zone="menu">
             <div class="apollo__tab apollo__tab--active" data-tab="dashboard" onclick="apollo_switchTab('dashboard'); return false;">
                 <span class="apollo__tab-label">Dashboard</span>
             </div>
@@ -47,7 +47,7 @@
     </div>
     
     <!-- Apollo Content Area -->
-    <div class="apollo__content">
+    <div class="apollo__content" data-tekton-zone="content" data-tekton-scrollable="true">
         <!-- Dashboard Tab (Default Active Tab) -->
         <div id="dashboard-panel" class="apollo__panel apollo__panel--active">
             <div class="apollo__dashboard">
@@ -1757,7 +1757,7 @@
     </div>
     
     <!-- Footer with Chat Input -->
-    <div class="apollo__footer">
+    <div class="apollo__footer" data-tekton-zone="footer">
         <div class="apollo__chat-input-container">
             <div class="apollo__chat-prompt">></div>
             <input type="text" id="chat-input" class="apollo__chat-input" 

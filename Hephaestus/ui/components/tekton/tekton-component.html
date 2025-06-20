@@ -1,7 +1,11 @@
 <!-- Tekton Core Component - Project Management -->
-<div class="tekton">
+<div class="tekton"
+     data-tekton-area="tekton"
+     data-tekton-component="tekton"
+     data-tekton-type="component-workspace"
+     data-tekton-description="Core project management and orchestration">
     <!-- Component Header with Title -->
-    <div class="tekton__header">
+    <div class="tekton__header" data-tekton-zone="header" data-tekton-section="header">
         <div class="tekton__title-container">
             <img src="/images/hexagon.jpg" alt="Tekton" class="tekton__icon">
             <h2 class="tekton__title">
@@ -12,50 +16,101 @@
     </div>
     
     <!-- Tekton Menu Bar with Tab Navigation -->
-    <div class="tekton__menu-bar">
+    <div class="tekton__menu-bar" data-tekton-zone="menu" data-tekton-nav="component-menu">
         <div class="tekton__tabs">
-            <div class="tekton__tab tekton__tab--active" data-tab="projects" onclick="tekton_switchTab('projects'); return false;">
+            <div class="tekton__tab tekton__tab--active" data-tab="projects"
+                 data-tekton-menu-item="Projects"
+                 data-tekton-menu-component="tekton"
+                 data-tekton-menu-active="true"
+                 data-tekton-menu-panel="projects-panel"
+                 data-tekton-nav-target="projects"
+                 onclick="tekton_switchTab('projects'); return false;">
                 <span class="tekton__tab-label">Projects</span>
             </div>
-            <div class="tekton__tab" data-tab="repositories" onclick="tekton_switchTab('repositories'); return false;">
+            <div class="tekton__tab" data-tab="repositories"
+                 data-tekton-menu-item="Repositories"
+                 data-tekton-menu-component="tekton"
+                 data-tekton-menu-active="false"
+                 data-tekton-menu-panel="repositories-panel"
+                 data-tekton-nav-target="repositories"
+                 onclick="tekton_switchTab('repositories'); return false;">
                 <span class="tekton__tab-label">Repositories</span>
             </div>
-            <div class="tekton__tab" data-tab="branches" onclick="tekton_switchTab('branches'); return false;">
+            <div class="tekton__tab" data-tab="branches"
+                 data-tekton-menu-item="Branches"
+                 data-tekton-menu-component="tekton"
+                 data-tekton-menu-active="false"
+                 data-tekton-menu-panel="branches-panel"
+                 data-tekton-nav-target="branches"
+                 onclick="tekton_switchTab('branches'); return false;">
                 <span class="tekton__tab-label">Branches</span>
             </div>
-            <div class="tekton__tab" data-tab="actions" onclick="tekton_switchTab('actions'); return false;">
+            <div class="tekton__tab" data-tab="actions"
+                 data-tekton-menu-item="Actions"
+                 data-tekton-menu-component="tekton"
+                 data-tekton-menu-active="false"
+                 data-tekton-menu-panel="actions-panel"
+                 data-tekton-nav-target="actions"
+                 onclick="tekton_switchTab('actions'); return false;">
                 <span class="tekton__tab-label">Actions</span>
             </div>
-            <div class="tekton__tab" data-tab="projectchat" onclick="tekton_switchTab('projectchat'); return false;">
+            <div class="tekton__tab" data-tab="projectchat"
+                 data-tekton-menu-item="Project Chat"
+                 data-tekton-menu-component="tekton"
+                 data-tekton-menu-active="false"
+                 data-tekton-menu-panel="projectchat-panel"
+                 data-tekton-nav-target="projectchat"
+                 onclick="tekton_switchTab('projectchat'); return false;">
                 <span class="tekton__tab-label">Project Chat</span>
             </div>
-            <div class="tekton__tab" data-tab="teamchat" onclick="tekton_switchTab('teamchat'); return false;">
+            <div class="tekton__tab" data-tab="teamchat"
+                 data-tekton-menu-item="Team Chat"
+                 data-tekton-menu-component="tekton"
+                 data-tekton-menu-active="false"
+                 data-tekton-menu-panel="teamchat-panel"
+                 data-tekton-nav-target="teamchat"
+                 onclick="tekton_switchTab('teamchat'); return false;">
                 <span class="tekton__tab-label">Team Chat</span>
             </div>
         </div>
         <div class="tekton__actions">
-            <button id="clear-chat-btn" class="tekton__action-button" style="display: none;" onclick="tekton_clearChat(); return false;">
+            <button id="clear-chat-btn" class="tekton__action-button" style="display: none;"
+                    data-tekton-action="clear-chat"
+                    data-tekton-action-type="secondary"
+                    onclick="tekton_clearChat(); return false;">
                 <span class="tekton__button-label">Clear</span>
             </button>
         </div>
     </div>
     
     <!-- Tekton Content Area -->
-    <div class="tekton__content">
+    <div class="tekton__content" data-tekton-zone="content" data-tekton-scrollable="true">
         <!-- Projects Tab (Default Active Tab) -->
-        <div id="projects-panel" class="tekton__panel tekton__panel--active">
+        <div id="projects-panel" class="tekton__panel tekton__panel--active"
+             data-tekton-panel="projects"
+             data-tekton-panel-for="Projects"
+             data-tekton-panel-component="tekton"
+             data-tekton-panel-active="true">
             <div class="tekton__projects">
                 <div class="tekton__control-bar">
                     <div class="tekton__search-container">
-                        <input type="text" id="project-search" class="tekton__search-input" placeholder="Search projects...">
-                        <button id="project-search-btn" class="tekton__search-button">Search</button>
+                        <input type="text" id="project-search" class="tekton__search-input" placeholder="Search projects..."
+                               data-tekton-input="project-search"
+                               data-tekton-input-type="search">
+                        <button id="project-search-btn" class="tekton__search-button"
+                                data-tekton-action="search-projects"
+                                data-tekton-action-type="primary">Search</button>
                     </div>
                     <div class="tekton__actions">
-                        <button id="new-project-btn" class="tekton__action-button">
+                        <button id="new-project-btn" class="tekton__action-button"
+                                data-tekton-action="new-project"
+                                data-tekton-action-type="primary">
                             <span class="tekton__button-icon">+</span>
                             <span class="tekton__button-label">New Project</span>
                         </button>
-                        <button id="import-project-btn" class="tekton__action-button">
+                        <button id="import-project-btn" class="tekton__action-button"
+                                data-tekton-action="import-project"
+                                data-tekton-action-type="secondary">
                             <span class="tekton__button-icon">↓</span>
                             <span class="tekton__button-label">Import</span>
                         </button>
@@ -77,8 +132,12 @@
                                 </div>
                             </div>
                             <div class="tekton__project-actions">
-                                <button class="tekton__project-action-btn">Open</button>
-                                <button class="tekton__project-action-btn">Settings</button>
+                                <button class="tekton__project-action-btn"
+                                        data-tekton-action="open-project"
+                                        data-tekton-action-type="primary">Open</button>
+                                <button class="tekton__project-action-btn"
+                                        data-tekton-action="project-settings"
+                                        data-tekton-action-type="secondary">Settings</button>
                             </div>
                         </div>
                         <div class="tekton__project-item">
@@ -90,8 +149,12 @@
                                 </div>
                             </div>
                             <div class="tekton__project-actions">
-                                <button class="tekton__project-action-btn">Open</button>
-                                <button class="tekton__project-action-btn">Settings</button>
+                                <button class="tekton__project-action-btn"
+                                        data-tekton-action="open-project"
+                                        data-tekton-action-type="primary">Open</button>
+                                <button class="tekton__project-action-btn"
+                                        data-tekton-action="project-settings"
+                                        data-tekton-action-type="secondary">Settings</button>
                             </div>
                         </div>
                     </div>

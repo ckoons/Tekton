@@ -1,7 +1,7 @@
 <!-- Engram Component - Memory and Knowledge Management -->
 <div class="engram" data-tekton-area="engram" data-tekton-component="engram" data-tekton-type="component-workspace" data-tekton-ai="engram-assistant" data-tekton-ai-ready="false">
     <!-- Component Header with Title -->
-    <div class="engram__header">
+    <div class="engram__header" data-tekton-zone="header" data-tekton-section="header">
         <div class="engram__title-container">
             <img src="/images/hexagon.jpg" alt="Tekton" class="engram__icon">
             <h2 class="engram__title">
@@ -12,8 +12,8 @@
     </div>
     
     <!-- Engram Menu Bar with Tab Navigation -->
-    <div class="engram__menu-bar">
-        <div class="engram__tabs">
+    <div class="engram__menu-bar" data-tekton-zone="menu" data-tekton-zone="menu" data-tekton-nav="component-menu">
+        <div class="engram__tabs" data-tekton-zone="menu">
             <!-- Memory Explorer Tab -->
             <div class="engram__tab engram__tab--active" data-tab="explorer" onclick="engram_switchTab('explorer'); return false;">
                 <span class="engram__tab-label">Memory Explorer</span>
@@ -43,7 +43,7 @@
     </div>
     
     <!-- Engram Content Area -->
-    <div class="engram__content">
+    <div class="engram__content" data-tekton-zone="content" data-tekton-scrollable="true">
         <!-- Explorer Tab (Default Active Tab) -->
         <div id="explorer-panel" class="engram__panel engram__panel--active">
             <div class="engram__explorer">
@@ -481,7 +481,7 @@
     </div>
     
     <!-- Footer with Chat Input -->
-    <div class="engram__footer">
+    <div class="engram__footer" data-tekton-zone="footer">
         <div class="engram__chat-input-container">
             <div class="engram__chat-prompt">></div>
             <input type="text" id="chat-input" class="engram__chat-input" 

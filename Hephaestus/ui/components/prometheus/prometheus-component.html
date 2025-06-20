@@ -1,7 +1,7 @@
 <!-- Prometheus Component - Planning and Resource Management -->
 <div class="prometheus" data-tekton-area="prometheus" data-tekton-component="prometheus" data-tekton-type="component-workspace" data-tekton-ai="prometheus-assistant" data-tekton-ai-ready="false">
     <!-- Component Header with Title -->
-    <div class="prometheus__header">
+    <div class="prometheus__header" data-tekton-zone="header" data-tekton-section="header">
         <div class="prometheus__title-container">
             <img src="/images/hexagon.jpg" alt="Tekton" class="prometheus__icon">
             <h2 class="prometheus__title">
@@ -12,8 +12,8 @@
     </div>
     
     <!-- Prometheus Menu Bar with Tab Navigation -->
-    <div class="prometheus__menu-bar">
-        <div class="prometheus__tabs">
+    <div class="prometheus__menu-bar" data-tekton-zone="menu" data-tekton-zone="menu" data-tekton-nav="component-menu">
+        <div class="prometheus__tabs" data-tekton-zone="menu">
             <div class="prometheus__tab prometheus__tab--active" data-tab="planning" onclick="prometheus_switchTab('planning'); return false;">
                 <span class="prometheus__tab-label">Planning</span>
             </div>
@@ -41,7 +41,7 @@
     </div>
     
     <!-- Prometheus Content Area -->
-    <div class="prometheus__content">
+    <div class="prometheus__content" data-tekton-zone="content" data-tekton-scrollable="true">
         <!-- Planning Tab (Default Active Tab) -->
         <div id="planning-panel" class="prometheus__panel prometheus__panel--active">
             <div class="prometheus__planning">
@@ -266,7 +266,7 @@
     </div>
     
     <!-- Footer with Chat Input -->
-    <div class="prometheus__footer">
+    <div class="prometheus__footer" data-tekton-zone="footer">
         <div class="prometheus__chat-input-container">
             <div class="prometheus__chat-prompt">></div>
             <input type="text" id="chat-input" class="prometheus__chat-input" 

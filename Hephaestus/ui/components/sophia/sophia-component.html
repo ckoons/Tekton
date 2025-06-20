@@ -1,7 +1,7 @@
 <!-- Sophia Component - AI Intelligence Measurement & Continuous Improvement -->
 <div class="sophia" data-tekton-area="sophia" data-tekton-component="sophia" data-tekton-type="component-workspace" data-tekton-ai="sophia-assistant" data-tekton-ai-ready="false">
     <!-- Component Header with Title -->
-    <div class="sophia__header">
+    <div class="sophia__header" data-tekton-zone="header" data-tekton-section="header">
         <div class="sophia__title-container">
             <img src="/images/hexagon.jpg" alt="Tekton" class="sophia__icon">
             <h2 class="sophia__title">
@@ -12,8 +12,8 @@
     </div>
     
     <!-- Sophia Menu Bar with Tab Navigation -->
-    <div class="sophia__menu-bar">
-        <div class="sophia__tabs">
+    <div class="sophia__menu-bar" data-tekton-zone="menu" data-tekton-zone="menu" data-tekton-nav="component-menu">
+        <div class="sophia__tabs" data-tekton-zone="menu">
             <div class="sophia__tab sophia__tab--active" data-tab="metrics" onclick="sophia_switchTab('metrics'); return false;">
                 <span class="sophia__tab-label">Metrics</span>
             </div>
@@ -41,7 +41,7 @@
     </div>
     
     <!-- Sophia Content Area -->
-    <div class="sophia__content">
+    <div class="sophia__content" data-tekton-zone="content" data-tekton-scrollable="true">
         <!-- Metrics Tab (Default Active Tab) -->
         <div id="metrics-panel" class="sophia__panel sophia__panel--active">
             <div class="sophia__metrics">
@@ -385,7 +385,7 @@
     </div>
     
     <!-- Footer with Chat Input -->
-    <div class="sophia__footer">
+    <div class="sophia__footer" data-tekton-zone="footer">
         <div class="sophia__chat-input-container">
             <div class="sophia__chat-prompt">></div>
             <input type="text" id="chat-input" class="sophia__chat-input" 

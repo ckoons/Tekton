@@ -1341,8 +1341,43 @@ function rhetor_protectHtmlPanel() {
     }
 }
 
+// NAVIGATION FIX
+// Ensure HTML panel is visible when component loads
+function rhetor_ensurePanelVisibility() {
+    console.log('[RHETOR] Ensuring HTML panel visibility');
+    
+    const htmlPanel = document.getElementById('html-panel');
+    const terminalPanel = document.getElementById('terminal-panel');
+    
+    if (htmlPanel) {
+        htmlPanel.style.display = 'block';
+        htmlPanel.classList.add('active');
+        console.log('[RHETOR] HTML panel made visible');
+    }
+    
+    if (terminalPanel) {
+        terminalPanel.style.display = 'none';
+        terminalPanel.classList.remove('active');
+        console.log('[RHETOR] Terminal panel hidden');
+    }
+    
+    // Update UI manager state if available
+    if (window.uiManager) {
+        window.uiManager.activePanel = 'html';
+        console.log('[RHETOR] Updated uiManager panel state');
+    }
+    
+    // Report component loaded to DevTools
+    window.postMessage({
+        type: 'component-loaded',
+        component: 'rhetor',
+        timestamp: Date.now()
+    }, '*');
+}
+
 // SETUP
 // Do immediate initialization on script load
+rhetor_ensurePanelVisibility();  // Fix navigation issue first
 rhetor_protectHtmlPanel();
 rhetor_loadComponent();
 </script>

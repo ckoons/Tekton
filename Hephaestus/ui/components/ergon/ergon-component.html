@@ -1,7 +1,7 @@
 <!-- Ergon Component - Agent Management and LLM Integration -->
 <div class="ergon" data-tekton-area="ergon" data-tekton-component="ergon" data-tekton-type="component-workspace" data-tekton-ai="ergon-assistant" data-tekton-ai-ready="false">
     <!-- Component Header with Title -->
-    <div class="ergon__header">
+    <div class="ergon__header" data-tekton-zone="header" data-tekton-section="header">
         <div class="ergon__title-container">
             <img src="/images/hexagon.jpg" alt="Tekton" class="ergon__icon">
             <h2 class="ergon__title">
@@ -12,8 +12,8 @@
     </div>
 
     <!-- Ergon Menu Bar with Tab Navigation -->
-    <div class="ergon__menu-bar">
-        <div class="ergon__tabs">
+    <div class="ergon__menu-bar" data-tekton-zone="menu" data-tekton-zone="menu" data-tekton-nav="component-menu">
+        <div class="ergon__tabs" data-tekton-zone="menu">
             <div class="ergon__tab ergon__tab--active" data-tab="agents" onclick="ergon_switchTab('agents'); return false;">
                 <span class="ergon__tab-label">Agents</span>
             </div>
@@ -41,7 +41,7 @@
     </div>
     
     <!-- Ergon Content Area -->
-    <div class="ergon__content">
+    <div class="ergon__content" data-tekton-zone="content" data-tekton-scrollable="true">
         <!-- Agents Tab (Default Active Tab) -->
         <div id="agents-panel" class="ergon__panel ergon__panel--active">
             <div class="ergon__agent-grid">
@@ -272,7 +272,7 @@
     </div>
     
     <!-- Footer with Chat Input -->
-    <div class="ergon__footer">
+    <div class="ergon__footer" data-tekton-zone="footer">
         <div class="ergon__chat-input-container">
             <div class="ergon__chat-prompt">></div>
             <input type="text" id="chat-input" class="ergon__chat-input" 
