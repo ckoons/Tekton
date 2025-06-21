@@ -15,9 +15,13 @@ This documentation provides comprehensive information about the Hephaestus UI co
 
 ### Development Guides
 
-- **[UI DevTools Comprehensive Guide](./docs/UI_DEVTOOLS_COMPREHENSIVE_GUIDE.md)** - Complete guide to UI DevTools
-- **[Instrumentation Guide](./docs/INSTRUMENTATION_GUIDE.md)** - Semantic tagging system and patterns
-- **[Loading State System](./docs/LOADING_STATE_INSTRUMENTATION.md)** - Component loading detection
+- **[UI DevTools V2](./ui_dev_tools/)** - Revolutionary new UI debugging tools
+  - Based on "Code is Truth, Browser is Result" philosophy
+  - Discovers that browser ADDS 71 dynamic tags to components
+  - Tools: CodeReader, BrowserVerifier, Comparator, Navigator, SafeTester
+  - Launch with: `./run_mcp.sh`
+  - Full docs: `/MetaData/TektonDocumentation/Guides/UIDevToolsV2/`
+- **[Instrumentation Status](./docs/INSTRUMENTATION_STATUS.md)** - Component instrumentation progress
 - **[Debug Instrumentation](./ui/server/README_DEBUG.md)** - Python debug system
 
 ### Reference Documents
@@ -45,10 +49,15 @@ Archived documentation from previous sprints and migrations can be found in `./d
 6. **Loading State System**: Semantic HTML attributes track component loading lifecycle (pending → loading → loaded/error) with automatic timing and error reporting.
 
 7. **100% Semantic Instrumentation**: All UI elements use `data-tekton-*` attributes for reliable AI/automation discovery and interaction.
+   - **Static tags**: 75+ semantic tags defined in source (e.g., rhetor component)
+   - **Dynamic tags**: System adds 71+ tags at runtime for navigation, loading, and state
+   - **Total**: 146+ semantic tags in running components
 
 8. **WebSocket Communication**: Real-time communication with backend services through a unified WebSocket client.
 
 9. **Terminal Interface**: Terminal-based interaction alongside the graphical interface for command-line operations.
+
+10. **UI DevTools V2**: Advanced debugging tools that compare source code (truth) with browser DOM (result) to diagnose discrepancies and understand dynamic behavior.
 
 ## Getting Started
 

@@ -1,34 +1,38 @@
-# UI DevTools Cookbook
+# UI DevTools Cookbook V2
 
-*A practical guide for using the Hephaestus UI DevTools - now with working tools!*
+*A practical guide for using the Hephaestus UI DevTools V2 - with the revolutionary "Code is Truth, Browser is Result" approach*
 
 Created: 2025-01-16  
-Last Updated: 2025-06-17  
-Status: Active - Tools are functional with some limitations
+Last Updated: 2025-06-21  
+Status: Active - New V2 tools with enhanced diagnostic capabilities
 
-## Welcome to UI DevTools!
+## Welcome to UI DevTools V2!
 
-The Hephaestus UI DevTools help you modify and inspect the UI without diving into code files. They're designed with Casey's philosophy: **"Keep it simple, ask questions when unsure, and state clearly what you know and why."**
+The new UI DevTools V2 revolutionize how we debug UI issues. Built on the philosophy **"Code is Truth, Browser is Result"**, they help you understand not just what's in the browser, but WHY it differs from your source code.
 
-### What's Working Well ✅
-- **ui_capture** returns full DOM structure with accurate element counts
-- **ui_capture** includes raw HTML for searching and debugging
-- **ui_sandbox** can successfully modify elements (text, attributes, CSS)
-- Clear error messages when selectors aren't found
-- Proper handling of complex selectors with quotes
+### Major Discovery 🎉
+- **Source Code**: Components have 75+ semantic tags (rhetor example)
+- **Browser DOM**: Shows 146 tags - MORE than source!
+- **Key Insight**: Browser ADDS 71 dynamic tags for navigation, loading, and state
+- **Reality**: Your components work perfectly - the system enriches them!
 
-### Current Limitation 🔧
-- **DynamicContentView**: Components loaded via JavaScript aren't immediately visible
-- **Impact**: After navigating to a component, the content may not be captured
-- **Workaround**: For dynamically loaded content, edit component HTML files directly
-- **Status**: This is a known limitation we're working on
+### What's New in V2 ✅
+- **CodeReader** - Shows exactly what's in your source files (the truth)
+- **BrowserVerifier** - Shows what's actually in the DOM (the result)
+- **Comparator** - Reveals why they're different (dynamic enrichment)
+- **Navigator** - Reliable component navigation
+- **SafeTester** - Test changes without breaking production
+
+### Philosophy Shift 🔄
+- **Old Way**: "Can't find tags in browser" → Confusion
+- **New Way**: "75 tags in source, 146 in browser" → Understanding
 
 ## Table of Contents
 1. [Quick Start](#quick-start)
-2. [Common Operations](#common-operations)
-3. [Known Issues & Workarounds](#known-issues--workarounds)
-4. [Pattern Library](#pattern-library)
-5. [Anti-Patterns](#anti-patterns)
+2. [Core Workflow](#core-workflow)
+3. [Common Operations](#common-operations)
+4. [Understanding Static vs Dynamic Tags](#understanding-static-vs-dynamic-tags)
+5. [Pattern Library](#pattern-library)
 6. [Troubleshooting](#troubleshooting)
 
 ## Quick Start
@@ -58,47 +62,87 @@ async def devtools_request(tool_name, arguments):
         return response.json()
 ```
 
-### 3. Basic Workflow
+### 3. Basic V2 Workflow
 ```python
-# 1. Capture current state
-result = await devtools_request("ui_capture", {"area": "rhetor"})
-print(f"Found {result['result']['structure']['element_count']} elements")
-print(f"Available selectors: {result['result']['selectors_available']}")
+# 1. Check source code (TRUTH)
+result = await devtools_request("code_reader", {
+    "component": "rhetor"
+})
+print(f"Source has {result['result']['semantic_tags']['total_count']} tags")
 
-# 2. Search the HTML if needed
-if ".nav-label" in result['result']['html']:
-    print("Found navigation labels!")
+# 2. Check browser (RESULT)
+result = await devtools_request("browser_verifier", {
+    "component": "rhetor"
+})
+print(f"Browser has {result['result']['semantic_tags']['count']} tags")
 
-# 3. Make changes (preview is optional but recommended)
-result = await devtools_request("ui_sandbox", {
-    "area": "rhetor",
-    "changes": [{
-        "type": "text",
-        "selector": ".nav-label",
-        "content": "New Text",
-        "action": "replace"
-    }],
-    "preview": True  # Preview first to test
+# 3. Compare and understand (INSIGHT)
+result = await devtools_request("comparator", {
+    "component": "rhetor"
+})
+print(f"Browser added {len(result['result']['discrepancies']['dom_only_tags'])} dynamic tags")
+
+# 4. Navigate safely
+result = await devtools_request("navigator", {
+    "component": "rhetor",
+    "wait_for_ready": True
 })
 
-# 4. Apply if preview succeeds
-if result['status'] == 'success' and result['result']['summary']['successful'] > 0:
-    result = await devtools_request("ui_sandbox", {
-        "area": "rhetor",
-        "changes": [...],
-        "preview": False
-    })
+# 5. Test changes safely
+result = await devtools_request("safe_tester", {
+    "component": "rhetor",
+    "changes": [{"selector": ".nav-label", "attribute": "data-test", "value": "true"}],
+    "preview": True
+})
 ```
 
-### When to Ask Questions
+### When to Use Each Tool
 
-Following Casey's guidance, if you're unsure about:
-- Which selector to use → Check `selectors_available` in ui_capture
-- Whether a change will work → Use preview mode
-- Why something failed → Check the error message
-- Whether to use DevTools or edit files → Try DevTools first for simple changes
+Following Casey's philosophy and the new approach:
+- **Debugging missing tags** → Start with CodeReader (they're probably in source!)
+- **Verifying changes worked** → Use BrowserVerifier 
+- **Understanding differences** → Use Comparator
+- **Making UI changes** → Use SafeTester with preview first
+- **Navigating components** → Use Navigator with wait_for_ready
 
-**Remember**: It's better to ask "Should I use DevTools or edit the HTML file directly?" than to guess!
+**Remember**: Always check source truth before assuming browser problems!
+
+## Core Workflow
+
+### The Three-Step Debug Process
+
+1. **Read Source (Truth)**
+   ```python
+   # See what SHOULD be there
+   source = await devtools_request("code_reader", {"component": "rhetor"})
+   print(f"Source tags: {source['result']['semantic_tags']['total_count']}")
+   ```
+
+2. **Verify Browser (Result)**
+   ```python
+   # See what IS there
+   browser = await devtools_request("browser_verifier", {"component": "rhetor"})
+   print(f"Browser tags: {browser['result']['semantic_tags']['count']}")
+   ```
+
+3. **Compare (Understanding)**
+   ```python
+   # Understand WHY they're different
+   comparison = await devtools_request("comparator", {"component": "rhetor"})
+   print(comparison['result']['insights'])
+   ```
+
+### Key Discovery: Browser Enrichment
+
+When you run the comparator on rhetor:
+- Source: 75 tags (your design)
+- Browser: 146 tags (runtime reality)
+- Difference: 71 tags ADDED by the system
+
+These added tags include:
+- Navigation: `nav-item`, `nav-target` (36 instances)
+- Loading: `loading-state`, `loading-component` (9 instances)
+- State: `state`, `active` (26 instances)
 
 ## Common Operations
 
@@ -143,10 +187,55 @@ changes = [{
 }]
 ```
 
+## Understanding Static vs Dynamic Tags
+
+### Static Tags (You Write These)
+```html
+<!-- In your component HTML -->
+<div data-tekton-component="rhetor"
+     data-tekton-area="rhetor"
+     data-tekton-zone="header">
+  <button data-tekton-action="send">Send</button>
+</div>
+```
+
+These represent your design decisions:
+- Component identity and structure
+- Defined actions and behaviors
+- Layout zones and panels
+
+### Dynamic Tags (System Adds These)
+```html
+<!-- What appears in browser -->
+<div data-tekton-component="rhetor"
+     data-tekton-area="rhetor"
+     data-tekton-zone="header"
+     data-tekton-loading-state="loaded"      <!-- ADDED -->
+     data-tekton-state="active">             <!-- ADDED -->
+  <button data-tekton-action="send"
+          data-tekton-nav-item="send-action"  <!-- ADDED -->
+          data-tekton-active="false">         <!-- ADDED -->
+    Send
+  </button>
+</div>
+```
+
+The system adds:
+- Loading lifecycle tracking
+- Navigation wiring
+- State management
+- Runtime behavior
+
+### Why This Matters
+
+**Old thinking**: "My tags are missing!" → Add more tags to source
+**New thinking**: "Which tags should be static vs dynamic?" → Let system handle dynamic ones
+
 ## Things to Know
 
-### 1. DynamicContentView Limitation 📋
-**What happens**: Components loaded via JavaScript aren't immediately visible to DevTools
+### 1. Components Load Correctly ✅
+**Discovery**: All static tags from source DO load into the browser
+**Reality**: The "missing tags" issue was a misunderstanding - tags were there all along!
 ```python
 # Example scenario:
 await devtools_request("ui_navigate", {"component": "rhetor"})

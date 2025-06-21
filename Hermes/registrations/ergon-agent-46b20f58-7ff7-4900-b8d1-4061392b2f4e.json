@@ -1,25 +1,23 @@
 {
-  "service_id": "ergon-fastmcp",
-  "name": "Ergon FastMCP Service",
+  "service_id": "ergon-agent-46b20f58-7ff7-4900-b8d1-4061392b2f4e",
+  "name": "Ergon Agent",
   "version": "0.1.0",
   "endpoint": null,
   "capabilities": [
     "a2a",
-    "agent_management",
-    "workflow_management",
-    "task_management"
+    "task_execution",
+    "workflow_management"
   ],
   "metadata": {
     "a2a_agent": true,
     "agent_card": {
-      "id": "ergon-fastmcp",
-      "name": "Ergon FastMCP Service",
-      "description": "Ergon FastMCP Service - Workflow and task execution agent",
+      "id": "ergon-agent-46b20f58-7ff7-4900-b8d1-4061392b2f4e",
+      "name": "Ergon Agent",
+      "description": "Ergon Agent - Workflow and task execution agent",
       "version": "0.1.0",
       "capabilities": [
-        "agent_management",
-        "workflow_management",
-        "task_management"
+        "task_execution",
+        "workflow_management"
       ],
       "supportedMethods": [],
       "endpoint": "http://localhost:8002/api/a2a/v1/",
@@ -34,7 +32,7 @@
       }
     }
   },
-  "instance_uuid": "89e0c132-acbc-4266-9ee4-d5c020d43a61",
-  "registration_time": 1750532984.795417,
+  "instance_uuid": "f48f2dee-d6e4-45cb-b3d1-938424812809",
+  "registration_time": 1750532984.790048,
   "status": "active"
 }
