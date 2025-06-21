@@ -4,37 +4,31 @@
 
 This documentation provides comprehensive information about the Hephaestus UI component of the Tekton AI orchestration system. Hephaestus serves as the unified user interface for interacting with all Tekton components through a combination of terminal and graphical interfaces.
 
-## Documentation Contents
+## Documentation Structure
 
-### [Technical Documentation](./technical_documentation.md)
+### Core Documentation
 
-A comprehensive technical reference covering:
-- Architecture and system design
-- Core components and their functionality
-- Component isolation strategy
-- Integration points with other Tekton services
-- State management and theming
-- Error handling and performance optimization
+- **[UI Architecture Guide](./ui/README.md)** - Main UI architecture reference
+- **[Technical Documentation](./technical_documentation.md)** - System design and components
+- **[Developer Guide](./developer_guide.md)** - Creating and extending components
+- **[Architecture Overview](./architecture.md)** - Visual diagrams and system flow
 
-### [Developer Guide](./developer_guide.md)
+### Development Guides
 
-A practical guide for developers who want to create or extend Hephaestus components:
-- Step-by-step instructions for creating new components
-- CSS naming conventions and best practices
-- Using component utilities (notifications, dialogs, tabs, etc.)
-- Integrating with Tekton services (LLM Adapter, Hermes, Engram)
-- Testing and troubleshooting components
+- **[UI DevTools Comprehensive Guide](./docs/UI_DEVTOOLS_COMPREHENSIVE_GUIDE.md)** - Complete guide to UI DevTools
+- **[Instrumentation Guide](./docs/INSTRUMENTATION_GUIDE.md)** - Semantic tagging system and patterns
+- **[Loading State System](./docs/LOADING_STATE_INSTRUMENTATION.md)** - Component loading detection
+- **[Debug Instrumentation](./ui/server/README_DEBUG.md)** - Python debug system
 
-### [Architecture Overview](./architecture.md)
+### Reference Documents
 
-Visual diagrams and explanations of the Hephaestus architecture:
-- System architecture and layers
-- Component isolation using Shadow DOM
-- File structure and organization
-- Component loading flow
-- Theme propagation
-- WebSocket communication
-- Service integration patterns
+- **[Component Index](./docs/INSTRUMENTATION_INDEX.md)** - Quick component reference
+- **[Testing Guide](./tests/README.md)** - Test suite documentation
+- **[API Reference](./docs/api_reference.md)** - Component APIs
+
+### Historical Documentation
+
+Archived documentation from previous sprints and migrations can be found in `./docs/archive/`
 
 ## Key Features
 
@@ -48,9 +42,13 @@ Visual diagrams and explanations of the Hephaestus architecture:
 
 5. **Service Integration**: Standardized patterns for integrating with Tekton services like LLM Adapter, Hermes message bus, and Engram memory system.
 
-6. **WebSocket Communication**: Real-time communication with backend services through a unified WebSocket client.
+6. **Loading State System**: Semantic HTML attributes track component loading lifecycle (pending → loading → loaded/error) with automatic timing and error reporting.
 
-7. **Terminal Interface**: Terminal-based interaction alongside the graphical interface for command-line operations.
+7. **100% Semantic Instrumentation**: All UI elements use `data-tekton-*` attributes for reliable AI/automation discovery and interaction.
+
+8. **WebSocket Communication**: Real-time communication with backend services through a unified WebSocket client.
+
+9. **Terminal Interface**: Terminal-based interaction alongside the graphical interface for command-line operations.
 
 ## Getting Started
 

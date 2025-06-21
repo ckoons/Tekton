@@ -40,6 +40,8 @@ async def test_loading_states():
                         print(f"  Load Time: {result['load_time_ms']}ms")
                 elif result.get("loading_state_fallback"):
                     print(f"  Loading State Used: ✗ (fallback used)")
+                    if "loading_state_error" in result:
+                        print(f"  Fallback reason: {result['loading_state_error']}")
                 else:
                     print(f"  Loading State Used: ✗")
                 

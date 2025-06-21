@@ -96,10 +96,19 @@ async def ui_navigate(
             
             # First, try to wait for the component to reach loaded state
             # This leverages our new semantic loading state system
-            loaded_selector = f'[data-tekton-loading-component="{component}"][data-tekton-loading-state="loaded"]'
-            error_selector = f'[data-tekton-loading-component="{component}"][data-tekton-loading-state="error"]'
-            
             try:
+                # Step 1: Wait for the loading process to START
+                # This ensures MinimalLoader has begun working on this component
+                component_loading_selector = f'[data-tekton-loading-component="{component}"]'
+                await page.wait_for_selector(
+                    component_loading_selector,
+                    timeout=2000  # 2 seconds should be plenty for loader to start
+                )
+                
+                # Step 2: Now wait for the component to finish loading
+                loaded_selector = f'[data-tekton-loading-component="{component}"][data-tekton-loading-state="loaded"]'
+                error_selector = f'[data-tekton-loading-component="{component}"][data-tekton-loading-state="error"]'
+                
                 # Wait for either loaded or error state
                 await page.wait_for_selector(
                     f'{loaded_selector}, {error_selector}',
