@@ -1,0 +1,26 @@
+{
+  "id": "fd9145bf-0c77-4ac3-b957-3d4169fb7e3f",
+  "type": "architecture_decision",
+  "title": "Graceful shutdown pattern",
+  "description": "Handles graceful shutdown for Tekton components",
+  "file_path": "/Users/cskoons/projects/github/Tekton/shared/utils/graceful_shutdown.py",
+  "line_number": 17,
+  "timestamp": "2025-06-21T18:59:42.269863",
+  "author": "system",
+  "metadata": {
+    "rationale": "Ensure components clean up properly and notify Hermes before terminating",
+    "alternatives_considered": [
+      "Immediate termination",
+      "Systemd-only management",
+      "K8s lifecycle hooks"
+    ],
+    "impacts": [
+      "reliability",
+      "data_integrity",
+      "component_coordination"
+    ],
+    "decided_by": "team"
+  },
+  "tags": [],
+  "related_landmarks": []
+}

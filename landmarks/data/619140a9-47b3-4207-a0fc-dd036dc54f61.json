@@ -1,0 +1,21 @@
+{
+  "id": "619140a9-47b3-4207-a0fc-dd036dc54f61",
+  "type": "performance_boundary",
+  "title": "Plan creation with complexity-based reasoning",
+  "description": "Create a plan for the given objective using latent reasoning when appropriate.\n        \n        Args:\n            objective: The objective to plan for\n            context: Optional additional context for planning\n            complexity_threshold: Threshold for using latent reasoning\n            max_iterations: Maximum reasoning iterations for complex plans\n            \n        Returns:\n            Dictionary with the plan and reasoning details",
+  "file_path": "/Users/cskoons/projects/github/Tekton/Prometheus/prometheus/core/planning_engine.py",
+  "line_number": 82,
+  "timestamp": "2025-06-21T20:08:08.903263",
+  "author": "system",
+  "metadata": {
+    "sla": "<5s for simple plans, <30s for complex iterative plans",
+    "optimization_notes": "Cache partial results, early termination for convergence",
+    "metrics": {
+      "simple_avg": "2.3s",
+      "complex_avg": "18.5s",
+      "iteration_avg": "6.2s"
+    }
+  },
+  "tags": [],
+  "related_landmarks": []
+}

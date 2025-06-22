@@ -1,0 +1,24 @@
+{
+  "id": "31c5c29a-df02-4173-8829-e38731b58fd1",
+  "type": "architecture_decision",
+  "title": "Knowledge graph system",
+  "description": "Athena knowledge graph component.",
+  "file_path": "/Users/cskoons/projects/github/Tekton/Athena/athena/core/athena_component.py",
+  "line_number": 13,
+  "timestamp": "2025-06-21T20:17:18.050199",
+  "author": "system",
+  "metadata": {
+    "rationale": "Implement graph-based knowledge representation for complex entity relationships and semantic search",
+    "alternatives_considered": [],
+    "impacts": [],
+    "decided_by": "team",
+    "alternatives": [
+      "Relational database",
+      "Document store",
+      "Vector database only"
+    ],
+    "decision_date": "2024-01-10"
+  },
+  "tags": [],
+  "related_landmarks": []
+}

@@ -5,10 +5,24 @@ from pathlib import Path
 
 from shared.utils.standard_component import StandardComponentBase
 from athena.core.engine import get_knowledge_engine
+from landmarks import architecture_decision, state_checkpoint
 
 logger = logging.getLogger(__name__)
 
 
+@architecture_decision(
+    title="Knowledge graph system",
+    rationale="Implement graph-based knowledge representation for complex entity relationships and semantic search",
+    alternatives=["Relational database", "Document store", "Vector database only"],
+    decision_date="2024-01-10"
+)
+@state_checkpoint(
+    title="Knowledge engine state",
+    state_type="service",
+    persistence=True,
+    consistency_requirements="Graph consistency must be maintained across restarts",
+    recovery_strategy="Reload from Neo4j or memory adapter persistence"
+)
 class AthenaComponent(StandardComponentBase):
     """Athena knowledge graph component."""
     

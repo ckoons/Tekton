@@ -6,10 +6,15 @@ from typing import List, Dict, Any
 from shared.utils.standard_component import StandardComponentBase
 from telos.core.requirements_manager import RequirementsManager
 from telos.prometheus_connector import TelosPrometheusConnector
+from landmarks import architecture_decision, integration_point
 
 logger = logging.getLogger(__name__)
 
 
+@architecture_decision(
+    title="Requirements-driven development",
+    rationale="Telos provides centralized requirements management to ensure all development aligns with user goals",
+    alternatives_considered=["Ad-hoc requirements", "External requirements tools", "Document-based tracking"])
 class TelosComponent(StandardComponentBase):
     """Telos requirements tracking and validation component."""
     
@@ -33,10 +38,19 @@ class TelosComponent(StandardComponentBase):
         logger.info(f"Requirements manager initialized with {len(self.requirements_manager.projects)} projects")
         
         # Initialize Prometheus connector
-        self.prometheus_connector = TelosPrometheusConnector(self.requirements_manager)
-        try:
+        @integration_point(
+    title="Telos-Prometheus integration",
+    target_component="Telos",
+    protocol="Internal API",
+    data_flow="Requirements → Prometheus → Plans"
+)
+        async def init_prometheus():
+            self.prometheus_connector = TelosPrometheusConnector(self.requirements_manager)
             await self.prometheus_connector.initialize()
             logger.info("Prometheus connector initialized successfully")
+        
+        try:
+            await init_prometheus()
         except Exception as e:
             logger.warning(f"Failed to initialize Prometheus connector: {e}")
             # Prometheus connector is optional, so we continue

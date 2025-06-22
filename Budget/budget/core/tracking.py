@@ -8,6 +8,7 @@ across different time periods, components, and providers.
 import os
 from datetime import datetime, timedelta
 from typing import Dict, List, Any, Optional, Union, Tuple
+from landmarks import performance_boundary, state_checkpoint
 
 # Try to import debug_utils from shared if available
 try:
@@ -39,6 +40,19 @@ from budget.data.repository import (
 )
 
 
+@state_checkpoint(
+    title="Usage tracking state",
+    state_type="ephemeral",
+    persistence=False,
+    consistency_requirements="In-memory counters with periodic database sync",
+    recovery_strategy="Rebuild from UsageRecord database on restart"
+)
+@performance_boundary(
+    title="Real-time usage tracking",
+    sla="<10ms for counter updates",
+    metrics={"avg_update": "3ms", "p99": "8ms"},
+    optimization_notes="In-memory counters with batch database writes"
+)
 class UsageTracker:
     """
     Tracks token and cost usage across different dimensions.

@@ -1,0 +1,26 @@
+{
+  "id": "2e4ca5e8-a5ab-49e3-b6e5-3fba6614dea6",
+  "type": "architecture_decision",
+  "title": "FastMCP for AI integration",
+  "description": "Create a standardized FastMCP server for a component.\n    \n    Args:\n        component_name: Name of the component\n        version: Version string\n        description: Optional custom description\n        \n    Returns:\n        Configured FastMCPServer instance",
+  "file_path": "/Users/cskoons/projects/github/Tekton/shared/utils/mcp_helpers.py",
+  "line_number": 40,
+  "timestamp": "2025-06-21T18:33:56.897113",
+  "author": "system",
+  "metadata": {
+    "rationale": "Use FastMCP to expose component capabilities as tools that AI agents can call",
+    "alternatives_considered": [
+      "Custom protocol",
+      "Direct API calls",
+      "Function calling"
+    ],
+    "impacts": [
+      "ai_integration",
+      "tool_discovery",
+      "agent_capabilities"
+    ],
+    "decided_by": "team"
+  },
+  "tags": [],
+  "related_landmarks": []
+}

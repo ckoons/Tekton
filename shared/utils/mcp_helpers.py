@@ -11,6 +11,7 @@ from datetime import datetime
 import asyncio
 
 from shared.utils.errors import ComponentError
+from landmarks import architecture_decision, integration_point, api_contract
 
 logger = logging.getLogger(__name__)
 
@@ -36,6 +37,19 @@ except ImportError:
             pass
 
 
+@integration_point(
+    title="MCP server creation",
+    target_component="AI Agents",
+    protocol="MCP",
+    data_flow="Component tools exposed to AI agents via Model Context Protocol"
+)
+@architecture_decision(
+    title="FastMCP for AI integration",
+    rationale="Use FastMCP to expose component capabilities as tools that AI agents can call",
+    alternatives_considered=["Custom protocol", "Direct API calls", "Function calling"],
+    impacts=["ai_integration", "tool_discovery", "agent_capabilities"],
+    decided_by="team"
+)
 def create_mcp_server(
     component_name: str,
     version: str = "0.1.0",

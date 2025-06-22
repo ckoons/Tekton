@@ -1,0 +1,17 @@
+{
+  "id": "aca23149-8824-4644-9a8c-bc614311cab9",
+  "type": "integration_point",
+  "title": "Central message bus",
+  "description": "Main interface for inter-component messaging.\n    \n    This class provides methods for publishing and subscribing to messages,\n    enabling asynchronous communication between Tekton components.",
+  "file_path": "/Users/cskoons/projects/github/Tekton/Hermes/hermes/core/message_bus.py",
+  "line_number": 20,
+  "timestamp": "2025-06-21T20:17:00.146463",
+  "author": "system",
+  "metadata": {
+    "target_component": "All Tekton components",
+    "protocol": "In-memory pub/sub (future: WebSocket)",
+    "data_flow": "Components publish events -> MessageBus routes -> Subscribers receive"
+  },
+  "tags": [],
+  "related_landmarks": []
+}

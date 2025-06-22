@@ -1,0 +1,17 @@
+{
+  "id": "a8f1242f-1741-4cc9-8999-5e8fc47e0d45",
+  "type": "integration_point",
+  "title": "Terminal output streaming",
+  "description": "Register a callback for terminal output\n        \n        Args:\n            session_id: The ID of the session\n            callback: Function to call with the output string\n            \n        Returns:\n            bool: True if successful, False otherwise",
+  "file_path": "/Users/cskoons/projects/github/Tekton/Terma/terma/core/session_manager.py",
+  "line_number": 289,
+  "timestamp": "2025-06-21T20:31:17.144522",
+  "author": "system",
+  "metadata": {
+    "target_component": "Terminal sessions",
+    "protocol": "Internal API",
+    "data_flow": "PTY output \u2192 Session \u2192 Callbacks \u2192 Clients"
+  },
+  "tags": [],
+  "related_landmarks": []
+}

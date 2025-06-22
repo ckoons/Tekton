@@ -1,0 +1,17 @@
+{
+  "id": "0b148ff5-81fb-4662-9155-157cbe4458b5",
+  "type": "integration_point",
+  "title": "Graph database connection",
+  "description": "Core knowledge graph engine for Athena.\n    \n    Manages entity and relationship creation, querying, and inference.",
+  "file_path": "/Users/cskoons/projects/github/Tekton/Athena/athena/core/engine.py",
+  "line_number": 46,
+  "timestamp": "2025-06-21T20:17:18.002538",
+  "author": "system",
+  "metadata": {
+    "target_component": "Neo4j",
+    "protocol": "Bolt/HTTP",
+    "data_flow": "Entities and relationships stored/retrieved via adapter abstraction"
+  },
+  "tags": [],
+  "related_landmarks": []
+}

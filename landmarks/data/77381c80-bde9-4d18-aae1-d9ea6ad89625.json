@@ -1,0 +1,18 @@
+{
+  "id": "77381c80-bde9-4d18-aae1-d9ea6ad89625",
+  "type": "state_checkpoint",
+  "title": "Budget database state",
+  "description": "Budget management component with financial tracking and MCP support.",
+  "file_path": "/Users/cskoons/projects/github/Tekton/Budget/budget/core/budget_component.py",
+  "line_number": 14,
+  "timestamp": "2025-06-21T20:11:21.398219",
+  "author": "system",
+  "metadata": {
+    "state_type": "persistent",
+    "persistence": true,
+    "consistency_requirements": "ACID compliance for financial tracking",
+    "recovery_strategy": "Restore from SQLite database with transaction logs"
+  },
+  "tags": [],
+  "related_landmarks": []
+}

@@ -1,0 +1,24 @@
+{
+  "id": "1ad6c030-1df4-45a5-ad47-a921f555e3f9",
+  "type": "architecture_decision",
+  "title": "Multi-provider LLM abstraction",
+  "description": "Client for managing and interacting with LLM providers",
+  "file_path": "/Users/cskoons/projects/github/Tekton/Rhetor/rhetor/core/llm_client.py",
+  "line_number": 30,
+  "timestamp": "2025-06-21T20:11:16.792192",
+  "author": "system",
+  "metadata": {
+    "rationale": "Support multiple LLM providers (Anthropic, OpenAI, Ollama) with fallback and unified interface",
+    "alternatives_considered": [],
+    "impacts": [],
+    "decided_by": "team",
+    "alternatives": [
+      "Single provider",
+      "Direct API calls",
+      "External gateway service"
+    ],
+    "decision_date": "2024-02-15"
+  },
+  "tags": [],
+  "related_landmarks": []
+}

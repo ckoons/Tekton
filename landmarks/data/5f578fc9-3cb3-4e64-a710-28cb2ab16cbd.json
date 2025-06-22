@@ -1,0 +1,22 @@
+{
+  "id": "5f578fc9-3cb3-4e64-a710-28cb2ab16cbd",
+  "type": "architecture_decision",
+  "title": "Enhanced component launcher",
+  "description": "Advanced component launcher with monitoring and recovery",
+  "file_path": "/Users/cskoons/utils/tekton-launch",
+  "line_number": 166,
+  "timestamp": "2025-06-21T20:28:38.629497",
+  "author": "system",
+  "metadata": {
+    "rationale": "Centralized launcher with health monitoring, auto-recovery, and proper logging for all Tekton components",
+    "alternatives_considered": [
+      "Manual component startup",
+      "systemd services",
+      "Docker Compose"
+    ],
+    "impacts": [],
+    "decided_by": "team"
+  },
+  "tags": [],
+  "related_landmarks": []
+}

@@ -1,0 +1,18 @@
+{
+  "id": "6553f08e-f61d-46e5-a4e2-85418a04e460",
+  "type": "state_checkpoint",
+  "title": "Task manager state",
+  "description": "Metis task management component with WebSocket and MCP support.",
+  "file_path": "/Users/cskoons/projects/github/Tekton/Metis/metis/core/metis_component.py",
+  "line_number": 14,
+  "timestamp": "2025-06-21T20:08:08.974550",
+  "author": "system",
+  "metadata": {
+    "state_type": "hybrid",
+    "persistence": true,
+    "consistency_requirements": "Task state must be durable with auto-save",
+    "recovery_strategy": "Load from JSON backup file on startup"
+  },
+  "tags": [],
+  "related_landmarks": []
+}

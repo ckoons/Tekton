@@ -1,0 +1,17 @@
+{
+  "id": "fbd593d1-c052-479a-9132-bc86e9b5a7e7",
+  "type": "integration_point",
+  "title": "LLM WebSocket interface",
+  "description": "WebSocket endpoint for real-time LLM interactions.",
+  "file_path": "/Users/cskoons/projects/github/Tekton/landmarks/core/decorators.py",
+  "line_number": 244,
+  "timestamp": "2025-06-21T20:17:13.105566",
+  "author": "system",
+  "metadata": {
+    "target_component": "Rhetor",
+    "protocol": "WebSocket",
+    "data_flow": "Client <-> Hermes <-> Rhetor (bidirectional streaming)"
+  },
+  "tags": [],
+  "related_landmarks": []
+}

@@ -1,0 +1,24 @@
+{
+  "id": "6f64c741-75d7-474c-9545-1f167ad6c745",
+  "type": "architecture_decision",
+  "title": "AI specialist orchestration",
+  "description": "Manages dynamic AI specialist processes and coordinates communication.\n    \n    This class handles:\n    - Dynamic AI specialist allocation \n    - Process lifecycle management\n    - AI-to-AI communication through Hermes\n    - Rhetor orchestration and message filtering",
+  "file_path": "/Users/cskoons/projects/github/Tekton/Rhetor/rhetor/core/ai_specialist_manager.py",
+  "line_number": 48,
+  "timestamp": "2025-06-21T20:17:12.020485",
+  "author": "system",
+  "metadata": {
+    "rationale": "Implement dynamic AI specialist allocation with Rhetor as orchestrator for multi-agent coordination",
+    "alternatives_considered": [],
+    "impacts": [],
+    "decided_by": "team",
+    "alternatives": [
+      "Static AI assignment",
+      "Single AI agent",
+      "External orchestration service"
+    ],
+    "decision_date": "2024-03-20"
+  },
+  "tags": [],
+  "related_landmarks": []
+}

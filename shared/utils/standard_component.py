@@ -19,7 +19,24 @@ from shared.utils.logging_setup import setup_component_logging
 from shared.utils.errors import StartupError
 from shared.utils.health_check import create_health_response
 
+from landmarks import architecture_decision, state_checkpoint, performance_boundary
 
+
+@architecture_decision(
+    title="Standardized component lifecycle",
+    rationale="All components follow same init/startup/shutdown patterns for consistency and reliability",
+    alternatives_considered=["Component-specific initialization", "Container orchestration only", "No standard base"],
+    impacts=["all_components", "startup_time", "maintenance"],
+    decided_by="team",
+    patterns=["template_method", "dependency_injection"]
+)
+@state_checkpoint(
+    title="Component lifecycle state",
+    state_type="lifecycle",
+    persistence=False,
+    consistency_requirements="Sequential state transitions",
+    recovery_strategy="Restart component on failure"
+)
 class StandardComponentBase:
     """
     Base class for standardizing Tekton component initialization.

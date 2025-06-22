@@ -1,0 +1,18 @@
+{
+  "id": "0bde1d82-01b2-4f19-8dfa-fd98d78cfa31",
+  "type": "state_checkpoint",
+  "title": "Workflow state cache",
+  "description": "Manages workflow state persistence and retrieval.\n    \n    This class provides methods for saving and loading workflow state,\n    enabling workflow persistence, recovery, and inspection.",
+  "file_path": "/Users/cskoons/projects/github/Tekton/Harmonia/harmonia/core/state.py",
+  "line_number": 20,
+  "timestamp": "2025-06-21T20:17:17.655719",
+  "author": "system",
+  "metadata": {
+    "state_type": "hybrid",
+    "persistence": true,
+    "consistency_requirements": "Cache coherency with persistent storage",
+    "recovery_strategy": "Reload from disk/database on cache miss"
+  },
+  "tags": [],
+  "related_landmarks": []
+}

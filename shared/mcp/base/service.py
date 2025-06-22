@@ -14,6 +14,16 @@ from tekton.models import TektonBaseModel
 logger = logging.getLogger(__name__)
 
 
+@architecture_decision(
+    title="Unified MCP service base",
+    rationale="Standardized base class for all Tekton components to implement MCP protocol support",
+    alternatives_considered=["Component-specific MCP implementations", "External MCP proxy", "Direct API exposure"])
+@integration_point(
+    title="MCP protocol implementation",
+    target_component="All Tekton components",
+    protocol="Internal API",
+    data_flow="Component → MCPService → Tool registration → Hermes aggregation → External clients"
+)
 class MCPService(ABC):
     """
     Base class for implementing MCP services in Tekton components.
@@ -197,6 +207,13 @@ class MCPService(ABC):
         self.message_handlers[message_type] = handler
         logger.info(f"Registered message handler for type: {message_type}")
     
+    @state_checkpoint(
+        title="MCP context management",
+        state_type="memory",
+        persistence=False,
+        consistency_requirements="Context data must be thread-safe for concurrent access",
+        recovery_strategy="Contexts are ephemeral, recreated on restart"
+    )
     async def create_context(
         self,
         context_id: Optional[str] = None,

@@ -1,0 +1,22 @@
+{
+  "id": "b3f3f63b-cae6-4cd8-9ff5-3f7decc3873f",
+  "type": "architecture_decision",
+  "title": "Task decomposition engine",
+  "description": "Metis task management component with WebSocket and MCP support.",
+  "file_path": "/Users/cskoons/projects/github/Tekton/Metis/metis/core/metis_component.py",
+  "line_number": 14,
+  "timestamp": "2025-06-21T20:08:08.975598",
+  "author": "system",
+  "metadata": {
+    "rationale": "Metis provides intelligent task decomposition and dependency management for complex workflows",
+    "alternatives_considered": [
+      "Manual task breakdown",
+      "Simple todo lists",
+      "External project management"
+    ],
+    "impacts": [],
+    "decided_by": "team"
+  },
+  "tags": [],
+  "related_landmarks": []
+}

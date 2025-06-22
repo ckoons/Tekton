@@ -11,12 +11,30 @@ import asyncio
 from typing import Dict, Any, Optional, TypeVar, Generic
 
 from shared.utils.env_config import get_component_config as _get_original_component_config
+from landmarks import state_checkpoint, architecture_decision
 
 logger = logging.getLogger(__name__)
 
 T = TypeVar('T')
 
 
+@state_checkpoint(
+    title="Global configuration singleton",
+    state_type="singleton",
+    persistence=False,
+    consistency_requirements="Thread-safe access required",
+    recovery_strategy="Reinitialize from environment on restart",
+    impacts=["all_components"],
+    critical=True
+)
+@architecture_decision(
+    title="Centralized configuration management",
+    rationale="Replace scattered globals with unified config to reduce coupling and improve testability",
+    alternatives_considered=["Distributed config files", "Environment variables only", "Database config"],
+    impacts=["configuration", "state_management", "service_discovery"],
+    decided_by="team",
+    date="2024-10-15"
+)
 class GlobalConfig:
     """
     Unified global configuration and state management for Tekton components.

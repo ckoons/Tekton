@@ -7,9 +7,21 @@ from shared.utils.standard_component import StandardComponentBase
 from metis.core.task_manager import TaskManager
 from metis.core.connection_manager import ConnectionManager
 import metis.core.mcp.tools as mcp_tools
+from landmarks import architecture_decision, integration_point, state_checkpoint
 
 logger = logging.getLogger(__name__)
 
+@architecture_decision(
+    title="Task decomposition engine",
+    rationale="Metis provides intelligent task decomposition and dependency management for complex workflows",
+    alternatives_considered=["Manual task breakdown", "Simple todo lists", "External project management"])
+@state_checkpoint(
+    title="Task manager state",
+    state_type="hybrid",
+    persistence=True,
+    consistency_requirements="Task state must be durable with auto-save",
+    recovery_strategy="Load from JSON backup file on startup"
+)
 class MetisComponent(StandardComponentBase):
     """Metis task management component with WebSocket and MCP support."""
     
@@ -41,15 +53,24 @@ class MetisComponent(StandardComponentBase):
         # Optional components - warn but continue
         try:
             # Initialize MCP tools - Metis uses a different pattern
-            # The tools module has functions like decompose_task, analyze_task_complexity, etc.
-            # Rather than individual CRUD tools
-            self.mcp_tools = {
-                "decompose_task": mcp_tools.decompose_task,
-                "analyze_task_complexity": mcp_tools.analyze_task_complexity,
-                "suggest_task_order": mcp_tools.suggest_task_order,
-                "generate_subtasks": mcp_tools.generate_subtasks,
-                "detect_dependencies": mcp_tools.detect_dependencies
-            }
+            @integration_point(
+    title="MCP task intelligence tools",
+    target_component="MCP",
+    protocol="Internal API",
+    data_flow="Tasks → MCP tools → Analysis/decomposition results"
+)
+            def init_mcp_tools():
+                # The tools module has functions like decompose_task, analyze_task_complexity, etc.
+                # Rather than individual CRUD tools
+                return {
+                    "decompose_task": mcp_tools.decompose_task,
+                    "analyze_task_complexity": mcp_tools.analyze_task_complexity,
+                    "suggest_task_order": mcp_tools.suggest_task_order,
+                    "generate_subtasks": mcp_tools.generate_subtasks,
+                    "detect_dependencies": mcp_tools.detect_dependencies
+                }
+            
+            self.mcp_tools = init_mcp_tools()
             
             # Update the global task manager reference in mcp_tools
             # This is a temporary workaround until we refactor mcp_tools

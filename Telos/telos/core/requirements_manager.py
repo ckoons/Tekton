@@ -10,10 +10,24 @@ from typing import Dict, List, Optional, Union, Any
 
 from telos.core.requirement import Requirement
 from telos.core.project import Project
+from landmarks import state_checkpoint, performance_boundary
 
 logger = logging.getLogger(__name__)
 
 
+@state_checkpoint(
+    title="Requirements storage",
+    state_type="persistent",
+    persistence=True,
+    consistency_requirements="Requirements must be durably stored",
+    recovery_strategy="Reload from JSON files in storage directory"
+)
+@performance_boundary(
+    title="Requirements operations",
+    sla="<50ms for CRUD operations",
+    metrics={"create": "10ms", "read": "5ms", "update": "15ms", "delete": "8ms"},
+    optimization_notes="In-memory cache with file-based persistence"
+)
 class RequirementsManager:
     """Manager for projects and requirements."""
     

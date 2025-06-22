@@ -1,0 +1,23 @@
+{
+  "id": "2e9d0250-5ad3-4aee-b6a5-bdc639704f04",
+  "type": "architecture_decision",
+  "title": "Dual-nature planning system",
+  "description": "Prometheus planning system component.\n    \n    Implements strategic planning and retrospective analysis capabilities\n    following Tekton's standardized component patterns.",
+  "file_path": "/Users/cskoons/projects/github/Tekton/Prometheus/prometheus/core/prometheus_component.py",
+  "line_number": 18,
+  "timestamp": "2025-06-21T20:11:21.137943",
+  "author": "system",
+  "metadata": {
+    "rationale": "Combines Prometheus (forward planning) and Epimethius (retrospective analysis) for comprehensive project management",
+    "alternatives_considered": [],
+    "impacts": [],
+    "decided_by": "team",
+    "alternatives": [
+      "Separate planning and retrospective components",
+      "Traditional project management tools"
+    ],
+    "decision_date": "2024-01-15"
+  },
+  "tags": [],
+  "related_landmarks": []
+}

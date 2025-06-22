@@ -1,0 +1,17 @@
+{
+  "id": "597e8e08-0bb7-4df3-981b-bcef5d02676f",
+  "type": "integration_point",
+  "title": "Planning engine initialization",
+  "description": "Initialize Prometheus-specific components.",
+  "file_path": "/Users/cskoons/projects/github/Tekton/Prometheus/prometheus/core/prometheus_component.py",
+  "line_number": 48,
+  "timestamp": "2025-06-21T20:17:15.730667",
+  "author": "system",
+  "metadata": {
+    "target_component": "PlanningEngine",
+    "protocol": "Internal API",
+    "data_flow": "Plans flow from objectives through reasoning iterations to structured output"
+  },
+  "tags": [],
+  "related_landmarks": []
+}

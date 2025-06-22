@@ -1,0 +1,24 @@
+{
+  "id": "e7a0442a-3dd5-4a2d-ac76-dd914802d048",
+  "type": "architecture_decision",
+  "title": "Multi-modal query strategies",
+  "description": "Enhanced query engine for Athena knowledge graph.\n    \n    Provides multiple retrieval strategies inspired by LightRAG:\n    - Naive: Simple keyword-based search\n    - Local: Entity-focused retrieval\n    - Global: Relationship-focused retrieval\n    - Hybrid: Combined entity and relationship retrieval\n    - Mix: Integrated graph and vector retrieval",
+  "file_path": "/Users/cskoons/projects/github/Tekton/Athena/athena/core/query_engine.py",
+  "line_number": 36,
+  "timestamp": "2025-06-21T20:11:23.431218",
+  "author": "system",
+  "metadata": {
+    "rationale": "Implement LightRAG-inspired retrieval modes for flexible querying: naive, local, global, hybrid, and mix strategies",
+    "alternatives_considered": [],
+    "impacts": [],
+    "decided_by": "team",
+    "alternatives": [
+      "Single query mode",
+      "Simple keyword search",
+      "SPARQL-only queries"
+    ],
+    "decision_date": "2024-03-05"
+  },
+  "tags": [],
+  "related_landmarks": []
+}

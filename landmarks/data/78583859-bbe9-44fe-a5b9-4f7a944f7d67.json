@@ -1,0 +1,18 @@
+{
+  "id": "78583859-bbe9-44fe-a5b9-4f7a944f7d67",
+  "type": "danger_zone",
+  "title": "Dependency cycle detection",
+  "description": "Detect cycles in a dependency graph.\n        \n        Args:\n            dependency_graph: Graph of dependencies (component_id -> list of dependency_ids)\n            \n        Returns:\n            List of detected cycles",
+  "file_path": "/Users/cskoons/projects/github/Tekton/tekton/core/dependency.py",
+  "line_number": 26,
+  "timestamp": "2025-06-21T20:17:17.757041",
+  "author": "system",
+  "metadata": {
+    "risk_level": "startup_failure",
+    "risks": [],
+    "mitigation": "Automatically break cycles by removing lowest priority edges",
+    "review_required": "Verify cycle breaking doesn't violate critical dependencies"
+  },
+  "tags": [],
+  "related_landmarks": []
+}

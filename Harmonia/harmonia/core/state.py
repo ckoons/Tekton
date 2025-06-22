@@ -11,11 +11,23 @@ import os
 from typing import Dict, List, Any, Optional, Set, Union
 from datetime import datetime
 import pickle
+from landmarks import architecture_decision, performance_boundary, state_checkpoint
 
 # Configure logger
 logger = logging.getLogger(__name__)
 
 
+@architecture_decision(
+    title="Hybrid state storage",
+    rationale="Support both file-based (pickle) and database storage for workflow state with in-memory caching",
+    alternatives_considered=["Database only", "Memory only", "File only"])
+@state_checkpoint(
+    title="Workflow state cache",
+    state_type="hybrid",
+    persistence=True,
+    consistency_requirements="Cache coherency with persistent storage",
+    recovery_strategy="Reload from disk/database on cache miss"
+)
 class StateManager:
     """
     Manages workflow state persistence and retrieval.

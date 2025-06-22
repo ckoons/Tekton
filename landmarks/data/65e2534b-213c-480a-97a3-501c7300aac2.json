@@ -1,0 +1,17 @@
+{
+  "id": "65e2534b-213c-480a-97a3-501c7300aac2",
+  "type": "integration_point",
+  "title": "Component startup orchestration",
+  "description": "Advanced component launcher with monitoring and recovery",
+  "file_path": "/Users/cskoons/utils/tekton-launch",
+  "line_number": 166,
+  "timestamp": "2025-06-21T20:17:00.028297",
+  "author": "system",
+  "metadata": {
+    "target_component": "All Tekton components",
+    "protocol": "Process management",
+    "data_flow": "Launcher \u2192 Component processes \u2192 Health checks \u2192 Logs"
+  },
+  "tags": [],
+  "related_landmarks": []
+}

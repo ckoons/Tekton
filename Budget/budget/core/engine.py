@@ -9,6 +9,7 @@ import os
 import uuid
 from datetime import datetime, timedelta
 from typing import Dict, List, Any, Optional, Union, Tuple
+from landmarks import architecture_decision, performance_boundary, danger_zone
 
 # Try to import debug_utils from shared if available
 try:
@@ -47,6 +48,17 @@ from budget.data.repository import (
 from budget.core.allocation import allocation_manager
 
 
+@architecture_decision(
+    title="Policy-based budget enforcement",
+    rationale="Use flexible policy system with tiers, periods, and thresholds for granular budget control",
+    alternatives_considered=["Hard limits only", "Manual approval process", "Post-hoc billing"])
+@danger_zone(
+    title="Budget enforcement logic",
+    risk_level="high",
+    risks=["Service interruption", "Incorrect cost calculation", "Policy bypass"],
+    mitigations=["Warning thresholds", "Override mechanisms", "Audit logging"],
+    review_required=True
+)
 class BudgetEngine:
     """
     Core budget management engine.

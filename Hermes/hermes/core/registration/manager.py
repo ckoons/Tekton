@@ -18,9 +18,25 @@ from hermes.core.registration.handlers import (
     handle_heartbeat
 )
 
+from landmarks import architecture_decision, state_checkpoint, integration_point
+
 # Configure logger
 logger = logging.getLogger(__name__)
 
+@architecture_decision(
+    title="Unified component registration",
+    rationale="Central registry enables service discovery, health monitoring, and dynamic component management",
+    alternatives_considered=["Static configuration", "DNS-based discovery", "Kubernetes native"],
+    impacts=["reliability", "startup_time", "component_coordination"],
+    decided_by="team"
+)
+@state_checkpoint(
+    title="Component registry state",
+    state_type="runtime",
+    persistence=True,
+    consistency_requirements="Eventually consistent, heartbeat-based liveness",
+    recovery_strategy="Components re-register on restart"
+)
 class RegistrationManager:
     """
     Central manager for component registration across the Tekton ecosystem.

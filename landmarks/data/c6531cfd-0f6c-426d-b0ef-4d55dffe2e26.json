@@ -1,0 +1,22 @@
+{
+  "id": "c6531cfd-0f6c-426d-b0ef-4d55dffe2e26",
+  "type": "performance_boundary",
+  "title": "Component startup orchestration",
+  "description": "Group components by startup priority with dependency hierarchy:\n        Hermes \u2192 Engram \u2192 Rhetor \u2192 Everything else",
+  "file_path": "/Users/cskoons/utils/tekton-launch",
+  "line_number": 979,
+  "timestamp": "2025-06-21T20:32:18.275401",
+  "author": "system",
+  "metadata": {
+    "sla": "<30s for full stack startup",
+    "optimization_notes": "Parallel launch within priority groups, sequential between groups",
+    "metrics": {
+      "hermes": "2s",
+      "engram": "3s",
+      "rhetor": "5s",
+      "others": "2-5s each"
+    }
+  },
+  "tags": [],
+  "related_landmarks": []
+}

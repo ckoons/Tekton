@@ -10,9 +10,21 @@ from harmonia.core.component import ComponentRegistry
 from harmonia.core.engine import WorkflowEngine
 from harmonia.core.startup_instructions import StartUpInstructions
 from harmonia.core.workflow_startup import WorkflowEngineStartup
+from landmarks import architecture_decision, state_checkpoint, danger_zone
 
 logger = logging.getLogger(__name__)
 
+@architecture_decision(
+    title="Workflow orchestration system",
+    rationale="Harmonia provides centralized workflow management and cross-component coordination for complex multi-step processes",
+    alternatives_considered=["Per-component workflows", "External workflow manager", "Manual coordination"])
+@state_checkpoint(
+    title="Workflow state persistence",
+    state_type="persistent",
+    persistence=True,
+    consistency_requirements="Workflow state must survive restarts to enable resumption",
+    recovery_strategy="Load workflow state from disk/database, resume paused executions"
+)
 class HarmoniaComponent(StandardComponentBase):
     """Harmonia workflow orchestration component with state management and event streaming."""
     
@@ -28,6 +40,13 @@ class HarmoniaComponent(StandardComponentBase):
         self.startup_instructions = None
         self.mcp_bridge = None
         
+    @danger_zone(
+        title="Complex initialization sequence",
+        risk_level="high",
+        risks=["Initialization order dependencies", "State corruption on partial init", "Resource leaks"],
+        mitigations=["Ordered initialization", "Rollback on failure", "Resource tracking"],
+        review_required=True
+    )
     async def _component_specific_init(self):
         """Initialize Harmonia-specific services in critical dependency order."""
         # Critical initialization sequence

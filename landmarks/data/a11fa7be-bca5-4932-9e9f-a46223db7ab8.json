@@ -1,0 +1,27 @@
+{
+  "id": "a11fa7be-bca5-4932-9e9f-a46223db7ab8",
+  "type": "architecture_decision",
+  "title": "Pub/Sub messaging pattern",
+  "description": "Main interface for inter-component messaging.\n    \n    This class provides methods for publishing and subscribing to messages,\n    enabling asynchronous communication between Tekton components.",
+  "file_path": "/Users/cskoons/projects/github/Tekton/Hermes/hermes/core/message_bus.py",
+  "line_number": 20,
+  "timestamp": "2025-06-21T20:17:00.148336",
+  "author": "system",
+  "metadata": {
+    "rationale": "Enable loose coupling between components with asynchronous event-driven communication",
+    "alternatives_considered": [
+      "Direct RPC calls",
+      "REST webhooks",
+      "Message queues (RabbitMQ/Kafka)"
+    ],
+    "impacts": [
+      "scalability",
+      "complexity",
+      "latency"
+    ],
+    "decided_by": "team",
+    "date": "2024-01-20"
+  },
+  "tags": [],
+  "related_landmarks": []
+}

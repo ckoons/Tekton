@@ -3,10 +3,22 @@ import logging
 from typing import List, Dict, Any
 
 from shared.utils.standard_component import StandardComponentBase
+from landmarks import architecture_decision, state_checkpoint, integration_point
 
 logger = logging.getLogger(__name__)
 
 
+@architecture_decision(
+    title="Central execution hub",
+    rationale="Synthesis serves as the execution engine for Tekton, coordinating plan implementation across components",
+    alternatives_considered=["Distributed execution", "Component-local execution", "External workflow engine"])
+@state_checkpoint(
+    title="Execution engine state",
+    state_type="ephemeral",
+    persistence=False,
+    consistency_requirements="Active execution tracking must survive brief restarts",
+    recovery_strategy="Cancel incomplete executions on restart, restore from execution history"
+)
 class SynthesisComponent(StandardComponentBase):
     """Synthesis execution and integration engine component."""
     
@@ -102,6 +114,12 @@ class SynthesisComponent(StandardComponentBase):
         
         return status
     
+    @integration_point(
+    title="Synthesis MCP bridge",
+    target_component="Hermes",
+    protocol="Internal API",
+    data_flow="Execution commands → Engine → Status updates"
+)
     async def initialize_mcp_bridge(self):
         """Initialize the MCP bridge after component startup."""
         try:

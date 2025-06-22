@@ -1,0 +1,25 @@
+{
+  "id": "353aebbb-f6f5-4d70-8a75-d293bbdb2116",
+  "type": "architecture_decision",
+  "title": "Use landmark system for persistent memory",
+  "description": "Implementation of the landmark system",
+  "file_path": "/Users/cskoons/projects/github/Tekton/landmarks/test_landmark_system.py",
+  "line_number": 33,
+  "timestamp": "2025-06-21T19:08:23.812512",
+  "author": "system",
+  "metadata": {
+    "rationale": "CIs need context across sessions",
+    "alternatives_considered": [
+      "Database tags",
+      "Code comments",
+      "External docs"
+    ],
+    "impacts": [
+      "developer_experience",
+      "ci_capabilities"
+    ],
+    "decided_by": "Casey"
+  },
+  "tags": [],
+  "related_landmarks": []
+}

@@ -1,0 +1,17 @@
+{
+  "id": "0dc74ee0-e8ce-4135-bb07-9a68c0a8ffe0",
+  "type": "integration_point",
+  "title": "LLM service connection",
+  "description": "LLM Adapter for Prometheus planning system.\n    \n    This adapter provides an interface for LLM operations using the enhanced\n    tekton-llm-client features for template management, streaming, and response handling.",
+  "file_path": "/Users/cskoons/projects/github/Tekton/Prometheus/prometheus/utils/llm_adapter.py",
+  "line_number": 36,
+  "timestamp": "2025-06-21T20:17:15.796194",
+  "author": "system",
+  "metadata": {
+    "target_component": "Rhetor",
+    "protocol": "REST/WebSocket",
+    "data_flow": "Prompts \u2192 LLM service \u2192 Structured responses"
+  },
+  "tags": [],
+  "related_landmarks": []
+}

@@ -555,3 +555,18 @@ async def start_server(host: str = "0.0.0.0", port: int = None, ws_port: int = N
     config = uvicorn.Config(app, host=host, port=port)
     server = uvicorn.Server(config)
     await server.serve()
+
+
+if __name__ == "__main__":
+    """Run the server when executed directly"""
+    import sys
+    
+    # Get port from command line if provided
+    port = None
+    if "--port" in sys.argv:
+        idx = sys.argv.index("--port")
+        if idx + 1 < len(sys.argv):
+            port = int(sys.argv[idx + 1])
+    
+    # Run the server
+    asyncio.run(start_server(port=port))

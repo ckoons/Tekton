@@ -1,0 +1,26 @@
+{
+  "id": "8bae2531-7f9d-4d47-b1c0-3e2e04586642",
+  "type": "api_contract",
+  "title": "WebSocket LLM chat",
+  "description": "WebSocket endpoint for real-time LLM interactions.",
+  "file_path": "/Users/cskoons/projects/github/Tekton/Hermes/hermes/api/llm_endpoints.py",
+  "line_number": 244,
+  "timestamp": "2025-06-21T20:07:55.141366",
+  "author": "system",
+  "metadata": {
+    "endpoint": "/llm/ws",
+    "method": "WebSocket",
+    "request_schema": {
+      "type": "chat|analyze",
+      "message": "string",
+      "stream": "bool"
+    },
+    "response_schema": {
+      "type": "response|error",
+      "content": "string"
+    },
+    "auth_required": false
+  },
+  "tags": [],
+  "related_landmarks": []
+}

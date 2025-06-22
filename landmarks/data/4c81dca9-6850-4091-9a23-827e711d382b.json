@@ -1,0 +1,17 @@
+{
+  "id": "4c81dca9-6850-4091-9a23-827e711d382b",
+  "type": "integration_point",
+  "title": "Graceful degradation registry",
+  "description": "Manager for graceful degradation across components.\n    \n    Provides a central registry for fallbacks and circuit breakers.",
+  "file_path": "/Users/cskoons/projects/github/Tekton/tekton/core/graceful_degradation.py",
+  "line_number": 263,
+  "timestamp": "2025-06-21T20:11:23.040141",
+  "author": "system",
+  "metadata": {
+    "target_component": "All Tekton components",
+    "protocol": "Internal API",
+    "data_flow": "Component requests \u2192 Manager \u2192 Fallback selection \u2192 Handler execution"
+  },
+  "tags": [],
+  "related_landmarks": []
+}

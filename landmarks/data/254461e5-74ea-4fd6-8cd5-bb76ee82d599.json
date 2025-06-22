@@ -1,0 +1,18 @@
+{
+  "id": "254461e5-74ea-4fd6-8cd5-bb76ee82d599",
+  "type": "state_checkpoint",
+  "title": "MCP DevTools server state",
+  "description": "Start the MCP DevTools server as a subprocess.",
+  "file_path": "/Users/cskoons/projects/github/Tekton/Hephaestus/hephaestus/core/hephaestus_component.py",
+  "line_number": 111,
+  "timestamp": "2025-06-21T20:17:15.807410",
+  "author": "system",
+  "metadata": {
+    "state_type": "subprocess",
+    "persistence": false,
+    "consistency_requirements": "MCP server process must be tracked for cleanup",
+    "recovery_strategy": "Restart MCP server on failure, non-critical service"
+  },
+  "tags": [],
+  "related_landmarks": []
+}

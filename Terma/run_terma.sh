@@ -43,10 +43,10 @@ handle_error() {
     exit 1
 }
 
-# Check if virtual environment exists
-if [ -d "venv" ]; then
-    source venv/bin/activate
-fi
+# Skip virtual environment - use system Python like other components
+# if [ -d "venv" ]; then
+#     source venv/bin/activate
+# fi
 
 # Register with Hermes using tekton-register
 echo -e "${YELLOW}Registering Terma with Hermes...${RESET}"

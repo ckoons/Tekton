@@ -1,0 +1,20 @@
+{
+  "id": "6a93121c-25c0-443f-b78f-e70954de9a44",
+  "type": "performance_boundary",
+  "title": "Terminal resize operation",
+  "description": "Resize the terminal\n        \n        Args:\n            rows: Number of rows\n            cols: Number of columns\n            \n        Returns:\n            bool: True if successful, False otherwise",
+  "file_path": "/Users/cskoons/projects/github/Tekton/Terma/terma/core/terminal.py",
+  "line_number": 326,
+  "timestamp": "2025-06-21T20:27:14.137283",
+  "author": "system",
+  "metadata": {
+    "sla": "<10ms for window size change",
+    "optimization_notes": "Direct ioctl call to PTY, minimal overhead",
+    "metrics": {
+      "resize_time": "2ms",
+      "signal_propagation": "5ms"
+    }
+  },
+  "tags": [],
+  "related_landmarks": []
+}

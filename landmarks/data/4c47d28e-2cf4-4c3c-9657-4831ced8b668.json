@@ -1,0 +1,20 @@
+{
+  "id": "4c47d28e-2cf4-4c3c-9657-4831ced8b668",
+  "type": "performance_boundary",
+  "title": "Landmark search performance",
+  "description": "Fast landmark search",
+  "file_path": "/Users/cskoons/projects/github/Tekton/landmarks/test_landmark_system.py",
+  "line_number": 46,
+  "timestamp": "2025-06-21T17:40:07.784845",
+  "author": "system",
+  "metadata": {
+    "sla": "<100ms for 10k landmarks",
+    "optimization_notes": "Uses in-memory indexes",
+    "metrics": {
+      "index_time": "5ms",
+      "search_time": "10ms"
+    }
+  },
+  "tags": [],
+  "related_landmarks": []
+}

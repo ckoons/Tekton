@@ -1,0 +1,20 @@
+{
+  "id": "2af84149-d19a-4831-8855-62d03032433d",
+  "type": "performance_boundary",
+  "title": "Plan execution performance",
+  "description": "Execute a plan asynchronously.\n        \n        Args:\n            plan: Execution plan or plan data\n            context: Optional execution context or context data\n            \n        Returns:\n            Execution context ID",
+  "file_path": "/Users/cskoons/projects/github/Tekton/Synthesis/synthesis/core/execution_engine.py",
+  "line_number": 103,
+  "timestamp": "2025-06-21T20:11:23.174266",
+  "author": "system",
+  "metadata": {
+    "sla": "<100ms to start execution, <5min typical completion",
+    "optimization_notes": "Async execution, semaphore concurrency control",
+    "metrics": {
+      "start_time": "45ms avg",
+      "completion_time": "3.2min avg"
+    }
+  },
+  "tags": [],
+  "related_landmarks": []
+}

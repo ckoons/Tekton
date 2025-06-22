@@ -1,0 +1,22 @@
+{
+  "id": "e2697348-6846-4971-bf6e-7a13eabbe2a3",
+  "type": "architecture_decision",
+  "title": "Agent-based task execution",
+  "description": "Ergon agent system component with specialized task execution capabilities.",
+  "file_path": "/Users/cskoons/projects/github/Tekton/Ergon/ergon/core/ergon_component.py",
+  "line_number": 18,
+  "timestamp": "2025-06-21T20:11:23.468506",
+  "author": "system",
+  "metadata": {
+    "rationale": "Ergon provides specialized agents for different task types (browser, GitHub, mail) with autonomous execution capabilities",
+    "alternatives_considered": [
+      "Direct API integration",
+      "Manual task execution",
+      "Single agent type"
+    ],
+    "impacts": [],
+    "decided_by": "team"
+  },
+  "tags": [],
+  "related_landmarks": []
+}

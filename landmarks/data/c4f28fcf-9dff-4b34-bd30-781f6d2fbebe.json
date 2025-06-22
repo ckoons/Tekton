@@ -1,0 +1,18 @@
+{
+  "id": "c4f28fcf-9dff-4b34-bd30-781f6d2fbebe",
+  "type": "danger_zone",
+  "title": "PTY read loop concurrency",
+  "description": "Continuously read from the PTY and call output callbacks",
+  "file_path": "/Users/cskoons/projects/github/Tekton/Terma/terma/core/terminal.py",
+  "line_number": 156,
+  "timestamp": "2025-06-21T20:28:41.006009",
+  "author": "system",
+  "metadata": {
+    "risk_level": "resource_exhaustion",
+    "risks": [],
+    "mitigation": "Non-blocking reads with asyncio executor, proper exception handling",
+    "review_required": "Monitor for file descriptor leaks and CPU usage"
+  },
+  "tags": [],
+  "related_landmarks": []
+}

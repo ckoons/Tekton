@@ -7,9 +7,21 @@ from shared.utils.standard_component import StandardComponentBase
 from budget.core.engine import BudgetEngine
 from budget.data.repository import db_manager
 from budget.api.websocket_server import ConnectionManager
+from landmarks import architecture_decision, state_checkpoint, integration_point
 
 logger = logging.getLogger(__name__)
 
+@architecture_decision(
+    title="Centralized budget management",
+    rationale="Implement unified budget tracking and enforcement across all Tekton components to prevent cost overruns",
+    alternatives_considered=["Per-component budgets", "External cost tracking", "No budget enforcement"])
+@state_checkpoint(
+    title="Budget database state",
+    state_type="persistent",
+    persistence=True,
+    consistency_requirements="ACID compliance for financial tracking",
+    recovery_strategy="Restore from SQLite database with transaction logs"
+)
 class BudgetComponent(StandardComponentBase):
     """Budget management component with financial tracking and MCP support."""
     
@@ -104,6 +116,12 @@ class BudgetComponent(StandardComponentBase):
         return metadata
 
 
+@integration_point(
+    title="Budget engine access",
+    target_component="BudgetEngine",
+    protocol="Internal API",
+    data_flow="Component → BudgetEngine → Database"
+)
 def get_budget_engine() -> BudgetEngine:
     """
     Convenience function to get budget engine through component.

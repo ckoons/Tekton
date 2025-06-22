@@ -1,0 +1,18 @@
+{
+  "id": "bfb95b4b-2874-4883-8580-0683e5eb9fcc",
+  "type": "danger_zone",
+  "title": "Message queue concurrency",
+  "description": "Message queue with history for reliable message delivery.\n    \n    Ensures components don't miss messages during startup or restart by\n    maintaining message history and tracking delivered messages.",
+  "file_path": "/Users/cskoons/projects/github/Tekton/tekton/core/lifecycle.py",
+  "line_number": 430,
+  "timestamp": "2025-06-21T20:17:17.627129",
+  "author": "system",
+  "metadata": {
+    "risk_level": "concurrency",
+    "risks": [],
+    "mitigation": "Async locks on all queue operations",
+    "review_required": "Ensure no deadlocks in lock acquisition patterns"
+  },
+  "tags": [],
+  "related_landmarks": []
+}

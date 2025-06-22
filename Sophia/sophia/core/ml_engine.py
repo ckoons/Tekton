@@ -10,9 +10,20 @@ import asyncio
 import importlib
 from typing import Dict, Any, List, Optional, Tuple, Union
 from pathlib import Path
+from landmarks import architecture_decision, performance_boundary, integration_point
 
 logger = logging.getLogger("sophia.ml_engine")
 
+@architecture_decision(
+    title="Pluggable model registry",
+    rationale="Support multiple ML model providers and types with dynamic loading and capability-based selection",
+    alternatives_considered=["Single model type", "Hard-coded models", "External model service"])
+@integration_point(
+    title="ML model provider integration",
+    target_component="HuggingFace",
+    protocol="Internal API",
+    data_flow="Model requests → Registry → Provider → Model instance"
+)
 class ModelRegistry:
     """
     Registry for managing ML models in Sophia.

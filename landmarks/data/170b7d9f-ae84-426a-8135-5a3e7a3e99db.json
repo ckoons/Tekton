@@ -1,0 +1,27 @@
+{
+  "id": "170b7d9f-ae84-426a-8135-5a3e7a3e99db",
+  "type": "architecture_decision",
+  "title": "WebSocket for real-time messaging",
+  "description": "Main WebSocket server for inter-component communication",
+  "file_path": "/Users/cskoons/projects/github/Tekton/landmarks/examples/landmark_example.py",
+  "line_number": 21,
+  "timestamp": "2025-06-21T17:40:57.747330",
+  "author": "system",
+  "metadata": {
+    "rationale": "Need <100ms latency for UI updates, REST polling would be too slow",
+    "alternatives_considered": [
+      "REST with polling",
+      "Server-sent events",
+      "gRPC streaming"
+    ],
+    "impacts": [
+      "scalability",
+      "client_complexity",
+      "infrastructure"
+    ],
+    "decided_by": "Casey",
+    "date": "2024-01-15"
+  },
+  "tags": [],
+  "related_landmarks": []
+}

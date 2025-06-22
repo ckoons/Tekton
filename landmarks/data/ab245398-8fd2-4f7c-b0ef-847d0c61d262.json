@@ -1,0 +1,26 @@
+{
+  "id": "ab245398-8fd2-4f7c-b0ef-847d0c61d262",
+  "type": "danger_zone",
+  "title": "Path finding complexity",
+  "description": "Find paths between two entities.\n        \n        Args:\n            source_id: Source entity ID\n            target_id: Target entity ID\n            max_depth: Maximum path length\n            \n        Returns:\n            List of paths, where each path is a list of alternating Entity and Relationship objects",
+  "file_path": "/Users/cskoons/projects/github/Tekton/Athena/athena/core/engine.py",
+  "line_number": 418,
+  "timestamp": "2025-06-21T20:17:18.000159",
+  "author": "system",
+  "metadata": {
+    "risk_level": "medium",
+    "risks": [
+      "Exponential search space",
+      "Memory exhaustion for deep searches"
+    ],
+    "mitigation": "",
+    "review_required": false,
+    "mitigations": [
+      "Max depth limits",
+      "Timeout constraints",
+      "Result pagination"
+    ]
+  },
+  "tags": [],
+  "related_landmarks": []
+}

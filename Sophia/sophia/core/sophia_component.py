@@ -3,10 +3,22 @@ import logging
 from typing import List, Dict, Any
 
 from shared.utils.standard_component import StandardComponentBase
+from landmarks import architecture_decision, state_checkpoint, danger_zone
 
 logger = logging.getLogger(__name__)
 
 
+@architecture_decision(
+    title="Multi-engine ML system",
+    rationale="Sophia provides comprehensive ML capabilities with separate engines for metrics, analysis, experiments, recommendations, intelligence measurement, and core ML",
+    alternatives_considered=["Single ML framework", "External ML services", "Simple analytics only"])
+@state_checkpoint(
+    title="ML engine ensemble state",
+    state_type="ephemeral",
+    persistence=False,
+    consistency_requirements="Engine states must be synchronized",
+    recovery_strategy="Restart all engines on recovery"
+)
 class SophiaComponent(StandardComponentBase):
     """Sophia machine learning and continuous improvement component."""
     
@@ -23,6 +35,13 @@ class SophiaComponent(StandardComponentBase):
         self.active_connections = []
         self.initialized = False
         
+    @danger_zone(
+        title="Complex multi-engine initialization",
+        risk_level="high",
+        risks=["Engine dependency conflicts", "Resource exhaustion", "Partial initialization"],
+        mitigations=["Sequential initialization", "Resource monitoring", "Graceful degradation"],
+        review_required=True
+    )
     async def _component_specific_init(self):
         """Initialize Sophia-specific services."""
         # Import here to avoid circular imports

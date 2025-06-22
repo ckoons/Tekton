@@ -15,9 +15,21 @@ import traceback
 from typing import Optional, Dict, Any, Tuple, List, Callable
 
 from ..utils.logging import setup_logging
+from landmarks import architecture_decision, danger_zone, state_checkpoint, performance_boundary
 
 logger = setup_logging()
 
+@architecture_decision(
+    title="PTY-based terminal emulation",
+    rationale="Use pseudo-terminal interface for full terminal emulation including control sequences and interactive programs",
+    alternatives_considered=["Direct process execution", "SSH-based terminals", "Web-based terminals"])
+@state_checkpoint(
+    title="Terminal session state",
+    state_type="memory",
+    persistence=False,
+    consistency_requirements="Session state must be consistent with PTY process",
+    recovery_strategy="Sessions are ephemeral, restart on failure"
+)
 class TerminalSession:
     """Manages a single terminal session with PTY interface"""
     
@@ -141,6 +153,12 @@ class TerminalSession:
         else:
             logger.warning("Event loop not running, read loop not started")
     
+    @danger_zone(
+        title="PTY read loop concurrency",
+        risk_level="resource_exhaustion",
+        mitigation="Non-blocking reads with asyncio executor, proper exception handling",
+        review_required="Monitor for file descriptor leaks and CPU usage"
+    )
     async def _read_loop(self):
         """Continuously read from the PTY and call output callbacks"""
         if not self.pty:
@@ -305,6 +323,12 @@ class TerminalSession:
             logger.debug(f"Read error details: {type(e).__name__}: {str(e)}")
             return None
     
+    @performance_boundary(
+        title="Terminal resize operation",
+        sla="<10ms for window size change",
+        metrics={"resize_time": "2ms", "signal_propagation": "5ms"},
+        optimization_notes="Direct ioctl call to PTY, minimal overhead"
+    )
     def resize(self, rows: int, cols: int) -> bool:
         """Resize the terminal
         

@@ -8,6 +8,7 @@ inspired by LightRAG's multi-modal query capabilities.
 import logging
 import asyncio
 from typing import Dict, List, Any, Optional, Union, Set, Tuple
+from landmarks import architecture_decision, performance_boundary
 
 # Import FastMCP integration if available
 try:
@@ -32,6 +33,12 @@ from .mcp import register_query_tools
 
 logger = logging.getLogger("athena.query_engine")
 
+@architecture_decision(
+    title="Multi-modal query strategies",
+    rationale="Implement LightRAG-inspired retrieval modes for flexible querying: naive, local, global, hybrid, and mix strategies",
+    alternatives=["Single query mode", "Simple keyword search", "SPARQL-only queries"],
+    decision_date="2024-03-05"
+)
 class QueryEngine:
     """
     Enhanced query engine for Athena knowledge graph.

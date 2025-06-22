@@ -16,6 +16,8 @@ from fastapi.responses import StreamingResponse
 from pydantic import Field
 from tekton.models import TektonBaseModel
 
+from landmarks import api_contract, integration_point, performance_boundary
+
 # Add Tekton root to path for shared imports
 tekton_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../.."))
 if tekton_root not in sys.path:
@@ -239,6 +241,24 @@ async def get_providers() -> ProviderInfo:
         logger.error(f"Provider info error: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Failed to get providers: {str(e)}")
 
+@integration_point(
+    title="LLM WebSocket interface",
+    target_component="Rhetor",
+    protocol="WebSocket",
+    data_flow="Client <-> Hermes <-> Rhetor (bidirectional streaming)"
+)
+@performance_boundary(
+    title="Real-time LLM streaming",
+    sla="<100ms first token latency",
+    optimization_notes="Direct WebSocket pass-through to Rhetor"
+)
+@api_contract(
+    title="WebSocket LLM chat",
+    endpoint="/llm/ws",
+    method="WebSocket",
+    request_schema={"type": "chat|analyze", "message": "string", "stream": "bool"},
+    response_schema={"type": "response|error", "content": "string"}
+)
 @llm_router.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
     """

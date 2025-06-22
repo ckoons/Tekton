@@ -1,0 +1,26 @@
+{
+  "id": "4aba689f-4788-48bd-a82e-a79ff8369387",
+  "type": "architecture_decision",
+  "title": "Rule-based action planning",
+  "description": "Action planner for Apollo that determines appropriate corrective actions.\n    \n    This class uses rule-based decision making to generate actions based on \n    current context states and predictions about future states. It prioritizes\n    actions and determines appropriate timing for interventions.",
+  "file_path": "/Users/cskoons/projects/github/Tekton/Apollo/apollo/core/action_planner.py",
+  "line_number": 481,
+  "timestamp": "2025-06-21T20:08:08.868055",
+  "author": "system",
+  "metadata": {
+    "rationale": "Deterministic rules provide predictable, debuggable behavior for critical context management",
+    "alternatives_considered": [
+      "ML-based planning",
+      "Reinforcement learning",
+      "Static thresholds"
+    ],
+    "impacts": [
+      "predictability",
+      "maintainability",
+      "flexibility"
+    ],
+    "decided_by": "team"
+  },
+  "tags": [],
+  "related_landmarks": []
+}

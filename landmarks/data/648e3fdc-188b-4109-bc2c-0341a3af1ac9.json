@@ -1,0 +1,17 @@
+{
+  "id": "648e3fdc-188b-4109-bc2c-0341a3af1ac9",
+  "type": "integration_point",
+  "title": "Telos-Prometheus integration",
+  "description": "",
+  "file_path": "/Users/cskoons/projects/github/Tekton/Telos/telos/core/telos_component.py",
+  "line_number": 41,
+  "timestamp": "2025-06-21T20:08:08.922018",
+  "author": "system",
+  "metadata": {
+    "target_component": "Telos",
+    "protocol": "Internal API",
+    "data_flow": "Requirements \u2192 Prometheus \u2192 Plans"
+  },
+  "tags": [],
+  "related_landmarks": []
+}

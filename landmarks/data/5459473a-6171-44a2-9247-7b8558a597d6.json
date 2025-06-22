@@ -1,0 +1,24 @@
+{
+  "id": "5459473a-6171-44a2-9247-7b8558a597d6",
+  "type": "architecture_decision",
+  "title": "Enhanced LLM client integration",
+  "description": "LLM Adapter for Prometheus planning system.\n    \n    This adapter provides an interface for LLM operations using the enhanced\n    tekton-llm-client features for template management, streaming, and response handling.",
+  "file_path": "/Users/cskoons/projects/github/Tekton/Prometheus/prometheus/utils/llm_adapter.py",
+  "line_number": 36,
+  "timestamp": "2025-06-21T20:17:15.800989",
+  "author": "system",
+  "metadata": {
+    "rationale": "Use tekton-llm-client for standardized prompt templates, streaming, and structured output parsing",
+    "alternatives_considered": [],
+    "impacts": [],
+    "decided_by": "team",
+    "alternatives": [
+      "Direct API calls",
+      "Custom LLM wrapper",
+      "LangChain integration"
+    ],
+    "decision_date": "2024-03-10"
+  },
+  "tags": [],
+  "related_landmarks": []
+}

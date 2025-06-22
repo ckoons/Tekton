@@ -1,0 +1,27 @@
+{
+  "id": "7b205eb6-32cc-4ecc-b182-c55f99307ec7",
+  "type": "danger_zone",
+  "title": "Complex initialization sequence",
+  "description": "Initialize Harmonia-specific services in critical dependency order.",
+  "file_path": "/Users/cskoons/projects/github/Tekton/Harmonia/harmonia/core/harmonia_component.py",
+  "line_number": 43,
+  "timestamp": "2025-06-21T20:08:11.148721",
+  "author": "system",
+  "metadata": {
+    "risk_level": "high",
+    "risks": [
+      "Initialization order dependencies",
+      "State corruption on partial init",
+      "Resource leaks"
+    ],
+    "mitigation": "",
+    "review_required": true,
+    "mitigations": [
+      "Ordered initialization",
+      "Rollback on failure",
+      "Resource tracking"
+    ]
+  },
+  "tags": [],
+  "related_landmarks": []
+}

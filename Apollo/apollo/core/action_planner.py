@@ -26,6 +26,8 @@ from apollo.models.context import (
 from apollo.core.context_observer import ContextObserver
 from apollo.core.predictive_engine import PredictiveEngine
 
+from landmarks import architecture_decision, danger_zone, performance_boundary
+
 # Configure logging
 logger = logging.getLogger(__name__)
 
@@ -476,6 +478,20 @@ class PreventiveActionRule(ActionRule):
         return None
 
 
+@architecture_decision(
+    title="Rule-based action planning",
+    rationale="Deterministic rules provide predictable, debuggable behavior for critical context management",
+    alternatives_considered=["ML-based planning", "Reinforcement learning", "Static thresholds"],
+    impacts=["predictability", "maintainability", "flexibility"],
+    decided_by="team"
+)
+@danger_zone(
+    title="Complex planning logic",
+    risk_level="high",
+    risks=["Action loops", "Resource exhaustion", "Conflicting actions"],
+    mitigation="Priority system, action expiration, max actions per context",
+    review_required=True
+)
 class ActionPlanner:
     """
     Action planner for Apollo that determines appropriate corrective actions.

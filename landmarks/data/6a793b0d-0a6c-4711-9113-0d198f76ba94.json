@@ -1,0 +1,27 @@
+{
+  "id": "6a793b0d-0a6c-4711-9113-0d198f76ba94",
+  "type": "danger_zone",
+  "title": "Multi-agent coordination",
+  "description": "Manages dynamic AI specialist processes and coordinates communication.\n    \n    This class handles:\n    - Dynamic AI specialist allocation \n    - Process lifecycle management\n    - AI-to-AI communication through Hermes\n    - Rhetor orchestration and message filtering",
+  "file_path": "/Users/cskoons/projects/github/Tekton/Rhetor/rhetor/core/ai_specialist_manager.py",
+  "line_number": 48,
+  "timestamp": "2025-06-21T20:17:12.018169",
+  "author": "system",
+  "metadata": {
+    "risk_level": "high",
+    "risks": [
+      "Message loops",
+      "Resource exhaustion",
+      "Conflicting specialist actions"
+    ],
+    "mitigation": "",
+    "review_required": true,
+    "mitigations": [
+      "Message filtering",
+      "Resource limits",
+      "Rhetor orchestration oversight"
+    ]
+  },
+  "tags": [],
+  "related_landmarks": []
+}

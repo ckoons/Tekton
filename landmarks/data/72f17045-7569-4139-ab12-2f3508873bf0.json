@@ -1,0 +1,17 @@
+{
+  "id": "72f17045-7569-4139-ab12-2f3508873bf0",
+  "type": "integration_point",
+  "title": "ML model provider integration",
+  "description": "Registry for managing ML models in Sophia.",
+  "file_path": "/Users/cskoons/projects/github/Tekton/Sophia/sophia/core/ml_engine.py",
+  "line_number": 17,
+  "timestamp": "2025-06-21T20:17:17.953742",
+  "author": "system",
+  "metadata": {
+    "target_component": "HuggingFace",
+    "protocol": "Internal API",
+    "data_flow": "Model requests \u2192 Registry \u2192 Provider \u2192 Model instance"
+  },
+  "tags": [],
+  "related_landmarks": []
+}

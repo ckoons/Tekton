@@ -10,8 +10,17 @@ import aiohttp
 from typing import Optional, Callable, List
 from datetime import datetime
 
+from landmarks import architecture_decision, integration_point, performance_boundary
+
 logger = logging.getLogger(__name__)
 
+@architecture_decision(
+    title="Graceful shutdown pattern",
+    rationale="Ensure components clean up properly and notify Hermes before terminating",
+    alternatives_considered=["Immediate termination", "Systemd-only management", "K8s lifecycle hooks"],
+    impacts=["reliability", "data_integrity", "component_coordination"],
+    decided_by="team"
+)
 class GracefulShutdown:
     """Handles graceful shutdown for Tekton components"""
     
@@ -27,6 +36,18 @@ class GracefulShutdown:
         """Add a cleanup handler to run during shutdown"""
         self.shutdown_handlers.append(handler)
         
+    @integration_point(
+        title="Hermes shutdown notification",
+        target_component="Hermes",
+        protocol="REST",
+        data_flow="Component status update -> Hermes registry",
+        critical=True
+    )
+    @performance_boundary(
+        title="Shutdown notification timeout",
+        sla="<2 seconds",
+        optimization_notes="Short timeout to prevent hanging during shutdown"
+    )
     async def notify_hermes_shutdown(self):
         """Notify Hermes that we're shutting down"""
         try:

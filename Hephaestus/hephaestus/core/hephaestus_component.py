@@ -9,9 +9,20 @@ from typing import Optional, Dict, Any
 from pathlib import Path
 
 from shared.utils.standard_component import StandardComponentBase
+from landmarks import architecture_decision, integration_point, state_checkpoint
 
 logger = logging.getLogger(__name__)
 
+@architecture_decision(
+    title="Unified UI server architecture",
+    rationale="Single component managing both HTTP/WebSocket UI server and MCP DevTools for centralized UI operations",
+    alternatives_considered=["Separate UI and DevTools components", "Client-side only UI", "Multiple UI servers"])
+@integration_point(
+    title="UI component bridge",
+    target_component="All Tekton components",
+    protocol="Internal API",
+    data_flow="Components → WebSocket → UI → User interactions → MCP DevTools → Component state"
+)
 class HephaestusComponent(StandardComponentBase):
     """Hephaestus UI server component managing both HTTP/WebSocket and MCP servers."""
     
@@ -97,6 +108,13 @@ class HephaestusComponent(StandardComponentBase):
         
         return thread
     
+    @state_checkpoint(
+        title="MCP DevTools server state",
+        state_type="subprocess",
+        persistence=False,
+        consistency_requirements="MCP server process must be tracked for cleanup",
+        recovery_strategy="Restart MCP server on failure, non-critical service"
+    )
     async def _start_mcp_server(self):
         """Start the MCP DevTools server as a subprocess."""
         try:

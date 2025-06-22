@@ -1,0 +1,18 @@
+{
+  "id": "1ec6d0ca-76fb-49c9-836f-699f66a60bd7",
+  "type": "state_checkpoint",
+  "title": "Registry singleton state",
+  "description": "Get the singleton registry instance",
+  "file_path": "/Users/cskoons/projects/github/Tekton/landmarks/test_landmark_system.py",
+  "line_number": 96,
+  "timestamp": "2025-06-21T19:08:23.813588",
+  "author": "system",
+  "metadata": {
+    "state_type": "singleton",
+    "persistence": true,
+    "consistency_requirements": "Thread-safe access",
+    "recovery_strategy": "Reload from disk"
+  },
+  "tags": [],
+  "related_landmarks": []
+}

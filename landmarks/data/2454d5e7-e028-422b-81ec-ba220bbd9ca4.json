@@ -1,0 +1,27 @@
+{
+  "id": "2454d5e7-e028-422b-81ec-ba220bbd9ca4",
+  "type": "architecture_decision",
+  "title": "Centralized configuration management",
+  "description": "Unified global configuration and state management for Tekton components.\n    \n    This class:\n    1. Wraps ComponentConfig for environment-based configuration\n    2. Manages runtime state (services, registration, etc.)\n    3. Provides data directory management\n    4. Acts as a service registry for shared services\n    5. Provides service URL resolution (future: Hermes service discovery)",
+  "file_path": "/Users/cskoons/projects/github/Tekton/shared/utils/global_config.py",
+  "line_number": 21,
+  "timestamp": "2025-06-21T20:17:17.958126",
+  "author": "system",
+  "metadata": {
+    "rationale": "Replace scattered globals with unified config to reduce coupling and improve testability",
+    "alternatives_considered": [
+      "Distributed config files",
+      "Environment variables only",
+      "Database config"
+    ],
+    "impacts": [
+      "configuration",
+      "state_management",
+      "service_discovery"
+    ],
+    "decided_by": "team",
+    "date": "2024-10-15"
+  },
+  "tags": [],
+  "related_landmarks": []
+}

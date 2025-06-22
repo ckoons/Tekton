@@ -1,0 +1,18 @@
+{
+  "id": "dbe72e69-dc0f-416b-b527-779fdf81c881",
+  "type": "state_checkpoint",
+  "title": "Token usage tracking",
+  "description": "Manages token budgets for LLM operations across components.\n    \n    This class is responsible for allocating token budgets based on task\n    requirements and priorities, tracking token usage, and enforcing budget\n    policies to prevent token exhaustion.",
+  "file_path": "/Users/cskoons/projects/github/Tekton/Apollo/apollo/core/token_budget.py",
+  "line_number": 35,
+  "timestamp": "2025-06-21T20:08:08.915480",
+  "author": "system",
+  "metadata": {
+    "state_type": "runtime",
+    "persistence": true,
+    "consistency_requirements": "Atomic updates for usage tracking",
+    "recovery_strategy": "Reload from persistent storage, reset periods if corrupted"
+  },
+  "tags": [],
+  "related_landmarks": []
+}

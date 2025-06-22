@@ -1,0 +1,21 @@
+{
+  "id": "eb801cd9-fa75-4f06-ba70-a2aea6afa789",
+  "type": "danger_zone",
+  "title": "Health check retry logic",
+  "description": "Enhanced health check with multiple endpoints and retries",
+  "file_path": "/Users/cskoons/utils/tekton-launch",
+  "line_number": 236,
+  "timestamp": "2025-06-21T20:07:54.553272",
+  "author": "system",
+  "metadata": {
+    "risk_level": "medium",
+    "risks": [
+      "false_positives",
+      "startup_delays"
+    ],
+    "mitigation": "Multiple endpoint attempts with exponential backoff",
+    "review_required": true
+  },
+  "tags": [],
+  "related_landmarks": []
+}

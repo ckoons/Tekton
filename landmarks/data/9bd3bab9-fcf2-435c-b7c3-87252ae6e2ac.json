@@ -1,0 +1,27 @@
+{
+  "id": "9bd3bab9-fcf2-435c-b7c3-87252ae6e2ac",
+  "type": "danger_zone",
+  "title": "Complex initialization sequence",
+  "description": "Initialize Rhetor-specific services.",
+  "file_path": "/Users/cskoons/projects/github/Tekton/Rhetor/rhetor/core/rhetor_component.py",
+  "line_number": 46,
+  "timestamp": "2025-06-21T20:08:05.707282",
+  "author": "system",
+  "metadata": {
+    "risk_level": "high",
+    "risks": [
+      "Circular dependencies",
+      "Service startup order",
+      "Partial initialization state"
+    ],
+    "mitigation": "",
+    "review_required": true,
+    "mitigations": [
+      "Delayed imports",
+      "Try-catch blocks",
+      "Graceful degradation"
+    ]
+  },
+  "tags": [],
+  "related_landmarks": []
+}

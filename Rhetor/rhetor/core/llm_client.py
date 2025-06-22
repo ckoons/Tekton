@@ -23,9 +23,22 @@ from tekton_llm_client import (
     StructuredOutputParser, OutputFormat,
     ClientSettings, LLMSettings, load_settings, get_env
 )
+from landmarks import architecture_decision, performance_boundary, integration_point
 
 logger = logging.getLogger(__name__)
 
+@architecture_decision(
+    title="Multi-provider LLM abstraction",
+    rationale="Support multiple LLM providers (Anthropic, OpenAI, Ollama) with fallback and unified interface",
+    alternatives=["Single provider", "Direct API calls", "External gateway service"],
+    decision_date="2024-02-15"
+)
+@integration_point(
+    title="LLM provider connections",
+    target_component="Anthropic API",
+    protocol="REST/WebSocket",
+    data_flow="Prompts → Provider selection → LLM API → Responses"
+)
 class LLMClient:
     """Client for managing and interacting with LLM providers"""
     

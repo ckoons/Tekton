@@ -1,0 +1,22 @@
+{
+  "id": "e05f4be6-142a-4332-9bbe-44b12b86fc8d",
+  "type": "architecture_decision",
+  "title": "Multi-engine ML system",
+  "description": "Sophia machine learning and continuous improvement component.",
+  "file_path": "/Users/cskoons/projects/github/Tekton/Sophia/sophia/core/sophia_component.py",
+  "line_number": 11,
+  "timestamp": "2025-06-21T20:11:23.108624",
+  "author": "system",
+  "metadata": {
+    "rationale": "Sophia provides comprehensive ML capabilities with separate engines for metrics, analysis, experiments, recommendations, intelligence measurement, and core ML",
+    "alternatives_considered": [
+      "Single ML framework",
+      "External ML services",
+      "Simple analytics only"
+    ],
+    "impacts": [],
+    "decided_by": "team"
+  },
+  "tags": [],
+  "related_landmarks": []
+}

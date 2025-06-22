@@ -1,0 +1,20 @@
+{
+  "id": "52b785b4-42ee-4171-b394-0049fd79eeb4",
+  "type": "performance_boundary",
+  "title": "Task breakdown generation",
+  "description": "Use LLM to breakdown requirements into tasks.\n        \n        Args:\n            requirements: List of requirement data\n            \n        Returns:\n            List of task data",
+  "file_path": "/Users/cskoons/projects/github/Tekton/Prometheus/prometheus/utils/llm_adapter.py",
+  "line_number": 398,
+  "timestamp": "2025-06-21T20:17:15.791464",
+  "author": "system",
+  "metadata": {
+    "sla": "<10s for typical requirement sets",
+    "optimization_notes": "Template caching, parallel processing for large sets",
+    "metrics": {
+      "avg_time": "6.8s",
+      "p95": "9.2s"
+    }
+  },
+  "tags": [],
+  "related_landmarks": []
+}

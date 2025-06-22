@@ -1,0 +1,22 @@
+{
+  "id": "2ba5411f-d700-490b-8393-8c65cf25c9a4",
+  "type": "state_checkpoint",
+  "title": "Global configuration singleton",
+  "description": "Unified global configuration and state management for Tekton components.\n\nThis class:\n1. Wraps ComponentConfig for environment-based configuration\n2. Manages runtime state (services, registration, etc.)\n3. Provides data directory management\n4. Acts as a service registry for shared services\n5. Provides service URL resolution (future: Hermes service discovery)",
+  "file_path": "/Users/cskoons/projects/github/Tekton/shared/utils/global_config.py",
+  "line_number": 21,
+  "timestamp": "2025-06-21T20:08:11.133538",
+  "author": "system",
+  "metadata": {
+    "state_type": "singleton",
+    "persistence": false,
+    "consistency_requirements": "Thread-safe access required",
+    "recovery_strategy": "Reinitialize from environment on restart",
+    "impacts": [
+      "all_components"
+    ],
+    "critical": true
+  },
+  "tags": [],
+  "related_landmarks": []
+}

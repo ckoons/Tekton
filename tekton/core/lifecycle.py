@@ -12,9 +12,14 @@ import asyncio
 import logging
 from enum import Enum
 from typing import Dict, List, Any, Optional, Set, Callable, Awaitable
+from landmarks import architecture_decision, state_checkpoint, danger_zone
 
 logger = logging.getLogger("tekton.lifecycle")
 
+@architecture_decision(
+    title="Fine-grained component states",
+    rationale="Provide detailed lifecycle states to prevent deadlocks and enable precise dependency management",
+    alternatives_considered=["Simple on/off states", "Three-state model", "External state tracking"])
 class ComponentState(Enum):
     """
     Enhanced component state enum with fine-grained lifecycle states.
@@ -207,6 +212,13 @@ class ReadinessCondition:
             return False
 
 
+@state_checkpoint(
+    title="Component registration state",
+    state_type="persistent",
+    persistence=True,
+    consistency_requirements="Instance UUID must be unique across restarts",
+    recovery_strategy="Restore from registry.json, validate instance uniqueness"
+)
 class ComponentRegistration:
     """
     Enhanced component registration with unique instance tracking.
@@ -415,6 +427,12 @@ class ComponentRegistration:
         }
 
 
+@danger_zone(
+    title="Message queue concurrency",
+    risk_level="concurrency",
+    mitigation="Async locks on all queue operations",
+    review_required="Ensure no deadlocks in lock acquisition patterns"
+)
 class PersistentMessageQueue:
     """
     Message queue with history for reliable message delivery.

@@ -1,0 +1,22 @@
+{
+  "id": "e5adf78e-5f37-45ab-b98b-9b361c8cf460",
+  "type": "architecture_decision",
+  "title": "Circuit breaker pattern",
+  "description": "Implements the circuit breaker pattern for graceful degradation.\n    \n    Automatically tracks failure rates and opens the circuit when\n    too many failures occur, preventing cascading failures.",
+  "file_path": "/Users/cskoons/projects/github/Tekton/tekton/core/graceful_degradation.py",
+  "line_number": 31,
+  "timestamp": "2025-06-21T20:17:15.712099",
+  "author": "system",
+  "metadata": {
+    "rationale": "Prevent cascading failures by automatically failing fast when errors exceed threshold",
+    "alternatives_considered": [
+      "Retry with backoff",
+      "Hard failures",
+      "Rate limiting"
+    ],
+    "impacts": [],
+    "decided_by": "team"
+  },
+  "tags": [],
+  "related_landmarks": []
+}

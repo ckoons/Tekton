@@ -1,0 +1,22 @@
+{
+  "id": "91067408-8298-4140-894b-633ac9fcf068",
+  "type": "architecture_decision",
+  "title": "Fine-grained component states",
+  "description": "Enhanced component state enum with fine-grained lifecycle states.\n\nProvides clear distinction between different operational states to avoid deadlocks\nand enable better dependency management.",
+  "file_path": "/Users/cskoons/projects/github/Tekton/tekton/core/lifecycle.py",
+  "line_number": 19,
+  "timestamp": "2025-06-21T20:17:18.026706",
+  "author": "system",
+  "metadata": {
+    "rationale": "Provide detailed lifecycle states to prevent deadlocks and enable precise dependency management",
+    "alternatives_considered": [
+      "Simple on/off states",
+      "Three-state model",
+      "External state tracking"
+    ],
+    "impacts": [],
+    "decided_by": "team"
+  },
+  "tags": [],
+  "related_landmarks": []
+}

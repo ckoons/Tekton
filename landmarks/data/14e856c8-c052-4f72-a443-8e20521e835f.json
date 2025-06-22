@@ -1,0 +1,18 @@
+{
+  "id": "14e856c8-c052-4f72-a443-8e20521e835f",
+  "type": "state_checkpoint",
+  "title": "Component registration state",
+  "description": "Enhanced component registration with unique instance tracking.\n    \n    Provides unique identity for component instances across restarts to prevent\n    duplicate instances and track component lifecycle.",
+  "file_path": "/Users/cskoons/projects/github/Tekton/tekton/core/lifecycle.py",
+  "line_number": 215,
+  "timestamp": "2025-06-21T20:17:15.705131",
+  "author": "system",
+  "metadata": {
+    "state_type": "persistent",
+    "persistence": true,
+    "consistency_requirements": "Instance UUID must be unique across restarts",
+    "recovery_strategy": "Restore from registry.json, validate instance uniqueness"
+  },
+  "tags": [],
+  "related_landmarks": []
+}

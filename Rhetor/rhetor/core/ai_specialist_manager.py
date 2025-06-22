@@ -18,6 +18,7 @@ from pathlib import Path
 # Standard logging - removed debug_log import
 from .llm_client import LLMClient
 from .model_router import ModelRouter
+from landmarks import architecture_decision, state_checkpoint, danger_zone
 
 logger = logging.getLogger(__name__)
 
@@ -44,6 +45,19 @@ class AIMessage:
     context: Dict[str, Any]
     timestamp: float
 
+@architecture_decision(
+    title="AI specialist orchestration",
+    rationale="Implement dynamic AI specialist allocation with Rhetor as orchestrator for multi-agent coordination",
+    alternatives=["Static AI assignment", "Single AI agent", "External orchestration service"],
+    decision_date="2024-03-20"
+)
+@danger_zone(
+    title="Multi-agent coordination",
+    risk_level="high",
+    risks=["Message loops", "Resource exhaustion", "Conflicting specialist actions"],
+    mitigations=["Message filtering", "Resource limits", "Rhetor orchestration oversight"],
+    review_required=True
+)
 class AISpecialistManager:
     """
     Manages dynamic AI specialist processes and coordinates communication.

@@ -1,0 +1,22 @@
+{
+  "id": "9737ffa3-c074-4202-bef5-72b5fcbb106b",
+  "type": "architecture_decision",
+  "title": "Multi-session terminal manager",
+  "description": "Manages multiple terminal sessions",
+  "file_path": "/Users/cskoons/projects/github/Tekton/Terma/terma/core/session_manager.py",
+  "line_number": 18,
+  "timestamp": "2025-06-21T20:26:10.918323",
+  "author": "system",
+  "metadata": {
+    "rationale": "Centralized management of multiple terminal sessions with lifecycle control and resource cleanup",
+    "alternatives_considered": [
+      "Per-session management",
+      "Direct PTY access",
+      "Session pooling"
+    ],
+    "impacts": [],
+    "decided_by": "team"
+  },
+  "tags": [],
+  "related_landmarks": []
+}

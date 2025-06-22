@@ -1,0 +1,18 @@
+{
+  "id": "2cc420f3-5dff-4bbc-9c55-2a7e8f5a09fe",
+  "type": "state_checkpoint",
+  "title": "Agent system state",
+  "description": "Ergon agent system component with specialized task execution capabilities.",
+  "file_path": "/Users/cskoons/projects/github/Tekton/Ergon/ergon/core/ergon_component.py",
+  "line_number": 18,
+  "timestamp": "2025-06-21T20:11:23.467875",
+  "author": "system",
+  "metadata": {
+    "state_type": "persistent",
+    "persistence": true,
+    "consistency_requirements": "Agent configurations and memory must persist",
+    "recovery_strategy": "Reload from database and memory service"
+  },
+  "tags": [],
+  "related_landmarks": []
+}

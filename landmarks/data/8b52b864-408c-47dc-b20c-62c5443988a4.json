@@ -1,0 +1,22 @@
+{
+  "id": "8b52b864-408c-47dc-b20c-62c5443988a4",
+  "type": "architecture_decision",
+  "title": "Centralized budget management",
+  "description": "Budget management component with financial tracking and MCP support.",
+  "file_path": "/Users/cskoons/projects/github/Tekton/Budget/budget/core/budget_component.py",
+  "line_number": 14,
+  "timestamp": "2025-06-21T20:17:16.000905",
+  "author": "system",
+  "metadata": {
+    "rationale": "Implement unified budget tracking and enforcement across all Tekton components to prevent cost overruns",
+    "alternatives_considered": [
+      "Per-component budgets",
+      "External cost tracking",
+      "No budget enforcement"
+    ],
+    "impacts": [],
+    "decided_by": "team"
+  },
+  "tags": [],
+  "related_landmarks": []
+}

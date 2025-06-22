@@ -26,10 +26,26 @@ from apollo.models.budget import (
     BudgetSummary
 )
 
+from landmarks import state_checkpoint, performance_boundary, architecture_decision
+
 # Configure logging
 logger = logging.getLogger(__name__)
 
 
+@architecture_decision(
+    title="Token budget management system",
+    rationale="Prevent runaway costs and ensure fair resource allocation across components",
+    alternatives_considered=["No limits", "Static quotas", "Pay-per-use"],
+    impacts=["cost_control", "performance", "user_experience"],
+    decided_by="team"
+)
+@state_checkpoint(
+    title="Token usage tracking",
+    state_type="runtime",
+    persistence=True,
+    consistency_requirements="Atomic updates for usage tracking",
+    recovery_strategy="Reload from persistent storage, reset periods if corrupted"
+)
 class TokenBudgetManager:
     """
     Manages token budgets for LLM operations across components.

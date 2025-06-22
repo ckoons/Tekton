@@ -1,0 +1,20 @@
+{
+  "id": "7366f2dc-316c-47fa-96fb-20da728b5ba4",
+  "type": "performance_boundary",
+  "title": "Message processing pipeline",
+  "description": "Process incoming WebSocket messages",
+  "file_path": "/Users/cskoons/projects/github/Tekton/landmarks/examples/landmark_example.py",
+  "line_number": 32,
+  "timestamp": "2025-06-21T17:40:57.746370",
+  "author": "system",
+  "metadata": {
+    "sla": "<50ms per message",
+    "optimization_notes": "Async processing, message batching for broadcasts",
+    "metrics": {
+      "throughput": "10k msg/sec",
+      "p99_latency": "45ms"
+    }
+  },
+  "tags": [],
+  "related_landmarks": []
+}

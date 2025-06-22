@@ -1,0 +1,32 @@
+{
+  "analysis_date": "2025-06-21T17:26:05.430452",
+  "components_analyzed": [
+    "shared",
+    "Hermes",
+    "Apollo",
+    "Engram",
+    "Athena",
+    "Prometheus",
+    "Budget",
+    "Ergon",
+    "Harmonia",
+    "Metis",
+    "Rhetor",
+    "Sophia",
+    "Synthesis",
+    "Telos",
+    "Terma"
+  ],
+  "total_files": 16722,
+  "total_functions": 213291,
+  "total_classes": 41370,
+  "total_landmarks": 176661,
+  "patterns_found": [
+    "websocket",
+    "fastapi",
+    "async",
+    "error_handling",
+    "mcp",
+    "singleton"
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "id": "6ae7548b-124b-461f-860e-86524f4d2bc1",
+  "type": "architecture_decision",
+  "title": "Central execution hub",
+  "description": "Synthesis execution and integration engine component.",
+  "file_path": "/Users/cskoons/projects/github/Tekton/Synthesis/synthesis/core/synthesis_component.py",
+  "line_number": 11,
+  "timestamp": "2025-06-21T20:11:23.416237",
+  "author": "system",
+  "metadata": {
+    "rationale": "Synthesis serves as the execution engine for Tekton, coordinating plan implementation across components",
+    "alternatives_considered": [
+      "Distributed execution",
+      "Component-local execution",
+      "External workflow engine"
+    ],
+    "impacts": [],
+    "decided_by": "team"
+  },
+  "tags": [],
+  "related_landmarks": []
+}

@@ -1,0 +1,22 @@
+{
+  "id": "3e203271-bddc-4d50-8c92-6cee9c74e240",
+  "type": "architecture_decision",
+  "title": "Workflow orchestration system",
+  "description": "Harmonia workflow orchestration component with state management and event streaming.",
+  "file_path": "/Users/cskoons/projects/github/Tekton/Harmonia/harmonia/core/harmonia_component.py",
+  "line_number": 17,
+  "timestamp": "2025-06-21T20:08:11.159661",
+  "author": "system",
+  "metadata": {
+    "rationale": "Harmonia provides centralized workflow management and cross-component coordination for complex multi-step processes",
+    "alternatives_considered": [
+      "Per-component workflows",
+      "External workflow manager",
+      "Manual coordination"
+    ],
+    "impacts": [],
+    "decided_by": "team"
+  },
+  "tags": [],
+  "related_landmarks": []
+}

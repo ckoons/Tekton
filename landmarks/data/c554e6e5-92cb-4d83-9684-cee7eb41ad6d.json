@@ -1,0 +1,22 @@
+{
+  "id": "c554e6e5-92cb-4d83-9684-cee7eb41ad6d",
+  "type": "architecture_decision",
+  "title": "Unified UI server architecture",
+  "description": "Hephaestus UI server component managing both HTTP/WebSocket and MCP servers.",
+  "file_path": "/Users/cskoons/projects/github/Tekton/Hephaestus/hephaestus/core/hephaestus_component.py",
+  "line_number": 16,
+  "timestamp": "2025-06-21T20:08:08.980276",
+  "author": "system",
+  "metadata": {
+    "rationale": "Single component managing both HTTP/WebSocket UI server and MCP DevTools for centralized UI operations",
+    "alternatives_considered": [
+      "Separate UI and DevTools components",
+      "Client-side only UI",
+      "Multiple UI servers"
+    ],
+    "impacts": [],
+    "decided_by": "team"
+  },
+  "tags": [],
+  "related_landmarks": []
+}

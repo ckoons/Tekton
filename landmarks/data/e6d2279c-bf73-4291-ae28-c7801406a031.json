@@ -1,0 +1,18 @@
+{
+  "id": "e6d2279c-bf73-4291-ae28-c7801406a031",
+  "type": "state_checkpoint",
+  "title": "Execution engine state",
+  "description": "Synthesis execution and integration engine component.",
+  "file_path": "/Users/cskoons/projects/github/Tekton/Synthesis/synthesis/core/synthesis_component.py",
+  "line_number": 11,
+  "timestamp": "2025-06-21T20:08:11.226025",
+  "author": "system",
+  "metadata": {
+    "state_type": "ephemeral",
+    "persistence": false,
+    "consistency_requirements": "Active execution tracking must survive brief restarts",
+    "recovery_strategy": "Cancel incomplete executions on restart, restore from execution history"
+  },
+  "tags": [],
+  "related_landmarks": []
+}

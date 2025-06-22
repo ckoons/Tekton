@@ -11,9 +11,21 @@ from ergon.core.a2a_client import A2AClient
 from ergon.core.agents.generator import AgentGenerator
 from ergon.core.agents.runner import AgentRunner
 from ergon.utils.config.settings import settings
+from landmarks import architecture_decision, state_checkpoint
 
 logger = logging.getLogger(__name__)
 
+@architecture_decision(
+    title="Agent-based task execution",
+    rationale="Ergon provides specialized agents for different task types (browser, GitHub, mail) with autonomous execution capabilities",
+    alternatives_considered=["Direct API integration", "Manual task execution", "Single agent type"])
+@state_checkpoint(
+    title="Agent system state",
+    state_type="persistent",
+    persistence=True,
+    consistency_requirements="Agent configurations and memory must persist",
+    recovery_strategy="Reload from database and memory service"
+)
 class ErgonComponent(StandardComponentBase):
     """Ergon agent system component with specialized task execution capabilities."""
     

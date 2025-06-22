@@ -24,6 +24,22 @@ from engram.core.memory import MemoryService
 from engram.core.structured_memory import StructuredMemory
 from engram.core.nexus import NexusInterface
 
+from landmarks import architecture_decision, state_checkpoint, performance_boundary
+
+@architecture_decision(
+    title="Multi-backend memory architecture",
+    rationale="Support both vector (FAISS/LanceDB) and graph storage for flexible memory types",
+    alternatives_considered=["Single database", "File-based only", "In-memory only"],
+    impacts=["flexibility", "complexity", "performance"],
+    decided_by="team"
+)
+@state_checkpoint(
+    title="Memory service pool",
+    state_type="cache",
+    persistence=True,
+    consistency_requirements="Client isolation, thread-safe access",
+    recovery_strategy="Lazy loading from disk on client access"
+)
 class MemoryManager:
     """
     Memory manager for handling multiple client connections.

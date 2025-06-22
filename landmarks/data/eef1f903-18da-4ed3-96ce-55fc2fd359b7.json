@@ -1,0 +1,18 @@
+{
+  "id": "eef1f903-18da-4ed3-96ce-55fc2fd359b7",
+  "type": "state_checkpoint",
+  "title": "Knowledge engine state",
+  "description": "Athena knowledge graph component.",
+  "file_path": "/Users/cskoons/projects/github/Tekton/Athena/athena/core/athena_component.py",
+  "line_number": 13,
+  "timestamp": "2025-06-21T20:17:18.049698",
+  "author": "system",
+  "metadata": {
+    "state_type": "service",
+    "persistence": true,
+    "consistency_requirements": "Graph consistency must be maintained across restarts",
+    "recovery_strategy": "Reload from Neo4j or memory adapter persistence"
+  },
+  "tags": [],
+  "related_landmarks": []
+}

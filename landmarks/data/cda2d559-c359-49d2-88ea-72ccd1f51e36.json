@@ -1,0 +1,22 @@
+{
+  "id": "cda2d559-c359-49d2-88ea-72ccd1f51e36",
+  "type": "performance_boundary",
+  "title": "Requirements operations",
+  "description": "Manager for projects and requirements.",
+  "file_path": "/Users/cskoons/projects/github/Tekton/Telos/telos/core/requirements_manager.py",
+  "line_number": 18,
+  "timestamp": "2025-06-21T20:11:21.130843",
+  "author": "system",
+  "metadata": {
+    "sla": "<50ms for CRUD operations",
+    "optimization_notes": "In-memory cache with file-based persistence",
+    "metrics": {
+      "create": "10ms",
+      "read": "5ms",
+      "update": "15ms",
+      "delete": "8ms"
+    }
+  },
+  "tags": [],
+  "related_landmarks": []
+}

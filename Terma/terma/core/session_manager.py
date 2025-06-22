@@ -11,9 +11,21 @@ from concurrent.futures import ThreadPoolExecutor
 
 from .terminal import TerminalSession
 from ..utils.logging import setup_logging
+from landmarks import architecture_decision, state_checkpoint, integration_point
 
 logger = setup_logging()
 
+@architecture_decision(
+    title="Multi-session terminal manager",
+    rationale="Centralized management of multiple terminal sessions with lifecycle control and resource cleanup",
+    alternatives_considered=["Per-session management", "Direct PTY access", "Session pooling"])
+@state_checkpoint(
+    title="Session registry state",
+    state_type="memory",
+    persistence=False,
+    consistency_requirements="Session list must be consistent with active PTY processes",
+    recovery_strategy="Terminate orphaned PTYs on restart"
+)
 class SessionManager:
     """Manages multiple terminal sessions"""
     
@@ -274,6 +286,12 @@ class SessionManager:
             
         return session.resize(rows, cols)
     
+    @integration_point(
+    title="Terminal output streaming",
+    target_component="Terminal sessions",
+    protocol="Internal API",
+    data_flow="PTY output → Session → Callbacks → Clients"
+)
     def register_output_callback(self, session_id: str, callback: Callable[[str], None]) -> bool:
         """Register a callback for terminal output
         

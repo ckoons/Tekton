@@ -1,0 +1,26 @@
+{
+  "id": "44ec6cd3-fb7e-4d9e-9f2a-ae61c90716fe",
+  "type": "architecture_decision",
+  "title": "Token budget management system",
+  "description": "Manages token budgets for LLM operations across components.\n    \n    This class is responsible for allocating token budgets based on task\n    requirements and priorities, tracking token usage, and enforcing budget\n    policies to prevent token exhaustion.",
+  "file_path": "/Users/cskoons/projects/github/Tekton/Apollo/apollo/core/token_budget.py",
+  "line_number": 35,
+  "timestamp": "2025-06-21T20:11:21.143270",
+  "author": "system",
+  "metadata": {
+    "rationale": "Prevent runaway costs and ensure fair resource allocation across components",
+    "alternatives_considered": [
+      "No limits",
+      "Static quotas",
+      "Pay-per-use"
+    ],
+    "impacts": [
+      "cost_control",
+      "performance",
+      "user_experience"
+    ],
+    "decided_by": "team"
+  },
+  "tags": [],
+  "related_landmarks": []
+}

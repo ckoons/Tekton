@@ -60,6 +60,7 @@ sys.path.insert(0, tekton_root)
 
 from tekton.utils.component_config import get_component_config
 from tekton.utils.port_config import get_component_port
+from landmarks import architecture_decision, performance_boundary, integration_point, danger_zone
 
 
 class ComponentState(Enum):
@@ -162,6 +163,18 @@ class LogReader(threading.Thread):
             self.running = False
 
 
+@architecture_decision(
+    title="Enhanced component launcher",
+    rationale="Centralized launcher with health monitoring, auto-recovery, and proper logging for all Tekton components",
+    alternatives_considered=["Manual component startup", "systemd services", "Docker Compose"],
+    decided_by="team"
+)
+@integration_point(
+    title="Component startup orchestration",
+    target_component="All Tekton components",
+    protocol="Process management",
+    data_flow="Launcher → Component processes → Health checks → Logs"
+)
 class EnhancedComponentLauncher:
     """Advanced component launcher with monitoring and recovery"""
     
@@ -220,6 +233,13 @@ class EnhancedComponentLauncher:
         """Get the log file path for a component"""
         return os.path.join(self.log_dir, f"{component_name}.log")
         
+    @danger_zone(
+        title="Health check retry logic",
+        risk_level="medium",
+        risks=["false_positives", "startup_delays"],
+        mitigation="Multiple endpoint attempts with exponential backoff",
+        review_required=True
+    )
     async def enhanced_health_check(self, component_name: str, port: int) -> HealthCheckResult:
         """Enhanced health check with multiple endpoints and retries"""
         start_time = time.time()
@@ -956,6 +976,12 @@ class EnhancedComponentLauncher:
         if enable_monitoring:
             self.start_health_monitoring()
             
+    @performance_boundary(
+        title="Component startup orchestration",
+        sla="<30s for full stack startup",
+        metrics={"hermes": "2s", "engram": "3s", "rhetor": "5s", "others": "2-5s each"},
+        optimization_notes="Parallel launch within priority groups, sequential between groups"
+    )
     def get_launch_groups(self, components: List[str]) -> Dict[int, List[str]]:
         """Group components by startup priority with dependency hierarchy:
         Hermes → Engram → Rhetor → Everything else

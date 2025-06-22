@@ -1,0 +1,22 @@
+{
+  "id": "045b132f-b641-4986-be2e-b594ccfeac44",
+  "type": "architecture_decision",
+  "title": "Component registry pattern",
+  "description": "Register a component with the registry.\n    \n    Args:\n        components: Dictionary of component registrations\n        instances: Dictionary of component instances\n        registration: ComponentRegistration object \n        data_dir: Directory for persistent storage\n        \n    Returns:\n        Tuple of (success, message)",
+  "file_path": "/Users/cskoons/projects/github/Tekton/tekton/core/registry.py",
+  "line_number": 98,
+  "timestamp": "2025-06-21T20:17:17.795161",
+  "author": "system",
+  "metadata": {
+    "rationale": "Centralized registry for all Tekton components with instance tracking and health monitoring",
+    "alternatives_considered": [
+      "Distributed registry",
+      "Static configuration",
+      "Service mesh discovery"
+    ],
+    "impacts": [],
+    "decided_by": "team"
+  },
+  "tags": [],
+  "related_landmarks": []
+}

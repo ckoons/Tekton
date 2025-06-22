@@ -1,0 +1,20 @@
+{
+  "id": "4c8e94fd-f943-4d5a-b2cd-5a1ec13fd7b4",
+  "type": "performance_boundary",
+  "title": "Message publication",
+  "description": "Publish a message to a topic.\n        \n        Args:\n            topic: Topic to publish to\n            message: Message to publish (will be serialized)\n            headers: Optional message headers\n            \n        Returns:\n            True if publication successful",
+  "file_path": "/Users/cskoons/projects/github/Tekton/Hermes/hermes/core/message_bus.py",
+  "line_number": 81,
+  "timestamp": "2025-06-21T20:07:54.695281",
+  "author": "system",
+  "metadata": {
+    "sla": "<10ms for local delivery",
+    "optimization_notes": "In-memory routing, async delivery to subscribers",
+    "metrics": {
+      "avg_latency": "2ms",
+      "p99_latency": "8ms"
+    }
+  },
+  "tags": [],
+  "related_landmarks": []
+}

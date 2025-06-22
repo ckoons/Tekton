@@ -1,0 +1,17 @@
+{
+  "id": "03024912-5106-4b74-b3bb-4e80a2218d99",
+  "type": "integration_point",
+  "title": "UI component bridge",
+  "description": "Hephaestus UI server component managing both HTTP/WebSocket and MCP servers.",
+  "file_path": "/Users/cskoons/projects/github/Tekton/Hephaestus/hephaestus/core/hephaestus_component.py",
+  "line_number": 16,
+  "timestamp": "2025-06-21T20:17:15.808946",
+  "author": "system",
+  "metadata": {
+    "target_component": "All Tekton components",
+    "protocol": "Internal API",
+    "data_flow": "Components \u2192 WebSocket \u2192 UI \u2192 User interactions \u2192 MCP DevTools \u2192 Component state"
+  },
+  "tags": [],
+  "related_landmarks": []
+}

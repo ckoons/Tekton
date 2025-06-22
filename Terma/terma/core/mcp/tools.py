@@ -13,6 +13,45 @@ import psutil
 from typing import Dict, Any, List, Optional
 from datetime import datetime, timedelta
 from tekton.mcp.fastmcp.schema import MCPTool
+import inspect
+
+
+def _generate_schema(func):
+    """Generate a schema from function signature."""
+    sig = inspect.signature(func)
+    properties = {}
+    required = []
+    
+    for param_name, param in sig.parameters.items():
+        if param_name == 'self':
+            continue
+            
+        param_type = "string"  # Default type
+        if param.annotation != inspect.Parameter.empty:
+            if param.annotation == int:
+                param_type = "integer"
+            elif param.annotation == float:
+                param_type = "number"
+            elif param.annotation == bool:
+                param_type = "boolean"
+            elif param.annotation == dict or param.annotation == Dict:
+                param_type = "object"
+            elif param.annotation == list or param.annotation == List:
+                param_type = "array"
+                
+        properties[param_name] = {
+            "type": param_type,
+            "description": f"Parameter {param_name}"
+        }
+        
+        if param.default == inspect.Parameter.empty:
+            required.append(param_name)
+    
+    return {
+        "type": "object",
+        "properties": properties,
+        "required": required
+    }
 
 
 # ============================================================================
@@ -1772,32 +1811,32 @@ terminal_management_tools = [
     MCPTool(
         name="create_terminal_session",
         description="Create and configure a new terminal session",
-        func=create_terminal_session
+        schema=_generate_schema(create_terminal_session)
     ),
     MCPTool(
         name="manage_session_lifecycle",
         description="Manage terminal session lifecycle and state transitions",
-        func=manage_session_lifecycle
+        schema=_generate_schema(manage_session_lifecycle)
     ),
     MCPTool(
         name="execute_terminal_commands", 
         description="Execute commands in a specific terminal session",
-        func=execute_terminal_commands
+        schema=_generate_schema(execute_terminal_commands)
     ),
     MCPTool(
         name="monitor_session_performance",
         description="Monitor terminal session performance and resource usage",
-        func=monitor_session_performance
+        schema=_generate_schema(monitor_session_performance)
     ),
     MCPTool(
         name="configure_terminal_settings",
         description="Configure terminal settings, shell preferences, and environment",
-        func=configure_terminal_settings
+        schema=_generate_schema(configure_terminal_settings)
     ),
     MCPTool(
         name="backup_session_state",
         description="Backup and restore terminal session state and history",
-        func=backup_session_state
+        schema=_generate_schema(backup_session_state)
     )
 ]
 
@@ -1806,32 +1845,32 @@ llm_integration_tools = [
     MCPTool(
         name="provide_command_assistance",
         description="Provide AI-powered assistance for terminal commands",
-        func=provide_command_assistance
+        schema=_generate_schema(provide_command_assistance)
     ),
     MCPTool(
         name="analyze_terminal_output",
-        description="Analyze and interpret terminal output and error messages", 
-        func=analyze_terminal_output
+        description="Analyze and interpret terminal output and error messages",
+        schema=_generate_schema(analyze_terminal_output)
     ),
     MCPTool(
         name="suggest_command_improvements",
         description="Suggest command improvements and alternatives",
-        func=suggest_command_improvements
+        schema=_generate_schema(suggest_command_improvements)
     ),
     MCPTool(
         name="detect_terminal_issues",
         description="Detect and diagnose terminal issues and problems",
-        func=detect_terminal_issues
+        schema=_generate_schema(detect_terminal_issues)
     ),
     MCPTool(
         name="generate_terminal_workflows",
         description="Generate automated terminal command workflows",
-        func=generate_terminal_workflows
+        schema=_generate_schema(generate_terminal_workflows)
     ),
     MCPTool(
         name="optimize_llm_interactions",
         description="Optimize LLM interactions within terminal context",
-        func=optimize_llm_interactions
+        schema=_generate_schema(optimize_llm_interactions)
     )
 ]
 
@@ -1840,21 +1879,21 @@ system_integration_tools = [
     MCPTool(
         name="integrate_with_tekton_components",
         description="Integrate terminal sessions with other Tekton components",
-        func=integrate_with_tekton_components
+        schema=_generate_schema(integrate_with_tekton_components)
     ),
     MCPTool(
         name="synchronize_session_data",
         description="Synchronize terminal data and state across components",
-        func=synchronize_session_data
+        schema=_generate_schema(synchronize_session_data)
     ),
     MCPTool(
         name="manage_terminal_security",
         description="Manage terminal security, permissions, and access control",
-        func=manage_terminal_security
+        schema=_generate_schema(manage_terminal_security)
     ),
     MCPTool(
         name="track_terminal_metrics",
         description="Track terminal usage metrics and performance analytics",
-        func=track_terminal_metrics
+        schema=_generate_schema(track_terminal_metrics)
     )
 ]

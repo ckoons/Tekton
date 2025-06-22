@@ -12,9 +12,23 @@ from datetime import datetime, timedelta
 
 from ..models.plan import Plan
 from ..models.task import Task
+from landmarks import architecture_decision, performance_boundary, danger_zone
 
 logger = logging.getLogger("prometheus.critical_path")
 
+@architecture_decision(
+    title="Graph-based critical path analysis",
+    rationale="Use NetworkX directed graphs for efficient critical path calculation with support for complex dependency chains",
+    alternatives=["PERT charts", "Gantt chart analysis", "Manual dependency tracking"],
+    decision_date="2024-02-20"
+)
+@danger_zone(
+    title="Critical path calculation",
+    risk_level="high",
+    risks=["Circular dependencies", "Incorrect duration estimates", "Missing dependencies"],
+    mitigations=["Cycle detection", "Validation checks", "Conservative estimates"],
+    review_required=True
+)
 class CriticalPathAnalyzer:
     """
     Analyzer for calculating critical path and related metrics.

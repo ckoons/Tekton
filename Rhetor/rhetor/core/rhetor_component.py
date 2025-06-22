@@ -4,10 +4,24 @@ import os
 from typing import List, Dict, Any
 
 from shared.utils.standard_component import StandardComponentBase
+from landmarks import architecture_decision, state_checkpoint, integration_point, danger_zone
 
 logger = logging.getLogger(__name__)
 
 
+@architecture_decision(
+    title="LLM orchestration service",
+    rationale="Centralize LLM interactions across Tekton with provider abstraction, budget management, and AI specialist routing",
+    alternatives=["Direct LLM API calls per component", "External LLM gateway", "Single provider lock-in"],
+    decision_date="2024-01-05"
+)
+@state_checkpoint(
+    title="LLM service state",
+    state_type="service",
+    persistence=False,
+    consistency_requirements="Stateless design with external state in Budget and Engram",
+    recovery_strategy="Reconnect to providers, reload templates and specialists"
+)
 class RhetorComponent(StandardComponentBase):
     """Rhetor LLM orchestration and management component."""
     
@@ -29,6 +43,13 @@ class RhetorComponent(StandardComponentBase):
         self.component_specialist_registry = None
         self.initialized = False
         
+    @danger_zone(
+        title="Complex initialization sequence",
+        risk_level="high",
+        risks=["Circular dependencies", "Service startup order", "Partial initialization state"],
+        mitigations=["Delayed imports", "Try-catch blocks", "Graceful degradation"],
+        review_required=True
+    )
     async def _component_specific_init(self):
         """Initialize Rhetor-specific services."""
         # Import here to avoid circular imports
@@ -116,15 +137,24 @@ class RhetorComponent(StandardComponentBase):
                 logger.warning(f"Failed to start core AI specialists: {e}")
             
             # Initialize AI messaging integration with Hermes
-            hermes_url = os.environ.get("HERMES_URL", "http://localhost:8001")
-            self.ai_messaging_integration = AIMessagingIntegration(
-                self.ai_specialist_manager, 
-                hermes_url, 
-                self.specialist_router
+            @integration_point(
+                title="Hermes AI messaging integration",
+                target_component="Hermes",
+                protocol="WebSocket/REST",
+                data_flow="AI specialists → Hermes message bus → Other components"
             )
-            try:
+            async def init_messaging():
+                hermes_url = os.environ.get("HERMES_URL", "http://localhost:8001")
+                self.ai_messaging_integration = AIMessagingIntegration(
+                    self.ai_specialist_manager, 
+                    hermes_url, 
+                    self.specialist_router
+                )
                 await self.ai_messaging_integration.initialize()
                 logger.info("AI messaging integration initialized")
+            
+            try:
+                await init_messaging()
             except Exception as e:
                 logger.warning(f"Failed to initialize AI messaging integration: {e}")
             

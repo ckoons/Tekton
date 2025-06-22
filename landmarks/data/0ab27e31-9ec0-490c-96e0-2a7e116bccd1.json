@@ -1,0 +1,17 @@
+{
+  "id": "0ab27e31-9ec0-490c-96e0-2a7e116bccd1",
+  "type": "performance_boundary",
+  "title": "Real-time LLM streaming",
+  "description": "WebSocket endpoint for real-time LLM interactions.",
+  "file_path": "/Users/cskoons/projects/github/Tekton/landmarks/core/decorators.py",
+  "line_number": 244,
+  "timestamp": "2025-06-21T20:11:06.169648",
+  "author": "system",
+  "metadata": {
+    "sla": "<100ms first token latency",
+    "optimization_notes": "Direct WebSocket pass-through to Rhetor",
+    "metrics": {}
+  },
+  "tags": [],
+  "related_landmarks": []
+}

@@ -14,6 +14,7 @@ from enum import Enum
 from typing import Dict, List, Any, Optional, Callable, TypeVar, Union, Tuple, Set
 
 from .lifecycle import ComponentState
+from landmarks import architecture_decision, performance_boundary, integration_point
 
 logger = logging.getLogger("tekton.graceful_degradation")
 
@@ -27,6 +28,10 @@ class CircuitBreakerState(Enum):
     HALF_OPEN = "half_open" # Testing state, limited requests go through
 
 
+@architecture_decision(
+    title="Circuit breaker pattern",
+    rationale="Prevent cascading failures by automatically failing fast when errors exceed threshold",
+    alternatives_considered=["Retry with backoff", "Hard failures", "Rate limiting"])
 class CircuitBreaker:
     """
     Implements the circuit breaker pattern for graceful degradation.
@@ -255,6 +260,12 @@ class NoFallbackAvailableError(Exception):
     pass
 
 
+@integration_point(
+    title="Graceful degradation registry",
+    target_component="All Tekton components",
+    protocol="Internal API",
+    data_flow="Component requests → Manager → Fallback selection → Handler execution"
+)
 class GracefulDegradationManager:
     """
     Manager for graceful degradation across components.

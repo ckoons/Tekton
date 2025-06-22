@@ -1,0 +1,18 @@
+{
+  "id": "f4de99fc-4d4f-4e77-bc2b-d6231ffffa54",
+  "type": "state_checkpoint",
+  "title": "ML engine ensemble state",
+  "description": "Sophia machine learning and continuous improvement component.",
+  "file_path": "/Users/cskoons/projects/github/Tekton/Sophia/sophia/core/sophia_component.py",
+  "line_number": 11,
+  "timestamp": "2025-06-21T20:17:17.707047",
+  "author": "system",
+  "metadata": {
+    "state_type": "ephemeral",
+    "persistence": false,
+    "consistency_requirements": "Engine states must be synchronized",
+    "recovery_strategy": "Restart all engines on recovery"
+  },
+  "tags": [],
+  "related_landmarks": []
+}

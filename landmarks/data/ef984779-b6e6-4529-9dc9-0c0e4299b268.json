@@ -1,0 +1,18 @@
+{
+  "id": "ef984779-b6e6-4529-9dc9-0c0e4299b268",
+  "type": "state_checkpoint",
+  "title": "Component registry state",
+  "description": "Central manager for component registration across the Tekton ecosystem.\n    \n    This class manages component registration, authentication, and propagation\n    of registration information between Tekton components.",
+  "file_path": "/Users/cskoons/projects/github/Tekton/Hermes/hermes/core/registration/manager.py",
+  "line_number": 26,
+  "timestamp": "2025-06-21T20:17:13.070696",
+  "author": "system",
+  "metadata": {
+    "state_type": "runtime",
+    "persistence": true,
+    "consistency_requirements": "Eventually consistent, heartbeat-based liveness",
+    "recovery_strategy": "Components re-register on restart"
+  },
+  "tags": [],
+  "related_landmarks": []
+}

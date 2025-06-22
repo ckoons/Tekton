@@ -1,0 +1,17 @@
+{
+  "id": "e415ab35-d158-439e-8072-60f1a5f6fce0",
+  "type": "integration_point",
+  "title": "Hermes AI messaging integration",
+  "description": "",
+  "file_path": "/Users/cskoons/projects/github/Tekton/Rhetor/rhetor/core/rhetor_component.py",
+  "line_number": 140,
+  "timestamp": "2025-06-21T20:17:13.051311",
+  "author": "system",
+  "metadata": {
+    "target_component": "Hermes",
+    "protocol": "WebSocket/REST",
+    "data_flow": "AI specialists \u2192 Hermes message bus \u2192 Other components"
+  },
+  "tags": [],
+  "related_landmarks": []
+}

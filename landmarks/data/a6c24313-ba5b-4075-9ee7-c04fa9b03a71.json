@@ -1,0 +1,24 @@
+{
+  "id": "a6c24313-ba5b-4075-9ee7-c04fa9b03a71",
+  "type": "architecture_decision",
+  "title": "LLM orchestration service",
+  "description": "Rhetor LLM orchestration and management component.",
+  "file_path": "/Users/cskoons/projects/github/Tekton/Rhetor/rhetor/core/rhetor_component.py",
+  "line_number": 12,
+  "timestamp": "2025-06-21T20:08:05.710499",
+  "author": "system",
+  "metadata": {
+    "rationale": "Centralize LLM interactions across Tekton with provider abstraction, budget management, and AI specialist routing",
+    "alternatives_considered": [],
+    "impacts": [],
+    "decided_by": "team",
+    "alternatives": [
+      "Direct LLM API calls per component",
+      "External LLM gateway",
+      "Single provider lock-in"
+    ],
+    "decision_date": "2024-01-05"
+  },
+  "tags": [],
+  "related_landmarks": []
+}

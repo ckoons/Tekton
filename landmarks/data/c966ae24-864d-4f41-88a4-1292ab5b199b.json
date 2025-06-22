@@ -1,0 +1,18 @@
+{
+  "id": "c966ae24-864d-4f41-88a4-1292ab5b199b",
+  "type": "state_checkpoint",
+  "title": "Workflow state persistence",
+  "description": "Harmonia workflow orchestration component with state management and event streaming.",
+  "file_path": "/Users/cskoons/projects/github/Tekton/Harmonia/harmonia/core/harmonia_component.py",
+  "line_number": 17,
+  "timestamp": "2025-06-21T20:17:17.970586",
+  "author": "system",
+  "metadata": {
+    "state_type": "persistent",
+    "persistence": true,
+    "consistency_requirements": "Workflow state must survive restarts to enable resumption",
+    "recovery_strategy": "Load workflow state from disk/database, resume paused executions"
+  },
+  "tags": [],
+  "related_landmarks": []
+}

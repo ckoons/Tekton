@@ -1,0 +1,18 @@
+{
+  "id": "97141286-a438-49d2-a5dd-a32d8704340d",
+  "type": "state_checkpoint",
+  "title": "LLM service state",
+  "description": "Rhetor LLM orchestration and management component.",
+  "file_path": "/Users/cskoons/projects/github/Tekton/Rhetor/rhetor/core/rhetor_component.py",
+  "line_number": 12,
+  "timestamp": "2025-06-21T20:11:16.742886",
+  "author": "system",
+  "metadata": {
+    "state_type": "service",
+    "persistence": false,
+    "consistency_requirements": "Stateless design with external state in Budget and Engram",
+    "recovery_strategy": "Reconnect to providers, reload templates and specialists"
+  },
+  "tags": [],
+  "related_landmarks": []
+}

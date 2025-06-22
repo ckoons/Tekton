@@ -1,0 +1,17 @@
+{
+  "id": "3fcbced2-167b-4728-bba8-2c8a3a44a4c9",
+  "type": "integration_point",
+  "title": "MCP server creation",
+  "description": "Create a standardized FastMCP server for a component.\n    \n    Args:\n        component_name: Name of the component\n        version: Version string\n        description: Optional custom description\n        \n    Returns:\n        Configured FastMCPServer instance",
+  "file_path": "/Users/cskoons/projects/github/Tekton/landmarks/core/decorators.py",
+  "line_number": 40,
+  "timestamp": "2025-06-21T18:33:56.897504",
+  "author": "system",
+  "metadata": {
+    "target_component": "AI Agents",
+    "protocol": "MCP",
+    "data_flow": "Component tools exposed to AI agents via Model Context Protocol"
+  },
+  "tags": [],
+  "related_landmarks": []
+}

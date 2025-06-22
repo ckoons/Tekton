@@ -1,0 +1,22 @@
+{
+  "id": "7460d32b-9504-4009-9cf7-c91ef3a09514",
+  "type": "architecture_decision",
+  "title": "Pluggable model registry",
+  "description": "Registry for managing ML models in Sophia.",
+  "file_path": "/Users/cskoons/projects/github/Tekton/Sophia/sophia/core/ml_engine.py",
+  "line_number": 17,
+  "timestamp": "2025-06-21T20:08:11.155166",
+  "author": "system",
+  "metadata": {
+    "rationale": "Support multiple ML model providers and types with dynamic loading and capability-based selection",
+    "alternatives_considered": [
+      "Single model type",
+      "Hard-coded models",
+      "External model service"
+    ],
+    "impacts": [],
+    "decided_by": "team"
+  },
+  "tags": [],
+  "related_landmarks": []
+}

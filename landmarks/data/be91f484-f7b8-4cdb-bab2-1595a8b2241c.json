@@ -1,0 +1,22 @@
+{
+  "id": "be91f484-f7b8-4cdb-bab2-1595a8b2241c",
+  "type": "architecture_decision",
+  "title": "Cycle-breaking dependency resolver",
+  "description": "Utility for resolving component dependencies with cycle detection.\n    \n    Detects and handles circular dependencies to prevent deadlocks during startup.",
+  "file_path": "/Users/cskoons/projects/github/Tekton/tekton/core/dependency.py",
+  "line_number": 15,
+  "timestamp": "2025-06-21T20:17:17.758988",
+  "author": "system",
+  "metadata": {
+    "rationale": "Automatically detect and break circular dependencies to prevent startup deadlocks",
+    "alternatives_considered": [
+      "Manual dependency ordering",
+      "Fail on cycles",
+      "Lazy loading"
+    ],
+    "impacts": [],
+    "decided_by": "team"
+  },
+  "tags": [],
+  "related_landmarks": []
+}

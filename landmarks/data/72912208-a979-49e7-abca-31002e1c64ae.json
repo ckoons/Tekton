@@ -1,0 +1,17 @@
+{
+  "id": "72912208-a979-49e7-abca-31002e1c64ae",
+  "type": "performance_boundary",
+  "title": "Shutdown notification timeout",
+  "description": "Notify Hermes that we're shutting down",
+  "file_path": "/Users/cskoons/projects/github/Tekton/shared/utils/graceful_shutdown.py",
+  "line_number": 39,
+  "timestamp": "2025-06-21T18:33:56.718844",
+  "author": "system",
+  "metadata": {
+    "sla": "<2 seconds",
+    "optimization_notes": "Short timeout to prevent hanging during shutdown",
+    "metrics": {}
+  },
+  "tags": [],
+  "related_landmarks": []
+}

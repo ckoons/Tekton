@@ -1,0 +1,20 @@
+{
+  "id": "60056a35-777c-4e93-b4d9-8f386ad7b4e5",
+  "type": "performance_boundary",
+  "title": "Registry save operation",
+  "description": "Save component registrations to disk.\n    \n    Args:\n        components: Dictionary of component registrations\n        data_dir: Directory to save to",
+  "file_path": "/Users/cskoons/projects/github/Tekton/tekton/core/registry.py",
+  "line_number": 70,
+  "timestamp": "2025-06-21T20:11:21.119699",
+  "author": "system",
+  "metadata": {
+    "sla": "<50ms for typical registry size",
+    "optimization_notes": "JSON serialization with async file I/O",
+    "metrics": {
+      "save_time": "avg 20ms",
+      "file_size": "<100KB"
+    }
+  },
+  "tags": [],
+  "related_landmarks": []
+}

@@ -1,0 +1,18 @@
+{
+  "id": "5eb02d9f-25b0-4dfa-8d86-681fbc8730ff",
+  "type": "integration_point",
+  "title": "Hermes shutdown notification",
+  "description": "Notify Hermes that we're shutting down",
+  "file_path": "/Users/cskoons/projects/github/Tekton/landmarks/core/decorators.py",
+  "line_number": 39,
+  "timestamp": "2025-06-21T19:08:37.833553",
+  "author": "system",
+  "metadata": {
+    "target_component": "Hermes",
+    "protocol": "REST",
+    "data_flow": "Component status update -> Hermes registry",
+    "critical": true
+  },
+  "tags": [],
+  "related_landmarks": []
+}

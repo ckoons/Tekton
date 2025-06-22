@@ -1,0 +1,17 @@
+{
+  "id": "9ad720d1-c352-4ca2-a19b-722a2ec809e0",
+  "type": "integration_point",
+  "title": "Budget engine access",
+  "description": "Convenience function to get budget engine through component.\n    This maintains compatibility with existing code during migration.",
+  "file_path": "/Users/cskoons/projects/github/Tekton/Budget/budget/core/budget_component.py",
+  "line_number": 119,
+  "timestamp": "2025-06-21T20:08:09.176310",
+  "author": "system",
+  "metadata": {
+    "target_component": "BudgetEngine",
+    "protocol": "Internal API",
+    "data_flow": "Component \u2192 BudgetEngine \u2192 Database"
+  },
+  "tags": [],
+  "related_landmarks": []
+}

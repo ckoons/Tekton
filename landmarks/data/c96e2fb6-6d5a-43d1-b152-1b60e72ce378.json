@@ -1,0 +1,18 @@
+{
+  "id": "c96e2fb6-6d5a-43d1-b152-1b60e72ce378",
+  "type": "state_checkpoint",
+  "title": "Terminal session state",
+  "description": "Manages a single terminal session with PTY interface",
+  "file_path": "/Users/cskoons/projects/github/Tekton/Terma/terma/core/terminal.py",
+  "line_number": 22,
+  "timestamp": "2025-06-21T20:31:17.141678",
+  "author": "system",
+  "metadata": {
+    "state_type": "memory",
+    "persistence": false,
+    "consistency_requirements": "Session state must be consistent with PTY process",
+    "recovery_strategy": "Sessions are ephemeral, restart on failure"
+  },
+  "tags": [],
+  "related_landmarks": []
+}
