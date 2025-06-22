@@ -8,6 +8,7 @@ from typing import List, Dict, Optional, Set, Any
 from datetime import datetime
 import threading
 from collections import defaultdict
+import hashlib
 
 from .landmark import Landmark
 
@@ -22,6 +23,7 @@ class LandmarkRegistry:
     _instance = None
     _lock = threading.Lock()
     _landmarks: Dict[str, Landmark] = {}
+    _landmark_hashes: Dict[str, str] = {}  # hash -> landmark_id
     _index: Dict[str, Dict[str, Set[str]]] = {
         'type': defaultdict(set),
         'component': defaultdict(set),
@@ -46,11 +48,25 @@ class LandmarkRegistry:
         self._load_registry()
     
     @classmethod
+    def _compute_hash(cls, landmark: Landmark) -> str:
+        """Hash the significant parts"""
+        significant = f"{landmark.type}|{landmark.title}|{landmark.file_path}|{landmark.line_number}"
+        return hashlib.sha256(significant.encode()).hexdigest()
+    
+    @classmethod
     def register(cls, landmark: Landmark) -> None:
-        """Register a new landmark"""
+        """Register only if hash is new"""
         instance = cls()
         
-        # Store landmark
+        # Compute hash for this landmark
+        landmark_hash = cls._compute_hash(landmark)
+        
+        # Already seen? Skip it
+        if landmark_hash in cls._landmark_hashes:
+            return
+        
+        # New landmark - store it
+        cls._landmark_hashes[landmark_hash] = landmark.id
         cls._landmarks[landmark.id] = landmark
         
         # Update indexes
@@ -190,6 +206,10 @@ class LandmarkRegistry:
                         
                         # Store in memory
                         self._landmarks[landmark.id] = landmark
+                        
+                        # Rebuild hash index
+                        landmark_hash = self._compute_hash(landmark)
+                        self._landmark_hashes[landmark_hash] = landmark.id
                         
                         # Rebuild indexes
                         self._index['type'][landmark.type].add(landmark.id)
