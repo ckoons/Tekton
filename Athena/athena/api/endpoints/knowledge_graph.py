@@ -17,7 +17,6 @@ from ...core.relationship import Relationship
 
 # Create router
 router = APIRouter(
-    prefix="/knowledge",
     tags=["knowledge"],
     responses={404: {"description": "Not found"}},
 )
