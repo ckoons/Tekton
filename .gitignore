@@ -90,6 +90,42 @@ CLAUDE.md
 **/CLAUDE.md
 **/.claude/settings.local.json
 .tekton/logs/
+.tekton/data/
+
+# Landmark operational data (not the system itself)
+landmarks/data/*.json
+!landmarks/data/.gitkeep
+landmarks/data/registry.json
+
+# Component registrations (runtime)
+Hermes/registrations/
+!Hermes/registrations/.gitkeep
+!Hermes/registrations/README.md
+
+# Analysis artifacts (keep code, exclude results)
+**/backend_analysis/components/
+**/backend_analysis/refined/
+**/backend_analysis/*_analysis.json
+**/backend_analysis/*_refined.json
+**/backend_analysis/*_summary.md
+**/backend_analysis/*_summary.json
+**/backend_analysis/overall_summary.json
+**/backend_analysis/refined_summary.json
+**/backend_analysis/landmark_locations.json
+**/backend_analysis/executive_summary.md
+**/backend_analysis/handoff_documentation.md
+**/backend_analysis/progress_dashboard.html
+**/backend_analysis/architectural_patterns.md
+
+# CI Memory operational data
+ci_memory/*/conversations.json
+ci_memory/*/current_session.json
+ci_memory/*/knowledge.json
+ci_memory/*/ci_registry.json
+
+# Keep the analysis scripts
+!**/backend_analysis/*.py
+!**/backend_analysis/SPRINT_COMPLETION_SUMMARY.md
 
 # Temporary files
 .gitignore.template

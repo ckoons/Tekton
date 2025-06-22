@@ -1,0 +1,23 @@
+# Landmark runtime/operational data
+data/*.json
+!data/.gitkeep
+!data/registry.json
+
+# Temporary files
+*.tmp
+*.bak
+*.swp
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# IDE files
+.idea/
+.vscode/
+*.sublime-*
+
+# OS files
+.DS_Store
+Thumbs.db
