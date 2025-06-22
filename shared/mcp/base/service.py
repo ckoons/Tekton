@@ -11,6 +11,26 @@ import asyncio
 
 from tekton.models import TektonBaseModel
 
+# Try to import landmarks decorators, but make them optional
+try:
+    from landmarks import architecture_decision, integration_point, state_checkpoint
+except ImportError:
+    # Create no-op decorators if landmarks module is not available
+    def architecture_decision(*args, **kwargs):
+        def decorator(func):
+            return func
+        return decorator
+    
+    def integration_point(*args, **kwargs):
+        def decorator(func):
+            return func
+        return decorator
+    
+    def state_checkpoint(*args, **kwargs):
+        def decorator(func):
+            return func
+        return decorator
+
 logger = logging.getLogger(__name__)
 
 

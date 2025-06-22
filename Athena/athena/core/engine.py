@@ -10,7 +10,30 @@ import logging
 import asyncio
 from typing import Dict, Any, List, Optional, Set, Tuple, Union
 from pathlib import Path
-from landmarks import architecture_decision, integration_point, performance_boundary, danger_zone
+# Try to import landmarks decorators, but make them optional
+try:
+    from landmarks import architecture_decision, integration_point, performance_boundary, danger_zone
+except ImportError:
+    # Create no-op decorators if landmarks module is not available
+    def architecture_decision(*args, **kwargs):
+        def decorator(func):
+            return func
+        return decorator
+    
+    def integration_point(*args, **kwargs):
+        def decorator(func):
+            return func
+        return decorator
+    
+    def performance_boundary(*args, **kwargs):
+        def decorator(func):
+            return func
+        return decorator
+    
+    def danger_zone(*args, **kwargs):
+        def decorator(func):
+            return func
+        return decorator
 
 # Import FastMCP integration if available
 try:

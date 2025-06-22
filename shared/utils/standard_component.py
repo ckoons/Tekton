@@ -19,7 +19,25 @@ from shared.utils.logging_setup import setup_component_logging
 from shared.utils.errors import StartupError
 from shared.utils.health_check import create_health_response
 
-from landmarks import architecture_decision, state_checkpoint, performance_boundary
+# Try to import landmarks decorators, but make them optional
+try:
+    from landmarks import architecture_decision, state_checkpoint, performance_boundary
+except ImportError:
+    # Create no-op decorators if landmarks module is not available
+    def architecture_decision(*args, **kwargs):
+        def decorator(func):
+            return func
+        return decorator
+    
+    def state_checkpoint(*args, **kwargs):
+        def decorator(func):
+            return func
+        return decorator
+    
+    def performance_boundary(*args, **kwargs):
+        def decorator(func):
+            return func
+        return decorator
 
 
 @architecture_decision(

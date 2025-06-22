@@ -8,7 +8,21 @@ inspired by LightRAG's multi-modal query capabilities.
 import logging
 import asyncio
 from typing import Dict, List, Any, Optional, Union, Set, Tuple
-from landmarks import architecture_decision, performance_boundary
+
+# Try to import landmarks decorators, but make them optional
+try:
+    from landmarks import architecture_decision, performance_boundary
+except ImportError:
+    # Create no-op decorators if landmarks module is not available
+    def architecture_decision(*args, **kwargs):
+        def decorator(func):
+            return func
+        return decorator
+    
+    def performance_boundary(*args, **kwargs):
+        def decorator(func):
+            return func
+        return decorator
 
 # Import FastMCP integration if available
 try:

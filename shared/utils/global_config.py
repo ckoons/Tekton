@@ -11,7 +11,20 @@ import asyncio
 from typing import Dict, Any, Optional, TypeVar, Generic
 
 from shared.utils.env_config import get_component_config as _get_original_component_config
-from landmarks import state_checkpoint, architecture_decision
+# Try to import landmarks decorators, but make them optional
+try:
+    from landmarks import state_checkpoint, architecture_decision
+except ImportError:
+    # Create no-op decorators if landmarks module is not available
+    def state_checkpoint(*args, **kwargs):
+        def decorator(func):
+            return func
+        return decorator
+    
+    def architecture_decision(*args, **kwargs):
+        def decorator(func):
+            return func
+        return decorator
 
 logger = logging.getLogger(__name__)
 

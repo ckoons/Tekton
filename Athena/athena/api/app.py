@@ -15,10 +15,10 @@ from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
-# Add Tekton root to path for shared imports
+# Add Tekton root to path for shared imports and landmarks
 tekton_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../.."))
 if tekton_root not in sys.path:
-    sys.path.append(tekton_root)
+    sys.path.insert(0, tekton_root)  # Insert at beginning for priority
 
 # Import shared utils
 from shared.utils.global_config import GlobalConfig
