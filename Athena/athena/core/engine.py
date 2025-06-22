@@ -447,6 +447,28 @@ class KnowledgeEngine:
             logger.error(f"Error finding paths: {e}")
             return []
     
+    async def sync(self) -> bool:
+        """
+        Synchronize the knowledge graph data to persistent storage.
+        
+        Only applicable for adapters that support persistence (e.g., memory adapter).
+        For database-backed adapters (Neo4j), this is a no-op.
+        
+        Returns:
+            True if successful or not applicable
+        """
+        if not self.is_initialized:
+            logger.warning("Cannot sync: engine not initialized")
+            return False
+            
+        # Only sync if using memory adapter
+        if hasattr(self.adapter, 'sync'):
+            logger.info("Syncing knowledge graph to disk")
+            return await self.adapter.sync()
+        else:
+            # For database adapters, sync is not needed
+            return True
+    
     async def get_status(self) -> Dict[str, Any]:
         """
         Get the status of the knowledge engine.

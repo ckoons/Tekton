@@ -25,8 +25,29 @@ async def search_entities(adapter, query: str, entity_type: Optional[str] = None
     Returns:
         List of matching entities
     """
-    query = query.lower()
     results = []
+    
+    # Handle None or empty query - return all entities (filtered by type if specified)
+    if not query:
+        for node_id in adapter.graph.nodes():
+            entity = adapter.graph.nodes[node_id].get('entity')
+            if not entity:
+                continue
+                
+            # Filter by entity type if specified
+            if entity_type and entity.entity_type != entity_type:
+                continue
+                
+            results.append(entity)
+            
+            if len(results) >= limit:
+                break
+                
+        logger.debug(f"Search with no query and entity_type='{entity_type}' found {len(results)} entities")
+        return results[:limit]
+    
+    # Normal search with query
+    query = query.lower()
     
     for node_id in adapter.graph.nodes():
         entity = adapter.graph.nodes[node_id].get('entity')
@@ -44,7 +65,12 @@ async def search_entities(adapter, query: str, entity_type: Optional[str] = None
             
         # Check for matches in properties
         for key, prop in entity.properties.items():
-            value = prop.get('value')
+            # Handle both structured properties (with 'value' key) and simple properties
+            if isinstance(prop, dict) and 'value' in prop:
+                value = prop.get('value')
+            else:
+                value = prop
+            
             if isinstance(value, str) and query in value.lower():
                 if entity not in results:
                     results.append(entity)

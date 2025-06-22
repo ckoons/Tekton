@@ -88,6 +88,17 @@ class LandmarkIngesterV2:
         print(f"  Landmarks: {len(self.landmark_entities)}")
         print(f"  Relationships: {self.relationships_created}")
         
+        # Sync to disk
+        print("\n📁 Syncing to disk...")
+        try:
+            response = await self.client.post(f"{ATHENA_API}/knowledge/sync")
+            if response.status_code == 200:
+                print("  ✓ Successfully synced knowledge graph to disk")
+            else:
+                print(f"  ✗ Failed to sync: {response.text}")
+        except Exception as e:
+            print(f"  ✗ Error syncing: {e}")
+        
     def _extract_component(self, landmark: Dict) -> str:
         """Extract component name from landmark"""
         file_path = landmark.get("file_path", "")

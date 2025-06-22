@@ -142,6 +142,22 @@ class MemoryAdapter:
     async def find_paths(self, source_id: str, target_id: str, max_depth: int = 3):
         return await find_paths(self, source_id, target_id, max_depth)
         
+    # Persistence operations
+    async def sync(self) -> bool:
+        """
+        Synchronize in-memory data to disk.
+        
+        Returns:
+            True if successful
+        """
+        logger.info("Syncing in-memory graph to disk")
+        success = await save_data(self)
+        if success:
+            logger.info("Successfully synced graph data to disk")
+        else:
+            logger.error("Failed to sync graph data to disk")
+        return success
+        
     # Count operations
     async def count_entities(self) -> int:
         return len(self.graph.nodes)

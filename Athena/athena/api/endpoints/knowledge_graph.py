@@ -239,3 +239,19 @@ async def get_stats(
         "relationship_count": relationship_count,
         "adapter_type": "neo4j" if hasattr(engine.adapter, "graph_db") else "memory"
     }
+
+@router.post("/sync")
+async def sync_data(
+    engine: KnowledgeEngine = Depends(get_engine)
+) -> Dict[str, str]:
+    """
+    Synchronize the knowledge graph data to persistent storage.
+    
+    This is primarily useful for the memory adapter to save data to disk.
+    For database-backed adapters, this is a no-op.
+    """
+    success = await engine.sync()
+    if success:
+        return {"status": "success", "message": "Knowledge graph synced to disk"}
+    else:
+        raise HTTPException(status_code=500, detail="Failed to sync knowledge graph")

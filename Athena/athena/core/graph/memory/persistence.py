@@ -54,13 +54,18 @@ async def load_data(adapter) -> None:
         except Exception as e:
             logger.error(f"Error loading relationships: {e}")
 
-async def save_data(adapter) -> None:
+async def save_data(adapter) -> bool:
     """
     Save graph data to persistence files.
     
     Args:
         adapter: The memory adapter instance
+        
+    Returns:
+        True if successful, False otherwise
     """
+    success = True
+    
     # Save entities
     try:
         entities_data = []
@@ -75,6 +80,7 @@ async def save_data(adapter) -> None:
         logger.info(f"Saved {len(entities_data)} entities to {adapter.entity_file}")
     except Exception as e:
         logger.error(f"Error saving entities: {e}")
+        success = False
         
     # Save relationships
     try:
@@ -90,3 +96,6 @@ async def save_data(adapter) -> None:
         logger.info(f"Saved {len(relationships_data)} relationships to {adapter.relationship_file}")
     except Exception as e:
         logger.error(f"Error saving relationships: {e}")
+        success = False
+        
+    return success
