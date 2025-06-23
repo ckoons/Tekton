@@ -277,5 +277,234 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
+// Test function to verify onclick works
+window.testClick = function() {
+    alert('Click works!');
+    return false;
+};
+
+// Global Settings Functions - Simple like Rhetor
+window.settings_showPanel = function(panelId) {
+    console.log('[Settings] Showing panel:', panelId);
+    console.log('[Settings] Function called! Panel elements:', document.querySelectorAll('.settings__panel'));
+    
+    // Update tab states
+    const tabs = document.querySelectorAll('.settings__tab');
+    console.log('[Settings] Found tabs:', tabs.length);
+    tabs.forEach(tab => {
+        if (tab.getAttribute('data-tab') === panelId) {
+            tab.classList.add('settings__tab--active');
+        } else {
+            tab.classList.remove('settings__tab--active');
+        }
+    });
+    
+    // Update panel visibility
+    const panels = document.querySelectorAll('.settings__panel');
+    console.log('[Settings] Found panels:', panels.length);
+    panels.forEach(panel => {
+        panel.classList.remove('settings__panel--active');
+    });
+    
+    const targetPanel = document.getElementById(panelId + '-panel');
+    console.log('[Settings] Target panel:', targetPanel);
+    if (targetPanel) {
+        targetPanel.classList.add('settings__panel--active');
+    }
+    
+    return false; // Prevent default
+};
+
+window.settings_setThemeMode = function(mode) {
+    console.log('[Settings] Setting theme mode:', mode);
+    console.log('[Settings] settingsManager available?', !!window.settingsManager);
+    
+    // Update button states
+    const buttons = document.querySelectorAll('.settings__theme-mode-button');
+    buttons.forEach(button => {
+        if (button.getAttribute('data-mode') === mode) {
+            button.classList.add('settings__theme-mode-button--active');
+        } else {
+            button.classList.remove('settings__theme-mode-button--active');
+        }
+    });
+    
+    // Apply theme
+    if (window.settingsManager) {
+        window.settingsManager.setThemeBase(mode);
+    } else {
+        console.error('[Settings] settingsManager not available!');
+    }
+    
+    return false; // Prevent default
+};
+
+window.settings_setAccentColor = function(color) {
+    console.log('[Settings] Setting accent color:', color);
+    
+    // Update button states
+    const buttons = document.querySelectorAll('.settings__theme-color-button');
+    buttons.forEach(button => {
+        if (button.getAttribute('data-color') === color) {
+            button.classList.add('settings__theme-color-button--active');
+        } else {
+            button.classList.remove('settings__theme-color-button--active');
+        }
+    });
+    
+    // Apply color
+    if (window.settingsManager) {
+        window.settingsManager.setAccentColor(color);
+    }
+};
+
+window.settings_toggleGreekNames = function(checked) {
+    console.log('[Settings] Toggle Greek names:', checked);
+    
+    if (window.settingsManager) {
+        window.settingsManager.settings.showGreekNames = checked;
+        window.settingsManager.save();
+        window.settingsManager.applyNames();
+    }
+};
+
+window.settings_setTerminalFontSize = function(size) {
+    console.log('[Settings] Setting terminal font size:', size);
+    
+    if (window.settingsManager) {
+        window.settingsManager.settings.terminalFontSize = size;
+        window.settingsManager.save();
+    }
+};
+
+window.settings_saveAll = function() {
+    console.log('[Settings] Saving all settings');
+    
+    if (window.settingsManager) {
+        window.settingsManager.save();
+        alert('Settings saved successfully!');
+    }
+};
+
+window.settings_resetAll = function() {
+    if (confirm('Reset all settings to defaults?')) {
+        console.log('[Settings] Resetting all settings');
+        
+        if (window.settingsManager) {
+            window.settingsManager.reset();
+            
+            // Update UI to reflect defaults
+            settings_setThemeMode('pure-black');
+            settings_setAccentColor('blue');
+            
+            const greekToggle = document.getElementById('greek-names-toggle');
+            if (greekToggle) greekToggle.checked = false;
+            
+            const fontSelect = document.getElementById('terminal-font-size');
+            if (fontSelect) fontSelect.value = 'medium';
+        }
+    }
+};
+
+// Initialize Settings UI when component loads
+window.initializeSettingsUI = function() {
+    console.log('[Settings] Initializing Settings UI...');
+    
+    // Add event listeners since onclick might not work
+    setTimeout(() => {
+        // Tab clicks
+        document.querySelectorAll('.settings__tab').forEach(tab => {
+            const tabId = tab.getAttribute('data-tab');
+            tab.addEventListener('click', (e) => {
+                e.preventDefault();
+                console.log('[Settings] Tab clicked:', tabId);
+                settings_showPanel(tabId);
+            });
+        });
+        
+        // Theme mode buttons
+        document.querySelectorAll('.settings__theme-mode-button').forEach(button => {
+            const mode = button.getAttribute('data-mode');
+            button.addEventListener('click', (e) => {
+                e.preventDefault();
+                console.log('[Settings] Theme mode clicked:', mode);
+                settings_setThemeMode(mode);
+            });
+        });
+        
+        // Accent color buttons
+        document.querySelectorAll('.settings__theme-color-button').forEach(button => {
+            const color = button.getAttribute('data-color');
+            button.addEventListener('click', (e) => {
+                e.preventDefault();
+                console.log('[Settings] Accent color clicked:', color);
+                settings_setAccentColor(color);
+            });
+        });
+        
+        // Save button
+        const saveBtn = document.querySelector('[onclick*="settings_saveAll"]');
+        if (saveBtn) {
+            saveBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                console.log('[Settings] Save clicked');
+                settings_saveAll();
+            });
+        }
+        
+        // Reset button
+        const resetBtn = document.querySelector('[onclick*="settings_resetAll"]');
+        if (resetBtn) {
+            resetBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                console.log('[Settings] Reset clicked');
+                settings_resetAll();
+            });
+        }
+        
+        // Greek names toggle
+        const greekToggle = document.getElementById('greek-names-toggle');
+        if (greekToggle) {
+            greekToggle.addEventListener('change', (e) => {
+                console.log('[Settings] Greek names toggled:', e.target.checked);
+                settings_toggleGreekNames(e.target.checked);
+            });
+        }
+        
+        // Terminal font size
+        const fontSelect = document.getElementById('terminal-font-size');
+        if (fontSelect) {
+            fontSelect.addEventListener('change', (e) => {
+                console.log('[Settings] Font size changed:', e.target.value);
+                settings_setTerminalFontSize(e.target.value);
+            });
+        }
+        
+        console.log('[Settings] Event listeners added');
+    }, 200);
+    
+    // Initialize values
+    if (window.settingsManager) {
+        const settings = window.settingsManager.settings;
+        
+        // Set initial theme mode
+        settings_setThemeMode(settings.themeMode || 'pure-black');
+        
+        // Set initial accent color
+        settings_setAccentColor(settings.themeColor || 'blue');
+        
+        // Set Greek names toggle
+        const greekToggle = document.getElementById('greek-names-toggle');
+        if (greekToggle) {
+            greekToggle.checked = settings.showGreekNames || false;
+        }
+        
+        // Set terminal font size
+        const fontSelect = document.getElementById('terminal-font-size');
+        if (fontSelect) {
+            fontSelect.value = settings.terminalFontSize || 'medium';
+        }
+    }
+};
     tektonUI.log('Tekton UI initialized');
 });

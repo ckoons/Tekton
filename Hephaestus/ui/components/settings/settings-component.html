@@ -1,165 +1,105 @@
-<!-- Settings Component UI Template -->
-<script>console.log('[SETTINGS] Component HTML loaded!');</script>
-<div class="settings-container"
+<!-- 
+  Settings Component - Pure HTML/CSS Solution
+  NO SCRIPTS - Uses forms, radio buttons, and CSS for all functionality
+-->
+
+<!-- Hidden form controls for CSS-only functionality -->
+<input type="radio" name="settings-tab" id="tab-theme" checked style="display: none;">
+<input type="radio" name="settings-tab" id="tab-interface" style="display: none;">
+
+<input type="radio" name="theme-mode" id="theme-light" value="light" style="display: none;">
+<input type="radio" name="theme-mode" id="theme-dark" value="dark" style="display: none;">
+<input type="radio" name="theme-mode" id="theme-pure-black" value="pure-black" checked style="display: none;">
+
+<input type="radio" name="accent-color" id="accent-blue" value="blue" checked style="display: none;">
+<input type="radio" name="accent-color" id="accent-green" value="green" style="display: none;">
+<input type="radio" name="accent-color" id="accent-purple" value="purple" style="display: none;">
+<input type="radio" name="accent-color" id="accent-orange" value="orange" style="display: none;">
+
+<input type="checkbox" name="greek-names" id="greek-names-setting" style="display: none;">
+
+<div class="settings" 
      data-tekton-area="settings"
      data-tekton-component="settings"
-     data-tekton-type="component-workspace"
-     data-tekton-description="System configuration and preferences">
-  <div class="settings-header" data-tekton-zone="header" data-tekton-section="header">
-    <div class="settings-title-container">
-      <img src="/images/hexagon.jpg" alt="Tekton" class="settings-icon">
-      <h2 class="settings-header__title">
-        <span class="settings-title-main">Settings</span>
-        <span class="settings-title-sub">Tekton Configuration</span>
+     data-tekton-type="component-workspace">
+  
+  <!-- Component Header -->
+  <div class="settings__header" data-tekton-zone="header">
+    <div class="settings__title-container">
+      <img src="/images/hexagon.jpg" alt="Tekton" class="settings__icon">
+      <h2 class="settings__title">
+        <span class="settings__title-main">Settings</span>
+        <span class="settings__title-sub">System Configuration</span>
       </h2>
     </div>
   </div>
   
-  <!-- Settings Menu Bar with Tab Navigation -->
-  <div class="settings-menu-bar" data-tekton-zone="menu" data-tekton-nav="component-menu">
-    <div class="settings-tabs">
-      <div class="settings-tab settings-tab--active" data-tab="theme"
-           data-tekton-menu-item="Theme"
-           data-tekton-menu-component="settings"
-           data-tekton-menu-active="true"
-           data-tekton-menu-panel="theme-panel"
-           data-tekton-nav-target="theme"
-           data-settings-action="switch-tab" data-tab-target="theme">
-        <span class="settings-tab-label">Theme</span>
-      </div>
-      <div class="settings-tab" data-tab="interface"
-           data-tekton-menu-item="Interface"
-           data-tekton-menu-component="settings"
-           data-tekton-menu-active="false"
-           data-tekton-menu-panel="interface-panel"
-           data-tekton-nav-target="interface"
-           data-settings-action="switch-tab" data-tab-target="interface">
-        <span class="settings-tab-label">Interface</span>
-      </div>
+  <!-- Tab Navigation - CSS ONLY -->
+  <div class="settings__menu-bar" data-tekton-zone="menu">
+    <div class="settings__tabs">
+      <!-- Theme Tab -->
+      <label for="tab-theme" class="settings__tab">
+        <span class="settings__tab-label">Theme</span>
+      </label>
+      <!-- Interface Tab -->
+      <label for="tab-interface" class="settings__tab">
+        <span class="settings__tab-label">Interface</span>
+      </label>
     </div>
-    <div class="settings-actions">
-      <button class="settings-button settings-button--primary" id="save-all-settings"
-              data-tekton-action="save-settings"
-              data-tekton-action-type="primary"
-              data-settings-action="save-all">
-        Save Settings
-      </button>
-      <button class="settings-button" id="reset-all-settings"
-              data-tekton-action="reset-settings"
-              data-tekton-action-type="secondary"
-              data-settings-action="reset-all">
-        Reset to Defaults
-      </button>
+    <div class="settings__actions">
+      <span class="settings__status">Changes applied instantly</span>
     </div>
   </div>
-
-<script type="text/javascript">
-// Settings component initialization
-console.log('[Settings] Component HTML loaded, waiting for external script...');
-
-// Check if functions are available, if not, wait for external script
-function checkSettingsFunctions() {
-    if (typeof window.settings_switchTab === 'function') {
-        console.log('[Settings] External script loaded, functions available');
-    } else {
-        console.log('[Settings] Waiting for external script to define functions...');
-        setTimeout(checkSettingsFunctions, 100);
-    }
-}
-
-// Start checking
-checkSettingsFunctions();
-</script>
   
-  <!-- Settings Content Area -->
-  <div class="settings-content" data-tekton-zone="content" data-tekton-scrollable="true">
-    <!-- Theme Tab (Default Active Tab) -->
-    <div id="theme-panel" class="settings-panel settings-panel--active"
-         data-tekton-panel="theme"
-         data-tekton-panel-for="Theme"
-         data-tekton-panel-component="settings"
-         data-tekton-panel-active="true">
-      <div class="settings-form">
-        <div class="settings-field">
-          <div class="settings-field-label">UI Mode</div>
-          <div class="settings-field-control">
-            <div class="settings-theme-mode">
-              <button class="settings-theme-mode__button" data-mode="light"
-                      data-tekton-action="set-theme-mode"
-                      data-tekton-action-value="light">
-                <span class="settings-theme-mode__icon">☀️</span>
-                <span class="settings-theme-mode__label">Light</span>
-              </button>
-              <button class="settings-theme-mode__button" data-mode="dark"
-                      data-tekton-action="set-theme-mode"
-                      data-tekton-action-value="dark">
-                <span class="settings-theme-mode__icon">🌙</span>
-                <span class="settings-theme-mode__label">Dark</span>
-              </button>
-              <button class="settings-theme-mode__button" data-mode="pure-black"
-                      data-tekton-action="set-theme-mode"
-                      data-tekton-action-value="pure-black">
-                <span class="settings-theme-mode__icon">⚫</span>
-                <span class="settings-theme-mode__label">Pure Black</span>
-              </button>
+  <!-- Content Area -->
+  <div class="settings__content" data-tekton-zone="content">
+    
+    <!-- Theme Panel -->
+    <div class="settings__panel settings__panel--theme">
+      <div class="settings__form">
+        
+        <!-- UI Mode -->
+        <div class="settings__field">
+          <div class="settings__field-label">UI Mode</div>
+          <div class="settings__field-control">
+            <div class="settings__theme-mode">
+              <label for="theme-light" class="settings__theme-mode-button">
+                <span class="settings__theme-mode-icon">☀️</span>
+                <span class="settings__theme-mode-label">Light</span>
+              </label>
+              <label for="theme-dark" class="settings__theme-mode-button">
+                <span class="settings__theme-mode-icon">🌙</span>
+                <span class="settings__theme-mode-label">Dark</span>
+              </label>
+              <label for="theme-pure-black" class="settings__theme-mode-button">
+                <span class="settings__theme-mode-icon">⚫</span>
+                <span class="settings__theme-mode-label">Pure Black</span>
+              </label>
             </div>
           </div>
         </div>
         
-        <div class="settings-field">
-          <div class="settings-field-label">Accent Color</div>
-          <div class="settings-field-control">
-            <div class="settings-theme-color">
-              <button class="settings-theme-color__button" data-color="blue" style="--color: #007bff"
-                      data-tekton-action="set-theme-color"
-                      data-tekton-action-value="blue">
-                <span class="settings-theme-color__dot"></span>
-                <span class="settings-theme-color__label">Blue</span>
-              </button>
-              <button class="settings-theme-color__button" data-color="green" style="--color: #28a745"
-                      data-tekton-action="set-theme-color"
-                      data-tekton-action-value="green">
-                <span class="settings-theme-color__dot"></span>
-                <span class="settings-theme-color__label">Green</span>
-              </button>
-              <button class="settings-theme-color__button" data-color="purple" style="--color: #6f42c1"
-                      data-tekton-action="set-theme-color"
-                      data-tekton-action-value="purple">
-                <span class="settings-theme-color__dot"></span>
-                <span class="settings-theme-color__label">Purple</span>
-              </button>
-              <button class="settings-theme-color__button" data-color="custom" style="--color: #ff5722"
-                      data-tekton-action="set-theme-color"
-                      data-tekton-action-value="custom">
-                <span class="settings-theme-color__dot"></span>
-                <span class="settings-theme-color__label">Custom</span>
-              </button>
-            </div>
-          </div>
-        </div>
-        
-        <!-- Custom color area appears when Custom is selected -->
-        <div id="custom-color-area" class="settings-field" style="display: none; margin-top: 0;">
-          <div class="settings-field-label">Custom Color</div>
-          <div class="settings-field-control">
-            <div class="settings-custom-color">
-              <!-- Color picker -->
-              <div class="color-picker-container">
-                <input type="color" id="custom-color-input" value="#ff5722" class="settings-color-input"
-                       data-tekton-input="custom-color"
-                       data-tekton-input-type="color">
-                <span id="custom-color-hex" class="color-hex-display">#FF5722</span>
-              </div>
-              
-              <!-- Color from image picker -->
-              <div class="settings-image-color-picker">
-                <div class="image-color-title">Pick color from image:</div>
-                <div class="image-color-container">
-                  <img src="/images/hexagon.jpg" id="color-sample-image" class="color-sample-image" alt="Sample image">
-                  <canvas id="color-canvas" class="color-canvas" width="20" height="20"></canvas>
-                </div>
-                <div class="image-color-instructions">Click anywhere on the image to sample color</div>
-              </div>
+        <!-- Accent Color -->
+        <div class="settings__field">
+          <div class="settings__field-label">Accent Color</div>
+          <div class="settings__field-control">
+            <div class="settings__theme-color">
+              <label for="accent-blue" class="settings__theme-color-button" data-color="blue">
+                <span class="settings__theme-color-dot" style="background-color: #007bff;"></span>
+                <span class="settings__theme-color-label">Blue</span>
+              </label>
+              <label for="accent-green" class="settings__theme-color-button" data-color="green">
+                <span class="settings__theme-color-dot" style="background-color: #28a745;"></span>
+                <span class="settings__theme-color-label">Green</span>
+              </label>
+              <label for="accent-purple" class="settings__theme-color-button" data-color="purple">
+                <span class="settings__theme-color-dot" style="background-color: #6f42c1;"></span>
+                <span class="settings__theme-color-label">Purple</span>
+              </label>
+              <label for="accent-orange" class="settings__theme-color-button" data-color="orange">
+                <span class="settings__theme-color-dot" style="background-color: #fd7e14;"></span>
+                <span class="settings__theme-color-label">Orange</span>
+              </label>
             </div>
           </div>
         </div>
@@ -167,534 +107,460 @@ checkSettingsFunctions();
       </div>
     </div>
     
-    <!-- Interface Tab -->
-    <div id="interface-panel" class="settings-panel"
-         data-tekton-panel="interface"
-         data-tekton-panel-for="Interface"
-         data-tekton-panel-component="settings"
-         data-tekton-panel-active="false">
-      <div class="settings-form">
-        <div class="settings-field">
-          <div class="settings-field-label">Show Greek Names</div>
-          <div class="settings-field-control">
-            <label class="settings-toggle">
-              <input type="checkbox" id="greek-names-toggle" data-settings-action="toggle-greek-names"
-                     data-tekton-input="greek-names"
-                     data-tekton-input-type="toggle">
-              <span class="settings-toggle__slider"></span>
+    <!-- Interface Panel -->
+    <div class="settings__panel settings__panel--interface">
+      <div class="settings__form">
+        
+        <!-- Greek Names Toggle -->
+        <div class="settings__field">
+          <div class="settings__field-label">Show Greek Names</div>
+          <div class="settings__field-control">
+            <label for="greek-names-setting" class="settings__toggle">
+              <span class="settings__toggle-slider"></span>
             </label>
-            <div class="settings-field-description">
-              When enabled, components will be displayed with their Greek names (e.g., "Ergon - Agents/Tools/MCP"). 
-              When disabled, only functional names will be shown (e.g., "Agents/Tools/MCP").
+            <div class="settings__field-description">
+              Display components with their Greek names (e.g., "Ergon - Agents/Tools/MCP")
             </div>
           </div>
         </div>
         
-        <div class="settings-field">
-          <div class="settings-field-label">Terminal Font Size</div>
-          <div class="settings-field-control">
-            <select id="terminal-font-size" class="settings-select"
-                    data-tekton-input="terminal-font-size"
-                    data-tekton-input-type="select">
+        <!-- Terminal Font Size -->
+        <div class="settings__field">
+          <div class="settings__field-label">Terminal Font Size</div>
+          <div class="settings__field-control">
+            <select id="terminal-font-setting" class="settings__select">
               <option value="small">Small</option>
               <option value="medium" selected>Medium</option>
               <option value="large">Large</option>
             </select>
           </div>
         </div>
+        
       </div>
     </div>
+    
   </div>
 </div>
 
-<!-- Add component-specific styles -->
-<style>
-    /* Settings component styles using BEM naming convention */
-    
-    /* Container */
-    .settings-container {
-        display: flex;
-        flex-direction: column;
-        height: 100%;
-        width: 100%;
-        background-color: var(--color-bg-base, #000000);
-        color: var(--color-text-primary, #ffffff);
-    }
-    
-    /* Header */
-    .settings-header {
-        display: flex;
-        align-items: center;
-        padding: 10px 16px;
-        background-color: var(--color-bg-panel, #0a0a0a);
-        border-bottom: 1px solid var(--color-border, #2a2a2a);
-        height: 46px; /* Match Athena header height */
-    }
-    
-    .settings-title-container {
-        display: flex;
-        align-items: center;
-    }
-    
-    .settings-icon {
-        height: 30px;
-        width: auto;
-        margin-right: 12px;
-    }
-    
-    .settings-header__title {
-        margin: 0;
-        font-size: 1.2rem;
-        font-weight: 500;
-    }
-    
-    .settings-title-sub {
-        margin-left: 8px;
-        opacity: 0.8;
-        font-weight: normal;
-    }
-    
-    /* Menu Bar */
-    .settings-menu-bar {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 6px 16px;
-        background-color: var(--color-bg-panel, #0a0a0a); /* Match theme */
-        border-bottom: 1px solid var(--color-border, #2a2a2a);
-        height: 46px; /* Match Athena menu bar height */
-    }
-    
-    .settings-tabs {
-        display: flex;
-        gap: 8px;
-    }
-    
-    .settings-tab {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        padding: 8px 16px;
-        background-color: transparent;
-        border: none;
-        border-bottom: 2px solid transparent;
-        color: var(--color-text-primary, #ffffff);
-        cursor: pointer;
-        transition: all 0.2s ease;
-    }
-    
-    .settings-tab:hover {
-        background-color: var(--color-bg-hover, #1f1f1f);
-    }
-    
-    .settings-tab--active {
-        border-bottom-color: var(--color-accent, #007bff); /* Use theme accent */
-        font-weight: 500;
-    }
-    
-    .settings-actions {
-        display: flex;
-        gap: 8px;
-    }
-    
-    /* Content Area */
-    .settings-content {
-        flex: 1;
-        overflow: auto;
-        padding: 20px;
-    }
-    
-    .settings-panel {
-        display: none;
-        padding: 0;
-        height: 100%;
-    }
-    
-    .settings-panel--active {
-        display: block;
-    }
-    
-    /* Form styles */
-    .settings-form {
-        display: flex;
-        flex-direction: column;
-        gap: 24px;
-        max-width: 800px;
-        margin: 0 auto;
-    }
-    
-    .settings-field {
-        display: flex;
-        align-items: flex-start;
-    }
-    
-    .settings-field-label {
-        min-width: 180px;
-        padding-top: 2px;
-        font-weight: 500;
-        color: var(--color-accent, #007bff); /* Use theme accent */
-        line-height: 36px; /* Match the height of input fields */
-    }
-    
-    .settings-field-control {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-    }
-    
-    .settings-select,
-    .settings-input {
-        width: 100%;
-        min-width: 350px; /* At least twice as wide as before */
-        padding: 8px 12px;
-        background-color: var(--color-bg-card, #141414);
-        border: 1px solid var(--color-border, #2a2a2a);
-        border-radius: 4px;
-        color: var(--color-text-primary, #ffffff);
-        font-size: 14px;
-    }
-    
-    .settings-field-description {
-        font-size: 0.9em;
-        color: var(--color-text-secondary, #b0b0b0);
-        margin-top: 4px;
-    }
-    
-    /* Theme mode selector */
-    .settings-theme-mode {
-        display: flex;
-        gap: 12px;
-    }
-    
-    .settings-theme-mode__button {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        padding: 8px 16px;
-        background-color: var(--color-bg-card, #141414);
-        border: 1px solid var(--color-border, #2a2a2a);
-        border-radius: 4px;
-        color: var(--color-text-primary, #ffffff);
-        cursor: pointer;
-    }
-    
-    .settings-theme-mode__button--active {
-        background-color: var(--color-accent, #007bff); /* Use theme accent */
-        color: white;
-        border-color: var(--color-accent, #007bff);
-    }
-    
-    /* Theme color selector */
-    .settings-theme-color {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 12px;
-    }
-    
-    .settings-theme-color__button {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        padding: 8px 16px;
-        background-color: var(--color-bg-card, #141414);
-        border: 1px solid var(--color-border, #2a2a2a);
-        border-radius: 4px;
-        color: var(--color-text-primary, #ffffff);
-        cursor: pointer;
-    }
-    
-    .settings-theme-color__button--active {
-        background-color: var(--color-bg-hover, #1f1f1f);
-        border-color: var(--color, #007bff);
-    }
-    
-    .settings-theme-color__dot {
-        width: 16px;
-        height: 16px;
-        border-radius: 50%;
-        background-color: var(--color);
-    }
-    
-    /* Toggle switch */
-    .settings-toggle {
-        display: inline-flex;
-        position: relative;
-        width: 44px;
-        height: 22px;
-    }
-    
-    .settings-toggle input {
-        opacity: 0;
-        width: 0;
-        height: 0;
-    }
-    
-    .settings-toggle__slider {
-        position: absolute;
-        cursor: pointer;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background-color: var(--color-bg-card, #141414);
-        border: 1px solid var(--color-border, #2a2a2a);
-        transition: .4s;
-        border-radius: 22px;
-    }
-    
-    .settings-toggle__slider:before {
-        position: absolute;
-        content: "";
-        height: 16px;
-        width: 16px;
-        left: 2px;
-        bottom: 2px;
-        background-color: var(--color-text-primary, #ffffff);
-        transition: .4s;
-        border-radius: 50%;
-    }
-    
-    input:checked + .settings-toggle__slider {
-        background-color: var(--color-accent, #007bff); /* Use theme accent */
-        border-color: var(--color-accent, #007bff);
-    }
-    
-    input:checked + .settings-toggle__slider:before {
-        transform: translateX(22px);
-    }
-    
-    /* Button styles */
-    .settings-button {
-        padding: 6px 12px;
-        background-color: var(--color-bg-card, #141414);
-        border: 1px solid var(--color-border, #2a2a2a);
-        border-radius: 4px;
-        color: var(--color-text-primary, #ffffff);
-        cursor: pointer;
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        transition: all 0.2s ease;
-    }
-    
-    .settings-button:hover {
-        background-color: var(--color-bg-hover, #1f1f1f);
-    }
-    
-    .settings-button--primary {
-        background-color: var(--color-accent, #007bff); /* Use theme accent */
-        color: white;
-        border-color: var(--color-accent, #007bff);
-    }
-    
-    .settings-button--primary:hover {
-        background-color: var(--color-accent-hover, #0056b3);
-    }
-    
-    .settings-button--danger {
-        background-color: #d32f2f;
-        color: white;
-        border-color: #d32f2f;
-    }
-    
-    /* Custom color picker */
-    .settings-custom-color {
-        display: flex;
-        flex-direction: column;
-        gap: 20px;
-    }
-    
-    .color-picker-container {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-    }
-    
-    .settings-color-input {
-        -webkit-appearance: none;
-        -moz-appearance: none;
-        appearance: none;
-        width: 50px;
-        height: 36px;
-        padding: 0;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        background-color: transparent;
-    }
-    
-    .settings-color-input::-webkit-color-swatch-wrapper {
-        padding: 0;
-    }
-    
-    .settings-color-input::-webkit-color-swatch {
-        border: none;
-        border-radius: 4px;
-    }
-    
-    .color-hex-display {
-        font-family: monospace;
-        font-size: 14px;
-        padding: 4px 8px;
-        background-color: var(--color-bg-card, #141414);
-        border-radius: 4px;
-    }
-    
-    /* Image color picker */
-    .settings-image-color-picker {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-        margin-top: 10px;
-    }
-    
-    .image-color-title {
-        font-weight: 500;
-        margin-bottom: 6px;
-    }
-    
-    .image-color-container {
-        display: flex;
-        align-items: flex-start;
-        gap: 16px;
-    }
-    
-    .color-sample-image {
-        width: 200px;
-        height: auto;
-        max-height: 200px;
-        object-fit: contain;
-        border-radius: 4px;
-        cursor: crosshair;
-    }
-    
-    .color-canvas {
-        width: 40px;
-        height: 40px;
-        border-radius: 4px;
-        border: 1px solid var(--color-border, #2a2a2a);
-    }
-    
-    .image-color-instructions {
-        font-size: 0.85em;
-        color: var(--color-text-secondary, #b0b0b0);
-        margin-top: 4px;
-    }
-</style>
-
 <script>
-    // Initialize color picker functionality
-    document.addEventListener('DOMContentLoaded', function() {
-        // Get color buttons and custom color picker elements
-        const colorButtons = document.querySelectorAll('.settings-theme-color__button');
-        const customColorArea = document.getElementById('custom-color-area');
-        const customColorInput = document.getElementById('custom-color-input');
-        const customColorHex = document.getElementById('custom-color-hex');
-        const colorSampleImage = document.getElementById('color-sample-image');
-        const colorCanvas = document.getElementById('color-canvas');
-        
-        // Initialize canvas context
-        const ctx = colorCanvas.getContext('2d', { willReadFrequently: true });
-        
-        // Add click event to all color buttons
-        colorButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                // Remove active class from all buttons
-                colorButtons.forEach(btn => btn.classList.remove('settings-theme-color__button--active'));
-                
-                // Add active class to clicked button
-                this.classList.add('settings-theme-color__button--active');
-                
-                // Show/hide custom color picker based on button clicked
-                if (this.getAttribute('data-color') === 'custom') {
-                    customColorArea.style.display = 'flex';
-                } else {
-                    customColorArea.style.display = 'none';
-                }
-            });
-        });
-        
-        // Update custom color hex value when color picker changes
-        if (customColorInput) {
-            customColorInput.addEventListener('input', function() {
-                const color = this.value.toUpperCase();
-                updateColorDisplay(color);
-            });
-        }
-        
-        // Initialize color canvas with initial color
-        if (colorCanvas && ctx && customColorInput) {
-            updateColorCanvas(customColorInput.value);
-        }
-        
-        // Enable color picking from image
-        if (colorSampleImage) {
-            colorSampleImage.addEventListener('click', function(e) {
-                // Get click position relative to image
-                const rect = this.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const y = e.clientY - rect.top;
-                
-                // Create a temporary canvas to get the image data
-                const tempCanvas = document.createElement('canvas');
-                const tempCtx = tempCanvas.getContext('2d', { willReadFrequently: true });
-                tempCanvas.width = this.width;
-                tempCanvas.height = this.height;
-                tempCtx.drawImage(this, 0, 0, tempCanvas.width, tempCanvas.height);
-                
-                // Get pixel color
-                const pixelData = tempCtx.getImageData(x, y, 1, 1).data;
-                
-                // Convert RGB to hex
-                const hexColor = rgbToHex(pixelData[0], pixelData[1], pixelData[2]);
-                
-                // Update color picker and display
-                customColorInput.value = hexColor;
-                updateColorDisplay(hexColor);
-                
-                // Make sure custom button is active
-                const customButton = document.querySelector('.settings-theme-color__button[data-color="custom"]');
-                if (customButton) {
-                    colorButtons.forEach(btn => btn.classList.remove('settings-theme-color__button--active'));
-                    customButton.classList.add('settings-theme-color__button--active');
-                    customColorArea.style.display = 'flex';
-                }
-            });
-        }
-        
-        // Helper function to convert rgb to hex
-        function rgbToHex(r, g, b) {
-            return '#' + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1).toUpperCase();
-        }
-        
-        // Helper function to update color display
-        function updateColorDisplay(color) {
-            // Update hex display
-            if (customColorHex) {
-                customColorHex.textContent = color;
-            }
-            
-            // Update canvas
-            updateColorCanvas(color);
-            
-            // Update custom button color
-            const customButton = document.querySelector('.settings-theme-color__button[data-color="custom"]');
-            if (customButton) {
-                customButton.style.setProperty('--color', color);
-                const colorDot = customButton.querySelector('.settings-theme-color__dot');
-                if (colorDot) {
-                    colorDot.style.backgroundColor = color;
-                }
-            }
-        }
-        
-        // Helper function to update color canvas
-        function updateColorCanvas(color) {
-            if (ctx) {
-                ctx.fillStyle = color;
-                ctx.fillRect(0, 0, colorCanvas.width, colorCanvas.height);
-            }
-        }
-    });
+// Direct theme application - brute force approach
+function applyTheme() {
+  const checkedTheme = document.querySelector('input[name="theme-mode"]:checked');
+  const checkedAccent = document.querySelector('input[name="accent-color"]:checked');
+  const greekNames = document.querySelector('input[name="greek-names"]:checked');
+  
+  console.log('=== APPLYING THEME ===');
+  console.log('Theme:', checkedTheme?.value);
+  console.log('Accent:', checkedAccent?.value);
+  console.log('Greek names:', !!greekNames);
+  
+  // Apply theme using existing theme system
+  if (checkedTheme) {
+    document.documentElement.setAttribute('data-theme-base', checkedTheme.value);
+    document.body.setAttribute('data-theme-base', checkedTheme.value);
+    console.log('Set data-theme-base to:', checkedTheme.value);
+    
+    // Update the theme stylesheet link if needed
+    const themeStylesheet = document.getElementById('theme-stylesheet');
+    if (themeStylesheet) {
+      themeStylesheet.href = `styles/themes/theme-${checkedTheme.value}.css`;
+      console.log('Updated theme stylesheet to:', themeStylesheet.href);
+    }
+  }
+  
+  // Apply accent color
+  if (checkedAccent) {
+    document.documentElement.setAttribute('data-theme-color', checkedAccent.value);
+    document.body.setAttribute('data-theme-color', checkedAccent.value);
+    
+    const accentColors = {
+      'blue': '#007bff',
+      'green': '#28a745',
+      'purple': '#6f42c1',
+      'orange': '#fd7e14'
+    };
+    
+    const accentColor = accentColors[checkedAccent.value];
+    if (accentColor) {
+      document.documentElement.style.setProperty('--color-accent', accentColor);
+      console.log('Set accent color to:', accentColor);
+    }
+  }
+  
+  // Handle Greek names
+  if (greekNames) {
+    document.documentElement.setAttribute('data-show-greek-names', 'true');
+  } else {
+    document.documentElement.setAttribute('data-show-greek-names', 'false');
+  }
+  
+  console.log('=== THEME APPLICATION COMPLETE ===');
+}
+
+// Listen for clicks on labels (most reliable)
+document.addEventListener('click', function(e) {
+  const label = e.target.closest('label');
+  if (label) {
+    const inputId = label.getAttribute('for');
+    console.log('Label clicked for input:', inputId);
+    
+    // Small delay to let the radio button/checkbox update
+    setTimeout(() => {
+      applyTheme();
+    }, 50);
+  }
+});
+
+// Backup: Listen for input changes
+document.addEventListener('change', function(e) {
+  if (e.target.type === 'radio' || e.target.type === 'checkbox') {
+    console.log('Input changed:', e.target.name, e.target.value || e.target.checked);
+    applyTheme();
+  }
+});
+
+// Apply theme on load
+setTimeout(() => {
+  console.log('Initial theme application...');
+  applyTheme();
+}, 200);
 </script>
+
+<style>
+/* CSS-Only Settings Functionality */
+
+/* Tab switching */
+#tab-theme:checked ~ .settings .settings__panel--theme {
+  display: block;
+}
+
+#tab-interface:checked ~ .settings .settings__panel--interface {
+  display: block;
+}
+
+#tab-theme:checked ~ .settings .settings__panel--interface {
+  display: none;
+}
+
+#tab-interface:checked ~ .settings .settings__panel--theme {
+  display: none;
+}
+
+/* Tab visual states */
+#tab-theme:checked ~ .settings .settings__tab:first-child {
+  background-color: var(--color-bg-card, #333);
+  color: var(--color-accent, #007bff);
+  border-bottom: 2px solid var(--color-accent, #007bff);
+}
+
+#tab-interface:checked ~ .settings .settings__tab:last-child {
+  background-color: var(--color-bg-card, #333);
+  color: var(--color-accent, #007bff);
+  border-bottom: 2px solid var(--color-accent, #007bff);
+}
+
+/* Theme mode button states */
+#theme-light:checked ~ .settings label[for="theme-light"] {
+  background-color: var(--color-accent, #007bff);
+  color: white;
+}
+
+#theme-dark:checked ~ .settings label[for="theme-dark"] {
+  background-color: var(--color-accent, #007bff);
+  color: white;
+}
+
+#theme-pure-black:checked ~ .settings label[for="theme-pure-black"] {
+  background-color: var(--color-accent, #007bff);
+  color: white;
+}
+
+/* Accent color button states */
+#accent-blue:checked ~ .settings label[for="accent-blue"] {
+  border: 2px solid #007bff;
+  background-color: rgba(0, 123, 255, 0.1);
+}
+
+#accent-green:checked ~ .settings label[for="accent-green"] {
+  border: 2px solid #28a745;
+  background-color: rgba(40, 167, 69, 0.1);
+}
+
+#accent-purple:checked ~ .settings label[for="accent-purple"] {
+  border: 2px solid #6f42c1;
+  background-color: rgba(111, 66, 193, 0.1);
+}
+
+#accent-orange:checked ~ .settings label[for="accent-orange"] {
+  border: 2px solid #fd7e14;
+  background-color: rgba(253, 126, 20, 0.1);
+}
+
+/* Greek names toggle */
+#greek-names-setting:checked ~ .settings .settings__toggle .settings__toggle-slider {
+  background-color: var(--color-accent, #007bff);
+}
+
+#greek-names-setting:checked ~ .settings .settings__toggle .settings__toggle-slider::before {
+  transform: translateX(20px);
+}
+
+/* Fix toggle positioning */
+.settings__toggle input[type="checkbox"] {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+
+/* Debug theme switching - immediate background changes */
+#theme-light:checked ~ .settings {
+  background-color: #ffffff !important;
+  color: #000000 !important;
+}
+
+#theme-dark:checked ~ .settings {
+  background-color: #1a1a1a !important;
+  color: #ffffff !important;
+}
+
+#theme-pure-black:checked ~ .settings {
+  background-color: #000000 !important;
+  color: #ffffff !important;
+}
+
+/* Base Settings styling */
+.settings {
+  background-color: var(--color-bg-base, #000000);
+  color: var(--color-text-primary, #ffffff);
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.settings__header {
+  padding: 20px;
+  border-bottom: 1px solid var(--color-border, #333);
+}
+
+.settings__title-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.settings__icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 4px;
+}
+
+.settings__title-main {
+  font-size: 24px;
+  font-weight: 600;
+  display: block;
+}
+
+.settings__title-sub {
+  font-size: 14px;
+  color: var(--color-text-secondary, #ccc);
+  display: block;
+}
+
+.settings__menu-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 20px;
+  border-bottom: 1px solid var(--color-border, #333);
+}
+
+.settings__tabs {
+  display: flex;
+  gap: 0;
+}
+
+.settings__tab {
+  padding: 12px 20px;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s ease;
+  background: none;
+  border: none;
+  color: var(--color-text-secondary, #ccc);
+}
+
+.settings__tab:hover {
+  color: var(--color-text-primary, #fff);
+  background-color: var(--color-bg-card, #141414);
+}
+
+.settings__actions {
+  display: flex;
+  gap: 10px;
+}
+
+.settings__button {
+  padding: 8px 16px;
+  border: 1px solid var(--color-border, #333);
+  background-color: var(--color-bg-card, #141414);
+  color: var(--color-text-primary, #fff);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.settings__button:hover {
+  background-color: var(--color-bg-panel, #0a0a0a);
+}
+
+.settings__button--primary {
+  background-color: var(--color-accent, #007bff);
+  border-color: var(--color-accent, #007bff);
+}
+
+.settings__content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+}
+
+.settings__panel {
+  display: none;
+}
+
+.settings__panel--theme {
+  display: block; /* Default active */
+}
+
+.settings__field {
+  margin-bottom: 24px;
+}
+
+.settings__field-label {
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: var(--color-text-primary, #fff);
+}
+
+.settings__field-control {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.settings__theme-mode {
+  display: flex;
+  gap: 12px;
+}
+
+.settings__theme-mode-button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 16px;
+  border: 1px solid var(--color-border, #333);
+  background-color: var(--color-bg-card, #141414);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: var(--color-text-primary, #fff);
+  min-width: 80px;
+}
+
+.settings__theme-mode-button:hover {
+  border-color: var(--color-accent, #007bff);
+}
+
+.settings__theme-mode-icon {
+  font-size: 24px;
+}
+
+.settings__theme-mode-label {
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.settings__theme-color {
+  display: flex;
+  gap: 12px;
+}
+
+.settings__theme-color-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  border: 1px solid var(--color-border, #333);
+  background-color: var(--color-bg-card, #141414);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: var(--color-text-primary, #fff);
+}
+
+.settings__theme-color-button:hover {
+  border-color: var(--color-accent, #007bff);
+}
+
+.settings__theme-color-dot {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 1px solid var(--color-border, #333);
+}
+
+.settings__toggle {
+  position: relative;
+  display: inline-block;
+  width: 50px;
+  height: 24px;
+}
+
+.settings__toggle-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--color-bg-panel, #333);
+  transition: 0.3s;
+  border-radius: 24px;
+}
+
+.settings__toggle-slider::before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: 0.3s;
+  border-radius: 50%;
+}
+
+.settings__select {
+  padding: 8px 12px;
+  border: 1px solid var(--color-border, #333);
+  background-color: var(--color-bg-card, #141414);
+  color: var(--color-text-primary, #fff);
+  border-radius: 4px;
+  max-width: 200px;
+}
+
+.settings__field-description {
+  font-size: 12px;
+  color: var(--color-text-secondary, #ccc);
+  margin-top: 4px;
+}
+
+.settings__status {
+  font-size: 12px;
+  color: var(--color-text-secondary, #ccc);
+  font-style: italic;
+}
+</style>
