@@ -1,17 +1,49 @@
 /* Rhetor Dashboard Styles */
 
+/* Make the entire Rhetor component black */
+.rhetor {
+  background-color: #000000 !important;
+}
+
+/* True black background for dashboard panel */
+#dashboard-panel {
+  background-color: #000000 !important;
+  overflow-y: auto !important;
+  height: 100% !important;
+  padding: 0 !important;
+}
+
+/* Make header and menu bar black too */
+.rhetor__menu-bar {
+  background-color: #000000 !important;
+}
+
+.rhetor__header {
+  background-color: #000000 !important;
+}
+
+.rhetor__content {
+  background-color: #000000 !important;
+}
+
 /* Dashboard Container */
 .rhetor__dashboard {
-  padding: 20px;
-  height: 100%;
-  overflow-y: auto;
+  padding: 0;
+  min-height: 100%;
+  background-color: #000000;
+}
+
+/* Dashboard content wrapper for better layout */
+.rhetor__dashboard-content {
+  padding: 10px 20px 20px 20px;
 }
 
 .rhetor__dashboard-title {
   font-size: 18px;
   font-weight: 600;
-  margin: 0 0 16px 0;
+  margin: 10px 0 12px 0;
   color: var(--text-color-primary, #e2e8f0);
+  padding: 0 20px;
 }
 
 .rhetor__dashboard-subtitle {
@@ -26,21 +58,37 @@
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   gap: 12px;
-  margin-bottom: 24px;
+  margin: 0 20px 24px 20px;
 }
 
 .rhetor__component-card {
-  background: var(--bg-color-card, rgba(71, 85, 105, 0.3));
-  border: 1px solid var(--border-color, rgba(100, 116, 139, 0.4));
+  background: #000000;
+  border: 2px solid #666;
   border-radius: 6px;
   padding: 12px;
   transition: all 0.2s ease;
 }
 
 .rhetor__component-card:hover {
-  border-color: var(--border-hover, rgba(100, 116, 139, 0.6));
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgba(255, 255, 255, 0.1);
 }
+
+/* Component-specific border colors */
+.rhetor__component-card[data-component="tekton"] { border-color: #FBBC05; }
+.rhetor__component-card[data-component="prometheus"] { border-color: #C2185B; }
+.rhetor__component-card[data-component="telos"] { border-color: #00796B; }
+.rhetor__component-card[data-component="ergon"] { border-color: #0097A7; }
+.rhetor__component-card[data-component="metis"] { border-color: #00BFA5; }
+.rhetor__component-card[data-component="harmonia"] { border-color: #F57C00; }
+.rhetor__component-card[data-component="synthesis"] { border-color: #3949AB; }
+.rhetor__component-card[data-component="athena"] { border-color: #7B1FA2; }
+.rhetor__component-card[data-component="sophia"] { border-color: #7CB342; }
+.rhetor__component-card[data-component="engram"] { border-color: #34A853; }
+.rhetor__component-card[data-component="apollo"] { border-color: #FFD600; }
+.rhetor__component-card[data-component="rhetor"] { border-color: #D32F2F; }
+.rhetor__component-card[data-component="penia"] { border-color: #34A853; }
+.rhetor__component-card[data-component="hermes"] { border-color: #4285F4; }
+.rhetor__component-card[data-component="terma"] { border-color: #5D4037; }
 
 .rhetor__component-header {
   display: flex;
@@ -86,10 +134,11 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 24px;
+  margin: 0 20px 20px 20px;
 }
 
 .rhetor__dashboard-section {
-  background: var(--bg-color-card, rgba(71, 85, 105, 0.3));
+  background: #000000;
   border: 1px solid var(--border-color, rgba(100, 116, 139, 0.4));
   border-radius: 6px;
   padding: 16px;

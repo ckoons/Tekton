@@ -112,65 +112,15 @@
         <div class="rhetor__dashboard-section">
           <h2 class="rhetor__dashboard-title">Component Status</h2>
           <div class="rhetor__component-grid" id="component-status-grid">
-            <!-- Component cards -->
-            <div class="rhetor__component-card" data-component="rhetor">
+            <!-- Component cards in order from left panel -->
+            <div class="rhetor__component-card" data-component="tekton">
               <div class="rhetor__component-header">
-                <span class="rhetor__component-name">Rhetor</span>
+                <span class="rhetor__component-name">Tekton</span>
                 <span class="rhetor__component-status rhetor__component-status--active">●</span>
               </div>
               <div class="rhetor__component-metrics">
-                <div class="rhetor__metric">42 req/min</div>
-                <div class="rhetor__metric">3 AIs active</div>
-              </div>
-            </div>
-            <div class="rhetor__component-card" data-component="hermes">
-              <div class="rhetor__component-header">
-                <span class="rhetor__component-name">Hermes</span>
-                <span class="rhetor__component-status rhetor__component-status--active">●</span>
-              </div>
-              <div class="rhetor__component-metrics">
-                <div class="rhetor__metric">WebSocket</div>
-                <div class="rhetor__metric">5 clients</div>
-              </div>
-            </div>
-            <div class="rhetor__component-card" data-component="athena">
-              <div class="rhetor__component-header">
-                <span class="rhetor__component-name">Athena</span>
-                <span class="rhetor__component-status rhetor__component-status--active">●</span>
-              </div>
-              <div class="rhetor__component-metrics">
-                <div class="rhetor__metric">71 entities</div>
-                <div class="rhetor__metric">Graph OK</div>
-              </div>
-            </div>
-            <div class="rhetor__component-card" data-component="apollo">
-              <div class="rhetor__component-header">
-                <span class="rhetor__component-name">Apollo</span>
-                <span class="rhetor__component-status rhetor__component-status--active">●</span>
-              </div>
-              <div class="rhetor__component-metrics">
-                <div class="rhetor__metric">Executing</div>
-                <div class="rhetor__metric">2 tasks</div>
-              </div>
-            </div>
-            <div class="rhetor__component-card" data-component="penia">
-              <div class="rhetor__component-header">
-                <span class="rhetor__component-name">Penia</span>
-                <span class="rhetor__component-status rhetor__component-status--active">●</span>
-              </div>
-              <div class="rhetor__component-metrics">
-                <div class="rhetor__metric">$0.42/hr</div>
-                <div class="rhetor__metric">15% budget</div>
-              </div>
-            </div>
-            <div class="rhetor__component-card" data-component="telos">
-              <div class="rhetor__component-header">
-                <span class="rhetor__component-name">Telos</span>
-                <span class="rhetor__component-status rhetor__component-status--active">●</span>
-              </div>
-              <div class="rhetor__component-metrics">
-                <div class="rhetor__metric">Planning</div>
-                <div class="rhetor__metric">1 session</div>
+                <div class="rhetor__metric">Projects</div>
+                <div class="rhetor__metric">System OK</div>
               </div>
             </div>
             <div class="rhetor__component-card" data-component="prometheus">
@@ -179,8 +129,78 @@
                 <span class="rhetor__component-status rhetor__component-status--active">●</span>
               </div>
               <div class="rhetor__component-metrics">
-                <div class="rhetor__metric">Strategic</div>
-                <div class="rhetor__metric">3 analyses</div>
+                <div class="rhetor__metric">Planning</div>
+                <div class="rhetor__metric">3 strategies</div>
+              </div>
+            </div>
+            <div class="rhetor__component-card" data-component="telos">
+              <div class="rhetor__component-header">
+                <span class="rhetor__component-name">Telos</span>
+                <span class="rhetor__component-status rhetor__component-status--active">●</span>
+              </div>
+              <div class="rhetor__component-metrics">
+                <div class="rhetor__metric">Requirements</div>
+                <div class="rhetor__metric">12 tracked</div>
+              </div>
+            </div>
+            <div class="rhetor__component-card" data-component="ergon">
+              <div class="rhetor__component-header">
+                <span class="rhetor__component-name">Ergon</span>
+                <span class="rhetor__component-status rhetor__component-status--active">●</span>
+              </div>
+              <div class="rhetor__component-metrics">
+                <div class="rhetor__metric">Agents/Tools</div>
+                <div class="rhetor__metric">5 active</div>
+              </div>
+            </div>
+            <div class="rhetor__component-card" data-component="metis">
+              <div class="rhetor__component-header">
+                <span class="rhetor__component-name">Metis</span>
+                <span class="rhetor__component-status rhetor__component-status--active">●</span>
+              </div>
+              <div class="rhetor__component-metrics">
+                <div class="rhetor__metric">Workflows</div>
+                <div class="rhetor__metric">2 running</div>
+              </div>
+            </div>
+            <div class="rhetor__component-card" data-component="harmonia">
+              <div class="rhetor__component-header">
+                <span class="rhetor__component-name">Harmonia</span>
+                <span class="rhetor__component-status rhetor__component-status--active">●</span>
+              </div>
+              <div class="rhetor__component-metrics">
+                <div class="rhetor__metric">Orchestration</div>
+                <div class="rhetor__metric">Balanced</div>
+              </div>
+            </div>
+            <div class="rhetor__component-card" data-component="synthesis">
+              <div class="rhetor__component-header">
+                <span class="rhetor__component-name">Synthesis</span>
+                <span class="rhetor__component-status rhetor__component-status--active">●</span>
+              </div>
+              <div class="rhetor__component-metrics">
+                <div class="rhetor__metric">Integration</div>
+                <div class="rhetor__metric">All synced</div>
+              </div>
+            </div>
+            <div class="rhetor__component-card" data-component="athena">
+              <div class="rhetor__component-header">
+                <span class="rhetor__component-name">Athena</span>
+                <span class="rhetor__component-status rhetor__component-status--active">●</span>
+              </div>
+              <div class="rhetor__component-metrics">
+                <div class="rhetor__metric">Knowledge</div>
+                <div class="rhetor__metric">71 entities</div>
+              </div>
+            </div>
+            <div class="rhetor__component-card" data-component="sophia">
+              <div class="rhetor__component-header">
+                <span class="rhetor__component-name">Sophia</span>
+                <span class="rhetor__component-status rhetor__component-status--active">●</span>
+              </div>
+              <div class="rhetor__component-metrics">
+                <div class="rhetor__metric">Learning</div>
+                <div class="rhetor__metric">Adapting</div>
               </div>
             </div>
             <div class="rhetor__component-card" data-component="engram">
@@ -189,28 +209,58 @@
                 <span class="rhetor__component-status rhetor__component-status--inactive">○</span>
               </div>
               <div class="rhetor__component-metrics">
-                <div class="rhetor__metric">Memory OFF</div>
+                <div class="rhetor__metric">Memory</div>
                 <div class="rhetor__metric">Loading...</div>
               </div>
             </div>
-            <div class="rhetor__component-card" data-component="numa">
+            <div class="rhetor__component-card" data-component="apollo">
               <div class="rhetor__component-header">
-                <span class="rhetor__component-name">Numa</span>
+                <span class="rhetor__component-name">Apollo</span>
                 <span class="rhetor__component-status rhetor__component-status--active">●</span>
               </div>
               <div class="rhetor__component-metrics">
-                <div class="rhetor__metric">Reasoning</div>
-                <div class="rhetor__metric">5 queries</div>
+                <div class="rhetor__metric">Attention</div>
+                <div class="rhetor__metric">2 focused</div>
               </div>
             </div>
-            <div class="rhetor__component-card" data-component="hephaestus">
+            <div class="rhetor__component-card" data-component="rhetor">
               <div class="rhetor__component-header">
-                <span class="rhetor__component-name">Hephaestus</span>
+                <span class="rhetor__component-name">Rhetor</span>
                 <span class="rhetor__component-status rhetor__component-status--active">●</span>
               </div>
               <div class="rhetor__component-metrics">
-                <div class="rhetor__metric">UI Active</div>
-                <div class="rhetor__metric">2 users</div>
+                <div class="rhetor__metric">LLM/Prompt</div>
+                <div class="rhetor__metric">3 models</div>
+              </div>
+            </div>
+            <div class="rhetor__component-card" data-component="penia">
+              <div class="rhetor__component-header">
+                <span class="rhetor__component-name">Penia</span>
+                <span class="rhetor__component-status rhetor__component-status--active">●</span>
+              </div>
+              <div class="rhetor__component-metrics">
+                <div class="rhetor__metric">LLM Cost</div>
+                <div class="rhetor__metric">$0.42/hr</div>
+              </div>
+            </div>
+            <div class="rhetor__component-card" data-component="hermes">
+              <div class="rhetor__component-header">
+                <span class="rhetor__component-name">Hermes</span>
+                <span class="rhetor__component-status rhetor__component-status--active">●</span>
+              </div>
+              <div class="rhetor__component-metrics">
+                <div class="rhetor__metric">Messages</div>
+                <div class="rhetor__metric">5 clients</div>
+              </div>
+            </div>
+            <div class="rhetor__component-card" data-component="terma">
+              <div class="rhetor__component-header">
+                <span class="rhetor__component-name">Terma</span>
+                <span class="rhetor__component-status rhetor__component-status--active">●</span>
+              </div>
+              <div class="rhetor__component-metrics">
+                <div class="rhetor__metric">Terminal</div>
+                <div class="rhetor__metric">Ready</div>
               </div>
             </div>
           </div>
@@ -222,7 +272,30 @@
           <div class="rhetor__dashboard-section rhetor__dashboard-section--half">
             <h3 class="rhetor__dashboard-subtitle">Active AI Specialists</h3>
             <div class="rhetor__specialist-list" id="dashboard-specialist-list">
-              <!-- Specialists will be populated here -->
+              <div class="rhetor__specialist-item">
+                <span class="rhetor__specialist-name">rhetor-orchestrator</span>
+                <span class="rhetor__specialist-model">[Opus]</span>
+              </div>
+              <div class="rhetor__specialist-item">
+                <span class="rhetor__specialist-name">apollo-coordinator</span>
+                <span class="rhetor__specialist-model">[Sonnet]</span>
+              </div>
+              <div class="rhetor__specialist-item">
+                <span class="rhetor__specialist-name">hermes-messenger</span>
+                <span class="rhetor__specialist-model">[Haiku]</span>
+              </div>
+              <div class="rhetor__specialist-item">
+                <span class="rhetor__specialist-name">athena-analyst</span>
+                <span class="rhetor__specialist-model">[Sonnet]</span>
+              </div>
+              <div class="rhetor__specialist-item">
+                <span class="rhetor__specialist-name">prometheus-strategist</span>
+                <span class="rhetor__specialist-model">[Opus]</span>
+              </div>
+              <div class="rhetor__specialist-item">
+                <span class="rhetor__specialist-name">telos-planner</span>
+                <span class="rhetor__specialist-model">[Haiku]</span>
+              </div>
             </div>
           </div>
           
@@ -230,7 +303,27 @@
           <div class="rhetor__dashboard-section rhetor__dashboard-section--half">
             <h3 class="rhetor__dashboard-subtitle">Token Usage (24h)</h3>
             <div class="rhetor__token-stats" id="dashboard-token-stats">
-              <!-- Token stats will be populated here -->
+              <div class="rhetor__token-total">
+                <span class="rhetor__token-label">Total:</span>
+                <span class="rhetor__token-value">1.2M tokens</span>
+              </div>
+              <div class="rhetor__token-cost">
+                <span class="rhetor__token-label">Cost:</span>
+                <span class="rhetor__token-value">$42.50</span>
+              </div>
+              <div class="rhetor__token-breakdown">
+                <div class="rhetor__token-bar">
+                  <div class="rhetor__token-segment rhetor__token-segment--opus" style="width: 45%;">
+                    <span class="rhetor__token-percent">Opus 45%</span>
+                  </div>
+                  <div class="rhetor__token-segment rhetor__token-segment--sonnet" style="width: 30%;">
+                    <span class="rhetor__token-percent">Sonnet 30%</span>
+                  </div>
+                  <div class="rhetor__token-segment rhetor__token-segment--haiku" style="width: 25%;">
+                    <span class="rhetor__token-percent">Haiku 25%</span>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
