@@ -24,7 +24,7 @@
            data-tekton-menu-active="true"
            data-tekton-menu-panel="theme-panel"
            data-tekton-nav-target="theme"
-           onclick="settings_switchTab('theme'); return false;">
+           data-settings-action="switch-tab" data-tab-target="theme">
         <span class="settings-tab-label">Theme</span>
       </div>
       <div class="settings-tab" data-tab="interface"
@@ -33,7 +33,7 @@
            data-tekton-menu-active="false"
            data-tekton-menu-panel="interface-panel"
            data-tekton-nav-target="interface"
-           onclick="settings_switchTab('interface'); return false;">
+           data-settings-action="switch-tab" data-tab-target="interface">
         <span class="settings-tab-label">Interface</span>
       </div>
     </div>
@@ -41,239 +41,34 @@
       <button class="settings-button settings-button--primary" id="save-all-settings"
               data-tekton-action="save-settings"
               data-tekton-action-type="primary"
-              onclick="settings_saveAllSettings(); return false;">
+              data-settings-action="save-all">
         Save Settings
       </button>
       <button class="settings-button" id="reset-all-settings"
               data-tekton-action="reset-settings"
               data-tekton-action-type="secondary"
-              onclick="settings_resetAllSettings(); return false;">
+              data-settings-action="reset-all">
         Reset to Defaults
       </button>
     </div>
   </div>
 
 <script type="text/javascript">
-// SETTINGS TAB SWITCHING FUNCTION
-// Define tab switching function to match budget_switchTab pattern
-window.settings_switchTab = function(tabId) {
-    console.log('[SETTINGS] Switching to tab:', tabId);
-    console.log('[SETTINGS] IMPORTANT DEBUG: settings_switchTab function called');
-    
-    // Force HTML panel visibility
-    const htmlPanelElements = document.querySelectorAll('#html-panel');
-    htmlPanelElements.forEach(panel => {
-        if (panel) panel.style.display = 'block';
-    });
-    
-    try {
-        // Only select elements within settings component to avoid conflicts with other components
-        const settingsContainer = document.querySelector('.settings-container');
-        if (!settingsContainer) {
-            console.error('[SETTINGS] Tab Switch: Cannot find settings container');
-            return false;
-        }
-        
-        // Initialize checkbox states when switching tabs
-        if (tabId === 'interface') {
-            setTimeout(function() {
-                const greekToggle = document.getElementById('greek-names-toggle');
-                if (greekToggle && window.settingsManager) {
-                    greekToggle.checked = window.settingsManager.settings.showGreekNames;
-                    console.log('[Settings] Initialized Greek names toggle to:', greekToggle.checked);
-                }
-            }, 50);
-        }
-        
-        // Update tab active state if there are settings tabs
-        const tabs = settingsContainer.querySelectorAll('.settings-tab');
-        tabs.forEach(tab => {
-            if (tab.getAttribute('data-tab') === tabId) {
-                tab.classList.add('settings-tab--active');
-            } else {
-                tab.classList.remove('settings-tab--active');
-            }
-        });
-        
-        // Update panel visibility
-        const panels = settingsContainer.querySelectorAll('.settings-panel');
-        panels.forEach(panel => {
-            const panelId = panel.id;
-            if (panelId === tabId + '-panel') {
-                panel.style.display = 'block';
-                panel.classList.add('settings-panel--active');
-            } else {
-                panel.style.display = 'none';
-                panel.classList.remove('settings-panel--active');
-            }
-        });
-        
-        // Update component state if settingsComponent is available
-        if (window.settingsComponent) {
-            window.settingsComponent.state = window.settingsComponent.state || {};
-            window.settingsComponent.state.activeTab = tabId;
-            
-            // Call component-specific methods if available
-            if (typeof window.settingsComponent.loadTabContent === 'function') {
-                window.settingsComponent.loadTabContent(tabId);
-            }
-            
-            if (typeof window.settingsComponent.saveComponentState === 'function') {
-                window.settingsComponent.saveComponentState();
-            }
-        }
-    } catch (err) {
-        console.error('[SETTINGS] Error in tab switching:', err);
-    }
-    
-    return false; // Stop event propagation
-};
+// Settings component initialization
+console.log('[Settings] Component HTML loaded, waiting for external script...');
 
-// Save All Settings Function
-window.settings_saveAllSettings = function() {
-    console.log('[SETTINGS] Save all settings button clicked');
-    
-    try {
-        if (window.settingsManager) {
-            // Save to localStorage
-            window.settingsManager.save();
-            
-            // Also save to environment if bridge is available
-            if (window.settingsEnvBridge) {
-                window.settingsEnvBridge.saveSettings();
-            }
-            
-            console.log('[SETTINGS] Settings saved successfully');
-            
-            // Show notification if available
-            if (window.notifications) {
-                window.notifications.show('Settings saved successfully', 'success');
-            }
-        } else {
-            console.error('[SETTINGS] SettingsManager not available');
-        }
-    } catch (err) {
-        console.error('[SETTINGS] Error saving all settings:', err);
+// Check if functions are available, if not, wait for external script
+function checkSettingsFunctions() {
+    if (typeof window.settings_switchTab === 'function') {
+        console.log('[Settings] External script loaded, functions available');
+    } else {
+        console.log('[Settings] Waiting for external script to define functions...');
+        setTimeout(checkSettingsFunctions, 100);
     }
-    
-    return false; // Stop event propagation
-};
+}
 
-// Reset All Settings Function
-window.settings_resetAllSettings = function() {
-    console.log('[SETTINGS] Reset all settings button clicked');
-    
-    try {
-        if (window.settingsComponent && typeof window.settingsComponent.resetAllSettings === 'function') {
-            window.settingsComponent.resetAllSettings();
-        } else {
-            console.log('[SETTINGS] Component not available for reset, will try again');
-            setTimeout(window.settings_resetAllSettings, 1000); // Retry after 1 second
-        }
-    } catch (err) {
-        console.error('[SETTINGS] Error resetting all settings:', err);
-    }
-    
-    return false; // Stop event propagation
-};
-
-// Greek names toggle function
-window.settings_toggleGreekNames = function(checkbox) {
-    console.log('[Settings] Greek names toggle clicked, new value:', checkbox.checked);
-    
-    try {
-        if (window.settingsManager) {
-            window.settingsManager.settings.showGreekNames = checkbox.checked;
-            window.settingsManager.save();
-            window.settingsManager.applyNames();
-            console.log('[Settings] Greek names setting applied:', checkbox.checked);
-        } else {
-            console.error('[Settings] SettingsManager not available');
-        }
-    } catch (error) {
-        console.error('[Settings] Error in toggle handler:', error);
-    }
-    
-    // Don't prevent default - let the checkbox update
-    return true;
-};
-
-// Initialize settings UI when component loads
-// Run immediately since this script is inside the component HTML
-(function() {
-    // Small delay to ensure elements are rendered
-    setTimeout(function() {
-        // Initialize Greek names toggle
-        const greekNamesToggle = document.getElementById('greek-names-toggle');
-        if (greekNamesToggle && window.settingsManager) {
-            greekNamesToggle.checked = window.settingsManager.settings.showGreekNames;
-            console.log('[Settings] Initialized Greek names toggle to:', greekNamesToggle.checked);
-        }
-        
-        // Initialize theme mode buttons
-        const themeModeButtons = document.querySelectorAll('.settings-theme-mode__button');
-        if (window.settingsManager) {
-            themeModeButtons.forEach(button => {
-                const mode = button.getAttribute('data-mode');
-                if (mode === window.settingsManager.settings.themeMode) {
-                    button.classList.add('settings-theme-mode__button--active');
-                } else {
-                    button.classList.remove('settings-theme-mode__button--active');
-                }
-                
-                button.addEventListener('click', function() {
-                    if (mode && window.settingsManager) {
-                        window.settingsManager.settings.themeMode = mode;
-                        window.settingsManager.save();
-                        window.settingsManager.applyTheme();
-                        
-                        // Update active state
-                        themeModeButtons.forEach(btn => btn.classList.remove('settings-theme-mode__button--active'));
-                        button.classList.add('settings-theme-mode__button--active');
-                        
-                        console.log('[Settings] Theme mode changed to:', mode);
-                    }
-                });
-            });
-        }
-        
-        // Initialize theme color buttons
-        const themeColorButtons = document.querySelectorAll('.settings-theme-color__button');
-        if (window.settingsManager) {
-            themeColorButtons.forEach(button => {
-                const color = button.getAttribute('data-color');
-                if (color === window.settingsManager.settings.themeColor) {
-                    button.classList.add('settings-theme-color__button--active');
-                } else {
-                    button.classList.remove('settings-theme-color__button--active');
-                }
-                
-                button.addEventListener('click', function() {
-                    if (color && window.settingsManager) {
-                        window.settingsManager.setThemeColor(color);
-                        
-                        // Update active state
-                        themeColorButtons.forEach(btn => btn.classList.remove('settings-theme-color__button--active'));
-                        button.classList.add('settings-theme-color__button--active');
-                        
-                        console.log('[Settings] Theme color changed to:', color);
-                    }
-                });
-            });
-        }
-        
-        // Terminal font size
-        const terminalFontSize = document.getElementById('terminal-font-size');
-        if (terminalFontSize && window.settingsManager) {
-            terminalFontSize.value = window.settingsManager.settings.terminalFontSize;
-            terminalFontSize.addEventListener('change', function() {
-                window.settingsManager.settings.terminalFontSize = terminalFontSize.value;
-                window.settingsManager.save();
-                console.log('[Settings] Terminal font size changed to:', terminalFontSize.value);
-            });
-        }
-    }, 100); // Reduced delay since we're running immediately
-})();
+// Start checking
+checkSettingsFunctions();
 </script>
   
   <!-- Settings Content Area -->
@@ -383,7 +178,7 @@ window.settings_toggleGreekNames = function(checkbox) {
           <div class="settings-field-label">Show Greek Names</div>
           <div class="settings-field-control">
             <label class="settings-toggle">
-              <input type="checkbox" id="greek-names-toggle" onclick="settings_toggleGreekNames(this);"
+              <input type="checkbox" id="greek-names-toggle" data-settings-action="toggle-greek-names"
                      data-tekton-input="greek-names"
                      data-tekton-input-type="toggle">
               <span class="settings-toggle__slider"></span>

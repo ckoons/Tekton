@@ -117,6 +117,24 @@ class MinimalLoader {
       // This helps standardize tab switching across components
       await this.loadUtility('tab-navigation');
 
+      // For Settings component, load script FIRST before HTML
+      if (componentId === 'settings' && !window.settings_switchTab) {
+        console.log('MinimalLoader: Pre-loading Settings component script...');
+        await new Promise((resolve) => {
+          const settingsScript = document.createElement('script');
+          settingsScript.src = `/scripts/settings/settings-component.js?t=${new Date().getTime()}`;
+          settingsScript.onload = () => {
+            console.log('MinimalLoader: Settings component script pre-loaded');
+            resolve();
+          };
+          settingsScript.onerror = () => {
+            console.error('MinimalLoader: Failed to pre-load Settings script');
+            resolve(); // Continue anyway
+          };
+          document.head.appendChild(settingsScript);
+        });
+      }
+
       // Now load the component HTML
       const response = await fetch(componentPath);
       if (!response.ok) {
@@ -235,14 +253,13 @@ class MinimalLoader {
         }, 100);
       }
       
-      // For Settings component, ensure script is loaded
+      // Double-check Settings functions are available
       if (componentId === 'settings') {
-        const settingsScript = document.createElement('script');
-        settingsScript.src = `/scripts/settings/settings-component.js?t=${new Date().getTime()}`;
-        settingsScript.onload = () => {
-          console.log('MinimalLoader: Settings component script loaded');
-        };
-        document.head.appendChild(settingsScript);
+        if (window.settings_switchTab) {
+          console.log('MinimalLoader: Settings functions confirmed available');
+        } else {
+          console.error('MinimalLoader: Settings functions still not available!');
+        }
       }
     } catch (error) {
       console.error(`MinimalLoader: Error loading ${componentId}:`, error);

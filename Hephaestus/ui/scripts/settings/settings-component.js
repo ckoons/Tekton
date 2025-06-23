@@ -1,6 +1,7 @@
 /**
  * Settings Component Script
  * Handles Settings UI functionality without Shadow DOM
+ * Uses event delegation to avoid inline onclick issues
  */
 
 console.log('[Settings] Component script loading...');
@@ -9,16 +10,55 @@ console.log('[Settings] Component script loading...');
 function initSettingsComponent() {
     console.log('[Settings] Initializing component...');
     
+    // Setup event delegation for all clicks
+    setupEventDelegation();
+    
     // Setup theme button handlers
     setupThemeHandlers();
     
-    // Setup interface handlers
+    // Setup interface handlers  
     setupInterfaceHandlers();
     
     // Initialize UI state
     updateSettingsUI();
     
     console.log('[Settings] Component initialized');
+}
+
+function setupEventDelegation() {
+    // Use event delegation on document body to catch all settings clicks
+    document.addEventListener('click', function(e) {
+        const target = e.target.closest('[data-settings-action]');
+        if (!target) return;
+        
+        const action = target.getAttribute('data-settings-action');
+        console.log('[Settings] Action triggered:', action);
+        
+        switch(action) {
+            case 'switch-tab':
+                e.preventDefault();
+                const tabId = target.getAttribute('data-tab-target') || target.getAttribute('data-tab');
+                switchTab(tabId);
+                break;
+                
+            case 'save-all':
+                e.preventDefault();
+                saveAllSettings();
+                break;
+                
+            case 'reset-all':
+                e.preventDefault();
+                resetAllSettings();
+                break;
+        }
+    });
+    
+    // Handle checkbox changes
+    document.addEventListener('change', function(e) {
+        if (e.target.getAttribute('data-settings-action') === 'toggle-greek-names') {
+            toggleGreekNames(e.target.checked);
+        }
+    });
 }
 
 function setupThemeHandlers() {
@@ -29,12 +69,7 @@ function setupThemeHandlers() {
             e.preventDefault();
             const mode = this.getAttribute('data-mode');
             if (mode && window.settingsManager) {
-                // For pure-black theme, use setThemeBase
-                if (mode === 'pure-black') {
-                    window.settingsManager.setThemeBase('pure-black');
-                } else {
-                    window.settingsManager.setThemeBase(mode);
-                }
+                window.settingsManager.setThemeBase(mode);
                 updateThemeModeButtons(mode);
             }
         });
@@ -203,8 +238,8 @@ function pickColorFromImage(event) {
     }
 }
 
-// Global functions for onclick handlers
-window.settings_switchTab = function(tabId) {
+// Internal functions (not global)
+function switchTab(tabId) {
     console.log('[Settings] Switching to tab:', tabId);
     
     // Update tab states
@@ -236,11 +271,9 @@ window.settings_switchTab = function(tabId) {
             greekToggle.checked = window.settingsManager.settings.showGreekNames || false;
         }
     }
+}
 
-    return false;
-};
-
-window.settings_saveAllSettings = function() {
+function saveAllSettings() {
     console.log('[Settings] Saving all settings...');
     
     if (window.settingsManager) {
@@ -252,11 +285,9 @@ window.settings_saveAllSettings = function() {
             window.notifications.show('Settings saved successfully', 'success');
         }
     }
-    
-    return false;
-};
+}
 
-window.settings_resetAllSettings = function() {
+function resetAllSettings() {
     console.log('[Settings] Resetting all settings...');
     
     if (confirm('Are you sure you want to reset all settings to defaults?')) {
@@ -269,26 +300,24 @@ window.settings_resetAllSettings = function() {
             console.log('[Settings] Settings reset to defaults');
         }
     }
-    
-    return false;
-};
+}
 
-window.settings_toggleGreekNames = function(checkbox) {
-    console.log('[Settings] Greek names toggle:', checkbox.checked);
+function toggleGreekNames(checked) {
+    console.log('[Settings] Greek names toggle:', checked);
     
     if (window.settingsManager) {
-        window.settingsManager.settings.showGreekNames = checkbox.checked;
+        window.settingsManager.settings.showGreekNames = checked;
         window.settingsManager.save();
         window.settingsManager.applyNames();
     }
-    
-    return true; // Let checkbox update
-};
+}
 
-// Initialize when Settings component is loaded
-if (window._currentLoadingComponent === 'settings') {
-    // Wait for DOM to be ready
-    setTimeout(initSettingsComponent, 100);
+// Initialize immediately when script loads
+document.addEventListener('DOMContentLoaded', initSettingsComponent);
+
+// Also try to initialize if DOM is already loaded
+if (document.readyState === 'interactive' || document.readyState === 'complete') {
+    initSettingsComponent();
 }
 
 console.log('[Settings] Component script loaded');
