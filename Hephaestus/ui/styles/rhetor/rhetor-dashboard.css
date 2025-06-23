@@ -1,36 +1,36 @@
 /* Rhetor Dashboard Styles */
 
-/* Make the entire Rhetor component black */
+/* Use theme variables instead of hardcoded colors */
 .rhetor {
-  background-color: #000000 !important;
+  background-color: var(--color-bg-base) !important;
 }
 
-/* True black background for dashboard panel */
+/* Dashboard panel uses theme background */
 #dashboard-panel {
-  background-color: #000000 !important;
+  background-color: var(--color-bg-base) !important;
   overflow-y: auto !important;
   height: 100% !important;
   padding: 0 !important;
 }
 
-/* Make header and menu bar black too */
+/* Header and menu use panel background */
 .rhetor__menu-bar {
-  background-color: #000000 !important;
+  background-color: var(--color-bg-panel) !important;
 }
 
 .rhetor__header {
-  background-color: #000000 !important;
+  background-color: var(--color-bg-panel) !important;
 }
 
 .rhetor__content {
-  background-color: #000000 !important;
+  background-color: var(--color-bg-base) !important;
 }
 
 /* Dashboard Container */
 .rhetor__dashboard {
   padding: 0;
   min-height: 100%;
-  background-color: #000000;
+  background-color: var(--color-bg-base);
 }
 
 /* Dashboard content wrapper for better layout */
@@ -62,18 +62,15 @@
 }
 
 .rhetor__component-card {
-  background: #000000;
-  border: 2px solid #666;
-  border-radius: 6px;
-  padding: 12px;
-  transition: all 0.2s ease;
+  background: var(--color-bg-card);
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-md);
+  transition: all var(--transition-fast);
 }
 
-.rhetor__component-card:hover {
-  box-shadow: 0 2px 8px rgba(255, 255, 255, 0.1);
-}
 
-/* Component-specific border colors */
+/* Component-specific border colors - these stay as unique identifiers */
 .rhetor__component-card[data-component="tekton"] { border-color: #FBBC05; }
 .rhetor__component-card[data-component="prometheus"] { border-color: #C2185B; }
 .rhetor__component-card[data-component="telos"] { border-color: #00796B; }
@@ -89,6 +86,12 @@
 .rhetor__component-card[data-component="penia"] { border-color: #34A853; }
 .rhetor__component-card[data-component="hermes"] { border-color: #4285F4; }
 .rhetor__component-card[data-component="terma"] { border-color: #5D4037; }
+
+/* On hover, add accent glow */
+.rhetor__component-card:hover {
+  box-shadow: 0 0 12px var(--color-accent-glow);
+  transform: translateY(-2px);
+}
 
 .rhetor__component-header {
   display: flex;

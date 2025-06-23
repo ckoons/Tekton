@@ -2,16 +2,17 @@
 
 /* CSS Variables for theming */
 :root {
-    /* Base colors - will be overridden by theme-specific CSS */
-    --bg-primary: #f8f9fa;
-    --bg-secondary: #e9ecef;
-    --bg-tertiary: #dee2e6;
-    --text-primary: #212529;
-    --text-secondary: #495057;
-    --accent-primary: #007bff;
-    --accent-secondary: #6c757d;
-    --border-color: #ced4da;
-    --shadow-color: rgba(0, 0, 0, 0.1);
+    /* These will be overridden by theme files */
+    /* Using theme variables that match our theme system */
+    --bg-primary: var(--color-bg-base, #000000);
+    --bg-secondary: var(--color-bg-panel, #0a0a0a);
+    --bg-tertiary: var(--color-bg-card, #141414);
+    --text-primary: var(--color-text-primary, #ffffff);
+    --text-secondary: var(--color-text-secondary, #b0b0b0);
+    --accent-primary: var(--color-accent, #007bff);
+    --accent-secondary: var(--color-accent-secondary, #6c757d);
+    --border-color: var(--color-border, #2a2a2a);
+    --shadow-color: var(--color-shadow, rgba(0, 0, 0, 0.5));
     
     /* Fixed sizes */
     --left-panel-width: 260px;
@@ -51,8 +52,8 @@ body {
 .left-panel {
     width: var(--left-panel-width);
     height: 100%;
-    background-color: var(--bg-secondary);
-    border-right: 1px solid var(--border-color);
+    background-color: var(--color-bg-base, #000000);
+    border-right: 1px solid var(--color-border, #2a2a2a);
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -61,9 +62,9 @@ body {
 
 .left-panel-header {
     padding: 0 0 0 16px; /* Padding only on left, no vertical padding */
-    border-bottom: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--color-border, #2a2a2a);
     height: 85px; /* Slightly taller */
-    background-color: #000000; /* Black background for the title area */
+    background-color: var(--color-bg-base, #000000); /* Use theme variable */
     display: flex;
     align-items: center;
     position: relative;
@@ -90,7 +91,7 @@ body {
     font-size: 2.5rem; /* 3 font sizes larger */
     font-weight: 700;
     margin-bottom: -5px; /* Further reduced spacing between title and subtitle */
-    color: var(--accent-primary); /* Blue like the buttons */
+    color: var(--color-accent, #007bff); /* Use theme variable */
     text-align: center;
     margin-top: -5px; /* Raise position of Tekton slightly */
     line-height: 1.2; /* Tighten line height */
@@ -98,7 +99,7 @@ body {
 
 .subtitle {
     font-size: 0.5rem; /* MUCH smaller to test if changes are visible */
-    color: var(--text-secondary);
+    color: var(--color-text-secondary, #b0b0b0);
     text-align: center;
     margin-top: -2px; /* Reduced spacing */
     white-space: nowrap; /* Prevent text wrapping */
@@ -129,24 +130,24 @@ body {
     display: flex;
     align-items: center;
     padding: 8px 12px;
-    background-color: var(--bg-tertiary);
+    background-color: var(--color-bg-card, #141414);
     border: none;
     border-radius: var(--border-radius);
     cursor: pointer;
     transition: background-color var(--transition-speed) ease;
     text-align: left;
-    color: var(--text-primary);
+    color: var(--color-text-primary, #ffffff);
     margin: 8px;
     position: relative;
 }
 
 .nav-item:hover {
-    background-color: var(--accent-primary);
+    background-color: var(--color-accent, #007bff);
     color: white;
 }
 
 .nav-item.active {
-    background-color: var(--accent-primary);
+    background-color: var(--color-accent, #007bff);
     color: white;
 }
 
@@ -201,7 +202,7 @@ body {
 
 .footer-separator {
     height: 1px;
-    background-color: var(--border-color);
+    background-color: var(--color-border, #2a2a2a);
     margin: 0 16px;
 }
 
@@ -216,17 +217,17 @@ body {
     display: flex;
     align-items: center;
     padding: 8px 12px;
-    background-color: var(--bg-tertiary);
+    background-color: var(--color-bg-card, #141414);
     border: none;
     border-radius: var(--border-radius);
     cursor: pointer;
     transition: background-color var(--transition-speed) ease;
     text-align: left;
-    color: var(--text-primary);
+    color: var(--color-text-primary, #ffffff);
 }
 
 .control-button:hover {
-    background-color: var(--accent-primary);
+    background-color: var(--color-accent, #007bff);
     color: white;
 }
 
@@ -253,12 +254,12 @@ body {
 
 .content-header {
     height: var(--header-height);
-    border-bottom: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--color-border, #2a2a2a);
     padding: 0 20px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    background-color: var(--bg-secondary);
+    background-color: var(--color-bg-panel, #0a0a0a);
 }
 
 .component-title {
@@ -288,7 +289,7 @@ body {
     display: none;
     padding: 0;
     margin: 0;
-    background-color: var(--bg-primary);
+    background-color: var(--color-bg-base, #000000);
     z-index: 1; /* Base z-index for all panels */
 }
 
@@ -300,8 +301,8 @@ body {
 /* HTML panel specific styles to fix rendering issues */
 .panel.html-panel {
     overflow: auto; /* Allow scrolling in HTML panel */
-    background-color: #1e1e1e;
-    color: #f0f0f0;
+    background-color: var(--color-bg-base, #000000);
+    color: var(--color-text-primary, #ffffff);
     padding: 0;
     margin: 0;
     position: absolute;
@@ -328,7 +329,7 @@ body {
     display: flex;
     flex-direction: column;
     padding: 15px;
-    background-color: #1e1e1e;
+    background-color: var(--color-bg-base, #000000);
 }
 
 .chat-message {
@@ -338,26 +339,26 @@ body {
 
 .chat-message.user-message {
     align-self: flex-end;
-    background-color: #1e3a8a;
+    background-color: var(--color-accent, #007bff);
     border-radius: 1rem 1rem 0 1rem;
     padding: 0.75rem 1rem;
-    color: #f0f0f0;
+    color: #ffffff;
 }
 
 .chat-message.ai-message {
     align-self: flex-start;
-    background-color: #252525;
+    background-color: var(--color-bg-panel, #0a0a0a);
     border-radius: 1rem 1rem 1rem 0;
     padding: 0.75rem 1rem;
-    color: #f0f0f0;
+    color: var(--color-text-primary, #ffffff);
 }
 
 .chat-message.system {
     align-self: center;
-    background-color: #333;
+    background-color: var(--color-bg-card, #141414);
     border-radius: 0.5rem;
     padding: 0.5rem 1rem;
-    color: #aaa;
+    color: var(--color-text-secondary, #b0b0b0);
     font-style: italic;
     margin: 10px 0;
     max-width: 90%;
@@ -367,8 +368,8 @@ body {
     display: flex;
     gap: 10px;
     padding: 10px 15px;
-    background-color: #252525;
-    border-top: 1px solid #333;
+    background-color: var(--color-bg-panel, #0a0a0a);
+    border-top: 1px solid var(--color-border, #2a2a2a);
     position: sticky;
     bottom: 0;
 }
@@ -378,9 +379,9 @@ body {
     resize: none;
     padding: 10px;
     border-radius: 5px;
-    border: 1px solid #444;
-    background-color: #333;
-    color: #fff;
+    border: 1px solid var(--color-border, #2a2a2a);
+    background-color: var(--color-bg-card, #141414);
+    color: var(--color-text-primary, #ffffff);
     min-height: 24px;
     max-height: 100px;
     overflow-y: auto;
@@ -391,21 +392,21 @@ body {
     padding: 5px 15px;
     border: none;
     border-radius: 5px;
-    background-color: #0066cc;
+    background-color: var(--color-accent, #007bff);
     color: white;
     cursor: pointer;
 }
 
 .clear-chat-button {
-    background-color: #555;
+    background-color: var(--color-bg-card, #141414);
 }
 
 .send-button:hover {
-    background-color: #0052a3;
+    background-color: var(--color-accent-hover, #0056b3);
 }
 
 .clear-chat-button:hover {
-    background-color: #444;
+    background-color: var(--color-bg-hover, #1f1f1f);
 }
 
 /* Error message */
@@ -420,9 +421,9 @@ body {
 
 .content-footer {
     height: var(--footer-height);
-    border-top: 1px solid var(--border-color);
+    border-top: 1px solid var(--color-border, #2a2a2a);
     padding: 16px;
-    background-color: var(--bg-secondary);
+    background-color: var(--color-bg-panel, #0a0a0a);
 }
 
 .chat-input-container {
@@ -433,21 +434,21 @@ body {
 
 #chat-input {
     flex: 1;
-    border: 1px solid var(--border-color);
+    border: 1px solid var(--color-border, #2a2a2a);
     border-radius: var(--border-radius);
     padding: 12px;
     resize: none;
     font-family: inherit;
     font-size: 0.95rem;
-    background-color: var(--bg-primary);
-    color: var(--text-primary);
+    background-color: var(--color-bg-base, #000000);
+    color: var(--color-text-primary, #ffffff);
 }
 
 #send-button {
     padding: 0 24px;
     border: none;
     border-radius: var(--border-radius);
-    background-color: var(--accent-primary);
+    background-color: var(--color-accent, #007bff);
     color: white;
     font-weight: 500;
     cursor: pointer;
@@ -455,7 +456,7 @@ body {
 }
 
 #send-button:hover {
-    background-color: var(--accent-primary-dark, #0069d9);
+    background-color: var(--color-accent-hover, #0056b3);
 }
 
 /* Terminal styles */
@@ -467,8 +468,8 @@ body {
 }
 
 .terminal {
-    background-color: var(--terminal-bg, #1e1e1e);
-    color: var(--terminal-text, #f8f8f8);
+    background-color: var(--color-bg-base, #000000);
+    color: var(--color-text-primary, #ffffff);
     font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
     font-size: 0.9rem;
     line-height: 1.5;
@@ -487,21 +488,21 @@ body {
 
 /* Terminal command/output styling */
 .terminal-command {
-    color: var(--terminal-text, #f8f8f8);
+    color: var(--color-text-primary, #ffffff);
     margin-bottom: 6px;
     white-space: pre-wrap;
     word-break: break-word;
 }
 
 .terminal-output {
-    color: var(--terminal-text, #f8f8f8);
+    color: var(--color-text-primary, #ffffff);
     margin-bottom: 6px;
     white-space: pre-wrap;
     word-break: break-word;
 }
 
 .command-prefix {
-    color: var(--accent-primary, #007bff);
+    color: var(--color-accent, #007bff);
     font-weight: bold;
     margin-right: 4px;
 }
@@ -514,17 +515,17 @@ body {
     margin-bottom: 10px;
     padding: 10px;
     font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
-    background-color: #222;
-    border: 2px solid #007bff;
+    background-color: var(--color-bg-panel, #0a0a0a);
+    border: 2px solid var(--color-accent, #007bff);
     border-radius: 4px;
     position: sticky;
     bottom: 0;
     z-index: 100;
-    box-shadow: 0 -2px 10px rgba(0,0,0,0.5);
+    box-shadow: 0 -2px 10px var(--color-shadow, rgba(0,0,0,0.5));
 }
 
 .terminal-prompt {
-    color: #00ff00;
+    color: var(--color-success, #00ff00);
     font-weight: bold;
     margin-right: 10px;
     font-size: 16px;
@@ -532,15 +533,15 @@ body {
 
 .terminal-input {
     flex: 1;
-    background-color: #111;
+    background-color: var(--color-bg-base, #000000);
     border: none;
     outline: none;
-    color: white;
+    color: var(--color-text-primary, #ffffff);
     font-family: inherit;
     font-size: 16px;
     padding: 8px;
     margin: 0;
-    caret-color: #00ff00;
+    caret-color: var(--color-success, #00ff00);
     min-width: 50px;
     width: 100%;
 }
@@ -548,22 +549,22 @@ body {
 /* Styling for hardcoded input */
 #simple-terminal-input {
     flex: 1;
-    background-color: #111;
+    background-color: var(--color-bg-base, #000000);
     border: none;
     outline: none;
-    color: white;
+    color: var(--color-text-primary, #ffffff);
     font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
     font-size: 16px;
     padding: 8px;
     margin: 0;
-    caret-color: #00ff00;
+    caret-color: var(--color-success, #00ff00);
     min-width: 50px;
     width: 100%;
 }
 
 /* Code and formatting in terminal */
 .terminal pre {
-    background-color: rgba(0, 0, 0, 0.3);
+    background-color: var(--color-bg-overlay, rgba(0, 0, 0, 0.3));
     padding: 8px;
     border-radius: 4px;
     margin: 8px 0;
@@ -572,7 +573,7 @@ body {
 
 .terminal code {
     font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
-    background-color: rgba(0, 0, 0, 0.2);
+    background-color: var(--color-bg-overlay-light, rgba(0, 0, 0, 0.2));
     padding: 2px 4px;
     border-radius: 2px;
 }
@@ -584,12 +585,12 @@ body {
 
 .terminal strong {
     font-weight: bold;
-    color: #d7ba7d;
+    color: var(--color-warning, #d7ba7d);
 }
 
 .terminal em {
     font-style: italic;
-    color: #ce9178;
+    color: var(--color-info, #ce9178);
 }
 
 /* Modal */
@@ -601,17 +602,17 @@ body {
     top: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: var(--color-overlay, rgba(0, 0, 0, 0.5));
 }
 
 .modal-content {
-    background-color: var(--bg-primary);
+    background-color: var(--color-bg-base, #000000);
     margin: 15% auto;
     padding: 20px;
     border-radius: var(--border-radius);
     width: 50%;
     max-width: 600px;
-    box-shadow: 0 5px 15px var(--shadow-color);
+    box-shadow: 0 5px 15px var(--color-shadow, rgba(0, 0, 0, 0.5));
 }
 
 .close-modal {
@@ -622,7 +623,7 @@ body {
 }
 
 .close-modal:hover {
-    color: var(--accent-primary);
+    color: var(--color-accent, #007bff);
 }
 
 /* Settings panel styles */
@@ -643,7 +644,7 @@ body {
 
 .settings-save {
     padding: 8px 16px;
-    background-color: var(--accent-primary);
+    background-color: var(--color-accent, #007bff);
     color: white;
     border: none;
     border-radius: var(--border-radius);
@@ -654,7 +655,7 @@ body {
 }
 
 .settings-save:hover {
-    background-color: var(--accent-primary-dark, #0069d9);
+    background-color: var(--color-accent-hover, #0056b3);
 }
 
 /* Error container */
@@ -662,12 +663,12 @@ body {
     position: fixed;
     top: 20px;
     right: 20px;
-    background-color: #f44336;
+    background-color: var(--color-error, #f44336);
     color: white;
     padding: 16px;
     border-radius: var(--border-radius);
     max-width: 400px;
-    box-shadow: 0 4px 8px var(--shadow-color);
+    box-shadow: 0 4px 8px var(--color-shadow, rgba(0, 0, 0, 0.5));
     z-index: 100;
     display: none;
 }
@@ -679,7 +680,7 @@ body {
     left: 0;
     width: 100vw;
     height: 100vh;
-    background-color: var(--bg-primary);
+    background-color: var(--color-bg-base, #000000);
     z-index: 9999;
     display: none; /* Initially hidden until shown in JS */
     align-items: center;
@@ -704,12 +705,12 @@ body {
     font-size: 3rem;
     font-weight: 700;
     margin-bottom: 8px;
-    color: var(--accent-primary);
+    color: var(--color-accent, #007bff);
 }
 
 .splash-subtitle {
     font-size: 1.2rem;
-    color: var(--text-secondary);
+    color: var(--color-text-secondary, #b0b0b0);
     margin-bottom: 40px;
 }
 
@@ -722,9 +723,9 @@ body {
 .spinner {
     width: 40px;
     height: 40px;
-    border: 4px solid rgba(0, 0, 0, 0.1);
+    border: 4px solid var(--color-bg-overlay-light, rgba(0, 0, 0, 0.1));
     border-radius: 50%;
-    border-top-color: var(--accent-primary);
+    border-top-color: var(--color-accent, #007bff);
     animation: spin 1s linear infinite;
     margin-bottom: 16px;
 }

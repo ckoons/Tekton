@@ -1,4 +1,5 @@
 <!-- Settings Component UI Template -->
+<script>console.log('[SETTINGS] Component HTML loaded!');</script>
 <div class="settings-container"
      data-tekton-area="settings"
      data-tekton-component="settings"
@@ -300,6 +301,12 @@ window.settings_toggleGreekNames = function(checkbox) {
                 <span class="settings-theme-mode__icon">🌙</span>
                 <span class="settings-theme-mode__label">Dark</span>
               </button>
+              <button class="settings-theme-mode__button" data-mode="pure-black"
+                      data-tekton-action="set-theme-mode"
+                      data-tekton-action-value="pure-black">
+                <span class="settings-theme-mode__icon">⚫</span>
+                <span class="settings-theme-mode__label">Pure Black</span>
+              </button>
             </div>
           </div>
         </div>
@@ -415,8 +422,8 @@ window.settings_toggleGreekNames = function(checkbox) {
         flex-direction: column;
         height: 100%;
         width: 100%;
-        background-color: var(--bg-primary, #1e1e2e);
-        color: var(--text-primary, #f0f0f0);
+        background-color: var(--color-bg-base, #000000);
+        color: var(--color-text-primary, #ffffff);
     }
     
     /* Header */
@@ -424,8 +431,8 @@ window.settings_toggleGreekNames = function(checkbox) {
         display: flex;
         align-items: center;
         padding: 10px 16px;
-        background-color: var(--bg-secondary, #252535);
-        border-bottom: 1px solid var(--border-color, #444444);
+        background-color: var(--color-bg-panel, #0a0a0a);
+        border-bottom: 1px solid var(--color-border, #2a2a2a);
         height: 46px; /* Match Athena header height */
     }
     
@@ -458,8 +465,8 @@ window.settings_toggleGreekNames = function(checkbox) {
         justify-content: space-between;
         align-items: center;
         padding: 6px 16px;
-        background-color: var(--bg-secondary, #252535); /* Match Athena menu bar */
-        border-bottom: 1px solid var(--border-color, #444444);
+        background-color: var(--color-bg-panel, #0a0a0a); /* Match theme */
+        border-bottom: 1px solid var(--color-border, #2a2a2a);
         height: 46px; /* Match Athena menu bar height */
     }
     
@@ -476,17 +483,17 @@ window.settings_toggleGreekNames = function(checkbox) {
         background-color: transparent;
         border: none;
         border-bottom: 2px solid transparent;
-        color: var(--text-primary, #f0f0f0);
+        color: var(--color-text-primary, #ffffff);
         cursor: pointer;
         transition: all 0.2s ease;
     }
     
     .settings-tab:hover {
-        background-color: var(--bg-hover, #3a3a4a);
+        background-color: var(--color-bg-hover, #1f1f1f);
     }
     
     .settings-tab--active {
-        border-bottom-color: var(--color-primary, #10A283); /* Teal color for Settings */
+        border-bottom-color: var(--color-accent, #007bff); /* Use theme accent */
         font-weight: 500;
     }
     
@@ -530,7 +537,7 @@ window.settings_toggleGreekNames = function(checkbox) {
         min-width: 180px;
         padding-top: 2px;
         font-weight: 500;
-        color: #10A283; /* Teal color for labels */
+        color: var(--color-accent, #007bff); /* Use theme accent */
         line-height: 36px; /* Match the height of input fields */
     }
     
@@ -546,16 +553,16 @@ window.settings_toggleGreekNames = function(checkbox) {
         width: 100%;
         min-width: 350px; /* At least twice as wide as before */
         padding: 8px 12px;
-        background-color: var(--bg-tertiary, #333345);
-        border: 1px solid #66BB6A; /* Mint color border */
+        background-color: var(--color-bg-card, #141414);
+        border: 1px solid var(--color-border, #2a2a2a);
         border-radius: 4px;
-        color: var(--text-primary, #f0f0f0);
+        color: var(--color-text-primary, #ffffff);
         font-size: 14px;
     }
     
     .settings-field-description {
         font-size: 0.9em;
-        color: var(--text-secondary, #f0f0f0); /* White for descriptions */
+        color: var(--color-text-secondary, #b0b0b0);
         margin-top: 4px;
     }
     
@@ -570,17 +577,17 @@ window.settings_toggleGreekNames = function(checkbox) {
         align-items: center;
         gap: 8px;
         padding: 8px 16px;
-        background-color: var(--bg-tertiary, #333345);
-        border: 1px solid var(--border-color, #444444);
+        background-color: var(--color-bg-card, #141414);
+        border: 1px solid var(--color-border, #2a2a2a);
         border-radius: 4px;
-        color: var(--text-primary, #f0f0f0);
+        color: var(--color-text-primary, #ffffff);
         cursor: pointer;
     }
     
     .settings-theme-mode__button--active {
-        background-color: var(--color-primary, #10A283); /* Teal accent */
+        background-color: var(--color-accent, #007bff); /* Use theme accent */
         color: white;
-        border-color: var(--color-primary, #10A283);
+        border-color: var(--color-accent, #007bff);
     }
     
     /* Theme color selector */
@@ -595,15 +602,15 @@ window.settings_toggleGreekNames = function(checkbox) {
         align-items: center;
         gap: 8px;
         padding: 8px 16px;
-        background-color: var(--bg-tertiary, #333345);
-        border: 1px solid var(--border-color, #444444);
+        background-color: var(--color-bg-card, #141414);
+        border: 1px solid var(--color-border, #2a2a2a);
         border-radius: 4px;
-        color: var(--text-primary, #f0f0f0);
+        color: var(--color-text-primary, #ffffff);
         cursor: pointer;
     }
     
     .settings-theme-color__button--active {
-        background-color: var(--bg-hover, #3a3a4a);
+        background-color: var(--color-bg-hover, #1f1f1f);
         border-color: var(--color, #007bff);
     }
     
@@ -635,8 +642,8 @@ window.settings_toggleGreekNames = function(checkbox) {
         left: 0;
         right: 0;
         bottom: 0;
-        background-color: var(--bg-tertiary, #333345);
-        border: 1px solid var(--border-color, #444444);
+        background-color: var(--color-bg-card, #141414);
+        border: 1px solid var(--color-border, #2a2a2a);
         transition: .4s;
         border-radius: 22px;
     }
@@ -648,14 +655,14 @@ window.settings_toggleGreekNames = function(checkbox) {
         width: 16px;
         left: 2px;
         bottom: 2px;
-        background-color: var(--text-primary, #f0f0f0);
+        background-color: var(--color-text-primary, #ffffff);
         transition: .4s;
         border-radius: 50%;
     }
     
     input:checked + .settings-toggle__slider {
-        background-color: var(--color-primary, #10A283); /* Teal accent */
-        border-color: var(--color-primary, #10A283);
+        background-color: var(--color-accent, #007bff); /* Use theme accent */
+        border-color: var(--color-accent, #007bff);
     }
     
     input:checked + .settings-toggle__slider:before {
@@ -665,10 +672,10 @@ window.settings_toggleGreekNames = function(checkbox) {
     /* Button styles */
     .settings-button {
         padding: 6px 12px;
-        background-color: var(--bg-tertiary, #333345);
-        border: 1px solid var(--border-color, #444444);
+        background-color: var(--color-bg-card, #141414);
+        border: 1px solid var(--color-border, #2a2a2a);
         border-radius: 4px;
-        color: var(--text-primary, #f0f0f0);
+        color: var(--color-text-primary, #ffffff);
         cursor: pointer;
         display: inline-flex;
         align-items: center;
@@ -677,17 +684,17 @@ window.settings_toggleGreekNames = function(checkbox) {
     }
     
     .settings-button:hover {
-        background-color: var(--bg-hover, #3a3a4a);
+        background-color: var(--color-bg-hover, #1f1f1f);
     }
     
     .settings-button--primary {
-        background-color: var(--color-primary, #10A283); /* Teal accent */
+        background-color: var(--color-accent, #007bff); /* Use theme accent */
         color: white;
-        border-color: var(--color-primary, #10A283);
+        border-color: var(--color-accent, #007bff);
     }
     
     .settings-button--primary:hover {
-        background-color: #0A8C6F; /* Darker teal */
+        background-color: var(--color-accent-hover, #0056b3);
     }
     
     .settings-button--danger {
@@ -735,7 +742,7 @@ window.settings_toggleGreekNames = function(checkbox) {
         font-family: monospace;
         font-size: 14px;
         padding: 4px 8px;
-        background-color: var(--bg-tertiary, #333345);
+        background-color: var(--color-bg-card, #141414);
         border-radius: 4px;
     }
     
@@ -771,12 +778,12 @@ window.settings_toggleGreekNames = function(checkbox) {
         width: 40px;
         height: 40px;
         border-radius: 4px;
-        border: 1px solid var(--border-color, #444444);
+        border: 1px solid var(--color-border, #2a2a2a);
     }
     
     .image-color-instructions {
         font-size: 0.85em;
-        color: var(--text-secondary, #aaaaaa);
+        color: var(--color-text-secondary, #b0b0b0);
         margin-top: 4px;
     }
 </style>

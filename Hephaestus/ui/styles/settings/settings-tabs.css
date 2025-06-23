@@ -1,0 +1,189 @@
+/* Settings Component Tab Styles - Matching Rhetor Pattern */
+
+/* Menu Bar */
+.settings-menu-bar {
+  display: flex;
+  background-color: var(--color-bg-panel, var(--bg-secondary));
+  border-bottom: 1px solid var(--color-border, var(--border-color));
+  padding: 0 var(--spacing-md);
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Tabs Container */
+.settings-tabs {
+  display: flex;
+  gap: 8px;
+}
+
+/* Individual Tab */
+.settings-tab {
+  padding: 12px 20px;
+  cursor: pointer;
+  border: none;
+  background: none;
+  color: var(--color-text-secondary, var(--text-secondary));
+  font-size: 14px;
+  font-weight: 500;
+  position: relative;
+  transition: all var(--transition-fast, 150ms ease);
+}
+
+.settings-tab:hover {
+  color: var(--color-text-primary, var(--text-primary));
+  background-color: var(--color-bg-hover, rgba(255, 255, 255, 0.05));
+}
+
+.settings-tab--active {
+  color: var(--color-accent, var(--accent-primary));
+  background-color: var(--color-bg-base, var(--bg-primary));
+}
+
+.settings-tab--active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background-color: var(--color-accent, var(--accent-primary));
+}
+
+/* Tab Label */
+.settings-tab-label {
+  display: inline-block;
+}
+
+/* Actions Container */
+.settings-actions {
+  display: flex;
+  gap: 8px;
+}
+
+/* Content Area */
+.settings-content {
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+  background-color: var(--color-bg-base, var(--bg-primary));
+}
+
+/* Panels */
+.settings-panel {
+  display: none;
+  padding: var(--spacing-lg);
+  height: 100%;
+  width: 100%;
+  overflow-y: auto;
+  background-color: var(--color-bg-base, var(--bg-primary));
+}
+
+.settings-panel--active {
+  display: block;
+}
+
+/* Form Styles */
+.settings-form {
+  max-width: 800px;
+}
+
+.settings-field {
+  margin-bottom: 24px;
+}
+
+.settings-field-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text-primary, var(--text-primary));
+  margin-bottom: 8px;
+}
+
+.settings-field-control {
+  margin-top: 8px;
+}
+
+/* Title Container */
+.settings-title-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.settings-icon {
+  height: 30px;
+  width: auto;
+}
+
+.settings-title-main {
+  font-weight: 600;
+}
+
+.settings-title-sub {
+  font-weight: 400;
+  color: var(--color-text-secondary, var(--text-secondary));
+  margin-left: 8px;
+}
+
+/* Theme Mode Buttons */
+.settings-theme-mode {
+  display: flex;
+  gap: 8px;
+}
+
+.settings-theme-mode__button {
+  padding: 12px 24px;
+  border: 2px solid var(--color-border, var(--border-color));
+  background: var(--color-bg-card, var(--bg-secondary));
+  color: var(--color-text-primary, var(--text-primary));
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all var(--transition-fast, 150ms ease);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.settings-theme-mode__button:hover {
+  border-color: var(--color-accent, var(--accent-primary));
+  background: var(--color-bg-hover, var(--bg-tertiary));
+}
+
+.settings-theme-mode__button--active {
+  border-color: var(--color-accent, var(--accent-primary));
+  background: var(--color-accent-bg, rgba(0, 123, 255, 0.1));
+}
+
+/* Theme Color Buttons */
+.settings-theme-color {
+  display: flex;
+  gap: 8px;
+}
+
+.settings-theme-color__button {
+  padding: 8px 16px;
+  border: 2px solid var(--color-border, var(--border-color));
+  background: var(--color-bg-card, var(--bg-secondary));
+  color: var(--color-text-primary, var(--text-primary));
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all var(--transition-fast, 150ms ease);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.settings-theme-color__button:hover {
+  border-color: var(--color, var(--accent-primary));
+}
+
+.settings-theme-color__button--active {
+  border-color: var(--color, var(--accent-primary));
+  background: var(--color-bg-hover, var(--bg-tertiary));
+}
+
+.settings-theme-color__dot {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background-color: var(--color);
+}

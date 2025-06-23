@@ -191,7 +191,23 @@ class MinimalLoader {
             });
             console.log(`MinimalLoader: Loaded external script ${newScript.src}`);
           } else {
-            newScript.textContent = script.textContent;
+            // For inline scripts, execute in global scope
+            const scriptContent = script.textContent;
+            
+            // For Settings component, ensure functions are global
+            if (componentId === 'settings') {
+              // Replace function declarations to ensure they're global
+              const globalScript = scriptContent
+                .replace(/window\.settings_switchTab\s*=\s*function/g, 'window.settings_switchTab = function')
+                .replace(/window\.settings_saveAllSettings\s*=\s*function/g, 'window.settings_saveAllSettings = function')
+                .replace(/window\.settings_resetAllSettings\s*=\s*function/g, 'window.settings_resetAllSettings = function')
+                .replace(/window\.settings_toggleGreekNames\s*=\s*function/g, 'window.settings_toggleGreekNames = function');
+              
+              newScript.textContent = globalScript;
+            } else {
+              newScript.textContent = scriptContent;
+            }
+            
             document.head.appendChild(newScript);
             console.log(`MinimalLoader: Executed inline script for ${componentId}`);
           }
@@ -217,6 +233,16 @@ class MinimalLoader {
           window.settingsManager.updateComponentHeaders();
           console.log(`MinimalLoader: Updated component headers for ${componentId}`);
         }, 100);
+      }
+      
+      // For Settings component, ensure script is loaded
+      if (componentId === 'settings') {
+        const settingsScript = document.createElement('script');
+        settingsScript.src = `/scripts/settings/settings-component.js?t=${new Date().getTime()}`;
+        settingsScript.onload = () => {
+          console.log('MinimalLoader: Settings component script loaded');
+        };
+        document.head.appendChild(settingsScript);
       }
     } catch (error) {
       console.error(`MinimalLoader: Error loading ${componentId}:`, error);

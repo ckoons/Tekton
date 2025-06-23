@@ -1,0 +1,65 @@
+/* Light Theme - Clean and Bright */
+
+[data-theme-base="light"] {
+  /* Base colors */
+  --color-bg-base: #ffffff;
+  --color-bg-panel: #f8f9fa;
+  --color-bg-card: #ffffff;
+  --color-bg-hover: #e9ecef;
+  --color-bg-input: #ffffff;
+  
+  /* Text colors */
+  --color-text-primary: #212529;
+  --color-text-secondary: #495057;
+  --color-text-tertiary: #6c757d;
+  --color-text-disabled: #adb5bd;
+  
+  /* Border colors */
+  --color-border: #dee2e6;
+  --color-border-hover: #ced4da;
+  --color-border-focus: var(--color-accent);
+  
+  /* Status colors */
+  --color-success: #198754;
+  --color-warning: #ffc107;
+  --color-error: #dc3545;
+  --color-info: #0dcaf0;
+  
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 2px 4px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 4px 8px rgba(0, 0, 0, 0.12);
+  --shadow-xl: 0 8px 16px rgba(0, 0, 0, 0.16);
+  
+  /* Component specific */
+  --terminal-bg: #f8f9fa;
+  --terminal-text: #212529;
+  --code-bg: #f8f9fa;
+  --code-text: #212529;
+}
+
+/* Light theme specific adjustments */
+[data-theme-base="light"] {
+  /* Subtle borders */
+  --component-border-active: var(--color-accent);
+  
+  /* Standard contrast */
+  --contrast-ratio: 1.0;
+}
+
+/* Component overrides for light */
+[data-theme-base="light"] .nav-item.active {
+  background-color: var(--color-bg-hover);
+  border-left-color: var(--color-accent);
+}
+
+[data-theme-base="light"] .rhetor__component-card {
+  background: var(--color-bg-card);
+  border-color: var(--color-border);
+  box-shadow: var(--shadow-sm);
+}
+
+[data-theme-base="light"] .rhetor__component-card:hover {
+  border-color: var(--color-accent);
+  box-shadow: var(--shadow-md);
+}

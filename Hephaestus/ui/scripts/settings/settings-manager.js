@@ -7,8 +7,9 @@ class SettingsManager {
     constructor() {
         this.settings = {
             showGreekNames: true,
-            themeMode: 'dark',     // 'dark' or 'light'
-            themeColor: 'blue',    // 'blue', 'green', or 'purple'
+            themeBase: 'pure-black',     // 'pure-black', 'dark', 'light', 'high-contrast'
+            accentColor: '#007bff',     // Hex color for accent
+            accentPreset: 'blue',       // 'blue', 'green', 'purple', 'orange', 'red', 'custom'
             chatHistoryEnabled: true,
             maxChatHistoryEntries: 50,
             terminalFontSize: 'medium',  // 'small', 'medium', 'large'
@@ -102,22 +103,105 @@ class SettingsManager {
      * Apply theme settings
      */
     applyTheme() {
-        const themeName = `${this.settings.themeMode}-${this.settings.themeColor}`;
+        const root = document.documentElement;
         
-        // Remove all existing theme classes
-        document.documentElement.removeAttribute('data-theme');
+        // Apply base theme
+        root.setAttribute('data-theme-base', this.settings.themeBase);
         
-        // Set the new theme attribute
-        document.documentElement.setAttribute('data-theme', themeName);
+        // Apply accent color
+        this.applyAccentColor(this.settings.accentColor);
         
-        // Update theme stylesheet
-        const themeLink = document.getElementById('theme-stylesheet');
-        if (themeLink) {
-            themeLink.href = `styles/themes/${themeName}.css`;
+        // Load theme CSS files
+        this.loadThemeStyles();
+        
+        console.log(`Applied theme: ${this.settings.themeBase} with accent ${this.settings.accentColor}`);
+        return this;
+    }
+    
+    /**
+     * Apply accent color dynamically
+     */
+    applyAccentColor(color) {
+        const root = document.documentElement;
+        
+        // Convert hex to HSL for dynamic variations
+        const hsl = this.hexToHSL(color);
+        
+        // Set CSS variables
+        root.style.setProperty('--accent-h', hsl.h);
+        root.style.setProperty('--accent-s', `${hsl.s}%`);
+        root.style.setProperty('--accent-l', `${hsl.l}%`);
+        
+        // Set direct color values for older browsers
+        root.style.setProperty('--color-accent', color);
+        
+        return this;
+    }
+    
+    /**
+     * Load theme stylesheets
+     */
+    loadThemeStyles() {
+        // Get or create theme link elements
+        let baseThemeLink = document.getElementById('theme-base-stylesheet');
+        if (!baseThemeLink) {
+            baseThemeLink = document.createElement('link');
+            baseThemeLink.id = 'theme-base-stylesheet';
+            baseThemeLink.rel = 'stylesheet';
+            document.head.appendChild(baseThemeLink);
         }
         
-        console.log(`Applied theme: ${themeName}`);
+        let themeLink = document.getElementById('theme-stylesheet');
+        if (!themeLink) {
+            themeLink = document.createElement('link');
+            themeLink.id = 'theme-stylesheet';
+            themeLink.rel = 'stylesheet';
+            document.head.appendChild(themeLink);
+        }
+        
+        // Load base theme variables
+        baseThemeLink.href = 'styles/themes/theme-base.css';
+        
+        // Load specific theme
+        themeLink.href = `styles/themes/theme-${this.settings.themeBase}.css`;
+        
         return this;
+    }
+    
+    /**
+     * Convert hex color to HSL
+     */
+    hexToHSL(hex) {
+        // Remove # if present
+        hex = hex.replace('#', '');
+        
+        // Convert to RGB
+        const r = parseInt(hex.substr(0, 2), 16) / 255;
+        const g = parseInt(hex.substr(2, 2), 16) / 255;
+        const b = parseInt(hex.substr(4, 2), 16) / 255;
+        
+        const max = Math.max(r, g, b);
+        const min = Math.min(r, g, b);
+        let h, s, l = (max + min) / 2;
+        
+        if (max === min) {
+            h = s = 0; // achromatic
+        } else {
+            const d = max - min;
+            s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+            
+            switch (max) {
+                case r: h = ((g - b) / d + (g < b ? 6 : 0)) / 6; break;
+                case g: h = ((b - r) / d + 2) / 6; break;
+                case b: h = ((r - g) / d + 4) / 6; break;
+            }
+        }
+        
+        return {
+            h: Math.round(h * 360),
+            s: Math.round(s * 100),
+            l: Math.round(l * 100)
+        };
     }
 
     /**
@@ -191,14 +275,54 @@ class SettingsManager {
     }
 
     /**
-     * Set theme color
-     * @param {string} color - Color to set ('blue', 'green', or 'purple')
+     * Set base theme
+     * @param {string} theme - Theme to set ('pure-black', 'dark', 'light', 'high-contrast')
      */
-    setThemeColor(color) {
-        if (['blue', 'green', 'purple'].includes(color)) {
-            this.settings.themeColor = color;
+    setThemeBase(theme) {
+        const validThemes = ['pure-black', 'dark', 'light', 'high-contrast'];
+        if (validThemes.includes(theme)) {
+            this.settings.themeBase = theme;
             this.save().applyTheme();
             this.dispatchEvent('themeChanged', this.settings);
+        }
+        return this;
+    }
+    
+    /**
+     * Set accent color
+     * @param {string} color - Hex color code
+     * @param {string} preset - Preset name or 'custom'
+     */
+    setAccentColor(color, preset = 'custom') {
+        // Validate hex color
+        if (/^#[0-9A-F]{6}$/i.test(color)) {
+            this.settings.accentColor = color;
+            this.settings.accentPreset = preset;
+            this.save();
+            this.applyAccentColor(color);
+            this.dispatchEvent('accentChanged', {color, preset});
+        }
+        return this;
+    }
+    
+    /**
+     * Set accent preset
+     * @param {string} preset - Preset name
+     */
+    setAccentPreset(preset) {
+        const presets = {
+            'blue': '#007bff',
+            'green': '#28a745',
+            'purple': '#6f42c1',
+            'orange': '#fd7e14',
+            'red': '#dc3545',
+            'teal': '#20c997',
+            'pink': '#e83e8c',
+            'yellow': '#ffc107'
+        };
+        
+        if (presets[preset]) {
+            this.setAccentColor(presets[preset], preset);
         }
         return this;
     }

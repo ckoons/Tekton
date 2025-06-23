@@ -5,12 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tekton - AI Orchestration System</title>
     <link rel="stylesheet" href="styles/main.css">
-    <link rel="stylesheet" href="styles/themes/dark-blue.css" id="theme-stylesheet">
+    <link rel="stylesheet" href="styles/themes/theme-base.css" id="theme-base-stylesheet">
+    <link rel="stylesheet" href="styles/themes/theme-pure-black.css" id="theme-stylesheet">
     <link rel="stylesheet" href="styles/ergon.css">
-    <link rel="stylesheet" href="styles/settings.css">
+    <link rel="stylesheet" href="styles/settings/settings-component.css">
+    <link rel="stylesheet" href="styles/settings/settings-tabs.css">
     <link rel="stylesheet" href="styles/profile.css">
     <link rel="stylesheet" href="styles/rhetor/rhetor-component.css">
     <link rel="stylesheet" href="styles/rhetor/rhetor-dashboard.css">
+    
+    <!-- Apply theme immediately -->
+    <script>
+        // Apply pure black theme immediately
+        document.documentElement.setAttribute('data-theme-base', 'pure-black');
+    </script>
     
     <!-- Debug instrumentation -->
     <script src="scripts/debug-shim.js"></script>
@@ -162,7 +170,7 @@
         }
     </style>
 </head>
-<body data-theme="dark-blue">
+<body data-theme-base="pure-black">
     <div class="app-container">
         <!-- Left Panel -->
         <div class="left-panel" data-tekton-nav="main" data-tekton-area="navigation">

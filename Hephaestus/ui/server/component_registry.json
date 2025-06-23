@@ -106,7 +106,7 @@
       "styles": [
         "styles/settings/settings-component.css"
       ],
-      "usesShadowDom": true
+      "usesShadowDom": false
     },
     {
       "id": "terma",
