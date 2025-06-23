@@ -35,16 +35,18 @@ A Tekton component is a self-contained service that:
 - [ ] Create component directory structure
 - [ ] Create `__main__.py` for `python -m` support (REQUIRED)
 - [ ] Implement backend API server (FastAPI)
+- [ ] Add instrumentation metadata to all code (see [Component_Instrumentation_Guide.md](./Component_Instrumentation_Guide.md))
 - [ ] Implement MCP service using shared library
 - [ ] Register MCP tools with Hermes
 - [ ] Create CLI interface
 - [ ] Register with Hermes
-- [ ] Build UI component for Hephaestus
+- [ ] Build UI component for Hephaestus with semantic tags
 - [ ] Add health check endpoints
 - [ ] Configure environment variables
 - [ ] Write backend tests (including MCP tools)
 - [ ] Document the component and its MCP tools
 - [ ] Test with enhanced launcher
+- [ ] Verify all instrumentation is complete
 
 ## Documentation Structure
 
@@ -52,11 +54,13 @@ A Tekton component is a self-contained service that:
 2. **[Backend_Implementation_Guide.md](./Backend_Implementation_Guide.md)** - Backend API and business logic (includes MCP)
 3. **[UI_Implementation_Guide.md](./UI_Implementation_Guide.md)** - Hephaestus UI integration
 4. **[AI_Interface_Implementation_Guide.md](./AI_Interface_Implementation_Guide.md)** - Implementing AI interfaces and chat integration
-5. **[Step_By_Step_Tutorial.md](./Step_By_Step_Tutorial.md)** - Complete walkthrough
-6. **[Shared_Patterns_Reference.md](./Shared_Patterns_Reference.md)** - Common patterns and utilities
-7. **[Testing_Guide.md](./Testing_Guide.md)** - Test-driven development approach
-8. **[Documentation_Requirements.md](./Documentation_Requirements.md)** - Required documentation
-9. **[MCP Implementation Guide](../MCP_IMPLEMENTATION_GUIDE.md)** - Detailed MCP implementation patterns
+5. **[Component_Instrumentation_Guide.md](./Component_Instrumentation_Guide.md)** - How to add and maintain instrumentation metadata
+6. **[Instrumentation_Examples.md](./Instrumentation_Examples.md)** - Detailed examples for all file types
+7. **[Step_By_Step_Tutorial.md](./Step_By_Step_Tutorial.md)** - Complete walkthrough
+8. **[Shared_Patterns_Reference.md](./Shared_Patterns_Reference.md)** - Common patterns and utilities
+9. **[Testing_Guide.md](./Testing_Guide.md)** - Test-driven development approach
+10. **[Documentation_Requirements.md](./Documentation_Requirements.md)** - Required documentation
+11. **[MCP Implementation Guide](../MCP_IMPLEMENTATION_GUIDE.md)** - Detailed MCP implementation patterns
 
 ## Component Directory Structure
 

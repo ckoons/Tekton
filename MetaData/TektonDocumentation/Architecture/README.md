@@ -6,22 +6,38 @@ This directory contains the architectural documentation for the Tekton system. T
 
 ## Core Architectural Documents
 
+### System Architecture
+- [Tekton Core Architecture](./TektonCoreArchitecture.md): Overall system architecture
+- [Single Port Architecture](./SinglePortArchitecture.md): Unified port management strategy
+- [Hephaestus UI Architecture](./HephaestusUIArchitecture.md): UI framework architecture
+- [Semantic UI Architecture](./SemanticUIArchitecture.md): Semantic HTML navigation system
+
 ### Component Architecture
-
 - [Component Integration Patterns](./ComponentIntegrationPatterns.md): Standardized patterns for integrating components into Tekton
-- [Component Isolation Architecture](./ComponentIsolationArchitecture.md): Shadow DOM-based isolation for UI components
+- [Component Lifecycle](./ComponentLifecycle.md): Component initialization and lifecycle management
+- [Component Management](./ComponentManagement.md): Component discovery and orchestration
 
-### Communication Architecture
+### Project Structures
+- [Harmonia Project Structure](./Harmonia_Project_Structure.md): Harmonia component architecture
+- [Synthesis Project Structure](./Synthesis_Project_Structure.md): Synthesis component architecture
 
-- [UI Component Communication](./UIComponentCommunication.md): Communication mechanisms between UI components
+### Configuration and Environment
+- [Environment Management](./ENVIRONMENT_MANAGEMENT.md): Environment variable management
+- [Centralized Config](./CENTRALIZED_CONFIG.md): Configuration management patterns
+- [Port Management Guide](./PORT_MANAGEMENT_GUIDE.md): Port allocation and management
 
 ### AI and Intelligence Architecture
-
-- [AI Orchestration Architecture](./AI_Orchestration_Architecture.md): AI specialist management and MCP tools orchestration (Phase 3/4)
+- [AI Orchestration Architecture](./AI_Orchestration_Architecture.md): AI specialist management and MCP tools orchestration
+- [LLM Integration Plan](./LLMIntegrationPlan.md): LLM integration architecture
 
 ### State Management
-
 - [State Management Architecture](./StateManagementArchitecture.md): Application-wide state management approach
+- [State Management Patterns](./STATE_MANAGEMENT_PATTERNS.md): Common state management patterns
+
+### Integration Guides
+- [A2A Protocol Implementation](./A2A_Protocol_Implementation.md): Agent-to-Agent protocol architecture
+- [Harmonia Integration Guide](./Harmonia_Integration_Guide.md): Harmonia integration patterns
+- [Terma Integration](./Terma_Integration.md): Terma integration architecture
 
 ### To Be Created
 
@@ -59,5 +75,7 @@ When updating architectural documentation:
 
 ## Related Documentation
 
-- [Developer Guides](../DeveloperGuides/): Implementation-specific guidelines
-- [API Reference](../APIReference/): Detailed API specifications
+- [Building New Components](../Building_New_Tekton_Components/): Step-by-step component creation guides
+- [Standards](../Standards/): Coding, API, and UI standards
+- [Developer Reference](../Developer_Reference/): Technical references and debugging guides
+- [QuickStart](../QuickStart/): Getting started guides
