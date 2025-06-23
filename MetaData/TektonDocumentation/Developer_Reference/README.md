@@ -13,6 +13,16 @@ This directory contains technical reference materials, debugging guides, migrati
   - Archive of previous versions
   - API references and troubleshooting
 
+### Instrumentation Status
+- `InstrumentationStatus/` - Current instrumentation status for components
+  - Track which components have semantic tags
+  - Identify components needing instrumentation work
+
+### Component Status
+- `ComponentStatus/` - Operational status of specific components
+  - Current state of complex components
+  - Known issues and workarounds
+
 ### Migration and Status Documents
 - `LLMClient_Migration_Guide.md` - LLM client migration guide
 - `SharedCodeMigrationGuide.md` - Shared code migration guide

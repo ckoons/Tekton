@@ -21,7 +21,7 @@
     state: {
       initialized: false,
       loaded: false,
-      activeTab: 'specialists',
+      activeTab: 'dashboard',
       connected: false,
       provider: null,
       model: null,
@@ -67,16 +67,24 @@
      */
     init: function() {
       this.debug('init', 'Initializing component');
+      console.log('[RHETOR] Init called, checking for container');
       
       try {
-        // Get component container
+        // Get component container - try multiple selectors
         this.elements.container = document.getElementById('rhetor-component');
         if (!this.elements.container) {
           this.elements.container = document.querySelector('.rhetor-container');
         }
+        if (!this.elements.container) {
+          this.elements.container = document.querySelector('.rhetor');
+        }
+        if (!this.elements.container) {
+          this.elements.container = document.querySelector('[data-tekton-component="rhetor"]');
+        }
         
         if (!this.elements.container) {
           this.error('init', 'Cannot find component container');
+          console.error('[RHETOR] Tried: #rhetor-component, .rhetor-container, .rhetor, [data-tekton-component="rhetor"]');
           return;
         }
         
@@ -123,6 +131,10 @@
         const container = this.elements.container || document.querySelector('.rhetor');
         this.elements.tabs = container.querySelectorAll('.rhetor__tab');
         this.elements.contents = {};
+        this.elements.contents.dashboard = container.querySelector('#dashboard-panel');
+        this.elements.contents.models = container.querySelector('#models-panel');
+        this.elements.contents.prompts = container.querySelector('#prompts-panel');
+        this.elements.contents.contexts = container.querySelector('#contexts-panel');
         this.elements.contents.specialists = container.querySelector('#specialists-panel');
         this.elements.contents.orchestration = container.querySelector('#orchestration-panel');
         this.elements.contents.sessions = container.querySelector('#sessions-panel');
@@ -141,8 +153,10 @@
         
         this.debug('initElements', 'DOM elements initialized');
         
-        // Load initial specialists if on specialists tab
-        if (this.state.activeTab === 'specialists') {
+        // Load initial content based on active tab
+        if (this.state.activeTab === 'dashboard') {
+          console.log('[RHETOR] Dashboard using static HTML - no dynamic loading needed');
+        } else if (this.state.activeTab === 'specialists') {
           setTimeout(() => this.refreshSpecialists(), 100);
         }
       } catch (err) {
@@ -624,6 +638,142 @@
     },
     
     /**
+     * Load dashboard content
+     * REMOVED: Dashboard now uses static HTML instead of dynamic DOM manipulation
+     */
+    /*
+    loadDashboard: async function() {
+      this.info('loadDashboard', 'Loading dashboard content');
+      console.log('[RHETOR] loadDashboard called');
+      
+      try {
+        // Get dashboard elements
+        const componentGrid = document.getElementById('component-status-grid');
+        const specialistList = document.getElementById('dashboard-specialist-list');
+        const tokenStats = document.getElementById('dashboard-token-stats');
+        
+        console.log('[RHETOR] Dashboard elements:', {
+          componentGrid: !!componentGrid,
+          specialistList: !!specialistList,
+          tokenStats: !!tokenStats
+        });
+        
+        if (!componentGrid || !specialistList || !tokenStats) {
+          this.warn('loadDashboard', 'Dashboard elements not found');
+          console.log('[RHETOR] Missing elements:', {
+            componentGrid: componentGrid,
+            specialistList: specialistList,
+            tokenStats: tokenStats
+          });
+          // Try to populate what we have
+        }
+        
+        // Fetch real data from Rhetor backend
+        try {
+          // Get available models from Rhetor
+          const modelsResponse = await fetch('/api/rhetor/models');
+          const modelsData = await modelsResponse.json();
+          console.log('[RHETOR] Models data:', modelsData);
+          
+          // Get AI specialists from Rhetor
+          const specialistsResponse = await fetch('/api/rhetor/specialists');
+          const specialistsData = await specialistsResponse.json();
+          console.log('[RHETOR] Specialists data:', specialistsData);
+          
+          // Get token usage/budget from Rhetor
+          const usageResponse = await fetch('/api/rhetor/usage');
+          const usageData = await usageResponse.json();
+          console.log('[RHETOR] Usage data:', usageData);
+        } catch (apiError) {
+          console.error('[RHETOR] Failed to fetch data from backend:', apiError);
+          // Fall back to demo data for now
+        }
+        
+        // Populate component status grid
+        if (componentGrid) {
+          const components = [
+            { name: 'Rhetor', status: 'active', metrics: ['42 req/min', '3 AIs active'] },
+            { name: 'Hermes', status: 'active', metrics: ['WebSocket', '5 clients'] },
+            { name: 'Athena', status: 'active', metrics: ['71 entities', 'Graph OK'] },
+            { name: 'Apollo', status: 'active', metrics: ['Executing', '2 tasks'] },
+            { name: 'Penia', status: 'active', metrics: ['$0.42/hr', '15% budget'] },
+            { name: 'Telos', status: 'active', metrics: ['Planning', '1 session'] },
+            { name: 'Prometheus', status: 'active', metrics: ['Strategic', '3 analyses'] },
+            { name: 'Engram', status: 'inactive', metrics: ['Memory OFF', 'Loading...'] },
+            { name: 'Numa', status: 'active', metrics: ['Reasoning', '5 queries'] },
+            { name: 'Hephaestus', status: 'active', metrics: ['UI Active', '2 users'] }
+          ];
+          
+          componentGrid.innerHTML = components.map(comp => `
+            <div class="rhetor__component-card" data-component="${comp.name.toLowerCase()}">
+              <div class="rhetor__component-header">
+                <span class="rhetor__component-name">${comp.name}</span>
+                <span class="rhetor__component-status rhetor__component-status--${comp.status}">●</span>
+              </div>
+              <div class="rhetor__component-metrics">
+                ${comp.metrics.map(m => `<div class="rhetor__metric">${m}</div>`).join('')}
+              </div>
+            </div>
+          `).join('');
+          console.log('[RHETOR] Component grid populated');
+        }
+        
+        // Populate specialist list
+        if (specialistList) {
+          const specialists = [
+            { name: 'rhetor-orchestrator', model: 'Opus' },
+            { name: 'apollo-coordinator', model: 'Sonnet' },
+            { name: 'hermes-messenger', model: 'Haiku' },
+            { name: 'telos-analyst', model: 'Haiku' },
+            { name: 'prometheus-strategist', model: 'Sonnet' },
+            { name: 'engram-memory', model: 'Haiku' }
+          ];
+          
+          specialistList.innerHTML = specialists.map(spec => `
+          <div class="rhetor__specialist-item">
+            <span class="rhetor__specialist-name">${spec.name}</span>
+            <span class="rhetor__specialist-model">[${spec.model}]</span>
+          </div>
+          `).join('');
+          console.log('[RHETOR] Specialist list populated');
+        }
+        
+        // Populate token stats
+        if (tokenStats) {
+          tokenStats.innerHTML = `
+          <div class="rhetor__token-total">
+            <span class="rhetor__token-label">Total:</span>
+            <span class="rhetor__token-value">1.2M tokens</span>
+          </div>
+          <div class="rhetor__token-cost">
+            <span class="rhetor__token-label">Cost:</span>
+            <span class="rhetor__token-value">$42.50</span>
+          </div>
+          <div class="rhetor__token-breakdown">
+            <div class="rhetor__token-bar">
+              <div class="rhetor__token-segment rhetor__token-segment--opus" style="width: 45%;">
+                <span class="rhetor__token-percent">Opus 45%</span>
+              </div>
+              <div class="rhetor__token-segment rhetor__token-segment--sonnet" style="width: 30%;">
+                <span class="rhetor__token-percent">Sonnet 30%</span>
+              </div>
+              <div class="rhetor__token-segment rhetor__token-segment--haiku" style="width: 25%;">
+                <span class="rhetor__token-percent">Haiku 25%</span>
+              </div>
+            </div>
+          </div>
+          `;
+          console.log('[RHETOR] Token stats populated');
+        }
+        
+        this.info('loadDashboard', 'Dashboard loaded successfully');
+      } catch (err) {
+        this.error('loadDashboard', 'Failed to load dashboard', { error: err.message });
+      }
+    },
+    */
+    
+    /**
      * Refresh AI specialists list
      */
     refreshSpecialists: function() {
@@ -1090,6 +1240,22 @@
       
       // Load tab content based on the tab ID
       switch (tabId) {
+        case 'dashboard':
+          // Dashboard uses static HTML - no dynamic loading needed
+          this.showLoading(false);
+          break;
+        case 'models':
+          // Models panel is static for now
+          this.showLoading(false);
+          break;
+        case 'prompts':
+          // Prompts panel is static for now
+          this.showLoading(false);
+          break;
+        case 'contexts':
+          // Contexts panel is static for now
+          this.showLoading(false);
+          break;
         case 'specialists':
           this.refreshSpecialists();
           this.showLoading(false);
@@ -2185,4 +2351,7 @@
     // Initialize the component
     RhetorComponent.init();
   }
+  
+  // Also expose for debugging
+  window.RhetorComponent = RhetorComponent;
 })();

@@ -40,10 +40,14 @@ def main():
     print("🧪 UI DevTools Test Suite")
     print("="*60)
     
+    # V2 tests are in ui_dev_tools/tests/
+    v2_test_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "ui_dev_tools", "tests")
     tests = [
-        ("test_devtools_practice_workflow.py", "Basic DevTools Workflow Test"),
-        ("test_ui_screenshot_tools.py", "Screenshot Tools Test (Phase 4)"),
-        ("test_ui_workflow.py", "New ui_workflow Tool Test"),
+        (os.path.join(v2_test_dir, "test_code_reader.py"), "Code Reader Test (V2)"),
+        (os.path.join(v2_test_dir, "test_browser_verifier.py"), "Browser Verifier Test (V2)"),
+        (os.path.join(v2_test_dir, "test_comparator.py"), "Comparator Test (V2)"),
+        (os.path.join(v2_test_dir, "test_navigator.py"), "Navigator Test (V2)"),
+        (os.path.join(v2_test_dir, "test_safe_tester.py"), "Safe Tester Test (V2)"),
     ]
     
     passed = 0

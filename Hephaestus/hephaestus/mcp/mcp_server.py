@@ -36,6 +36,7 @@ from ui_dev_tools.tools.browser_verifier import BrowserVerifier
 from ui_dev_tools.tools.comparator import Comparator
 from ui_dev_tools.tools.navigator import Navigator
 from ui_dev_tools.tools.safe_tester import SafeTester
+from ui_dev_tools.tools.screenshot import Screenshot
 
 # Import configuration
 from shared.utils.global_config import GlobalConfig
@@ -44,7 +45,7 @@ from shared.utils.global_config import GlobalConfig
 global_config = GlobalConfig.get_instance()
 MCP_PORT = global_config.config.hephaestus.mcp_port
 COMPONENT_NAME = "hephaestus_ui_devtools"
-VERSION = "2.0.0"
+VERSION = "0.1.0"
 
 # Global state
 hermes_registration: Optional[HermesRegistration] = None
@@ -56,6 +57,7 @@ browser_verifier: Optional[BrowserVerifier] = None
 comparator: Optional[Comparator] = None
 navigator: Optional[Navigator] = None
 safe_tester: Optional[SafeTester] = None
+screenshot: Optional[Screenshot] = None
 
 
 class ToolRequest(BaseModel):
@@ -77,7 +79,7 @@ class ToolResponse(BaseModel):
 async def lifespan(app: FastAPI):
     """Manage application lifecycle"""
     global hermes_registration, heartbeat_task
-    global code_reader, browser_verifier, comparator, navigator, safe_tester
+    global code_reader, browser_verifier, comparator, navigator, safe_tester, screenshot
     
     # Startup
     logger.info(f"Starting Hephaestus UI DevTools MCP Server v{VERSION}")
@@ -88,6 +90,7 @@ async def lifespan(app: FastAPI):
     comparator = Comparator()
     navigator = Navigator()
     safe_tester = SafeTester()
+    screenshot = Screenshot()
     logger.info("All tools initialized")
     
     # Register with Hermes
@@ -100,7 +103,7 @@ async def lifespan(app: FastAPI):
             capabilities=["ui_devtools", "code_analysis", "browser_verification"],
             metadata={
                 "version": VERSION,
-                "tools": ["code_reader", "browser_verifier", "comparator", "navigator", "safe_tester"]
+                "tools": ["code_reader", "browser_verifier", "comparator", "navigator", "safe_tester", "screenshot"]
             }
         )
         
@@ -140,6 +143,8 @@ async def lifespan(app: FastAPI):
         await navigator.cleanup()
     if safe_tester:
         await safe_tester.cleanup()
+    if screenshot:
+        await screenshot.cleanup()
 
 
 # Create FastAPI app
@@ -206,6 +211,8 @@ async def execute_tool(request: ToolRequest):
             result = await execute_navigator(tool_name, args)
         elif tool_name.startswith("test_"):
             result = await execute_safe_tester(tool_name, args)
+        elif tool_name.startswith("screenshot_"):
+            result = await execute_screenshot(tool_name, args)
         else:
             raise HTTPException(
                 status_code=400,
@@ -304,6 +311,19 @@ async def execute_safe_tester(tool_name: str, args: Dict[str, Any]):
         return await safe_tester.rollback_changes(component)
     else:
         raise HTTPException(400, f"Unknown SafeTester tool: {tool_name}")
+
+
+async def execute_screenshot(tool_name: str, args: Dict[str, Any]):
+    """Execute Screenshot tools"""
+    component = args.get("component_name", args.get("component"))
+    save_path = args.get("save_path")
+    
+    if tool_name == "screenshot_component":
+        return await screenshot.capture_component(component, save_path)
+    elif tool_name == "screenshot_full_page":
+        return await screenshot.capture_full_page(save_path)
+    else:
+        raise HTTPException(400, f"Unknown Screenshot tool: {tool_name}")
 
 
 @app.get("/api/mcp/v2/tools")
@@ -432,6 +452,25 @@ async def list_tools():
             "description": "Rollback to previous state",
             "category": "testing",
             "parameters": {"component_name": {"type": "string", "required": True}}
+        },
+        
+        # Screenshot tools
+        {
+            "name": "screenshot_component",
+            "description": "Capture screenshot of a specific component",
+            "category": "screenshot",
+            "parameters": {
+                "component_name": {"type": "string", "required": True},
+                "save_path": {"type": "string", "required": False}
+            }
+        },
+        {
+            "name": "screenshot_full_page",
+            "description": "Capture full page screenshot",
+            "category": "screenshot",
+            "parameters": {
+                "save_path": {"type": "string", "required": False}
+            }
         }
     ]
     

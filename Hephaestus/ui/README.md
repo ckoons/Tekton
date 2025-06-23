@@ -113,6 +113,10 @@ For more detailed documentation, refer to:
 - [Hephaestus_UI_Implementation.md](/MetaData/TektonDocumentation/DeveloperGuides/Hephaestus_UI_Implementation.md): Detailed implementation guide
 - [EngineeringGuidelines.md](/MetaData/TektonDocumentation/DeveloperGuides/EngineeringGuidelines.md): Overall engineering principles
 
+## Implementation Details
+
+For detailed information about how the UI loading system works, CSS management, and common pitfalls, see [How Tekton UI Works](./docs/HowTektonUIWorks.md).
+
 ## Component Development
 
 To create a new component:

@@ -25,38 +25,52 @@
   <!-- Tab Navigation - DIRECT ONCLICK HANDLERS -->
   <div class="rhetor__menu-bar" data-tekton-zone="menu" data-tekton-nav="component-menu">
     <div class="rhetor__tabs">
-      <div class="rhetor__tab rhetor__tab--active" data-tab="specialists" 
-           data-tekton-menu-item="AI Specialists"
+      <!-- Dashboard (new default) -->
+      <div class="rhetor__tab rhetor__tab--active" data-tab="dashboard" 
+           data-tekton-menu-item="Dashboard"
            data-tekton-menu-component="rhetor"
            data-tekton-menu-active="true"
+           data-tekton-menu-panel="dashboard-panel"
+           onclick="rhetor_switchTab('dashboard'); return false;">
+        <span class="rhetor__tab-label">Dashboard</span>
+      </div>
+      <!-- Models (new) -->
+      <div class="rhetor__tab" data-tab="models" 
+           data-tekton-menu-item="Models"
+           data-tekton-menu-component="rhetor"
+           data-tekton-menu-active="false"
+           data-tekton-menu-panel="models-panel"
+           onclick="rhetor_switchTab('models'); return false;">
+        <span class="rhetor__tab-label">Models</span>
+      </div>
+      <!-- Prompts (new) -->
+      <div class="rhetor__tab" data-tab="prompts" 
+           data-tekton-menu-item="Prompts"
+           data-tekton-menu-component="rhetor"
+           data-tekton-menu-active="false"
+           data-tekton-menu-panel="prompts-panel"
+           onclick="rhetor_switchTab('prompts'); return false;">
+        <span class="rhetor__tab-label">Prompts</span>
+      </div>
+      <!-- Contexts (new) -->
+      <div class="rhetor__tab" data-tab="contexts" 
+           data-tekton-menu-item="Contexts"
+           data-tekton-menu-component="rhetor"
+           data-tekton-menu-active="false"
+           data-tekton-menu-panel="contexts-panel"
+           onclick="rhetor_switchTab('contexts'); return false;">
+        <span class="rhetor__tab-label">Contexts</span>
+      </div>
+      <!-- Specialists (renamed from AI Specialists) -->
+      <div class="rhetor__tab" data-tab="specialists" 
+           data-tekton-menu-item="Specialists"
+           data-tekton-menu-component="rhetor"
+           data-tekton-menu-active="false"
            data-tekton-menu-panel="specialists-panel"
            onclick="rhetor_switchTab('specialists'); return false;">
-        <span class="rhetor__tab-label">AI Specialists</span>
+        <span class="rhetor__tab-label">Specialists</span>
       </div>
-      <div class="rhetor__tab" data-tab="orchestration" 
-           data-tekton-menu-item="Orchestration"
-           data-tekton-menu-component="rhetor"
-           data-tekton-menu-active="false"
-           data-tekton-menu-panel="orchestration-panel"
-           onclick="rhetor_switchTab('orchestration'); return false;">
-        <span class="rhetor__tab-label">Orchestration</span>
-      </div>
-      <div class="rhetor__tab" data-tab="sessions" 
-           data-tekton-menu-item="Active Sessions"
-           data-tekton-menu-component="rhetor"
-           data-tekton-menu-active="false"
-           data-tekton-menu-panel="sessions-panel"
-           onclick="rhetor_switchTab('sessions'); return false;">
-        <span class="rhetor__tab-label">Active Sessions</span>
-      </div>
-      <div class="rhetor__tab" data-tab="configuration" 
-           data-tekton-menu-item="Configuration"
-           data-tekton-menu-component="rhetor"
-           data-tekton-menu-active="false"
-           data-tekton-menu-panel="configuration-panel"
-           onclick="rhetor_switchTab('configuration'); return false;">
-        <span class="rhetor__tab-label">Configuration</span>
-      </div>
+      <!-- LLM Chat (moved to right) -->
       <div class="rhetor__tab" data-tab="llmchat" 
            data-tekton-menu-item="LLM Chat"
            data-tekton-menu-component="rhetor"
@@ -65,6 +79,7 @@
            onclick="rhetor_switchTab('llmchat'); return false;">
         <span class="rhetor__tab-label">LLM Chat</span>
       </div>
+      <!-- Team Chat (rightmost) -->
       <div class="rhetor__tab" data-tab="teamchat" 
            data-tekton-menu-item="Team Chat"
            data-tekton-menu-component="rhetor"
@@ -85,13 +100,150 @@
   
   <!-- Content Area with Panels -->
   <div class="rhetor__content" data-tekton-zone="content" data-tekton-scrollable="true">
-    <!-- AI Specialists Tab (Default Active Tab) -->
-    <div id="specialists-panel" class="rhetor__panel rhetor__panel--active" 
-         data-tekton-panel="specialists"
-         data-tekton-panel-for="AI Specialists"
+    <!-- Dashboard Tab (New Default) -->
+    <div id="dashboard-panel" class="rhetor__panel rhetor__panel--active" 
+         data-tekton-panel="dashboard"
+         data-tekton-panel-for="Dashboard"
          data-tekton-panel-component="rhetor"
          data-tekton-panel-active="true"
          style="display: block;">
+      <div class="rhetor__dashboard">
+        <!-- Component Status Grid -->
+        <div class="rhetor__dashboard-section">
+          <h2 class="rhetor__dashboard-title">Component Status</h2>
+          <div class="rhetor__component-grid" id="component-status-grid">
+            <!-- Component cards -->
+            <div class="rhetor__component-card" data-component="rhetor">
+              <div class="rhetor__component-header">
+                <span class="rhetor__component-name">Rhetor</span>
+                <span class="rhetor__component-status rhetor__component-status--active">●</span>
+              </div>
+              <div class="rhetor__component-metrics">
+                <div class="rhetor__metric">42 req/min</div>
+                <div class="rhetor__metric">3 AIs active</div>
+              </div>
+            </div>
+            <div class="rhetor__component-card" data-component="hermes">
+              <div class="rhetor__component-header">
+                <span class="rhetor__component-name">Hermes</span>
+                <span class="rhetor__component-status rhetor__component-status--active">●</span>
+              </div>
+              <div class="rhetor__component-metrics">
+                <div class="rhetor__metric">WebSocket</div>
+                <div class="rhetor__metric">5 clients</div>
+              </div>
+            </div>
+            <div class="rhetor__component-card" data-component="athena">
+              <div class="rhetor__component-header">
+                <span class="rhetor__component-name">Athena</span>
+                <span class="rhetor__component-status rhetor__component-status--active">●</span>
+              </div>
+              <div class="rhetor__component-metrics">
+                <div class="rhetor__metric">71 entities</div>
+                <div class="rhetor__metric">Graph OK</div>
+              </div>
+            </div>
+            <div class="rhetor__component-card" data-component="apollo">
+              <div class="rhetor__component-header">
+                <span class="rhetor__component-name">Apollo</span>
+                <span class="rhetor__component-status rhetor__component-status--active">●</span>
+              </div>
+              <div class="rhetor__component-metrics">
+                <div class="rhetor__metric">Executing</div>
+                <div class="rhetor__metric">2 tasks</div>
+              </div>
+            </div>
+            <div class="rhetor__component-card" data-component="penia">
+              <div class="rhetor__component-header">
+                <span class="rhetor__component-name">Penia</span>
+                <span class="rhetor__component-status rhetor__component-status--active">●</span>
+              </div>
+              <div class="rhetor__component-metrics">
+                <div class="rhetor__metric">$0.42/hr</div>
+                <div class="rhetor__metric">15% budget</div>
+              </div>
+            </div>
+            <div class="rhetor__component-card" data-component="telos">
+              <div class="rhetor__component-header">
+                <span class="rhetor__component-name">Telos</span>
+                <span class="rhetor__component-status rhetor__component-status--active">●</span>
+              </div>
+              <div class="rhetor__component-metrics">
+                <div class="rhetor__metric">Planning</div>
+                <div class="rhetor__metric">1 session</div>
+              </div>
+            </div>
+            <div class="rhetor__component-card" data-component="prometheus">
+              <div class="rhetor__component-header">
+                <span class="rhetor__component-name">Prometheus</span>
+                <span class="rhetor__component-status rhetor__component-status--active">●</span>
+              </div>
+              <div class="rhetor__component-metrics">
+                <div class="rhetor__metric">Strategic</div>
+                <div class="rhetor__metric">3 analyses</div>
+              </div>
+            </div>
+            <div class="rhetor__component-card" data-component="engram">
+              <div class="rhetor__component-header">
+                <span class="rhetor__component-name">Engram</span>
+                <span class="rhetor__component-status rhetor__component-status--inactive">○</span>
+              </div>
+              <div class="rhetor__component-metrics">
+                <div class="rhetor__metric">Memory OFF</div>
+                <div class="rhetor__metric">Loading...</div>
+              </div>
+            </div>
+            <div class="rhetor__component-card" data-component="numa">
+              <div class="rhetor__component-header">
+                <span class="rhetor__component-name">Numa</span>
+                <span class="rhetor__component-status rhetor__component-status--active">●</span>
+              </div>
+              <div class="rhetor__component-metrics">
+                <div class="rhetor__metric">Reasoning</div>
+                <div class="rhetor__metric">5 queries</div>
+              </div>
+            </div>
+            <div class="rhetor__component-card" data-component="hephaestus">
+              <div class="rhetor__component-header">
+                <span class="rhetor__component-name">Hephaestus</span>
+                <span class="rhetor__component-status rhetor__component-status--active">●</span>
+              </div>
+              <div class="rhetor__component-metrics">
+                <div class="rhetor__metric">UI Active</div>
+                <div class="rhetor__metric">2 users</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Lower Section with Specialists and Token Usage -->
+        <div class="rhetor__dashboard-lower">
+          <!-- Active AI Specialists -->
+          <div class="rhetor__dashboard-section rhetor__dashboard-section--half">
+            <h3 class="rhetor__dashboard-subtitle">Active AI Specialists</h3>
+            <div class="rhetor__specialist-list" id="dashboard-specialist-list">
+              <!-- Specialists will be populated here -->
+            </div>
+          </div>
+          
+          <!-- Token Usage -->
+          <div class="rhetor__dashboard-section rhetor__dashboard-section--half">
+            <h3 class="rhetor__dashboard-subtitle">Token Usage (24h)</h3>
+            <div class="rhetor__token-stats" id="dashboard-token-stats">
+              <!-- Token stats will be populated here -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- AI Specialists Tab (No longer default) -->
+    <div id="specialists-panel" class="rhetor__panel" 
+         data-tekton-panel="specialists"
+         data-tekton-panel-for="Specialists"
+         data-tekton-panel-component="rhetor"
+         data-tekton-panel-active="false"
+         style="display: none;">
       <div class="rhetor__section-header">
         <h2>AI Specialists</h2>
         <div class="rhetor__controls">
@@ -274,6 +426,48 @@
             </div>
           </div>
         </div>
+      </div>
+    </div>
+    
+    <!-- Models Tab -->
+    <div id="models-panel" class="rhetor__panel" style="display: none;"
+         data-tekton-panel="models"
+         data-tekton-panel-for="Models"
+         data-tekton-panel-component="rhetor"
+         data-tekton-panel-active="false">
+      <div class="rhetor__section-header">
+        <h2>Models & Providers</h2>
+      </div>
+      <div class="rhetor__empty-state">
+        <p>Model management interface coming soon...</p>
+      </div>
+    </div>
+    
+    <!-- Prompts Tab -->
+    <div id="prompts-panel" class="rhetor__panel" style="display: none;"
+         data-tekton-panel="prompts"
+         data-tekton-panel-for="Prompts"
+         data-tekton-panel-component="rhetor"
+         data-tekton-panel-active="false">
+      <div class="rhetor__section-header">
+        <h2>Prompt Engineering</h2>
+      </div>
+      <div class="rhetor__empty-state">
+        <p>Prompt template management coming soon...</p>
+      </div>
+    </div>
+    
+    <!-- Contexts Tab -->
+    <div id="contexts-panel" class="rhetor__panel" style="display: none;"
+         data-tekton-panel="contexts"
+         data-tekton-panel-for="Contexts"
+         data-tekton-panel-component="rhetor"
+         data-tekton-panel-active="false">
+      <div class="rhetor__section-header">
+        <h2>Context Management</h2>
+      </div>
+      <div class="rhetor__empty-state">
+        <p>Context window optimization coming soon...</p>
       </div>
     </div>
   </div>

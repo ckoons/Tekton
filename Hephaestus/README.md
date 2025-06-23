@@ -21,6 +21,7 @@ This documentation provides comprehensive information about the Hephaestus UI co
   - Tools: CodeReader, BrowserVerifier, Comparator, Navigator, SafeTester
   - Launch with: `./run_mcp.sh`
   - Full docs: `/MetaData/TektonDocumentation/Guides/UIDevToolsV2/`
+- **[How Tekton UI Works](./ui/docs/HowTektonUIWorks.md)** - Implementation details and lessons learned
 - **[Instrumentation Status](./docs/INSTRUMENTATION_STATUS.md)** - Component instrumentation progress
 - **[Debug Instrumentation](./ui/server/README_DEBUG.md)** - Python debug system
 

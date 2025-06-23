@@ -1,0 +1,208 @@
+/* Rhetor Dashboard Styles */
+
+/* Dashboard Container */
+.rhetor__dashboard {
+  padding: 20px;
+  height: 100%;
+  overflow-y: auto;
+}
+
+.rhetor__dashboard-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0 0 16px 0;
+  color: var(--text-color-primary, #e2e8f0);
+}
+
+.rhetor__dashboard-subtitle {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0 0 12px 0;
+  color: var(--text-color-primary, #e2e8f0);
+}
+
+/* Component Status Grid */
+.rhetor__component-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.rhetor__component-card {
+  background: var(--bg-color-card, rgba(71, 85, 105, 0.3));
+  border: 1px solid var(--border-color, rgba(100, 116, 139, 0.4));
+  border-radius: 6px;
+  padding: 12px;
+  transition: all 0.2s ease;
+}
+
+.rhetor__component-card:hover {
+  border-color: var(--border-hover, rgba(100, 116, 139, 0.6));
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.rhetor__component-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.rhetor__component-name {
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--text-color-primary, #e2e8f0);
+}
+
+.rhetor__component-status {
+  font-size: 12px;
+  line-height: 1;
+}
+
+.rhetor__component-status--active {
+  color: #22c55e;
+}
+
+.rhetor__component-status--warning {
+  color: #f59e0b;
+}
+
+.rhetor__component-status--inactive {
+  color: #ef4444;
+}
+
+.rhetor__component-metrics {
+  font-size: 12px;
+  color: var(--text-color-secondary, #94a3b8);
+}
+
+.rhetor__metric {
+  line-height: 1.4;
+}
+
+/* Lower Dashboard Section */
+.rhetor__dashboard-lower {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+.rhetor__dashboard-section {
+  background: var(--bg-color-card, rgba(71, 85, 105, 0.3));
+  border: 1px solid var(--border-color, rgba(100, 116, 139, 0.4));
+  border-radius: 6px;
+  padding: 16px;
+}
+
+.rhetor__dashboard-section--half {
+  min-height: 200px;
+}
+
+/* Specialist List */
+.rhetor__specialist-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.rhetor__specialist-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 8px;
+  background: var(--bg-color-secondary, rgba(51, 65, 85, 0.3));
+  border-radius: 4px;
+  font-size: 13px;
+}
+
+.rhetor__specialist-name {
+  color: var(--text-color-primary, #e2e8f0);
+  font-family: var(--font-mono, 'SF Mono', Monaco, 'Cascadia Code', monospace);
+}
+
+.rhetor__specialist-model {
+  color: var(--text-color-secondary, #94a3b8);
+  font-size: 12px;
+}
+
+/* Token Usage */
+.rhetor__token-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.rhetor__token-total,
+.rhetor__token-cost {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+}
+
+.rhetor__token-label {
+  color: var(--text-color-secondary, #94a3b8);
+}
+
+.rhetor__token-value {
+  font-weight: 600;
+  color: var(--text-color-primary, #e2e8f0);
+  font-family: var(--font-mono, 'SF Mono', Monaco, 'Cascadia Code', monospace);
+}
+
+.rhetor__token-breakdown {
+  margin-top: 8px;
+}
+
+.rhetor__token-bar {
+  display: flex;
+  height: 32px;
+  background: var(--bg-color-secondary, rgba(51, 65, 85, 0.3));
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.rhetor__token-segment {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 12px;
+  font-weight: 500;
+  position: relative;
+}
+
+.rhetor__token-segment--opus {
+  background: #8b5cf6;
+}
+
+.rhetor__token-segment--sonnet {
+  background: #3b82f6;
+}
+
+.rhetor__token-segment--haiku {
+  background: #10b981;
+}
+
+.rhetor__token-percent {
+  white-space: nowrap;
+  padding: 0 8px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1200px) {
+  .rhetor__component-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (max-width: 960px) {
+  .rhetor__component-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  
+  .rhetor__dashboard-lower {
+    grid-template-columns: 1fr;
+  }
+}

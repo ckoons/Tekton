@@ -47,6 +47,7 @@ A Tekton component is a self-contained service that:
 - [ ] Document the component and its MCP tools
 - [ ] Test with enhanced launcher
 - [ ] Verify all instrumentation is complete
+- [ ] Add architectural landmarks to key decision points (see [Landmarks_Integration_Guide.md](./Landmarks_Integration_Guide.md))
 
 ## Documentation Structure
 
@@ -61,6 +62,7 @@ A Tekton component is a self-contained service that:
 9. **[Testing_Guide.md](./Testing_Guide.md)** - Test-driven development approach
 10. **[Documentation_Requirements.md](./Documentation_Requirements.md)** - Required documentation
 11. **[MCP Implementation Guide](../MCP_IMPLEMENTATION_GUIDE.md)** - Detailed MCP implementation patterns
+12. **[Landmarks_Integration_Guide.md](./Landmarks_Integration_Guide.md)** - How to add architectural landmarks to components
 
 ## Component Directory Structure
 

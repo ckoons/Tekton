@@ -299,9 +299,10 @@
         "scripts/rhetor/rhetor-component.js"
       ],
       "styles": [
-        "styles/rhetor/rhetor-component.css"
+        "styles/rhetor/rhetor-component.css",
+        "styles/rhetor/rhetor-dashboard.css"
       ],
-      "usesShadowDom": true
+      "usesShadowDom": false
     },
     {
       "id": "budget",
