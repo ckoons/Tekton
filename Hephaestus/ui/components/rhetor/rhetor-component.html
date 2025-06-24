@@ -1122,11 +1122,371 @@
          data-tekton-panel="prompts"
          data-tekton-panel-for="Prompts"
          data-tekton-panel-component="rhetor">
-      <div class="rhetor__section-header">
-        <h2>Prompt Engineering</h2>
-      </div>
-      <div class="rhetor__empty-state">
-        <p>Prompt template management coming soon...</p>
+      <div class="rhetor__prompts-container" data-tekton-scrollable="true">
+        <!-- Tekton Component Prompts Grid -->
+        <div class="rhetor__prompts-section">
+          <h3 class="rhetor__prompts-section-title">Tekton Component Prompts</h3>
+          <div class="rhetor__component-grid">
+            <!-- Row 1 -->
+            <div class="rhetor__component-prompt-card rhetor__component-prompt-card--athena" data-component="athena">
+              <div class="rhetor__component-prompt-name">Athena - Knowledge</div>
+            </div>
+            <div class="rhetor__component-prompt-card rhetor__component-prompt-card--apollo" data-component="apollo">
+              <div class="rhetor__component-prompt-name">Apollo - Prediction</div>
+            </div>
+            <div class="rhetor__component-prompt-card rhetor__component-prompt-card--engram" data-component="engram">
+              <div class="rhetor__component-prompt-name">Engram - Memory</div>
+            </div>
+            <div class="rhetor__component-prompt-card rhetor__component-prompt-card--ergon" data-component="ergon">
+              <div class="rhetor__component-prompt-name">Ergon - Agents</div>
+            </div>
+            <div class="rhetor__component-prompt-card rhetor__component-prompt-card--harmonia" data-component="harmonia">
+              <div class="rhetor__component-prompt-name">Harmonia - Workflow</div>
+            </div>
+            <div class="rhetor__component-prompt-card rhetor__component-prompt-card--hephaestus" data-component="hephaestus">
+              <div class="rhetor__component-prompt-name">Hephaestus - UI</div>
+            </div>
+            
+            <!-- Row 2 -->
+            <div class="rhetor__component-prompt-card rhetor__component-prompt-card--hermes" data-component="hermes">
+              <div class="rhetor__component-prompt-name">Hermes - Messaging</div>
+            </div>
+            <div class="rhetor__component-prompt-card rhetor__component-prompt-card--metis" data-component="metis">
+              <div class="rhetor__component-prompt-name">Metis - Tasks</div>
+            </div>
+            <div class="rhetor__component-prompt-card rhetor__component-prompt-card--penia" data-component="penia">
+              <div class="rhetor__component-prompt-name">Penia - Budget</div>
+            </div>
+            <div class="rhetor__component-prompt-card rhetor__component-prompt-card--prometheus" data-component="prometheus">
+              <div class="rhetor__component-prompt-name">Prometheus - Planning</div>
+            </div>
+            <div class="rhetor__component-prompt-card rhetor__component-prompt-card--rhetor" data-component="rhetor">
+              <div class="rhetor__component-prompt-name">Rhetor - LLM</div>
+            </div>
+            <div class="rhetor__component-prompt-card rhetor__component-prompt-card--sophia" data-component="sophia">
+              <div class="rhetor__component-prompt-name">Sophia - ML</div>
+            </div>
+            
+            <!-- Row 3 -->
+            <div class="rhetor__component-prompt-card rhetor__component-prompt-card--synthesis" data-component="synthesis">
+              <div class="rhetor__component-prompt-name">Synthesis - Code</div>
+            </div>
+            <div class="rhetor__component-prompt-card rhetor__component-prompt-card--telos" data-component="telos">
+              <div class="rhetor__component-prompt-name">Telos - Requirements</div>
+            </div>
+            <div class="rhetor__component-prompt-card rhetor__component-prompt-card--terma" data-component="terma">
+              <div class="rhetor__component-prompt-name">Terma - Terminal</div>
+            </div>
+            <!-- Empty slots for future components -->
+            <div class="rhetor__component-prompt-card rhetor__component-prompt-card--empty"></div>
+            <div class="rhetor__component-prompt-card rhetor__component-prompt-card--empty"></div>
+            <div class="rhetor__component-prompt-card rhetor__component-prompt-card--empty"></div>
+          </div>
+        </div>
+        
+        <!-- Multi-Prompt Editor (hidden by default, shown when component selected) -->
+        <div class="rhetor__prompts-section rhetor__multi-prompt-editor" data-component-editor="true">
+          <div class="rhetor__multi-prompt-header">
+            <h3 class="rhetor__prompts-section-title">
+              <span class="rhetor__multi-prompt-component-name">Athena - Knowledge</span> Prompt Configuration
+            </h3>
+            <button class="rhetor__prompts-button rhetor__prompts-button--secondary" 
+                    data-tekton-action="close-component-editor">
+              ← Back to Components
+            </button>
+          </div>
+          
+          <!-- System Prompt -->
+          <div class="rhetor__prompt-layer">
+            <div class="rhetor__prompt-layer-header">
+              <div class="rhetor__prompt-layer-info">
+                <h4 class="rhetor__prompt-layer-title">System Prompt</h4>
+                <span class="rhetor__prompt-layer-desc">Base AI behavior and capabilities</span>
+              </div>
+              <div class="rhetor__prompt-layer-actions">
+                <button class="rhetor__prompt-layer-action" title="Edit">✏️</button>
+                <button class="rhetor__prompt-layer-action" title="Lock">🔒</button>
+              </div>
+            </div>
+            <textarea class="rhetor__prompt-layer-content" readonly
+                      data-tekton-input="system-prompt">You are an AI assistant with the following capabilities:
+- Advanced reasoning and analysis
+- Code understanding and generation
+- Natural language processing
+- Task decomposition and planning</textarea>
+          </div>
+          
+          <!-- Initial Prompt -->
+          <div class="rhetor__prompt-layer">
+            <div class="rhetor__prompt-layer-header">
+              <div class="rhetor__prompt-layer-info">
+                <h4 class="rhetor__prompt-layer-title">Initial Prompt (Tekton Identity)</h4>
+                <span class="rhetor__prompt-layer-desc">Platform purpose, component role, success criteria</span>
+              </div>
+              <div class="rhetor__prompt-layer-actions">
+                <button class="rhetor__prompt-layer-action" title="Edit">✏️</button>
+                <button class="rhetor__prompt-layer-action" title="Lock">🔒</button>
+              </div>
+            </div>
+            <textarea class="rhetor__prompt-layer-content"
+                      data-tekton-input="initial-prompt">You are [Component Name], the [Component Role] component of the Tekton platform.
+
+TEKTON PLATFORM PURPOSE:
+Tekton is a Multi-AI Engineering Platform designed to study AI-enabled software engineering, AI cognition with computational spectral analysis and catastrophe theory, structured memory systems, and collaborative AI development.
+
+YOUR ROLE:
+- [Primary responsibility 1]
+- [Primary responsibility 2]
+- [Primary responsibility 3]
+
+SUCCESS CRITERIA:
+- [Success metric 1]
+- [Success metric 2]
+- [Success metric 3]</textarea>
+          </div>
+          
+          <!-- Component Prompt -->
+          <div class="rhetor__prompt-layer">
+            <div class="rhetor__prompt-layer-header">
+              <div class="rhetor__prompt-layer-info">
+                <h4 class="rhetor__prompt-layer-title">Component Prompt</h4>
+                <span class="rhetor__prompt-layer-desc">Component-specific directives and behavior</span>
+              </div>
+              <div class="rhetor__prompt-layer-actions">
+                <button class="rhetor__prompt-layer-action" title="Edit">✏️</button>
+                <button class="rhetor__prompt-layer-action" title="Lock">🔒</button>
+              </div>
+            </div>
+            <textarea class="rhetor__prompt-layer-content"
+                      data-tekton-input="component-prompt">As [Component Name], you should:
+- [Specific directive 1]
+- [Specific directive 2]
+- [Integration point with other components]
+- [Technical implementation detail]
+- [Performance requirement]</textarea>
+          </div>
+          
+          <!-- Task-Specific Prompt -->
+          <div class="rhetor__prompt-layer">
+            <div class="rhetor__prompt-layer-header">
+              <div class="rhetor__prompt-layer-info">
+                <h4 class="rhetor__prompt-layer-title">Task-Specific Prompt</h4>
+                <span class="rhetor__prompt-layer-desc">Current task or query (changes each turn)</span>
+              </div>
+              <div class="rhetor__prompt-layer-actions">
+                <button class="rhetor__prompt-layer-action rhetor__prompt-layer-action--primary" title="Run">▶️</button>
+              </div>
+            </div>
+            <textarea class="rhetor__prompt-layer-content"
+                      data-tekton-input="task-prompt"
+                      placeholder="Enter the specific task or query for this component..."></textarea>
+          </div>
+          
+          <!-- Editor Actions -->
+          <div class="rhetor__multi-prompt-actions">
+            <button class="rhetor__prompts-button rhetor__prompts-button--secondary"
+                    data-tekton-action="cancel-component-prompts">
+              Cancel
+            </button>
+            <button class="rhetor__prompts-button rhetor__prompts-button--primary"
+                    data-tekton-action="save-component-prompts">
+              Save All Changes
+            </button>
+            <button class="rhetor__prompts-button rhetor__prompts-button--primary"
+                    data-tekton-action="apply-component-prompts">
+              Apply to Component
+            </button>
+          </div>
+        </div>
+        
+        <!-- Template Library Section -->
+        <div class="rhetor__prompts-section">
+          <div class="rhetor__prompts-header">
+            <h3 class="rhetor__prompts-section-title">Prompt Templates</h3>
+            <div class="rhetor__prompts-actions">
+              <input type="text" class="rhetor__prompts-search" placeholder="Search templates..." 
+                     data-tekton-input="prompt-search">
+              <button class="rhetor__prompts-button rhetor__prompts-button--primary"
+                      data-tekton-action="create-template">
+                + New Template
+              </button>
+            </div>
+          </div>
+          
+          <!-- Template Categories -->
+          <div class="rhetor__template-categories">
+            <button class="rhetor__category-tab rhetor__category-tab--active" data-category="all">
+              All Templates <span class="rhetor__category-count">24</span>
+            </button>
+            <button class="rhetor__category-tab" data-category="system">
+              System <span class="rhetor__category-count">8</span>
+            </button>
+            <button class="rhetor__category-tab" data-category="task">
+              Task-Specific <span class="rhetor__category-count">6</span>
+            </button>
+            <button class="rhetor__category-tab" data-category="component">
+              Component <span class="rhetor__category-count">7</span>
+            </button>
+            <button class="rhetor__category-tab" data-category="custom">
+              Custom <span class="rhetor__category-count">3</span>
+            </button>
+          </div>
+          
+          <!-- Template Grid -->
+          <div class="rhetor__template-grid">
+            <!-- Example Template Cards -->
+            <div class="rhetor__template-card" data-template-id="1">
+              <div class="rhetor__template-header">
+                <h4 class="rhetor__template-name">Code Review Assistant</h4>
+                <div class="rhetor__template-category">System</div>
+              </div>
+              <p class="rhetor__template-description">
+                Comprehensive code review with focus on quality, performance, and best practices
+              </p>
+              <div class="rhetor__template-meta">
+                <span class="rhetor__template-usage">Used 142 times</span>
+                <span class="rhetor__template-modified">2 days ago</span>
+              </div>
+              <div class="rhetor__template-actions">
+                <button class="rhetor__template-action" title="Edit">✏️</button>
+                <button class="rhetor__template-action" title="Copy">📋</button>
+                <button class="rhetor__template-action" title="Use">▶️</button>
+              </div>
+            </div>
+            
+            <div class="rhetor__template-card" data-template-id="2">
+              <div class="rhetor__template-header">
+                <h4 class="rhetor__template-name">Architecture Analysis</h4>
+                <div class="rhetor__template-category">Task-Specific</div>
+              </div>
+              <p class="rhetor__template-description">
+                Analyze system architecture and provide improvement recommendations
+              </p>
+              <div class="rhetor__template-meta">
+                <span class="rhetor__template-usage">Used 89 times</span>
+                <span class="rhetor__template-modified">1 week ago</span>
+              </div>
+              <div class="rhetor__template-actions">
+                <button class="rhetor__template-action" title="Edit">✏️</button>
+                <button class="rhetor__template-action" title="Copy">📋</button>
+                <button class="rhetor__template-action" title="Use">▶️</button>
+              </div>
+            </div>
+            
+            <div class="rhetor__template-card" data-template-id="3">
+              <div class="rhetor__template-header">
+                <h4 class="rhetor__template-name">Athena Knowledge Query</h4>
+                <div class="rhetor__template-category">Component</div>
+              </div>
+              <p class="rhetor__template-description">
+                Query the Athena knowledge graph for entities and relationships
+              </p>
+              <div class="rhetor__template-meta">
+                <span class="rhetor__template-usage">Used 256 times</span>
+                <span class="rhetor__template-modified">3 hours ago</span>
+              </div>
+              <div class="rhetor__template-actions">
+                <button class="rhetor__template-action" title="Edit">✏️</button>
+                <button class="rhetor__template-action" title="Copy">📋</button>
+                <button class="rhetor__template-action" title="Use">▶️</button>
+              </div>
+            </div>
+            
+            <div class="rhetor__template-card rhetor__template-card--new">
+              <div class="rhetor__template-new-content">
+                <span class="rhetor__template-new-icon">+</span>
+                <span class="rhetor__template-new-text">Create New Template</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Template Editor Section -->
+        <div class="rhetor__prompts-section rhetor__prompts-section--editor">
+          <h3 class="rhetor__prompts-section-title">Template Editor</h3>
+          
+          <div class="rhetor__editor-container">
+            <div class="rhetor__editor-metadata">
+              <input type="text" class="rhetor__editor-input" placeholder="Template Name" 
+                     data-tekton-input="template-name">
+              <textarea class="rhetor__editor-textarea rhetor__editor-textarea--small" 
+                        placeholder="Template Description"
+                        data-tekton-input="template-description"></textarea>
+              <select class="rhetor__editor-select" data-tekton-input="template-category">
+                <option value="">Select Category</option>
+                <option value="system">System</option>
+                <option value="task">Task-Specific</option>
+                <option value="component">Component</option>
+                <option value="custom">Custom</option>
+              </select>
+            </div>
+            
+            <div class="rhetor__editor-main">
+              <div class="rhetor__editor-toolbar">
+                <button class="rhetor__editor-tool" title="Insert Variable">
+                  {x} Variable
+                </button>
+                <button class="rhetor__editor-tool" title="Insert Context">
+                  📄 Context
+                </button>
+                <button class="rhetor__editor-tool" title="Insert Component Reference">
+                  🔧 Component
+                </button>
+                <span class="rhetor__editor-spacer"></span>
+                <button class="rhetor__editor-tool" title="Preview">
+                  👁️ Preview
+                </button>
+              </div>
+              
+              <textarea class="rhetor__editor-textarea rhetor__editor-textarea--main" 
+                        placeholder="Enter your prompt template here...&#10;&#10;Use {variable_name} for variables&#10;Use {{context:name}} for context references&#10;Use [[component:name]] for component references"
+                        data-tekton-input="template-content"></textarea>
+              
+              <div class="rhetor__editor-variables">
+                <h4 class="rhetor__editor-subtitle">Detected Variables</h4>
+                <div class="rhetor__variable-list">
+                  <span class="rhetor__variable-tag">{user_request}</span>
+                  <span class="rhetor__variable-tag">{code_context}</span>
+                  <span class="rhetor__variable-tag">{component_state}</span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="rhetor__editor-actions">
+              <button class="rhetor__prompts-button rhetor__prompts-button--secondary"
+                      data-tekton-action="cancel-template">
+                Cancel
+              </button>
+              <button class="rhetor__prompts-button rhetor__prompts-button--primary"
+                      data-tekton-action="save-template">
+                Save Template
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Quick Actions Section -->
+        <div class="rhetor__prompts-section rhetor__prompts-section--actions">
+          <h3 class="rhetor__prompts-section-title">Quick Actions</h3>
+          <div class="rhetor__quick-actions">
+            <button class="rhetor__quick-action">
+              <span class="rhetor__quick-action-icon">📥</span>
+              <span class="rhetor__quick-action-text">Import Templates</span>
+            </button>
+            <button class="rhetor__quick-action">
+              <span class="rhetor__quick-action-icon">📤</span>
+              <span class="rhetor__quick-action-text">Export Templates</span>
+            </button>
+            <button class="rhetor__quick-action">
+              <span class="rhetor__quick-action-icon">🔄</span>
+              <span class="rhetor__quick-action-text">Sync with Team</span>
+            </button>
+            <button class="rhetor__quick-action">
+              <span class="rhetor__quick-action-icon">📊</span>
+              <span class="rhetor__quick-action-text">Usage Analytics</span>
+            </button>
+          </div>
+        </div>
       </div>
     </div>
     
@@ -2317,6 +2677,631 @@
     color: var(--text-primary, #f0f0f0);
   }
 
+  /* Prompts Tab Styles */
+  .rhetor__prompts-container {
+    padding: 0;
+    width: 100%;
+    height: calc(100% - 70px); /* Account for footer */
+    overflow-y: auto;
+    padding-bottom: 20px;
+  }
+
+  .rhetor__prompts-section {
+    background-color: var(--bg-primary, #1e1e2e);
+    border: none;
+    border-radius: 0;
+    padding: 20px;
+    border-bottom: 1px solid var(--border-color, #444444);
+  }
+
+  .rhetor__prompts-section--editor {
+    background-color: #000000;
+  }
+
+  .rhetor__prompts-section--actions {
+    border-bottom: none;
+  }
+
+  .rhetor__prompts-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+
+  .rhetor__prompts-section-title {
+    margin: 0;
+    color: var(--text-primary, #f0f0f0);
+    font-size: 1.1rem;
+    font-weight: 600;
+  }
+
+  /* Component Prompts Grid */
+  .rhetor__component-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 16px;
+    margin-top: 20px;
+  }
+
+  .rhetor__component-prompt-card {
+    background-color: #000000;
+    border: 1px solid var(--border-color, #444444);
+    border-radius: 4px;
+    padding: 8px 12px;
+    text-align: center;
+    transition: all 0.2s ease;
+    cursor: pointer;
+  }
+
+  .rhetor__component-prompt-card:hover {
+    border-color: var(--color-primary, #673AB7);
+    transform: translateY(-2px);
+  }
+
+  .rhetor__component-prompt-card--empty {
+    opacity: 0.3;
+    cursor: default;
+  }
+
+  .rhetor__component-prompt-card--empty:hover {
+    transform: none;
+    border-color: var(--border-color, #444444);
+  }
+
+  .rhetor__component-prompt-name {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--text-primary, #f0f0f0);
+    margin: 0;
+  }
+
+  /* Component-specific colors */
+  .rhetor__component-prompt-card--athena {
+    background-color: #1a237e;
+    border-color: #3949ab;
+  }
+  .rhetor__component-prompt-card--athena:hover {
+    background-color: #283593;
+  }
+
+  .rhetor__component-prompt-card--apollo {
+    background-color: #f57c00;
+    border-color: #ff9800;
+  }
+  .rhetor__component-prompt-card--apollo:hover {
+    background-color: #ff8f00;
+  }
+
+  .rhetor__component-prompt-card--engram {
+    background-color: #00695c;
+    border-color: #00897b;
+  }
+  .rhetor__component-prompt-card--engram:hover {
+    background-color: #00796b;
+  }
+
+  .rhetor__component-prompt-card--ergon {
+    background-color: #6a1b9a;
+    border-color: #8e24aa;
+  }
+  .rhetor__component-prompt-card--ergon:hover {
+    background-color: #7b1fa2;
+  }
+
+  .rhetor__component-prompt-card--harmonia {
+    background-color: #c62828;
+    border-color: #e53935;
+  }
+  .rhetor__component-prompt-card--harmonia:hover {
+    background-color: #d32f2f;
+  }
+
+  .rhetor__component-prompt-card--hephaestus {
+    background-color: #795548;
+    border-color: #8d6e63;
+  }
+  .rhetor__component-prompt-card--hephaestus:hover {
+    background-color: #6d4c41;
+  }
+
+  .rhetor__component-prompt-card--hermes {
+    background-color: #00838f;
+    border-color: #0097a7;
+  }
+  .rhetor__component-prompt-card--hermes:hover {
+    background-color: #00acc1;
+  }
+
+  .rhetor__component-prompt-card--metis {
+    background-color: #2e7d32;
+    border-color: #43a047;
+  }
+  .rhetor__component-prompt-card--metis:hover {
+    background-color: #388e3c;
+  }
+
+  .rhetor__component-prompt-card--penia {
+    background-color: #fbc02d;
+    border-color: #fdd835;
+    color: #000000;
+  }
+  .rhetor__component-prompt-card--penia:hover {
+    background-color: #f9a825;
+  }
+
+  .rhetor__component-prompt-card--prometheus {
+    background-color: #d84315;
+    border-color: #ff5722;
+  }
+  .rhetor__component-prompt-card--prometheus:hover {
+    background-color: #e64a19;
+  }
+
+  .rhetor__component-prompt-card--rhetor {
+    background-color: #4a148c;
+    border-color: #6a1b9a;
+  }
+  .rhetor__component-prompt-card--rhetor:hover {
+    background-color: #6a1b9a;
+  }
+
+  .rhetor__component-prompt-card--sophia {
+    background-color: #311b92;
+    border-color: #512da8;
+  }
+  .rhetor__component-prompt-card--sophia:hover {
+    background-color: #4527a0;
+  }
+
+  .rhetor__component-prompt-card--synthesis {
+    background-color: #455a64;
+    border-color: #607d8b;
+  }
+  .rhetor__component-prompt-card--synthesis:hover {
+    background-color: #546e7a;
+  }
+
+  .rhetor__component-prompt-card--telos {
+    background-color: #0d47a1;
+    border-color: #1976d2;
+  }
+  .rhetor__component-prompt-card--telos:hover {
+    background-color: #1565c0;
+  }
+
+  .rhetor__component-prompt-card--terma {
+    background-color: #263238;
+    border-color: #37474f;
+  }
+  .rhetor__component-prompt-card--terma:hover {
+    background-color: #37474f;
+  }
+
+  /* Multi-Prompt Editor */
+  .rhetor__multi-prompt-editor {
+    background-color: #000000;
+    border-top: 2px solid var(--color-primary, #673AB7);
+  }
+
+  .rhetor__multi-prompt-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+
+  .rhetor__multi-prompt-component-name {
+    color: var(--color-primary, #673AB7);
+  }
+
+  .rhetor__prompt-layer {
+    background-color: var(--bg-primary, #1e1e2e);
+    border: 1px solid var(--border-color, #444444);
+    border-radius: 8px;
+    margin-bottom: 16px;
+    overflow: hidden;
+  }
+
+  .rhetor__prompt-layer-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    background-color: var(--bg-secondary, #252535);
+    border-bottom: 1px solid var(--border-color, #444444);
+  }
+
+  .rhetor__prompt-layer-info {
+    flex: 1;
+  }
+
+  .rhetor__prompt-layer-title {
+    margin: 0;
+    font-size: 1rem;
+    color: var(--text-primary, #f0f0f0);
+  }
+
+  .rhetor__prompt-layer-desc {
+    font-size: 0.85rem;
+    color: var(--text-secondary, #aaaaaa);
+  }
+
+  .rhetor__prompt-layer-actions {
+    display: flex;
+    gap: 8px;
+  }
+
+  .rhetor__prompt-layer-action {
+    padding: 6px 10px;
+    background-color: #000000;
+    border: 1px solid var(--border-color, #444444);
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+  }
+
+  .rhetor__prompt-layer-action:hover {
+    background-color: var(--bg-primary, #1e1e2e);
+    border-color: var(--color-primary, #673AB7);
+  }
+
+  .rhetor__prompt-layer-action--primary {
+    background-color: var(--color-primary, #673AB7);
+    border-color: var(--color-primary, #673AB7);
+    color: white;
+  }
+
+  .rhetor__prompt-layer-action--primary:hover {
+    background-color: #5e35a8;
+  }
+
+  .rhetor__prompt-layer-content {
+    padding: 16px;
+    background-color: #000000;
+    border: none;
+    color: var(--text-primary, #f0f0f0);
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    width: 100%;
+    min-height: 180px;
+    resize: vertical;
+  }
+
+  .rhetor__prompt-layer-content[readonly] {
+    background-color: #0a0a0a;
+    opacity: 0.8;
+  }
+
+  .rhetor__multi-prompt-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+    margin-top: 20px;
+  }
+
+  .rhetor__prompts-actions {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+  }
+
+  .rhetor__prompts-search {
+    padding: 8px 12px;
+    background-color: var(--bg-secondary, #252535);
+    border: 1px solid var(--border-color, #444444);
+    border-radius: 4px;
+    color: var(--text-primary, #f0f0f0);
+    width: 250px;
+  }
+
+  .rhetor__prompts-button {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+  }
+
+  .rhetor__prompts-button--primary {
+    background-color: var(--color-primary, #673AB7);
+    color: white;
+  }
+
+  .rhetor__prompts-button--primary:hover {
+    background-color: #5e35a8;
+  }
+
+  .rhetor__prompts-button--secondary {
+    background-color: var(--bg-secondary, #252535);
+    color: var(--text-primary, #f0f0f0);
+    border: 1px solid var(--border-color, #444444);
+  }
+
+  .rhetor__prompts-button--secondary:hover {
+    background-color: #2a2a3a;
+  }
+
+  /* Template Categories */
+  .rhetor__template-categories {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid var(--border-color, #444444);
+    padding-bottom: 0;
+  }
+
+  .rhetor__category-tab {
+    padding: 10px 16px;
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    color: var(--text-secondary, #aaaaaa);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .rhetor__category-tab:hover {
+    color: var(--text-primary, #f0f0f0);
+  }
+
+  .rhetor__category-tab--active {
+    color: var(--color-primary, #673AB7);
+    border-bottom-color: var(--color-primary, #673AB7);
+  }
+
+  .rhetor__category-count {
+    background-color: var(--bg-secondary, #252535);
+    padding: 2px 6px;
+    border-radius: 10px;
+    font-size: 0.8rem;
+  }
+
+  /* Template Grid */
+  .rhetor__template-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 16px;
+  }
+
+  .rhetor__template-card {
+    background-color: #000000;
+    border: 1px solid var(--border-color, #444444);
+    border-radius: 8px;
+    padding: 16px;
+    transition: all 0.2s ease;
+    cursor: pointer;
+  }
+
+  .rhetor__template-card:hover {
+    border-color: var(--color-primary, #673AB7);
+    transform: translateY(-2px);
+  }
+
+  .rhetor__template-card--new {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 150px;
+    border-style: dashed;
+  }
+
+  .rhetor__template-new-content {
+    text-align: center;
+    color: var(--text-secondary, #aaaaaa);
+  }
+
+  .rhetor__template-new-icon {
+    display: block;
+    font-size: 2rem;
+    margin-bottom: 8px;
+  }
+
+  .rhetor__template-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 8px;
+  }
+
+  .rhetor__template-name {
+    margin: 0;
+    font-size: 1rem;
+    color: var(--text-primary, #f0f0f0);
+  }
+
+  .rhetor__template-category {
+    padding: 4px 8px;
+    background-color: var(--bg-secondary, #252535);
+    border-radius: 4px;
+    font-size: 0.75rem;
+    color: var(--color-primary, #673AB7);
+  }
+
+  .rhetor__template-description {
+    margin: 0 0 12px 0;
+    font-size: 0.85rem;
+    color: var(--text-secondary, #aaaaaa);
+    line-height: 1.4;
+  }
+
+  .rhetor__template-meta {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.75rem;
+    color: var(--text-secondary, #666666);
+    margin-bottom: 12px;
+  }
+
+  .rhetor__template-actions {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+  }
+
+  .rhetor__template-action {
+    padding: 6px 10px;
+    background-color: var(--bg-secondary, #252535);
+    border: 1px solid var(--border-color, #444444);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 0.9rem;
+  }
+
+  .rhetor__template-action:hover {
+    background-color: #2a2a3a;
+    border-color: var(--color-primary, #673AB7);
+  }
+
+  /* Template Editor */
+  .rhetor__editor-container {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: 20px;
+  }
+
+  .rhetor__editor-metadata {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .rhetor__editor-input,
+  .rhetor__editor-textarea,
+  .rhetor__editor-select {
+    padding: 10px;
+    background-color: var(--bg-secondary, #252535);
+    border: 1px solid var(--border-color, #444444);
+    border-radius: 4px;
+    color: var(--text-primary, #f0f0f0);
+    font-family: inherit;
+  }
+
+  .rhetor__editor-textarea--small {
+    min-height: 80px;
+    resize: vertical;
+  }
+
+  .rhetor__editor-textarea--main {
+    min-height: 300px;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    font-size: 0.9rem;
+    line-height: 1.5;
+  }
+
+  .rhetor__editor-main {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .rhetor__editor-toolbar {
+    display: flex;
+    gap: 8px;
+    padding: 8px;
+    background-color: var(--bg-secondary, #252535);
+    border-radius: 4px;
+    align-items: center;
+  }
+
+  .rhetor__editor-tool {
+    padding: 6px 12px;
+    background-color: #000000;
+    border: 1px solid var(--border-color, #444444);
+    border-radius: 4px;
+    cursor: pointer;
+    color: var(--text-primary, #f0f0f0);
+    font-size: 0.85rem;
+    transition: all 0.2s ease;
+  }
+
+  .rhetor__editor-tool:hover {
+    background-color: var(--bg-primary, #1e1e2e);
+    border-color: var(--color-primary, #673AB7);
+  }
+
+  .rhetor__editor-spacer {
+    flex: 1;
+  }
+
+  .rhetor__editor-variables {
+    padding: 12px;
+    background-color: var(--bg-secondary, #252535);
+    border-radius: 4px;
+  }
+
+  .rhetor__editor-subtitle {
+    margin: 0 0 8px 0;
+    font-size: 0.9rem;
+    color: var(--text-secondary, #aaaaaa);
+  }
+
+  .rhetor__variable-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .rhetor__variable-tag {
+    padding: 4px 8px;
+    background-color: #000000;
+    border: 1px solid var(--border-color, #444444);
+    border-radius: 4px;
+    font-family: monospace;
+    font-size: 0.85rem;
+    color: var(--color-primary, #673AB7);
+  }
+
+  .rhetor__editor-actions {
+    grid-column: 1 / -1;
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+    margin-top: 20px;
+  }
+
+  /* Quick Actions */
+  .rhetor__quick-actions {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 12px;
+  }
+
+  .rhetor__quick-action {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 20px;
+    background-color: #000000;
+    border: 1px solid var(--border-color, #444444);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .rhetor__quick-action:hover {
+    border-color: var(--color-primary, #673AB7);
+    transform: translateY(-2px);
+  }
+
+  .rhetor__quick-action-icon {
+    font-size: 1.5rem;
+  }
+
+  .rhetor__quick-action-text {
+    font-size: 0.9rem;
+    color: var(--text-primary, #f0f0f0);
+  }
+
   /* Responsive adjustments */
   @media (max-width: 768px) {
     .rhetor__template-list {
@@ -2343,6 +3328,14 @@
     
     .rhetor__matrix-container {
       font-size: 0.85rem;
+    }
+    
+    .rhetor__component-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+    
+    .rhetor__editor-container {
+      grid-template-columns: 1fr;
     }
   }
 </style>
