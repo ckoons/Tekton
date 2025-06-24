@@ -386,7 +386,7 @@ class EnhancedComponentLauncher:
             health = await self.enhanced_health_check("ui_dev_tools", port)
             if health.healthy:
                 self.log(f"Already running and healthy", "success", "ui_dev_tools")
-                return LaunchResult(
+                result = LaunchResult(
                     component_name="ui_dev_tools",
                     success=True,
                     state=ComponentState.HEALTHY,
@@ -396,6 +396,9 @@ class EnhancedComponentLauncher:
                     health_check_time=health.response_time,
                     log_file=self.get_log_file_path("ui_dev_tools")
                 )
+                # Register with monitoring so it counts as successful
+                self.launched_components["ui_dev_tools"] = result
+                return result
             else:
                 # Kill unhealthy process
                 self.log(f"Killing unhealthy process on port {port}", "warning", "ui_dev_tools")
@@ -559,7 +562,7 @@ class EnhancedComponentLauncher:
                 health = await self.enhanced_health_check(component_name, port)
                 if health.healthy:
                     self.log(f"Already running and healthy", "success", component_name)
-                    return LaunchResult(
+                    result = LaunchResult(
                         component_name=component_name,
                         success=True,
                         state=ComponentState.HEALTHY,
@@ -569,6 +572,9 @@ class EnhancedComponentLauncher:
                         health_check_time=health.response_time,
                         log_file=self.get_log_file_path(component_name)
                     )
+                    # Register with monitoring so it counts as successful
+                    self.launched_components[component_name] = result
+                    return result
                 else:
                     # Kill unhealthy process
                     self.log(f"Killing unhealthy process on port {port}", "warning", component_name)

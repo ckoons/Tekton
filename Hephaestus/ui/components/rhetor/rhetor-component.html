@@ -4,7 +4,17 @@
   agency/alignment controls, and chat interfaces.
   
   IMPORTANT: Follows Component Implementation Standard in /MetaData/UI/ComponentImplementationStandard.md
+  UPDATE: Converted to radio button pattern for reliable tab switching (like Settings component)
 -->
+
+<!-- Hidden radio controls for CSS-only tab functionality -->
+<input type="radio" name="rhetor-tab" id="tab-dashboard" checked style="display: none;">
+<input type="radio" name="rhetor-tab" id="tab-models" style="display: none;">
+<input type="radio" name="rhetor-tab" id="tab-prompts" style="display: none;">
+<input type="radio" name="rhetor-tab" id="tab-contexts" style="display: none;">
+<input type="radio" name="rhetor-tab" id="tab-specialists" style="display: none;">
+<input type="radio" name="rhetor-tab" id="tab-llmchat" style="display: none;">
+<input type="radio" name="rhetor-tab" id="tab-teamchat" style="display: none;">
 <div class="rhetor" 
      data-tekton-area="rhetor"
      data-tekton-component="rhetor"
@@ -26,68 +36,54 @@
   <div class="rhetor__menu-bar" data-tekton-zone="menu" data-tekton-nav="component-menu">
     <div class="rhetor__tabs">
       <!-- Dashboard (new default) -->
-      <div class="rhetor__tab rhetor__tab--active" data-tab="dashboard" 
-           data-tekton-menu-item="Dashboard"
-           data-tekton-menu-component="rhetor"
-           data-tekton-menu-active="true"
-           data-tekton-menu-panel="dashboard-panel"
-           onclick="rhetor_switchTab('dashboard'); return false;">
+      <label for="tab-dashboard" class="rhetor__tab" data-tab="dashboard" 
+             data-tekton-menu-item="Dashboard"
+             data-tekton-menu-component="rhetor"
+             data-tekton-menu-panel="dashboard-panel">
         <span class="rhetor__tab-label">Dashboard</span>
-      </div>
+      </label>
       <!-- Models (new) -->
-      <div class="rhetor__tab" data-tab="models" 
-           data-tekton-menu-item="Models"
-           data-tekton-menu-component="rhetor"
-           data-tekton-menu-active="false"
-           data-tekton-menu-panel="models-panel"
-           onclick="rhetor_switchTab('models'); return false;">
+      <label for="tab-models" class="rhetor__tab" data-tab="models" 
+             data-tekton-menu-item="Models"
+             data-tekton-menu-component="rhetor"
+             data-tekton-menu-panel="models-panel">
         <span class="rhetor__tab-label">Models</span>
-      </div>
+      </label>
       <!-- Prompts (new) -->
-      <div class="rhetor__tab" data-tab="prompts" 
-           data-tekton-menu-item="Prompts"
-           data-tekton-menu-component="rhetor"
-           data-tekton-menu-active="false"
-           data-tekton-menu-panel="prompts-panel"
-           onclick="rhetor_switchTab('prompts'); return false;">
+      <label for="tab-prompts" class="rhetor__tab" data-tab="prompts" 
+             data-tekton-menu-item="Prompts"
+             data-tekton-menu-component="rhetor"
+             data-tekton-menu-panel="prompts-panel">
         <span class="rhetor__tab-label">Prompts</span>
-      </div>
+      </label>
       <!-- Contexts (new) -->
-      <div class="rhetor__tab" data-tab="contexts" 
-           data-tekton-menu-item="Contexts"
-           data-tekton-menu-component="rhetor"
-           data-tekton-menu-active="false"
-           data-tekton-menu-panel="contexts-panel"
-           onclick="rhetor_switchTab('contexts'); return false;">
+      <label for="tab-contexts" class="rhetor__tab" data-tab="contexts" 
+             data-tekton-menu-item="Contexts"
+             data-tekton-menu-component="rhetor"
+             data-tekton-menu-panel="contexts-panel">
         <span class="rhetor__tab-label">Contexts</span>
-      </div>
+      </label>
       <!-- Specialists (renamed from AI Specialists) -->
-      <div class="rhetor__tab" data-tab="specialists" 
-           data-tekton-menu-item="Specialists"
-           data-tekton-menu-component="rhetor"
-           data-tekton-menu-active="false"
-           data-tekton-menu-panel="specialists-panel"
-           onclick="rhetor_switchTab('specialists'); return false;">
+      <label for="tab-specialists" class="rhetor__tab" data-tab="specialists" 
+             data-tekton-menu-item="Specialists"
+             data-tekton-menu-component="rhetor"
+             data-tekton-menu-panel="specialists-panel">
         <span class="rhetor__tab-label">Specialists</span>
-      </div>
+      </label>
       <!-- LLM Chat (moved to right) -->
-      <div class="rhetor__tab" data-tab="llmchat" 
-           data-tekton-menu-item="LLM Chat"
-           data-tekton-menu-component="rhetor"
-           data-tekton-menu-active="false"
-           data-tekton-menu-panel="llmchat-panel"
-           onclick="rhetor_switchTab('llmchat'); return false;">
+      <label for="tab-llmchat" class="rhetor__tab" data-tab="llmchat" 
+             data-tekton-menu-item="LLM Chat"
+             data-tekton-menu-component="rhetor"
+             data-tekton-menu-panel="llmchat-panel">
         <span class="rhetor__tab-label">LLM Chat</span>
-      </div>
+      </label>
       <!-- Team Chat (rightmost) -->
-      <div class="rhetor__tab" data-tab="teamchat" 
-           data-tekton-menu-item="Team Chat"
-           data-tekton-menu-component="rhetor"
-           data-tekton-menu-active="false"
-           data-tekton-menu-panel="teamchat-panel"
-           onclick="rhetor_switchTab('teamchat'); return false;">
+      <label for="tab-teamchat" class="rhetor__tab" data-tab="teamchat" 
+             data-tekton-menu-item="Team Chat"
+             data-tekton-menu-component="rhetor"
+             data-tekton-menu-panel="teamchat-panel">
         <span class="rhetor__tab-label">Team Chat</span>
-      </div>
+      </label>
     </div>
     <div class="rhetor__actions">
       <button id="clear-chat-btn" class="rhetor__action-button" style="display: none;" onclick="rhetor_clearChat(); return false;"
@@ -101,12 +97,10 @@
   <!-- Content Area with Panels -->
   <div class="rhetor__content" data-tekton-zone="content" data-tekton-scrollable="true">
     <!-- Dashboard Tab (New Default) -->
-    <div id="dashboard-panel" class="rhetor__panel rhetor__panel--active" 
+    <div id="dashboard-panel" class="rhetor__panel" 
          data-tekton-panel="dashboard"
          data-tekton-panel-for="Dashboard"
-         data-tekton-panel-component="rhetor"
-         data-tekton-panel-active="true"
-         style="display: block;">
+         data-tekton-panel-component="rhetor">
       <div class="rhetor__dashboard">
         <!-- Component Status Grid -->
         <div class="rhetor__dashboard-section">
@@ -334,9 +328,7 @@
     <div id="specialists-panel" class="rhetor__panel" 
          data-tekton-panel="specialists"
          data-tekton-panel-for="Specialists"
-         data-tekton-panel-component="rhetor"
-         data-tekton-panel-active="false"
-         style="display: none;">
+         data-tekton-panel-component="rhetor">
       <div class="rhetor__section-header">
         <h2>AI Specialists</h2>
         <div class="rhetor__controls">
@@ -356,7 +348,7 @@
     </div>
     
     <!-- Orchestration Tab -->
-    <div id="orchestration-panel" class="rhetor__panel" style="display: none;">
+    <div id="orchestration-panel" class="rhetor__panel">
       <div class="rhetor__section-header">
         <h2>Orchestration Settings</h2>
       </div>
@@ -413,7 +405,7 @@
     </div>
     
     <!-- Active Sessions Tab -->
-    <div id="sessions-panel" class="rhetor__panel" style="display: none;">
+    <div id="sessions-panel" class="rhetor__panel">
       <div class="rhetor__section-header">
         <h2>Active AI Sessions</h2>
         <div class="rhetor__controls">
@@ -433,7 +425,7 @@
     </div>
     
     <!-- Configuration Tab -->
-    <div id="configuration-panel" class="rhetor__panel" style="display: none;">
+    <div id="configuration-panel" class="rhetor__panel">
       <div class="rhetor__section-header">
         <h2>AI Configuration</h2>
       </div>
@@ -488,7 +480,7 @@
     </div>
     
     <!-- LLM Chat Tab -->
-    <div id="llmchat-panel" class="rhetor__panel" style="display: none;" data-tekton-chat="rhetor-llm" data-tekton-ai="rhetor-orchestrator" data-tekton-ai-ready="false">
+    <div id="llmchat-panel" class="rhetor__panel" data-tekton-chat="rhetor-llm" data-tekton-ai="rhetor-orchestrator" data-tekton-ai-ready="false">
       <div id="llmchat-messages" class="rhetor__chat-messages" data-tekton-element="chat-messages">
         <div class="rhetor__message rhetor__message--system">
           <div class="rhetor__message-content">
@@ -508,7 +500,7 @@
     </div>
     
     <!-- Team Chat Tab -->
-    <div id="teamchat-panel" class="rhetor__panel" style="display: none;">
+    <div id="teamchat-panel" class="rhetor__panel">
       <div id="teamchat-messages" class="rhetor__chat-messages">
         <!-- Welcome message -->
         <div class="rhetor__message rhetor__message--system">
@@ -523,11 +515,10 @@
     </div>
     
     <!-- Models Tab -->
-    <div id="models-panel" class="rhetor__panel" style="display: none;"
+    <div id="models-panel" class="rhetor__panel"
          data-tekton-panel="models"
          data-tekton-panel-for="Models"
-         data-tekton-panel-component="rhetor"
-         data-tekton-panel-active="false">
+         data-tekton-panel-component="rhetor">
       <div class="rhetor__section-header">
         <h2>Models & Providers</h2>
       </div>
@@ -537,11 +528,10 @@
     </div>
     
     <!-- Prompts Tab -->
-    <div id="prompts-panel" class="rhetor__panel" style="display: none;"
+    <div id="prompts-panel" class="rhetor__panel"
          data-tekton-panel="prompts"
          data-tekton-panel-for="Prompts"
-         data-tekton-panel-component="rhetor"
-         data-tekton-panel-active="false">
+         data-tekton-panel-component="rhetor">
       <div class="rhetor__section-header">
         <h2>Prompt Engineering</h2>
       </div>
@@ -551,11 +541,10 @@
     </div>
     
     <!-- Contexts Tab -->
-    <div id="contexts-panel" class="rhetor__panel" style="display: none;"
+    <div id="contexts-panel" class="rhetor__panel"
          data-tekton-panel="contexts"
          data-tekton-panel-for="Contexts"
-         data-tekton-panel-component="rhetor"
-         data-tekton-panel-active="false">
+         data-tekton-panel-component="rhetor">
       <div class="rhetor__section-header">
         <h2>Context Management</h2>
       </div>
@@ -584,6 +573,80 @@
 <!-- Add component-specific styles -->
 <style>
   /* Rhetor component styles using BEM naming convention */
+  
+  /* CSS-Only Tab Switching using Radio Button Pattern */
+  
+  /* Dashboard panel - visible when dashboard radio is checked */
+  #tab-dashboard:checked ~ .rhetor #dashboard-panel {
+    display: block;
+  }
+  
+  /* Models panel - visible when models radio is checked */
+  #tab-models:checked ~ .rhetor #models-panel {
+    display: block;
+  }
+  
+  /* Prompts panel - visible when prompts radio is checked */
+  #tab-prompts:checked ~ .rhetor #prompts-panel {
+    display: block;
+  }
+  
+  /* Contexts panel - visible when contexts radio is checked */
+  #tab-contexts:checked ~ .rhetor #contexts-panel {
+    display: block;
+  }
+  
+  /* Specialists panel - visible when specialists radio is checked */
+  #tab-specialists:checked ~ .rhetor #specialists-panel {
+    display: block;
+  }
+  
+  /* LLM Chat panel - visible when llmchat radio is checked */
+  #tab-llmchat:checked ~ .rhetor #llmchat-panel {
+    display: block;
+  }
+  
+  /* Team Chat panel - visible when teamchat radio is checked */
+  #tab-teamchat:checked ~ .rhetor #teamchat-panel {
+    display: block;
+  }
+  
+  /* Hide all panels by default */
+  #tab-dashboard:not(:checked) ~ .rhetor #dashboard-panel,
+  #tab-models:not(:checked) ~ .rhetor #models-panel,
+  #tab-prompts:not(:checked) ~ .rhetor #prompts-panel,
+  #tab-contexts:not(:checked) ~ .rhetor #contexts-panel,
+  #tab-specialists:not(:checked) ~ .rhetor #specialists-panel,
+  #tab-llmchat:not(:checked) ~ .rhetor #llmchat-panel,
+  #tab-teamchat:not(:checked) ~ .rhetor #teamchat-panel {
+    display: none;
+  }
+  
+  /* Active tab styling */
+  #tab-dashboard:checked ~ .rhetor label[for="tab-dashboard"],
+  #tab-models:checked ~ .rhetor label[for="tab-models"],
+  #tab-prompts:checked ~ .rhetor label[for="tab-prompts"],
+  #tab-contexts:checked ~ .rhetor label[for="tab-contexts"],
+  #tab-specialists:checked ~ .rhetor label[for="tab-specialists"],
+  #tab-llmchat:checked ~ .rhetor label[for="tab-llmchat"],
+  #tab-teamchat:checked ~ .rhetor label[for="tab-teamchat"] {
+    border-bottom-color: var(--color-primary, #673AB7);
+    font-weight: 500;
+  }
+  
+  /* Show/hide clear button based on chat tabs */
+  #tab-llmchat:checked ~ .rhetor #clear-chat-btn,
+  #tab-teamchat:checked ~ .rhetor #clear-chat-btn {
+    display: block !important;
+  }
+  
+  #tab-dashboard:checked ~ .rhetor #clear-chat-btn,
+  #tab-models:checked ~ .rhetor #clear-chat-btn,
+  #tab-prompts:checked ~ .rhetor #clear-chat-btn,
+  #tab-contexts:checked ~ .rhetor #clear-chat-btn,
+  #tab-specialists:checked ~ .rhetor #clear-chat-btn {
+    display: none !important;
+  }
   
   /* Container */
   .rhetor {
@@ -661,6 +724,7 @@
     background-color: var(--bg-hover, #3a3a4a);
   }
   
+  /* Active tab styling now handled by CSS :checked selectors
   .rhetor__tab--active {
     border-bottom-color: var(--color-primary, #673AB7);
     font-weight: 500;
@@ -697,15 +761,11 @@
   }
   
   .rhetor__panel {
-    display: none;
+    display: none; /* Hidden by default, CSS :checked selectors will show */
     height: 100%;
     width: 100%;
     overflow: auto;
     padding: 16px;
-  }
-  
-  .rhetor__panel--active {
-    display: block;
   }
   
   /* Section Headers */
@@ -1336,92 +1396,24 @@ if (window.uiManager) {
     console.log('[RHETOR] Set UI Manager to ignore rhetor component');
 }
 
-// DEFINE TAB SWITCHING FUNCTION
-// CRITICAL: This uses no shared code/utilities to avoid conflicts
-window.rhetor_switchTab = function(tabId) {
-    console.log('[RHETOR] Switching to tab:', tabId);
-    
-    // Force HTML panel visibility
-    const htmlPanelElements = document.querySelectorAll('#html-panel');
-    htmlPanelElements.forEach(panel => {
-        if (panel) panel.style.display = 'block';
-    });
-    
-    try {
-        // Only select elements within rhetor component to avoid conflicts with other components
-        const rhetorContainer = document.querySelector('.rhetor');
-        if (!rhetorContainer) {
-            console.error('[RHETOR] Tab Switch: Cannot find rhetor container');
-            return false;
-        }
-        
-        // Update tab active state - ONLY WITHIN RHETOR CONTAINER
-        const tabs = rhetorContainer.querySelectorAll('.rhetor__tab');
-        tabs.forEach(tab => {
-            if (tab.getAttribute('data-tab') === tabId) {
-                tab.classList.add('rhetor__tab--active');
-            } else {
-                tab.classList.remove('rhetor__tab--active');
-            }
-        });
-        
-        // Update panel visibility - ONLY WITHIN RHETOR CONTAINER
-        const panels = rhetorContainer.querySelectorAll('.rhetor__panel');
-        panels.forEach(panel => {
-            const panelId = panel.id;
-            if (panelId === tabId + '-panel') {
-                panel.style.display = 'block';
-                panel.classList.add('rhetor__panel--active');
-            } else {
-                panel.style.display = 'none';
-                panel.classList.remove('rhetor__panel--active');
-            }
-        });
-        
-        // Update clear button visibility for chat tabs
-        const clearButton = rhetorContainer.querySelector('#clear-chat-btn');
-        if (clearButton) {
-            clearButton.style.display = (tabId === 'llmchat' || tabId === 'teamchat') ? 'block' : 'none';
-        }
-        
-        // Update component state
-        if (window.rhetorComponent) {
-            window.rhetorComponent.state = window.rhetorComponent.state || {};
-            window.rhetorComponent.state.activeTab = tabId;
-            
-            // Call component-specific methods if available
-            if (typeof window.rhetorComponent.updateChatPlaceholder === 'function') {
-                window.rhetorComponent.updateChatPlaceholder(tabId);
-            }
-            
-            if (typeof window.rhetorComponent.loadTabContent === 'function') {
-                window.rhetorComponent.loadTabContent(tabId);
-            }
-            
-            if (typeof window.rhetorComponent.saveComponentState === 'function') {
-                window.rhetorComponent.saveComponentState();
-            }
-        }
-    } catch (err) {
-        console.error('[RHETOR] Error in tab switching:', err);
-    }
-    
-    return false; // Stop event propagation
-};
+// TAB SWITCHING NOW HANDLED BY CSS - NO JS NEEDED
+// The radio button pattern handles all tab switching through CSS :checked selectors
 
 // SEND LLM CHAT FUNCTION
 window.rhetor_sendLLMChat = function() {
     console.log('[RHETOR] Send LLM chat clicked');
     
     const chatInput = document.getElementById('chat-input');
-    const activeTab = document.querySelector('.rhetor__tab--active');
-    
-    if (!chatInput || !activeTab) return;
+    if (!chatInput) return;
     
     const message = chatInput.value.trim();
     if (!message) return;
     
-    const tabId = activeTab.getAttribute('data-tab');
+    // Check which radio button is checked to determine active tab
+    const checkedRadio = document.querySelector('input[name="rhetor-tab"]:checked');
+    if (!checkedRadio) return;
+    
+    const tabId = checkedRadio.id.replace('tab-', '');
     console.log('[RHETOR] Active tab:', tabId, 'Message:', message);
     
     // Only process for llmchat tab
@@ -1485,15 +1477,15 @@ window.rhetor_clearChat = function() {
     console.log('[RHETOR] Clear chat clicked');
     
     try {
-        // Get active tab ID within rhetor container
-        const rhetorContainer = document.querySelector('.rhetor');
-        if (!rhetorContainer) {
-            console.error('[RHETOR] Clear Chat: Cannot find rhetor container');
+        // Get active tab ID using radio button
+        const checkedRadio = document.querySelector('input[name="rhetor-tab"]:checked');
+        if (!checkedRadio) {
+            console.error('[RHETOR] Clear Chat: No tab selected');
             return false;
         }
         
-        const activeTab = rhetorContainer.querySelector('.rhetor__tab--active');
-        const tabId = activeTab ? activeTab.getAttribute('data-tab') : '';
+        const tabId = checkedRadio.id.replace('tab-', '');
+        const rhetorContainer = document.querySelector('.rhetor');
         
         if (tabId === 'llmchat' || tabId === 'teamchat') {
             // Get message container within rhetor container only
