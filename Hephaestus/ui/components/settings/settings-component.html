@@ -24,81 +24,190 @@
      data-tekton-type="component-workspace">
   
   <!-- Component Header -->
-  <div class="settings__header" data-tekton-zone="header">
-    <div class="settings__title-container">
-      <img src="/images/hexagon.jpg" alt="Tekton" class="settings__icon">
-      <h2 class="settings__title">
-        <span class="settings__title-main">Settings</span>
-        <span class="settings__title-sub">System Configuration</span>
+  <div class="settings__header" 
+       data-tekton-zone="header"
+       data-tekton-section="header"
+       data-tekton-element="settings-header">
+    <div class="settings__title-container"
+         data-tekton-element="title-container">
+      <img src="/images/hexagon.jpg" alt="Tekton" class="settings__icon"
+           data-tekton-element="icon"
+           data-tekton-type="image">
+      <h2 class="settings__title"
+          data-tekton-element="title"
+          data-tekton-type="heading">
+        <span class="settings__title-main"
+              data-tekton-element="title-main"
+              data-tekton-text="Settings">Settings</span>
+        <span class="settings__title-sub"
+              data-tekton-element="title-sub"
+              data-tekton-text="System Configuration">System Configuration</span>
       </h2>
     </div>
   </div>
   
   <!-- Tab Navigation - CSS ONLY -->
-  <div class="settings__menu-bar" data-tekton-zone="menu">
-    <div class="settings__tabs">
+  <div class="settings__menu-bar" 
+       data-tekton-zone="menu"
+       data-tekton-nav="component-menu"
+       data-tekton-element="menu-bar">
+    <div class="settings__tabs"
+         data-tekton-nav="tabs"
+         data-tekton-element="tab-container">
       <!-- Theme Tab -->
-      <label for="tab-theme" class="settings__tab">
-        <span class="settings__tab-label">Theme</span>
+      <label for="tab-theme" class="settings__tab"
+             data-tekton-nav-item="theme"
+             data-tekton-nav-target="theme-panel"
+             data-tekton-element="tab"
+             data-tekton-state="active">
+        <span class="settings__tab-label"
+              data-tekton-element="tab-label"
+              data-tekton-text="Theme">Theme</span>
       </label>
       <!-- Interface Tab -->
-      <label for="tab-interface" class="settings__tab">
-        <span class="settings__tab-label">Interface</span>
+      <label for="tab-interface" class="settings__tab"
+             data-tekton-nav-item="interface"
+             data-tekton-nav-target="interface-panel"
+             data-tekton-element="tab"
+             data-tekton-state="inactive">
+        <span class="settings__tab-label"
+              data-tekton-element="tab-label"
+              data-tekton-text="Interface">Interface</span>
       </label>
     </div>
-    <div class="settings__actions">
-      <span class="settings__status">Changes applied instantly</span>
+    <div class="settings__actions"
+         data-tekton-element="actions">
+      <span class="settings__status"
+            data-tekton-element="status"
+            data-tekton-type="message"
+            data-tekton-text="Changes applied instantly">Changes applied instantly</span>
     </div>
   </div>
   
   <!-- Content Area -->
-  <div class="settings__content" data-tekton-zone="content">
+  <div class="settings__content" 
+       data-tekton-zone="content"
+       data-tekton-scrollable="true"
+       data-tekton-element="content-area">
     
     <!-- Theme Panel -->
-    <div class="settings__panel settings__panel--theme">
-      <div class="settings__form">
+    <div class="settings__panel settings__panel--theme"
+         data-tekton-panel="theme"
+         data-tekton-element="panel"
+         data-tekton-state="active">
+      <div class="settings__form"
+           data-tekton-element="form"
+           data-tekton-type="settings-form">
         
         <!-- UI Mode -->
-        <div class="settings__field">
-          <div class="settings__field-label">UI Mode</div>
-          <div class="settings__field-control">
-            <div class="settings__theme-mode">
-              <label for="theme-light" class="settings__theme-mode-button">
-                <span class="settings__theme-mode-icon">☀️</span>
-                <span class="settings__theme-mode-label">Light</span>
+        <div class="settings__field"
+             data-tekton-field="theme-mode"
+             data-tekton-element="field">
+          <div class="settings__field-label"
+               data-tekton-element="field-label"
+               data-tekton-text="UI Mode">UI Mode</div>
+          <div class="settings__field-control"
+               data-tekton-element="field-control">
+            <div class="settings__theme-mode"
+                 data-tekton-control="theme-selector"
+                 data-tekton-element="theme-mode-container">
+              <label for="theme-light" class="settings__theme-mode-button"
+                     data-tekton-option="light"
+                     data-tekton-element="theme-option"
+                     data-tekton-state="inactive">
+                <span class="settings__theme-mode-icon"
+                      data-tekton-element="theme-icon">☀️</span>
+                <span class="settings__theme-mode-label"
+                      data-tekton-element="theme-label"
+                      data-tekton-text="Light">Light</span>
               </label>
-              <label for="theme-dark" class="settings__theme-mode-button">
-                <span class="settings__theme-mode-icon">🌙</span>
-                <span class="settings__theme-mode-label">Dark</span>
+              <label for="theme-dark" class="settings__theme-mode-button"
+                     data-tekton-option="dark"
+                     data-tekton-element="theme-option"
+                     data-tekton-state="inactive">
+                <span class="settings__theme-mode-icon"
+                      data-tekton-element="theme-icon">🌙</span>
+                <span class="settings__theme-mode-label"
+                      data-tekton-element="theme-label"
+                      data-tekton-text="Dark">Dark</span>
               </label>
-              <label for="theme-pure-black" class="settings__theme-mode-button">
-                <span class="settings__theme-mode-icon">⚫</span>
-                <span class="settings__theme-mode-label">Pure Black</span>
+              <label for="theme-pure-black" class="settings__theme-mode-button"
+                     data-tekton-option="pure-black"
+                     data-tekton-element="theme-option"
+                     data-tekton-state="active">
+                <span class="settings__theme-mode-icon"
+                      data-tekton-element="theme-icon">⚫</span>
+                <span class="settings__theme-mode-label"
+                      data-tekton-element="theme-label"
+                      data-tekton-text="Pure Black">Pure Black</span>
               </label>
             </div>
           </div>
         </div>
         
         <!-- Accent Color -->
-        <div class="settings__field">
-          <div class="settings__field-label">Accent Color</div>
-          <div class="settings__field-control">
-            <div class="settings__theme-color">
-              <label for="accent-blue" class="settings__theme-color-button" data-color="blue">
-                <span class="settings__theme-color-dot" style="background-color: #007bff;"></span>
-                <span class="settings__theme-color-label">Blue</span>
+        <div class="settings__field"
+             data-tekton-field="accent-color"
+             data-tekton-element="field">
+          <div class="settings__field-label"
+               data-tekton-element="field-label"
+               data-tekton-text="Accent Color">Accent Color</div>
+          <div class="settings__field-control"
+               data-tekton-element="field-control">
+            <div class="settings__theme-color"
+                 data-tekton-control="accent-selector"
+                 data-tekton-element="accent-color-container">
+              <label for="accent-blue" class="settings__theme-color-button" 
+                     data-color="blue"
+                     data-tekton-option="blue"
+                     data-tekton-element="accent-option"
+                     data-tekton-state="active">
+                <span class="settings__theme-color-dot" 
+                      style="background-color: #007bff;"
+                      data-tekton-element="color-dot"
+                      data-tekton-color="#007bff"></span>
+                <span class="settings__theme-color-label"
+                      data-tekton-element="color-label"
+                      data-tekton-text="Blue">Blue</span>
               </label>
-              <label for="accent-green" class="settings__theme-color-button" data-color="green">
-                <span class="settings__theme-color-dot" style="background-color: #28a745;"></span>
-                <span class="settings__theme-color-label">Green</span>
+              <label for="accent-green" class="settings__theme-color-button" 
+                     data-color="green"
+                     data-tekton-option="green"
+                     data-tekton-element="accent-option"
+                     data-tekton-state="inactive">
+                <span class="settings__theme-color-dot" 
+                      style="background-color: #28a745;"
+                      data-tekton-element="color-dot"
+                      data-tekton-color="#28a745"></span>
+                <span class="settings__theme-color-label"
+                      data-tekton-element="color-label"
+                      data-tekton-text="Green">Green</span>
               </label>
-              <label for="accent-purple" class="settings__theme-color-button" data-color="purple">
-                <span class="settings__theme-color-dot" style="background-color: #6f42c1;"></span>
-                <span class="settings__theme-color-label">Purple</span>
+              <label for="accent-purple" class="settings__theme-color-button" 
+                     data-color="purple"
+                     data-tekton-option="purple"
+                     data-tekton-element="accent-option"
+                     data-tekton-state="inactive">
+                <span class="settings__theme-color-dot" 
+                      style="background-color: #6f42c1;"
+                      data-tekton-element="color-dot"
+                      data-tekton-color="#6f42c1"></span>
+                <span class="settings__theme-color-label"
+                      data-tekton-element="color-label"
+                      data-tekton-text="Purple">Purple</span>
               </label>
-              <label for="accent-orange" class="settings__theme-color-button" data-color="orange">
-                <span class="settings__theme-color-dot" style="background-color: #fd7e14;"></span>
-                <span class="settings__theme-color-label">Orange</span>
+              <label for="accent-orange" class="settings__theme-color-button" 
+                     data-color="orange"
+                     data-tekton-option="orange"
+                     data-tekton-element="accent-option"
+                     data-tekton-state="inactive">
+                <span class="settings__theme-color-dot" 
+                      style="background-color: #fd7e14;"
+                      data-tekton-element="color-dot"
+                      data-tekton-color="#fd7e14"></span>
+                <span class="settings__theme-color-label"
+                      data-tekton-element="color-label"
+                      data-tekton-text="Orange">Orange</span>
               </label>
             </div>
           </div>
@@ -108,30 +217,60 @@
     </div>
     
     <!-- Interface Panel -->
-    <div class="settings__panel settings__panel--interface">
-      <div class="settings__form">
+    <div class="settings__panel settings__panel--interface"
+         data-tekton-panel="interface"
+         data-tekton-element="panel"
+         data-tekton-state="inactive">
+      <div class="settings__form"
+           data-tekton-element="form"
+           data-tekton-type="settings-form">
         
         <!-- Greek Names Toggle -->
-        <div class="settings__field">
-          <div class="settings__field-label">Show Greek Names</div>
-          <div class="settings__field-control">
-            <label for="greek-names-setting" class="settings__toggle">
-              <span class="settings__toggle-slider"></span>
+        <div class="settings__field"
+             data-tekton-field="greek-names"
+             data-tekton-element="field">
+          <div class="settings__field-label"
+               data-tekton-element="field-label"
+               data-tekton-text="Show Greek Names">Show Greek Names</div>
+          <div class="settings__field-control"
+               data-tekton-element="field-control">
+            <label for="greek-names-setting" class="settings__toggle"
+                   data-tekton-control="toggle"
+                   data-tekton-element="toggle-control"
+                   data-tekton-state="unchecked">
+              <span class="settings__toggle-slider"
+                    data-tekton-element="toggle-slider"></span>
             </label>
-            <div class="settings__field-description">
+            <div class="settings__field-description"
+                 data-tekton-element="field-description"
+                 data-tekton-type="help-text">
               Display components with their Greek names (e.g., "Ergon - Agents/Tools/MCP")
             </div>
           </div>
         </div>
         
         <!-- Terminal Font Size -->
-        <div class="settings__field">
-          <div class="settings__field-label">Terminal Font Size</div>
-          <div class="settings__field-control">
-            <select id="terminal-font-setting" class="settings__select">
-              <option value="small">Small</option>
-              <option value="medium" selected>Medium</option>
-              <option value="large">Large</option>
+        <div class="settings__field"
+             data-tekton-field="terminal-font-size"
+             data-tekton-element="field">
+          <div class="settings__field-label"
+               data-tekton-element="field-label"
+               data-tekton-text="Terminal Font Size">Terminal Font Size</div>
+          <div class="settings__field-control"
+               data-tekton-element="field-control">
+            <select id="terminal-font-setting" class="settings__select"
+                    data-tekton-control="select"
+                    data-tekton-element="select-control"
+                    data-tekton-value="medium">
+              <option value="small"
+                      data-tekton-option="small"
+                      data-tekton-text="Small">Small</option>
+              <option value="medium" selected
+                      data-tekton-option="medium"
+                      data-tekton-text="Medium">Medium</option>
+              <option value="large"
+                      data-tekton-option="large"
+                      data-tekton-text="Large">Large</option>
             </select>
           </div>
         </div>
@@ -147,12 +286,16 @@
 function applyTheme() {
   const checkedTheme = document.querySelector('input[name="theme-mode"]:checked');
   const checkedAccent = document.querySelector('input[name="accent-color"]:checked');
-  const greekNames = document.querySelector('input[name="greek-names"]:checked');
+  const greekNamesCheckbox = document.getElementById('greek-names-setting');
+  const greekNames = greekNamesCheckbox ? greekNamesCheckbox.checked : false;
   
   console.log('=== APPLYING THEME ===');
   console.log('Theme:', checkedTheme?.value);
   console.log('Accent:', checkedAccent?.value);
-  console.log('Greek names:', !!greekNames);
+  console.log('Greek names:', greekNames);
+  
+  // Update semantic tags for state tracking
+  updateSemanticStates(checkedTheme, checkedAccent, greekNames);
   
   // Apply theme using existing theme system
   if (checkedTheme) {
@@ -188,13 +331,61 @@ function applyTheme() {
   }
   
   // Handle Greek names
-  if (greekNames) {
-    document.documentElement.setAttribute('data-show-greek-names', 'true');
-  } else {
-    document.documentElement.setAttribute('data-show-greek-names', 'false');
+  if (greekNames !== null) {
+    document.documentElement.setAttribute('data-show-greek-names', greekNames ? 'true' : 'false');
+    
+    // Update settings manager and apply names
+    if (window.settingsManager) {
+      window.settingsManager.settings.showGreekNames = greekNames;
+      window.settingsManager.save();
+      window.settingsManager.applyNames();
+      console.log('Applied Greek names setting:', greekNames);
+    }
   }
   
   console.log('=== THEME APPLICATION COMPLETE ===');
+}
+
+// Update semantic state tags for UI DevTools
+function updateSemanticStates(theme, accent, greekNames) {
+  // Update theme option states
+  document.querySelectorAll('[data-tekton-element="theme-option"]').forEach(opt => {
+    const isActive = opt.getAttribute('data-tekton-option') === theme?.value;
+    opt.setAttribute('data-tekton-state', isActive ? 'active' : 'inactive');
+  });
+  
+  // Update accent option states
+  document.querySelectorAll('[data-tekton-element="accent-option"]').forEach(opt => {
+    const isActive = opt.getAttribute('data-tekton-option') === accent?.value;
+    opt.setAttribute('data-tekton-state', isActive ? 'active' : 'inactive');
+  });
+  
+  // Update tab states
+  const activeTab = document.querySelector('input[name="settings-tab"]:checked');
+  document.querySelectorAll('[data-tekton-element="tab"]').forEach(tab => {
+    const tabName = tab.getAttribute('data-tekton-nav-item');
+    const isActive = activeTab?.id === `tab-${tabName}`;
+    tab.setAttribute('data-tekton-state', isActive ? 'active' : 'inactive');
+  });
+  
+  // Update panel states
+  document.querySelectorAll('[data-tekton-element="panel"]').forEach(panel => {
+    const panelName = panel.getAttribute('data-tekton-panel');
+    const isActive = activeTab?.id === `tab-${panelName}`;
+    panel.setAttribute('data-tekton-state', isActive ? 'active' : 'inactive');
+  });
+  
+  // Update toggle state
+  const toggle = document.querySelector('[data-tekton-control="toggle"]');
+  if (toggle) {
+    toggle.setAttribute('data-tekton-state', greekNames ? 'checked' : 'unchecked');
+  }
+  
+  // Update select value
+  const select = document.querySelector('[data-tekton-control="select"]');
+  if (select) {
+    select.setAttribute('data-tekton-value', select.value);
+  }
 }
 
 // Listen for clicks on labels (most reliable)
@@ -214,7 +405,13 @@ document.addEventListener('click', function(e) {
 // Backup: Listen for input changes
 document.addEventListener('change', function(e) {
   if (e.target.type === 'radio' || e.target.type === 'checkbox') {
-    console.log('Input changed:', e.target.name, e.target.value || e.target.checked);
+    console.log('Input changed:', e.target.name || e.target.id, e.target.value || e.target.checked);
+    applyTheme();
+  }
+  
+  // Special handling for Greek names checkbox
+  if (e.target.id === 'greek-names-setting') {
+    console.log('Greek names toggled to:', e.target.checked);
     applyTheme();
   }
 });
@@ -222,6 +419,16 @@ document.addEventListener('change', function(e) {
 // Apply theme on load
 setTimeout(() => {
   console.log('Initial theme application...');
+  
+  // Set initial Greek names checkbox state from settings
+  if (window.settingsManager) {
+    const greekCheckbox = document.getElementById('greek-names-setting');
+    if (greekCheckbox) {
+      greekCheckbox.checked = window.settingsManager.settings.showGreekNames;
+      console.log('Set Greek names checkbox to:', window.settingsManager.settings.showGreekNames);
+    }
+  }
+  
   applyTheme();
 }, 200);
 </script>
