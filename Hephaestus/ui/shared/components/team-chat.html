@@ -1,0 +1,435 @@
+<!-- Tekton Team Chat - Shared Component -->
+<!-- Include this component in any Tekton component UI for team collaboration -->
+
+<style>
+/* Team Chat Component Styles */
+.tekton-team-chat {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background-color: var(--bg-primary, #1e1e2e);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+/* Participants Bar */
+.tekton-team-chat__participants {
+  display: flex;
+  gap: 8px;
+  padding: 12px 16px;
+  background-color: var(--bg-secondary, #252535);
+  border-bottom: 1px solid var(--border-color, #444444);
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+.tekton-team-chat__participant {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background-color: var(--bg-tertiary, #333345);
+  border: 1px solid var(--border-color, #444444);
+  border-radius: 20px;
+  font-size: 0.9rem;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tekton-team-chat__participant:hover {
+  background-color: var(--bg-hover, #3a3a4a);
+  border-color: var(--color-primary, #673AB7);
+}
+
+.tekton-team-chat__participant--active {
+  background-color: var(--color-primary, #673AB7);
+  border-color: var(--color-primary, #673AB7);
+  color: white;
+}
+
+.tekton-team-chat__participant--add {
+  background-color: transparent;
+  border-style: dashed;
+  color: var(--text-secondary, #aaaaaa);
+}
+
+.tekton-team-chat__participant--add:hover {
+  background-color: var(--bg-tertiary, #333345);
+  color: var(--text-primary, #f0f0f0);
+}
+
+.tekton-team-chat__participant-icon {
+  font-size: 1.1rem;
+}
+
+.tekton-team-chat__participant-name {
+  font-weight: 500;
+}
+
+/* Messages Area */
+.tekton-team-chat__messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+  scroll-behavior: smooth;
+}
+
+.tekton-team-chat__message {
+  margin-bottom: 16px;
+  display: flex;
+  gap: 12px;
+}
+
+.tekton-team-chat__message--user {
+  flex-direction: row-reverse;
+}
+
+.tekton-team-chat__message--system {
+  justify-content: center;
+}
+
+.tekton-team-chat__speaker {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 60px;
+}
+
+.tekton-team-chat__speaker-icon {
+  font-size: 1.5rem;
+  margin-bottom: 4px;
+}
+
+.tekton-team-chat__speaker-name {
+  font-size: 0.75rem;
+  color: var(--text-secondary, #aaaaaa);
+  text-align: center;
+}
+
+.tekton-team-chat__message-content {
+  flex: 1;
+  max-width: 70%;
+}
+
+.tekton-team-chat__message--user .tekton-team-chat__message-content {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.tekton-team-chat__message-bubble {
+  background-color: var(--bg-secondary, #252535);
+  border: 1px solid var(--border-color, #444444);
+  border-radius: 12px;
+  padding: 12px 16px;
+  position: relative;
+}
+
+.tekton-team-chat__message--user .tekton-team-chat__message-bubble {
+  background-color: var(--color-primary, #673AB7);
+  border-color: var(--color-primary, #673AB7);
+  color: white;
+}
+
+.tekton-team-chat__message--system .tekton-team-chat__message-bubble {
+  background-color: var(--bg-info, #1a237e);
+  border-color: var(--border-info, #3949ab);
+  text-align: center;
+  max-width: 100%;
+}
+
+.tekton-team-chat__message-text {
+  margin: 0;
+  line-height: 1.5;
+}
+
+.tekton-team-chat__message-timestamp {
+  font-size: 0.75rem;
+  color: var(--text-secondary, #aaaaaa);
+  margin-top: 4px;
+}
+
+/* Input Area */
+.tekton-team-chat__input-area {
+  display: flex;
+  gap: 12px;
+  padding: 16px;
+  background-color: var(--bg-secondary, #252535);
+  border-top: 1px solid var(--border-color, #444444);
+}
+
+.tekton-team-chat__input {
+  flex: 1;
+  background-color: var(--bg-tertiary, #333345);
+  border: 1px solid var(--border-color, #444444);
+  border-radius: 8px;
+  padding: 12px;
+  color: var(--text-primary, #f0f0f0);
+  font-family: inherit;
+  font-size: 1rem;
+  resize: none;
+  min-height: 50px;
+  max-height: 150px;
+}
+
+.tekton-team-chat__input:focus {
+  outline: none;
+  border-color: var(--color-primary, #673AB7);
+}
+
+.tekton-team-chat__send-button {
+  padding: 12px 24px;
+  background-color: var(--color-primary, #673AB7);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.tekton-team-chat__send-button:hover {
+  background-color: #5e35a8;
+}
+
+.tekton-team-chat__send-button:disabled {
+  background-color: var(--bg-tertiary, #333345);
+  color: var(--text-secondary, #aaaaaa);
+  cursor: not-allowed;
+}
+</style>
+
+<div class="tekton-team-chat" 
+     data-tekton-component="team-chat"
+     data-tekton-shared="true"
+     data-tekton-version="1.0">
+  
+  <!-- Participants Bar -->
+  <div class="tekton-team-chat__participants" 
+       data-tekton-element="participants-bar"
+       data-tekton-team-members="active">
+    <!-- Participants will be dynamically added here -->
+    <div class="tekton-team-chat__participant tekton-team-chat__participant--active" 
+         data-tekton-participant="rhetor"
+         data-component="rhetor">
+      <span class="tekton-team-chat__participant-icon">🎯</span>
+      <span class="tekton-team-chat__participant-name">Rhetor</span>
+    </div>
+    <button class="tekton-team-chat__participant tekton-team-chat__participant--add" 
+            data-tekton-action="add-participant"
+            onclick="tektonTeamChat.addParticipant()">
+      <span>+ Add</span>
+    </button>
+  </div>
+  
+  <!-- Messages Area -->
+  <div class="tekton-team-chat__messages" 
+       id="tekton-team-chat-messages"
+       data-tekton-element="messages-container"
+       data-tekton-scroll-behavior="bottom">
+    <!-- System welcome message -->
+    <div class="tekton-team-chat__message tekton-team-chat__message--system"
+         data-tekton-message-type="system">
+      <div class="tekton-team-chat__message-content">
+        <div class="tekton-team-chat__message-bubble">
+          <p class="tekton-team-chat__message-text">
+            <strong>Tekton Team Chat</strong><br>
+            Multi-specialist collaboration space. All Tekton components can participate.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Input Area -->
+  <div class="tekton-team-chat__input-area" 
+       data-tekton-element="input-area">
+    <textarea class="tekton-team-chat__input" 
+              id="tekton-team-chat-input"
+              placeholder="Type a message to the team..."
+              data-tekton-input="team-message"
+              onkeydown="tektonTeamChat.handleKeyPress(event)"></textarea>
+    <button class="tekton-team-chat__send-button" 
+            id="tekton-team-chat-send"
+            data-tekton-action="send-message"
+            onclick="tektonTeamChat.sendMessage()">
+      Send
+    </button>
+  </div>
+</div>
+
+<script>
+// Tekton Team Chat Component JavaScript
+window.tektonTeamChat = {
+  participants: new Set(['rhetor']),
+  messageId: 0,
+  
+  // Initialize the component
+  init: function(componentName) {
+    console.log(`[Team Chat] Initializing for component: ${componentName}`);
+    this.currentComponent = componentName;
+    
+    // Add current component as participant if not already present
+    if (componentName && componentName !== 'rhetor') {
+      this.addComponentParticipant(componentName);
+    }
+    
+    // Set up WebSocket connection if available
+    if (window.tektonWebSocket) {
+      this.setupWebSocket();
+    }
+  },
+  
+  // Add a component as a participant
+  addComponentParticipant: function(componentName) {
+    if (this.participants.has(componentName)) return;
+    
+    this.participants.add(componentName);
+    const participantsBar = document.querySelector('.tekton-team-chat__participants');
+    const addButton = participantsBar.querySelector('.tekton-team-chat__participant--add');
+    
+    const participant = document.createElement('div');
+    participant.className = 'tekton-team-chat__participant';
+    participant.setAttribute('data-tekton-participant', componentName);
+    participant.setAttribute('data-component', componentName);
+    
+    // Component icons mapping
+    const icons = {
+      apollo: '🔮', athena: '📚', engram: '💾', ergon: '⚙️',
+      harmonia: '🎵', hephaestus: '🔨', hermes: '📨', metis: '📋',
+      penia: '💰', prometheus: '🔥', rhetor: '🎯', sophia: '🧠',
+      synthesis: '🔧', tekton: '🏛️', telos: '🎯', terma: '💻'
+    };
+    
+    participant.innerHTML = `
+      <span class="tekton-team-chat__participant-icon">${icons[componentName] || '🤖'}</span>
+      <span class="tekton-team-chat__participant-name">${this.formatName(componentName)}</span>
+    `;
+    
+    participantsBar.insertBefore(participant, addButton);
+  },
+  
+  // Format component name for display
+  formatName: function(name) {
+    return name.charAt(0).toUpperCase() + name.slice(1);
+  },
+  
+  // Add participant dialog
+  addParticipant: function() {
+    // This would open a dialog to select components to add
+    console.log('[Team Chat] Add participant clicked');
+    // For now, we'll add a placeholder
+    alert('Component selection dialog would appear here');
+  },
+  
+  // Send a message
+  sendMessage: function() {
+    const input = document.getElementById('tekton-team-chat-input');
+    const message = input.value.trim();
+    
+    if (!message) return;
+    
+    // Add user message
+    this.addMessage({
+      type: 'user',
+      content: message,
+      timestamp: new Date()
+    });
+    
+    // Clear input
+    input.value = '';
+    
+    // Send via WebSocket if available
+    if (window.tektonWebSocket && window.tektonWebSocket.send) {
+      window.tektonWebSocket.send({
+        type: 'team_chat',
+        component: this.currentComponent,
+        message: message
+      });
+    }
+  },
+  
+  // Add a message to the chat
+  addMessage: function(msgData) {
+    const messagesContainer = document.getElementById('tekton-team-chat-messages');
+    const messageEl = document.createElement('div');
+    messageEl.className = `tekton-team-chat__message tekton-team-chat__message--${msgData.type}`;
+    messageEl.setAttribute('data-tekton-message-type', msgData.type);
+    messageEl.setAttribute('data-tekton-message-id', ++this.messageId);
+    
+    if (msgData.type === 'ai') {
+      const speakerInfo = this.getSpeakerInfo(msgData.speaker);
+      messageEl.innerHTML = `
+        <div class="tekton-team-chat__speaker" data-tekton-speaker="${msgData.speaker}">
+          <span class="tekton-team-chat__speaker-icon">${speakerInfo.icon}</span>
+          <span class="tekton-team-chat__speaker-name">${speakerInfo.name}</span>
+        </div>
+        <div class="tekton-team-chat__message-content">
+          <div class="tekton-team-chat__message-bubble">
+            <p class="tekton-team-chat__message-text">${this.escapeHtml(msgData.content)}</p>
+            <div class="tekton-team-chat__message-timestamp">${this.formatTime(msgData.timestamp)}</div>
+          </div>
+        </div>
+      `;
+    } else if (msgData.type === 'user') {
+      messageEl.innerHTML = `
+        <div class="tekton-team-chat__message-content">
+          <div class="tekton-team-chat__message-bubble">
+            <p class="tekton-team-chat__message-text">${this.escapeHtml(msgData.content)}</p>
+            <div class="tekton-team-chat__message-timestamp">${this.formatTime(msgData.timestamp)}</div>
+          </div>
+        </div>
+      `;
+    }
+    
+    messagesContainer.appendChild(messageEl);
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+  },
+  
+  // Get speaker information
+  getSpeakerInfo: function(componentName) {
+    const icons = {
+      apollo: '🔮', athena: '📚', engram: '💾', ergon: '⚙️',
+      harmonia: '🎵', hephaestus: '🔨', hermes: '📨', metis: '📋',
+      penia: '💰', prometheus: '🔥', rhetor: '🎯', sophia: '🧠',
+      synthesis: '🔧', tekton: '🏛️', telos: '🎯', terma: '💻'
+    };
+    
+    return {
+      icon: icons[componentName] || '🤖',
+      name: this.formatName(componentName)
+    };
+  },
+  
+  // Handle key press in input
+  handleKeyPress: function(event) {
+    if (event.key === 'Enter' && !event.shiftKey) {
+      event.preventDefault();
+      this.sendMessage();
+    }
+  },
+  
+  // Utility functions
+  escapeHtml: function(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+  },
+  
+  formatTime: function(date) {
+    const d = new Date(date);
+    return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  },
+  
+  // Setup WebSocket handlers
+  setupWebSocket: function() {
+    // This would connect to the actual WebSocket
+    console.log('[Team Chat] WebSocket setup would happen here');
+  }
+};
+
+// Auto-initialize if component name is available
+if (window.currentTektonComponent) {
+  tektonTeamChat.init(window.currentTektonComponent);
+}
+</script>

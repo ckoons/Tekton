@@ -348,9 +348,159 @@
         </div>
       </div>
       
-      <div class="rhetor__specialists-grid" id="specialists-grid">
-        <!-- AI Specialist cards will be dynamically inserted here -->
-        <div class="rhetor__loading">Loading AI specialists...</div>
+      <div class="rhetor__settings-section" style="background-color: #000000; padding: 20px;">
+        <style>
+          .rhetor__specialists-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+          }
+          .rhetor__specialist-card {
+            background-color: #000000;
+            border: 2px solid #444;
+            border-radius: 8px;
+            padding: 16px;
+          }
+          .rhetor__specialist-card strong {
+            font-size: 1.1rem;
+            display: block;
+            margin-bottom: 8px;
+          }
+          .rhetor__specialist-info {
+            font-size: 0.95rem;
+            line-height: 1.6;
+          }
+        </style>
+        <div class="rhetor__specialists-grid">
+          <div class="rhetor__specialist-card">
+            <strong style="color: #ff9800;">Apollo</strong>
+            <div class="rhetor__specialist-info">
+              <div>Model: Claude 3 Opus</div>
+              <div>Prompts: 3 layers</div>
+              <div>Context: 2KB/1KB</div>
+            </div>
+          </div>
+          <div class="rhetor__specialist-card">
+            <strong style="color: #3949ab;">Athena</strong>
+            <div class="rhetor__specialist-info">
+              <div>Model: Claude 3 Sonnet</div>
+              <div>Prompts: 3 layers</div>
+              <div>Context: 3KB/1KB</div>
+            </div>
+          </div>
+          <div class="rhetor__specialist-card">
+            <strong style="color: #00897b;">Engram</strong>
+            <div class="rhetor__specialist-info">
+              <div>Model: Claude 3 Haiku</div>
+              <div>Prompts: 3 layers</div>
+              <div>Context: 2KB/1KB</div>
+            </div>
+          </div>
+          <div class="rhetor__specialist-card">
+            <strong style="color: #8e24aa;">Ergon</strong>
+            <div class="rhetor__specialist-info">
+              <div>Model: Claude 3 Sonnet</div>
+              <div>Prompts: 3 layers</div>
+              <div>Context: 2KB/1KB</div>
+            </div>
+          </div>
+          <div class="rhetor__specialist-card">
+            <strong style="color: #e53935;">Harmonia</strong>
+            <div class="rhetor__specialist-info">
+              <div>Model: Claude 3 Sonnet</div>
+              <div>Prompts: 3 layers</div>
+              <div>Context: 2KB/1KB</div>
+            </div>
+          </div>
+          <div class="rhetor__specialist-card">
+            <strong style="color: #8d6e63;">Hephaestus</strong>
+            <div class="rhetor__specialist-info">
+              <div>Model: Claude 3 Haiku</div>
+              <div>Prompts: 3 layers</div>
+              <div>Context: 1KB/1KB</div>
+            </div>
+          </div>
+          <div class="rhetor__specialist-card">
+            <strong style="color: #0097a7;">Hermes</strong>
+            <div class="rhetor__specialist-info">
+              <div>Model: Claude 3 Haiku</div>
+              <div>Prompts: 3 layers</div>
+              <div>Context: 1KB/0.5KB</div>
+            </div>
+          </div>
+          <div class="rhetor__specialist-card">
+            <strong style="color: #43a047;">Metis</strong>
+            <div class="rhetor__specialist-info">
+              <div>Model: Claude 3 Sonnet</div>
+              <div>Prompts: 3 layers</div>
+              <div>Context: 2KB/1KB</div>
+            </div>
+          </div>
+          <div class="rhetor__specialist-card">
+            <strong style="color: #fdd835;">Penia</strong>
+            <div class="rhetor__specialist-info">
+              <div>Model: Claude 3 Haiku</div>
+              <div>Prompts: 3 layers</div>
+              <div>Context: 1KB/0.5KB</div>
+            </div>
+          </div>
+          <div class="rhetor__specialist-card">
+            <strong style="color: #ff5722;">Prometheus</strong>
+            <div class="rhetor__specialist-info">
+              <div>Model: Claude 3 Opus</div>
+              <div>Prompts: 3 layers</div>
+              <div>Context: 3KB/2KB</div>
+            </div>
+          </div>
+          <div class="rhetor__specialist-card">
+            <strong style="color: #6a1b9a;">Rhetor</strong>
+            <div class="rhetor__specialist-info">
+              <div>Model: Claude 3 Opus</div>
+              <div>Prompts: 3 layers</div>
+              <div>Context: 4KB/2KB</div>
+            </div>
+          </div>
+          <div class="rhetor__specialist-card">
+            <strong style="color: #512da8;">Sophia</strong>
+            <div class="rhetor__specialist-info">
+              <div>Model: Claude 3 Opus</div>
+              <div>Prompts: 3 layers</div>
+              <div>Context: 3KB/2KB</div>
+            </div>
+          </div>
+          <div class="rhetor__specialist-card">
+            <strong style="color: #607d8b;">Synthesis</strong>
+            <div class="rhetor__specialist-info">
+              <div>Model: Claude 3 Opus</div>
+              <div>Prompts: 3 layers</div>
+              <div>Context: 3KB/2KB</div>
+            </div>
+          </div>
+          <div class="rhetor__specialist-card">
+            <strong style="color: #7E57C2;">Tekton</strong>
+            <div class="rhetor__specialist-info">
+              <div>Model: Claude 3 Opus</div>
+              <div>Prompts: 3 layers</div>
+              <div>Context: 4KB/2KB</div>
+            </div>
+          </div>
+          <div class="rhetor__specialist-card">
+            <strong style="color: #1976d2;">Telos</strong>
+            <div class="rhetor__specialist-info">
+              <div>Model: Claude 3 Sonnet</div>
+              <div>Prompts: 3 layers</div>
+              <div>Context: 2KB/1KB</div>
+            </div>
+          </div>
+          <div class="rhetor__specialist-card">
+            <strong style="color: #37474f;">Terma</strong>
+            <div class="rhetor__specialist-info">
+              <div>Model: Claude 3 Haiku</div>
+              <div>Prompts: 3 layers</div>
+              <div>Context: 1KB/0.5KB</div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
     
@@ -1518,11 +1668,157 @@ SUCCESS CRITERIA:
          data-tekton-panel="contexts"
          data-tekton-panel-for="Contexts"
          data-tekton-panel-component="rhetor">
-      <div class="rhetor__section-header">
-        <h2>Context Management</h2>
-      </div>
-      <div class="rhetor__empty-state">
-        <p>Context window optimization coming soon...</p>
+      <div class="rhetor__prompts-container">
+        <div class="rhetor__prompts-section">
+          <h3 class="rhetor__prompts-section-title">Component Context Management</h3>
+          <div class="rhetor__component-grid">
+            <!-- Row 1 -->
+            <div class="rhetor__component-prompt-card rhetor__component-prompt-card--apollo" onclick="rhetor_editContext('apollo')" style="cursor: pointer;">
+              <div class="rhetor__component-prompt-name">Apollo - Prediction</div>
+            </div>
+            <div class="rhetor__component-prompt-card rhetor__component-prompt-card--athena" onclick="rhetor_editContext('athena')" style="cursor: pointer;">
+              <div class="rhetor__component-prompt-name">Athena - Knowledge</div>
+            </div>
+            <div class="rhetor__component-prompt-card rhetor__component-prompt-card--engram" onclick="rhetor_editContext('engram')" style="cursor: pointer;">
+              <div class="rhetor__component-prompt-name">Engram - Memory</div>
+            </div>
+            <div class="rhetor__component-prompt-card rhetor__component-prompt-card--ergon" onclick="rhetor_editContext('ergon')" style="cursor: pointer;">
+              <div class="rhetor__component-prompt-name">Ergon - Agents</div>
+            </div>
+            <div class="rhetor__component-prompt-card rhetor__component-prompt-card--harmonia" onclick="rhetor_editContext('harmonia')" style="cursor: pointer;">
+              <div class="rhetor__component-prompt-name">Harmonia - Workflow</div>
+            </div>
+            <div class="rhetor__component-prompt-card rhetor__component-prompt-card--hephaestus" onclick="rhetor_editContext('hephaestus')" style="cursor: pointer;">
+              <div class="rhetor__component-prompt-name">Hephaestus - UI</div>
+            </div>
+            
+            <!-- Row 2 -->
+            <div class="rhetor__component-prompt-card rhetor__component-prompt-card--hermes" onclick="rhetor_editContext('hermes')" style="cursor: pointer;">
+              <div class="rhetor__component-prompt-name">Hermes - Messaging</div>
+            </div>
+            <div class="rhetor__component-prompt-card rhetor__component-prompt-card--metis" onclick="rhetor_editContext('metis')" style="cursor: pointer;">
+              <div class="rhetor__component-prompt-name">Metis - Tasks</div>
+            </div>
+            <div class="rhetor__component-prompt-card rhetor__component-prompt-card--penia" onclick="rhetor_editContext('penia')" style="cursor: pointer;">
+              <div class="rhetor__component-prompt-name">Penia - Budget</div>
+            </div>
+            <div class="rhetor__component-prompt-card rhetor__component-prompt-card--prometheus" onclick="rhetor_editContext('prometheus')" style="cursor: pointer;">
+              <div class="rhetor__component-prompt-name">Prometheus - Planning</div>
+            </div>
+            <div class="rhetor__component-prompt-card rhetor__component-prompt-card--rhetor" onclick="rhetor_editContext('rhetor')" style="cursor: pointer;">
+              <div class="rhetor__component-prompt-name">Rhetor - LLM</div>
+            </div>
+            <div class="rhetor__component-prompt-card rhetor__component-prompt-card--sophia" onclick="rhetor_editContext('sophia')" style="cursor: pointer;">
+              <div class="rhetor__component-prompt-name">Sophia - ML</div>
+            </div>
+            
+            <!-- Row 3 -->
+            <div class="rhetor__component-prompt-card rhetor__component-prompt-card--synthesis" onclick="rhetor_editContext('synthesis')" style="cursor: pointer;">
+              <div class="rhetor__component-prompt-name">Synthesis - Code</div>
+            </div>
+            <div class="rhetor__component-prompt-card rhetor__component-prompt-card--tekton" onclick="rhetor_editContext('tekton')" style="cursor: pointer;">
+              <div class="rhetor__component-prompt-name">Tekton - Projects</div>
+            </div>
+            <div class="rhetor__component-prompt-card rhetor__component-prompt-card--telos" onclick="rhetor_editContext('telos')" style="cursor: pointer;">
+              <div class="rhetor__component-prompt-name">Telos - Requirements</div>
+            </div>
+            <div class="rhetor__component-prompt-card rhetor__component-prompt-card--terma" onclick="rhetor_editContext('terma')" style="cursor: pointer;">
+              <div class="rhetor__component-prompt-name">Terma - Terminal</div>
+            </div>
+            <!-- Empty slots -->
+            <div class="rhetor__component-prompt-card rhetor__component-prompt-card--empty"></div>
+            <div class="rhetor__component-prompt-card rhetor__component-prompt-card--empty"></div>
+          </div>
+        </div>
+        
+        <!-- Context Editor (hidden by default, shown when component selected) -->
+        <div class="rhetor__prompts-section rhetor__context-editor" data-context-editor="true" style="display: none;">
+          <div class="rhetor__multi-prompt-header">
+            <h3 class="rhetor__prompts-section-title">
+              <span class="rhetor__context-component-name">Component</span> Context Configuration
+            </h3>
+            <button class="rhetor__prompts-button rhetor__prompts-button--secondary" 
+                    data-tekton-action="close-context-editor"
+                    onclick="rhetor_hideContextEditor()">
+              ← Back to Components
+            </button>
+          </div>
+          
+          <!-- Deterministic Context -->
+          <div class="rhetor__prompt-layer">
+            <div class="rhetor__prompt-layer-header">
+              <div class="rhetor__prompt-layer-info">
+                <h4 class="rhetor__prompt-layer-title">Deterministic Context</h4>
+                <span class="rhetor__prompt-layer-desc">Fixed state, facts, and operational parameters</span>
+              </div>
+              <div class="rhetor__prompt-layer-actions">
+                <button class="rhetor__prompt-layer-action" title="Edit">✏️</button>
+                <button class="rhetor__prompt-layer-action" title="Lock">🔒</button>
+              </div>
+            </div>
+            <textarea class="rhetor__prompt-layer-content" 
+                      data-tekton-input="deterministic-context"
+                      placeholder="Enter deterministic context: facts, configuration, fixed parameters..."></textarea>
+          </div>
+          
+          <!-- Probabilistic Context -->
+          <div class="rhetor__prompt-layer">
+            <div class="rhetor__prompt-layer-header">
+              <div class="rhetor__prompt-layer-info">
+                <h4 class="rhetor__prompt-layer-title">Probabilistic Context</h4>
+                <span class="rhetor__prompt-layer-desc">Behavioral attractors, tendencies, and influences</span>
+              </div>
+              <div class="rhetor__prompt-layer-actions">
+                <button class="rhetor__prompt-layer-action" title="Edit">✏️</button>
+                <button class="rhetor__prompt-layer-action" title="Lock">🔒</button>
+              </div>
+            </div>
+            <textarea class="rhetor__prompt-layer-content"
+                      data-tekton-input="probabilistic-context"
+                      placeholder="Enter probabilistic context: behaviors, tendencies, attractor states..."></textarea>
+          </div>
+          
+          <!-- Context Metrics -->
+          <div class="rhetor__prompt-layer">
+            <div class="rhetor__prompt-layer-header">
+              <div class="rhetor__prompt-layer-info">
+                <h4 class="rhetor__prompt-layer-title">Context Metrics</h4>
+                <span class="rhetor__prompt-layer-desc">Size and usage statistics</span>
+              </div>
+            </div>
+            <div class="rhetor__context-metrics">
+              <div class="rhetor__metric">
+                <span class="rhetor__metric-label">Deterministic:</span>
+                <span class="rhetor__metric-value" id="det-context-size">0 KB</span>
+              </div>
+              <div class="rhetor__metric">
+                <span class="rhetor__metric-label">Probabilistic:</span>
+                <span class="rhetor__metric-value" id="prob-context-size">0 KB</span>
+              </div>
+              <div class="rhetor__metric">
+                <span class="rhetor__metric-label">Total:</span>
+                <span class="rhetor__metric-value" id="total-context-size">0 KB</span>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Editor Actions -->
+          <div class="rhetor__multi-prompt-actions">
+            <button class="rhetor__prompts-button rhetor__prompts-button--secondary"
+                    data-tekton-action="cancel-context">
+              Cancel
+            </button>
+            <button class="rhetor__prompts-button rhetor__prompts-button--primary"
+                    data-tekton-action="save-context"
+                    onclick="rhetor_saveContext()">
+              Save Context
+            </button>
+            <button class="rhetor__prompts-button rhetor__prompts-button--primary"
+                    data-tekton-action="apply-context">
+              Apply to Component
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -2338,6 +2634,38 @@ SUCCESS CRITERIA:
     color: var(--color-primary, #673AB7);
     margin-bottom: 4px;
     font-weight: 500;
+  }
+  
+  /* Context editor styles */
+  .rhetor__context-editor {
+    background-color: var(--bg-secondary, #252535);
+    border-radius: 8px;
+    padding: 24px;
+    margin-top: 20px;
+  }
+  
+  .rhetor__context-metrics {
+    display: flex;
+    gap: 24px;
+    padding: 16px;
+    background-color: var(--bg-primary, #1e1e2e);
+    border-radius: 6px;
+  }
+  
+  .rhetor__metric {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  .rhetor__metric-label {
+    color: var(--text-secondary, #aaaaaa);
+    font-size: 0.9rem;
+  }
+  
+  .rhetor__metric-value {
+    color: var(--text-primary, #f0f0f0);
+    font-weight: 600;
   }
   
   /* Models Tab Styles */
@@ -3769,6 +4097,21 @@ rhetor_ensurePanelVisibility();  // Fix navigation issue first
 rhetor_protectHtmlPanel();
 rhetor_loadComponent();
 
+// Add event listeners for context editor
+document.addEventListener('DOMContentLoaded', function() {
+    // Update metrics when context changes
+    const detContext = document.querySelector('[data-tekton-input="deterministic-context"]');
+    const probContext = document.querySelector('[data-tekton-input="probabilistic-context"]');
+    
+    if (detContext) {
+        detContext.addEventListener('input', rhetor_updateContextMetrics);
+    }
+    
+    if (probContext) {
+        probContext.addEventListener('input', rhetor_updateContextMetrics);
+    }
+});
+
 // Simple component click handler - just toggle visibility
 function rhetor_showComponentPrompts(componentName) {
     const editor = document.querySelector('.rhetor__multi-prompt-editor');
@@ -3792,6 +4135,112 @@ function rhetor_hideComponentPrompts() {
         editor.setAttribute('data-tekton-state', 'hidden');
         editor.removeAttribute('data-tekton-editing');
     }
+}
+
+// Context editor functions
+function rhetor_editContext(componentName) {
+    const grid = document.querySelector('.rhetor__component-grid');
+    const editor = document.querySelector('.rhetor__context-editor');
+    
+    if (grid && editor) {
+        // Hide component grid
+        grid.parentElement.style.display = 'none';
+        
+        // Show context editor
+        editor.style.display = 'block';
+        editor.setAttribute('data-tekton-state', 'visible');
+        editor.setAttribute('data-tekton-editing', componentName);
+        
+        // Update component name in header
+        const nameSpan = editor.querySelector('.rhetor__context-component-name');
+        if (nameSpan) {
+            const componentNames = {
+                'apollo': 'Apollo - Prediction',
+                'athena': 'Athena - Knowledge',
+                'engram': 'Engram - Memory',
+                'ergon': 'Ergon - Agents',
+                'harmonia': 'Harmonia - Workflow',
+                'hephaestus': 'Hephaestus - UI',
+                'hermes': 'Hermes - Messaging',
+                'metis': 'Metis - Tasks',
+                'penia': 'Penia - Budget',
+                'prometheus': 'Prometheus - Planning',
+                'rhetor': 'Rhetor - LLM',
+                'sophia': 'Sophia - ML',
+                'synthesis': 'Synthesis - Code',
+                'tekton': 'Tekton - Projects',
+                'telos': 'Telos - Requirements',
+                'terma': 'Terma - Terminal'
+            };
+            nameSpan.textContent = componentNames[componentName] || componentName;
+        }
+        
+        // Load existing context if available
+        rhetor_loadContext(componentName);
+    }
+}
+
+function rhetor_hideContextEditor() {
+    const grid = document.querySelector('.rhetor__component-grid');
+    const editor = document.querySelector('.rhetor__context-editor');
+    
+    if (grid && editor) {
+        // Show component grid
+        grid.parentElement.style.display = 'block';
+        
+        // Hide context editor
+        editor.style.display = 'none';
+        editor.setAttribute('data-tekton-state', 'hidden');
+        editor.removeAttribute('data-tekton-editing');
+    }
+}
+
+function rhetor_loadContext(componentName) {
+    // TODO: Load context from backend
+    console.log(`[RHETOR] Loading context for ${componentName}`);
+    
+    // For now, set some example content
+    const detContext = document.querySelector('[data-tekton-input="deterministic-context"]');
+    const probContext = document.querySelector('[data-tekton-input="probabilistic-context"]');
+    
+    if (detContext) {
+        detContext.value = `Component: ${componentName}\nVersion: 1.0.0\nState: Active\nMemory Limit: 4GB`;
+    }
+    
+    if (probContext) {
+        probContext.value = `Behavioral tendencies for ${componentName}:\n- Collaborative with other components\n- Performance-optimized responses\n- Error recovery strategies`;
+    }
+    
+    // Update metrics
+    rhetor_updateContextMetrics();
+}
+
+function rhetor_saveContext() {
+    const componentName = document.querySelector('.rhetor__context-editor').getAttribute('data-tekton-editing');
+    const detContext = document.querySelector('[data-tekton-input="deterministic-context"]').value;
+    const probContext = document.querySelector('[data-tekton-input="probabilistic-context"]').value;
+    
+    console.log(`[RHETOR] Saving context for ${componentName}`);
+    console.log('Deterministic:', detContext);
+    console.log('Probabilistic:', probContext);
+    
+    // TODO: Send to backend
+    
+    // Show confirmation
+    alert(`Context saved for ${componentName}`);
+}
+
+function rhetor_updateContextMetrics() {
+    const detContext = document.querySelector('[data-tekton-input="deterministic-context"]').value;
+    const probContext = document.querySelector('[data-tekton-input="probabilistic-context"]').value;
+    
+    const detSize = new Blob([detContext]).size / 1024;
+    const probSize = new Blob([probContext]).size / 1024;
+    const totalSize = detSize + probSize;
+    
+    document.getElementById('det-context-size').textContent = `${detSize.toFixed(2)} KB`;
+    document.getElementById('prob-context-size').textContent = `${probSize.toFixed(2)} KB`;
+    document.getElementById('total-context-size').textContent = `${totalSize.toFixed(2)} KB`;
 }
 
 // Component Prompt Management
