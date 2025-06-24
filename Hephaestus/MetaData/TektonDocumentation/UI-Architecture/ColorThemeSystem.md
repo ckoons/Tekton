@@ -94,3 +94,31 @@ Accent colors work the same way using `data-theme-color` attribute:
 - green (#28a745) 
 - purple (#6f42c1)
 - orange (#fd7e14)
+
+## Rhetor UI Theme Implementation
+
+The Rhetor component demonstrates advanced theme usage:
+
+### Component-Specific Colors
+Each Tekton component has its own color in the Prompts tab:
+```css
+.rhetor__component-prompt-card--athena {
+    background-color: #1a237e;
+    border-color: #3949ab;
+}
+```
+
+### Black Backgrounds for Editors
+Following Casey's preference, editor sections use pure black:
+```css
+.rhetor__prompts-section--editor {
+    background-color: #000000;
+}
+```
+
+### Theme Consistency
+All components respect the global theme while adding their own personality through:
+1. Border colors
+2. Hover states  
+3. Component-specific accents
+4. Consistent use of CSS variables for text

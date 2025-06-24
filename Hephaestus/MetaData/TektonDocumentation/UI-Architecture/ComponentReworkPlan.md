@@ -6,8 +6,27 @@ Tekton UI has accumulated too much "bullshit from iterative development" with in
 ## The Solution: ONE PATTERN FOR ALL
 
 ### Phase 1: Establish the Pattern (COMPLETE)
-✅ **Rhetor Component** - Working reference implementation
-✅ **Settings Component** - Pure HTML/CSS with minimal JavaScript
+✅ **Settings Component** - Pure HTML/CSS with radio button pattern
+✅ **Rhetor Component** - Enhanced with Models and Prompts tabs following Settings pattern
+
+### Key Lessons from Rhetor UI Work
+
+#### What Works (Copy from Settings)
+1. **Hidden radio buttons** for tab switching
+   ```html
+   <input type="radio" name="rhetor-tab" id="tab-dashboard" checked style="display: none;">
+   <label for="tab-dashboard" class="rhetor__tab">Dashboard</label>
+   ```
+2. **CSS :checked selectors** - No JavaScript needed for tabs
+3. **Simple onclick handlers** when absolutely necessary
+   ```html
+   <div onclick="rhetor_showComponentPrompts('athena')">
+   ```
+
+#### What Doesn't Work (Avoid)
+1. **Complex DOM manipulation** - Event listeners that never fire
+2. **Dynamic element creation** - Just hide/show existing elements
+3. **Fancy JavaScript patterns** - Keep it simple
 
 ### Phase 2: The Rework Strategy
 
