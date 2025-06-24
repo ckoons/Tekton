@@ -101,20 +101,27 @@
          data-tekton-panel="dashboard"
          data-tekton-panel-for="Dashboard"
          data-tekton-panel-component="rhetor">
-      <div class="rhetor__dashboard">
+      <div class="rhetor__dashboard" data-tekton-element="dashboard-container">
         <!-- Component Status Grid -->
-        <div class="rhetor__dashboard-section">
-          <h2 class="rhetor__dashboard-title">Component Status</h2>
-          <div class="rhetor__component-grid" id="component-status-grid">
+        <div class="rhetor__dashboard-section" data-tekton-section="component-status">
+          <h2 class="rhetor__dashboard-title" data-tekton-element="section-title">Component Status</h2>
+          <div class="rhetor__component-grid" id="component-status-grid" 
+               data-tekton-element="component-grid"
+               data-tekton-grid="components">
             <!-- Component cards in order from left panel -->
-            <div class="rhetor__component-card" data-component="tekton">
-              <div class="rhetor__component-header">
-                <span class="rhetor__component-name">Tekton</span>
-                <span class="rhetor__component-status rhetor__component-status--active">●</span>
+            <div class="rhetor__component-card" data-component="tekton"
+                 data-tekton-element="component-card"
+                 data-tekton-component="tekton"
+                 data-tekton-state="active">
+              <div class="rhetor__component-header" data-tekton-element="component-header">
+                <span class="rhetor__component-name" data-tekton-element="component-name">Tekton</span>
+                <span class="rhetor__component-status rhetor__component-status--active" 
+                      data-tekton-element="component-status"
+                      data-tekton-status="active">●</span>
               </div>
-              <div class="rhetor__component-metrics">
-                <div class="rhetor__metric">Projects</div>
-                <div class="rhetor__metric">System OK</div>
+              <div class="rhetor__component-metrics" data-tekton-element="component-metrics">
+                <div class="rhetor__metric" data-tekton-element="metric">Projects</div>
+                <div class="rhetor__metric" data-tekton-element="metric">System OK</div>
               </div>
             </div>
             <div class="rhetor__component-card" data-component="prometheus">
@@ -519,16 +526,23 @@
          data-tekton-panel="models"
          data-tekton-panel-for="Models"
          data-tekton-panel-component="rhetor">
-      <div class="rhetor__models-container">
+      <div class="rhetor__models-container" data-tekton-scrollable="true">
         <!-- Provider Status Section -->
-        <div class="rhetor__models-section">
-          <h3 class="rhetor__models-section-title">Provider Status</h3>
-          <div class="rhetor__provider-grid">
+        <div class="rhetor__models-section" data-tekton-section="provider-status">
+          <h3 class="rhetor__models-section-title" data-tekton-element="section-title">Provider Status</h3>
+          <div class="rhetor__provider-grid" 
+               data-tekton-element="provider-grid"
+               data-tekton-grid="providers">
             <!-- Anthropic -->
-            <div class="rhetor__provider-card rhetor__provider-card--active" data-provider="anthropic">
-              <div class="rhetor__provider-header">
-                <span class="rhetor__provider-name">Anthropic</span>
-                <span class="rhetor__provider-status">●</span>
+            <div class="rhetor__provider-card rhetor__provider-card--active" data-provider="anthropic"
+                 data-tekton-element="provider-card"
+                 data-tekton-provider="anthropic"
+                 data-tekton-state="active">
+              <div class="rhetor__provider-header" data-tekton-element="provider-header">
+                <span class="rhetor__provider-name" data-tekton-element="provider-name">Anthropic</span>
+                <span class="rhetor__provider-status" 
+                      data-tekton-element="provider-status"
+                      data-tekton-status="active">●</span>
               </div>
               <div class="rhetor__provider-info">
                 <span class="rhetor__provider-models">4 models</span>
@@ -1124,15 +1138,21 @@
          data-tekton-panel-component="rhetor">
       <div class="rhetor__prompts-container" data-tekton-scrollable="true">
         <!-- Tekton Component Prompts Grid -->
-        <div class="rhetor__prompts-section">
-          <h3 class="rhetor__prompts-section-title">Tekton Component Prompts</h3>
-          <div class="rhetor__component-grid">
+        <div class="rhetor__prompts-section" data-tekton-section="component-prompts">
+          <h3 class="rhetor__prompts-section-title" data-tekton-element="section-title">Tekton Component Prompts</h3>
+          <div class="rhetor__component-grid" 
+               data-tekton-element="component-prompt-grid"
+               data-tekton-grid="component-prompts">
             <!-- Row 1 -->
+            <div class="rhetor__component-prompt-card rhetor__component-prompt-card--apollo" data-component="apollo" 
+                 onclick="rhetor_showComponentPrompts('apollo')"
+                 data-tekton-element="component-prompt-card"
+                 data-tekton-component="apollo"
+                 data-tekton-action="edit-prompts">
+              <div class="rhetor__component-prompt-name" data-tekton-element="component-prompt-name">Apollo - Prediction</div>
+            </div>
             <div class="rhetor__component-prompt-card rhetor__component-prompt-card--athena" data-component="athena" onclick="rhetor_showComponentPrompts('athena')">
               <div class="rhetor__component-prompt-name">Athena - Knowledge</div>
-            </div>
-            <div class="rhetor__component-prompt-card rhetor__component-prompt-card--apollo" data-component="apollo" onclick="rhetor_showComponentPrompts('apollo')">
-              <div class="rhetor__component-prompt-name">Apollo - Prediction</div>
             </div>
             <div class="rhetor__component-prompt-card rhetor__component-prompt-card--engram" data-component="engram" onclick="rhetor_showComponentPrompts('engram')">
               <div class="rhetor__component-prompt-name">Engram - Memory</div>
@@ -2760,20 +2780,20 @@ SUCCESS CRITERIA:
   }
 
   /* Component-specific colors */
-  .rhetor__component-prompt-card--athena {
-    background-color: #1a237e;
-    border-color: #3949ab;
-  }
-  .rhetor__component-prompt-card--athena:hover {
-    background-color: #283593;
-  }
-
   .rhetor__component-prompt-card--apollo {
     background-color: #f57c00;
     border-color: #ff9800;
   }
   .rhetor__component-prompt-card--apollo:hover {
     background-color: #ff8f00;
+  }
+
+  .rhetor__component-prompt-card--athena {
+    background-color: #1a237e;
+    border-color: #3949ab;
+  }
+  .rhetor__component-prompt-card--athena:hover {
+    background-color: #283593;
   }
 
   .rhetor__component-prompt-card--engram {
@@ -3754,6 +3774,8 @@ function rhetor_showComponentPrompts(componentName) {
     const editor = document.querySelector('.rhetor__multi-prompt-editor');
     if (editor) {
         editor.style.display = 'block';
+        editor.setAttribute('data-tekton-state', 'visible');
+        editor.setAttribute('data-tekton-editing', componentName);
         const nameSpan = editor.querySelector('.rhetor__multi-prompt-component-name');
         if (nameSpan) {
             const card = document.querySelector(`[data-component="${componentName}"]`);
@@ -3767,6 +3789,8 @@ function rhetor_hideComponentPrompts() {
     const editor = document.querySelector('.rhetor__multi-prompt-editor');
     if (editor) {
         editor.style.display = 'none';
+        editor.setAttribute('data-tekton-state', 'hidden');
+        editor.removeAttribute('data-tekton-editing');
     }
 }
 
