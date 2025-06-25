@@ -337,9 +337,9 @@
          data-tekton-panel="specialists"
          data-tekton-panel-for="Specialists"
          data-tekton-panel-component="rhetor">
-      <div class="rhetor__section-header">
-        <h2>AI Specialists</h2>
-        <div class="rhetor__controls">
+      <div class="rhetor__section-header" data-tekton-element="section-header">
+        <h2 data-tekton-element="section-title">AI Specialists</h2>
+        <div class="rhetor__controls" data-tekton-element="controls">
           <button class="rhetor__button rhetor__button--primary" onclick="rhetor_createSpecialist()"
                   data-tekton-action="create-specialist"
                   data-tekton-action-type="primary">Create Specialist</button>
@@ -349,7 +349,10 @@
         </div>
       </div>
       
-      <div class="rhetor__settings-section" style="background-color: #000000; padding: 20px;">
+      <div class="rhetor__settings-section" 
+           data-tekton-section="specialists-content"
+           data-tekton-scrollable="true"
+           style="background-color: #000000; padding: 20px;">
         <style>
           .rhetor__specialists-grid {
             display: grid;
@@ -372,7 +375,10 @@
             line-height: 1.6;
           }
         </style>
-        <div class="rhetor__specialists-grid">
+        <div class="rhetor__specialists-grid"
+             data-tekton-element="specialists-grid"
+             data-tekton-grid="specialists"
+             data-tekton-grid-layout="2-column">
           <div class="rhetor__specialist-card">
             <strong style="color: #ff9800;">Apollo</strong>
             <div class="rhetor__specialist-info">
@@ -381,10 +387,12 @@
               <div>Context: 2KB/1KB</div>
             </div>
           </div>
-          <div class="rhetor__specialist-card">
-            <strong style="color: #3949ab;">Athena</strong>
-            <div class="rhetor__specialist-info">
-              <div>Model: Claude 3 Sonnet</div>
+          <div class="rhetor__specialist-card"
+               data-tekton-element="specialist-card"
+               data-tekton-component="athena">
+            <strong style="color: #3949ab;" data-tekton-element="component-name">Athena</strong>
+            <div class="rhetor__specialist-info" data-tekton-element="specialist-info">
+              <div data-tekton-element="model-info">Model: Claude 3 Sonnet</div>
               <div>Prompts: 3 layers</div>
               <div>Context: 3KB/1KB</div>
             </div>
@@ -658,7 +666,13 @@
     </div>
     
     <!-- Team Chat Tab -->
-    <div id="teamchat-panel" class="rhetor__panel" data-tekton-chat="team" data-tekton-ai="rhetor-orchestrator" data-tekton-ai-ready="false">
+    <div id="teamchat-panel" class="rhetor__panel" 
+         data-tekton-panel="teamchat"
+         data-tekton-panel-for="Team Chat"
+         data-tekton-panel-component="rhetor"
+         data-tekton-chat="team" 
+         data-tekton-ai="rhetor-orchestrator" 
+         data-tekton-ai-ready="false">
       <div id="teamchat-messages" class="rhetor__chat-messages" data-tekton-element="chat-messages">
         <div class="rhetor__message rhetor__message--system">
           <div class="rhetor__message-content">
@@ -1674,22 +1688,45 @@ SUCCESS CRITERIA:
          data-tekton-panel="contexts"
          data-tekton-panel-for="Contexts"
          data-tekton-panel-component="rhetor">
-      <div class="rhetor__prompts-container">
-        <div class="rhetor__prompts-section">
-          <h3 class="rhetor__prompts-section-title">Component Context Management</h3>
-          <div class="rhetor__component-grid">
+      <div class="rhetor__prompts-container" data-tekton-scrollable="true">
+        <div class="rhetor__prompts-section" data-tekton-section="contexts-main">
+          <h3 class="rhetor__prompts-section-title" data-tekton-element="section-title">Component Context Management</h3>
+          <div class="rhetor__component-grid" 
+               data-tekton-element="component-grid"
+               data-tekton-grid="contexts"
+               data-tekton-grid-layout="6x3">
             <!-- Row 1 -->
-            <div class="rhetor__component-prompt-card rhetor__component-prompt-card--apollo" onclick="rhetor_editContext('apollo')" style="cursor: pointer;">
-              <div class="rhetor__component-prompt-name">Apollo - Prediction</div>
+            <div class="rhetor__component-prompt-card rhetor__component-prompt-card--apollo" 
+                 onclick="rhetor_editContext('apollo')" 
+                 style="cursor: pointer;"
+                 data-tekton-element="context-card"
+                 data-tekton-component="apollo"
+                 data-tekton-action="edit-context">
+              <div class="rhetor__component-prompt-name" data-tekton-element="component-name">Apollo - Prediction</div>
             </div>
-            <div class="rhetor__component-prompt-card rhetor__component-prompt-card--athena" onclick="rhetor_editContext('athena')" style="cursor: pointer;">
-              <div class="rhetor__component-prompt-name">Athena - Knowledge</div>
+            <div class="rhetor__component-prompt-card rhetor__component-prompt-card--athena" 
+                 onclick="rhetor_editContext('athena')" 
+                 style="cursor: pointer;"
+                 data-tekton-element="context-card"
+                 data-tekton-component="athena"
+                 data-tekton-action="edit-context">
+              <div class="rhetor__component-prompt-name" data-tekton-element="component-name">Athena - Knowledge</div>
             </div>
-            <div class="rhetor__component-prompt-card rhetor__component-prompt-card--engram" onclick="rhetor_editContext('engram')" style="cursor: pointer;">
-              <div class="rhetor__component-prompt-name">Engram - Memory</div>
+            <div class="rhetor__component-prompt-card rhetor__component-prompt-card--engram" 
+                 onclick="rhetor_editContext('engram')" 
+                 style="cursor: pointer;"
+                 data-tekton-element="context-card"
+                 data-tekton-component="engram"
+                 data-tekton-action="edit-context">
+              <div class="rhetor__component-prompt-name" data-tekton-element="component-name">Engram - Memory</div>
             </div>
-            <div class="rhetor__component-prompt-card rhetor__component-prompt-card--ergon" onclick="rhetor_editContext('ergon')" style="cursor: pointer;">
-              <div class="rhetor__component-prompt-name">Ergon - Agents</div>
+            <div class="rhetor__component-prompt-card rhetor__component-prompt-card--ergon" 
+                 onclick="rhetor_editContext('ergon')" 
+                 style="cursor: pointer;"
+                 data-tekton-element="context-card"
+                 data-tekton-component="ergon"
+                 data-tekton-action="edit-context">
+              <div class="rhetor__component-prompt-name" data-tekton-element="component-name">Ergon - Agents</div>
             </div>
             <div class="rhetor__component-prompt-card rhetor__component-prompt-card--harmonia" onclick="rhetor_editContext('harmonia')" style="cursor: pointer;">
               <div class="rhetor__component-prompt-name">Harmonia - Workflow</div>
@@ -1738,7 +1775,11 @@ SUCCESS CRITERIA:
         </div>
         
         <!-- Context Editor (hidden by default, shown when component selected) -->
-        <div class="rhetor__prompts-section rhetor__context-editor" data-context-editor="true" style="display: none;">
+        <div class="rhetor__prompts-section rhetor__context-editor" 
+             data-context-editor="true" 
+             data-tekton-section="context-editor"
+             data-tekton-state="hidden"
+             style="display: none;">
           <div class="rhetor__multi-prompt-header">
             <h3 class="rhetor__prompts-section-title">
               <span class="rhetor__context-component-name">Component</span> Context Configuration

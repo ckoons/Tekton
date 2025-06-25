@@ -156,6 +156,26 @@ asyncio.run(main())
 | Context too large | Use summarization or split conversations |
 | Rate limiting | Implement retries with backoff strategy |
 
+## Web UI Interface
+
+Rhetor provides a comprehensive web interface accessible through Hephaestus with the following panels:
+
+| Panel | Description |
+|-------|-------------|
+| Dashboard | Overview of system status and quick actions (default view) |
+| Models | Provider status and model selection matrix for all components |
+| Prompts | Multi-layered prompt management with template library |
+| Contexts | Edit deterministic and probabilistic contexts for all 16 Tekton components |
+| Specialists | View and manage Model/Prompt/Context assignments per component |
+| LLM Chat | Direct interaction with Rhetor's LLM orchestration |
+| Team Chat | Multi-specialist collaboration space (pending backend implementation) |
+
+### Key UI Features
+
+- **Context Management**: Click any component in the Contexts panel to edit its deterministic (fixed state) and probabilistic (behavioral) contexts
+- **Specialist Configuration**: Two-column grid showing each component's current Model, Prompts, and Context assignments
+- **Unified Chat Input**: Single input area that routes to either LLM Chat or Team Chat based on active tab
+
 ## Starting/Stopping
 
 ```bash

@@ -12,9 +12,10 @@ Phase 4A of the Rhetor AI Integration Sprint introduces real-time streaming supp
 - **Benefits**: Immediate feedback, progress tracking, chunked responses
 
 ### 2. Streaming-Enabled Tools
-Two AI orchestration tools now support streaming:
+Currently, one AI orchestration tool supports streaming:
 - `SendMessageToSpecialistStream`: Stream AI specialist responses in real-time
-- `OrchestrateTeamChatStream`: Stream multi-specialist conversations as they happen
+
+Note: Team Chat functionality is pending backend implementation. The UI currently shows a placeholder message when Team Chat is used.
 
 ### 3. Progress Indicators
 All tools (even non-streaming ones) now provide progress updates when called through the streaming endpoint:
