@@ -240,7 +240,8 @@ class StandardComponentBase:
             
             # 3. Deregister from Hermes
             if self.global_config.hermes_registration and self.global_config.is_registered_with_hermes:
-                await self.global_config.hermes_registration.deregister_component(self.component_name)
+                # Fix: Use correct method name 'deregister' instead of 'deregister_component'
+                await self.global_config.hermes_registration.deregister(self.component_name)
                 self.logger.info("Deregistered from Hermes")
             
             # 4. Cleanup MCP bridge

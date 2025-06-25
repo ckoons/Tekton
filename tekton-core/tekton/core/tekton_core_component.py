@@ -33,11 +33,14 @@ class TektonCoreComponent(StandardComponentBase):
         self.resource_monitor = ResourceMonitor()
         logger.info("Resource monitor initialized")
         
-        # Monitoring dashboard is optional
+        # Monitoring dashboard is optional - DISABLED for now due to initialization issues
         try:
-            self.monitoring_dashboard = MonitoringDashboard()
-            await self.monitoring_dashboard.start()
-            logger.info("Monitoring dashboard initialized")
+            # Temporarily disable monitoring dashboard to keep Tekton Core running
+            # self.monitoring_dashboard = MonitoringDashboard()
+            # await self.monitoring_dashboard.start()
+            # logger.info("Monitoring dashboard initialized")
+            self.monitoring_dashboard = None
+            logger.info("Monitoring dashboard disabled (temporary fix)")
         except Exception as e:
             logger.warning(f"Monitoring dashboard initialization failed: {e}")
             self.monitoring_dashboard = None
