@@ -81,7 +81,8 @@
       <label for="tab-teamchat" class="rhetor__tab" data-tab="teamchat" 
              data-tekton-menu-item="Team Chat"
              data-tekton-menu-component="rhetor"
-             data-tekton-menu-panel="teamchat-panel">
+             data-tekton-menu-panel="teamchat-panel"
+             onclick="console.log('[RHETOR] Team Chat label clicked')">
         <span class="rhetor__tab-label">Team Chat</span>
       </label>
     </div>
@@ -657,14 +658,19 @@
     </div>
     
     <!-- Team Chat Tab -->
-    <div id="teamchat-panel" class="rhetor__panel">
-      <div id="teamchat-messages" class="rhetor__chat-messages">
-        <!-- Welcome message -->
+    <div id="teamchat-panel" class="rhetor__panel" data-tekton-chat="team" data-tekton-ai="rhetor-orchestrator" data-tekton-ai-ready="false">
+      <div id="teamchat-messages" class="rhetor__chat-messages" data-tekton-element="chat-messages">
         <div class="rhetor__message rhetor__message--system">
           <div class="rhetor__message-content">
             <div class="rhetor__message-text">
               <h3 class="rhetor__message-title">Tekton Team Chat</h3>
-              <p>This chat is shared across all Tekton components. Use this for team communication and coordination.</p>
+              <p>This is a multi-specialist collaboration space. Rhetor facilitates discussions between all Tekton components. Try questions like:</p>
+              <ul>
+                <li>How can we optimize the knowledge graph structure?</li>
+                <li>What patterns should we use for cross-component communication?</li>
+                <li>How can memory and prediction work together?</li>
+                <li>What's the best approach for distributed task management?</li>
+              </ul>
             </div>
           </div>
         </div>
@@ -1831,8 +1837,8 @@ SUCCESS CRITERIA:
              data-tekton-input="chat-input"
              data-tekton-input-type="chat"
              placeholder="Enter chat message for LLM context management, prompts, or team communication"
-             onkeydown="if(event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); rhetor_sendLLMChat(); }">
-      <button class="rhetor__send-button" id="send-button" onclick="rhetor_sendLLMChat(); return false;"
+             onkeydown="if(event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); rhetor_sendChat(); }">
+      <button class="rhetor__send-button" id="send-button" onclick="rhetor_sendChat(); return false;"
               data-tekton-action="send-message"
               data-tekton-action-type="primary">Send</button>
     </div>
@@ -2035,6 +2041,11 @@ SUCCESS CRITERIA:
     width: 100%;
     overflow: auto;
     padding: 16px;
+  }
+  
+  /* Show dashboard panel by default as fallback */
+  #dashboard-panel {
+    display: block;
   }
   
   /* Section Headers */
@@ -2667,6 +2678,25 @@ SUCCESS CRITERIA:
     color: var(--text-primary, #f0f0f0);
     font-weight: 600;
   }
+  
+  /* Team Chat container styles */
+  .rhetor__teamchat-container {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .rhetor__loading-message,
+  .rhetor__error-message {
+    text-align: center;
+    padding: 40px;
+    color: var(--text-secondary, #aaaaaa);
+  }
+  
+  .rhetor__error-message {
+    color: var(--color-danger, #dc3545);
+  }
+  
   
   /* Models Tab Styles */
   .rhetor__models-container {
@@ -4097,20 +4127,31 @@ rhetor_ensurePanelVisibility();  // Fix navigation issue first
 rhetor_protectHtmlPanel();
 rhetor_loadComponent();
 
-// Add event listeners for context editor
-document.addEventListener('DOMContentLoaded', function() {
-    // Update metrics when context changes
-    const detContext = document.querySelector('[data-tekton-input="deterministic-context"]');
-    const probContext = document.querySelector('[data-tekton-input="probabilistic-context"]');
-    
-    if (detContext) {
-        detContext.addEventListener('input', rhetor_updateContextMetrics);
-    }
-    
-    if (probContext) {
-        probContext.addEventListener('input', rhetor_updateContextMetrics);
-    }
+// Add event listeners immediately - no DOMContentLoaded
+// This runs when the script is evaluated, which is after the HTML is injected
+
+// Debug tab switching
+const allTabs = document.querySelectorAll('input[name="rhetor-tab"]');
+console.log('[RHETOR] Found tabs:', allTabs.length);
+allTabs.forEach(tab => {
+    tab.addEventListener('change', function() {
+        console.log(`[RHETOR] Tab changed: ${this.id} = ${this.checked}`);
+    });
 });
+
+// Update metrics when context changes
+const detContext = document.querySelector('[data-tekton-input="deterministic-context"]');
+const probContext = document.querySelector('[data-tekton-input="probabilistic-context"]');
+
+if (detContext) {
+    detContext.addEventListener('input', rhetor_updateContextMetrics);
+}
+
+if (probContext) {
+    probContext.addEventListener('input', rhetor_updateContextMetrics);
+}
+
+// Team Chat is now built-in like LLM Chat, no dynamic loading needed
 
 // Simple component click handler - just toggle visibility
 function rhetor_showComponentPrompts(componentName) {
@@ -4231,17 +4272,108 @@ function rhetor_saveContext() {
 }
 
 function rhetor_updateContextMetrics() {
-    const detContext = document.querySelector('[data-tekton-input="deterministic-context"]').value;
-    const probContext = document.querySelector('[data-tekton-input="probabilistic-context"]').value;
+    const detContextEl = document.querySelector('[data-tekton-input="deterministic-context"]');
+    const probContextEl = document.querySelector('[data-tekton-input="probabilistic-context"]');
+    
+    if (!detContextEl || !probContextEl) {
+        console.warn('[RHETOR] Context elements not found');
+        return;
+    }
+    
+    const detContext = detContextEl.value || '';
+    const probContext = probContextEl.value || '';
     
     const detSize = new Blob([detContext]).size / 1024;
     const probSize = new Blob([probContext]).size / 1024;
     const totalSize = detSize + probSize;
     
-    document.getElementById('det-context-size').textContent = `${detSize.toFixed(2)} KB`;
-    document.getElementById('prob-context-size').textContent = `${probSize.toFixed(2)} KB`;
-    document.getElementById('total-context-size').textContent = `${totalSize.toFixed(2)} KB`;
+    const detSizeEl = document.getElementById('det-context-size');
+    const probSizeEl = document.getElementById('prob-context-size');
+    const totalSizeEl = document.getElementById('total-context-size');
+    
+    if (detSizeEl) detSizeEl.textContent = `${detSize.toFixed(2)} KB`;
+    if (probSizeEl) probSizeEl.textContent = `${probSize.toFixed(2)} KB`;
+    if (totalSizeEl) totalSizeEl.textContent = `${totalSize.toFixed(2)} KB`;
 }
+
+
+// Send chat message (works for both LLM Chat and Team Chat)
+function rhetor_sendChat() {
+    const input = document.getElementById('chat-input');
+    const message = input.value.trim();
+    if (!message) return;
+    
+    // Check which chat is active
+    const llmChatActive = document.getElementById('tab-llmchat').checked;
+    const teamChatActive = document.getElementById('tab-teamchat').checked;
+    
+    if (llmChatActive) {
+        rhetor_sendLLMChatMessage(message);
+    } else if (teamChatActive) {
+        rhetor_sendTeamChatMessage(message);
+    }
+    
+    // Clear input
+    input.value = '';
+}
+
+// Send LLM Chat message
+function rhetor_sendLLMChatMessage(message) {
+    console.log('[RHETOR] Sending LLM chat:', message);
+    
+    // Add user message
+    rhetor_addChatMessage('llmchat', 'user', message);
+    
+    // Call LLM endpoint
+    // This would normally call rhetor_sendLLMChat() from the external script
+    if (window.rhetor_sendLLMChat) {
+        window.rhetor_sendLLMChat();
+    }
+}
+
+// Send Team Chat message
+function rhetor_sendTeamChatMessage(message) {
+    console.log('[RHETOR] Team chat message:', message);
+    
+    // Add user message
+    rhetor_addChatMessage('teamchat', 'user', message);
+    
+    // For now, show a placeholder response
+    // TODO: Connect to Rhetor team chat endpoint when available
+    rhetor_addChatMessage('teamchat', 'ai', 
+        'Team Chat endpoint not yet implemented. This will coordinate responses from all Tekton components once the backend is ready.');
+}
+
+// Add message to chat
+function rhetor_addChatMessage(chatType, messageType, content) {
+    const messagesContainer = document.getElementById(`${chatType}-messages`);
+    if (!messagesContainer) return;
+    
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `rhetor__message rhetor__message--${messageType}`;
+    
+    if (messageType === 'typing') {
+        messageDiv.classList.add('rhetor__message--typing');
+        messageDiv.setAttribute('data-typing', 'true');
+        messageDiv.innerHTML = `
+            <div class="rhetor__message-content">
+                <div class="rhetor__message-text">
+                    <em>${content}</em>
+                </div>
+            </div>
+        `;
+    } else {
+        messageDiv.innerHTML = `
+            <div class="rhetor__message-content">
+                <div class="rhetor__message-text">${content}</div>
+            </div>
+        `;
+    }
+    
+    messagesContainer.appendChild(messageDiv);
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+}
+
 
 // Component Prompt Management
 const componentPrompts = {

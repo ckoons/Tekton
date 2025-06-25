@@ -143,6 +143,28 @@
   line-height: 1.5;
 }
 
+/* CI Attribution styles */
+.tekton-team-chat__attribution {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.85rem;
+  color: var(--color-primary, #673AB7);
+  margin-right: 6px;
+  padding: 2px 8px;
+  background-color: rgba(103, 58, 183, 0.1);
+  border-radius: 12px;
+}
+
+.tekton-team-chat__attribution-icon {
+  font-size: 1rem;
+}
+
+.tekton-team-chat__message--rhetor .tekton-team-chat__message-bubble {
+  background-color: rgba(211, 47, 47, 0.1);
+  border-color: #D32F2F;
+}
+
 .tekton-team-chat__message-timestamp {
   font-size: 0.75rem;
   color: var(--text-secondary, #aaaaaa);
@@ -196,6 +218,44 @@
   background-color: var(--bg-tertiary, #333345);
   color: var(--text-secondary, #aaaaaa);
   cursor: not-allowed;
+}
+
+/* Typing indicator */
+.tekton-team-chat__typing-indicator .tekton-team-chat__message-bubble {
+  padding: 8px 16px;
+}
+
+.tekton-team-chat__typing-dots {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+
+.tekton-team-chat__typing-dots span {
+  width: 8px;
+  height: 8px;
+  background-color: var(--text-secondary, #aaaaaa);
+  border-radius: 50%;
+  animation: typing-pulse 1.4s infinite;
+}
+
+.tekton-team-chat__typing-dots span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.tekton-team-chat__typing-dots span:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes typing-pulse {
+  0%, 60%, 100% {
+    opacity: 0.3;
+    transform: scale(0.8);
+  }
+  30% {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 </style>
 
@@ -339,8 +399,11 @@ window.tektonTeamChat = {
     // Clear input
     input.value = '';
     
-    // Send via WebSocket if available
-    if (window.tektonWebSocket && window.tektonWebSocket.send) {
+    // If this is Rhetor, use streaming endpoint
+    if (this.currentComponent === 'rhetor') {
+      this.sendToRhetorStream(message);
+    } else if (window.tektonWebSocket && window.tektonWebSocket.send) {
+      // Otherwise use WebSocket if available
       window.tektonWebSocket.send({
         type: 'team_chat',
         component: this.currentComponent,
@@ -349,16 +412,170 @@ window.tektonTeamChat = {
     }
   },
   
+  // Send message to Rhetor using SSE streaming
+  sendToRhetorStream: function(message) {
+    const url = 'http://localhost:8003/api/mcp/v2/stream';
+    
+    // Show typing indicator
+    const typingMessage = this.showTypingIndicator('rhetor');
+    
+    fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        tool_name: 'OrchestrateTeamChatStream',
+        arguments: {
+          message: message,
+          max_rounds: 3,
+          participants: Array.from(this.participants)
+        }
+      })
+    })
+    .then(response => {
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let currentMessage = '';
+      let currentSpeaker = 'rhetor';
+      let currentAttribution = [];
+      
+      const processChunk = () => {
+        reader.read().then(({ done, value }) => {
+          if (done) {
+            // Remove typing indicator
+            this.removeTypingIndicator(typingMessage);
+            return;
+          }
+          
+          const chunk = decoder.decode(value);
+          const lines = chunk.split('\n');
+          
+          lines.forEach(line => {
+            if (line.startsWith('event: message')) {
+              // New message starting
+              if (currentMessage) {
+                // Add the previous message
+                this.addMessage({
+                  type: 'ai',
+                  speaker: currentSpeaker,
+                  attribution: currentAttribution.length > 0 ? currentAttribution : null,
+                  content: currentMessage,
+                  timestamp: new Date()
+                });
+                currentMessage = '';
+                currentAttribution = [];
+              }
+            } else if (line.startsWith('data: ')) {
+              try {
+                const data = JSON.parse(line.slice(6));
+                
+                if (data.speaker) {
+                  currentSpeaker = data.speaker;
+                  // Extract attribution from speaker info
+                  if (data.speaker === 'rhetor' && data.content) {
+                    // Parse attribution from content like "[Apollo, Athena]: message"
+                    const attrMatch = data.content.match(/^\[([^\]]+)\]:\s*(.+)$/);
+                    if (attrMatch) {
+                      currentAttribution = attrMatch[1].split(',').map(s => s.trim().toLowerCase());
+                      currentMessage += attrMatch[2];
+                    } else {
+                      currentMessage += data.content;
+                    }
+                  } else {
+                    currentMessage += data.content || '';
+                  }
+                }
+              } catch (e) {
+                console.error('[Team Chat] Error parsing SSE data:', e);
+              }
+            }
+          });
+          
+          processChunk();
+        });
+      };
+      
+      processChunk();
+    })
+    .catch(error => {
+      console.error('[Team Chat] Streaming error:', error);
+      this.removeTypingIndicator(typingMessage);
+      this.addMessage({
+        type: 'ai',
+        speaker: 'rhetor',
+        content: 'Sorry, I encountered an error connecting to the team. Please try again.',
+        timestamp: new Date()
+      });
+    });
+  },
+  
+  // Show typing indicator
+  showTypingIndicator: function(speaker) {
+    const messagesContainer = document.getElementById('tekton-team-chat-messages');
+    const messageEl = document.createElement('div');
+    messageEl.className = 'tekton-team-chat__message tekton-team-chat__message--ai tekton-team-chat__typing-indicator';
+    messageEl.setAttribute('data-tekton-typing', speaker);
+    
+    const speakerInfo = this.getSpeakerInfo(speaker);
+    messageEl.innerHTML = `
+      <div class="tekton-team-chat__speaker">
+        <span class="tekton-team-chat__speaker-icon">${speakerInfo.icon}</span>
+        <span class="tekton-team-chat__speaker-name">${speakerInfo.name}</span>
+      </div>
+      <div class="tekton-team-chat__message-content">
+        <div class="tekton-team-chat__message-bubble">
+          <div class="tekton-team-chat__typing-dots">
+            <span></span><span></span><span></span>
+          </div>
+        </div>
+      </div>
+    `;
+    
+    messagesContainer.appendChild(messageEl);
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    
+    return messageEl;
+  },
+  
+  // Remove typing indicator
+  removeTypingIndicator: function(element) {
+    if (element && element.parentNode) {
+      element.parentNode.removeChild(element);
+    }
+  },
+  
   // Add a message to the chat
   addMessage: function(msgData) {
     const messagesContainer = document.getElementById('tekton-team-chat-messages');
     const messageEl = document.createElement('div');
     messageEl.className = `tekton-team-chat__message tekton-team-chat__message--${msgData.type}`;
+    
+    // Add speaker-specific class for styling
+    if (msgData.speaker) {
+      messageEl.className += ` tekton-team-chat__message--${msgData.speaker}`;
+    }
+    
     messageEl.setAttribute('data-tekton-message-type', msgData.type);
     messageEl.setAttribute('data-tekton-message-id', ++this.messageId);
     
     if (msgData.type === 'ai') {
       const speakerInfo = this.getSpeakerInfo(msgData.speaker);
+      
+      // Build message content with optional attribution
+      let messageContent = msgData.content;
+      if (msgData.attribution && msgData.attribution.length > 0) {
+        const attributionHtml = msgData.attribution.map(ci => {
+          const ciInfo = this.getSpeakerInfo(ci);
+          return `<span class="tekton-team-chat__attribution">
+            <span class="tekton-team-chat__attribution-icon">${ciInfo.icon}</span>
+            ${ciInfo.name}
+          </span>`;
+        }).join('');
+        
+        messageContent = attributionHtml + messageContent;
+      }
+      
       messageEl.innerHTML = `
         <div class="tekton-team-chat__speaker" data-tekton-speaker="${msgData.speaker}">
           <span class="tekton-team-chat__speaker-icon">${speakerInfo.icon}</span>
@@ -366,7 +583,7 @@ window.tektonTeamChat = {
         </div>
         <div class="tekton-team-chat__message-content">
           <div class="tekton-team-chat__message-bubble">
-            <p class="tekton-team-chat__message-text">${this.escapeHtml(msgData.content)}</p>
+            <div class="tekton-team-chat__message-text">${messageContent}</div>
             <div class="tekton-team-chat__message-timestamp">${this.formatTime(msgData.timestamp)}</div>
           </div>
         </div>
