@@ -1,0 +1,1 @@
+../MetaData/TektonDocumentation/Architecture/Rhetor_AI_Communication_Protocol.md
