@@ -99,6 +99,9 @@ class AISpecialistManager:
             "default_model_selection": "balanced"
         }
         
+        # Socket integration (set later)
+        self._socket_integration = None
+        
         # Conversation history storage
         self.conversation_history: Dict[str, List[Dict[str, Any]]] = {}
         
@@ -218,6 +221,10 @@ class AISpecialistManager:
             
             config.process_id = os.getpid()  # Placeholder
             config.status = "active"
+            
+            # Notify socket integration if available
+            if hasattr(self, '_socket_integration') and self._socket_integration:
+                await self._socket_integration.on_specialist_created(specialist_id)
             
             logger.info(f"Specialist {specialist_id} created successfully")
             return True
@@ -547,3 +554,35 @@ class AISpecialistManager:
         except Exception as e:
             logger.error(f"Error updating orchestration settings: {e}")
             return False
+    
+    def set_socket_integration(self, socket_integration):
+        """Set the socket integration instance.
+        
+        Args:
+            socket_integration: The socket integration instance
+        """
+        self._socket_integration = socket_integration
+        logger.info("Socket integration connected to AI specialist manager")
+
+
+# Singleton instance
+_manager_instance: Optional[AISpecialistManager] = None
+
+
+def get_ai_specialist_manager() -> Optional[AISpecialistManager]:
+    """Get the singleton AI specialist manager instance.
+    
+    Returns:
+        The AI specialist manager instance or None if not initialized
+    """
+    return _manager_instance
+
+
+def set_ai_specialist_manager(manager: AISpecialistManager):
+    """Set the singleton AI specialist manager instance.
+    
+    Args:
+        manager: The AI specialist manager instance
+    """
+    global _manager_instance
+    _manager_instance = manager

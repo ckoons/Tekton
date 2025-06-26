@@ -169,6 +169,14 @@ try:
 except ImportError as e:
     logger.warning(f"AI Specialist endpoints not available: {e}")
 
+# Add Team Chat endpoints
+try:
+    from .team_chat_endpoints import router as team_chat_router
+    app.include_router(team_chat_router)
+    logger.info("Team Chat endpoints added to Rhetor API")
+except ImportError as e:
+    logger.warning(f"Team Chat endpoints not available: {e}")
+
 # Enable CORS
 app.add_middleware(
     CORSMiddleware,
@@ -250,6 +258,9 @@ async def discovery():
             EndpointInfo(path="/api/v1/models", method="GET", description="List available models"),
             EndpointInfo(path="/api/v1/budget", method="*", description="Budget management"),
             EndpointInfo(path="/api/v1/specialists", method="*", description="AI specialist management"),
+            EndpointInfo(path="/api/team-chat", method="POST", description="Team chat with multiple AIs"),
+            EndpointInfo(path="/api/team-chat/stream", method="GET", description="Stream team chat responses"),
+            EndpointInfo(path="/api/team-chat/sockets", method="GET", description="List team chat sockets"),
             EndpointInfo(path="/ws", method="WEBSOCKET", description="WebSocket for streaming")
         ],
         capabilities=component.get_capabilities() if component else [],

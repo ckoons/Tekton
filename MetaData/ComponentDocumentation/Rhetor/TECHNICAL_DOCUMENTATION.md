@@ -36,6 +36,13 @@ Rhetor is designed as a prompt engineering and LLM interaction management system
    - Provides template inheritance and composition
    - Handles template validation
 
+6. **AI Socket Registry**
+   - Manages AI communication sockets following Unix philosophy
+   - Provides team chat broadcast capabilities
+   - Handles transparent message routing with headers
+   - Maintains socket persistence via Engram
+   - Monitors socket health and responsiveness
+
 ## Internal System Design
 
 ### Prompt Management Architecture
@@ -739,6 +746,127 @@ class TemplateManager:
         with open(template_path, 'w') as f:
             json.dump(template.to_dict(), f)
 ```
+
+## AI Socket Registry Architecture
+
+The AI Socket Registry implements the Unix philosophy where "AIs are just sockets that read and write." This architecture enables seamless multi-AI collaboration and team chat functionality.
+
+### Design Principles
+
+1. **Simplicity**: Sockets are just dictionaries with read/write operations
+2. **Transparency**: Headers are metadata, invisible to AIs
+3. **Persistence**: Socket state survives restarts via Engram
+4. **Unix-like**: Everything is a stream, fail silently with logging
+
+### Socket Structure
+
+```python
+@dataclass
+class AISocket:
+    socket_id: str              # Unique identifier
+    model: str                  # AI model (e.g., "claude-3")
+    prompt: str                 # System prompt
+    context: Dict[str, Any]     # Socket context
+    created_at: str             # ISO timestamp
+    state: SocketState          # ACTIVE, INACTIVE, UNRESPONSIVE
+    last_activity: str          # ISO timestamp
+    message_queue: List[Dict]   # Message queue
+```
+
+### Registry Operations
+
+#### Socket Lifecycle
+```python
+# Create: On-demand socket creation
+socket_id = await registry.create(model, prompt, context)
+
+# Read: Automatic header addition
+messages = await registry.read(socket_id)  # Adds [team-chat-from-X]
+
+# Write: Automatic header wrapping
+await registry.write(socket_id, message)   # Adds [team-chat-to-Y]
+
+# Reset: Clear context, keep alive
+await registry.reset(socket_id)
+
+# Delete: Terminate and cleanup
+await registry.delete(socket_id)
+```
+
+#### Broadcasting
+The special `team-chat-all` socket enables broadcasting:
+
+```python
+# Broadcast to all active sockets
+await registry.write("team-chat-all", "Team question")
+
+# Collect all responses
+responses = await registry.read("team-chat-all")
+```
+
+### Message Routing
+
+Messages are wrapped with transparent headers:
+
+1. **Write Operation**: 
+   - User writes: "Hello AI"
+   - Socket receives: "[team-chat-to-apollo-123] Hello AI"
+   - AI sees: "Hello AI"
+
+2. **Read Operation**:
+   - AI writes: "My response"
+   - Registry adds: "[team-chat-from-apollo-123] My response"
+   - User sees full message with source
+
+### Persistence Layer
+
+Socket state is persisted to Engram with local backup:
+
+```python
+# Persistence namespace
+namespace = "rhetor_sockets"
+
+# Socket saved on every state change
+await engram_client.store_memory(
+    namespace=namespace,
+    key=socket_id,
+    data=socket.to_dict(),
+    metadata={"type": "ai_socket", "model": model}
+)
+
+# Restored on registry initialization
+memories = await engram_client.list_memories(namespace)
+```
+
+### Health Monitoring
+
+Sockets can be marked unresponsive:
+
+```python
+# Mark socket as unresponsive
+await registry.mark_unresponsive(socket_id)
+
+# Unresponsive sockets reject writes
+if socket.state != SocketState.ACTIVE:
+    return False  # Write rejected
+```
+
+### Team Chat Integration
+
+The socket registry enables Rhetor's team chat moderation modes:
+
+1. **Pass-through**: Stream all responses immediately
+2. **Synthesis**: Collect and summarize responses  
+3. **Consensus**: Group by agreement patterns
+4. **Directed**: Call on specific AIs
+
+### Performance Considerations
+
+- In-memory socket storage for fast access
+- Async operations throughout
+- Minimal overhead on read/write operations
+- Efficient broadcast using dictionary iteration
+- Lazy persistence (only on state changes)
 
 ## Communication Module
 

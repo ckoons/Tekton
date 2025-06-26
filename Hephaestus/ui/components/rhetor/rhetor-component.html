@@ -4373,20 +4373,73 @@ function rhetor_sendLLMChatMessage(message) {
 }
 
 // Send Team Chat message
-function rhetor_sendTeamChatMessage(message) {
+async function rhetor_sendTeamChatMessage(message) {
     console.log('[RHETOR] Team chat message:', message);
     
     // Add user message
     rhetor_addChatMessage('teamchat', 'user', message);
     
-    // For now, show a placeholder response
-    // TODO: Connect to Rhetor team chat endpoint when available
-    rhetor_addChatMessage('teamchat', 'ai', 
-        'Team Chat endpoint not yet implemented. This will coordinate responses from all Tekton components once the backend is ready.');
+    // Show typing indicator
+    const typingId = Date.now();
+    rhetor_addChatMessage('teamchat', 'typing', 'Gathering responses from AI team...', typingId);
+    
+    try {
+        // Call the team chat endpoint
+        const response = await fetch('http://localhost:8003/api/team-chat', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                message: message,
+                moderation_mode: 'pass_through',  // Can be configurable later
+                timeout: 10.0  // 10 second timeout
+            })
+        });
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        
+        // Remove typing indicator
+        rhetor_removeTypingIndicator('teamchat', typingId);
+        
+        // Display responses
+        if (data.responses && data.responses.length > 0) {
+            // Show individual responses
+            for (const resp of data.responses) {
+                const socketName = resp.socket_id.split('-')[0].charAt(0).toUpperCase() + 
+                                 resp.socket_id.split('-')[0].slice(1);
+                rhetor_addChatMessage('teamchat', 'ai', 
+                    `<strong>${socketName}:</strong> ${resp.content}`);
+            }
+            
+            // Show synthesis if available
+            if (data.synthesis) {
+                rhetor_addChatMessage('teamchat', 'ai', 
+                    `<strong>Synthesis:</strong> ${data.synthesis}`);
+            }
+        } else {
+            rhetor_addChatMessage('teamchat', 'ai', 
+                'No responses received from the AI team. Make sure AI specialists are running.');
+        }
+        
+    } catch (error) {
+        console.error('[RHETOR] Team chat error:', error);
+        
+        // Remove typing indicator
+        rhetor_removeTypingIndicator('teamchat', typingId);
+        
+        // Show error message
+        rhetor_addChatMessage('teamchat', 'ai', 
+            `Error: ${error.message}. Make sure Rhetor is running on port 8003.`);
+    }
 }
 
 // Add message to chat
-function rhetor_addChatMessage(chatType, messageType, content) {
+function rhetor_addChatMessage(chatType, messageType, content, typingId = null) {
     const messagesContainer = document.getElementById(`${chatType}-messages`);
     if (!messagesContainer) return;
     
@@ -4396,6 +4449,9 @@ function rhetor_addChatMessage(chatType, messageType, content) {
     if (messageType === 'typing') {
         messageDiv.classList.add('rhetor__message--typing');
         messageDiv.setAttribute('data-typing', 'true');
+        if (typingId) {
+            messageDiv.setAttribute('data-typing-id', typingId);
+        }
         messageDiv.innerHTML = `
             <div class="rhetor__message-content">
                 <div class="rhetor__message-text">
@@ -4413,6 +4469,17 @@ function rhetor_addChatMessage(chatType, messageType, content) {
     
     messagesContainer.appendChild(messageDiv);
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
+}
+
+// Remove typing indicator
+function rhetor_removeTypingIndicator(chatType, typingId) {
+    const messagesContainer = document.getElementById(`${chatType}-messages`);
+    if (!messagesContainer) return;
+    
+    const typingElement = messagesContainer.querySelector(`[data-typing-id="${typingId}"]`);
+    if (typingElement) {
+        typingElement.remove();
+    }
 }
 
 

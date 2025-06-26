@@ -113,9 +113,17 @@ class RhetorComponent(StandardComponentBase):
             logger.info("Specialist router initialized")
             
             # Initialize AI specialist manager
+            from .ai_specialist_manager import set_ai_specialist_manager
             self.ai_specialist_manager = AISpecialistManager(self.llm_client, self.specialist_router)
             self.specialist_router.set_specialist_manager(self.ai_specialist_manager)
+            set_ai_specialist_manager(self.ai_specialist_manager)  # Set singleton
             logger.info("AI specialist manager initialized")
+            
+            # Initialize socket-specialist integration
+            from .socket_specialist_integration import get_socket_specialist_integration
+            self.socket_integration = await get_socket_specialist_integration(self.ai_specialist_manager)
+            self.ai_specialist_manager.set_socket_integration(self.socket_integration)
+            logger.info("Socket-specialist integration initialized")
             
             # Initialize component specialist registry
             self.component_specialist_registry = ComponentSpecialistRegistry(self.ai_specialist_manager)

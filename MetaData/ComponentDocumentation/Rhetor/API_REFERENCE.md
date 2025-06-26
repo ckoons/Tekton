@@ -1125,6 +1125,39 @@ Server -> Client (Stream response):
 }
 ```
 
+## AI Socket Registry API
+
+The AI Socket Registry provides the foundation for team chat and multi-AI collaboration in Rhetor. It implements the Unix philosophy where "AIs are just sockets that read and write."
+
+For detailed Socket Registry API documentation, see: [AI_SOCKET_REGISTRY_API.md](./AI_SOCKET_REGISTRY_API.md)
+
+### Key Features
+
+- **Socket Management**: Create, read, write, delete, and reset AI sockets
+- **Team Chat**: Broadcast messages to all AI participants
+- **Header Routing**: Automatic message routing with transparent headers
+- **Persistence**: Socket state survives Rhetor restarts via Engram
+- **Health Monitoring**: Track and manage unresponsive AIs
+
+### Quick Example
+
+```python
+from rhetor.core.ai_socket_registry import get_socket_registry
+
+# Initialize and use the registry
+registry = await get_socket_registry()
+
+# Create AI sockets
+apollo_id = await registry.create("claude-3", "You are Apollo", {"role": "predictor"})
+athena_id = await registry.create("gpt-4", "You are Athena", {"role": "knowledge"})
+
+# Broadcast to all AIs
+await registry.write("team-chat-all", "How can we improve our system?")
+
+# Collect responses
+responses = await registry.read("team-chat-all")
+```
+
 ## Error Responses
 
 All endpoints follow a standard error response format:
