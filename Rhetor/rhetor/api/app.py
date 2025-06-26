@@ -177,6 +177,7 @@ try:
 except ImportError as e:
     logger.warning(f"Team Chat endpoints not available: {e}")
 
+
 # Enable CORS
 app.add_middleware(
     CORSMiddleware,
