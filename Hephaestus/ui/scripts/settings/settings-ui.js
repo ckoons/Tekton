@@ -32,7 +32,7 @@ class SettingsUI {
         }
         
         // Always load the settings component on initialization
-        this.loadSettingsComponent();
+        // this.loadSettingsComponent();
         
         return this;
     }

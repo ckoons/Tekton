@@ -36,7 +36,7 @@ class ProfileUI {
         });
         
         // Load the profile component if not already loaded
-        this.loadProfileComponent();
+        // this.loadProfileComponent();
         
         return this;
     }
