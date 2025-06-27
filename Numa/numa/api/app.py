@@ -16,17 +16,24 @@ if tekton_root not in sys.path:
     sys.path.append(tekton_root)
 
 from shared.utils.env_config import get_component_config
+from shared.utils.hermes_registration import HermesRegistration, heartbeat_loop
 
 config = get_component_config()
 NUMA_PORT = config.numa.port
 HERMES_URL = os.environ.get("HERMES_URL", f"http://localhost:{config.hermes.port}")
 RHETOR_URL = os.environ.get("RHETOR_URL", f"http://localhost:{config.rhetor.port}")
 
+# Component version
+COMPONENT_VERSION = "0.1.0"
+
 app = FastAPI(
     title="Numa - Platform AI Mentor",
     description="Platform-wide AI mentor that oversees and guides the Tekton ecosystem",
-    version="0.1.0"
+    version=COMPONENT_VERSION
 )
+
+# Global registration instance
+hermes_registration: Optional[HermesRegistration] = None
 
 class CompanionChatRequest(BaseModel):
     """Request model for companion chat"""
@@ -69,6 +76,7 @@ async def health_check():
     return {
         "status": "healthy",
         "component": "numa",
+        "version": COMPONENT_VERSION,
         "timestamp": datetime.now().isoformat(),
         "port": NUMA_PORT,
         "capabilities": [
@@ -138,48 +146,43 @@ async def startup_event():
     print(f"Numa starting on port {NUMA_PORT}")
     
     # Register with Hermes
-    try:
-        import httpx
-        async with httpx.AsyncClient() as client:
-            registration_data = {
-                "name": "numa",
-                "port": NUMA_PORT,
-                "health_endpoint": "/health",
-                "description": "Platform AI Mentor",
-                "capabilities": [
-                    "companion_chat",
-                    "team_chat",
-                    "platform_guidance",
-                    "component_mentoring"
-                ]
-            }
-            response = await client.post(
-                f"{HERMES_URL}/api/register",
-                json=registration_data
-            )
-            if response.status_code == 200:
-                print(f"✅ Numa registered with Hermes")
-            else:
-                print(f"⚠️ Failed to register with Hermes: {response.status_code}")
-    except Exception as e:
-        print(f"⚠️ Could not register with Hermes: {e}")
+    global hermes_registration
+    hermes_registration = HermesRegistration(HERMES_URL)
+    
+    registration_success = await hermes_registration.register_component(
+        component_name="numa",
+        port=NUMA_PORT,
+        version=COMPONENT_VERSION,
+        capabilities=[
+            "companion_chat",
+            "team_chat", 
+            "platform_guidance",
+            "component_mentoring"
+        ],
+        metadata={
+            "description": "Platform AI Mentor",
+            "type": "platform_ai",
+            "responsibilities": [
+                "Provides guidance and mentorship to platform users",
+                "Facilitates team communication between components",
+                "Monitors overall system health and patterns"
+            ]
+        }
+    )
+    
+    if registration_success:
+        print(f"✅ Numa registered with Hermes")
+        # Start heartbeat loop
+        asyncio.create_task(heartbeat_loop(hermes_registration, "numa"))
+    else:
+        print(f"⚠️ Failed to register with Hermes")
     
 @app.on_event("shutdown")
 async def shutdown_event():
     """Cleanup on shutdown"""
     print("Numa shutting down...")
-    
-    # Deregister from Hermes
-    try:
-        import httpx
-        async with httpx.AsyncClient() as client:
-            response = await client.delete(
-                f"{HERMES_URL}/api/components/numa"
-            )
-            if response.status_code == 200:
-                print("✅ Numa deregistered from Hermes")
-    except Exception as e:
-        print(f"⚠️ Could not deregister from Hermes: {e}")
+    if hermes_registration:
+        await hermes_registration.deregister("numa")
 
 if __name__ == "__main__":
     import uvicorn

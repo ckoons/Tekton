@@ -73,6 +73,13 @@ class MinimalLoader {
   async loadComponent(componentId) {
     console.log(`MinimalLoader: Loading component ${componentId} - DEBUG LOG`);
     
+    // DEBUG: Special logging for Numa
+    if (componentId === 'numa') {
+      console.log(`MinimalLoader: DEBUG - Numa loading requested`);
+      console.log(`MinimalLoader: Numa path: ${this.componentPaths[componentId]}`);
+      console.log(`MinimalLoader: Current component before loading: ${this.currentComponent}`);
+    }
+    
     // Debug logging to show which loader is handling the component
     if (componentId === 'profile' || componentId === 'settings') {
       console.log(`MinimalLoader: IMPORTANT DEBUG - Loading ${componentId} component`);
@@ -114,6 +121,12 @@ class MinimalLoader {
 
       // Determine component path
       const componentPath = this.componentPaths[componentId] || `/components/${componentId}/${componentId}-component.html`;
+      
+      // DEBUG: Log the actual path being used
+      console.log(`MinimalLoader: Using path for ${componentId}: ${componentPath}`);
+      if (componentId === 'numa') {
+        console.log('MinimalLoader: DEBUG - About to fetch Numa component from:', componentPath);
+      }
 
       // First, ensure we have the tab navigation utility loaded
       // This helps standardize tab switching across components
@@ -129,9 +142,22 @@ class MinimalLoader {
       }
 
       const html = await response.text();
+      
+      // DEBUG: Check what we fetched
+      if (componentId === 'numa') {
+        console.log('MinimalLoader: DEBUG - Fetched HTML for Numa, first 200 chars:', html.substring(0, 200));
+        console.log('MinimalLoader: DEBUG - HTML contains "Numa":', html.includes('Numa'));
+        console.log('MinimalLoader: DEBUG - HTML contains "Profile":', html.includes('Profile'));
+      }
 
       // Display the component HTML directly in the container
       container.innerHTML = html;
+      
+      // DEBUG: Check what's actually in the container after setting
+      if (componentId === 'numa') {
+        console.log('MinimalLoader: DEBUG - After setting innerHTML, container contains:', container.innerHTML.substring(0, 200));
+        console.log('MinimalLoader: DEBUG - Container has Numa content:', container.innerHTML.includes('numa'));
+      }
 
       // Update current component
       this.currentComponent = componentId;

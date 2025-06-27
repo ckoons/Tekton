@@ -16,17 +16,24 @@ if tekton_root not in sys.path:
     sys.path.append(tekton_root)
 
 from shared.utils.env_config import get_component_config
+from shared.utils.hermes_registration import HermesRegistration, heartbeat_loop
 
 config = get_component_config()
 NOESIS_PORT = config.noesis.port
 HERMES_URL = os.environ.get("HERMES_URL", f"http://localhost:{config.hermes.port}")
 RHETOR_URL = os.environ.get("RHETOR_URL", f"http://localhost:{config.rhetor.port}")
 
+# Component version
+COMPONENT_VERSION = "0.1.0"
+
 app = FastAPI(
     title="Noesis - Discovery System",
     description="Pattern discovery and insight generation for the Tekton ecosystem",
-    version="0.1.0"
+    version=COMPONENT_VERSION
 )
+
+# Global registration instance
+hermes_registration: Optional[HermesRegistration] = None
 
 class DiscoveryChatRequest(BaseModel):
     """Request model for discovery chat"""
@@ -70,6 +77,7 @@ async def health_check():
     return {
         "status": "healthy",
         "component": "noesis",
+        "version": COMPONENT_VERSION,
         "timestamp": datetime.now().isoformat(),
         "port": NOESIS_PORT,
         "capabilities": [
@@ -145,48 +153,44 @@ async def startup_event():
     print(f"Noesis starting on port {NOESIS_PORT}")
     
     # Register with Hermes
-    try:
-        import httpx
-        async with httpx.AsyncClient() as client:
-            registration_data = {
-                "name": "noesis",
-                "port": NOESIS_PORT,
-                "health_endpoint": "/health",
-                "description": "Discovery System",
-                "capabilities": [
-                    "discovery_chat",
-                    "team_chat",
-                    "pattern_recognition",
-                    "insight_generation"
-                ]
-            }
-            response = await client.post(
-                f"{HERMES_URL}/api/register",
-                json=registration_data
-            )
-            if response.status_code == 200:
-                print(f"✅ Noesis registered with Hermes")
-            else:
-                print(f"⚠️ Failed to register with Hermes: {response.status_code}")
-    except Exception as e:
-        print(f"⚠️ Could not register with Hermes: {e}")
+    global hermes_registration
+    hermes_registration = HermesRegistration(HERMES_URL)
+    
+    registration_success = await hermes_registration.register_component(
+        component_name="noesis",
+        port=NOESIS_PORT,
+        version=COMPONENT_VERSION,
+        capabilities=[
+            "discovery_chat",
+            "team_chat",
+            "pattern_recognition", 
+            "insight_generation"
+        ],
+        metadata={
+            "description": "Discovery System",
+            "type": "discovery_ai",
+            "responsibilities": [
+                "Discovers patterns across system components",
+                "Generates insights from system behavior",
+                "Identifies optimization opportunities",
+                "Provides discovery-based chat interface"
+            ]
+        }
+    )
+    
+    if registration_success:
+        print(f"✅ Noesis registered with Hermes")
+        # Start heartbeat loop
+        asyncio.create_task(heartbeat_loop(hermes_registration, "noesis"))
+    else:
+        print(f"⚠️ Failed to register with Hermes")
     
 @app.on_event("shutdown")
 async def shutdown_event():
     """Cleanup on shutdown"""
     print("Noesis shutting down...")
-    
-    # Deregister from Hermes
-    try:
-        import httpx
-        async with httpx.AsyncClient() as client:
-            response = await client.delete(
-                f"{HERMES_URL}/api/components/noesis"
-            )
-            if response.status_code == 200:
-                print("✅ Noesis deregistered from Hermes")
-    except Exception as e:
-        print(f"⚠️ Could not deregister from Hermes: {e}")
+    if hermes_registration:
+        await hermes_registration.deregister("noesis")
 
 if __name__ == "__main__":
     import uvicorn

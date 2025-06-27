@@ -122,6 +122,13 @@ class UIManagerCore {
         // Add stack trace to see where this is being called from
         console.trace(`Call stack for activating component: ${componentId}`);
         
+        // DEBUG: Check what's happening with Numa
+        if (componentId === 'numa') {
+            console.log('DEBUG: Numa activation requested');
+            console.log('DEBUG: Current component:', this.activeComponent);
+            console.log('DEBUG: minimalLoader available:', !!window.minimalLoader);
+        }
+        
         // Check if this component should be ignored by UI manager
         // This allows components to manage their own UI without interference
         if (this._ignoreComponent === componentId) {
@@ -158,6 +165,33 @@ class UIManagerCore {
         // Use the minimal loader if available (for all components including profile and settings)
         if (window.minimalLoader) {
             console.log(`Using MinimalLoader to load ${componentId}`);
+            
+            // DEBUG: Special handling for Numa to trace the issue
+            if (componentId === 'numa') {
+                console.log('DEBUG: Explicitly loading Numa component');
+                // Force update navigation state first
+                const navItems = document.querySelectorAll('.nav-item');
+                navItems.forEach(item => {
+                    if (item.getAttribute('data-component') === 'numa') {
+                        item.classList.add('active');
+                    } else {
+                        item.classList.remove('active');
+                    }
+                });
+                
+                // Update component title
+                const componentTitle = document.querySelector('.component-title');
+                if (componentTitle && window.settingsManager) {
+                    componentTitle.textContent = window.settingsManager.getComponentLabel('numa');
+                }
+                
+                // Update active component state
+                this.activeComponent = 'numa';
+                if (window.tektonUI) {
+                    window.tektonUI.activeComponent = 'numa';
+                }
+            }
+            
             window.minimalLoader.loadComponent(componentId);
             return;
         }
