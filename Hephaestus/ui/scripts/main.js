@@ -215,7 +215,6 @@ document.addEventListener('DOMContentLoaded', function() {
     setTimeout(() => {
         // Add some status indicators for demonstration
         document.querySelector('.nav-item[data-component="telos"] .status-indicator').classList.add('active');
-        document.querySelector('.nav-item[data-component="codex"] .status-indicator').classList.add('attention');
         
         // After a bit longer, add an alert
         setTimeout(() => {

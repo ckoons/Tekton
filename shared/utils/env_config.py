@@ -383,6 +383,38 @@ class TektonCoreConfig(BaseComponentConfig):
         )
 
 
+class NumaConfig(BaseComponentConfig):
+    """Configuration for Numa platform AI mentor."""
+    
+    port: int
+    ai_enabled: bool = False
+    companion_enabled: bool = True
+    
+    @classmethod
+    def from_env(cls) -> 'NumaConfig':
+        return cls(
+            port=cls._get_required_env('NUMA_PORT', 'int'),
+            ai_enabled=cls._get_env_value('TEKTON_REGISTER_AI', False, 'bool'),
+            companion_enabled=cls._get_env_value('NUMA_COMPANION_ENABLED', True, 'bool')
+        )
+
+
+class NoesisConfig(BaseComponentConfig):
+    """Configuration for Noesis discovery system."""
+    
+    port: int
+    ai_enabled: bool = False
+    discovery_mode: str = 'placeholder'
+    
+    @classmethod
+    def from_env(cls) -> 'NoesisConfig':
+        return cls(
+            port=cls._get_required_env('NOESIS_PORT', 'int'),
+            ai_enabled=cls._get_env_value('TEKTON_REGISTER_AI', False, 'bool'),
+            discovery_mode=cls._get_env_value('NOESIS_DISCOVERY_MODE', 'placeholder', 'str')
+        )
+
+
 class TektonConfig(BaseModel):
     """Global Tekton system configuration."""
     
@@ -459,6 +491,8 @@ class ComponentConfig:
         self.telos = TelosConfig.from_env()
         self.terma = TermaConfig.from_env()
         self.tekton_core = TektonCoreConfig.from_env()
+        self.numa = NumaConfig.from_env()
+        self.noesis = NoesisConfig.from_env()
         self.tekton = TektonConfig.from_env()
     
     def refresh(self):
@@ -497,6 +531,8 @@ class ComponentConfig:
             'terma': self.terma,
             'tekton-core': self.tekton_core,
             'tekton_core': self.tekton_core,
+            'numa': self.numa,
+            'noesis': self.noesis,
         }
         
         config = component_map.get(component_lower)
@@ -523,6 +559,8 @@ class ComponentConfig:
             'synthesis': self.synthesis.model_dump(),
             'telos': self.telos.model_dump(),
             'terma': self.terma.model_dump(),
+            'numa': self.numa.model_dump(),
+            'noesis': self.noesis.model_dump(),
             'tekton': self.tekton.model_dump(),
         }
 

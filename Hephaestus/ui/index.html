@@ -67,14 +67,17 @@
         .nav-item[data-component="hermes"] .status-indicator { 
             background-color: #4285F4; /* Blue */
         }
-        .nav-item[data-component="codex"] .status-indicator { 
-            background-color: #00ACC1; /* Light Blue */
-        }
         .nav-item[data-component="terma"] .status-indicator { 
             background-color: #5D4037; /* Brown */
         }
         .nav-item[data-component="budget"] .status-indicator { 
             background-color: #34A853; /* Green */
+        }
+        .nav-item[data-component="numa"] .status-indicator { 
+            background-color: #9C27B0; /* Deep Purple - Platform Mentor */
+        }
+        .nav-item[data-component="noesis"] .status-indicator { 
+            background-color: #FF6F00; /* Deep Orange - Discovery */
         }
         
         /* Make status indicators always visible */
@@ -186,6 +189,10 @@
             
             <div class="left-panel-nav" data-tekton-section="nav-main">
                 <ul class="component-nav" data-tekton-list="components">
+                    <li class="nav-item" data-component="numa" data-tekton-nav-item="numa" data-tekton-nav-target="numa" data-tekton-state="inactive">
+                        <span class="nav-label">Numa - Companion</span>
+                        <span class="status-indicator"></span>
+                    </li>
                     <li class="nav-item active" data-component="tekton" data-tekton-nav-item="tekton" data-tekton-nav-target="tekton" data-tekton-state="active">
                         <span class="nav-label">Tekton - Projects</span>
                         <span class="status-indicator"></span>
@@ -222,6 +229,10 @@
                         <span class="nav-label">Sophia - Learning</span>
                         <span class="status-indicator"></span>
                     </li>
+                    <li class="nav-item" data-component="noesis" data-tekton-nav-item="noesis" data-tekton-nav-target="noesis" data-tekton-state="inactive">
+                        <span class="nav-label">Noesis - Discovery</span>
+                        <span class="status-indicator"></span>
+                    </li>
                     <li class="nav-item" data-component="engram" data-tekton-nav-item="engram" data-tekton-nav-target="engram" data-tekton-state="inactive">
                         <span class="nav-label">Engram - Memory</span>
                         <span class="status-indicator"></span>
@@ -240,10 +251,6 @@
                     </li>
                     <li class="nav-item" data-component="hermes" data-tekton-nav-item="hermes" data-tekton-nav-target="hermes" data-tekton-state="inactive">
                         <span class="nav-label">Hermes - Messages/Data</span>
-                        <span class="status-indicator"></span>
-                    </li>
-                    <li class="nav-item" data-component="codex" data-tekton-nav-item="codex" data-tekton-nav-target="codex" data-tekton-state="inactive">
-                        <span class="nav-label">Codex - Coding</span>
                         <span class="status-indicator"></span>
                     </li>
                     <li class="nav-item" data-component="terma" data-tekton-nav-item="terma" data-tekton-nav-target="terma" data-tekton-state="inactive">

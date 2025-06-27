@@ -358,18 +358,6 @@
       ]
     },
     {
-      "id": "codex",
-      "name": "Codex",
-      "description": "Code development and analysis",
-      "icon": "💻",
-      "defaultMode": "html",
-      "capabilities": [
-        "code_generation",
-        "code_review",
-        "documentation"
-      ]
-    },
-    {
       "id": "harmonia",
       "name": "Harmonia",
       "description": "Workflow orchestration",
@@ -410,6 +398,48 @@
       "scripts": [
         "scripts/metis/metis-component.js"
       ],
+      "usesShadowDom": false
+    },
+    {
+      "id": "numa",
+      "name": "Numa",
+      "description": "Platform AI Mentor",
+      "icon": "🌟",
+      "defaultMode": "html",
+      "capabilities": [
+        "companion_chat",
+        "team_chat",
+        "platform_guidance",
+        "component_mentoring",
+        "shadow_dom",
+        "component_isolation"
+      ],
+      "componentPath": "components/numa/numa-component.html",
+      "scripts": [
+        "scripts/numa/numa-component.js"
+      ],
+      "styles": [],
+      "usesShadowDom": false
+    },
+    {
+      "id": "noesis",
+      "name": "Noesis",
+      "description": "Discovery System",
+      "icon": "🔍",
+      "defaultMode": "html",
+      "capabilities": [
+        "discovery_chat",
+        "team_chat",
+        "pattern_recognition",
+        "insight_generation",
+        "shadow_dom",
+        "component_isolation"
+      ],
+      "componentPath": "components/noesis/noesis-component.html",
+      "scripts": [
+        "scripts/noesis/noesis-component.js"
+      ],
+      "styles": [],
       "usesShadowDom": false
     }
   ]

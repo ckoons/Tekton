@@ -7,7 +7,7 @@
 class UIManagerCore {
     constructor() {
         this.components = {};
-        this.activeComponent = 'test'; // Default to test component for debugging
+        this.activeComponent = 'numa'; // Default to Numa - Platform AI Mentor
         this.activePanel = 'html'; // Default panel (terminal, html, or settings)
         this.useShadowDOM = false; // Disabled Shadow DOM for direct HTML injection
 

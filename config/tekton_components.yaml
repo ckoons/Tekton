@@ -70,6 +70,32 @@ components:
     startup_priority: 4
     dependencies: ["hermes", "rhetor"]
     
+  numa:
+    name: "Numa"
+    port: 8016
+    description: "Platform AI mentor providing guidance and oversight"
+    category: "ai"
+    startup_priority: 6  # Starts after all components for platform-wide view
+    dependencies: ["hermes", "rhetor"]
+    capabilities:
+      - "companion_chat"
+      - "team_chat"
+      - "platform_guidance"
+      - "component_mentoring"
+    
+  noesis:
+    name: "Noesis"
+    port: 8015
+    description: "Discovery system for pattern recognition and insights"
+    category: "ai"
+    startup_priority: 5  # Starts after core AI components
+    dependencies: ["hermes", "rhetor", "athena"]
+    capabilities:
+      - "discovery_chat"
+      - "team_chat"
+      - "pattern_recognition"
+      - "insight_generation"
+    
   # Planning and Execution
   prometheus:
     name: "Prometheus"

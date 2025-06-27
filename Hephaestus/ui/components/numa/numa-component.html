@@ -1,0 +1,361 @@
+<!-- Numa Component - Platform AI Mentor -->
+
+<!-- Hidden radio controls for CSS-only tab functionality -->
+<input type="radio" name="numa-tab" id="numa-tab-companion" checked style="display: none;">
+<input type="radio" name="numa-tab" id="numa-tab-team" style="display: none;">
+
+<div class="numa" id="numa-container" data-tekton-component="numa">
+    <!-- Component Header with Title -->
+    <div class="numa__header" data-tekton-zone="header">
+        <div class="numa__title-container">
+            <img src="/images/hexagon.jpg" alt="Tekton" class="numa__icon">
+            <h2 class="numa__title">
+                <span class="numa__title-main">Numa</span>
+                <span class="numa__title-sub">Platform AI Mentor</span>
+            </h2>
+        </div>
+        <div class="numa__connection-status">
+            <span class="numa__status-indicator" data-status="inactive"></span>
+            <span class="numa__status-text">Connecting...</span>
+        </div>
+    </div>
+    
+    <!-- Menu Bar -->
+    <div class="numa__menu-bar" data-tekton-zone="menu">
+        <div class="numa__tabs">
+            <label for="numa-tab-companion" class="numa__tab" data-tab="companion-chat">
+                <span class="numa__tab-label">Companion Chat</span>
+            </label>
+            <label for="numa-tab-team" class="numa__tab" data-tab="team-chat">
+                <span class="numa__tab-label">Team Chat</span>
+            </label>
+        </div>
+    </div>
+    
+    <!-- Content Area -->
+    <div class="numa__content" data-tekton-zone="content">
+        <!-- Companion Chat Tab -->
+        <div class="numa__panel numa__panel--companion" data-tab-content="companion-chat" data-tekton-tab-content="companion-chat">
+            <div class="chat-interface" data-tekton-chat="companion">
+                <div class="chat-messages" id="numa-companion-messages" data-tekton-messages="companion">
+                    <div class="chat-message system-message">
+                        <strong>Numa:</strong> Hello! I'm Numa, your platform AI mentor. I oversee the entire Tekton ecosystem and can help guide you through using any component. What would you like to explore today?
+                    </div>
+                </div>
+                <div class="chat-input-container" data-tekton-input="companion">
+                    <input type="text" 
+                           id="numa-companion-input" 
+                           class="chat-input" 
+                           placeholder="Ask Numa for guidance..."
+                           data-tekton-input-field="companion">
+                    <button class="chat-send-button" 
+                            id="numa-companion-send"
+                            data-tekton-send="companion">Send</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Team Chat Tab -->
+        <div class="numa__panel numa__panel--team" data-tab-content="team-chat" data-tekton-tab-content="team-chat">
+            <div class="chat-interface" data-tekton-chat="team">
+                <div class="team-chat-header">
+                    <p>Communicate with other AI specialists across the Tekton platform</p>
+                    <div class="team-chat-controls">
+                        <label>
+                            <input type="checkbox" id="numa-broadcast-mode" data-tekton-broadcast="numa">
+                            Broadcast to all AIs
+                        </label>
+                    </div>
+                </div>
+                <div class="chat-messages" id="numa-team-messages" data-tekton-messages="team">
+                    <div class="chat-message system-message">
+                        <strong>System:</strong> Team Chat allows Numa to coordinate with other AI specialists.
+                    </div>
+                </div>
+                <div class="chat-input-container" data-tekton-input="team">
+                    <input type="text" 
+                           id="numa-team-input" 
+                           class="chat-input" 
+                           placeholder="Message to team..."
+                           data-tekton-input-field="team">
+                    <button class="chat-send-button" 
+                            id="numa-team-send"
+                            data-tekton-send="team">Send</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Component Footer -->
+    <div class="component-footer" data-tekton-footer="numa">
+        <div class="footer-info">
+            <span class="info-item">Port: <span id="numa-port">8016</span></span>
+            <span class="info-item">Status: <span id="numa-status">Initializing</span></span>
+            <span class="info-item">AI: <span id="numa-ai-status">Disabled</span></span>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Numa Component Styles - Following Rhetor's BEM Pattern */
+
+/* Container */
+.numa {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  background-color: var(--bg-primary, #1e1e2e);
+  color: var(--text-primary, #f0f0f0);
+  /* No absolute positioning - proper component containment */
+}
+
+/* Header */
+.numa__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 16px;
+  background-color: var(--bg-secondary, #252535);
+  border-bottom: 1px solid var(--border-color, #444444);
+}
+
+.numa__title-container {
+  display: flex;
+  align-items: center;
+}
+
+.numa__icon {
+  height: 30px;
+  width: auto;
+  margin-right: 12px;
+}
+
+.numa__title {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 500;
+}
+
+.numa__title-main {
+  font-weight: 600;
+}
+
+.numa__title-sub {
+  margin-left: 8px;
+  opacity: 0.8;
+  font-weight: normal;
+}
+
+.numa__connection-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.numa__status-indicator {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: var(--color-warning, #ffc107);
+}
+
+.numa__status-indicator[data-status="active"] {
+  background-color: var(--color-success, #28a745);
+}
+
+.numa__status-text {
+  font-size: 0.9rem;
+  color: var(--text-secondary, #aaaaaa);
+}
+
+/* Menu Bar */
+.numa__menu-bar {
+  display: flex;
+  background-color: var(--bg-secondary, #252535);
+  border-bottom: 1px solid var(--border-color, #444444);
+  padding: 0 16px;
+}
+
+.numa__tabs {
+  display: flex;
+  gap: 8px;
+}
+
+.numa__tab {
+  padding: 16px;
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  color: var(--text-secondary, #aaaaaa);
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.numa__tab:hover {
+  color: var(--text-primary, #f0f0f0);
+  background-color: rgba(156, 39, 176, 0.05);
+}
+
+/* Active state handled by radio button logic */
+
+/* Content Area */
+.numa__content {
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Panel styling - hidden by default */
+.numa__panel {
+  display: none;
+  height: 100%;
+  overflow: auto;
+  padding: 24px;
+}
+
+/* Radio button logic for tab switching */
+#numa-tab-companion:checked ~ .numa .numa__panel--companion,
+#numa-tab-team:checked ~ .numa .numa__panel--team {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Active tab styling */
+#numa-tab-companion:checked ~ .numa .numa__tab[for="numa-tab-companion"],
+#numa-tab-team:checked ~ .numa .numa__tab[for="numa-tab-team"] {
+  color: var(--text-primary, #f0f0f0);
+  border-bottom-color: #9C27B0;
+  background-color: rgba(156, 39, 176, 0.05);
+}
+
+/* Chat Interface */
+.chat-interface {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  border: 1px solid var(--border-color, #444444);
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 16px;
+  background-color: var(--bg-tertiary, #333345);
+}
+
+.chat-message {
+  margin-bottom: 12px;
+  padding: 12px;
+  border-radius: 8px;
+  background-color: var(--bg-secondary, #252535);
+}
+
+.chat-message.system-message {
+  background-color: rgba(156, 39, 176, 0.1);
+  border-left: 3px solid #9C27B0;
+}
+
+.chat-message.user-message {
+  background-color: rgba(76, 175, 80, 0.1);
+  margin-left: 32px;
+}
+
+.chat-message.ai-message {
+  background-color: rgba(156, 39, 176, 0.1);
+  margin-right: 32px;
+}
+
+.chat-input-container {
+  display: flex;
+  gap: 8px;
+}
+
+.chat-input {
+  flex: 1;
+  padding: 12px;
+  border: 1px solid var(--border-color, #444444);
+  border-radius: 8px;
+  font-size: 14px;
+  background-color: var(--bg-tertiary, #333345);
+  color: var(--text-primary, #f0f0f0);
+}
+
+.chat-input:focus {
+  outline: none;
+  border-color: #9C27B0;
+}
+
+.chat-send-button {
+  padding: 12px 24px;
+  background-color: #9C27B0;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.3s ease;
+}
+
+.chat-send-button:hover {
+  background-color: #7B1FA2;
+}
+
+/* Team Chat Specific */
+.team-chat-header {
+  padding: 16px;
+  background-color: var(--bg-tertiary, #333345);
+  border-radius: 8px;
+  margin-bottom: 16px;
+}
+
+.team-chat-controls {
+  margin-top: 8px;
+}
+
+.team-chat-controls label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-secondary, #aaaaaa);
+}
+
+/* Footer */
+.component-footer {
+  background-color: var(--bg-secondary, #252535);
+  padding: 12px 16px;
+  border-top: 1px solid var(--border-color, #444444);
+}
+
+.footer-info {
+  display: flex;
+  gap: 24px;
+  font-size: 13px;
+  color: var(--text-secondary, #aaaaaa);
+}
+
+.info-item span {
+  font-weight: 500;
+  color: var(--text-primary, #f0f0f0);
+}
+</style>
+
+<script>
+// Initialize Numa component when loaded
+setTimeout(() => {
+    if (window.NumaComponent && typeof window.NumaComponent.init === 'function') {
+        window.NumaComponent.init();
+        console.log('Numa component initialized');
+    } else {
+        console.warn('NumaComponent not found, waiting for script load...');
+        // Try again after scripts load
+        setTimeout(() => {
+            if (window.NumaComponent && typeof window.NumaComponent.init === 'function') {
+                window.NumaComponent.init();
+                console.log('Numa component initialized (delayed)');
+            }
+        }, 500);
+    }
+}, 100);
+</script>

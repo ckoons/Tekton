@@ -1,0 +1,394 @@
+<!-- Noesis Component - Discovery System -->
+
+<!-- Hidden radio controls for CSS-only tab functionality -->
+<input type="radio" name="noesis-tab" id="noesis-tab-discovery" checked style="display: none;">
+<input type="radio" name="noesis-tab" id="noesis-tab-team" style="display: none;">
+
+<div class="noesis" id="noesis-container" data-tekton-component="noesis">
+    <!-- Component Header with Title -->
+    <div class="noesis__header" data-tekton-zone="header">
+        <div class="noesis__title-container">
+            <img src="/images/hexagon.jpg" alt="Tekton" class="noesis__icon">
+            <h2 class="noesis__title">
+                <span class="noesis__title-main">Noesis</span>
+                <span class="noesis__title-sub">Discovery System</span>
+            </h2>
+        </div>
+        <div class="noesis__connection-status">
+            <span class="noesis__status-indicator" data-status="inactive"></span>
+            <span class="noesis__status-text">Connecting...</span>
+        </div>
+    </div>
+    
+    <!-- Menu Bar -->
+    <div class="noesis__menu-bar" data-tekton-zone="menu">
+        <div class="noesis__tabs">
+            <label for="noesis-tab-discovery" class="noesis__tab" data-tab="discovery-chat">
+                <span class="noesis__tab-label">Discovery Chat</span>
+            </label>
+            <label for="noesis-tab-team" class="noesis__tab" data-tab="team-chat">
+                <span class="noesis__tab-label">Team Chat</span>
+            </label>
+        </div>
+    </div>
+    
+    <!-- Content Area -->
+    <div class="noesis__content" data-tekton-zone="content">
+        <!-- Discovery Chat Tab -->
+        <div class="noesis__panel noesis__panel--discovery" data-tab-content="discovery-chat" data-tekton-tab-content="discovery-chat">
+            <div class="chat-interface" data-tekton-chat="discovery">
+                <div class="discovery-controls">
+                    <label for="noesis-search-scope">Search Scope:</label>
+                    <select id="noesis-search-scope" class="discovery-select">
+                        <option value="all">All Patterns</option>
+                        <option value="components">Component Patterns</option>
+                        <option value="patterns">Behavioral Patterns</option>
+                        <option value="insights">System Insights</option>
+                    </select>
+                </div>
+                <div class="chat-messages" id="noesis-discovery-messages" data-tekton-messages="discovery">
+                    <div class="chat-message system-message">
+                        <strong>Noesis:</strong> I discover patterns and generate insights across the Tekton ecosystem. What would you like me to explore?
+                    </div>
+                </div>
+                <div class="chat-input-container" data-tekton-input="discovery">
+                    <input type="text" 
+                           id="noesis-discovery-input" 
+                           class="chat-input" 
+                           placeholder="What patterns should I discover?"
+                           data-tekton-input-field="discovery">
+                    <button class="chat-send-button" 
+                            id="noesis-discovery-send"
+                            data-tekton-send="discovery">Discover</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Team Chat Tab -->
+        <div class="noesis__panel noesis__panel--team" data-tab-content="team-chat" data-tekton-tab-content="team-chat">
+            <div class="chat-interface" data-tekton-chat="team">
+                <div class="team-chat-header">
+                    <p>Share discoveries with other AI specialists</p>
+                    <div class="team-chat-controls">
+                        <label>
+                            <input type="checkbox" id="noesis-broadcast-mode" data-tekton-broadcast="noesis">
+                            Broadcast discovery to all AIs
+                        </label>
+                    </div>
+                </div>
+                <div class="chat-messages" id="noesis-team-messages" data-tekton-messages="team">
+                    <div class="chat-message system-message">
+                        <strong>System:</strong> Team Chat allows Noesis to share discoveries with other specialists.
+                    </div>
+                </div>
+                <div class="chat-input-container" data-tekton-input="team">
+                    <input type="text" 
+                           id="noesis-team-input" 
+                           class="chat-input" 
+                           placeholder="Share discovery with team..."
+                           data-tekton-input-field="team">
+                    <button class="chat-send-button" 
+                            id="noesis-team-send"
+                            data-tekton-send="team">Share</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Component Footer -->
+    <div class="component-footer" data-tekton-footer="noesis">
+        <div class="footer-info">
+            <span class="info-item">Port: <span id="noesis-port">8015</span></span>
+            <span class="info-item">Status: <span id="noesis-status">Initializing</span></span>
+            <span class="info-item">Mode: <span id="noesis-mode">Placeholder</span></span>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Noesis Component Styles - Following Rhetor's BEM Pattern */
+
+/* Container */
+.noesis {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  background-color: var(--bg-primary, #1e1e2e);
+  color: var(--text-primary, #f0f0f0);
+  /* No absolute positioning - proper component containment */
+}
+
+/* Header */
+.noesis__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 16px;
+  background-color: var(--bg-secondary, #252535);
+  border-bottom: 1px solid var(--border-color, #444444);
+}
+
+.noesis__title-container {
+  display: flex;
+  align-items: center;
+}
+
+.noesis__icon {
+  height: 30px;
+  width: auto;
+  margin-right: 12px;
+}
+
+.noesis__title {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 500;
+}
+
+.noesis__title-main {
+  font-weight: 600;
+}
+
+.noesis__title-sub {
+  margin-left: 8px;
+  opacity: 0.8;
+  font-weight: normal;
+}
+
+.noesis__connection-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.noesis__status-indicator {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: var(--color-warning, #ffc107);
+}
+
+.noesis__status-indicator[data-status="active"] {
+  background-color: var(--color-success, #28a745);
+}
+
+.noesis__status-text {
+  font-size: 0.9rem;
+  color: var(--text-secondary, #aaaaaa);
+}
+
+/* Menu Bar */
+.noesis__menu-bar {
+  display: flex;
+  background-color: var(--bg-secondary, #252535);
+  border-bottom: 1px solid var(--border-color, #444444);
+  padding: 0 16px;
+}
+
+.noesis__tabs {
+  display: flex;
+  gap: 8px;
+}
+
+.noesis__tab {
+  padding: 16px;
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  color: var(--text-secondary, #aaaaaa);
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.noesis__tab:hover {
+  color: var(--text-primary, #f0f0f0);
+  background-color: rgba(255, 111, 0, 0.05);
+}
+
+/* Active state handled by radio button logic */
+
+/* Content Area */
+.noesis__content {
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Panel styling - hidden by default */
+.noesis__panel {
+  display: none;
+  height: 100%;
+  overflow: auto;
+  padding: 24px;
+}
+
+/* Radio button logic for tab switching */
+#noesis-tab-discovery:checked ~ .noesis .noesis__panel--discovery,
+#noesis-tab-team:checked ~ .noesis .noesis__panel--team {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Active tab styling */
+#noesis-tab-discovery:checked ~ .noesis .noesis__tab[for="noesis-tab-discovery"],
+#noesis-tab-team:checked ~ .noesis .noesis__tab[for="noesis-tab-team"] {
+  color: var(--text-primary, #f0f0f0);
+  border-bottom-color: #FF6F00;
+  background-color: rgba(255, 111, 0, 0.05);
+}
+
+/* Chat Interface */
+.chat-interface {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.discovery-controls {
+  margin-bottom: 16px;
+  padding: 16px;
+  background-color: var(--bg-tertiary, #333345);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.discovery-controls label {
+  color: var(--text-secondary, #aaaaaa);
+}
+
+.discovery-select {
+  padding: 8px;
+  border: 1px solid var(--border-color, #444444);
+  border-radius: 4px;
+  font-size: 14px;
+  background-color: var(--bg-tertiary, #333345);
+  color: var(--text-primary, #f0f0f0);
+}
+
+.chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  border: 1px solid var(--border-color, #444444);
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 16px;
+  background-color: var(--bg-tertiary, #333345);
+}
+
+.chat-message {
+  margin-bottom: 12px;
+  padding: 12px;
+  border-radius: 8px;
+  background-color: var(--bg-secondary, #252535);
+}
+
+.chat-message.system-message {
+  background-color: rgba(255, 111, 0, 0.1);
+  border-left: 3px solid #FF6F00;
+}
+
+.chat-message.user-message {
+  background-color: rgba(76, 175, 80, 0.1);
+  margin-left: 32px;
+}
+
+.chat-message.discovery-message {
+  background-color: rgba(255, 193, 7, 0.1);
+  border: 1px solid #ffb300;
+  margin: 8px 0;
+}
+
+.chat-input-container {
+  display: flex;
+  gap: 8px;
+}
+
+.chat-input {
+  flex: 1;
+  padding: 12px;
+  border: 1px solid var(--border-color, #444444);
+  border-radius: 8px;
+  font-size: 14px;
+  background-color: var(--bg-tertiary, #333345);
+  color: var(--text-primary, #f0f0f0);
+}
+
+.chat-input:focus {
+  outline: none;
+  border-color: #FF6F00;
+}
+
+.chat-send-button {
+  padding: 12px 24px;
+  background-color: #FF6F00;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.3s ease;
+}
+
+.chat-send-button:hover {
+  background-color: #E65100;
+}
+
+/* Team Chat Specific */
+.team-chat-header {
+  padding: 16px;
+  background-color: var(--bg-tertiary, #333345);
+  border-radius: 8px;
+  margin-bottom: 16px;
+}
+
+.team-chat-controls {
+  margin-top: 8px;
+}
+
+.team-chat-controls label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-secondary, #aaaaaa);
+}
+
+/* Footer */
+.component-footer {
+  background-color: var(--bg-secondary, #252535);
+  padding: 12px 16px;
+  border-top: 1px solid var(--border-color, #444444);
+}
+
+.footer-info {
+  display: flex;
+  gap: 24px;
+  font-size: 13px;
+  color: var(--text-secondary, #aaaaaa);
+}
+
+.info-item span {
+  font-weight: 500;
+  color: var(--text-primary, #f0f0f0);
+}
+</style>
+
+<script>
+// Initialize Noesis component when loaded
+setTimeout(() => {
+    if (window.NoesisComponent && typeof window.NoesisComponent.init === 'function') {
+        window.NoesisComponent.init();
+        console.log('Noesis component initialized');
+    } else {
+        console.warn('NoesisComponent not found, waiting for script load...');
+        // Try again after scripts load
+        setTimeout(() => {
+            if (window.NoesisComponent && typeof window.NoesisComponent.init === 'function') {
+                window.NoesisComponent.init();
+                console.log('Noesis component initialized (delayed)');
+            }
+        }, 500);
+    }
+}, 100);
+</script>

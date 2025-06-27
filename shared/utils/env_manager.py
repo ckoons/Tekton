@@ -243,6 +243,8 @@ class TektonEnvManager:
             'APOLLO_PORT',
             'BUDGET_PORT',
             'SOPHIA_PORT',
+            'NUMA_PORT',
+            'NOESIS_PORT',
             'TERMA_WS_PORT'
         ]
         

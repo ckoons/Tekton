@@ -354,7 +354,8 @@ class SettingsManager {
             'apollo': { main: this.settings.showGreekNames ? 'Apollo' : '', sub: 'Attention/Prediction' },
             'rhetor': { main: this.settings.showGreekNames ? 'Rhetor' : '', sub: 'LLM/Prompt/Context' },
             'hermes': { main: this.settings.showGreekNames ? 'Hermes' : '', sub: 'Messages/Data' },
-            'codex': { main: this.settings.showGreekNames ? 'Codex' : '', sub: 'Coding' },
+            'numa': { main: this.settings.showGreekNames ? 'Numa' : '', sub: this.settings.showGreekNames ? 'Platform AI Mentor' : 'Companion' },
+            'noesis': { main: this.settings.showGreekNames ? 'Noesis' : '', sub: this.settings.showGreekNames ? 'Pattern Discovery' : 'Discovery' },
             'tekton': { main: this.settings.showGreekNames ? 'Tekton' : '', sub: this.settings.showGreekNames ? 'Project Management' : 'Projects' },
             'terma': { main: this.settings.showGreekNames ? 'Terma' : '', sub: 'Terminal' },
             'budget': { main: this.settings.showGreekNames ? 'Penia' : '', sub: this.settings.showGreekNames ? 'LLM Cost Management' : 'LLM Cost' },
@@ -424,7 +425,8 @@ class SettingsManager {
                 case 'apollo': return 'Apollo - Attention/Prediction';
                 case 'rhetor': return 'Rhetor - LLM/Prompt/Context';
                 case 'hermes': return 'Hermes - Messages/Data';
-                case 'codex': return 'Codex - Coding';
+                case 'numa': return 'Numa - Companion';
+                case 'noesis': return 'Noesis - Discovery';
                 case 'tekton': return 'Tekton - Projects';
                 case 'terma': return 'Terma - Terminal';
                 case 'budget': return 'Penia - LLM Cost';
@@ -448,7 +450,8 @@ class SettingsManager {
                 case 'apollo': return 'Attention/Prediction';
                 case 'rhetor': return 'LLM/Prompt/Context';
                 case 'hermes': return 'Messages/Data';
-                case 'codex': return 'Coding';
+                case 'numa': return 'Companion';
+                case 'noesis': return 'Discovery';
                 case 'tekton': return 'Projects';
                 case 'terma': return 'Terminal';
                 case 'budget': return 'LLM Cost';

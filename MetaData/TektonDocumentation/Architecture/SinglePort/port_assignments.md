@@ -24,6 +24,8 @@ As of April 26, 2025, Tekton has moved to a consolidated, single-port-per-compon
 | Apollo | 8012 | APOLLO_PORT | Local Attention/Prediction layer - HTTP, Events |
 | Budget | 8013 | BUDGET_PORT | Token/cost management system - HTTP, Events |
 | Sophia | 8014 | SOPHIA_PORT | Machine learning system - HTTP, Events |
+| Noesis | 8015 | NOESIS_PORT | Discovery system - HTTP, Events |
+| Numa | 8016 | NUMA_PORT | Platform AI mentor - HTTP, Events |
 
 ## Design Rationale
 
