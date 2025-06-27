@@ -1,5 +1,15 @@
 # Loading State System Guide
 
+> ⚠️ **DEPRECATED as of June 2025**
+> 
+> The Loading State System is no longer used in Hephaestus UI. The new CSS-first architecture pre-loads all components, eliminating the need for loading states.
+> 
+> **See: [CSS-First Architecture Documentation](/MetaData/TektonDocumentation/Architecture/CSSFirstArchitecture.md)**
+> 
+> This documentation is preserved for historical reference only.
+
+---
+
 ## Overview
 
 The Loading State System provides reliable detection of when UI components are fully loaded and ready for interaction. This system uses semantic HTML attributes to track component loading lifecycle, solving the DynamicContentView problem where DevTools couldn't reliably detect dynamically loaded content.

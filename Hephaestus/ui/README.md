@@ -1,15 +1,37 @@
 # Hephaestus UI
 
+## 🎉 NEW: CSS-First Architecture (June 2025)
+
+**IMPORTANT: Hephaestus UI now uses a radically simplified CSS-first architecture!**
+
+- ✅ All components pre-loaded (no dynamic loading)
+- ✅ Navigation via pure CSS (no JavaScript routing)
+- ✅ Only ~300 lines of JS (down from thousands)
+- ✅ No race conditions, instant navigation
+
+**📖 Must Read: [CSS-First Architecture Documentation](/MetaData/TektonDocumentation/Architecture/CSSFirstArchitecture.md)**
+
+---
+
 ## Overview
 
 Hephaestus UI is the unified interface for the Tekton ecosystem, providing a consistent way to interact with all Tekton components. It follows the "Keep It Simple" philosophy with a standardized structure for component display and interaction.
 
 ## Architecture
 
+### CSS-First Design
+
+The UI uses a CSS-first architecture where:
+- All components are pre-loaded in `index.html`
+- Navigation works via CSS `:target` selectors (e.g., `#numa:target`)
+- JavaScript only handles WebSocket, chat, and health checks
+
+### UI Structure
+
 The UI is structured around two main regions:
 
 1. **LEFT PANEL**: Navigation and component selection
-2. **RIGHT PANEL**: Component-specific interface with standardized structure:
+2. **MAIN CONTENT**: All components pre-loaded, shown/hidden via CSS:
    - HEADER: Component identification
    - MENU BAR: Component-specific tabs and controls
    - WORKSPACE: Main content area
@@ -38,16 +60,30 @@ The UI is structured around two main regions:
 
 ## Development Guidelines
 
+### Adding or Modifying Components
+
+1. **Edit component HTML**: `components/[name]/[name]-component.html`
+2. **Run build script**: `python3 build-simplified.py`
+3. **Test locally**: Components instantly available via `#componentName` hash
+
 ### File Organization
 
-Each component has its own directory structure:
+```
+ui/
+├── index.html              # All components pre-loaded here
+├── scripts/
+│   └── app-minimal.js      # Only ~300 lines (WebSocket, chat, health)
+├── components/             # Component HTML files (inlined during build)
+│   └── [name]/
+│       └── [name]-component.html
+└── build-simplified.py     # Builds index.html from components
+```
 
-```
-ui/scripts/component-name/
-├── html/          # HTML templates
-├── css/           # Component styles
-├── js/            # JavaScript functionality
-```
+### Key Files
+
+- **`app-minimal.js`**: Entire JavaScript logic (~300 lines)
+- **`build-simplified.py`**: Inlines all components into index.html
+- **`index.html`**: Contains ALL components pre-loaded
 
 ### File Size Limits
 

@@ -1,12 +1,24 @@
 # How Tekton UI Works
 
-*Living Document - Last Updated: 2025-06-23*
+*Living Document - Last Updated: 2025-06-27*
 
 This document captures the hard-won lessons about how Tekton's UI system actually works, based on real implementation experience. It will evolve as Tekton evolves.
 
+## 🚨 IMPORTANT UPDATE: CSS-First Architecture (June 2025) 🚨
+
+**The Hephaestus UI now uses a simplified CSS-first architecture!** 
+
+- All components are pre-loaded in index.html (no dynamic loading)
+- Navigation works via pure CSS `:target` selectors (no JavaScript)
+- Only ~300 lines of JavaScript for WebSocket, chat, and health checks
+
+**See: [CSS-First Architecture Documentation](/MetaData/TektonDocumentation/Architecture/CSSFirstArchitecture.md)**
+
+---
+
 ## Overview
 
-Tekton UI follows a component-based architecture where each AI component (Rhetor, Ergon, Athena, etc.) has its own isolated UI. The system loads one component at a time into the right panel, with all styling and behavior pre-loaded for performance.
+Tekton UI follows a component-based architecture where each AI component (Rhetor, Ergon, Athena, etc.) has its own isolated UI. ~~The system loads one component at a time into the right panel~~. **UPDATE: All components are now pre-loaded in the DOM and shown/hidden via CSS.**
 
 ### Core Philosophy
 - **Static HTML over dynamic DOM manipulation**
@@ -142,10 +154,25 @@ Component renders (CSS already loaded from index.html)
 
 ## Version History
 
+- **2025-06-27**: Major architectural change to CSS-first
+  - Replaced dynamic loading with pre-loaded components
+  - Navigation now pure CSS using `:target` selectors
+  - Reduced JavaScript from thousands of lines to ~300
+  - All deprecated files marked for removal
 - **2025-06-23**: Initial documentation created
   - Documented CSS loading discovery
   - Added Shadow DOM findings
   - Created component checklist
+
+## ⚠️ DEPRECATED: Dynamic Loading System
+
+The following sections describe the OLD dynamic loading system, preserved for reference:
+- Component Registry usage
+- MinimalLoader.js
+- Component Loading Flow
+- Dynamic component paths
+
+**These are NO LONGER USED as of June 2025. See [CSS-First Architecture](/MetaData/TektonDocumentation/Architecture/CSSFirstArchitecture.md) for current approach.**
 
 ## Future Sections
 
