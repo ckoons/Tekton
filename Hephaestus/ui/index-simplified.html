@@ -11108,12 +11108,17 @@
     </style>
 </head>
 <body data-theme-base="pure-black">
-    <div class="app-container">
+    <div class="app-container" data-tekton-root="true">
         <!-- Main Content Area FIRST (for CSS sibling selectors) -->
-        <div class="main-content" data-tekton-area="content">
+        <div class="main-content" 
+             data-tekton-area="content"
+             data-tekton-type="workspace">
 
             <!-- NUMA COMPONENT -->
-            <div id="numa" class="component">
+            <div id="numa" class="component" 
+                 data-tekton-area="numa"
+                 data-tekton-type="component-container"
+                 data-tekton-visibility="hidden">
 <!-- Numa Component - Platform AI Mentor -->
 
 <!-- Hidden radio controls for CSS-only tab functionality -->
@@ -11200,7 +11205,10 @@
             </div>
 
             <!-- TEKTON COMPONENT -->
-            <div id="tekton" class="component">
+            <div id="tekton" class="component" 
+                 data-tekton-area="tekton"
+                 data-tekton-type="component-container"
+                 data-tekton-visibility="hidden">
 <!-- Tekton Core Component - Project Management -->
 <div class="tekton"
      data-tekton-area="tekton"
@@ -11900,7 +11908,10 @@ if (document.readyState === 'complete' || document.readyState === 'interactive')
             </div>
 
             <!-- PROMETHEUS COMPONENT -->
-            <div id="prometheus" class="component">
+            <div id="prometheus" class="component" 
+                 data-tekton-area="prometheus"
+                 data-tekton-type="component-container"
+                 data-tekton-visibility="hidden">
 <!-- Prometheus Component - Planning and Resource Management -->
 <div class="prometheus" data-tekton-area="prometheus" data-tekton-component="prometheus" data-tekton-type="component-workspace" data-tekton-ai="prometheus-assistant" data-tekton-ai-ready="false">
     <!-- Component Header with Title -->
@@ -12404,7 +12415,10 @@ if (document.readyState === 'complete' || document.readyState === 'interactive')
             </div>
 
             <!-- TELOS COMPONENT -->
-            <div id="telos" class="component">
+            <div id="telos" class="component" 
+                 data-tekton-area="telos"
+                 data-tekton-type="component-container"
+                 data-tekton-visibility="hidden">
 <!-- Telos Component - Requirements Management -->
 <div class="telos" data-tekton-area="telos" data-tekton-component="telos" data-tekton-type="component-workspace" data-tekton-ai="telos-assistant" data-tekton-ai-ready="false">
     <!-- Component Header with Title -->
@@ -12954,7 +12968,10 @@ if (document.readyState === 'complete' || document.readyState === 'interactive')
             </div>
 
             <!-- METIS COMPONENT -->
-            <div id="metis" class="component">
+            <div id="metis" class="component" 
+                 data-tekton-area="metis"
+                 data-tekton-type="component-container"
+                 data-tekton-visibility="hidden">
 <!-- Metis Component - Task Management and Visualization -->
 <div class="metis" data-tekton-area="metis" data-tekton-component="metis" data-tekton-type="component-workspace" data-tekton-ai="metis-assistant" data-tekton-ai-ready="false">
     <!-- Component Header with Title -->
@@ -13907,7 +13924,10 @@ if (document.readyState === 'complete' || document.readyState === 'interactive')
             </div>
 
             <!-- HARMONIA COMPONENT -->
-            <div id="harmonia" class="component">
+            <div id="harmonia" class="component" 
+                 data-tekton-area="harmonia"
+                 data-tekton-type="component-container"
+                 data-tekton-visibility="hidden">
 <!-- Harmonia Component - Workflow Orchestration -->
 <div class="harmonia" data-tekton-area="harmonia" data-tekton-component="harmonia" data-tekton-type="component-workspace" data-tekton-ai="harmonia-assistant" data-tekton-ai-ready="false">
     <!-- Component Header with Title -->
@@ -14245,7 +14265,10 @@ if (document.readyState === 'complete' || document.readyState === 'interactive')
             </div>
 
             <!-- SYNTHESIS COMPONENT -->
-            <div id="synthesis" class="component">
+            <div id="synthesis" class="component" 
+                 data-tekton-area="synthesis"
+                 data-tekton-type="component-container"
+                 data-tekton-visibility="hidden">
 <!-- Synthesis Component - Execution & Integration Engine -->
 <div class="synthesis" data-tekton-area="synthesis" data-tekton-component="synthesis" data-tekton-type="component-workspace" data-tekton-ai="synthesis-assistant" data-tekton-ai-ready="false">
     <!-- Component Header with Title -->
@@ -14935,7 +14958,10 @@ if (document.readyState === 'complete' || document.readyState === 'interactive')
             </div>
 
             <!-- ATHENA COMPONENT -->
-            <div id="athena" class="component">
+            <div id="athena" class="component" 
+                 data-tekton-area="athena"
+                 data-tekton-type="component-container"
+                 data-tekton-visibility="hidden">
 <!-- Athena Component - Knowledge Graph and Entity Management -->
 <div class="athena" data-tekton-area="athena" data-tekton-component="athena" data-tekton-type="component-workspace" data-tekton-ai="athena-assistant" data-tekton-ai-ready="false">
     <!-- Component Header with Title -->
@@ -15400,7 +15426,10 @@ if (document.readyState === 'complete' || document.readyState === 'interactive')
             </div>
 
             <!-- SOPHIA COMPONENT -->
-            <div id="sophia" class="component">
+            <div id="sophia" class="component" 
+                 data-tekton-area="sophia"
+                 data-tekton-type="component-container"
+                 data-tekton-visibility="hidden">
 <!-- Sophia Component - AI Intelligence Measurement & Continuous Improvement -->
 <div class="sophia" data-tekton-area="sophia" data-tekton-component="sophia" data-tekton-type="component-workspace" data-tekton-ai="sophia-assistant" data-tekton-ai-ready="false">
     <!-- Component Header with Title -->
@@ -16035,7 +16064,10 @@ if (document.readyState === 'complete' || document.readyState === 'interactive')
             </div>
 
             <!-- NOESIS COMPONENT -->
-            <div id="noesis" class="component">
+            <div id="noesis" class="component" 
+                 data-tekton-area="noesis"
+                 data-tekton-type="component-container"
+                 data-tekton-visibility="hidden">
 <!-- Noesis Component - Discovery System -->
 
 <!-- Hidden radio controls for CSS-only tab functionality -->
@@ -16131,7 +16163,10 @@ if (document.readyState === 'complete' || document.readyState === 'interactive')
             </div>
 
             <!-- ENGRAM COMPONENT -->
-            <div id="engram" class="component">
+            <div id="engram" class="component" 
+                 data-tekton-area="engram"
+                 data-tekton-type="component-container"
+                 data-tekton-visibility="hidden">
 <!-- Engram Component - Memory and Knowledge Management -->
 <div class="engram" data-tekton-area="engram" data-tekton-component="engram" data-tekton-type="component-workspace" data-tekton-ai="engram-assistant" data-tekton-ai-ready="false">
     <!-- Component Header with Title -->
@@ -17154,7 +17189,10 @@ if (document.readyState === 'complete' || document.readyState === 'interactive')
             </div>
 
             <!-- APOLLO COMPONENT -->
-            <div id="apollo" class="component">
+            <div id="apollo" class="component" 
+                 data-tekton-area="apollo"
+                 data-tekton-type="component-container"
+                 data-tekton-visibility="hidden">
 <!-- Apollo Component - Attention and Prediction System -->
 <div class="apollo" data-tekton-area="apollo" data-tekton-component="apollo" data-tekton-type="component-workspace" data-tekton-ai="apollo-assistant" data-tekton-ai-ready="false">
     <!-- Component Header with Title -->
@@ -19136,7 +19174,10 @@ if (document.readyState === 'complete' || document.readyState === 'interactive')
             </div>
 
             <!-- RHETOR COMPONENT -->
-            <div id="rhetor" class="component">
+            <div id="rhetor" class="component" 
+                 data-tekton-area="rhetor"
+                 data-tekton-type="component-container"
+                 data-tekton-visibility="hidden">
 <!-- 
   Rhetor LLM/Prompt/Context Management Component
   This component provides a web interface for LLM management, prompt templates, context management,
@@ -22173,7 +22214,10 @@ SUCCESS CRITERIA:
             </div>
 
             <!-- BUDGET COMPONENT -->
-            <div id="budget" class="component">
+            <div id="budget" class="component" 
+                 data-tekton-area="budget"
+                 data-tekton-type="component-container"
+                 data-tekton-visibility="hidden">
 <!-- Budget Component - LLM Usage and Budget Management -->
 <!-- Load Chart.js dependency -->
 <script src="/scripts/chart.js"></script>
@@ -23088,7 +23132,10 @@ if (document.readyState === 'complete' || document.readyState === 'interactive')
             </div>
 
             <!-- HERMES COMPONENT -->
-            <div id="hermes" class="component">
+            <div id="hermes" class="component" 
+                 data-tekton-area="hermes"
+                 data-tekton-type="component-container"
+                 data-tekton-visibility="hidden">
 <!-- Hermes Component - Message and Data Handling -->
 <div class="hermes"
      data-tekton-area="hermes"
@@ -23831,7 +23878,10 @@ if (document.readyState === 'complete' || document.readyState === 'interactive')
             </div>
 
             <!-- ERGON COMPONENT -->
-            <div id="ergon" class="component">
+            <div id="ergon" class="component" 
+                 data-tekton-area="ergon"
+                 data-tekton-type="component-container"
+                 data-tekton-visibility="hidden">
 <!-- Ergon Component - Agent Management and LLM Integration -->
 <div class="ergon" data-tekton-area="ergon" data-tekton-component="ergon" data-tekton-type="component-workspace" data-tekton-ai="ergon-assistant" data-tekton-ai-ready="false">
     <!-- Component Header with Title -->
@@ -24288,7 +24338,10 @@ if (document.readyState === 'complete' || document.readyState === 'interactive')
             </div>
 
             <!-- TERMA COMPONENT -->
-            <div id="terma" class="component">
+            <div id="terma" class="component" 
+                 data-tekton-area="terma"
+                 data-tekton-type="component-container"
+                 data-tekton-visibility="hidden">
 <!-- Terma Component - Terminal System -->
 <div class="terma-component"
      data-tekton-area="terma"
@@ -24351,7 +24404,10 @@ if (document.readyState === 'complete' || document.readyState === 'interactive')
             </div>
 
             <!-- PROFILE COMPONENT -->
-            <div id="profile" class="component">
+            <div id="profile" class="component" 
+                 data-tekton-area="profile"
+                 data-tekton-type="component-container"
+                 data-tekton-visibility="hidden">
 <!-- Profile Component - User Information Management -->
 <div class="profile"
      data-tekton-area="profile"
@@ -24851,7 +24907,10 @@ window.profile_resetChanges = function() {
             </div>
 
             <!-- SETTINGS COMPONENT -->
-            <div id="settings" class="component">
+            <div id="settings" class="component" 
+                 data-tekton-area="settings"
+                 data-tekton-type="component-container"
+                 data-tekton-visibility="hidden">
 <!-- 
   Settings Component - Pure HTML/CSS Solution
   NO SCRIPTS - Uses forms, radio buttons, and CSS for all functionality
@@ -25138,8 +25197,12 @@ window.profile_resetChanges = function() {
         </div>
         
         <!-- Left Panel Navigation -->
-        <div class="left-panel" data-tekton-nav="main">
-            <div class="left-panel-header">
+        <div class="left-panel" 
+             data-tekton-nav="main"
+             data-tekton-area="navigation">
+            <div class="left-panel-header" 
+                 data-tekton-zone="header"
+                 data-tekton-section="nav-header">
                 <div class="tekton-logo">
                     <div class="logo-text">
                         <h1 style="color: #007bff; font-size: 2.5rem;">Tekton</h1>
@@ -25149,147 +25212,269 @@ window.profile_resetChanges = function() {
                 </div>
             </div>
             
-            <div class="left-panel-nav">
-                <ul class="component-nav">
+            <div class="left-panel-nav" 
+                 data-tekton-zone="main"
+                 data-tekton-section="nav-main">
+                <ul class="component-nav" 
+                    data-tekton-list="components"
+                    data-tekton-nav-type="primary">
 
-                    <li class="nav-item" data-component="numa">
+                    <li class="nav-item" 
+                        data-component="numa"
+                        data-tekton-nav-item="numa"
+                        data-tekton-nav-target="numa"
+                        data-tekton-state="inactive">
                         <a href="#numa" class="nav-link">
                             
                             <span class="nav-label">Numa - Companion</span>
-                            <span class="status-indicator"></span>
+                            <span class="status-indicator" 
+                                 data-tekton-status="numa-health"
+                                 data-status="inactive"></span>
                         </a>
                     </li>
-                    <li class="nav-item" data-component="tekton">
+                    <li class="nav-item" 
+                        data-component="tekton"
+                        data-tekton-nav-item="tekton"
+                        data-tekton-nav-target="tekton"
+                        data-tekton-state="inactive">
                         <a href="#tekton" class="nav-link">
                             
                             <span class="nav-label">Tekton - Projects</span>
-                            <span class="status-indicator"></span>
+                            <span class="status-indicator" 
+                                 data-tekton-status="tekton-health"
+                                 data-status="inactive"></span>
                         </a>
                     </li>
-                    <li class="nav-item" data-component="prometheus">
+                    <li class="nav-item" 
+                        data-component="prometheus"
+                        data-tekton-nav-item="prometheus"
+                        data-tekton-nav-target="prometheus"
+                        data-tekton-state="inactive">
                         <a href="#prometheus" class="nav-link">
                             
                             <span class="nav-label">Prometheus - Planning</span>
-                            <span class="status-indicator"></span>
+                            <span class="status-indicator" 
+                                 data-tekton-status="prometheus-health"
+                                 data-status="inactive"></span>
                         </a>
                     </li>
-                    <li class="nav-item" data-component="telos">
+                    <li class="nav-item" 
+                        data-component="telos"
+                        data-tekton-nav-item="telos"
+                        data-tekton-nav-target="telos"
+                        data-tekton-state="inactive">
                         <a href="#telos" class="nav-link">
                             
                             <span class="nav-label">Telos - Requirements</span>
-                            <span class="status-indicator"></span>
+                            <span class="status-indicator" 
+                                 data-tekton-status="telos-health"
+                                 data-status="inactive"></span>
                         </a>
                     </li>
-                    <li class="nav-item" data-component="metis">
+                    <li class="nav-item" 
+                        data-component="metis"
+                        data-tekton-nav-item="metis"
+                        data-tekton-nav-target="metis"
+                        data-tekton-state="inactive">
                         <a href="#metis" class="nav-link">
                             
                             <span class="nav-label">Metis - Workflows</span>
-                            <span class="status-indicator"></span>
+                            <span class="status-indicator" 
+                                 data-tekton-status="metis-health"
+                                 data-status="inactive"></span>
                         </a>
                     </li>
-                    <li class="nav-item" data-component="harmonia">
+                    <li class="nav-item" 
+                        data-component="harmonia"
+                        data-tekton-nav-item="harmonia"
+                        data-tekton-nav-target="harmonia"
+                        data-tekton-state="inactive">
                         <a href="#harmonia" class="nav-link">
                             
                             <span class="nav-label">Harmonia - Orchestration</span>
-                            <span class="status-indicator"></span>
+                            <span class="status-indicator" 
+                                 data-tekton-status="harmonia-health"
+                                 data-status="inactive"></span>
                         </a>
                     </li>
-                    <li class="nav-item" data-component="synthesis">
+                    <li class="nav-item" 
+                        data-component="synthesis"
+                        data-tekton-nav-item="synthesis"
+                        data-tekton-nav-target="synthesis"
+                        data-tekton-state="inactive">
                         <a href="#synthesis" class="nav-link">
                             
                             <span class="nav-label">Synthesis - Integration</span>
-                            <span class="status-indicator"></span>
+                            <span class="status-indicator" 
+                                 data-tekton-status="synthesis-health"
+                                 data-status="inactive"></span>
                         </a>
                     </li>
-                    <li class="nav-item" data-component="athena">
+                    <li class="nav-item" 
+                        data-component="athena"
+                        data-tekton-nav-item="athena"
+                        data-tekton-nav-target="athena"
+                        data-tekton-state="inactive">
                         <a href="#athena" class="nav-link">
                             
                             <span class="nav-label">Athena - Knowledge</span>
-                            <span class="status-indicator"></span>
+                            <span class="status-indicator" 
+                                 data-tekton-status="athena-health"
+                                 data-status="inactive"></span>
                         </a>
                     </li>
-                    <li class="nav-item" data-component="sophia">
+                    <li class="nav-item" 
+                        data-component="sophia"
+                        data-tekton-nav-item="sophia"
+                        data-tekton-nav-target="sophia"
+                        data-tekton-state="inactive">
                         <a href="#sophia" class="nav-link">
                             
                             <span class="nav-label">Sophia - Learning</span>
-                            <span class="status-indicator"></span>
+                            <span class="status-indicator" 
+                                 data-tekton-status="sophia-health"
+                                 data-status="inactive"></span>
                         </a>
                     </li>
-                    <li class="nav-item" data-component="noesis">
+                    <li class="nav-item" 
+                        data-component="noesis"
+                        data-tekton-nav-item="noesis"
+                        data-tekton-nav-target="noesis"
+                        data-tekton-state="inactive">
                         <a href="#noesis" class="nav-link">
                             
                             <span class="nav-label">Noesis - Discovery</span>
-                            <span class="status-indicator"></span>
+                            <span class="status-indicator" 
+                                 data-tekton-status="noesis-health"
+                                 data-status="inactive"></span>
                         </a>
                     </li>
-                    <li class="nav-item" data-component="engram">
+                    <li class="nav-item" 
+                        data-component="engram"
+                        data-tekton-nav-item="engram"
+                        data-tekton-nav-target="engram"
+                        data-tekton-state="inactive">
                         <a href="#engram" class="nav-link">
                             
                             <span class="nav-label">Engram - Memory</span>
-                            <span class="status-indicator"></span>
+                            <span class="status-indicator" 
+                                 data-tekton-status="engram-health"
+                                 data-status="inactive"></span>
                         </a>
                     </li>
-                    <li class="nav-item" data-component="apollo">
+                    <li class="nav-item" 
+                        data-component="apollo"
+                        data-tekton-nav-item="apollo"
+                        data-tekton-nav-target="apollo"
+                        data-tekton-state="inactive">
                         <a href="#apollo" class="nav-link">
                             
                             <span class="nav-label">Apollo - Attention/Prediction</span>
-                            <span class="status-indicator"></span>
+                            <span class="status-indicator" 
+                                 data-tekton-status="apollo-health"
+                                 data-status="inactive"></span>
                         </a>
                     </li>
-                    <li class="nav-item" data-component="rhetor">
+                    <li class="nav-item" 
+                        data-component="rhetor"
+                        data-tekton-nav-item="rhetor"
+                        data-tekton-nav-target="rhetor"
+                        data-tekton-state="inactive">
                         <a href="#rhetor" class="nav-link">
                             
                             <span class="nav-label">Rhetor - LLM/Prompt/Context</span>
-                            <span class="status-indicator"></span>
+                            <span class="status-indicator" 
+                                 data-tekton-status="rhetor-health"
+                                 data-status="inactive"></span>
                         </a>
                     </li>
-                    <li class="nav-item" data-component="budget">
+                    <li class="nav-item" 
+                        data-component="budget"
+                        data-tekton-nav-item="budget"
+                        data-tekton-nav-target="budget"
+                        data-tekton-state="inactive">
                         <a href="#budget" class="nav-link">
                             
                             <span class="nav-label">Penia - LLM Cost</span>
-                            <span class="status-indicator"></span>
+                            <span class="status-indicator" 
+                                 data-tekton-status="budget-health"
+                                 data-status="inactive"></span>
                         </a>
                     </li>
-                    <li class="nav-item" data-component="hermes">
+                    <li class="nav-item" 
+                        data-component="hermes"
+                        data-tekton-nav-item="hermes"
+                        data-tekton-nav-target="hermes"
+                        data-tekton-state="inactive">
                         <a href="#hermes" class="nav-link">
                             
                             <span class="nav-label">Hermes - Messages/Data</span>
-                            <span class="status-indicator"></span>
+                            <span class="status-indicator" 
+                                 data-tekton-status="hermes-health"
+                                 data-status="inactive"></span>
                         </a>
                     </li>
-                    <li class="nav-item" data-component="ergon">
+                    <li class="nav-item" 
+                        data-component="ergon"
+                        data-tekton-nav-item="ergon"
+                        data-tekton-nav-target="ergon"
+                        data-tekton-state="inactive">
                         <a href="#ergon" class="nav-link">
                             
                             <span class="nav-label">Ergon - Agents/Tools/MCP</span>
-                            <span class="status-indicator"></span>
+                            <span class="status-indicator" 
+                                 data-tekton-status="ergon-health"
+                                 data-status="inactive"></span>
                         </a>
                     </li>
-                    <li class="nav-item" data-component="terma">
+                    <li class="nav-item" 
+                        data-component="terma"
+                        data-tekton-nav-item="terma"
+                        data-tekton-nav-target="terma"
+                        data-tekton-state="inactive">
                         <a href="#terma" class="nav-link">
                             
                             <span class="nav-label">Terma - Terminal</span>
-                            <span class="status-indicator"></span>
+                            <span class="status-indicator" 
+                                 data-tekton-status="terma-health"
+                                 data-status="inactive"></span>
                         </a>
                     </li>
                 </ul>
             </div>
             
-            <div class="left-panel-footer">
+            <div class="left-panel-footer" 
+                 data-tekton-zone="footer"
+                 data-tekton-section="nav-footer">
                 <div class="footer-separator"></div>
-                <ul class="component-nav">
+                <ul class="component-nav" 
+                    data-tekton-list="utilities"
+                    data-tekton-nav-type="secondary">
 
-                    <li class="nav-item" data-component="profile">
+                    <li class="nav-item" 
+                        data-component="profile"
+                        data-tekton-nav-item="profile"
+                        data-tekton-nav-target="profile"
+                        data-tekton-state="inactive">
                         <a href="#profile" class="nav-link">
                             <span class="button-icon">👤</span>
                             <span class="nav-label">Profile - Profile</span>
-                            <span class="status-indicator"></span>
+                            <span class="status-indicator" 
+                                 data-tekton-status="profile-health"
+                                 data-status="inactive"></span>
                         </a>
                     </li>
-                    <li class="nav-item" data-component="settings">
+                    <li class="nav-item" 
+                        data-component="settings"
+                        data-tekton-nav-item="settings"
+                        data-tekton-nav-target="settings"
+                        data-tekton-state="inactive">
                         <a href="#settings" class="nav-link">
                             <span class="button-icon">⚙️</span>
                             <span class="nav-label">Settings - Settings</span>
-                            <span class="status-indicator"></span>
+                            <span class="status-indicator" 
+                                 data-tekton-status="settings-health"
+                                 data-status="inactive"></span>
                         </a>
                     </li>
                 </ul>

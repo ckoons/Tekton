@@ -194,19 +194,30 @@ function registerHandlers() {
 
 // Handle component visibility based on URL hash
 function handleHashChange() {
-  const hash = window.location.hash.slice(1); // Remove #
-  if (hash) {
-    // Update active nav item
-    document.querySelectorAll('.nav-item').forEach(item => {
-      if (item.getAttribute('data-component') === hash) {
-        item.classList.add('active');
-        item.setAttribute('data-tekton-state', 'active');
-      } else {
-        item.classList.remove('active');
-        item.setAttribute('data-tekton-state', 'inactive');
-      }
-    });
-  }
+  const hash = window.location.hash.slice(1) || 'numa'; // Default to numa
+  
+  // Update nav item states
+  document.querySelectorAll('.nav-item').forEach(item => {
+    if (item.getAttribute('data-component') === hash) {
+      item.classList.add('active');
+      item.setAttribute('data-tekton-state', 'active');
+    } else {
+      item.classList.remove('active');
+      item.setAttribute('data-tekton-state', 'inactive');
+    }
+  });
+  
+  // Update component visibility states
+  document.querySelectorAll('.component').forEach(component => {
+    const componentId = component.id;
+    if (componentId === hash) {
+      component.setAttribute('data-tekton-visibility', 'visible');
+      component.setAttribute('data-tekton-state', 'active');
+    } else {
+      component.setAttribute('data-tekton-visibility', 'hidden');
+      component.setAttribute('data-tekton-state', 'inactive');
+    }
+  });
 }
 
 // Initialize on DOM ready

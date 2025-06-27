@@ -87,11 +87,17 @@ def build_simplified_index():
         icon = info.get('icon', '')
         
         nav_item = f'''
-                    <li class="nav-item" data-component="{component}">
+                    <li class="nav-item" 
+                        data-component="{component}"
+                        data-tekton-nav-item="{component}"
+                        data-tekton-nav-target="{component}"
+                        data-tekton-state="inactive">
                         <a href="#{component}" class="nav-link">
                             {f'<span class="button-icon">{icon}</span>' if icon else ''}
                             <span class="nav-label">{info.get('title', component)} - {info.get('subtitle', '')}</span>
-                            <span class="status-indicator"></span>
+                            <span class="status-indicator" 
+                                 data-tekton-status="{component}-health"
+                                 data-status="inactive"></span>
                         </a>
                     </li>'''
         
@@ -109,7 +115,10 @@ def build_simplified_index():
             component_html = components_data[component]['html']
             component_div = f'''
             <!-- {component.upper()} COMPONENT -->
-            <div id="{component}" class="component">
+            <div id="{component}" class="component" 
+                 data-tekton-area="{component}"
+                 data-tekton-type="component-container"
+                 data-tekton-visibility="hidden">
 {component_html}
             </div>'''
             component_divs.append(component_div)
@@ -235,15 +244,21 @@ def build_simplified_index():
     </style>
 </head>
 <body data-theme-base="pure-black">
-    <div class="app-container">
+    <div class="app-container" data-tekton-root="true">
         <!-- Main Content Area FIRST (for CSS sibling selectors) -->
-        <div class="main-content" data-tekton-area="content">
+        <div class="main-content" 
+             data-tekton-area="content"
+             data-tekton-type="workspace">
 {component_divs}
         </div>
         
         <!-- Left Panel Navigation -->
-        <div class="left-panel" data-tekton-nav="main">
-            <div class="left-panel-header">
+        <div class="left-panel" 
+             data-tekton-nav="main"
+             data-tekton-area="navigation">
+            <div class="left-panel-header" 
+                 data-tekton-zone="header"
+                 data-tekton-section="nav-header">
                 <div class="tekton-logo">
                     <div class="logo-text">
                         <h1 style="color: #007bff; font-size: 2.5rem;">Tekton</h1>
@@ -253,15 +268,23 @@ def build_simplified_index():
                 </div>
             </div>
             
-            <div class="left-panel-nav">
-                <ul class="component-nav">
+            <div class="left-panel-nav" 
+                 data-tekton-zone="main"
+                 data-tekton-section="nav-main">
+                <ul class="component-nav" 
+                    data-tekton-list="components"
+                    data-tekton-nav-type="primary">
 {nav_items}
                 </ul>
             </div>
             
-            <div class="left-panel-footer">
+            <div class="left-panel-footer" 
+                 data-tekton-zone="footer"
+                 data-tekton-section="nav-footer">
                 <div class="footer-separator"></div>
-                <ul class="component-nav">
+                <ul class="component-nav" 
+                    data-tekton-list="utilities"
+                    data-tekton-nav-type="secondary">
 {footer_nav_items}
                 </ul>
             </div>
