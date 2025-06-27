@@ -1,4 +1,6 @@
 /**
+ * DEPRECATED: This file will be removed after CSS-first migration is verified
+ * 
  * UI Manager Core (Refactored)
  * Handles core UI functionality including component navigation and panel management
  * Implements a modular architecture with separate component files

@@ -1,4 +1,5 @@
 /**
+ * DEPRECATED: This file will be removed after CSS-first migration is verified
  * Settings Environment Bridge
  * Extends SettingsManager to integrate with TektonEnvManager
  */

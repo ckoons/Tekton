@@ -1,4 +1,5 @@
 /**
+ * DEPRECATED: This file will be removed after CSS-first migration is verified
  * Settings UI Handler
  * Manages the settings UI and connects it to the Settings Manager
  */

@@ -1,4 +1,5 @@
 /**
+ * DEPRECATED: This file will be removed after CSS-first migration is verified
  * Profile Manager
  * Manages user profile data for Tekton
  */

@@ -1,4 +1,5 @@
 /**
+ * DEPRECATED: This file will be removed after CSS-first migration is verified
  * Main JavaScript file for Tekton UI
  * Handles core functionality and initialization
  */

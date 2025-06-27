@@ -1,4 +1,5 @@
 /**
+ * DEPRECATED: This file will be removed after CSS-first migration is verified
  * Terminal Chat Manager
  * Enhanced terminal with AI chat capabilities for Tekton
  */

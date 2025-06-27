@@ -1,4 +1,5 @@
 /**
+ * DEPRECATED: This file will be removed after CSS-first migration is verified
  * Settings Manager
  * Manages user preferences and settings for the Tekton UI
  */

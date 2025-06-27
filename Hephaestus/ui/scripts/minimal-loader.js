@@ -1,4 +1,6 @@
 /**
+ * DEPRECATED: This file will be removed after CSS-first migration is verified
+ * 
  * Minimal Component Loader
  * 
  * A stripped-down, extremely simple component loader for the Hephaestus UI.

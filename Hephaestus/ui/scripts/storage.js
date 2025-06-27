@@ -1,4 +1,5 @@
 /**
+ * DEPRECATED: This file will be removed after CSS-first migration is verified
  * Storage Manager
  * Handles localStorage operations for UI state persistence
  */

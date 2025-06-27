@@ -1,4 +1,5 @@
 /**
+ * DEPRECATED: This file will be removed after CSS-first migration is verified
  * UI Utilities
  * Shared utility functions for UI components
  */

@@ -1,4 +1,5 @@
 /**
+ * DEPRECATED: This file will be removed after CSS-first migration is verified
  * Component Loading Guard
  * 
  * This utility helps manage the loading and initialization of components

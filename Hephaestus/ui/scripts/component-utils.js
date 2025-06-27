@@ -1,4 +1,5 @@
 /**
+ * DEPRECATED: This file will be removed after CSS-first migration is verified
  * Component Utilities
  * 
  * Shared utilities for components in Hephaestus UI

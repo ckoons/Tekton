@@ -1,4 +1,5 @@
 /**
+ * DEPRECATED: This file will be removed after CSS-first migration is verified
  * WebSocket Manager
  * Handles WebSocket communication with the Tekton backend
  */

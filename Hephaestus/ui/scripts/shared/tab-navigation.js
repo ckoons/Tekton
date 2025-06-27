@@ -1,4 +1,5 @@
 /**
+ * DEPRECATED: This file will be removed after CSS-first migration is verified
  * Tab Navigation - Simplified Tab Switching
  * 
  * A minimal, Safari-compatible tab navigation system that uses direct onclick handlers

@@ -1,4 +1,5 @@
 /**
+ * DEPRECATED: This file will be removed after CSS-first migration is verified
  * Terminal Manager
  * Handles the terminal interface with history, command processing, and input capabilities
  */

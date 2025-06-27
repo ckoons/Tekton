@@ -1,4 +1,5 @@
 /**
+ * DEPRECATED: This file will be removed after CSS-first migration is verified
  * Profile UI Handler
  * Manages the profile UI and connects it to the Profile Manager
  */
