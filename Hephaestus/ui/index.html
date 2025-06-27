@@ -80,6 +80,19 @@
             background-color: #FF6F00; /* Deep Orange - Discovery */
         }
         
+        /* Connected status indicator - luminous glow effect */
+        .nav-item .status-indicator.connected {
+            box-shadow: 0 0 8px currentColor, 0 0 12px currentColor;
+            opacity: 1;
+        }
+        
+        /* Consistent font weight for component title elements */
+        [class*="__title-main"],
+        [class*="__title-sub"] {
+            font-weight: 500;
+            opacity: 1;
+        }
+        
         /* Make status indicators always visible */
         .nav-item .status-indicator {
             opacity: 0.5;
@@ -205,10 +218,6 @@
                         <span class="nav-label">Telos - Requirements</span>
                         <span class="status-indicator"></span>
                     </li>
-                    <li class="nav-item" data-component="ergon" data-tekton-nav-item="ergon" data-tekton-nav-target="ergon" data-tekton-state="inactive">
-                        <span class="nav-label">Ergon - Agents/Tools/MCP</span>
-                        <span class="status-indicator"></span>
-                    </li>
                     <li class="nav-item" data-component="metis" data-tekton-nav-item="metis" data-tekton-nav-target="metis" data-tekton-state="inactive">
                         <span class="nav-label" data-greek-name="Metis - Workflows" data-functional-name="Workflows">Metis - Workflows</span>
                         <span class="status-indicator"></span>
@@ -251,6 +260,10 @@
                     </li>
                     <li class="nav-item" data-component="hermes" data-tekton-nav-item="hermes" data-tekton-nav-target="hermes" data-tekton-state="inactive">
                         <span class="nav-label">Hermes - Messages/Data</span>
+                        <span class="status-indicator"></span>
+                    </li>
+                    <li class="nav-item" data-component="ergon" data-tekton-nav-item="ergon" data-tekton-nav-target="ergon" data-tekton-state="inactive">
+                        <span class="nav-label">Ergon - Agents/Tools/MCP</span>
                         <span class="status-indicator"></span>
                     </li>
                     <li class="nav-item" data-component="terma" data-tekton-nav-item="terma" data-tekton-nav-target="terma" data-tekton-state="inactive">

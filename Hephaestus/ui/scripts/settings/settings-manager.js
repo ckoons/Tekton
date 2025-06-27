@@ -341,27 +341,51 @@ class SettingsManager {
      * Update component headers inside loaded components
      */
     updateComponentHeaders() {
-        const headerConfigs = {
-            'athena': { main: 'Athena', sub: this.settings.showGreekNames ? 'Knowledge Graph' : 'Knowledge' },
-            'ergon': { main: this.settings.showGreekNames ? 'Ergon' : '', sub: 'Agents/Tools/MCP' },
-            'prometheus': { main: this.settings.showGreekNames ? 'Prometheus' : '', sub: this.settings.showGreekNames ? 'Planning System' : 'Planning' },
-            'telos': { main: this.settings.showGreekNames ? 'Telos' : '', sub: this.settings.showGreekNames ? 'Requirements Manager' : 'Requirements' },
-            'metis': { main: this.settings.showGreekNames ? 'Metis' : '', sub: this.settings.showGreekNames ? 'Task Management' : 'Workflows' },
-            'harmonia': { main: this.settings.showGreekNames ? 'Harmonia' : '', sub: this.settings.showGreekNames ? 'Workflow Orchestration' : 'Orchestration' },
-            'synthesis': { main: this.settings.showGreekNames ? 'Synthesis' : '', sub: this.settings.showGreekNames ? 'Execution Engine' : 'Integration' },
-            'sophia': { main: this.settings.showGreekNames ? 'Sophia' : '', sub: this.settings.showGreekNames ? 'Intelligence Measurement' : 'Learning' },
-            'engram': { main: this.settings.showGreekNames ? 'Engram' : '', sub: this.settings.showGreekNames ? 'Memory System' : 'Memory' },
-            'apollo': { main: this.settings.showGreekNames ? 'Apollo' : '', sub: 'Attention/Prediction' },
-            'rhetor': { main: this.settings.showGreekNames ? 'Rhetor' : '', sub: 'LLM/Prompt/Context' },
-            'hermes': { main: this.settings.showGreekNames ? 'Hermes' : '', sub: 'Messages/Data' },
-            'numa': { main: this.settings.showGreekNames ? 'Numa' : '', sub: this.settings.showGreekNames ? 'Platform AI Mentor' : 'Companion' },
-            'noesis': { main: this.settings.showGreekNames ? 'Noesis' : '', sub: this.settings.showGreekNames ? 'Pattern Discovery' : 'Discovery' },
-            'tekton': { main: this.settings.showGreekNames ? 'Tekton' : '', sub: this.settings.showGreekNames ? 'Project Management' : 'Projects' },
-            'terma': { main: this.settings.showGreekNames ? 'Terma' : '', sub: 'Terminal' },
-            'budget': { main: this.settings.showGreekNames ? 'Penia' : '', sub: this.settings.showGreekNames ? 'LLM Cost Management' : 'LLM Cost' },
-            'penia': { main: this.settings.showGreekNames ? 'Penia' : '', sub: this.settings.showGreekNames ? 'LLM Cost Management' : 'LLM Cost' },
-            'profile': { main: 'Profile', sub: this.settings.showGreekNames ? 'User Information' : '' },
-            'settings': { main: 'Settings', sub: this.settings.showGreekNames ? 'Tekton Configuration' : '' }
+        // Define the header configurations based on SHOW_GREEK_NAMES setting
+        const headerConfigs = this.settings.showGreekNames ? {
+            // When SHOW_GREEK_NAMES is true: show "Greek Name - Description"
+            'numa': { main: 'Numa', sub: 'Companion AI for Tekton Platform' },
+            'tekton': { main: 'Tekton', sub: 'Project Management' },
+            'prometheus': { main: 'Prometheus', sub: 'Planning' },
+            'telos': { main: 'Telos', sub: 'Requirements' },
+            'metis': { main: 'Metis', sub: 'Workflows' },
+            'harmonia': { main: 'Harmonia', sub: 'Orchestration' },
+            'synthesis': { main: 'Synthesis', sub: 'Integration Execution Engine' },
+            'athena': { main: 'Athena', sub: 'Knowledge' },
+            'sophia': { main: 'Sophia', sub: 'Learning' },
+            'noesis': { main: 'Noesis', sub: 'Discovery' },
+            'engram': { main: 'Engram', sub: 'Memory' },
+            'apollo': { main: 'Apollo', sub: 'Attention/Prediction' },
+            'rhetor': { main: 'Rhetor', sub: 'LLM/Prompt/Context' },
+            'budget': { main: 'Penia', sub: 'LLM Cost Management' },
+            'penia': { main: 'Penia', sub: 'LLM Cost Management' },
+            'hermes': { main: 'Hermes', sub: 'Messages/Data' },
+            'ergon': { main: 'Ergon', sub: 'Agents/Tools/Mcp' },
+            'terma': { main: 'Terma', sub: 'AI Terminals' },
+            'profile': { main: 'Profile', sub: '' },
+            'settings': { main: 'Settings', sub: '' }
+        } : {
+            // When SHOW_GREEK_NAMES is false: show only the functional description
+            'numa': { main: '', sub: 'Companion AI for Tekton Platform' },
+            'tekton': { main: '', sub: 'Project Management' },
+            'prometheus': { main: '', sub: 'Planning' },
+            'telos': { main: '', sub: 'Requirements' },
+            'metis': { main: '', sub: 'Workflows' },
+            'harmonia': { main: '', sub: 'Orchestration' },
+            'synthesis': { main: '', sub: 'Integration Execution Engine' },
+            'athena': { main: '', sub: 'Knowledge' },
+            'sophia': { main: '', sub: 'Learning' },
+            'noesis': { main: '', sub: 'Discovery' },
+            'engram': { main: '', sub: 'Memory' },
+            'apollo': { main: '', sub: 'Attention/Prediction' },
+            'rhetor': { main: '', sub: 'LLM/Prompt/Context' },
+            'budget': { main: '', sub: 'LLM Cost Management' },
+            'penia': { main: '', sub: 'LLM Cost Management' },
+            'hermes': { main: '', sub: 'Messages/Data' },
+            'ergon': { main: '', sub: 'Agents/Tools/Mcp' },
+            'terma': { main: '', sub: 'AI Terminals' },
+            'profile': { main: 'Profile', sub: '' },
+            'settings': { main: 'Settings', sub: '' }
         };
         
         // Update each component's header if it exists
@@ -387,21 +411,82 @@ class SettingsManager {
             }
             
             if (mainElement) {
-                if (config.main) {
-                    mainElement.textContent = config.main;
-                    mainElement.style.display = 'inline';
-                } else {
-                    // For functional names only, hide the Greek name part
-                    mainElement.style.display = 'none';
-                }
+                mainElement.textContent = config.main;
+                mainElement.style.display = config.main ? 'inline' : 'none';
             }
             
             if (subElement) {
+                // Just show the subtitle without any separator
                 subElement.textContent = config.sub;
+                
+                if (config.sub) {
+                    subElement.style.display = 'inline';
+                } else {
+                    subElement.style.display = 'none';
+                }
             }
         });
         
         console.log('Updated component headers for naming convention:', this.settings.showGreekNames ? 'Greek names' : 'Function names');
+    }
+
+    /**
+     * Get component header for RIGHT panel
+     * @param {string} component - Component ID
+     * @returns {string} Formatted component header for right panel
+     */
+    getRightPanelHeader(component) {
+        if (this.settings.showGreekNames) {
+            // When SHOW_GREEK_NAMES is true: return "Greek Name - Description"
+            switch(component) {
+                case 'numa': return 'Numa - Companion AI for Tekton Platform';
+                case 'tekton': return 'Tekton - Project Management';
+                case 'prometheus': return 'Prometheus - Planning';
+                case 'telos': return 'Telos - Requirements';
+                case 'metis': return 'Metis - Workflows';
+                case 'harmonia': return 'Harmonia - Orchestration';
+                case 'synthesis': return 'Synthesis - Integration Execution Engine';
+                case 'athena': return 'Athena - Knowledge';
+                case 'sophia': return 'Sophia - Learning';
+                case 'noesis': return 'Noesis - Discovery';
+                case 'engram': return 'Engram - Memory';
+                case 'apollo': return 'Apollo - Attention/Prediction';
+                case 'rhetor': return 'Rhetor - LLM/Prompt/Context';
+                case 'budget': return 'Penia - LLM Cost Management';
+                case 'penia': return 'Penia - LLM Cost Management';
+                case 'hermes': return 'Hermes - Messages/Data';
+                case 'ergon': return 'Ergon - Agents/Tools/Mcp';
+                case 'terma': return 'Terma - AI Terminals';
+                case 'profile': return 'Profile';
+                case 'settings': return 'Settings';
+                default: return component;
+            }
+        } else {
+            // When SHOW_GREEK_NAMES is false: return only the functional description
+            switch(component) {
+                case 'numa': return 'Companion AI for Tekton Platform';
+                case 'tekton': return 'Project Management';
+                case 'prometheus': return 'Planning';
+                case 'telos': return 'Requirements';
+                case 'metis': return 'Workflows';
+                case 'harmonia': return 'Orchestration';
+                case 'synthesis': return 'Integration Execution Engine';
+                case 'athena': return 'Knowledge';
+                case 'sophia': return 'Learning';
+                case 'noesis': return 'Discovery';
+                case 'engram': return 'Memory';
+                case 'apollo': return 'Attention/Prediction';
+                case 'rhetor': return 'LLM/Prompt/Context';
+                case 'budget': return 'LLM Cost Management';
+                case 'penia': return 'LLM Cost Management';
+                case 'hermes': return 'Messages/Data';
+                case 'ergon': return 'Agents/Tools/Mcp';
+                case 'terma': return 'AI Terminals';
+                case 'profile': return 'Profile';
+                case 'settings': return 'Settings';
+                default: return component;
+            }
+        }
     }
 
     /**

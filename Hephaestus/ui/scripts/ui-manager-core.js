@@ -871,6 +871,8 @@ class UIManagerCore {
         
         // Define component health check endpoints
         const componentEndpoints = {
+            'numa': '/health',
+            'noesis': '/health',
             'hermes': '/health',
             'engram': '/health',
             'ergon': '/health',
@@ -981,6 +983,8 @@ class UIManagerCore {
      */
     _getDefaultPort(componentId) {
         const defaultPorts = {
+            'numa': window.NUMA_PORT || 8016,
+            'noesis': window.NOESIS_PORT || 8017,
             'engram': window.ENGRAM_PORT || 8000,
             'hermes': window.HERMES_PORT || 8001,
             'ergon': window.ERGON_PORT || 8002,
