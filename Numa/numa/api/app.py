@@ -7,6 +7,7 @@ from datetime import datetime
 
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import JSONResponse, StreamingResponse
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 # Get configuration from environment - NO HARDCODED DEFAULTS
@@ -30,6 +31,15 @@ app = FastAPI(
     title="Numa - Platform AI Mentor",
     description="Platform-wide AI mentor that oversees and guides the Tekton ecosystem",
     version=COMPONENT_VERSION
+)
+
+# Add CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # In production, specify actual origins
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 # Global registration instance

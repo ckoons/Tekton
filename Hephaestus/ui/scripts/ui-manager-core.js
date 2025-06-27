@@ -56,8 +56,13 @@ class UIManagerCore {
         // We don't need to add a click handler for the budget button here.
         // The main.js file already handles this and calls this.activateComponent('budget')
         
-        // Set initial active component
-        this.activateComponent(this.activeComponent);
+        // Set initial active component - ensure Numa loads
+        console.log('[UIManager] Loading initial component:', this.activeComponent);
+        // Delay initial load to ensure DOM is ready
+        setTimeout(() => {
+            this.activateComponent('numa'); // Explicitly load Numa
+            this.activatePanel('html'); // Switch to HTML panel
+        }, 100);
         
         console.log('UI Manager Core initialized (Shadow DOM: ' + (this.useShadowDOM ? 'enabled' : 'disabled') + ')');
         
@@ -118,16 +123,7 @@ class UIManagerCore {
      * @param {string} componentId - ID of the component to activate
      */
     activateComponent(componentId) {
-        console.log(`COMPONENT ACTIVATION: Activating component: ${componentId}`);
-        // Add stack trace to see where this is being called from
-        console.trace(`Call stack for activating component: ${componentId}`);
-        
-        // DEBUG: Check what's happening with Numa
-        if (componentId === 'numa') {
-            console.log('DEBUG: Numa activation requested');
-            console.log('DEBUG: Current component:', this.activeComponent);
-            console.log('DEBUG: minimalLoader available:', !!window.minimalLoader);
-        }
+        console.log(`Activating component: ${componentId}`);
         
         // Check if this component should be ignored by UI manager
         // This allows components to manage their own UI without interference
@@ -166,31 +162,8 @@ class UIManagerCore {
         if (window.minimalLoader) {
             console.log(`Using MinimalLoader to load ${componentId}`);
             
-            // DEBUG: Special handling for Numa to trace the issue
-            if (componentId === 'numa') {
-                console.log('DEBUG: Explicitly loading Numa component');
-                // Force update navigation state first
-                const navItems = document.querySelectorAll('.nav-item');
-                navItems.forEach(item => {
-                    if (item.getAttribute('data-component') === 'numa') {
-                        item.classList.add('active');
-                    } else {
-                        item.classList.remove('active');
-                    }
-                });
-                
-                // Update component title
-                const componentTitle = document.querySelector('.component-title');
-                if (componentTitle && window.settingsManager) {
-                    componentTitle.textContent = window.settingsManager.getComponentLabel('numa');
-                }
-                
-                // Update active component state
-                this.activeComponent = 'numa';
-                if (window.tektonUI) {
-                    window.tektonUI.activeComponent = 'numa';
-                }
-            }
+            // Activate the HTML panel for component display
+            this.activatePanel('html');
             
             window.minimalLoader.loadComponent(componentId);
             return;

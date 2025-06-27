@@ -42,16 +42,6 @@
                         <strong>Numa:</strong> Hello! I'm Numa, your platform AI mentor. I oversee the entire Tekton ecosystem and can help guide you through using any component. What would you like to explore today?
                     </div>
                 </div>
-                <div class="chat-input-container" data-tekton-input="companion">
-                    <input type="text" 
-                           id="numa-companion-input" 
-                           class="chat-input" 
-                           placeholder="Ask Numa for guidance..."
-                           data-tekton-input-field="companion">
-                    <button class="chat-send-button" 
-                            id="numa-companion-send"
-                            data-tekton-send="companion">Send</button>
-                </div>
             </div>
         </div>
         
@@ -72,26 +62,22 @@
                         <strong>System:</strong> Team Chat allows Numa to coordinate with other AI specialists.
                     </div>
                 </div>
-                <div class="chat-input-container" data-tekton-input="team">
-                    <input type="text" 
-                           id="numa-team-input" 
-                           class="chat-input" 
-                           placeholder="Message to team..."
-                           data-tekton-input-field="team">
-                    <button class="chat-send-button" 
-                            id="numa-team-send"
-                            data-tekton-send="team">Send</button>
-                </div>
             </div>
         </div>
     </div>
     
-    <!-- Component Footer -->
-    <div class="component-footer" data-tekton-footer="numa">
-        <div class="footer-info">
-            <span class="info-item">Port: <span id="numa-port">8016</span></span>
-            <span class="info-item">Status: <span id="numa-status">Initializing</span></span>
-            <span class="info-item">AI: <span id="numa-ai-status">Disabled</span></span>
+    <!-- Footer with Chat Input -->
+    <div class="numa__footer" data-tekton-zone="footer" data-tekton-section="footer">
+        <div class="numa__chat-input-container" data-tekton-chat="numa-companion" data-tekton-chat-component="numa">
+            <div class="numa__chat-prompt">></div>
+            <input type="text" class="numa__chat-input" id="numa-chat-input"
+                   data-tekton-input="chat-input"
+                   data-tekton-input-type="chat"
+                   placeholder="Chat with Numa - your platform AI mentor and companion"
+                   onkeydown="if(event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); numa_sendChat(); }">
+            <button class="numa__send-button" id="numa-send-button" onclick="numa_sendChat(); return false;"
+                    data-tekton-action="send-message"
+                    data-tekton-action-type="primary">Send</button>
         </div>
     </div>
 </div>
@@ -203,6 +189,7 @@
   flex: 1;
   overflow: hidden;
   position: relative;
+  padding-bottom: 70px; /* Account for footer height */
 }
 
 /* Panel styling - hidden by default */
@@ -230,19 +217,26 @@
 
 /* Chat Interface */
 .chat-interface {
-  flex: 1;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   display: flex;
   flex-direction: column;
 }
 
 .chat-messages {
-  flex: 1;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0; /* No footer inside tabs anymore */
   overflow-y: auto;
-  border: 1px solid var(--border-color, #444444);
-  border-radius: 8px;
   padding: 16px;
-  margin-bottom: 16px;
-  background-color: var(--bg-tertiary, #333345);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
 .chat-message {
@@ -321,23 +315,76 @@
   color: var(--text-secondary, #aaaaaa);
 }
 
-/* Footer */
-.component-footer {
+/* Footer with Chat Input */
+.numa__footer {
   background-color: var(--bg-secondary, #252535);
-  padding: 12px 16px;
   border-top: 1px solid var(--border-color, #444444);
+  padding: 12px 16px;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 70px; /* Fixed height to match chat area */
 }
 
-.footer-info {
+.numa__chat-input-container {
   display: flex;
-  gap: 24px;
-  font-size: 13px;
-  color: var(--text-secondary, #aaaaaa);
+  align-items: center;
+  gap: 12px;
+  width: 100%;
 }
 
-.info-item span {
-  font-weight: 500;
+.numa__chat-prompt {
+  font-size: 18px;
+  font-weight: bold;
+  color: #9C27B0; /* Deep Purple for Numa */
+}
+
+.numa__chat-input {
+  flex: 1;
+  height: 44px;
+  padding: 8px 16px;
+  background-color: var(--bg-tertiary, #333345);
+  border: 1px solid var(--border-color, #444444);
+  border-radius: 8px;
   color: var(--text-primary, #f0f0f0);
+  font-size: 14px;
+  transition: border-color 0.2s ease;
+}
+
+.numa__chat-input:focus {
+  outline: none;
+  border-color: #9C27B0;
+}
+
+.numa__chat-input::placeholder {
+  color: var(--text-secondary, #888888);
+}
+
+.numa__send-button {
+  height: 44px;
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #9C27B0; /* Deep Purple for Numa */
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.numa__send-button:hover {
+  background-color: #7B1FA2; /* Darker purple on hover */
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(156, 39, 176, 0.3);
+}
+
+.numa__send-button:active {
+  transform: translateY(0);
+  box-shadow: none;
 }
 </style>
 
@@ -358,4 +405,49 @@ setTimeout(() => {
         }, 500);
     }
 }, 100);
+
+// Chat functionality
+function numa_sendChat() {
+    const input = document.getElementById('numa-chat-input');
+    const message = input.value.trim();
+    
+    if (!message) return;
+    
+    // Determine which tab is active
+    const companionActive = document.getElementById('numa-tab-companion').checked;
+    const chatType = companionActive ? 'companion' : 'team';
+    const messagesContainer = document.getElementById(`numa-${chatType}-messages`);
+    
+    // Add user message
+    const userMessageDiv = document.createElement('div');
+    userMessageDiv.className = 'chat-message user-message';
+    userMessageDiv.innerHTML = `<strong>You:</strong> ${message}`;
+    messagesContainer.appendChild(userMessageDiv);
+    
+    // Clear input
+    input.value = '';
+    
+    // Scroll to bottom
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    
+    // Send to backend (placeholder for now)
+    console.log(`Numa ${chatType} chat:`, message);
+    
+    // Simulate AI response
+    setTimeout(() => {
+        const aiMessageDiv = document.createElement('div');
+        aiMessageDiv.className = 'chat-message ai-message';
+        aiMessageDiv.innerHTML = `<strong>Numa:</strong> I understand you're asking about "${message}". As your platform AI mentor, I can help guide you through the Tekton ecosystem. This feature is currently being developed.`;
+        messagesContainer.appendChild(aiMessageDiv);
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }, 1000);
+}
+
+// Add enter key handler for chat input when component loads
+document.addEventListener('DOMContentLoaded', function() {
+    const chatInput = document.getElementById('numa-chat-input');
+    if (chatInput) {
+        chatInput.focus();
+    }
+});
 </script>

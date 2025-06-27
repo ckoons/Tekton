@@ -1083,6 +1083,10 @@ function tekton_loadComponent() {
 
 // HTML PANEL PROTECTION
 // Setup explicit protection for the HTML panel to prevent it being hidden
+// DEPRECATED: Panel protection removed - Casey 2025-06-27
+// This was causing UI navigation issues and was an artifact of old terminal vs component design
+// Terma will handle terminals as free-floating in the future
+/*
 function tekton_protectHtmlPanel() {
     const htmlPanel = document.getElementById('html-panel');
     if (!htmlPanel) {
@@ -1129,12 +1133,13 @@ function tekton_protectHtmlPanel() {
         });
     }
 }
+*/
 
 // SETUP DONE AFTER PAGE LOAD
 // This ensures the functions are available before the tab events need them
 window.addEventListener('DOMContentLoaded', function() {
     console.log('[TEKTON] DOM loaded, setting up Tekton component');
-    tekton_protectHtmlPanel();
+    // DEPRECATED: tekton_protectHtmlPanel(); - Removed panel protection
     tekton_loadComponent();
 });
 
@@ -1142,7 +1147,7 @@ window.addEventListener('DOMContentLoaded', function() {
 // In case the DOM is already loaded
 if (document.readyState === 'complete' || document.readyState === 'interactive') {
     console.log('[TEKTON] Document already loaded, setting up Tekton component immediately');
-    tekton_protectHtmlPanel();
+    // DEPRECATED: tekton_protectHtmlPanel(); - Removed panel protection
     tekton_loadComponent();
 }
 </script>

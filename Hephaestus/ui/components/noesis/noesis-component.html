@@ -51,16 +51,6 @@
                         <strong>Noesis:</strong> I discover patterns and generate insights across the Tekton ecosystem. What would you like me to explore?
                     </div>
                 </div>
-                <div class="chat-input-container" data-tekton-input="discovery">
-                    <input type="text" 
-                           id="noesis-discovery-input" 
-                           class="chat-input" 
-                           placeholder="What patterns should I discover?"
-                           data-tekton-input-field="discovery">
-                    <button class="chat-send-button" 
-                            id="noesis-discovery-send"
-                            data-tekton-send="discovery">Discover</button>
-                </div>
             </div>
         </div>
         
@@ -81,26 +71,22 @@
                         <strong>System:</strong> Team Chat allows Noesis to share discoveries with other specialists.
                     </div>
                 </div>
-                <div class="chat-input-container" data-tekton-input="team">
-                    <input type="text" 
-                           id="noesis-team-input" 
-                           class="chat-input" 
-                           placeholder="Share discovery with team..."
-                           data-tekton-input-field="team">
-                    <button class="chat-send-button" 
-                            id="noesis-team-send"
-                            data-tekton-send="team">Share</button>
-                </div>
             </div>
         </div>
     </div>
     
-    <!-- Component Footer -->
-    <div class="component-footer" data-tekton-footer="noesis">
-        <div class="footer-info">
-            <span class="info-item">Port: <span id="noesis-port">8015</span></span>
-            <span class="info-item">Status: <span id="noesis-status">Initializing</span></span>
-            <span class="info-item">Mode: <span id="noesis-mode">Placeholder</span></span>
+    <!-- Footer with Chat Input -->
+    <div class="noesis__footer" data-tekton-zone="footer" data-tekton-section="footer">
+        <div class="noesis__chat-input-container" data-tekton-chat="noesis-discovery" data-tekton-chat-component="noesis">
+            <div class="noesis__chat-prompt">></div>
+            <input type="text" class="noesis__chat-input" id="noesis-chat-input"
+                   data-tekton-input="chat-input"
+                   data-tekton-input-type="chat"
+                   placeholder="Ask Noesis to discover patterns and insights across the system"
+                   onkeydown="if(event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); noesis_sendChat(); }">
+            <button class="noesis__send-button" id="noesis-send-button" onclick="noesis_sendChat(); return false;"
+                    data-tekton-action="send-message"
+                    data-tekton-action-type="primary">Discover</button>
         </div>
     </div>
 </div>
@@ -212,6 +198,7 @@
   flex: 1;
   overflow: hidden;
   position: relative;
+  padding-bottom: 70px; /* Account for footer height */
 }
 
 /* Panel styling - hidden by default */
@@ -239,7 +226,11 @@
 
 /* Chat Interface */
 .chat-interface {
-  flex: 1;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   display: flex;
   flex-direction: column;
 }
@@ -268,13 +259,16 @@
 }
 
 .chat-messages {
-  flex: 1;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0; /* No footer inside tabs anymore */
   overflow-y: auto;
-  border: 1px solid var(--border-color, #444444);
-  border-radius: 8px;
   padding: 16px;
-  margin-bottom: 16px;
-  background-color: var(--bg-tertiary, #333345);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
 .chat-message {
@@ -354,23 +348,76 @@
   color: var(--text-secondary, #aaaaaa);
 }
 
-/* Footer */
-.component-footer {
+/* Footer with Chat Input */
+.noesis__footer {
   background-color: var(--bg-secondary, #252535);
-  padding: 12px 16px;
   border-top: 1px solid var(--border-color, #444444);
+  padding: 12px 16px;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 70px; /* Fixed height to match chat area */
 }
 
-.footer-info {
+.noesis__chat-input-container {
   display: flex;
-  gap: 24px;
-  font-size: 13px;
-  color: var(--text-secondary, #aaaaaa);
+  align-items: center;
+  gap: 12px;
+  width: 100%;
 }
 
-.info-item span {
-  font-weight: 500;
+.noesis__chat-prompt {
+  font-size: 18px;
+  font-weight: bold;
+  color: #FF6F00; /* Deep Orange for Noesis */
+}
+
+.noesis__chat-input {
+  flex: 1;
+  height: 44px;
+  padding: 8px 16px;
+  background-color: var(--bg-tertiary, #333345);
+  border: 1px solid var(--border-color, #444444);
+  border-radius: 8px;
   color: var(--text-primary, #f0f0f0);
+  font-size: 14px;
+  transition: border-color 0.2s ease;
+}
+
+.noesis__chat-input:focus {
+  outline: none;
+  border-color: #FF6F00;
+}
+
+.noesis__chat-input::placeholder {
+  color: var(--text-secondary, #888888);
+}
+
+.noesis__send-button {
+  height: 44px;
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #FF6F00; /* Deep Orange for Noesis */
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.noesis__send-button:hover {
+  background-color: #E65100; /* Darker orange on hover */
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(255, 111, 0, 0.3);
+}
+
+.noesis__send-button:active {
+  transform: translateY(0);
+  box-shadow: none;
 }
 </style>
 
@@ -391,4 +438,49 @@ setTimeout(() => {
         }, 500);
     }
 }, 100);
+
+// Chat functionality
+function noesis_sendChat() {
+    const input = document.getElementById('noesis-chat-input');
+    const message = input.value.trim();
+    
+    if (!message) return;
+    
+    // Determine which tab is active
+    const discoveryActive = document.getElementById('noesis-tab-discovery').checked;
+    const chatType = discoveryActive ? 'discovery' : 'team';
+    const messagesContainer = document.getElementById(`noesis-${chatType}-messages`);
+    
+    // Add user message
+    const userMessageDiv = document.createElement('div');
+    userMessageDiv.className = 'chat-message user-message';
+    userMessageDiv.innerHTML = `<strong>You:</strong> ${message}`;
+    messagesContainer.appendChild(userMessageDiv);
+    
+    // Clear input
+    input.value = '';
+    
+    // Scroll to bottom
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    
+    // Send to backend (placeholder for now)
+    console.log(`Noesis ${chatType} chat:`, message);
+    
+    // Simulate AI response
+    setTimeout(() => {
+        const aiMessageDiv = document.createElement('div');
+        aiMessageDiv.className = 'chat-message ai-message';
+        aiMessageDiv.innerHTML = `<strong>Noesis:</strong> Analyzing patterns for "${message}". I'm discovering insights across the Tekton ecosystem. This feature is currently being developed.`;
+        messagesContainer.appendChild(aiMessageDiv);
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }, 1000);
+}
+
+// Add enter key handler for chat input when component loads
+document.addEventListener('DOMContentLoaded', function() {
+    const chatInput = document.getElementById('noesis-chat-input');
+    if (chatInput) {
+        chatInput.focus();
+    }
+});
 </script>
