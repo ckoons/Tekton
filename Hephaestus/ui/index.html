@@ -86,11 +86,23 @@
             opacity: 1;
         }
         
+        /* Ensure Noesis gets the glow effect with its orange color */
+        .nav-item[data-component="noesis"] .status-indicator.connected {
+            box-shadow: 0 0 8px #FF6F00, 0 0 12px #FF6F00;
+            opacity: 1;
+        }
+        
         /* Consistent font weight for component title elements */
         [class*="__title-main"],
         [class*="__title-sub"] {
             font-weight: 500;
             opacity: 1;
+        }
+        
+        /* Style for nav label subtitle */
+        .nav-label-sub {
+            font-size: 0.9em;
+            opacity: 0.7;
         }
         
         /* Make status indicators always visible */

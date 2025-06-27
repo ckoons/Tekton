@@ -984,7 +984,7 @@ class UIManagerCore {
     _getDefaultPort(componentId) {
         const defaultPorts = {
             'numa': window.NUMA_PORT || 8016,
-            'noesis': window.NOESIS_PORT || 8017,
+            'noesis': window.NOESIS_PORT || 8015,
             'engram': window.ENGRAM_PORT || 8000,
             'hermes': window.HERMES_PORT || 8001,
             'ergon': window.ERGON_PORT || 8002,

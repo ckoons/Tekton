@@ -496,26 +496,26 @@ class SettingsManager {
      */
     getComponentLabel(component) {
         if (this.settings.showGreekNames) {
-            // Return Greek + function format
+            // Return Greek + function format with styled spans
             switch(component) {
-                case 'ergon': return 'Ergon - Agents/Tools/MCP';
-                case 'prometheus': return 'Prometheus - Planning';
-                case 'telos': return 'Telos - Requirements';
-                case 'metis': return 'Metis - Workflows';
-                case 'harmonia': return 'Harmonia - Orchestration';
-                case 'synthesis': return 'Synthesis - Integration';
-                case 'athena': return 'Athena - Knowledge';
-                case 'sophia': return 'Sophia - Learning';
-                case 'engram': return 'Engram - Memory';
-                case 'apollo': return 'Apollo - Attention/Prediction';
-                case 'rhetor': return 'Rhetor - LLM/Prompt/Context';
-                case 'hermes': return 'Hermes - Messages/Data';
-                case 'numa': return 'Numa - Companion';
-                case 'noesis': return 'Noesis - Discovery';
-                case 'tekton': return 'Tekton - Projects';
-                case 'terma': return 'Terma - Terminal';
-                case 'budget': return 'Penia - LLM Cost';
-                case 'penia': return 'Penia - LLM Cost';
+                case 'numa': return 'Numa<span class="nav-label-sub"> - Companion</span>';
+                case 'tekton': return 'Tekton<span class="nav-label-sub"> - Projects</span>';
+                case 'prometheus': return 'Prometheus<span class="nav-label-sub"> - Planning</span>';
+                case 'telos': return 'Telos<span class="nav-label-sub"> - Requirements</span>';
+                case 'metis': return 'Metis<span class="nav-label-sub"> - Workflows</span>';
+                case 'harmonia': return 'Harmonia<span class="nav-label-sub"> - Orchestration</span>';
+                case 'synthesis': return 'Synthesis<span class="nav-label-sub"> - Integration</span>';
+                case 'athena': return 'Athena<span class="nav-label-sub"> - Knowledge</span>';
+                case 'sophia': return 'Sophia<span class="nav-label-sub"> - Learning</span>';
+                case 'noesis': return 'Noesis<span class="nav-label-sub"> - Discovery</span>';
+                case 'engram': return 'Engram<span class="nav-label-sub"> - Memory</span>';
+                case 'apollo': return 'Apollo<span class="nav-label-sub"> - Attention/Prediction</span>';
+                case 'rhetor': return 'Rhetor<span class="nav-label-sub"> - LLM/Prompt/Context</span>';
+                case 'budget': return 'Penia<span class="nav-label-sub"> - LLM Cost</span>';
+                case 'penia': return 'Penia<span class="nav-label-sub"> - LLM Cost</span>';
+                case 'hermes': return 'Hermes<span class="nav-label-sub"> - Messages/Data</span>';
+                case 'ergon': return 'Ergon<span class="nav-label-sub"> - Agents/Tools/MCP</span>';
+                case 'terma': return 'Terma<span class="nav-label-sub"> - Terminal</span>';
                 case 'profile': return 'Profile';
                 case 'settings': return 'Settings';
                 default: return component;
@@ -523,7 +523,8 @@ class SettingsManager {
         } else {
             // Return function only
             switch(component) {
-                case 'ergon': return 'Agents/Tools/MCP';
+                case 'numa': return 'Companion';
+                case 'tekton': return 'Projects';
                 case 'prometheus': return 'Planning';
                 case 'telos': return 'Requirements';
                 case 'metis': return 'Workflows';
@@ -531,13 +532,12 @@ class SettingsManager {
                 case 'synthesis': return 'Integration';
                 case 'athena': return 'Knowledge';
                 case 'sophia': return 'Learning';
+                case 'noesis': return 'Discovery';
                 case 'engram': return 'Memory';
                 case 'apollo': return 'Attention/Prediction';
                 case 'rhetor': return 'LLM/Prompt/Context';
                 case 'hermes': return 'Messages/Data';
-                case 'numa': return 'Companion';
-                case 'noesis': return 'Discovery';
-                case 'tekton': return 'Projects';
+                case 'ergon': return 'Agents/Tools/MCP';
                 case 'terma': return 'Terminal';
                 case 'budget': return 'LLM Cost';
                 case 'penia': return 'LLM Cost';
