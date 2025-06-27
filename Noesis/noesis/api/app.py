@@ -10,6 +10,15 @@ from fastapi.responses import JSONResponse, StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
+# Landmark imports
+from landmarks import (
+    architecture_decision,
+    state_checkpoint,
+    api_contract,
+    integration_point,
+    performance_boundary
+)
+
 # Get configuration from environment - NO HARDCODED DEFAULTS
 import sys
 tekton_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../.."))
@@ -99,6 +108,19 @@ async def health_check():
     }
 
 @app.post("/api/discovery-chat", response_model=DiscoveryChatResponse)
+@api_contract(
+    title="Discovery Chat API",
+    endpoint="/api/discovery-chat",
+    method="POST",
+    request_schema={"query": "string", "search_scope": "string", "context": "object"},
+    response_schema={"discoveries": "list", "insights": "list", "timestamp": "datetime", "metadata": "object"}
+)
+@performance_boundary(
+    title="Pattern Recognition Performance",
+    sla="<1s for basic queries, <5s for complex analysis",
+    optimization_notes="Uses caching for discovered patterns and incremental updates",
+    metrics={"target_latency": "1s", "max_latency": "5s"}
+)
 async def discovery_chat(request: DiscoveryChatRequest):
     """Handle discovery chat queries - pattern and insight discovery"""
     try:
@@ -123,6 +145,12 @@ async def discovery_chat(request: DiscoveryChatRequest):
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/api/team-chat", response_model=TeamChatResponse)
+@api_contract(
+    title="Team Chat API",
+    endpoint="/api/team-chat",
+    method="POST",
+    request_schema={"message": "string", "from_component": "string", "to_components": "list", "broadcast": "bool"}
+)
 async def team_chat(request: TeamChatRequest):
     """Handle team chat messages - communication with other AIs"""
     try:
@@ -158,6 +186,12 @@ async def get_status():
     }
 
 @app.on_event("startup")
+@integration_point(
+    title="Hermes Service Registration",
+    target_component="Hermes",
+    protocol="HTTP REST API",
+    data_flow="Registration request -> Hermes -> Acknowledgment"
+)
 async def startup_event():
     """Register with Hermes on startup"""
     print(f"Noesis starting on port {NOESIS_PORT}")

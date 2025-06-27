@@ -10,6 +10,15 @@ from fastapi.responses import JSONResponse, StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
+# Landmark imports
+from landmarks import (
+    architecture_decision,
+    state_checkpoint,
+    api_contract,
+    integration_point,
+    danger_zone
+)
+
 # Get configuration from environment - NO HARDCODED DEFAULTS
 import sys
 tekton_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../.."))
@@ -98,6 +107,19 @@ async def health_check():
     }
 
 @app.post("/api/companion-chat", response_model=CompanionChatResponse)
+@api_contract(
+    title="Companion Chat API",
+    endpoint="/api/companion-chat",
+    method="POST",
+    request_schema={"message": "string", "user_id": "string", "context": "object"}
+)
+@state_checkpoint(
+    title="User Context Management",
+    state_type="user_session",
+    persistence=False,
+    consistency_requirements="Maintain conversation context within session",
+    recovery_strategy="Start fresh conversation on session loss"
+)
 async def companion_chat(request: CompanionChatRequest):
     """Handle companion chat messages - direct interaction with user"""
     try:
@@ -116,6 +138,18 @@ async def companion_chat(request: CompanionChatRequest):
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/api/team-chat", response_model=TeamChatResponse)
+@api_contract(
+    title="Team Chat API",
+    endpoint="/api/team-chat",
+    method="POST",
+    request_schema={"message": "string", "from_component": "string", "to_components": "list", "broadcast": "bool"}
+)
+@integration_point(
+    title="Cross-Component Communication Hub",
+    target_component="Rhetor",
+    protocol="HTTP REST API",
+    data_flow="Numa -> Rhetor -> Target components -> Responses"
+)
 async def team_chat(request: TeamChatRequest):
     """Handle team chat messages - communication with other AIs"""
     try:
@@ -151,6 +185,12 @@ async def get_status():
     }
 
 @app.on_event("startup")
+@integration_point(
+    title="Hermes Service Registration",
+    target_component="Hermes",
+    protocol="HTTP REST API",
+    data_flow="Registration request -> Hermes -> Acknowledgment"
+)
 async def startup_event():
     """Register with Hermes on startup"""
     print(f"Numa starting on port {NUMA_PORT}")
