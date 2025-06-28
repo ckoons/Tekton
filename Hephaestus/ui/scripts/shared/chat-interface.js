@@ -5,6 +5,7 @@
  * component to implement LLM chat functionality with a consistent user experience.
  */
 
+console.log('[FILE_TRACE] Loading: chat-interface.js');
 /**
  * Creates a chat interface component that can be integrated into any Tekton component.
  * 

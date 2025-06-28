@@ -3,6 +3,7 @@
  * Agent management and LLM integration interface with BEM naming conventions
  */
 
+console.log('[FILE_TRACE] Loading: ergon-component.js');
 class ErgonComponent {
     constructor() {
         this.state = {

@@ -3,6 +3,7 @@
  * Knowledge graph and entity management interface
  */
 
+console.log('[FILE_TRACE] Loading: athena-component.js');
 class AthenaComponent {
     constructor() {
         this.state = {

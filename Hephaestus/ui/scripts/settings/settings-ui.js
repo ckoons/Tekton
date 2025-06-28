@@ -4,6 +4,7 @@
  * Manages the settings UI and connects it to the Settings Manager
  */
 
+console.log('[FILE_TRACE] Loading: settings-ui.js');
 class SettingsUI {
     constructor() {
         this.initialized = false;

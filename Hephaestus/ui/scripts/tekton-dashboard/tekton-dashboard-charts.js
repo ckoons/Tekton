@@ -3,6 +3,7 @@
  * Chart initialization and update functions for the Tekton Dashboard component
  */
 
+console.log('[FILE_TRACE] Loading: tekton-dashboard-charts.js');
 (function(component) {
     // Initialize mini charts for the system overview
     function initMiniCharts() {

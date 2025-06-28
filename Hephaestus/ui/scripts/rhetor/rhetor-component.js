@@ -5,6 +5,7 @@
  * Part of the Clean Slate Sprint
  */
 
+console.log('[FILE_TRACE] Loading: rhetor-component.js');
 // Use IIFE for encapsulation and to prevent global namespace pollution
 (function() {
   'use strict';

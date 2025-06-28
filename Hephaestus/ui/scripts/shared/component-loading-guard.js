@@ -6,6 +6,7 @@
  * to prevent conflicts, especially with tab navigation across components.
  */
 
+console.log('[FILE_TRACE] Loading: component-loading-guard.js');
 window.ComponentLoadingGuard = {
   // Current active component 
   activeComponent: null,

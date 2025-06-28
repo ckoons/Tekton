@@ -4,6 +4,7 @@
  * Handles the terminal interface with history, command processing, and input capabilities
  */
 
+console.log('[FILE_TRACE] Loading: terminal.js');
 class TerminalManager {
     constructor(containerId) {
         this.containerId = containerId;

@@ -5,6 +5,7 @@
  * Implements real-time monitoring of service registrations and message routing.
  */
 
+console.log('[FILE_TRACE] Loading: hermes-component.js');
 (function(component) {
     'use strict';
     

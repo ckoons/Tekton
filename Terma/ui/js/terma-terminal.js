@@ -3,6 +3,7 @@
  * Implementation of xterm.js-based terminal for Tekton
  */
 
+console.log('[FILE_TRACE] Loading: terma-terminal.js');
 /**
  * Enhanced debugging utility for the Terma Terminal Component
  * 

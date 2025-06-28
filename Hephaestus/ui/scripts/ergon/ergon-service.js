@@ -6,6 +6,7 @@
  * while automatically updating the state system with the results.
  */
 
+console.log('[FILE_TRACE] Loading: ergon-service.js');
 class ErgonService {
     constructor() {
         this.initialized = false;

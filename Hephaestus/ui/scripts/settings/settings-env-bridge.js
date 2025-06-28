@@ -4,6 +4,7 @@
  * Extends SettingsManager to integrate with TektonEnvManager
  */
 
+console.log('[FILE_TRACE] Loading: settings-env-bridge.js');
 class SettingsEnvBridge {
     constructor() {
         this.baseUrl = `http://localhost:${window.HEPHAESTUS_PORT || 8080}`;

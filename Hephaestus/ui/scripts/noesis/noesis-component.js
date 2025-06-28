@@ -1,3 +1,4 @@
+console.log('[FILE_TRACE] Loading: noesis-component.js');
 // Noesis Component JavaScript - Following Rhetor's minimal pattern
 
 window.NoesisComponent = {

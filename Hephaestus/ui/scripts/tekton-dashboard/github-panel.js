@@ -4,6 +4,7 @@
  * issue tracking, and project synchronization
  */
 
+console.log('[FILE_TRACE] Loading: github-panel.js');
 (function(component) {
     // Component state using State Management Pattern
     if (window.tektonUI.stateManager) {

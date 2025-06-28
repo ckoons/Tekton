@@ -9,6 +9,7 @@
  * - Terminal registration with message capabilities
  */
 
+console.log('[FILE_TRACE] Loading: terminal-chat-enhanced.js');
 class EnhancedTerminalChat {
     constructor(containerId, options = {}) {
         this.containerId = containerId;

@@ -9,6 +9,7 @@
  * - LLM assistance integration
  */
 
+console.log('[FILE_TRACE] Loading: terma-component.js');
 (function(component) {
     'use strict';
     

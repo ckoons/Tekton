@@ -3,6 +3,7 @@
  * Sets up the GitHub panel and initializes its functionality
  */
 
+console.log('[FILE_TRACE] Loading: github-panel-init.js');
 (function() {
     // Create initialization function for the GitHub panel
     window.tektonUI = window.tektonUI || {};

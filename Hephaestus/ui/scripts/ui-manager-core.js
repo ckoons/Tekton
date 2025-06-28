@@ -6,6 +6,7 @@
  * Implements a modular architecture with separate component files
  */
 
+console.log('[FILE_TRACE] Loading: ui-manager-core.js');
 class UIManagerCore {
     constructor() {
         this.components = {};

@@ -5,6 +5,7 @@
  * Implements memory search, chat interface, and analytics.
  */
 
+console.log('[FILE_TRACE] Loading: engram-component.js');
 (function(component) {
     'use strict';
     

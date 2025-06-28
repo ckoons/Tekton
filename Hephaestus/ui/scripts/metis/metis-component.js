@@ -3,6 +3,7 @@
  * Follows Clean Slate UI architecture pattern
  */
 
+console.log('[FILE_TRACE] Loading: metis-component.js');
 // Define the component namespace
 window.metisComponent = window.metisComponent || {};
 

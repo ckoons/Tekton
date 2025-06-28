@@ -6,6 +6,7 @@
  * handling agent state, execution tracking, and reactive UI patterns.
  */
 
+console.log('[FILE_TRACE] Loading: component-utils-ergon-state.js');
 class ComponentErgonStateUtils {
     constructor() {
         this.initialized = false;

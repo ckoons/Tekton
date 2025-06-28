@@ -5,6 +5,7 @@
  * Also handles connection to the LLM Adapter for terminal chat
  */
 
+console.log('[FILE_TRACE] Loading: hermes-connector.js');
 // LLM Adapter configuration
 const LLM_ADAPTER_CONFIG = {
     // WebSocket endpoint for LLM Adapter 

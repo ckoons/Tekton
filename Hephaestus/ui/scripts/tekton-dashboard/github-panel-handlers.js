@@ -3,6 +3,7 @@
  * Provides event handling and business logic for the GitHub panel component
  */
 
+console.log('[FILE_TRACE] Loading: github-panel-handlers.js');
 (function(component) {
     // Make handler functions available on component
     component.handlers = component.handlers || {};

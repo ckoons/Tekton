@@ -6,6 +6,7 @@
  * that isn't being properly respected during component switching.
  */
 
+console.log('[FILE_TRACE] Loading: tab-navigation-debug.js');
 // Create a global namespace for our tab navigation debugging
 window.TabNavigationDebug = {
   // Keep track of which component should be ignored

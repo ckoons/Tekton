@@ -3,6 +3,7 @@
  * Requirements management interface
  */
 
+console.log('[FILE_TRACE] Loading: telos-component.js');
 class TelosComponent {
     constructor() {
         this.state = {

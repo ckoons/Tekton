@@ -3,6 +3,7 @@
  * Provides communication with the Tekton system for monitoring and managing components
  */
 
+console.log('[FILE_TRACE] Loading: tekton-service.js');
 class TektonService extends window.tektonUI.componentUtils.BaseService {
     constructor() {
         // Call base service with service name and default API endpoint

@@ -4,6 +4,7 @@
  * issue tracking, and project synchronization
  */
 
+console.log('[FILE_TRACE] Loading: github-service.js');
 class GitHubService extends window.tektonUI.componentUtils.BaseService {
     constructor() {
         // Call base service with service name and default API endpoint

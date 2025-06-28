@@ -3,6 +3,7 @@
  * Shadow DOM compatible implementation of the Profile UI
  */
 
+console.log('[FILE_TRACE] Loading: profile-component.js');
 (function(component) {
     'use strict';
     

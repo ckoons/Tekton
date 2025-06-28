@@ -3,6 +3,7 @@
  * This script sets up window environment variables for port access
  */
 
+console.log('[FILE_TRACE] Loading: env.js');
 // Single Port Architecture environment variables
 window.HEPHAESTUS_PORT = 8080;  // Default Hephaestus port
 window.ENGRAM_PORT = 8000;      // Default Engram port

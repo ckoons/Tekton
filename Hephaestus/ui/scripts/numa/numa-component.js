@@ -1,3 +1,4 @@
+console.log('[FILE_TRACE] Loading: numa-component.js');
 // Numa Component JavaScript - Following Rhetor's minimal pattern
 
 window.NumaComponent = {

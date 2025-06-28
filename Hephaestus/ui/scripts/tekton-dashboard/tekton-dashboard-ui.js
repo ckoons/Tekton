@@ -3,6 +3,7 @@
  * UI update functions for the Tekton Dashboard component
  */
 
+console.log('[FILE_TRACE] Loading: tekton-dashboard-ui.js');
 (function(component) {
     // Load components data
     function loadComponents() {

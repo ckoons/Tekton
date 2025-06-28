@@ -4,6 +4,7 @@
  * Manages user preferences and settings for the Tekton UI
  */
 
+console.log('[FILE_TRACE] Loading: settings-manager.js');
 class SettingsManager {
     constructor() {
         this.settings = {

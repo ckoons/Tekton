@@ -4,6 +4,7 @@
  * resource monitoring, and component management
  */
 
+console.log('[FILE_TRACE] Loading: tekton-dashboard.js');
 (function(component) {
     // Component state using State Management Pattern
     if (window.tektonUI.stateManager) {

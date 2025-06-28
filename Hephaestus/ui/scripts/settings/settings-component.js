@@ -4,6 +4,7 @@
  * Uses event delegation to avoid inline onclick issues
  */
 
+console.log('[FILE_TRACE] Loading: settings-component.js');
 console.log('[Settings] Component script loading...');
 
 // Initialize when DOM is ready

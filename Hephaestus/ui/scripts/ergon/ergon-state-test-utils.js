@@ -6,6 +6,7 @@
  * and mocking state-related behaviors.
  */
 
+console.log('[FILE_TRACE] Loading: ergon-state-test-utils.js');
 class ErgonStateTestUtils {
     constructor() {
         this.initialized = false;

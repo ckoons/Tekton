@@ -3,6 +3,7 @@
  * Manages user profile data for Tekton using the BaseService pattern
  */
 
+console.log('[FILE_TRACE] Loading: profile-service.js');
 class ProfileService extends window.tektonUI.componentUtils.BaseService {
     constructor() {
         super('profileService', '/api/profile');

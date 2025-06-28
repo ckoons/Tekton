@@ -4,6 +4,7 @@
  * Manages the profile UI and connects it to the Profile Manager
  */
 
+console.log('[FILE_TRACE] Loading: profile-ui.js');
 class ProfileUI {
     constructor() {
         this.initialized = false;

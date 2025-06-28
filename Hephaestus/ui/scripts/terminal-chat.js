@@ -4,6 +4,7 @@
  * Enhanced terminal with AI chat capabilities for Tekton
  */
 
+console.log('[FILE_TRACE] Loading: terminal-chat.js');
 class TerminalChatManager {
     constructor(containerId, options = {}) {
         this.containerId = containerId;

@@ -4,6 +4,7 @@
  * Handles WebSocket communication with the Tekton backend
  */
 
+console.log('[FILE_TRACE] Loading: websocket.js');
 class WebSocketManager {
     constructor() {
         this.socket = null;

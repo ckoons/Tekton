@@ -6,6 +6,7 @@
  * Extends the core Tekton state manager with agent-specific enhancements.
  */
 
+console.log('[FILE_TRACE] Loading: ergon-state-manager.js');
 class ErgonStateManager {
     constructor() {
         // Core state is managed by the main StateManager

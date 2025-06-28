@@ -10,6 +10,7 @@
  * Extends the BaseService pattern with Terma-specific functionality.
  */
 
+console.log('[FILE_TRACE] Loading: terma-service.js');
 class TermaService extends window.tektonUI.componentUtils.BaseService {
     /**
      * Create a new Terma service

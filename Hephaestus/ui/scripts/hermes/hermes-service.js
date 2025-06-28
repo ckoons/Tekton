@@ -3,6 +3,7 @@
  * Provides communication with the Hermes message bus and service registry
  */
 
+console.log('[FILE_TRACE] Loading: hermes-service.js');
 class HermesService extends window.tektonUI.componentUtils.BaseService {
     constructor() {
         // Call base service with service name and dynamic port from environment

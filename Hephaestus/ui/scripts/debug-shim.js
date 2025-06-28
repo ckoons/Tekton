@@ -9,6 +9,7 @@
  * to existing logger() functions when available.
  */
 
+console.log('[FILE_TRACE] Loading: debug-shim.js');
 // Simple global debug object
 window.TektonDebug = {
   // Configuration (can be updated by future logging system)

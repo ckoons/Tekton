@@ -13,6 +13,19 @@
 
 ---
 
+## 🐛 Debugging
+
+**For debugging and troubleshooting, see: [DEBUGGING.md](DEBUGGING.md)**
+
+The UI includes a powerful debug system for:
+- Identifying which files are loaded
+- Tracking component behavior
+- Diagnosing issues without code changes
+
+Quick start: `HephaestusDebug.enableFileTrace()` in browser console.
+
+---
+
 ## Overview
 
 Hephaestus UI is the unified interface for the Tekton ecosystem, providing a consistent way to interact with all Tekton components. It follows the "Keep It Simple" philosophy with a standardized structure for component display and interaction.

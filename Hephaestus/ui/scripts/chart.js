@@ -3,6 +3,7 @@
  * This file ensures Chart.js is loaded for components that need it
  */
 
+console.log('[FILE_TRACE] Loading: chart.js');
 // Check if Chart.js is already loaded
 if (typeof Chart === 'undefined') {
     console.log('[TEKTON] Loading Chart.js library...');

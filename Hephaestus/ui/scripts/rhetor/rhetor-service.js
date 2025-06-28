@@ -4,6 +4,7 @@
  * Enhanced with debug instrumentation and follows Single Port Architecture
  */
 
+console.log('[FILE_TRACE] Loading: rhetor-service.js');
 (function() {
   'use strict';
   

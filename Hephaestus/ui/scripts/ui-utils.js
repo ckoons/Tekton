@@ -4,6 +4,7 @@
  * Shared utility functions for UI components
  */
 
+console.log('[FILE_TRACE] Loading: ui-utils.js');
 /**
  * UI Utilities class
  * Provides shared functionality for UI operations across components

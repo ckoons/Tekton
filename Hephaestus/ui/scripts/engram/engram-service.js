@@ -3,6 +3,7 @@
  * Handles communication with the Engram Memory API and provides a clean interface for memory operations
  */
 
+console.log('[FILE_TRACE] Loading: engram-service.js');
 class EngramService extends window.tektonUI.componentUtils.BaseService {
     /**
      * Initialize the Engram Service

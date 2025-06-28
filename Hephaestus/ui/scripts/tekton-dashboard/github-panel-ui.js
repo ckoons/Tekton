@@ -3,6 +3,7 @@
  * Provides UI update functions for the GitHub panel component
  */
 
+console.log('[FILE_TRACE] Loading: github-panel-ui.js');
 (function(component) {
     // Make UI functions available on component
     component.ui = component.ui || {};

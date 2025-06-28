@@ -3,6 +3,7 @@
  * Event handlers and UI update functions for the Tekton Dashboard component
  */
 
+console.log('[FILE_TRACE] Loading: tekton-dashboard-handlers.js');
 (function(component) {
     // Event handlers for system status
     function refreshSystemStatus() {

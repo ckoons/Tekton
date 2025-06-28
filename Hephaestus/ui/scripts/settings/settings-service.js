@@ -3,6 +3,7 @@
  * Manages user preferences and settings for the Tekton UI
  */
 
+console.log('[FILE_TRACE] Loading: settings-service.js');
 class SettingsService extends window.tektonUI.componentUtils.BaseService {
     constructor() {
         super('settingsService', null); // No API URL needed as this is local storage based

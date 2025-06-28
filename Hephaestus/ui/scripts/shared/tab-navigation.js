@@ -14,6 +14,7 @@
  * 3. The TabNavigation utility will handle the rest
  */
 
+console.log('[FILE_TRACE] Loading: tab-navigation.js');
 // Create a debug log tracker to monitor exactly what happens
 const DEBUG_TAB_NAV = true;
 window._tabNavDebugLogs = [];

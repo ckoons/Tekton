@@ -4,6 +4,7 @@
  * Manages user profile data for Tekton
  */
 
+console.log('[FILE_TRACE] Loading: profile-manager.js');
 class ProfileManager {
     constructor() {
         this.profile = {

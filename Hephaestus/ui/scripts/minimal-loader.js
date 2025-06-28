@@ -10,6 +10,7 @@
  * ONE COMPONENT AT A TIME. This simplifies everything.
  */
 
+console.log('[FILE_TRACE] Loading: minimal-loader.js');
 class MinimalLoader {
   constructor() {
     // Standard component paths

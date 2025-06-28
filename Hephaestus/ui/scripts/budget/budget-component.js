@@ -5,6 +5,7 @@
  * and resource allocation within the Tekton platform.
  */
 
+console.log('[FILE_TRACE] Loading: budget-component.js');
 class BudgetComponent {
     constructor() {
         this.budgetService = null;

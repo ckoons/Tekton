@@ -6,6 +6,7 @@
  * streaming responses.
  */
 
+console.log('[FILE_TRACE] Loading: llm_adapter_client.js');
 class LLMAdapterClient {
     /**
      * Initialize the LLM adapter client.

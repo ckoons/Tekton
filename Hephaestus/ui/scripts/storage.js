@@ -4,6 +4,7 @@
  * Handles localStorage operations for UI state persistence
  */
 
+console.log('[FILE_TRACE] Loading: storage.js');
 class StorageManager {
     constructor() {
         this.prefix = 'tekton_';

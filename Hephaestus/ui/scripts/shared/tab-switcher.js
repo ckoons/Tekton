@@ -6,6 +6,7 @@
  * tab switching functionality.
  */
 
+console.log('[FILE_TRACE] Loading: tab-switcher.js');
 window.TabSwitcher = {
   /**
    * Switch a tab within a component

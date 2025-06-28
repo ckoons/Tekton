@@ -5,6 +5,7 @@
  * Handles fetching, creating, updating, and deleting requirements and related data.
  */
 
+console.log('[FILE_TRACE] Loading: telos-service.js');
 class TelosClient {
     constructor() {
         // Base URL for the API

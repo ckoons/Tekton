@@ -5,6 +5,7 @@
  * between Ergon and Athena components.
  */
 
+console.log('[FILE_TRACE] Loading: diagnostic.js');
 // Create a global diagnostic object
 window.Diagnostics = {
   // Create a DOM inspector that watches for changes
