@@ -57,6 +57,7 @@ tekton_root = find_tekton_root()
 sys.path.insert(0, tekton_root)
 
 from tekton.utils.component_config import get_component_config
+from shared.utils.env_config import get_component_config as get_env_config
 from tekton.utils.port_config import get_component_port
 
 
@@ -412,6 +413,43 @@ class EnhancedComponentKiller:
         except Exception as e:
             self.log(f"Error during cleanup: {e}", "warning", component_name)
             return False
+    
+    async def terminate_component_ai(self, component_name: str):
+        """Terminate AI specialist for a component if running"""
+        # Check if AI is enabled from Tekton config
+        env_config = get_env_config()
+        if not env_config.tekton.register_ai:
+            self.log("AI support disabled, skipping AI termination", "info", component_name)
+            return
+        
+        try:
+            # Use the AI killer script with force flag
+            cmd = [
+                sys.executable,
+                os.path.join(tekton_root, 'scripts', 'enhanced_tekton_ai_killer.py'),
+                '-f',  # Force flag to skip confirmation
+                component_name
+            ]
+            
+            self.log("Checking for AI specialist to terminate...", "info", component_name)
+            
+            process = await asyncio.create_subprocess_exec(
+                *cmd,
+                stdout=asyncio.subprocess.PIPE,
+                stderr=asyncio.subprocess.PIPE
+            )
+            
+            stdout, stderr = await process.communicate()
+            output = stdout.decode() if stdout else ""
+            
+            if process.returncode == 0 and "Terminated 1" in output:
+                self.log("AI specialist terminated", "success", component_name)
+            else:
+                # AI wasn't running
+                self.log("No AI specialist was running", "info", component_name)
+                
+        except Exception as e:
+            self.log(f"AI termination error: {str(e)}", "warning", component_name)
             
     async def terminate_component_advanced(self, component_name: str) -> TerminationResult:
         """Advanced component termination with multiple strategies"""
@@ -478,6 +516,9 @@ class EnhancedComponentKiller:
                 
                 # Check if process is still running
                 if not self.get_detailed_process_info(port):
+                    # Kill associated AI if enabled
+                    await self.terminate_component_ai(component_name)
+                    
                     cleanup_performed = await self.cleanup_component_resources(component_name)
                     return TerminationResult(
                         component_name=component_name,
@@ -496,6 +537,9 @@ class EnhancedComponentKiller:
         self.log("Attempting graceful signal termination...", "info", component_name)
         success, message = await self.terminate_process_gracefully(process_info, component_name)
         if success:
+            # Kill associated AI if enabled
+            await self.terminate_component_ai(component_name)
+            
             cleanup_performed = await self.cleanup_component_resources(component_name)
             return TerminationResult(
                 component_name=component_name,
@@ -511,6 +555,10 @@ class EnhancedComponentKiller:
         # Strategy 3: Force kill
         self.log("Graceful termination failed, force killing...", "warning", component_name)
         success, message = await self.force_kill_process(process_info, component_name)
+        
+        if success:
+            # Kill associated AI if enabled
+            await self.terminate_component_ai(component_name)
         
         cleanup_performed = await self.cleanup_component_resources(component_name)
         
@@ -796,6 +844,16 @@ async def main():
         action="store_true",
         help="Kill UI DevTools MCP server only"
     )
+    parser.add_argument(
+        "--ai",
+        nargs='*',
+        help="Kill only AI specialists for components (optionally specify which)"
+    )
+    parser.add_argument(
+        "--no-ai",
+        action="store_true",
+        help="Don't kill AI specialists when killing components"
+    )
     
     args = parser.parse_args()
     
@@ -816,6 +874,33 @@ async def main():
             else:
                 killer.log("UI DevTools MCP not running on port 8088", "info")
             return
+        
+        # Handle AI-only mode
+        if args.ai is not None:
+            # Kill only AI specialists
+            if args.ai == []:  # --ai with no arguments means all AIs
+                # Get all running components to kill their AIs
+                components = killer.get_running_components()
+                ai_components = components
+            else:
+                ai_components = [c.strip().lower() for c in args.ai]
+            
+            # Use the AI killer directly
+            cmd = [
+                sys.executable,
+                os.path.join(tekton_root, 'scripts', 'enhanced_tekton_ai_killer.py'),
+                '-f'  # Force mode
+            ] + ai_components
+            
+            killer.log(f"Killing AI specialists only: {', '.join(ai_components)}", "info")
+            
+            proc = subprocess.run(cmd)
+            return
+        
+        # Handle --no-ai flag
+        if args.no_ai:
+            os.environ['TEKTON_REGISTER_AI'] = 'false'
+            killer.log("AI killing disabled by --no-ai flag", "info")
         
         # Nuclear option
         if args.nuclear:

@@ -224,6 +224,74 @@ class EnhancedStatusChecker:
         if self.session:
             await self.session.close()
             
+    async def check_ui_devtools_status(self) -> ComponentMetrics:
+        """Check UI DevTools MCP status"""
+        # UI DevTools is a special case - it's an MCP server on port 8088
+        metrics = ComponentMetrics(
+            name="ui_dev_tools",
+            port=8088,
+            status="unknown",
+            version="unknown",
+            response_time=None,
+            uptime=None,
+            cpu_percent=None,
+            memory_mb=None,
+            request_count=None,
+            error_count=None,
+            last_error=None,
+            registered_with_hermes=False,
+            health_score=0.0,
+            process_info=None,
+            endpoint_health={},
+            dependencies_healthy=True
+        )
+        
+        start_time = time.time()
+        
+        # Check process information
+        process_info = self.get_process_info(8088)
+        metrics.process_info = process_info
+        
+        if not process_info:
+            metrics.status = "not_running"
+            metrics.response_time = time.time() - start_time
+            return metrics
+            
+        # Extract process metrics
+        if "cpu_percent" in process_info:
+            metrics.cpu_percent = process_info["cpu_percent"]
+        if "memory_mb" in process_info:
+            metrics.memory_mb = process_info["memory_mb"]
+            
+        # Check health endpoint
+        try:
+            url = "http://localhost:8088/health"
+            async with self.session.get(url) as resp:
+                metrics.response_time = time.time() - start_time
+                if resp.status == 200:
+                    try:
+                        data = await resp.json()
+                        metrics.status = "healthy"
+                        metrics.version = data.get("version", "unknown")
+                        # UI DevTools doesn't register with Hermes
+                        metrics.registered_with_hermes = False
+                    except:
+                        metrics.status = "healthy"
+                else:
+                    metrics.status = "unhealthy"
+        except asyncio.TimeoutError:
+            metrics.status = "timeout"
+            metrics.response_time = time.time() - start_time
+        except Exception as e:
+            metrics.status = "error"
+            metrics.last_error = str(e)
+            metrics.response_time = time.time() - start_time
+            
+        # Calculate health score
+        metrics.health_score = self.calculate_health_score(metrics)
+        
+        return metrics
+    
     async def check_component_comprehensive(self, comp_name: str, comp_info: ComponentInfo) -> ComponentMetrics:
         """Comprehensive component health check"""
         start_time = time.time()
@@ -537,20 +605,26 @@ class EnhancedStatusChecker:
     async def check_all_components_comprehensive(self, show_progress: bool = True) -> Tuple[List[ComponentMetrics], SystemMetrics]:
         """Check all components with comprehensive metrics"""
         components = self.config.get_all_components()
+        
+        # Add UI DevTools to the count
+        total_count = len(components) + 1  # +1 for UI DevTools
 
         if show_progress:
             mode_str = " (quick mode)" if self.quick_mode else ""
             timeout_str = f" with {self.timeout}s timeout" if self.timeout != 2.0 else ""
-            print(f"🔍 Checking {len(components)} components{mode_str}{timeout_str}...")
+            print(f"🔍 Checking {total_count} components{mode_str}{timeout_str}...")
 
         # Check all components in parallel with progress updates
         tasks = [
             asyncio.create_task(self.check_component_comprehensive(comp_name, comp_info))
             for comp_name, comp_info in components.items()
         ]
+        
+        # Add UI DevTools check
+        tasks.append(asyncio.create_task(self.check_ui_devtools_status()))
 
         if show_progress:
-            print(f"  📋 Checking all {len(components)} components in parallel", end="", flush=True)
+            print(f"  📋 Checking all {total_count} components in parallel", end="", flush=True)
 
             # Show progress dots as components complete
             done_tasks = []
@@ -644,12 +718,17 @@ class EnhancedStatusChecker:
             # Registration status
             if metrics.name.lower() == "hermes":
                 reg_symbol = "♻️"  # Hermes recycles itself
+            elif metrics.name == "ui_dev_tools":
+                reg_symbol = "🛠️"  # UI DevTools uses wrench icon
             else:
                 reg_symbol = "✅" if metrics.registered_with_hermes else "❌"
             
             # Component name from config
-            comp_info = self.config.get_component(metrics.name)
-            display_name = comp_info.name if comp_info else metrics.name.title()
+            if metrics.name == "ui_dev_tools":
+                display_name = "UI DevTools"
+            else:
+                comp_info = self.config.get_component(metrics.name)
+                display_name = comp_info.name if comp_info else metrics.name.title()
             
             row = [
                 display_name,
@@ -700,6 +779,8 @@ class EnhancedStatusChecker:
             # Registration status
             if metrics.name.lower() == "hermes":
                 reg_symbol = "♻️"  # Hermes recycles itself
+            elif metrics.name == "ui_dev_tools":
+                reg_symbol = "🛠️"  # UI DevTools uses wrench icon
             else:
                 reg_symbol = "✅" if metrics.registered_with_hermes else "❌"
             
@@ -712,8 +793,11 @@ class EnhancedStatusChecker:
                 capabilities_str += f" +{len(metrics.capabilities) - 3}"
             
             # Component name from config
-            comp_info = self.config.get_component(metrics.name)
-            display_name = comp_info.name if comp_info else metrics.name.title()
+            if metrics.name == "ui_dev_tools":
+                display_name = "UI DevTools"
+            else:
+                comp_info = self.config.get_component(metrics.name)
+                display_name = comp_info.name if comp_info else metrics.name.title()
             
             row = [
                 display_name,
@@ -745,8 +829,11 @@ class EnhancedStatusChecker:
                 
             recent_logs = self.get_recent_logs(metrics.name, lines)
             if recent_logs:
-                comp_info = self.config.get_component(metrics.name)
-                display_name = comp_info.name if comp_info else metrics.name.title()
+                if metrics.name == "ui_dev_tools":
+                    display_name = "UI DevTools"
+                else:
+                    comp_info = self.config.get_component(metrics.name)
+                    display_name = comp_info.name if comp_info else metrics.name.title()
                 output.append(f"\n{display_name} (last {lines} lines):")
                 for log_line in recent_logs:
                     # Truncate long lines
@@ -787,6 +874,8 @@ class EnhancedStatusChecker:
             # Registration status
             if metrics.name.lower() == "hermes":
                 reg_symbol = "♻️"  # Hermes recycles itself
+            elif metrics.name == "ui_dev_tools":
+                reg_symbol = "🛠️"  # UI DevTools uses wrench icon
             else:
                 reg_symbol = "✅" if metrics.registered_with_hermes else "❌"
             
@@ -799,8 +888,11 @@ class EnhancedStatusChecker:
                 process_str = "-"
                 
             # Component name from config
-            comp_info = self.config.get_component(metrics.name)
-            display_name = comp_info.name if comp_info else metrics.name.upper()
+            if metrics.name == "ui_dev_tools":
+                display_name = "UI DevTools"
+            else:
+                comp_info = self.config.get_component(metrics.name)
+                display_name = comp_info.name if comp_info else metrics.name.upper()
             
             row = [
                 display_name,
@@ -919,11 +1011,18 @@ async def main():
                 # Check specific components
                 component_metrics = []
                 for component_name in components_to_check:
+                    # Special handling for ui-dev-tools
+                    if component_name in ["ui_dev_tools", "ui-dev-tools", "ui-devtools", "ui_devtools"]:
+                        metrics = await checker.check_ui_devtools_status()
+                        component_metrics.append(metrics)
+                        continue
+                        
                     comp_info = checker.config.get_component(component_name)
                     
                     if not comp_info:
                         print(f"❌ Unknown component: {component_name}")
                         available = list(checker.config.get_all_components().keys())
+                        available.append("ui-dev-tools")
                         print(f"Available: {', '.join(sorted(available))}")
                         continue
                         

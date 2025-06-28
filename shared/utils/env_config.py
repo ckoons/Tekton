@@ -434,6 +434,7 @@ class TektonConfig(BaseModel):
     # Feature flags
     mcp_enabled: bool = True
     notifications_enabled: bool = True
+    register_ai: bool = True
     
     @classmethod
     def from_env(cls) -> 'TektonConfig':
@@ -447,7 +448,8 @@ class TektonConfig(BaseModel):
             theme_mode=cls._get_env_value('TEKTON_THEME_MODE', 'dark', 'str'),
             theme_color=cls._get_env_value('TEKTON_THEME_COLOR', 'blue', 'str'),
             mcp_enabled=cls._get_env_value('TEKTON_MCP_ENABLED', True, 'bool'),
-            notifications_enabled=cls._get_env_value('TEKTON_NOTIFICATIONS_ENABLED', True, 'bool')
+            notifications_enabled=cls._get_env_value('TEKTON_NOTIFICATIONS_ENABLED', True, 'bool'),
+            register_ai=cls._get_env_value('TEKTON_REGISTER_AI', True, 'bool')
         )
     
     @classmethod

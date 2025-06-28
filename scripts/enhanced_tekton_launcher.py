@@ -59,6 +59,7 @@ tekton_root = find_tekton_root()
 sys.path.insert(0, tekton_root)
 
 from tekton.utils.component_config import get_component_config
+from shared.utils.env_config import get_component_config as get_env_config
 from tekton.utils.port_config import get_component_port
 from landmarks import architecture_decision, performance_boundary, integration_point, danger_zone
 
@@ -619,6 +620,11 @@ class EnhancedComponentLauncher:
                     "log",
                     component_name
                 )
+                
+                # Launch AI if enabled (check Tekton config, not OS environ)
+                env_config = get_env_config()
+                if env_config.tekton.register_ai:
+                    await self.launch_component_ai(component_name)
             else:
                 result.state = ComponentState.UNHEALTHY
                 result.message = f"Launched but failed health check within {timeout}s"
@@ -1021,6 +1027,54 @@ class EnhancedComponentLauncher:
                 
         return dict(sorted(groups.items()))
     
+    async def launch_component_ai(self, component_name: str):
+        """Launch AI specialist for a component if configured"""
+        try:
+            # Check if component is excluded from AI support
+            if component_name.lower() in ['ui_dev_tools', 'ui-dev-tools', 'ui_devtools']:
+                self.log(f"Component does not support AI specialists", "info", component_name)
+                return
+            
+            self.log(f"AI support enabled, checking AI configuration...", "info", component_name)
+            
+            # Use the AI launcher script
+            cmd = [
+                sys.executable,
+                os.path.join(self.tekton_root, 'scripts', 'enhanced_tekton_ai_launcher.py'),
+                component_name,
+                '-v',  # Verbose for better logging
+                '--no-cleanup'  # Don't kill the AI when script exits
+            ]
+            
+            self.log(f"Launching AI specialist...", "launch", component_name)
+            
+            # Run the AI launcher and capture output
+            process = await asyncio.create_subprocess_exec(
+                *cmd,
+                stdout=asyncio.subprocess.PIPE,
+                stderr=asyncio.subprocess.STDOUT  # Combine stdout and stderr
+            )
+            
+            # Wait for it to complete and get output
+            stdout, _ = await process.communicate()
+            output = stdout.decode() if stdout else ""
+            
+            if process.returncode == 0:
+                if "Successfully launched" in output:
+                    self.log(f"AI specialist launched successfully", "success", component_name)
+                elif "already running" in output:
+                    self.log(f"AI specialist already running", "info", component_name)
+                else:
+                    self.log(f"AI launch completed (check ai_status for details)", "info", component_name)
+            else:
+                # Extract error message from output
+                error_lines = [line for line in output.split('\n') if 'error' in line.lower() or 'failed' in line.lower()]
+                error_msg = error_lines[0] if error_lines else "Check logs for details"
+                self.log(f"AI launch failed: {error_msg}", "warning", component_name)
+                
+        except Exception as e:
+            self.log(f"AI launch error: {str(e)}", "error", component_name)
+    
     def start_health_monitoring(self, interval: int = 30):
         """Start continuous health monitoring"""
         async def monitor():
@@ -1090,6 +1144,16 @@ async def main():
         action="store_true",
         help="Launch with full development environment (includes UI DevTools MCP)"
     )
+    parser.add_argument(
+        "--ai",
+        nargs='*',
+        help="Launch only AI specialists for components (optionally specify which)"
+    )
+    parser.add_argument(
+        "--no-ai",
+        action="store_true",
+        help="Disable AI launching even if TEKTON_REGISTER_AI is set"
+    )
     
     args = parser.parse_args()
     
@@ -1133,6 +1197,36 @@ async def main():
                 if cleared_count > 0:
                     print(f"✅ Cleared {cleared_count} log files for components being launched")
             
+        # Handle AI-only mode
+        if args.ai is not None:
+            # Launch only AI specialists
+            if args.ai == []:  # --ai with no arguments means all AIs
+                ai_components = components
+            else:
+                ai_components = [c.strip().lower() for c in args.ai]
+            
+            # Use the AI launcher directly
+            ai_cmd = [
+                sys.executable,
+                os.path.join(tekton_root, 'scripts', 'enhanced_tekton_ai_launcher.py')
+            ] + ai_components
+            
+            launcher.log(f"Launching AI specialists only: {', '.join(ai_components)}", "info")
+            
+            process = await asyncio.create_subprocess_exec(
+                *ai_cmd,
+                stdout=None,
+                stderr=None
+            )
+            
+            await process.wait()
+            return
+        
+        # Handle --no-ai flag
+        if args.no_ai:
+            os.environ['TEKTON_REGISTER_AI'] = 'false'
+            launcher.log("AI launching disabled by --no-ai flag", "info")
+        
         if not components:
             launcher.log("No components selected", "warning")
             return

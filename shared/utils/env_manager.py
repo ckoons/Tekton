@@ -125,17 +125,17 @@ class TektonEnvManager:
         
         # Always set TEKTON_ROOT to the detected Tekton root
         os.environ['TEKTON_ROOT'] = str(self.tekton_root.absolute())
-        logger.info(f"Set TEKTON_ROOT to: {os.environ['TEKTON_ROOT']}")
+        logger.debug(f"Set TEKTON_ROOT to: {os.environ['TEKTON_ROOT']}")
         
         # Set TEKTON_LOG_DIR if not already set
         if 'TEKTON_LOG_DIR' not in os.environ:
             os.environ['TEKTON_LOG_DIR'] = os.path.join(os.environ['TEKTON_ROOT'], '.tekton', 'logs')
-            logger.info(f"Set TEKTON_LOG_DIR to: {os.environ['TEKTON_LOG_DIR']}")
+            logger.debug(f"Set TEKTON_LOG_DIR to: {os.environ['TEKTON_LOG_DIR']}")
         
         # Set TEKTON_DATA_DIR if not already set
         if 'TEKTON_DATA_DIR' not in os.environ:
             os.environ['TEKTON_DATA_DIR'] = os.path.join(os.environ['TEKTON_ROOT'], '.tekton', 'data')
-            logger.info(f"Set TEKTON_DATA_DIR to: {os.environ['TEKTON_DATA_DIR']}")
+            logger.debug(f"Set TEKTON_DATA_DIR to: {os.environ['TEKTON_DATA_DIR']}")
         
         # Load files in priority order (later files override earlier ones)
         env_files = [
@@ -164,9 +164,9 @@ class TektonEnvManager:
         self._loaded_env = dict(os.environ)
         
         if loaded_files:
-            logger.info(f"Loaded environment from: {', '.join(loaded_files)}")
+            logger.debug(f"Loaded environment from: {', '.join(loaded_files)}")
         else:
-            logger.info("No environment files found, using system environment only")
+            logger.debug("No environment files found, using system environment only")
         
         return dict(os.environ)
     

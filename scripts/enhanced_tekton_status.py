@@ -53,6 +53,8 @@ tekton_root = find_tekton_root()
 sys.path.insert(0, tekton_root)
 
 from tekton.utils.component_config import get_component_config, ComponentInfo
+from shared.utils.env_config import get_component_config as get_env_config
+from shared.ai.registry_client import AIRegistryClient
 
 
 @dataclass
@@ -76,6 +78,8 @@ class ComponentMetrics:
     dependencies_healthy: bool
     ready: bool = False  # From /ready endpoint
     capabilities: List[str] = None  # Component capabilities
+    ai_status: Optional[str] = None  # AI model name or None
+    ai_health: Optional[str] = None  # green/yellow/red/none
     
     def __post_init__(self):
         if self.capabilities is None:
@@ -210,6 +214,32 @@ class EnhancedStatusChecker:
         self.session = None
         self.timeout = timeout
         self.quick_mode = quick_mode
+        self.ai_registry = AIRegistryClient()
+        self.model_display_names = self._load_model_display_names()
+    
+    def _load_model_display_names(self) -> Dict[str, str]:
+        """Load model display names from config."""
+        config_path = os.path.join(tekton_root, 'config', 'ai_model_display_names.json')
+        try:
+            with open(config_path, 'r') as f:
+                data = json.load(f)
+                return data.get('model_display_names', {})
+        except Exception:
+            return {}
+    
+    def _get_display_model_name(self, model: str) -> str:
+        """Get display name for a model."""
+        if not model:
+            return "None"
+        # Check mapping first
+        if model in self.model_display_names:
+            return self.model_display_names[model]
+        # Clean up raw model name
+        if ':' in model:
+            # Ollama format: llama3:70b -> Llama3 70B
+            base, variant = model.split(':', 1)
+            return f"{base.title()} {variant.upper()}"
+        return model
         
     async def __aenter__(self):
         """Async context manager entry"""
@@ -370,11 +400,65 @@ class EnhancedStatusChecker:
                 
             # Get capabilities
             metrics.capabilities = await self.get_component_capabilities(comp_name, comp_info.port)
+        
+        # Check AI status
+        ai_info = await self.check_ai_status(comp_name)
+        metrics.ai_status = ai_info['model']
+        metrics.ai_health = ai_info['health']
             
         # Calculate health score
         metrics.health_score = self.calculate_health_score(metrics)
         
         return metrics
+    
+    async def check_ai_status(self, component_name: str) -> Dict[str, str]:
+        """Check AI status for a component."""
+        # Check if AI is enabled globally from Tekton config
+        env_config = get_env_config()
+        if not env_config.tekton.register_ai:
+            return {'model': None, 'health': 'none'}
+        
+        # Check for AI registered for this component
+        ai_id = f"{component_name.lower()}-ai"
+        ai_registry = self.ai_registry.list_platform_ais()
+        
+        if ai_id not in ai_registry:
+            return {'model': None, 'health': 'none'}
+        
+        # Get AI info
+        socket_info = self.ai_registry.get_ai_socket(ai_id)
+        if not socket_info:
+            return {'model': 'Unknown', 'health': 'red'}
+        
+        # Try to get model info
+        try:
+            reader, writer = await asyncio.wait_for(
+                asyncio.open_connection(socket_info[0], socket_info[1]),
+                timeout=1.0
+            )
+            
+            # Send info request
+            writer.write(b'{"type": "info"}\n')
+            await writer.drain()
+            
+            # Get response
+            response = await asyncio.wait_for(reader.readline(), timeout=1.0)
+            
+            writer.close()
+            await writer.wait_closed()
+            
+            if response:
+                data = json.loads(response.decode())
+                model = data.get('model_name', 'Unknown')
+                display_model = self._get_display_model_name(model)
+                return {'model': display_model, 'health': 'green'}
+            else:
+                return {'model': 'Unknown', 'health': 'yellow'}
+                
+        except asyncio.TimeoutError:
+            return {'model': 'Unknown', 'health': 'yellow'}
+        except Exception:
+            return {'model': 'Unknown', 'health': 'red'}
         
     async def check_health_endpoint(self, port: int) -> Dict[str, Any]:
         """Check the /health endpoint"""
@@ -703,14 +787,11 @@ class EnhancedStatusChecker:
             }
             status_display = f"{status_symbols.get(metrics.status, '❓')} {metrics.status}"
             
-            # Health score with color coding
-            score = metrics.health_score
-            if score >= 80:
-                score_display = f"🟢 {score:.0f}"
-            elif score >= 60:
-                score_display = f"🟡 {score:.0f}"
+            # AI status - just the model name, no emoji
+            if metrics.ai_status:
+                ai_display = metrics.ai_status
             else:
-                score_display = f"🔴 {score:.0f}"
+                ai_display = "None"
                 
             # Response time
             response_str = f"{metrics.response_time:.3f}s" if metrics.response_time else "-"
@@ -735,17 +816,17 @@ class EnhancedStatusChecker:
                 metrics.port,
                 status_display,
                 metrics.version,
-                score_display,
+                ai_display,
                 response_str,
                 reg_symbol
             ]
             
             table_data.append(row)
             
-        # Sort by health score (descending)
-        table_data.sort(key=lambda x: float(x[4].split()[-1]), reverse=True)
+        # Sort by port number
+        table_data.sort(key=lambda x: x[1])
         
-        headers = ["Component", "Port", "Status", "Version", "Health", "Response", "Reg"]
+        headers = ["Component", "Port", "Status", "Version", "AI Status", "Response", "Reg"]
         return tabulate(table_data, headers=headers, tablefmt="fancy_grid")
         
     def format_full_table(self, component_metrics: List[ComponentMetrics]) -> str:
@@ -764,14 +845,11 @@ class EnhancedStatusChecker:
             }
             status_display = f"{status_symbols.get(metrics.status, '❓')} {metrics.status}"
             
-            # Health score with color coding
-            score = metrics.health_score
-            if score >= 80:
-                score_display = f"🟢 {score:.0f}"
-            elif score >= 60:
-                score_display = f"🟡 {score:.0f}"
+            # AI status - just the model name, no emoji
+            if metrics.ai_status:
+                ai_display = metrics.ai_status
             else:
-                score_display = f"🔴 {score:.0f}"
+                ai_display = "None"
                 
             # Response time
             response_str = f"{metrics.response_time:.3f}s" if metrics.response_time else "-"
@@ -783,9 +861,6 @@ class EnhancedStatusChecker:
                 reg_symbol = "🛠️"  # UI DevTools uses wrench icon
             else:
                 reg_symbol = "✅" if metrics.registered_with_hermes else "❌"
-            
-            # Ready status
-            ready_str = "✅ Yes" if metrics.ready else "❌ No"
             
             # Capabilities
             capabilities_str = ", ".join(metrics.capabilities[:3])  # Show first 3
@@ -804,19 +879,19 @@ class EnhancedStatusChecker:
                 metrics.port,
                 status_display,
                 metrics.version,
-                score_display,
+                ai_display,
                 response_str,
                 reg_symbol,
-                ready_str,
                 capabilities_str or "-"
             ]
             
             table_data.append(row)
             
-        # Sort by health score (descending)
-        table_data.sort(key=lambda x: float(x[4].split()[-1]), reverse=True)
+        # Sort by status (healthy first)
+        status_order = {"healthy": 0, "unhealthy": 1, "error": 2, "timeout": 3, "not_running": 4}
+        table_data.sort(key=lambda x: status_order.get(x[2].split()[-1], 5))
         
-        headers = ["Component", "Port", "Status", "Version", "Health", "Response", "Reg", "Ready", "Capabilities"]
+        headers = ["Component", "Port", "Status", "Version", "AI Model", "Response", "Reg", "Capabilities"]
         return tabulate(table_data, headers=headers, tablefmt="fancy_grid")
     
     def format_log_output(self, component_metrics: List[ComponentMetrics], lines: int = 5) -> str:
@@ -1073,7 +1148,8 @@ async def main():
                     else:
                         print(f"\n{checker.format_default_table(component_metrics)}")
                         
-                    print(f"\n{checker.format_system_summary(system_metrics)}")
+                    # Skip system summary per Casey's request
+                    # print(f"\n{checker.format_system_summary(system_metrics)}")
                     
                     # Add logs if requested
                     if args.log:

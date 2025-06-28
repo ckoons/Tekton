@@ -60,6 +60,7 @@ sys.path.insert(0, tekton_root)
 
 from tekton.utils.component_config import get_component_config
 from tekton.utils.port_config import get_component_port
+from landmarks import architecture_decision, performance_boundary, integration_point, danger_zone
 
 
 class ComponentState(Enum):
@@ -162,6 +163,18 @@ class LogReader(threading.Thread):
             self.running = False
 
 
+@architecture_decision(
+    title="Enhanced component launcher",
+    rationale="Centralized launcher with health monitoring, auto-recovery, and proper logging for all Tekton components",
+    alternatives_considered=["Manual component startup", "systemd services", "Docker Compose"],
+    decided_by="team"
+)
+@integration_point(
+    title="Component startup orchestration",
+    target_component="All Tekton components",
+    protocol="Process management",
+    data_flow="Launcher → Component processes → Health checks → Logs"
+)
 class EnhancedComponentLauncher:
     """Advanced component launcher with monitoring and recovery"""
     
@@ -220,6 +233,13 @@ class EnhancedComponentLauncher:
         """Get the log file path for a component"""
         return os.path.join(self.log_dir, f"{component_name}.log")
         
+    @danger_zone(
+        title="Health check retry logic",
+        risk_level="medium",
+        risks=["false_positives", "startup_delays"],
+        mitigation="Multiple endpoint attempts with exponential backoff",
+        review_required=True
+    )
     async def enhanced_health_check(self, component_name: str, port: int) -> HealthCheckResult:
         """Enhanced health check with multiple endpoints and retries"""
         start_time = time.time()
@@ -355,12 +375,176 @@ class EnhancedComponentLauncher:
             return False  # Port is free
         except OSError:
             return True  # Port is in use
+    
+    async def launch_ui_devtools_mcp(self) -> LaunchResult:
+        """Launch the UI DevTools MCP server"""
+        launch_start = time.time()
+        port = 8088
+        
+        # Check if already running
+        if not self.check_port_available(port):
+            health = await self.enhanced_health_check("ui_dev_tools", port)
+            if health.healthy:
+                self.log(f"Already running and healthy", "success", "ui_dev_tools")
+                result = LaunchResult(
+                    component_name="ui_dev_tools",
+                    success=True,
+                    state=ComponentState.HEALTHY,
+                    port=port,
+                    message=f"Already running on port {port}",
+                    startup_time=0,
+                    health_check_time=health.response_time,
+                    log_file=self.get_log_file_path("ui_dev_tools")
+                )
+                # Register with monitoring so it counts as successful
+                self.launched_components["ui_dev_tools"] = result
+                return result
+            else:
+                # Kill unhealthy process
+                self.log(f"Killing unhealthy process on port {port}", "warning", "ui_dev_tools")
+                if not self.kill_port_process(port):
+                    return LaunchResult(
+                        component_name="ui_dev_tools",
+                        success=False,
+                        state=ComponentState.FAILED,
+                        message=f"Could not free port {port}",
+                        startup_time=time.time() - launch_start
+                    )
+                await asyncio.sleep(2)
+        
+        # Get the run script path
+        hephaestus_dir = os.path.join(self.tekton_root, "Hephaestus")
+        run_script = os.path.join(hephaestus_dir, "run_mcp.sh")
+        
+        if not os.path.exists(run_script):
+            return LaunchResult(
+                component_name="ui_dev_tools",
+                success=False,
+                state=ComponentState.FAILED,
+                message=f"Run script not found: {run_script}",
+                startup_time=time.time() - launch_start
+            )
+        
+        # Set environment variables
+        env = os.environ.copy()
+        env["UI_DEV_TOOLS_PORT"] = str(port)
+        
+        # Add Tekton root to PYTHONPATH
+        current_pythonpath = env.get('PYTHONPATH', '')
+        if current_pythonpath:
+            env['PYTHONPATH'] = f"{self.tekton_root}:{current_pythonpath}"
+        else:
+            env['PYTHONPATH'] = self.tekton_root
+        
+        # Open log file
+        log_file_path = self.get_log_file_path("ui_dev_tools")
+        log_file = open(log_file_path, 'a')
+        
+        # Write launch header to log
+        log_file.write(f"\n{'='*60}\n")
+        log_file.write(f"Component: ui_dev_tools\n")
+        log_file.write(f"Started: {datetime.now()}\n")
+        log_file.write(f"Command: bash {run_script}\n")
+        log_file.write(f"Directory: {hephaestus_dir}\n")
+        log_file.write(f"Port: {port}\n")
+        log_file.write(f"{'='*60}\n\n")
+        log_file.flush()
+        
+        # Launch the MCP server
+        if self.verbose:
+            self.log(f"Executing: bash {run_script}", "launch", "ui_dev_tools")
+        
+        # Use subprocess.Popen with PIPE to capture output
+        if platform.system() == "Windows":
+            process = subprocess.Popen(
+                ["bash", run_script],
+                cwd=hephaestus_dir,
+                env=env,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                creationflags=subprocess.CREATE_NEW_PROCESS_GROUP
+            )
+        else:
+            process = subprocess.Popen(
+                ["bash", run_script],
+                cwd=hephaestus_dir,
+                env=env,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                preexec_fn=os.setsid
+            )
+        
+        # Start log reader threads
+        stdout_reader = LogReader(process.stdout, log_file, "ui_dev_tools", "stdout")
+        stderr_reader = LogReader(process.stderr, log_file, "ui_dev_tools", "stderr")
+        stdout_reader.start()
+        stderr_reader.start()
+        
+        # Keep track of readers for cleanup
+        self.log_readers.extend([stdout_reader, stderr_reader])
+        
+        # Check if process started successfully
+        await asyncio.sleep(1)
+        if process.poll() is not None:
+            # Process exited immediately
+            stdout_reader.join(timeout=1)
+            stderr_reader.join(timeout=1)
+            
+            # Read last few lines from log file for error message
+            log_file.close()
+            with open(log_file_path, 'r') as f:
+                lines = f.readlines()
+                error_lines = lines[-10:] if len(lines) > 10 else lines
+                error_msg = ''.join(error_lines)
+            
+            return LaunchResult(
+                component_name="ui_dev_tools",
+                success=False,
+                state=ComponentState.FAILED,
+                message=f"Process exited immediately: {error_msg[-200:]}",
+                error=error_msg[-500:],
+                log_file=log_file_path
+            )
+        
+        # Wait for it to become healthy
+        self.log(f"Waiting for health check...", "info", "ui_dev_tools")
+        health_start = time.time()
+        
+        if await self.wait_for_healthy("ui_dev_tools", port, timeout=10):
+            final_health = await self.enhanced_health_check("ui_dev_tools", port)
+            return LaunchResult(
+                component_name="ui_dev_tools",
+                success=True,
+                state=ComponentState.HEALTHY,
+                pid=process.pid,
+                port=port,
+                message=f"Successfully launched and healthy on port {port}",
+                startup_time=time.time() - launch_start,
+                health_check_time=time.time() - health_start,
+                log_file=log_file_path
+            )
+        else:
+            return LaunchResult(
+                component_name="ui_dev_tools",
+                success=False,
+                state=ComponentState.UNHEALTHY,
+                pid=process.pid,
+                port=port,
+                message=f"Launched but failed health check",
+                error="Health check timeout",
+                startup_time=time.time() - launch_start,
+                log_file=log_file_path
+            )
         
     async def enhanced_launch_component(self, component_name: str) -> LaunchResult:
         """Enhanced component launch with detailed monitoring"""
         launch_start = time.time()
         
         try:
+            # Special handling for UI DevTools MCP
+            if component_name == "ui_dev_tools":
+                return await self.launch_ui_devtools_mcp()
+            
             comp_info = self.config.get_component(component_name)
             if not comp_info:
                 return LaunchResult(
@@ -378,7 +562,7 @@ class EnhancedComponentLauncher:
                 health = await self.enhanced_health_check(component_name, port)
                 if health.healthy:
                     self.log(f"Already running and healthy", "success", component_name)
-                    return LaunchResult(
+                    result = LaunchResult(
                         component_name=component_name,
                         success=True,
                         state=ComponentState.HEALTHY,
@@ -388,6 +572,9 @@ class EnhancedComponentLauncher:
                         health_check_time=health.response_time,
                         log_file=self.get_log_file_path(component_name)
                     )
+                    # Register with monitoring so it counts as successful
+                    self.launched_components[component_name] = result
+                    return result
                 else:
                     # Kill unhealthy process
                     self.log(f"Killing unhealthy process on port {port}", "warning", component_name)
@@ -795,6 +982,12 @@ class EnhancedComponentLauncher:
         if enable_monitoring:
             self.start_health_monitoring()
             
+    @performance_boundary(
+        title="Component startup orchestration",
+        sla="<30s for full stack startup",
+        metrics={"hermes": "2s", "engram": "3s", "rhetor": "5s", "others": "2-5s each"},
+        optimization_notes="Parallel launch within priority groups, sequential between groups"
+    )
     def get_launch_groups(self, components: List[str]) -> Dict[int, List[str]]:
         """Group components by startup priority with dependency hierarchy:
         Hermes → Engram → Rhetor → Everything else
@@ -803,12 +996,19 @@ class EnhancedComponentLauncher:
         
         # Define explicit priority hierarchy
         priority_map = {
-            "hermes": 1,    # First - message bus
-            "engram": 2,    # Second - memory system
-            "rhetor": 3,    # Third - AI whisperer
+            "hermes": 1,        # First - message bus
+            "engram": 2,        # Second - memory system
+            "rhetor": 3,        # Third - AI whisperer
+            "ui_dev_tools": 5,  # After Hephaestus (priority 4)
         }
         
         for comp_name in components:
+            # Special handling for ui_dev_tools which isn't in component config
+            if comp_name == "ui_dev_tools":
+                priority = priority_map.get(comp_name, 5)
+                groups[priority].append(comp_name)
+                continue
+                
             comp_info = self.config.get_component(comp_name)
             if comp_info:
                 # Use explicit priority if defined, otherwise use priority 4 (everything else)
@@ -885,6 +1085,11 @@ async def main():
         action="store_true",
         help="Preserve existing log files (default: delete logs on startup)"
     )
+    parser.add_argument(
+        "--full", "-f",
+        action="store_true",
+        help="Launch with full development environment (includes UI DevTools MCP)"
+    )
     
     args = parser.parse_args()
     
@@ -896,14 +1101,20 @@ async def main():
         # Determine components to launch
         if args.launch_all:
             components = list(launcher.config.get_all_components().keys())
+            if args.full:
+                components.append("ui_dev_tools")
         elif args.components:
             if args.components.lower() == 'all':
                 components = list(launcher.config.get_all_components().keys())
+                if args.full:
+                    components.append("ui_dev_tools")
             else:
                 components = [c.strip().lower().replace("-", "_")
                              for c in args.components.split(",")]
         else:
             components = list(launcher.config.get_all_components().keys())
+            if args.full:
+                components.append("ui_dev_tools")
         
         # Delete logs only for components we're launching (unless --save-logs is specified)
         if not args.save_logs:
