@@ -1,3 +1,9 @@
+# @tekton-module: Base AI Specialist Worker framework
+# @tekton-depends: asyncio, httpx, json, socket
+# @tekton-provides: ai-specialist-base, socket-server, llm-integration
+# @tekton-version: 1.0.0
+# @tekton-critical: true
+
 """
 Base AI Specialist Worker class for Tekton AI specialists.
 
@@ -16,9 +22,66 @@ from typing import Dict, Any, Optional, Callable
 from abc import ABC, abstractmethod
 import socket
 
-logger = logging.getLogger(__name__)
+# Import landmarks for architectural documentation
+try:
+    from landmarks import (
+        architecture_decision,
+        performance_boundary,
+        api_contract,
+        integration_point,
+        state_checkpoint
+    )
+except ImportError:
+    # If landmarks not available, create no-op decorators
+    def architecture_decision(**kwargs):
+        def decorator(func):
+            return func
+        return decorator
+    
+    def performance_boundary(**kwargs):
+        def decorator(func):
+            return func
+        return decorator
+    
+    def api_contract(**kwargs):
+        def decorator(func):
+            return func
+        return decorator
+    
+    def integration_point(**kwargs):
+        def decorator(func):
+            return func
+        return decorator
+    
+    def state_checkpoint(**kwargs):
+        def decorator(func):
+            return func
+        return decorator
+
+# Import debug utilities
+try:
+    from shared.utils.debug_utils import create_component_logger
+    logger = create_component_logger('ai_specialist')
+except ImportError:
+    logger = logging.getLogger(__name__)
 
 
+# @tekton-class: Abstract base for AI specialists
+# @tekton-singleton: false
+# @tekton-lifecycle: worker
+# @tekton-abstract: true
+@architecture_decision(
+    title="AI Specialist Worker Pattern",
+    rationale="Provide common framework for all AI specialists with socket communication and LLM integration",
+    alternatives_considered=["Direct HTTP APIs", "gRPC services", "Message queues"],
+    impacts=["consistency", "code_reuse", "socket_overhead"]
+)
+@integration_point(
+    title="LLM Provider Integration",
+    target_component="Ollama/Anthropic",
+    protocol="HTTP REST",
+    data_flow="Prompt/response cycles"
+)
 class AISpecialistWorker(ABC):
     """Base class for AI specialist workers."""
     
@@ -115,6 +178,14 @@ class AISpecialistWorker(ABC):
             'port': self.port
         }
     
+    # @tekton-method: Handle chat messages via LLM
+    # @tekton-async: true
+    # @tekton-delegates-to: ollama, anthropic
+    @performance_boundary(
+        title="LLM Chat Processing",
+        sla="<30s response time",
+        optimization_notes="Timeout handling, streaming support planned"
+    )
     async def _handle_chat(self, message: Dict[str, Any]) -> Dict[str, Any]:
         """Handle chat message - delegates to LLM."""
         try:
@@ -199,11 +270,23 @@ class AISpecialistWorker(ABC):
         except Exception as e:
             return f"Rhetor connection error: {e}"
     
+    # @tekton-method: Handle socket client connections
+    # @tekton-async: true
+    # @tekton-socket-handler: true
+    # @tekton-concurrent: true
+    @api_contract(
+        title="Socket Message Protocol",
+        endpoint="socket://{port}",
+        method="SOCKET",
+        request_schema={"type": "string", "content": "any"},
+        response_schema={"type": "string", "ai_id": "string", "content": "any"}
+    )
     async def handle_client(self, reader: asyncio.StreamReader, 
                           writer: asyncio.StreamWriter):
         """Handle client connection."""
         client_addr = writer.get_extra_info('peername')
         self.logger.info(f"Client connected: {client_addr}")
+        self.logger.debug(f"Active clients: {len(self.clients) + 1}")
         self.clients.append(writer)
         
         try:
@@ -221,6 +304,7 @@ class AISpecialistWorker(ABC):
                     handler = self.handlers.get(msg_type, self.process_message)
                     
                     # Process message
+                    self.logger.debug(f"Processing message type: {msg_type}")
                     response = await handler(message)
                     
                     # Send response
@@ -242,6 +326,15 @@ class AISpecialistWorker(ABC):
             await writer.wait_closed()
             self.logger.info(f"Client disconnected: {client_addr}")
     
+    # @tekton-method: Start socket server
+    # @tekton-async: true
+    # @tekton-lifecycle: startup
+    @state_checkpoint(
+        title="AI Specialist Server State",
+        state_type="runtime",
+        persistence=False,
+        consistency_requirements="Socket bound to port"
+    )
     async def start(self):
         """Start the AI specialist server."""
         self.server = await asyncio.start_server(

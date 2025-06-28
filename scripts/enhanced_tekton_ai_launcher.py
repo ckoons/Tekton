@@ -1,4 +1,11 @@
 #!/usr/bin/env python3
+# @tekton-module: Enhanced AI Launcher for Tekton components
+# @tekton-depends: registry_client, env_config, subprocess
+# @tekton-provides: ai-lifecycle-management, ai-launching, ai-monitoring
+# @tekton-version: 2.0.0
+# @tekton-executable: true
+# @tekton-cli: true
+
 """
 Enhanced Tekton AI Launcher
 
@@ -14,6 +21,48 @@ import json
 from typing import List, Dict, Optional, Set, Any
 from pathlib import Path
 
+# Import landmarks
+try:
+    from landmarks import (
+        architecture_decision,
+        performance_boundary,
+        api_contract,
+        danger_zone,
+        integration_point,
+        state_checkpoint
+    )
+except ImportError:
+    # If landmarks not available, create no-op decorators
+    def architecture_decision(**kwargs):
+        def decorator(func):
+            return func
+        return decorator
+    
+    def performance_boundary(**kwargs):
+        def decorator(func):
+            return func
+        return decorator
+    
+    def api_contract(**kwargs):
+        def decorator(func):
+            return func
+        return decorator
+    
+    def danger_zone(**kwargs):
+        def decorator(func):
+            return func
+        return decorator
+    
+    def integration_point(**kwargs):
+        def decorator(func):
+            return func
+        return decorator
+    
+    def state_checkpoint(**kwargs):
+        def decorator(func):
+            return func
+        return decorator
+
 # Add Tekton root to path
 script_path = os.path.realpath(__file__)
 tekton_root = os.path.dirname(os.path.dirname(script_path))
@@ -23,10 +72,26 @@ from shared.ai.registry_client import AIRegistryClient
 from shared.utils.env_config import get_component_config
 from shared.utils.logging_setup import setup_component_logging
 
-# Components that should NOT have AI specialists
+# @tekton-constant: Components excluded from AI support
+# @tekton-rationale: These components don't benefit from AI assistance
 AI_EXCLUDED_COMPONENTS = {'ui_dev_tools', 'ui-dev-tools', 'ui_devtools'}
 
 
+# @tekton-class: Main AI launcher for managing specialist lifecycle
+# @tekton-singleton: false
+# @tekton-lifecycle: launcher
+@architecture_decision(
+    title="Centralized AI Launcher Architecture",
+    rationale="Single launcher manages all AI specialists for consistency and resource control",
+    alternatives_considered=["Component-embedded AIs", "Distributed launchers"],
+    impacts=["centralized_control", "launch_performance", "monitoring_capability"]
+)
+@state_checkpoint(
+    title="AI Process State Tracking",
+    state_type="runtime",
+    persistence=False,
+    consistency_requirements="Process handles and registry sync"
+)
 class AILauncher:
     """Manages AI specialist launching."""
     
@@ -100,6 +165,21 @@ class AILauncher:
             'component_config': comp_config
         }
         
+    # @tekton-method: Launch AI specialist for component
+    # @tekton-async: true
+    # @tekton-critical: true
+    # @tekton-side-effects: process-creation, port-allocation
+    @performance_boundary(
+        title="AI Launch Sequence",
+        sla="<30s for AI readiness",
+        optimization_notes="Parallel launch support, readiness checking"
+    )
+    @integration_point(
+        title="AI Process Launch",
+        target_component="AI specialists",
+        protocol="subprocess + socket",
+        data_flow="Launch parameters, readiness verification"
+    )
     async def launch_ai(self, component: str) -> bool:
         """
         Launch AI specialist for a component.
@@ -148,6 +228,7 @@ class AILauncher:
                 cmd.append('--verbose')
             
             self.logger.info(f"Launching {ai_id} on port {ai_port}")
+            self.logger.debug(f"Launch command: {' '.join(cmd)}")
             
             process = subprocess.Popen(
                 cmd,
@@ -175,6 +256,7 @@ class AILauncher:
                 return True
             elif await self.registry_client.wait_for_ai(ai_id, timeout=30):
                 self.logger.info(f"Successfully launched {ai_id}")
+                self.logger.debug(f"AI {ai_id} ready - PID: {process.pid}")
                 return True
             else:
                 self.logger.error(f"AI {ai_id} failed to become ready")
@@ -185,6 +267,15 @@ class AILauncher:
             self.logger.error(f"Failed to launch {ai_id}: {e}")
             return False
     
+    # @tekton-method: Kill AI specialist process
+    # @tekton-critical: true
+    # @tekton-cleanup: true
+    @danger_zone(
+        title="AI Process Termination",
+        risk_level="medium",
+        risks=["Orphaned processes", "Registry inconsistency"],
+        mitigation="Graceful termination with timeout and force kill"
+    )
     def kill_ai(self, ai_id: str) -> bool:
         """Kill a specific AI specialist."""
         # Deregister from registry

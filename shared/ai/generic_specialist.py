@@ -1,3 +1,9 @@
+# @tekton-module: Generic AI Specialist implementation
+# @tekton-depends: specialist_worker, logging_setup
+# @tekton-provides: component-ai-specialist, auto-configuration
+# @tekton-version: 1.0.0
+# @tekton-executable: true
+
 """
 Generic AI Specialist implementation that can be used by any component.
 
@@ -9,6 +15,21 @@ import sys
 import argparse
 import logging
 from typing import Dict, Any
+
+# Import landmarks
+try:
+    from landmarks import architecture_decision, state_checkpoint
+except ImportError:
+    # If landmarks not available, create no-op decorators
+    def architecture_decision(**kwargs):
+        def decorator(func):
+            return func
+        return decorator
+    
+    def state_checkpoint(**kwargs):
+        def decorator(func):
+            return func
+        return decorator
 
 # Add parent directory to path for imports
 script_path = os.path.realpath(__file__)
@@ -22,7 +43,9 @@ if 'TEKTON_ROOT' not in os.environ:
 from shared.ai.specialist_worker import AISpecialistWorker
 from shared.utils.logging_setup import setup_component_logging
 
-# Component descriptions and expertise
+# @tekton-data: Component expertise configuration
+# @tekton-static: true
+# @tekton-purpose: Define AI specialist personalities
 COMPONENT_EXPERTISE = {
     'apollo': {
         'title': 'The Codebase Oracle',
@@ -117,6 +140,16 @@ COMPONENT_EXPERTISE = {
 }
 
 
+# @tekton-class: Generic AI specialist implementation
+# @tekton-singleton: false
+# @tekton-lifecycle: worker
+# @tekton-configurable: true
+@architecture_decision(
+    title="Generic AI Specialist Pattern",
+    rationale="Single implementation adapts to any component via configuration",
+    alternatives_considered=["Component-specific implementations", "Plugin architecture"],
+    impacts=["maintainability", "consistency", "flexibility"]
+)
 class GenericAISpecialist(AISpecialistWorker):
     """Generic AI specialist that can be used by any component."""
     
@@ -137,7 +170,11 @@ class GenericAISpecialist(AISpecialistWorker):
         
         self.component_info = comp_info
         self.logger.info(f"Initialized {component} AI specialist as '{comp_info['title']}'")
+        self.logger.debug(f"Component expertise: {comp_info['expertise']}")
     
+    # @tekton-method: Generate component-specific system prompt
+    # @tekton-dynamic: true
+    # @tekton-returns: system-prompt
     def get_system_prompt(self) -> str:
         """Get system prompt for this AI specialist."""
         return f"""You are {self.component_info['title']}, the AI specialist for {self.component}.
@@ -151,6 +188,9 @@ You work as part of the Tekton AI platform, collaborating with other AI speciali
 
 When asked about capabilities outside your expertise, acknowledge the limitation and suggest which other Tekton AI specialist might be better suited to help."""
     
+    # @tekton-method: Process component-specific messages
+    # @tekton-async: true
+    # @tekton-extensible: true
     async def process_message(self, message: Dict[str, Any]) -> Dict[str, Any]:
         """Process component-specific messages."""
         msg_type = message.get('type', 'unknown')
@@ -167,6 +207,9 @@ When asked about capabilities outside your expertise, acknowledge the limitation
         }
 
 
+# @tekton-function: Main entry point
+# @tekton-entry-point: true
+# @tekton-cli: true
 def main():
     """Main entry point for generic AI specialist."""
     parser = argparse.ArgumentParser(description='Generic AI Specialist')

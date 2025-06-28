@@ -1,3 +1,10 @@
+# @tekton-module: AI Registry Client for thread-safe socket management
+# @tekton-depends: fcntl, json, socket, asyncio
+# @tekton-provides: thread-safe-registry, port-allocation, socket-management
+# @tekton-version: 2.0.0
+# @tekton-modified: 2025-06-28 - Added thread-safe file locking for concurrent access
+# @tekton-critical: true
+
 """
 AI Registry Client for platform-wide AI socket management.
 
@@ -14,9 +21,67 @@ import time
 from typing import Dict, Optional, Tuple, Any
 from pathlib import Path
 
+# Import landmarks for architectural documentation
+try:
+    from landmarks import (
+        architecture_decision,
+        performance_boundary,
+        api_contract,
+        danger_zone,
+        integration_point,
+        state_checkpoint
+    )
+except ImportError:
+    # If landmarks not available, create no-op decorators
+    def architecture_decision(**kwargs):
+        def decorator(func):
+            return func
+        return decorator
+    
+    def performance_boundary(**kwargs):
+        def decorator(func):
+            return func
+        return decorator
+    
+    def api_contract(**kwargs):
+        def decorator(func):
+            return func
+        return decorator
+    
+    def danger_zone(**kwargs):
+        def decorator(func):
+            return func
+        return decorator
+    
+    def integration_point(**kwargs):
+        def decorator(func):
+            return func
+        return decorator
+    
+    def state_checkpoint(**kwargs):
+        def decorator(func):
+            return func
+        return decorator
+
 logger = logging.getLogger(__name__)
 
 
+# @tekton-class: Main registry client for AI socket management
+# @tekton-singleton: false
+# @tekton-lifecycle: component
+# @tekton-thread-safe: true
+@architecture_decision(
+    title="Thread-safe AI Registry Architecture",
+    rationale="Prevent race conditions in concurrent AI launches using file locking",
+    alternatives_considered=["In-memory locks", "Database storage", "Redis"],
+    impacts=["reliability", "concurrent_access", "file_io_overhead"]
+)
+@state_checkpoint(
+    title="AI Registry State Management",
+    state_type="persistent",
+    persistence=True,
+    consistency_requirements="Atomic file operations with fcntl locks"
+)
 class AIRegistryClient:
     """Client for managing platform-wide AI socket connections."""
     
@@ -45,6 +110,22 @@ class AIRegistryClient:
         
         self._registry_cache: Dict[str, Dict[str, Any]] = {}
         
+    # @tekton-method: Register platform AI with atomic updates
+    # @tekton-critical: true
+    # @tekton-modifies: platform-ai-registry
+    # @tekton-thread-safe: true
+    @api_contract(
+        title="Platform AI Registration",
+        endpoint="register_platform_ai",
+        method="CALL",
+        request_schema={"ai_id": "string", "port": "int", "component": "string", "metadata": "dict"}
+    )
+    @danger_zone(
+        title="Concurrent registry modification",
+        risk_level="high",
+        risks=["Registry corruption", "Port conflicts", "Race conditions"],
+        mitigation="Exclusive file locking with retries"
+    )
     def register_platform_ai(self, ai_id: str, port: int, 
                            component: str, metadata: Optional[Dict] = None) -> bool:
         """
@@ -211,6 +292,21 @@ class AIRegistryClient:
             logger.error(f"Failed to list platform AIs: {e}")
             return {}
     
+    # @tekton-method: Allocate available port atomically
+    # @tekton-critical: true
+    # @tekton-thread-safe: true
+    # @tekton-performance: port-scanning
+    @performance_boundary(
+        title="Port allocation scanning",
+        sla="<500ms for 5000 port range",
+        optimization_notes="Caches used ports, atomic allocation with locks"
+    )
+    @danger_zone(
+        title="Port allocation race conditions",
+        risk_level="medium",
+        risks=["Duplicate port allocation", "Socket bind failures"],
+        mitigation="Exclusive locking during entire allocation process"
+    )
     def allocate_port(self, start_port: int = 45000, max_port: int = 50000) -> Optional[int]:
         """
         Allocate an available port for an AI socket with atomic allocation.
@@ -258,6 +354,7 @@ class AIRegistryClient:
                                 # Immediately reserve this port by creating a temp marker
                                 # This prevents race conditions during concurrent launches
                                 logger.info(f"Allocated port {port} (used ports: {len(used_ports)})")
+                                logger.debug(f"Port allocation - Used ports: {sorted(used_ports)}")
                                 return port
                         
                         return None
@@ -348,6 +445,21 @@ class AIRegistryClient:
                     logger.error(f"Failed to save platform registry after {max_retries} attempts: {e}")
                     raise
     
+    # @tekton-method: Wait for AI readiness with timeout
+    # @tekton-async: true
+    # @tekton-timeout: 30s
+    # @tekton-integration: socket-connection
+    @performance_boundary(
+        title="AI readiness check",
+        sla="<30s timeout",
+        optimization_notes="Async polling with exponential backoff"
+    )
+    @integration_point(
+        title="AI socket connection verification",
+        target_component="AI specialists",
+        protocol="TCP socket",
+        data_flow="Connection test only"
+    )
     async def wait_for_ai(self, ai_id: str, timeout: float = 30.0) -> bool:
         """
         Wait for an AI to be registered and responding.
