@@ -20,6 +20,7 @@ Tekton serves as the "builder" - the central coordinator between various AI mode
 - **Agent Management**: Works with Agenteer for specialized agent creation and workflow
 - **Resource Optimization**: Uses the right AI for each task based on complexity and requirements
 - **Zero-Downtime Restarts**: Advanced socket reuse enables immediate component restarts without port conflicts
+- **AI Specialists**: Each component has an intelligent AI assistant with specialized expertise
 
 ## Architecture
 
@@ -256,6 +257,43 @@ This script:
 - Extracts requirements from setup.py if no requirements.in exists
 - Handles special cases like Codex with its own compilation script
 - Creates reproducible builds with pinned dependencies
+
+## AI Platform Integration
+
+Tekton includes a comprehensive AI platform where each component has its own AI specialist. These AI assistants provide intelligent help, automation, and insights specific to their component's domain.
+
+### AI Specialists
+
+Each component has a specialized AI assistant:
+- **Hermes AI**: Service orchestration and health monitoring
+- **Engram AI**: Memory management and semantic search
+- **Rhetor AI**: Prompt engineering and LLM orchestration
+- **Athena AI**: Knowledge graph construction and reasoning
+- **Prometheus AI**: Strategic planning and resource optimization
+- And more...
+
+### Configuration
+
+Enable AI support in `.env.tekton`:
+```bash
+TEKTON_REGISTER_AI=true
+TEKTON_AI_PROVIDER=ollama  # or anthropic
+```
+
+AI specialists use `llama3.3:70b` by default. Override per component:
+```bash
+ATHENA_AI_MODEL=llama3.1:70b
+RHETOR_AI_MODEL=qwen2.5-coder:32b
+```
+
+### Monitoring
+
+View AI status with:
+```bash
+tekton-status  # Shows AI model for each component
+```
+
+See [AI Registry Architecture](./MetaData/TektonDocumentation/Architecture/AIRegistry.md) for technical details.
 
 ## External Tool Registration
 
