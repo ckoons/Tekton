@@ -104,12 +104,7 @@ class MCPToolsIntegrationUnified:
                 return {"success": False, "error": f"Specialist {specialist_id} not found"}
             
             # TODO: Implement actual message sending via socket connection
-            # For now, return a placeholder response
-            return {
-                "success": True,
-                "response": f"Message sent to {specialist_id}",
-                "specialist": ai_info
-            }
+            raise NotImplementedError(f"SendMessageToSpecialist not implemented for {specialist_id}")
         except Exception as e:
             logger.error(f"Failed to send message to {specialist_id}: {e}")
             return {"success": False, "error": str(e)}
@@ -125,12 +120,8 @@ class MCPToolsIntegrationUnified:
         Returns:
             Conversation history
         """
-        # TODO: Implement actual history retrieval
-        return {
-            "success": True,
-            "messages": [],
-            "total_count": 0
-        }
+        # TODO: Implement actual history retrieval from Engram
+        raise NotImplementedError(f"GetSpecialistConversationHistory not implemented for {specialist_id}")
     
     async def configure_orchestration(self, settings: Dict[str, Any]) -> bool:
         """Configure AI orchestration settings.
@@ -142,8 +133,7 @@ class MCPToolsIntegrationUnified:
             True if successful
         """
         # TODO: Implement orchestration configuration
-        logger.info(f"Orchestration settings update requested: {settings}")
-        return True
+        raise NotImplementedError("ConfigureOrchestration not implemented yet")
 
 
 # Singleton instance
