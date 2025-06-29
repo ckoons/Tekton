@@ -107,6 +107,23 @@ mcp-client send-message apollo-ai "Hello"
 
 ## Recommended Next Steps
 
+### Phase 0: Cleanup & Analysis (Day 1) - STOP AFTER THIS
+1. **Remove deprecated files** (see AI_Platform_Cleanup_Tasks.md)
+   - Delete 8 deprecated stub/old files
+   - Update import statements
+   - Remove SpecialistRouter warnings
+2. **Verify system stability**
+   - Start all components
+   - Test MCP tool registration
+   - Verify Greek Chorus AI registration
+   - Test ai-discover functionality
+3. **Document findings**
+   - Note any unexpected dependencies
+   - Update architecture diagrams if needed
+   - Create fresh baseline for Phase 1
+
+**⚠️ CHECKPOINT: Stop after Phase 0 and assess before proceeding**
+
 ### Phase 1: Fix Critical Path (1-2 days)
 1. Fix aish socket communication parsing
 2. Implement basic MCP message sending
@@ -123,6 +140,20 @@ mcp-client send-message apollo-ai "Hello"
 2. Circuit breakers
 3. Monitoring integration
 4. Load testing
+
+## Phase 0 References
+
+### Required Reading
+- **Cleanup Guide**: `/Users/cskoons/projects/github/Tekton/MetaData/DevelopmentSprints/AI_Platform_Cleanup_Tasks.md`
+- Lists 8 files to remove
+- Safe cleanup commands provided
+- Testing checklist included
+
+### Phase 0 Rationale
+1. **Clean baseline** - Remove confusion from deprecated code
+2. **Risk mitigation** - Ensure stability before making changes
+3. **Developer clarity** - Understand current vs legacy code
+4. **Hidden dependencies** - Discover any unexpected usage
 
 ## Key Files for Reference
 
@@ -144,8 +175,20 @@ mcp-client send-message apollo-ai "Hello"
 5. Documentation reflects implementation
 
 ## Notes for Next Developer
+
+### Phase 0 is Mandatory
+**DO NOT SKIP PHASE 0** - The deprecated code will confuse the implementation. Clean it first.
+
+### Architecture Notes
 - The dual architecture (socket vs API) is intentional and correct
 - Discovery is unified but communication is bifurcated
 - Greek Chorus AIs are high-performance independent processes
 - Rhetor specialists are managed and orchestrated
 - Both types coexist in the same registry
+
+### Estimated Timeline
+- **Phase 0**: 1 day (cleanup & verify)
+- **Phase 1**: 1-2 days (critical fixes)
+- **Phase 2**: 3-4 days (full implementation)
+- **Phase 3**: 1 week (production hardening)
+- **Total**: ~2 weeks with Phase 0
