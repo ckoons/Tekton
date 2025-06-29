@@ -24,6 +24,7 @@ import platform
 from datetime import datetime, timedelta
 import threading
 import queue
+from pathlib import Path
 
 # Find the Tekton root directory by looking for a marker file
 def find_tekton_root():
@@ -1075,6 +1076,40 @@ class EnhancedComponentLauncher:
         except Exception as e:
             self.log(f"AI launch error: {str(e)}", "error", component_name)
     
+    def launch_sync_services(self):
+        """Launch background sync services."""
+        try:
+            # Check if sync service is already running
+            for proc in psutil.process_iter(['pid', 'name', 'cmdline']):
+                try:
+                    cmdline = proc.info.get('cmdline', [])
+                    if cmdline and 'ai_config_sync.py' in ' '.join(cmdline):
+                        self.log("AI config sync service already running", "info")
+                        return
+                except (psutil.NoSuchProcess, psutil.AccessDenied):
+                    continue
+            
+            # Launch AI config sync service
+            # Use TEKTON_ROOT to find the sync service
+            sync_script = Path(self.tekton_root) / 'shared' / 'services' / 'ai_config_sync.py'
+            
+            if sync_script.exists():
+                # Launch in background, redirect output to log file
+                log_file = os.path.join(self.log_dir, 'ai_config_sync.log')
+                with open(log_file, 'w') as log_f:
+                    subprocess.Popen(
+                        [sys.executable, str(sync_script)],
+                        stdout=log_f,
+                        stderr=subprocess.STDOUT,
+                        start_new_session=True  # Detach from parent process
+                    )
+                self.log("Started AI config sync service in background", "success")
+            else:
+                self.log(f"AI config sync service not found at {sync_script}", "warning")
+                
+        except Exception as e:
+            self.log(f"Failed to launch sync services: {e}", "error")
+    
     def start_health_monitoring(self, interval: int = 30):
         """Start continuous health monitoring"""
         async def monitor():
@@ -1234,6 +1269,11 @@ async def main():
         # Launch components
         start_time = time.time()
         await launcher.launch_with_monitoring(components, enable_monitoring=args.monitor)
+        
+        # Launch AI config sync service if ANY components were launched successfully
+        # The sync service is a shared service that should run whenever Tekton is active
+        if any(r.success for r in launcher.launched_components.values()):
+            launcher.launch_sync_services()
         
         # Report results
         elapsed = time.time() - start_time

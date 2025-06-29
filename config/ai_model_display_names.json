@@ -8,6 +8,7 @@
     "gpt-4": "GPT-4",
     "gpt-4-turbo": "GPT-4 Turbo",
     "gpt-3.5-turbo": "GPT-3.5 Turbo",
+    "llama3.3:70b": "Llama3.3 70B",
     "llama3:70b": "Llama3 70B",
     "llama3:7b": "Llama3 7B",
     "llama2:70b": "Llama2 70B",

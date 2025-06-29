@@ -29,7 +29,7 @@ class RhetorComponent(StandardComponentBase):
         super().__init__(component_name="rhetor", version="0.1.0")
         self.llm_client = None
         self.model_router = None
-        self.specialist_router = None
+        # self.specialist_router = None  # DEPRECATED - removed in cleanup
         self.ai_messaging_integration = None
         self.context_manager = None
         self.prompt_engine = None
@@ -58,7 +58,7 @@ class RhetorComponent(StandardComponentBase):
         from rhetor.core.template_manager import TemplateManager
         from rhetor.core.prompt_registry import PromptRegistry
         from rhetor.core.budget_manager import BudgetManager
-        from rhetor.core.specialist_router import SpecialistRouter
+        # from rhetor.core.specialist_router import SpecialistRouter  # DEPRECATED - removed in cleanup
         from rhetor.core.anthropic_max_config import AnthropicMaxConfig
         
         try:
@@ -103,9 +103,9 @@ class RhetorComponent(StandardComponentBase):
             self.model_router = ModelRouter(self.llm_client, budget_manager=self.budget_manager)
             logger.info("Model router initialized")
             
-            # Initialize specialist router for AI specialist management
-            self.specialist_router = SpecialistRouter(self.llm_client, budget_manager=self.budget_manager)
-            logger.info("Specialist router initialized")
+            # Specialist router is DEPRECATED - AI specialist management now handled by AI Registry
+            # self.specialist_router = SpecialistRouter(self.llm_client, budget_manager=self.budget_manager)
+            logger.info("Specialist router DEPRECATED - using AI Registry")
             
             # AI specialist management is now handled by the AI Registry
             # The old internal specialist system has been removed
@@ -184,7 +184,7 @@ class RhetorComponent(StandardComponentBase):
         return {
             "llm_client": self.llm_client is not None,
             "model_router": self.model_router is not None,
-            "specialist_router": self.specialist_router is not None,
+            # "specialist_router": self.specialist_router is not None,  # DEPRECATED
             "ai_messaging_integration": self.ai_messaging_integration is not None,
             "context_manager": self.context_manager is not None,
             "prompt_engine": self.prompt_engine is not None,

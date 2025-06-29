@@ -603,9 +603,48 @@ class EnhancedComponentKiller:
                     except:
                         pass
                         
+        # Kill background sync services
+        self.log("Cleaning up background sync services...", "nuclear")
+        await self.kill_sync_services()
+        
         self.log("☢️  Nuclear protocol complete", "nuclear")
         return results
         
+    async def kill_sync_services(self):
+        """Kill background sync services like ai_config_sync."""
+        killed_count = 0
+        
+        try:
+            for proc in psutil.process_iter(['pid', 'name', 'cmdline']):
+                try:
+                    cmdline = proc.info.get('cmdline', [])
+                    if cmdline and 'ai_config_sync.py' in ' '.join(cmdline):
+                        self.log(f"Found AI config sync service (PID: {proc.pid})", "info")
+                        
+                        if not self.dry_run:
+                            try:
+                                proc.terminate()
+                                proc.wait(timeout=5)
+                            except psutil.TimeoutExpired:
+                                self.log(f"Sync service didn't terminate gracefully, force killing", "warning")
+                                proc.kill()
+                            
+                            self.log(f"Killed AI config sync service", "success")
+                            killed_count += 1
+                        else:
+                            self.log(f"[DRY RUN] Would kill AI config sync service (PID: {proc.pid})", "info")
+                            
+                except (psutil.NoSuchProcess, psutil.AccessDenied):
+                    continue
+                    
+        except Exception as e:
+            self.log(f"Error killing sync services: {e}", "error")
+            
+        if killed_count == 0 and not self.dry_run:
+            self.log("No sync services found running", "info")
+            
+        return killed_count
+    
     def get_shutdown_order(self, components: List[str]) -> Tuple[List[str], List[str]]:
         """Determine optimal shutdown order: (non_core_components, core_components)"""
         # Core infrastructure components that should be killed last
@@ -749,6 +788,11 @@ class EnhancedComponentKiller:
                                  if name in target_components}
         else:
             components_to_check = all_components
+            
+        # If cleaning up all components, also kill sync services
+        if not target_components:
+            self.log("Killing background sync services...", "cleanup")
+            await self.kill_sync_services()
         
         for comp_name, comp_info in components_to_check.items():
             port = comp_info.port

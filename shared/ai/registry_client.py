@@ -118,6 +118,71 @@ class AIRegistryClient:
         self._registry_cache: Dict[str, Dict[str, Any]] = {}
         self._state_cache: Dict[str, str] = {}  # Track previous states
         
+        # Clean up any stale locks on initialization
+        self._cleanup_stale_locks()
+        
+    def _cleanup_stale_locks(self):
+        """Clean up stale lock files older than 60 seconds."""
+        lock_files = [
+            self.registry_base / '.registration.lock',
+            self.registry_base / '.port_allocation.lock'
+        ]
+        
+        for lock_file in lock_files:
+            if lock_file.exists():
+                try:
+                    lock_age = time.time() - lock_file.stat().st_mtime
+                    if lock_age > 60:  # Lock older than 60 seconds
+                        logger.warning(f"Removing stale lock file (age: {lock_age:.1f}s): {lock_file}")
+                        lock_file.unlink()
+                except Exception as e:
+                    logger.error(f"Failed to clean up stale lock {lock_file}: {e}")
+    
+    def _acquire_lock_with_timeout(self, lock_file_path: Path, timeout: float = 5.0, exclusive: bool = True):
+        """
+        Acquire a file lock with timeout.
+        
+        Args:
+            lock_file_path: Path to lock file
+            timeout: Maximum time to wait for lock
+            exclusive: True for exclusive lock, False for shared
+            
+        Returns:
+            File handle with lock acquired
+            
+        Raises:
+            TimeoutError: If lock cannot be acquired within timeout
+        """
+        start_time = time.time()
+        lock_file_path.parent.mkdir(parents=True, exist_ok=True)
+        
+        # First check for stale lock
+        if lock_file_path.exists():
+            try:
+                lock_age = time.time() - lock_file_path.stat().st_mtime
+                if lock_age > 60:
+                    logger.warning(f"Removing stale lock (age: {lock_age:.1f}s): {lock_file_path}")
+                    lock_file_path.unlink()
+            except:
+                pass
+        
+        while time.time() - start_time < timeout:
+            f = None
+            try:
+                f = open(lock_file_path, 'w')
+                lock_flag = fcntl.LOCK_EX if exclusive else fcntl.LOCK_SH
+                fcntl.flock(f.fileno(), lock_flag | fcntl.LOCK_NB)
+                # Write PID to help identify lock owner
+                f.write(f"{os.getpid()}\n")
+                f.flush()
+                return f
+            except IOError:
+                if f:
+                    f.close()
+                time.sleep(0.05)  # 50ms retry interval
+        
+        raise TimeoutError(f"Could not acquire lock on {lock_file_path} within {timeout} seconds")
+        
     # @tekton-method: Register platform AI with atomic updates
     # @tekton-critical: true
     # @tekton-modifies: platform-ai-registry
@@ -153,50 +218,49 @@ class AIRegistryClient:
         
         for attempt in range(max_retries):
             try:
-                # Use a registration lock file to coordinate concurrent registrations
+                # Use the new lock mechanism with timeout
                 registration_lock = self.registry_base / '.registration.lock'
-                with open(registration_lock, 'w') as lock_f:
-                    # Acquire exclusive lock for registration
-                    fcntl.flock(lock_f.fileno(), fcntl.LOCK_EX)
-                    try:
-                        # Load existing registry while holding lock
-                        registry = self._load_platform_registry()
-                        
-                        # Check if port is already in use by another AI
-                        for existing_ai_id, existing_data in registry.items():
-                            if existing_ai_id != ai_id and existing_data['port'] == port:
-                                logger.error(f"Port {port} already in use by {existing_ai_id}")
-                                return False
-                        
-                        # Add or update AI entry
-                        registry[ai_id] = {
-                            'port': port,
-                            'component': component,
-                            'metadata': metadata or {},
-                            'registered_at': asyncio.get_event_loop().time()
-                        }
-                        
-                        # Save registry while still holding lock
-                        self._save_platform_registry(registry)
-                        
-                        # Update cache
-                        self._registry_cache[ai_id] = registry[ai_id]
-                        
-                        logger.info(f"Registered platform AI: {ai_id} on port {port}")
-                        
-                        # Log the registration event
-                        self.log_transition(ai_id, 'registered', {
-                            'port': port,
-                            'component': component,
-                            'metadata': metadata,
-                            'trigger': 'api_call'
-                        })
-                        
-                        return True
-                        
-                    finally:
-                        # Release lock
-                        fcntl.flock(lock_f.fileno(), fcntl.LOCK_UN)
+                lock_f = self._acquire_lock_with_timeout(registration_lock, timeout=5.0)
+                try:
+                    # Load existing registry while holding lock
+                    registry = self._load_platform_registry()
+                    
+                    # Check if port is already in use by another AI
+                    for existing_ai_id, existing_data in registry.items():
+                        if existing_ai_id != ai_id and existing_data['port'] == port:
+                            logger.error(f"Port {port} already in use by {existing_ai_id}")
+                            return False
+                    
+                    # Add or update AI entry
+                    registry[ai_id] = {
+                        'port': port,
+                        'component': component,
+                        'metadata': metadata or {},
+                        'registered_at': asyncio.get_event_loop().time()
+                    }
+                    
+                    # Save registry while still holding lock
+                    self._save_platform_registry(registry)
+                    
+                    # Update cache
+                    self._registry_cache[ai_id] = registry[ai_id]
+                    
+                    logger.info(f"Registered platform AI: {ai_id} on port {port}")
+                    
+                    # Log the registration event
+                    self.log_transition(ai_id, 'registered', {
+                        'port': port,
+                        'component': component,
+                        'metadata': metadata,
+                        'trigger': 'api_call'
+                    })
+                    
+                    return True
+                    
+                finally:
+                    # Release lock and close file
+                    fcntl.flock(lock_f.fileno(), fcntl.LOCK_UN)
+                    lock_f.close()
                         
             except Exception as e:
                 if attempt < max_retries - 1:
@@ -223,12 +287,10 @@ class AIRegistryClient:
         
         for attempt in range(max_retries):
             try:
-                # Use the same registration lock for all registry modifications
+                # Use the new lock mechanism with timeout
                 registration_lock = self.registry_base / '.registration.lock'
-                with open(registration_lock, 'w') as lock_f:
-                    # Acquire exclusive lock
-                    fcntl.flock(lock_f.fileno(), fcntl.LOCK_EX)
-                    try:
+                lock_f = self._acquire_lock_with_timeout(registration_lock, timeout=5.0)
+                try:
                         registry = self._load_platform_registry()
                         
                         if ai_id in registry:
@@ -250,9 +312,10 @@ class AIRegistryClient:
                         
                         return False
                         
-                    finally:
-                        # Release lock
-                        fcntl.flock(lock_f.fileno(), fcntl.LOCK_UN)
+                finally:
+                    # Release lock and close file
+                    fcntl.flock(lock_f.fileno(), fcntl.LOCK_UN)
+                    lock_f.close()
                         
             except Exception as e:
                 if attempt < max_retries - 1:
@@ -383,10 +446,9 @@ class AIRegistryClient:
         
         for attempt in range(max_retries):
             try:
-                with open(allocation_lock_file, 'w') as lock_f:
-                    # Acquire exclusive lock for port allocation
-                    fcntl.flock(lock_f.fileno(), fcntl.LOCK_EX)
-                    try:
+                # Use the new lock mechanism with timeout for port allocation
+                lock_f = self._acquire_lock_with_timeout(allocation_lock_file, timeout=5.0)
+                try:
                         # Get all used ports while holding the lock
                         used_ports = set()
                         
@@ -406,20 +468,21 @@ class AIRegistryClient:
                             except Exception:
                                 pass
                         
-                        # Find available port
+                        # Find available port - just check registry, don't bind
+                        # This eliminates TOCTOU race - the actual service will try to bind
+                        # and fail gracefully if something else grabbed the port
                         for port in range(start_port, max_port):
-                            if port not in used_ports and self._is_port_available(port):
-                                # Immediately reserve this port by creating a temp marker
-                                # This prevents race conditions during concurrent launches
+                            if port not in used_ports:
                                 logger.info(f"Allocated port {port} (used ports: {len(used_ports)})")
                                 logger.debug(f"Port allocation - Used ports: {sorted(used_ports)}")
                                 return port
                         
                         return None
                         
-                    finally:
-                        # Release lock
-                        fcntl.flock(lock_f.fileno(), fcntl.LOCK_UN)
+                finally:
+                    # Release lock and close file
+                    fcntl.flock(lock_f.fileno(), fcntl.LOCK_UN)
+                    lock_f.close()
                         
             except Exception as e:
                 if attempt < max_retries - 1:
