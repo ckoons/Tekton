@@ -1,0 +1,279 @@
+#!/usr/bin/env python3
+"""
+AI Discovery Tool for Tekton Platform
+
+This tool allows command-line discovery of AI specialists, similar to MCP discovery.
+It's designed to be used by aish and other clients to find and connect to AIs.
+"""
+import argparse
+import asyncio
+import json
+import sys
+from typing import Optional
+from pathlib import Path
+
+# Add Tekton root to path
+tekton_root = Path(__file__).parent.parent
+sys.path.insert(0, str(tekton_root))
+
+from shared.ai.ai_discovery_service import AIDiscoveryService
+from shared.ai.registry_client import AIRegistryClient
+
+
+async def list_ais(args):
+    """List available AI specialists."""
+    discovery = AIDiscoveryService()
+    result = await discovery.list_ais(role=args.role, capability=args.capability)
+    
+    if args.json:
+        print(json.dumps(result, indent=2))
+    else:
+        print(f"\n{'='*60}")
+        print(f"Available AI Specialists")
+        print(f"{'='*60}\n")
+        
+        for ai in result['ais']:
+            status_icon = "✓" if ai['status'] == 'healthy' else "✗"
+            print(f"{status_icon} {ai['name']} ({ai['id']})")
+            print(f"   Component: {ai['component']}")
+            print(f"   Roles: {', '.join(ai['roles'])}")
+            print(f"   Socket: {ai['connection']['host']}:{ai['connection']['port']}")
+            
+            if ai.get('model') and ai['model'] != 'unknown':
+                print(f"   Model: {ai['model']}")
+            
+            if args.verbose:
+                print(f"   Capabilities: {', '.join(ai['capabilities'])}")
+                if ai.get('performance'):
+                    perf = ai['performance']
+                    print(f"   Performance: {perf['success_rate']*100:.1f}% success, "
+                          f"{perf['avg_response_time']:.3f}s avg response")
+            print()
+
+
+async def info_ai(args):
+    """Get detailed information about a specific AI."""
+    discovery = AIDiscoveryService()
+    info = await discovery.get_ai_info(args.ai_id)
+    
+    if args.json:
+        print(json.dumps(info, indent=2))
+    else:
+        if 'error' in info:
+            print(f"Error: {info['error']}")
+            return
+            
+        print(f"\n{'='*60}")
+        print(f"AI Specialist: {info['name']} ({info['id']})")
+        print(f"{'='*60}\n")
+        
+        print(f"Component: {info['component']}")
+        print(f"Status: {info['status']}")
+        print(f"Roles: {', '.join(info['roles'])}")
+        print(f"Capabilities: {', '.join(info['capabilities'])}")
+        print(f"\nConnection:")
+        print(f"  Host: {info['connection']['host']}")
+        print(f"  Port: {info['connection']['port']}")
+        
+        if info.get('model'):
+            print(f"\nModel Information:")
+            print(f"  Model: {info['model']}")
+            if info.get('context_window'):
+                print(f"  Context Window: {info['context_window']:,} tokens")
+            if info.get('max_tokens'):
+                print(f"  Max Output: {info['max_tokens']:,} tokens")
+        
+        if info.get('performance'):
+            perf = info['performance']
+            print(f"\nPerformance:")
+            print(f"  Success Rate: {perf['success_rate']*100:.1f}%")
+            print(f"  Avg Response Time: {perf['avg_response_time']:.3f}s")
+            print(f"  Total Requests: {perf['total_requests']:,}")
+
+
+async def test_ai(args):
+    """Test connection to AI specialists."""
+    discovery = AIDiscoveryService()
+    
+    if args.ai_id:
+        # Test specific AI
+        result = await discovery.test_ai_connection(args.ai_id)
+        
+        if args.json:
+            print(json.dumps(result, indent=2))
+        else:
+            status = "✓ Reachable" if result['reachable'] else "✗ Unreachable"
+            print(f"\n{args.ai_id}: {status}")
+            print(f"Socket: {result['socket']}")
+            
+            if result['reachable']:
+                print(f"Response Time: {result['response_time']*1000:.1f}ms")
+            else:
+                print(f"Error: {result.get('error', 'Unknown error')}")
+    else:
+        # Test all AIs
+        all_ais = await discovery.list_ais()
+        results = []
+        
+        print(f"\nTesting {len(all_ais['ais'])} AI specialists...\n")
+        
+        for ai in all_ais['ais']:
+            result = await discovery.test_ai_connection(ai['id'])
+            results.append(result)
+            
+            if not args.json:
+                status = "✓" if result['reachable'] else "✗"
+                print(f"{status} {ai['id']:20} {result['socket']:20}", end='')
+                if result['reachable']:
+                    print(f" {result['response_time']*1000:6.1f}ms")
+                else:
+                    print(f" {result.get('error', 'Unknown error')}")
+        
+        if args.json:
+            print(json.dumps(results, indent=2))
+
+
+async def schema_ai(args):
+    """Get interaction schema for an AI."""
+    discovery = AIDiscoveryService()
+    schema = await discovery.get_ai_schema(args.ai_id)
+    
+    if args.json:
+        print(json.dumps(schema, indent=2))
+    else:
+        if 'error' in schema:
+            print(f"Error: {schema['error']}")
+            return
+            
+        print(f"\n{'='*60}")
+        print(f"Interaction Schema: {args.ai_id}")
+        print(f"{'='*60}\n")
+        
+        print("Message Types:")
+        for msg_type, details in schema['message_types'].items():
+            print(f"\n  {msg_type}:")
+            print(f"    Description: {details['description']}")
+            if details['required']:
+                print(f"    Required: {', '.join(details['required'])}")
+            if details['optional']:
+                print(f"    Optional: {', '.join(details['optional'])}")
+        
+        print("\n\nResponse Formats:")
+        for msg_type, format_spec in schema['response_format'].items():
+            print(f"\n  {msg_type}: {json.dumps(format_spec, indent=4)}")
+
+
+async def manifest(args):
+    """Get the AI platform discovery manifest."""
+    discovery = AIDiscoveryService()
+    manifest = discovery.create_discovery_manifest()
+    
+    if args.json:
+        print(json.dumps(manifest, indent=2))
+    else:
+        print(f"\n{'='*60}")
+        print(f"Tekton AI Platform Manifest")
+        print(f"{'='*60}\n")
+        
+        print(f"Platform: {manifest['platform']}")
+        print(f"Version: {manifest['version']}")
+        print(f"\nAI Registry:")
+        print(f"  Total AIs: {manifest['ai_registry']['total_ais']}")
+        print(f"  Roles: {', '.join(manifest['ai_registry']['roles'][:5])}...")
+        print(f"  Capabilities: {', '.join(manifest['ai_registry']['capabilities'][:5])}...")
+        
+        print(f"\nInteraction Protocol:")
+        proto = manifest['interaction_protocol']
+        print(f"  Transport: {proto['transport']}")
+        print(f"  Format: {proto['format']}")
+        print(f"  Port Range: {proto['default_port_range']}")
+
+
+async def best_ai(args):
+    """Find the best AI for a given role."""
+    registry = AIRegistryClient()
+    ai_id = registry.select_best_ai(args.role)
+    
+    if ai_id:
+        discovery = AIDiscoveryService()
+        info = await discovery.get_ai_info(ai_id)
+        
+        if args.json:
+            print(json.dumps(info, indent=2))
+        else:
+            print(f"\nBest AI for role '{args.role}': {info['name']} ({ai_id})")
+            print(f"Socket: {info['connection']['host']}:{info['connection']['port']}")
+            if info.get('model'):
+                print(f"Model: {info['model']}")
+    else:
+        if args.json:
+            print(json.dumps({"error": f"No AI found for role '{args.role}'"}, indent=2))
+        else:
+            print(f"No AI found for role '{args.role}'")
+
+
+def main():
+    parser = argparse.ArgumentParser(
+        description="AI Discovery Tool for Tekton Platform",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Examples:
+  %(prog)s list                     # List all AIs
+  %(prog)s list --role planning     # List AIs with planning role
+  %(prog)s info apollo-ai           # Get info about specific AI
+  %(prog)s test                     # Test all AI connections
+  %(prog)s schema rhetor-ai         # Get interaction schema
+  %(prog)s best planning            # Find best AI for planning
+  %(prog)s manifest                 # Get platform manifest
+        """
+    )
+    
+    parser.add_argument('--json', action='store_true',
+                       help='Output in JSON format')
+    parser.add_argument('--verbose', '-v', action='store_true',
+                       help='Verbose output')
+    
+    subparsers = parser.add_subparsers(dest='command', help='Commands')
+    
+    # List command
+    list_parser = subparsers.add_parser('list', help='List available AIs')
+    list_parser.add_argument('--role', help='Filter by role')
+    list_parser.add_argument('--capability', help='Filter by capability')
+    list_parser.set_defaults(func=list_ais)
+    
+    # Info command
+    info_parser = subparsers.add_parser('info', help='Get AI information')
+    info_parser.add_argument('ai_id', help='AI identifier')
+    info_parser.set_defaults(func=info_ai)
+    
+    # Test command
+    test_parser = subparsers.add_parser('test', help='Test AI connections')
+    test_parser.add_argument('ai_id', nargs='?', help='AI to test (all if omitted)')
+    test_parser.set_defaults(func=test_ai)
+    
+    # Schema command
+    schema_parser = subparsers.add_parser('schema', help='Get AI interaction schema')
+    schema_parser.add_argument('ai_id', help='AI identifier')
+    schema_parser.set_defaults(func=schema_ai)
+    
+    # Manifest command
+    manifest_parser = subparsers.add_parser('manifest', help='Get platform manifest')
+    manifest_parser.set_defaults(func=manifest)
+    
+    # Best command
+    best_parser = subparsers.add_parser('best', help='Find best AI for role')
+    best_parser.add_argument('role', help='Required role')
+    best_parser.set_defaults(func=best_ai)
+    
+    args = parser.parse_args()
+    
+    if not args.command:
+        parser.print_help()
+        sys.exit(1)
+    
+    # Run the async function
+    asyncio.run(args.func(args))
+
+
+if __name__ == '__main__':
+    main()

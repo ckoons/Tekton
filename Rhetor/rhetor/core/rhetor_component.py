@@ -30,7 +30,6 @@ class RhetorComponent(StandardComponentBase):
         self.llm_client = None
         self.model_router = None
         self.specialist_router = None
-        self.ai_specialist_manager = None
         self.ai_messaging_integration = None
         self.context_manager = None
         self.prompt_engine = None
@@ -40,7 +39,6 @@ class RhetorComponent(StandardComponentBase):
         self.anthropic_max_config = None
         self.mcp_bridge = None
         self.mcp_integration = None
-        self.component_specialist_registry = None
         self.initialized = False
         
     @danger_zone(
@@ -61,10 +59,7 @@ class RhetorComponent(StandardComponentBase):
         from rhetor.core.prompt_registry import PromptRegistry
         from rhetor.core.budget_manager import BudgetManager
         from rhetor.core.specialist_router import SpecialistRouter
-        from rhetor.core.ai_specialist_manager import AISpecialistManager
-        from rhetor.core.ai_messaging_integration import AIMessagingIntegration
         from rhetor.core.anthropic_max_config import AnthropicMaxConfig
-        from rhetor.core.component_specialists import ComponentSpecialistRegistry
         
         try:
             # Initialize core components
@@ -112,59 +107,13 @@ class RhetorComponent(StandardComponentBase):
             self.specialist_router = SpecialistRouter(self.llm_client, budget_manager=self.budget_manager)
             logger.info("Specialist router initialized")
             
-            # Initialize AI specialist manager
-            from .ai_specialist_manager import set_ai_specialist_manager
-            self.ai_specialist_manager = AISpecialistManager(self.llm_client, self.specialist_router)
-            self.specialist_router.set_specialist_manager(self.ai_specialist_manager)
-            set_ai_specialist_manager(self.ai_specialist_manager)  # Set singleton
-            logger.info("AI specialist manager initialized")
+            # AI specialist management is now handled by the AI Registry
+            # The old internal specialist system has been removed
+            logger.info("Using AI Registry for specialist management")
             
-            # Initialize socket-specialist integration
-            from .socket_specialist_integration import get_socket_specialist_integration
-            self.socket_integration = await get_socket_specialist_integration(self.ai_specialist_manager)
-            self.ai_specialist_manager.set_socket_integration(self.socket_integration)
-            logger.info("Socket-specialist integration initialized")
-            
-            # Initialize component specialist registry
-            self.component_specialist_registry = ComponentSpecialistRegistry(self.ai_specialist_manager)
-            logger.info("Component specialist registry initialized")
-            
-            # Ensure rhetor-orchestrator specialist is available
-            try:
-                rhetor_specialist = await self.component_specialist_registry.ensure_specialist("rhetor")
-                if rhetor_specialist:
-                    logger.info(f"Rhetor orchestrator specialist ready: {rhetor_specialist.specialist_id}")
-            except Exception as e:
-                logger.warning(f"Failed to ensure rhetor specialist: {e}")
-            
-            # Start core AI specialists
-            try:
-                core_results = await self.ai_specialist_manager.start_core_specialists()
-                logger.info(f"Core AI specialists started: {core_results}")
-            except Exception as e:
-                logger.warning(f"Failed to start core AI specialists: {e}")
-            
-            # Initialize AI messaging integration with Hermes
-            @integration_point(
-                title="Hermes AI messaging integration",
-                target_component="Hermes",
-                protocol="WebSocket/REST",
-                data_flow="AI specialists → Hermes message bus → Other components"
-            )
-            async def init_messaging():
-                hermes_url = os.environ.get("HERMES_URL", "http://localhost:8001")
-                self.ai_messaging_integration = AIMessagingIntegration(
-                    self.ai_specialist_manager, 
-                    hermes_url, 
-                    self.specialist_router
-                )
-                await self.ai_messaging_integration.initialize()
-                logger.info("AI messaging integration initialized")
-            
-            try:
-                await init_messaging()
-            except Exception as e:
-                logger.warning(f"Failed to initialize AI messaging integration: {e}")
+            # AI messaging integration is deprecated - messaging now handled through AI Registry
+            self.ai_messaging_integration = None
+            logger.info("AI messaging handled through AI Registry")
             
             # Initialize prompt engine with template manager integration
             self.prompt_engine = PromptEngine(self.template_manager)
@@ -236,7 +185,6 @@ class RhetorComponent(StandardComponentBase):
             "llm_client": self.llm_client is not None,
             "model_router": self.model_router is not None,
             "specialist_router": self.specialist_router is not None,
-            "ai_specialist_manager": self.ai_specialist_manager is not None,
             "ai_messaging_integration": self.ai_messaging_integration is not None,
             "context_manager": self.context_manager is not None,
             "prompt_engine": self.prompt_engine is not None,
@@ -260,31 +208,21 @@ class RhetorComponent(StandardComponentBase):
         except Exception as e:
             logger.warning(f"Failed to initialize MCP Bridge: {e}")
         
-        # Initialize MCP Tools Integration with live components
+        # Initialize MCP Tools Integration with AI Registry
         try:
-            from rhetor.core.mcp.init_integration import (
-                initialize_mcp_integration,
-                setup_hermes_subscriptions,
-                test_mcp_integration
+            from rhetor.core.mcp.tools_integration_unified import (
+                MCPToolsIntegrationUnified,
+                set_mcp_tools_integration
             )
             
             hermes_url = os.environ.get("HERMES_URL", "http://localhost:8001")
             
-            # Create the integration
-            self.mcp_integration = initialize_mcp_integration(
-                specialist_manager=self.ai_specialist_manager,
-                messaging_integration=self.ai_messaging_integration,
-                hermes_url=hermes_url
-            )
+            # Create unified MCP integration with AI Registry
+            self.mcp_integration = MCPToolsIntegrationUnified(hermes_url=hermes_url)
+            set_mcp_tools_integration(self.mcp_integration)
             
-            # Set up Hermes subscriptions for cross-component messaging
-            await setup_hermes_subscriptions(self.mcp_integration)
-            
-            # Test the integration if in debug mode
-            if logger.isEnabledFor(logging.DEBUG):
-                await test_mcp_integration(self.mcp_integration)
-            
-            logger.info("MCP Tools Integration initialized with live components")
+            logger.info("MCP Tools Integration initialized with AI Registry")
             
         except Exception as e:
             logger.warning(f"Failed to initialize MCP Tools Integration: {e}")
+            self.mcp_integration = None

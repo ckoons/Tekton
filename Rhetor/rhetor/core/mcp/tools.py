@@ -1292,16 +1292,27 @@ async def list_ai_specialists(
     """
     try:
         # Try to use live integration if available
-        from .tools_integration import get_mcp_tools_integration
+        from .tools_integration_unified import get_mcp_tools_integration
         integration = get_mcp_tools_integration()
         
-        if integration and integration.specialist_manager:
+        if integration:
             # Use live data from the integration
-            return await integration.list_ai_specialists(
-                filter_by_status=filter_by_status,
-                filter_by_type=filter_by_type,
-                filter_by_component=filter_by_component
-            )
+            # Use unified integration to list specialists
+            specialists = await integration.list_specialists()
+            
+            # Apply filters if requested
+            if filter_by_status:
+                specialists = [s for s in specialists if s.get('status') == filter_by_status]
+            if filter_by_type:
+                specialists = [s for s in specialists if filter_by_type in s.get('roles', [])]
+            if filter_by_component:
+                specialists = [s for s in specialists if s.get('component') == filter_by_component]
+            
+            return {
+                "success": True,
+                "specialists": specialists,
+                "total_count": len(specialists)
+            }
         
         # Fallback to mock data if integration not available
         logger.warning("MCP tools integration not available, using mock data")
@@ -1411,15 +1422,12 @@ async def activate_ai_specialist(
     """
     try:
         # Try to use live integration if available
-        from .tools_integration import get_mcp_tools_integration
+        from .tools_integration_unified import get_mcp_tools_integration
         integration = get_mcp_tools_integration()
         
-        if integration and integration.specialist_manager:
+        if integration:
             # Use live activation
-            return await integration.activate_ai_specialist(
-                specialist_id=specialist_id,
-                initialization_context=initialization_context
-            )
+            return await integration.activate_specialist(specialist_id)
         
         # Fallback to mock data if integration not available
         logger.warning("MCP tools integration not available, using mock activation")
@@ -1479,7 +1487,7 @@ async def send_message_to_specialist(
     """
     try:
         # Try to use live integration if available
-        from .tools_integration import get_mcp_tools_integration
+        from .tools_integration_unified import get_mcp_tools_integration
         integration = get_mcp_tools_integration()
         
         if integration and integration.messaging_integration:
@@ -1557,7 +1565,7 @@ async def orchestrate_team_chat(
     """
     try:
         # Try to use live integration if available
-        from .tools_integration import get_mcp_tools_integration
+        from .tools_integration_unified import get_mcp_tools_integration
         integration = get_mcp_tools_integration()
         
         if integration and integration.messaging_integration:
@@ -1673,10 +1681,10 @@ async def get_specialist_conversation_history(
     """
     try:
         # Try to use live integration if available
-        from .tools_integration import get_mcp_tools_integration
+        from .tools_integration_unified import get_mcp_tools_integration
         integration = get_mcp_tools_integration()
         
-        if integration and integration.specialist_manager:
+        if integration:
             # Use live history
             return await integration.get_specialist_conversation_history(
                 specialist_id=specialist_id,
@@ -1741,10 +1749,10 @@ async def configure_ai_orchestration(
     """
     try:
         # Try to use live integration if available
-        from .tools_integration import get_mcp_tools_integration
+        from .tools_integration_unified import get_mcp_tools_integration
         integration = get_mcp_tools_integration()
         
-        if integration and integration.specialist_manager:
+        if integration:
             # Use live configuration
             return await integration.configure_ai_orchestration(
                 settings=settings,

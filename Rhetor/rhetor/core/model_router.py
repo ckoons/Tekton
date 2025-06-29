@@ -11,7 +11,11 @@ import json
 from typing import Dict, List, Any, Optional, Tuple
 from pathlib import Path
 
-from .llm_client import LLMClient
+# Support both old and new LLM clients during migration
+try:
+    from .llm_client_unified import LLMClient
+except ImportError:
+    from .llm_client import LLMClient
 from .budget_manager import BudgetManager
 
 logger = logging.getLogger(__name__)
@@ -34,15 +38,23 @@ class ModelRouter:
     def _load_task_configs(self) -> Dict[str, Dict[str, Any]]:
         """
         Load task configuration for model routing.
+        Supports both old provider-based and new role-based configs.
         
         Returns:
             Dictionary of task configurations
         """
-        # First check for config file
-        config_file = os.environ.get(
-            "RHETOR_TASK_CONFIG", 
-            str(Path(__file__).parent.parent / "config" / "tasks.json")
-        )
+        # Check for unified config first, then fall back to old config
+        config_dir = Path(__file__).parent.parent / "config"
+        unified_config = config_dir / "tasks_unified.json"
+        old_config = config_dir / "tasks.json"
+        
+        config_file = os.environ.get("RHETOR_TASK_CONFIG")
+        if not config_file:
+            # Prefer unified config if it exists
+            if unified_config.exists():
+                config_file = str(unified_config)
+            else:
+                config_file = str(old_config)
         
         try:
             if os.path.exists(config_file):
@@ -114,6 +126,7 @@ class ModelRouter:
     ) -> Dict[str, Any]:
         """
         Get the appropriate model configuration for a task.
+        Supports both old provider-based and new role-based configs.
         
         Args:
             task_type: Type of task (code, planning, reasoning, chat, etc.)
@@ -178,10 +191,21 @@ class ModelRouter:
             # Merge the rest
             config = {**config, **override_config}
         
-        # Get the default provider and model
-        provider_id = config.get("provider")
-        model_id = config.get("model")
-        options = config.get("options", {})
+        # Get the configuration - handle both old and new formats
+        if "role" in config:
+            # New role-based format
+            role = config.get("role", "general")
+            provider_id = None  # Let the unified client decide
+            model_id = None  # Let the unified client decide
+            options = config.get("options", {})
+            # Add role and task_type to options for unified client
+            options["role"] = role
+            options["task_type"] = task_type
+        else:
+            # Old provider-based format
+            provider_id = config.get("provider")
+            model_id = config.get("model")
+            options = config.get("options", {})
         
         # Budget awareness - check if this model is within budget and get alternatives if needed
         budget_warnings = []
@@ -292,10 +316,21 @@ class ModelRouter:
             # Merge the rest
             config = {**config, **override_config}
         
-        # Get the default provider and model
-        provider_id = config.get("provider")
-        model_id = config.get("model")
-        options = config.get("options", {})
+        # Get the configuration - handle both old and new formats
+        if "role" in config:
+            # New role-based format
+            role = config.get("role", "general")
+            provider_id = None  # Let the unified client decide
+            model_id = None  # Let the unified client decide
+            options = config.get("options", {})
+            # Add role and task_type to options for unified client
+            options["role"] = role
+            options["task_type"] = task_type
+        else:
+            # Old provider-based format
+            provider_id = config.get("provider")
+            model_id = config.get("model")
+            options = config.get("options", {})
         
         # Budget awareness - check if this model is within budget and get alternatives if needed
         budget_warnings = []

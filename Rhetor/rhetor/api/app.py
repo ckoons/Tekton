@@ -163,7 +163,7 @@ except ImportError as e:
 
 # Add AI Specialist endpoints
 try:
-    from .ai_specialist_endpoints import router as ai_router
+    from .ai_specialist_endpoints_unified import router as ai_router
     app.include_router(ai_router)
     logger.info("AI Specialist endpoints added to Rhetor API")
 except ImportError as e:
@@ -564,53 +564,8 @@ async def create_budget_policy(request: BudgetPolicyRequest):
         raise HTTPException(status_code=400, detail=str(e))
 
 
-# AI Specialist endpoints
-@routers.v1.get("/specialists")
-async def list_specialists():
-    """List all AI specialists."""
-    if not component or not component.initialized:
-        raise HTTPException(status_code=503, detail="Rhetor not initialized")
-    
-    specialists = await component.ai_specialist_manager.list_specialists()
-    return {"specialists": specialists}
-
-
-@routers.v1.get("/specialists/{specialist_id}")
-async def get_specialist(specialist_id: str):
-    """Get information about a specific specialist."""
-    if not component or not component.initialized:
-        raise HTTPException(status_code=503, detail="Rhetor not initialized")
-    
-    specialist = await component.ai_specialist_manager.get_specialist(specialist_id)
-    if not specialist:
-        raise HTTPException(status_code=404, detail=f"Specialist not found: {specialist_id}")
-    return specialist
-
-
-@routers.v1.post("/specialists/{specialist_id}/start")
-async def start_specialist(specialist_id: str):
-    """Start a specialist."""
-    if not component or not component.initialized:
-        raise HTTPException(status_code=503, detail="Rhetor not initialized")
-    
-    try:
-        result = await component.ai_specialist_manager.start_specialist(specialist_id)
-        return result
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
-
-
-@routers.v1.post("/specialists/{specialist_id}/stop")
-async def stop_specialist(specialist_id: str):
-    """Stop a specialist."""
-    if not component or not component.initialized:
-        raise HTTPException(status_code=503, detail="Rhetor not initialized")
-    
-    try:
-        result = await component.ai_specialist_manager.stop_specialist(specialist_id)
-        return result
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
+# AI Specialist endpoints are now handled by the unified endpoints in ai_specialist_endpoints_unified.py
+# The old internal specialist system has been removed in favor of the AI Registry
 
 
 # WebSocket endpoint for streaming

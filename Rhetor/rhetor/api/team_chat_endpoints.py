@@ -16,7 +16,7 @@ from sse_starlette.sse import EventSourceResponse
 from pydantic import BaseModel, Field
 
 from ..core.ai_socket_registry import get_socket_registry
-from ..core.ai_specialist_manager import get_ai_specialist_manager
+# AI specialist management now handled by AI Registry
 
 logger = logging.getLogger(__name__)
 

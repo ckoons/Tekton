@@ -136,7 +136,7 @@ class RhetorInterface:
             List of session information dictionaries
         """
         try:
-            response = await self._request("GET", "/api/v1/specialists", params={"active_only": "true"})
+            response = await self._request("GET", "/api/ai/specialists", params={"active_only": "true"})
             
             # Transform specialists to session format
             sessions = []
@@ -227,13 +227,13 @@ class RhetorInterface:
         try:
             # First try to deactivate
             try:
-                await self._request("POST", f"/api/v1/specialists/{context_id}/stop")
+                await self._request("POST", f"/api/ai/specialists/{context_id}/fire")
             except Exception:
                 # Deactivation might not be implemented yet
                 pass
             
             # Then reactivate
-            response = await self._request("POST", f"/api/v1/specialists/{context_id}/start")
+            response = await self._request("POST", f"/api/ai/specialists/{context_id}/hire", json={"ai_id": context_id, "role": "general"})
             return response.get("success", False)
             
         except Exception as e:

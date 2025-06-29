@@ -95,7 +95,7 @@ async def create_dynamic_specialist(
     """
     try:
         from ..specialist_templates import create_from_template
-        from .tools_integration import get_mcp_tools_integration
+        from .tools_integration_unified import get_mcp_tools_integration
         
         # Generate unique specialist ID
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -123,7 +123,7 @@ async def create_dynamic_specialist(
         
         if integration and integration.specialist_manager:
             # Import the proper dataclass
-            from rhetor.core.ai_specialist_manager import AISpecialistConfig
+            # AISpecialistConfig is deprecated - using AI Registry instead
             
             # Register the new specialist configuration
             specialist_config = AISpecialistConfig(
@@ -213,7 +213,7 @@ async def clone_specialist(
         Dictionary containing clone result and new specialist details
     """
     try:
-        from .tools_integration import get_mcp_tools_integration
+        from .tools_integration_unified import get_mcp_tools_integration
         
         integration = get_mcp_tools_integration()
         
@@ -262,7 +262,7 @@ async def clone_specialist(
                 clone_config["personality"]["custom_name"] = new_specialist_name
             
             # Import the proper dataclass
-            from rhetor.core.ai_specialist_manager import AISpecialistConfig
+            # AISpecialistConfig is deprecated - using AI Registry instead
             
             # Register the clone
             clone_specialist = AISpecialistConfig(
@@ -326,7 +326,7 @@ async def modify_specialist(
         Dictionary containing modification result
     """
     try:
-        from .tools_integration import get_mcp_tools_integration
+        from .tools_integration_unified import get_mcp_tools_integration
         
         integration = get_mcp_tools_integration()
         
@@ -411,7 +411,7 @@ async def deactivate_specialist(
         Dictionary containing deactivation result
     """
     try:
-        from .tools_integration import get_mcp_tools_integration
+        from .tools_integration_unified import get_mcp_tools_integration
         
         integration = get_mcp_tools_integration()
         
@@ -489,7 +489,7 @@ async def get_specialist_metrics(
         Dictionary containing specialist metrics
     """
     try:
-        from .tools_integration import get_mcp_tools_integration
+        from .tools_integration_unified import get_mcp_tools_integration
         
         integration = get_mcp_tools_integration()
         

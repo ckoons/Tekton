@@ -19,6 +19,26 @@ from dataclasses import dataclass, asdict
 import psutil
 import statistics
 
+# Try to import colorama for colored output
+try:
+    from colorama import init, Fore, Style
+    init(autoreset=True)
+    HAS_COLOR = True
+except ImportError:
+    # Fallback - no colors
+    HAS_COLOR = False
+    class Fore:
+        GREEN = ''
+        RED = ''
+        YELLOW = ''
+        BLUE = ''
+        CYAN = ''
+        MAGENTA = ''
+        RESET = ''
+    class Style:
+        BRIGHT = ''
+        RESET_ALL = ''
+
 # Find the Tekton root directory by looking for a marker file
 def find_tekton_root():
     """Find the Tekton root directory by looking for marker files"""
@@ -787,9 +807,15 @@ class EnhancedStatusChecker:
             }
             status_display = f"{status_symbols.get(metrics.status, '❓')} {metrics.status}"
             
-            # AI status - just the model name, no emoji
+            # AI status - with color based on component health
             if metrics.ai_status:
-                ai_display = metrics.ai_status
+                # Color based on component status
+                if metrics.status == "healthy":
+                    ai_display = f"{Fore.GREEN}{metrics.ai_status}{Style.RESET_ALL}"
+                elif metrics.status in ["unhealthy", "not_running", "error"]:
+                    ai_display = f"{Fore.RED}{metrics.ai_status}{Style.RESET_ALL}"
+                else:  # timeout, starting, unknown
+                    ai_display = f"{Fore.YELLOW}{metrics.ai_status}{Style.RESET_ALL}"
             else:
                 ai_display = "None"
                 
@@ -845,9 +871,15 @@ class EnhancedStatusChecker:
             }
             status_display = f"{status_symbols.get(metrics.status, '❓')} {metrics.status}"
             
-            # AI status - just the model name, no emoji
+            # AI status - with color based on component health
             if metrics.ai_status:
-                ai_display = metrics.ai_status
+                # Color based on component status
+                if metrics.status == "healthy":
+                    ai_display = f"{Fore.GREEN}{metrics.ai_status}{Style.RESET_ALL}"
+                elif metrics.status in ["unhealthy", "not_running", "error"]:
+                    ai_display = f"{Fore.RED}{metrics.ai_status}{Style.RESET_ALL}"
+                else:  # timeout, starting, unknown
+                    ai_display = f"{Fore.YELLOW}{metrics.ai_status}{Style.RESET_ALL}"
             else:
                 ai_display = "None"
                 

@@ -46,6 +46,29 @@ Currently, operational data (landmarks, registrations, messages, etc.) grows unb
    - Restore capabilities
    - S3/cloud storage option
 
+4. **AI Config Sync Service**
+   - Run `shared/services/ai_config_sync.py` periodically
+   - Syncs AI Registry state to `config/tekton_ai_config.json`
+   - Monitors registry update flag set by Rhetor
+   - Ensures config reflects runtime AI roster changes
+
+## Running Services
+
+### AI Config Sync Service
+```bash
+# Run the AI config sync service
+cd $TEKTON_ROOT
+python3 shared/services/ai_config_sync.py
+
+# Or run in background
+nohup python3 shared/services/ai_config_sync.py > ~/.tekton/logs/ai_config_sync.log 2>&1 &
+```
+
+This service:
+- Checks every 30 seconds for registry updates
+- Syncs changes from AI Registry to config file
+- Maintains config/tekton_ai_config.json as source of truth
+
 ## Technical Design
 
 ### Architecture

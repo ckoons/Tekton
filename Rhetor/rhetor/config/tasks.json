@@ -1,84 +1,114 @@
 {
   "code": {
-    "provider": "anthropic",
-    "model": "claude-3-opus-20240229",
+    "role": "code-analysis",
     "options": {
       "temperature": 0.2,
       "max_tokens": 4000,
-      "fallback_provider": "openai",
-      "fallback_model": "gpt-4-turbo"
+      "priority": "high"
     }
   },
   "planning": {
-    "provider": "anthropic",
-    "model": "claude-3-sonnet-20240229",
+    "role": "planning",
     "options": {
       "temperature": 0.7,
       "max_tokens": 4000,
-      "fallback_provider": "openai",
-      "fallback_model": "gpt-4o"
+      "priority": "medium"
     }
   },
   "reasoning": {
-    "provider": "anthropic",
-    "model": "claude-3-sonnet-20240229",
+    "role": "knowledge-synthesis",
     "options": {
       "temperature": 0.5,
       "max_tokens": 4000,
-      "fallback_provider": "openai",
-      "fallback_model": "gpt-4o"
+      "priority": "medium"
     }
   },
   "chat": {
-    "provider": "anthropic",
-    "model": "claude-3-haiku-20240307",
+    "role": "messaging",
     "options": {
       "temperature": 0.8,
       "max_tokens": 2000,
-      "fallback_provider": "openai",
-      "fallback_model": "gpt-3.5-turbo"
+      "priority": "low"
     }
   },
   "default": {
-    "provider": "anthropic",
-    "model": "claude-3-sonnet-20240229",
+    "role": "orchestration",
     "options": {
       "temperature": 0.7,
       "max_tokens": 4000,
-      "fallback_provider": "openai",
-      "fallback_model": "gpt-4o"
+      "priority": "medium"
     }
   },
   "ergon": {
-    "provider": "anthropic",
-    "model": "claude-3-sonnet-20240229",
+    "role": "agent-coordination",
     "options": {
       "temperature": 0.7,
-      "max_tokens": 4000
+      "max_tokens": 4000,
+      "priority": "high"
     }
   },
   "hermes": {
-    "provider": "anthropic",
-    "model": "claude-3-haiku-20240307",
+    "role": "messaging",
     "options": {
       "temperature": 0.7,
-      "max_tokens": 2000
+      "max_tokens": 2000,
+      "priority": "high"
     }
   },
   "telos": {
-    "provider": "anthropic",
-    "model": "claude-3-opus-20240229",
+    "role": "planning",
     "options": {
       "temperature": 0.7,
-      "max_tokens": 4000
+      "max_tokens": 4000,
+      "priority": "high"
     }
   },
   "engram": {
-    "provider": "anthropic",
-    "model": "claude-3-haiku-20240307",
+    "role": "memory",
     "options": {
       "temperature": 0.5,
-      "max_tokens": 2000
+      "max_tokens": 2000,
+      "priority": "high"
+    }
+  },
+  "orchestration": {
+    "role": "orchestration",
+    "options": {
+      "temperature": 0.7,
+      "max_tokens": 4000,
+      "priority": "high"
+    }
+  },
+  "knowledge-synthesis": {
+    "role": "knowledge-synthesis",
+    "options": {
+      "temperature": 0.6,
+      "max_tokens": 4000,
+      "priority": "medium"
+    }
+  },
+  "specialist-management": {
+    "role": "specialist-management",
+    "options": {
+      "temperature": 0.5,
+      "max_tokens": 3000,
+      "priority": "high"
+    }
+  },
+  "workflow-design": {
+    "role": "workflow-design",
+    "options": {
+      "temperature": 0.6,
+      "max_tokens": 3000,
+      "priority": "medium"
+    }
+  },
+  "learning": {
+    "role": "learning",
+    "options": {
+      "temperature": 0.7,
+      "max_tokens": 3000,
+      "priority": "medium"
     }
   }
 }

@@ -64,10 +64,10 @@ async def send_message_to_specialist_stream(
     """
     try:
         # Try to use live integration if available
-        from .tools_integration import get_mcp_tools_integration
+        from .tools_integration_unified import get_mcp_tools_integration
         integration = get_mcp_tools_integration()
         
-        if integration and integration.specialist_manager:
+        if integration:
             # Check if we have a streaming callback
             if _stream_callback:
                 # Send initial progress
@@ -77,7 +77,9 @@ async def send_message_to_specialist_stream(
                 })
                 
                 # For live integration with streaming
-                specialist_config = integration.specialist_manager.specialists.get(specialist_id)
+                # Get specialist info from registry
+                specialist_info = await integration.discovery.get_ai_info(specialist_id)
+                specialist_config = specialist_info if specialist_info else None
                 if not specialist_config:
                     await _stream_callback("error", {
                         "message": f"Specialist {specialist_id} not found"
@@ -298,7 +300,7 @@ async def orchestrate_team_chat_stream(
     """
     try:
         # Try to use live integration if available
-        from .tools_integration import get_mcp_tools_integration
+        from .tools_integration_unified import get_mcp_tools_integration
         integration = get_mcp_tools_integration()
         
         conversation = []
