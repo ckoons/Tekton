@@ -9,11 +9,19 @@ import argparse
 import asyncio
 import json
 import sys
+import os
 from typing import Optional
 from pathlib import Path
 
-# Add Tekton root to path
-tekton_root = Path(__file__).parent.parent
+# Add Tekton root to path - make it location-independent
+script_dir = Path(__file__).parent.absolute()
+tekton_root = script_dir.parent
+
+# Handle both direct execution and symlinked execution
+if 'Tekton' not in str(tekton_root):
+    # If symlinked, find Tekton root from environment or default location
+    tekton_root = Path(os.environ.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton'))
+
 sys.path.insert(0, str(tekton_root))
 
 from shared.ai.ai_discovery_service import AIDiscoveryService

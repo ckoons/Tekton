@@ -52,6 +52,13 @@ Currently, operational data (landmarks, registrations, messages, etc.) grows unb
    - Monitors registry update flag set by Rhetor
    - Ensures config reflects runtime AI roster changes
 
+5. **Unified AI Platform Integration** (✅ Completed June 2025)
+   - Replaced old internal AI specialist system with unified AI Registry
+   - All AI specialists now auto-register with `shared/ai/registry_client.py`
+   - Rhetor acts as hiring manager via `/api/ai/specialists` endpoints
+   - MCP tools integration updated to use AI Registry
+   - Discovery service provides `aish` and other clients with AI discovery
+
 ## Running Services
 
 ### AI Config Sync Service
@@ -273,6 +280,79 @@ class StandardComponentBase:
 3. Verify behavior matches expectations
 4. Switch over component by component
 5. Deprecate simple solution
+
+## AI Platform Integration Details
+
+### API Changes
+The old Rhetor specialist endpoints have been replaced with unified AI Registry endpoints:
+
+**Old Endpoints (Removed):**
+- `GET /api/v1/specialists` - List specialists
+- `POST /api/v1/specialists/{id}/start` - Start specialist
+- `POST /api/v1/specialists/{id}/stop` - Stop specialist
+
+**New Unified Endpoints:**
+- `GET /api/ai/specialists` - List all AIs from registry
+- `POST /api/ai/specialists/{id}/hire` - Hire an AI (add to roster)
+- `POST /api/ai/specialists/{id}/fire` - Fire an AI (remove from roster)
+- `GET /api/ai/roster` - Get Rhetor's current hired roster
+- `POST /api/ai/specialists/{id}/reassign` - Reassign AI to new role
+
+### Key Components
+1. **AI Registry** (`shared/ai/registry_client.py`)
+   - Thread-safe registry with file locking
+   - Unified discovery for both AI types
+   - Role-based AI selection
+   - Socket info for Greek Chorus AIs
+
+2. **AI Discovery Service** (`shared/ai/ai_discovery_service.py`)
+   - List AIs by role (both types)
+   - Find best AI for a task
+   - Get AI connection info with socket details
+
+3. **Dual Communication Architecture**:
+   - **Greek Chorus**: Direct TCP socket (JSON protocol)
+   - **Rhetor Specialists**: HTTP API endpoints
+   - **aish**: Smart routing based on AI type
+
+4. **Unified Endpoints** (`Rhetor/rhetor/api/ai_specialist_endpoints_unified.py`)
+   - Rhetor as hiring manager (for managed specialists)
+   - Roster management
+   - Config sync triggers
+
+### AI Architecture - Two Types of AIs
+
+**1. Greek Chorus AIs** (Independent)
+- Run on dedicated socket ports (45000-50000)
+- Direct TCP socket communication
+- Auto-register with AI Registry for discovery
+- Examples: apollo-ai, athena-ai, prometheus-ai
+
+**2. Rhetor Specialists** (Managed)
+- Managed through Rhetor's API endpoints
+- Communication via HTTP API calls
+- Rhetor acts as hiring manager
+- Examples: rhetor-orchestrator, planning-specialist
+
+### Testing with aish
+```bash
+# List available AIs (discovers both types)
+aish -l
+
+# Find AIs by role
+ai-discover --json list --role planning
+
+# Use Greek Chorus AI (direct socket)
+echo "Analyze this code" | aish --ai apollo
+
+# Use Rhetor specialist (via API)
+echo "Plan a feature" | rhetor
+
+# Pipeline mixing both types
+echo "Complex task" | apollo | rhetor | athena
+```
+
+**Note**: aish automatically detects AI type and uses appropriate communication method.
 
 ## Future Enhancements
 1. **Cloud Storage Integration**: S3/GCS for archives
