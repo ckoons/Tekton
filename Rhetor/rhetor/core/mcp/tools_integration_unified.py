@@ -9,7 +9,6 @@ import logging
 import os
 import sys
 import json
-import socket
 import asyncio
 from typing import Dict, Any, List, Optional
 from datetime import datetime
@@ -321,79 +320,54 @@ class MCPToolsIntegrationUnified:
         """
         host = ai_info['connection'].get('host', 'localhost')
         port = ai_info['connection']['port']
+        specialist_id = ai_info['id']
         
         try:
-            # Create socket with timeout
-            sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            sock.settimeout(2.0)  # Connection timeout
+            # Use the new shared socket client
+            from shared.ai.socket_client import AISocketClient
             
-            # Connect
-            await asyncio.get_event_loop().run_in_executor(
-                None, sock.connect, (host, port)
+            client = AISocketClient(
+                default_timeout=timeout,
+                connection_timeout=2.0,
+                max_retries=0  # No retries for team chat to avoid delays
             )
             
-            # Switch to response timeout
-            sock.settimeout(timeout)
+            logger.info(f"Sending message to {specialist_id} at {host}:{port}")
             
-            # Prepare request
-            request = {
-                "type": "chat",
-                "content": message
-            }
-            if context:
-                request["context"] = context
-            
-            # Send request (newline-delimited JSON)
-            request_data = json.dumps(request).encode() + b'\n'
-            await asyncio.get_event_loop().run_in_executor(
-                None, sock.sendall, request_data
+            result = await client.send_message(
+                host=host,
+                port=port,
+                message=message,
+                context=context,
+                timeout=timeout
             )
             
-            # Read response with proper buffering
-            buffer = b""
-            while b'\n' not in buffer:
-                chunk = await asyncio.get_event_loop().run_in_executor(
-                    None, sock.recv, 4096
-                )
-                if not chunk:
-                    break
-                buffer += chunk
-            
-            sock.close()
-            
-            # Parse response
-            if buffer:
-                line = buffer.split(b'\n', 1)[0]
-                response = json.loads(line.decode())
-                
-                # Extract content
-                content = response.get('content', response.get('response', ''))
-                
+            if result["success"]:
+                logger.info(f"Got response from {specialist_id}: {len(result['response'])} chars")
                 return {
                     "success": True,
-                    "response": content,
-                    "specialist_id": ai_info['id'],
-                    "type": "socket"
+                    "response": result["response"],
+                    "specialist_id": specialist_id,
+                    "type": "socket",
+                    "model": result.get("model", "unknown"),
+                    "elapsed_time": result.get("elapsed_time", 0)
                 }
             else:
+                logger.warning(f"Failed to get response from {specialist_id}: {result['error']}")
                 return {
                     "success": False,
-                    "error": "No response from specialist",
-                    "response": None
+                    "error": result["error"],
+                    "response": None,
+                    "specialist_id": specialist_id
                 }
                 
-        except socket.timeout:
-            return {
-                "success": False,
-                "error": "Connection timeout - specialist may be unavailable",
-                "response": None
-            }
         except Exception as e:
-            logger.error(f"Socket communication error: {e}")
+            logger.error(f"Socket communication error for {specialist_id}: {e}", exc_info=True)
             return {
                 "success": False,
                 "error": f"Socket error: {str(e)}",
-                "response": None
+                "response": None,
+                "specialist_id": specialist_id
             }
     
     async def _send_via_api(self, specialist_id: str, message: str,
