@@ -8,6 +8,9 @@ replacing the old specialist manager with registry-based discovery.
 import logging
 import os
 import sys
+import json
+import socket
+import asyncio
 from typing import Dict, Any, List, Optional
 from datetime import datetime
 
@@ -89,25 +92,41 @@ class MCPToolsIntegrationUnified:
                                        context: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
         """Send a message to an AI specialist.
         
+        This method handles both socket-based (Greek Chorus) and API-based (Rhetor) specialists.
+        
         Args:
-            specialist_id: ID of the specialist
+            specialist_id: ID of the specialist (e.g., 'athena-ai', 'apollo-ai')
             message: Message content
             context: Optional context
             
         Returns:
-            Response from specialist
+            Response from specialist with success status
         """
         try:
             # Get specialist info
             ai_info = await self.discovery.get_ai_info(specialist_id)
             if not ai_info:
-                return {"success": False, "error": f"Specialist {specialist_id} not found"}
+                return {
+                    "success": False, 
+                    "error": f"Specialist {specialist_id} not found",
+                    "response": None
+                }
             
-            # TODO: Implement actual message sending via socket connection
-            raise NotImplementedError(f"SendMessageToSpecialist not implemented for {specialist_id}")
+            # Check if this is a socket-based AI (Greek Chorus)
+            if 'connection' in ai_info and ai_info['connection'].get('port'):
+                # Socket-based communication for Greek Chorus AIs
+                return await self._send_via_socket(ai_info, message, context)
+            else:
+                # API-based communication via Rhetor
+                return await self._send_via_api(specialist_id, message, context)
+                
         except Exception as e:
             logger.error(f"Failed to send message to {specialist_id}: {e}")
-            return {"success": False, "error": str(e)}
+            return {
+                "success": False, 
+                "error": str(e),
+                "response": None
+            }
     
     async def get_specialist_conversation_history(self, specialist_id: str, 
                                                 limit: int = 10) -> Dict[str, Any]:
@@ -134,6 +153,179 @@ class MCPToolsIntegrationUnified:
         """
         # TODO: Implement orchestration configuration
         raise NotImplementedError("ConfigureOrchestration not implemented yet")
+    
+    async def _send_via_socket(self, ai_info: Dict[str, Any], message: str, 
+                              context: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+        """Send message via direct socket connection (Greek Chorus AIs).
+        
+        Args:
+            ai_info: AI information including connection details
+            message: Message to send
+            context: Optional context
+            
+        Returns:
+            Response dictionary with success status
+        """
+        host = ai_info['connection'].get('host', 'localhost')
+        port = ai_info['connection']['port']
+        
+        try:
+            # Create socket with timeout
+            sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            sock.settimeout(2.0)  # Connection timeout
+            
+            # Connect
+            await asyncio.get_event_loop().run_in_executor(
+                None, sock.connect, (host, port)
+            )
+            
+            # Switch to response timeout
+            sock.settimeout(30.0)
+            
+            # Prepare request
+            request = {
+                "type": "chat",
+                "content": message
+            }
+            if context:
+                request["context"] = context
+            
+            # Send request (newline-delimited JSON)
+            request_data = json.dumps(request).encode() + b'\n'
+            await asyncio.get_event_loop().run_in_executor(
+                None, sock.sendall, request_data
+            )
+            
+            # Read response with proper buffering
+            buffer = b""
+            while b'\n' not in buffer:
+                chunk = await asyncio.get_event_loop().run_in_executor(
+                    None, sock.recv, 4096
+                )
+                if not chunk:
+                    break
+                buffer += chunk
+            
+            sock.close()
+            
+            # Parse response
+            if buffer:
+                line = buffer.split(b'\n', 1)[0]
+                response = json.loads(line.decode())
+                
+                # Extract content
+                content = response.get('content', response.get('response', ''))
+                
+                return {
+                    "success": True,
+                    "response": content,
+                    "specialist_id": ai_info['id'],
+                    "type": "socket"
+                }
+            else:
+                return {
+                    "success": False,
+                    "error": "No response from specialist",
+                    "response": None
+                }
+                
+        except socket.timeout:
+            return {
+                "success": False,
+                "error": "Connection timeout - specialist may be unavailable",
+                "response": None
+            }
+        except Exception as e:
+            logger.error(f"Socket communication error: {e}")
+            return {
+                "success": False,
+                "error": f"Socket error: {str(e)}",
+                "response": None
+            }
+    
+    async def _send_via_api(self, specialist_id: str, message: str,
+                           context: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+        """Send message via Rhetor API.
+        
+        Args:
+            specialist_id: Specialist ID
+            message: Message to send
+            context: Optional context
+            
+        Returns:
+            Response dictionary with success status
+        """
+        try:
+            # Use aiohttp if available, otherwise fallback to requests
+            try:
+                import aiohttp
+                async with aiohttp.ClientSession() as session:
+                    payload = {
+                        "specialist_id": specialist_id,
+                        "message": message,
+                        "context": context or {}
+                    }
+                    
+                    async with session.post(
+                        f"{self.hermes_url}/api/chat/{specialist_id}",
+                        json=payload,
+                        timeout=aiohttp.ClientTimeout(total=30)
+                    ) as response:
+                        if response.status == 200:
+                            data = await response.json()
+                            return {
+                                "success": True,
+                                "response": data.get('response', ''),
+                                "specialist_id": specialist_id,
+                                "type": "api"
+                            }
+                        else:
+                            error_text = await response.text()
+                            return {
+                                "success": False,
+                                "error": f"API error: {response.status} - {error_text}",
+                                "response": None
+                            }
+            except ImportError:
+                # Fallback to synchronous requests
+                import requests
+                payload = {
+                    "specialist_id": specialist_id,
+                    "message": message,
+                    "context": context or {}
+                }
+                
+                response = await asyncio.get_event_loop().run_in_executor(
+                    None,
+                    lambda: requests.post(
+                        f"{self.hermes_url}/api/chat/{specialist_id}",
+                        json=payload,
+                        timeout=30
+                    )
+                )
+                
+                if response.status_code == 200:
+                    data = response.json()
+                    return {
+                        "success": True,
+                        "response": data.get('response', ''),
+                        "specialist_id": specialist_id,
+                        "type": "api"
+                    }
+                else:
+                    return {
+                        "success": False,
+                        "error": f"API error: {response.status_code} - {response.text}",
+                        "response": None
+                    }
+                    
+        except Exception as e:
+            logger.error(f"API communication error: {e}")
+            return {
+                "success": False,
+                "error": f"API error: {str(e)}",
+                "response": None
+            }
 
 
 # Singleton instance
