@@ -19,6 +19,8 @@ tekton_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(sc
 if tekton_root not in sys.path:
     sys.path.insert(0, tekton_root)
 
+from landmarks import architecture_decision, integration_point
+
 from shared.ai.socket_client import AISocketClient
 from shared.ai.routing_engine import RoutingEngine
 from shared.ai.unified_registry import UnifiedAIRegistry
@@ -58,6 +60,13 @@ logger = logging.getLogger(__name__)
     target_component="AI Registry",
     protocol="Socket-based communication",
     data_flow="Request → Registry lookup → AI specialist → Response"
+)
+@architecture_decision(
+    title="Rhetor LLM Client Migration to Unified System",
+    rationale="Eliminate duplicate LLM client implementations by using shared AI infrastructure",
+    alternatives_considered=["Keep custom implementation", "Direct socket connections"],
+    impacts=["code_reduction", "consistency", "maintenance"],
+    decided_by="Casey"
 )
 class LLMClient:
     """

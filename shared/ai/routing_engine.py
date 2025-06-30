@@ -13,6 +13,13 @@ from dataclasses import dataclass
 from collections import defaultdict
 import random
 
+from landmarks import (
+    architecture_decision,
+    performance_boundary,
+    danger_zone,
+    state_checkpoint
+)
+
 from .unified_registry import UnifiedAIRegistry, AISpecialist, AIStatus
 from .socket_client import AISocketClient, StreamChunk
 
@@ -43,6 +50,20 @@ class RouteResult:
     reason: str = ""
 
 
+@architecture_decision(
+    title="Rule-Based AI Routing Engine",
+    rationale="Enable intelligent routing of AI requests based on context, capabilities, and performance",
+    alternatives_considered=["Random selection", "Round-robin", "Static mapping"],
+    impacts=["performance", "flexibility", "complexity"],
+    decided_by="Casey"
+)
+@state_checkpoint(
+    title="Routing State and Metrics",
+    state_type="cache",
+    persistence=False,
+    consistency_requirements="In-memory only, resets on restart",
+    recovery_strategy="Rebuild from registry on startup"
+)
 class RoutingEngine:
     """
     Intelligent routing engine for AI requests.
@@ -74,6 +95,17 @@ class RoutingEngine:
         """Set default fallback chain for when no rules match"""
         self.default_fallback_chain = ai_ids
         
+    @performance_boundary(
+        title="Message Routing Decision",
+        sla="<50ms routing decision time",
+        optimization_notes="Uses cached registry data, applies rules in priority order"
+    )
+    @danger_zone(
+        title="Complex Routing Logic",
+        risk_level="medium",
+        risks=["Routing loops", "Availability cascades", "Load imbalance"],
+        mitigation="Fallback limits, exclude lists, load balancing"
+    )
     async def route_message(self,
                            message: str,
                            context: Optional[Dict[str, Any]] = None,

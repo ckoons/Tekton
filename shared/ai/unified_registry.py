@@ -29,6 +29,15 @@ import fcntl
 import tempfile
 from collections import defaultdict
 
+from landmarks import (
+    architecture_decision,
+    performance_boundary,
+    integration_point,
+    state_checkpoint,
+    danger_zone,
+    api_contract
+)
+
 from .socket_client import AISocketClient
 
 logger = logging.getLogger(__name__)
@@ -253,6 +262,20 @@ class MemoryBackend(AIRegistryBackend):
         return list(self._specialists.keys())
 
 
+@architecture_decision(
+    title="Unified AI Registry Architecture",
+    rationale="Create a single source of truth for all AI specialists with event-driven updates and health monitoring",
+    alternatives_considered=["Distributed registries", "Static configuration", "Service mesh"],
+    impacts=["scalability", "consistency", "observability"],
+    decided_by="Casey"
+)
+@state_checkpoint(
+    title="Central AI Registry State",
+    state_type="singleton",
+    persistence=True,
+    consistency_requirements="Eventually consistent with file locking",
+    recovery_strategy="Reload from persistent storage on restart"
+)
 class UnifiedAIRegistry:
     """
     Unified AI Registry with event-driven updates and health monitoring.
@@ -390,6 +413,12 @@ class UnifiedAIRegistry:
         """Get a specific AI specialist"""
         return await self.backend.get(ai_id)
     
+    @performance_boundary(
+        title="AI Discovery with Caching",
+        sla="<10ms for cached queries, <100ms for fresh queries",
+        optimization_notes="Uses in-memory cache with 60s TTL, filters are applied in-memory",
+        metrics={"cache_ttl": "60s", "typical_results": "1-5 AIs"}
+    )
     async def discover(self,
                       role: Optional[str] = None,
                       capabilities: Optional[List[str]] = None,

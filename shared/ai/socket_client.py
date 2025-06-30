@@ -25,6 +25,14 @@ from contextlib import asynccontextmanager
 from dataclasses import dataclass
 from enum import Enum
 
+from landmarks import (
+    architecture_decision,
+    performance_boundary,
+    integration_point,
+    state_checkpoint,
+    danger_zone
+)
+
 logger = logging.getLogger(__name__)
 
 
@@ -46,6 +54,19 @@ class StreamChunk:
     is_final: bool = False
 
 
+@architecture_decision(
+    title="Unified AI Socket Client Architecture",
+    rationale="Centralize all AI socket communication to ensure consistent protocol handling and error management",
+    alternatives_considered=["Individual socket implementations per component", "REST API only", "gRPC"],
+    impacts=["reliability", "performance", "maintainability"],
+    decided_by="Casey"
+)
+@integration_point(
+    title="Greek Chorus AI Integration",
+    target_component="Greek Chorus AIs (ports 45000-50000)",
+    protocol="Socket/NDJSON",
+    data_flow="Bidirectional message exchange with streaming support"
+)
 class AISocketClient:
     """
     Async socket client for AI specialist communication.
@@ -79,6 +100,12 @@ class AISocketClient:
         self.debug = debug
         self._connection_pool: Dict[Tuple[str, int], asyncio.StreamWriter] = {}
         
+    @performance_boundary(
+        title="AI Socket Message Exchange",
+        sla="<30s timeout per message",
+        optimization_notes="Uses connection pooling and exponential backoff retry",
+        metrics={"default_timeout": "30s", "max_retries": 3}
+    )
     async def send_message(self,
                           host: str,
                           port: int,
@@ -202,6 +229,17 @@ class AISocketClient:
             "elapsed_time": time.time() - start_time
         }
     
+    @architecture_decision(
+        title="Native Streaming Support",
+        rationale="Support real-time streaming responses for better UX and reduced latency",
+        alternatives_considered=["Polling", "Long polling", "WebSockets"],
+        impacts=["user_experience", "memory_usage", "complexity"]
+    )
+    @performance_boundary(
+        title="Streaming Response Handler",
+        sla="<100ms first token latency",
+        optimization_notes="Yields chunks immediately without buffering"
+    )
     async def send_message_stream(self,
                                  host: str,
                                  port: int,
