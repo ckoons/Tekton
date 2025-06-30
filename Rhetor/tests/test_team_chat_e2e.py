@@ -21,7 +21,7 @@ import os
 # Add parent directory to path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from rhetor.core.ai_socket_registry import get_socket_registry
+# from rhetor.core.ai_socket_registry import get_socket_registry  # Removed - use unified registry
 
 
 async def test_team_chat_basic():

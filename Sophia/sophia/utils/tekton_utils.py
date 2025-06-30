@@ -38,7 +38,7 @@ AVAILABLE_UTILS = [
     "tekton_http",
     "tekton_config",
     "tekton_logging",
-    "tekton_websocket",
+    # "tekton_websocket",  # Removed - unused implementation
     "tekton_registration",
     "tekton_errors",
     "tekton_lifecycle",
@@ -294,11 +294,12 @@ def create_websocket_manager() -> Any:
     Returns:
         WebSocket manager or None if not available
     """
-    if has_util("tekton_websocket"):
-        return tekton_utils["tekton_websocket"].WebSocketManager()
-    else:
-        logger.warning("tekton_websocket not available")
-        return None
+    # tekton_websocket has been removed - it was an unused implementation
+    # if has_util("tekton_websocket"):
+    #     return tekton_utils["tekton_websocket"].WebSocketManager()
+    # else:
+    logger.warning("tekton_websocket not available (removed - unused implementation)")
+    return None
         
 # Component lifecycle functions
 

@@ -51,7 +51,7 @@ SHARED_UTILS = [
     "tekton.utils.tekton_http",
     "tekton.utils.tekton_config",
     "tekton.utils.tekton_logging",
-    "tekton.utils.tekton_websocket",
+    # "tekton.utils.tekton_websocket",  # Removed - unused implementation
     "tekton.utils.tekton_registration",
     "tekton.utils.tekton_errors",
     "tekton.utils.tekton_lifecycle",
