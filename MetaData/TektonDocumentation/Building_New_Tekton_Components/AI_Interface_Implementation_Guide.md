@@ -4,6 +4,8 @@
 
 This guide provides comprehensive instructions for implementing AI interfaces in Tekton components. Every Tekton component should leverage AI capabilities to enhance user experience, automate complex tasks, and provide intelligent insights.
 
+**Important Update (June 2025)**: This guide has been updated to use the new unified AI system. All examples now use the real AI infrastructure in `/Tekton/shared/ai/` that connects to Greek Chorus AIs on ports 45000-50000.
+
 ## Core AI Integration Points
 
 ### 1. Chat Interface (Primary AI Interaction)
@@ -111,8 +113,14 @@ async def analyze_data(
         >>> await analyze_data('{"sales": [100, 150, 120]}', "patterns")
         {"patterns": ["Upward trend with mid-period dip"], "insights": [...]}
     """
-    # Get Rhetor for AI analysis
-    rhetor_client = mcp.get_dependency("rhetor")
+    # Get unified AI system for analysis
+    from Tekton.shared.ai.unified_registry import UnifiedAIRegistry
+    from Tekton.shared.ai.routing_engine import RoutingEngine
+    
+    registry = UnifiedAIRegistry()
+    await registry.discover()
+    
+    routing_engine = RoutingEngine(registry)
     
     # Construct analysis prompt
     prompt = f"""
@@ -129,14 +137,22 @@ async def analyze_data(
     Format the response as structured JSON.
     """
     
+    # Route to appropriate AI specialist
+    specialist = await routing_engine.route_message(
+        message=prompt,
+        intent="data_analysis",
+        capabilities_needed=["analysis", analysis_type]
+    )
+    
     # Get AI analysis
-    response = await rhetor_client.call_tool(
-        "generate_response",
-        {
-            "prompt": prompt,
-            "context": f"data_analysis_{analysis_type}",
-            "output_format": "json"
-        }
+    from Tekton.shared.ai.socket_client import AISocketClient
+    client = AISocketClient()
+    
+    response = await client.send_message(
+        host=specialist['host'],
+        port=specialist['port'],
+        message=prompt,
+        context={"analysis_type": analysis_type}
     )
     
     # Store analysis in Engram for future reference
@@ -789,10 +805,24 @@ async def get_ai_analysis(data: str) -> Dict[str, Any]:
     cache_key = f"analysis_{hash(data)}"
     
     async def compute_analysis():
-        rhetor = mcp.get_dependency("rhetor")
-        return await rhetor.call_tool(
-            "analyze_data",
-            {"data": data}
+        from Tekton.shared.ai.unified_registry import UnifiedAIRegistry
+        from Tekton.shared.ai.socket_client import AISocketClient
+        
+        registry = UnifiedAIRegistry()
+        await registry.discover()
+        
+        # Find analysis specialist
+        analysts = registry.get_specialists_by_capability("analysis")
+        if not analysts:
+            raise ValueError("No analysis specialists available")
+        
+        specialist = analysts[0]
+        client = AISocketClient()
+        
+        return await client.send_message(
+            host=specialist['host'],
+            port=specialist['port'],
+            message=f"Analyze this data: {data}"
         )
     
     return await ai_cache.get_or_compute(cache_key, compute_analysis)
@@ -895,3 +925,17 @@ Implementing AI interfaces in Tekton components involves:
 8. **Feedback Loops** - Continuously improve AI responses
 
 Remember: AI should enhance, not complicate. Keep the user experience simple while leveraging powerful AI capabilities behind the scenes.
+
+## Using the Unified AI System
+
+The examples in this guide now use the unified AI system located in `/Tekton/shared/ai/`. Key components:
+
+1. **AISocketClient** - Handles socket communication with streaming support
+2. **UnifiedAIRegistry** - Discovers and manages AI specialists  
+3. **RoutingEngine** - Intelligently routes messages to appropriate AIs
+4. **Event System** - Real-time updates about AI availability
+
+For more details, see:
+- `/Tekton/shared/ai/socket_client.py` - Socket communication with streaming
+- `/Tekton/shared/ai/unified_registry.py` - Registry with event-driven updates
+- `/Tekton/shared/ai/routing_engine.py` - Intelligent message routing

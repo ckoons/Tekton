@@ -4,6 +4,8 @@
 
 Design for managing AI specialists across all Tekton components with proper lifecycle integration.
 
+**Status Update (June 2025)**: This design has been implemented using the unified AI system in `/Tekton/shared/ai/`. AI specialists now run on ports 45000-50000 and are managed through the platform AI registry at `~/.tekton/ai_registry/platform_ai_registry.json`.
+
 ## Key Design Decisions
 
 ### 1. Model Updates
@@ -82,16 +84,15 @@ if component_name == 'rhetor' and ai_registration_enabled:
 
 ### 1. Shared AI Registry Module
 
-Create a shared module that doesn't require Rhetor to be running:
+**IMPLEMENTED**: The shared AI registry is now available at:
 
 ```python
-# tekton/utils/ai_registry_client.py
-class AIRegistryClient:
-    """Client for AI registration that works independently of Rhetor."""
+# /Tekton/shared/ai/unified_registry.py
+class UnifiedAIRegistry:
+    """Unified registry for all AI specialists with event-driven updates."""
     
     def __init__(self):
-        self.rhetor_url = "http://localhost:8003"
-        self.registry_file = "$TEKTON_ROOT/.tekton/ai_registry.json"
+        self.registry_path = Path.home() / ".tekton" / "ai_registry" / "platform_ai_registry.json"
     
     async def register_component_ai(self, component_name: str, config: dict):
         """Register AI for a component."""

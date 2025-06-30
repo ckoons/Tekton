@@ -4,6 +4,8 @@
 
 This document describes the AI orchestration architecture implemented in Tekton through the Rhetor AI Integration Sprint (Phase 3/4). The architecture enables sophisticated AI-powered workflows through MCP tools, live component integration, and dynamic specialist management.
 
+**Updated June 2025**: This architecture now uses the unified AI system in `/Tekton/shared/ai/` that connects to real Greek Chorus AI specialists on ports 45000-50000.
+
 ## Core Concepts
 
 ### AI Specialists
@@ -62,13 +64,13 @@ class AISpecialistManager:
     async def orchestrate_team_chat(...) -> List[AIMessage]
 ```
 
-### 2. MCPToolsIntegration
+### 2. MCPToolsIntegrationUnified
 
-Bridge between MCP tools and live Rhetor components:
+Bridge between MCP tools and the unified AI system:
 
 ```python
-class MCPToolsIntegration:
-    specialist_manager: AISpecialistManager
+class MCPToolsIntegrationUnified:
+    unified_client: UnifiedAIClient  # Uses shared/ai components
     messaging_integration: AIMessagingIntegration
     message_bus: Optional[MessageBus]
     
@@ -76,6 +78,11 @@ class MCPToolsIntegration:
     async def send_message_to_specialist(...) -> Dict
     async def orchestrate_team_chat(...) -> Dict
 ```
+
+The unified system provides:
+- **AISocketClient**: Direct socket communication with streaming
+- **UnifiedAIRegistry**: Discovery and management of AI specialists
+- **RoutingEngine**: Intelligent message routing based on capabilities
 
 ### 3. Dynamic Specialist System
 

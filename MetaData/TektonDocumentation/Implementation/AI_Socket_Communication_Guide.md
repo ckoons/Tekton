@@ -4,6 +4,8 @@
 
 This guide shows how to communicate with Tekton AI specialists from HTML/JavaScript using the socket-based protocol.
 
+**Updated June 2025**: This guide now references the unified AI system in `/Tekton/shared/ai/` that provides the `AISocketClient` for direct communication with Greek Chorus AIs on ports 45000-50000.
+
 ## Socket Communication Protocol
 
 Each AI specialist listens on a TCP socket (ports 45000-50000) and communicates via JSON messages.

@@ -4,6 +4,8 @@
 
 This quick reference provides a concise guide to the 30 MCP tools available through Rhetor for AI orchestration. These tools enable sophisticated AI-powered workflows, live component interaction, and dynamic specialist management.
 
+**Important Update**: As of June 2025, these tools now work with real AI specialists through our unified AI system (see `/Tekton/shared/ai/`) that connects to actual Greek Chorus AIs running on ports 45000-50000.
+
 ## Tool Categories
 
 ### 🤖 Model Management (6 tools)
@@ -197,9 +199,10 @@ response = await client.post(
 
 ### Direct Access (Within Rhetor)
 ```python
-from rhetor.core.mcp.tools_integration import MCPToolsIntegration
+from rhetor.core.mcp.tools_integration import MCPToolsIntegrationUnified
 
-integration = MCPToolsIntegration()
+# Uses the new unified AI system
+integration = MCPToolsIntegrationUnified()
 result = await integration.list_ai_specialists(filter_active=True)
 ```
 
