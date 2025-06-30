@@ -137,6 +137,12 @@ async def startup_callback():
         # Initialize MCP components after component startup
         await component.initialize_mcp_components()
         
+        # Initialize MCP tools integration for team chat
+        from rhetor.core.mcp.tools_integration_unified import MCPToolsIntegrationUnified, set_mcp_tools_integration
+        integration = MCPToolsIntegrationUnified()
+        set_mcp_tools_integration(integration)
+        logger.info("Initialized MCP tools integration")
+        
         logger.info(f"Rhetor API server started successfully")
     except Exception as e:
         logger.error(f"Failed to start Rhetor: {e}")
