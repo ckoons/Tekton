@@ -89,7 +89,8 @@ class MCPToolsIntegrationUnified:
             return {"success": False, "error": str(e)}
     
     async def send_message_to_specialist(self, specialist_id: str, message: str, 
-                                       context: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+                                       context: Optional[Dict[str, Any]] = None,
+                                       timeout: float = 10.0) -> Dict[str, Any]:
         """Send a message to an AI specialist.
         
         This method handles both socket-based (Greek Chorus) and API-based (Rhetor) specialists.
@@ -98,6 +99,7 @@ class MCPToolsIntegrationUnified:
             specialist_id: ID of the specialist (e.g., 'athena-ai', 'apollo-ai')
             message: Message content
             context: Optional context
+            timeout: Response timeout in seconds (default 10.0)
             
         Returns:
             Response from specialist with success status
@@ -115,7 +117,7 @@ class MCPToolsIntegrationUnified:
             # Check if this is a socket-based AI (Greek Chorus)
             if 'connection' in ai_info and ai_info['connection'].get('port'):
                 # Socket-based communication for Greek Chorus AIs
-                return await self._send_via_socket(ai_info, message, context)
+                return await self._send_via_socket(ai_info, message, context, timeout)
             else:
                 # API-based communication via Rhetor
                 return await self._send_via_api(specialist_id, message, context)
@@ -154,14 +156,165 @@ class MCPToolsIntegrationUnified:
         # TODO: Implement orchestration configuration
         raise NotImplementedError("ConfigureOrchestration not implemented yet")
     
+    async def orchestrate_team_chat(
+        self,
+        topic: str,
+        specialists: List[str],
+        initial_prompt: str,
+        max_rounds: int = 3,
+        orchestration_style: str = "collaborative",
+        timeout: float = 10.0
+    ) -> Dict[str, Any]:
+        """Orchestrate a team chat between multiple AI specialists.
+        
+        This method connects to real Greek Chorus AIs via sockets and coordinates
+        their responses for collaborative problem solving.
+        
+        Args:
+            topic: Discussion topic
+            specialists: List of specialist IDs to include (if empty, uses all available)
+            initial_prompt: Initial prompt to start discussion
+            max_rounds: Maximum rounds of discussion (currently uses 1 round)
+            orchestration_style: Style of orchestration (collaborative, directive, exploratory)
+            timeout: Timeout for each AI response in seconds
+            
+        Returns:
+            Dictionary containing team chat results with responses from all AIs
+        """
+        logger.info(f"Starting team chat orchestration on topic: {topic}")
+        logger.info(f"Requested specialists: {specialists}")
+        logger.info(f"Orchestration style: {orchestration_style}")
+        
+        try:
+            # Discover all available specialists
+            all_specialists = await self.list_specialists()
+            logger.info(f"Found {len(all_specialists)} total specialists")
+            
+            # Filter for Greek Chorus AIs (those with socket connections on ports 45000+)
+            greek_chorus = []
+            for spec in all_specialists:
+                if 'connection' in spec and spec['connection'].get('port'):
+                    port = spec['connection']['port']
+                    if 45000 <= port <= 50000:  # Greek Chorus port range
+                        greek_chorus.append(spec)
+                        logger.info(f"Including Greek Chorus AI: {spec['id']} on port {port}")
+            
+            logger.info(f"Found {len(greek_chorus)} Greek Chorus AIs")
+            
+            # If specific specialists requested, filter for those
+            if specialists:
+                greek_chorus = [s for s in greek_chorus if s['id'] in specialists]
+                logger.info(f"Filtered to {len(greek_chorus)} requested specialists")
+            
+            if not greek_chorus:
+                error_msg = "No Greek Chorus AIs available for team chat"
+                logger.error(error_msg)
+                return {
+                    "success": False,
+                    "error": error_msg,
+                    "responses": {}
+                }
+            
+            # Prepare the message with topic context
+            message = f"Topic: {topic}\n\n{initial_prompt}"
+            
+            # Send to each AI concurrently
+            tasks = []
+            for specialist in greek_chorus:
+                logger.info(f"Creating task for {specialist['id']}")
+                task = asyncio.create_task(
+                    self.send_message_to_specialist(
+                        specialist['id'],
+                        message,
+                        context={"topic": topic, "orchestration_style": orchestration_style},
+                        timeout=timeout
+                    )
+                )
+                tasks.append((specialist['id'], specialist.get('role', 'unknown'), task))
+            
+            # Collect responses with timeout
+            responses = {}
+            response_count = 0
+            error_count = 0
+            
+            for spec_id, role, task in tasks:
+                try:
+                    logger.info(f"Waiting for response from {spec_id} (timeout: {timeout}s)")
+                    result = await asyncio.wait_for(task, timeout)
+                    
+                    if result['success']:
+                        responses[spec_id] = {
+                            "role": role,
+                            "response": result['response'],
+                            "type": result.get('type', 'unknown')
+                        }
+                        response_count += 1
+                        logger.info(f"Got response from {spec_id}: {len(result['response'])} chars")
+                    else:
+                        error_msg = result.get('error', 'Unknown error')
+                        logger.error(f"{spec_id} failed: {error_msg}")
+                        responses[spec_id] = {
+                            "role": role,
+                            "response": f"Error: {error_msg}",
+                            "error": True
+                        }
+                        error_count += 1
+                        
+                except asyncio.TimeoutError:
+                    logger.warning(f"{spec_id} timed out after {timeout}s")
+                    responses[spec_id] = {
+                        "role": role,
+                        "response": f"Timeout after {timeout} seconds",
+                        "error": True
+                    }
+                    error_count += 1
+                except Exception as e:
+                    logger.error(f"Unexpected error from {spec_id}: {e}")
+                    responses[spec_id] = {
+                        "role": role,
+                        "response": f"Unexpected error: {str(e)}",
+                        "error": True
+                    }
+                    error_count += 1
+            
+            # Prepare summary
+            success = response_count > 0
+            summary = f"Received {response_count} responses from {len(tasks)} specialists"
+            if error_count > 0:
+                summary += f" ({error_count} errors)"
+            
+            logger.info(f"Team chat complete: {summary}")
+            
+            return {
+                "success": success,
+                "topic": topic,
+                "orchestration_style": orchestration_style,
+                "responses": responses,
+                "summary": summary,
+                "response_count": response_count,
+                "error_count": error_count,
+                "total_specialists": len(tasks)
+            }
+            
+        except Exception as e:
+            error_msg = f"Team chat orchestration failed: {str(e)}"
+            logger.error(error_msg, exc_info=True)
+            return {
+                "success": False,
+                "error": error_msg,
+                "responses": {}
+            }
+    
     async def _send_via_socket(self, ai_info: Dict[str, Any], message: str, 
-                              context: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+                              context: Optional[Dict[str, Any]] = None,
+                              timeout: float = 10.0) -> Dict[str, Any]:
         """Send message via direct socket connection (Greek Chorus AIs).
         
         Args:
             ai_info: AI information including connection details
             message: Message to send
             context: Optional context
+            timeout: Socket timeout in seconds (default 10.0)
             
         Returns:
             Response dictionary with success status
@@ -180,7 +333,7 @@ class MCPToolsIntegrationUnified:
             )
             
             # Switch to response timeout
-            sock.settimeout(30.0)
+            sock.settimeout(timeout)
             
             # Prepare request
             request = {

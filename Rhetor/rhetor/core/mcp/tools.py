@@ -1568,8 +1568,9 @@ async def orchestrate_team_chat(
         from .tools_integration_unified import get_mcp_tools_integration
         integration = get_mcp_tools_integration()
         
-        if integration and integration.messaging_integration:
-            # Use live orchestration
+        if integration:
+            # Use live orchestration with real Greek Chorus AIs
+            logger.info(f"Using live orchestration for team chat on topic: {topic}")
             return await integration.orchestrate_team_chat(
                 topic=topic,
                 specialists=specialists,

@@ -1,7 +1,7 @@
 """Team Chat API endpoints for Rhetor.
 
-Implements the team chat functionality using the AI Socket Registry.
-Supports real-time multi-AI collaboration with various moderation modes.
+Implements the team chat functionality using the MCP Tools Integration.
+Connects to real Greek Chorus AIs for multi-AI collaboration.
 """
 
 import asyncio
@@ -15,8 +15,7 @@ from fastapi.responses import JSONResponse
 from sse_starlette.sse import EventSourceResponse
 from pydantic import BaseModel, Field
 
-from ..core.ai_socket_registry import get_socket_registry
-# AI specialist management now handled by AI Registry
+from ..core.mcp.tools_integration_unified import MCPToolsIntegrationUnified, get_mcp_tools_integration
 
 logger = logging.getLogger(__name__)
 
@@ -36,7 +35,7 @@ class TeamChatRequest(BaseModel):
         description="Specific socket IDs to target (None for all)"
     )
     timeout: Optional[float] = Field(
-        30.0,
+        10.0,
         description="Timeout in seconds for collecting responses"
     )
     metadata: Optional[Dict[str, Any]] = Field(
@@ -61,43 +60,55 @@ async def team_chat(request: TeamChatRequest):
     """
     Broadcast a message to all AI specialists and collect responses.
     
-    This endpoint implements the team chat functionality where multiple AIs
-    can collaborate on answering questions or solving problems.
+    This endpoint connects to real Greek Chorus AIs via the MCP tools integration
+    for multi-AI collaboration on answering questions or solving problems.
     """
     start_time = datetime.utcnow()
     request_id = f"team-chat-{start_time.timestamp()}"
     
+    logger.info(f"Team chat request {request_id}: {request.message[:100]}...")
+    logger.info(f"Moderation mode: {request.moderation_mode}, Target AIs: {request.target_sockets}")
+    
     try:
-        # Get socket registry
-        registry = await get_socket_registry()
+        # Get MCP tools integration
+        integration = get_mcp_tools_integration()
+        if not integration:
+            # Initialize if needed
+            integration = MCPToolsIntegrationUnified()
+            from ..core.mcp.tools_integration_unified import set_mcp_tools_integration
+            set_mcp_tools_integration(integration)
+            logger.info("Initialized MCP tools integration for team chat")
         
-        # Broadcast message
-        metadata = request.metadata or {}
-        metadata["request_id"] = request_id
-        metadata["moderation_mode"] = request.moderation_mode
+        # Use orchestrate_team_chat to connect to real Greek Chorus AIs
+        topic = request.metadata.get("topic", "General Discussion") if request.metadata else "General Discussion"
         
-        # Write to team-chat-all or specific sockets
-        if request.target_sockets:
-            # Write to specific sockets
-            for socket_id in request.target_sockets:
-                await registry.write(socket_id, request.message, metadata)
-        else:
-            # Broadcast to all
-            await registry.write("team-chat-all", request.message, metadata)
+        logger.info("Calling orchestrate_team_chat with real Greek Chorus AIs")
+        result = await integration.orchestrate_team_chat(
+            topic=topic,
+            specialists=request.target_sockets or [],  # Empty list means all available
+            initial_prompt=request.message,
+            max_rounds=1,  # Single round for now
+            orchestration_style=request.moderation_mode,
+            timeout=request.timeout
+        )
         
-        # Collect responses based on moderation mode
+        # Convert responses to expected format
         responses = []
-        
-        if request.moderation_mode == "pass_through":
-            # Stream responses as they arrive
-            responses = await _collect_responses_streaming(
-                registry, request.timeout, request.target_sockets
-            )
+        if result["success"] and result["responses"]:
+            for ai_id, response_data in result["responses"].items():
+                if not response_data.get("error", False):
+                    responses.append({
+                        "socket_id": ai_id,
+                        "content": response_data["response"],
+                        "timestamp": datetime.utcnow().isoformat(),
+                        "metadata": {
+                            "role": response_data.get("role", "unknown"),
+                            "type": response_data.get("type", "socket")
+                        }
+                    })
+            logger.info(f"Collected {len(responses)} successful responses")
         else:
-            # Collect all responses first
-            responses = await _collect_responses_batch(
-                registry, request.timeout, request.target_sockets
-            )
+            logger.warning(f"Team chat failed or no responses: {result.get('error', 'Unknown error')}")
         
         # Process based on moderation mode
         synthesis = None
@@ -111,6 +122,10 @@ async def team_chat(request: TeamChatRequest):
         # Calculate elapsed time
         elapsed_time = (datetime.utcnow() - start_time).total_seconds()
         
+        # Log summary
+        logger.info(f"Team chat complete: {result.get('summary', 'No summary')}")
+        logger.info(f"Response count: {len(responses)}, Elapsed time: {elapsed_time:.2f}s")
+        
         return TeamChatResponse(
             request_id=request_id,
             responses=responses,
@@ -122,7 +137,7 @@ async def team_chat(request: TeamChatRequest):
         )
         
     except Exception as e:
-        logger.error(f"Team chat error: {e}")
+        logger.error(f"Team chat error: {e}", exc_info=True)
         raise HTTPException(status_code=500, detail=str(e))
 
 
@@ -130,53 +145,88 @@ async def team_chat(request: TeamChatRequest):
 async def team_chat_stream(
     message: str = Query(..., description="Message to broadcast"),
     moderation_mode: str = Query("pass_through", description="Moderation mode"),
-    timeout: float = Query(30.0, description="Timeout in seconds")
+    timeout: float = Query(10.0, description="Timeout in seconds")
 ):
     """
     Stream team chat responses using Server-Sent Events.
     
-    This endpoint allows real-time streaming of AI responses as they arrive.
+    This endpoint allows real-time streaming of AI responses as they arrive
+    from the Greek Chorus AIs.
     """
     async def event_generator():
         try:
-            # Get socket registry
-            registry = await get_socket_registry()
+            logger.info(f"Starting team chat stream: {message[:100]}...")
             
-            # Broadcast message
-            metadata = {
-                "request_id": f"stream-{datetime.utcnow().timestamp()}",
-                "moderation_mode": moderation_mode,
-                "stream": True
+            # Get MCP tools integration
+            integration = get_mcp_tools_integration()
+            if not integration:
+                integration = MCPToolsIntegrationUnified()
+                from ..core.mcp.tools_integration_unified import set_mcp_tools_integration
+                set_mcp_tools_integration(integration)
+            
+            # Send initial connected event
+            yield {
+                "event": "connected",
+                "data": json.dumps({
+                    "type": "connected",
+                    "message": "Connected to team chat stream"
+                })
             }
             
-            await registry.write("team-chat-all", message, metadata)
+            # Start orchestration in background
+            topic = "Stream Discussion"
+            task = asyncio.create_task(
+                integration.orchestrate_team_chat(
+                    topic=topic,
+                    specialists=[],  # All available
+                    initial_prompt=message,
+                    max_rounds=1,
+                    orchestration_style=moderation_mode,
+                    timeout=timeout
+                )
+            )
             
-            # Stream responses
+            # Stream responses as they arrive
             start_time = datetime.utcnow()
             response_count = 0
+            last_check = 0
             
-            while (datetime.utcnow() - start_time).total_seconds() < timeout:
-                # Read responses
-                messages = await registry.read("team-chat-all")
+            while not task.done() and (datetime.utcnow() - start_time).total_seconds() < timeout:
+                # Check if we have partial results (this is a simplified approach)
+                # In a real implementation, we'd modify orchestrate_team_chat to yield results
+                await asyncio.sleep(0.5)
                 
-                for msg in messages:
-                    response_count += 1
-                    event_data = {
-                        "type": "response",
-                        "socket_id": msg["header"].replace("[team-chat-from-", "").replace("]", ""),
-                        "content": msg["content"],
-                        "timestamp": msg["timestamp"],
-                        "metadata": msg.get("metadata", {}),
-                        "index": response_count
-                    }
-                    
-                    yield {
-                        "event": "message",
-                        "data": json.dumps(event_data)
-                    }
-                
-                # Small delay to prevent busy waiting
-                await asyncio.sleep(0.1)
+                # For now, we'll wait for completion and send all at once
+                if task.done():
+                    result = await task
+                    if result["success"] and result["responses"]:
+                        for ai_id, response_data in result["responses"].items():
+                            if not response_data.get("error", False):
+                                response_count += 1
+                                event_data = {
+                                    "type": "response",
+                                    "socket_id": ai_id,
+                                    "content": response_data["response"],
+                                    "timestamp": datetime.utcnow().isoformat(),
+                                    "metadata": {
+                                        "role": response_data.get("role", "unknown"),
+                                        "type": response_data.get("type", "socket")
+                                    },
+                                    "index": response_count
+                                }
+                                
+                                yield {
+                                    "event": "message",
+                                    "data": json.dumps(event_data)
+                                }
+            
+            # Ensure task is complete
+            if not task.done():
+                task.cancel()
+                try:
+                    await task
+                except asyncio.CancelledError:
+                    pass
             
             # Send completion event
             yield {
@@ -189,7 +239,7 @@ async def team_chat_stream(
             }
             
         except Exception as e:
-            logger.error(f"Stream error: {e}")
+            logger.error(f"Stream error: {e}", exc_info=True)
             yield {
                 "event": "error",
                 "data": json.dumps({"error": str(e)})
@@ -200,13 +250,34 @@ async def team_chat_stream(
 
 @router.get("/team-chat/sockets")
 async def list_team_sockets():
-    """List all registered AI sockets available for team chat."""
+    """List all Greek Chorus AIs available for team chat."""
     try:
-        registry = await get_socket_registry()
-        sockets = await registry.list_sockets()
+        # Get MCP tools integration
+        integration = get_mcp_tools_integration()
+        if not integration:
+            integration = MCPToolsIntegrationUnified()
+            from ..core.mcp.tools_integration_unified import set_mcp_tools_integration
+            set_mcp_tools_integration(integration)
         
-        # Filter out the broadcast socket
-        team_sockets = [s for s in sockets if s["socket_id"] != "team-chat-all"]
+        # List all specialists
+        all_specialists = await integration.list_specialists()
+        
+        # Filter for Greek Chorus AIs (those with socket connections)
+        team_sockets = []
+        for spec in all_specialists:
+            if 'connection' in spec and spec['connection'].get('port'):
+                port = spec['connection']['port']
+                if 45000 <= port <= 50000:  # Greek Chorus port range
+                    team_sockets.append({
+                        "socket_id": spec['id'],
+                        "model": spec.get('model', 'unknown'),
+                        "state": "active" if spec.get('status') == 'healthy' else "inactive",
+                        "role": spec.get('role', 'specialist'),
+                        "port": port,
+                        "capabilities": spec.get('capabilities', [])
+                    })
+        
+        logger.info(f"Found {len(team_sockets)} Greek Chorus AIs for team chat")
         
         return {
             "sockets": team_sockets,
@@ -215,19 +286,33 @@ async def list_team_sockets():
         }
         
     except Exception as e:
-        logger.error(f"Error listing sockets: {e}")
+        logger.error(f"Error listing team sockets: {e}", exc_info=True)
         raise HTTPException(status_code=500, detail=str(e))
 
 
 @router.post("/team-chat/sockets/{socket_id}/reset")
 async def reset_team_socket(socket_id: str):
-    """Reset a specific AI socket (clear context)."""
+    """Reset a specific AI specialist (clear context)."""
     try:
-        registry = await get_socket_registry()
-        success = await registry.reset(socket_id)
+        # Get MCP tools integration
+        integration = get_mcp_tools_integration()
+        if not integration:
+            integration = MCPToolsIntegrationUnified()
+            from ..core.mcp.tools_integration_unified import set_mcp_tools_integration
+            set_mcp_tools_integration(integration)
         
-        if not success:
-            raise HTTPException(status_code=404, detail=f"Socket not found: {socket_id}")
+        # Send reset message to the AI
+        reset_message = "Please reset your context and start fresh. Forget all previous conversations."
+        result = await integration.send_message_to_specialist(
+            socket_id,
+            reset_message,
+            context={"command": "reset"}
+        )
+        
+        if not result["success"]:
+            raise HTTPException(status_code=404, detail=f"Failed to reset AI: {result.get('error', 'Unknown error')}")
+        
+        logger.info(f"Reset AI specialist: {socket_id}")
         
         return {
             "socket_id": socket_id,
@@ -235,87 +320,14 @@ async def reset_team_socket(socket_id: str):
             "timestamp": datetime.utcnow().isoformat()
         }
         
+    except HTTPException:
+        raise
     except Exception as e:
-        logger.error(f"Error resetting socket: {e}")
+        logger.error(f"Error resetting AI specialist: {e}", exc_info=True)
         raise HTTPException(status_code=500, detail=str(e))
 
 
 # Helper functions
-
-async def _collect_responses_streaming(
-    registry,
-    timeout: float,
-    target_sockets: Optional[List[str]] = None
-) -> List[Dict[str, Any]]:
-    """Collect responses in streaming mode."""
-    responses = []
-    start_time = datetime.utcnow()
-    
-    while (datetime.utcnow() - start_time).total_seconds() < timeout:
-        # Read available responses
-        if target_sockets:
-            # Read from specific sockets
-            for socket_id in target_sockets:
-                messages = await registry.read(socket_id)
-                for msg in messages:
-                    responses.append({
-                        "socket_id": socket_id,
-                        "content": msg["content"],
-                        "timestamp": msg["timestamp"],
-                        "metadata": msg.get("metadata", {})
-                    })
-        else:
-            # Read from all
-            messages = await registry.read("team-chat-all")
-            for msg in messages:
-                socket_id = msg["header"].replace("[team-chat-from-", "").replace("]", "")
-                responses.append({
-                    "socket_id": socket_id,
-                    "content": msg["content"],
-                    "timestamp": msg["timestamp"],
-                    "metadata": msg.get("metadata", {})
-                })
-        
-        # Small delay to prevent busy waiting
-        await asyncio.sleep(0.1)
-    
-    return responses
-
-
-async def _collect_responses_batch(
-    registry,
-    timeout: float,
-    target_sockets: Optional[List[str]] = None
-) -> List[Dict[str, Any]]:
-    """Collect all responses in batch mode."""
-    # Wait for responses to arrive
-    await asyncio.sleep(min(timeout, 5.0))  # Wait up to 5 seconds
-    
-    # Collect all available responses
-    responses = []
-    
-    if target_sockets:
-        for socket_id in target_sockets:
-            messages = await registry.read(socket_id)
-            for msg in messages:
-                responses.append({
-                    "socket_id": socket_id,
-                    "content": msg["content"],
-                    "timestamp": msg["timestamp"],
-                    "metadata": msg.get("metadata", {})
-                })
-    else:
-        messages = await registry.read("team-chat-all")
-        for msg in messages:
-            socket_id = msg["header"].replace("[team-chat-from-", "").replace("]", "")
-            responses.append({
-                "socket_id": socket_id,
-                "content": msg["content"],
-                "timestamp": msg["timestamp"],
-                "metadata": msg.get("metadata", {})
-            })
-    
-    return responses
 
 
 async def _synthesize_responses(responses: List[Dict[str, Any]]) -> str:
