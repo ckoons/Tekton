@@ -1,17 +1,19 @@
 #!/usr/bin/env python3
 """
-AI Discovery Tool for Tekton Platform
+AI Discovery Tool for Tekton Platform - Enhanced Version
 
-This tool allows command-line discovery of AI specialists, similar to MCP discovery.
-It's designed to be used by aish and other clients to find and connect to AIs.
+A comprehensive tool for discovering, monitoring, and managing AI specialists.
+Features real-time status, performance metrics, and streaming capabilities.
 """
 import argparse
 import asyncio
 import json
 import sys
 import os
-from typing import Optional
+import time
+from typing import Optional, List, Dict, Any
 from pathlib import Path
+from datetime import datetime
 
 # Add Tekton root to path - make it location-independent
 script_dir = Path(__file__).parent.absolute()
@@ -24,215 +26,595 @@ if 'Tekton' not in str(tekton_root):
 
 sys.path.insert(0, str(tekton_root))
 
+from shared.ai.unified_registry import UnifiedAIRegistry, AIStatus, get_registry
+from shared.ai.routing_engine import RoutingEngine, create_default_rules
+from shared.ai.socket_client import AISocketClient
 from shared.ai.ai_discovery_service import AIDiscoveryService
 from shared.ai.registry_client import AIRegistryClient
 
+# Try to import rich for better output (optional)
+try:
+    from rich.console import Console
+    from rich.table import Table
+    from rich.live import Live
+    from rich.progress import Progress, SpinnerColumn, TextColumn
+    from rich.panel import Panel
+    from rich.syntax import Syntax
+    HAS_RICH = True
+    console = Console()
+except ImportError:
+    HAS_RICH = False
+    console = None
+
 
 async def list_ais(args):
-    """List available AI specialists."""
-    discovery = AIDiscoveryService()
-    result = await discovery.list_ais(role=args.role, capability=args.capability)
+    """List available AI specialists with enhanced information."""
+    registry = get_registry()
+    await registry.start()
+    
+    # Apply filters
+    kwargs = {}
+    if args.role:
+        kwargs['role'] = args.role
+    if args.capability:
+        kwargs['capabilities'] = [args.capability]
+    if args.status:
+        kwargs['status'] = AIStatus[args.status.upper()]
+    if args.min_success_rate:
+        kwargs['min_success_rate'] = args.min_success_rate
+    
+    specialists = await registry.discover(**kwargs)
     
     if args.json:
-        print(json.dumps(result, indent=2))
-    else:
-        print(f"\n{'='*60}")
-        print(f"Available AI Specialists")
-        print(f"{'='*60}\n")
+        # JSON output
+        data = {
+            "timestamp": datetime.now().isoformat(),
+            "total": len(specialists),
+            "filters": kwargs,
+            "ais": [spec.to_dict() for spec in specialists]
+        }
+        print(json.dumps(data, indent=2))
+    elif HAS_RICH and not args.simple:
+        # Rich table output
+        table = Table(title=f"AI Specialists ({len(specialists)} found)")
+        table.add_column("Status", style="cyan", width=8)
+        table.add_column("ID", style="magenta")
+        table.add_column("Name", style="yellow")
+        table.add_column("Port", justify="right")
+        table.add_column("Model", style="green")
+        table.add_column("Success", justify="right")
+        table.add_column("Avg RT", justify="right")
+        table.add_column("Capabilities", style="dim")
         
-        for ai in result['ais']:
-            status_icon = "✓" if ai['status'] == 'healthy' else "✗"
-            print(f"{status_icon} {ai['name']} ({ai['id']})")
-            print(f"   Component: {ai['component']}")
-            print(f"   Roles: {', '.join(ai['roles'])}")
-            print(f"   Socket: {ai['connection']['host']}:{ai['connection']['port']}")
+        for spec in specialists:
+            status_icon = {
+                AIStatus.HEALTHY: "✅",
+                AIStatus.DEGRADED: "⚠️",
+                AIStatus.UNRESPONSIVE: "❌",
+                AIStatus.UNKNOWN: "❓",
+                AIStatus.STARTING: "🔄",
+                AIStatus.STOPPING: "🛑"
+            }.get(spec.status, "?")
             
-            if ai.get('model') and ai['model'] != 'unknown':
-                print(f"   Model: {ai['model']}")
-            
+            table.add_row(
+                status_icon,
+                spec.id,
+                spec.name,
+                str(spec.port),
+                spec.model[:15] + "..." if len(spec.model) > 15 else spec.model,
+                f"{spec.success_rate*100:.1f}%",
+                f"{spec.avg_response_time:.2f}s" if spec.avg_response_time > 0 else "N/A",
+                ", ".join(spec.capabilities[:3]) + ("..." if len(spec.capabilities) > 3 else "")
+            )
+        
+        console.print(table)
+    else:
+        # Simple text output
+        print(f"\n{'='*80}")
+        print(f"Available AI Specialists ({len(specialists)} found)")
+        print(f"{'='*80}\n")
+        
+        for spec in specialists:
+            status_icon = "✓" if spec.status == AIStatus.HEALTHY else "✗"
+            print(f"{status_icon} {spec.name} ({spec.id})")
+            print(f"   Port: {spec.port}")
+            print(f"   Model: {spec.model}")
+            print(f"   Status: {spec.status.value}")
+            print(f"   Success Rate: {spec.success_rate*100:.1f}%")
+            if spec.avg_response_time > 0:
+                print(f"   Avg Response: {spec.avg_response_time:.3f}s")
             if args.verbose:
-                print(f"   Capabilities: {', '.join(ai['capabilities'])}")
-                if ai.get('performance'):
-                    perf = ai['performance']
-                    print(f"   Performance: {perf['success_rate']*100:.1f}% success, "
-                          f"{perf['avg_response_time']:.3f}s avg response")
+                print(f"   Capabilities: {', '.join(spec.capabilities)}")
+                print(f"   Roles: {', '.join(spec.roles)}")
             print()
-
-
-async def info_ai(args):
-    """Get detailed information about a specific AI."""
-    discovery = AIDiscoveryService()
-    info = await discovery.get_ai_info(args.ai_id)
     
-    if args.json:
-        print(json.dumps(info, indent=2))
-    else:
-        if 'error' in info:
-            print(f"Error: {info['error']}")
-            return
+    await registry.stop()
+
+
+async def watch_ais(args):
+    """Watch AI status in real-time."""
+    if not HAS_RICH:
+        print("Error: 'rich' library required for watch mode. Install with: pip install rich")
+        return
+    
+    registry = get_registry()
+    await registry.start()
+    
+    with Live(refresh_per_second=1) as live:
+        while True:
+            # Get current stats
+            stats = await registry.get_statistics()
+            specialists = await registry.discover()
             
-        print(f"\n{'='*60}")
-        print(f"AI Specialist: {info['name']} ({info['id']})")
-        print(f"{'='*60}\n")
-        
-        print(f"Component: {info['component']}")
-        print(f"Status: {info['status']}")
-        print(f"Roles: {', '.join(info['roles'])}")
-        print(f"Capabilities: {', '.join(info['capabilities'])}")
-        print(f"\nConnection:")
-        print(f"  Host: {info['connection']['host']}")
-        print(f"  Port: {info['connection']['port']}")
-        
-        if info.get('model'):
-            print(f"\nModel Information:")
-            print(f"  Model: {info['model']}")
-            if info.get('context_window'):
-                print(f"  Context Window: {info['context_window']:,} tokens")
-            if info.get('max_tokens'):
-                print(f"  Max Output: {info['max_tokens']:,} tokens")
-        
-        if info.get('performance'):
-            perf = info['performance']
-            print(f"\nPerformance:")
-            print(f"  Success Rate: {perf['success_rate']*100:.1f}%")
-            print(f"  Avg Response Time: {perf['avg_response_time']:.3f}s")
-            print(f"  Total Requests: {perf['total_requests']:,}")
+            # Create display
+            table = Table(title=f"AI Specialists Monitor - {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+            table.add_column("Status", style="cyan", width=8)
+            table.add_column("ID", style="magenta")
+            table.add_column("Port", justify="right")
+            table.add_column("Model", style="green")
+            table.add_column("Success", justify="right")
+            table.add_column("Avg RT", justify="right")
+            table.add_column("Requests", justify="right")
+            table.add_column("Last Seen", style="dim")
+            
+            for spec in specialists:
+                status_emoji = {
+                    AIStatus.HEALTHY: "✅",
+                    AIStatus.DEGRADED: "⚠️",
+                    AIStatus.UNRESPONSIVE: "❌",
+                    AIStatus.UNKNOWN: "❓"
+                }.get(spec.status, "?")
+                
+                # Format last seen
+                if spec.last_seen > 0:
+                    last_seen_delta = time.time() - spec.last_seen
+                    if last_seen_delta < 60:
+                        last_seen = f"{int(last_seen_delta)}s ago"
+                    elif last_seen_delta < 3600:
+                        last_seen = f"{int(last_seen_delta/60)}m ago"
+                    else:
+                        last_seen = f"{int(last_seen_delta/3600)}h ago"
+                else:
+                    last_seen = "Never"
+                
+                table.add_row(
+                    status_emoji,
+                    spec.id,
+                    str(spec.port),
+                    spec.model[:20] + "..." if len(spec.model) > 20 else spec.model,
+                    f"{spec.success_rate*100:.1f}%",
+                    f"{spec.avg_response_time:.2f}s" if spec.avg_response_time > 0 else "N/A",
+                    str(spec.total_requests),
+                    last_seen
+                )
+            
+            # Add summary panel
+            summary = Panel(
+                f"Total AIs: {stats['total_specialists']} | "
+                f"Healthy: {stats['status_breakdown'].get('healthy', 0)} | "
+                f"Degraded: {stats['status_breakdown'].get('degraded', 0)} | "
+                f"Overall Success: {stats['overall_success_rate']*100:.1f}%",
+                title="Summary"
+            )
+            
+            live.update(summary)
+            live.update(table)
+            
+            await asyncio.sleep(1)
 
 
 async def test_ai(args):
-    """Test connection to AI specialists."""
-    discovery = AIDiscoveryService()
+    """Test AI connections with detailed diagnostics."""
+    registry = get_registry()
+    await registry.start()
+    
+    client = AISocketClient(debug=args.verbose)
     
     if args.ai_id:
         # Test specific AI
-        result = await discovery.test_ai_connection(args.ai_id)
+        spec = await registry.get(args.ai_id)
+        if not spec:
+            print(f"Error: AI '{args.ai_id}' not found")
+            return
         
-        if args.json:
-            print(json.dumps(result, indent=2))
+        # Run multiple tests
+        results = []
+        test_messages = [
+            "ping",
+            "Hello, this is a test message.",
+            "What are your capabilities?"
+        ]
+        
+        if HAS_RICH and not args.simple:
+            with Progress(
+                SpinnerColumn(),
+                TextColumn("[progress.description]{task.description}"),
+                transient=True
+            ) as progress:
+                task = progress.add_task(f"Testing {spec.id}...", total=len(test_messages))
+                
+                for msg in test_messages:
+                    start = time.time()
+                    response = await client.send_message(spec.host, spec.port, msg, timeout=5.0)
+                    elapsed = time.time() - start
+                    
+                    results.append({
+                        "message": msg,
+                        "success": response["success"],
+                        "elapsed": elapsed,
+                        "response": response.get("response", response.get("error"))
+                    })
+                    
+                    progress.advance(task)
         else:
-            status = "✓ Reachable" if result['reachable'] else "✗ Unreachable"
-            print(f"\n{args.ai_id}: {status}")
-            print(f"Socket: {result['socket']}")
+            print(f"Testing {spec.id}...")
+            for msg in test_messages:
+                start = time.time()
+                response = await client.send_message(spec.host, spec.port, msg, timeout=5.0)
+                elapsed = time.time() - start
+                
+                results.append({
+                    "message": msg,
+                    "success": response["success"],
+                    "elapsed": elapsed,
+                    "response": response.get("response", response.get("error"))
+                })
+        
+        # Display results
+        if args.json:
+            print(json.dumps({
+                "ai_id": spec.id,
+                "host": spec.host,
+                "port": spec.port,
+                "test_results": results
+            }, indent=2))
+        else:
+            print(f"\n{'='*60}")
+            print(f"Test Results: {spec.id}")
+            print(f"{'='*60}\n")
             
-            if result['reachable']:
-                print(f"Response Time: {result['response_time']*1000:.1f}ms")
-            else:
-                print(f"Error: {result.get('error', 'Unknown error')}")
+            success_count = sum(1 for r in results if r["success"])
+            print(f"Success Rate: {success_count}/{len(results)}")
+            print(f"Average Response Time: {sum(r['elapsed'] for r in results)/len(results):.3f}s\n")
+            
+            for result in results:
+                status = "✓" if result["success"] else "✗"
+                print(f"{status} Message: {result['message'][:50]}...")
+                print(f"  Time: {result['elapsed']:.3f}s")
+                if args.verbose:
+                    print(f"  Response: {str(result['response'])[:100]}...")
+                print()
     else:
         # Test all AIs
-        all_ais = await discovery.list_ais()
-        results = []
+        specialists = await registry.discover(status=AIStatus.HEALTHY)
         
-        print(f"\nTesting {len(all_ais['ais'])} AI specialists...\n")
-        
-        for ai in all_ais['ais']:
-            result = await discovery.test_ai_connection(ai['id'])
-            results.append(result)
+        if HAS_RICH and not args.simple:
+            table = Table(title="AI Connection Tests")
+            table.add_column("Status", width=6)
+            table.add_column("ID", style="magenta")
+            table.add_column("Port", justify="right")
+            table.add_column("Response Time", justify="right")
+            table.add_column("Result")
             
-            if not args.json:
-                status = "✓" if result['reachable'] else "✗"
-                print(f"{status} {ai['id']:20} {result['socket']:20}", end='')
-                if result['reachable']:
-                    print(f" {result['response_time']*1000:6.1f}ms")
+            for spec in specialists:
+                response = await client.ping(spec.host, spec.port)
+                
+                status = "✅" if response["success"] else "❌"
+                time_str = f"{response['elapsed_time']*1000:.1f}ms" if response["success"] else "N/A"
+                result = "OK" if response["success"] else response.get("error", "Failed")
+                
+                table.add_row(status, spec.id, str(spec.port), time_str, result)
+            
+            console.print(table)
+        else:
+            print("Testing all healthy AIs...")
+            for spec in specialists:
+                response = await client.ping(spec.host, spec.port)
+                status = "✓" if response["success"] else "✗"
+                print(f"{status} {spec.id:20} Port {spec.port:5} ", end="")
+                if response["success"]:
+                    print(f"{response['elapsed_time']*1000:6.1f}ms")
                 else:
-                    print(f" {result.get('error', 'Unknown error')}")
-        
-        if args.json:
-            print(json.dumps(results, indent=2))
-
-
-async def schema_ai(args):
-    """Get interaction schema for an AI."""
-    discovery = AIDiscoveryService()
-    schema = await discovery.get_ai_schema(args.ai_id)
+                    print(f"Failed: {response.get('error', 'Unknown')}")
     
-    if args.json:
-        print(json.dumps(schema, indent=2))
+    await registry.stop()
+
+
+async def test_streaming(args):
+    """Test streaming capabilities of an AI."""
+    registry = get_registry()
+    await registry.start()
+    
+    spec = await registry.get(args.ai_id)
+    if not spec:
+        print(f"Error: AI '{args.ai_id}' not found")
+        return
+    
+    client = AISocketClient()
+    
+    print(f"Testing streaming with {spec.id}...")
+    print(f"Message: {args.message}\n")
+    print("Response:")
+    print("-" * 60)
+    
+    total_chunks = 0
+    start_time = time.time()
+    
+    async for chunk in client.send_message_stream(
+        spec.host,
+        spec.port,
+        args.message,
+        temperature=args.temperature,
+        max_tokens=args.max_tokens
+    ):
+        if chunk.content:
+            print(chunk.content, end='', flush=True)
+            total_chunks += 1
+        
+        if chunk.is_final:
+            elapsed = time.time() - start_time
+            print("\n" + "-" * 60)
+            print(f"\nStreaming completed:")
+            print(f"  Total chunks: {total_chunks}")
+            print(f"  Total time: {elapsed:.2f}s")
+            if chunk.metadata:
+                if 'model' in chunk.metadata:
+                    print(f"  Model: {chunk.metadata['model']}")
+                if 'total_tokens' in chunk.metadata:
+                    print(f"  Total tokens: {chunk.metadata['total_tokens']}")
+                if 'error' in chunk.metadata:
+                    print(f"  Error: {chunk.metadata['error']}")
+    
+    await registry.stop()
+
+
+async def benchmark_ais(args):
+    """Benchmark AI response times and performance."""
+    registry = get_registry()
+    await registry.start()
+    
+    # Get AIs to benchmark
+    if args.ai_ids:
+        specialists = []
+        for ai_id in args.ai_ids:
+            spec = await registry.get(ai_id)
+            if spec:
+                specialists.append(spec)
+            else:
+                print(f"Warning: AI '{ai_id}' not found")
     else:
-        if 'error' in schema:
-            print(f"Error: {schema['error']}")
-            return
+        # Benchmark all healthy AIs
+        specialists = await registry.discover(status=AIStatus.HEALTHY)
+    
+    if not specialists:
+        print("No AIs available for benchmarking")
+        return
+    
+    client = AISocketClient()
+    results = []
+    
+    # Test messages of varying complexity
+    test_messages = [
+        ("Simple", "Hello"),
+        ("Medium", "Explain the concept of recursion in programming."),
+        ("Complex", "Write a detailed analysis of the trade-offs between microservices and monolithic architectures.")
+    ]
+    
+    print(f"Benchmarking {len(specialists)} AIs with {args.iterations} iterations...")
+    
+    for spec in specialists:
+        spec_results = {
+            "ai_id": spec.id,
+            "model": spec.model,
+            "tests": {}
+        }
+        
+        for test_name, message in test_messages:
+            times = []
+            errors = 0
             
-        print(f"\n{'='*60}")
-        print(f"Interaction Schema: {args.ai_id}")
-        print(f"{'='*60}\n")
+            for i in range(args.iterations):
+                start = time.time()
+                response = await client.send_message(
+                    spec.host,
+                    spec.port,
+                    message,
+                    timeout=30.0
+                )
+                elapsed = time.time() - start
+                
+                if response["success"]:
+                    times.append(elapsed)
+                else:
+                    errors += 1
+                
+                # Progress indicator
+                if not args.json:
+                    print(f"  {spec.id} - {test_name}: {i+1}/{args.iterations}\r", end="")
+            
+            if times:
+                spec_results["tests"][test_name] = {
+                    "avg_time": sum(times) / len(times),
+                    "min_time": min(times),
+                    "max_time": max(times),
+                    "success_rate": len(times) / args.iterations,
+                    "errors": errors
+                }
+            else:
+                spec_results["tests"][test_name] = {
+                    "success_rate": 0,
+                    "errors": errors
+                }
         
-        print("Message Types:")
-        for msg_type, details in schema['message_types'].items():
-            print(f"\n  {msg_type}:")
-            print(f"    Description: {details['description']}")
-            if details['required']:
-                print(f"    Required: {', '.join(details['required'])}")
-            if details['optional']:
-                print(f"    Optional: {', '.join(details['optional'])}")
+        results.append(spec_results)
+        if not args.json:
+            print()  # New line after progress
+    
+    # Display results
+    if args.json:
+        print(json.dumps(results, indent=2))
+    elif HAS_RICH and not args.simple:
+        # Create comparison table
+        table = Table(title="AI Benchmark Results")
+        table.add_column("AI ID", style="magenta")
+        table.add_column("Model", style="green")
         
-        print("\n\nResponse Formats:")
-        for msg_type, format_spec in schema['response_format'].items():
-            print(f"\n  {msg_type}: {json.dumps(format_spec, indent=4)}")
+        for test_name, _ in test_messages:
+            table.add_column(f"{test_name}\n(avg/min/max)", justify="right")
+        
+        table.add_column("Overall\nSuccess", justify="right")
+        
+        for result in results:
+            row = [result["ai_id"], result["model"][:20] + "..." if len(result["model"]) > 20 else result["model"]]
+            
+            total_success = 0
+            total_attempts = 0
+            
+            for test_name, _ in test_messages:
+                if test_name in result["tests"]:
+                    test_data = result["tests"][test_name]
+                    if test_data["success_rate"] > 0:
+                        row.append(
+                            f"{test_data['avg_time']:.2f}s\n"
+                            f"{test_data['min_time']:.2f}s\n"
+                            f"{test_data['max_time']:.2f}s"
+                        )
+                    else:
+                        row.append("Failed")
+                    total_success += test_data["success_rate"] * args.iterations
+                    total_attempts += args.iterations
+                else:
+                    row.append("N/A")
+            
+            overall_success = (total_success / total_attempts * 100) if total_attempts > 0 else 0
+            row.append(f"{overall_success:.1f}%")
+            
+            table.add_row(*row)
+        
+        console.print(table)
+    else:
+        # Simple text output
+        print(f"\n{'='*80}")
+        print("Benchmark Results")
+        print(f"{'='*80}\n")
+        
+        for result in results:
+            print(f"{result['ai_id']} ({result['model']})")
+            for test_name, _ in test_messages:
+                if test_name in result["tests"]:
+                    test_data = result["tests"][test_name]
+                    if test_data["success_rate"] > 0:
+                        print(f"  {test_name}: avg={test_data['avg_time']:.3f}s, "
+                              f"min={test_data['min_time']:.3f}s, "
+                              f"max={test_data['max_time']:.3f}s, "
+                              f"success={test_data['success_rate']*100:.1f}%")
+                    else:
+                        print(f"  {test_name}: All attempts failed")
+            print()
+    
+    await registry.stop()
 
 
-async def manifest(args):
-    """Get the AI platform discovery manifest."""
-    discovery = AIDiscoveryService()
-    manifest = discovery.create_discovery_manifest()
+async def route_test(args):
+    """Test routing engine with different scenarios."""
+    registry = get_registry()
+    await registry.start()
+    
+    engine = RoutingEngine(registry)
+    
+    # Add default rules
+    for rule in create_default_rules():
+        engine.add_rule(rule)
+    
+    # Test routing
+    context = {"message": args.message}
+    
+    try:
+        result = await engine.route_message(
+            args.message,
+            context=context,
+            preferred_ai=args.preferred,
+            required_capabilities=args.capabilities.split(",") if args.capabilities else None
+        )
+        
+        if args.json:
+            print(json.dumps({
+                "message": args.message,
+                "selected_ai": result.specialist.to_dict(),
+                "rule_used": result.rule_used,
+                "fallback_level": result.fallback_level,
+                "reason": result.reason
+            }, indent=2))
+        else:
+            print(f"\nRouting Result:")
+            print(f"  Message: {args.message}")
+            print(f"  Selected AI: {result.specialist.id}")
+            print(f"  Model: {result.specialist.model}")
+            print(f"  Rule Used: {result.rule_used or 'None'}")
+            print(f"  Fallback Level: {result.fallback_level}")
+            print(f"  Reason: {result.reason}")
+            
+            if args.execute:
+                print(f"\nExecuting request...")
+                client = AISocketClient()
+                response = await client.send_message(
+                    result.specialist.host,
+                    result.specialist.port,
+                    args.message
+                )
+                
+                if response["success"]:
+                    print(f"Response: {response['response'][:200]}...")
+                else:
+                    print(f"Error: {response['error']}")
+    
+    except ValueError as e:
+        print(f"Routing failed: {e}")
+    
+    await registry.stop()
+
+
+async def stats(args):
+    """Display registry statistics."""
+    registry = get_registry()
+    await registry.start()
+    
+    stats = await registry.get_statistics()
     
     if args.json:
-        print(json.dumps(manifest, indent=2))
+        print(json.dumps(stats, indent=2))
     else:
         print(f"\n{'='*60}")
-        print(f"Tekton AI Platform Manifest")
+        print("AI Registry Statistics")
         print(f"{'='*60}\n")
         
-        print(f"Platform: {manifest['platform']}")
-        print(f"Version: {manifest['version']}")
-        print(f"\nAI Registry:")
-        print(f"  Total AIs: {manifest['ai_registry']['total_ais']}")
-        print(f"  Roles: {', '.join(manifest['ai_registry']['roles'][:5])}...")
-        print(f"  Capabilities: {', '.join(manifest['ai_registry']['capabilities'][:5])}...")
+        print(f"Total Specialists: {stats['total_specialists']}")
+        print(f"Total Requests: {stats['total_requests']:,}")
+        print(f"Total Failures: {stats['total_failures']:,}")
+        print(f"Overall Success Rate: {stats['overall_success_rate']*100:.1f}%")
+        print(f"Last Update: {stats['last_update']}")
         
-        print(f"\nInteraction Protocol:")
-        proto = manifest['interaction_protocol']
-        print(f"  Transport: {proto['transport']}")
-        print(f"  Format: {proto['format']}")
-        print(f"  Port Range: {proto['default_port_range']}")
-
-
-async def best_ai(args):
-    """Find the best AI for a given role."""
-    registry = AIRegistryClient()
-    ai_id = registry.select_best_ai(args.role)
+        print("\nStatus Breakdown:")
+        for status, count in stats['status_breakdown'].items():
+            print(f"  {status}: {count}")
     
-    if ai_id:
-        discovery = AIDiscoveryService()
-        info = await discovery.get_ai_info(ai_id)
-        
-        if args.json:
-            print(json.dumps(info, indent=2))
-        else:
-            print(f"\nBest AI for role '{args.role}': {info['name']} ({ai_id})")
-            print(f"Socket: {info['connection']['host']}:{info['connection']['port']}")
-            if info.get('model'):
-                print(f"Model: {info['model']}")
-    else:
-        if args.json:
-            print(json.dumps({"error": f"No AI found for role '{args.role}'"}, indent=2))
-        else:
-            print(f"No AI found for role '{args.role}'")
+    await registry.stop()
 
 
 def main():
     parser = argparse.ArgumentParser(
-        description="AI Discovery Tool for Tekton Platform",
+        description="Enhanced AI Discovery Tool for Tekton Platform",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  %(prog)s list                     # List all AIs
-  %(prog)s list --role planning     # List AIs with planning role
-  %(prog)s info apollo-ai           # Get info about specific AI
-  %(prog)s test                     # Test all AI connections
-  %(prog)s schema rhetor-ai         # Get interaction schema
-  %(prog)s best planning            # Find best AI for planning
-  %(prog)s manifest                 # Get platform manifest
+  %(prog)s list                               # List all AIs
+  %(prog)s list --role planning --status healthy   # Filter AIs
+  %(prog)s watch                              # Watch AI status in real-time
+  %(prog)s test apollo-ai                     # Test specific AI
+  %(prog)s stream apollo-ai "Tell me a story" # Test streaming
+  %(prog)s benchmark --iterations 10         # Benchmark all AIs
+  %(prog)s route "analyze this code"         # Test routing engine
+  %(prog)s stats                             # Show registry statistics
         """
     )
     
@@ -240,6 +622,8 @@ Examples:
                        help='Output in JSON format')
     parser.add_argument('--verbose', '-v', action='store_true',
                        help='Verbose output')
+    parser.add_argument('--simple', action='store_true',
+                       help='Simple text output (no rich formatting)')
     
     subparsers = parser.add_subparsers(dest='command', help='Commands')
     
@@ -247,40 +631,98 @@ Examples:
     list_parser = subparsers.add_parser('list', help='List available AIs')
     list_parser.add_argument('--role', help='Filter by role')
     list_parser.add_argument('--capability', help='Filter by capability')
+    list_parser.add_argument('--status', choices=['healthy', 'degraded', 'unresponsive', 'unknown'],
+                           help='Filter by status')
+    list_parser.add_argument('--min-success-rate', type=float, default=0.0,
+                           help='Minimum success rate (0-1)')
     list_parser.set_defaults(func=list_ais)
     
-    # Info command
-    info_parser = subparsers.add_parser('info', help='Get AI information')
-    info_parser.add_argument('ai_id', help='AI identifier')
-    info_parser.set_defaults(func=info_ai)
+    # Watch command
+    watch_parser = subparsers.add_parser('watch', help='Watch AI status in real-time')
+    watch_parser.set_defaults(func=watch_ais)
     
     # Test command
     test_parser = subparsers.add_parser('test', help='Test AI connections')
     test_parser.add_argument('ai_id', nargs='?', help='AI to test (all if omitted)')
     test_parser.set_defaults(func=test_ai)
     
-    # Schema command
-    schema_parser = subparsers.add_parser('schema', help='Get AI interaction schema')
+    # Stream command
+    stream_parser = subparsers.add_parser('stream', help='Test streaming capabilities')
+    stream_parser.add_argument('ai_id', help='AI identifier')
+    stream_parser.add_argument('message', help='Message to send')
+    stream_parser.add_argument('--temperature', type=float, default=0.7,
+                             help='Temperature for response')
+    stream_parser.add_argument('--max-tokens', type=int, default=1000,
+                             help='Maximum tokens in response')
+    stream_parser.set_defaults(func=test_streaming)
+    
+    # Benchmark command
+    bench_parser = subparsers.add_parser('benchmark', help='Benchmark AI performance')
+    bench_parser.add_argument('ai_ids', nargs='*', help='AIs to benchmark (all if omitted)')
+    bench_parser.add_argument('--iterations', type=int, default=5,
+                            help='Number of iterations per test')
+    bench_parser.set_defaults(func=benchmark_ais)
+    
+    # Route command
+    route_parser = subparsers.add_parser('route', help='Test routing engine')
+    route_parser.add_argument('message', help='Message to route')
+    route_parser.add_argument('--preferred', help='Preferred AI')
+    route_parser.add_argument('--capabilities', help='Required capabilities (comma-separated)')
+    route_parser.add_argument('--execute', action='store_true',
+                            help='Execute the routed request')
+    route_parser.set_defaults(func=route_test)
+    
+    # Stats command
+    stats_parser = subparsers.add_parser('stats', help='Show registry statistics')
+    stats_parser.set_defaults(func=stats)
+    
+    # Legacy commands for compatibility
+    info_parser = subparsers.add_parser('info', help='Get AI information (use list --json)')
+    info_parser.add_argument('ai_id', help='AI identifier')
+    schema_parser = subparsers.add_parser('schema', help='Get AI schema (deprecated)')
     schema_parser.add_argument('ai_id', help='AI identifier')
-    schema_parser.set_defaults(func=schema_ai)
-    
-    # Manifest command
-    manifest_parser = subparsers.add_parser('manifest', help='Get platform manifest')
-    manifest_parser.set_defaults(func=manifest)
-    
-    # Best command
-    best_parser = subparsers.add_parser('best', help='Find best AI for role')
+    manifest_parser = subparsers.add_parser('manifest', help='Get platform manifest (use stats)')
+    best_parser = subparsers.add_parser('best', help='Find best AI (use route)')
     best_parser.add_argument('role', help='Required role')
-    best_parser.set_defaults(func=best_ai)
     
     args = parser.parse_args()
+    
+    # Handle legacy commands
+    if args.command == 'info':
+        print("Note: 'info' is deprecated. Use 'list --json' with grep/jq instead.")
+        args.command = 'list'
+        args.role = None
+        args.capability = None
+        args.status = None
+        args.min_success_rate = 0.0
+        args.func = list_ais
+    elif args.command == 'schema':
+        print("Note: 'schema' is deprecated. AI interaction is standardized.")
+        return
+    elif args.command == 'manifest':
+        print("Note: 'manifest' is deprecated. Use 'stats' instead.")
+        args.command = 'stats'
+        args.func = stats
+    elif args.command == 'best':
+        print("Note: 'best' is deprecated. Use 'route' instead.")
+        return
     
     if not args.command:
         parser.print_help()
         sys.exit(1)
     
     # Run the async function
-    asyncio.run(args.func(args))
+    try:
+        asyncio.run(args.func(args))
+    except KeyboardInterrupt:
+        print("\nInterrupted by user")
+        sys.exit(0)
+    except Exception as e:
+        print(f"Error: {e}")
+        if args.verbose:
+            import traceback
+            traceback.print_exc()
+        sys.exit(1)
 
 
 if __name__ == '__main__':
