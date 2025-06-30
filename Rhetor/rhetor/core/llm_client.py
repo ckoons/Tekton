@@ -10,12 +10,28 @@ import asyncio
 from typing import Dict, List, Optional, Any, AsyncGenerator, Union
 from datetime import datetime
 
-# Import registry fix
-from .registry_fix import apply_fix
-apply_fix()
+# Import the new shared AI components
+import sys
+import os
+# Add Tekton root to path
+script_path = os.path.realpath(__file__)
+tekton_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(script_path))))
+if tekton_root not in sys.path:
+    sys.path.insert(0, tekton_root)
 
-# Import unified client
-from .unified_ai_client import UnifiedAIClient, AIResponse
+from shared.ai.socket_client import AISocketClient
+from shared.ai.routing_engine import RoutingEngine
+from shared.ai.unified_registry import UnifiedAIRegistry
+from dataclasses import dataclass
+from typing import AsyncIterator
+
+@dataclass
+class AIResponse:
+    """Response from an AI specialist."""
+    content: str
+    ai_id: str
+    model: str
+    metadata: Dict[str, Any] = None
 
 # Import enhanced LLM client features for compatibility
 from tekton_llm_client import (
@@ -59,7 +75,9 @@ class LLMClient:
             default_provider: Ignored - kept for compatibility
             default_model: Ignored - kept for compatibility
         """
-        self.unified_client = UnifiedAIClient()
+        self.registry = UnifiedAIRegistry()
+        self.socket_client = AISocketClient()
+        self.routing_engine = RoutingEngine(self.registry)
         self.providers = {}  # Compatibility mapping
         self.default_provider_id = "unified"
         self.default_model = "registry-selected"
@@ -70,31 +88,40 @@ class LLMClient:
         # Load default templates if directory exists
         templates_dir = os.path.join(os.path.dirname(__file__), "..", "templates")
         if os.path.exists(templates_dir):
-            self.prompt_registry.load_from_directory(templates_dir)
+            try:
+                # Try the new method name first
+                if hasattr(self.prompt_registry, 'load_templates_from_directory'):
+                    self.prompt_registry.load_templates_from_directory(templates_dir)
+                elif hasattr(self.prompt_registry, 'load_from_directory'):
+                    self.prompt_registry.load_from_directory(templates_dir)
+                else:
+                    logger.warning("No template loading method available")
+            except Exception as e:
+                logger.warning(f"Failed to load templates: {e}")
         
         logger.info("Initialized unified LLM client with AI Registry")
     
     async def initialize(self):
-        """Initialize the client - now a no-op as registry is always ready."""
-        # List available models to verify registry connection
+        """Initialize the client and discover AIs."""
         try:
-            available = await self.unified_client.list_available_models()
-            logger.info(f"AI Registry connected. Available roles: {list(available.keys())}")
+            # Discover available AIs
+            ais = await self.registry.discover()
+            logger.info(f"Discovered {len(ais)} AI specialists")
             
             # Create compatibility provider mapping
             self._create_provider_mapping()
             
         except Exception as e:
-            logger.warning(f"Failed to connect to AI Registry: {e}")
+            logger.warning(f"Failed to discover AIs: {e}")
     
     def _create_provider_mapping(self):
         """Create compatibility mapping for old provider names."""
         # Map old providers to roles
         self.providers = {
-            "anthropic": UnifiedProvider("orchestration", self.unified_client),
-            "openai": UnifiedProvider("code-analysis", self.unified_client),
-            "ollama": UnifiedProvider("general", self.unified_client),
-            "simulated": UnifiedProvider("general", self.unified_client)
+            "anthropic": UnifiedProvider("orchestration", self.socket_client, self.routing_engine),
+            "openai": UnifiedProvider("code-analysis", self.socket_client, self.routing_engine),
+            "ollama": UnifiedProvider("general", self.socket_client, self.routing_engine),
+            "simulated": UnifiedProvider("general", self.socket_client, self.routing_engine)
         }
     
     @property
@@ -106,7 +133,7 @@ class LLMClient:
         """Get a provider by ID - returns unified provider."""
         if provider_id and provider_id in self.providers:
             return self.providers[provider_id]
-        return self.providers.get("anthropic", UnifiedProvider("general", self.unified_client))
+        return self.providers.get("anthropic", UnifiedProvider("general", self.socket_client, self.routing_engine))
     
     def list_providers(self):
         """List available providers - returns compatibility list."""
@@ -140,27 +167,31 @@ class LLMClient:
         # Extract relevant parameters
         temperature = kwargs.get('temperature', 0.7)
         max_tokens = kwargs.get('max_tokens', 4000)
-        metadata = {
-            'original_provider': provider_id,
-            'original_model': model,
-            'task_type': kwargs.get('task_type'),
-            'messages': kwargs.get('messages', [])
-        }
         
-        # Use unified client
-        response = await self.unified_client.complete(
-            prompt=prompt,
+        # Route to best AI for the role
+        route_result = await self.routing_engine.route_message(
+            message=prompt,
             role=role,
+            context=kwargs.get('messages', [])
+        )
+        
+        if not route_result.ai:
+            raise RuntimeError(f"No AI available for role {role}")
+        
+        # Send message to the selected AI
+        response = await self.socket_client.send_message(
+            host=route_result.ai.host,
+            port=route_result.ai.port,
+            message=prompt,
             temperature=temperature,
-            max_tokens=max_tokens,
-            metadata=metadata
+            max_tokens=max_tokens
         )
         
         # Convert to old format
         return {
             'content': response.content,
-            'model': response.model,
-            'provider': response.ai_id,
+            'model': route_result.ai.model or 'unknown',
+            'provider': route_result.ai.id,
             'usage': {
                 'prompt_tokens': len(prompt.split()),
                 'completion_tokens': len(response.content.split()),
@@ -218,9 +249,12 @@ class LLMClient:
         
         return 'general'
     
-    def get_default_model(self):
-        """Get default model - returns unified default."""
-        return self.unified_client.get_default_model()
+    async def get_default_model(self):
+        """Get default model - returns first available AI."""
+        ais = await self.registry.discover()
+        if ais:
+            return ais[0].id
+        return "none-available"
     
     def set_default_model(self, model_id, provider_id=None):
         """Set default model - no-op for compatibility."""
@@ -229,15 +263,16 @@ class LLMClient:
     
     async def cleanup(self):
         """Cleanup resources."""
-        await self.unified_client.shutdown()
+        # No cleanup needed for shared socket client
 
 
 class UnifiedProvider:
     """Compatibility wrapper for old provider interface."""
     
-    def __init__(self, default_role: str, unified_client: UnifiedAIClient):
+    def __init__(self, default_role: str, socket_client: AISocketClient, routing_engine: RoutingEngine):
         self.default_role = default_role
-        self.unified_client = unified_client
+        self.socket_client = socket_client
+        self.routing_engine = routing_engine
         self.default_model = "registry-selected"
     
     def is_available(self):
@@ -245,17 +280,28 @@ class UnifiedProvider:
         return True  # Always available with registry
     
     async def complete(self, prompt, model=None, **kwargs):
-        """Complete using unified client."""
-        response = await self.unified_client.complete(
-            prompt=prompt,
-            role=self.default_role,
+        """Complete using routing engine and socket client."""
+        # Route to best AI for the role
+        route_result = await self.routing_engine.route_message(
+            message=prompt,
+            role=self.default_role
+        )
+        
+        if not route_result.ai:
+            raise RuntimeError(f"No AI available for role {self.default_role}")
+        
+        # Send message to the selected AI
+        response = await self.socket_client.send_message(
+            host=route_result.ai.host,
+            port=route_result.ai.port,
+            message=prompt,
             temperature=kwargs.get('temperature', 0.7),
             max_tokens=kwargs.get('max_tokens', 4000)
         )
         
         return {
             'content': response.content,
-            'model': response.model,
+            'model': route_result.ai.model or 'unknown',
             'usage': {
                 'prompt_tokens': len(prompt.split()),
                 'completion_tokens': len(response.content.split())

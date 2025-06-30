@@ -290,8 +290,17 @@ class PromptRegistry:
         
         if os.path.exists(templates_dir):
             logger.info(f"Loading templates from {templates_dir}")
-            self.template_registry.load_from_directory(templates_dir)
-            logger.info(f"Loaded {len(self.template_registry.templates)} templates from directory")
+            try:
+                # Try the different method names that might be available
+                if hasattr(self.template_registry, 'load_templates_from_directory'):
+                    self.template_registry.load_templates_from_directory(templates_dir)
+                elif hasattr(self.template_registry, 'load_from_directory'):
+                    self.template_registry.load_from_directory(templates_dir)
+                else:
+                    logger.warning("No template loading method available in PromptTemplateRegistry")
+                logger.info(f"Template registry has {len(getattr(self.template_registry, 'templates', {}))} templates")
+            except Exception as e:
+                logger.warning(f"Failed to load templates from directory: {e}")
     
     def _ensure_directories(self) -> None:
         """Ensure all necessary directories exist."""
