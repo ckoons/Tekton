@@ -38,7 +38,8 @@ logger = logging.getLogger(__name__)
 
 class MessageType(Enum):
     """Supported message types"""
-    MESSAGE = "message"
+    CHAT = "chat"  # For Greek Chorus AIs
+    MESSAGE = "message"  # For team chat
     PING = "ping"
     STREAM = "stream"
     CHUNK = "chunk"
@@ -145,7 +146,7 @@ class AISocketClient:
         
         # Prepare request
         request = {
-            "type": MessageType.MESSAGE.value,
+            "type": "chat",  # Greek Chorus AIs expect "chat" not "message"
             "content": message
         }
         
@@ -233,12 +234,20 @@ class AISocketClient:
         title="Native Streaming Support",
         rationale="Support real-time streaming responses for better UX and reduced latency",
         alternatives_considered=["Polling", "Long polling", "WebSockets"],
-        impacts=["user_experience", "memory_usage", "complexity"]
+        impacts=["user_experience", "memory_usage", "complexity"],
+        decided_by="Casey"
     )
     @performance_boundary(
         title="Streaming Response Handler",
         sla="<100ms first token latency",
-        optimization_notes="Yields chunks immediately without buffering"
+        optimization_notes="Yields chunks immediately without buffering",
+        metrics={"chunk_size": "4KB", "protocol": "NDJSON"}
+    )
+    @integration_point(
+        title="Streaming Protocol for Greek Chorus AIs",
+        target_component="AI Specialists",
+        protocol="Socket/NDJSON streaming",
+        data_flow="Request with stream=True → Chunks via NDJSON → Complete signal"
     )
     async def send_message_stream(self,
                                  host: str,
@@ -274,9 +283,10 @@ class AISocketClient:
         
         # Prepare request
         request = {
-            "type": MessageType.MESSAGE.value,
+            "type": "chat",  # Greek Chorus AIs expect "chat" not "message"
             "content": message,
-            "stream": True  # Request streaming response
+            "stream": True,  # Request streaming if supported
+            "request_id": str(time.time())  # Unique request ID
         }
         
         if context:
@@ -322,7 +332,73 @@ class AISocketClient:
                         try:
                             response = json.loads(line.decode('utf-8'))
                             
-                            if response.get("type") == MessageType.CHUNK.value:
+                            if response.get("type") == "stream_start":
+                                # AI acknowledged streaming request
+                                logger.debug(f"Stream started: {response.get('request_id')}")
+                                continue
+                                
+                            elif response.get("type") == "stream_chunk":
+                                # Native streaming chunk from enhanced AI
+                                content = response.get("content", "")
+                                metadata = response.get("metadata", {})
+                                
+                                yield StreamChunk(
+                                    content=content,
+                                    metadata=metadata,
+                                    is_final=False
+                                )
+                                
+                            elif response.get("type") == "stream_end":
+                                # Stream completion from enhanced AI
+                                yield StreamChunk(
+                                    content="",
+                                    metadata=response.get("metadata", {}),
+                                    is_final=True
+                                )
+                                writer.close()
+                                await writer.wait_closed()
+                                return
+                                
+                            elif response.get("type") == "stream_error":
+                                # Streaming error
+                                raise Exception(response.get("error", "Stream error"))
+                                
+                            elif response.get("type") == "chat_response":
+                                # Greek Chorus AIs don't support streaming yet
+                                # Simulate streaming by yielding the full response
+                                content = response.get("content", "")
+                                total_content.append(content)
+                                
+                                # Yield as chunks
+                                chunk_size = 50  # Characters per chunk
+                                for i in range(0, len(content), chunk_size):
+                                    chunk_content = content[i:i+chunk_size]
+                                    yield StreamChunk(
+                                        content=chunk_content,
+                                        metadata={
+                                            "ai_id": response.get("ai_id"),
+                                            "simulated_streaming": True
+                                        },
+                                        is_final=False
+                                    )
+                                    await asyncio.sleep(0.05)  # Small delay for effect
+                                
+                                # Final chunk
+                                yield StreamChunk(
+                                    content="",
+                                    metadata={
+                                        "model": response.get("model", "llama3.3:70b"),
+                                        "ai_id": response.get("ai_id"),
+                                        "elapsed_time": time.time() - start_time,
+                                        "total_content": "".join(total_content)
+                                    },
+                                    is_final=True
+                                )
+                                writer.close()
+                                await writer.wait_closed()
+                                return
+                                
+                            elif response.get("type") == MessageType.CHUNK.value:
                                 content = response.get("content", "")
                                 total_content.append(content)
                                 yield StreamChunk(
