@@ -374,6 +374,15 @@ TEKTON_DEBUG=false
 # Log level: TRACE, DEBUG, INFO, WARN, ERROR, FATAL, OFF
 TEKTON_LOG_LEVEL=INFO
 
+# Vector Database Settings
+# Preferred vector database: 'auto', 'faiss', 'chromadb', 'qdrant', 'lancedb'
+# 'auto' will automatically select based on hardware (recommended)
+TEKTON_VECTOR_DB=auto
+# Force CPU-only mode for vector operations (true/false)
+TEKTON_VECTOR_CPU_ONLY=false
+# Enable GPU acceleration if available (true/false)
+TEKTON_VECTOR_GPU_ENABLED=true
+
 # Component Port Assignments (Single Port Architecture)
 # UI system (using standard web port)
 HEPHAESTUS_PORT=8080

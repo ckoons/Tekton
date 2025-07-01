@@ -456,8 +456,8 @@ routers.v1.add_api_route(
 # Mount standard routers
 mount_standard_routers(app, routers)
 
-# Note: Engram uses shared MCP bridge instead of FastMCP endpoints
-# The fastmcp_server.py is a standalone server for alternative MCP mode
+# Note: Engram uses shared MCP bridge for standard operation
+# The fastmcp_server.py provides standalone MCP mode when run with --standalone flag
 
 
 def parse_arguments():

@@ -43,7 +43,18 @@ class EngramComponent(StandardComponentBase):
             logger.debug("Debug mode enabled")
         
         # Log storage configuration
-        logger.info(f"Storage mode: {'fallback (file-based)' if self.use_fallback else 'vector (FAISS)'}")
+        if self.use_fallback:
+            storage_mode = "fallback (file-based)"
+        else:
+            # Get configured vector DB preference
+            try:
+                vector_config = self.global_config.config.vector
+                vector_db = vector_config.vector_db
+                storage_mode = f"vector ({vector_db.upper()} configured)"
+            except:
+                storage_mode = "vector (auto-detect)"
+        
+        logger.info(f"Storage mode: {storage_mode}")
         logger.info(f"Hermes integration: {'enabled' if self.use_hermes else 'disabled'}")
         
         # Set up data directory structure

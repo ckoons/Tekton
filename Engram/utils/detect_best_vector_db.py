@@ -78,6 +78,27 @@ def detect_hardware() -> Dict[str, Any]:
     # Check for Apple Silicon
     if hardware["system"] == "darwin" and hardware["machine"] in ["arm64", "aarch64"]:
         hardware["apple_silicon"] = True
+        
+        # Detect specific Apple Silicon model
+        try:
+            result = subprocess.run(["sysctl", "-n", "machdep.cpu.brand_string"], 
+                                 capture_output=True, text=True, check=False)
+            if result.returncode == 0:
+                cpu_brand = result.stdout.strip()
+                hardware["cpu_brand"] = cpu_brand
+                # Detect M-series chip
+                if "Apple M" in cpu_brand:
+                    if "M4" in cpu_brand:
+                        hardware["apple_silicon_gen"] = "M4"
+                    elif "M3" in cpu_brand:
+                        hardware["apple_silicon_gen"] = "M3"
+                    elif "M2" in cpu_brand:
+                        hardware["apple_silicon_gen"] = "M2"
+                    elif "M1" in cpu_brand:
+                        hardware["apple_silicon_gen"] = "M1"
+        except:
+            pass
+        
         # Check for Metal support
         try:
             import torch
@@ -183,7 +204,10 @@ def print_vector_db_status(dependencies: Dict[str, bool], hardware: Dict[str, An
     print(f"  • System: {hardware['system'].title()} on {hardware['machine']}")
     if hardware["apple_silicon"]:
         metal = "✅ Available" if hardware["metal_available"] else "❌ Not available"
-        print(f"  • Apple Silicon: Yes (Metal: {metal})")
+        chip = hardware.get("apple_silicon_gen", "Unknown")
+        print(f"  • Apple Silicon: {chip} (Metal: {metal})")
+        if "cpu_brand" in hardware:
+            print(f"  • CPU: {hardware['cpu_brand']}")
     if hardware["cuda_available"]:
         print(f"  • CUDA: Available")
         if "cuda_device" in hardware:

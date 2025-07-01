@@ -14,6 +14,23 @@ from shared.utils.env_manager import get_env_manager, TektonEnvManager
 logger = logging.getLogger(__name__)
 
 
+class VectorDBConfig(BaseModel):
+    """Configuration for vector database settings."""
+    
+    vector_db: str = Field(default="auto", description="Preferred vector database")
+    cpu_only: bool = Field(default=False, description="Force CPU-only mode")
+    gpu_enabled: bool = Field(default=True, description="Enable GPU acceleration if available")
+    
+    @classmethod
+    def from_env(cls) -> 'VectorDBConfig':
+        """Create VectorDBConfig from environment variables."""
+        return cls(
+            vector_db=os.environ.get('TEKTON_VECTOR_DB', 'auto'),
+            cpu_only=os.environ.get('TEKTON_VECTOR_CPU_ONLY', 'false').lower() == 'true',
+            gpu_enabled=os.environ.get('TEKTON_VECTOR_GPU_ENABLED', 'true').lower() == 'true'
+        )
+
+
 class BaseComponentConfig(BaseModel):
     """Base configuration for all Tekton components."""
     
@@ -476,6 +493,10 @@ class ComponentConfig:
     
     def _load_configs(self):
         """Load all component configurations from environment."""
+        # System configurations
+        self.vector = VectorDBConfig.from_env()
+        
+        # Component configurations
         self.hermes = HermesConfig.from_env()
         self.engram = EngramConfig.from_env()
         self.rhetor = RhetorConfig.from_env()

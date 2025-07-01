@@ -53,6 +53,7 @@ class VectorStorage:
         # Initialize vector database
         self.vector_client = None
         self.namespace_collections = {}
+        self.vector_db_path = self.data_dir / "vector_db"
         self._initialize_vector_db()
         
     def _initialize_vector_db(self) -> None:
@@ -66,7 +67,11 @@ class VectorStorage:
             self._initialize_faiss(vector_db_path)
         elif self.vector_db_name == "chromadb":
             self._initialize_chromadb(vector_db_path)
+        elif self.vector_db_name == "lancedb":
+            self._initialize_lancedb(vector_db_path)
         elif self.vector_db_name == "qdrant":
+            # Qdrant has version compatibility issues - not recommended
+            logger.warning("Qdrant has known compatibility issues. Consider using ChromaDB or LanceDB instead.")
             self._initialize_qdrant(vector_db_path)
         else:
             raise ValueError(f"Unsupported vector database: {self.vector_db_name}")
@@ -148,6 +153,20 @@ class VectorStorage:
         """Restore original Qdrant validation method."""
         if hasattr(self, '_original_validate'):
             self.vector_client._validate_collection_info = self._original_validate
+    
+    def _initialize_lancedb(self, vector_db_path: Path) -> None:
+        """Initialize LanceDB vector database."""
+        try:
+            import lancedb
+            
+            # Initialize LanceDB client
+            logger.info("Initializing LanceDB vector database")
+            self.vector_client = lancedb.connect(str(vector_db_path))
+            
+            logger.info("LanceDB vector database initialized")
+        except ImportError as e:
+            logger.error(f"Could not initialize LanceDB: {e}")
+            raise
             
     def ensure_collection(self, namespace: str) -> bool:
         """
@@ -214,9 +233,29 @@ class VectorStorage:
                 self._restore_qdrant_validation()
                 
             elif self.vector_db_name == "faiss":
-                # FAISS implementation
-                # TODO: Implement FAISS collection creation
+                # FAISS implementation - collections are handled by VectorStore
                 pass
+                
+            elif self.vector_db_name == "lancedb":
+                # LanceDB implementation
+                try:
+                    # Check if table exists
+                    existing_tables = self.vector_client.table_names()
+                    if collection_name not in existing_tables:
+                        # Create new table with schema
+                        import pyarrow as pa
+                        schema = pa.schema([
+                            pa.field("id", pa.string()),
+                            pa.field("content", pa.string()),
+                            pa.field("vector", pa.list_(pa.float32(), self.vector_dim)),
+                            pa.field("metadata", pa.string())  # JSON string
+                        ])
+                        self.vector_client.create_table(collection_name, schema=schema)
+                        logger.info(f"Created LanceDB table {collection_name}")
+                except Exception as e:
+                    logger.error(f"Failed to create LanceDB table {collection_name}: {e}")
+                    return False
+                    
             else:
                 raise ValueError(f"Unknown vector database: {self.vector_db_name}")
                 
@@ -331,9 +370,57 @@ class VectorStorage:
                 return True
                 
             elif self.vector_db_name == "faiss":
-                # FAISS implementation
-                # TODO: Implement FAISS memory addition
-                pass
+                # FAISS implementation using the VectorStore
+                from engram.core.vector_store import VectorStore
+                
+                # Ensure we have a VectorStore instance
+                if not hasattr(self, '_faiss_store'):
+                    # Initialize FAISS store if not already done
+                    vector_path = os.path.join(self.vector_db_path, "faiss_vectors")
+                    self._faiss_store = VectorStore(
+                        data_path=vector_path,
+                        dimension=self.embedding_model.get_sentence_embedding_dimension()
+                    )
+                
+                # Use namespace as compartment name
+                compartment = namespace
+                
+                # Add the content with metadata
+                metadata_with_id = metadata.copy() if metadata else {}
+                metadata_with_id['memory_id'] = memory_id
+                metadata_with_id['namespace'] = namespace
+                metadata_with_id['created_at'] = datetime.utcnow().isoformat()
+                
+                # Add to FAISS store
+                ids = self._faiss_store.add(
+                    compartment=compartment,
+                    texts=[content_str],
+                    metadatas=[metadata_with_id]
+                )
+                
+                # Save the compartment
+                self._faiss_store.save(compartment)
+                
+                logger.debug(f"Added memory to FAISS in namespace {namespace} with ID {memory_id}")
+                return True
+                
+            elif self.vector_db_name == "lancedb":
+                # LanceDB implementation
+                import pyarrow as pa
+                import pandas as pd
+                table = self.vector_client.open_table(collection_name)
+                
+                # Create pandas DataFrame for LanceDB
+                data = pd.DataFrame({
+                    "id": [memory_id],
+                    "content": [content_str],
+                    "vector": [embedding.tolist()],
+                    "metadata": [json.dumps(metadata or {})]
+                })
+                
+                table.add(data)
+                logger.debug(f"Added memory to LanceDB in namespace {namespace} with ID {memory_id}")
+                return True
                 
             else:
                 raise ValueError(f"Unknown vector database: {self.vector_db_name}")
@@ -463,9 +550,75 @@ class VectorStorage:
                 return formatted_results[:limit]
                 
             elif self.vector_db_name == "faiss":
-                # FAISS implementation
-                # TODO: Implement FAISS search
-                pass
+                # FAISS implementation using the VectorStore
+                from engram.core.vector_store import VectorStore
+                
+                # Ensure we have a VectorStore instance
+                if not hasattr(self, '_faiss_store'):
+                    # Initialize FAISS store if not already done
+                    vector_path = os.path.join(self.vector_db_path, "faiss_vectors")
+                    self._faiss_store = VectorStore(
+                        data_path=vector_path,
+                        dimension=self.embedding_model.get_sentence_embedding_dimension()
+                    )
+                    # Load existing compartments
+                    for comp_file in Path(vector_path).glob("*.index"):
+                        compartment_name = comp_file.stem
+                        self._faiss_store.load(compartment_name)
+                
+                # Use namespace as compartment name
+                compartment = namespace
+                
+                # Search in FAISS
+                search_results = self._faiss_store.search(
+                    compartment=compartment,
+                    query=query,
+                    top_k=limit
+                )
+                
+                # Format results to match expected format
+                formatted_results = []
+                for result in search_results:
+                    metadata = result.get('metadata', {})
+                    formatted_results.append({
+                        "id": metadata.get('memory_id', result.get('id', '')),
+                        "content": result.get('text', ''),
+                        "metadata": metadata,
+                        "relevance": result.get('score', 0.0)
+                    })
+                
+                return formatted_results
+                
+            elif self.vector_db_name == "lancedb":
+                # LanceDB implementation
+                table = self.vector_client.open_table(collection_name)
+                
+                # Search using vector similarity
+                search_results = table.search(query_embedding.tolist()).limit(limit * 2).to_pandas()
+                
+                # Format the results
+                formatted_results = []
+                for idx, row in search_results.iterrows():
+                    # Calculate relevance score from distance (assuming cosine similarity)
+                    # LanceDB returns results ordered by similarity
+                    relevance = 1.0 - (idx / len(search_results))  # Simple ranking-based score
+                    
+                    # Parse metadata from JSON string
+                    metadata = {}
+                    try:
+                        import json
+                        metadata = json.loads(row.get('metadata', '{}'))
+                    except:
+                        pass
+                    
+                    formatted_results.append({
+                        "id": row.get('id', ''),
+                        "content": row.get('content', ''),
+                        "metadata": metadata,
+                        "relevance": relevance
+                    })
+                
+                return formatted_results[:limit]
                 
             else:
                 raise ValueError(f"Unknown vector database: {self.vector_db_name}")
@@ -516,9 +669,44 @@ class VectorStorage:
                     )
                     
             elif self.vector_db_name == "faiss":
-                # FAISS implementation
-                # TODO: Implement FAISS namespace clearing
-                pass
+                # FAISS implementation using the VectorStore
+                from engram.core.vector_store import VectorStore
+                
+                # Ensure we have a VectorStore instance
+                if not hasattr(self, '_faiss_store'):
+                    # Initialize FAISS store if not already done
+                    vector_path = os.path.join(self.vector_db_path, "faiss_vectors")
+                    self._faiss_store = VectorStore(
+                        data_path=vector_path,
+                        dimension=self.embedding_model.get_sentence_embedding_dimension()
+                    )
+                
+                # Use namespace as compartment name
+                compartment = namespace
+                
+                # Delete the compartment
+                self._faiss_store.delete(compartment)
+                
+                logger.debug(f"Cleared namespace {namespace} in FAISS")
+                
+            elif self.vector_db_name == "lancedb":
+                # LanceDB implementation - drop and recreate table
+                try:
+                    self.vector_client.drop_table(collection_name)
+                    logger.debug(f"Dropped LanceDB table {collection_name}")
+                except Exception as e:
+                    logger.warning(f"Failed to drop table {collection_name}: {e}")
+                
+                # Recreate the table with schema
+                import pyarrow as pa
+                schema = pa.schema([
+                    pa.field("id", pa.string()),
+                    pa.field("content", pa.string()),
+                    pa.field("vector", pa.list_(pa.float32(), self.vector_dim)),
+                    pa.field("metadata", pa.string())  # JSON string
+                ])
+                self.vector_client.create_table(collection_name, schema=schema)
+                logger.debug(f"Recreated LanceDB table {collection_name}")
                 
             else:
                 raise ValueError(f"Unknown vector database: {self.vector_db_name}")

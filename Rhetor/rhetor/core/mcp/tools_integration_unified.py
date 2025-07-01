@@ -178,8 +178,8 @@ class MCPToolsIntegrationUnified:
         try:
             import httpx
             
-            # Engram API endpoint
-            engram_url = "http://localhost:8004"  # Engram's default port
+            # Engram API endpoint - using standard port from port_assignments.md
+            engram_url = "http://localhost:8000"  # Engram's official port
             
             # Build query for specialist conversations
             query = f"specialist:{specialist_id}"

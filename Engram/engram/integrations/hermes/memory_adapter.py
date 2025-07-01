@@ -26,7 +26,8 @@ logging.basicConfig(
 logger = logging.getLogger("engram.integrations.hermes")
 
 # Import from refactored structure
-from engram.integrations.hermes.memory_adapter import HermesMemoryService, MemoryService, HAS_HERMES
+from engram.integrations.hermes.memory_adapter.core.service import HermesMemoryService, MemoryService
+from engram.integrations.hermes.memory_adapter.core.imports import HAS_HERMES
 
 # Re-export from the package
 __all__ = ['HermesMemoryService', 'MemoryService', 'HAS_HERMES']
