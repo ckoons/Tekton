@@ -77,6 +77,24 @@ from shared.utils.logging_setup import setup_component_logging
 AI_EXCLUDED_COMPONENTS = {'ui_dev_tools', 'ui-dev-tools', 'ui_devtools'}
 
 
+# @tekton-function: Calculate expected AI port from component main port
+# @tekton-rationale: Deterministic port allocation prevents race conditions
+def get_expected_ai_port(main_port: int) -> int:
+    """
+    Calculate expected AI port based on component's main port.
+    
+    Formula: AI port = 45000 + (main_port - 8000)
+    
+    Examples:
+        Hermes (8001) -> 45001
+        Engram (8002) -> 45002
+        Rhetor (8003) -> 45003
+        Apollo (8004) -> 45004
+        Athena (8005) -> 45005
+    """
+    return 45000 + (main_port - 8000)
+
+
 # @tekton-class: Main AI launcher for managing specialist lifecycle
 # @tekton-singleton: false
 # @tekton-lifecycle: launcher
@@ -209,11 +227,30 @@ class AILauncher:
             self.logger.info(f"Component {component} not properly configured")
             return False
         
-        # Allocate port for AI
-        ai_port = self.registry_client.allocate_port()
+        # Calculate expected AI port based on component's main port
+        expected_ai_port = None
+        component_config = getattr(self.config, component, None)
+        if component_config and hasattr(component_config, 'port'):
+            main_port = component_config.port
+            expected_ai_port = get_expected_ai_port(main_port)
+            self.logger.debug(f"Component {component} main port: {main_port}, expected AI port: {expected_ai_port}")
+        else:
+            self.logger.warning(f"Could not determine expected port for {component}")
+        
+        # Allocate port for AI (will try to get the expected one)
+        ai_port = self.registry_client.allocate_port(preferred_port=expected_ai_port)
         if not ai_port:
             self.logger.error(f"Could not allocate port for {ai_id}")
             return False
+        
+        # Log the allocation result
+        if expected_ai_port and ai_port == expected_ai_port:
+            self.logger.info(f"✓ Allocated expected port {ai_port} for {ai_id}")
+        elif expected_ai_port and ai_port != expected_ai_port:
+            self.logger.error(f"✗ Port mismatch for {ai_id}: expected {expected_ai_port}, got {ai_port}")
+            # Still continue but with error logged
+        else:
+            self.logger.info(f"Allocated port {ai_port} for {ai_id}")
         
         # Launch AI process
         try:
@@ -337,6 +374,33 @@ class AILauncher:
         """Clean up all launched AIs."""
         for ai_id in list(self.launched_ais.keys()):
             self.kill_ai(ai_id)
+    
+    def show_port_mapping(self):
+        """Display expected port mapping for all components."""
+        self.logger.info("Expected AI Port Mapping:")
+        self.logger.info("=" * 50)
+        
+        components = []
+        for attr_name in dir(self.config):
+            if attr_name.startswith('_'):
+                continue
+            
+            try:
+                comp_config = getattr(self.config, attr_name)
+                if hasattr(comp_config, 'port') and attr_name not in AI_EXCLUDED_COMPONENTS:
+                    main_port = comp_config.port
+                    expected_ai_port = get_expected_ai_port(main_port)
+                    components.append((attr_name, main_port, expected_ai_port))
+            except:
+                continue
+        
+        # Sort by main port
+        components.sort(key=lambda x: x[1])
+        
+        for comp_name, main_port, ai_port in components:
+            self.logger.info(f"{comp_name:15} : {main_port} → {ai_port}")
+        
+        self.logger.info("=" * 50)
 
 
 async def main():
@@ -346,7 +410,7 @@ async def main():
     )
     parser.add_argument(
         'components', 
-        nargs='+',
+        nargs='*',  # Changed to * to make optional when using --show-mapping
         help='Components to launch AIs for (or "all")'
     )
     parser.add_argument(
@@ -364,6 +428,11 @@ async def main():
         action='store_true',
         help='Don\'t clean up launched AIs on exit (for use by enhanced_tekton_launcher)'
     )
+    parser.add_argument(
+        '--show-mapping',
+        action='store_true',
+        help='Show expected port mapping and exit'
+    )
     
     args = parser.parse_args()
     
@@ -374,6 +443,15 @@ async def main():
         sys.exit(1)
     
     launcher = AILauncher(verbose=args.verbose)
+    
+    # Handle show-mapping option
+    if args.show_mapping:
+        launcher.show_port_mapping()
+        sys.exit(0)
+    
+    # Ensure components are specified if not showing mapping
+    if not args.components:
+        parser.error("Please specify components to launch or use 'all'")
     
     try:
         await launcher.launch_multiple(args.components)

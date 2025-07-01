@@ -428,11 +428,13 @@ class AIRegistryClient:
         risks=["Duplicate port allocation", "Socket bind failures"],
         mitigation="Exclusive locking during entire allocation process"
     )
-    def allocate_port(self, start_port: int = 45000, max_port: int = 50000) -> Optional[int]:
+    def allocate_port(self, preferred_port: Optional[int] = None,
+                      start_port: int = 45000, max_port: int = 50000) -> Optional[int]:
         """
         Allocate an available port for an AI socket with atomic allocation.
         
         Args:
+            preferred_port: Try this port first if specified
             start_port: Starting port to scan from
             max_port: Maximum port to try
             
@@ -468,12 +470,21 @@ class AIRegistryClient:
                             except Exception:
                                 pass
                         
+                        # Try preferred port first if specified
+                        if preferred_port and preferred_port not in used_ports:
+                            logger.info(f"Allocated preferred port {preferred_port} (used ports: {len(used_ports)})")
+                            logger.debug(f"Port allocation - Used ports: {sorted(used_ports)}")
+                            return preferred_port
+                        
                         # Find available port - just check registry, don't bind
                         # This eliminates TOCTOU race - the actual service will try to bind
                         # and fail gracefully if something else grabbed the port
                         for port in range(start_port, max_port):
                             if port not in used_ports:
-                                logger.info(f"Allocated port {port} (used ports: {len(used_ports)})")
+                                if preferred_port:
+                                    logger.warning(f"Preferred port {preferred_port} unavailable, allocated {port} instead")
+                                else:
+                                    logger.info(f"Allocated port {port} (used ports: {len(used_ports)})")
                                 logger.debug(f"Port allocation - Used ports: {sorted(used_ports)}")
                                 return port
                         
