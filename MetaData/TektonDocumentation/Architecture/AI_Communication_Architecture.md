@@ -1,7 +1,7 @@
 # Tekton AI Communication Architecture
 
 ## Overview
-Tekton supports two distinct types of AI specialists with different communication protocols, unified through the AI Registry for discovery but requiring different interaction methods.
+Tekton supports two distinct types of AI specialists with different communication protocols, unified through the AI Registry for discovery but requiring different interaction methods. **Updated July 2025**: SSE (Server-Sent Events) streaming is now fully functional for real-time communication with both individual and team chat.
 
 ## AI Types
 
@@ -119,6 +119,12 @@ echo "Plan project" | aish --ai rhetor-orchestrator
 
 # Pipeline mixing both types
 echo "Complex task" | apollo | rhetor | athena
+
+# NEW (July 2025): SSE Streaming
+curl -N "http://localhost:8003/api/chat/apollo-ai/stream?message=Hello"
+curl -X POST -H "Content-Type: application/json" \
+  -d '{"message": "Hello team"}' \
+  "http://localhost:8003/api/chat/team/stream"
 ```
 
 ## Benefits of Dual Architecture
@@ -134,6 +140,13 @@ echo "Complex task" | apollo | rhetor | athena
 - **Integration**: MCP tools, context management
 - **Coordination**: Centralized orchestration
 - **Flexibility**: Runtime configuration changes
+
+### SSE Streaming (July 2025 Update)
+- **Real-time Communication**: Server-Sent Events for progressive responses
+- **Individual Chat**: Stream responses from any Greek Chorus AI
+- **Team Chat**: Parallel streaming from all 18 specialists simultaneously
+- **Enhanced Metadata**: Token tracking, performance metrics, model information
+- **Error Resilience**: Proper timeout handling and connection management
 
 ## Implementation Notes
 

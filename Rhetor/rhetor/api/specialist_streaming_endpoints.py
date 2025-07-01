@@ -150,12 +150,13 @@ async def stream_team_chat(request: StreamingRequest):
                             }
             
             # Final summary
+            completed_count = len(streaming_tasks) - len(pending_tasks)
             yield {
                 "data": json.dumps({
                     "type": "team_complete",
                     "summary": {
                         "total_ais": len(greek_chorus),
-                        "completed_streams": len(streaming_tasks) - len(pending_tasks),
+                        "completed_streams": completed_count,
                         "total_time": time.time() - start_time
                     }
                 })
@@ -385,125 +386,6 @@ async def stream_specialist_chat_get(
     return await stream_specialist_chat(specialist_id, request)
 
 
-@performance_boundary(
-    title="Team Chat Streaming",
-    sla="<100ms first token from each AI",
-    optimization_notes="Parallel streaming from multiple AIs",
-    metrics={"max_concurrent_streams": 18}
-)
-@router.post("/team/stream")
-async def stream_team_chat(request: StreamingRequest):
-    """
-    Stream responses from all available AI specialists simultaneously.
-    
-    This creates a real-time "Greek Chorus" effect with multiple AIs
-    responding to the same prompt in parallel.
-    """
-    start_time = time.time()
-    
-    logger.info(f"Starting team streaming chat: {request.message[:100]}...")
-    
-    async def generate_team_stream():
-        try:
-            # Discover all available specialists
-            all_ais = await discovery_service.list_ais()
-            greek_chorus = [
-                ai for ai in all_ais.get('ais', [])
-                if ai.get('connection', {}).get('port') 
-                and 45000 <= ai['connection']['port'] <= 50000
-                and ai.get('status') == 'healthy'
-            ]
-            
-            if not greek_chorus:
-                yield {
-                    "data": json.dumps({
-                        "type": "error",
-                        "error": "No healthy Greek Chorus AIs available"
-                    })
-                }
-                return
-            
-            logger.info(f"Streaming from {len(greek_chorus)} AIs in parallel")
-            
-            # Create streaming tasks for each AI
-            streaming_tasks = []
-            for ai in greek_chorus:
-                # Create a task to collect all chunks from this AI
-                async def collect_chunks(ai_info):
-                    chunks = []
-                    async for chunk in stream_from_specialist(
-                        ai_info['id'],
-                        ai_info['connection']['host'],
-                        ai_info['connection']['port'],
-                        request,
-                        ai_info
-                    ):
-                        chunks.append(chunk)
-                    return chunks
-                
-                task = asyncio.create_task(collect_chunks(ai))
-                streaming_tasks.append((ai['id'], task))
-            
-            # Stream responses as they arrive
-            pending_tasks = {ai_id: task for ai_id, task in streaming_tasks}
-            
-            while pending_tasks:
-                # Wait for any task to complete
-                done, pending = await asyncio.wait(
-                    pending_tasks.values(),
-                    return_when=asyncio.FIRST_COMPLETED
-                )
-                
-                # Process completed tasks
-                for task in done:
-                    # Find which AI this task belongs to
-                    ai_id = None
-                    for aid, t in pending_tasks.items():
-                        if t == task:
-                            ai_id = aid
-                            break
-                    
-                    if ai_id:
-                        # Remove from pending
-                        del pending_tasks[ai_id]
-                        
-                        try:
-                            chunks = await task
-                            # Stream all chunks from this AI
-                            for chunk_data in chunks:
-                                yield {"data": json.dumps(chunk_data)}
-                        except Exception as e:
-                            logger.error(f"Error streaming from {ai_id}: {e}")
-                            yield {
-                                "data": json.dumps({
-                                    "type": "error",
-                                    "specialist_id": ai_id,
-                                    "error": str(e)
-                                })
-                            }
-            
-            # Final summary
-            yield {
-                "data": json.dumps({
-                    "type": "team_complete",
-                    "summary": {
-                        "total_ais": len(greek_chorus),
-                        "completed_streams": completed_streams,
-                        "total_time": time.time() - start_time
-                    }
-                })
-            }
-            
-        except Exception as e:
-            logger.error(f"Team streaming error: {e}", exc_info=True)
-            yield {
-                "data": json.dumps({
-                    "type": "error",
-                    "error": str(e)
-                })
-            }
-    
-    return EventSourceResponse(generate_team_stream())
 
 
 async def stream_from_specialist(

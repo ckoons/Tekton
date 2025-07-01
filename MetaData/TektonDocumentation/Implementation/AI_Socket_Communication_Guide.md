@@ -4,7 +4,7 @@
 
 This guide shows how to communicate with Tekton AI specialists from HTML/JavaScript using the socket-based protocol.
 
-**Updated June 2025**: This guide now references the unified AI system in `/Tekton/shared/ai/` that provides the `AISocketClient` for direct communication with Greek Chorus AIs on ports 45000-50000.
+**Updated July 2025**: This guide now references the unified AI system in `/Tekton/shared/ai/` that provides the `AISocketClient` for direct communication with Greek Chorus AIs on ports 45000-50000. SSE (Server-Sent Events) streaming is now fully functional for both individual and team chat.
 
 ## Socket Communication Protocol
 
@@ -26,7 +26,86 @@ All messages are JSON objects followed by a newline character:
 
 Since browsers cannot directly connect to TCP sockets, you need a proxy or use the Rhetor API endpoints.
 
-### Option 1: Direct Socket Connection (Node.js/Backend)
+### Option 1: SSE Streaming API (Recommended)
+
+**NEW (July 2025)**: Use Rhetor's SSE streaming endpoints for real-time communication:
+
+```javascript
+// Individual AI Chat with Streaming
+async function streamChatWithAI(specialistId, message) {
+  const response = await fetch(`http://localhost:8003/api/chat/${specialistId}/stream?message=${encodeURIComponent(message)}`, {
+    method: 'GET',
+    headers: {
+      'Accept': 'text/event-stream'
+    }
+  });
+  
+  const reader = response.body.getReader();
+  const decoder = new TextDecoder();
+  
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    
+    const chunk = decoder.decode(value);
+    const lines = chunk.split('\n');
+    
+    for (const line of lines) {
+      if (line.startsWith('data: ')) {
+        const data = JSON.parse(line.slice(6));
+        console.log('Received chunk:', data.content);
+        
+        if (data.type === 'complete') {
+          console.log('Stream complete');
+          return;
+        }
+      }
+    }
+  }
+}
+
+// Team Chat with Multiple AIs
+async function streamTeamChat(message) {
+  const response = await fetch('http://localhost:8003/api/chat/team/stream', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'text/event-stream'
+    },
+    body: JSON.stringify({ message, include_metadata: false })
+  });
+  
+  const reader = response.body.getReader();
+  const decoder = new TextDecoder();
+  
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    
+    const chunk = decoder.decode(value);
+    const lines = chunk.split('\n');
+    
+    for (const line of lines) {
+      if (line.startsWith('data: ')) {
+        const data = JSON.parse(line.slice(6));
+        
+        if (data.type === 'team_chunk') {
+          console.log(`${data.specialist_name}: ${data.content}`);
+        } else if (data.type === 'team_complete') {
+          console.log('All AIs responded:', data.summary);
+          return;
+        }
+      }
+    }
+  }
+}
+
+// Usage examples
+streamChatWithAI('apollo-ai', 'Hello Apollo!');
+streamTeamChat('Hello team, what are your thoughts?');
+```
+
+### Option 2: Direct Socket Connection (Node.js/Backend)
 
 ```javascript
 const net = require('net');
