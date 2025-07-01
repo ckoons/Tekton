@@ -39,6 +39,12 @@ except Exception as e:
     VECTOR_CPU_ONLY = False
     VECTOR_GPU_ENABLED = True
 
+# Allow override for testing purposes
+FORCE_VECTOR_DB = os.environ.get('ENGRAM_FORCE_VECTOR_DB', '').lower()
+if FORCE_VECTOR_DB and FORCE_VECTOR_DB in ['faiss', 'chromadb', 'lancedb', 'qdrant']:
+    PREFERRED_VECTOR_DB = FORCE_VECTOR_DB
+    logger.info(f"Vector DB forced via environment variable: {FORCE_VECTOR_DB.upper()}")
+
 def initialize_vector_db() -> Tuple[bool, Optional[Dict[str, Any]], Optional[Any]]:
     """
     Initialize vector database components if available.
