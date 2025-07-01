@@ -10466,6 +10466,311 @@
         66% { content: "..."; }
     }
 
+/* TERMA COMPONENT STYLES */
+/* Terma Component Styles - Following Rhetor's BEM Pattern */
+
+/* Container */
+.terma {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  background-color: var(--bg-primary, #1e1e2e);
+  color: var(--text-primary, #f0f0f0);
+  /* No absolute positioning - proper component containment */
+}
+
+/* Header */
+.terma__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 16px;
+  background-color: var(--bg-secondary, #252535);
+  border-bottom: 1px solid var(--border-color, #444444);
+}
+
+.terma__title-container {
+  display: flex;
+  align-items: center;
+}
+
+.terma__icon {
+  height: 30px;
+  width: auto;
+  margin-right: 12px;
+}
+
+.terma__title {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 500;
+}
+
+.terma__title-main {
+  font-weight: 600;
+}
+
+.terma__title-sub {
+  margin-left: 8px;
+  opacity: 0.8;
+  font-weight: normal;
+}
+
+.terma__connection-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.terma__status-indicator {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: var(--color-warning, #ffc107);
+}
+
+.terma__status-indicator[data-status="active"] {
+  background-color: var(--color-success, #28a745);
+}
+
+.terma__status-text {
+  font-size: 0.9rem;
+  color: var(--text-secondary, #aaaaaa);
+}
+
+/* Menu Bar */
+.terma__menu-bar {
+  display: flex;
+  background-color: var(--bg-secondary, #252535);
+  border-bottom: 1px solid var(--border-color, #444444);
+  padding: 0 16px;
+}
+
+.terma__tabs {
+  display: flex;
+  gap: 8px;
+}
+
+.terma__tab {
+  padding: 16px;
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  color: var(--text-secondary, #aaaaaa);
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.terma__tab:hover {
+  color: var(--text-primary, #f0f0f0);
+  background-color: rgba(93, 64, 55, 0.05);
+}
+
+/* Active state handled by radio button logic */
+
+/* Content Area */
+.terma__content {
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+  padding-bottom: 70px; /* Account for footer height */
+}
+
+/* Panel styling - hidden by default */
+.terma__panel {
+  display: none;
+  height: 100%;
+  overflow: auto;
+  padding: 24px;
+}
+
+/* Radio button logic for tab switching */
+#terma-tab-companion:checked ~ .terma .terma__panel--companion,
+#terma-tab-team:checked ~ .terma .terma__panel--team {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Active tab styling */
+#terma-tab-companion:checked ~ .terma .terma__tab[for="terma-tab-companion"],
+#terma-tab-team:checked ~ .terma .terma__tab[for="terma-tab-team"] {
+  color: var(--text-primary, #f0f0f0);
+  border-bottom-color: #5D4037;
+  background-color: rgba(93, 64, 55, 0.05);
+}
+
+/* Chat Interface */
+.chat-interface {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.chat-messages {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0; /* No footer inside tabs anymore */
+  overflow-y: auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.chat-message {
+  margin-bottom: 12px;
+  padding: 12px;
+  border-radius: 8px;
+  background-color: var(--bg-secondary, #252535);
+}
+
+.chat-message.system-message {
+  background-color: rgba(93, 64, 55, 0.1);
+  border-left: 3px solid #5D4037;
+}
+
+.chat-message.user-message {
+  background-color: rgba(76, 175, 80, 0.1);
+  margin-left: 32px;
+}
+
+.chat-message.ai-message {
+  background-color: rgba(93, 64, 55, 0.1);
+  margin-right: 32px;
+}
+
+.chat-input-container {
+  display: flex;
+  gap: 8px;
+}
+
+.chat-input {
+  flex: 1;
+  padding: 12px;
+  border: 1px solid var(--border-color, #444444);
+  border-radius: 8px;
+  font-size: 14px;
+  background-color: var(--bg-tertiary, #333345);
+  color: var(--text-primary, #f0f0f0);
+}
+
+.chat-input:focus {
+  outline: none;
+  border-color: #5D4037;
+}
+
+.chat-send-button {
+  padding: 12px 24px;
+  background-color: #5D4037;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.3s ease;
+}
+
+.chat-send-button:hover {
+  background-color: #6D5047;
+}
+
+/* Team Chat Specific */
+.team-chat-header {
+  padding: 16px;
+  background-color: var(--bg-tertiary, #333345);
+  border-radius: 8px;
+  margin-bottom: 16px;
+}
+
+.team-chat-controls {
+  margin-top: 8px;
+}
+
+.team-chat-controls label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-secondary, #aaaaaa);
+}
+
+/* Footer with Chat Input */
+.terma__footer {
+  background-color: var(--bg-secondary, #252535);
+  border-top: 1px solid var(--border-color, #444444);
+  padding: 12px 16px;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 70px; /* Fixed height to match chat area */
+}
+
+.terma__chat-input-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+}
+
+.terma__chat-prompt {
+  font-size: 18px;
+  font-weight: bold;
+  color: #5D4037; /* Brown for Terma */
+}
+
+.terma__chat-input {
+  flex: 1;
+  height: 44px;
+  padding: 8px 16px;
+  background-color: var(--bg-tertiary, #333345);
+  border: 1px solid var(--border-color, #444444);
+  border-radius: 8px;
+  color: var(--text-primary, #f0f0f0);
+  font-size: 14px;
+  transition: border-color 0.2s ease;
+}
+
+.terma__chat-input:focus {
+  outline: none;
+  border-color: #5D4037;
+}
+
+.terma__chat-input::placeholder {
+  color: var(--text-secondary, #888888);
+}
+
+.terma__send-button {
+  height: 44px;
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #5D4037; /* Brown for Terma */
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.terma__send-button:hover {
+  background-color: #6D5047; /* Darker brown on hover */
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(93, 64, 55, 0.3);
+}
+
+.terma__send-button:active {
+  transform: translateY(0);
+  box-shadow: none;
+}
+
 /* PROFILE COMPONENT STYLES */
 /* Profile component styles using BEM naming convention */
     
@@ -21036,7 +21341,7 @@ SUCCESS CRITERIA:
       <input type="text" class="rhetor__chat-input" id="chat-input"
              data-tekton-input="chat-input"
              data-tekton-input-type="chat"
-             placeholder="Enter chat message for LLM context management, prompts, or team communication"
+             placeholder="Enter message (Team Chat when Team Chat tab is active, LLM Chat when LLM tab is active)"
              onkeydown="if(event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); rhetor_sendChat(); }">
       <button class="rhetor__send-button" id="send-button" onclick="rhetor_sendChat(); return false;"
               data-tekton-action="send-message"
@@ -21063,7 +21368,8 @@ if (window.uiManager) {
 // TAB SWITCHING NOW HANDLED BY CSS - NO JS NEEDED
 // The radio button pattern handles all tab switching through CSS :checked selectors
 
-// SEND LLM CHAT FUNCTION
+// SEND LLM CHAT FUNCTION - DEPRECATED (now handled by rhetor_sendLLMChatMessage)
+/*
 window.rhetor_sendLLMChat = function() {
     console.log('[RHETOR] Send LLM chat clicked');
     
@@ -21135,6 +21441,7 @@ window.rhetor_sendLLMChat = function() {
     
     return false;
 };
+*/
 
 // CHAT CLEARING FUNCTION
 window.rhetor_clearChat = function() {
@@ -21637,16 +21944,72 @@ function rhetor_sendChat() {
 }
 
 // Send LLM Chat message
-function rhetor_sendLLMChatMessage(message) {
+async function rhetor_sendLLMChatMessage(message) {
     console.log('[RHETOR] Sending LLM chat:', message);
     
     // Add user message
     rhetor_addChatMessage('llmchat', 'user', message);
     
-    // Call LLM endpoint
-    // This would normally call rhetor_sendLLMChat() from the external script
-    if (window.rhetor_sendLLMChat) {
-        window.rhetor_sendLLMChat();
+    // Show typing indicator
+    const typingId = Date.now();
+    rhetor_addChatMessage('llmchat', 'typing', 'Processing...', typingId);
+    
+    try {
+        // Use team chat endpoint to talk to single Rhetor AI
+        const response = await fetch('http://localhost:8003/api/team-chat', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                message: message,
+                target_sockets: ["rhetor-ai"],  // Only talk to Rhetor AI
+                timeout: 15.0  // 15 second timeout for single AI
+            })
+        });
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        
+        // Remove typing indicator
+        rhetor_removeTypingIndicator('llmchat', typingId);
+        
+        // Display response
+        if (data.responses && data.responses.length > 0) {
+            // Get response from Rhetor AI
+            const rhetorResponse = data.responses.find(r => r.socket_id === 'rhetor-ai');
+            if (rhetorResponse) {
+                // Clean up the response
+                let content = rhetorResponse.content;
+                if (content.startsWith('Received message message.')) {
+                    content = content.replace('Received message message.', '').trim();
+                }
+                rhetor_addChatMessage('llmchat', 'ai', content);
+            } else {
+                rhetor_addChatMessage('llmchat', 'ai', 
+                    'Rhetor AI did not respond. Make sure it is running on port 45002.');
+            }
+        } else {
+            rhetor_addChatMessage('llmchat', 'ai', 
+                'No response from Rhetor AI. Make sure it is running.');
+            
+            // Show diagnostic info
+            rhetor_addChatMessage('llmchat', 'system', 
+                `Diagnostics: Elapsed time: ${data.elapsed_time?.toFixed(1) || '?'}s`);
+        }
+        
+    } catch (error) {
+        console.error('[RHETOR] LLM chat error:', error);
+        
+        // Remove typing indicator
+        rhetor_removeTypingIndicator('llmchat', typingId);
+        
+        // Show error message
+        rhetor_addChatMessage('llmchat', 'ai', 
+            `Error: ${error.message}. Make sure Rhetor is running on port 8003.`);
     }
 }
 
@@ -21659,7 +22022,7 @@ async function rhetor_sendTeamChatMessage(message) {
     
     // Show typing indicator
     const typingId = Date.now();
-    rhetor_addChatMessage('teamchat', 'typing', 'Gathering responses from AI team...', typingId);
+    rhetor_addChatMessage('teamchat', 'typing', 'Gathering responses from Greek Chorus AIs (this may take up to 30 seconds with Ollama 70B models)...', typingId);
     
     try {
         // Call the team chat endpoint
@@ -21671,7 +22034,7 @@ async function rhetor_sendTeamChatMessage(message) {
             body: JSON.stringify({
                 message: message,
                 moderation_mode: 'pass_through',  // Can be configurable later
-                timeout: 10.0  // 10 second timeout
+                timeout: 30.0  // 30 second timeout for Ollama 70B models
             })
         });
         
@@ -21688,10 +22051,17 @@ async function rhetor_sendTeamChatMessage(message) {
         if (data.responses && data.responses.length > 0) {
             // Show individual responses
             for (const resp of data.responses) {
-                const socketName = resp.socket_id.split('-')[0].charAt(0).toUpperCase() + 
-                                 resp.socket_id.split('-')[0].slice(1);
+                // Extract AI name from socket_id (e.g., "apollo-ai" -> "Apollo")
+                const aiName = resp.socket_id.replace('-ai', '').split('-')
+                    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                    .join(' ');
+                // Clean up the response by removing "Received message message." prefix
+                let content = resp.content;
+                if (content.startsWith('Received message message.')) {
+                    content = content.replace('Received message message.', '').trim();
+                }
                 rhetor_addChatMessage('teamchat', 'ai', 
-                    `<strong>${socketName}:</strong> ${resp.content}`);
+                    `<strong>${aiName}:</strong> ${content}`);
             }
             
             // Show synthesis if available
@@ -21699,9 +22069,26 @@ async function rhetor_sendTeamChatMessage(message) {
                 rhetor_addChatMessage('teamchat', 'ai', 
                     `<strong>Synthesis:</strong> ${data.synthesis}`);
             }
+            
+            // Show summary
+            const responseCount = data.responses.length;
+            const totalCount = data.total_specialists || 18;
+            const elapsedTime = data.elapsed_time ? data.elapsed_time.toFixed(1) : '?';
+            rhetor_addChatMessage('teamchat', 'system', 
+                `Received ${responseCount} responses from ${totalCount} specialists in ${elapsedTime}s`);
         } else {
-            rhetor_addChatMessage('teamchat', 'ai', 
-                'No responses received from the AI team. Make sure AI specialists are running.');
+            // Check if we got an error
+            if (data.error) {
+                rhetor_addChatMessage('teamchat', 'ai', 
+                    `Error: ${data.error}`);
+            } else {
+                rhetor_addChatMessage('teamchat', 'ai', 
+                    'No responses received from the AI team. Make sure Greek Chorus AI specialists are running on ports 45000+.');
+            }
+            
+            // Show diagnostic info
+            rhetor_addChatMessage('teamchat', 'system', 
+                `Diagnostics: ${data.total_specialists || 0} specialists available, ${data.error_count || 0} errors, timeout: ${data.elapsed_time?.toFixed(1) || '?'}s`);
         }
         
     } catch (error) {
@@ -24342,64 +24729,88 @@ if (document.readyState === 'complete' || document.readyState === 'interactive')
                  data-tekton-area="terma"
                  data-tekton-type="component-container"
                  data-tekton-visibility="hidden">
-<!-- Terma Component - Terminal System -->
-<div class="terma-component"
-     data-tekton-area="terma"
-     data-tekton-component="terma"
-     data-tekton-type="component-workspace"
-     data-tekton-description="Interactive terminal with AI assistance"
-     data-tekton-ai="terma-assistant"
-     data-tekton-ai-ready="false">
-  <header class="terma-header" data-tekton-zone="header" data-tekton-section="header">
-    <div class="terma-header-title">
-      <img src="/images/icon.jpg" alt="Terma" class="terma-logo">
-      <h1>Terma - Terminal System</h1>
-    </div>
-    <div class="terma-header-controls">
-      <button class="terma-clear"
-              data-tekton-action="clear-terminal"
-              data-tekton-action-type="secondary">Clear</button>
-      <button class="terma-settings"
-              data-tekton-action="open-settings"
-              data-tekton-action-type="secondary">Settings</button>
-    </div>
-  </header>
-  
-  <div class="terma-terminal-container" data-tekton-zone="content" data-tekton-scrollable="true">
-    <div id="terma-terminal" class="terma-terminal">
-      <div id="terma-output" class="terma-output">
-        <div class="terma-welcome">
-          <span class="terma-welcome-title">Welcome to Terma Terminal</span>
-          <span class="terma-welcome-message">Type commands below to interact with the system.</span>
+<!-- Terma Component - Platform AI Mentor -->
+
+<!-- Hidden radio controls for CSS-only tab functionality -->
+<input type="radio" name="terma-tab" id="terma-tab-companion" checked style="display: none;">
+<input type="radio" name="terma-tab" id="terma-tab-team" style="display: none;">
+
+<div class="terma" id="terma-container" data-tekton-component="terma">
+    <!-- Component Header with Title -->
+    <div class="terma__header" data-tekton-zone="header">
+        <div class="terma__title-container">
+            <img src="/images/hexagon.jpg" alt="Tekton" class="terma__icon">
+            <h2 class="terma__title">
+                <span class="terma__title-main">Terma</span>
+                <span class="terma__title-sub">Companion AI for Tekton Platform</span>
+            </h2>
         </div>
-      </div>
-      <div class="terma-input-container">
-        <span class="terma-prompt">$</span>
-        <input type="text" id="terma-input" class="terma-input" placeholder="Type your command here..."
-               data-tekton-input="terminal-input"
-               data-tekton-input-type="command">
-      </div>
+        <div class="terma__connection-status">
+            <span class="terma__status-indicator" data-status="inactive"></span>
+            <span class="terma__status-text">Connecting...</span>
+        </div>
     </div>
-  </div>
-  
-  <div class="terma-llm-assistance" data-tekton-zone="assistant" data-tekton-ai-panel="terma">
-    <div class="terma-llm-header">
-      <span>AI Assistant</span>
-      <button id="terma-llm-toggle" class="terma-llm-toggle"
-              data-tekton-action="toggle-ai-assistant"
-              data-tekton-action-type="toggle"
-              data-tekton-state="collapsed">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M6 9L12 15L18 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-      </button>
+    
+    <!-- Menu Bar -->
+    <div class="terma__menu-bar" data-tekton-zone="menu">
+        <div class="terma__tabs">
+            <label for="terma-tab-companion" class="terma__tab" data-tab="companion-chat">
+                <span class="terma__tab-label">Companion Chat</span>
+            </label>
+            <label for="terma-tab-team" class="terma__tab" data-tab="team-chat">
+                <span class="terma__tab-label">Team Chat</span>
+            </label>
+        </div>
     </div>
-    <div id="terma-llm-output" class="terma-llm-output">
-      <p>
-        Ask for help by typing <code>?command</code> or run command followed by <code>?</code> to analyze output.
-      </p>
+    
+    <!-- Content Area -->
+    <div class="terma__content" data-tekton-zone="content">
+        <!-- Companion Chat Tab -->
+        <div class="terma__panel terma__panel--companion" data-tab-content="companion-chat" data-tekton-tab-content="companion-chat">
+            <div class="chat-interface" data-tekton-chat="companion">
+                <div class="chat-messages" id="terma-companion-messages" data-tekton-messages="companion">
+                    <div class="chat-message system-message">
+                        <strong>Terma:</strong> Hello! I'm Terma, your platform AI mentor. I oversee the entire Tekton ecosystem and can help guide you through using any component. What would you like to explore today?
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Team Chat Tab -->
+        <div class="terma__panel terma__panel--team" data-tab-content="team-chat" data-tekton-tab-content="team-chat">
+            <div class="chat-interface" data-tekton-chat="team">
+                <div class="team-chat-header">
+                    <p>Communicate with other AI specialists across the Tekton platform</p>
+                    <div class="team-chat-controls">
+                        <label>
+                            <input type="checkbox" id="terma-broadcast-mode" data-tekton-broadcast="terma">
+                            Broadcast to all AIs
+                        </label>
+                    </div>
+                </div>
+                <div class="chat-messages" id="terma-team-messages" data-tekton-messages="team">
+                    <div class="chat-message system-message">
+                        <strong>System:</strong> Team Chat allows Terma to coordinate with other AI specialists.
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-  </div>
+    
+    <!-- Footer with Chat Input -->
+    <div class="terma__footer" data-tekton-zone="footer" data-tekton-section="footer">
+        <div class="terma__chat-input-container" data-tekton-chat="terma-companion" data-tekton-chat-component="terma">
+            <div class="terma__chat-prompt">></div>
+            <input type="text" class="terma__chat-input" id="terma-chat-input"
+                   data-tekton-input="chat-input"
+                   data-tekton-input-type="chat"
+                   placeholder="Chat with Terma - your platform AI mentor and companion"
+                   onkeydown="if(event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); terma_sendChat(); }">
+            <button class="terma__send-button" id="terma-send-button" onclick="terma_sendChat(); return false;"
+                    data-tekton-action="send-message"
+                    data-tekton-action-type="primary">Send</button>
+        </div>
+    </div>
 </div>
             </div>
 
@@ -25482,7 +25893,519 @@ window.profile_resetChanges = function() {
         </div>
     </div>
     
-    <!-- Single minimal script -->
-    <script src="scripts/app-minimal.js"></script>
+    <!-- Component Scripts -->
+    <script>
+// NUMA COMPONENT SCRIPT
+
+// Initialize Numa component when loaded
+setTimeout(() => {
+    if (window.NumaComponent && typeof window.NumaComponent.init === 'function') {
+        window.NumaComponent.init();
+        console.log('Numa component initialized');
+    } else {
+        console.warn('NumaComponent not found, waiting for script load...');
+        // Try again after scripts load
+        setTimeout(() => {
+            if (window.NumaComponent && typeof window.NumaComponent.init === 'function') {
+                window.NumaComponent.init();
+                console.log('Numa component initialized (delayed)');
+            }
+        }, 500);
+    }
+}, 100);
+
+// Chat functionality
+function numa_sendChat() {
+    const input = document.getElementById('numa-chat-input');
+    const message = input.value.trim();
+    
+    if (!message) return;
+    
+    // Determine which tab is active
+    const companionActive = document.getElementById('numa-tab-companion').checked;
+    const chatType = companionActive ? 'companion' : 'team';
+    const messagesContainer = document.getElementById(`numa-${chatType}-messages`);
+    
+    // Add user message
+    const userMessageDiv = document.createElement('div');
+    userMessageDiv.className = 'chat-message user-message';
+    userMessageDiv.innerHTML = `<strong>You:</strong> ${message}`;
+    messagesContainer.appendChild(userMessageDiv);
+    
+    // Clear input
+    input.value = '';
+    
+    // Scroll to bottom
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    
+    // Send to backend (placeholder for now)
+    console.log(`Numa ${chatType} chat:`, message);
+    
+    // Simulate AI response
+    setTimeout(() => {
+        const aiMessageDiv = document.createElement('div');
+        aiMessageDiv.className = 'chat-message ai-message';
+        aiMessageDiv.innerHTML = `<strong>Numa:</strong> I understand you're asking about "${message}". As your platform AI mentor, I can help guide you through the Tekton ecosystem. This feature is currently being developed.`;
+        messagesContainer.appendChild(aiMessageDiv);
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }, 1000);
+}
+
+// Add enter key handler for chat input when component loads
+document.addEventListener('DOMContentLoaded', function() {
+    const chatInput = document.getElementById('numa-chat-input');
+    if (chatInput) {
+        chatInput.focus();
+    }
+});
+
+// HARMONIA COMPONENT SCRIPT
+
+// IMMEDIATELY SET UP UI MANAGER PROTECTION
+// Tell UI Manager to ignore this component - must be done IMMEDIATELY to avoid races
+if (window.uiManager) {
+    window.uiManager._ignoreComponent = 'harmonia';
+    console.log('[HARMONIA] Set UI Manager to ignore harmonia component');
+}
+
+// Force HTML panel visibility
+document.querySelectorAll('#html-panel').forEach(panel => {
+    if (panel) panel.style.display = 'block';
+});
+
+// DEFINE TAB SWITCHING FUNCTION
+// CRITICAL: This uses no shared code/utilities to avoid conflicts
+window.harmonia_switchTab = function(tabId) {
+    console.log('[HARMONIA] Switching to tab:', tabId);
+    
+    // Force HTML panel visibility again
+    document.querySelectorAll('#html-panel').forEach(panel => {
+        if (panel) panel.style.display = 'block';
+    });
+    
+    try {
+        // Only select elements within harmonia component to avoid conflicts with other components
+        const harmoniaContainer = document.querySelector('.harmonia');
+        if (!harmoniaContainer) {
+            console.error('[HARMONIA] Tab Switch: Cannot find harmonia container');
+            return false;
+        }
+        
+        // Update tab active state - ONLY WITHIN HARMONIA CONTAINER
+        const tabs = harmoniaContainer.querySelectorAll('.harmonia__tab');
+        tabs.forEach(tab => {
+            if (tab.getAttribute('data-tab') === tabId) {
+                tab.classList.add('harmonia__tab--active');
+            } else {
+                tab.classList.remove('harmonia__tab--active');
+            }
+        });
+        
+        // Update panel visibility - ONLY WITHIN HARMONIA CONTAINER
+        const panels = harmoniaContainer.querySelectorAll('.harmonia__panel');
+        panels.forEach(panel => {
+            const panelId = panel.id;
+            if (panelId === tabId + '-panel') {
+                panel.style.display = 'block';
+                panel.classList.add('harmonia__panel--active');
+            } else {
+                panel.style.display = 'none';
+                panel.classList.remove('harmonia__panel--active');
+            }
+        });
+        
+        // Update clear button visibility for chat tabs
+        const clearButton = harmoniaContainer.querySelector('#clear-chat-btn');
+        if (clearButton) {
+            clearButton.style.display = (tabId === 'workflowchat' || tabId === 'teamchat') ? 'block' : 'none';
+        }
+        
+        // Update component state
+        if (window.harmoniaComponent) {
+            window.harmoniaComponent.state = window.harmoniaComponent.state || {};
+            window.harmoniaComponent.state.activeTab = tabId;
+            
+            // Call component-specific methods if available
+            if (typeof window.harmoniaComponent.updateChatPlaceholder === 'function') {
+                window.harmoniaComponent.updateChatPlaceholder(tabId);
+            }
+            
+            if (typeof window.harmoniaComponent.loadTabContent === 'function') {
+                window.harmoniaComponent.loadTabContent(tabId);
+            }
+            
+            if (typeof window.harmoniaComponent.saveComponentState === 'function') {
+                window.harmoniaComponent.saveComponentState();
+            }
+        }
+    } catch (err) {
+        console.error('[HARMONIA] Error in tab switching:', err);
+    }
+    
+    return false; // Stop event propagation
+};
+
+// CHAT CLEARING FUNCTION
+window.harmonia_clearChat = function() {
+    console.log('[HARMONIA] Clearing chat messages');
+    
+    try {
+        const harmoniaContainer = document.querySelector('.harmonia');
+        if (!harmoniaContainer) {
+            console.error('[HARMONIA] Clear Chat: Cannot find harmonia container');
+            return false;
+        }
+        
+        const activeTab = harmoniaContainer.querySelector('.harmonia__tab--active');
+        if (!activeTab) {
+            console.error('[HARMONIA] Clear Chat: Cannot find active tab');
+            return false;
+        }
+        
+        const tabId = activeTab.getAttribute('data-tab');
+        
+        if (tabId === 'workflowchat') {
+            const chatMessages = harmoniaContainer.querySelector('#workflowchat-messages');
+            if (chatMessages) {
+                // Keep only the system welcome message
+                const systemMessages = chatMessages.querySelectorAll('.harmonia__message--system');
+                if (systemMessages.length > 0) {
+                    const firstSystemMessage = systemMessages[0];
+                    chatMessages.innerHTML = '';
+                    chatMessages.appendChild(firstSystemMessage);
+                } else {
+                    chatMessages.innerHTML = '';
+                }
+            }
+        } else if (tabId === 'teamchat') {
+            const chatMessages = harmoniaContainer.querySelector('#teamchat-messages');
+            if (chatMessages) {
+                // Keep only the system welcome message
+                const systemMessages = chatMessages.querySelectorAll('.harmonia__message--system');
+                if (systemMessages.length > 0) {
+                    const firstSystemMessage = systemMessages[0];
+                    chatMessages.innerHTML = '';
+                    chatMessages.appendChild(firstSystemMessage);
+                } else {
+                    chatMessages.innerHTML = '';
+                }
+            }
+        }
+        
+        // Update component state
+        if (window.harmoniaComponent) {
+            if (typeof window.harmoniaComponent.clearChatMessages === 'function') {
+                window.harmoniaComponent.clearChatMessages(tabId);
+            }
+        }
+    } catch (err) {
+        console.error('[HARMONIA] Error in clearing chat:', err);
+    }
+    
+    return false; // Stop event propagation
+};
+
+// Load Component Script
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('[HARMONIA] DOM content loaded, loading component scripts');
+    
+    // Force HTML panel visibility once more
+    document.querySelectorAll('#html-panel').forEach(panel => {
+        if (panel) panel.style.display = 'block';
+    });
+    
+    // Import harmonia-component.js module
+    const script = document.createElement('script');
+    script.type = 'module';
+    script.src = '/scripts/harmonia/harmonia-component.js';
+    script.onload = function() {
+        console.log('[HARMONIA] Component script loaded successfully');
+    };
+    script.onerror = function() {
+        console.error('[HARMONIA] Failed to load component script');
+    };
+    document.head.appendChild(script);
+});
+
+// NOESIS COMPONENT SCRIPT
+
+// Initialize Noesis component when loaded
+setTimeout(() => {
+    if (window.NoesisComponent && typeof window.NoesisComponent.init === 'function') {
+        window.NoesisComponent.init();
+        console.log('Noesis component initialized');
+    } else {
+        console.warn('NoesisComponent not found, waiting for script load...');
+        // Try again after scripts load
+        setTimeout(() => {
+            if (window.NoesisComponent && typeof window.NoesisComponent.init === 'function') {
+                window.NoesisComponent.init();
+                console.log('Noesis component initialized (delayed)');
+            }
+        }, 500);
+    }
+}, 100);
+
+// Chat functionality
+function noesis_sendChat() {
+    const input = document.getElementById('noesis-chat-input');
+    const message = input.value.trim();
+    
+    if (!message) return;
+    
+    // Determine which tab is active
+    const discoveryActive = document.getElementById('noesis-tab-discovery').checked;
+    const chatType = discoveryActive ? 'discovery' : 'team';
+    const messagesContainer = document.getElementById(`noesis-${chatType}-messages`);
+    
+    // Add user message
+    const userMessageDiv = document.createElement('div');
+    userMessageDiv.className = 'chat-message user-message';
+    userMessageDiv.innerHTML = `<strong>You:</strong> ${message}`;
+    messagesContainer.appendChild(userMessageDiv);
+    
+    // Clear input
+    input.value = '';
+    
+    // Scroll to bottom
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    
+    // Send to backend (placeholder for now)
+    console.log(`Noesis ${chatType} chat:`, message);
+    
+    // Simulate AI response
+    setTimeout(() => {
+        const aiMessageDiv = document.createElement('div');
+        aiMessageDiv.className = 'chat-message ai-message';
+        aiMessageDiv.innerHTML = `<strong>Noesis:</strong> Analyzing patterns for "${message}". I'm discovering insights across the Tekton ecosystem. This feature is currently being developed.`;
+        messagesContainer.appendChild(aiMessageDiv);
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }, 1000);
+}
+
+// Add enter key handler for chat input when component loads
+document.addEventListener('DOMContentLoaded', function() {
+    const chatInput = document.getElementById('noesis-chat-input');
+    if (chatInput) {
+        chatInput.focus();
+    }
+});
+
+// TERMA COMPONENT SCRIPT
+
+// Initialize Terma component when loaded
+setTimeout(() => {
+    if (window.TermaComponent && typeof window.TermaComponent.init === 'function') {
+        window.TermaComponent.init();
+        console.log('Terma component initialized');
+    } else {
+        console.warn('TermaComponent not found, waiting for script load...');
+        // Try again after scripts load
+        setTimeout(() => {
+            if (window.TermaComponent && typeof window.TermaComponent.init === 'function') {
+                window.TermaComponent.init();
+                console.log('Terma component initialized (delayed)');
+            }
+        }, 500);
+    }
+}, 100);
+
+// Chat functionality
+function terma_sendChat() {
+    const input = document.getElementById('terma-chat-input');
+    const message = input.value.trim();
+    
+    if (!message) return;
+    
+    // Determine which tab is active
+    const companionActive = document.getElementById('terma-tab-companion').checked;
+    const chatType = companionActive ? 'companion' : 'team';
+    const messagesContainer = document.getElementById(`terma-${chatType}-messages`);
+    
+    // Add user message
+    const userMessageDiv = document.createElement('div');
+    userMessageDiv.className = 'chat-message user-message';
+    userMessageDiv.innerHTML = `<strong>You:</strong> ${message}`;
+    messagesContainer.appendChild(userMessageDiv);
+    
+    // Clear input
+    input.value = '';
+    
+    // Scroll to bottom
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    
+    // Send to backend (placeholder for now)
+    console.log(`Terma ${chatType} chat:`, message);
+    
+    // Simulate AI response
+    setTimeout(() => {
+        const aiMessageDiv = document.createElement('div');
+        aiMessageDiv.className = 'chat-message ai-message';
+        aiMessageDiv.innerHTML = `<strong>Terma:</strong> I understand you're asking about "${message}". As your platform AI mentor, I can help guide you through the Tekton ecosystem. This feature is currently being developed.`;
+        messagesContainer.appendChild(aiMessageDiv);
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }, 1000);
+}
+
+// Add enter key handler for chat input when component loads
+document.addEventListener('DOMContentLoaded', function() {
+    const chatInput = document.getElementById('terma-chat-input');
+    if (chatInput) {
+        chatInput.focus();
+    }
+});
+
+// SETTINGS COMPONENT SCRIPT
+
+// Direct theme application - brute force approach
+function applyTheme() {
+  const checkedTheme = document.querySelector('input[name="theme-mode"]:checked');
+  const checkedAccent = document.querySelector('input[name="accent-color"]:checked');
+  const greekNamesCheckbox = document.getElementById('greek-names-setting');
+  const greekNames = greekNamesCheckbox ? greekNamesCheckbox.checked : false;
+  
+  console.log('=== APPLYING THEME ===');
+  console.log('Theme:', checkedTheme?.value);
+  console.log('Accent:', checkedAccent?.value);
+  console.log('Greek names:', greekNames);
+  
+  // Update semantic tags for state tracking
+  updateSemanticStates(checkedTheme, checkedAccent, greekNames);
+  
+  // Apply theme using existing theme system
+  if (checkedTheme) {
+    document.documentElement.setAttribute('data-theme-base', checkedTheme.value);
+    document.body.setAttribute('data-theme-base', checkedTheme.value);
+    console.log('Set data-theme-base to:', checkedTheme.value);
+    
+    // Update the theme stylesheet link if needed
+    const themeStylesheet = document.getElementById('theme-stylesheet');
+    if (themeStylesheet) {
+      themeStylesheet.href = `styles/themes/theme-${checkedTheme.value}.css`;
+      console.log('Updated theme stylesheet to:', themeStylesheet.href);
+    }
+  }
+  
+  // Apply accent color
+  if (checkedAccent) {
+    document.documentElement.setAttribute('data-theme-color', checkedAccent.value);
+    document.body.setAttribute('data-theme-color', checkedAccent.value);
+    
+    const accentColors = {
+      'blue': '#007bff',
+      'green': '#28a745',
+      'purple': '#6f42c1',
+      'orange': '#fd7e14'
+    };
+    
+    const accentColor = accentColors[checkedAccent.value];
+    if (accentColor) {
+      document.documentElement.style.setProperty('--color-accent', accentColor);
+      console.log('Set accent color to:', accentColor);
+    }
+  }
+  
+  // Handle Greek names
+  if (greekNames !== null) {
+    document.documentElement.setAttribute('data-show-greek-names', greekNames ? 'true' : 'false');
+    
+    // Update settings manager and apply names
+    if (window.settingsManager) {
+      window.settingsManager.settings.showGreekNames = greekNames;
+      window.settingsManager.save();
+      window.settingsManager.applyNames();
+      console.log('Applied Greek names setting:', greekNames);
+    }
+  }
+  
+  console.log('=== THEME APPLICATION COMPLETE ===');
+}
+
+// Update semantic state tags for UI DevTools
+function updateSemanticStates(theme, accent, greekNames) {
+  // Update theme option states
+  document.querySelectorAll('[data-tekton-element="theme-option"]').forEach(opt => {
+    const isActive = opt.getAttribute('data-tekton-option') === theme?.value;
+    opt.setAttribute('data-tekton-state', isActive ? 'active' : 'inactive');
+  });
+  
+  // Update accent option states
+  document.querySelectorAll('[data-tekton-element="accent-option"]').forEach(opt => {
+    const isActive = opt.getAttribute('data-tekton-option') === accent?.value;
+    opt.setAttribute('data-tekton-state', isActive ? 'active' : 'inactive');
+  });
+  
+  // Update tab states
+  const activeTab = document.querySelector('input[name="settings-tab"]:checked');
+  document.querySelectorAll('[data-tekton-element="tab"]').forEach(tab => {
+    const tabName = tab.getAttribute('data-tekton-nav-item');
+    const isActive = activeTab?.id === `tab-${tabName}`;
+    tab.setAttribute('data-tekton-state', isActive ? 'active' : 'inactive');
+  });
+  
+  // Update panel states
+  document.querySelectorAll('[data-tekton-element="panel"]').forEach(panel => {
+    const panelName = panel.getAttribute('data-tekton-panel');
+    const isActive = activeTab?.id === `tab-${panelName}`;
+    panel.setAttribute('data-tekton-state', isActive ? 'active' : 'inactive');
+  });
+  
+  // Update toggle state
+  const toggle = document.querySelector('[data-tekton-control="toggle"]');
+  if (toggle) {
+    toggle.setAttribute('data-tekton-state', greekNames ? 'checked' : 'unchecked');
+  }
+  
+  // Update select value
+  const select = document.querySelector('[data-tekton-control="select"]');
+  if (select) {
+    select.setAttribute('data-tekton-value', select.value);
+  }
+}
+
+// Listen for clicks on labels (most reliable)
+document.addEventListener('click', function(e) {
+  const label = e.target.closest('label');
+  if (label) {
+    const inputId = label.getAttribute('for');
+    console.log('Label clicked for input:', inputId);
+    
+    // Small delay to let the radio button/checkbox update
+    setTimeout(() => {
+      applyTheme();
+    }, 50);
+  }
+});
+
+// Backup: Listen for input changes
+document.addEventListener('change', function(e) {
+  if (e.target.type === 'radio' || e.target.type === 'checkbox') {
+    console.log('Input changed:', e.target.name || e.target.id, e.target.value || e.target.checked);
+    applyTheme();
+  }
+  
+  // Special handling for Greek names checkbox
+  if (e.target.id === 'greek-names-setting') {
+    console.log('Greek names toggled to:', e.target.checked);
+    applyTheme();
+  }
+});
+
+// Apply theme on load
+setTimeout(() => {
+  console.log('Initial theme application...');
+  
+  // Set initial Greek names checkbox state from settings
+  if (window.settingsManager) {
+    const greekCheckbox = document.getElementById('greek-names-setting');
+    if (greekCheckbox) {
+      greekCheckbox.checked = window.settingsManager.settings.showGreekNames;
+      console.log('Set Greek names checkbox to:', window.settingsManager.settings.showGreekNames);
+    }
+  }
+  
+  applyTheme();
+}, 200);
+    </script>
 </body>
 </html>

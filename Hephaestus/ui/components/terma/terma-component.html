@@ -1,59 +1,626 @@
-<!-- Terma Component - Terminal System -->
-<div class="terma-component"
-     data-tekton-area="terma"
-     data-tekton-component="terma"
-     data-tekton-type="component-workspace"
-     data-tekton-description="Interactive terminal with AI assistance"
-     data-tekton-ai="terma-assistant"
-     data-tekton-ai-ready="false">
-  <header class="terma-header" data-tekton-zone="header" data-tekton-section="header">
-    <div class="terma-header-title">
-      <img src="/images/icon.jpg" alt="Terma" class="terma-logo">
-      <h1>Terma - Terminal System</h1>
-    </div>
-    <div class="terma-header-controls">
-      <button class="terma-clear"
-              data-tekton-action="clear-terminal"
-              data-tekton-action-type="secondary">Clear</button>
-      <button class="terma-settings"
-              data-tekton-action="open-settings"
-              data-tekton-action-type="secondary">Settings</button>
-    </div>
-  </header>
-  
-  <div class="terma-terminal-container" data-tekton-zone="content" data-tekton-scrollable="true">
-    <div id="terma-terminal" class="terma-terminal">
-      <div id="terma-output" class="terma-output">
-        <div class="terma-welcome">
-          <span class="terma-welcome-title">Welcome to Terma Terminal</span>
-          <span class="terma-welcome-message">Type commands below to interact with the system.</span>
+<!-- Terma Component - Platform AI Mentor -->
+
+<!-- Hidden radio controls for CSS-only tab functionality -->
+<input type="radio" name="terma-tab" id="terma-tab-dashboard" checked style="display: none;">
+<input type="radio" name="terma-tab" id="terma-tab-launch" style="display: none;">
+<input type="radio" name="terma-tab" id="terma-tab-companion" style="display: none;">
+<input type="radio" name="terma-tab" id="terma-tab-team" style="display: none;">
+
+<div class="terma" id="terma-container" data-tekton-component="terma">
+    <!-- Component Header with Title -->
+    <div class="terma__header" data-tekton-zone="header">
+        <div class="terma__title-container">
+            <img src="/images/hexagon.jpg" alt="Tekton" class="terma__icon">
+            <h2 class="terma__title">
+                <span class="terma__title-main">Terma</span>
+                <span class="terma__title-sub">Terminal Orchestrator</span>
+            </h2>
         </div>
-      </div>
-      <div class="terma-input-container">
-        <span class="terma-prompt">$</span>
-        <input type="text" id="terma-input" class="terma-input" placeholder="Type your command here..."
-               data-tekton-input="terminal-input"
-               data-tekton-input-type="command">
-      </div>
+        <div class="terma__connection-status">
+            <span class="terma__status-indicator" data-status="inactive"></span>
+            <span class="terma__status-text">Connecting...</span>
+        </div>
     </div>
-  </div>
-  
-  <div class="terma-llm-assistance" data-tekton-zone="assistant" data-tekton-ai-panel="terma">
-    <div class="terma-llm-header">
-      <span>AI Assistant</span>
-      <button id="terma-llm-toggle" class="terma-llm-toggle"
-              data-tekton-action="toggle-ai-assistant"
-              data-tekton-action-type="toggle"
-              data-tekton-state="collapsed">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M6 9L12 15L18 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-      </button>
+    
+    <!-- Menu Bar -->
+    <div class="terma__menu-bar" data-tekton-zone="menu">
+        <div class="terma__tabs">
+            <label for="terma-tab-dashboard" class="terma__tab" data-tab="dashboard">
+                <span class="terma__tab-label">Dashboard</span>
+            </label>
+            <label for="terma-tab-launch" class="terma__tab" data-tab="launch-terminal">
+                <span class="terma__tab-label">Launch Terminal</span>
+            </label>
+            <label for="terma-tab-companion" class="terma__tab" data-tab="companion-chat">
+                <span class="terma__tab-label">Companion Chat</span>
+            </label>
+            <label for="terma-tab-team" class="terma__tab" data-tab="team-chat">
+                <span class="terma__tab-label">Team Chat</span>
+            </label>
+        </div>
     </div>
-    <div id="terma-llm-output" class="terma-llm-output">
-      <p>
-        Ask for help by typing <code>?command</code> or run command followed by <code>?</code> to analyze output.
-      </p>
+    
+    <!-- Content Area -->
+    <div class="terma__content" data-tekton-zone="content">
+        <!-- Dashboard Tab -->
+        <div class="terma__panel terma__panel--dashboard" data-tab-content="dashboard" data-tekton-tab-content="dashboard">
+            <div class="terma__dashboard">
+                <h3 class="terma__section-title">Active Terminals</h3>
+                <div class="terma__terminals-grid" id="terma-terminals-list">
+                    <div class="terma__empty-state">
+                        <p>No active terminals</p>
+                        <p class="terma__empty-hint">Use "Launch Terminal" to start a new terminal session</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Launch Terminal Tab -->
+        <div class="terma__panel terma__panel--launch" data-tab-content="launch-terminal" data-tekton-tab-content="launch-terminal">
+            <div class="terma__launch">
+                <h3 class="terma__section-title">Launch New Terminal</h3>
+                <div class="terma__launch-options">
+                    <div class="terma__terminal-type">
+                        <h4>Terminal Type</h4>
+                        <select id="terma-terminal-type" class="terma__select">
+                            <option value="native">Native Terminal (Terminal.app)</option>
+                            <option value="iterm2">iTerm2</option>
+                            <option value="warp">Warp</option>
+                        </select>
+                    </div>
+                    
+                    <div class="terma__shell-type">
+                        <h4>Shell</h4>
+                        <select id="terma-shell-type" class="terma__select">
+                            <option value="aish">aish (AI-enhanced shell)</option>
+                            <option value="bash">bash</option>
+                            <option value="zsh">zsh</option>
+                        </select>
+                    </div>
+                    
+                    <div class="terma__launch-button-container">
+                        <button id="terma-launch-btn" class="terma__button terma__button--primary">
+                            Launch Terminal
+                        </button>
+                    </div>
+                    
+                    <div class="terma__launch-status" id="terma-launch-status"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Companion Chat Tab -->
+        <div class="terma__panel terma__panel--companion" data-tab-content="companion-chat" data-tekton-tab-content="companion-chat">
+            <div class="chat-interface" data-tekton-chat="companion">
+                <div class="chat-messages" id="terma-companion-messages" data-tekton-messages="companion">
+                    <div class="chat-message system-message">
+                        <strong>Terma:</strong> Hello! I'm Terma, the Terminal Orchestrator. I manage native terminal sessions and the aish AI-enhanced shell. How can I help you with terminal operations today?
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Team Chat Tab -->
+        <div class="terma__panel terma__panel--team" data-tab-content="team-chat" data-tekton-tab-content="team-chat">
+            <div class="chat-interface" data-tekton-chat="team">
+                <div class="team-chat-header">
+                    <p>Communicate with other AI specialists across the Tekton platform</p>
+                    <div class="team-chat-controls">
+                        <label>
+                            <input type="checkbox" id="terma-broadcast-mode" data-tekton-broadcast="terma">
+                            Broadcast to all AIs
+                        </label>
+                    </div>
+                </div>
+                <div class="chat-messages" id="terma-team-messages" data-tekton-messages="team">
+                    <div class="chat-message system-message">
+                        <strong>System:</strong> Team Chat allows Terma to coordinate with other AI specialists.
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-  </div>
+    
+    <!-- Footer with Chat Input -->
+    <div class="terma__footer" data-tekton-zone="footer" data-tekton-section="footer">
+        <div class="terma__chat-input-container" data-tekton-chat="terma-companion" data-tekton-chat-component="terma">
+            <div class="terma__chat-prompt">></div>
+            <input type="text" class="terma__chat-input" id="terma-chat-input"
+                   data-tekton-input="chat-input"
+                   data-tekton-input-type="chat"
+                   placeholder="Chat with Terma - your platform AI mentor and companion"
+                   onkeydown="if(event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); terma_sendChat(); }">
+            <button class="terma__send-button" id="terma-send-button" onclick="terma_sendChat(); return false;"
+                    data-tekton-action="send-message"
+                    data-tekton-action-type="primary">Send</button>
+        </div>
+    </div>
 </div>
+
+<style>
+/* Terma Component Styles - Following Rhetor's BEM Pattern */
+
+/* Container */
+.terma {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  background-color: var(--bg-primary, #1e1e2e);
+  color: var(--text-primary, #f0f0f0);
+  /* No absolute positioning - proper component containment */
+}
+
+/* Header */
+.terma__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 16px;
+  background-color: var(--bg-secondary, #252535);
+  border-bottom: 1px solid var(--border-color, #444444);
+}
+
+.terma__title-container {
+  display: flex;
+  align-items: center;
+}
+
+.terma__icon {
+  height: 30px;
+  width: auto;
+  margin-right: 12px;
+}
+
+.terma__title {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 500;
+}
+
+.terma__title-main {
+  font-weight: 600;
+}
+
+.terma__title-sub {
+  margin-left: 8px;
+  opacity: 0.8;
+  font-weight: normal;
+}
+
+.terma__connection-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.terma__status-indicator {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: var(--color-warning, #ffc107);
+}
+
+.terma__status-indicator[data-status="active"] {
+  background-color: var(--color-success, #28a745);
+}
+
+.terma__status-text {
+  font-size: 0.9rem;
+  color: var(--text-secondary, #aaaaaa);
+}
+
+/* Menu Bar */
+.terma__menu-bar {
+  display: flex;
+  background-color: var(--bg-secondary, #252535);
+  border-bottom: 1px solid var(--border-color, #444444);
+  padding: 0 16px;
+}
+
+.terma__tabs {
+  display: flex;
+  gap: 8px;
+}
+
+.terma__tab {
+  padding: 16px;
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  color: var(--text-secondary, #aaaaaa);
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.terma__tab:hover {
+  color: var(--text-primary, #f0f0f0);
+  background-color: rgba(93, 64, 55, 0.05);
+}
+
+/* Active state handled by radio button logic */
+
+/* Content Area */
+.terma__content {
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+  padding-bottom: 70px; /* Account for footer height */
+}
+
+/* Panel styling - hidden by default */
+.terma__panel {
+  display: none;
+  height: 100%;
+  overflow: auto;
+  padding: 24px;
+}
+
+/* Radio button logic for tab switching */
+#terma-tab-companion:checked ~ .terma .terma__panel--companion,
+#terma-tab-team:checked ~ .terma .terma__panel--team {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Active tab styling */
+#terma-tab-companion:checked ~ .terma .terma__tab[for="terma-tab-companion"],
+#terma-tab-team:checked ~ .terma .terma__tab[for="terma-tab-team"] {
+  color: var(--text-primary, #f0f0f0);
+  border-bottom-color: #5D4037;
+  background-color: rgba(93, 64, 55, 0.05);
+}
+
+/* Chat Interface */
+.chat-interface {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.chat-messages {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0; /* No footer inside tabs anymore */
+  overflow-y: auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.chat-message {
+  margin-bottom: 12px;
+  padding: 12px;
+  border-radius: 8px;
+  background-color: var(--bg-secondary, #252535);
+}
+
+.chat-message.system-message {
+  background-color: rgba(93, 64, 55, 0.1);
+  border-left: 3px solid #5D4037;
+}
+
+.chat-message.user-message {
+  background-color: rgba(76, 175, 80, 0.1);
+  margin-left: 32px;
+}
+
+.chat-message.ai-message {
+  background-color: rgba(93, 64, 55, 0.1);
+  margin-right: 32px;
+}
+
+.chat-input-container {
+  display: flex;
+  gap: 8px;
+}
+
+.chat-input {
+  flex: 1;
+  padding: 12px;
+  border: 1px solid var(--border-color, #444444);
+  border-radius: 8px;
+  font-size: 14px;
+  background-color: var(--bg-tertiary, #333345);
+  color: var(--text-primary, #f0f0f0);
+}
+
+.chat-input:focus {
+  outline: none;
+  border-color: #5D4037;
+}
+
+.chat-send-button {
+  padding: 12px 24px;
+  background-color: #5D4037;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.3s ease;
+}
+
+.chat-send-button:hover {
+  background-color: #6D5047;
+}
+
+/* Team Chat Specific */
+.team-chat-header {
+  padding: 16px;
+  background-color: var(--bg-tertiary, #333345);
+  border-radius: 8px;
+  margin-bottom: 16px;
+}
+
+.team-chat-controls {
+  margin-top: 8px;
+}
+
+.team-chat-controls label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-secondary, #aaaaaa);
+}
+
+/* Footer with Chat Input */
+.terma__footer {
+  background-color: var(--bg-secondary, #252535);
+  border-top: 1px solid var(--border-color, #444444);
+  padding: 12px 16px;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 70px; /* Fixed height to match chat area */
+}
+
+.terma__chat-input-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+}
+
+.terma__chat-prompt {
+  font-size: 18px;
+  font-weight: bold;
+  color: #5D4037; /* Brown for Terma */
+}
+
+.terma__chat-input {
+  flex: 1;
+  height: 44px;
+  padding: 8px 16px;
+  background-color: var(--bg-tertiary, #333345);
+  border: 1px solid var(--border-color, #444444);
+  border-radius: 8px;
+  color: var(--text-primary, #f0f0f0);
+  font-size: 14px;
+  transition: border-color 0.2s ease;
+}
+
+.terma__chat-input:focus {
+  outline: none;
+  border-color: #5D4037;
+}
+
+.terma__chat-input::placeholder {
+  color: var(--text-secondary, #888888);
+}
+
+.terma__send-button {
+  height: 44px;
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #5D4037; /* Brown for Terma */
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.terma__send-button:hover {
+  background-color: #6D5047; /* Darker brown on hover */
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(93, 64, 55, 0.3);
+}
+
+.terma__send-button:active {
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+/* Dashboard Panel Styles */
+.terma__dashboard {
+  padding: 20px;
+  height: 100%;
+  overflow-y: auto;
+}
+
+.terma__section-title {
+  color: var(--text-primary, #f0f0f0);
+  margin-bottom: 16px;
+  font-size: 1.2rem;
+  font-weight: 500;
+}
+
+.terma__terminals-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
+}
+
+.terma__empty-state {
+  text-align: center;
+  padding: 40px;
+  color: var(--text-secondary, #888);
+}
+
+.terma__empty-hint {
+  margin-top: 8px;
+  font-size: 0.9rem;
+  opacity: 0.7;
+}
+
+/* Launch Terminal Panel Styles */
+.terma__launch {
+  padding: 20px;
+  height: 100%;
+  overflow-y: auto;
+}
+
+.terma__launch-options {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.terma__terminal-type,
+.terma__shell-type {
+  margin-bottom: 24px;
+}
+
+.terma__terminal-type h4,
+.terma__shell-type h4 {
+  color: var(--text-primary, #f0f0f0);
+  margin-bottom: 8px;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.terma__select {
+  width: 100%;
+  padding: 8px 12px;
+  background-color: var(--bg-secondary, #252535);
+  color: var(--text-primary, #f0f0f0);
+  border: 1px solid var(--border-color, #444);
+  border-radius: 4px;
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+
+.terma__select:focus {
+  outline: none;
+  border-color: #5D4037;
+}
+
+.terma__launch-button-container {
+  margin-top: 32px;
+  text-align: center;
+}
+
+.terma__button {
+  padding: 10px 24px;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.terma__button--primary {
+  background-color: #5D4037;
+  color: white;
+}
+
+.terma__button--primary:hover {
+  background-color: #6D5047;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(93, 64, 55, 0.3);
+}
+
+.terma__button--primary:active {
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+.terma__launch-status {
+  margin-top: 16px;
+  text-align: center;
+  font-size: 0.9rem;
+  min-height: 20px;
+}
+
+.terma__launch-status.success {
+  color: #4CAF50;
+}
+
+.terma__launch-status.error {
+  color: #f44336;
+}
+</style>
+
+<script>
+// Initialize Terma component when loaded
+setTimeout(() => {
+    if (window.TermaComponent && typeof window.TermaComponent.init === 'function') {
+        window.TermaComponent.init();
+        console.log('Terma component initialized');
+    } else {
+        console.warn('TermaComponent not found, waiting for script load...');
+        // Try again after scripts load
+        setTimeout(() => {
+            if (window.TermaComponent && typeof window.TermaComponent.init === 'function') {
+                window.TermaComponent.init();
+                console.log('Terma component initialized (delayed)');
+            }
+        }, 500);
+    }
+}, 100);
+
+// Chat functionality
+function terma_sendChat() {
+    const input = document.getElementById('terma-chat-input');
+    const message = input.value.trim();
+    
+    if (!message) return;
+    
+    // Determine which tab is active
+    const companionActive = document.getElementById('terma-tab-companion').checked;
+    const chatType = companionActive ? 'companion' : 'team';
+    const messagesContainer = document.getElementById(`terma-${chatType}-messages`);
+    
+    // Add user message
+    const userMessageDiv = document.createElement('div');
+    userMessageDiv.className = 'chat-message user-message';
+    userMessageDiv.innerHTML = `<strong>You:</strong> ${message}`;
+    messagesContainer.appendChild(userMessageDiv);
+    
+    // Clear input
+    input.value = '';
+    
+    // Scroll to bottom
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    
+    // Send to backend (placeholder for now)
+    console.log(`Terma ${chatType} chat:`, message);
+    
+    // Simulate AI response
+    setTimeout(() => {
+        const aiMessageDiv = document.createElement('div');
+        aiMessageDiv.className = 'chat-message ai-message';
+        aiMessageDiv.innerHTML = `<strong>Terma:</strong> I understand you're asking about "${message}". As your platform AI mentor, I can help guide you through the Tekton ecosystem. This feature is currently being developed.`;
+        messagesContainer.appendChild(aiMessageDiv);
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }, 1000);
+}
+
+// Add enter key handler for chat input when component loads
+document.addEventListener('DOMContentLoaded', function() {
+    const chatInput = document.getElementById('terma-chat-input');
+    if (chatInput) {
+        chatInput.focus();
+    }
+});
+</script>

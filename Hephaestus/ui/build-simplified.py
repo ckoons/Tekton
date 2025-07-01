@@ -82,6 +82,13 @@ def build_simplified_index():
     nav_items = []
     footer_nav_items = []
     
+    # Collect component scripts
+    component_scripts = []
+    for component in COMPONENTS:
+        if component in components_data and components_data[component]['script']:
+            component_scripts.append(f"// {component.upper()} COMPONENT SCRIPT")
+            component_scripts.append(components_data[component]['script'])
+    
     for component in COMPONENTS:
         info = COMPONENT_INFO.get(component, {})
         icon = info.get('icon', '')
@@ -291,8 +298,10 @@ def build_simplified_index():
         </div>
     </div>
     
-    <!-- Single minimal script -->
-    <script src="scripts/app-minimal.js"></script>
+    <!-- Component Scripts -->
+    <script>
+{component_scripts}
+    </script>
 </body>
 </html>'''
 
@@ -314,7 +323,8 @@ def build_simplified_index():
         all_styles='\n\n'.join(all_styles),
         component_divs='\n'.join(component_divs),
         nav_items=''.join(nav_items),
-        footer_nav_items=''.join(footer_nav_items)
+        footer_nav_items=''.join(footer_nav_items),
+        component_scripts='\n\n'.join(component_scripts)
     )
     
     # Write the file
