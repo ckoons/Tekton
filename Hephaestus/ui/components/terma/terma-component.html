@@ -6,9 +6,14 @@
 <input type="radio" name="terma-tab" id="terma-tab-companion" style="display: none;">
 <input type="radio" name="terma-tab" id="terma-tab-team" style="display: none;">
 
-<div class="terma" id="terma-container" data-tekton-component="terma">
+<div class="terma" id="terma-container" 
+     data-tekton-component="terma"
+     data-tekton-area="terma"
+     data-tekton-type="component-workspace"
+     data-tekton-ai="terma-orchestrator"
+     data-tekton-ai-ready="false">
     <!-- Component Header with Title -->
-    <div class="terma__header" data-tekton-zone="header">
+    <div class="terma__header" data-tekton-zone="header" data-tekton-section="header">
         <div class="terma__title-container">
             <img src="/images/hexagon.jpg" alt="Tekton" class="terma__icon">
             <h2 class="terma__title">
@@ -16,37 +21,57 @@
                 <span class="terma__title-sub">Terminal Orchestrator</span>
             </h2>
         </div>
-        <div class="terma__connection-status">
-            <span class="terma__status-indicator" data-status="inactive"></span>
-            <span class="terma__status-text">Connecting...</span>
+        <div class="terma__connection-status" data-tekton-element="connection-status">
+            <span class="terma__status-indicator" 
+                  data-tekton-status="terma-health"
+                  data-status="inactive"></span>
+            <span class="terma__status-text" data-tekton-element="status-text">Connecting...</span>
         </div>
     </div>
     
     <!-- Menu Bar -->
-    <div class="terma__menu-bar" data-tekton-zone="menu">
+    <div class="terma__menu-bar" data-tekton-zone="menu" data-tekton-nav="component-menu">
         <div class="terma__tabs">
-            <label for="terma-tab-dashboard" class="terma__tab" data-tab="dashboard">
+            <label for="terma-tab-dashboard" class="terma__tab" data-tab="dashboard"
+                   data-tekton-menu-item="Dashboard"
+                   data-tekton-menu-component="terma"
+                   data-tekton-menu-panel="terma-dashboard">
                 <span class="terma__tab-label">Dashboard</span>
             </label>
-            <label for="terma-tab-launch" class="terma__tab" data-tab="launch-terminal">
+            <label for="terma-tab-launch" class="terma__tab" data-tab="launch-terminal"
+                   data-tekton-menu-item="Launch Terminal"
+                   data-tekton-menu-component="terma"
+                   data-tekton-menu-panel="terma-launch">
                 <span class="terma__tab-label">Launch Terminal</span>
             </label>
-            <label for="terma-tab-companion" class="terma__tab" data-tab="companion-chat">
+            <label for="terma-tab-companion" class="terma__tab" data-tab="companion-chat"
+                   data-tekton-menu-item="Companion Chat"
+                   data-tekton-menu-component="terma"
+                   data-tekton-menu-panel="terma-companion">
                 <span class="terma__tab-label">Companion Chat</span>
             </label>
-            <label for="terma-tab-team" class="terma__tab" data-tab="team-chat">
+            <label for="terma-tab-team" class="terma__tab" data-tab="team-chat"
+                   data-tekton-menu-item="Team Chat"
+                   data-tekton-menu-component="terma"
+                   data-tekton-menu-panel="terma-team">
                 <span class="terma__tab-label">Team Chat</span>
             </label>
         </div>
     </div>
     
     <!-- Content Area -->
-    <div class="terma__content" data-tekton-zone="content">
+    <div class="terma__content" data-tekton-zone="content" data-tekton-scrollable="true">
         <!-- Dashboard Tab -->
-        <div class="terma__panel terma__panel--dashboard" data-tab-content="dashboard" data-tekton-tab-content="dashboard">
-            <div class="terma__dashboard">
-                <h3 class="terma__section-title">Active Terminals</h3>
-                <div class="terma__terminals-grid" id="terma-terminals-list">
+        <div class="terma__panel terma__panel--dashboard" data-tab-content="dashboard" 
+             data-tekton-tab-content="dashboard"
+             data-tekton-panel="dashboard"
+             data-tekton-panel-for="Dashboard"
+             data-tekton-panel-component="terma">
+            <div class="terma__dashboard" data-tekton-element="dashboard-container">
+                <h3 class="terma__section-title" data-tekton-element="section-title">Active Terminals</h3>
+                <div class="terma__terminals-grid" id="terma-terminals-list"
+                     data-tekton-element="terminals-grid"
+                     data-tekton-grid="terminals">
                     <div class="terma__empty-state">
                         <p>No active terminals</p>
                         <p class="terma__empty-hint">Use "Launch Terminal" to start a new terminal session</p>
@@ -56,18 +81,27 @@
         </div>
         
         <!-- Launch Terminal Tab -->
-        <div class="terma__panel terma__panel--launch" data-tab-content="launch-terminal" data-tekton-tab-content="launch-terminal">
-            <div class="terma__launch">
-                <h3 class="terma__section-title">Launch New Terminal</h3>
-                <div class="terma__launch-options">
-                    <div class="terma__terminal-name">
+        <div class="terma__panel terma__panel--launch" data-tab-content="launch-terminal" 
+             data-tekton-tab-content="launch-terminal"
+             data-tekton-panel="launch"
+             data-tekton-panel-for="Launch Terminal"
+             data-tekton-panel-component="terma">
+            <div class="terma__launch" data-tekton-element="launch-container">
+                <h3 class="terma__section-title" data-tekton-element="section-title">Launch New Terminal</h3>
+                <div class="terma__launch-options" data-tekton-element="launch-form">
+                    <div class="terma__terminal-name" data-tekton-element="form-field">
                         <h4>Terminal Name</h4>
-                        <input type="text" id="terma-terminal-name" class="terma__input" placeholder="My aish Terminal" />
+                        <input type="text" id="terma-terminal-name" class="terma__input" 
+                               placeholder="My aish Terminal"
+                               data-tekton-input="terminal-name"
+                               data-tekton-input-type="text" />
                     </div>
                     
-                    <div class="terma__terminal-template">
+                    <div class="terma__terminal-template" data-tekton-element="form-field">
                         <h4>Template</h4>
-                        <select id="terma-terminal-template" class="terma__select">
+                        <select id="terma-terminal-template" class="terma__select"
+                                data-tekton-input="terminal-template"
+                                data-tekton-input-type="select">
                             <option value="">Default aish Terminal</option>
                             <option value="development">Development Environment</option>
                             <option value="ai_workspace">AI Workspace</option>
@@ -75,26 +109,40 @@
                         </select>
                     </div>
                     
-                    <div class="terma__terminal-purpose">
+                    <div class="terma__terminal-purpose" data-tekton-element="form-field">
                         <h4>Purpose (Optional AI Context)</h4>
-                        <input type="text" id="terma-terminal-purpose" class="terma__input" placeholder="Working on authentication feature" />
+                        <input type="text" id="terma-terminal-purpose" class="terma__input" 
+                               placeholder="Working on authentication feature"
+                               data-tekton-input="terminal-purpose"
+                               data-tekton-input-type="context" />
                     </div>
                     
                     <div class="terma__launch-button-container">
-                        <button id="terma-launch-btn" class="terma__button terma__button--primary">
+                        <button id="terma-launch-btn" class="terma__button terma__button--primary"
+                                data-tekton-action="launch-terminal"
+                                data-tekton-action-type="primary">
                             Launch Terminal
                         </button>
                     </div>
                     
-                    <div class="terma__launch-status" id="terma-launch-status"></div>
+                    <div class="terma__launch-status" id="terma-launch-status"
+                         data-tekton-element="status-message"></div>
                 </div>
             </div>
         </div>
         
         <!-- Companion Chat Tab -->
-        <div class="terma__panel terma__panel--companion" data-tab-content="companion-chat" data-tekton-tab-content="companion-chat">
-            <div class="chat-interface" data-tekton-chat="companion">
-                <div class="chat-messages" id="terma-companion-messages" data-tekton-messages="companion">
+        <div class="terma__panel terma__panel--companion" data-tab-content="companion-chat" 
+             data-tekton-tab-content="companion-chat"
+             data-tekton-panel="companion"
+             data-tekton-panel-for="Companion Chat"
+             data-tekton-panel-component="terma">
+            <div class="chat-interface" data-tekton-chat="companion"
+                 data-tekton-ai="terma-companion"
+                 data-tekton-ai-ready="false">
+                <div class="chat-messages" id="terma-companion-messages" 
+                     data-tekton-messages="companion"
+                     data-tekton-element="chat-messages">
                     <div class="chat-message system-message">
                         <strong>Terma:</strong> Hello! I'm Terma, the Terminal Orchestrator. I manage native terminal sessions and the aish AI-enhanced shell. How can I help you with terminal operations today?
                     </div>
@@ -103,18 +151,30 @@
         </div>
         
         <!-- Team Chat Tab -->
-        <div class="terma__panel terma__panel--team" data-tab-content="team-chat" data-tekton-tab-content="team-chat">
+        <div class="terma__panel terma__panel--team" data-tab-content="team-chat" 
+             data-tekton-tab-content="team-chat"
+             data-tekton-panel="team"
+             data-tekton-panel-for="Team Chat"
+             data-tekton-panel-component="terma"
+             data-tekton-chat="team"
+             data-tekton-ai="terma-orchestrator"
+             data-tekton-ai-ready="false">
             <div class="chat-interface" data-tekton-chat="team">
-                <div class="team-chat-header">
+                <div class="team-chat-header" data-tekton-element="chat-header">
                     <p>Communicate with other AI specialists across the Tekton platform</p>
-                    <div class="team-chat-controls">
+                    <div class="team-chat-controls" data-tekton-element="chat-controls">
                         <label>
-                            <input type="checkbox" id="terma-broadcast-mode" data-tekton-broadcast="terma">
+                            <input type="checkbox" id="terma-broadcast-mode" 
+                                   data-tekton-broadcast="terma"
+                                   data-tekton-input="broadcast-mode"
+                                   data-tekton-input-type="checkbox">
                             Broadcast to all AIs
                         </label>
                     </div>
                 </div>
-                <div class="chat-messages" id="terma-team-messages" data-tekton-messages="team">
+                <div class="chat-messages" id="terma-team-messages" 
+                     data-tekton-messages="team"
+                     data-tekton-element="chat-messages">
                     <div class="chat-message system-message">
                         <strong>System:</strong> Team Chat allows Terma to coordinate with other AI specialists.
                     </div>
@@ -125,16 +185,21 @@
     
     <!-- Footer with Chat Input -->
     <div class="terma__footer" data-tekton-zone="footer" data-tekton-section="footer">
-        <div class="terma__chat-input-container" data-tekton-chat="terma-companion" data-tekton-chat-component="terma">
-            <div class="terma__chat-prompt">></div>
+        <div class="terma__chat-input-container" 
+             data-tekton-chat="terma-companion" 
+             data-tekton-chat-component="terma"
+             data-tekton-element="chat-input-container">
+            <div class="terma__chat-prompt" data-tekton-element="chat-prompt">></div>
             <input type="text" class="terma__chat-input" id="terma-chat-input"
                    data-tekton-input="chat-input"
                    data-tekton-input-type="chat"
+                   data-tekton-input-component="terma"
                    placeholder="Chat with Terma - your platform AI mentor and companion"
                    onkeydown="if(event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); terma_sendChat(); }">
             <button class="terma__send-button" id="terma-send-button" onclick="terma_sendChat(); return false;"
                     data-tekton-action="send-message"
-                    data-tekton-action-type="primary">Send</button>
+                    data-tekton-action-type="primary"
+                    data-tekton-action-component="terma">Send</button>
         </div>
     </div>
 </div>
@@ -906,27 +971,38 @@ async function fetchTerminalList() {
             const isSystemTerminal = terminal.template === 'system' || terminal.purpose?.includes('system');
             
             html += `
-                <div class="terma__terminal-card ${isSystemTerminal ? 'terma__terminal-card--system' : ''}">
-                    <div class="terma__terminal-header">
-                        <h4>${terminal.name || 'Unnamed Terminal'}</h4>
-                        <span class="terma__terminal-status terma__terminal-status--${statusClass}">
+                <div class="terma__terminal-card ${isSystemTerminal ? 'terma__terminal-card--system' : ''}"
+                     data-tekton-element="terminal-card"
+                     data-tekton-terminal="${terminal.pid}"
+                     data-tekton-state="${statusClass}">
+                    <div class="terma__terminal-header" data-tekton-element="terminal-header">
+                        <h4 data-tekton-element="terminal-name">${terminal.name || 'Unnamed Terminal'}</h4>
+                        <span class="terma__terminal-status terma__terminal-status--${statusClass}"
+                              data-tekton-element="terminal-status"
+                              data-tekton-status="${statusClass}">
                             ${terminal.status}
                         </span>
                     </div>
-                    <div class="terma__terminal-details">
-                        <p><strong>PID:</strong> ${terminal.pid}</p>
-                        <p><strong>App:</strong> ${terminal.terminal_app}</p>
-                        ${terminal.purpose ? `<p><strong>Purpose:</strong> ${terminal.purpose}</p>` : ''}
-                        ${terminal.template ? `<p><strong>Template:</strong> ${terminal.template}</p>` : ''}
-                        <p><strong>Started:</strong> ${new Date(terminal.launched_at).toLocaleString()}</p>
+                    <div class="terma__terminal-details" data-tekton-element="terminal-details">
+                        <p data-tekton-element="terminal-pid"><strong>PID:</strong> ${terminal.pid}</p>
+                        <p data-tekton-element="terminal-app"><strong>App:</strong> ${terminal.terminal_app}</p>
+                        ${terminal.purpose ? `<p data-tekton-element="terminal-purpose"><strong>Purpose:</strong> ${terminal.purpose}</p>` : ''}
+                        ${terminal.template ? `<p data-tekton-element="terminal-template"><strong>Template:</strong> ${terminal.template}</p>` : ''}
+                        <p data-tekton-element="terminal-started"><strong>Started:</strong> ${new Date(terminal.launched_at).toLocaleString()}</p>
                     </div>
-                    <div class="terma__terminal-actions">
+                    <div class="terma__terminal-actions" data-tekton-element="terminal-actions">
                         <button class="terma__button terma__button--primary terma__button--small" 
-                                onclick="showTerminal(${terminal.pid})">
+                                onclick="showTerminal(${terminal.pid})"
+                                data-tekton-action="show-terminal"
+                                data-tekton-action-target="${terminal.pid}"
+                                data-tekton-action-type="secondary">
                             Show
                         </button>
                         <button class="terma__button terma__button--danger terma__button--small" 
-                                onclick="terminateTerminal(${terminal.pid})">
+                                onclick="terminateTerminal(${terminal.pid})"
+                                data-tekton-action="terminate-terminal"
+                                data-tekton-action-target="${terminal.pid}"
+                                data-tekton-action-type="danger">
                             Terminate
                         </button>
                     </div>
