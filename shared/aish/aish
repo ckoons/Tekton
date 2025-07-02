@@ -1,0 +1,147 @@
+#!/usr/bin/env python3
+"""
+aish - The AI Shell
+Main entry point for the AI shell interpreter.
+"""
+
+import sys
+import os
+import argparse
+from pathlib import Path
+
+# Get the real path of the script (follows symlinks)
+script_path = Path(__file__).resolve()
+aish_root = script_path.parent
+src_path = aish_root / 'src'
+
+# Add src to path
+sys.path.insert(0, str(src_path))
+
+# Also add Tekton root if available (we're inside Tekton/shared/aish)
+tekton_root = aish_root.parent.parent  # Go up to Tekton root
+if tekton_root.exists() and (tekton_root / 'tekton').exists():
+    sys.path.insert(0, str(tekton_root))
+
+from core.shell import AIShell
+from core.version import __version__
+
+def main():
+    parser = argparse.ArgumentParser(
+        description='aish - The AI Shell\n\nProvides AI capabilities in your terminal through the Tekton platform.',
+        epilog='''Examples:
+  aish                      # Start interactive AI shell
+  aish apollo "question"    # Send question to Apollo AI
+  echo "data" | aish athena # Pipe data to Athena AI
+  aish team-chat "hello"    # Broadcast to all AIs
+  aish -l                   # List available AIs
+  aish script.ai            # Run AI script file
+
+Available AIs: apollo, athena, rhetor, sophia, hermes, prometheus,
+               telos, ergon, engram, numa, noesis
+
+Environment variables:
+  RHETOR_ENDPOINT    # Override default Rhetor endpoint
+  AISH_ACTIVE        # Set by aish-proxy when active
+  AISH_DEBUG         # Enable debug output''',
+        formatter_class=argparse.RawDescriptionHelpFormatter
+    )
+    
+    parser.add_argument(
+        'ai_or_script',
+        nargs='?',
+        help='AI name (apollo, athena, etc.) or script file'
+    )
+    
+    parser.add_argument(
+        'message',
+        nargs='*',
+        help='Message to send to AI'
+    )
+    
+    parser.add_argument(
+        '-c', '--command',
+        help='Execute a single AI pipeline command and exit'
+    )
+    
+    parser.add_argument(
+        '-v', '--version',
+        action='version',
+        version=f'aish {__version__}'
+    )
+    
+    parser.add_argument(
+        '-d', '--debug',
+        action='store_true',
+        help='Enable debug output'
+    )
+    
+    parser.add_argument(
+        '-r', '--rhetor',
+        default=None,
+        help='Rhetor endpoint (default: TEKTON_RHETOR_PORT env var or http://localhost:8003)'
+    )
+    
+    parser.add_argument(
+        '-l', '--list-ais',
+        action='store_true',
+        help='List available AI specialists and exit'
+    )
+    
+    args = parser.parse_args()
+    
+    # Create shell instance
+    shell = AIShell(
+        rhetor_endpoint=args.rhetor,
+        debug=args.debug
+    )
+    
+    # Handle special commands
+    if args.list_ais:
+        shell._list_ais()
+        return
+    
+    # Known AI names
+    ai_names = ['apollo', 'athena', 'rhetor', 'sophia', 'hermes', 'prometheus', 
+                'telos', 'ergon', 'engram', 'numa', 'noesis', 'team-chat']
+    
+    # Check if first argument is an AI name
+    if args.ai_or_script and args.ai_or_script.lower() in ai_names:
+        ai_name = args.ai_or_script.lower()
+        
+        # Get input from stdin if available, otherwise from message args
+        if not sys.stdin.isatty():
+            # Data is being piped in
+            input_data = sys.stdin.read()
+        elif args.message:
+            # Message provided as arguments
+            input_data = ' '.join(args.message)
+        else:
+            # Interactive mode with specific AI
+            print(f"[aish] Entering interactive mode with {ai_name}")
+            print("Type your message and press Ctrl+D when done:")
+            input_data = sys.stdin.read()
+        
+        # Route to AI
+        if ai_name == 'team-chat':
+            shell.execute_command(f'team-chat "{input_data}"')
+        else:
+            shell.execute_command(f'echo "{input_data}" | {ai_name}')
+    
+    # Original behavior for other cases
+    elif args.command:
+        # Single command mode
+        shell.execute_command(args.command)
+    elif args.ai_or_script and os.path.isfile(args.ai_or_script):
+        # Script execution mode
+        shell.execute_script(args.ai_or_script)
+    elif args.ai_or_script:
+        # Unknown AI or command
+        print(f"aish: Unknown AI or file: {args.ai_or_script}", file=sys.stderr)
+        print("Available AIs: " + ", ".join(ai_names), file=sys.stderr)
+        sys.exit(1)
+    else:
+        # Interactive mode
+        shell.interactive()
+
+if __name__ == '__main__':
+    main()

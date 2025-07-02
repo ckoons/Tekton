@@ -1,0 +1,105 @@
+#!/usr/bin/env python3
+"""
+aish-history - View and manage aish conversation history.
+
+Usage:
+    aish-history                    # Show recent history
+    aish-history -n 20              # Show last 20 entries
+    aish-history --search "apollo"  # Search history
+    aish-history --replay 1716      # Get command for replay
+    aish-history --json             # Export as JSON
+    aish-history --json | jq        # Process with jq
+"""
+
+import argparse
+import sys
+import os
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
+from src.core.history import AIHistory
+
+
+def format_history_entry(lines):
+    """Format history lines for display."""
+    for line in lines:
+        print(line.rstrip())
+
+
+def main():
+    parser = argparse.ArgumentParser(
+        description='View and manage aish conversation history',
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Examples:
+  aish-history                    # Show recent history
+  aish-history -n 20              # Show last 20 entries
+  aish-history --search "apollo"  # Search history
+  aish-history --replay 1716      # Get command for replay
+  aish-history --json             # Export as JSON
+  aish-history --json | jq '.history[-5:]'  # Last 5 with jq
+        """
+    )
+    
+    parser.add_argument('-n', '--lines', type=int, 
+                        help='Number of recent entries to show')
+    parser.add_argument('-s', '--search', 
+                        help='Search history for pattern')
+    parser.add_argument('-r', '--replay', type=int,
+                        help='Get command by number for replay')
+    parser.add_argument('--json', action='store_true',
+                        help='Export as JSON for processing')
+    parser.add_argument('--clear', action='store_true',
+                        help='Clear history (backs up to .aish_history.bak)')
+    parser.add_argument('--start', type=int,
+                        help='Starting command number for JSON export')
+    parser.add_argument('--end', type=int,
+                        help='Ending command number for JSON export')
+    
+    args = parser.parse_args()
+    
+    history = AIHistory()
+    
+    # Handle different modes
+    if args.clear:
+        confirm = input("Clear history? Previous history will be backed up to .aish_history.bak [y/N]: ")
+        if confirm.lower() == 'y':
+            history.clear()
+            print("History cleared.")
+        return
+    
+    elif args.json:
+        # JSON export mode
+        print(history.export_json(args.start, args.end))
+        return
+    
+    elif args.replay is not None:
+        # Replay mode
+        command = history.replay(args.replay)
+        if command:
+            print(command)
+        else:
+            print(f"Command {args.replay} not found", file=sys.stderr)
+            sys.exit(1)
+        return
+    
+    elif args.search:
+        # Search mode
+        results = history.search(args.search)
+        if results:
+            format_history_entry(results)
+        else:
+            print(f"No matches found for '{args.search}'", file=sys.stderr)
+        return
+    
+    else:
+        # Default: show recent history
+        lines = args.lines or 20
+        entries = history.get_history(lines)
+        if entries:
+            format_history_entry(entries)
+        else:
+            print("No history found. Start using aish to build history!")
+
+
+if __name__ == '__main__':
+    main()

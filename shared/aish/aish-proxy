@@ -1,0 +1,146 @@
+#!/usr/bin/env python3
+"""
+aish-proxy - AI-enhanced shell using safe shell hooks
+
+This provides AI capabilities through shell functions/aliases
+without any dangerous terminal manipulation.
+
+Usage:
+  ./aish-proxy              # Interactive mode
+  ./aish-proxy -c "cmd"     # Single command (not supported yet)
+"""
+
+import sys
+import os
+from pathlib import Path
+
+# Get the directory containing this script
+script_dir = Path(__file__).resolve().parent
+src_path = script_dir / 'src'
+
+# Add src to Python path
+sys.path.insert(0, str(src_path))
+
+import subprocess
+import tempfile
+
+
+def create_shell_init(shell_name, aish_dir, rhetor_endpoint=None, debug=False):
+    """Create shell initialization for AI commands."""
+    rhetor = rhetor_endpoint or "http://localhost:8003"
+    
+    # Base functions that work in both bash and zsh
+    common_functions = f'''
+# aish proxy initialization
+export AISH_ACTIVE=1
+export AISH_VERSION="3.0.0"
+export RHETOR_ENDPOINT="{rhetor}"
+
+# Ensure aish command is in PATH
+export PATH="{aish_dir}:$PATH"
+
+# That's it! The 'aish' command will handle all AI routing
+# Usage:
+#   aish apollo "query"
+#   echo "data" | aish athena
+#   aish team-chat "message"
+'''
+    
+    # No shell-specific code needed anymore - just use aish command
+    init_content = common_functions
+    
+    if not debug:
+        init_content += '''
+echo "aish-proxy active (v3.0.0) - Usage: aish <ai-name> [message]"
+echo "Examples: aish apollo | aish team-chat 'hello' | echo 'test' | aish athena"
+'''
+    
+    return init_content
+
+def main():
+    """Main entry point for aish proxy."""
+    import argparse
+    
+    parser = argparse.ArgumentParser(
+        description='aish-proxy - Safe AI-enhanced shell',
+        epilog='Provides AI capabilities through shell functions'
+    )
+    
+    parser.add_argument(
+        '-c', '--command',
+        help='Single command mode not supported yet'
+    )
+    
+    parser.add_argument(
+        '--debug',
+        action='store_true',
+        help='Enable debug output'
+    )
+    
+    parser.add_argument(
+        '--shell',
+        help='Base shell to use (default: $SHELL)',
+        default=None
+    )
+    
+    parser.add_argument(
+        '--rhetor',
+        help='Rhetor endpoint (default: http://localhost:8003)',
+        default=None
+    )
+    
+    parser.add_argument(
+        '--version',
+        action='store_true',
+        help='Show version and exit'
+    )
+    
+    args = parser.parse_args()
+    
+    if args.version:
+        print("aish-proxy v3.0.0 - Safe shell hook implementation")
+        return 0
+    
+    if args.command:
+        print("Error: Single command mode not implemented yet", file=sys.stderr)
+        return 1
+    
+    # Determine shell
+    shell = args.shell or os.environ.get('SHELL', '/bin/bash')
+    shell_name = os.path.basename(shell)
+    
+    # Get aish directory
+    aish_dir = str(Path(__file__).resolve().parent)
+    
+    # Create initialization
+    init_content = create_shell_init(shell_name, aish_dir, args.rhetor, args.debug)
+    
+    # Write to temp file
+    with tempfile.NamedTemporaryFile(mode='w', suffix='.sh', delete=False) as f:
+        f.write(init_content)
+        init_file = f.name
+    
+    try:
+        if 'zsh' in shell_name:
+            # For zsh, source our file then run interactive shell
+            cmd = [shell, '-c', f'source {init_file} && exec {shell} -i']
+        else:
+            # For bash, use --rcfile
+            cmd = [shell, '--rcfile', init_file]
+        
+        # Run the shell
+        result = subprocess.run(cmd)
+        return result.returncode
+        
+    finally:
+        # Cleanup
+        try:
+            os.unlink(init_file)
+        except:
+            pass
+    
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

@@ -10,6 +10,7 @@ from typing import Dict, Any, List, Optional
 from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
 import asyncio
+import os
 
 from tekton.mcp.fastmcp.server import FastMCPServer
 from tekton.mcp.fastmcp.utils.endpoints import add_mcp_endpoints
@@ -206,18 +207,15 @@ async def get_terminal_health() -> Dict[str, Any]:
 
 
 @mcp_router.post("/terminal-session-bulk-action")
-async def terminal_session_bulk_action(
-    action: str,
-    session_filters: Dict[str, Any],
-    parameters: Optional[Dict[str, Any]] = None
-) -> Dict[str, Any]:
+async def terminal_session_bulk_action(request: Dict[str, Any]) -> Dict[str, Any]:
     """
     Perform bulk actions on multiple terminal sessions.
     
     Args:
-        action: Action to perform on sessions
-        session_filters: Filters to select sessions
-        parameters: Additional parameters for the action
+        request: Dictionary containing:
+            - action: Action to perform on sessions
+            - session_filters: Filters to select sessions
+            - parameters: Additional parameters for the action
         
     Returns:
         Dictionary containing bulk action results
@@ -226,6 +224,14 @@ async def terminal_session_bulk_action(
         import random
         from datetime import datetime
         import uuid
+        
+        # Extract parameters from request
+        action = request.get("action")
+        session_filters = request.get("session_filters", {})
+        parameters = request.get("parameters")
+        
+        if not action:
+            raise HTTPException(status_code=400, detail="Action is required")
         
         valid_actions = ["backup", "restart", "optimize", "monitor", "cleanup"]
         if action not in valid_actions:
@@ -285,6 +291,77 @@ async def terminal_session_bulk_action(
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Bulk action failed: {str(e)}")
+
+
+@mcp_router.post("/tools/launch_terminal")
+async def mcp_launch_terminal(request: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Launch a terminal with aish integration.
+    
+    This endpoint allows external systems to launch aish-enabled terminals
+    through the MCP interface.
+    
+    Args:
+        request: Dictionary containing:
+            - name: Optional terminal name
+            - working_dir: Optional working directory (defaults to user home)
+            - purpose: Optional AI context/purpose
+            - template: Optional template name
+            
+    Returns:
+        Dictionary containing:
+            - success: Whether the launch was successful
+            - pid: Process ID of the launched terminal
+            - terminal_app: The terminal application used
+            - message: Status message
+    """
+    try:
+        from terma.core.terminal_launcher_impl import TerminalLauncher, TerminalConfig
+        
+        # Create launcher instance
+        launcher = TerminalLauncher()
+        
+        # Create config from request
+        config = TerminalConfig(
+            name=request.get("name", "aish Terminal"),
+            working_dir=request.get("working_dir"),  # Will default to home in launcher
+            purpose=request.get("purpose"),
+            env={
+                "TEKTON_ENABLED": "true",
+                "AISH_ACTIVE": "1"
+            }
+        )
+        
+        # Apply template if specified
+        template_name = request.get("template")
+        if template_name:
+            from terma.core.terminal_launcher_impl import TerminalTemplates
+            template = TerminalTemplates.get_template(template_name)
+            if template:
+                # Merge template with provided config
+                if not config.name or config.name == "aish Terminal":
+                    config.name = template.name
+                config.env.update(template.env)
+                if not config.purpose and template.purpose:
+                    config.purpose = template.purpose
+        
+        # Launch the terminal
+        pid = launcher.launch_terminal(config)
+        
+        return {
+            "success": True,
+            "pid": pid,
+            "terminal_app": config.app or launcher.get_default_terminal(),
+            "working_directory": config.working_dir or os.path.expanduser("~"),
+            "aish_enabled": True,
+            "message": f"Successfully launched aish-enabled terminal (PID: {pid})"
+        }
+        
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to launch terminal: {str(e)}"
+        )
 
 
 # ============================================================================

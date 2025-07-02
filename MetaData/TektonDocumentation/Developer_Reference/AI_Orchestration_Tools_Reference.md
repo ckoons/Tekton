@@ -2,9 +2,31 @@
 
 ## Overview
 
-This quick reference provides a concise guide to the 30 MCP tools available through Rhetor for AI orchestration. These tools enable sophisticated AI-powered workflows, live component interaction, and dynamic specialist management.
+This quick reference provides a concise guide to the AI orchestration tools available in Tekton. The primary interface for AI interaction is now **aish** (AI Shell), which provides a simple, Unix-like command interface to all AI capabilities.
 
-**Important Update**: As of June 2025, these tools now work with real AI specialists through our unified AI system (see `/Tekton/shared/ai/`) that connects to actual Greek Chorus AIs running on ports 45000-50000.
+**Important Update (July 2025)**: aish is now the standard way to interact with AIs in Tekton. Individual AI commands (apollo, athena, etc.) are deprecated in favor of the unified `aish` command.
+
+## Primary Tool: aish
+
+### Basic Usage
+
+```bash
+# Direct AI interaction
+aish <ai-name> "message"
+
+# Piped input
+echo "data" | aish <ai-name>
+
+# List available AIs
+aish -l
+
+# Team chat
+aish team-chat "message"
+```
+
+### Integration with MCP Tools
+
+While aish is the primary user interface, the MCP tools below are still available for programmatic access through Rhetor. These tools enable sophisticated AI-powered workflows, live component interaction, and dynamic specialist management.
 
 ## Tool Categories
 
