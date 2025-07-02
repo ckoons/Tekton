@@ -54,7 +54,12 @@ class TerminalLauncher:
     
     def __init__(self, aish_path: Optional[str] = None):
         self.platform = platform.system().lower()
-        self.aish_path = aish_path or self._find_aish_proxy()
+        try:
+            self.aish_path = aish_path or self._find_aish_proxy()
+            print(f"Found aish-proxy at: {self.aish_path}")
+        except FileNotFoundError:
+            print("aish-proxy not found. Terminal launching will use basic shells.")
+            self.aish_path = None
         self.terminals: Dict[int, TerminalInfo] = {}
         
         # Platform-specific terminal detection
@@ -67,6 +72,7 @@ class TerminalLauncher:
         """Find the aish-proxy executable."""
         # Check common locations
         locations = [
+            Path.home() / "projects" / "github" / "aish" / "aish-proxy",
             Path(__file__).parent.parent.parent / "aish-proxy",
             Path.home() / "utils" / "aish-proxy",
             Path("/usr/local/bin/aish-proxy"),
@@ -197,7 +203,13 @@ class TerminalLauncher:
             env_exports += f" export TEKTON_TERMINAL_PURPOSE='{config.purpose}';"
         
         # Build shell command
-        shell_cmd = f"cd '{config.working_dir}'; {env_exports} '{self.aish_path}'"
+        if self.aish_path:
+            shell_cmd = f"cd '{config.working_dir}'; {env_exports} '{self.aish_path}'"
+        else:
+            # Fall back to regular shell when aish-proxy not available
+            shell_to_use = config.shell or "/bin/bash"
+            shell_cmd = f"cd '{config.working_dir}'; {env_exports} {shell_to_use}"
+        
         if config.shell_args:
             shell_cmd += " " + " ".join(config.shell_args)
         

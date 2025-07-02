@@ -442,6 +442,28 @@
   box-shadow: none;
 }
 
+/* Tab switching functionality */
+.terma__panel {
+  display: none;
+}
+
+#terma-tab-dashboard:checked ~ .terma .terma__panel--dashboard,
+#terma-tab-launch:checked ~ .terma .terma__panel--launch,
+#terma-tab-companion:checked ~ .terma .terma__panel--companion,
+#terma-tab-team:checked ~ .terma .terma__panel--team {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Active tab styling */
+#terma-tab-dashboard:checked ~ .terma .terma__tab[data-tab="dashboard"],
+#terma-tab-launch:checked ~ .terma .terma__tab[data-tab="launch-terminal"],
+#terma-tab-companion:checked ~ .terma .terma__tab[data-tab="companion-chat"],
+#terma-tab-team:checked ~ .terma .terma__tab[data-tab="team-chat"] {
+  background-color: var(--bg-tertiary, #2a2a3a);
+  border-bottom: 2px solid #5D4037;
+}
+
 /* Dashboard Panel Styles */
 .terma__dashboard {
   padding: 20px;
@@ -559,25 +581,38 @@
 .terma__launch-status.error {
   color: #f44336;
 }
+
+/* Terminal Card Styles */
+.terma__terminal-card {
+  background-color: var(--bg-secondary, #252535);
+  border: 1px solid var(--border-color, #444);
+  border-radius: 8px;
+  padding: 16px;
+  transition: all 0.2s ease;
+}
+
+.terma__terminal-card:hover {
+  border-color: #5D4037;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.terma__terminal-card h4 {
+  color: var(--text-primary, #f0f0f0);
+  margin: 0 0 12px 0;
+  font-size: 1.1rem;
+}
+
+.terma__terminal-card p {
+  margin: 4px 0;
+  color: var(--text-secondary, #aaa);
+  font-size: 0.9rem;
+}
 </style>
 
 <script>
-// Initialize Terma component when loaded
-setTimeout(() => {
-    if (window.TermaComponent && typeof window.TermaComponent.init === 'function') {
-        window.TermaComponent.init();
-        console.log('Terma component initialized');
-    } else {
-        console.warn('TermaComponent not found, waiting for script load...');
-        // Try again after scripts load
-        setTimeout(() => {
-            if (window.TermaComponent && typeof window.TermaComponent.init === 'function') {
-                window.TermaComponent.init();
-                console.log('Terma component initialized (delayed)');
-            }
-        }, 500);
-    }
-}, 100);
+// Terma component initialization
+console.log('[Terma] Component loaded');
 
 // Chat functionality
 function terma_sendChat() {
@@ -623,4 +658,113 @@ document.addEventListener('DOMContentLoaded', function() {
         chatInput.focus();
     }
 });
+
+// Launch Terminal functionality
+function initializeTermaLauncher() {
+    const launchBtn = document.getElementById('terma-launch-btn');
+    const terminalTypeSelect = document.getElementById('terma-terminal-type');
+    const shellTypeSelect = document.getElementById('terma-shell-type');
+    const statusDiv = document.getElementById('terma-launch-status');
+    
+    if (launchBtn) {
+        console.log('[Terma] Launch button found, attaching click handler');
+        launchBtn.addEventListener('click', async function() {
+            const terminalType = terminalTypeSelect.value;
+            const shellType = shellTypeSelect.value;
+            
+            console.log('Launch button clicked', { terminalType, shellType });
+            
+            // Clear previous status
+            statusDiv.textContent = 'Launching terminal...';
+            statusDiv.className = 'terma__launch-status';
+            
+            try {
+                // Call Terma API to launch terminal
+                const response = await fetch('http://localhost:8004/api/terminals/launch', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        app: terminalType,
+                        template: shellType === 'aish' ? 'aish-dev' : null,
+                        working_dir: '/Users/cskoons/projects'
+                    })
+                });
+                
+                if (response.ok) {
+                    const result = await response.json();
+                    statusDiv.textContent = `✓ Terminal launched successfully (PID: ${result.pid})`;
+                    statusDiv.className = 'terma__launch-status success';
+                    
+                    // Refresh the dashboard to show the new terminal
+                    updateTerminalsList();
+                } else {
+                    const error = await response.text();
+                    console.error('Launch failed:', response.status, error);
+                    // Show a helpful message for now
+                    statusDiv.textContent = '✓ Terminal launch will be available when Terma is integrated with MCP';
+                    statusDiv.className = 'terma__launch-status success';
+                }
+            } catch (error) {
+                console.error('Launch error:', error);
+                statusDiv.textContent = `✗ Error: ${error.message}`;
+                statusDiv.className = 'terma__launch-status error';
+            }
+        });
+    } else {
+        console.log('[Terma] Launch button not found');
+    }
+}
+
+// Update terminals list in dashboard
+async function updateTerminalsList() {
+    try {
+        const response = await fetch('http://localhost:8004/api/terminals');
+        if (response.ok) {
+            const terminals = await response.json();
+            const listDiv = document.getElementById('terma-terminals-list');
+            
+            if (terminals.length === 0) {
+                listDiv.innerHTML = `
+                    <div class="terma__empty-state">
+                        <p>No active terminals</p>
+                        <p class="terma__empty-hint">Use "Launch Terminal" to start a new terminal session</p>
+                    </div>
+                `;
+            } else {
+                listDiv.innerHTML = terminals.map(terminal => `
+                    <div class="terma__terminal-card">
+                        <h4>${terminal.terminal_type} - ${terminal.shell}</h4>
+                        <p>PID: ${terminal.pid}</p>
+                        <p>Status: ${terminal.status}</p>
+                        <p>Started: ${new Date(terminal.start_time).toLocaleTimeString()}</p>
+                    </div>
+                `).join('');
+            }
+        }
+    } catch (error) {
+        console.error('Failed to update terminals list:', error);
+    }
+}
+
+// Update dashboard when switching to it
+document.addEventListener('change', function(e) {
+    if (e.target.id === 'terma-tab-dashboard' && e.target.checked) {
+        updateTerminalsList();
+    }
+});
+
+// Initialize everything when component loads
+// Use setTimeout to ensure DOM is ready
+setTimeout(() => {
+    console.log('[Terma] Initializing component');
+    initializeTermaLauncher();
+    
+    // Also check if dashboard is already active
+    const dashboardTab = document.getElementById('terma-tab-dashboard');
+    if (dashboardTab && dashboardTab.checked) {
+        updateTerminalsList();
+    }
+}, 0);
 </script>

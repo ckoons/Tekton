@@ -15,12 +15,14 @@ tekton_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os
 if tekton_root not in sys.path:
     sys.path.insert(0, tekton_root)
 
-from fastapi import FastAPI, WebSocket, HTTPException, Depends, WebSocketDisconnect, Query, Body
+from fastapi import FastAPI, HTTPException, status, Depends, Query
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
+from datetime import datetime
+import uvicorn
 
-from ..core.session_manager import SessionManager
-from .websocket import TerminalWebSocketServer
+# Import native terminal launcher
+from ..core.terminal_launcher import TerminalLauncher, TerminalConfig, TerminalTemplates
 from ..integrations.hermes_integration import HermesIntegration
 from .fastmcp_endpoints import mcp_router
 
@@ -28,45 +30,45 @@ from .fastmcp_endpoints import mcp_router
 from shared.utils.logging_setup import setup_component_logging
 logger = setup_component_logging("terma")
 
-# Models
-class SessionCreate(BaseModel):
-    """Model for session creation request"""
-    shell_command: Optional[str] = None
+# Models for native terminal launching
+class LaunchTerminalRequest(BaseModel):
+    """Request to launch a new terminal."""
+    template: Optional[str] = Field(None, description="Template name to use")
+    app: Optional[str] = Field(None, description="Terminal application to use")
+    working_dir: Optional[str] = Field(None, description="Working directory")
+    purpose: Optional[str] = Field(None, description="Purpose/context for AI")
+    env: Optional[Dict[str, str]] = Field(default_factory=dict, description="Environment variables")
+    name: Optional[str] = Field(None, description="Terminal name")
 
-class SessionResponse(BaseModel):
-    """Model for session response"""
-    session_id: str
-    created_at: float
+class TerminalInfo(BaseModel):
+    """Information about a terminal."""
+    pid: int
+    app: str
+    status: str
+    launched_at: datetime
+    purpose: Optional[str] = None
+    working_dir: Optional[str] = None
+    name: Optional[str] = None
 
-class SessionInfo(BaseModel):
-    """Model for session information"""
+class TerminalListResponse(BaseModel):
+    """Response for listing terminals."""
+    terminals: List[TerminalInfo]
+    count: int
+
+class TerminalTypeInfo(BaseModel):
+    """Information about a terminal type."""
     id: str
-    active: bool
-    created_at: float
-    last_activity: float
-    shell_command: str
-    idle_time: float
+    name: str
+    available: bool
+    path: Optional[str] = None
 
-class SessionsResponse(BaseModel):
-    """Model for sessions list response"""
-    sessions: List[SessionInfo]
-
-class WriteRequest(BaseModel):
-    """Model for write request"""
-    data: str
-
-class WriteResponse(BaseModel):
-    """Model for write response"""
-    status: str
-    bytes_written: int
-
-class ReadResponse(BaseModel):
-    """Model for read response"""
-    data: str
-
-class StatusResponse(BaseModel):
-    """Model for status response"""
-    status: str
+class TemplateInfo(BaseModel):
+    """Information about a terminal template."""
+    name: str
+    description: str
+    app: Optional[str] = None
+    shell: Optional[str] = None
+    purpose: Optional[str] = None
 
 class HealthResponse(BaseModel):
     """Model for health response"""
@@ -74,6 +76,10 @@ class HealthResponse(BaseModel):
     uptime: float
     version: str
     active_sessions: int
+
+class StatusResponse(BaseModel):
+    """Model for status response"""
+    status: str
 
 class HermesMessage(BaseModel):
     """Model for Hermes message"""
@@ -110,20 +116,8 @@ app.include_router(mcp_router, tags=["mcp"])
 START_TIME = time.time()
 VERSION = "0.1.0"
 
-# Dependency for session manager
-def get_session_manager():
-    """Get or create the session manager"""
-    if not hasattr(app.state, "session_manager"):
-        app.state.session_manager = SessionManager()
-        app.state.session_manager.start()
-    return app.state.session_manager
-
-# Dependency for websocket server
-def get_websocket_server():
-    """Get or create the WebSocket server"""
-    if not hasattr(app.state, "websocket_server"):
-        app.state.websocket_server = TerminalWebSocketServer(get_session_manager())
-    return app.state.websocket_server
+# Global terminal launcher instance
+launcher: Optional[TerminalLauncher] = None
 
 # Dependency for Hermes integration
 def get_hermes_integration():
@@ -133,7 +127,6 @@ def get_hermes_integration():
         hermes_url = get_hermes_url()
         app.state.hermes_integration = HermesIntegration(
             api_url=hermes_url,
-            session_manager=get_session_manager(),
             component_name="Terma"
         )
     return app.state.hermes_integration
@@ -141,9 +134,11 @@ def get_hermes_integration():
 @app.on_event("startup")
 async def startup_event():
     """Startup event handler"""
-    # Start session manager
-    session_manager = get_session_manager()
-    logger.info("Session manager started")
+    global launcher
+    
+    # Initialize terminal launcher
+    launcher = TerminalLauncher()
+    logger.info("Terminal launcher initialized")
     
     # Register with Hermes if REGISTER_WITH_HERMES environment variable is set
     if os.environ.get("REGISTER_WITH_HERMES", "false").lower() == "true":
@@ -157,15 +152,12 @@ async def startup_event():
 @app.on_event("shutdown")
 async def shutdown_event():
     """Shutdown event handler"""
-    # Stop session manager
-    if hasattr(app.state, "session_manager"):
-        app.state.session_manager.stop()
-        logger.info("Session manager stopped")
-        
-    # Stop websocket server
-    if hasattr(app.state, "websocket_server"):
-        app.state.websocket_server.stop_server()
-        logger.info("WebSocket server stopped")
+    global launcher
+    
+    # Clean up any tracked terminals
+    if launcher:
+        launcher.cleanup_stopped()
+        logger.info("Terminal launcher cleaned up")
 
 @app.get("/")
 async def root():
@@ -173,112 +165,143 @@ async def root():
     return {"message": "Terma Terminal API", "version": VERSION}
 
 @app.get("/health", response_model=HealthResponse)
-async def health_check(session_manager: SessionManager = Depends(get_session_manager)):
+async def health_check():
     """Health check endpoint"""
     uptime = time.time() - START_TIME
-    active_sessions = len(session_manager.sessions)
     
     return {
         "status": "healthy",
         "uptime": uptime,
         "version": VERSION,
-        "active_sessions": active_sessions
+        "active_sessions": 0
     }
 
-# Session management endpoints
-@app.get("/api/sessions", response_model=SessionsResponse)
-async def list_sessions(session_manager: SessionManager = Depends(get_session_manager)):
-    """List all active terminal sessions"""
-    sessions = session_manager.list_sessions()
-    return {"sessions": sessions}
+# Native Terminal Management Endpoints
 
-@app.post("/api/sessions", response_model=SessionResponse)
-async def create_session(
-    session_create: SessionCreate = Body(...),
-    session_manager: SessionManager = Depends(get_session_manager),
-    hermes_integration: HermesIntegration = Depends(get_hermes_integration)
-):
-    """Create a new terminal session"""
-    session_id = session_manager.create_session(shell_command=session_create.shell_command)
-    if not session_id:
-        raise HTTPException(status_code=500, detail="Failed to create session")
-        
-    session = session_manager.get_session(session_id)
-    if not session:
-        raise HTTPException(status_code=500, detail="Session created but not found")
+@app.get("/api/terminals/types", response_model=List[TerminalTypeInfo])
+async def list_terminal_types():
+    """List available terminal types on this platform."""
+    if not launcher:
+        raise HTTPException(status_code=500, detail="Launcher not initialized")
     
-    # Publish event to Hermes
-    if hermes_integration.is_registered:
-        event_payload = {
-            "session_id": session_id,
-            "shell_command": session_create.shell_command,
-            "created_at": session.created_at
-        }
-        asyncio.create_task(hermes_integration.publish_event("terminal.session.created", event_payload))
-        
-    return {"session_id": session_id, "created_at": session.created_at}
-
-@app.get("/api/sessions/{session_id}", response_model=SessionInfo)
-async def get_session(
-    session_id: str,
-    session_manager: SessionManager = Depends(get_session_manager)
-):
-    """Get information about a terminal session"""
-    session = session_manager.get_session(session_id)
-    if not session:
-        raise HTTPException(status_code=404, detail=f"Session {session_id} not found")
-        
-    return session.get_info()
-
-@app.delete("/api/sessions/{session_id}", response_model=StatusResponse)
-async def close_session(
-    session_id: str,
-    session_manager: SessionManager = Depends(get_session_manager),
-    hermes_integration: HermesIntegration = Depends(get_hermes_integration)
-):
-    """Close a terminal session"""
-    success = session_manager.close_session(session_id)
-    if not success:
-        raise HTTPException(status_code=404, detail=f"Session {session_id} not found")
+    terminals = []
+    default_terminal = launcher.get_default_terminal()
     
-    # Publish event to Hermes
-    if hermes_integration.is_registered:
-        event_payload = {
-            "session_id": session_id,
-            "closed_at": time.time()
-        }
-        asyncio.create_task(hermes_integration.publish_event("terminal.session.closed", event_payload))
-        
-    return {"status": "success"}
+    for app_id, display_name, _ in launcher.available_terminals:
+        terminals.append(TerminalTypeInfo(
+            id=app_id,
+            name=display_name,
+            available=True,
+            path=None
+        ))
+    
+    return terminals
 
-# Terminal I/O endpoints
-@app.post("/api/sessions/{session_id}/write", response_model=WriteResponse)
-async def write_to_session(
-    session_id: str,
-    write_request: WriteRequest,
-    session_manager: SessionManager = Depends(get_session_manager)
-):
-    """Write data to a terminal session"""
-    success = session_manager.write_to_session(session_id, write_request.data)
-    if not success:
-        raise HTTPException(status_code=404, detail=f"Session {session_id} not found")
-        
-    return {"status": "success", "bytes_written": len(write_request.data)}
 
-@app.get("/api/sessions/{session_id}/read", response_model=ReadResponse)
-async def read_from_session(
-    session_id: str,
-    size: int = Query(1024, description="Maximum size to read"),
-    session_manager: SessionManager = Depends(get_session_manager)
-):
-    """Read data from a terminal session"""
-    data = session_manager.read_from_session(session_id, size)
-    if data is None:
-        raise HTTPException(status_code=404, detail=f"Session {session_id} not found")
-        
-    return {"data": data or ""}
+@app.get("/api/terminals/templates", response_model=Dict[str, TemplateInfo])
+async def list_templates():
+    """List available terminal configuration templates."""
+    templates = {}
+    
+    for name, template in TerminalTemplates.DEFAULT_TEMPLATES.items():
+        templates[name] = TemplateInfo(
+            name=template.name,
+            description=f"Template: {name}",
+            app=template.app,
+            shell=template.shell,
+            purpose=template.purpose
+        )
+    
+    return templates
 
-# Hermes integration endpoints
+
+@app.post("/api/terminals/launch", response_model=TerminalInfo)
+async def launch_terminal(request: LaunchTerminalRequest):
+    """Launch a new native terminal with specified configuration."""
+    if not launcher:
+        raise HTTPException(status_code=500, detail="Launcher not initialized")
+    
+    try:
+        # Create configuration
+        if request.template:
+            config = TerminalTemplates.get_template(request.template)
+            if not config:
+                raise HTTPException(
+                    status_code=400,
+                    detail=f"Template '{request.template}' not found"
+                )
+        else:
+            config = TerminalConfig()
+        
+        # Apply request parameters
+        if request.name:
+            config.name = request.name
+        if request.app:
+            config.app = request.app
+        if request.working_dir:
+            config.working_dir = request.working_dir
+        if request.purpose:
+            config.purpose = request.purpose
+        if request.env:
+            config.env.update(request.env)
+        
+        # Launch terminal
+        logger.info(f"Launching terminal: {config.app or launcher.get_default_terminal()}")
+        pid = launcher.launch_terminal(config)
+        
+        # Get terminal info
+        terminal_info = launcher.terminals.get(pid)
+        if not terminal_info:
+            raise HTTPException(status_code=500, detail="Terminal launched but not tracked")
+        
+        logger.info(f"✅ Terminal launched with PID: {pid}")
+        
+        # Add note about aish-proxy status
+        status_msg = terminal_info.status
+        if not launcher.aish_path:
+            status_msg = "running (without aish-proxy)"
+        
+        return TerminalInfo(
+            pid=pid,
+            app=terminal_info.terminal_app,
+            status=status_msg,
+            launched_at=terminal_info.launched_at,
+            purpose=terminal_info.config.purpose,
+            working_dir=terminal_info.config.working_dir,
+            name=terminal_info.config.name
+        )
+        
+    except Exception as e:
+        logger.error(f"Failed to launch terminal: {e}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to launch terminal: {str(e)}"
+        )
+
+
+@app.get("/api/terminals", response_model=List[TerminalInfo])
+async def list_terminals():
+    """List all tracked terminals."""
+    if not launcher:
+        raise HTTPException(status_code=500, detail="Launcher not initialized")
+    
+    terminals = launcher.list_terminals()
+    
+    return [
+        TerminalInfo(
+            pid=info.pid,
+            app=info.terminal_app,
+            status=info.status,
+            launched_at=info.launched_at,
+            purpose=info.config.purpose,
+            working_dir=info.config.working_dir,
+            name=info.config.name
+        )
+        for info in terminals
+    ]
+
+
+# Hermes integration endpoints (keeping these for now)
 @app.post("/api/hermes/message", response_model=Dict[str, Any])
 async def hermes_message(
     message: HermesMessage,
@@ -302,16 +325,6 @@ async def handle_event(
     # Just acknowledge the event for now
     # In the future, we could handle specific events here
     return {"status": "success"}
-
-# WebSocket endpoint
-@app.websocket("/ws/{session_id}")
-async def websocket_endpoint(
-    websocket: WebSocket,
-    session_id: str,
-    websocket_server: TerminalWebSocketServer = Depends(get_websocket_server)
-):
-    """WebSocket endpoint for terminal communication"""
-    await websocket_server.handle_connection(websocket, f"/ws/{session_id}")
 
 # LLM Model API Endpoints
 class LLMProvidersResponse(BaseModel):
@@ -406,152 +419,26 @@ async def set_llm_provider_model(request: LLMSetRequest):
     
     return {"status": "success"}
 
-# Terminal launcher endpoint
-@app.get("/terminal/launch")
-async def launch_terminal(
-    session_id: str = Query(..., description="Session ID to connect to"),
-    session_manager: SessionManager = Depends(get_session_manager)
-):
-    """Launch a standalone terminal for a session"""
-    # Check if session exists
-    session = session_manager.get_session(session_id)
-    if not session:
-        raise HTTPException(status_code=404, detail=f"Session {session_id} not found")
-    
-    # Return HTML for the standalone terminal
-    html_content = f"""
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Terma Terminal - Session {session_id}</title>
-        <link rel="stylesheet" href="/ui/css/terma-terminal.css">
-        <script src="https://cdn.jsdelivr.net/npm/xterm@5.1.0/lib/xterm.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/xterm-addon-fit@0.7.0/lib/xterm-addon-fit.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/xterm-addon-web-links@0.8.0/lib/xterm-addon-web-links.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/xterm-addon-search@0.12.0/lib/xterm-addon-search.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/marked@4.3.0/marked.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.7.0/build/highlight.min.js"></script>
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.7.0/build/styles/github-dark.min.css">
-        <script>
-            // Session ID from server
-            const SESSION_ID = "{session_id}";
-            
-            // Configure marked options
-            document.addEventListener('DOMContentLoaded', function() {{
-                if (typeof marked !== 'undefined') {{
-                    marked.setOptions({{
-                        highlight: function(code, lang) {{
-                            const language = hljs.getLanguage(lang) ? lang : 'plaintext';
-                            return hljs.highlight(code, {{ language }}).value;
-                        }},
-                        langPrefix: 'hljs language-',
-                        gfm: true,
-                        breaks: true
-                    }});
-                }}
-            }});
-        </script>
-        <script src="/ui/js/terma-terminal.js"></script>
-    </head>
-    <body>
-        <div class="terma-standalone-container">
-            <div class="terma-header">
-                <div class="terma-title">Terma Terminal - Session {session_id}</div>
-                <div class="terma-controls">
-                    <select id="terma-llm-provider" class="terma-select" title="LLM Provider">
-                        <!-- To be populated by JS -->
-                    </select>
-                    <select id="terma-llm-model" class="terma-select" title="LLM Model">
-                        <!-- To be populated by JS -->
-                    </select>
-                    <button id="terma-settings-btn" class="terma-btn" title="Terminal Settings">⚙</button>
-                </div>
-            </div>
-            <div class="terma-content">
-                <div id="terma-terminal" class="terma-terminal"></div>
-            </div>
-        </div>
-        
-        <!-- Terminal Settings Modal -->
-        <div id="terma-settings-modal" class="terma-modal">
-            <div class="terma-modal-content">
-                <div class="terma-modal-header">
-                    <h2>Terminal Settings</h2>
-                    <button id="terma-settings-close" class="terma-modal-close">&times;</button>
-                </div>
-                <div class="terma-modal-body">
-                    <!-- Settings content copied from terma-component.html -->
-                </div>
-                <div class="terma-modal-footer">
-                    <button id="terma-settings-save" class="terma-btn terma-btn-primary">Save Settings</button>
-                    <button id="terma-settings-reset" class="terma-btn">Reset to Defaults</button>
-                </div>
-            </div>
-        </div>
-    </body>
-    </html>
-    """
-    
-    from fastapi.responses import HTMLResponse
-    return HTMLResponse(content=html_content)
 
 # Server startup function
-async def start_server(host: str = "0.0.0.0", port: int = None, ws_port: int = None):
-    """Start the FastAPI server and WebSocket server
+async def start_server(host: str = "0.0.0.0", port: int = None):
+    """Start the Terma Terminal Orchestrator API server
     
     Args:
         host: Host to bind to
         port: Port to bind the API server to (defaults to Terma's standard port)
-        ws_port: Port to bind the WebSocket server to (defaults to None, which disables the WebSocket server)
     """
     import uvicorn
-    import logging
-    logger = logging.getLogger("terma")
     
-    # Use environment variables for port configuration
-    import os
-
     # Set default port using centralized config
     if port is None:
         from tekton.utils.port_config import get_terma_port
         port = get_terma_port()
         logger.info(f"Using Terma port: {port}")
-
-    # Always check for WebSocket port in environment variables first
-    if ws_port is None:
-        # Use environment or disable WebSocket server
-        # Add import for get_component_config
-        from shared.utils.env_config import get_component_config
-        config = get_component_config()
-        ws_port = config.terma.ws_port if hasattr(config, 'terma') else (int(os.environ.get("TERMA_WS_PORT")) if os.environ.get("TERMA_WS_PORT") else None)
-        if ws_port:
-            logger.info(f"Using WebSocket port {ws_port} from environment")
-        else:
-            logger.info("WebSocket server disabled (no TERMA_WS_PORT configured)")
     
-    # Only start the WebSocket server if a port is available
-    if ws_port is not None:
-        logger.debug(f"Starting WebSocket server on {host}:{ws_port}")
-        websocket_server = get_websocket_server()
-        
-        # Check if port is already in use
-        import socket
-        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        result = s.connect_ex((host, ws_port))
-        s.close()
-        
-        if result == 0:
-            logger.warning(f"WebSocket port {ws_port} is already in use - WebSocket server may not start correctly")
-        
-        # Start the WebSocket server in a background task
-        asyncio.create_task(websocket_server.start_server(host, ws_port))
-    else:
-        logger.debug("WebSocket server initialization skipped (ws_port not specified)")
+    logger.info(f"Starting Terma Terminal Orchestrator API on {host}:{port}")
     
     # Start the FastAPI server
-    logger.debug(f"Starting FastAPI server on {host}:{port}")
     config = uvicorn.Config(app, host=host, port=port)
     server = uvicorn.Server(config)
     await server.serve()
