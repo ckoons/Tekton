@@ -24,7 +24,7 @@ Successfully completed a full replacement of Terma, transforming it from a web-b
 - **API-Only**: REST endpoints for terminal management
 - **No Web Terminals**: Complete removal of PTY/WebSocket code
 - **Port**: 8004 (Hermes registered)
-- **Location**: `/Users/cskoons/projects/github/Tekton/Terma/terma/api/terminal_service.py`
+- **Location**: `/Users/cskoons/projects/github/Tekton/Terma/terma/api/app.py`
 
 ### 4. Hephaestus UI Integration
 - **Native Launcher UI**: Terminal type selection, templates, purpose input

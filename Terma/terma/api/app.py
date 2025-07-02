@@ -24,11 +24,13 @@ import uvicorn
 
 # Import native terminal launcher
 from ..core.terminal_launcher import TerminalLauncher, TerminalConfig, TerminalTemplates
-from ..integrations.hermes_integration import HermesIntegration
+# from ..integrations.hermes_integration import HermesIntegration  # Replaced with shared registration
 from .fastmcp_endpoints import mcp_router
 
 # Use shared logging setup
 from shared.utils.logging_setup import setup_component_logging
+from shared.utils.hermes_registration import HermesRegistration, heartbeat_loop
+
 logger = setup_component_logging("terma")
 
 # Models for native terminal launching
@@ -102,20 +104,46 @@ class HermesEvent(BaseModel):
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Handle application startup and shutdown"""
-    global launcher
+    global launcher, hermes_registration
     
     # Startup
     launcher = TerminalLauncher()
     logger.info("Terminal launcher initialized")
     
-    # Register with Hermes if REGISTER_WITH_HERMES environment variable is set
-    if os.environ.get("REGISTER_WITH_HERMES", "false").lower() == "true":
-        hermes_integration = get_hermes_integration()
-        success = hermes_integration.register_capabilities()
-        if success:
-            logger.info("Registered with Hermes successfully")
-        else:
-            logger.warning("Failed to register with Hermes")
+    # Register with Hermes
+    hermes_url = os.environ.get("HERMES_URL", "http://localhost:8001")
+    hermes_registration = HermesRegistration(hermes_url)
+    
+    from tekton.utils.port_config import get_terma_port
+    port = get_terma_port()
+    
+    registration_success = await hermes_registration.register_component(
+        component_name="terma",
+        port=port,
+        version=VERSION,
+        capabilities=[
+            "terminal_launch",
+            "terminal_management", 
+            "native_terminals",
+            "aish_integration"
+        ],
+        metadata={
+            "description": "Terminal Orchestrator",
+            "type": "terminal_manager",
+            "responsibilities": [
+                "Launch native terminal applications",
+                "Integrate with aish AI-enhanced shell",
+                "Manage terminal sessions and lifecycle"
+            ]
+        }
+    )
+    
+    if registration_success:
+        logger.info("✅ Terma registered with Hermes")
+        # Start heartbeat loop
+        asyncio.create_task(heartbeat_loop(hermes_registration, "terma"))
+    else:
+        logger.warning("⚠️ Failed to register with Hermes")
     
     yield
     
@@ -123,6 +151,8 @@ async def lifespan(app: FastAPI):
     if launcher:
         launcher.cleanup_stopped()
         logger.info("Terminal launcher cleaned up")
+    if hermes_registration:
+        await hermes_registration.deregister("terma")
 
 # Application
 app = FastAPI(
@@ -147,20 +177,10 @@ app.include_router(mcp_router, tags=["mcp"])
 START_TIME = time.time()
 VERSION = "0.1.0"
 
-# Global terminal launcher instance
+# Global instances
 launcher: Optional[TerminalLauncher] = None
+hermes_registration: Optional[HermesRegistration] = None
 
-# Dependency for Hermes integration
-def get_hermes_integration():
-    """Get or create the Hermes integration"""
-    if not hasattr(app.state, "hermes_integration"):
-        from tekton.utils.port_config import get_hermes_url, get_terma_port
-        hermes_url = get_hermes_url()
-        app.state.hermes_integration = HermesIntegration(
-            api_url=hermes_url,
-            component_name="Terma"
-        )
-    return app.state.hermes_integration
 
 
 @app.get("/")
@@ -305,29 +325,19 @@ async def list_terminals():
     ]
 
 
-# Hermes integration endpoints (keeping these for now)
+# Hermes message handling endpoints
 @app.post("/api/hermes/message", response_model=Dict[str, Any])
-async def hermes_message(
-    message: HermesMessage,
-    hermes_integration: HermesIntegration = Depends(get_hermes_integration)
-):
+async def hermes_message(message: HermesMessage):
     """Handle message from Hermes"""
     logger.info(f"Received message from Hermes: {message.command}")
-    
-    # Handle the message
-    response = await hermes_integration.handle_message(message.model_dump())
-    return response
+    # For now, just acknowledge - TODO: implement actual message handling
+    return {"status": "received", "command": message.command}
 
 @app.post("/api/events", response_model=StatusResponse)
-async def handle_event(
-    event: HermesEvent,
-    hermes_integration: HermesIntegration = Depends(get_hermes_integration)
-):
+async def handle_event(event: HermesEvent):
     """Handle event from Hermes"""
     logger.info(f"Received event from Hermes: {event.event}")
-    
     # Just acknowledge the event for now
-    # In the future, we could handle specific events here
     return {"status": "success"}
 
 # LLM Model API Endpoints
