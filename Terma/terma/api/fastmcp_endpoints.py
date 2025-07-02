@@ -16,6 +16,21 @@ from tekton.mcp.fastmcp.server import FastMCPServer
 from tekton.mcp.fastmcp.utils.endpoints import add_mcp_endpoints
 from tekton.mcp.fastmcp.exceptions import FastMCPError
 
+# Add landmarks if available
+try:
+    from landmarks import api_contract, integration_point
+except ImportError:
+    # Define no-op decorators if landmarks not available
+    def api_contract(**kwargs):
+        def decorator(func):
+            return func
+        return decorator
+    
+    def integration_point(**kwargs):
+        def decorator(func):
+            return func
+        return decorator
+
 from terma.core.mcp.tools import (
     terminal_management_tools,
     llm_integration_tools,
@@ -294,6 +309,33 @@ async def terminal_session_bulk_action(request: Dict[str, Any]) -> Dict[str, Any
 
 
 @mcp_router.post("/tools/launch_terminal")
+@api_contract(
+    title="Launch aish Terminal via MCP",
+    endpoint="/api/mcp/v2/tools/launch_terminal",
+    method="POST",
+    request_schema={
+        "name": "string (optional)",
+        "working_dir": "string (optional)",
+        "purpose": "string (optional)",
+        "template": "string (optional)"
+    },
+    response_schema={
+        "success": "bool",
+        "pid": "int",
+        "terminal_app": "string",
+        "working_directory": "string",
+        "aish_enabled": "bool",
+        "message": "string"
+    },
+    integration_date="2025-07-02"
+)
+@integration_point(
+    title="MCP to Terminal Launcher Bridge",
+    target_component="terminal_launcher_impl",
+    protocol="Function call",
+    data_flow="MCP request → TerminalLauncher → aish-proxy → Native terminal",
+    description="Bridges MCP API requests to native terminal launching with aish"
+)
 async def mcp_launch_terminal(request: Dict[str, Any]) -> Dict[str, Any]:
     """
     Launch a terminal with aish integration.

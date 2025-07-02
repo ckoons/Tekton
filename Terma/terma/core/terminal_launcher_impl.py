@@ -20,6 +20,36 @@ from typing import Optional, List, Tuple, Dict, Any
 from dataclasses import dataclass, field
 from datetime import datetime
 
+# Add landmarks to Python path if needed
+try:
+    from landmarks import (
+        architecture_decision,
+        integration_point,
+        api_contract,
+        state_checkpoint
+    )
+except ImportError:
+    # Landmarks not available, define no-op decorators
+    def architecture_decision(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+    
+    def integration_point(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+    
+    def api_contract(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+    
+    def state_checkpoint(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+
 
 @dataclass
 class TerminalConfig:
@@ -44,6 +74,13 @@ class TerminalInfo:
     terminal_app: str = ""
 
 
+@architecture_decision(
+    title="Native Terminal Integration with aish",
+    rationale="Use native terminal apps (Terminal.app, iTerm, etc.) enhanced with aish-proxy for AI capabilities",
+    alternatives_considered=["Custom terminal emulator", "Web-based terminal", "PTY manipulation"],
+    impacts=["platform_compatibility", "user_experience", "maintenance"],
+    decision_date="2025-07-02"
+)
 class TerminalLauncher:
     """
     Launches and manages native terminal applications with aish enhancement.
@@ -68,6 +105,13 @@ class TerminalLauncher:
         if not self.available_terminals:
             raise RuntimeError(f"No supported terminal applications found on {self.platform}")
     
+    @integration_point(
+        title="aish-proxy Path Resolution",
+        target_component="aish",
+        protocol="File system lookup",
+        data_flow="Terma finds aish-proxy executable at Tekton/shared/aish",
+        integration_date="2025-07-02"
+    )
     def _find_aish_proxy(self) -> str:
         """Find the aish-proxy executable."""
         # Check common locations - Tekton/shared/aish first
@@ -163,6 +207,14 @@ class TerminalLauncher:
         # Return first available
         return self.available_terminals[0][0]
     
+    @api_contract(
+        title="Terminal Launch API",
+        endpoint="launch_terminal",
+        method="CALL",
+        request_schema={"config": "TerminalConfig"},
+        response_schema={"pid": "int"},
+        description="Launches aish-enabled terminal in user's home directory with their shell"
+    )
     def launch_terminal(self, config: Optional[TerminalConfig] = None) -> int:
         """
         Launch a native terminal with aish-proxy.
