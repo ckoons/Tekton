@@ -6,6 +6,7 @@ import os
 import sys
 import time
 from typing import Dict, List, Optional, Any
+from contextlib import asynccontextmanager
 
 # Add parent directory to path for shared utilities
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
@@ -97,8 +98,38 @@ class HermesEvent(BaseModel):
     timestamp: float
     payload: Dict[str, Any]
 
+# Lifespan handler for startup and shutdown
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Handle application startup and shutdown"""
+    global launcher
+    
+    # Startup
+    launcher = TerminalLauncher()
+    logger.info("Terminal launcher initialized")
+    
+    # Register with Hermes if REGISTER_WITH_HERMES environment variable is set
+    if os.environ.get("REGISTER_WITH_HERMES", "false").lower() == "true":
+        hermes_integration = get_hermes_integration()
+        success = hermes_integration.register_capabilities()
+        if success:
+            logger.info("Registered with Hermes successfully")
+        else:
+            logger.warning("Failed to register with Hermes")
+    
+    yield
+    
+    # Shutdown
+    if launcher:
+        launcher.cleanup_stopped()
+        logger.info("Terminal launcher cleaned up")
+
 # Application
-app = FastAPI(title="Terma Terminal API", description="API for Terma terminal services")
+app = FastAPI(
+    title="Terma Terminal API", 
+    description="API for Terma terminal services",
+    lifespan=lifespan
+)
 
 # Add CORS middleware
 app.add_middleware(
@@ -131,33 +162,6 @@ def get_hermes_integration():
         )
     return app.state.hermes_integration
 
-@app.on_event("startup")
-async def startup_event():
-    """Startup event handler"""
-    global launcher
-    
-    # Initialize terminal launcher
-    launcher = TerminalLauncher()
-    logger.info("Terminal launcher initialized")
-    
-    # Register with Hermes if REGISTER_WITH_HERMES environment variable is set
-    if os.environ.get("REGISTER_WITH_HERMES", "false").lower() == "true":
-        hermes_integration = get_hermes_integration()
-        success = hermes_integration.register_capabilities()
-        if success:
-            logger.info("Registered with Hermes successfully")
-        else:
-            logger.warning("Failed to register with Hermes")
-
-@app.on_event("shutdown")
-async def shutdown_event():
-    """Shutdown event handler"""
-    global launcher
-    
-    # Clean up any tracked terminals
-    if launcher:
-        launcher.cleanup_stopped()
-        logger.info("Terminal launcher cleaned up")
 
 @app.get("/")
 async def root():
