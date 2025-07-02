@@ -406,6 +406,197 @@ async def mcp_launch_terminal(request: Dict[str, Any]) -> Dict[str, Any]:
         )
 
 
+@mcp_router.get("/terminals/list")
+@api_contract(
+    title="List Active Terminals",
+    endpoint="/api/mcp/v2/terminals/list",
+    method="GET",
+    response_schema={
+        "success": "bool",
+        "terminals": "array of terminal objects",
+        "count": "int"
+    },
+    description="Get list of all tracked terminals with their status"
+)
+async def list_terminals() -> Dict[str, Any]:
+    """
+    Get list of all active terminals.
+    
+    Returns:
+        Dictionary containing list of terminals with their details
+    """
+    try:
+        from terma.core.terminal_launcher_impl import TerminalLauncher
+        
+        launcher = TerminalLauncher()
+        terminals = launcher.list_terminals()
+        
+        # Convert TerminalInfo objects to dictionaries
+        terminal_list = []
+        for term in terminals:
+            terminal_dict = {
+                "pid": term.pid,
+                "name": term.config.name,
+                "status": term.status,
+                "launched_at": term.launched_at.isoformat(),
+                "platform": term.platform,
+                "terminal_app": term.terminal_app,
+                "working_dir": term.config.working_dir,
+                "purpose": term.config.purpose,
+                "template": getattr(term.config, 'template', None)
+            }
+            terminal_list.append(terminal_dict)
+        
+        return {
+            "success": True,
+            "terminals": terminal_list,
+            "count": len(terminal_list)
+        }
+        
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to list terminals: {str(e)}"
+        )
+
+
+@mcp_router.post("/terminals/{pid}/show")
+@api_contract(
+    title="Show Terminal",
+    endpoint="/api/mcp/v2/terminals/{pid}/show",
+    method="POST",
+    response_schema={
+        "success": "bool",
+        "message": "string"
+    },
+    description="Bring a terminal window to the foreground"
+)
+async def show_terminal(pid: int) -> Dict[str, Any]:
+    """
+    Bring a terminal to the foreground.
+    
+    Args:
+        pid: Process ID of the terminal
+        
+    Returns:
+        Dictionary with success status
+    """
+    try:
+        from terma.core.terminal_launcher_impl import TerminalLauncher
+        
+        launcher = TerminalLauncher()
+        success = launcher.show_terminal(pid)
+        
+        if success:
+            return {
+                "success": True,
+                "message": f"Terminal {pid} brought to foreground"
+            }
+        else:
+            return {
+                "success": False,
+                "message": f"Could not show terminal {pid} (may not exist or not supported on this platform)"
+            }
+            
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to show terminal: {str(e)}"
+        )
+
+
+@mcp_router.post("/terminals/{pid}/terminate")
+@api_contract(
+    title="Terminate Terminal",
+    endpoint="/api/mcp/v2/terminals/{pid}/terminate",
+    method="POST",
+    response_schema={
+        "success": "bool",
+        "message": "string"
+    },
+    description="Terminate a terminal process"
+)
+async def terminate_terminal(pid: int) -> Dict[str, Any]:
+    """
+    Terminate a terminal.
+    
+    Args:
+        pid: Process ID of the terminal
+        
+    Returns:
+        Dictionary with success status
+    """
+    try:
+        from terma.core.terminal_launcher_impl import TerminalLauncher
+        
+        launcher = TerminalLauncher()
+        success = launcher.terminate_terminal(pid)
+        
+        if success:
+            return {
+                "success": True,
+                "message": f"Terminal {pid} terminated"
+            }
+        else:
+            return {
+                "success": False,
+                "message": f"Could not terminate terminal {pid} (may not exist)"
+            }
+            
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to terminate terminal: {str(e)}"
+        )
+
+
+@mcp_router.get("/terminals/{pid}/status")
+@api_contract(
+    title="Check Terminal Status",
+    endpoint="/api/mcp/v2/terminals/{pid}/status",
+    method="GET",
+    response_schema={
+        "success": "bool",
+        "pid": "int",
+        "running": "bool",
+        "status": "string"
+    },
+    description="Check if a specific terminal is running"
+)
+async def check_terminal_status(pid: int) -> Dict[str, Any]:
+    """
+    Check if a specific terminal is running.
+    
+    Args:
+        pid: Process ID of the terminal
+        
+    Returns:
+        Dictionary with terminal status
+    """
+    try:
+        from terma.core.terminal_launcher_impl import TerminalLauncher
+        
+        launcher = TerminalLauncher()
+        is_running = launcher.is_terminal_running(pid)
+        
+        # Also check if we have info about this terminal
+        terminals = launcher.list_terminals()
+        terminal_info = next((t for t in terminals if t.pid == pid), None)
+        
+        return {
+            "success": True,
+            "pid": pid,
+            "running": is_running,
+            "status": terminal_info.status if terminal_info else ("running" if is_running else "not_found")
+        }
+        
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to check terminal status: {str(e)}"
+        )
+
+
 # ============================================================================
 # Predefined Workflow Functions
 # ============================================================================

@@ -24,7 +24,8 @@ class MinimalLoader {
       'profile': '/components/profile/profile-component.html',
       'settings': '/components/settings/settings-component.html',
       'numa': '/components/numa/numa-component.html',
-      'noesis': '/components/noesis/noesis-component.html'
+      'noesis': '/components/noesis/noesis-component.html',
+      'terma': '/components/terma/terma-component.html'
     };
     
     // Keep track of the current component to prevent reloading
