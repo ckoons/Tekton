@@ -23,6 +23,70 @@ sys.path.insert(0, str(src_path))
 
 import subprocess
 import tempfile
+import threading
+import time
+import json
+import urllib.request
+import urllib.error
+
+
+def start_heartbeat_daemon():
+    """Start background thread to send heartbeats to Terma."""
+    terma_session_id = os.environ.get('TERMA_SESSION_ID')
+    terma_endpoint = os.environ.get('TERMA_ENDPOINT', 'http://localhost:8004')
+    
+    if not terma_session_id:
+        # Not launched by Terma, no heartbeats needed
+        return None, None
+    
+    # Flag to stop heartbeat thread
+    stop_heartbeat = threading.Event()
+    
+    def send_heartbeat(status="active"):
+        """Send a single heartbeat."""
+        try:
+            heartbeat_data = {
+                "terma_id": terma_session_id,
+                "pid": os.getpid(),
+                "name": os.environ.get('TERMA_TERMINAL_NAME', 'aish Terminal'),
+                "working_dir": os.getcwd(),
+                "terminal_app": os.environ.get('TERM_PROGRAM', 'unknown'),
+                "aish_version": "3.0.0",
+                "timestamp": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+                "status": status
+            }
+            
+            # Send heartbeat
+            url = f"{terma_endpoint}/api/mcp/v2/terminals/heartbeat"
+            data = json.dumps(heartbeat_data).encode('utf-8')
+            req = urllib.request.Request(url, data=data, 
+                                       headers={'Content-Type': 'application/json'})
+            
+            try:
+                with urllib.request.urlopen(req, timeout=5) as response:
+                    response.read()  # Consume response
+            except urllib.error.URLError:
+                # Terma might be down, that's ok
+                pass
+                
+        except Exception:
+            # Don't let heartbeat errors crash the shell
+            pass
+    
+    def send_heartbeats():
+        """Send heartbeat every 30 seconds."""
+        while not stop_heartbeat.is_set():
+            send_heartbeat("active")
+            # Wait 30 seconds or until stop event
+            stop_heartbeat.wait(30)
+    
+    # Start heartbeat thread as daemon so it exits when main process exits
+    heartbeat_thread = threading.Thread(target=send_heartbeats, daemon=True)
+    heartbeat_thread.start()
+    print(f"aish heartbeat started (session: {terma_session_id[:8]}...)")
+    
+    # Return the send_heartbeat function and stop event for exit handler
+    return send_heartbeat, stop_heartbeat
 
 
 def create_shell_init(shell_name, aish_dir, rhetor_endpoint=None, debug=False):
@@ -60,6 +124,8 @@ echo "Examples: aish apollo | aish team-chat 'hello' | echo 'test' | aish athena
 def main():
     """Main entry point for aish proxy."""
     import argparse
+    import atexit
+    import signal
     
     parser = argparse.ArgumentParser(
         description='aish-proxy - Safe AI-enhanced shell',
@@ -121,6 +187,32 @@ def main():
         init_file = f.name
     
     try:
+        # Start heartbeat daemon if launched by Terma
+        send_heartbeat_func, stop_event = start_heartbeat_daemon()
+        
+        # If we have heartbeat, register exit handler
+        if send_heartbeat_func:
+            def cleanup_and_exit():
+                """Stop heartbeat, send goodbye, and exit cleanly."""
+                # Stop the heartbeat thread first
+                if stop_event:
+                    stop_event.set()
+                # Send final terminated heartbeat
+                send_heartbeat_func("terminated")
+                # Give it a moment to send
+                time.sleep(0.1)
+            
+            # Register cleanup for normal exit
+            atexit.register(cleanup_and_exit)
+            
+            # Also handle signals
+            def signal_handler(signum, frame):
+                cleanup_and_exit()
+                sys.exit(0)
+            
+            for sig in [signal.SIGTERM, signal.SIGINT]:
+                signal.signal(sig, signal_handler)
+        
         if 'zsh' in shell_name:
             # For zsh, source our file then run interactive shell
             cmd = [shell, '-c', f'source {init_file} && exec {shell} -i']

@@ -831,12 +831,21 @@ function initializeTermaLauncher() {
     
     if (launchBtn) {
         console.log('[Terma] Launch button found, attaching click handler');
+        let launching = false;  // Prevent double clicks
+        
         launchBtn.addEventListener('click', async function() {
+            if (launching) {
+                console.log('[Terma] Already launching, ignoring click');
+                return;
+            }
+            launching = true;
+            
             const name = nameInput.value.trim() || 'aish Terminal';
             const template = templateSelect.value;
             const purpose = purposeInput.value.trim();
             
-            console.log('Launch button clicked', { name, template, purpose });
+            console.log('[Terma] Launch button clicked', { name, template, purpose });
+            console.log('[Terma] Timestamp:', new Date().toISOString());
             
             // Clear previous status
             statusDiv.textContent = 'Launching aish-enabled terminal...';
@@ -886,6 +895,9 @@ function initializeTermaLauncher() {
                 console.error('Launch error:', error);
                 statusDiv.textContent = `✗ Error: Cannot connect to Terma service`;
                 statusDiv.className = 'terma__launch-status error';
+            } finally {
+                // Reset launching flag
+                launching = false;
             }
         });
     } else {
@@ -1083,8 +1095,9 @@ async function showTerminal(pid) {
 async function terminateTerminal(pid) {
     console.log('[Terma] Terminate terminal:', pid);
     
-    // Confirm termination
-    if (!confirm(`Are you sure you want to terminate terminal ${pid}?`)) {
+    // Standard confirmation dialog
+    const message = `Terminate terminal process ${pid}?\n\nThis will forcefully close the terminal window.`;
+    if (!confirm(message)) {
         return;
     }
     

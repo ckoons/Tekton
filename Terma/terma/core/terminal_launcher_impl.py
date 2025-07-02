@@ -15,10 +15,12 @@ import shutil
 import json
 import time
 import signal
+import threading
+import uuid
 from pathlib import Path
 from typing import Optional, List, Tuple, Dict, Any
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, timedelta
 
 # Add landmarks to Python path if needed
 try:
@@ -72,6 +74,164 @@ class TerminalInfo:
     status: str = "running"
     platform: str = ""
     terminal_app: str = ""
+    terma_id: Optional[str] = None
+    last_heartbeat: Optional[datetime] = None
+
+
+class ActiveTerminalRoster:
+    """Thread-safe roster of active terminals with heartbeat tracking."""
+    
+    def __init__(self):
+        self._terminals: Dict[str, Dict[str, Any]] = {}
+        self._lock = threading.Lock()
+        self.heartbeat_timeout = timedelta(seconds=90)  # 3 missed heartbeats
+        self.degraded_timeout = timedelta(seconds=180)  # Remove after 6 missed
+        
+        # Start health check thread
+        self._running = True
+        self._health_thread = threading.Thread(target=self._health_check_loop, daemon=True)
+        self._health_thread.start()
+    
+    def update_heartbeat(self, terma_id: str, heartbeat_data: Dict[str, Any]):
+        """Update heartbeat for a terminal."""
+        with self._lock:
+            # Check if terminal is explicitly terminated
+            if heartbeat_data.get("status") == "terminated":
+                # Remove terminal immediately
+                if terma_id in self._terminals:
+                    del self._terminals[terma_id]
+                self._sync_to_storage()
+                return
+            
+            if terma_id not in self._terminals:
+                # New terminal registering
+                self._terminals[terma_id] = {}
+            
+            self._terminals[terma_id].update({
+                **heartbeat_data,
+                "last_heartbeat": datetime.now(),
+                "status": "active"
+            })
+            self._sync_to_storage()
+    
+    def pre_register(self, terma_id: str, pid: int, config: TerminalConfig):
+        """Pre-register a terminal before first heartbeat."""
+        with self._lock:
+            self._terminals[terma_id] = {
+                "terma_id": terma_id,
+                "pid": pid,
+                "name": config.name,
+                "working_dir": config.working_dir or os.path.expanduser("~"),
+                "terminal_app": config.app,
+                "purpose": config.purpose,
+                "template": config.template,
+                "launched_at": datetime.now().isoformat(),
+                "last_heartbeat": datetime.now(),
+                "status": "launching"
+            }
+            self._sync_to_storage()
+    
+    def get_terminals(self) -> List[Dict[str, Any]]:
+        """Get list of all terminals with current status."""
+        with self._lock:
+            return list(self._terminals.values())
+    
+    def get_terminal(self, terma_id: str) -> Optional[Dict[str, Any]]:
+        """Get info for a specific terminal."""
+        with self._lock:
+            return self._terminals.get(terma_id)
+    
+    def remove_terminal(self, terma_id: str):
+        """Remove a terminal from the roster."""
+        with self._lock:
+            if terma_id in self._terminals:
+                del self._terminals[terma_id]
+                self._sync_to_storage()
+    
+    def _health_check_loop(self):
+        """Periodically check terminal health."""
+        while self._running:
+            try:
+                self._check_health()
+            except Exception:
+                pass  # Don't crash health checker
+            time.sleep(10)  # Check every 10 seconds
+    
+    def _check_health(self):
+        """Check health of all terminals."""
+        now = datetime.now()
+        to_remove = []
+        
+        with self._lock:
+            for terma_id, info in self._terminals.items():
+                last_heartbeat = info.get("last_heartbeat")
+                if isinstance(last_heartbeat, str):
+                    last_heartbeat = datetime.fromisoformat(last_heartbeat)
+                elif not last_heartbeat:
+                    last_heartbeat = now
+                
+                time_since = now - last_heartbeat
+                
+                if time_since > self.degraded_timeout:
+                    # No heartbeat for 3 minutes - remove
+                    to_remove.append(terma_id)
+                elif time_since > self.heartbeat_timeout:
+                    # No heartbeat for 90 seconds - mark degraded
+                    info["status"] = "degraded"
+                elif info["status"] == "degraded":
+                    # Got heartbeat, mark active again
+                    info["status"] = "active"
+        
+        # Remove outside lock to avoid deadlock
+        for terma_id in to_remove:
+            self.remove_terminal(terma_id)
+    
+    def _sync_to_storage(self):
+        """Write active terminals to shared storage."""
+        try:
+            shared_dir = Path.home() / ".tekton" / "terma"
+            shared_dir.mkdir(parents=True, exist_ok=True)
+            
+            shared_path = shared_dir / "active_terminals.json"
+            
+            with open(shared_path, 'w') as f:
+                json.dump({
+                    "terminals": self._terminals,
+                    "last_updated": datetime.now().isoformat()
+                }, f, indent=2)
+        except Exception:
+            pass  # Don't crash on storage errors
+    
+    def load_from_storage(self):
+        """Load previously active terminals from storage."""
+        try:
+            shared_path = Path.home() / ".tekton" / "terma" / "active_terminals.json"
+            if shared_path.exists():
+                with open(shared_path) as f:
+                    data = json.load(f)
+                    with self._lock:
+                        # Mark all loaded terminals as degraded until heartbeat
+                        for terma_id, info in data.get("terminals", {}).items():
+                            info["status"] = "degraded"
+                            self._terminals[terma_id] = info
+        except Exception:
+            pass  # Start fresh if can't load
+    
+    def stop(self):
+        """Stop the health check thread."""
+        self._running = False
+
+
+# Global roster instance
+_terminal_roster = None
+
+def get_terminal_roster() -> ActiveTerminalRoster:
+    """Get the global terminal roster instance."""
+    global _terminal_roster
+    if _terminal_roster is None:
+        _terminal_roster = ActiveTerminalRoster()
+        _terminal_roster.load_from_storage()
+    return _terminal_roster
 
 
 @architecture_decision(
@@ -98,6 +258,9 @@ class TerminalLauncher:
             print("aish-proxy not found. Terminal launching will use basic shells.")
             self.aish_path = None
         self.terminals: Dict[int, TerminalInfo] = {}
+        
+        # Get the active terminal roster
+        self.roster = get_terminal_roster()
         
         # Platform-specific terminal detection
         self.available_terminals = self._detect_terminals()
@@ -224,6 +387,14 @@ class TerminalLauncher:
         if config is None:
             config = TerminalConfig()
         
+        # Generate unique Terma session ID
+        terma_id = str(uuid.uuid4())[:8]
+        
+        # Add Terma environment variables
+        config.env["TERMA_SESSION_ID"] = terma_id
+        config.env["TERMA_ENDPOINT"] = "http://localhost:8004"
+        config.env["TERMA_TERMINAL_NAME"] = config.name
+        
         # Auto-detect terminal if not specified
         if not config.app:
             config.app = self.get_default_terminal()
@@ -240,19 +411,27 @@ class TerminalLauncher:
         else:
             raise NotImplementedError(f"Platform {self.platform} not supported")
         
-        # Track the terminal
+        # Track the terminal locally
         self.terminals[pid] = TerminalInfo(
             pid=pid,
             config=config,
             launched_at=datetime.now(),
             platform=self.platform,
-            terminal_app=config.app
+            terminal_app=config.app,
+            terma_id=terma_id
         )
+        
+        # Pre-register in the active roster
+        self.roster.pre_register(terma_id, pid, config)
         
         return pid
     
     def _launch_macos_terminal(self, config: TerminalConfig) -> int:
         """Launch terminal on macOS."""
+        print(f"[Terma] Launching terminal: {config.app}")
+        print(f"[Terma] Terminal name: {config.name}")
+        print(f"[Terma] Working dir: {config.working_dir}")
+        
         env_exports = " ".join([f"export {k}='{v}';" for k, v in config.env.items()])
         
         # Add Tekton context if purpose specified
@@ -281,21 +460,48 @@ class TerminalLauncher:
             end tell
             '''
             
+            print(f"[Terma] Executing AppleScript...")
+            print(f"[Terma] Shell command: {shell_cmd[:100]}...")  # First 100 chars
+            
             result = subprocess.run(
                 ["osascript", "-e", script],
                 capture_output=True,
                 text=True
             )
             
-            # Get the Terminal process PID (approximate)
-            # In reality, we'd need more sophisticated PID tracking
-            time.sleep(0.5)  # Let Terminal start
+            print(f"[Terma] AppleScript result: {result.stdout}")
+            print(f"[Terma] AppleScript stderr: {result.stderr}")
+            
+            if result.returncode != 0:
+                print(f"[Terma] AppleScript failed with code: {result.returncode}")
+            
+            # Get the aish-proxy PID instead of Terminal PID
+            # This is more accurate for our use case
+            time.sleep(1.0)  # Let aish-proxy start
+            
+            print(f"[Terma] Getting aish-proxy PID...")
             ps_result = subprocess.run(
-                ["pgrep", "-n", "Terminal"],
+                ["pgrep", "-f", f"TERMA_SESSION_ID={config.env['TERMA_SESSION_ID']}"],
                 capture_output=True,
                 text=True
             )
-            return int(ps_result.stdout.strip()) if ps_result.stdout else 0
+            
+            if ps_result.stdout:
+                pid = int(ps_result.stdout.strip().split('\n')[0])  # First match
+                print(f"[Terma] Found aish-proxy PID: {pid}")
+                
+                # Store window info for later termination
+                if pid not in self._terminal_windows:
+                    self._terminal_windows = getattr(self, '_terminal_windows', {})
+                self._terminal_windows[pid] = {
+                    'app': 'Terminal.app',
+                    'launch_time': time.time()
+                }
+                
+                return pid
+            else:
+                print(f"[Terma] WARNING: Could not find aish-proxy process")
+                return 0
             
         elif config.app == "iTerm.app":
             # iTerm2 AppleScript
@@ -414,25 +620,83 @@ class TerminalLauncher:
             return False
     
     def terminate_terminal(self, pid: int) -> bool:
-        """Terminate a terminal process."""
+        """Terminate a terminal process and close the window."""
         try:
-            os.kill(pid, signal.SIGTERM)
+            # First kill the aish-proxy process
+            try:
+                os.kill(pid, signal.SIGKILL)  # Just kill it immediately
+                print(f"[Terma] Killed aish-proxy process {pid}")
+            except ProcessLookupError:
+                print(f"[Terma] Process {pid} already gone")
+            
+            # Now close the Terminal window
+            # For macOS Terminal.app, we need to close windows containing our session
+            if self.platform == "darwin":
+                # Get terminal info from roster
+                terminal_info = None
+                for term in self.roster.get_terminals():
+                    if term.get("pid") == pid:
+                        terminal_info = term
+                        break
+                
+                if terminal_info and terminal_info.get("terma_id"):
+                    # Use AppleScript to close windows with our session ID
+                    script = f'''
+                    tell application "Terminal"
+                        set windowList to windows
+                        repeat with aWindow in windowList
+                            set tabList to tabs of aWindow
+                            repeat with aTab in tabList
+                                if contents of aTab contains "{terminal_info["terma_id"]}" then
+                                    close aWindow
+                                    exit repeat
+                                end if
+                            end repeat
+                        end repeat
+                    end tell
+                    '''
+                    
+                    print(f"[Terma] Closing Terminal window for session {terminal_info['terma_id']}")
+                    subprocess.run(["osascript", "-e", script], capture_output=True)
+            
             if pid in self.terminals:
                 self.terminals[pid].status = "terminated"
             return True
-        except ProcessLookupError:
-            if pid in self.terminals:
-                self.terminals[pid].status = "not_found"
+        except Exception as e:
+            print(f"[Terma] Error terminating terminal: {e}")
             return False
     
     def list_terminals(self) -> List[TerminalInfo]:
-        """List all tracked terminals and update their status."""
-        for pid, info in self.terminals.items():
-            if info.status == "running":
-                if not self.is_terminal_running(pid):
-                    info.status = "stopped"
+        """List all tracked terminals from the active roster."""
+        # Get terminals from roster
+        roster_terminals = self.roster.get_terminals()
         
-        return list(self.terminals.values())
+        # Convert roster format to TerminalInfo objects
+        terminals = []
+        for term_data in roster_terminals:
+            # Create config from stored data
+            config = TerminalConfig(
+                name=term_data.get("name", "Terminal"),
+                app=term_data.get("terminal_app"),
+                working_dir=term_data.get("working_dir"),
+                purpose=term_data.get("purpose"),
+                template=term_data.get("template")
+            )
+            
+            # Create TerminalInfo
+            info = TerminalInfo(
+                pid=term_data["pid"],
+                config=config,
+                launched_at=datetime.fromisoformat(term_data["launched_at"]) if isinstance(term_data["launched_at"], str) else term_data["launched_at"],
+                status=term_data.get("status", "unknown"),
+                platform=self.platform,
+                terminal_app=term_data.get("terminal_app", ""),
+                terma_id=term_data["terma_id"],
+                last_heartbeat=term_data.get("last_heartbeat")
+            )
+            terminals.append(info)
+        
+        return terminals
     
     def cleanup_stopped(self):
         """Remove stopped terminals from tracking."""

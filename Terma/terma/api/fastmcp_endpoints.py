@@ -358,6 +358,7 @@ async def mcp_launch_terminal(request: Dict[str, Any]) -> Dict[str, Any]:
             - message: Status message
     """
     try:
+        print(f"[MCP] Launch terminal request received: {request}")
         from terma.core.terminal_launcher_impl import TerminalLauncher, TerminalConfig
         
         # Create launcher instance
@@ -547,6 +548,60 @@ async def terminate_terminal(pid: int) -> Dict[str, Any]:
         raise HTTPException(
             status_code=500,
             detail=f"Failed to terminate terminal: {str(e)}"
+        )
+
+
+@mcp_router.post("/terminals/heartbeat")
+@api_contract(
+    title="Terminal Heartbeat",
+    endpoint="/api/mcp/v2/terminals/heartbeat",
+    method="POST",
+    request_schema={
+        "terma_id": "string",
+        "pid": "int",
+        "name": "string",
+        "working_dir": "string",
+        "terminal_app": "string",
+        "aish_version": "string",
+        "timestamp": "string (ISO format)"
+    },
+    response_schema={
+        "success": "bool",
+        "message": "string"
+    },
+    description="Receive heartbeat from aish-enabled terminal"
+)
+async def terminal_heartbeat(heartbeat: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Receive heartbeat from aish-enabled terminal.
+    
+    Heartbeats are sent every 30 seconds by the background thread in aish-proxy.
+    This allows Terma to track active terminals even after restart.
+    
+    Args:
+        heartbeat: Dictionary containing terminal status information
+        
+    Returns:
+        Dictionary with success status
+    """
+    try:
+        from terma.core.terminal_launcher_impl import get_terminal_roster
+        
+        roster = get_terminal_roster()
+        roster.update_heartbeat(
+            terma_id=heartbeat["terma_id"],
+            heartbeat_data=heartbeat
+        )
+        
+        return {
+            "success": True,
+            "message": "Heartbeat received"
+        }
+        
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to process heartbeat: {str(e)}"
         )
 
 
