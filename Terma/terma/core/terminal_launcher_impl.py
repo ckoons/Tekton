@@ -100,7 +100,7 @@ class ActiveTerminalRoster:
                 # Remove terminal immediately
                 if terma_id in self._terminals:
                     del self._terminals[terma_id]
-                self._sync_to_storage()
+                # No storage sync - heartbeats control the roster
                 return
             
             if terma_id not in self._terminals:
@@ -112,7 +112,7 @@ class ActiveTerminalRoster:
                 "last_heartbeat": datetime.now(),
                 "status": "active"
             })
-            self._sync_to_storage()
+            # No storage sync - heartbeats control the roster
     
     def pre_register(self, terma_id: str, pid: int, config: TerminalConfig):
         """Pre-register a terminal before first heartbeat."""
@@ -251,11 +251,17 @@ class TerminalLauncher:
     
     def __init__(self, aish_path: Optional[str] = None):
         self.platform = platform.system().lower()
+        
+        # Setup logging
+        import logging
+        self.logger = logging.getLogger("terma.launcher")
+        self.logger.info(f"Initializing TerminalLauncher on {self.platform}")
+        
         try:
             self.aish_path = aish_path or self._find_aish_proxy()
-            print(f"Found aish-proxy at: {self.aish_path}")
+            self.logger.info(f"Found aish-proxy at: {self.aish_path}")
         except FileNotFoundError:
-            print("aish-proxy not found. Terminal launching will use basic shells.")
+            self.logger.warning("aish-proxy not found. Terminal launching will use basic shells.")
             self.aish_path = None
         self.terminals: Dict[int, TerminalInfo] = {}
         
@@ -428,9 +434,10 @@ class TerminalLauncher:
     
     def _launch_macos_terminal(self, config: TerminalConfig) -> int:
         """Launch terminal on macOS."""
-        print(f"[Terma] Launching terminal: {config.app}")
-        print(f"[Terma] Terminal name: {config.name}")
-        print(f"[Terma] Working dir: {config.working_dir}")
+        self.logger.info(f"Launching terminal: {config.app}")
+        self.logger.info(f"Terminal name: {config.name}")
+        self.logger.info(f"Working dir: {config.working_dir}")
+        self.logger.info(f"Session ID: {config.env.get('TERMA_SESSION_ID', 'unknown')}")
         
         env_exports = " ".join([f"export {k}='{v}';" for k, v in config.env.items()])
         
@@ -460,8 +467,8 @@ class TerminalLauncher:
             end tell
             '''
             
-            print(f"[Terma] Executing AppleScript...")
-            print(f"[Terma] Shell command: {shell_cmd[:100]}...")  # First 100 chars
+            self.logger.info("Executing AppleScript...")
+            self.logger.debug(f"Shell command: {shell_cmd[:100]}...")  # First 100 chars
             
             result = subprocess.run(
                 ["osascript", "-e", script],
@@ -469,17 +476,18 @@ class TerminalLauncher:
                 text=True
             )
             
-            print(f"[Terma] AppleScript result: {result.stdout}")
-            print(f"[Terma] AppleScript stderr: {result.stderr}")
+            self.logger.info(f"AppleScript stdout: {result.stdout}")
+            if result.stderr:
+                self.logger.warning(f"AppleScript stderr: {result.stderr}")
             
             if result.returncode != 0:
-                print(f"[Terma] AppleScript failed with code: {result.returncode}")
+                self.logger.error(f"AppleScript failed with code: {result.returncode}")
             
             # Get the aish-proxy PID instead of Terminal PID
             # This is more accurate for our use case
             time.sleep(1.0)  # Let aish-proxy start
             
-            print(f"[Terma] Getting aish-proxy PID...")
+            self.logger.info("Getting aish-proxy PID...")
             ps_result = subprocess.run(
                 ["pgrep", "-f", f"TERMA_SESSION_ID={config.env['TERMA_SESSION_ID']}"],
                 capture_output=True,
@@ -488,19 +496,16 @@ class TerminalLauncher:
             
             if ps_result.stdout:
                 pid = int(ps_result.stdout.strip().split('\n')[0])  # First match
-                print(f"[Terma] Found aish-proxy PID: {pid}")
+                self.logger.info(f"Found aish-proxy PID: {pid}")
                 
-                # Store window info for later termination
-                if pid not in self._terminal_windows:
-                    self._terminal_windows = getattr(self, '_terminal_windows', {})
-                self._terminal_windows[pid] = {
-                    'app': 'Terminal.app',
-                    'launch_time': time.time()
-                }
+                # Store session ID for termination
+                if not hasattr(self, '_session_mapping'):
+                    self._session_mapping = {}
+                self._session_mapping[pid] = config.env['TERMA_SESSION_ID']
                 
                 return pid
             else:
-                print(f"[Terma] WARNING: Could not find aish-proxy process")
+                self.logger.warning("Could not find aish-proxy process")
                 return 0
             
         elif config.app == "iTerm.app":
@@ -622,48 +627,70 @@ class TerminalLauncher:
     def terminate_terminal(self, pid: int) -> bool:
         """Terminate a terminal process and close the window."""
         try:
-            # First kill the aish-proxy process
+            self.logger.info(f"Terminating terminal PID {pid}")
+            
+            # First, remove from roster BEFORE killing process
+            # This ensures the UI updates immediately
+            session_id = None
+            
+            # Get session ID first
+            if hasattr(self, '_session_mapping') and pid in self._session_mapping:
+                session_id = self._session_mapping[pid]
+            else:
+                for term in self.roster.get_terminals():
+                    if term.get("pid") == pid:
+                        session_id = term.get("terma_id")
+                        break
+            
+            # Remove from roster immediately
+            if session_id:
+                for term in self.roster.get_terminals():
+                    if term.get("terma_id") == session_id:
+                        self.roster.remove_terminal(session_id)
+                        self.logger.info(f"Removed session {session_id} from roster")
+                        break
+            
+            # Now kill the aish-proxy process
             try:
                 os.kill(pid, signal.SIGKILL)  # Just kill it immediately
-                print(f"[Terma] Killed aish-proxy process {pid}")
+                self.logger.info(f"Killed aish-proxy process {pid}")
             except ProcessLookupError:
-                print(f"[Terma] Process {pid} already gone")
+                self.logger.info(f"Process {pid} already gone")
             
             # Now close the Terminal window
             # For macOS Terminal.app, we need to close windows containing our session
-            if self.platform == "darwin":
-                # Get terminal info from roster
-                terminal_info = None
-                for term in self.roster.get_terminals():
-                    if term.get("pid") == pid:
-                        terminal_info = term
-                        break
-                
-                if terminal_info and terminal_info.get("terma_id"):
-                    # Use AppleScript to close windows with our session ID
-                    script = f'''
-                    tell application "Terminal"
-                        set windowList to windows
-                        repeat with aWindow in windowList
-                            set tabList to tabs of aWindow
+            if self.platform == "darwin" and session_id:
+                # Use AppleScript to close windows with our session ID
+                # Try a more aggressive approach
+                script = f'''
+                tell application "Terminal"
+                    set windowList to every window
+                    repeat with aWindow in windowList
+                        try
+                            set tabList to every tab of aWindow
                             repeat with aTab in tabList
-                                if contents of aTab contains "{terminal_info["terma_id"]}" then
-                                    close aWindow
-                                    exit repeat
+                                if (history of aTab as string) contains "{session_id}" then
+                                    close aWindow saving no
+                                    return "closed"
                                 end if
                             end repeat
-                        end repeat
-                    end tell
-                    '''
-                    
-                    print(f"[Terma] Closing Terminal window for session {terminal_info['terma_id']}")
-                    subprocess.run(["osascript", "-e", script], capture_output=True)
+                        end try
+                    end repeat
+                    return "not found"
+                end tell
+                '''
+                
+                self.logger.info(f"Closing Terminal window for session {session_id}")
+                result = subprocess.run(["osascript", "-e", script], capture_output=True, text=True)
+                self.logger.info(f"AppleScript result: {result.stdout}")
+                if result.stderr:
+                    self.logger.warning(f"AppleScript stderr: {result.stderr}")
             
             if pid in self.terminals:
                 self.terminals[pid].status = "terminated"
             return True
         except Exception as e:
-            print(f"[Terma] Error terminating terminal: {e}")
+            self.logger.error(f"Error terminating terminal: {e}")
             return False
     
     def list_terminals(self) -> List[TerminalInfo]:

@@ -36,8 +36,9 @@ def main():
   aish -l                   # List available AIs
   aish script.ai            # Run AI script file
 
-Available AIs: apollo, athena, rhetor, sophia, hermes, prometheus,
-               telos, ergon, engram, numa, noesis
+Available AIs: numa, tekton, prometheus, telos, metis, harmonia,
+               synthesis, athena, sophia, noesis, engram, apollo,
+               rhetor, penia, hermes, ergon, terma
 
 Environment variables:
   RHETOR_ENDPOINT    # Override default Rhetor endpoint

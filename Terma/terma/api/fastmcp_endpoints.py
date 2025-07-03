@@ -358,7 +358,10 @@ async def mcp_launch_terminal(request: Dict[str, Any]) -> Dict[str, Any]:
             - message: Status message
     """
     try:
-        print(f"[MCP] Launch terminal request received: {request}")
+        import logging
+        logger = logging.getLogger("terma.mcp")
+        logger.info(f"Launch terminal request received: {request}")
+        
         from terma.core.terminal_launcher_impl import TerminalLauncher, TerminalConfig
         
         # Create launcher instance

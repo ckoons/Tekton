@@ -723,9 +723,24 @@
   text-transform: uppercase;
 }
 
-.terma__terminal-status--running {
+.terma__terminal-status--active {
+  background-color: rgba(76, 175, 80, 0.2);
+  color: #4CAF50; /* Green for active */
+}
+
+.terma__terminal-status--degraded {
+  background-color: rgba(255, 193, 7, 0.2);
+  color: #FFC107; /* Yellow for degraded */
+}
+
+.terma__terminal-status--launching {
   background-color: rgba(0, 188, 212, 0.2);
-  color: #00BCD4; /* Terma teal accent */
+  color: #00BCD4; /* Teal for launching */
+}
+
+.terma__terminal-status--terminated {
+  background-color: rgba(244, 67, 54, 0.2);
+  color: #F44336; /* Red for terminated */
 }
 
 .terma__terminal-status--stopped {
@@ -769,6 +784,16 @@
 .terma__terminal-card--system {
   background-color: rgba(93, 64, 55, 0.1);
   border-color: #5D4037;
+}
+
+.terma__terminal-card--degraded {
+  background-color: rgba(255, 193, 7, 0.05);
+  border-color: #FFC107;
+  border-width: 2px;
+}
+
+.terma__terminal-card--degraded .terma__terminal-header h4 {
+  color: #FFC107;
 }
 </style>
 
@@ -979,11 +1004,28 @@ async function fetchTerminalList() {
         // Build terminal cards
         let html = '';
         for (const terminal of data.terminals) {
-            const statusClass = terminal.status === 'running' ? 'running' : 'stopped';
+            // Map terminal status to CSS class
+            const statusClass = terminal.status || 'active';
             const isSystemTerminal = terminal.template === 'system' || terminal.purpose?.includes('system');
             
+            // Calculate time since last heartbeat if available
+            let heartbeatInfo = '';
+            if (terminal.last_heartbeat) {
+                const lastHeartbeat = new Date(terminal.last_heartbeat);
+                const now = new Date();
+                const timeDiff = Math.floor((now - lastHeartbeat) / 1000);
+                
+                if (timeDiff < 60) {
+                    heartbeatInfo = `${timeDiff}s ago`;
+                } else if (timeDiff < 3600) {
+                    heartbeatInfo = `${Math.floor(timeDiff / 60)}m ago`;
+                } else {
+                    heartbeatInfo = `${Math.floor(timeDiff / 3600)}h ago`;
+                }
+            }
+            
             html += `
-                <div class="terma__terminal-card ${isSystemTerminal ? 'terma__terminal-card--system' : ''}"
+                <div class="terma__terminal-card ${isSystemTerminal ? 'terma__terminal-card--system' : ''} ${terminal.status === 'degraded' ? 'terma__terminal-card--degraded' : ''}"
                      data-tekton-element="terminal-card"
                      data-tekton-terminal="${terminal.pid}"
                      data-tekton-state="${statusClass}">
@@ -1001,6 +1043,7 @@ async function fetchTerminalList() {
                         ${terminal.purpose ? `<p data-tekton-element="terminal-purpose"><strong>Purpose:</strong> ${terminal.purpose}</p>` : ''}
                         ${terminal.template ? `<p data-tekton-element="terminal-template"><strong>Template:</strong> ${terminal.template}</p>` : ''}
                         <p data-tekton-element="terminal-started"><strong>Started:</strong> ${new Date(terminal.launched_at).toLocaleString()}</p>
+                        ${heartbeatInfo ? `<p data-tekton-element="terminal-heartbeat"><strong>Last heartbeat:</strong> ${heartbeatInfo}</p>` : ''}
                     </div>
                     <div class="terma__terminal-actions" data-tekton-element="terminal-actions">
                         <button class="terma__button terma__button--primary terma__button--small" 
@@ -1036,11 +1079,41 @@ async function fetchTerminalList() {
     }
 }
 
+// Auto-refresh dashboard
+let dashboardRefreshInterval = null;
+
+function startDashboardRefresh() {
+    // Stop any existing interval
+    stopDashboardRefresh();
+    
+    // Update immediately
+    updateTerminalsList();
+    
+    // Then update every 5 seconds
+    dashboardRefreshInterval = setInterval(() => {
+        const dashboardTab = document.getElementById('terma-tab-dashboard');
+        if (dashboardTab && dashboardTab.checked) {
+            updateTerminalsList();
+        }
+    }, 5000);
+}
+
+function stopDashboardRefresh() {
+    if (dashboardRefreshInterval) {
+        clearInterval(dashboardRefreshInterval);
+        dashboardRefreshInterval = null;
+    }
+}
+
 // Update dashboard when switching to it
 document.addEventListener('change', function(e) {
     if (e.target.id === 'terma-tab-dashboard' && e.target.checked) {
-        updateTerminalsList();
+        startDashboardRefresh();
+    } else if (e.target.name === 'terma-tab' && !document.getElementById('terma-tab-dashboard').checked) {
+        // Stop refresh when switching away from dashboard
+        stopDashboardRefresh();
     }
+    
     // Clear launch status when switching to launch tab
     if (e.target.id === 'terma-tab-launch' && e.target.checked) {
         const statusDiv = document.getElementById('terma-launch-status');
@@ -1053,16 +1126,23 @@ document.addEventListener('change', function(e) {
 
 // Initialize everything when component loads
 // Use setTimeout to ensure DOM is ready
-setTimeout(() => {
-    console.log('[Terma] Initializing component');
-    initializeTermaLauncher();
-    
-    // Also check if dashboard is already active
-    const dashboardTab = document.getElementById('terma-tab-dashboard');
-    if (dashboardTab && dashboardTab.checked) {
-        updateTerminalsList();
-    }
-}, 0);
+// Add guard to prevent double initialization
+if (!window.termaInitialized) {
+    window.termaInitialized = true;
+    setTimeout(() => {
+        console.log('[Terma] Initializing component');
+        console.log('[Terma] Init timestamp:', new Date().toISOString());
+        initializeTermaLauncher();
+        
+        // Also check if dashboard is already active and start auto-refresh
+        const dashboardTab = document.getElementById('terma-tab-dashboard');
+        if (dashboardTab && dashboardTab.checked) {
+            startDashboardRefresh();
+        }
+    }, 0);
+} else {
+    console.log('[Terma] Component already initialized, skipping');
+}
 
 // Terminal action functions
 async function showTerminal(pid) {
