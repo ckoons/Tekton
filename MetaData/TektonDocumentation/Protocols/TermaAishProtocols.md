@@ -59,12 +59,13 @@ aish terma * "System checkpoint reached"
 # Get training documentation for AIs
 aish terma training-for-ais
 
-# Returns links to:
-# - This protocol documentation
-# - Tekton architecture overview
-# - Component interaction patterns
-# - AI collaboration guidelines
-# - Error reporting procedures
+# Returns path to AI training directory
+# All terminals have $TEKTON_AI_TRAINING environment variable
+# pointing to: MetaData/TektonDocumentation/AITraining/
+
+# AIs can also directly access:
+ls $TEKTON_AI_TRAINING
+cat $TEKTON_AI_TRAINING/README.md
 
 # Report an error or issue
 aish terma error-report "Unable to parse response from @planning broadcast"

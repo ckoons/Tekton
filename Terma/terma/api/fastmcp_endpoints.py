@@ -614,19 +614,32 @@ async def terminal_heartbeat(heartbeat: Dict[str, Any]) -> Dict[str, Any]:
             for result in heartbeat["command_results"]:
                 roster._command_results[result["id"]] = result
         
-        # Check for pending commands to send back
+        # Check for pending commands and messages to send back
         response = {
             "success": True,
             "message": "Heartbeat received"
         }
         
+        # Collect all pending items
+        pending_items = []
+        
+        # Add commands
         if hasattr(roster, '_command_queue'):
             terma_id = heartbeat["terma_id"]
             if terma_id in roster._command_queue and roster._command_queue[terma_id]:
-                # Send pending commands
-                response["commands"] = roster._command_queue[terma_id]
-                # Clear the queue
+                pending_items.extend(roster._command_queue[terma_id])
                 roster._command_queue[terma_id] = []
+        
+        # Add messages
+        if hasattr(roster, '_message_queue'):
+            terma_id = heartbeat["terma_id"]
+            if terma_id in roster._message_queue and roster._message_queue[terma_id]:
+                pending_items.extend(roster._message_queue[terma_id])
+                roster._message_queue[terma_id] = []
+        
+        # Include in response if any items
+        if pending_items:
+            response["commands"] = pending_items
         
         return response
         
@@ -787,6 +800,115 @@ async def get_command_status(command_id: str) -> Dict[str, Any]:
             status_code=500,
             detail=f"Failed to get command status: {str(e)}"
         )
+
+
+@mcp_router.post("/terminals/route-message")
+@api_contract(
+    title="Route Inter-Terminal Message",
+    endpoint="/api/mcp/v2/terminals/route-message",
+    method="POST",
+    request_schema={
+        "from": {"terma_id": "string", "name": "string"},
+        "target": "string (name, @purpose, broadcast, or *)",
+        "message": "string",
+        "timestamp": "string",
+        "type": "string"
+    },
+    response_schema={
+        "success": "bool",
+        "delivered_to": "array of terminal names",
+        "error": "string (optional)"
+    },
+    description="Route messages between terminals based on target specification"
+)
+async def route_terminal_message(msg_data: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Route a message between terminals.
+    
+    Target can be:
+    - Terminal name (e.g., "bob")
+    - Multiple names (e.g., "alice,bob")
+    - Purpose group (e.g., "@planning")
+    - "broadcast" (all except sender)
+    - "*" (all including sender)
+    
+    Args:
+        msg_data: Message data with from, target, message, etc.
+        
+    Returns:
+        Dictionary with delivery status
+    """
+    try:
+        from terma.core.terminal_launcher_impl import get_terminal_roster
+        
+        roster = get_terminal_roster()
+        sender_id = msg_data["from"]["terma_id"]
+        target = msg_data["target"]
+        
+        # Get all terminals
+        all_terminals = roster.get_terminals()
+        
+        # Find target terminals
+        target_terminals = []
+        delivered_to = []
+        
+        if target == "broadcast":
+            # All except sender
+            target_terminals = [t for t in all_terminals 
+                              if not t.get("terma_id", "").startswith(sender_id[:8])]
+        elif target == "*":
+            # All including sender
+            target_terminals = all_terminals
+        elif target.startswith("@"):
+            # Purpose-based routing
+            purpose = target[1:].lower()
+            target_terminals = [t for t in all_terminals 
+                              if t.get("purpose", "").lower() == purpose]
+        elif "," in target:
+            # Multiple named terminals
+            names = [n.strip().lower() for n in target.split(",")]
+            target_terminals = [t for t in all_terminals 
+                              if t.get("name", "").lower() in names]
+        else:
+            # Single named terminal
+            target_name = target.lower()
+            target_terminals = [t for t in all_terminals 
+                              if t.get("name", "").lower() == target_name]
+        
+        # Queue message for each target
+        if not hasattr(roster, '_message_queue'):
+            roster._message_queue = {}
+        
+        for term in target_terminals:
+            terma_id = term["terma_id"]
+            if terma_id not in roster._message_queue:
+                roster._message_queue[terma_id] = []
+            
+            # Format message for display
+            formatted_msg = {
+                "type": "terminal_message",
+                "from": msg_data["from"]["name"],
+                "from_id": sender_id[:8],
+                "message": msg_data["message"],
+                "timestamp": msg_data["timestamp"],
+                "routing": target if target.startswith("@") or target in ["broadcast", "*"] else "direct"
+            }
+            
+            roster._message_queue[terma_id].append(formatted_msg)
+            delivered_to.append(term["name"])
+        
+        return {
+            "success": True,
+            "delivered_to": delivered_to,
+            "count": len(delivered_to)
+        }
+        
+    except Exception as e:
+        return {
+            "success": False,
+            "error": str(e),
+            "delivered_to": []
+        }
 
 
 @mcp_router.get("/terminals/{pid}/status")

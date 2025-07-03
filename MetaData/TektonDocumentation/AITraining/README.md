@@ -2,6 +2,21 @@
 
 This directory contains documentation specifically designed for AI instances operating within Tekton.
 
+## Finding This Documentation
+
+Every Tekton terminal has the `TEKTON_AI_TRAINING` environment variable pointing to this directory:
+
+```bash
+# In any Tekton terminal:
+echo $TEKTON_AI_TRAINING
+# Output: /path/to/Tekton/MetaData/TektonDocumentation/AITraining
+
+# Browse available docs:
+ls $TEKTON_AI_TRAINING
+```
+
+This is your "single directory of Truth" for AI training materials.
+
 ## Available Guides
 
 ### [Terma Communication Guide](./TermaCommunication.md)

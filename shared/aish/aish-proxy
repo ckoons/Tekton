@@ -80,10 +80,15 @@ def start_heartbeat_daemon():
                     response_data = response.read()
                     if response_data:
                         result = json.loads(response_data)
-                        # Check for commands to execute
+                        # Check for commands and messages
                         if "commands" in result and result["commands"]:
-                            for cmd in result["commands"]:
-                                execute_command(cmd)
+                            for item in result["commands"]:
+                                if item.get("type") == "terminal_message":
+                                    # Display inter-terminal message
+                                    display_terminal_message(item)
+                                else:
+                                    # Execute command
+                                    execute_command(item)
             except urllib.error.URLError:
                 # Terma might be down, that's ok
                 pass
@@ -91,6 +96,23 @@ def start_heartbeat_daemon():
         except Exception:
             # Don't let heartbeat errors crash the shell
             pass
+    
+    def display_terminal_message(msg_info):
+        """Display an inter-terminal message."""
+        from_name = msg_info.get("from", "unknown")
+        message = msg_info.get("message", "")
+        routing = msg_info.get("routing", "direct")
+        
+        # Format based on routing type
+        if routing == "broadcast":
+            prefix = f"[TERMA: broadcast from {from_name}]"
+        elif routing.startswith("@"):
+            prefix = f"[TERMA: to {routing} from {from_name}]"
+        else:
+            prefix = f"[TERMA: from {from_name}]"
+        
+        # Print with color if terminal supports it
+        print(f"\n{prefix} {message}")
     
     def execute_command(cmd_info):
         """Execute a command and queue the result."""

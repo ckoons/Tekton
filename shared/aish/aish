@@ -19,7 +19,7 @@ sys.path.insert(0, str(src_path))
 
 # Also add Tekton root if available (we're inside Tekton/shared/aish)
 tekton_root = aish_root.parent.parent  # Go up to Tekton root
-if tekton_root.exists() and (tekton_root / 'tekton').exists():
+if tekton_root.exists() and (tekton_root / 'shared').exists():
     sys.path.insert(0, str(tekton_root))
 
 from core.shell import AIShell
@@ -101,13 +101,35 @@ Environment variables:
         shell._list_ais()
         return
     
-    # Known AI names
-    ai_names = ['apollo', 'athena', 'rhetor', 'sophia', 'hermes', 'prometheus', 
-                'telos', 'ergon', 'engram', 'numa', 'noesis', 'team-chat']
+    # Known AI names with their roles
+    ai_names = ['numa',        # Companion
+                'tekton',      # Projects
+                'prometheus',  # Planning
+                'telos',       # Requirements
+                'metis',       # Workflows
+                'harmonia',    # Orchestration
+                'synthesis',   # Integration
+                'athena',      # Knowledge
+                'sophia',      # Learning
+                'noesis',      # Discovery
+                'engram',      # Memory
+                'apollo',      # Attention/Prediction
+                'rhetor',      # LLM/Prompt/Context
+                'penia',       # LLM Cost
+                'hermes',      # Messages/Data
+                'ergon',       # Agents/Tools/MCP
+                'terma',       # Terminal
+                'team-chat']   # Broadcast to all
     
     # Check if first argument is an AI name
     if args.ai_or_script and args.ai_or_script.lower() in ai_names:
         ai_name = args.ai_or_script.lower()
+        
+        # Special handling for terma commands
+        if ai_name == 'terma':
+            # Import and use terma handler
+            from commands.terma import handle_terma_command
+            return handle_terma_command(args.message)
         
         # Get input from stdin if available, otherwise from message args
         if not sys.stdin.isatty():

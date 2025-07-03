@@ -411,8 +411,9 @@ class TerminalLauncher:
         config.env["TERMA_ENDPOINT"] = "http://localhost:8004"
         config.env["TERMA_TERMINAL_NAME"] = config.name
         
-        # Always include TEKTON_ROOT
+        # Always include TEKTON_ROOT and TEKTON_AI_TRAINING
         config.env["TEKTON_ROOT"] = os.environ.get("TEKTON_ROOT", "/Users/cskoons/projects/github/Tekton")
+        config.env["TEKTON_AI_TRAINING"] = os.path.join(config.env["TEKTON_ROOT"], "MetaData/TektonDocumentation/AITraining")
         
         # Auto-detect terminal if not specified
         if not config.app:
@@ -615,21 +616,57 @@ class TerminalLauncher:
         if self.platform != "darwin":
             return False
         
-        terminal_info = self.terminals.get(pid)
-        if not terminal_info:
-            return False
+        # First, try to find session ID from pid
+        session_id = None
         
-        # Use AppleScript to activate window by PID
-        script = f'''
-        tell application "System Events"
-            set frontProcess to first process whose unix id is {pid}
-            set frontmost of frontProcess to true
-        end tell
-        '''
+        # Check if we have a session mapping
+        if hasattr(self, '_session_mapping') and pid in self._session_mapping:
+            session_id = self._session_mapping[pid]
+        else:
+            # Try to find from roster
+            for term in self.roster.get_terminals():
+                if term.get("pid") == pid:
+                    session_id = term.get("terma_id")
+                    break
+        
+        if not session_id:
+            # Fall back to trying System Events with PID
+            script = f'''
+            tell application "System Events"
+                try
+                    set frontProcess to first process whose unix id is {pid}
+                    set frontmost of frontProcess to true
+                    return "success"
+                on error
+                    return "failed"
+                end try
+            end tell
+            '''
+        else:
+            # Use session ID to find and activate Terminal window
+            script = f'''
+            tell application "Terminal"
+                activate
+                set windowList to every window
+                repeat with aWindow in windowList
+                    set tabList to every tab of aWindow
+                    repeat with aTab in tabList
+                        if (history of aTab as string) contains "{session_id}" then
+                            set frontmost of aWindow to true
+                            set selected of aTab to true
+                            return "success"
+                        end if
+                    end repeat
+                end repeat
+                return "not found"
+            end tell
+            '''
         
         try:
-            subprocess.run(["osascript", "-e", script], check=True)
-            return True
+            result = subprocess.run(["osascript", "-e", script], 
+                                  capture_output=True, text=True)
+            self.logger.info(f"Show terminal result: {result.stdout}")
+            return result.returncode == 0 and "success" in result.stdout
         except subprocess.CalledProcessError:
             return False
     
