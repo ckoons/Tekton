@@ -39,10 +39,17 @@ def start_heartbeat_daemon():
         # Not launched by Terma, no heartbeats needed
         return None, None
     
+    # Import queue for thread-safe command handling
+    import queue
+    
     # Flag to stop heartbeat thread
     stop_heartbeat = threading.Event()
     
-    def send_heartbeat(status="active"):
+    # Queue for pending command results
+    pending_results = []
+    result_lock = threading.Lock()
+    
+    def send_heartbeat(status="active", immediate=False):
         """Send a single heartbeat."""
         try:
             heartbeat_data = {
@@ -56,6 +63,12 @@ def start_heartbeat_daemon():
                 "status": status
             }
             
+            # Include any pending command results
+            with result_lock:
+                if pending_results:
+                    heartbeat_data["command_results"] = pending_results[:]
+                    pending_results.clear()
+            
             # Send heartbeat
             url = f"{terma_endpoint}/api/mcp/v2/terminals/heartbeat"
             data = json.dumps(heartbeat_data).encode('utf-8')
@@ -64,7 +77,13 @@ def start_heartbeat_daemon():
             
             try:
                 with urllib.request.urlopen(req, timeout=5) as response:
-                    response.read()  # Consume response
+                    response_data = response.read()
+                    if response_data:
+                        result = json.loads(response_data)
+                        # Check for commands to execute
+                        if "commands" in result and result["commands"]:
+                            for cmd in result["commands"]:
+                                execute_command(cmd)
             except urllib.error.URLError:
                 # Terma might be down, that's ok
                 pass
@@ -73,12 +92,71 @@ def start_heartbeat_daemon():
             # Don't let heartbeat errors crash the shell
             pass
     
+    def execute_command(cmd_info):
+        """Execute a command and queue the result."""
+        try:
+            # Execute command in subprocess
+            result = subprocess.run(
+                cmd_info["command"],
+                shell=True,
+                capture_output=True,
+                text=True,
+                timeout=10,
+                cwd=os.getcwd()
+            )
+            
+            cmd_result = {
+                "id": cmd_info["id"],
+                "output": result.stdout or result.stderr,
+                "error": result.stderr if result.returncode != 0 else None,
+                "exit_code": result.returncode
+            }
+            
+            # Queue result and trigger immediate heartbeat
+            with result_lock:
+                pending_results.append(cmd_result)
+            
+            # Send immediate heartbeat with result
+            send_heartbeat("active", immediate=True)
+            
+        except subprocess.TimeoutExpired:
+            with result_lock:
+                pending_results.append({
+                    "id": cmd_info["id"],
+                    "output": "",
+                    "error": "Command timed out after 10 seconds",
+                    "exit_code": -1
+                })
+            send_heartbeat("active", immediate=True)
+        except Exception as e:
+            with result_lock:
+                pending_results.append({
+                    "id": cmd_info["id"],
+                    "output": "",
+                    "error": str(e),
+                    "exit_code": -1
+                })
+            send_heartbeat("active", immediate=True)
+    
     def send_heartbeats():
-        """Send heartbeat every 30 seconds."""
+        """Send heartbeat every 30 seconds, check for commands every 0.5 seconds."""
+        last_heartbeat = time.time()
+        last_command_check = time.time()
+        
         while not stop_heartbeat.is_set():
-            send_heartbeat("active")
-            # Wait 30 seconds or until stop event
-            stop_heartbeat.wait(30)
+            # Check for commands frequently (every 2 seconds)
+            if time.time() - last_command_check >= 2:
+                # Send a heartbeat to check for commands
+                send_heartbeat("active")
+                last_command_check = time.time()
+                last_heartbeat = time.time()  # This counts as a heartbeat too
+            # Send regular heartbeat if time
+            elif time.time() - last_heartbeat >= 30:
+                send_heartbeat("active")
+                last_heartbeat = time.time()
+            
+            # Short sleep to be responsive
+            time.sleep(0.5)
     
     # Start heartbeat thread as daemon so it exits when main process exits
     heartbeat_thread = threading.Thread(target=send_heartbeats, daemon=True)

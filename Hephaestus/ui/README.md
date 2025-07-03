@@ -1,15 +1,15 @@
 # Hephaestus UI
 
-## 🎉 NEW: CSS-First Architecture (June 2025)
+## 🎉 Architecture Update (June 2025)
 
-**IMPORTANT: Hephaestus UI now uses a radically simplified CSS-first architecture!**
+**IMPORTANT: Hephaestus UI uses a simplified architecture with dynamic component loading**
 
-- ✅ All components pre-loaded (no dynamic loading)
-- ✅ Navigation via pure CSS (no JavaScript routing)
-- ✅ Only ~300 lines of JS (down from thousands)
-- ✅ No race conditions, instant navigation
+- ✅ Components loaded on-demand via minimal-loader.js
+- ✅ Clean separation between navigation and content
+- ✅ Minimal JavaScript for core functionality
+- ✅ CSS-first styling and layout
 
-**📖 Must Read: [CSS-First Architecture Documentation](/MetaData/TektonDocumentation/Architecture/CSSFirstArchitecture.md)**
+**📖 Architecture Documentation: [CSS-First Architecture Documentation](/MetaData/TektonDocumentation/Architecture/CSSFirstArchitecture.md)** - Note: Contains historical context about the attempted pure CSS approach
 
 ---
 
@@ -32,12 +32,13 @@ Hephaestus UI is the unified interface for the Tekton ecosystem, providing a con
 
 ## Architecture
 
-### CSS-First Design
+### Current Architecture
 
-The UI uses a CSS-first architecture where:
-- All components are pre-loaded in `index.html`
-- Navigation works via CSS `:target` selectors (e.g., `#numa:target`)
-- JavaScript only handles WebSocket, chat, and health checks
+The UI uses dynamic component loading where:
+- Components are loaded on-demand when selected
+- Navigation works via JavaScript event handlers and URL fragments (e.g., `#numa`)
+- JavaScript handles component loading, WebSocket, chat, and health checks
+- CSS handles all styling and layout (CSS-first for presentation)
 
 ### UI Structure
 
@@ -76,27 +77,29 @@ The UI is structured around two main regions:
 ### Adding or Modifying Components
 
 1. **Edit component HTML**: `components/[name]/[name]-component.html`
-2. **Run build script**: `python3 build-simplified.py`
-3. **Test locally**: Components instantly available via `#componentName` hash
+2. **Refresh browser**: Changes appear immediately
+3. **Test locally**: Components load dynamically via `#componentName` hash
 
 ### File Organization
 
 ```
 ui/
-├── index.html              # All components pre-loaded here
+├── index.html              # Main entry point with navigation
 ├── scripts/
-│   └── app-minimal.js      # Only ~300 lines (WebSocket, chat, health)
-├── components/             # Component HTML files (inlined during build)
+│   ├── minimal-loader.js   # Handles dynamic component loading
+│   ├── ui-manager-core.js  # Component lifecycle management
+│   └── [various].js        # Supporting scripts
+├── components/             # Component HTML files
 │   └── [name]/
 │       └── [name]-component.html
-└── build-simplified.py     # Builds index.html from components
+└── styles/                 # CSS files for styling
 ```
 
 ### Key Files
 
-- **`app-minimal.js`**: Entire JavaScript logic (~300 lines)
-- **`build-simplified.py`**: Inlines all components into index.html
-- **`index.html`**: Contains ALL components pre-loaded
+- **`minimal-loader.js`**: Handles dynamic component loading
+- **`index.html`**: Main entry point with navigation
+- **`components/`**: Individual component HTML files
 
 ### File Size Limits
 
@@ -104,42 +107,35 @@ ui/
 - Strict limit: 1000 lines per file
 - Split files exceeding 600 lines
 
-### Component Implementation
+### Component Structure
 
-Components follow a standardized loading pattern:
+Each component HTML file follows a standardized structure:
 
-```javascript
-function loadComponentName() {
-  // Get HTML panel
-  const htmlPanel = document.getElementById('html-panel');
-  htmlPanel.innerHTML = '';
-  
-  // Set active component
-  setActiveComponent('component-name');
-  
-  // Create structure
-  const header = createComponentHeader('ComponentName', 'Functional Name');
-  const menuBar = createComponentMenuBar('component-name', tabDefinitions);
-  const workspace = createComponentWorkspace('component-name');
-  
-  // Add to panel
-  htmlPanel.appendChild(header);
-  htmlPanel.appendChild(menuBar);
-  htmlPanel.appendChild(workspace);
-  
-  // Add chat input if needed
-  if (isLLMComponent('component-name')) {
-    const chatInput = createChatInputArea('component-name');
-    htmlPanel.appendChild(chatInput);
-  }
-  
-  // Setup events
-  setupComponentEvents('component-name');
-  
-  // Load default tab
-  loadComponentTab('component-name', 'default-tab');
-}
+```html
+<div class="component-container">
+    <div class="component-header">
+        <h1 class="component-title">Component Name</h1>
+        <div class="component-actions">
+            <!-- Component-specific actions -->
+        </div>
+    </div>
+    
+    <div class="component-menu-bar">
+        <!-- Tabs or navigation -->
+    </div>
+    
+    <div class="component-workspace">
+        <!-- Main content area -->
+    </div>
+    
+    <!-- Optional chat area for LLM components -->
+    <div class="chat-input-area">
+        <!-- Chat interface -->
+    </div>
+</div>
 ```
+
+Components are loaded dynamically by minimal-loader.js when selected.
 
 ### Styling Guidelines
 

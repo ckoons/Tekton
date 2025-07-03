@@ -11,6 +11,7 @@ from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
 import asyncio
 import os
+from datetime import datetime
 
 from tekton.mcp.fastmcp.server import FastMCPServer
 from tekton.mcp.fastmcp.utils.endpoints import add_mcp_endpoints
@@ -378,6 +379,11 @@ async def mcp_launch_terminal(request: Dict[str, Any]) -> Dict[str, Any]:
             }
         )
         
+        # Handle startup command if provided
+        startup_cmd = request.get("startup_command")
+        if startup_cmd:
+            config.env["TERMA_STARTUP_CMD"] = startup_cmd
+        
         # Apply template if specified
         template_name = request.get("template")
         if template_name:
@@ -390,6 +396,8 @@ async def mcp_launch_terminal(request: Dict[str, Any]) -> Dict[str, Any]:
                 config.env.update(template.env)
                 if not config.purpose and template.purpose:
                     config.purpose = template.purpose
+                # Set the template name on the config
+                config.template = template_name
         
         # Launch the terminal
         pid = launcher.launch_terminal(config)
@@ -447,7 +455,9 @@ async def list_terminals() -> Dict[str, Any]:
                 "terminal_app": term.terminal_app,
                 "working_dir": term.config.working_dir,
                 "purpose": term.config.purpose,
-                "template": getattr(term.config, 'template', None)
+                "template": getattr(term.config, 'template', None),
+                "terma_id": term.terma_id,  # Include terma_id
+                "last_heartbeat": term.last_heartbeat.isoformat() if term.last_heartbeat else None
             }
             terminal_list.append(terminal_dict)
         
@@ -596,15 +606,186 @@ async def terminal_heartbeat(heartbeat: Dict[str, Any]) -> Dict[str, Any]:
             heartbeat_data=heartbeat
         )
         
-        return {
+        # Check for command results in heartbeat
+        if "command_results" in heartbeat and heartbeat["command_results"]:
+            if not hasattr(roster, '_command_results'):
+                roster._command_results = {}
+            
+            for result in heartbeat["command_results"]:
+                roster._command_results[result["id"]] = result
+        
+        # Check for pending commands to send back
+        response = {
             "success": True,
             "message": "Heartbeat received"
         }
+        
+        if hasattr(roster, '_command_queue'):
+            terma_id = heartbeat["terma_id"]
+            if terma_id in roster._command_queue and roster._command_queue[terma_id]:
+                # Send pending commands
+                response["commands"] = roster._command_queue[terma_id]
+                # Clear the queue
+                roster._command_queue[terma_id] = []
+        
+        return response
         
     except Exception as e:
         raise HTTPException(
             status_code=500,
             detail=f"Failed to process heartbeat: {str(e)}"
+        )
+
+
+@mcp_router.post("/terminals/command")
+@api_contract(
+    title="Send Command to Terminal",
+    endpoint="/api/mcp/v2/terminals/command",
+    method="POST",
+    request_schema={
+        "terma_id": "string",
+        "command": "string"
+    },
+    response_schema={
+        "success": "bool",
+        "command_id": "string",
+        "message": "string"
+    },
+    description="Send a command to be executed in a terminal"
+)
+async def send_terminal_command(request: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Send a command to a terminal for execution.
+    
+    The command will be queued and executed by the heartbeat process.
+    Results will be available via the status endpoint.
+    
+    Args:
+        request: Dictionary containing terma_id and command
+        
+    Returns:
+        Dictionary with command_id for tracking
+    """
+    try:
+        import uuid
+        from terma.core.terminal_launcher_impl import get_terminal_roster
+        
+        terma_id = request.get("terma_id")
+        command = request.get("command")
+        
+        if not terma_id or not command:
+            raise HTTPException(
+                status_code=400,
+                detail="Both terma_id and command are required"
+            )
+        
+        roster = get_terminal_roster()
+        terminal = roster.get_terminal(terma_id)
+        
+        if not terminal:
+            raise HTTPException(
+                status_code=404,
+                detail=f"Terminal {terma_id} not found"
+            )
+        
+        # Generate command ID
+        command_id = str(uuid.uuid4())[:8]
+        
+        # Queue command for terminal
+        # For now, store in roster (in real implementation, would use proper queue)
+        if not hasattr(roster, '_command_queue'):
+            roster._command_queue = {}
+        if terma_id not in roster._command_queue:
+            roster._command_queue[terma_id] = []
+        
+        roster._command_queue[terma_id].append({
+            "id": command_id,
+            "command": command,
+            "status": "pending",
+            "queued_at": datetime.now().isoformat()
+        })
+        
+        return {
+            "success": True,
+            "command_id": command_id,
+            "message": f"Command queued for terminal {terma_id}"
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to send command: {str(e)}"
+        )
+
+
+@mcp_router.get("/terminals/command/{command_id}/status")
+@api_contract(
+    title="Get Command Status",
+    endpoint="/api/mcp/v2/terminals/command/{command_id}/status",
+    method="GET",
+    response_schema={
+        "success": "bool",
+        "command_id": "string",
+        "completed": "bool",
+        "output": "string (optional)",
+        "error": "string (optional)"
+    },
+    description="Check the status and result of a queued command"
+)
+async def get_command_status(command_id: str) -> Dict[str, Any]:
+    """
+    Get the status and result of a previously sent command.
+    
+    Args:
+        command_id: The command ID returned from send_terminal_command
+        
+    Returns:
+        Dictionary with command status and output
+    """
+    try:
+        from terma.core.terminal_launcher_impl import get_terminal_roster
+        
+        roster = get_terminal_roster()
+        
+        # For now, check results in roster (in real implementation, would use proper storage)
+        if not hasattr(roster, '_command_results'):
+            roster._command_results = {}
+        
+        if command_id in roster._command_results:
+            result = roster._command_results[command_id]
+            return {
+                "success": True,
+                "command_id": command_id,
+                "completed": True,
+                "output": result.get("output", ""),
+                "error": result.get("error")
+            }
+        
+        # Check if still pending
+        if hasattr(roster, '_command_queue'):
+            for terma_id, commands in roster._command_queue.items():
+                for cmd in commands:
+                    if cmd["id"] == command_id:
+                        return {
+                            "success": True,
+                            "command_id": command_id,
+                            "completed": False
+                        }
+        
+        # Not found
+        return {
+            "success": False,
+            "command_id": command_id,
+            "completed": False,
+            "error": "Command not found"
+        }
+        
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to get command status: {str(e)}"
         )
 
 

@@ -94,17 +94,22 @@ class ActiveTerminalRoster:
     
     def update_heartbeat(self, terma_id: str, heartbeat_data: Dict[str, Any]):
         """Update heartbeat for a terminal."""
+        import logging
+        logger = logging.getLogger("terma.roster")
+        
         with self._lock:
             # Check if terminal is explicitly terminated
             if heartbeat_data.get("status") == "terminated":
                 # Remove terminal immediately
                 if terma_id in self._terminals:
                     del self._terminals[terma_id]
+                logger.info(f"Terminal {terma_id} terminated, removed from roster")
                 # No storage sync - heartbeats control the roster
                 return
             
             if terma_id not in self._terminals:
                 # New terminal registering
+                logger.info(f"New terminal {terma_id} registering via heartbeat")
                 self._terminals[terma_id] = {}
             
             self._terminals[terma_id].update({
@@ -112,10 +117,14 @@ class ActiveTerminalRoster:
                 "last_heartbeat": datetime.now(),
                 "status": "active"
             })
+            logger.debug(f"Updated heartbeat for terminal {terma_id}, total terminals: {len(self._terminals)}")
             # No storage sync - heartbeats control the roster
     
     def pre_register(self, terma_id: str, pid: int, config: TerminalConfig):
         """Pre-register a terminal before first heartbeat."""
+        import logging
+        logger = logging.getLogger("terma.roster")
+        
         with self._lock:
             self._terminals[terma_id] = {
                 "terma_id": terma_id,
@@ -124,12 +133,13 @@ class ActiveTerminalRoster:
                 "working_dir": config.working_dir or os.path.expanduser("~"),
                 "terminal_app": config.app,
                 "purpose": config.purpose,
-                "template": config.template,
+                "template": getattr(config, 'template', None),  # Safe access to template
                 "launched_at": datetime.now().isoformat(),
                 "last_heartbeat": datetime.now(),
                 "status": "launching"
             }
-            self._sync_to_storage()
+            logger.info(f"Pre-registered terminal {terma_id} with PID {pid}, total terminals: {len(self._terminals)}")
+            # Removed sync_to_storage as per user request
     
     def get_terminals(self) -> List[Dict[str, Any]]:
         """Get list of all terminals with current status."""
@@ -482,30 +492,20 @@ class TerminalLauncher:
             if result.returncode != 0:
                 self.logger.error(f"AppleScript failed with code: {result.returncode}")
             
-            # Get the aish-proxy PID instead of Terminal PID
-            # This is more accurate for our use case
-            time.sleep(1.0)  # Let aish-proxy start
+            # For now, return a synthetic PID based on the roster pre-registration
+            # The real PID will be updated when the first heartbeat arrives
+            # This avoids the timing issue with pgrep
+            import random
+            synthetic_pid = random.randint(10000, 99999)
             
-            self.logger.info("Getting aish-proxy PID...")
-            ps_result = subprocess.run(
-                ["pgrep", "-f", f"TERMA_SESSION_ID={config.env['TERMA_SESSION_ID']}"],
-                capture_output=True,
-                text=True
-            )
+            self.logger.info(f"Using synthetic PID {synthetic_pid} until first heartbeat")
             
-            if ps_result.stdout:
-                pid = int(ps_result.stdout.strip().split('\n')[0])  # First match
-                self.logger.info(f"Found aish-proxy PID: {pid}")
-                
-                # Store session ID for termination
-                if not hasattr(self, '_session_mapping'):
-                    self._session_mapping = {}
-                self._session_mapping[pid] = config.env['TERMA_SESSION_ID']
-                
-                return pid
-            else:
-                self.logger.warning("Could not find aish-proxy process")
-                return 0
+            # Store session ID for termination
+            if not hasattr(self, '_session_mapping'):
+                self._session_mapping = {}
+            self._session_mapping[synthetic_pid] = config.env['TERMA_SESSION_ID']
+            
+            return synthetic_pid
             
         elif config.app == "iTerm.app":
             # iTerm2 AppleScript

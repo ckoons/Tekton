@@ -1,5 +1,7 @@
 # Hephaestus UI Implementation Guide
 
+**⚠️ UPDATE (June 2025)**: The UI architecture has evolved. While the component structure patterns below remain valid, the loading mechanism has changed. Components are now loaded dynamically via `minimal-loader.js`. See the [CSS-First Architecture Documentation](/MetaData/TektonDocumentation/Architecture/CSSFirstArchitecture.md) for current implementation details.
+
 ## Table of Contents
 1. [Overview](#overview)
 2. [Architecture](#architecture)

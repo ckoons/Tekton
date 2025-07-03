@@ -1,10 +1,11 @@
 # CSS-First Architecture for Hephaestus UI
 
 *Created: 2025-06-27 by Casey Koons and Claude*
+*Updated: 2025-01-03 - Clarified current implementation status*
 
 ## Overview
 
-The Hephaestus UI has been radically simplified using a CSS-first architecture that eliminates ~90% of the JavaScript complexity while maintaining all functionality. This approach replaces the previous dynamic component loading system with pre-loaded HTML and pure CSS navigation.
+The Hephaestus UI attempted a pure CSS architecture that would have eliminated ~90% of the JavaScript complexity. However, due to limitations with CSS `:target` selectors (components after the target in DOM order cannot be properly hidden), the UI currently uses a hybrid approach with minimal-loader.js for reliable component navigation.
 
 ## Core Philosophy
 
@@ -107,13 +108,17 @@ function checkHealth() {
 
 ## Migration from Dynamic Loading
 
-### What Was Removed
+### Current Status
 
-1. **`minimal-loader.js`** - No longer needed
-2. **`ui-manager-core.js`** - CSS handles component switching
-3. **`component-loading-guard.js`** - No loading conflicts possible
-4. **`terminal.js` & `terminal-chat.js`** - Terminal functionality removed
-5. **Component-specific loaders** - Everything pre-loaded
+**Still in Use:**
+1. **`minimal-loader.js`** - Handles dynamic component loading
+2. **`ui-manager-core.js`** - Manages component lifecycle
+3. **`terminal.js` & related files** - Terminal functionality
+
+**Deprecated Approach:**
+- Pure CSS `:target` navigation (had limitations)
+- `build-simplified.py` script (deleted)
+- Pre-loading all components in index.html
 
 ### What Was Preserved
 
@@ -122,23 +127,13 @@ function checkHealth() {
 3. **Health monitoring** - Status dots still glow when services are up
 4. **Theme system** - CSS variables still work
 
-## Building the Simplified Index
+## Implementation Note
 
-A Python script (`build-simplified.py`) automates the inlining process:
+**⚠️ IMPORTANT**: The pure CSS `:target` approach described above was attempted but has fundamental limitations:
+- Components appearing after the targeted component in DOM order cannot be properly hidden with pure CSS
+- This caused navigation issues, particularly with components like Numa
 
-```python
-# Read all component HTML files
-for component in COMPONENTS:
-    data = read_component(component)
-    components_data[component] = {
-        'html': extract_html(data),
-        'styles': extract_styles(data),
-        'script': extract_script(data)
-    }
-
-# Build single index.html with everything inlined
-build_index_html(components_data)
-```
+**Current Approach**: The UI uses `minimal-loader.js` to dynamically load components on-demand, providing reliable navigation while maintaining the CSS-first philosophy for styling and layout.
 
 ## Benefits
 
