@@ -460,7 +460,6 @@ class TerminalLauncher:
             # Use AppleScript for Terminal.app
             script = f'''
             tell application "Terminal"
-                activate
                 set newWindow to do script "{shell_cmd}"
                 set windowID to id of window 1
                 return windowID
