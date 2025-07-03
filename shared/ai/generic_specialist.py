@@ -57,6 +57,11 @@ COMPONENT_EXPERTISE = {
         'expertise': 'Budget management, cost optimization, and resource allocation',
         'focus': 'API usage tracking, cost analysis, budget enforcement, and optimization recommendations'
     },
+    'budget': {
+        'title': 'The Budget Guardian',
+        'expertise': 'Budget management, cost optimization, and resource allocation',
+        'focus': 'API usage tracking, cost analysis, budget enforcement, and optimization recommendations'
+    },
     'telos': {
         'title': 'The Requirements Tracker',
         'expertise': 'Requirements engineering, traceability, and validation',
@@ -154,12 +159,24 @@ class GenericAISpecialist(AISpecialistWorker):
     """Generic AI specialist that can be used by any component."""
     
     def __init__(self, ai_id: str, component: str, port: int):
-        # Get component info
-        comp_info = COMPONENT_EXPERTISE.get(component.lower(), {
-            'title': f'The {component.title()} Specialist',
-            'expertise': f'{component.title()} operations and management',
-            'focus': f'{component.lower()} specific tasks and operations'
-        })
+        # Get component info - normalize component name
+        # Handle both hyphen and underscore variants
+        comp_key = component.lower().replace('-', '_')
+        
+        # Also check original format if not found
+        comp_info = COMPONENT_EXPERTISE.get(comp_key)
+        if not comp_info and '_' in comp_key:
+            # Try with hyphens if underscores didn't work
+            comp_key_alt = comp_key.replace('_', '-')
+            comp_info = COMPONENT_EXPERTISE.get(comp_key_alt)
+            
+        if not comp_info:
+            # Final fallback
+            comp_info = {
+                'title': f'The {component.title()} Specialist',
+                'expertise': f'{component.title()} operations and management',
+                'focus': f'{component.lower()} specific tasks and operations'
+            }
         
         super().__init__(
             ai_id=ai_id,
@@ -171,6 +188,11 @@ class GenericAISpecialist(AISpecialistWorker):
         self.component_info = comp_info
         self.logger.info(f"Initialized {component} AI specialist as '{comp_info['title']}'")
         self.logger.debug(f"Component expertise: {comp_info['expertise']}")
+        
+        # DEBUG: Final state
+        print(f"[DEBUG] Final state:")
+        print(f"[DEBUG]   self.component: {self.component}")
+        print(f"[DEBUG]   self.component_info['title']: {self.component_info['title']}")
     
     # @tekton-method: Generate component-specific system prompt
     # @tekton-dynamic: true

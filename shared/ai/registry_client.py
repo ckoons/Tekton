@@ -738,7 +738,15 @@ class AIRegistryClient:
         return {}
     
     def _component_to_role(self, component: str) -> str:
-        """Map component name to primary role."""
+        """
+        Map component name to primary role.
+        
+        DEPRECATED: This mapping duplicates roles defined in tekton_ai_config.json
+        and COMPONENT_EXPERTISE in generic_specialist.py. This method should be
+        removed and roles should be read directly from the config file.
+        
+        TODO: Remove this method and use roles from tekton_ai_config.json
+        """
         role_map = {
             'apollo': 'code-analysis',
             'athena': 'knowledge-synthesis',
@@ -754,7 +762,15 @@ class AIRegistryClient:
         return role_map.get(component.lower(), 'general')
     
     def _get_component_capabilities(self, component: str) -> List[str]:
-        """Get capabilities for a component."""
+        """
+        Get capabilities for a component.
+        
+        DEPRECATED: This mapping duplicates capabilities defined in tekton_ai_config.json
+        and COMPONENT_EXPERTISE in generic_specialist.py. Capabilities should be read
+        directly from the config file.
+        
+        TODO: Remove this method and use capabilities from tekton_ai_config.json
+        """
         capability_map = {
             'apollo': ['code-analysis', 'static-analysis', 'metrics', 'quality-assessment'],
             'athena': ['knowledge-synthesis', 'query-resolution', 'semantic-search', 'reasoning'],

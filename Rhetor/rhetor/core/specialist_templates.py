@@ -1,4 +1,12 @@
 """
+DEPRECATED: This module represents the old dynamic specialist system.
+Use generic_specialist.py and COMPONENT_EXPERTISE instead.
+
+This file is kept for reference but should not be used for new code.
+The complex template-based personality system has been replaced with
+a simpler approach using COMPONENT_EXPERTISE in generic_specialist.py.
+
+Original description:
 Specialist Templates for Dynamic AI Creation.
 
 This module provides pre-defined templates for creating specialized AI agents

@@ -2,6 +2,7 @@
   "version": "1.0.0",
   "description": "Tekton AI Platform Configuration - Defines available AI specialists",
   "last_sync": "2025-06-29T16:43:44.278209",
+  "_deprecation_notice": "The 'personality' sections in this file duplicate COMPONENT_EXPERTISE in generic_specialist.py and should be removed. Only port, roles, and basic metadata should be kept.",
   "default_model": "llama3.3:70b",
   "default_provider": "ollama",
   "ai_specialists": {
