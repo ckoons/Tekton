@@ -411,12 +411,18 @@ class TerminalLauncher:
         config.env["TERMA_ENDPOINT"] = "http://localhost:8004"
         config.env["TERMA_TERMINAL_NAME"] = config.name
         
+        # Always include TEKTON_ROOT
+        config.env["TEKTON_ROOT"] = os.environ.get("TEKTON_ROOT", "/Users/cskoons/projects/github/Tekton")
+        
         # Auto-detect terminal if not specified
         if not config.app:
             config.app = self.get_default_terminal()
         
-        # Set working directory to user's home directory
-        if not config.working_dir:
+        # Expand and set working directory
+        if config.working_dir:
+            # Expand environment variables and ~ in the path
+            config.working_dir = os.path.expandvars(os.path.expanduser(config.working_dir))
+        else:
             config.working_dir = os.path.expanduser("~")
         
         # Launch based on platform
@@ -455,9 +461,13 @@ class TerminalLauncher:
         if config.purpose:
             env_exports += f" export TEKTON_TERMINAL_PURPOSE='{config.purpose}';"
         
-        # Build shell command
+        # Build shell command - just export vars and run aish-proxy
+        # Let aish-proxy handle the cd and startup command after shell init
         if self.aish_path:
-            shell_cmd = f"cd '{config.working_dir}'; {env_exports} '{self.aish_path}'"
+            # Pass working dir and startup cmd as environment variables
+            if config.working_dir and config.working_dir != os.path.expanduser("~"):
+                env_exports += f" export TERMA_WORKING_DIR='{config.working_dir}';"
+            shell_cmd = f"{env_exports} '{self.aish_path}'"
         else:
             # Fall back to user's shell when aish-proxy not available
             shell_to_use = os.environ.get('SHELL', '/bin/bash')
@@ -710,14 +720,21 @@ class TerminalLauncher:
             )
             
             # Create TerminalInfo
+            # Handle launched_at which might be datetime or string
+            launched_at = term_data.get("launched_at")
+            if isinstance(launched_at, str):
+                launched_at = datetime.fromisoformat(launched_at)
+            elif not isinstance(launched_at, datetime):
+                launched_at = datetime.now()  # Default to now if missing or invalid
+            
             info = TerminalInfo(
-                pid=term_data["pid"],
+                pid=term_data.get("pid", 0),
                 config=config,
-                launched_at=datetime.fromisoformat(term_data["launched_at"]) if isinstance(term_data["launched_at"], str) else term_data["launched_at"],
+                launched_at=launched_at,
                 status=term_data.get("status", "unknown"),
                 platform=self.platform,
                 terminal_app=term_data.get("terminal_app", ""),
-                terma_id=term_data["terma_id"],
+                terma_id=term_data.get("terma_id", ""),
                 last_heartbeat=term_data.get("last_heartbeat")
             )
             terminals.append(info)

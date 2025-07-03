@@ -191,6 +191,22 @@ export PATH="{aish_dir}:$PATH"
     # No shell-specific code needed anymore - just use aish command
     init_content = common_functions
     
+    # Handle working directory change after shell init
+    working_dir = os.environ.get('TERMA_WORKING_DIR')
+    if working_dir:
+        init_content += f'''
+# Change to requested working directory
+cd "{working_dir}"
+'''
+    
+    # Handle startup command if provided
+    startup_cmd = os.environ.get('TERMA_STARTUP_CMD')
+    if startup_cmd:
+        init_content += f'''
+# Execute startup command
+{startup_cmd}
+'''
+    
     if not debug:
         init_content += '''
 echo "aish-proxy active (v3.0.0) - Usage: aish <ai-name> [message]"
