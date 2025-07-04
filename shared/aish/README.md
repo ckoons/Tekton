@@ -125,7 +125,14 @@ When launched via Terma, terminals automatically have:
 ### Registry Management
 - `clean_registry.py`: Remove stale AI entries
 - `launch_component_ai.py`: Atomic AI replacement
+- `cleanup_orphan_processes.py`: Detect and remove orphaned AI processes
 - Registry located at: `~/.tekton/ai_registry/platform_ai_registry.json`
+
+### Orphan Process Cleanup
+- Automatic cleanup via Shared Services (every 6 hours)
+- Manual cleanup: `python3 cleanup_orphan_processes.py`
+- Safe detection with multiple verification steps
+- See `shared/services/README.md` for service configuration
 
 ### New Features (July 2025)
 - Fixed quoted message syntax

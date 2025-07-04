@@ -1,0 +1,26 @@
+[Unit]
+Description=Tekton Shared Services (Orphan Cleanup, AI Config Sync)
+After=network.target
+
+[Service]
+Type=simple
+User=%i
+WorkingDirectory=/Users/cskoons/projects/github/Tekton
+Environment="PYTHONPATH=/Users/cskoons/projects/github/Tekton/shared"
+Environment="TEKTON_ROOT=/Users/cskoons/projects/github/Tekton"
+ExecStart=/usr/bin/python3 /Users/cskoons/projects/github/Tekton/shared/services/run_shared_services.py --orphan-interval 6.0 --orphan-min-age 2.0
+Restart=always
+RestartSec=30
+StandardOutput=journal
+StandardError=journal
+
+# Resource limits
+MemoryLimit=512M
+CPUQuota=10%
+
+# Security
+PrivateTmp=true
+NoNewPrivileges=true
+
+[Install]
+WantedBy=multi-user.target

@@ -131,6 +131,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Clean AI Registry')
     parser.add_argument('--dry-run', action='store_true', help='Show what would be removed')
     parser.add_argument('--reset', action='store_true', help='Completely reset registry')
+    parser.add_argument('--check-orphans', action='store_true', help='Also check for orphan processes')
     
     args = parser.parse_args()
     
@@ -142,3 +143,14 @@ if __name__ == "__main__":
             print("Aborted")
     else:
         clean_registry(dry_run=args.dry_run)
+        
+        if args.check_orphans:
+            print("\nChecking for orphan processes...")
+            try:
+                from cleanup_orphan_processes import identify_orphans
+                orphans, legitimate = identify_orphans(verbose=True)
+                if orphans:
+                    print(f"\n⚠️  Found {len(orphans)} orphan processes!")
+                    print("Run cleanup_orphan_processes.py to handle them")
+            except ImportError:
+                print("Could not import orphan detection module")
