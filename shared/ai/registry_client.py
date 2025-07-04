@@ -655,17 +655,7 @@ class AIRegistryClient:
                     'performance': self._get_ai_performance(ai_id)
                 })
             
-            # Also check component-based roles
-            component_role = self._component_to_role(ai_data['component'])
-            if component_role == role:
-                matching_ais.append({
-                    'ai_id': ai_id,
-                    'component': ai_data['component'],
-                    'port': ai_data['port'],
-                    'roles': [component_role],
-                    'capabilities': self._get_component_capabilities(ai_data['component']),
-                    'performance': self._get_ai_performance(ai_id)
-                })
+            # Skip component-based role checking - roles should come from config
         
         return matching_ais
     
@@ -736,48 +726,6 @@ class AIRegistryClient:
             except Exception as e:
                 logger.error(f"Failed to load role mappings: {e}")
         return {}
-    
-    def _component_to_role(self, component: str) -> str:
-        """
-        Map component name to primary role.
-        
-        DEPRECATED: This mapping duplicates roles defined in tekton_ai_config.json
-        and COMPONENT_EXPERTISE in generic_specialist.py. This method should be
-        removed and roles should be read directly from the config file.
-        
-        TODO: Remove this method and use roles from tekton_ai_config.json
-        """
-        role_map = {
-            'apollo': 'code-analysis',
-            'athena': 'knowledge-synthesis',
-            'prometheus': 'planning',
-            'hermes': 'messaging',
-            'engram': 'memory',
-            'rhetor': 'orchestration',
-            'numa': 'specialist-management',
-            'sophia': 'learning',
-            'ergon': 'agent-coordination',
-            'metis': 'workflow-design'
-        }
-        return role_map.get(component.lower(), 'general')
-    
-    def _get_component_capabilities(self, component: str) -> List[str]:
-        """
-        Get capabilities for a component.
-        
-        DEPRECATED: This mapping duplicates capabilities defined in tekton_ai_config.json
-        and COMPONENT_EXPERTISE in generic_specialist.py. Capabilities should be read
-        directly from the config file.
-        
-        TODO: Remove this method and use capabilities from tekton_ai_config.json
-        """
-        capability_map = {
-            'apollo': ['code-analysis', 'static-analysis', 'metrics', 'quality-assessment'],
-            'athena': ['knowledge-synthesis', 'query-resolution', 'semantic-search', 'reasoning'],
-            'prometheus': ['planning', 'task-breakdown', 'resource-optimization', 'scheduling'],
-            'rhetor': ['orchestration', 'prompt-engineering', 'llm-routing', 'response-optimization']
-        }
-        return capability_map.get(component.lower(), ['general'])
     
     def _get_ai_performance(self, ai_id: str) -> Dict[str, float]:
         """Get performance metrics for an AI (placeholder for now)."""

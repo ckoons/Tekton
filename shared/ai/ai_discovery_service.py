@@ -386,30 +386,18 @@ class AIDiscoveryService:
             return None
     
     def _get_ai_roles(self, ai_id: str, ai_data: Dict[str, Any]) -> List[str]:
-        """
-        Get roles for an AI.
-        
-        DEPRECATED: This method uses the deprecated _component_to_role mapping.
-        TODO: Read roles directly from tekton_ai_config.json or AI metadata.
-        """
-        # Map component to roles
-        component = ai_data.get('component', '').lower()
-        return [self.registry._component_to_role(component)]
+        """Get roles for an AI from metadata."""
+        # Return empty list - roles should come from AI metadata
+        return ai_data.get('roles', [])
     
     def _get_ai_capabilities(self, ai_id: str, ai_data: Dict[str, Any], 
                            live_info: Optional[Dict[str, Any]]) -> List[str]:
-        """
-        Get capabilities for an AI.
-        
-        DEPRECATED: Falls back to the deprecated _get_component_capabilities mapping.
-        TODO: Read capabilities directly from tekton_ai_config.json or AI metadata.
-        """
+        """Get capabilities for an AI from metadata."""
         if live_info and 'capabilities' in live_info:
             return live_info['capabilities']
             
-        # Use component-based capabilities
-        component = ai_data.get('component', '').lower()
-        return self.registry._get_component_capabilities(component)
+        # Return from ai_data or empty list
+        return ai_data.get('capabilities', [])
     
     def _get_ai_performance(self, ai_id: str) -> Dict[str, float]:
         """Get performance metrics for an AI."""
