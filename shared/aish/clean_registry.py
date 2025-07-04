@@ -10,6 +10,20 @@ import psutil
 import socket
 from pathlib import Path
 
+try:
+    from landmarks import danger_zone, state_checkpoint
+except ImportError:
+    # Fallback decorators if landmarks not available
+    def danger_zone(**kwargs):
+        def decorator(func):
+            return func
+        return decorator
+    
+    def state_checkpoint(**kwargs):
+        def decorator(func):
+            return func
+        return decorator
+
 def check_process_exists(pid):
     """Check if a process with given PID exists."""
     try:
@@ -30,6 +44,13 @@ def check_port_open(port):
     sock.close()
     return result == 0
 
+@danger_zone(
+    title="AI Registry cleanup",
+    risk_level="medium",
+    potential_impacts=["AI specialist availability", "Port allocation"],
+    mitigation="Only removes entries where process is dead AND port is closed",
+    recovery="Restart affected AI specialists"
+)
 def clean_registry(dry_run=False):
     """Clean the AI registry of stale entries."""
     registry_path = Path.home() / '.tekton' / 'ai_registry' / 'platform_ai_registry.json'

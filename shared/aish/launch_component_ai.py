@@ -14,6 +14,25 @@ from pathlib import Path
 import subprocess
 import argparse
 
+try:
+    from landmarks import architecture_decision, integration_point, danger_zone
+except ImportError:
+    # Fallback decorators if landmarks not available
+    def architecture_decision(**kwargs):
+        def decorator(func):
+            return func
+        return decorator
+    
+    def integration_point(**kwargs):
+        def decorator(func):
+            return func
+        return decorator
+    
+    def danger_zone(**kwargs):
+        def decorator(func):
+            return func
+        return decorator
+
 def load_registry():
     """Load the AI registry with file locking."""
     registry_path = Path.home() / '.tekton' / 'ai_registry' / 'platform_ai_registry.json'
@@ -56,6 +75,20 @@ def shutdown_socket(port):
         # If it fails, that's ok - process might already be gone
         pass
 
+@architecture_decision(
+    title="Component-specific AI replacement",
+    rationale="Need atomic replacement to avoid orphaned AI processes and port conflicts",
+    alternatives_considered=["Kill all and restart", "Registry versioning", "Port reuse"],
+    impacts=["reliability", "port_management", "process_lifecycle"],
+    decided_by="Casey",
+    date="2025-01-04"
+)
+@integration_point(
+    title="AI specialist launcher",
+    target_component="All Tekton components",
+    protocol="Process spawn with registry update",
+    data_flow="Component name -> Registry cleanup -> Process launch -> Port registration"
+)
 def launch_component_ai(component_name, verbose=False):
     """Launch or replace a component's AI specialist."""
     ai_name = f"{component_name}-ai"
