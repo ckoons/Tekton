@@ -208,6 +208,35 @@ aish -r http://custom-rhetor:8003 apollo "message"
 - `TEKTON_ROOT` - Tekton installation directory
 - `AISH_DEBUG` - Enable debug output
 
+## System Maintenance
+
+### AI Registry Management
+
+The system automatically maintains the AI registry to ensure healthy operation:
+
+```bash
+# Clean stale registry entries
+python3 $TEKTON_ROOT/shared/aish/clean_registry.py
+
+# Check for orphaned processes
+python3 $TEKTON_ROOT/shared/aish/clean_registry.py --check-orphans
+
+# View orphan processes (dry run)
+python3 $TEKTON_ROOT/shared/aish/cleanup_orphan_processes.py --dry-run
+```
+
+### Automatic Orphan Cleanup
+
+The Tekton Shared Services run automatic cleanup every 6 hours to:
+- Detect AI processes that are no longer registered
+- Remove processes older than 2 hours that have no registry entry
+- Ensure ports are freed for new AI specialists
+
+This happens automatically, but you can also:
+- Check service status in logs: `~/.tekton/logs/orphan_cleanup.log`
+- Run manual cleanup if needed (see commands above)
+- The service ensures AI specialists remain healthy and available
+
 ## Tips for Effective AI Collaboration
 
 1. **Be Specific**: Clear, specific queries get better responses

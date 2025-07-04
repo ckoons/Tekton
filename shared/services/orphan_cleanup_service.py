@@ -149,7 +149,10 @@ class OrphanCleanupService:
     
     async def _run_cleanup(self) -> int:
         """Run the cleanup in an async context."""
-        # Run the synchronous cleanup function in a thread pool
+        # LANDMARK: Async-Sync Bridge
+        # The cleanup functions are synchronous (using psutil) but we run them
+        # in a thread pool executor to maintain async compatibility with the
+        # Tekton service architecture. This prevents blocking the event loop.
         loop = asyncio.get_event_loop()
         
         # First identify orphans

@@ -33,7 +33,11 @@ except ImportError:
             return func
         return decorator
 
-# Known Tekton AI process patterns
+# LANDMARK: Process Pattern Matching
+# This list defines all known Tekton AI process patterns used for orphan detection.
+# Add new AI specialist names here when they're created.
+# Used by: find_tekton_processes() for pattern matching
+# Critical for: Accurate orphan detection without false positives
 TEKTON_AI_PATTERNS = [
     'enhanced_tekton_ai_launcher.py',
     'tekton_ai_specialist.py',
@@ -152,7 +156,12 @@ def identify_orphans(min_age_hours=1.0, verbose=False):
         pid = proc['pid']
         component = extract_component_name(proc['cmdline'])
         
-        # Safety checks for orphan detection
+        # LANDMARK: Orphan Detection Safety Checks
+        # Multiple layers of verification prevent false positives:
+        # 1. Registry check - is process registered?
+        # 2. Age check - is process old enough?
+        # 3. Launcher grace period - short-lived processes get extra time
+        # 4. Zombie detection - always mark zombies as orphans
         is_orphan = True
         reasons = []
         
