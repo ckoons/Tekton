@@ -1,8 +1,8 @@
-# aish Help System - Architectural Decisions
+# aish Help System and Communication - Architectural Decisions
 
 ## Overview
 
-This document records the architectural decisions made for the aish help system implementation. The primary decision is to use a minimal "documentation path pattern" that provides pointers to resources rather than embedded help text.
+This document records the architectural decisions made for the aish help system and communication enhancements. Key decisions include the unified command syntax, in-memory message system, and documentation path pattern.
 
 ## Decision 1: Documentation Path Pattern
 
@@ -127,14 +127,67 @@ MetaData/TektonDocumentation/
 - Easy to navigate and discover
 - Supports future growth
 
+## Decision 4: Unified Command Syntax
+
+### Context
+
+Current aish has inconsistent command patterns and fails on direct AI messaging.
+
+### Decision
+
+Implement unified syntax: `aish [component] [command/message] [options]`
+
+### Rationale
+
+- Consistent interface across all operations
+- Eliminates synthetic pipeline construction
+- Natural extension point for new features
+- Matches git/docker subcommand patterns
+
+## Decision 5: In-Memory Message System
+
+### Context
+
+AI sessions need to see messages sent between terminals.
+
+### Decision
+
+Implement in-memory two-inbox system (new/keep) without disk persistence.
+
+### Rationale
+
+- Simple: No file I/O or cleanup needed
+- Natural: Matches terminal session lifecycle
+- Privacy: Nothing persisted to disk
+- Future-ready: Easy to add Engram integration
+- Human-like: Mirrors email triage behavior
+
+## Decision 6: Message Display via /dev/tty
+
+### Context
+
+Async messages interfere with command prompts when using stdout.
+
+### Decision
+
+Write messages directly to /dev/tty to avoid prompt interference.
+
+### Rationale
+
+- Clean separation of message display and command I/O
+- Works with all terminal types
+- No prompt corruption
+
 ## Future Considerations
 
 1. **Conversational Help**: The pattern "Help: I need..." could trigger richer responses
 2. **Context-Aware Help**: Help could eventually consider user's current task
 3. **Help Indexing**: Could add search capabilities across documentation
 4. **Multi-Language Support**: Documentation directories could have language subdirectories
+5. **Persistent Messages**: Engram integration for long-term message storage
+6. **Real-time Delivery**: WebSocket for immediate message delivery
 
-These are explicitly out of scope for this sprint but the chosen pattern supports them.
+These are explicitly out of scope for this sprint but the chosen patterns support them.
 
 ## References
 

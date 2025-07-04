@@ -263,6 +263,20 @@ class AIHistory:
             return result[0]
         return None
     
+    def add_exchange(self, ai_name: str, message: str, response: str):
+        """
+        Add a single AI exchange to history.
+        
+        Args:
+            ai_name: Name of the AI
+            message: Message sent to AI
+            response: Response from AI
+        """
+        # Format as a simple command
+        command = f'echo "{message}" | {ai_name}'
+        responses = {ai_name: response}
+        self.add_command(command, responses)
+    
     def clear(self):
         """Clear history (with backup)."""
         if self.history_file.exists():

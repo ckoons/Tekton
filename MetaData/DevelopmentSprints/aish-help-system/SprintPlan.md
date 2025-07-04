@@ -8,10 +8,11 @@ Tekton is an intelligent orchestration system that coordinates multiple AI model
 
 ## Sprint Goals
 
-1. **Implement help command recognition**: Add logic to aish to recognize help requests
-2. **Return documentation paths**: Display paths to AI Training and User Guides
-3. **Create documentation structure**: Establish directory hierarchy for component docs
-4. **Keep it minimal and powerful**: Simple implementation with lasting impact
+1. **Fix aish syntax**: Implement unified `aish [component] [command/message]` pattern
+2. **Enable AI message visibility**: In-memory two-inbox system for inter-terminal messages
+3. **Implement help command recognition**: Add logic to aish to recognize help requests
+4. **Return documentation paths**: Display paths to AI Training and User Guides
+5. **Create documentation structure**: Establish directory hierarchy for component docs
 
 ## Business Value
 
@@ -76,12 +77,27 @@ All implementation will be contained within the aish command itself. No other co
 
 ## Timeline and Phases
 
-Single phase sprint - estimated 1-2 hours:
+Expanded sprint with four implementation phases:
 
-1. Modify aish command to handle help
-2. Create documentation directory structure
-3. Write initial documentation
-4. Test and verify
+### Phase 1: Fix aish Syntax (30 minutes)
+- Implement unified router in aish command
+- Fix direct AI messaging (no synthetic pipelines)
+- Test with all AI components
+
+### Phase 2: Fix Message Display (15 minutes)
+- Update aish-proxy to write to /dev/tty
+- Ensure messages don't interfere with prompts
+- Test inter-terminal messaging
+
+### Phase 3: Implement Two-Inbox System (45 minutes)
+- Add in-memory message storage to aish-proxy
+- Implement inbox commands in terma.py
+- Test inbox operations (new, keep, read, trash)
+
+### Phase 4: Add Help System (30 minutes)
+- Integrate help command with unified router
+- Create documentation directory structure
+- Test help for all components
 
 ## Success Criteria
 

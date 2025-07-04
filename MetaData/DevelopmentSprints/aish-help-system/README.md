@@ -1,14 +1,18 @@
-# aish Help System Development Sprint
+# aish Help System and Communication Enhancement Sprint
 
 ## Overview
 
-This sprint implements a minimal help system for the aish command that provides documentation paths for both AI Training and User Guides.
+This sprint implements three integrated improvements to aish:
+1. **Unified syntax**: Fix the `aish [component] [command/message]` pattern
+2. **Message visibility**: In-memory two-inbox system for AI-to-AI communication
+3. **Help system**: Documentation path pattern for discoverability
 
 ## Sprint Status
 
-**Status:** Planning Phase  
+**Status:** Implementation Phase  
 **Created:** 2025-01-03  
-**Scope:** Minimal - single file change to aish command
+**Updated:** 2025-01-04  
+**Scope:** Expanded to include syntax fixes and message system
 
 ## Key Design Decision
 
@@ -28,7 +32,27 @@ User Guides: /Users/.../MetaData/TektonDocumentation/UserGuides/Terma/
 
 ## Implementation
 
-All changes are contained within `/Users/cskoons/projects/github/Tekton/shared/aish/aish`.
+Changes span three files:
+- `/Users/cskoons/projects/github/Tekton/shared/aish/aish` - Unified syntax and help
+- `/Users/cskoons/projects/github/Tekton/shared/aish/aish-proxy` - Message display fix
+- `/Users/cskoons/projects/github/Tekton/shared/aish/src/commands/terma.py` - Inbox commands
+
+## Key Features
+
+### 1. Unified Syntax
+- Direct AI messaging: `aish apollo "message"`
+- Component commands: `aish terma list`
+- Help integration: `aish apollo help`
+
+### 2. In-Memory Message System
+- Two-inbox design: new and keep
+- No disk persistence (session-based)
+- Future Engram integration ready
+
+### 3. Message Visibility for AIs
+- `aish terma inbox` - View new messages
+- `aish terma inbox keep` - View saved messages
+- `aish terma inbox read N` - Move message to keep
 
 ## Documentation
 
@@ -37,7 +61,9 @@ All changes are contained within `/Users/cskoons/projects/github/Tekton/shared/a
 
 ## Why This Matters
 
-This tiny sprint establishes a pattern that will serve Tekton for years:
+This sprint establishes patterns that will serve Tekton for years:
+- Consistent command interface across all components
+- Natural AI-to-AI communication
 - Equal treatment for humans and Companion Intelligences
 - Documentation can evolve without code changes
 - Simple, discoverable, and scalable

@@ -374,6 +374,78 @@ History Management:
         
         print("\nUse any AI name in a pipeline: echo \"hello\" | apollo")
     
+    def send_to_ai(self, ai_name, message):
+        """Send message directly to AI via Rhetor."""
+        try:
+            # Get or create socket for this AI
+            socket_id = self._get_or_create_socket(ai_name)
+            
+            
+            if message:
+                # Write message to AI
+                success = self.registry.write(socket_id, message)
+                if not success:
+                    print(f"Failed to send message to {ai_name}")
+                    return
+                
+                # Read response
+                responses = self.registry.read(socket_id)
+                if responses:
+                    # Extract message content
+                    response = responses[0]
+                    # Remove header if present
+                    if response.startswith(f"[team-chat-from-{ai_name}"):
+                        response = response[len(f"[team-chat-from-{ai_name}"):].strip()
+                        if response.startswith(']'):
+                            response = response[1:].strip()
+                    
+                    # Track in history
+                    self.ai_history.add_exchange(ai_name, message, response)
+                    
+                    # Display response
+                    print(response)
+                else:
+                    print(f"No response from {ai_name}")
+            else:
+                print(f"No message to send to {ai_name}")
+                
+        except Exception as e:
+            print(f"Error communicating with {ai_name}: {e}")
+            if self.debug:
+                import traceback
+                traceback.print_exc()
+    
+    def broadcast_message(self, message):
+        """Broadcast message to all AIs (team-chat)."""
+        try:
+            # Get or create socket for team-chat
+            socket_id = self._get_or_create_socket('team-chat')
+            
+            if message:
+                # Write message
+                success = self.registry.write(socket_id, message)
+                if not success:
+                    print("Failed to broadcast message")
+                    return
+                
+                # Read responses
+                responses = self.registry.read(socket_id)
+                if responses:
+                    print("Team responses:")
+                    print("-" * 40)
+                    for response in responses:
+                        print(response)
+                else:
+                    print("No team responses received")
+            else:
+                print("No message to broadcast")
+                
+        except Exception as e:
+            print(f"Error broadcasting message: {e}")
+            if self.debug:
+                import traceback
+                traceback.print_exc()
+    
     def _show_history(self):
         """Show recent conversation history."""
         entries = self.ai_history.get_history(20)  # Last 20 entries

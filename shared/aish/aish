@@ -9,6 +9,7 @@ import os
 import argparse
 from pathlib import Path
 
+
 # Get the real path of the script (follows symlinks)
 script_path = Path(__file__).resolve()
 aish_root = script_path.parent
@@ -96,12 +97,20 @@ Environment variables:
         debug=args.debug
     )
     
+    # Handle general help command
+    if args.ai_or_script == "help":
+        print("Usage: aish [options] [component] [command/message]")
+        tekton_root = os.environ.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
+        print(f"AI Training: {tekton_root}/MetaData/TektonDocumentation/AITraining/aish/")
+        print(f"User Guides: {tekton_root}/MetaData/TektonDocumentation/UserGuides/aish/")
+        return
+    
     # Handle special commands
     if args.list_ais:
         shell._list_ais()
         return
     
-    # Known AI names with their roles
+    # Known AI names with their roles (all lowercase for comparison)
     ai_names = ['numa',        # Companion
                 'tekton',      # Projects
                 'prometheus',  # Planning
@@ -121,34 +130,62 @@ Environment variables:
                 'terma',       # Terminal
                 'team-chat']   # Broadcast to all
     
-    # Check if first argument is an AI name
+    # Check if first argument is an AI name (case-insensitive)
     if args.ai_or_script and args.ai_or_script.lower() in ai_names:
-        ai_name = args.ai_or_script.lower()
+        component = args.ai_or_script.lower()
+        
         
         # Special handling for terma commands
-        if ai_name == 'terma':
+        if component == 'terma':
             # Import and use terma handler
             from commands.terma import handle_terma_command
             return handle_terma_command(args.message)
         
-        # Get input from stdin if available, otherwise from message args
-        if not sys.stdin.isatty():
-            # Data is being piped in
-            input_data = sys.stdin.read()
-        elif args.message:
-            # Message provided as arguments
-            input_data = ' '.join(args.message)
+        # Check for help command
+        if args.message and args.message[0] == "help":
+            print(f"Usage: aish {component} [message]")
+            tekton_root = os.environ.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
+            print(f"AI Training: {tekton_root}/MetaData/TektonDocumentation/AITraining/{component}/")
+            print(f"User Guides: {tekton_root}/MetaData/TektonDocumentation/UserGuides/{component}/")
+            return
+        
+        
+        # Get input from message args first, then stdin, then interactive
+        if args.message:
+            # Message provided as arguments - this takes priority
+            input_data = ' '.join(args.message).strip()
+            if args.debug:
+                print(f"[DEBUG] Using message args: {args.message}")
+                print(f"[DEBUG] Joined as: '{input_data}'")
+        elif not sys.stdin.isatty():
+            # Data might be piped in
+            # Try to read with a very short timeout to avoid hanging
+            import select
+            if select.select([sys.stdin], [], [], 0.0)[0]:
+                input_data = sys.stdin.read().strip()
+                if args.debug:
+                    print(f"[DEBUG] Got piped input: '{input_data}'")
+            else:
+                # No data in pipe, treat as interactive
+                print(f"[aish] Entering interactive mode with {component}")
+                print("Type your message and press Ctrl+D when done:")
+                input_data = sys.stdin.read().strip()
         else:
             # Interactive mode with specific AI
-            print(f"[aish] Entering interactive mode with {ai_name}")
+            print(f"[aish] Entering interactive mode with {component}")
             print("Type your message and press Ctrl+D when done:")
-            input_data = sys.stdin.read()
+            input_data = sys.stdin.read().strip()
         
-        # Route to AI
-        if ai_name == 'team-chat':
-            shell.execute_command(f'team-chat "{input_data}"')
+        # Check if we actually have data
+        if not input_data:
+            print(f"aish: No message provided for {component}", file=sys.stderr)
+            sys.exit(1)
+        
+        # Send directly to AI (no synthetic pipeline)
+        if component == 'team-chat':
+            shell.broadcast_message(input_data)
         else:
-            shell.execute_command(f'echo "{input_data}" | {ai_name}')
+            shell.send_to_ai(component, input_data)
     
     # Original behavior for other cases
     elif args.command:
