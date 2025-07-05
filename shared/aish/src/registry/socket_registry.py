@@ -123,6 +123,11 @@ class SocketRegistry:
         
         # Write to specific socket
         return self._write_to_socket(socket_id, message)
+        
+        # TODO: Should use AI service for ALL messages
+        # from shared.ai.ai_service import get_service
+        # service = get_service()
+        # But keeping old path for now since it works
     
     def _write_to_socket(self, socket_id: str, message: str) -> bool:
         """Internal method to write to a specific socket"""
@@ -494,70 +499,70 @@ class SocketRegistry:
         return None
     
     async def write_all(self, message: str, exclude: List[str] = None) -> Dict[str, bool]:
-        """Broadcast to all active AI sockets concurrently"""
+        """Broadcast using AI service"""
+        from shared.ai.ai_service import get_service
+        
         exclude = exclude or []
         results = {}
         
         # Get all available AIs
         if not self._ai_cache:
             self.discover_ais()
+            
+        # Get service
+        service = get_service(debug=True)  # Force debug for now
         
-        # Create tasks for concurrent sending
-        tasks = []
+        # Register and broadcast (deduplicate by actual AI ID)
+        ai_ids = []
+        seen_ids = set()
         for ai_id, ai_info in self._ai_cache.items():
-            if ai_id in exclude or ai_info['id'] in exclude:
+            actual_id = ai_info['id']  # The real AI ID
+            
+            if actual_id in seen_ids:
+                continue  # Skip duplicates
+                
+            if actual_id in exclude or ai_id in exclude:
                 continue
-            
-            # Only send to AIs with socket connections
+                
             if 'port' in ai_info:
-                task = self._send_to_ai_async(ai_id, ai_info, message)
-                tasks.append((ai_id, task))
+                seen_ids.add(actual_id)
+                host = ai_info.get('host', 'localhost')
+                port = ai_info['port']
+                service.register_ai(actual_id, host, port)
+                ai_ids.append(actual_id)
+                
+        # Send to all
+        self._last_broadcast_ids = service.broadcast(message, ai_ids)
         
-        # Send all messages concurrently
-        if tasks:
-            import asyncio
-            responses = await asyncio.gather(*[task for _, task in tasks], return_exceptions=True)
+        # Process all messages now
+        await service.process_all_messages()
+        
+        # Mark all as sent
+        for ai_id in ai_ids:
+            results[ai_id] = True
             
-            for i, (ai_id, _) in enumerate(tasks):
-                if isinstance(responses[i], Exception):
-                    results[ai_id] = False
-                    if self.debug:
-                        print(f"Failed to send to {ai_id}: {responses[i]}")
-                else:
-                    results[ai_id] = responses[i]
-        
         return results
     
     async def read_response_chunks(self, timeout: float = 30.0):
-        """Yield responses as they arrive from any AI"""
-        import asyncio
+        """Yield responses as they arrive"""
+        from shared.ai.ai_service import get_service
         
-        start_time = asyncio.get_event_loop().time()
+        if not hasattr(self, '_last_broadcast_ids'):
+            return
+            
+        service = get_service(debug=self.debug)
         
-        # Monitor all message queues
-        while True:
-            # Check timeout
-            if asyncio.get_event_loop().time() - start_time > timeout:
-                break
-            
-            # Check each queue for messages
-            found_message = False
-            for socket_id, queue in self.message_queues.items():
-                if queue:
-                    ai_name = self.sockets[socket_id]['ai_name']
-                    message = queue.popleft()
-                    
-                    yield {
-                        'ai_id': f"{ai_name}-ai",
-                        'ai_name': ai_name,
-                        'content': message,
-                        'timestamp': datetime.now().isoformat()
-                    }
-                    found_message = True
-            
-            # Small delay if no messages found
-            if not found_message:
-                await asyncio.sleep(0.1)
+        # Collect responses
+        async for ai_id, response in service.collect_responses(
+            self._last_broadcast_ids, timeout=35.0
+        ):
+            if response['success']:
+                yield {
+                    'ai_id': ai_id,
+                    'ai_name': ai_id.replace('-ai', ''),
+                    'content': response['response'],
+                    'timestamp': datetime.now().isoformat()
+                }
     
     async def _send_to_ai_async(self, ai_id: str, ai_info: Dict[str, Any], message: str) -> bool:
         """Send message to a single AI asynchronously"""
