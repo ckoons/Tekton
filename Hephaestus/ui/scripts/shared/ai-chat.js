@@ -94,7 +94,8 @@ window.AIChat = {
             body: JSON.stringify({
                 message: message,
                 moderation_mode: 'pass_through',
-                timeout: 10.0
+                timeout: 10.0,
+                target_sockets: aiNames.length > 0 ? aiNames : null  // null means broadcast to all
             })
         });
         

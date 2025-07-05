@@ -384,6 +384,17 @@
 }
 
 /* Team Chat Specific */
+.noesis__panel--team .chat-interface {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 24px;
+}
+
 .team-chat-header {
   padding: 16px;
   background-color: var(--bg-tertiary, #333345);
@@ -400,6 +411,16 @@
   align-items: center;
   gap: 8px;
   color: var(--text-secondary, #aaaaaa);
+}
+
+.noesis__panel--team .chat-messages {
+  position: relative;
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
 /* Footer with Chat Input */
@@ -627,11 +648,24 @@ function noesis_sendTeamChatMessage() {
     
     // Use shared AI chat module for team broadcast
     if (window.AIChat) {
-        // For broadcast, pass empty array; otherwise specific AIs
-        const targets = broadcast ? [] : ['noesis-ai', 'athena-ai', 'sophia-ai'];
+        // For now, just send to one AI as a test
+        // TODO: Fix team-chat endpoint to return responses
+        const testMessage = broadcast ? 
+            `[BROADCAST TO ALL] ${fullMessage}` : 
+            `[TO: athena-ai, sophia-ai] ${fullMessage}`;
         
-        window.AIChat.broadcastMessage(fullMessage, targets)
-            .then(responses => {
+        // Temporarily use single AI chat until team-chat is fixed
+        window.AIChat.sendMessage('apollo-ai', testMessage)
+            .then(response => {
+                // Remove typing indicator
+                noesis_removeTypingIndicator(typingId);
+                
+                // Format as if it came from team chat
+                const responses = [{
+                    socket_id: 'apollo-ai',
+                    content: response.content || '',
+                    ...response
+                }];
                 // Remove typing indicator
                 noesis_removeTypingIndicator(typingId);
                 
