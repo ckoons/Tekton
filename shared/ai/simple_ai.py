@@ -111,8 +111,26 @@ def ai_send_sync(ai_id: str, message: str, host: Optional[str] = None, port: Opt
             except:
                 pass
     
-    # Use the async version
-    return asyncio.run(ai_send(ai_id, message, host, port))
+    if not host or not port:
+        raise ValueError(f"Host and port required for {ai_id}")
+    
+    # Use service's sync method if available, or run async version in new loop
+    service = get_service()
+    try:
+        # Try using service sync method first
+        return service.send_message_sync(ai_id, message)
+    except RuntimeError:
+        # If sync method fails, try async version in new event loop
+        try:
+            loop = asyncio.get_running_loop()
+            # We're in an async context, use thread pool
+            import concurrent.futures
+            with concurrent.futures.ThreadPoolExecutor() as executor:
+                future = executor.submit(asyncio.run, ai_send(ai_id, message, host, port))
+                return future.result()
+        except RuntimeError:
+            # No event loop running, safe to use asyncio.run
+            return asyncio.run(ai_send(ai_id, message, host, port))
 
 # Helper to map ports to AI IDs
 def _get_ai_id_from_port(port: int) -> Optional[str]:
@@ -166,7 +184,9 @@ def register_all_ais():
     ]
     
     for ai_id, host, port in ais:
-        service.register_ai(ai_id, host, port)
+        # Don't auto-connect - just make sure the queues exist
+        if ai_id not in service.queues:
+            service.queues[ai_id] = {}
 
 # Auto-register on import
 register_all_ais()

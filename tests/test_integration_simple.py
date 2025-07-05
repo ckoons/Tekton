@@ -54,12 +54,12 @@ def test_simple_ai_mock():
         
         # This should fail with connection error (expected)
         try:
-            response = ai_send_sync("test-ai", "hello", "localhost", 99999)
+            response = ai_send_sync("non-existent-ai", "hello", "localhost", 99999)
             print(f"✗ {test_name}: Should have failed")
             return False
         except Exception as e:
             # Expected to fail - AI not running
-            if "Could not connect" in str(e):
+            if "Could not connect" in str(e) or "AI non-existent-ai not registered" in str(e):
                 print(f"✓ {test_name}")
                 return True
             else:
