@@ -166,6 +166,51 @@ class AIService:
     def broadcast(self, request: str, ai_ids: List[str]) -> Dict[str, str]:
         """Send to multiple AIs"""
         return {ai_id: self.send_request(ai_id, request) for ai_id in ai_ids}
+    
+    async def send_message(self, ai_id: str, message: str, host: str = None, port: int = None, timeout: float = 30.0) -> str:
+        """Simple async method to send message and get response"""
+        # Register AI if needed
+        if ai_id not in self.connections:
+            if not host or not port:
+                raise ValueError(f"AI {ai_id} not registered and no host/port provided")
+            self.register_ai(ai_id, host, port)
+        
+        # Queue the message
+        msg_id = self.send_request(ai_id, message)
+        
+        # Process it
+        await self.process_message(ai_id, msg_id)
+        
+        # Get response
+        response = self.get_response(ai_id, msg_id)
+        
+        if response:
+            if response['success']:
+                return response['response']
+            else:
+                raise Exception(f"AI error: {response['error']}")
+        else:
+            raise TimeoutError(f"No response from {ai_id}")
+    
+    def send_message_sync(self, ai_id: str, message: str, host: str = None, port: int = None, timeout: float = 30.0) -> str:
+        """Simple sync method to send message and get response"""
+        import asyncio
+        
+        # Check if we're in an event loop
+        try:
+            loop = asyncio.get_running_loop()
+        except RuntimeError:
+            # No loop running, we can use asyncio.run
+            return asyncio.run(self.send_message(ai_id, message, host, port, timeout))
+        else:
+            # Already in a loop, use thread pool
+            import concurrent.futures
+            with concurrent.futures.ThreadPoolExecutor() as executor:
+                future = executor.submit(
+                    asyncio.run,
+                    self.send_message(ai_id, message, host, port, timeout)
+                )
+                return future.result()
         
     async def collect_responses(self, msg_ids: Dict[str, str], timeout: float = 35.0):
         """Yield responses as they arrive"""
