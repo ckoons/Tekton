@@ -37,6 +37,7 @@ class AIService:
         self.debug = debug
         self.queues: Dict[str, Dict[str, Message]] = {}  # ai_id -> {msg_id -> Message}
         self.connections: Dict[str, Connection] = {}  # ai_id -> Connection
+        self._loop = None  # Store the event loop
         
     def register_ai(self, ai_id: str, host: str, port: int):
         """Register an AI"""
@@ -110,6 +111,16 @@ class AIService:
     async def _connect(self, conn: Connection):
         """Connect to AI"""
         try:
+            # Close existing connection if any (might be from different loop)
+            if conn.writer:
+                try:
+                    conn.writer.close()
+                    await conn.writer.wait_closed()
+                except:
+                    pass
+                conn.reader = None
+                conn.writer = None
+            
             conn.reader, conn.writer = await asyncio.open_connection(conn.host, conn.port)
             conn.connected = True
             if self.debug:
@@ -117,6 +128,7 @@ class AIService:
         except Exception as e:
             if self.debug:
                 print(f"Failed to connect to {conn.ai_id} at {conn.host}:{conn.port}: {e}")
+            conn.connected = False
                 
     async def _send_message(self, conn: Connection, msg: Message):
         """Send message and wait for response"""
@@ -199,11 +211,7 @@ class AIService:
         # Check if we're in an event loop
         try:
             loop = asyncio.get_running_loop()
-        except RuntimeError:
-            # No loop running, we can use asyncio.run
-            return asyncio.run(self.send_message(ai_id, message, host, port, timeout))
-        else:
-            # Already in a loop, use thread pool
+            # Already in a loop, use thread pool to run in new loop
             import concurrent.futures
             with concurrent.futures.ThreadPoolExecutor() as executor:
                 future = executor.submit(
@@ -211,6 +219,21 @@ class AIService:
                     self.send_message(ai_id, message, host, port, timeout)
                 )
                 return future.result()
+        except RuntimeError:
+            # No loop running
+            if self._loop is None:
+                # Create and store a loop for this service instance
+                self._loop = asyncio.new_event_loop()
+            
+            # Run in our persistent loop
+            asyncio.set_event_loop(self._loop)
+            try:
+                return self._loop.run_until_complete(
+                    self.send_message(ai_id, message, host, port, timeout)
+                )
+            finally:
+                # Don't close the loop - we'll reuse it
+                asyncio.set_event_loop(None)
         
     async def collect_responses(self, msg_ids: Dict[str, str], timeout: float = 35.0):
         """Yield responses as they arrive"""

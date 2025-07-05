@@ -164,6 +164,37 @@ class AISocketClient:
                 "elapsed_time": 2.5
             }
         """
+        # Skip routing if this is a health check or if we're already inside simple_ai
+        # DISABLED for now - routing happens at registry level
+        if False and not _internal_health_check and not getattr(self, '_in_simple_ai', False):
+            # Route through simple_ai for ALL communication
+            try:
+                from .simple_ai import ai_send
+                
+                # Find AI ID from port if not provided
+                ai_id = f"{host}:{port}"
+                
+                # Mark that we're in simple_ai to avoid recursion
+                self._in_simple_ai = True
+                try:
+                    # Use simple_ai (one queue, one socket)
+                    response = await ai_send(ai_id, message, host, port)
+                    
+                    return {
+                        "success": True,
+                        "response": response,
+                        "ai_id": ai_id,
+                        "model": "unknown",
+                        "elapsed_time": 0,
+                        "routed_through": "simple_ai"
+                    }
+                finally:
+                    self._in_simple_ai = False
+            except Exception as e:
+                if self.debug:
+                    logger.debug(f"Simple AI routing failed: {e}, falling back to direct connection")
+                # Continue with original implementation as fallback
+        
         # Ensure pool is initialized (lazy init)
         await self._ensure_pool_initialized()
         
@@ -595,6 +626,30 @@ class SyncAISocketClient:
         
     def send_message(self, host: str, port: int, message: str, **kwargs) -> Dict[str, Any]:
         """Sync version of send_message."""
+        # Route through simple_ai for ALL communication
+        # DISABLED for now - routing happens at registry level
+        if False:
+            try:
+                from .simple_ai import ai_send_sync
+                
+                # Find AI ID from port if not provided
+                ai_id = f"{host}:{port}"
+                
+                # Use simple_ai (one queue, one socket)
+                response = ai_send_sync(ai_id, message, host, port)
+                
+                return {
+                    "success": True,
+                    "response": response,
+                    "ai_id": ai_id,
+                    "model": "unknown",
+                    "elapsed_time": 0,
+                    "routed_through": "simple_ai"
+                }
+            except Exception as e:
+                # Fall back to original implementation
+                pass
+            
         loop = None
         try:
             loop = asyncio.get_running_loop()

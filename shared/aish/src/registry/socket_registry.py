@@ -130,64 +130,46 @@ class SocketRegistry:
         # But keeping old path for now since it works
     
     def _write_to_socket(self, socket_id: str, message: str) -> bool:
-        """Internal method to write to a specific socket"""
+        """Internal method to write to a specific socket - uses simple_ai"""
         if socket_id not in self.sockets:
             return False
         
         socket_info = self.sockets[socket_id]
         ai_name = socket_info['ai_name']
         
-        # Add destination header
-        message_with_header = f"[team-chat-to-{ai_name}] {message}"
-        
         try:
-            # Resolve AI name dynamically
+            # Use simple_ai for ALL communication
+            from shared.ai.simple_ai import ai_send_sync
+            
+            # Resolve AI info
             ai_info = self._get_ai_info(ai_name)
             if not ai_info:
                 if self.debug:
                     print(f"Could not resolve AI name '{ai_name}'")
-                return self._write_via_team_chat(socket_id, ai_name, message)
-            
-            # Check if this is a Greek Chorus AI (has socket info)
-            if 'socket' in ai_info and 'host' in ai_info and 'port' in ai_info:
-                return self._write_via_socket(socket_id, ai_info, message)
-            
-            # Fall back to Rhetor specialist endpoint
-            specialist_id = ai_info.get('id', ai_name)
-            payload = {
-                "message": message,
-                "temperature": 0.7
-            }
-            
-            response = requests.post(
-                f"{self.rhetor_endpoint}/api/ai/specialists/{specialist_id}/message",
-                json=payload,
-                timeout=30
-            )
-            
-            if response.status_code == 200:
-                result = response.json()
-                # Extract the response content
-                ai_response = result.get('response', result.get('content', ''))
-                
-                # Add to message queue for this socket
-                if socket_id in self.message_queues:
-                    self.message_queues[socket_id].append(ai_response)
-                
-                return True
-            elif response.status_code == 404:
-                # Specialist not found, fallback to team chat
-                if self.debug:
-                    print(f"Specialist {specialist_id} not found, using team chat fallback")
-                return self._write_via_team_chat(socket_id, ai_name, message)
-            else:
-                if self.debug:
-                    print(f"Error from Rhetor: {response.status_code} - {response.text}")
                 return False
+            
+            # Get connection info
+            ai_id = ai_info.get('id', ai_name)
+            host = ai_info.get('host', 'localhost')
+            port = ai_info.get('port')
+            
+            if not port:
+                if self.debug:
+                    print(f"No port found for {ai_id}")
+                return False
+            
+            # Send via simple_ai (one queue, one socket)
+            response = ai_send_sync(ai_id, message, host, port)
+            
+            # Add to message queue for this socket
+            if socket_id in self.message_queues:
+                self.message_queues[socket_id].append(response)
+            
+            return True
                 
         except Exception as e:
             if self.debug:
-                print(f"Error calling Rhetor: {e}")
+                print(f"Error in _write_to_socket: {e}")
             return False
     
     def _write_via_team_chat(self, socket_id: str, ai_name: str, message: str) -> bool:
@@ -500,7 +482,7 @@ class SocketRegistry:
     
     async def write_all(self, message: str, exclude: List[str] = None) -> Dict[str, bool]:
         """Broadcast using AI service"""
-        from shared.ai.ai_service import get_service
+        from shared.ai.ai_service_simple import get_service
         
         exclude = exclude or []
         results = {}
@@ -545,7 +527,7 @@ class SocketRegistry:
     
     async def read_response_chunks(self, timeout: float = 30.0):
         """Yield responses as they arrive"""
-        from shared.ai.ai_service import get_service
+        from shared.ai.ai_service_simple import get_service
         
         if not hasattr(self, '_last_broadcast_ids'):
             return
