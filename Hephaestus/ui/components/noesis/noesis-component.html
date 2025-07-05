@@ -4,7 +4,7 @@
 <input type="radio" name="noesis-tab" id="noesis-tab-discovery" checked style="display: none;">
 <input type="radio" name="noesis-tab" id="noesis-tab-team" style="display: none;">
 
-<div class="noesis" id="noesis-container" data-tekton-component="noesis">
+<div class="noesis" id="noesis-container" data-tekton-component="noesis" data-tekton-ai="noesis-specialist" data-tekton-ai-ready="false">
     <!-- Component Header with Title -->
     <div class="noesis__header" data-tekton-zone="header">
         <div class="noesis__title-container">
@@ -47,9 +47,7 @@
                     </select>
                 </div>
                 <div class="chat-messages" id="noesis-discovery-messages" data-tekton-messages="discovery">
-                    <div class="chat-message system-message">
-                        <strong>Noesis:</strong> I discover patterns and generate insights across the Tekton ecosystem. What would you like me to explore?
-                    </div>
+                    <!-- Initial message will be added by first AI response -->
                 </div>
             </div>
         </div>
@@ -288,10 +286,26 @@
   margin-left: 32px;
 }
 
+.chat-message.ai-message {
+  background-color: rgba(33, 150, 243, 0.1);
+  border-left: 3px solid #2196F3;
+}
+
 .chat-message.discovery-message {
   background-color: rgba(255, 193, 7, 0.1);
   border: 1px solid #ffb300;
   margin: 8px 0;
+}
+
+.chat-message.insight-message {
+  background-color: rgba(156, 39, 176, 0.1);
+  border-left: 3px solid #9C27B0;
+}
+
+.chat-message.typing-message {
+  background-color: var(--bg-secondary, #252535);
+  opacity: 0.7;
+  font-style: italic;
 }
 
 .chat-input-container {
@@ -424,6 +438,28 @@
 <script>
 // Initialize Noesis component when loaded
 setTimeout(() => {
+    // Check Noesis health status
+    fetch('http://localhost:8015/health')
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'healthy') {
+                document.querySelector('#noesis-container').setAttribute('data-tekton-ai-ready', 'true');
+                document.querySelector('.noesis__status-indicator').setAttribute('data-status', 'active');
+                document.querySelector('.noesis__status-text').textContent = 'Connected';
+            }
+        })
+        .catch(error => {
+            console.error('Noesis health check failed:', error);
+            document.querySelector('.noesis__status-indicator').setAttribute('data-status', 'error');
+            document.querySelector('.noesis__status-text').textContent = 'Offline';
+        });
+    
+    // Ensure AIChat is available
+    if (!window.AIChat) {
+        console.warn('AIChat module not loaded yet, will retry functions...');
+        // The functions below will check for AIChat when called
+    }
+    
     if (window.NoesisComponent && typeof window.NoesisComponent.init === 'function') {
         window.NoesisComponent.init();
         console.log('Noesis component initialized');
@@ -439,41 +475,193 @@ setTimeout(() => {
     }
 }, 100);
 
-// Chat functionality
+// Chat functionality - Following Rhetor's pattern
 function noesis_sendChat() {
+    const isDiscoveryTab = document.getElementById('noesis-tab-discovery').checked;
+    
+    if (isDiscoveryTab) {
+        noesis_sendDiscoveryChatMessage();
+    } else {
+        noesis_sendTeamChatMessage();
+    }
+}
+
+function noesis_sendDiscoveryChatMessage() {
     const input = document.getElementById('noesis-chat-input');
     const message = input.value.trim();
+    const scopeSelect = document.getElementById('noesis-search-scope');
     
     if (!message) return;
     
-    // Determine which tab is active
-    const discoveryActive = document.getElementById('noesis-tab-discovery').checked;
-    const chatType = discoveryActive ? 'discovery' : 'team';
-    const messagesContainer = document.getElementById(`noesis-${chatType}-messages`);
+    // Add scope to message if not "all"
+    const fullMessage = scopeSelect.value !== 'all' 
+        ? `[Scope: ${scopeSelect.value}] ${message}`
+        : message;
     
     // Add user message
-    const userMessageDiv = document.createElement('div');
-    userMessageDiv.className = 'chat-message user-message';
-    userMessageDiv.innerHTML = `<strong>You:</strong> ${message}`;
-    messagesContainer.appendChild(userMessageDiv);
+    noesis_addChatMessage('discovery', message, 'user');
     
     // Clear input
     input.value = '';
     
-    // Scroll to bottom
+    // Add typing indicator
+    const typingId = 'noesis-typing-' + Date.now();
+    noesis_addChatMessage('discovery', '...', 'typing', typingId);
+    
+    // Use shared AI chat module to talk to noesis-ai
+    if (window.AIChat) {
+        console.log('Sending message to noesis-ai:', fullMessage);
+        window.AIChat.sendMessage('noesis-ai', fullMessage)
+            .then(response => {
+                console.log('Received response:', response);
+                // Remove typing indicator
+                noesis_removeTypingIndicator(typingId);
+                
+                // Parse response for special formatting
+                const parts = window.AIChat.parseResponse(response);
+                
+                parts.forEach(part => {
+                    if (part.type === 'text' && part.content.trim()) {
+                        // Clean up response text if needed
+                        let content = part.content;
+                        if (content.startsWith('Received message message.')) {
+                            content = content.replace('Received message message.', '');
+                        }
+                        noesis_addChatMessage('discovery', content, 'ai');
+                    } else if (part.type === 'block') {
+                        // Special block formatting
+                        noesis_addChatMessage('discovery', part.content, 'insight');
+                    }
+                });
+            })
+            .catch(error => {
+                // Remove typing indicator
+                noesis_removeTypingIndicator(typingId);
+                
+                console.error('Noesis discovery chat error:', error);
+                console.error('Error details:', error.message, error.stack);
+                noesis_addChatMessage('discovery', 
+                    `Failed to connect to Noesis AI. Error: ${error.message}`, 
+                    'system');
+            });
+    } else {
+        // Fallback if AIChat module not loaded
+        noesis_removeTypingIndicator(typingId);
+        noesis_addChatMessage('discovery', 
+            'AI Chat module not loaded. Please refresh the page.', 
+            'system');
+    }
+}
+
+function noesis_sendTeamChatMessage() {
+    const input = document.getElementById('noesis-chat-input');
+    const message = input.value.trim();
+    const broadcast = document.getElementById('noesis-broadcast-mode').checked;
+    
+    if (!message) return;
+    
+    // Add user message with context
+    const fullMessage = `[From Noesis UI] ${message}`;
+    noesis_addChatMessage('team', message, 'user');
+    
+    // Clear input
+    input.value = '';
+    
+    // Add typing indicator
+    const typingId = 'noesis-team-typing-' + Date.now();
+    noesis_addChatMessage('team', '...', 'typing', typingId);
+    
+    // Use shared AI chat module for team broadcast
+    if (window.AIChat) {
+        // For broadcast, pass empty array; otherwise specific AIs
+        const targets = broadcast ? [] : ['noesis-ai', 'athena-ai', 'sophia-ai'];
+        
+        window.AIChat.broadcastMessage(fullMessage, targets)
+            .then(responses => {
+                // Remove typing indicator
+                noesis_removeTypingIndicator(typingId);
+                
+                // Handle responses
+                if (responses && responses.length > 0) {
+                    responses.forEach(resp => {
+                        let content = resp.content || resp.message || '';
+                        
+                        // Clean up response text
+                        if (content.startsWith('Received message message.')) {
+                            content = content.replace('Received message message.', '');
+                        }
+                        
+                        // Extract sender name
+                        const sender = resp.socket_id ? 
+                            resp.socket_id.replace('-ai', '').replace('-specialist', '') : 
+                            'AI';
+                        
+                        // Parse for special formatting
+                        const parts = window.AIChat.parseResponse(content);
+                        parts.forEach(part => {
+                            if (part.type === 'text' && part.content.trim()) {
+                                noesis_addChatMessage('team', part.content, 'ai', null, sender);
+                            } else if (part.type === 'block') {
+                                noesis_addChatMessage('team', part.content, 'discovery', null, sender);
+                            }
+                        });
+                    });
+                } else {
+                    noesis_addChatMessage('team', 'Message broadcast to team.', 'system');
+                }
+            })
+            .catch(error => {
+                // Remove typing indicator
+                noesis_removeTypingIndicator(typingId);
+                
+                console.error('Team chat error:', error);
+                noesis_addChatMessage('team', 
+                    'Failed to send team message. Please ensure AI specialists are running.', 
+                    'system');
+            });
+    } else {
+        // Fallback if AIChat module not loaded
+        noesis_removeTypingIndicator(typingId);
+        noesis_addChatMessage('team', 
+            'AI Chat module not loaded. Please refresh the page.', 
+            'system');
+    }
+}
+
+function noesis_addChatMessage(chatType, message, messageClass, id = null, sender = null) {
+    const messagesContainer = document.getElementById(`noesis-${chatType}-messages`);
+    if (!messagesContainer) return;
+    
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `chat-message ${messageClass}-message`;
+    if (id) messageDiv.id = id;
+    
+    // Determine the label
+    let label = '';
+    if (messageClass === 'user') {
+        label = 'You';
+    } else if (messageClass === 'ai') {
+        label = sender || 'Noesis';
+    } else if (messageClass === 'discovery') {
+        label = 'Discovery';
+    } else if (messageClass === 'insight') {
+        label = 'Insight';
+    } else if (messageClass === 'system') {
+        label = 'System';
+    } else if (messageClass === 'typing') {
+        label = 'Noesis';
+    }
+    
+    messageDiv.innerHTML = `<strong>${label}:</strong> ${message}`;
+    messagesContainer.appendChild(messageDiv);
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
-    
-    // Send to backend (placeholder for now)
-    console.log(`Noesis ${chatType} chat:`, message);
-    
-    // Simulate AI response
-    setTimeout(() => {
-        const aiMessageDiv = document.createElement('div');
-        aiMessageDiv.className = 'chat-message ai-message';
-        aiMessageDiv.innerHTML = `<strong>Noesis:</strong> Analyzing patterns for "${message}". I'm discovering insights across the Tekton ecosystem. This feature is currently being developed.`;
-        messagesContainer.appendChild(aiMessageDiv);
-        messagesContainer.scrollTop = messagesContainer.scrollHeight;
-    }, 1000);
+}
+
+function noesis_removeTypingIndicator(id) {
+    const indicator = document.getElementById(id);
+    if (indicator) {
+        indicator.remove();
+    }
 }
 
 // Add enter key handler for chat input when component loads
