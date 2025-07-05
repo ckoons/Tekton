@@ -33,6 +33,13 @@ from landmarks import (
     danger_zone
 )
 
+# Import connection pool if available
+try:
+    from .connection_pool import get_connection_pool
+    HAS_CONNECTION_POOL = True
+except ImportError:
+    HAS_CONNECTION_POOL = False
+
 logger = logging.getLogger(__name__)
 
 
@@ -99,7 +106,23 @@ class AISocketClient:
         self.connection_timeout = connection_timeout
         self.max_retries = max_retries
         self.debug = debug
-        self._connection_pool: Dict[Tuple[str, int], asyncio.StreamWriter] = {}
+        # Use global connection pool instead of local one
+        self._global_pool = None
+        self._pool_initialized = False
+    
+    async def _ensure_pool_initialized(self):
+        """Ensure connection pool is initialized (lazy init)"""
+        if not self._pool_initialized and HAS_CONNECTION_POOL:
+            try:
+                self._global_pool = await get_connection_pool()
+                self._pool_initialized = True
+                if self.debug:
+                    logger.debug("Initialized global connection pool")
+            except Exception as e:
+                if self.debug:
+                    logger.debug(f"Failed to initialize connection pool: {e}")
+                self._global_pool = None
+                self._pool_initialized = True  # Don't retry
         
     @performance_boundary(
         title="AI Socket Message Exchange",
@@ -141,6 +164,43 @@ class AISocketClient:
                 "elapsed_time": 2.5
             }
         """
+        # Ensure pool is initialized (lazy init)
+        await self._ensure_pool_initialized()
+        
+        # Use global connection pool if available
+        if self._global_pool and not _internal_health_check:
+            try:
+                # Find AI ID from registry if possible
+                ai_id = f"{host}:{port}"
+                
+                result = await self._global_pool.send_message(
+                    ai_id=ai_id,
+                    host=host,
+                    port=port,
+                    message=message,
+                    context=context,
+                    timeout=timeout or self.default_timeout
+                )
+                
+                # Make response format consistent with existing code
+                if result.get('success'):
+                    return {
+                        "success": True,
+                        "response": result.get('response', ''),
+                        "ai_id": result.get('ai_id', ai_id),
+                        "model": result.get('model', 'unknown'),
+                        "elapsed_time": result.get('elapsed_time', 0),
+                        "connection_reused": result.get('connection_reused', False)
+                    }
+                else:
+                    # Fall through to direct connection on failure
+                    if self.debug:
+                        logger.debug(f"Pool failed for {ai_id}: {result.get('error')}, using direct connection")
+            except Exception as e:
+                if self.debug:
+                    logger.debug(f"Connection pool error: {e}, falling back to direct connection")
+                # Fall through to direct connection
+        
         timeout = timeout or self.default_timeout
         start_time = time.time()
         

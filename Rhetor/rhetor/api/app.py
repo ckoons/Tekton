@@ -252,6 +252,10 @@ except ImportError as e:
 try:
     from .team_chat_endpoints import router as team_chat_router
     app.include_router(team_chat_router)
+    
+    # Include new streaming team chat
+    from .team_chat_streaming import router as team_chat_streaming_router
+    app.include_router(team_chat_streaming_router)
     logger.info("Team Chat endpoints added to Rhetor API")
 except ImportError as e:
     logger.warning(f"Team Chat endpoints not available: {e}")

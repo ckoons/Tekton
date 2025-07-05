@@ -35,7 +35,7 @@ class TeamChatRequest(BaseModel):
         description="Specific socket IDs to target (None for all)"
     )
     timeout: Optional[float] = Field(
-        10.0,
+        2.0,
         description="Timeout in seconds for collecting responses"
     )
     metadata: Optional[Dict[str, Any]] = Field(
@@ -145,7 +145,7 @@ async def team_chat(request: TeamChatRequest):
 async def team_chat_stream(
     message: str = Query(..., description="Message to broadcast"),
     moderation_mode: str = Query("pass_through", description="Moderation mode"),
-    timeout: float = Query(10.0, description="Timeout in seconds")
+    timeout: float = Query(2.0, description="Timeout in seconds")
 ):
     """
     Stream team chat responses using Server-Sent Events.

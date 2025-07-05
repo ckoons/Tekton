@@ -758,8 +758,8 @@ class MCPToolsIntegrationUnified:
             from shared.ai.socket_client import AISocketClient
             
             client = AISocketClient(
-                default_timeout=timeout,
-                connection_timeout=2.0,
+                default_timeout=min(timeout, 2.0),  # Cap at 2 seconds for fast responses
+                connection_timeout=0.5,  # Fast connection timeout
                 max_retries=0  # No retries for team chat to avoid delays
             )
             

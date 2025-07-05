@@ -642,14 +642,85 @@ function noesis_sendTeamChatMessage() {
     // Clear input
     input.value = '';
     
-    // Add typing indicator
-    const typingId = 'noesis-team-typing-' + Date.now();
-    noesis_addChatMessage('team', '...', 'typing', typingId);
-    
-    // Use shared AI chat module for team broadcast
-    if (window.AIChat) {
+    // Check if streaming team chat is available
+    if (window.StreamingTeamChat) {
+        // Use new streaming team chat
+        let responseCount = 0;
+        const startTime = Date.now();
+        
+        // Add initial status
+        const statusId = 'team-status-' + Date.now();
+        noesis_addChatMessage('team', 'Broadcasting to team...', 'system', statusId);
+        
+        const abort = window.StreamingTeamChat.streamMessage(
+            fullMessage,
+            {
+                timeout: 2.0,
+                includeErrors: true,
+                targetSpecialists: broadcast ? null : ['athena-ai', 'sophia-ai']
+            },
+            
+            // On each response
+            (response) => {
+                responseCount++;
+                
+                // Update status on first response
+                if (responseCount === 1) {
+                    const statusEl = document.getElementById(statusId);
+                    if (statusEl) {
+                        statusEl.innerHTML = '<strong>System:</strong> Receiving responses...';
+                    }
+                }
+                
+                // Extract sender name
+                const sender = response.specialist.replace('-ai', '').replace('-specialist', '');
+                
+                // Parse response for special formatting
+                const parts = window.AIChat ? window.AIChat.parseResponse(response.content) : 
+                    [{type: 'text', content: response.content}];
+                    
+                parts.forEach(part => {
+                    if (part.type === 'text' && part.content.trim()) {
+                        noesis_addChatMessage('team', part.content, 'ai', null, sender);
+                    } else if (part.type === 'block') {
+                        noesis_addChatMessage('team', part.content, 'discovery', null, sender);
+                    }
+                });
+            },
+            
+            // On error
+            (error) => {
+                if (error.type === 'timeout') {
+                    // Don't show timeout errors by default
+                    console.log(`${error.specialist} timed out`);
+                } else {
+                    noesis_addChatMessage('team', 
+                        `${error.specialist}: ${error.error}`, 
+                        'system');
+                }
+            },
+            
+            // On complete
+            (stats) => {
+                // Update final status
+                const statusEl = document.getElementById(statusId);
+                if (statusEl) {
+                    const elapsed = (Date.now() - startTime) / 1000;
+                    statusEl.innerHTML = `<strong>System:</strong> Team chat complete - ${stats.totalResponses} responses in ${elapsed.toFixed(1)}s`;
+                }
+            }
+        );
+        
+        // Store abort function in case we need it
+        window.noesisTeamChatAbort = abort;
+        
+    } else if (window.AIChat) {
+        // Fallback to old method
+        // Add typing indicator
+        const typingId = 'noesis-team-typing-' + Date.now();
+        noesis_addChatMessage('team', '...', 'typing', typingId);
+        
         // For now, just send to one AI as a test
-        // TODO: Fix team-chat endpoint to return responses
         const testMessage = broadcast ? 
             `[BROADCAST TO ALL] ${fullMessage}` : 
             `[TO: athena-ai, sophia-ai] ${fullMessage}`;
@@ -666,8 +737,6 @@ function noesis_sendTeamChatMessage() {
                     content: response.content || '',
                     ...response
                 }];
-                // Remove typing indicator
-                noesis_removeTypingIndicator(typingId);
                 
                 // Handle responses
                 if (responses && responses.length > 0) {
@@ -708,10 +777,9 @@ function noesis_sendTeamChatMessage() {
                     'system');
             });
     } else {
-        // Fallback if AIChat module not loaded
-        noesis_removeTypingIndicator(typingId);
+        // No chat module available
         noesis_addChatMessage('team', 
-            'AI Chat module not loaded. Please refresh the page.', 
+            'Chat modules not loaded. Please refresh the page.', 
             'system');
     }
 }

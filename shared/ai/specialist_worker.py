@@ -337,6 +337,17 @@ class AISpecialistWorker(ABC):
     )
     async def start(self):
         """Start the AI specialist server."""
+        # Pre-initialize connection pool if available
+        try:
+            from .connection_pool import get_connection_pool
+            pool = await get_connection_pool()
+            pool.start_health_monitoring()
+            self.logger.info("Connection pool initialized and health monitoring started")
+        except ImportError:
+            pass  # Connection pool not available
+        except Exception as e:
+            self.logger.warning(f"Could not initialize connection pool: {e}")
+        
         self.server = await asyncio.start_server(
             self.handle_client,
             'localhost',

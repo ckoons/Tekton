@@ -2,7 +2,7 @@
 Socket Registry - Manages AI socket connections
 """
 
-from typing import Dict, Optional, Any, List
+from typing import Dict, Optional, Any, List, AsyncIterator
 from collections import deque
 from datetime import datetime
 import requests
@@ -492,6 +492,138 @@ class SocketRegistry:
                 return ai_info
         
         return None
+    
+    async def write_all(self, message: str, exclude: List[str] = None) -> Dict[str, bool]:
+        """Broadcast to all active AI sockets concurrently"""
+        exclude = exclude or []
+        results = {}
+        
+        # Get all available AIs
+        if not self._ai_cache:
+            self.discover_ais()
+        
+        # Create tasks for concurrent sending
+        tasks = []
+        for ai_id, ai_info in self._ai_cache.items():
+            if ai_id in exclude or ai_info['id'] in exclude:
+                continue
+            
+            # Only send to AIs with socket connections
+            if 'port' in ai_info:
+                task = self._send_to_ai_async(ai_id, ai_info, message)
+                tasks.append((ai_id, task))
+        
+        # Send all messages concurrently
+        if tasks:
+            import asyncio
+            responses = await asyncio.gather(*[task for _, task in tasks], return_exceptions=True)
+            
+            for i, (ai_id, _) in enumerate(tasks):
+                if isinstance(responses[i], Exception):
+                    results[ai_id] = False
+                    if self.debug:
+                        print(f"Failed to send to {ai_id}: {responses[i]}")
+                else:
+                    results[ai_id] = responses[i]
+        
+        return results
+    
+    async def read_response_chunks(self, timeout: float = 30.0):
+        """Yield responses as they arrive from any AI"""
+        import asyncio
+        
+        start_time = asyncio.get_event_loop().time()
+        
+        # Monitor all message queues
+        while True:
+            # Check timeout
+            if asyncio.get_event_loop().time() - start_time > timeout:
+                break
+            
+            # Check each queue for messages
+            found_message = False
+            for socket_id, queue in self.message_queues.items():
+                if queue:
+                    ai_name = self.sockets[socket_id]['ai_name']
+                    message = queue.popleft()
+                    
+                    yield {
+                        'ai_id': f"{ai_name}-ai",
+                        'ai_name': ai_name,
+                        'content': message,
+                        'timestamp': datetime.now().isoformat()
+                    }
+                    found_message = True
+            
+            # Small delay if no messages found
+            if not found_message:
+                await asyncio.sleep(0.1)
+    
+    async def _send_to_ai_async(self, ai_id: str, ai_info: Dict[str, Any], message: str) -> bool:
+        """Send message to a single AI asynchronously"""
+        try:
+            # Use unified registry client if available
+            if self.unified_registry and hasattr(self.unified_registry, 'send_message_async'):
+                response = await self.unified_registry.send_message_async(
+                    ai_id=ai_info['id'],
+                    message=message,
+                    timeout=2.0
+                )
+                
+                if response and response.get('success'):
+                    # Find or create socket for this AI
+                    socket_id = None
+                    for sid, sinfo in self.sockets.items():
+                        if sinfo['ai_name'] == ai_info['name'] or sinfo['ai_name'] == ai_id:
+                            socket_id = sid
+                            break
+                    
+                    if not socket_id:
+                        # Create temporary socket for response tracking
+                        socket_id = self.create(ai_info['name'] or ai_id)
+                    
+                    # Add response to queue
+                    if socket_id in self.message_queues:
+                        self.message_queues[socket_id].append(response.get('response', ''))
+                    
+                    return True
+            
+            # Fallback to direct socket connection
+            host = ai_info.get('host', 'localhost')
+            port = ai_info.get('port')
+            
+            if not port:
+                return False
+            
+            # Use async socket client
+            from shared.ai.socket_client import AISocketClient
+            client = AISocketClient(default_timeout=2.0)
+            
+            response = await client.send_message(host, port, message)
+            
+            if response['success']:
+                # Find or create socket for this AI
+                socket_id = None
+                for sid, sinfo in self.sockets.items():
+                    if sinfo['ai_name'] == ai_info['name'] or sinfo['ai_name'] == ai_id:
+                        socket_id = sid
+                        break
+                
+                if not socket_id:
+                    socket_id = self.create(ai_info['name'] or ai_id)
+                
+                # Add response to queue
+                if socket_id in self.message_queues:
+                    self.message_queues[socket_id].append(response.get('response', ''))
+                
+                return True
+            
+            return False
+            
+        except Exception as e:
+            if self.debug:
+                print(f"Failed to send to {ai_id}: {e}")
+            return False
     
     def _write_via_socket(self, socket_id: str, ai_info: Dict[str, Any], message: str) -> bool:
         """Write to AI via direct socket connection using shared client"""

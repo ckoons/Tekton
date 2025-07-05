@@ -191,13 +191,19 @@ class AIShell:
             return f"Unsupported pipeline type: {pipeline_type}", {}
     
     def _execute_team_chat(self, message):
-        """Execute team-chat broadcast"""
-        # Send to all active AIs
-        self.registry.write("team-chat-all", message)
+        """Execute team-chat broadcast using new orchestration pattern"""
+        import asyncio
         
-        # Read responses
-        responses = self.registry.read("team-chat-all")
-        return '\n'.join(responses) if responses else "No responses yet"
+        # Run the async team chat in sync context
+        try:
+            return self._run_async_team_chat(message)
+        except Exception as e:
+            if self.debug:
+                print(f"[DEBUG] Team chat error: {e}")
+            # Fallback to old method
+            self.registry.write("team-chat-all", message)
+            responses = self.registry.read("team-chat-all")
+            return '\n'.join(responses) if responses else "No responses yet"
     
     def _execute_pipe_stages(self, stages):
         """Execute pipeline stages"""
@@ -418,25 +424,15 @@ History Management:
     def broadcast_message(self, message):
         """Broadcast message to all AIs (team-chat)."""
         try:
-            # Get or create socket for team-chat
-            socket_id = self._get_or_create_socket('team-chat')
-            
             if message:
-                # Write message
-                success = self.registry.write(socket_id, message)
-                if not success:
-                    print("Failed to broadcast message")
-                    return
-                
-                # Read responses
-                responses = self.registry.read(socket_id)
-                if responses:
-                    print("Team responses:")
-                    print("-" * 40)
-                    for response in responses:
-                        print(response)
+                # Use the new orchestration pattern
+                result = self._execute_team_chat(message)
+                # Result already includes formatting
+                if "No AIs responded" not in result and "No responses" not in result:
+                    # Don't print again since _execute_team_chat already prints
+                    pass
                 else:
-                    print("No team responses received")
+                    print(result)
             else:
                 print("No message to broadcast")
                 
@@ -458,6 +454,65 @@ History Management:
             print("Use !<number> to replay a command (e.g., !1716)")
         else:
             print("No conversation history yet. Start chatting with AIs!")
+    
+    def _run_async_team_chat(self, message):
+        """Run async team chat in sync context"""
+        import asyncio
+        
+        # Create new event loop for this operation
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        
+        try:
+            return loop.run_until_complete(self._async_team_chat(message))
+        finally:
+            loop.close()
+    
+    async def _async_team_chat(self, message):
+        """Async team chat implementation using orchestration pattern"""
+        # First, discover all available AIs
+        self.registry.discover_ais(force_refresh=True)
+        
+        print("Broadcasting to team...")
+        
+        # Send to all AIs concurrently
+        results = await self.registry.write_all(message)
+        
+        # Count successful sends
+        success_count = sum(1 for success in results.values() if success)
+        print(f"Sent to {success_count} AIs")
+        
+        if success_count == 0:
+            return "No AIs responded to broadcast"
+        
+        # Collect responses as they arrive
+        print("\nTeam responses:")
+        print("-" * 40)
+        
+        responses_received = 0
+        response_lines = []
+        
+        async for response in self.registry.read_response_chunks(timeout=5.0):
+            ai_name = response['ai_name']
+            content = response['content']
+            
+            # Format and display
+            formatted = f"[{ai_name}]: {content}"
+            print(formatted)
+            response_lines.append(formatted)
+            
+            responses_received += 1
+            
+            # Stop if we've heard from everyone who was sent to
+            if responses_received >= success_count:
+                break
+        
+        print("-" * 40)
+        
+        if response_lines:
+            return '\n'.join(response_lines)
+        else:
+            return "No responses received"
 
 
 if __name__ == '__main__':
