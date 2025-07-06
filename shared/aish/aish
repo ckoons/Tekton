@@ -131,7 +131,79 @@ Environment variables:
                 'hephaestus',  # UI/DevTools
                 'team-chat']   # Broadcast to all
     
-    # Handle forwarding commands first
+    # Handle special commands first
+    if args.ai_or_script == 'whoami':
+        # Show terminal name from environment
+        terminal_name = os.environ.get('TERMA_TERMINAL_NAME', 'Not in terma')
+        print(terminal_name)
+        return
+    
+    if args.ai_or_script == 'list':
+        # Handle list commands
+        if args.message and len(args.message) > 0 and args.message[0] == 'commands':
+            # Show command reference
+            print("aish Command Reference")
+            print("=" * 50)
+            print()
+            print("CORE COMMANDS:")
+            print("  aish                           Show help")
+            print("  aish whoami                    Show identity information")
+            print("  aish list                      List available AI components")
+            print("  aish list commands             Show this command reference")
+            print("  aish <ai> \"message\"            Send message to AI")
+            print()
+            print("FORWARDING:")
+            print("  aish forward <ai> <terminal>   Forward AI messages to terminal")
+            print("  aish forward list              Show active forwards")
+            print("  aish forward remove <ai>       Remove forwarding")
+            print("  aish unforward <ai>            Remove forwarding (alternative)")
+            print()
+            print("TERMINAL:")
+            print("  aish terma inbox               Show terminal inbox")
+            print("  aish terma send <name> \"msg\"   Send inter-terminal message")
+            print("  aish terma broadcast \"msg\"     Broadcast to all terminals")
+            print()
+            print("ADVANCED:")
+            print("  echo \"msg\" | aish <ai>         Pipe input to AI")
+            print("  aish <ai1> | aish <ai2>        Chain AI responses")
+            print("  aish team-chat \"message\"       Broadcast to all AIs")
+            print()
+            tekton_root = os.environ.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
+            print(f"Full documentation: {tekton_root}/MetaData/TektonDocumentation/AITraining/aish/COMMAND_REFERENCE.md")
+            return
+        else:
+            # Show available AIs
+            print("Available AI Components:")
+            print()
+            print("Core AIs:")
+            print("  numa         - Practical implementation and engineering")
+            print("  prometheus   - Forward planning and foresight")
+            print("  athena       - Strategic wisdom and decision making")
+            print("  synthesis    - Integration and coordination")
+            print()
+            print("Specialized AIs:")
+            print("  apollo       - Predictive intelligence and attention")
+            print("  rhetor       - Communication and prompt optimization")
+            print("  metis        - Analysis and insight")
+            print("  harmonia     - Balance and system harmony")
+            print("  noesis       - Understanding and comprehension")
+            print("  engram       - Memory and persistence")
+            print("  penia        - Resource management")
+            print("  hermes       - Messaging and communication")
+            print("  ergon        - Work execution and tools")
+            print("  sophia       - Wisdom and knowledge")
+            print("  telos        - Purpose and completion")
+            print()
+            print("Infrastructure:")
+            print("  terma        - Terminal management")
+            print("  hephaestus   - User interface")
+            print()
+            print("Special:")
+            print("  team-chat    - Broadcast to all AIs")
+            print()
+            print("For all commands: aish list commands")
+            return
+    
     if args.ai_or_script == 'forward':
         from commands.forward import handle_forward_command
         return handle_forward_command(args.message or [])
@@ -206,12 +278,29 @@ Environment variables:
         shell.execute_script(args.ai_or_script)
     elif args.ai_or_script:
         # Unknown AI or command
-        print(f"aish: Unknown AI or file: {args.ai_or_script}", file=sys.stderr)
+        print(f"Error: Unknown AI or command: {args.ai_or_script}", file=sys.stderr)
+        print("", file=sys.stderr)
         print("Available AIs: " + ", ".join(ai_names), file=sys.stderr)
+        print("", file=sys.stderr)
+        print("For all commands: aish list commands", file=sys.stderr)
         sys.exit(1)
     else:
-        # Interactive mode
-        shell.interactive()
+        # No arguments - show help
+        print("aish - AI Shell for Tekton")
+        print()
+        print("Usage: aish <ai-name> \"message\"")
+        print()
+        print("Quick Start:")
+        print("  aish numa \"Hello\"          Send message to AI")
+        print("  aish list                  Show available AIs")
+        print("  aish list commands         Show all commands ← START HERE")
+        print()
+        tekton_root = os.environ.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
+        print(f"Documentation: {tekton_root}/MetaData/TektonDocumentation/AITraining/aish/COMMAND_REFERENCE.md")
+        print()
+        print("AI Documentation:")
+        print(f"  AI Training: {tekton_root}/MetaData/TektonDocumentation/AITraining/")
+        print(f"  User Guides: {tekton_root}/MetaData/TektonDocumentation/UserGuides/")
 
 if __name__ == '__main__':
     main()

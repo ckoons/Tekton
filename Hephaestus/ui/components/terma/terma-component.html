@@ -1431,10 +1431,28 @@ function initializeTermaLauncher() {
             console.log('[Terma] Timestamp:', new Date().toISOString());
             
             // Clear previous status
-            statusDiv.textContent = 'Launching aish-enabled terminal...';
+            statusDiv.textContent = 'Checking terminal name availability...';
             statusDiv.className = 'terma__launch-status';
             
             try {
+                // First, check if terminal name is already in use
+                const listResponse = await fetch('http://localhost:8004/api/mcp/v2/terminals/list');
+                if (listResponse.ok) {
+                    const listData = await listResponse.json();
+                    const existingNames = listData.terminals ? listData.terminals.map(t => t.name) : [];
+                    
+                    if (existingNames.includes(name)) {
+                        alert(`Please choose a unique Terminal Name: [${name}] already active.`);
+                        statusDiv.textContent = 'Terminal name already in use';
+                        statusDiv.className = 'terma__launch-status error';
+                        launching = false;
+                        return;
+                    }
+                }
+                
+                // Name is unique, proceed with launch
+                statusDiv.textContent = 'Launching aish-enabled terminal...';
+                statusDiv.className = 'terma__launch-status';
                 // Call Terma MCP endpoint to launch terminal
                 const requestBody = {
                     name: name
