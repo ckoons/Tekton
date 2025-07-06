@@ -21,9 +21,7 @@ if tekton_root not in sys.path:
 
 from landmarks import architecture_decision, integration_point
 
-from shared.ai.socket_client import AISocketClient
-from shared.ai.routing_engine import RoutingEngine
-from shared.ai.unified_registry import UnifiedAIRegistry
+from shared.ai.simple_ai import ai_send, ai_send_sync
 from dataclasses import dataclass
 from typing import AsyncIterator
 
@@ -84,9 +82,7 @@ class LLMClient:
             default_provider: Ignored - kept for compatibility
             default_model: Ignored - kept for compatibility
         """
-        self.registry = UnifiedAIRegistry()
-        self.socket_client = AISocketClient()
-        self.routing_engine = RoutingEngine(self.registry)
+        # Using simple_ai - no registry or socket client needed
         self.providers = {}  # Compatibility mapping
         self.default_provider_id = "unified"
         self.default_model = "registry-selected"
@@ -127,10 +123,7 @@ class LLMClient:
         """Create compatibility mapping for old provider names."""
         # Map old providers to roles
         self.providers = {
-            "anthropic": UnifiedProvider("orchestration", self.socket_client, self.routing_engine),
-            "openai": UnifiedProvider("code-analysis", self.socket_client, self.routing_engine),
-            "ollama": UnifiedProvider("general", self.socket_client, self.routing_engine),
-            "simulated": UnifiedProvider("general", self.socket_client, self.routing_engine)
+            # Providers removed - using simple_ai directly
         }
     
     @property
@@ -142,7 +135,7 @@ class LLMClient:
         """Get a provider by ID - returns unified provider."""
         if provider_id and provider_id in self.providers:
             return self.providers[provider_id]
-        return self.providers.get("anthropic", UnifiedProvider("general", self.socket_client, self.routing_engine))
+        return None  # No providers - using simple_ai directly
     
     def list_providers(self):
         """List available providers - returns compatibility list."""
@@ -177,34 +170,31 @@ class LLMClient:
         temperature = kwargs.get('temperature', 0.7)
         max_tokens = kwargs.get('max_tokens', 4000)
         
-        # Route to best AI for the role
-        route_result = await self.routing_engine.route_message(
-            message=prompt,
-            role=role,
-            context=kwargs.get('messages', [])
-        )
+        # Map role to AI and port
+        ai_map = {
+            'orchestration': ('rhetor-ai', 'localhost', 45003),
+            'code-analysis': ('apollo-ai', 'localhost', 45012),
+            'knowledge': ('athena-ai', 'localhost', 45005),
+            'general': ('numa-ai', 'localhost', 45016)
+        }
         
-        if not route_result.ai:
-            raise RuntimeError(f"No AI available for role {role}")
+        ai_id, host, port = ai_map.get(role, ('numa-ai', 'localhost', 45016))
         
-        # Send message to the selected AI
-        response = await self.socket_client.send_message(
-            host=route_result.ai.host,
-            port=route_result.ai.port,
-            message=prompt,
-            temperature=temperature,
-            max_tokens=max_tokens
-        )
+        # Send message using simple_ai
+        try:
+            response_text = await ai_send(ai_id, prompt, host, port)
+        except Exception as e:
+            raise RuntimeError(f"Failed to get response from {ai_id}: {e}")
         
         # Convert to old format
         return {
-            'content': response.content,
-            'model': route_result.ai.model or 'unknown',
-            'provider': route_result.ai.id,
+            'content': response_text,
+            'model': 'llama3.3:70b',
+            'provider': ai_id,
             'usage': {
                 'prompt_tokens': len(prompt.split()),
-                'completion_tokens': len(response.content.split()),
-                'total_tokens': len(prompt.split()) + len(response.content.split())
+                'completion_tokens': len(response_text.split()),
+                'total_tokens': len(prompt.split()) + len(response_text.split())
             }
         }
     
@@ -275,48 +265,4 @@ class LLMClient:
         # No cleanup needed for shared socket client
 
 
-class UnifiedProvider:
-    """Compatibility wrapper for old provider interface."""
-    
-    def __init__(self, default_role: str, socket_client: AISocketClient, routing_engine: RoutingEngine):
-        self.default_role = default_role
-        self.socket_client = socket_client
-        self.routing_engine = routing_engine
-        self.default_model = "registry-selected"
-    
-    def is_available(self):
-        """Check if provider is available."""
-        return True  # Always available with registry
-    
-    async def complete(self, prompt, model=None, **kwargs):
-        """Complete using routing engine and socket client."""
-        # Route to best AI for the role
-        route_result = await self.routing_engine.route_message(
-            message=prompt,
-            role=self.default_role
-        )
-        
-        if not route_result.ai:
-            raise RuntimeError(f"No AI available for role {self.default_role}")
-        
-        # Send message to the selected AI
-        response = await self.socket_client.send_message(
-            host=route_result.ai.host,
-            port=route_result.ai.port,
-            message=prompt,
-            temperature=kwargs.get('temperature', 0.7),
-            max_tokens=kwargs.get('max_tokens', 4000)
-        )
-        
-        return {
-            'content': response.content,
-            'model': route_result.ai.model or 'unknown',
-            'usage': {
-                'prompt_tokens': len(prompt.split()),
-                'completion_tokens': len(response.content.split())
-            }
-        }
-    
-    def list_models(self):
-        """List models - returns placeholder."""
-        return ["registry-managed"]
+# UnifiedProvider class removed - using simple_ai directly

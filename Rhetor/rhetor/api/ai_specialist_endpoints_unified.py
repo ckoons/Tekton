@@ -19,7 +19,7 @@ tekton_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(sc
 if tekton_root not in sys.path:
     sys.path.insert(0, tekton_root)
 
-from shared.ai.registry_client import AIRegistryClient
+from shared.ai.simple_ai import ai_send, ai_send_sync
 from shared.ai.ai_discovery_service import AIDiscoveryService
 
 logger = logging.getLogger(__name__)
@@ -65,7 +65,7 @@ class CreateRoleRequest(BaseModel):
 router = APIRouter(prefix="/api/ai", tags=["AI Specialists"])
 
 # Initialize services
-registry = AIRegistryClient()
+# Registry removed - using simple_ai
 discovery = AIDiscoveryService()
 
 # Rhetor's hired AI roster (runtime state)

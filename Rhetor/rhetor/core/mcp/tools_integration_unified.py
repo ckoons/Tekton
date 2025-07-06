@@ -19,7 +19,7 @@ tekton_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os
 if tekton_root not in sys.path:
     sys.path.insert(0, tekton_root)
 
-from shared.ai.registry_client import AIRegistryClient
+from shared.ai.simple_ai import ai_send, ai_send_sync
 from shared.ai.ai_discovery_service import AIDiscoveryService
 
 from landmarks import (
@@ -85,11 +85,11 @@ class MCPToolsIntegrationUnified:
             hermes_url: URL of the Hermes message bus
         """
         self.hermes_url = hermes_url
-        self.registry = AIRegistryClient()
+        # Registry removed - using simple_ai
         self.discovery = AIDiscoveryService()
         
         # Initialize routing engine (placeholder for now)
-        self.routing_engine = RoutingEngine()
+        # Routing engine removed - using simple_ai
         
         logger.info("Initialized MCP tools integration with AI Registry")
     

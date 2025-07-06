@@ -29,7 +29,7 @@ import sys
 import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))
 
-from shared.ai.socket_client import AISocketClient, StreamChunk
+from shared.ai.simple_ai import ai_send, ai_send_sync
 from shared.ai.ai_discovery_service import AIDiscoveryService
 
 logger = logging.getLogger(__name__)
@@ -38,7 +38,7 @@ logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/chat", tags=["specialist-streaming"])
 
 # Initialize shared components
-socket_client = AISocketClient(default_timeout=30.0, debug=True)
+# Socket client removed - using simple_ai
 discovery_service = AIDiscoveryService()
 
 

@@ -68,7 +68,7 @@ script_path = os.path.realpath(__file__)
 tekton_root = os.path.dirname(os.path.dirname(script_path))
 sys.path.insert(0, tekton_root)
 
-from shared.ai.registry_client import AIRegistryClient
+# Registry client removed - using fixed ports
 from shared.utils.env_config import get_component_config
 from shared.utils.logging_setup import setup_component_logging
 
@@ -116,12 +116,28 @@ class AILauncher:
     def __init__(self, verbose: bool = False):
         self.verbose = verbose
         self.config = get_component_config()
-        self.registry_client = AIRegistryClient()
+        # Registry client removed - AIs use fixed ports
         self.launched_ais: Dict[str, subprocess.Popen] = {}
         
         # Setup logging
         log_level = 'DEBUG' if verbose else 'INFO'
         self.logger = setup_component_logging('ai_launcher', log_level)
+    
+    async def _wait_for_ai_direct(self, ai_id: str, port: int, timeout: int = 30) -> bool:
+        """Wait for AI to be ready by trying to connect directly."""
+        import time
+        import socket
+        start = time.time()
+        while time.time() - start < timeout:
+            try:
+                s = socket.socket()
+                s.settimeout(1)
+                s.connect(('localhost', port))
+                s.close()
+                return True
+            except:
+                await asyncio.sleep(1)
+        return False
     
     def check_component_config(self, component: str) -> bool:
         """
@@ -216,11 +232,18 @@ class AILauncher:
             
         ai_id = ai_config['ai_id']
         
-        # Check if already running
-        existing = self.registry_client.get_ai_socket(ai_id)
-        if existing:
-            self.logger.info(f"AI {ai_id} already running on port {existing[1]}")
+        # Check if already running by trying to connect to expected port
+        expected_ai_port = get_expected_ai_port(self.config.get_port(component))
+        try:
+            import socket
+            s = socket.socket()
+            s.settimeout(1)
+            s.connect(('localhost', expected_ai_port))
+            s.close()
+            self.logger.info(f"AI {ai_id} already running on port {expected_ai_port}")
             return True
+        except:
+            pass  # Not running
         
         # Check if component exists and is configured
         if not self.check_component_config(component):
@@ -238,7 +261,8 @@ class AILauncher:
             self.logger.warning(f"Could not determine expected port for {component}")
         
         # Allocate port for AI (will try to get the expected one)
-        ai_port = self.registry_client.allocate_port(preferred_port=expected_ai_port)
+        # Use fixed port calculation
+        ai_port = expected_ai_port
         if not ai_port:
             self.logger.error(f"Could not allocate port for {ai_id}")
             return False
@@ -276,22 +300,14 @@ class AILauncher:
             
             self.launched_ais[ai_id] = process
             
-            # Register with registry
-            self.registry_client.register_platform_ai(
-                ai_id=ai_id,
-                port=ai_port,
-                component=component,
-                metadata={
-                    'description': ai_config['description'],
-                    'pid': process.pid
-                }
-            )
+            # No registry registration needed - using fixed ports
+            self.logger.info(f"AI {ai_id} launched on fixed port {ai_port} (PID: {process.pid})")
             
             # Wait for AI to be ready (skip for Hermes - it receives health checks, doesn't perform them)
             if component.lower() == 'hermes':
                 self.logger.info(f"Successfully launched {ai_id} (skipped readiness check for Hermes)")
                 return True
-            elif await self.registry_client.wait_for_ai(ai_id, timeout=30):
+            elif await self._wait_for_ai_direct(ai_id, ai_port, timeout=30):
                 self.logger.info(f"Successfully launched {ai_id}")
                 self.logger.debug(f"AI {ai_id} ready - PID: {process.pid}")
                 return True
@@ -316,7 +332,7 @@ class AILauncher:
     def kill_ai(self, ai_id: str) -> bool:
         """Kill a specific AI specialist."""
         # Deregister from registry
-        self.registry_client.deregister_platform_ai(ai_id)
+        # No registry deregistration needed - using fixed ports
         
         # Kill process if we launched it
         if ai_id in self.launched_ais:

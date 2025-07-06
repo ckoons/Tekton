@@ -12,7 +12,7 @@ from typing import Dict, List, Optional, Any, Set
 from datetime import datetime
 from pathlib import Path
 
-from .registry_client import AIRegistryClient
+# Registry client removed - using fixed port discovery
 from landmarks import api_contract, integration_point, architecture_decision
 
 logger = logging.getLogger(__name__)
@@ -37,7 +37,15 @@ class AIDiscoveryService:
     
     def __init__(self):
         """Initialize the AI Discovery Service."""
-        self.registry = AIRegistryClient()
+        # Registry removed - using fixed port mappings
+        self._fixed_ports = {
+            'engram-ai': 45000, 'hermes-ai': 45001, 'ergon-ai': 45002,
+            'rhetor-ai': 45003, 'terma-ai': 45004, 'athena-ai': 45005,
+            'prometheus-ai': 45006, 'harmonia-ai': 45007, 'telos-ai': 45008,
+            'synthesis-ai': 45009, 'tekton_core-ai': 45010, 'metis-ai': 45011,
+            'apollo-ai': 45012, 'penia-ai': 45013, 'sophia-ai': 45014,
+            'noesis-ai': 45015, 'numa-ai': 45016, 'hephaestus-ai': 45080
+        }
         self._capability_cache = {}
         self._last_cache_update = 0
         self._cache_ttl = 60  # Cache for 1 minute
@@ -70,11 +78,16 @@ class AIDiscoveryService:
         Returns:
             Dictionary with list of AI specialists
         """
-        all_ais = self.registry.list_platform_ais()
+        # Return fixed port mappings as list
+        all_ais = [
+            {'id': ai_id, 'port': port, 'host': 'localhost', 'status': 'unknown'}
+            for ai_id, port in self._fixed_ports.items()
+        ]
         ai_list = []
         
-        for ai_id, ai_data in all_ais.items():
+        for ai_data in all_ais:
             # Get detailed info for each AI
+            ai_id = ai_data['id']
             ai_info = await self.get_ai_info(ai_id)
             
             # Apply filters if specified
@@ -120,13 +133,20 @@ class AIDiscoveryService:
             Detailed AI information
         """
         # Get basic info from registry
-        socket_info = self.registry.get_ai_socket(ai_id)
+        # Get socket info from fixed ports
+        port = self._fixed_ports.get(ai_id)
+        socket_info = ('localhost', port) if port else None
         if not socket_info:
             return {"error": f"AI {ai_id} not found"}
         
         # Get registry data
-        all_ais = self.registry.list_platform_ais()
-        ai_data = all_ais.get(ai_id, {})
+        # Return fixed port mappings as list
+        all_ais = [
+            {'id': ai_id, 'port': port, 'host': 'localhost', 'status': 'unknown'}
+            for ai_id, port in self._fixed_ports.items()
+        ]
+        # Find AI in list
+        ai_data = next((ai for ai in all_ais if ai['id'] == ai_id), {})
         
         # Try to get live info from the AI
         live_info = await self._query_ai_info(ai_id, socket_info)
@@ -185,7 +205,9 @@ class AIDiscoveryService:
         Returns:
             Connection test results
         """
-        socket_info = self.registry.get_ai_socket(ai_id)
+        # Get socket info from fixed ports
+        port = self._fixed_ports.get(ai_id)
+        socket_info = ('localhost', port) if port else None
         if not socket_info:
             return {
                 "ai_id": ai_id,
@@ -246,7 +268,9 @@ class AIDiscoveryService:
         Returns:
             AI interaction schema
         """
-        socket_info = self.registry.get_ai_socket(ai_id)
+        # Get socket info from fixed ports
+        port = self._fixed_ports.get(ai_id)
+        socket_info = ('localhost', port) if port else None
         if not socket_info:
             return {"error": f"AI {ai_id} not found"}
         
@@ -321,7 +345,7 @@ class AIDiscoveryService:
                 }
             },
             "ai_registry": {
-                "total_ais": len(self.registry.list_platform_ais()),
+                "total_ais": len(self._fixed_ports),
                 "roles": self._get_all_roles(),
                 "capabilities": self._get_all_capabilities()
             },
