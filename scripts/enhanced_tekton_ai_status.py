@@ -19,9 +19,10 @@ script_path = os.path.realpath(__file__)
 tekton_root = os.path.dirname(os.path.dirname(script_path))
 sys.path.insert(0, tekton_root)
 
-from shared.ai.registry_client import AIRegistryClient
+# Registry client removed - using fixed port discovery
 from shared.utils.env_config import get_component_config
 from shared.utils.logging_setup import setup_component_logging
+import socket
 
 
 class AIStatus:
@@ -29,7 +30,6 @@ class AIStatus:
     
     def __init__(self, verbose: bool = False):
         self.verbose = verbose
-        self.registry_client = AIRegistryClient()
         self.config = get_component_config()
         
         # Setup logging
@@ -38,6 +38,11 @@ class AIStatus:
         
         # Load model display names
         self.model_display_names = self._load_model_display_names()
+        
+        # Known AI components
+        self.ai_components = ['engram', 'hermes', 'ergon', 'rhetor', 'terma', 'athena',
+                            'prometheus', 'harmonia', 'telos', 'synthesis', 'tekton_core',
+                            'metis', 'apollo', 'penia', 'sophia', 'noesis', 'numa', 'hephaestus']
     
     def _load_model_display_names(self) -> Dict[str, str]:
         """Load model display names from config."""
@@ -155,37 +160,52 @@ class AIStatus:
     
     async def get_ai_status(self) -> List[Dict]:
         """Get status for all AI specialists."""
-        registry = self.registry_client.list_platform_ais()
         status_data = []
         
-        for ai_id, ai_info in registry.items():
-            socket_info = self.registry_client.get_ai_socket(ai_id)
+        for component in self.ai_components:
+            ai_id = f"{component}-ai"
+            component_port = self.config.get_port(component)
+            if not component_port:
+                continue
+                
+            ai_port = (component_port - self.config.tekton_port_base) + self.config.tekton_ai_port_base
+            socket_info = {'host': 'localhost', 'port': ai_port}
             
             # Check health and get info
-            if socket_info:
-                health = await self.check_ai_health(ai_id, socket_info)
+            health = await self.check_ai_health(ai_id, socket_info)
+            if health.startswith("✓"):
                 ai_details = await self.get_ai_info(ai_id, socket_info)
                 model = ai_details.get('model_name', 'unknown')
             else:
-                health = "✗ No Socket"
                 model = 'unknown'
             
-            # Get process info
-            pid = ai_info.get('metadata', {}).get('pid')
+            # Get process info by searching for the AI process
+            pid = None
+            for proc in psutil.process_iter(['pid', 'cmdline']):
+                try:
+                    cmdline = proc.info['cmdline']
+                    if cmdline and 'generic_specialist' in ' '.join(cmdline) and f'--ai-id {ai_id}' in ' '.join(cmdline):
+                        pid = proc.info['pid']
+                        break
+                except:
+                    continue
+                    
             proc_info = self.get_process_info(pid)
             
             # Format model name
             display_model = self._get_display_model_name(model)
             
-            status_data.append({
-                'AI Specialist': ai_id,
-                'Component': ai_info.get('component', 'unknown').title(),
-                'Model': display_model,
-                'Status': health,
-                'CPU': proc_info['cpu'],
-                'Memory': proc_info['memory'],
-                'Uptime': proc_info['uptime']
-            })
+            # Only add if AI is running
+            if health.startswith("✓") or self.verbose:
+                status_data.append({
+                    'AI Specialist': ai_id,
+                    'Component': component.title(),
+                    'Model': display_model,
+                    'Status': health,
+                    'CPU': proc_info['cpu'],
+                    'Memory': proc_info['memory'],
+                    'Uptime': proc_info['uptime']
+                })
         
         return status_data
     
@@ -199,9 +219,21 @@ class AIStatus:
             # Check if AI is enabled for component
             enabled = ai_config['config_check'](self.config)
             
-            # Check if AI is running
+            # Check if AI is running by trying to connect
             ai_id = ai_config['ai_id']
-            running = ai_id in self.registry_client.list_platform_ais()
+            component_port = self.config.get_port(component)
+            running = False
+            if component_port:
+                ai_port = (component_port - self.config.tekton_port_base) + self.config.tekton_ai_port_base
+                try:
+                    # Quick connection test
+                    s = socket.socket()
+                    s.settimeout(0.5)
+                    s.connect(('localhost', ai_port))
+                    s.close()
+                    running = True
+                except:
+                    pass
             
             status_data.append({
                 'Component': component.title(),
@@ -252,30 +284,42 @@ class AIStatus:
     
     async def _display_ai_details(self, ai_id: str):
         """Display detailed information for a specific AI."""
-        registry = self.registry_client.list_platform_ais()
-        
-        if ai_id not in registry:
+        # Extract component from ai_id
+        component = ai_id.replace('-ai', '')
+        component_port = self.config.get_port(component)
+        if not component_port:
+            print(f"\nComponent {component} not found")
             return
             
-        ai_info = registry[ai_id]
-        socket_info = self.registry_client.get_ai_socket(ai_id)
+        ai_port = (component_port - self.config.tekton_port_base) + self.config.tekton_ai_port_base
+        socket_info = {'host': 'localhost', 'port': ai_port}
         
-        print(f"\n═══ {ai_id} ═══")
-        print(f"Component: {ai_info.get('component', 'unknown').title()}")
-        print(f"Description: {ai_info.get('metadata', {}).get('description', 'N/A')}")
-        
-        if socket_info:
-            details = await self.get_ai_info(ai_id, socket_info)
-            model_name = self._get_display_model_name(details.get('model_name', 'unknown'))
-            print(f"Model: {model_name} (via {details.get('model_provider', 'unknown').title()})")
+        # Check if AI is running
+        health = await self.check_ai_health(ai_id, socket_info)
+        if not health.startswith("✓"):
+            print(f"\n{ai_id} is not running")
+            return
             
-            if details.get('system_prompt'):
-                print(f"\nSystem Prompt:")
-                prompt = details['system_prompt']
-                # Show first 300 chars of prompt
-                if len(prompt) > 300:
-                    prompt = prompt[:297] + "..."
-                print(f"  {prompt}")
+        print(f"\n═══ {ai_id} ═══")
+        print(f"Component: {component.title()}")
+        
+        # Get component expertise from generic_specialist
+        from shared.ai.generic_specialist import COMPONENT_EXPERTISE
+        expertise = COMPONENT_EXPERTISE.get(component, {})  
+        print(f"Description: {expertise.get('title', 'AI Specialist')}")
+        
+        # Get AI details
+        details = await self.get_ai_info(ai_id, socket_info)
+        model_name = self._get_display_model_name(details.get('model_name', 'unknown'))
+        print(f"Model: {model_name} (via {details.get('model_provider', 'unknown').title()})")
+        
+        if details.get('system_prompt'):
+            print(f"\nSystem Prompt:")
+            prompt = details['system_prompt']
+            # Show first 300 chars of prompt
+            if len(prompt) > 300:
+                prompt = prompt[:297] + "..."
+            print(f"  {prompt}")
         
         print("═" * (len(ai_id) + 8))
 

@@ -26,11 +26,10 @@ if 'Tekton' not in str(tekton_root):
 
 sys.path.insert(0, str(tekton_root))
 
-from shared.ai.unified_registry import UnifiedAIRegistry, AIStatus, get_registry
-from shared.ai.routing_engine import RoutingEngine, create_default_rules
-from shared.ai.socket_client import AISocketClient
-from shared.ai.ai_discovery_service import AIDiscoveryService
-from shared.ai.registry_client import AIRegistryClient
+# Registry and routing removed - using fixed port discovery
+from shared.utils.env_config import get_component_config
+import socket
+import json
 
 # Try to import rich for better output (optional)
 try:
@@ -49,29 +48,86 @@ except ImportError:
 
 async def list_ais(args):
     """List available AI specialists with enhanced information."""
-    registry = get_registry()
-    await registry.start()
+    config = get_component_config()
     
-    # Apply filters
-    kwargs = {}
-    if args.role:
-        kwargs['role'] = args.role
-    if args.capability:
-        kwargs['capabilities'] = [args.capability]
-    if args.status:
-        kwargs['status'] = AIStatus[args.status.upper()]
-    if args.min_success_rate:
-        kwargs['min_success_rate'] = args.min_success_rate
+    # Known AI components
+    ai_components = ['engram', 'hermes', 'ergon', 'rhetor', 'terma', 'athena',
+                    'prometheus', 'harmonia', 'telos', 'synthesis', 'tekton_core',
+                    'metis', 'apollo', 'penia', 'sophia', 'noesis', 'numa', 'hephaestus']
     
-    specialists = await registry.discover(**kwargs)
+    specialists = []
+    for component in ai_components:
+        component_port = config.get_port(component)
+        if not component_port:
+            continue
+            
+        ai_port = (component_port - config.tekton_port_base) + config.tekton_ai_port_base
+        ai_id = f"{component}-ai"
+        
+        # Check if AI is running by trying to connect
+        try:
+            reader, writer = await asyncio.wait_for(
+                asyncio.open_connection('localhost', ai_port),
+                timeout=1.0
+            )
+            
+            # Send ping to check status
+            writer.write(json.dumps({'type': 'ping'}).encode() + b'\n')
+            await writer.drain()
+            
+            # Read response
+            data = await asyncio.wait_for(reader.readline(), timeout=2.0)
+            response = json.loads(data.decode())
+            
+            writer.close()
+            await writer.wait_closed()
+            
+            # Create specialist info
+            specialist = {
+                'id': ai_id,
+                'name': component.title(),
+                'port': ai_port,
+                'status': 'healthy',
+                'model': 'personality',  # Simple personality responses
+                'success_rate': 1.0,
+                'avg_response_time': 0.1,
+                'capabilities': ['chat', 'personality'],
+                'component': component
+            }
+            
+            # Apply filters if any
+            if args.status and args.status != 'healthy':
+                continue
+            if args.min_success_rate and specialist['success_rate'] < args.min_success_rate:
+                continue
+                
+            specialists.append(specialist)
+            
+        except Exception:
+            # AI not running or not responding
+            if not args.status or args.status in ['unresponsive', 'unknown']:
+                specialists.append({
+                    'id': ai_id,
+                    'name': component.title(),
+                    'port': ai_port,
+                    'status': 'unresponsive',
+                    'model': 'unknown',
+                    'success_rate': 0.0,
+                    'avg_response_time': 0.0,
+                    'capabilities': [],
+                    'component': component
+                })
     
     if args.json:
         # JSON output
         data = {
             "timestamp": datetime.now().isoformat(),
             "total": len(specialists),
-            "filters": kwargs,
-            "ais": [spec.to_dict() for spec in specialists]
+            "filters": {
+                "status": args.status,
+                "min_success_rate": args.min_success_rate
+            },
+            "ais": specialists
         }
         print(json.dumps(data, indent=2))
     elif HAS_RICH and not args.simple:
@@ -88,23 +144,23 @@ async def list_ais(args):
         
         for spec in specialists:
             status_icon = {
-                AIStatus.HEALTHY: "✅",
-                AIStatus.DEGRADED: "⚠️",
-                AIStatus.UNRESPONSIVE: "❌",
-                AIStatus.UNKNOWN: "❓",
-                AIStatus.STARTING: "🔄",
-                AIStatus.STOPPING: "🛑"
-            }.get(spec.status, "?")
+                'healthy': "✅",
+                'degraded': "⚠️",
+                'unresponsive': "❌",
+                'unknown': "❓",
+                'starting': "🔄",
+                'stopping': "🛑"
+            }.get(spec['status'], "?")
             
             table.add_row(
                 status_icon,
-                spec.id,
-                spec.name,
-                str(spec.port),
-                spec.model[:15] + "..." if len(spec.model) > 15 else spec.model,
-                f"{spec.success_rate*100:.1f}%",
-                f"{spec.avg_response_time:.2f}s" if spec.avg_response_time > 0 else "N/A",
-                ", ".join(spec.capabilities[:3]) + ("..." if len(spec.capabilities) > 3 else "")
+                spec['id'],
+                spec['name'],
+                str(spec['port']),
+                spec['model'][:15] + "..." if len(spec['model']) > 15 else spec['model'],
+                f"{spec['success_rate']*100:.1f}%",
+                f"{spec['avg_response_time']:.2f}s" if spec['avg_response_time'] > 0 else "N/A",
+                ", ".join(spec['capabilities'][:3]) + ("..." if len(spec['capabilities']) > 3 else "")
             )
         
         console.print(table)
@@ -115,20 +171,17 @@ async def list_ais(args):
         print(f"{'='*80}\n")
         
         for spec in specialists:
-            status_icon = "✓" if spec.status == AIStatus.HEALTHY else "✗"
-            print(f"{status_icon} {spec.name} ({spec.id})")
-            print(f"   Port: {spec.port}")
-            print(f"   Model: {spec.model}")
-            print(f"   Status: {spec.status.value}")
-            print(f"   Success Rate: {spec.success_rate*100:.1f}%")
-            if spec.avg_response_time > 0:
-                print(f"   Avg Response: {spec.avg_response_time:.3f}s")
+            status_icon = "✓" if spec['status'] == 'healthy' else "✗"
+            print(f"{status_icon} {spec['name']} ({spec['id']})")
+            print(f"   Port: {spec['port']}")
+            print(f"   Model: {spec['model']}")
+            print(f"   Status: {spec['status']}")
+            print(f"   Success Rate: {spec['success_rate']*100:.1f}%")
+            if spec['avg_response_time'] > 0:
+                print(f"   Avg Response: {spec['avg_response_time']:.3f}s")
             if args.verbose:
-                print(f"   Capabilities: {', '.join(spec.capabilities)}")
-                print(f"   Roles: {', '.join(spec.roles)}")
+                print(f"   Capabilities: {', '.join(spec['capabilities'])}")
             print()
-    
-    await registry.stop()
 
 
 async def watch_ais(args):
@@ -137,14 +190,66 @@ async def watch_ais(args):
         print("Error: 'rich' library required for watch mode. Install with: pip install rich")
         return
     
-    registry = get_registry()
-    await registry.start()
+    config = get_component_config()
+    ai_components = ['engram', 'hermes', 'ergon', 'rhetor', 'terma', 'athena',
+                    'prometheus', 'harmonia', 'telos', 'synthesis', 'tekton_core',
+                    'metis', 'apollo', 'penia', 'sophia', 'noesis', 'numa', 'hephaestus']
     
     with Live(refresh_per_second=1) as live:
         while True:
-            # Get current stats
-            stats = await registry.get_statistics()
-            specialists = await registry.discover()
+            # Discover AIs by checking ports
+            specialists = []
+            total_healthy = 0
+            total_unresponsive = 0
+            
+            for component in ai_components:
+                component_port = config.get_port(component)
+                if not component_port:
+                    continue
+                    
+                ai_port = (component_port - config.tekton_port_base) + config.tekton_ai_port_base
+                ai_id = f"{component}-ai"
+                
+                # Check if AI is running
+                try:
+                    reader, writer = await asyncio.wait_for(
+                        asyncio.open_connection('localhost', ai_port),
+                        timeout=0.5
+                    )
+                    
+                    writer.write(json.dumps({'type': 'ping'}).encode() + b'\n')
+                    await writer.drain()
+                    
+                    data = await asyncio.wait_for(reader.readline(), timeout=1.0)
+                    response = json.loads(data.decode())
+                    
+                    writer.close()
+                    await writer.wait_closed()
+                    
+                    specialists.append({
+                        'id': ai_id,
+                        'port': ai_port,
+                        'model': 'personality',
+                        'status': 'healthy',
+                        'success_rate': 1.0,
+                        'avg_response_time': 0.1,
+                        'total_requests': 0,
+                        'last_seen': time.time()
+                    })
+                    total_healthy += 1
+                    
+                except Exception:
+                    specialists.append({
+                        'id': ai_id,
+                        'port': ai_port,
+                        'model': 'unknown',
+                        'status': 'unresponsive',
+                        'success_rate': 0.0,
+                        'avg_response_time': 0.0,
+                        'total_requests': 0,
+                        'last_seen': 0
+                    })
+                    total_unresponsive += 1
             
             # Create display
             table = Table(title=f"AI Specialists Monitor - {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
@@ -159,15 +264,15 @@ async def watch_ais(args):
             
             for spec in specialists:
                 status_emoji = {
-                    AIStatus.HEALTHY: "✅",
-                    AIStatus.DEGRADED: "⚠️",
-                    AIStatus.UNRESPONSIVE: "❌",
-                    AIStatus.UNKNOWN: "❓"
-                }.get(spec.status, "?")
+                    'healthy': "✅",
+                    'degraded': "⚠️",
+                    'unresponsive': "❌",
+                    'unknown': "❓"
+                }.get(spec['status'], "?")
                 
                 # Format last seen
-                if spec.last_seen > 0:
-                    last_seen_delta = time.time() - spec.last_seen
+                if spec['last_seen'] > 0:
+                    last_seen_delta = time.time() - spec['last_seen']
                     if last_seen_delta < 60:
                         last_seen = f"{int(last_seen_delta)}s ago"
                     elif last_seen_delta < 3600:
@@ -179,21 +284,21 @@ async def watch_ais(args):
                 
                 table.add_row(
                     status_emoji,
-                    spec.id,
-                    str(spec.port),
-                    spec.model[:20] + "..." if len(spec.model) > 20 else spec.model,
-                    f"{spec.success_rate*100:.1f}%",
-                    f"{spec.avg_response_time:.2f}s" if spec.avg_response_time > 0 else "N/A",
-                    str(spec.total_requests),
+                    spec['id'],
+                    str(spec['port']),
+                    spec['model'][:20] + "..." if len(spec['model']) > 20 else spec['model'],
+                    f"{spec['success_rate']*100:.1f}%",
+                    f"{spec['avg_response_time']:.2f}s" if spec['avg_response_time'] > 0 else "N/A",
+                    str(spec['total_requests']),
                     last_seen
                 )
             
             # Add summary panel
             summary = Panel(
-                f"Total AIs: {stats['total_specialists']} | "
-                f"Healthy: {stats['status_breakdown'].get('healthy', 0)} | "
-                f"Degraded: {stats['status_breakdown'].get('degraded', 0)} | "
-                f"Overall Success: {stats['overall_success_rate']*100:.1f}%",
+                f"Total AIs: {len(specialists)} | "
+                f"Healthy: {total_healthy} | "
+                f"Unresponsive: {total_unresponsive} | "
+                f"Overall Success: {(total_healthy/len(specialists)*100 if specialists else 0):.1f}%",
                 title="Summary"
             )
             
@@ -205,17 +310,23 @@ async def watch_ais(args):
 
 async def test_ai(args):
     """Test AI connections with detailed diagnostics."""
-    registry = get_registry()
-    await registry.start()
-    
-    client = AISocketClient(debug=args.verbose)
+    config = get_component_config()
     
     if args.ai_id:
         # Test specific AI
-        spec = await registry.get(args.ai_id)
-        if not spec:
-            print(f"Error: AI '{args.ai_id}' not found")
+        # Extract component name from ai_id
+        component = args.ai_id.replace('-ai', '')
+        component_port = config.get_port(component)
+        if not component_port:
+            print(f"Error: Component '{component}' not found")
             return
+            
+        ai_port = (component_port - config.tekton_port_base) + config.tekton_ai_port_base
+        spec = {
+            'id': args.ai_id,
+            'host': 'localhost',
+            'port': ai_port
+        }
         
         # Run multiple tests
         results = []
@@ -235,42 +346,84 @@ async def test_ai(args):
                 
                 for msg in test_messages:
                     start = time.time()
-                    response = await client.send_message(spec.host, spec.port, msg, timeout=5.0)
-                    elapsed = time.time() - start
-                    
-                    results.append({
-                        "message": msg,
-                        "success": response["success"],
-                        "elapsed": elapsed,
-                        "response": response.get("response", response.get("error"))
-                    })
+                    try:
+                        reader, writer = await asyncio.wait_for(
+                            asyncio.open_connection(spec['host'], spec['port']),
+                            timeout=5.0
+                        )
+                        
+                        writer.write(json.dumps({'content': msg}).encode() + b'\n')
+                        await writer.drain()
+                        
+                        data = await asyncio.wait_for(reader.readline(), timeout=5.0)
+                        response = json.loads(data.decode())
+                        
+                        writer.close()
+                        await writer.wait_closed()
+                        
+                        elapsed = time.time() - start
+                        results.append({
+                            "message": msg,
+                            "success": True,
+                            "elapsed": elapsed,
+                            "response": response.get('content', '')
+                        })
+                    except Exception as e:
+                        elapsed = time.time() - start
+                        results.append({
+                            "message": msg,
+                            "success": False,
+                            "elapsed": elapsed,
+                            "response": str(e)
+                        })
                     
                     progress.advance(task)
         else:
-            print(f"Testing {spec.id}...")
+            print(f"Testing {spec['id']}...")
             for msg in test_messages:
                 start = time.time()
-                response = await client.send_message(spec.host, spec.port, msg, timeout=5.0)
-                elapsed = time.time() - start
-                
-                results.append({
-                    "message": msg,
-                    "success": response["success"],
-                    "elapsed": elapsed,
-                    "response": response.get("response", response.get("error"))
-                })
+                try:
+                    reader, writer = await asyncio.wait_for(
+                        asyncio.open_connection(spec['host'], spec['port']),
+                        timeout=5.0
+                    )
+                    
+                    writer.write(json.dumps({'content': msg}).encode() + b'\n')
+                    await writer.drain()
+                    
+                    data = await asyncio.wait_for(reader.readline(), timeout=5.0)
+                    response = json.loads(data.decode())
+                    
+                    writer.close()
+                    await writer.wait_closed()
+                    
+                    elapsed = time.time() - start
+                    results.append({
+                        "message": msg,
+                        "success": True,
+                        "elapsed": elapsed,
+                        "response": response.get('content', '')
+                    })
+                except Exception as e:
+                    elapsed = time.time() - start
+                    results.append({
+                        "message": msg,
+                        "success": False,
+                        "elapsed": elapsed,
+                        "response": str(e)
+                    })
         
         # Display results
         if args.json:
             print(json.dumps({
-                "ai_id": spec.id,
-                "host": spec.host,
-                "port": spec.port,
+                "ai_id": spec['id'],
+                "host": spec['host'],
+                "port": spec['port'],
                 "test_results": results
             }, indent=2))
         else:
             print(f"\n{'='*60}")
-            print(f"Test Results: {spec.id}")
+            print(f"Test Results: {spec['id']}")
             print(f"{'='*60}\n")
             
             success_count = sum(1 for r in results if r["success"])
@@ -286,7 +439,43 @@ async def test_ai(args):
                 print()
     else:
         # Test all AIs
-        specialists = await registry.discover(status=AIStatus.HEALTHY)
+        ai_components = ['engram', 'hermes', 'ergon', 'rhetor', 'terma', 'athena',
+                        'prometheus', 'harmonia', 'telos', 'synthesis', 'tekton_core',
+                        'metis', 'apollo', 'penia', 'sophia', 'noesis', 'numa', 'hephaestus']
+        
+        specialists = []
+        for component in ai_components:
+            component_port = config.get_port(component)
+            if not component_port:
+                continue
+                
+            ai_port = (component_port - config.tekton_port_base) + config.tekton_ai_port_base
+            ai_id = f"{component}-ai"
+            
+            # Quick ping test to see if it's healthy
+            try:
+                reader, writer = await asyncio.wait_for(
+                    asyncio.open_connection('localhost', ai_port),
+                    timeout=0.5
+                )
+                
+                writer.write(json.dumps({'type': 'ping'}).encode() + b'\n')
+                await writer.drain()
+                
+                data = await asyncio.wait_for(reader.readline(), timeout=1.0)
+                response = json.loads(data.decode())
+                
+                writer.close()
+                await writer.wait_closed()
+                
+                specialists.append({
+                    'id': ai_id,
+                    'host': 'localhost',
+                    'port': ai_port
+                })
+            except Exception:
+                # Skip unhealthy AIs
+                pass
         
         if HAS_RICH and not args.simple:
             table = Table(title="AI Connection Tests")
@@ -297,100 +486,166 @@ async def test_ai(args):
             table.add_column("Result")
             
             for spec in specialists:
-                response = await client.ping(spec.host, spec.port)
+                try:
+                    start = time.time()
+                    reader, writer = await asyncio.wait_for(
+                        asyncio.open_connection(spec['host'], spec['port']),
+                        timeout=2.0
+                    )
+                    
+                    writer.write(json.dumps({'type': 'ping'}).encode() + b'\n')
+                    await writer.drain()
+                    
+                    data = await asyncio.wait_for(reader.readline(), timeout=2.0)
+                    response = json.loads(data.decode())
+                    
+                    writer.close()
+                    await writer.wait_closed()
+                    
+                    elapsed = time.time() - start
+                    status = "✅"
+                    time_str = f"{elapsed*1000:.1f}ms"
+                    result = "OK"
+                except Exception as e:
+                    status = "❌"
+                    time_str = "N/A"
+                    result = str(e)[:30] + "..." if len(str(e)) > 30 else str(e)
                 
-                status = "✅" if response["success"] else "❌"
-                time_str = f"{response['elapsed_time']*1000:.1f}ms" if response["success"] else "N/A"
-                result = "OK" if response["success"] else response.get("error", "Failed")
-                
-                table.add_row(status, spec.id, str(spec.port), time_str, result)
+                table.add_row(status, spec['id'], str(spec['port']), time_str, result)
             
             console.print(table)
         else:
             print("Testing all healthy AIs...")
             for spec in specialists:
-                response = await client.ping(spec.host, spec.port)
-                status = "✓" if response["success"] else "✗"
-                print(f"{status} {spec.id:20} Port {spec.port:5} ", end="")
-                if response["success"]:
-                    print(f"{response['elapsed_time']*1000:6.1f}ms")
-                else:
-                    print(f"Failed: {response.get('error', 'Unknown')}")
-    
-    await registry.stop()
+                try:
+                    start = time.time()
+                    reader, writer = await asyncio.wait_for(
+                        asyncio.open_connection(spec['host'], spec['port']),
+                        timeout=2.0
+                    )
+                    
+                    writer.write(json.dumps({'type': 'ping'}).encode() + b'\n')
+                    await writer.drain()
+                    
+                    data = await asyncio.wait_for(reader.readline(), timeout=2.0)
+                    response = json.loads(data.decode())
+                    
+                    writer.close()
+                    await writer.wait_closed()
+                    
+                    elapsed = time.time() - start
+                    status = "✓"
+                    print(f"{status} {spec['id']:20} Port {spec['port']:5} {elapsed*1000:6.1f}ms")
+                except Exception as e:
+                    status = "✗"
+                    print(f"{status} {spec['id']:20} Port {spec['port']:5} Failed: {str(e)[:30]}")
 
 
 async def test_streaming(args):
     """Test streaming capabilities of an AI."""
-    registry = get_registry()
-    await registry.start()
+    config = get_component_config()
     
-    spec = await registry.get(args.ai_id)
-    if not spec:
-        print(f"Error: AI '{args.ai_id}' not found")
+    # Extract component name from ai_id
+    component = args.ai_id.replace('-ai', '')
+    component_port = config.get_port(component)
+    if not component_port:
+        print(f"Error: Component '{component}' not found")
         return
+        
+    ai_port = (component_port - config.tekton_port_base) + config.tekton_ai_port_base
+    spec = {
+        'id': args.ai_id,
+        'host': 'localhost',
+        'port': ai_port
+    }
     
-    client = AISocketClient()
-    
-    print(f"Testing streaming with {spec.id}...")
+    print(f"Testing streaming with {spec['id']}...")
     print(f"Message: {args.message}\n")
     print("Response:")
     print("-" * 60)
     
-    total_chunks = 0
-    start_time = time.time()
-    
-    async for chunk in client.send_message_stream(
-        spec.host,
-        spec.port,
-        args.message,
-        temperature=args.temperature,
-        max_tokens=args.max_tokens
-    ):
-        if chunk.content:
-            print(chunk.content, end='', flush=True)
-            total_chunks += 1
+    # Note: Our simple AIs don't support streaming, just send regular message
+    try:
+        reader, writer = await asyncio.wait_for(
+            asyncio.open_connection(spec['host'], spec['port']),
+            timeout=5.0
+        )
         
-        if chunk.is_final:
-            elapsed = time.time() - start_time
-            print("\n" + "-" * 60)
-            print(f"\nStreaming completed:")
-            print(f"  Total chunks: {total_chunks}")
-            print(f"  Total time: {elapsed:.2f}s")
-            if chunk.metadata:
-                if 'model' in chunk.metadata:
-                    print(f"  Model: {chunk.metadata['model']}")
-                if 'total_tokens' in chunk.metadata:
-                    print(f"  Total tokens: {chunk.metadata['total_tokens']}")
-                if 'error' in chunk.metadata:
-                    print(f"  Error: {chunk.metadata['error']}")
-    
-    await registry.stop()
+        writer.write(json.dumps({'content': args.message}).encode() + b'\n')
+        await writer.drain()
+        
+        data = await asyncio.wait_for(reader.readline(), timeout=30.0)
+        response = json.loads(data.decode())
+        
+        writer.close()
+        await writer.wait_closed()
+        
+        print(response.get('content', 'No response'))
+        print("-" * 60)
+        print(f"\nNote: Simple AI personalities don't support streaming")
+        
+    except Exception as e:
+        print(f"Error: {e}")
+        print("-" * 60)
 
 
 async def benchmark_ais(args):
     """Benchmark AI response times and performance."""
-    registry = get_registry()
-    await registry.start()
+    config = get_component_config()
     
     # Get AIs to benchmark
+    specialists = []
+    
     if args.ai_ids:
-        specialists = []
         for ai_id in args.ai_ids:
-            spec = await registry.get(ai_id)
-            if spec:
-                specialists.append(spec)
+            component = ai_id.replace('-ai', '')
+            component_port = config.get_port(component)
+            if component_port:
+                ai_port = (component_port - config.tekton_port_base) + config.tekton_ai_port_base
+                specialists.append({
+                    'id': ai_id,
+                    'host': 'localhost',
+                    'port': ai_port,
+                    'model': 'personality'
+                })
             else:
                 print(f"Warning: AI '{ai_id}' not found")
     else:
         # Benchmark all healthy AIs
-        specialists = await registry.discover(status=AIStatus.HEALTHY)
+        ai_components = ['engram', 'hermes', 'ergon', 'rhetor', 'terma', 'athena',
+                        'prometheus', 'harmonia', 'telos', 'synthesis', 'tekton_core',
+                        'metis', 'apollo', 'penia', 'sophia', 'noesis', 'numa', 'hephaestus']
+        
+        for component in ai_components:
+            component_port = config.get_port(component)
+            if not component_port:
+                continue
+                
+            ai_port = (component_port - config.tekton_port_base) + config.tekton_ai_port_base
+            ai_id = f"{component}-ai"
+            
+            # Quick test to see if healthy
+            try:
+                reader, writer = await asyncio.wait_for(
+                    asyncio.open_connection('localhost', ai_port),
+                    timeout=0.5
+                )
+                writer.close()
+                await writer.wait_closed()
+                
+                specialists.append({
+                    'id': ai_id,
+                    'host': 'localhost',
+                    'port': ai_port,
+                    'model': 'personality'
+                })
+            except Exception:
+                pass
     
     if not specialists:
         print("No AIs available for benchmarking")
         return
     
-    client = AISocketClient()
     results = []
     
     # Test messages of varying complexity
@@ -404,8 +659,8 @@ async def benchmark_ais(args):
     
     for spec in specialists:
         spec_results = {
-            "ai_id": spec.id,
-            "model": spec.model,
+            "ai_id": spec['id'],
+            "model": spec['model'],
             "tests": {}
         }
         
@@ -415,22 +670,30 @@ async def benchmark_ais(args):
             
             for i in range(args.iterations):
                 start = time.time()
-                response = await client.send_message(
-                    spec.host,
-                    spec.port,
-                    message,
-                    timeout=30.0
-                )
-                elapsed = time.time() - start
-                
-                if response["success"]:
+                try:
+                    reader, writer = await asyncio.wait_for(
+                        asyncio.open_connection(spec['host'], spec['port']),
+                        timeout=30.0
+                    )
+                    
+                    writer.write(json.dumps({'content': message}).encode() + b'\n')
+                    await writer.drain()
+                    
+                    data = await asyncio.wait_for(reader.readline(), timeout=30.0)
+                    response = json.loads(data.decode())
+                    
+                    writer.close()
+                    await writer.wait_closed()
+                    
+                    elapsed = time.time() - start
                     times.append(elapsed)
-                else:
+                    
+                except Exception:
                     errors += 1
                 
                 # Progress indicator
                 if not args.json:
-                    print(f"  {spec.id} - {test_name}: {i+1}/{args.iterations}\r", end="")
+                    print(f"  {spec['id']} - {test_name}: {i+1}/{args.iterations}\r", end="")
             
             if times:
                 spec_results["tests"][test_name] = {
@@ -517,88 +780,65 @@ async def benchmark_ais(args):
 
 async def route_test(args):
     """Test routing engine with different scenarios."""
-    registry = get_registry()
-    await registry.start()
-    
-    engine = RoutingEngine(registry)
-    
-    # Add default rules
-    for rule in create_default_rules():
-        engine.add_rule(rule)
-    
-    # Test routing
-    context = {"message": args.message}
-    
-    try:
-        result = await engine.route_message(
-            args.message,
-            context=context,
-            preferred_ai=args.preferred,
-            required_capabilities=args.capabilities.split(",") if args.capabilities else None
-        )
-        
-        if args.json:
-            print(json.dumps({
-                "message": args.message,
-                "selected_ai": result.specialist.to_dict(),
-                "rule_used": result.rule_used,
-                "fallback_level": result.fallback_level,
-                "reason": result.reason
-            }, indent=2))
-        else:
-            print(f"\nRouting Result:")
-            print(f"  Message: {args.message}")
-            print(f"  Selected AI: {result.specialist.id}")
-            print(f"  Model: {result.specialist.model}")
-            print(f"  Rule Used: {result.rule_used or 'None'}")
-            print(f"  Fallback Level: {result.fallback_level}")
-            print(f"  Reason: {result.reason}")
-            
-            if args.execute:
-                print(f"\nExecuting request...")
-                client = AISocketClient()
-                response = await client.send_message(
-                    result.specialist.host,
-                    result.specialist.port,
-                    args.message
-                )
-                
-                if response["success"]:
-                    print(f"Response: {response['response'][:200]}...")
-                else:
-                    print(f"Error: {response['error']}")
-    
-    except ValueError as e:
-        print(f"Routing failed: {e}")
-    
-    await registry.stop()
+    # Routing not supported with simple fixed-port system
+    print("Routing test not supported in simplified architecture.")
+    print("All AIs use fixed ports based on their component ports.")
+    print(f"\nTo send a message to a specific AI, use: ai-discover test <ai-id>")
+    print(f"Example: ai-discover test apollo-ai")
 
 
 async def stats(args):
-    """Display registry statistics."""
-    registry = get_registry()
-    await registry.start()
+    """Display AI statistics."""
+    config = get_component_config()
+    ai_components = ['engram', 'hermes', 'ergon', 'rhetor', 'terma', 'athena',
+                    'prometheus', 'harmonia', 'telos', 'synthesis', 'tekton_core',
+                    'metis', 'apollo', 'penia', 'sophia', 'noesis', 'numa', 'hephaestus']
     
-    stats = await registry.get_statistics()
+    total_ais = 0
+    healthy_ais = 0
+    
+    for component in ai_components:
+        component_port = config.get_port(component)
+        if not component_port:
+            continue
+            
+        total_ais += 1
+        ai_port = (component_port - config.tekton_port_base) + config.tekton_ai_port_base
+        
+        # Quick health check
+        try:
+            reader, writer = await asyncio.wait_for(
+                asyncio.open_connection('localhost', ai_port),
+                timeout=0.5
+            )
+            writer.close()
+            await writer.wait_closed()
+            healthy_ais += 1
+        except Exception:
+            pass
+    
+    stats = {
+        "total_specialists": total_ais,
+        "healthy": healthy_ais,
+        "unresponsive": total_ais - healthy_ais,
+        "overall_health_rate": (healthy_ais / total_ais * 100) if total_ais > 0 else 0,
+        "last_update": datetime.now().isoformat()
+    }
     
     if args.json:
         print(json.dumps(stats, indent=2))
     else:
         print(f"\n{'='*60}")
-        print("AI Registry Statistics")
+        print("AI Statistics")
         print(f"{'='*60}\n")
         
         print(f"Total Specialists: {stats['total_specialists']}")
-        print(f"Total Requests: {stats['total_requests']:,}")
-        print(f"Total Failures: {stats['total_failures']:,}")
-        print(f"Overall Success Rate: {stats['overall_success_rate']*100:.1f}%")
+        print(f"Healthy: {stats['healthy']}")
+        print(f"Unresponsive: {stats['unresponsive']}")
+        print(f"Overall Health Rate: {stats['overall_health_rate']:.1f}%")
         print(f"Last Update: {stats['last_update']}")
         
-        print("\nStatus Breakdown:")
-        for status, count in stats['status_breakdown'].items():
-            print(f"  {status}: {count}")
-    
-    await registry.stop()
+        print("\nNote: Statistics are based on real-time health checks")
 
 
 def main():

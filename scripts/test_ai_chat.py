@@ -13,20 +13,25 @@ from typing import Dict, Any, Optional
 # Add Tekton root to path
 sys.path.insert(0, os.environ.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton'))
 
-from shared.ai.registry_client import AIRegistryClient
+# Registry removed - using fixed port calculations
+from shared.utils.env_config import get_component_config
 
 
 async def send_ai_message(ai_id: str, message: str) -> Optional[Dict[str, Any]]:
     """Send a chat message to an AI specialist and get response."""
-    registry_client = AIRegistryClient()
+    config = get_component_config()
     
-    # Get AI socket info
-    socket_info = registry_client.get_ai_socket(ai_id)
-    if not socket_info:
-        print(f"✗ {ai_id} not found in registry")
+    # Extract component name from ai_id (e.g., 'hermes-ai' -> 'hermes')
+    component = ai_id.replace('-ai', '')
+    
+    # Calculate AI port from component port
+    component_port = config.get_port(component)
+    if not component_port:
+        print(f"✗ Component {component} not found in config")
         return None
     
-    host, port = socket_info
+    host = 'localhost'
+    port = (component_port - 8000) + 45000
     
     try:
         # Connect to AI
@@ -63,8 +68,18 @@ async def send_ai_message(ai_id: str, message: str) -> Optional[Dict[str, Any]]:
 
 async def test_all_ais():
     """Test all registered AIs with sample messages."""
-    registry_client = AIRegistryClient()
-    ai_registry = registry_client.list_platform_ais()
+    # Build AI list from known components
+    config = get_component_config()
+    
+    # Known AI components
+    ai_components = ['engram', 'hermes', 'ergon', 'rhetor', 'terma', 'athena',
+                    'prometheus', 'harmonia', 'telos', 'synthesis', 'tekton_core',
+                    'metis', 'apollo', 'penia', 'sophia', 'noesis', 'numa', 'hephaestus']
+    
+    ai_registry = {}
+    for component in ai_components:
+        if config.get_port(component):
+            ai_registry[f'{component}-ai'] = {'component': component}
     
     if not ai_registry:
         print("No AIs registered!")
@@ -100,7 +115,7 @@ async def test_all_ais():
         response = await send_ai_message(ai_id, message)
         
         if response:
-            if response.get('type') == 'chat_response':
+            if response.get('type') in ['chat_response', 'response']:
                 content = response.get('content', 'No content')
                 # Truncate long responses
                 if len(content) > 200:
