@@ -48,22 +48,23 @@ logger = logging.getLogger(__name__)
 
 
 @architecture_decision(
-    title="Unified AI Registry-based LLM Client",
-    rationale="Replace direct provider connections with dynamic AI specialist discovery through registry",
-    alternatives_considered=["Keep multi-provider approach", "Static specialist mapping"],
-    impacts=["simplification", "dynamic_routing", "unified_management"]
+    title="Rhetor LLM Client Using Simple AI System",
+    rationale="Direct socket communication with fixed AI ports via simple_ai",
+    alternatives_considered=["Registry-based discovery", "Complex routing", "Connection pooling"],
+    impacts=["simplicity", "reliability", "fixed_port_mapping"],
+    decided_by="Casey"
 )
 @integration_point(
-    title="AI Registry Integration",
-    target_component="AI Registry",
-    protocol="Socket-based communication",
-    data_flow="Request → Registry lookup → AI specialist → Response"
+    title="Direct AI Socket Communication",
+    target_component="AI Specialists (ports 45000-50000)",
+    protocol="Direct socket via simple_ai",
+    data_flow="Request → simple_ai → Fixed Port Socket → AI Response"
 )
 @architecture_decision(
-    title="Rhetor LLM Client Migration to Unified System",
-    rationale="Eliminate duplicate LLM client implementations by using shared AI infrastructure",
-    alternatives_considered=["Keep custom implementation", "Direct socket connections"],
-    impacts=["code_reduction", "consistency", "maintenance"],
+    title="One Queue One Socket One AI Architecture",
+    rationale="Each AI has exactly one message queue and one socket connection",
+    alternatives_considered=["Connection pooling", "Load balancing", "Multiple queues"],
+    impacts=["simplicity", "predictability", "maintainability"],
     decided_by="Casey"
 )
 class LLMClient:

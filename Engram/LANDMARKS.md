@@ -100,7 +100,7 @@ LANCEDB      ✅      5/5      0/5        0        0.011s       0.015s
 - MCP (Model Context Protocol) integration
 - SSE (Server-Sent Events) streaming support
 - Greek Chorus AI communication
-- Hermes service registry integration
+- Hermes service integration (now using simple_ai for communication)
 
 ### **Memory System Overhaul** (February 2025)
 - Refactored memory service architecture

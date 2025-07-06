@@ -113,14 +113,13 @@ async def analyze_data(
         >>> await analyze_data('{"sales": [100, 150, 120]}', "patterns")
         {"patterns": ["Upward trend with mid-period dip"], "insights": [...]}
     """
-    # Get unified AI system for analysis
-    from Tekton.shared.ai.unified_registry import UnifiedAIRegistry
-    from Tekton.shared.ai.routing_engine import RoutingEngine
+    # Use simple AI system for analysis
+    from shared.ai.simple_ai import ai_send
     
-    registry = UnifiedAIRegistry()
-    await registry.discover()
-    
-    routing_engine = RoutingEngine(registry)
+    # Apollo AI is best for code/data analysis on port 45012
+    ai_id = "apollo-ai"
+    host = "localhost"
+    port = 45012
     
     # Construct analysis prompt
     prompt = f"""
@@ -137,16 +136,8 @@ async def analyze_data(
     Format the response as structured JSON.
     """
     
-    # Route to appropriate AI specialist
-    specialist = await routing_engine.route_message(
-        message=prompt,
-        intent="data_analysis",
-        capabilities_needed=["analysis", analysis_type]
-    )
-    
-    # Get AI analysis
-    from Tekton.shared.ai.socket_client import AISocketClient
-    client = AISocketClient()
+    # Send analysis request to Apollo AI
+    response = await ai_send(ai_id, prompt, host, port)
     
     response = await client.send_message(
         host=specialist['host'],
@@ -805,19 +796,10 @@ async def get_ai_analysis(data: str) -> Dict[str, Any]:
     cache_key = f"analysis_{hash(data)}"
     
     async def compute_analysis():
-        from Tekton.shared.ai.unified_registry import UnifiedAIRegistry
-        from Tekton.shared.ai.socket_client import AISocketClient
+        from shared.ai.simple_ai import ai_send
         
-        registry = UnifiedAIRegistry()
-        await registry.discover()
-        
-        # Find analysis specialist
-        analysts = registry.get_specialists_by_capability("analysis")
-        if not analysts:
-            raise ValueError("No analysis specialists available")
-        
-        specialist = analysts[0]
-        client = AISocketClient()
+        # Use Apollo AI for analysis on port 45012
+        response = await ai_send("apollo-ai", data, "localhost", 45012)
         
         return await client.send_message(
             host=specialist['host'],
@@ -931,11 +913,11 @@ Remember: AI should enhance, not complicate. Keep the user experience simple whi
 The examples in this guide now use the unified AI system located in `/Tekton/shared/ai/`. Key components:
 
 1. **AISocketClient** - Handles socket communication with streaming support
-2. **UnifiedAIRegistry** - Discovers and manages AI specialists  
-3. **RoutingEngine** - Intelligently routes messages to appropriate AIs
+2. **simple_ai** - Direct socket communication interface  
+3. **Fixed port mapping** - Deterministic AI port assignment (45000 + component offset)
 4. **Event System** - Real-time updates about AI availability
 
 For more details, see:
 - `/Tekton/shared/ai/socket_client.py` - Socket communication with streaming
-- `/Tekton/shared/ai/unified_registry.py` - Registry with event-driven updates
-- `/Tekton/shared/ai/routing_engine.py` - Intelligent message routing
+- `/Tekton/shared/ai/simple_ai.py` - Simple AI communication interface
+- `/Tekton/shared/ai/ai_service_simple.py` - Core message queue service

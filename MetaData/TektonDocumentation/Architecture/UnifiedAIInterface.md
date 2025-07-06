@@ -1,3 +1,11 @@
+# [DEPRECATED] Unified AI Interface Architecture
+
+> **⚠️ DEPRECATED**: This document describes the old complex unified AI system that has been replaced by the Simple AI Communication Architecture. See [SimpleAICommunication.md](./SimpleAICommunication.md) for the current architecture.
+>
+> **Status**: This architecture was replaced in July 2025 with a much simpler "One Queue, One Socket, One AI" approach using fixed ports and direct socket communication.
+
+---
+
 # Unified AI Interface Architecture
 
 ## Overview

@@ -1,10 +1,14 @@
 # AI Orchestration Architecture
 
+> **⚠️ UPDATE July 2025**: The complex unified AI system described in this document has been replaced by a much simpler "One Queue, One Socket, One AI" architecture. See [SimpleAICommunication.md](./SimpleAICommunication.md) for the current implementation. This document is retained for historical reference.
+
 ## Overview
 
 This document describes the AI orchestration architecture implemented in Tekton through the Rhetor AI Integration Sprint (Phase 3/4). The architecture enables sophisticated AI-powered workflows through MCP tools, live component integration, and dynamic specialist management.
 
 **Updated June 2025**: This architecture now uses the unified AI system in `/Tekton/shared/ai/` that connects to real Greek Chorus AI specialists on ports 45000-50000.
+
+**Updated July 2025**: Simplified to use direct socket communication via `simple_ai` with fixed port assignments.
 
 ## Core Concepts
 
