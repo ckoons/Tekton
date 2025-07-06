@@ -2333,16 +2333,18 @@ SUCCESS CRITERIA:
   }
   
   .rhetor__message--user {
-    background-color: var(--color-primary, #673AB7);
-    color: white;
-    align-self: flex-end;
-    border-radius: 16px 16px 0 16px;
+    background-color: rgba(76, 175, 80, 0.05);
+    border-left: 3px solid #4CAF50;
+    color: var(--text-primary, #f0f0f0);
+    align-self: flex-start;
+    border-radius: 4px;
   }
   
   .rhetor__message--ai {
-    background-color: var(--bg-secondary, #252535);
+    background-color: rgba(211, 47, 47, 0.05);
+    border-left: 3px solid #D32F2F;
     align-self: flex-start;
-    border-radius: 16px 16px 16px 0;
+    border-radius: 4px;
   }
   
   /* Footer with Chat Input */
@@ -2367,7 +2369,7 @@ SUCCESS CRITERIA:
   .rhetor__chat-prompt {
     font-size: 18px;
     font-weight: bold;
-    color: #4CAF50;
+    color: #D32F2F; /* Red for Rhetor */
   }
   
   .rhetor__chat-input {
@@ -2381,13 +2383,14 @@ SUCCESS CRITERIA:
     font-size: 14px;
   }
   
-  .rhetor__send-button {
+  .rhetor__send-button,
+  #send-button {
     height: 44px;
     padding: 0 20px;
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: var(--color-primary, #673AB7);
+    background-color: #D32F2F !important; /* Red for Rhetor */
     border: none;
     border-radius: 8px;
     color: white;
@@ -2396,8 +2399,11 @@ SUCCESS CRITERIA:
     transition: all 0.2s ease;
   }
   
-  .rhetor__send-button:hover {
-    background-color: var(--color-primary-hover, #5E35B1);
+  .rhetor__send-button:hover,
+  #send-button:hover {
+    background-color: #C62828 !important; /* Darker red on hover */
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(211, 47, 47, 0.3);
   }
   
   /* AI Specialists Grid */

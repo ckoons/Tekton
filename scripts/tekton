@@ -107,25 +107,30 @@ class TektonCLI:
     
     def cmd_stop(self, args: List[str]):
         """Stop Tekton components"""
-        # Look for kill script
-        kill_scripts = [
-            'scripts/kill_all_specialists.sh',
-            'scripts/tekton-kill',
-            'scripts/kill_tekton.py'
-        ]
-        
-        for script in kill_scripts:
-            script_path = Path(self.tekton_root) / script
-            if script_path.exists():
-                if script.endswith('.sh'):
-                    return subprocess.call(['bash', str(script_path)] + args)
-                elif script.endswith('.py'):
-                    return subprocess.call([sys.executable, str(script_path)] + args)
-                else:
-                    return subprocess.call([str(script_path)] + args)
-        
-        print("Error: Could not find Tekton stop script", file=sys.stderr)
-        return 1
+        script_path = Path(self.tekton_root) / 'scripts' / 'enhanced_tekton_killer.py'
+        if script_path.exists():
+            cmd = [sys.executable, str(script_path)] + args
+            return subprocess.call(cmd)
+        else:
+            # Look for fallback kill scripts
+            kill_scripts = [
+                'scripts/tekton-kill',
+                'scripts/kill_all_specialists.sh',
+                'scripts/kill_tekton.py'
+            ]
+            
+            for script in kill_scripts:
+                script_path = Path(self.tekton_root) / script
+                if script_path.exists():
+                    if script.endswith('.sh'):
+                        return subprocess.call(['bash', str(script_path)] + args)
+                    elif script.endswith('.py'):
+                        return subprocess.call([sys.executable, str(script_path)] + args)
+                    else:
+                        return subprocess.call([str(script_path)] + args)
+            
+            print("Error: Could not find Tekton stop script", file=sys.stderr)
+            return 1
     
     def cmd_status(self, args: List[str]):
         """Show Tekton component status"""

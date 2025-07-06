@@ -14,10 +14,6 @@
                 <span class="noesis__title-sub">Discovery System</span>
             </h2>
         </div>
-        <div class="noesis__connection-status">
-            <span class="noesis__status-indicator" data-status="inactive"></span>
-            <span class="noesis__status-text">CI Connecting...</span>
-        </div>
     </div>
     
     <!-- Menu Bar -->
@@ -505,14 +501,12 @@ setTimeout(() => {
         .then(data => {
             if (data.status === 'healthy') {
                 document.querySelector('#noesis-container').setAttribute('data-tekton-ai-ready', 'true');
-                document.querySelector('.noesis__status-indicator').setAttribute('data-status', 'active');
-                document.querySelector('.noesis__status-text').textContent = 'CI Connected';
+                // Status indicator removed from header
             }
         })
         .catch(error => {
             console.error('Noesis health check failed:', error);
-            document.querySelector('.noesis__status-indicator').setAttribute('data-status', 'error');
-            document.querySelector('.noesis__status-text').textContent = 'CI Disconnected';
+            // Status indicator removed from header
         });
     
     // Ensure AIChat is available
@@ -636,139 +630,37 @@ function noesis_sendTeamChatMessage() {
     // Clear input
     input.value = '';
     
-    // Check if streaming team chat is available
-    if (window.StreamingTeamChat) {
-        // Use new streaming team chat
-        let responseCount = 0;
-        const startTime = Date.now();
-        
-        // Add initial status
-        const statusId = 'team-status-' + Date.now();
-        noesis_addChatMessage('team', 'Broadcasting to team...', 'system', statusId);
-        
-        const abort = window.StreamingTeamChat.streamMessage(
-            fullMessage,
-            {
-                timeout: 2.0,
-                includeErrors: true,
-                targetSpecialists: broadcast ? null : ['athena-ai', 'sophia-ai']
-            },
-            
-            // On each response
-            (response) => {
-                responseCount++;
-                
-                // Update status on first response
-                if (responseCount === 1) {
-                    const statusEl = document.getElementById(statusId);
-                    if (statusEl) {
-                        statusEl.innerHTML = '<strong>System:</strong> Receiving responses...';
-                    }
-                }
-                
-                // Extract sender name
-                const sender = response.specialist.replace('-ai', '').replace('-specialist', '');
-                
-                // Parse response for special formatting
-                const parts = window.AIChat ? window.AIChat.parseResponse(response.content) : 
-                    [{type: 'text', content: response.content}];
-                    
-                parts.forEach(part => {
-                    if (part.type === 'text' && part.content.trim()) {
-                        noesis_addChatMessage('team', part.content, 'ai', null, sender);
-                    } else if (part.type === 'block') {
-                        noesis_addChatMessage('team', part.content, 'discovery', null, sender);
-                    }
-                });
-            },
-            
-            // On error
-            (error) => {
-                if (error.type === 'timeout') {
-                    // Don't show timeout errors by default
-                    console.log(`${error.specialist} timed out`);
-                } else {
-                    noesis_addChatMessage('team', 
-                        `${error.specialist}: ${error.error}`, 
-                        'system');
-                }
-            },
-            
-            // On complete
-            (stats) => {
-                // Update final status
-                const statusEl = document.getElementById(statusId);
-                if (statusEl) {
-                    const elapsed = (Date.now() - startTime) / 1000;
-                    statusEl.innerHTML = `<strong>System:</strong> Team chat complete - ${stats.totalResponses} responses in ${elapsed.toFixed(1)}s`;
-                }
-            }
-        );
-        
-        // Store abort function in case we need it
-        window.noesisTeamChatAbort = abort;
-        
-    } else if (window.AIChat) {
-        // Fallback to old method
+    // Use standard team chat
+    if (window.AIChat) {
+        // Fallback to standard team chat
         // Add typing indicator
         const typingId = 'noesis-team-typing-' + Date.now();
-        noesis_addChatMessage('team', '...', 'typing', typingId);
+        noesis_addChatMessage('team', 'Broadcasting to team...', 'system', typingId);
         
-        // For now, just send to one AI as a test
-        const testMessage = broadcast ? 
-            `[BROADCAST TO ALL] ${fullMessage}` : 
-            `[TO: athena-ai, sophia-ai] ${fullMessage}`;
-        
-        // Temporarily use single AI chat until team-chat is fixed
-        window.AIChat.sendMessage('apollo-ai', testMessage)
-            .then(response => {
+        // Use standard team chat
+        window.AIChat.teamChat(fullMessage, 'noesis')
+            .then(data => {
                 // Remove typing indicator
                 noesis_removeTypingIndicator(typingId);
                 
-                // Format as if it came from team chat
-                const responses = [{
-                    socket_id: 'apollo-ai',
-                    content: response.content || '',
-                    ...response
-                }];
-                
-                // Handle responses
-                if (responses && responses.length > 0) {
-                    responses.forEach(resp => {
-                        let content = resp.content || resp.message || '';
-                        
-                        // Clean up response text
-                        if (content.startsWith('Received message message.')) {
-                            content = content.replace('Received message message.', '');
-                        }
-                        
-                        // Extract sender name
-                        const sender = resp.socket_id ? 
-                            resp.socket_id.replace('-ai', '').replace('-specialist', '') : 
-                            'AI';
-                        
-                        // Parse for special formatting
-                        const parts = window.AIChat.parseResponse(content);
-                        parts.forEach(part => {
-                            if (part.type === 'text' && part.content.trim()) {
-                                noesis_addChatMessage('team', part.content, 'ai', null, sender);
-                            } else if (part.type === 'block') {
-                                noesis_addChatMessage('team', part.content, 'discovery', null, sender);
-                            }
-                        });
+                // Display team responses
+                if (data.responses && data.responses.length > 0) {
+                    data.responses.forEach(resp => {
+                        const sender = resp.socket_id.replace('-ai', '').charAt(0).toUpperCase() + 
+                                     resp.socket_id.replace('-ai', '').slice(1);
+                        noesis_addChatMessage('team', resp.content, 'ai', null, sender);
                     });
                 } else {
-                    noesis_addChatMessage('team', 'Message broadcast to team.', 'system');
+                    noesis_addChatMessage('team', 'No responses received from team', 'system');
                 }
             })
             .catch(error => {
                 // Remove typing indicator
                 noesis_removeTypingIndicator(typingId);
                 
-                console.error('Team chat error:', error);
-                noesis_addChatMessage('team', 
-                    'Failed to send team message. Please ensure AI specialists are running.', 
-                    'system');
+                // Show error message
+                console.error('Team chat failed:', error);
+                noesis_addChatMessage('team', `Team chat failed: ${error.message}`, 'system');
             });
     } else {
         // No chat module available

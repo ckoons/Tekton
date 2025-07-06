@@ -185,18 +185,6 @@
              data-tekton-ai="terma-orchestrator"
              data-tekton-ai-ready="false">
             <div class="chat-interface" data-tekton-chat="team">
-                <div class="team-chat-header" data-tekton-element="chat-header">
-                    <p>Communicate with other AI specialists across the Tekton platform</p>
-                    <div class="team-chat-controls" data-tekton-element="chat-controls">
-                        <label>
-                            <input type="checkbox" id="terma-broadcast-mode" 
-                                   data-tekton-broadcast="terma"
-                                   data-tekton-input="broadcast-mode"
-                                   data-tekton-input-type="checkbox">
-                            Broadcast to all AIs
-                        </label>
-                    </div>
-                </div>
                 <div class="chat-messages" id="terma-team-messages" 
                      data-tekton-messages="team"
                      data-tekton-element="chat-messages">
@@ -406,7 +394,7 @@
 
 .chat-messages {
   position: absolute;
-  top: 0;
+  top: 0; /* No extra header anymore */
   left: 0;
   right: 0;
   bottom: 0; /* No footer inside tabs anymore */
@@ -414,29 +402,54 @@
   padding: 16px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 4px;
 }
 
 .chat-message {
   margin-bottom: 12px;
-  padding: 12px;
-  border-radius: 8px;
-  background-color: var(--bg-secondary, #252535);
+  padding: 8px 12px;
+  border-radius: 4px;
+  background-color: transparent;
+  position: relative;
 }
 
+.chat-message strong {
+  display: inline-block;
+  margin-right: 8px;
+  font-weight: 600;
+}
+
+/* System messages */
 .chat-message.system-message {
-  background-color: rgba(93, 64, 55, 0.1);
+  background-color: rgba(93, 64, 55, 0.05);
   border-left: 3px solid #5D4037;
+  font-style: italic;
 }
 
+.chat-message.system-message strong {
+  color: #5D4037;
+}
+
+/* User messages */
 .chat-message.user-message {
-  background-color: rgba(76, 175, 80, 0.1);
-  margin-left: 32px;
+  background-color: rgba(76, 175, 80, 0.05);
+  border-left: 3px solid #4CAF50;
+  margin-left: 0;
 }
 
+.chat-message.user-message strong {
+  color: #4CAF50;
+}
+
+/* AI messages */
 .chat-message.ai-message {
-  background-color: rgba(93, 64, 55, 0.1);
-  margin-right: 32px;
+  background-color: rgba(93, 64, 55, 0.05);
+  border-left: 3px solid #5D4037;
+  margin-right: 0;
+}
+
+.chat-message.ai-message strong {
+  color: #5D4037;
 }
 
 .chat-input-container {
@@ -472,6 +485,55 @@
 
 .chat-send-button:hover {
   background-color: #6D5047;
+}
+
+/* Chat Headers */
+.terma__chat-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background-color: var(--bg-tertiary, #333345);
+  border-bottom: 1px solid var(--border-color, #444444);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.terma__chat-header h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--text-primary, #f0f0f0);
+}
+
+.terma__ai-status {
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+.terma__ai-status[data-ai-status="active"] {
+  color: #28a745;
+  text-shadow: 0 0 8px #28a745;
+  animation: pulse-glow 2s infinite;
+}
+
+.terma__ai-status[data-ai-status="inactive"] {
+  color: #6c757d;
+  opacity: 0.5;
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    text-shadow: 0 0 8px #28a745, 
+                 0 0 12px #28a745,
+                 0 0 16px rgba(40, 167, 69, 0.6);
+  }
+  50% {
+    text-shadow: 0 0 10px #28a745, 
+                 0 0 15px #28a745,
+                 0 0 20px rgba(40, 167, 69, 0.8);
+  }
 }
 
 /* Team Chat Specific */
