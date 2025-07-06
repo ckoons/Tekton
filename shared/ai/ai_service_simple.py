@@ -10,6 +10,13 @@ import uuid
 from typing import Dict, Optional, Any
 from dataclasses import dataclass
 
+from landmarks import (
+    architecture_decision,
+    performance_boundary,
+    state_checkpoint,
+    integration_point
+)
+
 @dataclass
 class Message:
     id: str
@@ -17,6 +24,20 @@ class Message:
     response: Optional[str] = None
     error: Optional[str] = None
 
+@architecture_decision(
+    title="One Queue, One Socket, One AI Architecture",
+    rationale="Simplify AI communication by eliminating connection pooling and complex routing",
+    alternatives_considered=["Connection pooling", "Multiple socket per AI", "Event-driven architecture"],
+    impacts=["simplicity", "reliability", "maintainability"],
+    decided_by="Casey"
+)
+@state_checkpoint(
+    title="AI Message Queue Management",
+    state_type="runtime",
+    persistence=False,
+    consistency_requirements="UUID-based message tracking ensures no message loss",
+    recovery_strategy="Queue per AI allows independent recovery"
+)
 class AIService:
     """One queue per AI, one socket per AI - just send/receive messages"""
     
@@ -44,6 +65,12 @@ class AIService:
             
         return msg_id
         
+    @performance_boundary(
+        title="Message Processing Pipeline",
+        sla="<1s per batch of messages",
+        optimization_notes="Async processing with direct socket communication",
+        metrics={"batch_processing": "all_queued_messages"}
+    )
     async def process_messages(self):
         """Process all queued messages through their sockets"""
         for ai_id, queue in self.queues.items():

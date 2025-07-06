@@ -22,6 +22,12 @@ if tekton_root not in sys.path:
 from shared.ai.registry_client import AIRegistryClient
 from shared.ai.ai_discovery_service import AIDiscoveryService
 
+from landmarks import (
+    architecture_decision,
+    integration_point,
+    performance_boundary
+)
+
 logger = logging.getLogger(__name__)
 
 
@@ -51,6 +57,19 @@ class RoutingEngine:
         self.specialist_weights[specialist_id] = context_weight
 
 
+@architecture_decision(
+    title="MCP Tools Integration with Unified AI System",
+    rationale="Replace complex socket client usage with unified simple_ai system",
+    alternatives_considered=["Keep socket_client", "Direct socket management", "REST API only"],
+    impacts=["consistency", "maintainability", "reduced_complexity"],
+    decided_by="Casey"
+)
+@integration_point(
+    title="MCP to Unified AI Bridge",
+    target_component="simple_ai",
+    protocol="unified message queue",
+    data_flow="MCP tools → simple_ai → ai_service_simple → Direct Socket"
+)
 class MCPToolsIntegrationUnified:
     """
     Integration layer connecting MCP tools to the AI Registry.
@@ -120,21 +139,22 @@ class MCPToolsIntegrationUnified:
     async def send_message_to_specialist(self, specialist_id: str, message: str, 
                                        context: Optional[Dict[str, Any]] = None,
                                        timeout: float = 10.0) -> Dict[str, Any]:
-        """Send a message to an AI specialist.
-        
-        This method handles both socket-based (Greek Chorus) and API-based (Rhetor) specialists.
+        """Send a message to an AI specialist using unified simple_ai system.
         
         Args:
             specialist_id: ID of the specialist (e.g., 'athena-ai', 'apollo-ai')
             message: Message content
-            context: Optional context
-            timeout: Response timeout in seconds (default 10.0)
+            context: Optional context (ignored for now)
+            timeout: Response timeout in seconds (ignored for now)
             
         Returns:
             Response from specialist with success status
         """
         try:
-            # Get specialist info
+            # Use unified simple_ai for ALL communication
+            from shared.ai.simple_ai import ai_send
+            
+            # Get specialist info to find port
             ai_info = await self.discovery.get_ai_info(specialist_id)
             if not ai_info:
                 return {
@@ -143,13 +163,37 @@ class MCPToolsIntegrationUnified:
                     "response": None
                 }
             
-            # Check if this is a socket-based AI (Greek Chorus)
+            # Extract connection info
+            port = None
+            host = 'localhost'
+            
             if 'connection' in ai_info and ai_info['connection'].get('port'):
-                # Socket-based communication for Greek Chorus AIs
-                return await self._send_via_socket(ai_info, message, context, timeout)
+                port = ai_info['connection']['port']
+                host = ai_info['connection'].get('host', 'localhost')
             else:
-                # API-based communication via Rhetor
-                return await self._send_via_api(specialist_id, message, context)
+                # Try standard port mapping for known AIs
+                port_map = {
+                    'apollo-ai': 45012, 'numa-ai': 45016, 'athena-ai': 45005,
+                    'rhetor-ai': 45003, 'engram-ai': 45000, 'hermes-ai': 45001
+                }
+                port = port_map.get(specialist_id)
+            
+            if not port:
+                return {
+                    "success": False,
+                    "error": f"No port found for {specialist_id}",
+                    "response": None
+                }
+            
+            # Send via unified system
+            response = await ai_send(specialist_id, message, host, port)
+            
+            return {
+                "success": True,
+                "response": response,
+                "specialist_id": specialist_id,
+                "type": "unified"
+            }
                 
         except Exception as e:
             logger.error(f"Failed to send message to {specialist_id}: {e}")
@@ -524,68 +568,64 @@ class MCPToolsIntegrationUnified:
     async def _stream_via_socket(self, ai_info: Dict[str, Any], message: str,
                                 context: Optional[Dict[str, Any]] = None,
                                 timeout: float = 30.0) -> AsyncIterator[Dict[str, Any]]:
-        """Stream response via socket connection."""
-        host = ai_info['connection'].get('host', 'localhost')
-        port = ai_info['connection']['port']
+        """Stream response via unified simple_ai system (simulated streaming)."""
         specialist_id = ai_info['id']
         
         try:
-            from shared.ai.socket_client import AISocketClient
+            # Use unified simple_ai system
+            from shared.ai.simple_ai import ai_send
             
-            client = AISocketClient(
-                default_timeout=timeout,
-                connection_timeout=2.0
-            )
+            # Extract connection info
+            host = ai_info['connection'].get('host', 'localhost')
+            port = ai_info['connection']['port']
             
+            # Get full response via unified system
+            response = await ai_send(specialist_id, message, host, port)
+            
+            # Simulate streaming by chunking response
+            chunk_size = 50
             chunk_count = 0
-            total_tokens = 0
             
-            async for chunk in client.send_message_stream(
-                host=host,
-                port=port,
-                message=message,
-                context=context,
-                timeout=timeout
-            ):
+            for i in range(0, len(response), chunk_size):
                 chunk_count += 1
+                content = response[i:i+chunk_size]
                 
-                # Estimate tokens
-                if chunk.content:
-                    tokens = len(chunk.content) // 4
-                    total_tokens += tokens
-                
-                # Yield chunk with enhanced metadata
-                if chunk.is_final:
-                    yield {
-                        "type": "complete",
-                        "specialist_id": specialist_id,
-                        "metadata": {
-                            "total_chunks": chunk_count,
-                            "total_tokens": total_tokens,
-                            "model": chunk.metadata.get('model', ai_info.get('model')),
-                            **chunk.metadata
-                        }
+                yield {
+                    "type": "chunk",
+                    "content": content,
+                    "specialist_id": specialist_id,
+                    "metadata": {
+                        "chunk_index": chunk_count,
+                        "via_unified": True
                     }
-                else:
-                    yield {
-                        "type": "chunk",
-                        "content": chunk.content,
-                        "specialist_id": specialist_id,
-                        "metadata": {
-                            "chunk_index": chunk_count,
-                            "tokens_so_far": total_tokens,
-                            **chunk.metadata
-                        }
-                    }
+                }
+                await asyncio.sleep(0.05)  # Small delay for streaming effect
+            
+            # Final completion
+            yield {
+                "type": "complete",
+                "specialist_id": specialist_id,
+                "metadata": {
+                    "total_chunks": chunk_count,
+                    "total_length": len(response),
+                    "via_unified": True
+                }
+            }
                     
         except Exception as e:
-            logger.error(f"Socket streaming error for {specialist_id}: {e}")
+            logger.error(f"Unified streaming error for {specialist_id}: {e}")
             yield {
                 "type": "error",
                 "error": str(e),
                 "specialist_id": specialist_id
             }
     
+    @performance_boundary(
+        title="Team Chat Orchestration",
+        sla="<30s for team chat completion",
+        optimization_notes="Concurrent AI communication via unified simple_ai system",
+        metrics={"timeout_per_ai": "10s", "max_specialists": "18"}
+    )
     async def orchestrate_team_chat(
         self,
         topic: str,
@@ -738,13 +778,13 @@ class MCPToolsIntegrationUnified:
     async def _send_via_socket(self, ai_info: Dict[str, Any], message: str, 
                               context: Optional[Dict[str, Any]] = None,
                               timeout: float = 10.0) -> Dict[str, Any]:
-        """Send message via direct socket connection (Greek Chorus AIs).
+        """Send message via unified simple_ai system.
         
         Args:
             ai_info: AI information including connection details
             message: Message to send
-            context: Optional context
-            timeout: Socket timeout in seconds (default 10.0)
+            context: Optional context (ignored for now)
+            timeout: Socket timeout in seconds (ignored for now)
             
         Returns:
             Response dictionary with success status
@@ -754,49 +794,27 @@ class MCPToolsIntegrationUnified:
         specialist_id = ai_info['id']
         
         try:
-            # Use the new shared socket client
-            from shared.ai.socket_client import AISocketClient
+            # Use unified simple_ai system
+            from shared.ai.simple_ai import ai_send
             
-            client = AISocketClient(
-                default_timeout=min(timeout, 2.0),  # Cap at 2 seconds for fast responses
-                connection_timeout=0.5,  # Fast connection timeout
-                max_retries=0  # No retries for team chat to avoid delays
-            )
+            logger.info(f"Sending message to {specialist_id} at {host}:{port} via unified system")
             
-            logger.info(f"Sending message to {specialist_id} at {host}:{port}")
+            response = await ai_send(specialist_id, message, host, port)
             
-            result = await client.send_message(
-                host=host,
-                port=port,
-                message=message,
-                context=context,
-                timeout=timeout
-            )
+            logger.info(f"Got response from {specialist_id}: {len(response)} chars")
             
-            if result["success"]:
-                logger.info(f"Got response from {specialist_id}: {len(result['response'])} chars")
-                return {
-                    "success": True,
-                    "response": result["response"],
-                    "specialist_id": specialist_id,
-                    "type": "socket",
-                    "model": result.get("model", "unknown"),
-                    "elapsed_time": result.get("elapsed_time", 0)
-                }
-            else:
-                logger.warning(f"Failed to get response from {specialist_id}: {result['error']}")
-                return {
-                    "success": False,
-                    "error": result["error"],
-                    "response": None,
-                    "specialist_id": specialist_id
-                }
+            return {
+                "success": True,
+                "response": response,
+                "specialist_id": specialist_id,
+                "type": "unified"
+            }
                 
         except Exception as e:
-            logger.error(f"Socket communication error for {specialist_id}: {e}", exc_info=True)
+            logger.error(f"Unified communication error for {specialist_id}: {e}", exc_info=True)
             return {
                 "success": False,
-                "error": f"Socket error: {str(e)}",
+                "error": f"Unified error: {str(e)}",
                 "response": None,
                 "specialist_id": specialist_id
             }

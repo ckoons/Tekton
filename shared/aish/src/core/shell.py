@@ -10,7 +10,7 @@ import atexit
 from pathlib import Path
 
 from parser.pipeline import PipelineParser
-from registry.socket_registry import SocketRegistry
+from message_handler import MessageHandler
 from core.history import AIHistory
 
 class AIShell:
@@ -26,7 +26,7 @@ class AIShell:
         
         self.debug = debug
         self.parser = PipelineParser()
-        self.registry = SocketRegistry(self.rhetor_endpoint, debug=debug)
+        self.handler = MessageHandler(self.rhetor_endpoint, debug=debug)
         self.history_file = Path.home() / '.aish_history'
         self.active_sockets = {}  # Track active socket IDs by AI name
         self.ai_history = AIHistory()  # Conversation history tracker
@@ -201,8 +201,8 @@ class AIShell:
             if self.debug:
                 print(f"[DEBUG] Team chat error: {e}")
             # Fallback to old method
-            self.registry.write("team-chat-all", message)
-            responses = self.registry.read("team-chat-all")
+            self.handler.write("team-chat-all", message)
+            responses = self.handler.read("team-chat-all")
             return '\n'.join(responses) if responses else "No responses yet"
     
     def _execute_pipe_stages(self, stages):
@@ -222,12 +222,12 @@ class AIShell:
                 
                 if current_data is not None:
                     # Write input to AI
-                    success = self.registry.write(socket_id, current_data)
+                    success = self.handler.write(socket_id, current_data)
                     if not success:
                         return f"Failed to write to {ai_name}"
                     
                     # Read response
-                    responses = self.registry.read(socket_id)
+                    responses = self.handler.read(socket_id)
                     if responses:
                         # Extract message content (remove header)
                         current_data = responses[0]
@@ -262,12 +262,12 @@ class AIShell:
                 
                 if current_data is not None:
                     # Write input to AI
-                    success = self.registry.write(socket_id, current_data)
+                    success = self.handler.write(socket_id, current_data)
                     if not success:
                         return f"Failed to write to {ai_name}", responses
                     
                     # Read response
-                    ai_responses = self.registry.read(socket_id)
+                    ai_responses = self.handler.read(socket_id)
                     if ai_responses:
                         # Extract message content (remove header)
                         current_data = ai_responses[0]
@@ -298,7 +298,7 @@ class AIShell:
     def _get_or_create_socket(self, ai_name):
         """Get existing socket or create new one for AI"""
         if ai_name not in self.active_sockets:
-            socket_id = self.registry.create(ai_name)
+            socket_id = self.handler.create(ai_name)
             self.active_sockets[ai_name] = socket_id
             if self.debug:
                 print(f"[DEBUG] Created socket {socket_id} for {ai_name}")
@@ -334,7 +334,8 @@ History Management:
     def _list_ais(self):
         """List available AI specialists"""
         print("Discovering available AI specialists...")
-        ais = self.registry.discover_ais(force_refresh=True)
+        # Discover AIs is not supported in MessageHandler, using hardcoded list
+        ais = self._get_hardcoded_ais()
         
         if not ais:
             print("No AI specialists found. Is Rhetor running?")
@@ -380,6 +381,15 @@ History Management:
         
         print("\nUse any AI name in a pipeline: echo \"hello\" | apollo")
     
+    def _get_hardcoded_ais(self):
+        """Return hardcoded list of AIs since MessageHandler doesn't support discovery."""
+        ai_names = ['engram', 'hermes', 'ergon', 'rhetor', 'terma', 'athena',
+                    'prometheus', 'harmonia', 'telos', 'synthesis', 'tekton_core',
+                    'metis', 'apollo', 'penia', 'sophia', 'noesis', 'numa', 'hephaestus']
+        
+        # Return in format expected by list_ais
+        return {name: {'id': name, 'status': 'unknown', 'capabilities': []} for name in ai_names}
+    
     def send_to_ai(self, ai_name, message):
         """Send message directly to AI via Rhetor."""
         try:
@@ -389,13 +399,13 @@ History Management:
             
             if message:
                 # Write message to AI
-                success = self.registry.write(socket_id, message)
+                success = self.handler.write(socket_id, message)
                 if not success:
                     print(f"Failed to send message to {ai_name}")
                     return
                 
                 # Read response
-                responses = self.registry.read(socket_id)
+                responses = self.handler.read(socket_id)
                 if responses:
                     # Extract message content
                     response = responses[0]
@@ -469,43 +479,32 @@ History Management:
             loop.close()
     
     async def _async_team_chat(self, message):
-        """Async team chat implementation using orchestration pattern"""
-        # First, discover all available AIs
-        self.registry.discover_ais(force_refresh=True)
-        
+        """Async team chat implementation using MessageHandler"""
         print("Broadcasting to team...")
         
-        # Send to all AIs concurrently
-        results = await self.registry.write_all(message)
+        # Use broadcast method
+        results = self.handler.broadcast(message)
         
         # Count successful sends
-        success_count = sum(1 for success in results.values() if success)
+        success_count = sum(1 for resp in results.values() if not resp.startswith('ERROR:'))
         print(f"Sent to {success_count} AIs")
         
         if success_count == 0:
             return "No AIs responded to broadcast"
         
-        # Collect responses as they arrive
+        # Collect responses
         print("\nTeam responses:")
         print("-" * 40)
         
-        responses_received = 0
         response_lines = []
         
-        async for response in self.registry.read_response_chunks(timeout=5.0):
-            ai_name = response['ai_name']
-            content = response['content']
-            
-            # Format and display
-            formatted = f"[{ai_name}]: {content}"
-            print(formatted)
-            response_lines.append(formatted)
-            
-            responses_received += 1
-            
-            # Stop if we've heard from everyone who was sent to
-            if responses_received >= success_count:
-                break
+        # Process responses from broadcast
+        for ai_name, content in results.items():
+            if not content.startswith('ERROR:'):
+                # Format and display
+                formatted = f"[{ai_name}]: {content}"
+                print(formatted)
+                response_lines.append(formatted)
         
         print("-" * 40)
         

@@ -19,7 +19,7 @@ from typing import Optional, List, Tuple
 from pathlib import Path
 
 from parser.pipeline import PipelineParser
-from registry.socket_registry import SocketRegistry
+from message_handler import MessageHandler
 from core.history import AIHistory
 
 
@@ -43,7 +43,7 @@ class TransparentAishProxy:
         
         self.debug = debug
         self.parser = PipelineParser()
-        self.registry = SocketRegistry(self.rhetor_endpoint, debug=debug)
+        self.handler = MessageHandler(self.rhetor_endpoint, debug=debug)
         self.ai_history = AIHistory()
         
         # Shell configuration
@@ -223,8 +223,8 @@ class TransparentAishProxy:
     
     def _execute_team_chat(self, message):
         """Execute team-chat broadcast."""
-        self.registry.write("team-chat-all", message)
-        responses = self.registry.read("team-chat-all")
+        self.handler.write("team-chat-all", message)
+        responses = self.handler.read("team-chat-all")
         return '\n'.join(responses) if responses else "No responses yet"
     
     def _sync_working_directory(self):
@@ -370,7 +370,11 @@ All standard commands, pipes, redirections work exactly as before.
         
         # Test AI connection
         try:
-            ais = self.registry.discover_ais(force_refresh=True)
+            # Discovery not supported in MessageHandler, using hardcoded list
+            ai_names = ['engram', 'hermes', 'ergon', 'rhetor', 'terma', 'athena',
+                        'prometheus', 'harmonia', 'telos', 'synthesis', 'tekton_core',
+                        'metis', 'apollo', 'penia', 'sophia', 'noesis', 'numa', 'hephaestus']
+            ais = {name: {'id': name} for name in ai_names}
             if ais:
                 print(f"  AI specialists: {len(ais)} available")
             else:

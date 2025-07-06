@@ -16,7 +16,32 @@ Usage:
 from typing import Optional
 from .ai_service_simple import get_service
 
+from landmarks import (
+    architecture_decision,
+    performance_boundary,
+    integration_point
+)
+
 # For async code
+@architecture_decision(
+    title="Unified AI Communication Interface",
+    rationale="Single entry point for all AI communication using 'One Queue, One Socket, One AI' principle",
+    alternatives_considered=["Multiple socket clients", "Connection pooling", "Direct socket access"],
+    impacts=["simplicity", "maintainability", "consistency"],
+    decided_by="Casey"
+)
+@performance_boundary(
+    title="AI Message Exchange",
+    sla="<30s timeout per message",
+    optimization_notes="Direct socket connection with UUID-based message tracking",
+    metrics={"default_timeout": "30s", "max_retries": 3}
+)
+@integration_point(
+    title="AI Service Integration",
+    target_component="ai_service_simple",
+    protocol="Socket/NDJSON",
+    data_flow="Message queue → Direct socket → AI response"
+)
 async def ai_send(ai_id: str, message: str, host: Optional[str] = None, port: Optional[int] = None) -> str:
     """
     Send message to AI and get response. Simple async interface.
@@ -114,23 +139,17 @@ def ai_send_sync(ai_id: str, message: str, host: Optional[str] = None, port: Opt
     if not host or not port:
         raise ValueError(f"Host and port required for {ai_id}")
     
-    # Use service's sync method if available, or run async version in new loop
-    service = get_service()
+    # Always use async version with real connections - don't use service sync method
     try:
-        # Try using service sync method first
-        return service.send_message_sync(ai_id, message)
+        loop = asyncio.get_running_loop()
+        # We're in an async context, use thread pool
+        import concurrent.futures
+        with concurrent.futures.ThreadPoolExecutor() as executor:
+            future = executor.submit(asyncio.run, ai_send(ai_id, message, host, port))
+            return future.result()
     except RuntimeError:
-        # If sync method fails, try async version in new event loop
-        try:
-            loop = asyncio.get_running_loop()
-            # We're in an async context, use thread pool
-            import concurrent.futures
-            with concurrent.futures.ThreadPoolExecutor() as executor:
-                future = executor.submit(asyncio.run, ai_send(ai_id, message, host, port))
-                return future.result()
-        except RuntimeError:
-            # No event loop running, safe to use asyncio.run
-            return asyncio.run(ai_send(ai_id, message, host, port))
+        # No event loop running, safe to use asyncio.run
+        return asyncio.run(ai_send(ai_id, message, host, port))
 
 # Helper to map ports to AI IDs
 def _get_ai_id_from_port(port: int) -> Optional[str]:

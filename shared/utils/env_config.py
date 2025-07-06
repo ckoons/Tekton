@@ -443,6 +443,10 @@ class TektonConfig(BaseModel):
     auto_launch: bool = True
     component_timeout: int = 30
     
+    # Port configuration
+    port_base: int = 8000  # Base port for Tekton components
+    ai_port_base: int = 45000  # Base port for AI specialists
+    
     # UI settings
     show_greek_names: bool = True
     theme_mode: str = 'dark'
@@ -461,6 +465,8 @@ class TektonConfig(BaseModel):
             log_level=cls._get_env_value('TEKTON_LOG_LEVEL', 'INFO', 'str'),
             auto_launch=cls._get_env_value('TEKTON_AUTO_LAUNCH', True, 'bool'),
             component_timeout=cls._get_env_value('TEKTON_COMPONENT_TIMEOUT', 30, 'int'),
+            port_base=cls._get_env_value('TEKTON_PORT_BASE', 8000, 'int'),
+            ai_port_base=cls._get_env_value('TEKTON_AI_PORT_BASE', 45000, 'int'),
             show_greek_names=cls._get_env_value('SHOW_GREEK_NAMES', True, 'bool'),
             theme_mode=cls._get_env_value('TEKTON_THEME_MODE', 'dark', 'str'),
             theme_color=cls._get_env_value('TEKTON_THEME_COLOR', 'blue', 'str'),

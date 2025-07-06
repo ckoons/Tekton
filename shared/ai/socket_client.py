@@ -33,12 +33,7 @@ from landmarks import (
     danger_zone
 )
 
-# Import connection pool if available
-try:
-    from .connection_pool import get_connection_pool
-    HAS_CONNECTION_POOL = True
-except ImportError:
-    HAS_CONNECTION_POOL = False
+# Connection pooling removed - unified system handles connections
 
 logger = logging.getLogger(__name__)
 
@@ -106,28 +101,12 @@ class AISocketClient:
         self.connection_timeout = connection_timeout
         self.max_retries = max_retries
         self.debug = debug
-        # Use global connection pool instead of local one
-        self._global_pool = None
-        self._pool_initialized = False
     
-    async def _ensure_pool_initialized(self):
-        """Ensure connection pool is initialized (lazy init)"""
-        if not self._pool_initialized and HAS_CONNECTION_POOL:
-            try:
-                self._global_pool = await get_connection_pool()
-                self._pool_initialized = True
-                if self.debug:
-                    logger.debug("Initialized global connection pool")
-            except Exception as e:
-                if self.debug:
-                    logger.debug(f"Failed to initialize connection pool: {e}")
-                self._global_pool = None
-                self._pool_initialized = True  # Don't retry
         
     @performance_boundary(
         title="AI Socket Message Exchange",
         sla="<30s timeout per message",
-        optimization_notes="Uses connection pooling and exponential backoff retry",
+        optimization_notes="Uses direct socket connection with exponential backoff retry",
         metrics={"default_timeout": "30s", "max_retries": 3}
     )
     async def send_message(self,
@@ -195,42 +174,7 @@ class AISocketClient:
                     logger.debug(f"Simple AI routing failed: {e}, falling back to direct connection")
                 # Continue with original implementation as fallback
         
-        # Ensure pool is initialized (lazy init)
-        await self._ensure_pool_initialized()
-        
-        # Use global connection pool if available
-        if self._global_pool and not _internal_health_check:
-            try:
-                # Find AI ID from registry if possible
-                ai_id = f"{host}:{port}"
-                
-                result = await self._global_pool.send_message(
-                    ai_id=ai_id,
-                    host=host,
-                    port=port,
-                    message=message,
-                    context=context,
-                    timeout=timeout or self.default_timeout
-                )
-                
-                # Make response format consistent with existing code
-                if result.get('success'):
-                    return {
-                        "success": True,
-                        "response": result.get('response', ''),
-                        "ai_id": result.get('ai_id', ai_id),
-                        "model": result.get('model', 'unknown'),
-                        "elapsed_time": result.get('elapsed_time', 0),
-                        "connection_reused": result.get('connection_reused', False)
-                    }
-                else:
-                    # Fall through to direct connection on failure
-                    if self.debug:
-                        logger.debug(f"Pool failed for {ai_id}: {result.get('error')}, using direct connection")
-            except Exception as e:
-                if self.debug:
-                    logger.debug(f"Connection pool error: {e}, falling back to direct connection")
-                # Fall through to direct connection
+        # Direct socket connection - no pooling needed with unified system
         
         timeout = timeout or self.default_timeout
         start_time = time.time()

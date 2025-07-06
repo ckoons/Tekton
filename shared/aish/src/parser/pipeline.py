@@ -79,6 +79,21 @@ class PipelineParser:
                 'input': parts[1].strip()
             }
         else:
+            # Check for direct AI command: ai_name "message"
+            # Match patterns like: apollo "hello" or numa 'test message'
+            match = re.match(r'^([a-zA-Z_]\w*)\s+["\'](.+)["\']$', command)
+            if match:
+                ai_name = match.group(1)
+                message = match.group(2)
+                # Convert to echo | ai pipeline format
+                return {
+                    'type': 'pipeline',
+                    'stages': [
+                        {'type': 'echo', 'content': message},
+                        {'type': 'ai', 'name': ai_name}
+                    ]
+                }
+            
             # Simple command
             return {
                 'type': 'simple',
