@@ -17,11 +17,19 @@ try:
 except ImportError:
     HAS_CONFIG = False
 
+# Import forwarding registry
+try:
+    from forwarding.forwarding_registry import ForwardingRegistry
+except ImportError:
+    # Try absolute import if relative fails
+    from src.forwarding.forwarding_registry import ForwardingRegistry
+
 class MessageHandler:
     """Just send and receive messages - that's it"""
     
     def __init__(self, rhetor_endpoint: str = None, debug: bool = False, timeout: int = 20):
         self.timeout = timeout
+        self.forwarding = ForwardingRegistry()
         
         if HAS_CONFIG:
             # Get port bases from config
@@ -67,7 +75,37 @@ class MessageHandler:
             }
     
     def send(self, ai_name: str, message: str) -> str:
-        """Send message, get response. Raise exception on any error."""
+        """Send message, check forwarding first."""
+        
+        # Check if AI is forwarded
+        forward_target = self.forwarding.get_forward(ai_name)
+        if forward_target:
+            return self._send_forwarded(ai_name, message, forward_target)
+        
+        # Normal AI routing
+        return self._send_to_ai_direct(ai_name, message)
+    
+    def _send_forwarded(self, ai_name: str, message: str, terminal_name: str) -> str:
+        """Send message to terminal inbox instead of AI."""
+        try:
+            # Format message for human inbox
+            formatted_msg = f"[{ai_name}] {message}"
+            
+            # Send to terminal inbox
+            success = self._send_to_terminal_inbox(terminal_name, formatted_msg)
+            
+            if success:
+                return f"Message forwarded to {terminal_name}"
+            else:
+                # Fallback to AI if forwarding fails
+                return self._send_to_ai_direct(ai_name, message)
+                
+        except Exception as e:
+            print(f"Forwarding failed: {e}, falling back to AI")
+            return self._send_to_ai_direct(ai_name, message)
+    
+    def _send_to_ai_direct(self, ai_name: str, message: str) -> str:
+        """Direct AI communication (original logic)."""
         port = self.ports.get(ai_name)
         if not port:
             raise ValueError(f"Unknown AI: {ai_name}")
@@ -82,6 +120,18 @@ class MessageHandler:
         
         resp = json.loads(data.decode())
         return resp.get('content', '')
+    
+    def _send_to_terminal_inbox(self, terminal_name: str, message: str) -> bool:
+        """Send message to terminal's inbox via terma."""
+        try:
+            # Import here to avoid circular dependencies
+            try:
+                from commands.terma import terma_send_message_to_terminal
+            except ImportError:
+                from src.commands.terma import terma_send_message_to_terminal
+            return terma_send_message_to_terminal(terminal_name, message)
+        except Exception:
+            return False
     
     def broadcast(self, message: str) -> Dict[str, str]:
         """Send to all AIs. Return dict of responses or errors."""

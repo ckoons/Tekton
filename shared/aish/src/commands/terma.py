@@ -331,6 +331,36 @@ def terma_send_message(target, message):
         print(f"Error sending message: {e}")
         return 1
 
+
+def terma_send_message_to_terminal(terminal_name, message):
+    """Send message directly to specific terminal's inbox."""
+    try:
+        # Build message for specific terminal
+        msg_data = {
+            "from": {
+                "terma_id": "aish-forwarding",
+                "name": "AI Forwarding"
+            },
+            "target": terminal_name,
+            "message": message,
+            "timestamp": datetime.now().isoformat(),
+            "type": "ai_forward"
+        }
+        
+        url = f"{TERMA_ENDPOINT}/api/mcp/v2/terminals/route-message"
+        data = json.dumps(msg_data).encode('utf-8')
+        req = urllib.request.Request(url, data=data, 
+                                   headers={'Content-Type': 'application/json'})
+        
+        with urllib.request.urlopen(req, timeout=5) as response:
+            result = json.loads(response.read())
+        
+        return result.get("success", False)
+        
+    except Exception as e:
+        print(f"Failed to send to terminal {terminal_name}: {e}")
+        return False
+
 def terma_inbox_both():
     """Show both new and keep inboxes to stdout."""
     try:

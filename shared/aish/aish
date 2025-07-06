@@ -131,6 +131,15 @@ Environment variables:
                 'hephaestus',  # UI/DevTools
                 'team-chat']   # Broadcast to all
     
+    # Handle forwarding commands first
+    if args.ai_or_script == 'forward':
+        from commands.forward import handle_forward_command
+        return handle_forward_command(args.message or [])
+    
+    if args.ai_or_script == 'unforward':
+        from commands.forward import handle_unforward_command
+        return handle_unforward_command(args.message or [])
+    
     # Check if first argument is an AI name (case-insensitive)
     if args.ai_or_script and args.ai_or_script.lower() in ai_names:
         component = args.ai_or_script.lower()
