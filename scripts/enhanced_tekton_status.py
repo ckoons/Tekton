@@ -74,7 +74,8 @@ sys.path.insert(0, tekton_root)
 
 from tekton.utils.component_config import get_component_config, ComponentInfo
 from shared.utils.env_config import get_component_config as get_env_config
-from shared.ai.registry_client import AIRegistryClient
+# Registry client removed - using direct port checks
+# from shared.ai.registry_client import AIRegistryClient
 
 
 @dataclass
@@ -230,11 +231,12 @@ class EnhancedStatusChecker:
     
     def __init__(self, store_metrics: bool = True, timeout: float = 2.0, quick_mode: bool = False):
         self.config = get_component_config()
+        self.env_config = get_env_config()  # For AI port calculations
         self.storage = MetricsStorage() if store_metrics else None
         self.session = None
         self.timeout = timeout
         self.quick_mode = quick_mode
-        self.ai_registry = AIRegistryClient()
+        # AI registry removed - using fixed port calculations
         self.model_display_names = self._load_model_display_names()
     
     def _load_model_display_names(self) -> Dict[str, str]:
@@ -434,26 +436,22 @@ class EnhancedStatusChecker:
     async def check_ai_status(self, component_name: str) -> Dict[str, str]:
         """Check AI status for a component."""
         # Check if AI is enabled globally from Tekton config
-        env_config = get_env_config()
-        if not env_config.tekton.register_ai:
+        if not self.env_config.tekton.register_ai:
             return {'model': None, 'health': 'none'}
         
-        # Check for AI registered for this component
+        # Calculate AI port from component port
+        component_port = self.env_config.get_port(component_name.lower())
+        if not component_port:
+            return {'model': None, 'health': 'none'}
+        
+        # AI port = (component_port - 8000) + 45000
+        ai_port = (component_port - 8000) + 45000
         ai_id = f"{component_name.lower()}-ai"
-        ai_registry = self.ai_registry.list_platform_ais()
         
-        if ai_id not in ai_registry:
-            return {'model': None, 'health': 'none'}
-        
-        # Get AI info
-        socket_info = self.ai_registry.get_ai_socket(ai_id)
-        if not socket_info:
-            return {'model': 'Unknown', 'health': 'red'}
-        
-        # Try to get model info
+        # Try to connect to AI
         try:
             reader, writer = await asyncio.wait_for(
-                asyncio.open_connection(socket_info[0], socket_info[1]),
+                asyncio.open_connection('localhost', ai_port),
                 timeout=1.0
             )
             

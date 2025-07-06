@@ -549,6 +549,7 @@ class ComponentConfig:
             'athena': self.athena,
             'apollo': self.apollo,
             'budget': self.budget,
+            'penia': self.budget,  # Penia is the AI name for budget component
             'ergon': self.ergon,
             'harmonia': self.harmonia,
             'hephaestus': self.hephaestus,

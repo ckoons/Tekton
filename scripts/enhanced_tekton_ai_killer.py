@@ -15,7 +15,7 @@ script_path = os.path.realpath(__file__)
 tekton_root = os.path.dirname(os.path.dirname(script_path))
 sys.path.insert(0, tekton_root)
 
-from shared.ai.registry_client import AIRegistryClient
+# Registry client removed - using process scanning
 from shared.utils.logging_setup import setup_component_logging
 
 
@@ -24,7 +24,7 @@ class AIKiller:
     
     def __init__(self, verbose: bool = False):
         self.verbose = verbose
-        self.registry_client = AIRegistryClient()
+        # Registry removed - will scan processes directly
         
         # Setup logging
         log_level = 'DEBUG' if verbose else 'INFO'
@@ -40,37 +40,30 @@ class AIKiller:
         Returns:
             True if killed successfully
         """
-        # Get AI info from registry
-        registry = self.registry_client.list_platform_ais()
-        
-        if ai_id not in registry:
-            self.logger.warning(f"AI {ai_id} not found in registry")
-            return False
-        
-        ai_info = registry[ai_id]
-        pid = ai_info.get('metadata', {}).get('pid')
-        
-        # Try to kill by PID if available
-        if pid:
+        # Find process by scanning for the AI id with generic_specialist
+        killed = False
+        for proc in psutil.process_iter(['pid', 'name', 'cmdline']):
             try:
-                process = psutil.Process(pid)
-                process.terminate()
-                process.wait(timeout=5)
-                self.logger.info(f"Terminated AI {ai_id} (PID: {pid})")
+                cmdline = proc.info.get('cmdline', [])
+                # Look for generic_specialist with this specific AI id
+                if cmdline and 'generic_specialist' in ' '.join(cmdline) and f'--ai-id {ai_id}' in ' '.join(cmdline):
+                    proc.terminate()
+                    proc.wait(timeout=5)
+                    self.logger.info(f"Terminated AI {ai_id} (PID: {proc.pid})")
+                    killed = True
             except psutil.NoSuchProcess:
-                self.logger.warning(f"Process {pid} not found")
+                pass  # Process already gone
             except psutil.TimeoutExpired:
                 try:
-                    process.kill()
-                    self.logger.info(f"Force killed AI {ai_id} (PID: {pid})")
+                    proc.kill()
+                    self.logger.info(f"Force killed AI {ai_id} (PID: {proc.pid})")
+                    killed = True
                 except Exception as e:
-                    self.logger.error(f"Failed to kill process {pid}: {e}")
+                    self.logger.error(f"Failed to kill process {proc.pid}: {e}")
             except Exception as e:
-                self.logger.error(f"Error killing AI {ai_id}: {e}")
+                self.logger.error(f"Error checking process: {e}")
         
-        # Always deregister from registry
-        self.registry_client.deregister_platform_ai(ai_id)
-        return True
+        return killed
     
     def kill_ai_by_component(self, component: str) -> bool:
         """

@@ -218,14 +218,14 @@ When asked about capabilities outside your expertise, acknowledge the limitation
         msg_type = message.get('type', 'unknown')
         
         # Let base class handle standard messages
-        if msg_type in ['ping', 'health', 'info', 'chat']:
+        if msg_type in ['ping', 'health', 'info']:
             return await self.handlers[msg_type](message)
         
         # Handle component-specific messages
         return {
             'type': 'response',
             'ai_id': self.ai_id,
-            'content': f"Received {msg_type} message. As {self.component_info['title']}, I specialize in {self.component_info['expertise']}."
+            'content': f"I am {self.component_info['title']}. I specialize in {self.component_info['expertise']}."
         }
 
 
