@@ -709,66 +709,35 @@ function noesis_sendTeamChatMessage() {
         window.noesisTeamChatAbort = abort;
         
     } else if (window.AIChat) {
-        // Fallback to old method
+        // Fallback to standard team chat
         // Add typing indicator
         const typingId = 'noesis-team-typing-' + Date.now();
-        noesis_addChatMessage('team', '...', 'typing', typingId);
+        noesis_addChatMessage('team', 'Broadcasting to team...', 'system', typingId);
         
-        // For now, just send to one AI as a test
-        const testMessage = broadcast ? 
-            `[BROADCAST TO ALL] ${fullMessage}` : 
-            `[TO: athena-ai, sophia-ai] ${fullMessage}`;
-        
-        // Temporarily use single AI chat until team-chat is fixed
-        window.AIChat.sendMessage('apollo-ai', testMessage)
-            .then(response => {
+        // Use standard team chat
+        window.AIChat.teamChat(fullMessage, 'noesis')
+            .then(data => {
                 // Remove typing indicator
                 noesis_removeTypingIndicator(typingId);
                 
-                // Format as if it came from team chat
-                const responses = [{
-                    socket_id: 'apollo-ai',
-                    content: response.content || '',
-                    ...response
-                }];
-                
-                // Handle responses
-                if (responses && responses.length > 0) {
-                    responses.forEach(resp => {
-                        let content = resp.content || resp.message || '';
-                        
-                        // Clean up response text
-                        if (content.startsWith('Received message message.')) {
-                            content = content.replace('Received message message.', '');
-                        }
-                        
-                        // Extract sender name
-                        const sender = resp.socket_id ? 
-                            resp.socket_id.replace('-ai', '').replace('-specialist', '') : 
-                            'AI';
-                        
-                        // Parse for special formatting
-                        const parts = window.AIChat.parseResponse(content);
-                        parts.forEach(part => {
-                            if (part.type === 'text' && part.content.trim()) {
-                                noesis_addChatMessage('team', part.content, 'ai', null, sender);
-                            } else if (part.type === 'block') {
-                                noesis_addChatMessage('team', part.content, 'discovery', null, sender);
-                            }
-                        });
+                // Display team responses
+                if (data.responses && data.responses.length > 0) {
+                    data.responses.forEach(resp => {
+                        const sender = resp.socket_id.replace('-ai', '').charAt(0).toUpperCase() + 
+                                     resp.socket_id.replace('-ai', '').slice(1);
+                        noesis_addChatMessage('team', resp.content, 'ai', null, sender);
                     });
                 } else {
-                    noesis_addChatMessage('team', 'Message broadcast to team.', 'system');
+                    noesis_addChatMessage('team', 'No responses received from team', 'system');
                 }
             })
             .catch(error => {
                 // Remove typing indicator
                 noesis_removeTypingIndicator(typingId);
                 
-                console.error('Team chat error:', error);
-                noesis_addChatMessage('team', 
-                    'Failed to send team message. Please ensure AI specialists are running.', 
-                    'system');
+                // Show error message
+                console.error('Team chat failed:', error);
+                noesis_addChatMessage('team', `Team chat failed: ${error.message}`, 'system');
             });
     } else {
         // No chat module available
