@@ -58,17 +58,17 @@ class RoutingEngine:
 
 
 @architecture_decision(
-    title="MCP Tools Integration with Unified AI System",
-    rationale="Replace complex socket client usage with unified simple_ai system",
-    alternatives_considered=["Keep socket_client", "Direct socket management", "REST API only"],
-    impacts=["consistency", "maintainability", "reduced_complexity"],
+    title="MCP Tools Integration with Simple AI System",
+    rationale="Use unified simple_ai system for direct socket communication with fixed ports",
+    alternatives_considered=["Complex registry system", "Connection pooling", "Dynamic discovery"],
+    impacts=["simplicity", "maintainability", "direct_communication"],
     decided_by="Casey"
 )
 @integration_point(
-    title="MCP to Unified AI Bridge",
-    target_component="simple_ai",
-    protocol="unified message queue",
-    data_flow="MCP tools → simple_ai → ai_service_simple → Direct Socket"
+    title="Direct AI Socket Integration",
+    target_component="AI Specialists (ports 45000-50000)",
+    protocol="Direct socket communication",
+    data_flow="MCP tools → simple_ai → Direct Socket → AI Response"
 )
 class MCPToolsIntegrationUnified:
     """

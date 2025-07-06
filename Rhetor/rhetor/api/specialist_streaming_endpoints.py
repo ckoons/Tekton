@@ -185,8 +185,8 @@ async def stream_team_chat(request: StreamingRequest):
 @integration_point(
     title="Greek Chorus AI Streaming Integration",
     target_component="AI Specialists (ports 45000-50000)",
-    protocol="SSE over HTTP",
-    data_flow="Request → AISocketClient → AI Specialist → Stream chunks → SSE Response"
+    protocol="SSE over HTTP with direct sockets",
+    data_flow="Request → simple_ai → Direct Socket → Stream chunks → SSE Response"
 )
 @api_contract(
     title="Specialist Streaming Endpoint",
