@@ -10,29 +10,29 @@ import json
 # Add Tekton root to path
 sys.path.insert(0, os.environ.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton'))
 
-from shared.ai.registry_client import AIRegistryClient
+# Registry removed - using fixed port calculations
+from shared.utils.env_config import get_component_config
 
 async def test_ai_launch(component: str):
     """Test launching an AI and see what happens"""
     print(f"\n=== Testing AI launch for {component} ===")
     
-    registry_client = AIRegistryClient()
+    config = get_component_config()
     ai_id = f"{component}-ai"
     
-    # Check if already in registry
-    existing = registry_client.get_ai_socket(ai_id)
-    if existing:
-        print(f"AI {ai_id} already registered on port {existing[1]}")
+    # Calculate expected AI port
+    component_port = config.get_port(component)
+    if not component_port:
+        print(f"Component {component} not found in config")
         return
     
-    # Allocate port
-    port = registry_client.allocate_port()
-    print(f"Allocated port {port} for {ai_id}")
+    ai_port = (component_port - 8000) + 45000
+    print(f"Expected port {ai_port} for {ai_id} (based on component port {component_port})")
     
     # Launch AI process
     cmd = [
         sys.executable, '-m', 'shared.ai.generic_specialist',
-        '--port', str(port),
+        '--port', str(ai_port),
         '--component', component,
         '--ai-id', ai_id,
         '--verbose'
@@ -46,17 +46,8 @@ async def test_ai_launch(component: str):
         env={**os.environ, 'PYTHONPATH': os.environ.get('TEKTON_ROOT')}
     )
     
-    # Register with registry
-    registry_client.register_platform_ai(
-        ai_id=ai_id,
-        port=port,
-        component=component,
-        metadata={
-            'description': f'AI specialist for {component}',
-            'pid': process.pid
-        }
-    )
-    print(f"Registered {ai_id} with PID {process.pid}")
+    # No registry needed - using fixed ports
+    print(f"Launched {ai_id} with PID {process.pid} on port {ai_port}")
     
     # Wait a bit for startup
     await asyncio.sleep(2)
@@ -71,10 +62,10 @@ async def test_ai_launch(component: str):
         return
     
     # Try to connect
-    print(f"Attempting to connect to {ai_id} on port {port}...")
+    print(f"Attempting to connect to {ai_id} on port {ai_port}...")
     try:
         reader, writer = await asyncio.wait_for(
-            asyncio.open_connection('localhost', port),
+            asyncio.open_connection('localhost', ai_port),
             timeout=5.0
         )
         print(f"✓ Successfully connected to {ai_id}")

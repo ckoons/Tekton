@@ -14,19 +14,19 @@ console.log('[FILE_TRACE] Loading: ai-chat.js');
  */
 
 window.AIChat = {
-    // Rhetor team-chat endpoint
+    // Rhetor endpoints
     teamChatUrl: 'http://localhost:8003/api/team-chat',
+    specialistUrl: 'http://localhost:8003/api/v1/ai/specialists',
     
     /**
-     * Send a message to a single AI specialist
+     * Send a message to a single AI specialist (like aish apollo "message")
      * @param {string} aiName - The AI name (e.g., 'noesis-ai', 'apollo-ai')
      * @param {string} message - The message to send
      * @returns {Promise<Object>} The AI's response
      */
     async sendMessage(aiName, message) {
         try {
-            // Use the streaming endpoint that actually works!
-            const response = await fetch(`http://localhost:8003/api/chat/${aiName}/stream`, {
+            const response = await fetch(`${this.specialistUrl}/${aiName}/message`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -40,39 +40,17 @@ window.AIChat = {
                 throw new Error(`Chat failed: ${response.statusText}`);
             }
             
-            // Read the streaming response
-            const reader = response.body.getReader();
-            const decoder = new TextDecoder();
-            let fullContent = '';
+            const data = await response.json();
             
-            while (true) {
-                const { done, value } = await reader.read();
-                if (done) break;
-                
-                const chunk = decoder.decode(value);
-                const lines = chunk.split('\n');
-                
-                for (const line of lines) {
-                    if (line.startsWith('data: ')) {
-                        try {
-                            const data = JSON.parse(line.slice(6));
-                            if (data.type === 'chunk' && data.content) {
-                                fullContent += data.content;
-                            } else if (data.type === 'complete' && data.summary) {
-                                // Final message
-                                fullContent = data.metadata?.total_content || fullContent;
-                            }
-                        } catch (e) {
-                            // Ignore parse errors for incomplete chunks
-                        }
-                    }
-                }
+            if (data.success && data.response) {
+                return {
+                    content: data.response,
+                    ai_id: data.ai_id,
+                    success: true
+                };
+            } else {
+                throw new Error(data.error || 'No response from AI');
             }
-            
-            return {
-                content: fullContent,
-                socket_id: aiName
-            };
         } catch (error) {
             console.error(`Failed to send message to ${aiName}:`, error);
             throw error;
@@ -80,12 +58,13 @@ window.AIChat = {
     },
     
     /**
-     * Broadcast a message to multiple AI specialists
+     * Send team chat message (like aish team-chat "message")
      * @param {string} message - The message to send
-     * @param {Array<string>} aiNames - List of AI names (empty for all)
-     * @returns {Promise<Array>} Array of responses
+     * @param {string} fromComponent - Which component is sending (e.g., 'rhetor', 'numa')
+     * @param {Array<string>} targetAIs - Optional list of specific AIs (empty = all)
+     * @returns {Promise<Object>} Team chat response
      */
-    async broadcastMessage(message, aiNames = []) {
+    async teamChat(message, fromComponent = 'ui', targetAIs = []) {
         const response = await fetch(this.teamChatUrl, {
             method: 'POST',
             headers: {
@@ -93,9 +72,9 @@ window.AIChat = {
             },
             body: JSON.stringify({
                 message: message,
-                moderation_mode: 'pass_through',
-                timeout: 10.0,
-                target_sockets: aiNames.length > 0 ? aiNames : null  // null means broadcast to all
+                from_component: fromComponent,
+                target_sockets: targetAIs.length > 0 ? targetAIs : null,
+                timeout: 10.0
             })
         });
         
@@ -103,19 +82,7 @@ window.AIChat = {
             throw new Error(`Team chat failed: ${response.statusText}`);
         }
         
-        const data = await response.json();
-        console.log('Broadcast response:', data);
-        
-        // Convert responses object to array format
-        if (data.responses && typeof data.responses === 'object') {
-            return Object.entries(data.responses).map(([socketId, response]) => ({
-                socket_id: socketId,
-                content: response.content || response.message || '',
-                ...response
-            }));
-        }
-        
-        return [];
+        return await response.json();
     },
     
     

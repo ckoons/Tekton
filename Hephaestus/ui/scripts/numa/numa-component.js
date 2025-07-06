@@ -101,7 +101,6 @@ window.NumaComponent = {
     sendTeamMessage: async function() {
         const input = document.getElementById('numa-team-input');
         const message = input.value.trim();
-        const broadcast = document.getElementById('numa-broadcast-mode').checked;
         
         if (!message) return;
         
@@ -110,7 +109,8 @@ window.NumaComponent = {
         input.value = '';
         
         try {
-            const response = await fetch(`${this.apiUrl}/api/team-chat`, {
+            // Use Rhetor's team chat endpoint
+            const response = await fetch('http://localhost:8003/api/team-chat', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -118,7 +118,7 @@ window.NumaComponent = {
                 body: JSON.stringify({
                     message: message,
                     from_component: 'numa',
-                    broadcast: broadcast
+                    broadcast: true  // Always broadcast to team
                 })
             });
             

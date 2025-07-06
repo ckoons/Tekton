@@ -472,7 +472,7 @@ class TektonConfig(BaseModel):
             theme_color=cls._get_env_value('TEKTON_THEME_COLOR', 'blue', 'str'),
             mcp_enabled=cls._get_env_value('TEKTON_MCP_ENABLED', True, 'bool'),
             notifications_enabled=cls._get_env_value('TEKTON_NOTIFICATIONS_ENABLED', True, 'bool'),
-            register_ai=cls._get_env_value('TEKTON_REGISTER_AI', True, 'bool')
+            register_ai=cls._get_env_value('TEKTON_REGISTER_AI', True, 'bool')  # Still True - AIs are active, just not using old registry
         )
     
     @classmethod

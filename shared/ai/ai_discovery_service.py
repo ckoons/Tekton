@@ -13,6 +13,7 @@ from datetime import datetime
 from pathlib import Path
 
 # Registry client removed - using fixed port discovery
+from shared.utils.ai_port_utils import get_ai_port, AI_PORT_MAP
 from landmarks import api_contract, integration_point, architecture_decision
 
 logger = logging.getLogger(__name__)
@@ -37,15 +38,8 @@ class AIDiscoveryService:
     
     def __init__(self):
         """Initialize the AI Discovery Service."""
-        # Registry removed - using fixed port mappings
-        self._fixed_ports = {
-            'engram-ai': 45000, 'hermes-ai': 45001, 'ergon-ai': 45002,
-            'rhetor-ai': 45003, 'terma-ai': 45004, 'athena-ai': 45005,
-            'prometheus-ai': 45006, 'harmonia-ai': 45007, 'telos-ai': 45008,
-            'synthesis-ai': 45009, 'tekton_core-ai': 45010, 'metis-ai': 45011,
-            'apollo-ai': 45012, 'penia-ai': 45013, 'sophia-ai': 45014,
-            'noesis-ai': 45015, 'numa-ai': 45016, 'hephaestus-ai': 45080
-        }
+        # Registry removed - using fixed port mappings from ai_port_utils
+        self._fixed_ports = AI_PORT_MAP
         self._capability_cache = {}
         self._last_cache_update = 0
         self._cache_ttl = 60  # Cache for 1 minute

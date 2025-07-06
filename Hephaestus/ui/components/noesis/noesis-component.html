@@ -57,12 +57,6 @@
             <div class="chat-interface" data-tekton-chat="team">
                 <div class="team-chat-header">
                     <p>Share discoveries with other AI specialists</p>
-                    <div class="team-chat-controls">
-                        <label>
-                            <input type="checkbox" id="noesis-broadcast-mode" data-tekton-broadcast="noesis">
-                            Broadcast discovery to all AIs
-                        </label>
-                    </div>
                 </div>
                 <div class="chat-messages" id="noesis-team-messages" data-tekton-messages="team">
                     <div class="chat-message system-message">
@@ -631,7 +625,7 @@ function noesis_sendDiscoveryChatMessage() {
 function noesis_sendTeamChatMessage() {
     const input = document.getElementById('noesis-chat-input');
     const message = input.value.trim();
-    const broadcast = document.getElementById('noesis-broadcast-mode').checked;
+    const broadcast = true; // Always broadcast to team
     
     if (!message) return;
     

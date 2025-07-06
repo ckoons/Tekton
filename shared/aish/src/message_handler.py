@@ -12,6 +12,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
 
 try:
     from shared.utils.env_config import get_tekton_config, get_component_config
+    from shared.utils.ai_port_utils import get_ai_port
     HAS_CONFIG = True
 except ImportError:
     HAS_CONFIG = False
@@ -37,8 +38,8 @@ class MessageHandler:
                             'metis', 'apollo', 'penia', 'sophia', 'noesis', 'numa', 'hephaestus']:
                 component_port = component_config.get_port(component)
                 if component_port:
-                    # AI port = (component_port - port_base) + ai_port_base
-                    ai_port = (component_port - self.port_base) + self.ai_port_base
+                    # Use standard formula from ai_port_utils
+                    ai_port = get_ai_port(component_port)
                     self.ports[component] = ai_port
         else:
             # Fallback to hardcoded if config not available

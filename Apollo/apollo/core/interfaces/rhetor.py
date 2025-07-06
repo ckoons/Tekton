@@ -136,13 +136,15 @@ class RhetorInterface:
             List of session information dictionaries
         """
         try:
-            response = await self._request("GET", "/api/ai/specialists", params={"active_only": "true"})
+            response = await self._request("GET", "/api/v1/ai/specialists")
             
             # Transform specialists to session format
             sessions = []
-            for specialist in response.get("specialists", []):
-                # Handle both "id" and "specialist_id" fields
-                specialist_id = specialist.get("id") or specialist.get("specialist_id")
+            # Handle both array response (new) and object with specialists key (old)
+            specialists = response if isinstance(response, list) else response.get("specialists", [])
+            for specialist in specialists:
+                # Handle different ID field names
+                specialist_id = specialist.get("ai_id") or specialist.get("id") or specialist.get("specialist_id")
                 if not specialist_id:
                     logger.warning(f"Specialist missing ID field: {specialist}")
                     continue
@@ -150,8 +152,8 @@ class RhetorInterface:
                 sessions.append({
                     "context_id": specialist_id,
                     "name": specialist.get("name", specialist_id),
-                    "type": specialist.get("type") or specialist.get("specialist_type", "unknown"),
-                    "active": specialist.get("active", specialist.get("status") == "active"),
+                    "type": specialist.get("category") or specialist.get("type") or specialist.get("specialist_type", "unknown"),
+                    "active": specialist.get("healthy", specialist.get("active", specialist.get("status") == "active")),
                     "message_count": specialist.get("messages", 0),
                     "session_count": specialist.get("sessions", 0),
                     "model": specialist.get("model", "unknown")
@@ -227,13 +229,13 @@ class RhetorInterface:
         try:
             # First try to deactivate
             try:
-                await self._request("POST", f"/api/ai/specialists/{context_id}/fire")
+                await self._request("DELETE", f"/api/v1/ai/specialists/{context_id}/fire")
             except Exception:
                 # Deactivation might not be implemented yet
                 pass
             
             # Then reactivate
-            response = await self._request("POST", f"/api/ai/specialists/{context_id}/hire", json={"ai_id": context_id, "role": "general"})
+            response = await self._request("POST", f"/api/v1/ai/specialists/{context_id}/hire")
             return response.get("success", False)
             
         except Exception as e:

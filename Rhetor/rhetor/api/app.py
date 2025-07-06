@@ -210,11 +210,11 @@ async def startup_callback():
         # Initialize MCP components after component startup
         await component.initialize_mcp_components()
         
-        # Initialize MCP tools integration for team chat
-        from rhetor.core.mcp.tools_integration_unified import MCPToolsIntegrationUnified, set_mcp_tools_integration
-        integration = MCPToolsIntegrationUnified()
+        # Initialize simplified MCP tools integration for team chat
+        from rhetor.core.mcp.tools_integration_simple import MCPToolsIntegrationSimple, set_mcp_tools_integration
+        integration = MCPToolsIntegrationSimple()
         set_mcp_tools_integration(integration)
-        logger.info("Initialized MCP tools integration")
+        logger.info("Initialized simplified MCP tools integration")
         
         logger.info(f"Rhetor API server started successfully")
     except Exception as e:
@@ -240,11 +240,11 @@ try:
 except ImportError as e:
     logger.warning(f"FastMCP endpoints not available: {e}")
 
-# Add AI Specialist endpoints
+# Add simplified AI Specialist endpoints
 try:
-    from .ai_specialist_endpoints_unified import router as ai_router
+    from .ai_specialist_endpoints_simple import router as ai_router
     app.include_router(ai_router)
-    logger.info("AI Specialist endpoints added to Rhetor API")
+    logger.info("Simplified AI Specialist endpoints added to Rhetor API")
 except ImportError as e:
     logger.warning(f"AI Specialist endpoints not available: {e}")
 
@@ -260,11 +260,11 @@ try:
 except ImportError as e:
     logger.warning(f"Team Chat endpoints not available: {e}")
 
-# Add Specialist Streaming endpoints
+# Add simplified Specialist Streaming endpoints
 try:
-    from .specialist_streaming_endpoints import router as streaming_router
+    from .specialist_streaming_endpoints_simple import router as streaming_router
     app.include_router(streaming_router)
-    logger.info("Specialist Streaming endpoints added to Rhetor API")
+    logger.info("Simplified Specialist Streaming endpoints added to Rhetor API")
 except ImportError as e:
     logger.warning(f"Specialist Streaming endpoints not available: {e}")
 

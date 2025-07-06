@@ -27,5 +27,4 @@ fi
 
 # Start Noesis API server
 echo "Starting Noesis on port $NOESIS_PORT..."
-echo "TEKTON_REGISTER_AI: ${TEKTON_REGISTER_AI:-false}"
 python -m noesis.api "$@"

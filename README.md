@@ -274,9 +274,14 @@ Each component has a specialized AI assistant:
 
 ### Configuration
 
-Enable AI support in `.env.tekton`:
+AI specialists are enabled by default. To disable them:
 ```bash
-TEKTON_REGISTER_AI=true
+# Add to .env.tekton only if you want to disable AIs
+TEKTON_REGISTER_AI=false
+```
+
+Configure AI provider (defaults to ollama):
+```bash
 TEKTON_AI_PROVIDER=ollama  # or anthropic
 ```
 

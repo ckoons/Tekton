@@ -417,6 +417,7 @@ class EnhancedComponentKiller:
     async def terminate_component_ai(self, component_name: str):
         """Terminate AI specialist for a component if running"""
         # Check if AI is enabled from Tekton config
+        # Note: register_ai still controls AI termination, but we no longer use the old registry system
         env_config = get_env_config()
         if not env_config.tekton.register_ai:
             self.log("AI support disabled, skipping AI termination", "info", component_name)
