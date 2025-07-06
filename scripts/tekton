@@ -1,0 +1,382 @@
+#!/usr/bin/env python3
+"""
+Tekton - Unified command-line interface for the Tekton Multi-AI Engineering Platform
+
+This script provides a single entry point for all Tekton functionality,
+routing subcommands to their appropriate implementations.
+"""
+
+import os
+import sys
+import argparse
+import subprocess
+import json
+from pathlib import Path
+from typing import List, Dict, Optional, Tuple
+
+# Version information
+TEKTON_VERSION = "1.0.0"
+
+class TektonCLI:
+    """Main CLI handler for Tekton commands"""
+    
+    def __init__(self):
+        self.tekton_root = os.environ.get('TEKTON_ROOT', os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+        self.config_dir = Path(self.tekton_root) / '.tekton'
+        self.aliases_file = self.config_dir / 'aliases'
+        self.aliases = self.load_aliases()
+        
+        # Subcommand mappings
+        self.subcommands = {
+            'start': self.cmd_start,
+            'stop': self.cmd_stop,
+            'status': self.cmd_status,
+            'revert': self.cmd_revert,
+            'logs': self.cmd_logs,
+            'alias': self.cmd_alias,
+            'help': self.cmd_help,
+            # Stubbed commands
+            'init': self.cmd_not_implemented,
+            'merge-coordinator': self.cmd_not_implemented,
+            'devs': self.cmd_not_implemented,
+            'config': self.cmd_not_implemented,
+            'profile': self.cmd_not_implemented,
+            'settings': self.cmd_not_implemented,
+            'ai': self.cmd_not_implemented,
+        }
+    
+    def load_aliases(self) -> Dict[str, str]:
+        """Load command aliases from config file"""
+        aliases = {}
+        if self.aliases_file.exists():
+            try:
+                with open(self.aliases_file, 'r') as f:
+                    for line in f:
+                        line = line.strip()
+                        if line and '=' in line and not line.startswith('#'):
+                            key, value = line.split('=', 1)
+                            aliases[key.strip()] = value.strip()
+            except Exception as e:
+                print(f"Warning: Could not load aliases: {e}", file=sys.stderr)
+        return aliases
+    
+    def save_aliases(self):
+        """Save aliases back to config file"""
+        self.config_dir.mkdir(parents=True, exist_ok=True)
+        with open(self.aliases_file, 'w') as f:
+            f.write("# Tekton command aliases\n")
+            f.write("# Format: alias=command\n\n")
+            for key, value in sorted(self.aliases.items()):
+                f.write(f"{key}={value}\n")
+    
+    def resolve_aliases(self, args: List[str]) -> List[str]:
+        """Resolve aliases in command arguments"""
+        if not args:
+            return args
+        
+        resolved = []
+        i = 0
+        while i < len(args):
+            arg = args[i]
+            
+            # Check if this argument is an alias
+            if arg in self.aliases and not arg.startswith('-'):
+                # Prevent recursive aliases
+                if self.aliases[arg] == arg:
+                    print(f"Warning: Recursive alias detected: {arg}", file=sys.stderr)
+                    resolved.append(arg)
+                else:
+                    # Expand alias (could be multiple words)
+                    expanded = self.aliases[arg].split()
+                    resolved.extend(expanded)
+            else:
+                resolved.append(arg)
+            i += 1
+        
+        return resolved
+    
+    def cmd_start(self, args: List[str]):
+        """Start Tekton components"""
+        script_path = Path(self.tekton_root) / 'scripts' / 'enhanced_tekton_launcher.py'
+        if script_path.exists():
+            cmd = [sys.executable, str(script_path)] + args
+            return subprocess.call(cmd)
+        else:
+            # Try tekton-launch as fallback
+            return subprocess.call(['tekton-launch'] + args)
+    
+    def cmd_stop(self, args: List[str]):
+        """Stop Tekton components"""
+        # Look for kill script
+        kill_scripts = [
+            'scripts/kill_all_specialists.sh',
+            'scripts/tekton-kill',
+            'scripts/kill_tekton.py'
+        ]
+        
+        for script in kill_scripts:
+            script_path = Path(self.tekton_root) / script
+            if script_path.exists():
+                if script.endswith('.sh'):
+                    return subprocess.call(['bash', str(script_path)] + args)
+                elif script.endswith('.py'):
+                    return subprocess.call([sys.executable, str(script_path)] + args)
+                else:
+                    return subprocess.call([str(script_path)] + args)
+        
+        print("Error: Could not find Tekton stop script", file=sys.stderr)
+        return 1
+    
+    def cmd_status(self, args: List[str]):
+        """Show Tekton component status"""
+        return subprocess.call(['tekton-status'] + args)
+    
+    def cmd_revert(self, args: List[str]):
+        """Revert Tekton changes"""
+        # For now, just pass through to git
+        if '--nuclear-destruction' in args:
+            print("Warning: Nuclear destruction mode activated!", file=sys.stderr)
+            # Casey's special revert mode
+        return subprocess.call(['git', 'revert'] + args)
+    
+    def cmd_logs(self, args: List[str]):
+        """View component logs - pass through to tekton-status"""
+        # Default to showing logs if no -c specified
+        if '-c' not in args and '--component' not in args:
+            return subprocess.call(['tekton-status'] + args)
+        else:
+            return subprocess.call(['tekton-status'] + args)
+    
+    def cmd_alias(self, args: List[str]):
+        """Manage command aliases"""
+        if not args:
+            # List all aliases
+            if self.aliases:
+                print("Configured aliases:")
+                for key, value in sorted(self.aliases.items()):
+                    print(f"  {key} = {value}")
+            else:
+                print("No aliases configured")
+            return 0
+        
+        subcmd = args[0]
+        
+        if subcmd == 'set' and len(args) > 1:
+            # Set alias: alias set mc=merge-coordinator
+            alias_def = ' '.join(args[1:])
+            if '=' in alias_def:
+                key, value = alias_def.split('=', 1)
+                key = key.strip()
+                value = value.strip()
+                
+                # Prevent aliasing protected commands
+                if key in ['help', 'version', 'alias']:
+                    print(f"Error: Cannot alias protected command '{key}'", file=sys.stderr)
+                    return 1
+                
+                self.aliases[key] = value
+                self.save_aliases()
+                print(f"Alias set: {key} = {value}")
+            else:
+                print("Error: Alias must be in format: key=value", file=sys.stderr)
+                return 1
+                
+        elif subcmd == 'remove' and len(args) > 1:
+            # Remove alias
+            key = args[1]
+            if key in self.aliases:
+                del self.aliases[key]
+                self.save_aliases()
+                print(f"Alias removed: {key}")
+            else:
+                print(f"Error: Alias '{key}' not found", file=sys.stderr)
+                return 1
+                
+        elif subcmd == 'show' and len(args) > 1:
+            # Show specific alias
+            key = args[1]
+            if key in self.aliases:
+                print(f"{key} = {self.aliases[key]}")
+            else:
+                print(f"Error: Alias '{key}' not found", file=sys.stderr)
+                return 1
+        else:
+            print("Usage: tekton alias [set <alias>=<command> | remove <alias> | show <alias>]")
+            return 1
+        
+        return 0
+    
+    def cmd_help(self, args: List[str]):
+        """Show help information"""
+        if args:
+            # Help for specific subcommand
+            subcmd = args[0]
+            
+            # Resolve alias
+            if subcmd in self.aliases:
+                subcmd = self.aliases[subcmd].split()[0]
+            
+            if subcmd in self.subcommands:
+                # Try to show subcommand's own help
+                if subcmd == 'help':
+                    self.show_main_help()
+                else:
+                    print(f"Help for 'tekton {subcmd}':")
+                    print()
+                    # Call subcommand with --help
+                    self.subcommands[subcmd](['--help'])
+            else:
+                print(f"Unknown command: {subcmd}", file=sys.stderr)
+                return 1
+        else:
+            self.show_main_help()
+        return 0
+    
+    def cmd_not_implemented(self, args: List[str]):
+        """Placeholder for not yet implemented commands"""
+        # Get the actual command name from the call stack
+        import inspect
+        frame = inspect.currentframe()
+        if frame and frame.f_back and frame.f_back.f_locals.get('subcmd'):
+            cmd_name = frame.f_back.f_locals['subcmd']
+        else:
+            cmd_name = "this command"
+        
+        print(f"Not Yet Implemented: {cmd_name}")
+        print("This feature is planned for a future release.")
+        return 1
+    
+    def show_main_help(self):
+        """Display main help message"""
+        print(f"""Tekton Multi-AI Engineering Platform v{TEKTON_VERSION}
+
+Usage: tekton [options] <command> [args]
+
+Options:
+  -h, --help          Show this help message
+  -V, --version       Show version information
+  -d, --debug         Enable debug output
+  -q, --quiet         Suppress output
+  -v, --verbose       Verbose output
+  --tekton <dir>      Use specific Tekton directory
+  -l, --list          List available Tekton directories
+
+Commands:
+  start               Launch Tekton components
+  stop                Stop Tekton components
+  status              Show component status
+  revert              Revert changes
+  logs                View component logs
+  alias               Manage command aliases
+  help                Show help for commands
+  
+Coming Soon:
+  init                Initialize new Tekton instance
+  merge-coordinator   AI merge coordination system
+  devs                Manage AI developer teams
+  ai                  Interact with AI specialists
+  config              Configuration management
+  profile             Manage user profiles
+  settings            Environment settings
+
+Examples:
+  tekton start                    # Start all components
+  tekton status                   # Show system status
+  tekton logs -c hermes -l 50     # View last 50 Hermes logs
+  tekton alias set mc=merge-coordinator
+  tekton mc status                # Uses alias
+
+Run 'tekton help <command>' for detailed help on any command.""")
+    
+    def show_status_summary(self):
+        """Show brief status summary (future feature)"""
+        print(f"Tekton Multi-AI Engineering Platform v{TEKTON_VERSION}")
+        print()
+        print("Usage: tekton [options] <command> [args]")
+        print("Run 'tekton help' for available commands")
+        
+        # Future: Show active instances, work in progress, etc.
+    
+    def run(self, args: List[str]) -> int:
+        """Main entry point for CLI"""
+        # Create argument parser for global options
+        parser = argparse.ArgumentParser(
+            description='Tekton Multi-AI Engineering Platform',
+            add_help=False,  # We handle help ourselves
+            allow_abbrev=False
+        )
+        
+        # Global options
+        parser.add_argument('-h', '--help', action='store_true', help='Show help')
+        parser.add_argument('-V', '--version', action='store_true', help='Show version')
+        parser.add_argument('-d', '--debug', action='store_true', help='Enable debug')
+        parser.add_argument('-q', '--quiet', action='store_true', help='Quiet mode')
+        parser.add_argument('-v', '--verbose', action='store_true', help='Verbose mode')
+        parser.add_argument('--tekton', metavar='DIR', help='Use specific Tekton directory')
+        parser.add_argument('-l', '--list', action='store_true', help='List Tekton directories')
+        
+        # Parse known args to separate global options from subcommand
+        global_args, remaining = parser.parse_known_args(args)
+        
+        # Handle global options
+        if global_args.version:
+            print(f"Tekton version {TEKTON_VERSION}")
+            return 0
+        
+        if global_args.list:
+            print("Available Tekton directories:")
+            print(f"  * {self.tekton_root} (current)")
+            # Future: scan for other Tekton instances
+            return 0
+        
+        if global_args.tekton:
+            # Override TEKTON_ROOT for this command
+            self.tekton_root = os.path.abspath(global_args.tekton)
+            os.environ['TEKTON_ROOT'] = self.tekton_root
+        
+        # Apply global flags to environment
+        if global_args.debug:
+            os.environ['TEKTON_DEBUG'] = '1'
+        if global_args.quiet:
+            os.environ['TEKTON_QUIET'] = '1'
+        if global_args.verbose:
+            os.environ['TEKTON_VERBOSE'] = '1'
+        
+        # If help requested but no subcommand, show main help
+        if global_args.help and not remaining:
+            self.show_main_help()
+            return 0
+        
+        # If no subcommand, show status summary
+        if not remaining:
+            self.show_status_summary()
+            return 0
+        
+        # Resolve aliases in remaining arguments
+        remaining = self.resolve_aliases(remaining)
+        
+        # Extract subcommand
+        subcmd = remaining[0]
+        subcmd_args = remaining[1:] if len(remaining) > 1 else []
+        
+        # Handle help flag with subcommand
+        if global_args.help:
+            return self.cmd_help([subcmd])
+        
+        # Route to subcommand handler
+        if subcmd in self.subcommands:
+            return self.subcommands[subcmd](subcmd_args)
+        else:
+            print(f"Unknown command: {subcmd}", file=sys.stderr)
+            print("Run 'tekton help' for available commands", file=sys.stderr)
+            return 1
+
+
+def main():
+    """Main entry point"""
+    cli = TektonCLI()
+    sys.exit(cli.run(sys.argv[1:]))
+
+
+if __name__ == '__main__':
+    main()
