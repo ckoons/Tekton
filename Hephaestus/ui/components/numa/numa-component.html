@@ -50,12 +50,6 @@
             <div class="chat-interface" data-tekton-chat="team">
                 <div class="team-chat-header">
                     <p>Communicate with other AI specialists across the Tekton platform</p>
-                    <div class="team-chat-controls">
-                        <label>
-                            <input type="checkbox" id="numa-broadcast-mode" data-tekton-broadcast="numa">
-                            Broadcast to all AIs
-                        </label>
-                    </div>
                 </div>
                 <div class="chat-messages" id="numa-team-messages" data-tekton-messages="team">
                     <div class="chat-message system-message">
@@ -430,17 +424,68 @@ function numa_sendChat() {
     // Scroll to bottom
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
     
-    // Send to backend (placeholder for now)
-    console.log(`Numa ${chatType} chat:`, message);
-    
-    // Simulate AI response
-    setTimeout(() => {
-        const aiMessageDiv = document.createElement('div');
-        aiMessageDiv.className = 'chat-message ai-message';
-        aiMessageDiv.innerHTML = `<strong>Numa:</strong> I understand you're asking about "${message}". As your platform AI mentor, I can help guide you through the Tekton ecosystem. This feature is currently being developed.`;
-        messagesContainer.appendChild(aiMessageDiv);
-        messagesContainer.scrollTop = messagesContainer.scrollHeight;
-    }, 1000);
+    // Send to backend
+    if (chatType === 'companion') {
+        // Direct message to numa-ai
+        if (window.AIChat) {
+            window.AIChat.sendMessage('numa-ai', message)
+                .then(response => {
+                    const aiMessageDiv = document.createElement('div');
+                    aiMessageDiv.className = 'chat-message ai-message';
+                    aiMessageDiv.innerHTML = `<strong>Numa:</strong> ${response.content}`;
+                    messagesContainer.appendChild(aiMessageDiv);
+                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                })
+                .catch(err => {
+                    console.error('Failed to send message:', err);
+                    const errorDiv = document.createElement('div');
+                    errorDiv.className = 'chat-message system-message';
+                    errorDiv.innerHTML = `<strong>System:</strong> Failed to connect to Numa AI`;
+                    messagesContainer.appendChild(errorDiv);
+                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                });
+        } else {
+            // Fallback to component's own endpoint
+            fetch('http://localhost:8016/api/companion-chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: message, user_id: 'default' })
+            })
+            .then(response => response.json())
+            .then(data => {
+                const aiMessageDiv = document.createElement('div');
+                aiMessageDiv.className = 'chat-message ai-message';
+                aiMessageDiv.innerHTML = `<strong>Numa:</strong> ${data.response}`;
+                messagesContainer.appendChild(aiMessageDiv);
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            })
+            .catch(err => {
+                console.error('Failed to send message:', err);
+            });
+        }
+    } else {
+        // Team chat through Rhetor
+        if (window.AIChat) {
+            window.AIChat.teamChat(message, 'numa')
+                .then(data => {
+                    // Display team responses
+                    if (data.responses && data.responses.length > 0) {
+                        data.responses.forEach(resp => {
+                            const aiMessageDiv = document.createElement('div');
+                            aiMessageDiv.className = 'chat-message ai-message';
+                            const sender = resp.socket_id.replace('-ai', '').charAt(0).toUpperCase() + 
+                                         resp.socket_id.replace('-ai', '').slice(1);
+                            aiMessageDiv.innerHTML = `<strong>${sender}:</strong> ${resp.content}`;
+                            messagesContainer.appendChild(aiMessageDiv);
+                        });
+                        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                    }
+                })
+                .catch(err => {
+                    console.error('Failed to send team message:', err);
+                });
+        }
+    }
 }
 
 // Add enter key handler for chat input when component loads

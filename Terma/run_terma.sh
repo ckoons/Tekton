@@ -27,7 +27,6 @@ fi
 
 # Start Terma API server
 echo "Starting Terma on port $TERMA_PORT..."
-echo "TEKTON_REGISTER_AI: ${TEKTON_REGISTER_AI:-false}"
 
 # Set log level to DEBUG for troubleshooting
 export TERMA_LOG_LEVEL=DEBUG

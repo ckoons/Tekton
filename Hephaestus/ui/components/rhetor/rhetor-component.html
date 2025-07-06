@@ -4372,16 +4372,14 @@ async function rhetor_sendLLMChatMessage(message) {
     rhetor_addChatMessage('llmchat', 'typing', 'Processing...', typingId);
     
     try {
-        // Use team chat endpoint to talk to single Rhetor AI
-        const response = await fetch('http://localhost:8003/api/team-chat', {
+        // Use direct specialist endpoint for single AI chat
+        const response = await fetch('http://localhost:8003/api/v1/ai/specialists/rhetor-ai/message', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                message: message,
-                target_sockets: ["rhetor-ai"],  // Only talk to Rhetor AI
-                timeout: 15.0  // 15 second timeout for single AI
+                message: message
             })
         });
         
@@ -4394,28 +4392,15 @@ async function rhetor_sendLLMChatMessage(message) {
         // Remove typing indicator
         rhetor_removeTypingIndicator('llmchat', typingId);
         
-        // Display response
-        if (data.responses && data.responses.length > 0) {
-            // Get response from Rhetor AI
-            const rhetorResponse = data.responses.find(r => r.socket_id === 'rhetor-ai');
-            if (rhetorResponse) {
-                // Clean up the response
-                let content = rhetorResponse.content;
-                if (content.startsWith('Received message message.')) {
-                    content = content.replace('Received message message.', '').trim();
-                }
-                rhetor_addChatMessage('llmchat', 'ai', content);
-            } else {
-                rhetor_addChatMessage('llmchat', 'ai', 
-                    'Rhetor AI did not respond. Make sure it is running on port 45002.');
-            }
-        } else {
-            rhetor_addChatMessage('llmchat', 'ai', 
-                'No response from Rhetor AI. Make sure it is running.');
-            
-            // Show diagnostic info
+        // Display response from direct specialist endpoint
+        if (data.success && data.response) {
+            rhetor_addChatMessage('llmchat', 'ai', data.response);
+        } else if (data.error) {
             rhetor_addChatMessage('llmchat', 'system', 
-                `Diagnostics: Elapsed time: ${data.elapsed_time?.toFixed(1) || '?'}s`);
+                `Error: ${data.error}`);
+        } else {
+            rhetor_addChatMessage('llmchat', 'system', 
+                'No response from Rhetor AI. Make sure it is running.');
         }
         
     } catch (error) {

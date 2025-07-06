@@ -568,7 +568,7 @@ console.log('[FILE_TRACE] Loading: rhetor-component.js');
       // Send message to rhetor-orchestrator specialist
       const specialistId = 'rhetor-orchestrator';
       
-      fetch(`/api/ai/specialists/${specialistId}/message`, {
+      fetch(`/api/v1/ai/specialists/${specialistId}/message`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -789,10 +789,11 @@ console.log('[FILE_TRACE] Loading: rhetor-component.js');
       this.elements.specialistsGrid.innerHTML = '<div class="rhetor__loading">Loading AI specialists...</div>';
       
       // Fetch specialists from backend
-      fetch('/api/ai/specialists')
+      fetch('/api/v1/ai/specialists')
         .then(response => response.json())
         .then(data => {
-          this.state.specialists = data.specialists || [];
+          // Handle both array response (simplified) and object response (old format)
+          this.state.specialists = Array.isArray(data) ? data : (data.specialists || []);
           this.renderSpecialists();
         })
         .catch(err => {
@@ -873,7 +874,7 @@ console.log('[FILE_TRACE] Loading: rhetor-component.js');
     activateSpecialist: function(specialistId) {
       this.info('activateSpecialist', 'Activating specialist', { specialistId });
       
-      fetch(`/api/ai/specialists/${specialistId}/activate`, { method: 'POST' })
+      fetch(`/api/v1/ai/specialists/${specialistId}/hire`, { method: 'POST' })
         .then(response => response.json())
         .then(data => {
           this.showNotification(`Activated ${data.name}`, 'success');

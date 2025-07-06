@@ -124,20 +124,37 @@ async def health_check():
 async def discovery_chat(request: DiscoveryChatRequest):
     """Handle discovery chat queries - pattern and insight discovery"""
     try:
-        # For now, return a placeholder response
-        # TODO: Integrate with actual discovery engine when implemented
-        response = DiscoveryChatResponse(
-            discoveries=[
+        # Check if AI is available
+        from shared.ai.simple_ai import ai_send
+        
+        # Create a discovery-focused prompt
+        prompt = f"[Discovery Query - Scope: {request.search_scope}] {request.query}"
+        
+        # Send to noesis-ai on port 45015
+        ai_response = await ai_send("noesis-ai", prompt, "localhost", 45015)
+        
+        if ai_response and ai_response != "AI_NOT_RUNNING":
+            # Parse AI response for discoveries and insights
+            # For now, treat the whole response as a discovery
+            discoveries = [ai_response]
+            insights = []
+            mode = "ai"
+        else:
+            # Fallback to placeholder if AI not available
+            discoveries = [
                 f"Searching for patterns related to: '{request.query}'",
                 "Discovery system is in placeholder mode"
-            ],
-            insights=[
-                "Noesis will provide deep insights once fully integrated"
-            ],
+            ]
+            insights = ["Noesis will provide deep insights once fully integrated"]
+            mode = "placeholder"
+            
+        response = DiscoveryChatResponse(
+            discoveries=discoveries,
+            insights=insights,
             timestamp=datetime.now(),
             metadata={
                 "search_scope": request.search_scope,
-                "mode": "placeholder"
+                "mode": mode
             }
         )
         return response

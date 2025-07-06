@@ -113,7 +113,6 @@ window.NoesisComponent = {
     sendTeamMessage: async function() {
         const input = document.getElementById('noesis-team-input');
         const message = input.value.trim();
-        const broadcast = document.getElementById('noesis-broadcast-mode').checked;
         
         if (!message) return;
         
@@ -122,7 +121,8 @@ window.NoesisComponent = {
         input.value = '';
         
         try {
-            const response = await fetch(`${this.apiUrl}/api/team-chat`, {
+            // Use Rhetor's team chat endpoint
+            const response = await fetch('http://localhost:8003/api/team-chat', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -130,7 +130,7 @@ window.NoesisComponent = {
                 body: JSON.stringify({
                     message: message,
                     from_component: 'noesis',
-                    broadcast: broadcast
+                    broadcast: true  // Always broadcast to team
                 })
             });
             

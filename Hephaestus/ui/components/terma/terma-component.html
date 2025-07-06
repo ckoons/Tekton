@@ -1197,17 +1197,50 @@ function terma_sendChat() {
     // Scroll to bottom
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
     
-    // Send to backend (placeholder for now)
-    console.log(`Terma ${chatType} chat:`, message);
-    
-    // Simulate AI response
-    setTimeout(() => {
-        const aiMessageDiv = document.createElement('div');
-        aiMessageDiv.className = 'chat-message ai-message';
-        aiMessageDiv.innerHTML = `<strong>Terma:</strong> I understand you're asking about "${message}". As your platform AI mentor, I can help guide you through the Tekton ecosystem. This feature is currently being developed.`;
-        messagesContainer.appendChild(aiMessageDiv);
-        messagesContainer.scrollTop = messagesContainer.scrollHeight;
-    }, 1000);
+    // Send to backend
+    if (chatType === 'companion') {
+        // Direct message to terma-ai
+        if (window.AIChat) {
+            window.AIChat.sendMessage('terma-ai', message)
+                .then(response => {
+                    const aiMessageDiv = document.createElement('div');
+                    aiMessageDiv.className = 'chat-message ai-message';
+                    aiMessageDiv.innerHTML = `<strong>Terma:</strong> ${response.content}`;
+                    messagesContainer.appendChild(aiMessageDiv);
+                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                })
+                .catch(err => {
+                    console.error('Failed to send message:', err);
+                    const errorDiv = document.createElement('div');
+                    errorDiv.className = 'chat-message system-message';
+                    errorDiv.innerHTML = `<strong>System:</strong> Failed to connect to Terma AI`;
+                    messagesContainer.appendChild(errorDiv);
+                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                });
+        }
+    } else {
+        // Team chat through Rhetor
+        if (window.AIChat) {
+            window.AIChat.teamChat(message, 'terma')
+                .then(data => {
+                    // Display team responses
+                    if (data.responses && data.responses.length > 0) {
+                        data.responses.forEach(resp => {
+                            const aiMessageDiv = document.createElement('div');
+                            aiMessageDiv.className = 'chat-message ai-message';
+                            const sender = resp.socket_id.replace('-ai', '').charAt(0).toUpperCase() + 
+                                         resp.socket_id.replace('-ai', '').slice(1);
+                            aiMessageDiv.innerHTML = `<strong>${sender}:</strong> ${resp.content}`;
+                            messagesContainer.appendChild(aiMessageDiv);
+                        });
+                        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                    }
+                })
+                .catch(err => {
+                    console.error('Failed to send team message:', err);
+                });
+        }
+    }
 }
 
 // Add enter key handler for chat input when component loads

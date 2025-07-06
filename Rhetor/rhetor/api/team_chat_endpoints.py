@@ -15,7 +15,7 @@ from fastapi.responses import JSONResponse
 from sse_starlette.sse import EventSourceResponse
 from pydantic import BaseModel, Field
 
-from ..core.mcp.tools_integration_unified import MCPToolsIntegrationUnified, get_mcp_tools_integration
+from ..core.mcp.tools_integration_simple import MCPToolsIntegrationSimple, get_mcp_tools_integration
 
 logger = logging.getLogger(__name__)
 
@@ -75,7 +75,7 @@ async def team_chat(request: TeamChatRequest):
         if not integration:
             # Initialize if needed
             integration = MCPToolsIntegrationUnified()
-            from ..core.mcp.tools_integration_unified import set_mcp_tools_integration
+            from ..core.mcp.tools_integration_simple import set_mcp_tools_integration
             set_mcp_tools_integration(integration)
             logger.info("Initialized MCP tools integration for team chat")
         
@@ -161,7 +161,7 @@ async def team_chat_stream(
             integration = get_mcp_tools_integration()
             if not integration:
                 integration = MCPToolsIntegrationUnified()
-                from ..core.mcp.tools_integration_unified import set_mcp_tools_integration
+                from ..core.mcp.tools_integration_simple import set_mcp_tools_integration
                 set_mcp_tools_integration(integration)
             
             # Send initial connected event
@@ -256,7 +256,7 @@ async def list_team_sockets():
         integration = get_mcp_tools_integration()
         if not integration:
             integration = MCPToolsIntegrationUnified()
-            from ..core.mcp.tools_integration_unified import set_mcp_tools_integration
+            from ..core.mcp.tools_integration_simple import set_mcp_tools_integration
             set_mcp_tools_integration(integration)
         
         # List all specialists
@@ -298,7 +298,7 @@ async def reset_team_socket(socket_id: str):
         integration = get_mcp_tools_integration()
         if not integration:
             integration = MCPToolsIntegrationUnified()
-            from ..core.mcp.tools_integration_unified import set_mcp_tools_integration
+            from ..core.mcp.tools_integration_simple import set_mcp_tools_integration
             set_mcp_tools_integration(integration)
         
         # Send reset message to the AI

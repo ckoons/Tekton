@@ -623,6 +623,7 @@ class EnhancedComponentLauncher:
                 )
                 
                 # Launch AI if enabled (check Tekton config, not OS environ)
+                # Note: register_ai still controls AI launching, but we no longer use the old registry system
                 env_config = get_env_config()
                 if env_config.tekton.register_ai:
                     await self.launch_component_ai(component_name)

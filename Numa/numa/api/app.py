@@ -123,14 +123,24 @@ async def health_check():
 async def companion_chat(request: CompanionChatRequest):
     """Handle companion chat messages - direct interaction with user"""
     try:
-        # For now, return a placeholder response
-        # TODO: Integrate with actual AI when TEKTON_REGISTER_AI is enabled
+        # Check if AI is available
+        from shared.ai.simple_ai import ai_send
+        
+        # Send to numa-ai on port 45016
+        ai_response = await ai_send("numa-ai", request.message, "localhost", 45016)
+        
+        if ai_response and ai_response != "AI_NOT_RUNNING":
+            response_text = ai_response
+        else:
+            # Fallback to placeholder if AI not available
+            response_text = f"Numa acknowledges: '{request.message}'. As the platform mentor, I'm here to help guide you through the Tekton ecosystem."
+            
         response = CompanionChatResponse(
-            response=f"Numa acknowledges: '{request.message}'. As the platform mentor, I'm here to help guide you through the Tekton ecosystem.",
+            response=response_text,
             timestamp=datetime.now(),
             metadata={
                 "user_id": request.user_id,
-                "mode": "placeholder"
+                "mode": "ai" if ai_response != "AI_NOT_RUNNING" else "placeholder"
             }
         )
         return response

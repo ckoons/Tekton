@@ -27,5 +27,4 @@ fi
 
 # Start Numa API server
 echo "Starting Numa on port $NUMA_PORT..."
-echo "TEKTON_REGISTER_AI: ${TEKTON_REGISTER_AI:-false}"
 python -m numa.api "$@"

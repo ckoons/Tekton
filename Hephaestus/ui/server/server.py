@@ -508,7 +508,7 @@ class TektonUIRequestHandler(SimpleHTTPRequestHandler):
                     target_port = int(os.environ.get("HERMES_PORT", 8001))
                 target_path = self.path  # Keep the same path
             # Rhetor AI specialist endpoints - proxy to Rhetor service
-            elif self.path.startswith("/api/ai/"):
+            elif self.path.startswith("/api/ai/") or self.path.startswith("/api/v1/ai/"):
                 target_host = "localhost"
                 try:
                     target_port = global_config.config.rhetor.port
