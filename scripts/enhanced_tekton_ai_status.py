@@ -69,7 +69,7 @@ class AIStatus:
             return f"{base.title()} {variant.upper()}"
         return model
         
-    async def check_ai_health(self, ai_id: str, socket_info: tuple) -> str:
+    async def check_ai_health(self, ai_id: str, socket_info: dict) -> str:
         """
         Check if an AI is responding.
         
@@ -82,7 +82,7 @@ class AIStatus:
         """
         try:
             reader, writer = await asyncio.wait_for(
-                asyncio.open_connection(socket_info[0], socket_info[1]),
+                asyncio.open_connection(socket_info['host'], socket_info['port']),
                 timeout=2.0
             )
             
@@ -126,11 +126,11 @@ class AIStatus:
         except (psutil.NoSuchProcess, psutil.AccessDenied):
             return {'cpu': 'N/A', 'memory': 'N/A', 'uptime': 'N/A'}
     
-    async def get_ai_info(self, ai_id: str, socket_info: tuple) -> Dict[str, str]:
+    async def get_ai_info(self, ai_id: str, socket_info: dict) -> Dict[str, str]:
         """Get AI info including model."""
         try:
             reader, writer = await asyncio.wait_for(
-                asyncio.open_connection(socket_info[0], socket_info[1]),
+                asyncio.open_connection(socket_info['host'], socket_info['port']),
                 timeout=2.0
             )
             
@@ -168,7 +168,7 @@ class AIStatus:
             if not component_port:
                 continue
                 
-            ai_port = (component_port - self.config.tekton_port_base) + self.config.tekton_ai_port_base
+            ai_port = (component_port - 8000) + 45000
             socket_info = {'host': 'localhost', 'port': ai_port}
             
             # Check health and get info
@@ -224,7 +224,7 @@ class AIStatus:
             component_port = self.config.get_port(component)
             running = False
             if component_port:
-                ai_port = (component_port - self.config.tekton_port_base) + self.config.tekton_ai_port_base
+                ai_port = (component_port - 8000) + 45000
                 try:
                     # Quick connection test
                     s = socket.socket()
@@ -291,7 +291,7 @@ class AIStatus:
             print(f"\nComponent {component} not found")
             return
             
-        ai_port = (component_port - self.config.tekton_port_base) + self.config.tekton_ai_port_base
+        ai_port = (component_port - 8000) + 45000
         socket_info = {'host': 'localhost', 'port': ai_port}
         
         # Check if AI is running
