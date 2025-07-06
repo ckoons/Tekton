@@ -18,14 +18,18 @@ This document summarizes the UI standardization updates made to Tekton component
 
 ### 3. Rhetor Component
 - ✅ Fixed chat prompt color from green (#4CAF50) to red (#D32F2F)
-- ✅ Fixed send button color from purple (#673AB7) to red (#D32F2F)
+- ✅ Fixed send button color from blue (#007bff) to red (#D32F2F) with !important to override global styles
 - ✅ Updated user messages from purple full bubbles to green partial bubbles (left-border accent)
 - ✅ Updated AI messages to use red partial bubbles (left-border accent) matching component color
 
 ### 4. Noesis Component
 - ✅ Already implements all standards correctly
 - ✅ Serves as the reference implementation
-- ✅ Fixed team chat to use standard AIChat.teamChat() instead of single AI fallback
+- ✅ Fixed team chat to use standard AIChat.teamChat() instead of StreamingTeamChat fallback
+
+### 5. Removed Duplicate Headers
+- ✅ Removed redundant "AI Companion Chat" and "Team Chat" headers from Numa and Terma
+- ✅ Components now use their existing tab structure without extra headers
 
 ## Standardized Elements
 

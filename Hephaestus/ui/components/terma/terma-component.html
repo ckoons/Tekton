@@ -165,10 +165,6 @@
             <div class="chat-interface" data-tekton-chat="companion"
                  data-tekton-ai="terma-companion"
                  data-tekton-ai-ready="false">
-                <div class="terma__chat-header">
-                    <h3>AI Companion Chat</h3>
-                    <span class="terma__ai-status" data-ai-status="inactive">●</span>
-                </div>
                 <div class="chat-messages" id="terma-companion-messages" 
                      data-tekton-messages="companion"
                      data-tekton-element="chat-messages">
@@ -189,22 +185,6 @@
              data-tekton-ai="terma-orchestrator"
              data-tekton-ai-ready="false">
             <div class="chat-interface" data-tekton-chat="team">
-                <div class="terma__chat-header">
-                    <h3>Team Chat</h3>
-                    <span class="terma__ai-status" data-ai-status="inactive">●</span>
-                </div>
-                <div class="team-chat-header" data-tekton-element="chat-header">
-                    <p>Communicate with other AI specialists across the Tekton platform</p>
-                    <div class="team-chat-controls" data-tekton-element="chat-controls">
-                        <label>
-                            <input type="checkbox" id="terma-broadcast-mode" 
-                                   data-tekton-broadcast="terma"
-                                   data-tekton-input="broadcast-mode"
-                                   data-tekton-input-type="checkbox">
-                            Broadcast to all AIs
-                        </label>
-                    </div>
-                </div>
                 <div class="chat-messages" id="terma-team-messages" 
                      data-tekton-messages="team"
                      data-tekton-element="chat-messages">
@@ -414,7 +394,7 @@
 
 .chat-messages {
   position: absolute;
-  top: 49px; /* Account for chat header */
+  top: 0; /* No extra header anymore */
   left: 0;
   right: 0;
   bottom: 0; /* No footer inside tabs anymore */

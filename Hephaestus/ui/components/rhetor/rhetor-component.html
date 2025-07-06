@@ -2383,13 +2383,14 @@ SUCCESS CRITERIA:
     font-size: 14px;
   }
   
-  .rhetor__send-button {
+  .rhetor__send-button,
+  #send-button {
     height: 44px;
     padding: 0 20px;
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: #D32F2F; /* Red for Rhetor */
+    background-color: #D32F2F !important; /* Red for Rhetor */
     border: none;
     border-radius: 8px;
     color: white;
@@ -2398,8 +2399,9 @@ SUCCESS CRITERIA:
     transition: all 0.2s ease;
   }
   
-  .rhetor__send-button:hover {
-    background-color: #C62828; /* Darker red on hover */
+  .rhetor__send-button:hover,
+  #send-button:hover {
+    background-color: #C62828 !important; /* Darker red on hover */
     transform: translateY(-1px);
     box-shadow: 0 2px 8px rgba(211, 47, 47, 0.3);
   }
