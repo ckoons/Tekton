@@ -113,7 +113,6 @@ class AISpecialistWorker(ABC):
             'ping': self._handle_ping,
             'health': self._handle_health,
             'info': self._handle_info,
-            'chat': self._handle_chat,
         }
         
         # AI configuration
@@ -178,97 +177,7 @@ class AISpecialistWorker(ABC):
             'port': self.port
         }
     
-    # @tekton-method: Handle chat messages via LLM
-    # @tekton-async: true
-    # @tekton-delegates-to: ollama, anthropic
-    @performance_boundary(
-        title="LLM Chat Processing",
-        sla="<30s response time",
-        optimization_notes="Timeout handling, streaming support planned"
-    )
-    async def _handle_chat(self, message: Dict[str, Any]) -> Dict[str, Any]:
-        """Handle chat message - delegates to LLM."""
-        try:
-            # Get prompt from message
-            prompt = message.get('content', '')
-            if not prompt:
-                return {
-                    'type': 'error',
-                    'error': 'No content provided'
-                }
-            
-            # Call LLM based on provider
-            if self.model_provider == 'ollama':
-                response = await self._call_ollama(prompt)
-            elif self.model_provider == 'anthropic':
-                response = await self._call_anthropic(prompt)
-            else:
-                response = f"Unknown provider: {self.model_provider}"
-            
-            return {
-                'type': 'chat_response',
-                'ai_id': self.ai_id,
-                'content': response
-            }
-            
-        except Exception as e:
-            self.logger.error(f"Chat error: {e}")
-            return {
-                'type': 'error',
-                'error': str(e)
-            }
-    
-    async def _call_ollama(self, prompt: str) -> str:
-        """Call Ollama API."""
-        try:
-            import httpx
-            
-            async with httpx.AsyncClient() as client:
-                response = await client.post(
-                    'http://localhost:11434/api/generate',
-                    json={
-                        'model': self.model_name,
-                        'prompt': f"{self.get_system_prompt()}\n\nUser: {prompt}\n\nAssistant:",
-                        'stream': False
-                    },
-                    timeout=30.0
-                )
-                
-                if response.status_code == 200:
-                    return response.json()['response']
-                else:
-                    return f"Ollama error: {response.status_code}"
-                    
-        except Exception as e:
-            return f"Ollama connection error: {e}"
-    
-    async def _call_anthropic(self, prompt: str) -> str:
-        """Call Anthropic API via Rhetor."""
-        try:
-            import httpx
-            
-            # Use Rhetor's API
-            async with httpx.AsyncClient() as client:
-                response = await client.post(
-                    'http://localhost:8003/api/v1/chat',
-                    json={
-                        'messages': [
-                            {'role': 'system', 'content': self.get_system_prompt()},
-                            {'role': 'user', 'content': prompt}
-                        ],
-                        'model': self.model_name,
-                        'temperature': 0.7
-                    },
-                    timeout=30.0
-                )
-                
-                if response.status_code == 200:
-                    return response.json()['content']
-                else:
-                    return f"Rhetor error: {response.status_code}"
-                    
-        except Exception as e:
-            return f"Rhetor connection error: {e}"
+    # LLM chat handler removed - AIs use simple personality responses instead
     
     # @tekton-method: Handle socket client connections
     # @tekton-async: true
