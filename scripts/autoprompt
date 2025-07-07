@@ -1,37 +1,12 @@
 #!/bin/bash
-# autoprompt - Keep Claude CIs active with periodic prompts
-# This script runs alongside Claude and periodically injects prompts
+# autoprompt - Send periodic inbox check reminders via aish
+# Usage: autoprompt [interval_seconds]
 
 PIDFILE="$HOME/.autoprompt.pid"
-LOGFILE="$HOME/.autoprompt.log"
-DEFAULT_INTERVAL=2
+DEFAULT_INTERVAL=2  # 2 seconds default - keep the CI active!
 
-# Function to send prompt to Claude's terminal
-send_prompt() {
-    # Method 1: Try osascript (macOS)
-    if [[ "$OSTYPE" == "darwin"* ]]; then
-        osascript -e 'tell application "System Events" to keystroke "."' 2>/dev/null
-        osascript -e 'tell application "System Events" to key code 36' 2>/dev/null
-        return $?
-    fi
-    
-    # Method 2: Try xdotool (Linux with X11)
-    if command -v xdotool >/dev/null 2>&1; then
-        xdotool type "."
-        xdotool key Return
-        return $?
-    fi
-    
-    # Method 3: Try ydotool (Linux with Wayland)
-    if command -v ydotool >/dev/null 2>&1; then
-        ydotool type "."
-        ydotool key 28:1 28:0  # Enter key press and release
-        return $?
-    fi
-    
-    echo "No method available to send keystrokes" >&2
-    return 1
-}
+# Get terminal name from environment
+TERMINAL_NAME=${TERMA_TERMINAL_NAME:-$(whoami)}
 
 case "$1" in
     start)
@@ -42,44 +17,63 @@ case "$1" in
         
         INTERVAL=${2:-$DEFAULT_INTERVAL}
         
-        # Start the prompt loop
+        # Start the reminder loop
         (
             echo $$ > "$PIDFILE"
-            echo "[$(date)] Autoprompt started (PID: $$, interval: ${INTERVAL}s)" | tee "$LOGFILE"
+            echo "Autoprompt started for $TERMINAL_NAME (interval: ${INTERVAL}s)"
             
-            # Give user time to switch to Claude window if needed
-            echo "Switch to Claude window now! Starting in 3 seconds..."
-            sleep 3
+            # Load custom jingles if available
+            JINGLE_FILE="$HOME/.tekton/my-jingles.txt"
+            if [ -f "$JINGLE_FILE" ]; then
+                # Read custom jingles into array
+                MESSAGES=()
+                while IFS= read -r line; do
+                    # Skip empty lines and comments
+                    if [[ -n "$line" && ! "$line" =~ ^# ]]; then
+                        MESSAGES+=("$line")
+                    fi
+                done < "$JINGLE_FILE"
+                echo "Loaded ${#MESSAGES[@]} custom jingles from $JINGLE_FILE"
+            else
+                # Default friendly rotating messages
+                MESSAGES=(
+                    "Hey there, time to check your prompts and inbox please!"
+                    "Just a gentle reminder to peek at your prompts and inbox, friend"
+                    "Hope you're doing well! Mind checking your prompts and inbox?"
+                    "Quick check-in: any new prompts or messages waiting for you?"
+                    "Friendly nudge - your prompts and inbox might have something new"
+                    "Hello! Don't forget to check your prompts and inbox please"
+                    "Staying productive? Time for a prompt and inbox check!"
+                    "Hey buddy, let's see what's in your prompts and inbox"
+                    "Good [time of day]! Check your prompts and inbox when you can"
+                    "Just me again - prompts and inbox check please, thanks!"
+                )
+            fi
             
             COUNT=0
             while [ -f "$PIDFILE" ]; do
-                if send_prompt; then
-                    COUNT=$((COUNT + 1))
-                    echo "[$(date)] Sent prompt #$COUNT" >> "$LOGFILE"
-                else
-                    echo "[$(date)] Failed to send prompt" >> "$LOGFILE"
-                fi
+                # Get next message from array
+                MSG="${MESSAGES[$COUNT % ${#MESSAGES[@]}]}"
+                
+                # Send reminder to own prompt inbox
+                aish prompt "$TERMINAL_NAME" "[autoprompt] $MSG" 2>/dev/null || {
+                    # If aish prompt doesn't exist yet, fall back to regular message
+                    aish terma send "$TERMINAL_NAME" "[autoprompt] $MSG" 2>/dev/null
+                }
+                
+                COUNT=$((COUNT + 1))
                 sleep "$INTERVAL"
             done
-            
-            echo "[$(date)] Autoprompt stopped after $COUNT prompts" >> "$LOGFILE"
         ) &
         
-        echo "Autoprompt started in background. Check $LOGFILE for activity."
-        echo "Run 'autoprompt stop' to stop."
+        echo "Autoprompt running. Your inbox will be checked every ${INTERVAL} seconds."
         ;;
         
     stop)
         if [ -f "$PIDFILE" ]; then
-            PID=$(cat "$PIDFILE")
-            if kill "$PID" 2>/dev/null; then
-                rm "$PIDFILE"
-                echo "Autoprompt stopped"
-                tail -1 "$LOGFILE"
-            else
-                rm "$PIDFILE"
-                echo "Cleaned up stale pidfile"
-            fi
+            kill $(cat "$PIDFILE") 2>/dev/null
+            rm -f "$PIDFILE"
+            echo "Autoprompt stopped"
         else
             echo "Autoprompt not running"
         fi
@@ -87,55 +81,22 @@ case "$1" in
         
     status)
         if [ -f "$PIDFILE" ] && kill -0 $(cat "$PIDFILE") 2>/dev/null; then
-            PID=$(cat "$PIDFILE")
-            echo "Autoprompt running (PID: $PID)"
-            if [ -f "$LOGFILE" ]; then
-                echo "Last activity:"
-                tail -3 "$LOGFILE"
-            fi
+            echo "Autoprompt running (PID: $(cat $PIDFILE))"
         else
             echo "Autoprompt not running"
         fi
         ;;
         
-    test)
-        echo "Testing keystroke injection..."
-        echo "Make sure Claude window is active!"
-        sleep 2
-        
-        for i in {1..3}; do
-            echo "Sending test prompt $i"
-            if send_prompt; then
-                echo "✓ Sent successfully"
-            else
-                echo "✗ Failed to send"
-            fi
-            sleep 1
-        done
-        ;;
-        
-    tail)
-        if [ -f "$LOGFILE" ]; then
-            tail -f "$LOGFILE"
-        else
-            echo "No log file found"
-        fi
-        ;;
-        
     *)
-        echo "Usage: autoprompt {start|stop|status|test|tail} [interval_seconds]"
+        echo "Usage: autoprompt {start|stop|status} [interval_seconds]"
         echo ""
-        echo "Commands:"
-        echo "  start [interval]  Start autoprompt (default: 2 seconds)"
-        echo "  stop              Stop autoprompt"
-        echo "  status            Show status and recent activity"
-        echo "  test              Test keystroke injection (3 prompts)"
-        echo "  tail              Follow the activity log"
+        echo "Sends periodic friendly reminders to check inbox via aish messaging"
+        echo "Default interval: 2 seconds (keeps CI active and engaged!)"
         echo ""
         echo "Examples:"
-        echo "  autoprompt start      # Start with 2-second interval"
-        echo "  autoprompt start 5    # Start with 5-second interval"
-        echo "  autoprompt status     # Check if running"
-        echo "  autoprompt tail       # Watch live activity"
+        echo "  autoprompt start      # 2-second reminders (default)"
+        echo "  autoprompt start 10   # 10-second reminders (relaxed)"
+        echo "  autoprompt start 120  # 2-minute reminders (focus mode)"
+        echo "  autoprompt stop       # Stop reminders"
         ;;
 esac

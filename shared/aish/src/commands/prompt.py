@@ -46,7 +46,7 @@ def handle_prompt_command(args: List[str]) -> int:
     
     # For now, use the regular terma send mechanism
     # TODO: When prompt inbox is implemented, send there instead
-    from commands.terma import send_message_to_terminal
+    from commands.terma import terma_send_message_to_terminal
     
     # Add prompt prefix to distinguish from regular messages
     prompt_message = f"[PROMPT] {message}"
@@ -90,7 +90,7 @@ def handle_prompt_command(args: List[str]) -> int:
             return 1
     else:
         # Direct terminal routing
-        result = send_message_to_terminal(target, prompt_message)
+        result = terma_send_message_to_terminal(target, prompt_message)
         if result == 0:
             print(f"Prompt sent to {target}")
         return result
@@ -102,6 +102,6 @@ def send_prompt(target: str, message: str) -> int:
     This will be updated to use prompt inbox when available.
     For now, uses regular message with [PROMPT] prefix.
     """
-    from commands.terma import send_message_to_terminal
+    from commands.terma import terma_send_message_to_terminal
     prompt_message = f"[PROMPT] {message}"
     return send_message_to_terminal(target, prompt_message)

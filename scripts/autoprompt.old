@@ -1,0 +1,141 @@
+#!/bin/bash
+# autoprompt - Keep Claude CIs active with periodic prompts
+# This script runs alongside Claude and periodically injects prompts
+
+PIDFILE="$HOME/.autoprompt.pid"
+LOGFILE="$HOME/.autoprompt.log"
+DEFAULT_INTERVAL=2
+
+# Function to send prompt to Claude's terminal
+send_prompt() {
+    # Method 1: Try osascript (macOS)
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+        osascript -e 'tell application "System Events" to keystroke "."' 2>/dev/null
+        osascript -e 'tell application "System Events" to key code 36' 2>/dev/null
+        return $?
+    fi
+    
+    # Method 2: Try xdotool (Linux with X11)
+    if command -v xdotool >/dev/null 2>&1; then
+        xdotool type "."
+        xdotool key Return
+        return $?
+    fi
+    
+    # Method 3: Try ydotool (Linux with Wayland)
+    if command -v ydotool >/dev/null 2>&1; then
+        ydotool type "."
+        ydotool key 28:1 28:0  # Enter key press and release
+        return $?
+    fi
+    
+    echo "No method available to send keystrokes" >&2
+    return 1
+}
+
+case "$1" in
+    start)
+        if [ -f "$PIDFILE" ] && kill -0 $(cat "$PIDFILE") 2>/dev/null; then
+            echo "Autoprompt already running (PID: $(cat $PIDFILE))"
+            exit 1
+        fi
+        
+        INTERVAL=${2:-$DEFAULT_INTERVAL}
+        
+        # Start the prompt loop
+        (
+            echo $$ > "$PIDFILE"
+            echo "[$(date)] Autoprompt started (PID: $$, interval: ${INTERVAL}s)" | tee "$LOGFILE"
+            
+            # Give user time to switch to Claude window if needed
+            echo "Switch to Claude window now! Starting in 3 seconds..."
+            sleep 3
+            
+            COUNT=0
+            while [ -f "$PIDFILE" ]; do
+                if send_prompt; then
+                    COUNT=$((COUNT + 1))
+                    echo "[$(date)] Sent prompt #$COUNT" >> "$LOGFILE"
+                else
+                    echo "[$(date)] Failed to send prompt" >> "$LOGFILE"
+                fi
+                sleep "$INTERVAL"
+            done
+            
+            echo "[$(date)] Autoprompt stopped after $COUNT prompts" >> "$LOGFILE"
+        ) &
+        
+        echo "Autoprompt started in background. Check $LOGFILE for activity."
+        echo "Run 'autoprompt stop' to stop."
+        ;;
+        
+    stop)
+        if [ -f "$PIDFILE" ]; then
+            PID=$(cat "$PIDFILE")
+            if kill "$PID" 2>/dev/null; then
+                rm "$PIDFILE"
+                echo "Autoprompt stopped"
+                tail -1 "$LOGFILE"
+            else
+                rm "$PIDFILE"
+                echo "Cleaned up stale pidfile"
+            fi
+        else
+            echo "Autoprompt not running"
+        fi
+        ;;
+        
+    status)
+        if [ -f "$PIDFILE" ] && kill -0 $(cat "$PIDFILE") 2>/dev/null; then
+            PID=$(cat "$PIDFILE")
+            echo "Autoprompt running (PID: $PID)"
+            if [ -f "$LOGFILE" ]; then
+                echo "Last activity:"
+                tail -3 "$LOGFILE"
+            fi
+        else
+            echo "Autoprompt not running"
+        fi
+        ;;
+        
+    test)
+        echo "Testing keystroke injection..."
+        echo "Make sure Claude window is active!"
+        sleep 2
+        
+        for i in {1..3}; do
+            echo "Sending test prompt $i"
+            if send_prompt; then
+                echo "✓ Sent successfully"
+            else
+                echo "✗ Failed to send"
+            fi
+            sleep 1
+        done
+        ;;
+        
+    tail)
+        if [ -f "$LOGFILE" ]; then
+            tail -f "$LOGFILE"
+        else
+            echo "No log file found"
+        fi
+        ;;
+        
+    *)
+        echo "Usage: autoprompt {start|stop|status|test|tail} [interval_seconds]"
+        echo ""
+        echo "Commands:"
+        echo "  start [interval]  Start autoprompt (default: 2 seconds)"
+        echo "  stop              Stop autoprompt"
+        echo "  status            Show status and recent activity"
+        echo "  test              Test keystroke injection (3 prompts)"
+        echo "  tail              Follow the activity log"
+        echo ""
+        echo "Examples:"
+        echo "  autoprompt start      # Start with 2-second interval"
+        echo "  autoprompt start 5    # Start with 5-second interval"
+        echo "  autoprompt status     # Check if running"
+        echo "  autoprompt tail       # Watch live activity"
+        ;;
+esac
