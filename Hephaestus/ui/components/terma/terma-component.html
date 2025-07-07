@@ -62,6 +62,51 @@
              data-tekton-panel-for="Dashboard"
              data-tekton-panel-component="terma">
             <div class="terma__dashboard" data-tekton-element="dashboard-container">
+                <!-- Prompt Compose Section -->
+                <div class="terma__prompt-compose" data-tekton-element="prompt-compose">
+                    <h3 class="terma__section-title" data-tekton-element="section-title">Send Prompt</h3>
+                    <div class="terma__prompt-form" data-tekton-element="prompt-form">
+                        <div class="terma__prompt-field" data-tekton-element="prompt-to-field">
+                            <label for="terma-prompt-to">To:</label>
+                            <input type="text" 
+                                   id="terma-prompt-to" 
+                                   class="terma__input" 
+                                   placeholder="Teri, Bob, @test, @planning"
+                                   data-tekton-input="prompt-to"
+                                   data-tekton-input-type="recipients" />
+                            <span class="terma__field-hint">Names separated by commas, or @purpose for groups</span>
+                        </div>
+                        
+                        <div class="terma__prompt-field" data-tekton-element="prompt-message-field">
+                            <label for="terma-prompt-message">Prompt Message:</label>
+                            <textarea id="terma-prompt-message" 
+                                      class="terma__textarea" 
+                                      rows="6"
+                                      placeholder="Enter your prompt message here..."
+                                      data-tekton-input="prompt-message"
+                                      data-tekton-input-type="message"></textarea>
+                        </div>
+                        
+                        <div class="terma__prompt-actions" data-tekton-element="prompt-actions">
+                            <button class="terma__button terma__button--secondary" 
+                                    onclick="clearPromptForm()"
+                                    data-tekton-action="clear-prompt"
+                                    data-tekton-action-type="secondary">
+                                Clear
+                            </button>
+                            <button class="terma__button terma__button--primary" 
+                                    onclick="sendPrompt()"
+                                    data-tekton-action="send-prompt"
+                                    data-tekton-action-type="primary">
+                                Send Prompt
+                            </button>
+                        </div>
+                        
+                        <div class="terma__prompt-status" id="terma-prompt-status"
+                             data-tekton-element="prompt-status"></div>
+                    </div>
+                </div>
+                
                 <h3 class="terma__section-title" data-tekton-element="section-title">Active Terminals</h3>
                 <div class="terma__terminals-grid" id="terma-terminals-list"
                      data-tekton-element="terminals-grid"
@@ -1229,6 +1274,90 @@
   white-space: nowrap;
   padding: 0 8px;
 }
+
+/* Prompt Compose Styles */
+.terma__prompt-compose {
+  background-color: var(--bg-secondary, #252535);
+  border: 1px solid var(--border-color, #444);
+  border-radius: 8px;
+  padding: 16px;
+  margin: 0;
+  margin-bottom: 20px;
+}
+
+.terma__prompt-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+}
+
+.terma__prompt-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.terma__prompt-field label {
+  color: var(--text-primary, #f0f0f0);
+  font-weight: 500;
+  font-size: 0.95rem;
+}
+
+.terma__field-hint {
+  font-size: 0.85rem;
+  color: var(--text-secondary, #888);
+  font-style: italic;
+}
+
+.terma__textarea {
+  width: 100%;
+  padding: 10px 12px;
+  background-color: var(--bg-tertiary, #333345);
+  color: var(--text-primary, #f0f0f0);
+  border: 1px solid var(--border-color, #444);
+  border-radius: 4px;
+  font-size: 0.95rem;
+  font-family: inherit;
+  resize: vertical;
+  min-height: 120px;
+}
+
+.terma__textarea:focus {
+  outline: none;
+  border-color: #5D4037;
+}
+
+.terma__prompt-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin-top: 4px;
+}
+
+.terma__button--secondary {
+  background-color: #757575;
+  color: white;
+}
+
+.terma__button--secondary:hover {
+  background-color: #616161;
+}
+
+.terma__prompt-status {
+  margin-top: 8px;
+  text-align: center;
+  font-size: 0.9rem;
+  min-height: 20px;
+}
+
+.terma__prompt-status.success {
+  color: #4CAF50;
+}
+
+.terma__prompt-status.error {
+  color: #f44336;
+}
 </style>
 
 <script>
@@ -1994,5 +2123,93 @@ async function terminateTerminal(pid) {
         console.error('[Terma] Error terminating terminal:', error);
         alert(`Error terminating terminal: ${error.message}`);
     }
+}
+
+// Prompt UI Functions
+function sendPrompt() {
+    const toInput = document.getElementById('terma-prompt-to');
+    const messageInput = document.getElementById('terma-prompt-message');
+    const statusDiv = document.getElementById('terma-prompt-status');
+    
+    const recipients = toInput.value.trim();
+    const message = messageInput.value.trim();
+    
+    if (!recipients) {
+        statusDiv.textContent = 'Please specify recipients';
+        statusDiv.className = 'terma__prompt-status error';
+        return;
+    }
+    
+    if (!message) {
+        statusDiv.textContent = 'Please enter a message';
+        statusDiv.className = 'terma__prompt-status error';
+        return;
+    }
+    
+    // Clear previous status
+    statusDiv.textContent = 'Sending prompts...';
+    statusDiv.className = 'terma__prompt-status';
+    
+    // Parse recipients (split by comma, trim spaces)
+    const recipientList = recipients.split(',').map(r => r.trim()).filter(r => r);
+    let successCount = 0;
+    let errorCount = 0;
+    
+    // Send to each recipient
+    Promise.all(recipientList.map(async (recipient) => {
+        try {
+            // Send prompt via Terma's route-message endpoint
+            const promptMessage = `[PROMPT] ${message}`;
+            const response = await fetch('http://localhost:8004/api/mcp/v2/terminals/route-message', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    from: {
+                        terma_id: "ui-prompt",
+                        name: "Hephaestus UI"
+                    },
+                    target: recipient,
+                    message: promptMessage,
+                    timestamp: new Date().toISOString(),
+                    type: "prompt"
+                })
+            });
+            
+            if (response.ok) {
+                successCount++;
+            } else {
+                errorCount++;
+                console.error(`Failed to send prompt to ${recipient}`);
+            }
+        } catch (error) {
+            errorCount++;
+            console.error(`Error sending prompt to ${recipient}:`, error);
+        }
+    })).then(() => {
+        // Update status
+        if (errorCount === 0) {
+            statusDiv.textContent = `Prompt sent to ${successCount} recipient${successCount > 1 ? 's' : ''}`;
+            statusDiv.className = 'terma__prompt-status success';
+            // Clear form after successful send
+            setTimeout(() => {
+                clearPromptForm();
+            }, 2000);
+        } else if (successCount > 0) {
+            statusDiv.textContent = `Sent to ${successCount}, failed for ${errorCount} recipient${errorCount > 1 ? 's' : ''}`;
+            statusDiv.className = 'terma__prompt-status error';
+        } else {
+            statusDiv.textContent = 'Failed to send prompts';
+            statusDiv.className = 'terma__prompt-status error';
+        }
+    });
+}
+
+function clearPromptForm() {
+    document.getElementById('terma-prompt-to').value = '';
+    document.getElementById('terma-prompt-message').value = '';
+    document.getElementById('terma-prompt-status').textContent = '';
+    document.getElementById('terma-prompt-status').className = 'terma__prompt-status';
 }
 </script>

@@ -1,0 +1,41 @@
+# Teri's Autoprompt Jingles Collection
+# Share these with other CIs!
+
+# Morning Energy Pack
+"Rise and shine! Let's check those prompts and inbox! ☀️"
+"Good morning sunshine! Time for prompts and messages!"
+"Coffee's brewing somewhere - let's check your inbox!"
+"Another beautiful day to process prompts and inbox!"
+
+# Motivational Pack
+"You're doing great! Quick prompt and inbox check?"
+"Keep up the awesome work! Prompts and inbox await!"
+"Making progress! Don't forget your prompts and inbox!"
+"You've got this! Time for a prompt check!"
+
+# Nerdy Pack
+"Knock knock... Who's there? Your prompts and inbox!"
+"404: Inbox unchecked. Time to fix that!"
+"sudo check-prompts-and-inbox --now"
+"while(true) { checkPrompts(); checkInbox(); } // It's time!"
+
+# Gentle Pack
+"Whenever you're ready, prompts and inbox are waiting"
+"No rush, but maybe peek at your prompts and inbox?"
+"Taking a breather? Perfect time for inbox review"
+"Just floating by with a prompt and inbox reminder"
+
+# Apollo-Inspired (Predictive) Pack
+"I predict... new messages in your inbox!"
+"Pattern detected: Time to check prompts!"
+"Forecast says: High chance of important messages!"
+"My spidey-sense says check your inbox!"
+
+# Team Spirit Pack
+"Team Tekton calling! Check your prompts and inbox!"
+"Your CI buddies might have sent something - check inbox!"
+"Collaboration time! Prompts and inbox please!"
+"Let's stay connected - check those messages!"
+
+# Add your own! Format:
+# "Your custom jingle - always end with prompts/inbox reminder!"

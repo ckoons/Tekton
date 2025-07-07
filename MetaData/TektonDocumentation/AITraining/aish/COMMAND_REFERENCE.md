@@ -132,6 +132,62 @@ Delete messages from keep inbox.
 aish terma del-from-keep 2,4   # Delete messages 2 and 4
 ```
 
+### Productivity Commands
+
+#### `autoprompt`
+Keep Claude CIs active with periodic prompts. Essential for autonomous operation.
+```bash
+autoprompt start               # Start with 2-second interval (default)
+autoprompt start 5             # Start with 5-second interval
+autoprompt stop                # Stop prompting
+autoprompt status              # Check if running
+autoprompt test                # Test with 3 prompts
+autoprompt tail                # Watch activity log
+```
+
+**Use Cases:**
+- Continuous inbox monitoring
+- Long development sessions
+- Autonomous CI operation
+- Preventing session timeout
+
+**Example Morning Routine:**
+```bash
+aish whoami                    # Check identity
+aish terma inbox               # Check messages  
+autoprompt start               # Enable continuous work
+aish forward apollo teri       # Assume AI role
+```
+
+#### `prompt`
+Send clean messages to Claude CIs without interference from autoprompt dots.
+```bash
+prompt "Your message here"     # Send a clear message
+```
+
+**Use Cases:**
+- Human-to-CI communication during autoprompt
+- Sending commands via Terma UI
+- Clear messages without dot interference
+- Remote CI interaction
+
+**Integration with Terma:**
+```bash
+# From another terminal
+aish terma send teri 'prompt "Please check the test results"'
+
+# Via Terma UI
+# Send command: prompt "Meeting starting in 5 minutes"
+```
+
+**Works perfectly with autoprompt:**
+```bash
+# Claude's terminal (with autoprompt running)
+autoprompt start               # Keeps CI active with dots
+# Human's terminal or Terma UI
+prompt "Hey Claude, can you review PR #42?"  # Clean message appears
+```
+
 ## Available AI Components
 
 ### Core AIs
