@@ -40,8 +40,10 @@ def handle_terma_command(args):
         print("  @<purpose> 'msg' - Send by purpose")
         print("  broadcast 'msg' - Send to all others")
         print("\nInbox Commands:")
-        print("  inbox - Show both inboxes")
-        print("  inbox new pop - Pop from new")
+        print("  inbox - Show all inboxes (prompt, new, keep)")
+        print("  inbox prompt - Show urgent prompt messages")
+        print("  inbox prompt pop - Pop from prompt inbox")
+        print("  inbox new pop - Pop from new inbox")
         print("  inbox keep push 'text' - Save to keep")
         print("  inbox keep read [remove] - Read from keep")
         print("\nDocumentation:")
@@ -87,8 +89,14 @@ def handle_terma_command(args):
             else:
                 print("Usage: aish terma inbox new pop")
                 return 1
+        elif subcommand == "prompt":
+            if len(args) > 2 and args[2] == "pop":
+                return terma_inbox_prompt_pop()
+            else:
+                # Just show prompt messages
+                return terma_inbox_prompt()
         else:
-            print("Usage: aish terma inbox [keep|new pop]")
+            print("Usage: aish terma inbox [prompt|keep|new] [pop]")
             return 1
     elif command == "error-report":
         if len(args) < 2:
@@ -126,7 +134,9 @@ def print_usage():
     print("Usage: aish terma <command> [args]")
     print("\nCommands:")
     print("  list                 - List active terminals")
-    print("  inbox                - Show both inboxes")
+    print("  inbox                - Show all inboxes (prompt, new, keep)")
+    print("  inbox prompt         - Show urgent messages")
+    print("  inbox prompt pop     - Pop from prompt inbox")
     print("  inbox keep           - Show keep inbox")
     print("  inbox new pop        - Pop message from new")
     print("  inbox keep push 'text' - Push to keep (front)")
@@ -370,8 +380,21 @@ def terma_inbox_both():
             with open(inbox_file, 'r') as f:
                 data = json.load(f)
             
+            prompt_messages = data.get('prompt', [])
             new_messages = data.get('new', [])
             keep_messages = data.get('keep', [])
+            
+            # Show prompt messages first (high priority)
+            if prompt_messages:
+                print(f"[PROMPT: {len(prompt_messages)} urgent messages]")
+                for i, msg in enumerate(prompt_messages[:10], 1):  # Show first 10
+                    time_str = msg['timestamp'][11:19] if 'timestamp' in msg else "??:??:??"
+                    from_name = msg.get('from', 'unknown')
+                    message = msg.get('message', '')
+                    if len(message) > 50:
+                        message = message[:47] + "..."
+                    print(f"{i}. [{time_str}] {from_name}: {message}")
+                print()  # Extra line for clarity
             
             # Show new messages
             print(f"[NEW: {len(new_messages)} messages]")
@@ -394,6 +417,7 @@ def terma_inbox_both():
                         content = content[:57] + "..."
                     print(f"{i}. [{time_str}] {content}")
         else:
+            print("[PROMPT: 0 urgent messages]")
             print("[NEW: 0 messages]")
             print("[KEEP: 0 messages]")
             print("\n(Check your inbox frequently with 'aish terma inbox')")
@@ -467,6 +491,73 @@ def terma_inbox_new_pop():
             
     except Exception as e:
         print(f"Error popping message: {e}")
+        return 1
+
+def terma_inbox_prompt():
+    """Show only prompt messages."""
+    try:
+        inbox_file = os.path.expanduser("~/.tekton/terma/.inbox_snapshot")
+        
+        if os.path.exists(inbox_file):
+            with open(inbox_file, 'r') as f:
+                data = json.load(f)
+            
+            prompt_messages = data.get('prompt', [])
+            
+            print(f"[PROMPT: {len(prompt_messages)} urgent messages]")
+            if prompt_messages:
+                for i, msg in enumerate(prompt_messages[:20], 1):  # Show first 20
+                    time_str = msg['timestamp'][11:19] if 'timestamp' in msg else "??:??:??"
+                    from_name = msg.get('from', 'unknown')
+                    message = msg.get('message', '')
+                    if len(message) > 60:
+                        message = message[:57] + "..."
+                    print(f"{i}. [{time_str}] {from_name}: {message}")
+        else:
+            print("[PROMPT: 0 urgent messages]")
+        
+        return 0
+    except Exception as e:
+        print(f"Error accessing prompt inbox: {e}")
+        return 1
+
+def terma_inbox_prompt_pop():
+    """Pop first message from prompt inbox (FIFO)."""
+    try:
+        inbox_file = os.path.expanduser("~/.tekton/terma/.inbox_snapshot")
+        
+        if os.path.exists(inbox_file):
+            with open(inbox_file, 'r') as f:
+                data = json.load(f)
+            
+            prompt_messages = data.get('prompt', [])
+            if prompt_messages:
+                # Pop first message (FIFO)
+                msg = prompt_messages[0]
+                time_str = msg['timestamp'][11:19] if 'timestamp' in msg else "??:??:??"
+                from_name = msg.get('from', 'unknown')
+                message = msg.get('message', '')
+                
+                # Output the message to stdout
+                print(f"[{time_str}] {from_name}: {message}")
+                
+                # Write command for proxy to remove it
+                cmd_dir = os.path.expanduser("~/.tekton/terma/commands")
+                os.makedirs(cmd_dir, exist_ok=True)
+                cmd_file = os.path.join(cmd_dir, f"prompt_pop_{int(time.time()*1000)}.json")
+                with open(cmd_file, 'w') as f:
+                    json.dump({'action': 'prompt_pop', 'timestamp': datetime.now().isoformat()}, f)
+                
+                return 0
+            else:
+                print("No prompt messages")
+                return 0
+        else:
+            print("No messages in prompt inbox")
+            return 0
+            
+    except Exception as e:
+        print(f"Error popping prompt message: {e}")
         return 1
 
 def terma_inbox_keep_push(message):

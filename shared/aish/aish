@@ -163,6 +163,11 @@ Environment variables:
             print("  aish terma send <name> \"msg\"   Send inter-terminal message")
             print("  aish terma broadcast \"msg\"     Broadcast to all terminals")
             print()
+            print("PRODUCTIVITY:")
+            print("  autoprompt start               Keep Claude CI active (default: 2s)")
+            print("  autoprompt stop                Stop autoprompt")
+            print("  autoprompt status              Check autoprompt status")
+            print()
             print("ADVANCED:")
             print("  echo \"msg\" | aish <ai>         Pipe input to AI")
             print("  aish <ai1> | aish <ai2>        Chain AI responses")
@@ -211,6 +216,10 @@ Environment variables:
     if args.ai_or_script == 'unforward':
         from commands.forward import handle_unforward_command
         return handle_unforward_command(args.message or [])
+    
+    if args.ai_or_script == 'prompt':
+        from commands.prompt import handle_prompt_command
+        return handle_prompt_command(args.message or [])
     
     # Check if first argument is an AI name (case-insensitive)
     if args.ai_or_script and args.ai_or_script.lower() in ai_names:
@@ -294,6 +303,7 @@ Environment variables:
         print("  aish numa \"Hello\"          Send message to AI")
         print("  aish list                  Show available AIs")
         print("  aish list commands         Show all commands ← START HERE")
+        print("  autoprompt start           Keep Claude active (CI essential!)")
         print()
         tekton_root = os.environ.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
         print(f"Documentation: {tekton_root}/MetaData/TektonDocumentation/AITraining/aish/COMMAND_REFERENCE.md")

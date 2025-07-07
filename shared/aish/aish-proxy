@@ -33,7 +33,8 @@ from datetime import datetime
 
 # Global in-memory message storage
 message_inbox = {
-    'new': deque(maxlen=100),    # Last 100 new messages
+    'prompt': deque(maxlen=50),   # Last 50 prompt messages (high priority)
+    'new': deque(maxlen=100),     # Last 100 new messages
     'keep': deque(maxlen=50)      # Last 50 kept messages
 }
 
@@ -47,6 +48,7 @@ def write_inbox_snapshot():
         # Write current inbox state
         snapshot_file = os.path.join(snapshot_dir, ".inbox_snapshot")
         snapshot_data = {
+            'prompt': list(message_inbox['prompt']),
             'new': list(message_inbox['new']),
             'keep': list(message_inbox['keep']),
             'session_id': os.environ.get('TERMA_SESSION_ID', 'unknown'),
@@ -85,6 +87,11 @@ def process_inbox_commands():
                 if action == 'pop' and message_inbox['new']:
                     # Remove first message from new
                     message_inbox['new'].popleft()
+                    write_inbox_snapshot()
+                    
+                elif action == 'prompt_pop' and message_inbox['prompt']:
+                    # Remove first message from prompt
+                    message_inbox['prompt'].popleft()
                     write_inbox_snapshot()
                     
                 elif action == 'keep_push':
@@ -214,14 +221,25 @@ def start_heartbeat_daemon():
             # Fallback to print if /dev/tty not available
             print(f"\n{prefix} {message}")
         
-        # Add to in-memory inbox
-        message_inbox['new'].append({
-            'id': len(message_inbox['new']) + 1,
-            'timestamp': datetime.now().isoformat(),
-            'from': from_name,
-            'message': message,
-            'routing': routing
-        })
+        # Add to appropriate inbox based on message type
+        if message.startswith('[PROMPT]') or message.startswith('[autoprompt]'):
+            # High priority prompt messages
+            message_inbox['prompt'].append({
+                'id': len(message_inbox['prompt']) + 1,
+                'timestamp': datetime.now().isoformat(),
+                'from': from_name,
+                'message': message,
+                'routing': routing
+            })
+        else:
+            # Regular messages
+            message_inbox['new'].append({
+                'id': len(message_inbox['new']) + 1,
+                'timestamp': datetime.now().isoformat(),
+                'from': from_name,
+                'message': message,
+                'routing': routing
+            })
         
         # Write snapshot for inbox command
         write_inbox_snapshot()

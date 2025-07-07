@@ -1,0 +1,33 @@
+#!/bin/bash
+# prompt - Send a clean message to Claude without dots
+# Usage: prompt "Your message here"
+#
+# This is designed to work with autoprompt - use this to send
+# clear messages while autoprompt maintains the background heartbeat.
+#
+# Can be invoked:
+# 1. Directly in terminal: prompt "Check the logs"
+# 2. Via Terma UI: Send command 'prompt "Hello Claude"'
+# 3. Via aish: aish terma send <terminal> 'prompt "Message"'
+
+# Get all arguments as the message
+MESSAGE="$*"
+
+# If no message provided, show usage
+if [ -z "$MESSAGE" ]; then
+    echo "Usage: prompt \"Your message here\""
+    echo ""
+    echo "Examples:"
+    echo "  prompt \"Check your inbox\""
+    echo "  prompt \"What are you working on?\""
+    echo "  prompt \"Please review the latest changes\""
+    exit 0
+fi
+
+# Simply echo the message - clean, no dots
+echo "$MESSAGE"
+
+# Optionally log it for debugging
+if [ -n "$PROMPT_LOG" ]; then
+    echo "[$(date)] Prompt sent: $MESSAGE" >> "$HOME/.prompt.log"
+fi
