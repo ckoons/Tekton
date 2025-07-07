@@ -22,6 +22,9 @@ from typing import Optional, List, Tuple, Dict, Any
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 
+# Import simple mailbox cleanup function
+from simple_mailbox import remove_terminal as remove_terminal_mailbox
+
 # Add landmarks to Python path if needed
 try:
     from landmarks import (
@@ -102,8 +105,12 @@ class ActiveTerminalRoster:
             if heartbeat_data.get("status") == "terminated":
                 # Remove terminal immediately
                 if terma_id in self._terminals:
+                    terminal_name = self._terminals[terma_id].get("name", "")
                     del self._terminals[terma_id]
-                logger.info(f"Terminal {terma_id} terminated, removed from roster")
+                    logger.info(f"Terminal {terma_id} terminated, removed from roster")
+                    # Clean up mailboxes
+                    if terminal_name:
+                        remove_terminal_mailbox(terminal_name)
                 # No storage sync - heartbeats control the roster
                 return
             
@@ -155,8 +162,12 @@ class ActiveTerminalRoster:
         """Remove a terminal from the roster."""
         with self._lock:
             if terma_id in self._terminals:
+                terminal_name = self._terminals[terma_id].get("name", "")
                 del self._terminals[terma_id]
                 self._sync_to_storage()
+                # Clean up mailboxes
+                if terminal_name:
+                    remove_terminal_mailbox(terminal_name)
     
     def _health_check_loop(self):
         """Periodically check terminal health."""

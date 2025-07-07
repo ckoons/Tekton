@@ -21,18 +21,27 @@ aish terma inbox new
 ```
 
 ### Send Messages
+
+#### Using aish prompt (recommended for urgent messages)
 ```bash
-# Send a prompt (high priority)
+# Send a prompt to one terminal
 aish prompt Bob "Please check the failing tests"
 
+# Send to multiple terminals (comma-separated)
+aish prompt Bob,Alice,Toni "System is down!"
+
+# Send by purpose (all terminals with that purpose)
+aish prompt @test "All tests need to run again"
+aish prompt @planning "Meeting in 5 minutes"
+```
+
+#### Using aish terma (regular messages)
+```bash
 # Send regular message
 aish terma Bob "Meeting at 3pm"
 
-# Send to multiple terminals
-aish prompt Bob,Alice,Toni "System is down!"
-
-# Send by purpose
-aish prompt @test "All tests need to run again"
+# Broadcast to all terminals
+aish terma broadcast "Coffee break!"
 ```
 
 ### Manage Messages
@@ -82,6 +91,18 @@ aish prompt Alice "Help! Can't figure out the auth bug"
 ```bash
 # Alert all test terminals
 aish prompt @test "New build ready for testing"
+
+# Notify planning team
+aish prompt @planning "Sprint review in 10 minutes"
+```
+
+### The difference between prompt and terma send
+```bash
+# aish prompt - Goes to PROMPT mailbox (high priority)
+aish prompt Alice "URGENT: Production is down"
+
+# aish terma - Goes to NEW mailbox (normal priority)  
+aish terma Alice "Let's grab coffee later"
 ```
 
 ### Checking messages regularly
