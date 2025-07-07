@@ -63,7 +63,8 @@ async def cleanup_stale_registry_entries():
     from pathlib import Path
     
     try:
-        registry_path = Path.home() / '.tekton' / 'ai_registry' / 'platform_ai_registry.json'
+        tekton_root = os.environ.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
+        registry_path = Path(tekton_root) / '.tekton' / 'ai_registry' / 'platform_ai_registry.json'
         
         if not registry_path.exists():
             logger.info("AI registry not found, skipping cleanup")

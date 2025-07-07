@@ -27,7 +27,8 @@ class AIShell:
         self.debug = debug
         self.parser = PipelineParser()
         self.handler = MessageHandler(self.rhetor_endpoint, debug=debug)
-        self.history_file = Path.home() / '.aish_history'
+        tekton_root = os.environ.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
+        self.history_file = Path(tekton_root) / '.tekton' / 'aish' / '.aish_history'
         self.active_sockets = {}  # Track active socket IDs by AI name
         self.ai_history = AIHistory()  # Conversation history tracker
         

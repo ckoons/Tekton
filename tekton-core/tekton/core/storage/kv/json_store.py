@@ -50,9 +50,10 @@ class JsonKVStore(BaseKVStorage):
         self.namespace = StorageNamespace(namespace)
         
         # Define data path
+        tekton_root = os.environ.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
         self.data_path = data_path or os.environ.get(
             "TEKTON_KV_DB_PATH", 
-            os.path.expanduser(f"~/.tekton/kv_stores/{namespace}")
+            os.path.join(tekton_root, ".tekton", "kv_stores", namespace)
         )
         
         # Define filename

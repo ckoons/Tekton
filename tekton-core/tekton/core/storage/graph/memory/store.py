@@ -43,9 +43,10 @@ class MemoryGraphStore(BaseGraphStorage):
         self.persist = persist
         
         # Define data path for persistence
+        tekton_root = os.environ.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
         self.data_path = data_path or os.environ.get(
             "TEKTON_GRAPH_DB_PATH", 
-            os.path.expanduser(f"~/.tekton/graph_stores/{namespace}")
+            os.path.join(tekton_root, ".tekton", "graph_stores", namespace)
         )
         
         # Create storage

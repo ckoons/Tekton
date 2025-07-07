@@ -105,7 +105,8 @@ def find_tekton_processes():
 
 def load_registry():
     """Load the AI registry."""
-    registry_path = Path.home() / '.tekton' / 'ai_registry' / 'platform_ai_registry.json'
+    tekton_root = os.environ.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
+    registry_path = Path(tekton_root) / '.tekton' / 'ai_registry' / 'platform_ai_registry.json'
     
     if not registry_path.exists():
         return {}
@@ -254,7 +255,8 @@ def cleanup_orphans(dry_run=True, min_age_hours=1.0, verbose=False):
                 print(f"  {result}")
             
             # Log cleanup
-            log_path = Path.home() / '.tekton' / 'logs' / 'orphan_cleanup.log'
+            tekton_root = os.environ.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
+            log_path = Path(tekton_root) / '.tekton' / 'logs' / 'orphan_cleanup.log'
             log_path.parent.mkdir(parents=True, exist_ok=True)
             
             with open(log_path, 'a') as f:
@@ -282,10 +284,11 @@ export PYTHONPATH="$TEKTON_ROOT/shared:$PYTHONPATH"
 python3 "$TEKTON_ROOT/shared/aish/cleanup_orphan_processes.py" --live --min-age 2.0
 
 # Log completion
-echo "$(date): Tekton orphan cleanup completed" >> ~/.tekton/logs/cron.log
+echo "$(date): Tekton orphan cleanup completed" >> "$TEKTON_ROOT/.tekton/logs/cron.log"
 """
     
-    script_path = Path.home() / '.tekton' / 'bin' / 'cleanup_tekton_orphans.sh'
+    tekton_root = os.environ.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
+    script_path = Path(tekton_root) / '.tekton' / 'bin' / 'cleanup_tekton_orphans.sh'
     script_path.parent.mkdir(parents=True, exist_ok=True)
     
     with open(script_path, 'w') as f:

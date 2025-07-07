@@ -35,7 +35,8 @@ except ImportError:
 
 def load_registry():
     """Load the AI registry with file locking."""
-    registry_path = Path.home() / '.tekton' / 'ai_registry' / 'platform_ai_registry.json'
+    tekton_root = os.environ.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
+    registry_path = Path(tekton_root) / '.tekton' / 'ai_registry' / 'platform_ai_registry.json'
     registry_path.parent.mkdir(parents=True, exist_ok=True)
     
     if not registry_path.exists():
@@ -50,7 +51,8 @@ def load_registry():
 
 def save_registry(registry):
     """Save the AI registry with file locking."""
-    registry_path = Path.home() / '.tekton' / 'ai_registry' / 'platform_ai_registry.json'
+    tekton_root = os.environ.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
+    registry_path = Path(tekton_root) / '.tekton' / 'ai_registry' / 'platform_ai_registry.json'
     registry_path.parent.mkdir(parents=True, exist_ok=True)
     
     # Write to temp file first

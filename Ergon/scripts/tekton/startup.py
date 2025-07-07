@@ -20,7 +20,7 @@ logger = logging.getLogger("tekton.startup")
 # Initialize imports for startup
 try:
     # Add Ergon to the Python path if not already there
-    TEKTON_ROOT = Path.home() / ".tekton"
+    TEKTON_ROOT = Path(os.environ.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton'))
     ERGON_ROOT = Path(__file__).parent.parent.parent.absolute()
     if str(ERGON_ROOT) not in sys.path:
         sys.path.insert(0, str(ERGON_ROOT))

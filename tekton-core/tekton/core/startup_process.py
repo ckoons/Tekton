@@ -55,7 +55,8 @@ class StartUpProcess:
             data_dir: Directory for storing startup state
             use_message_bus: Whether to use the message bus for communication
         """
-        self.data_dir = data_dir or os.path.expanduser("~/.tekton/startup")
+        tekton_root = os.environ.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
+        self.data_dir = data_dir or os.path.join(tekton_root, ".tekton", "startup")
         self.status_file = os.path.join(self.data_dir, "component_status.json")
         self.use_message_bus = use_message_bus and HERMES_AVAILABLE
         
