@@ -83,16 +83,18 @@ def get_expected_ai_port(main_port: int) -> int:
     """
     Calculate expected AI port based on component's main port.
     
-    Formula: AI port = 45000 + (main_port - 8000)
+    Uses port bases from environment configuration.
     
-    Examples:
+    Examples with defaults (TEKTON_PORT_BASE=8000, TEKTON_AI_PORT_BASE=45000):
         Hermes (8001) -> 45001
         Engram (8002) -> 45002
         Rhetor (8003) -> 45003
-        Apollo (8004) -> 45004
+        Apollo (8012) -> 45012
         Athena (8005) -> 45005
     """
-    return 45000 + (main_port - 8000)
+    # Import here to avoid circular dependency
+    from shared.utils.ai_port_utils import get_ai_port
+    return get_ai_port(main_port)
 
 
 # @tekton-class: Main AI launcher for managing specialist lifecycle

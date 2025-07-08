@@ -444,8 +444,9 @@ class EnhancedStatusChecker:
         if not component_port:
             return {'model': None, 'health': 'none'}
         
-        # AI port = (component_port - 8000) + 45000
-        ai_port = (component_port - 8000) + 45000
+        # Calculate AI port using configurable bases
+        from shared.utils.ai_port_utils import get_ai_port
+        ai_port = get_ai_port(component_port)
         ai_id = f"{component_name.lower()}-ai"
         
         # Try to connect to AI

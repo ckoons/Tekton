@@ -28,6 +28,7 @@ sys.path.insert(0, str(tekton_root))
 
 # Registry and routing removed - using fixed port discovery
 from shared.utils.env_config import get_component_config
+from shared.utils.ai_port_utils import get_ai_port
 import socket
 import json
 
@@ -61,7 +62,7 @@ async def list_ais(args):
         if not component_port:
             continue
             
-        ai_port = (component_port - 8000) + 45000
+        ai_port = get_ai_port(component_port)
         ai_id = f"{component}-ai"
         
         # Check if AI is running by trying to connect
@@ -207,7 +208,7 @@ async def watch_ais(args):
                 if not component_port:
                     continue
                     
-                ai_port = (component_port - 8000) + 45000
+                ai_port = get_ai_port(component_port)
                 ai_id = f"{component}-ai"
                 
                 # Check if AI is running
@@ -321,7 +322,7 @@ async def test_ai(args):
             print(f"Error: Component '{component}' not found")
             return
             
-        ai_port = (component_port - 8000) + 45000
+        ai_port = get_ai_port(component_port)
         spec = {
             'id': args.ai_id,
             'host': 'localhost',
@@ -449,7 +450,7 @@ async def test_ai(args):
             if not component_port:
                 continue
                 
-            ai_port = (component_port - 8000) + 45000
+            ai_port = get_ai_port(component_port)
             ai_id = f"{component}-ai"
             
             # Quick ping test to see if it's healthy
@@ -552,7 +553,7 @@ async def test_streaming(args):
         print(f"Error: Component '{component}' not found")
         return
         
-    ai_port = (component_port - 8000) + 45000
+    ai_port = get_ai_port(component_port)
     spec = {
         'id': args.ai_id,
         'host': 'localhost',
@@ -601,7 +602,7 @@ async def benchmark_ais(args):
             component = ai_id.replace('-ai', '')
             component_port = config.get_port(component)
             if component_port:
-                ai_port = (component_port - 8000) + 45000
+                ai_port = get_ai_port(component_port)
                 specialists.append({
                     'id': ai_id,
                     'host': 'localhost',
@@ -621,7 +622,7 @@ async def benchmark_ais(args):
             if not component_port:
                 continue
                 
-            ai_port = (component_port - 8000) + 45000
+            ai_port = get_ai_port(component_port)
             ai_id = f"{component}-ai"
             
             # Quick test to see if healthy
@@ -803,7 +804,7 @@ async def stats(args):
             continue
             
         total_ais += 1
-        ai_port = (component_port - 8000) + 45000
+        ai_port = get_ai_port(component_port)
         
         # Quick health check
         try:

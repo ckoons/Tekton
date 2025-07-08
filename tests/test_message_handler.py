@@ -133,12 +133,13 @@ def test_port_mapping():
     
     handler = MessageHandler()
     
-    # Test the formula: (base - 8000) + 45000
+    # Test the formula with default bases
+    # Note: These tests assume default TEKTON_PORT_BASE=8000 and TEKTON_AI_PORT_BASE=45000
     test_cases = [
-        ('engram', 45000),     # (8000 - 8000) + 45000 = 45000
-        ('hermes', 45001),     # (8001 - 8000) + 45000 = 45001
-        ('apollo', 45012),     # (8012 - 8000) + 45000 = 45012
-        ('hephaestus', 45080), # (8080 - 8000) + 45000 = 45080
+        ('engram', 45000),     # Default: engram at base port
+        ('hermes', 45001),     # Default: hermes at base+1
+        ('apollo', 45012),     # Default: apollo at base+12
+        ('hephaestus', 45080), # Default: hephaestus at base+80
     ]
     
     for ai_name, expected_port in test_cases:

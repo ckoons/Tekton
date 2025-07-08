@@ -11,7 +11,7 @@ Tekton's AI system uses a simplified "One Queue, One Socket, One AI" architectur
 The unified interface for all AI communication:
 
 - **Direct Communication**: Both sync (`ai_send_sync`) and async (`ai_send`) methods
-- **Fixed Ports**: AI port = 45000 + (component_port - 8000)
+- **Configurable Ports**: AI port = TEKTON_AI_PORT_BASE + (component_port - TEKTON_PORT_BASE)
 - **Message Tracking**: UUID-based message IDs for reliable request/response matching
 - **No Registry**: Direct host:port connections without registry files
 
@@ -50,12 +50,12 @@ Response via same socket
 
 ## Fixed Port System
 
-All AI ports are calculated using a simple formula:
+All AI ports are calculated using configurable bases:
 ```
-AI Port = 45000 + (Component Port - 8000)
+AI Port = TEKTON_AI_PORT_BASE + (Component Port - TEKTON_PORT_BASE)
 ```
 
-Examples:
+Examples with defaults (TEKTON_PORT_BASE=8000, TEKTON_AI_PORT_BASE=45000):
 - Tekton (8000) → AI Port 45000
 - Hermes (8001) → AI Port 45001
 - Engram (8002) → AI Port 45002

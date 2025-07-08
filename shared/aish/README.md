@@ -120,7 +120,7 @@ When launched via Terma, terminals automatically have:
 ```
 
 ### Port Management
-- Fixed port formula: AI port = 45000 + (component_port - 8000)
+- Configurable port formula: AI port = TEKTON_AI_PORT_BASE + (component_port - TEKTON_PORT_BASE)
 - Check port alignment: `scripts/check_port_alignment.py`
 - `cleanup_orphan_processes.py`: Detect and remove orphaned AI processes
 
