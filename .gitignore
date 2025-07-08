@@ -89,8 +89,7 @@ yarn-error.log*
 CLAUDE.md
 **/CLAUDE.md
 **/.claude/settings.local.json
-.tekton/logs/
-.tekton/data/
+.tekton/*
 
 # Landmark operational data (not the system itself)
 landmarks/data/*.json

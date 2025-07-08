@@ -1,7 +1,0 @@
-# Tekton runtime data
-data/
-logs/
-
-# Keep directory structure
-!data/.gitkeep
-!logs/.gitkeep

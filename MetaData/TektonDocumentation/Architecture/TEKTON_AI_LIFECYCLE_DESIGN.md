@@ -4,7 +4,7 @@
 
 Design for managing AI specialists across all Tekton components with proper lifecycle integration.
 
-**Status Update (June 2025)**: This design has been implemented using the unified AI system in `/Tekton/shared/ai/`. AI specialists now run on ports 45000-50000 and are managed through the platform AI registry at `~/.tekton/ai_registry/platform_ai_registry.json`.
+**Status Update (July 2025)**: This design has been implemented using the unified AI system in `/Tekton/shared/ai/`. AI specialists now run on fixed ports (45000 + component_port - 8000) using the simple_ai communication system.
 
 ## Key Design Decisions
 
@@ -60,7 +60,7 @@ if os.environ.get('TEKTON_REGISTER_AI', 'false').lower() == 'true':
 ```python
 # After all components are running
 if ai_registration_enabled:
-    await register_numa_platform_ai()
+    # AIs are auto-started with fixed ports
 ```
 
 #### C. Component Shutdown (enhanced_tekton_killer.py)
@@ -76,40 +76,28 @@ if ai_registration_enabled:
 ```python
 # Special handling for Rhetor shutdown
 if component_name == 'rhetor' and ai_registration_enabled:
-    # Export AI registry state before Rhetor terminates
-    await export_ai_registry_state()
+    # AI cleanup handled automatically
 ```
 
 ## Implementation Architecture
 
-### 1. Shared AI Registry Module
+### 1. Simple AI Communication Module
 
-**IMPLEMENTED**: The shared AI registry is now available at:
+**IMPLEMENTED**: The simple AI system is now available at:
 
 ```python
-# /Tekton/shared/ai/unified_registry.py
-class UnifiedAIRegistry:
-    """Unified registry for all AI specialists with event-driven updates."""
-    
-    def __init__(self):
-        self.registry_path = Path.home() / ".tekton" / "ai_registry" / "platform_ai_registry.json"
-    
-    async def register_component_ai(self, component_name: str, config: dict):
-        """Register AI for a component."""
-        try:
-            # Try Rhetor API first
-            if await self._is_rhetor_available():
-                return await self._register_via_api(component_name, config)
-            else:
-                # Fallback to file-based registration
-                return await self._register_via_file(component_name, config)
-        except Exception as e:
-            logger.error(f"Failed to register AI for {component_name}: {e}")
-    
-    async def deregister_component_ai(self, component_name: str):
-        """Deregister AI for a component."""
-        # Similar dual approach
+# /Tekton/shared/ai/simple_ai.py
+# Direct communication using fixed ports
+from shared.ai.simple_ai import ai_send_sync, ai_send
+
+# Sync example
+response = ai_send_sync("apollo-ai", "Hello", "localhost", 45012)
+
+# Async example
+response = await ai_send("numa-ai", "Status report", "localhost", 45004)
 ```
+
+No registry needed - ports are calculated: `45000 + (component_port - 8000)`
 
 ### 2. Component AI Configuration
 
@@ -161,7 +149,7 @@ async def launch_component_with_ai(component_name: str, component_info: dict):
         
         # Register component AI
         ai_config = get_ai_config(component_name)
-        await ai_registry_client.register_component_ai(component_name, ai_config)
+        # AI automatically available on fixed port
         
         logger.info(f"Registered AI for {component_name}")
     
@@ -173,7 +161,7 @@ async def post_launch_numa():
         numa_config = get_ai_config("numa")
         numa_config["components"] = list(launched_components.keys())
         
-        await ai_registry_client.register_component_ai("numa", numa_config)
+        # Numa AI automatically available on port 45004
         logger.info("Registered Numa platform AI")
 ```
 
@@ -187,7 +175,9 @@ async def get_component_status_with_ai(component_name: str):
     status = await get_component_status(component_name)
     
     if ai_registration_enabled():
-        ai_status = await ai_registry_client.get_ai_status(component_name)
+        # Check if AI is running on fixed port
+        ai_port = 45000 + (component_info.get('port', 8000) - 8000)
+        ai_status = check_port_open('localhost', ai_port)
         status["ai_specialist"] = {
             "registered": ai_status.get("registered", False),
             "active": ai_status.get("active", False),

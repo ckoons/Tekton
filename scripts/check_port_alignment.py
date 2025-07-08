@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Check AI port alignment with expected values.
-Uses fixed port calculation: AI port = 45000 + (main_port - 8000)
+Uses configurable port bases from environment.
 """
 import sys
 import os
@@ -13,10 +13,11 @@ tekton_root = os.path.dirname(os.path.dirname(script_path))
 sys.path.insert(0, tekton_root)
 
 from shared.utils.env_config import get_component_config
+from shared.utils.ai_port_utils import get_ai_port
 
 def get_expected_ai_port(main_port: int) -> int:
     """Calculate expected AI port based on component's main port."""
-    return 45000 + (main_port - 8000)
+    return get_ai_port(main_port)
 
 def check_port_open(host: str, port: int) -> bool:
     """Check if a port is open."""
@@ -78,7 +79,7 @@ def main():
     print(f"Total AI components: {total_count}")
     print(f"Running: {running_count}")
     print(f"Not running: {total_count - running_count}")
-    print("\nFixed port formula: AI port = 45000 + (main_port - 8000)")
+    print(f"\nPort formula: AI port = {os.environ.get('TEKTON_AI_PORT_BASE', '45000')} + (main_port - {os.environ.get('TEKTON_PORT_BASE', '8000')})")
 
 if __name__ == '__main__':
     main()
