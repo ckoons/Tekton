@@ -210,7 +210,8 @@ class ActiveTerminalRoster:
     def _sync_to_storage(self):
         """Write active terminals to shared storage."""
         try:
-            shared_dir = Path.home() / ".tekton" / "terma"
+            tekton_root = os.environ.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
+            shared_dir = Path(tekton_root) / ".tekton" / "terma"
             shared_dir.mkdir(parents=True, exist_ok=True)
             
             shared_path = shared_dir / "active_terminals.json"
@@ -226,7 +227,8 @@ class ActiveTerminalRoster:
     def load_from_storage(self):
         """Load previously active terminals from storage."""
         try:
-            shared_path = Path.home() / ".tekton" / "terma" / "active_terminals.json"
+            tekton_root = os.environ.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
+            shared_path = Path(tekton_root) / ".tekton" / "terma" / "active_terminals.json"
             if shared_path.exists():
                 with open(shared_path) as f:
                     data = json.load(f)

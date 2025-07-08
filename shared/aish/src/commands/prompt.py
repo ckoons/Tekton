@@ -104,4 +104,4 @@ def send_prompt(target: str, message: str) -> int:
     """
     from commands.terma import terma_send_message_to_terminal
     prompt_message = f"[PROMPT] {message}"
-    return send_message_to_terminal(target, prompt_message)
+    return terma_send_message_to_terminal(target, prompt_message)

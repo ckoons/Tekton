@@ -16,7 +16,8 @@ class ForwardingRegistry:
     """Manages AI message forwarding configuration."""
     
     def __init__(self):
-        self.config_dir = Path.home() / '.tekton' / 'aish'
+        tekton_root = os.environ.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
+        self.config_dir = Path(tekton_root) / '.tekton' / 'aish'
         self.config_file = self.config_dir / 'forwarding.json'
         self.forwards = self.load()
     

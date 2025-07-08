@@ -51,7 +51,8 @@ class Config:
         Args:
             config_path: Path to the configuration file
         """
-        self.config_path = config_path or os.path.expanduser("~/.terma/config.json")
+        tekton_root = os.environ.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
+        self.config_path = config_path or os.path.join(tekton_root, ".tekton", "terma", "config.json")
         self.config = {}
         self._load()
         

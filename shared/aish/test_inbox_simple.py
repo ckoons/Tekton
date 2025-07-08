@@ -15,7 +15,8 @@ def test_inbox():
     print("==========================")
     
     # Setup test data
-    inbox_dir = Path.home() / '.tekton' / 'terma'
+    tekton_root = os.environ.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
+    inbox_dir = Path(tekton_root) / '.tekton' / 'terma'
     inbox_dir.mkdir(parents=True, exist_ok=True)
     
     # Create a test inbox

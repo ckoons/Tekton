@@ -258,9 +258,10 @@ class PromptRegistry:
         """
         # Set default base directory if not provided
         if not base_dir:
+            tekton_root = os.environ.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
             base_dir = os.path.join(
                 os.environ.get('TEKTON_DATA_DIR', 
-                              os.path.join(os.environ.get('TEKTON_ROOT', os.path.expanduser('~')), '.tekton', 'data')),
+                              os.path.join(tekton_root, '.tekton', 'data')),
                 'rhetor', 'prompts'
             )
         

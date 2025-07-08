@@ -38,9 +38,11 @@ class AIHistory:
         if history_file:
             self.history_file = Path(history_file)
         else:
-            self.history_file = Path.home() / '.aish_history'
+            tekton_root = os.environ.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
+            self.history_file = Path(tekton_root) / '.tekton' / 'aish' / '.aish_history'
         
-        self.session_file = Path.home() / '.aish' / 'sessions' / f"{datetime.now().strftime('%Y-%m-%d')}.json"
+        tekton_root = os.environ.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
+        self.session_file = Path(tekton_root) / '.tekton' / 'aish' / 'sessions' / f"{datetime.now().strftime('%Y-%m-%d')}.json"
         self.command_number = self._get_last_command_number() + 1
         
         # Ensure directories exist
@@ -231,7 +233,8 @@ class AIHistory:
         entries = []
         
         # Read from session files
-        session_dir = Path.home() / '.aish' / 'sessions'
+        tekton_root = os.environ.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
+        session_dir = Path(tekton_root) / '.tekton' / 'aish' / 'sessions'
         if session_dir.exists():
             for session_file in sorted(session_dir.glob('*.json')):
                 try:

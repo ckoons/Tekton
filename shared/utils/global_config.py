@@ -88,8 +88,9 @@ class GlobalConfig:
             self.mcp_bridge = None
             
             # Setup base data directory
+            tekton_root = os.environ.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
             self._base_data_dir = os.environ.get('TEKTON_DATA_DIR',
-                os.path.join(os.path.expanduser('~'), '.tekton', 'data'))
+                os.path.join(tekton_root, '.tekton', 'data'))
             
             self._initialized = True
     

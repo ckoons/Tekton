@@ -42,7 +42,8 @@ def write_inbox_snapshot():
     """Write inbox state to file for inbox command access."""
     try:
         # Create snapshot directory
-        snapshot_dir = os.path.expanduser("~/.tekton/terma")
+        tekton_root = os.environ.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
+        snapshot_dir = os.path.join(tekton_root, ".tekton", "terma")
         os.makedirs(snapshot_dir, exist_ok=True)
         
         # Write current inbox state
@@ -65,10 +66,28 @@ def write_inbox_snapshot():
         # Don't let snapshot errors crash anything
         pass
 
+def load_inbox_snapshot():
+    """Load existing inbox snapshot into memory."""
+    try:
+        tekton_root = os.environ.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
+        snapshot_file = os.path.join(tekton_root, ".tekton", "terma", ".inbox_snapshot")
+        
+        if os.path.exists(snapshot_file):
+            with open(snapshot_file, 'r') as f:
+                data = json.load(f)
+            
+            # Load into deques
+            message_inbox['prompt'] = deque(data.get('prompt', []), maxlen=50)
+            message_inbox['new'] = deque(data.get('new', []), maxlen=100)
+            message_inbox['keep'] = deque(data.get('keep', []), maxlen=50)
+    except Exception:
+        pass
+
 def process_inbox_commands():
     """Process any pending inbox commands from terma."""
     try:
-        cmd_dir = os.path.expanduser("~/.tekton/terma/commands")
+        tekton_root = os.environ.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
+        cmd_dir = os.path.join(tekton_root, ".tekton", "terma", "commands")
         if not os.path.exists(cmd_dir):
             return
         
@@ -139,6 +158,9 @@ def start_heartbeat_daemon():
     if not terma_session_id:
         # Not launched by Terma, no heartbeats needed
         return None, None
+    
+    # Load existing inbox snapshot before starting
+    load_inbox_snapshot()
     
     # Import queue for thread-safe command handling
     import queue

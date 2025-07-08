@@ -55,74 +55,6 @@ COMPONENT_DESCRIPTION = "LLM orchestration and management service"
 component = RhetorComponent()
 
 
-async def cleanup_stale_registry_entries():
-    """Clean up stale AI registry entries - only remove dead ones."""
-    import json
-    import socket
-    import psutil
-    from pathlib import Path
-    
-    try:
-        registry_path = Path.home() / '.tekton' / 'ai_registry' / 'platform_ai_registry.json'
-        
-        if not registry_path.exists():
-            logger.info("AI registry not found, skipping cleanup")
-            return
-        
-        # Read registry
-        with open(registry_path, 'r') as f:
-            registry = json.load(f)
-        
-        if not registry:
-            logger.info("AI registry is empty, skipping cleanup")
-            return
-        
-        cleaned = []
-        preserved = []
-        
-        # Check each entry
-        for ai_name, entry in list(registry.items()):
-            port = entry.get('port')
-            pid = entry.get('metadata', {}).get('pid')
-            
-            # Check if process exists
-            process_exists = False
-            if pid:
-                try:
-                    process_exists = psutil.pid_exists(pid)
-                except:
-                    try:
-                        os.kill(pid, 0)
-                        process_exists = True
-                    except OSError:
-                        process_exists = False
-            
-            # Check if port is open
-            port_open = False
-            if port:
-                sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                sock.settimeout(1)
-                port_open = sock.connect_ex(('localhost', port)) == 0
-                sock.close()
-            
-            # Remove if dead
-            if not process_exists or not port_open:
-                del registry[ai_name]
-                cleaned.append(ai_name)
-            else:
-                preserved.append(ai_name)
-        
-        # Save cleaned registry
-        if cleaned:
-            with open(registry_path, 'w') as f:
-                json.dump(registry, f, indent=2)
-            logger.info(f"Registry cleanup: removed {len(cleaned)} dead entries: {', '.join(cleaned)}")
-        
-        if preserved:
-            logger.info(f"Registry cleanup: preserved {len(preserved)} running entries")
-        
-    except Exception as e:
-        logger.warning(f"Failed to clean AI registry: {e}")
 
 
 # Request/Response models
@@ -199,8 +131,6 @@ async def startup_callback():
     """Component startup callback."""
     global component
     try:
-        # Clean up stale AI registry entries on startup
-        await cleanup_stale_registry_entries()
         
         await component.initialize(
             capabilities=component.get_capabilities(),

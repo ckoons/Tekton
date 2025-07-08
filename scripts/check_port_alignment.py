@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """
 Check AI port alignment with expected values.
+Uses fixed port calculation: AI port = 45000 + (main_port - 8000)
 """
-import json
-from pathlib import Path
 import sys
 import os
+import socket
 
 # Add Tekton root to path
 script_path = os.path.realpath(__file__)
@@ -18,11 +18,15 @@ def get_expected_ai_port(main_port: int) -> int:
     """Calculate expected AI port based on component's main port."""
     return 45000 + (main_port - 8000)
 
+def check_port_open(host: str, port: int) -> bool:
+    """Check if a port is open."""
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    sock.settimeout(1)
+    result = sock.connect_ex((host, port)) == 0
+    sock.close()
+    return result
+
 def main():
-    # Load current registry
-    registry_file = Path.home() / '.tekton' / 'ai_registry' / 'platform_ai_registry.json'
-    with open(registry_file) as f:
-        registry = json.load(f)
     
     # Get component config
     config = get_component_config()
@@ -46,32 +50,35 @@ def main():
         except:
             continue
     
-    # Compare
-    print("AI Port Alignment Check")
+    # Check ports
+    print("AI Port Alignment Check (Fixed Port System)")
     print("=" * 70)
-    print(f"{'AI ID':<20} {'Component':<15} {'Current':<10} {'Expected':<10} {'Status':<10}")
+    print(f"{'Component':<15} {'Main Port':<12} {'AI Port':<12} {'AI Running':<12}")
     print("-" * 70)
     
-    misaligned = []
-    for ai_id, data in sorted(registry.items()):
-        current_port = data['port']
-        if ai_id in expected:
-            exp_port = expected[ai_id]['expected_port']
-            status = "✓ OK" if current_port == exp_port else "✗ MISMATCH"
-            if current_port != exp_port:
-                misaligned.append(ai_id)
-            print(f"{ai_id:<20} {data['component']:<15} {current_port:<10} {exp_port:<10} {status:<10}")
+    running_count = 0
+    total_count = 0
+    
+    for ai_id, data in sorted(expected.items()):
+        component = data['component']
+        main_port = data['main_port']
+        ai_port = data['expected_port']
+        is_running = check_port_open('localhost', ai_port)
+        
+        if is_running:
+            running_count += 1
+            status = "✓ Running"
         else:
-            print(f"{ai_id:<20} {data['component']:<15} {current_port:<10} {'N/A':<10} {'?':<10}")
+            status = "✗ Not running"
+            
+        total_count += 1
+        print(f"{component:<15} {main_port:<12} {ai_port:<12} {status:<12}")
     
     print("=" * 70)
-    print(f"Total AIs: {len(registry)}")
-    print(f"Misaligned: {len(misaligned)}")
-    
-    if misaligned:
-        print("\nMisaligned AIs:")
-        for ai_id in misaligned:
-            print(f"  - {ai_id}")
+    print(f"Total AI components: {total_count}")
+    print(f"Running: {running_count}")
+    print(f"Not running: {total_count - running_count}")
+    print("\nFixed port formula: AI port = 45000 + (main_port - 8000)")
 
 if __name__ == '__main__':
     main()

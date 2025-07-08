@@ -258,7 +258,8 @@ def terma_error_report(message):
         print("Thank you for the feedback!")
         
         # Log to local file for now
-        log_dir = os.path.expanduser("~/.tekton/terma/error_reports")
+        tekton_root = os.environ.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
+        log_dir = os.path.join(tekton_root, ".tekton", "terma", "error_reports")
         os.makedirs(log_dir, exist_ok=True)
         
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -374,7 +375,8 @@ def terma_send_message_to_terminal(terminal_name, message):
 def terma_inbox_both():
     """Show both new and keep inboxes to stdout."""
     try:
-        inbox_file = os.path.expanduser("~/.tekton/terma/.inbox_snapshot")
+        tekton_root = os.environ.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
+        inbox_file = os.path.join(tekton_root, ".tekton", "terma", ".inbox_snapshot")
         
         if os.path.exists(inbox_file):
             with open(inbox_file, 'r') as f:
@@ -430,7 +432,8 @@ def terma_inbox_both():
 def terma_inbox_keep():
     """Show kept messages."""
     try:
-        inbox_file = os.path.expanduser("~/.tekton/terma/.inbox_snapshot")
+        tekton_root = os.environ.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
+        inbox_file = os.path.join(tekton_root, ".tekton", "terma", ".inbox_snapshot")
         
         if os.path.exists(inbox_file):
             with open(inbox_file, 'r') as f:
@@ -457,7 +460,8 @@ def terma_inbox_keep():
 def terma_inbox_new_pop():
     """Pop first message from new inbox (FIFO)."""
     try:
-        inbox_file = os.path.expanduser("~/.tekton/terma/.inbox_snapshot")
+        tekton_root = os.environ.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
+        inbox_file = os.path.join(tekton_root, ".tekton", "terma", ".inbox_snapshot")
         
         if os.path.exists(inbox_file):
             with open(inbox_file, 'r') as f:
@@ -475,7 +479,8 @@ def terma_inbox_new_pop():
                 print(f"[{time_str}] {from_name}: {message}")
                 
                 # Write command for proxy to remove it
-                cmd_dir = os.path.expanduser("~/.tekton/terma/commands")
+                tekton_root = os.environ.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
+                cmd_dir = os.path.join(tekton_root, ".tekton", "terma", "commands")
                 os.makedirs(cmd_dir, exist_ok=True)
                 cmd_file = os.path.join(cmd_dir, f"inbox_pop_{int(time.time()*1000)}.json")
                 with open(cmd_file, 'w') as f:
@@ -496,7 +501,8 @@ def terma_inbox_new_pop():
 def terma_inbox_prompt():
     """Show only prompt messages."""
     try:
-        inbox_file = os.path.expanduser("~/.tekton/terma/.inbox_snapshot")
+        tekton_root = os.environ.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
+        inbox_file = os.path.join(tekton_root, ".tekton", "terma", ".inbox_snapshot")
         
         if os.path.exists(inbox_file):
             with open(inbox_file, 'r') as f:
@@ -524,7 +530,8 @@ def terma_inbox_prompt():
 def terma_inbox_prompt_pop():
     """Pop first message from prompt inbox (FIFO)."""
     try:
-        inbox_file = os.path.expanduser("~/.tekton/terma/.inbox_snapshot")
+        tekton_root = os.environ.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
+        inbox_file = os.path.join(tekton_root, ".tekton", "terma", ".inbox_snapshot")
         
         if os.path.exists(inbox_file):
             with open(inbox_file, 'r') as f:
@@ -542,7 +549,8 @@ def terma_inbox_prompt_pop():
                 print(f"[{time_str}] {from_name}: {message}")
                 
                 # Write command for proxy to remove it
-                cmd_dir = os.path.expanduser("~/.tekton/terma/commands")
+                tekton_root = os.environ.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
+                cmd_dir = os.path.join(tekton_root, ".tekton", "terma", "commands")
                 os.makedirs(cmd_dir, exist_ok=True)
                 cmd_file = os.path.join(cmd_dir, f"prompt_pop_{int(time.time()*1000)}.json")
                 with open(cmd_file, 'w') as f:
@@ -564,7 +572,8 @@ def terma_inbox_keep_push(message):
     """Push message to front of keep inbox."""
     try:
         # Write command for proxy to process
-        cmd_dir = os.path.expanduser("~/.tekton/terma/commands")
+        tekton_root = os.environ.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
+        cmd_dir = os.path.join(tekton_root, ".tekton", "terma", "commands")
         os.makedirs(cmd_dir, exist_ok=True)
         
         cmd_file = os.path.join(cmd_dir, f"keep_push_{int(time.time()*1000)}.json")
@@ -588,7 +597,8 @@ def terma_inbox_keep_write(message):
     """Write message to end of keep inbox."""
     try:
         # Write command for proxy to process
-        cmd_dir = os.path.expanduser("~/.tekton/terma/commands")
+        tekton_root = os.environ.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
+        cmd_dir = os.path.join(tekton_root, ".tekton", "terma", "commands")
         os.makedirs(cmd_dir, exist_ok=True)
         
         cmd_file = os.path.join(cmd_dir, f"keep_write_{int(time.time()*1000)}.json")
@@ -611,7 +621,8 @@ def terma_inbox_keep_write(message):
 def terma_inbox_keep_read(remove=False):
     """Read last message from keep inbox (LIFO)."""
     try:
-        inbox_file = os.path.expanduser("~/.tekton/terma/.inbox_snapshot")
+        tekton_root = os.environ.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
+        inbox_file = os.path.join(tekton_root, ".tekton", "terma", ".inbox_snapshot")
         
         if os.path.exists(inbox_file):
             with open(inbox_file, 'r') as f:
@@ -633,7 +644,8 @@ def terma_inbox_keep_read(remove=False):
                 
                 if remove:
                     # Write command for proxy to remove it
-                    cmd_dir = os.path.expanduser("~/.tekton/terma/commands")
+                    tekton_root = os.environ.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
+                    cmd_dir = os.path.join(tekton_root, ".tekton", "terma", "commands")
                     os.makedirs(cmd_dir, exist_ok=True)
                     cmd_file = os.path.join(cmd_dir, f"keep_remove_{int(time.time()*1000)}.json")
                     with open(cmd_file, 'w') as f:

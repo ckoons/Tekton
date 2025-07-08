@@ -63,9 +63,10 @@ class FAISSVectorStore(BaseVectorStorage):
         self.use_gpu = use_gpu
         
         # Define data path
+        tekton_root = os.environ.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
         self.data_path = data_path or os.environ.get(
             "TEKTON_VECTOR_DB_PATH", 
-            os.path.expanduser(f"~/.tekton/vector_stores/{namespace}")
+            os.path.join(tekton_root, ".tekton", "vector_stores", namespace)
         )
         
         # Convert distance metric
