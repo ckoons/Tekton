@@ -111,7 +111,6 @@ class ActiveTerminalRoster:
                     # Clean up mailboxes
                     if terminal_name:
                         remove_terminal_mailbox(terminal_name)
-                # No storage sync - heartbeats control the roster
                 return
             
             if terma_id not in self._terminals:
@@ -146,7 +145,6 @@ class ActiveTerminalRoster:
                 "status": "launching"
             }
             logger.info(f"Pre-registered terminal {terma_id} with PID {pid}, total terminals: {len(self._terminals)}")
-            # Removed sync_to_storage as per user request
     
     def get_terminals(self) -> List[Dict[str, Any]]:
         """Get list of all terminals with current status."""
@@ -164,7 +162,6 @@ class ActiveTerminalRoster:
             if terma_id in self._terminals:
                 terminal_name = self._terminals[terma_id].get("name", "")
                 del self._terminals[terma_id]
-                self._sync_to_storage()
                 # Clean up mailboxes
                 if terminal_name:
                     remove_terminal_mailbox(terminal_name)
@@ -207,38 +204,7 @@ class ActiveTerminalRoster:
         for terma_id in to_remove:
             self.remove_terminal(terma_id)
     
-    def _sync_to_storage(self):
-        """Write active terminals to shared storage."""
-        try:
-            tekton_root = os.environ.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
-            shared_dir = Path(tekton_root) / ".tekton" / "terma"
-            shared_dir.mkdir(parents=True, exist_ok=True)
-            
-            shared_path = shared_dir / "active_terminals.json"
-            
-            with open(shared_path, 'w') as f:
-                json.dump({
-                    "terminals": self._terminals,
-                    "last_updated": datetime.now().isoformat()
-                }, f, indent=2)
-        except Exception:
-            pass  # Don't crash on storage errors
     
-    def load_from_storage(self):
-        """Load previously active terminals from storage."""
-        try:
-            tekton_root = os.environ.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
-            shared_path = Path(tekton_root) / ".tekton" / "terma" / "active_terminals.json"
-            if shared_path.exists():
-                with open(shared_path) as f:
-                    data = json.load(f)
-                    with self._lock:
-                        # Mark all loaded terminals as degraded until heartbeat
-                        for terma_id, info in data.get("terminals", {}).items():
-                            info["status"] = "degraded"
-                            self._terminals[terma_id] = info
-        except Exception:
-            pass  # Start fresh if can't load
     
     def stop(self):
         """Stop the health check thread."""
@@ -253,7 +219,6 @@ def get_terminal_roster() -> ActiveTerminalRoster:
     global _terminal_roster
     if _terminal_roster is None:
         _terminal_roster = ActiveTerminalRoster()
-        _terminal_roster.load_from_storage()
     return _terminal_roster
 
 
