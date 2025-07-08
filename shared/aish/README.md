@@ -15,8 +15,6 @@ A thin client providing AI orchestration and inter-terminal communication for th
 - `aish` - Main command for AI interaction
 - `aish-proxy` - Terminal enhancement providing heartbeat and message display
 - `aish-history` - History management tool
-- `clean_registry.py` - AI registry maintenance
-- `launch_component_ai.py` - Atomic AI specialist replacement
 - `src/` - Core Python implementation
 
 ## Usage
@@ -93,9 +91,8 @@ When launched via Terma, terminals automatically have:
 2. **Socket Communication**: Some AI specialists may fail with "Failed to send message". This typically means:
    - The AI process crashed
    - Port conflict
-   - Registry out of sync
    
-   **Fix**: Run `python3 clean_registry.py` and restart affected components
+   **Fix**: Restart affected AI components
 
 3. **stdin Detection**: Fixed - aish now correctly prioritizes command-line arguments over stdin detection.
 
@@ -106,9 +103,9 @@ When launched via Terma, terminals automatically have:
 - The syntax `aish numa "hello"` now works correctly
 
 ### AI Not Responding
-1. Check if AI is registered: `tekton-status`
-2. Clean registry: `python3 clean_registry.py`
-3. Restart component: `./run_rhetor.sh --clean-registry`
+1. Check if AI is running: `tekton-status`
+2. Check port is open: `nc -zv localhost 45000`
+3. Restart component if needed
 
 ### Inbox Commands Not Working
 - Only terminals started after the fix have working inbox command processing
@@ -122,11 +119,10 @@ When launched via Terma, terminals automatically have:
 ./test_aish.sh  # Basic syntax tests
 ```
 
-### Registry Management
-- `clean_registry.py`: Remove stale AI entries
-- `launch_component_ai.py`: Atomic AI replacement
+### Port Management
+- Fixed port formula: AI port = 45000 + (component_port - 8000)
+- Check port alignment: `scripts/check_port_alignment.py`
 - `cleanup_orphan_processes.py`: Detect and remove orphaned AI processes
-- Registry located at: `~/.tekton/ai_registry/platform_ai_registry.json`
 
 ### Orphan Process Cleanup
 - Automatic cleanup via Shared Services (every 6 hours)
@@ -136,9 +132,9 @@ When launched via Terma, terminals automatically have:
 
 ### New Features (July 2025)
 - Fixed quoted message syntax
-- Added registry cleanup on Rhetor startup
-- Component-specific AI replacement
-- Launch flags: `-n` (no AI), `--clean-registry`
+- Simplified to fixed port system
+- Component-specific AI management
+- Launch flags: `-n` (no AI)
 
 ---
 

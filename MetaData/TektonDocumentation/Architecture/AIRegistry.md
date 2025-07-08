@@ -1,29 +1,28 @@
-# AI Registry Architecture
+# AI Communication Architecture
 
 ## Overview
 
-The Tekton AI Registry provides a centralized, thread-safe system for managing AI specialists across the platform. Each component can have an associated AI specialist that provides intelligent assistance and automation capabilities.
+Tekton's AI system uses a simplified "One Queue, One Socket, One AI" architecture. Each component can have an associated AI specialist that provides intelligent assistance through direct socket communication using fixed ports.
 
 ## Key Components
 
-### 1. AI Registry Client (`shared/ai/registry_client.py`)
+### 1. Simple AI Interface (`shared/ai/simple_ai.py`)
 
-The `AIRegistryClient` manages all AI specialist registrations with thread-safe operations:
+The unified interface for all AI communication:
 
-- **Port Allocation**: Atomic port assignment (45000-50000 range)
-- **Registration**: Thread-safe AI specialist registration
-- **Discovery**: Find AI specialists by component
-- **Lifecycle**: Track AI process states
+- **Direct Communication**: Both sync (`ai_send_sync`) and async (`ai_send`) methods
+- **Fixed Ports**: AI port = 45000 + (component_port - 8000)
+- **Message Tracking**: UUID-based message IDs for reliable request/response matching
+- **No Registry**: Direct host:port connections without registry files
 
-### 2. AI Specialist Worker (`shared/ai/specialist_worker.py`)
+### 2. AI Service Simple (`shared/ai/ai_service_simple.py`)
 
-Base class for all AI specialists providing:
+Core service managing AI communication:
 
-- Socket-based communication protocol
-- Health monitoring
-- Message handling (ping, health, info, chat)
-- Ollama/Anthropic LLM integration
-- Automatic model selection (defaults to `llama3.3:70b`)
+- **Queue Management**: One queue per AI for message handling
+- **Socket Connections**: Direct socket connections to AI specialists
+- **Auto-Registration**: 18 AIs automatically registered on service import
+- **Error Handling**: Graceful degradation when AIs are not running
 
 ### 3. Generic AI Specialist (`shared/ai/generic_specialist.py`)
 
@@ -36,51 +35,30 @@ A configurable AI implementation that adapts to any component:
 ## Architecture Flow
 
 ```
-Component Launch
+Component Request
       ↓
-Enhanced Launcher detects AI enabled
+simple_ai.ai_send() or ai_send_sync()
       ↓
-AI Launcher allocates port (with file lock)
+ai_service_simple message queue
       ↓
-Launches Generic AI Specialist process
+Direct socket connection (fixed port)
       ↓
-AI registers with Registry (atomic operation)
+AI Specialist processes request
       ↓
-AI starts socket server on allocated port
-      ↓
-Status checker connects to verify
+Response via same socket
 ```
 
-## Thread Safety
+## Fixed Port System
 
-All registry operations use file locking to prevent race conditions:
-
-1. **Port Allocation Lock** (`.port_allocation.lock`)
-   - Ensures unique port assignment
-   - Prevents concurrent allocation conflicts
-
-2. **Registration Lock** (`.registration.lock`)
-   - Atomic registry updates
-   - Prevents corruption during concurrent writes
-   - Shared locks for reads, exclusive for writes
-
-## Registry Structure
-
-Location: `~/.tekton/ai_registry/platform_ai_registry.json`
-
-```json
-{
-  "component-ai": {
-    "port": 45000,
-    "component": "component_name",
-    "metadata": {
-      "description": "AI specialist for Component",
-      "pid": 12345
-    },
-    "registered_at": 1234567890.123
-  }
-}
+All AI ports are calculated using a simple formula:
 ```
+AI Port = 45000 + (Component Port - 8000)
+```
+
+Examples:
+- Tekton (8000) → AI Port 45000
+- Hermes (8001) → AI Port 45001
+- Engram (8002) → AI Port 45002
 
 ## Component AI Personalities
 
@@ -112,40 +90,73 @@ export ATHENA_AI_MODEL=llama3.1:70b
 export RHETOR_AI_MODEL=qwen2.5-coder:32b
 ```
 
+## Usage Examples
+
+### Python - Synchronous
+```python
+from shared.ai.simple_ai import ai_send_sync
+response = ai_send_sync("apollo-ai", "What patterns do you see?", "localhost", 45012)
+```
+
+### Python - Asynchronous
+```python
+from shared.ai.simple_ai import ai_send
+response = await ai_send("numa-ai", "Help implement this feature", "localhost", 45004)
+```
+
+### Testing Communication
+```python
+# Quick test
+from shared.ai.simple_ai import ai_send_sync
+response = ai_send_sync("apollo-ai", "ping", "localhost", 45012)
+print(response)
+```
+
 ## Troubleshooting
 
-### AI Not Showing in Status
+### AI Not Responding
 
 1. Check if AI process is running: `ps aux | grep component-ai`
-2. Verify registry: `cat ~/.tekton/ai_registry/platform_ai_registry.json`
-3. Check for port conflicts in registry
+2. Verify port is open: `nc -zv localhost 45000`
+3. Check fixed port calculation matches expectation
 4. Ensure `TEKTON_REGISTER_AI=true` in `.env.tekton`
 
-### Registry Corruption
+### Port Conflicts
 
-The registry now has built-in protection:
-- Atomic writes prevent partial updates
-- File locking prevents concurrent corruption
-- Automatic retry with exponential backoff
-- Graceful handling of corrupted JSON
+- Verify no other processes using ports 45000-45080
+- Check component ports are correctly configured (8000-8080)
+- Use `scripts/check_port_alignment.py` to verify port mapping
 
-### Port Allocation Failures
+### Testing AI Service
 
-- Check port range availability (45000-50000)
-- Verify no other processes using these ports
-- Lock file issues: Remove stale `.port_allocation.lock` if needed
+```bash
+# Run test suite
+python tests/test_ai_service_simple.py
+python tests/test_integration_simple.py
+python tests/test_unified_ai_communication.py
+```
 
 ## Integration Points
 
 1. **Enhanced Launcher**: Automatically launches AI when component starts
 2. **Status Display**: Shows AI model and health in `tekton-status`
 3. **Socket Communication**: Direct AI interaction via socket protocol
-4. **MCP Integration**: Future integration with component MCP tools
+4. **aish Integration**: AI shell uses the unified system
 
 ## Best Practices
 
 1. Always use the generic AI specialist for new components
 2. Define component expertise in `COMPONENT_EXPERTISE` dict
-3. Let the framework handle port allocation and registration
-4. Use default model unless specific requirements exist
-5. Monitor AI health through `tekton-status`
+3. Use fixed port formula for consistency
+4. Monitor AI health through `tekton-status`
+5. Use the simple_ai interface for all communication
+
+## Migration from Registry System
+
+The old ai_registry system has been replaced with this simpler approach:
+- No registry files needed
+- No complex locking mechanisms
+- Direct socket connections only
+- Fixed port allocation by formula
+
+This aligns with Tekton's philosophy: "Do it once, do it well, and don't reinvent the wheel."
