@@ -39,8 +39,7 @@ class ReviewCommand:
     def list(self, days: int = 7) -> List[SessionInfo]:
         """List recent sessions."""
         
-    def compress(self, older_than_hours: int = 24) -> None:
-        """Compress old sessions."""
+    # compress() method removed - sessions stored compressed
 ```
 
 ### 3. Session Recording Logic
@@ -84,12 +83,23 @@ def stop(self) -> None:
         "session_version": "1.0"
     }
     
-    # Append to file
-    with open(self.current_session["filepath"], "a") as f:
+    # Append metadata to file
+    filepath = self.current_session["filepath"]
+    with open(filepath, "a") as f:
         f.write("\n[END OF SESSION]\n")
         f.write("--- TEKTON SESSION METADATA ---\n")
         f.write(json.dumps(metadata, indent=2))
         f.write("\n--- END METADATA ---\n")
+    
+    # Compress the file
+    with open(filepath, 'rb') as f_in:
+        with gzip.open(f"{filepath}.gz", 'wb') as f_out:
+            shutil.copyfileobj(f_in, f_out)
+    
+    # Preserve timestamp and remove original
+    stat = os.stat(filepath)
+    os.utime(f"{filepath}.gz", (stat.st_atime, stat.st_mtime))
+    os.remove(filepath)
 ```
 
 ### 4. Session Management Functions
@@ -101,7 +111,7 @@ def list(self, days: int = 7) -> List[Dict]:
     cutoff = datetime.now() - timedelta(days=days)
     
     for filename in os.listdir(self.session_dir):
-        if filename.endswith(('.log', '.log.gz')):
+        if filename.endswith('.log.gz'):
             filepath = os.path.join(self.session_dir, filename)
             stat = os.stat(filepath)
             
@@ -110,35 +120,13 @@ def list(self, days: int = 7) -> List[Dict]:
                 sessions.append({
                     "filename": filename,
                     "size": stat.st_size,
-                    "modified": stat.st_mtime,
-                    "compressed": filename.endswith('.gz')
+                    "modified": stat.st_mtime
                 })
     
     return sorted(sessions, key=lambda x: x["modified"], reverse=True)
 ```
 
-**Compress Old Sessions**:
-```python
-def compress(self, older_than_hours: int = 24) -> None:
-    cutoff = datetime.now() - timedelta(hours=older_than_hours)
-    
-    for filename in os.listdir(self.session_dir):
-        if filename.endswith('.log'):  # Not already compressed
-            filepath = os.path.join(self.session_dir, filename)
-            stat = os.stat(filepath)
-            
-            if datetime.fromtimestamp(stat.st_mtime) < cutoff:
-                # Compress with gzip
-                with open(filepath, 'rb') as f_in:
-                    with gzip.open(f"{filepath}.gz", 'wb') as f_out:
-                        shutil.copyfileobj(f_in, f_out)
-                
-                # Preserve timestamp
-                os.utime(f"{filepath}.gz", (stat.st_atime, stat.st_mtime))
-                
-                # Remove original
-                os.remove(filepath)
-```
+# Note: Compress function removed - all sessions stored compressed
 
 ### 5. Integration with AISH Command System
 
@@ -154,7 +142,7 @@ elif args[0] == "review":
     
     if len(args) == 1:
         # Show help
-        print("Usage: aish review [start|stop|list|compress]")
+        print("Usage: aish review [start|stop|list]")
     elif args[1] == "start":
         review_cmd.start(terminal_name)
     elif args[1] == "stop":
@@ -162,8 +150,6 @@ elif args[0] == "review":
     elif args[1] == "list":
         sessions = review_cmd.list()
         # Format and display
-    elif args[1] == "compress":
-        review_cmd.compress()
 ```
 
 ### 6. Helper Functions
@@ -236,7 +222,6 @@ def verify_metadata(filepath: str) -> Dict:
 
 2. **Phase 2 - Management** (Day 2):
    - List command
-   - Compression logic
    - Error handling
    - Help documentation
 
@@ -285,13 +270,12 @@ def stop(self) -> None:
 
 **Environment Variables**:
 - `TEKTON_MAIN_ROOT` - Required for session storage
-- `TEKTON_SESSION_COMPRESS_HOURS` - Optional, defaults to 24
 - `TEKTON_SESSION_RETENTION_DAYS` - Optional, for future use
 
 ## Success Metrics
 
 - All sessions captured completely
 - Metadata correctly appended
-- Compression reduces storage by >70%
+- Sessions compressed on stop
 - No data loss during any operation
 - Clear error messages for all failure modes

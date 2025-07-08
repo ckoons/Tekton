@@ -30,8 +30,6 @@ aish review stop
 # List recent sessions
 aish review list
 
-# Compress old sessions
-aish review compress
 ```
 
 ## Implementation Highlights
@@ -53,8 +51,8 @@ aish review compress
 ```
 
 ### Storage Structure
-- Filename: `{terminal_name}-{YYYYMMDD}-{HHMMSS}.log[.gz]`
-- Auto-compression after 24 hours
+- Filename: `{terminal_name}-{YYYYMMDD}-{HHMMSS}.log.gz`
+- All sessions stored compressed (gzip)
 - Indefinite retention (research value increases over time)
 
 ## Key Files
@@ -76,7 +74,7 @@ This infrastructure enables:
 
 - No synchronization needed - Sophia/Noesis can analyze whenever
 - Raw format preserves everything - no information loss
-- Compression is automatic but can be triggered manually
+- All sessions compressed immediately to save space
 - Future sanitization function planned but not needed now
 - Designed to handle format evolution gracefully
 
