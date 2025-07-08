@@ -59,9 +59,9 @@ This document captures the key architectural decisions made for the AISH Review 
 
 **Decision**: Store in `$TEKTON_MAIN_ROOT/.tekton/terminal-sessions/`
 
-**Naming Convention**: `{terminal_name}-{YYYYMMDD}-{HHMMSS}.log[.gz]`
+**Naming Convention**: `{terminal_name}-{YYYYMMDD}-{HHMMSS}.log.gz`
 
-**Example**: `amy-20250108-143000.log`
+**Example**: `amy-20250108-143000.log.gz`
 
 **Rationale**:
 - Centralized location for all coder environments
@@ -71,19 +71,18 @@ This document captures the key architectural decisions made for the AISH Review 
 
 ### 4. Compression Strategy
 
-**Decision**: Compress sessions older than 24 hours
+**Decision**: Store all sessions compressed immediately
 
 **Implementation**:
-- Use gzip for compression
-- Preserve original timestamps
-- Add .gz extension
-- Triggered by `aish review` or cron
+- Use gzip compression during session finalization
+- All files stored as .log.gz
+- No uncompressed files in storage
 
 **Rationale**:
 - Terminal sessions can be large
-- Recent sessions stay accessible
-- Gzip is universal and efficient
-- Simple age-based policy
+- These are for long-term research, not immediate access
+- Standard tools (vim, less, zcat) handle .gz transparently
+- Simplifies storage management
 
 ### 5. Session Lifecycle
 
@@ -137,9 +136,8 @@ This document captures the key architectural decisions made for the AISH Review 
 **Proposed Interface**:
 ```bash
 aish review start              # Start recording current terminal
-aish review stop               # Stop recording
-aish review list               # List recent sessions
-aish review compress           # Manually trigger compression
+aish review stop               # Stop recording and compress
+aish review list               # List sessions
 ```
 
 **Rationale**:
