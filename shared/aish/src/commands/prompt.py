@@ -62,21 +62,21 @@ def handle_prompt_command(args: List[str]) -> int:
             import urllib.error
             
             endpoint = os.environ.get('TERMA_ENDPOINT', 'http://localhost:8004')
-            req = urllib.request.Request(f"{endpoint}/terminals")
+            req = urllib.request.Request(f"{endpoint}/api/mcp/v2/terminals/list")
             
             with urllib.request.urlopen(req, timeout=2) as response:
                 data = json.loads(response.read().decode())
                 terminals = data.get('terminals', [])
                 
-            # Filter by purpose
+            # Filter by purpose using word-based matching
+            from core.purpose_matcher import match_purpose
+            matched_names = match_purpose(purpose, terminals)
+            
             matched = []
-            for terminal in terminals:
-                if terminal.get('purpose', '').lower() == purpose.lower():
-                    terminal_name = terminal.get('name', '')
-                    if terminal_name:
-                        result = send_prompt(terminal_name, message)
-                        if result == 0:
-                            matched.append(terminal_name)
+            for terminal_name in matched_names:
+                result = send_prompt(terminal_name, message)
+                if result == 0:
+                    matched.append(terminal_name)
             
             if matched:
                 print(f"Prompt sent to {len(matched)} terminals: {', '.join(matched)}")

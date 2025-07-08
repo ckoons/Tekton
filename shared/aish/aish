@@ -162,6 +162,7 @@ Environment variables:
             print("  aish terma inbox               Show terminal inbox")
             print("  aish terma send <name> \"msg\"   Send inter-terminal message")
             print("  aish terma broadcast \"msg\"     Broadcast to all terminals")
+            print("  aish purpose <name> \"roles\"    Set terminal purpose/roles")
             print()
             print("PRODUCTIVITY:")
             print("  autoprompt start               Keep Claude CI active (default: 2s)")
@@ -220,6 +221,10 @@ Environment variables:
     if args.ai_or_script == 'prompt':
         from commands.prompt import handle_prompt_command
         return handle_prompt_command(args.message or [])
+    
+    if args.ai_or_script == 'purpose':
+        from commands.purpose import handle_purpose_command
+        return handle_purpose_command(args.message or [])
     
     # Check if first argument is an AI name (case-insensitive)
     if args.ai_or_script and args.ai_or_script.lower() in ai_names:
