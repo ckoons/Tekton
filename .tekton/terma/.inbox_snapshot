@@ -1,7 +1,30 @@
 {
-  "prompt": [],
-  "new": [],
+  "prompt": [
+    {
+      "id": 1,
+      "timestamp": "2025-07-08T19:11:34.802165",
+      "from": "AI Forwarding",
+      "message": "[PROMPT] Important research update",
+      "routing": "direct"
+    }
+  ],
+  "new": [
+    {
+      "id": 1,
+      "timestamp": "2025-07-08T19:11:32.773712",
+      "from": "Tekton System",
+      "message": "Your purpose has been updated to: Coding, Research",
+      "routing": "system"
+    },
+    {
+      "id": 2,
+      "timestamp": "2025-07-08T19:11:32.774022",
+      "from": "Beth",
+      "message": "Test message to all coders",
+      "routing": "@coding"
+    }
+  ],
   "keep": [],
   "session_id": "f38d12b5",
-  "timestamp": "2025-07-08T10:51:57.121316"
+  "timestamp": "2025-07-08T19:11:34.802747"
 }

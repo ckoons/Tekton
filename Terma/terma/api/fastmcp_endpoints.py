@@ -860,10 +860,12 @@ async def route_terminal_message(msg_data: Dict[str, Any]) -> Dict[str, Any]:
             # All including sender
             target_terminals = all_terminals
         elif target.startswith("@"):
-            # Purpose-based routing
-            purpose = target[1:].lower()
+            # Purpose-based routing - match any word in purpose
+            from shared.aish.src.core.purpose_matcher import match_purpose
+            purpose_word = target[1:]  # Remove @ prefix
+            matching_names = match_purpose(purpose_word, all_terminals)
             target_terminals = [t for t in all_terminals 
-                              if t.get("purpose", "").lower() == purpose]
+                              if t.get("name", "") in matching_names]
         elif "," in target:
             # Multiple named terminals
             names = [n.strip().lower() for n in target.split(",")]
@@ -955,6 +957,101 @@ async def check_terminal_status(pid: int) -> Dict[str, Any]:
         raise HTTPException(
             status_code=500,
             detail=f"Failed to check terminal status: {str(e)}"
+        )
+
+
+@mcp_router.post("/purpose")
+async def update_terminal_purpose(request: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Update a terminal's purpose.
+    
+    Request body:
+        {
+            "terminal": "terminal_name",
+            "purpose": "CSV list of purposes"
+        }
+    """
+    try:
+        terminal_name = request.get("terminal", "").lower()
+        purpose = request.get("purpose", "")
+        
+        if not terminal_name:
+            raise HTTPException(
+                status_code=400,
+                detail="Terminal name is required"
+            )
+        
+        # Get the roster and find the terminal
+        from terma.core.terminal_launcher_impl import get_terminal_roster
+        roster = get_terminal_roster()
+        terminals = roster.get_terminals()
+        
+        # Find terminal by name
+        updated = False
+        terma_id = None
+        for term in terminals:
+            if term.get("name", "").lower() == terminal_name:
+                # Update purpose in the roster
+                term["purpose"] = purpose
+                terma_id = term.get("terma_id")
+                updated = True
+                break
+        
+        if not updated:
+            raise HTTPException(
+                status_code=404,
+                detail=f"Terminal '{terminal_name}' not found"
+            )
+        
+        # Queue a command to update the terminal's environment
+        if terma_id:
+            # Create command queue if it doesn't exist
+            if not hasattr(roster, '_command_queue'):
+                roster._command_queue = {}
+            
+            if terma_id not in roster._command_queue:
+                roster._command_queue[terma_id] = []
+            
+            # Queue export command
+            import uuid
+            command = {
+                "id": str(uuid.uuid4()),
+                "command": f"export TEKTON_TERMINAL_PURPOSE='{purpose}'",
+                "type": "environment_update"
+            }
+            roster._command_queue[terma_id].append(command)
+            
+            # Also queue a message to inform the CI
+            if not hasattr(roster, '_message_queue'):
+                roster._message_queue = {}
+            
+            if terma_id not in roster._message_queue:
+                roster._message_queue[terma_id] = []
+            
+            # Create informative message
+            message = {
+                "type": "terminal_message",
+                "from": "Tekton System",
+                "from_id": "system",
+                "message": f"Your purpose has been updated to: {purpose}",
+                "timestamp": datetime.now().isoformat(),
+                "routing": "system"
+            }
+            roster._message_queue[terma_id].append(message)
+        
+        return {
+            "success": True,
+            "terminal": terminal_name,
+            "purpose": purpose,
+            "message": f"Updated purpose for {terminal_name}"
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to update purpose: {str(e)}"
         )
 
 
