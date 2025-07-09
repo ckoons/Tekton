@@ -9,6 +9,31 @@ import os
 import argparse
 from pathlib import Path
 
+# Try to import landmarks if available
+try:
+    from landmarks import architecture_decision, integration_point, api_contract, state_checkpoint
+except ImportError:
+    # Landmarks not available, create no-op decorators
+    def architecture_decision(name, description, rationale=""):
+        def decorator(func):
+            return func
+        return decorator
+    
+    def integration_point(name, description, rationale=""):
+        def decorator(func):
+            return func
+        return decorator
+    
+    def api_contract(name, description, rationale=""):
+        def decorator(func):
+            return func
+        return decorator
+    
+    def state_checkpoint(name, description, rationale=""):
+        def decorator(func):
+            return func
+        return decorator
+
 
 # Get the real path of the script (follows symlinks)
 script_path = Path(__file__).resolve()
@@ -26,6 +51,94 @@ if tekton_root.exists() and (tekton_root / 'shared').exists():
 from core.shell import AIShell
 from core.version import __version__
 
+
+# Landmark: Command Type Dispatch Router - Routes to appropriate handlers
+def _dispatch_command(command_type, args, shell):
+    """Dispatch command to appropriate handler based on type."""
+    if command_type == 'forward':
+        from commands.forward import handle_forward_command
+        return handle_forward_command(args.message or [])
+    elif command_type == 'unforward':
+        from commands.forward import handle_unforward_command
+        return handle_unforward_command(args.message or [])
+    elif command_type == 'prompt':
+        from commands.prompt import handle_prompt_command
+        return handle_prompt_command(args.message or [])
+    elif command_type == 'purpose':
+        from commands.purpose import handle_purpose_command
+        return handle_purpose_command(args.message or [])
+    elif command_type == 'terma':
+        from commands.terma import handle_terma_command
+        return handle_terma_command(args.message)
+    return False
+
+
+# Landmark: AI Message Input Collection - Priority: args > piped stdin > interactive
+def _collect_ai_input(args, component):
+    """Collect input for AI from various sources."""
+    # Get input from message args first, then stdin, then interactive
+    if args.message:
+        # Message provided as arguments - this takes priority
+        input_data = ' '.join(args.message).strip()
+        if args.debug:
+            print(f"[DEBUG] Using message args: {args.message}")
+            print(f"[DEBUG] Joined as: '{input_data}'")
+    elif not sys.stdin.isatty():
+        # Data might be piped in
+        # Try to read with a very short timeout to avoid hanging
+        import select
+        if select.select([sys.stdin], [], [], 0.0)[0]:
+            input_data = sys.stdin.read().strip()
+            if args.debug:
+                print(f"[DEBUG] Got piped input: '{input_data}'")
+        else:
+            # No data in pipe, treat as interactive
+            print(f"[aish] Entering interactive mode with {component}")
+            print("Type your message and press Ctrl+D when done:")
+            input_data = sys.stdin.read().strip()
+    else:
+        # Interactive mode with specific AI
+        print(f"[aish] Entering interactive mode with {component}")
+        print("Type your message and press Ctrl+D when done:")
+        input_data = sys.stdin.read().strip()
+    
+    return input_data
+
+
+# Landmark: AI Communication Handler - Routes to team-chat or individual AIs
+def _handle_ai_command(args, shell, ai_names):
+    """Handle command directed at a specific AI."""
+    component = args.ai_or_script.lower()
+    
+    # Special handling for terma commands
+    if component == 'terma':
+        _dispatch_command('terma', args, shell)
+        return
+    
+    # Check for help command
+    if args.message and args.message[0] == "help":
+        print(f"Usage: aish {component} [message]")
+        tekton_root = os.environ.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
+        print(f"AI Training: {tekton_root}/MetaData/TektonDocumentation/AITraining/{component}/")
+        print(f"User Guides: {tekton_root}/MetaData/TektonDocumentation/UserGuides/{component}/")
+        return
+    
+    # Collect input from various sources
+    input_data = _collect_ai_input(args, component)
+    
+    # Check if we actually have data
+    if not input_data:
+        print(f"aish: No message provided for {component}", file=sys.stderr)
+        sys.exit(1)
+    
+    # Send directly to AI (no synthetic pipeline)
+    if component == 'team-chat':
+        shell.broadcast_message(input_data)
+    else:
+        shell.send_to_ai(component, input_data)
+
+
+# Landmark: aish Command Entry Point - Main orchestration for all commands
 def main():
     parser = argparse.ArgumentParser(
         description='aish - The AI Shell\n\nProvides AI capabilities in your terminal through the Tekton platform.',
@@ -213,77 +326,20 @@ Environment variables:
             return
     
     if args.ai_or_script == 'forward':
-        from commands.forward import handle_forward_command
-        return handle_forward_command(args.message or [])
+        return _dispatch_command('forward', args, shell)
     
     if args.ai_or_script == 'unforward':
-        from commands.forward import handle_unforward_command
-        return handle_unforward_command(args.message or [])
+        return _dispatch_command('unforward', args, shell)
     
     if args.ai_or_script == 'prompt':
-        from commands.prompt import handle_prompt_command
-        return handle_prompt_command(args.message or [])
+        return _dispatch_command('prompt', args, shell)
     
     if args.ai_or_script == 'purpose':
-        from commands.purpose import handle_purpose_command
-        return handle_purpose_command(args.message or [])
+        return _dispatch_command('purpose', args, shell)
     
     # Check if first argument is an AI name (case-insensitive)
     if args.ai_or_script and args.ai_or_script.lower() in ai_names:
-        component = args.ai_or_script.lower()
-        
-        
-        # Special handling for terma commands
-        if component == 'terma':
-            # Import and use terma handler
-            from commands.terma import handle_terma_command
-            return handle_terma_command(args.message)
-        
-        # Check for help command
-        if args.message and args.message[0] == "help":
-            print(f"Usage: aish {component} [message]")
-            tekton_root = os.environ.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
-            print(f"AI Training: {tekton_root}/MetaData/TektonDocumentation/AITraining/{component}/")
-            print(f"User Guides: {tekton_root}/MetaData/TektonDocumentation/UserGuides/{component}/")
-            return
-        
-        
-        # Get input from message args first, then stdin, then interactive
-        if args.message:
-            # Message provided as arguments - this takes priority
-            input_data = ' '.join(args.message).strip()
-            if args.debug:
-                print(f"[DEBUG] Using message args: {args.message}")
-                print(f"[DEBUG] Joined as: '{input_data}'")
-        elif not sys.stdin.isatty():
-            # Data might be piped in
-            # Try to read with a very short timeout to avoid hanging
-            import select
-            if select.select([sys.stdin], [], [], 0.0)[0]:
-                input_data = sys.stdin.read().strip()
-                if args.debug:
-                    print(f"[DEBUG] Got piped input: '{input_data}'")
-            else:
-                # No data in pipe, treat as interactive
-                print(f"[aish] Entering interactive mode with {component}")
-                print("Type your message and press Ctrl+D when done:")
-                input_data = sys.stdin.read().strip()
-        else:
-            # Interactive mode with specific AI
-            print(f"[aish] Entering interactive mode with {component}")
-            print("Type your message and press Ctrl+D when done:")
-            input_data = sys.stdin.read().strip()
-        
-        # Check if we actually have data
-        if not input_data:
-            print(f"aish: No message provided for {component}", file=sys.stderr)
-            sys.exit(1)
-        
-        # Send directly to AI (no synthetic pipeline)
-        if component == 'team-chat':
-            shell.broadcast_message(input_data)
-        else:
-            shell.send_to_ai(component, input_data)
+        return _handle_ai_command(args, shell, ai_names)
     
     # Original behavior for other cases
     elif args.command:

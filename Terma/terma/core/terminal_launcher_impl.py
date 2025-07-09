@@ -81,6 +81,12 @@ class TerminalInfo:
     last_heartbeat: Optional[datetime] = None
 
 
+@state_checkpoint(
+    title="Active Terminal Roster",
+    state_type="runtime",
+    description="Thread-safe roster tracking terminal health via heartbeats",
+    rationale="Central state management for all active terminals with degraded/dead detection"
+)
 class ActiveTerminalRoster:
     """Thread-safe roster of active terminals with heartbeat tracking."""
     

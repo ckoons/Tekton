@@ -9,6 +9,31 @@ import readline
 import atexit
 from pathlib import Path
 
+# Try to import landmarks if available
+try:
+    from landmarks import architecture_decision, integration_point, api_contract, state_checkpoint
+except ImportError:
+    # Landmarks not available, create no-op decorators
+    def architecture_decision(name, description, rationale=""):
+        def decorator(func):
+            return func
+        return decorator
+    
+    def integration_point(name, description, rationale=""):
+        def decorator(func):
+            return func
+        return decorator
+    
+    def api_contract(name, description, rationale=""):
+        def decorator(func):
+            return func
+        return decorator
+    
+    def state_checkpoint(name, description, rationale=""):
+        def decorator(func):
+            return func
+        return decorator
+
 from parser.pipeline import PipelineParser
 from message_handler import MessageHandler
 from core.history import AIHistory
@@ -161,6 +186,7 @@ class AIShell:
         else:
             return f"Unsupported pipeline type: {pipeline_type}"
     
+    # Landmark: Pipeline Execution Strategy - team-chat vs pipeline vs simple
     def _execute_pipeline_with_tracking(self, pipeline):
         """Execute a pipeline and track responses for history.
         

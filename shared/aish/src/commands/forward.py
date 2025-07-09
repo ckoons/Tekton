@@ -6,6 +6,31 @@ import os
 import sys
 from pathlib import Path
 
+# Try to import landmarks if available
+try:
+    from landmarks import architecture_decision, integration_point, api_contract, state_checkpoint
+except ImportError:
+    # Landmarks not available, create no-op decorators
+    def architecture_decision(name, description, rationale=""):
+        def decorator(func):
+            return func
+        return decorator
+    
+    def integration_point(name, description, rationale=""):
+        def decorator(func):
+            return func
+        return decorator
+    
+    def api_contract(name, description, rationale=""):
+        def decorator(func):
+            return func
+        return decorator
+    
+    def state_checkpoint(name, description, rationale=""):
+        def decorator(func):
+            return func
+        return decorator
+
 # Add path for forwarding registry
 sys.path.insert(0, str(Path(__file__).parent.parent))
 from forwarding.forwarding_registry import ForwardingRegistry
@@ -51,6 +76,7 @@ def print_forward_usage():
     print("  aish forward remove apollo    # Remove forwarding")
 
 
+# Landmark: AI-to-Human Routing - Forwards AI messages to terminal inboxes
 def set_forward(registry, ai_name, terminal_name):
     """Set up forwarding"""
     # Validate AI name
