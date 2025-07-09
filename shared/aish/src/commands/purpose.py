@@ -12,6 +12,31 @@ from typing import List, Optional, Dict
 import httpx
 import logging
 
+# Try to import landmarks if available
+try:
+    from landmarks import architecture_decision, integration_point, api_contract, state_checkpoint
+except ImportError:
+    # Landmarks not available, create no-op decorators
+    def architecture_decision(name, description, rationale=""):
+        def decorator(func):
+            return func
+        return decorator
+    
+    def integration_point(name, description, rationale=""):
+        def decorator(func):
+            return func
+        return decorator
+    
+    def api_contract(name, description, rationale=""):
+        def decorator(func):
+            return func
+        return decorator
+    
+    def state_checkpoint(name, description, rationale=""):
+        def decorator(func):
+            return func
+        return decorator
+
 from core.purpose_matcher import parse_purpose_list
 
 logger = logging.getLogger("aish.purpose")
@@ -25,6 +50,7 @@ class PurposeCommand:
         self.playbook_dir = Path(self.tekton_root) / ".tekton" / "playbook"
         self.terma_url = os.environ.get('TERMA_ENDPOINT', 'http://localhost:8004')
         
+    # Landmark: Terminal Context Setup - Sets purpose and shows playbook
     def execute(self, terminal_name: str, purpose_string: str) -> None:
         """
         Set purpose for a terminal and display relevant playbook content.

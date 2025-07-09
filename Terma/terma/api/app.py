@@ -8,6 +8,36 @@ import time
 from typing import Dict, List, Optional, Any
 from contextlib import asynccontextmanager
 
+# Try to import landmarks if available
+try:
+    from landmarks import architecture_decision, integration_point, api_contract, state_checkpoint, performance_boundary
+except ImportError:
+    # Landmarks not available, create no-op decorators
+    def architecture_decision(name, description, rationale=""):
+        def decorator(func):
+            return func
+        return decorator
+    
+    def integration_point(name, description, rationale=""):
+        def decorator(func):
+            return func
+        return decorator
+    
+    def api_contract(name, description, rationale=""):
+        def decorator(func):
+            return func
+        return decorator
+    
+    def state_checkpoint(name, description, rationale=""):
+        def decorator(func):
+            return func
+        return decorator
+    
+    def performance_boundary(name, description, sla, rationale=""):
+        def decorator(func):
+            return func
+        return decorator
+
 # Add parent directory to path for shared utilities
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
@@ -101,6 +131,13 @@ class HermesEvent(BaseModel):
     payload: Dict[str, Any]
 
 # Lifespan handler for startup and shutdown
+@architecture_decision(
+    title="Terma Lifespan Management",
+    decision="Use FastAPI lifespan for service registration and cleanup",
+    rationale="Ensures proper service registration and cleanup, maintains health status with Hermes",
+    alternatives_considered=["Manual startup/shutdown", "Separate service manager"],
+    decision_date="2025-07-09"
+)
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Handle application startup and shutdown"""
@@ -240,6 +277,13 @@ async def list_templates():
 
 
 @app.post("/api/terminals/launch", response_model=TerminalInfo)
+@integration_point(
+    title="Terminal Launch Bridge", 
+    target_component="terminal_launcher_impl",
+    protocol="HTTP POST to native process launch",
+    data_flow="API request → TerminalConfig → Native terminal with aish-proxy",
+    integration_date="2025-07-09"
+)
 async def launch_terminal(request: LaunchTerminalRequest):
     """Launch a new native terminal with specified configuration."""
     if not launcher:
@@ -327,6 +371,13 @@ async def list_terminals():
 
 # Hermes message handling endpoints
 @app.post("/api/hermes/message", response_model=Dict[str, Any])
+@integration_point(
+    title="Hermes Message Handler",
+    target_component="hermes",
+    protocol="HTTP POST /api/hermes/message",
+    data_flow="Hermes → Terma message processing",
+    integration_date="2025-07-09"
+)
 async def hermes_message(message: HermesMessage):
     """Handle message from Hermes"""
     logger.info(f"Received message from Hermes: {message.command}")

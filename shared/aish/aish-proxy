@@ -14,6 +14,36 @@ import sys
 import os
 from pathlib import Path
 
+# Try to import landmarks if available
+try:
+    from landmarks import architecture_decision, integration_point, api_contract, state_checkpoint, performance_boundary
+except ImportError:
+    # Landmarks not available, create no-op decorators
+    def architecture_decision(name, description, rationale=""):
+        def decorator(func):
+            return func
+        return decorator
+    
+    def integration_point(name, description, rationale=""):
+        def decorator(func):
+            return func
+        return decorator
+    
+    def api_contract(name, description, rationale=""):
+        def decorator(func):
+            return func
+        return decorator
+    
+    def state_checkpoint(name, description, rationale=""):
+        def decorator(func):
+            return func
+        return decorator
+    
+    def performance_boundary(name, description, sla, rationale=""):
+        def decorator(func):
+            return func
+        return decorator
+
 # Get the directory containing this script
 script_dir = Path(__file__).resolve().parent
 src_path = script_dir / 'src'
@@ -220,6 +250,7 @@ def start_heartbeat_daemon():
             # Don't let heartbeat errors crash the shell
             pass
     
+    # Landmark: Message Priority Classification - Routes to prompt/new/keep inboxes
     def display_terminal_message(msg_info):
         """Display an inter-terminal message."""
         from_name = msg_info.get("from", "unknown")
@@ -312,6 +343,7 @@ def start_heartbeat_daemon():
                 })
             send_heartbeat("active", immediate=True)
     
+    # Landmark: Heartbeat Loop - 0.5s sleep, 2s command check, 30s heartbeat
     def send_heartbeats():
         """Send heartbeat every 30 seconds, check for commands every 0.5 seconds."""
         last_heartbeat = time.time()

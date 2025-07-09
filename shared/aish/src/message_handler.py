@@ -7,6 +7,31 @@ from typing import Dict, Optional
 import sys
 from pathlib import Path
 
+# Try to import landmarks if available
+try:
+    from landmarks import architecture_decision, integration_point, api_contract, state_checkpoint
+except ImportError:
+    # Landmarks not available, create no-op decorators
+    def architecture_decision(name, description, rationale=""):
+        def decorator(func):
+            return func
+        return decorator
+    
+    def integration_point(name, description, rationale=""):
+        def decorator(func):
+            return func
+        return decorator
+    
+    def api_contract(name, description, rationale=""):
+        def decorator(func):
+            return func
+        return decorator
+    
+    def state_checkpoint(name, description, rationale=""):
+        def decorator(func):
+            return func
+        return decorator
+
 # Add Tekton root to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
 
@@ -74,6 +99,7 @@ class MessageHandler:
                 'hephaestus': 45080
             }
     
+    # Landmark: AI Message Routing Decision - Critical branch for forwarding
     def send(self, ai_name: str, message: str) -> str:
         """Send message, check forwarding first."""
         
@@ -104,6 +130,7 @@ class MessageHandler:
             print(f"Forwarding failed: {e}, falling back to AI")
             return self._send_to_ai_direct(ai_name, message)
     
+    # Landmark: AI Socket Communication - Direct connection to AI specialist
     def _send_to_ai_direct(self, ai_name: str, message: str) -> str:
         """Direct AI communication (original logic)."""
         port = self.ports.get(ai_name)

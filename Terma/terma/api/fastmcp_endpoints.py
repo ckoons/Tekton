@@ -821,6 +821,13 @@ async def get_command_status(command_id: str) -> Dict[str, Any]:
     },
     description="Route messages between terminals based on target specification"
 )
+@integration_point(
+    title="Inter-terminal Message Router",
+    target_component="ActiveTerminalRoster",
+    protocol="In-memory message queue",
+    data_flow="Source terminal → Router → Target terminal(s) via heartbeat",
+    integration_date="2025-07-09"
+)
 async def route_terminal_message(msg_data: Dict[str, Any]) -> Dict[str, Any]:
     """
     Route a message between terminals.

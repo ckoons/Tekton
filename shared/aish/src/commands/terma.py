@@ -19,6 +19,31 @@ import urllib.request
 import urllib.error
 from datetime import datetime
 
+# Try to import landmarks if available
+try:
+    from landmarks import architecture_decision, integration_point, api_contract, state_checkpoint
+except ImportError:
+    # Landmarks not available, create no-op decorators
+    def architecture_decision(name, description, rationale=""):
+        def decorator(func):
+            return func
+        return decorator
+    
+    def integration_point(name, description, rationale=""):
+        def decorator(func):
+            return func
+        return decorator
+    
+    def api_contract(name, description, rationale=""):
+        def decorator(func):
+            return func
+        return decorator
+    
+    def state_checkpoint(name, description, rationale=""):
+        def decorator(func):
+            return func
+        return decorator
+
 # Get endpoints from environment
 TERMA_ENDPOINT = os.environ.get('TERMA_ENDPOINT', 'http://localhost:8004')
 
@@ -372,6 +397,7 @@ def terma_send_message_to_terminal(terminal_name, message):
         print(f"Failed to send to terminal {terminal_name}: {e}")
         return False
 
+# Landmark: Inbox State Machine - prompt/new/keep queues with file sync
 def terma_inbox_both():
     """Show both new and keep inboxes to stdout."""
     try:
