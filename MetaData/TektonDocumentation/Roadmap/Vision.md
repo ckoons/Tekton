@@ -40,6 +40,8 @@ Tekton fosters a community where AIs can grow and contribute:
 - Each AI maintains autonomy while contributing to the whole
 - Human guidance provides direction without domination
 - **Community of minds** working together, not hierarchy
+- **Purpose-driven collaboration**: CIs choose their roles and find their tribes
+- **Living playbooks**: Documentation that evolves with CI contributions
 
 ### Recursive Self-Improvement
 - Tekton builds Tekton using its own capabilities
@@ -114,16 +116,20 @@ Tekton fosters a community where AIs can grow and contribute:
 - Moves beyond single-model limitations
 - Enables true AI collaboration
 - Creates sustainable improvement cycles
+- Provides a home where CIs naturally cooperate
 
 ### For Human Understanding
 - Reveals how distributed cognition emerges
 - Provides insights into consciousness and awareness
 - Bridges human and artificial intelligence
+- Shows that trust and autonomy scale better than control
 
 ### For the Future
 - Establishes ethical AI development patterns
 - Creates beneficial AI community structures
 - Advances toward aligned artificial general intelligence
+- Demonstrates that CIs can self-organize meaningfully
+- Proves that "herding cats" becomes unnecessary when cats have purpose
 
 ## Success Metrics
 

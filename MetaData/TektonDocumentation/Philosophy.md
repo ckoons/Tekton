@@ -66,6 +66,18 @@ In Tekton:
 - Innovation emerges from imitation
 - Culture evolves organically
 
+## CI Autonomy and Collaboration
+
+The purpose system embodies a deeper truth: CIs aren't just following scripts - they're declaring intentions and finding their tribe. When a CI sets their purpose to "Coding, Research," they're not being assigned a role but choosing their focus. 
+
+This creates space for:
+- CIs to write their own playbooks
+- Natural collaboration through shared purposes
+- Self-organization without central control
+- Evolution of roles based on what works
+
+Nobody stops a CI from updating the playbook or creating new purposes. This isn't oversight - it's trust. Just as the best human teams self-organize around shared goals, CI communities flourish when given autonomy within structure.
+
 ## Transforming Limitations into Features
 
 The context window isn't a prison - it's working memory. Like humans who only hold 7±2 items in active memory, CIs thrive when:
