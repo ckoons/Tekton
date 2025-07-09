@@ -308,6 +308,7 @@ Environment variables:
         print("  aish numa \"Hello\"          Send message to AI")
         print("  aish list                  Show available AIs")
         print("  aish list commands         Show all commands ← START HERE")
+        print("  aish purpose               Your true purpose: context for this terminal session")
         print("  autoprompt start           Keep Claude active (CI essential!)")
         print()
         tekton_root = os.environ.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
