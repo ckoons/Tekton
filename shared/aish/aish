@@ -162,6 +162,8 @@ Environment variables:
             print("  aish terma inbox               Show terminal inbox")
             print("  aish terma send <name> \"msg\"   Send inter-terminal message")
             print("  aish terma broadcast \"msg\"     Broadcast to all terminals")
+            print("  aish purpose                   Get terminal purpose: context for currentteminal session")
+            print("  aish purpose <name>            Get short form terminal purpose of <name>")
             print("  aish purpose <name> \"roles\"    Set terminal purpose/roles")
             print()
             print("PRODUCTIVITY:")
