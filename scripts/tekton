@@ -264,7 +264,7 @@ Options:
   -q, --quiet         Suppress output
   -v, --verbose       Verbose output
   --tekton <dir>      Use specific Tekton directory
-  -l, --list          List available Tekton directories
+  --list              List available Tekton directories
 
 Commands:
   start               Launch Tekton components
@@ -287,7 +287,7 @@ Coming Soon:
 Examples:
   tekton start                    # Start all components
   tekton status                   # Show system status
-  tekton logs -c hermes -l 50     # View last 50 Hermes logs
+  tekton logs -c hermes --log 50  # View last 50 Hermes logs
   tekton alias set mc=merge-coordinator
   tekton mc status                # Uses alias
 
@@ -318,7 +318,7 @@ Run 'tekton help <command>' for detailed help on any command.""")
         parser.add_argument('-q', '--quiet', action='store_true', help='Quiet mode')
         parser.add_argument('-v', '--verbose', action='store_true', help='Verbose mode')
         parser.add_argument('--tekton', metavar='DIR', help='Use specific Tekton directory')
-        parser.add_argument('-l', '--list', action='store_true', help='List Tekton directories')
+        parser.add_argument('--list', action='store_true', help='List Tekton directories')
         
         # Parse known args to separate global options from subcommand
         global_args, remaining = parser.parse_known_args(args)

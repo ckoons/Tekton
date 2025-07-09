@@ -17,6 +17,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 try:
     from aish.cleanup_orphan_processes import cleanup_orphans, identify_orphans
+    from inbox_orphan_cleanup import InboxOrphanCleaner
     from landmarks import service_boundary, monitoring_point, architecture_decision
 except ImportError:
     # Fallback if landmarks not available
@@ -74,6 +75,9 @@ class OrphanCleanupService:
         self.last_cleanup = None
         self.next_cleanup = None
         
+        # Initialize inbox cleaner
+        self.inbox_cleaner = InboxOrphanCleaner()
+        
         # Ensure minimum interval of 1 hour
         if self.check_interval < 3600:
             logger.warning(f"Check interval {check_interval}s too short, setting to 1 hour")
@@ -122,12 +126,17 @@ class OrphanCleanupService:
                 # Run cleanup
                 start_time = datetime.now()
                 orphan_count = await self._run_cleanup()
+                
+                # Also clean up inbox orphans
+                inbox_orphans = await self.inbox_cleaner.cleanup(self.dry_run)
+                
                 duration = (datetime.now() - start_time).total_seconds()
                 
                 self.last_cleanup = start_time
                 
                 # Log results
-                logger.info(f"Cleanup completed: {orphan_count} orphans {'found' if self.dry_run else 'cleaned'} in {duration:.1f}s")
+                logger.info(f"Cleanup completed: {orphan_count} process orphans {'found' if self.dry_run else 'cleaned'}, "
+                          f"{inbox_orphans} inbox orphans {'found' if self.dry_run else 'cleaned'} in {duration:.1f}s")
                 
                 # Alert if too many orphans
                 if orphan_count > 10:
