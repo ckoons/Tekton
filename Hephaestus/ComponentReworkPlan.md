@@ -1,1 +1,0 @@
-MetaData/TektonDocumentation/UI-Architecture/ComponentReworkPlan.md

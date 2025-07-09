@@ -1,10 +1,8 @@
 # Sophia
 
-Sophia is the machine learning and continuous improvement component of Tekton, designed to study AI collaboration, measure intelligence dimensions, and enable self-enhancement across components.
-
 ## Overview
 
-Sophia serves as the scientific foundation for the Tekton ecosystem, providing metrics collection, analysis, and intelligence measurement capabilities that support continuous learning and improvement. It implements the intelligence dimensions framework for measuring AI cognitive capabilities and provides tools for conducting scientific experiments on AI collaboration.
+Sophia is the machine learning and continuous improvement component for the Tekton ecosystem. It provides scientific measurement of AI intelligence across multiple dimensions, conducts controlled experiments for system optimization, and enables continuous self-improvement through data-driven insights and recommendations.
 
 ## Key Features
 
@@ -16,88 +14,266 @@ Sophia serves as the scientific foundation for the Tekton ecosystem, providing m
 - **Research Capabilities**: Advanced research tools including Computational Spectral Analysis (CSA) and Catastrophe Theory (CT) for neural network analysis
 - **MCP Integration**: Model Context Protocol integration with 16 specialized tools and advanced workflows
 
-## Architecture
-
-Sophia follows a modular architecture with:
-
-1. **Core Engines**:
-   - Metrics Engine: For collecting, storing, and querying metrics
-   - Analysis Engine: For pattern detection, anomaly detection, and trend analysis
-   - Experiment Framework: For designing and running controlled experiments
-   - Recommendation System: For generating and tracking improvement suggestions
-   - Intelligence Measurement: For measuring and comparing AI cognitive capabilities
-   - ML Engine: For machine learning operations and component analysis
-
-2. **API Layer**:
-   - RESTful API with FastAPI following Single Port Architecture
-   - WebSocket support for real-time updates
-   - Comprehensive endpoints for all capabilities
-
-3. **Integrations**:
-   - Hermes: For service discovery and registration
-   - Engram: For persistent memory storage
-   - Prometheus: For planning integration
-   - FastMCP: For Model Context Protocol integration
-
-4. **UI Components**:
-   - Dashboard for visualizing metrics and intelligence profiles
-   - Experiment management interface
-   - Recommendation tracking
-
-## Intelligence Dimensions Framework
-
-Sophia implements a comprehensive framework for measuring AI intelligence across 10 dimensions:
-
-1. **Language Processing**: Understanding, interpreting, and generating human language
-2. **Reasoning**: Making inferences, deductions, and logical arguments
-3. **Knowledge**: Factual information and domain expertise
-4. **Learning**: Acquiring new information and adapting from experience
-5. **Creativity**: Generating novel, valuable, and surprising outputs
-6. **Planning**: Formulating goals and strategies to achieve them
-7. **Problem Solving**: Identifying, analyzing, and resolving challenges
-8. **Adaptation**: Adjusting behavior based on changing conditions
-9. **Collaboration**: Working effectively with other agents or humans
-10. **Metacognition**: Awareness and control of one's own thought processes
-
-Each dimension is measured through multiple metrics and can be used to create intelligence profiles for components or the entire ecosystem.
-
-## Experiment Framework
-
-Sophia provides a comprehensive experiment framework supporting multiple experiment types:
-
-- **A/B Testing**: Compare two variants to determine which performs better
-- **Multivariate Testing**: Test multiple variables simultaneously
-- **Canary Deployments**: Gradually roll out changes to a subset of users
-- **Shadow Mode Testing**: Run a new implementation alongside the current one
-- **Parameter Tuning**: Find optimal values for configurable parameters
-- **Before/After Testing**: Compare metrics before and after a change
-- **Baseline Comparisons**: Compare multiple candidates against a baseline
-
-The framework handles experiment design, execution, data collection, and analysis, providing insights and recommendations based on results.
-
 ## Quick Start
 
 ```bash
-# Install dependencies
-./setup.sh
+# Install Sophia
+cd Sophia
+pip install -e .
 
-# Run the service with the unified launcher
+# Start the Sophia server
+python -m sophia.api.app
+# Or use the launch script
 ./scripts/tekton-launch --components sophia
 
-# Or run with custom port
-SOPHIA_PORT=8006 ./scripts/tekton-launch --components sophia
-
-# Register with Hermes
-./register_with_hermes.py
+# Use the CLI
+sophia metrics collect --all
+sophia experiment create "LLM Response Time"
+sophia intelligence measure --component rhetor
 ```
 
-## Client Usage
+## Configuration
 
-Sophia provides a Python client for easy interaction with the API:
+### Environment Variables
+
+```bash
+# Sophia-specific settings
+SOPHIA_PORT=8009                      # API port
+SOPHIA_AI_PORT=45009                  # AI specialist port
+SOPHIA_METRICS_RETENTION_DAYS=90      # Metrics retention period
+SOPHIA_EXPERIMENT_TIMEOUT=3600        # Experiment timeout (seconds)
+
+# Analysis settings
+SOPHIA_ANOMALY_THRESHOLD=3.0          # Standard deviations for anomaly
+SOPHIA_TREND_WINDOW=7                 # Days for trend analysis
+SOPHIA_CONFIDENCE_LEVEL=0.95          # Statistical confidence
+```
+
+### Configuration File
+
+Create `.env.sophia` for persistent settings:
+
+```bash
+# Intelligence measurement
+ENABLE_CONTINUOUS_PROFILING=true
+PROFILE_UPDATE_INTERVAL=3600
+INTELLIGENCE_BENCHMARK_VERSION=2.0
+
+# Experiment settings
+DEFAULT_EXPERIMENT_DURATION=86400
+MIN_SAMPLE_SIZE=100
+ENABLE_AUTO_EXPERIMENTS=true
+```
+
+## API Reference
+
+### REST API Endpoints
+
+#### Metrics
+- `POST /api/metrics` - Record new metrics
+- `GET /api/metrics/query` - Query metrics with filters
+- `GET /api/metrics/analyze` - Analyze metrics patterns
+- `GET /api/metrics/anomalies` - Detect anomalies
+
+#### Experiments
+- `POST /api/experiments` - Create new experiment
+- `GET /api/experiments` - List experiments
+- `POST /api/experiments/{id}/start` - Start experiment
+- `POST /api/experiments/{id}/stop` - Stop experiment
+- `GET /api/experiments/{id}/results` - Get results
+
+#### Intelligence Measurement
+- `POST /api/intelligence/measure` - Measure intelligence
+- `GET /api/intelligence/profiles` - Get profiles
+- `GET /api/intelligence/compare` - Compare components
+- `GET /api/intelligence/trends` - Intelligence trends
+
+#### Recommendations
+- `GET /api/recommendations` - Get recommendations
+- `POST /api/recommendations/{id}/implement` - Track implementation
+- `GET /api/recommendations/impact` - Measure impact
+
+### WebSocket Endpoints
+
+- `/ws/metrics` - Real-time metrics stream
+- `/ws/experiments` - Experiment updates
+- `/ws/alerts` - Anomaly alerts
+
+For detailed API documentation, run the server and visit `/docs`.
+
+## Integration Points
+
+Sophia seamlessly integrates with:
+
+- **All Components**: Collects metrics from every Tekton component
+- **Hermes**: Service registration and health monitoring
+- **Engram**: Stores historical data and intelligence profiles
+- **Prometheus**: Provides insights for strategic planning
+- **AI Specialists**: Sophia AI analyzes patterns and suggests improvements
+
+### Example Integration
 
 ```python
 from sophia.client import SophiaClient
 import asyncio
+
+async def main():
+    client = SophiaClient(host="localhost", port=8009)
+    
+    # Measure component intelligence
+    profile = await client.measure_intelligence(
+        component="rhetor",
+        dimensions=["language_processing", "reasoning", "creativity"]
+    )
+    
+    print(f"Rhetor Intelligence Profile:")
+    for dim, score in profile.scores.items():
+        print(f"  {dim}: {score:.2f}/10")
+    
+    # Create and run experiment
+    experiment = await client.create_experiment(
+        name="Prompt Optimization",
+        type="ab_test",
+        hypothesis="Structured prompts improve response quality",
+        metrics=["response_quality", "token_efficiency"]
+    )
+    
+    await client.start_experiment(experiment.id)
+    
+    # Record metrics
+    await client.record_metric(
+        name="response_quality",
+        value=0.85,
+        component="rhetor",
+        tags={"variant": "structured", "experiment": experiment.id}
+    )
+    
+    # Get recommendations
+    recommendations = await client.get_recommendations(
+        component="rhetor",
+        category="performance"
+    )
+    
+    for rec in recommendations:
+        print(f"Recommendation: {rec.title}")
+        print(f"  Impact: {rec.expected_impact}")
+        print(f"  Effort: {rec.implementation_effort}")
+
+asyncio.run(main())
+```
+
+## Intelligence Dimensions
+
+Sophia measures AI intelligence across 10 key dimensions:
+
+1. **Language Processing** - Natural language understanding and generation
+2. **Reasoning** - Logical inference and deduction capabilities
+3. **Knowledge** - Factual information and domain expertise
+4. **Learning** - Ability to acquire and apply new information
+5. **Creativity** - Generation of novel and valuable outputs
+6. **Planning** - Strategic thinking and goal formulation
+7. **Problem Solving** - Challenge identification and resolution
+8. **Adaptation** - Behavioral adjustment to new conditions
+9. **Collaboration** - Effective teamwork with humans and AIs
+10. **Metacognition** - Self-awareness and thought process control
+
+## Troubleshooting
+
+### Common Issues
+
+#### 1. Metrics Storage Full
+**Symptoms**: Cannot record new metrics
+
+**Solutions**:
+```bash
+# Check storage usage
+sophia metrics storage --status
+
+# Clean old metrics
+sophia metrics clean --older-than 90d
+
+# Adjust retention policy
+export SOPHIA_METRICS_RETENTION_DAYS=30
+```
+
+#### 2. Experiment Not Converging
+**Symptoms**: Experiment runs indefinitely without results
+
+**Solutions**:
+```bash
+# Check experiment status
+sophia experiment status <experiment-id>
+
+# Adjust sample size
+sophia experiment update <experiment-id> --min-samples 50
+
+# Force analysis
+sophia experiment analyze <experiment-id> --force
+```
+
+#### 3. Intelligence Measurement Errors
+**Symptoms**: Cannot measure component intelligence
+
+**Solutions**:
+```bash
+# Verify component is running
+sophia component check <component-name>
+
+# Reset intelligence cache
+sophia intelligence reset --component <name>
+
+# Run diagnostic
+sophia diagnose intelligence
+```
+
+### Performance Tuning
+
+- Use appropriate metric sampling rates
+- Enable metric aggregation for high-volume data
+- Configure retention policies based on needs
+- Use async operations for bulk metrics
+
+## Development
+
+### Running Tests
+
+```bash
+# Run all tests
+pytest tests/
+
+# Run with coverage
+pytest --cov=sophia tests/
+
+# Run specific test category
+pytest tests/unit/
+pytest tests/integration/
+```
+
+### Debug Mode
+
+```bash
+# Enable debug logging
+export SOPHIA_DEBUG=true
+export SOPHIA_LOG_LEVEL=DEBUG
+
+# Run with verbose output
+python -m sophia.api.app --debug
+```
+
+### Adding New Intelligence Dimensions
+
+1. Define dimension in `sophia/intelligence/dimensions.py`
+2. Create measurement methods in `sophia/intelligence/measures/`
+3. Add validation rules
+4. Create benchmark tests
+5. Update documentation
+
+## Related Documentation
+
+- [Intelligence Measurement Guide](/MetaData/ComponentDocumentation/Sophia/INTELLIGENCE_GUIDE.md)
+- [Experiment Framework](/MetaData/ComponentDocumentation/Sophia/EXPERIMENTS.md)
+- [Metrics Analysis](/MetaData/ComponentDocumentation/Sophia/METRICS_GUIDE.md)
+- [API Reference](/Sophia/docs/api_reference.md)
 
 async def example():
     # Create client

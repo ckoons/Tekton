@@ -2,7 +2,7 @@
 
 ## Overview
 
-Telos is the comprehensive requirements management and tracing system for the Tekton ecosystem. It provides a robust platform for documenting, organizing, tracking, and validating project requirements with support for hierarchical visualization and bidirectional tracing.
+Telos is the intelligent requirements management and goal-setting system for the Tekton ecosystem. It captures, organizes, validates, and traces project requirements while ensuring alignment with strategic objectives through advanced analysis and bidirectional tracing capabilities.
 
 ## Key Features
 
@@ -17,50 +17,206 @@ Telos is the comprehensive requirements management and tracing system for the Te
 - **CLI Interface**: Comprehensive command-line tools for requirement management
 - **REST API**: Full-featured API for programmatic integration
 
-## Architecture
-
-Telos follows the Tekton Single Port Architecture pattern:
-
-- **Port 8008**: All Telos communications (HTTP, WebSocket, Events)
-- **Path-based Routing**:
-  - `/api/*`: RESTful API endpoints
-  - `/ws`: WebSocket endpoint for real-time updates
-  - `/events`: Server-Sent Events for notifications
-
-## Installation
-
-### From Source
-
-```bash
-# Clone the repository
-git clone https://github.com/example/tekton.git
-cd tekton/Telos
-
-# Install Telos and its dependencies
-pip install -e .
-```
-
-### With Tekton Installer
-
-```bash
-# Run the Tekton installer
-./tekton-install.sh --components telos
-```
-
 ## Quick Start
 
 ```bash
-# Register with Hermes
-python -m Telos/register_with_hermes.py
+# Install Telos
+cd Telos
+pip install -e .
 
-# Start the Telos API server
-telos-api
-
-# Start with Tekton (alternative)
+# Start the Telos server
+python -m telos.api.app
+# Or use the launch script
 ./scripts/tekton-launch --components telos
+
+# Use the CLI
+telos project create "Q1 Product Release"
+telos requirement add "User authentication system"
+telos validate --project current
 ```
 
-## Usage Examples
+## Configuration
+
+### Environment Variables
+
+```bash
+# Telos-specific settings
+TELOS_PORT=8006                       # API port
+TELOS_AI_PORT=45006                   # AI specialist port
+TELOS_VALIDATION_LEVEL=strict         # Validation strictness
+TELOS_TRACE_DEPTH=5                   # Max tracing depth
+
+# Requirements settings
+TELOS_MAX_REQUIREMENT_SIZE=10000      # Max characters
+TELOS_AUTO_VALIDATE=true              # Auto-validate on save
+TELOS_VERSIONING_ENABLED=true         # Track requirement versions
+```
+
+### Configuration File
+
+Create `.env.telos` for persistent settings:
+
+```bash
+# Validation rules
+REQUIRE_ACCEPTANCE_CRITERIA=true
+REQUIRE_PRIORITY=true
+REQUIRE_ESTIMATION=false
+
+# Integration settings
+AUTO_SYNC_TO_METIS=true
+PROMETHEUS_PLANNING_ENABLED=true
+```
+
+## API Reference
+
+### REST API Endpoints
+
+#### Project Management
+- `POST /api/projects` - Create new project
+- `GET /api/projects` - List all projects
+- `GET /api/projects/{id}` - Get project details
+- `PUT /api/projects/{id}` - Update project
+- `DELETE /api/projects/{id}` - Delete project
+
+#### Requirements Management
+- `POST /api/projects/{id}/requirements` - Add requirement
+- `GET /api/projects/{id}/requirements` - List requirements
+- `GET /api/requirements/{id}` - Get requirement details
+- `PUT /api/requirements/{id}` - Update requirement
+- `DELETE /api/requirements/{id}` - Delete requirement
+- `POST /api/requirements/{id}/validate` - Validate requirement
+
+#### Tracing & Analysis
+- `GET /api/requirements/{id}/traces` - Get requirement traces
+- `POST /api/requirements/{id}/traces` - Add trace
+- `GET /api/projects/{id}/impact` - Impact analysis
+- `GET /api/projects/{id}/coverage` - Coverage analysis
+
+#### Integration
+- `POST /api/prometheus/analyze` - Prometheus planning analysis
+- `POST /api/metis/export` - Export to Metis tasks
+- `GET /api/validation/report` - Validation report
+
+### WebSocket Endpoints
+
+- `/ws` - Real-time requirement updates
+- `/ws/projects/{id}` - Project-specific updates
+
+For detailed API documentation, run the server and visit `/docs`.
+
+## Integration Points
+
+Telos seamlessly integrates with:
+
+- **Prometheus**: Strategic planning based on requirements
+- **Metis**: Automatic task generation from requirements
+- **Hermes**: Service registration and event distribution
+- **Engram**: Requirements history and traceability
+- **AI Specialists**: Telos AI for requirement analysis
+
+### Example Integration
+
+```python
+from telos.client import TelosClient
+
+client = TelosClient(host="localhost", port=8006)
+
+# Create project with requirements
+project = client.create_project(
+    name="E-commerce Platform",
+    description="Next-gen shopping experience",
+    goals=["Increase conversion by 25%", "Reduce cart abandonment"]
+)
+
+# Add structured requirement
+requirement = client.add_requirement(
+    project_id=project.id,
+    title="Shopping Cart Persistence",
+    description="Cart contents must persist across sessions",
+    type="functional",
+    priority="high",
+    acceptance_criteria=[
+        "Cart saved for logged-in users",
+        "Cart restored on next login",
+        "Cart expires after 30 days"
+    ]
+)
+
+# Validate requirement
+validation = client.validate_requirement(requirement.id)
+if not validation.is_valid:
+    print(f"Issues: {validation.issues}")
+
+# Trace to another requirement
+client.add_trace(
+    from_req=requirement.id,
+    to_req="req-456",  # User auth requirement
+    trace_type="depends_on",
+    rationale="Requires user identification"
+)
+
+# Export to Metis for implementation
+tasks = client.export_to_metis(
+    project_id=project.id,
+    include_estimates=True
+)
+```
+
+## Troubleshooting
+
+### Common Issues
+
+#### 1. Validation Failures
+**Symptoms**: Requirements marked as invalid
+
+**Solutions**:
+```bash
+# Check validation rules
+telos validation rules --list
+
+# Run detailed validation
+telos requirement validate <req-id> --verbose
+
+# Adjust validation level
+export TELOS_VALIDATION_LEVEL=moderate
+```
+
+#### 2. Circular Dependencies
+**Symptoms**: Error when adding requirement traces
+
+**Solutions**:
+```bash
+# Detect circular dependencies
+telos trace analyze --project <project-id>
+
+# Visualize dependency graph
+telos viz traces --project <project-id> --output traces.png
+
+# Remove problematic trace
+telos trace remove <trace-id>
+```
+
+#### 3. Integration Sync Issues
+**Symptoms**: Requirements not appearing in Metis/Prometheus
+
+**Solutions**:
+```bash
+# Check integration status
+telos integration status
+
+# Force sync
+telos sync --component metis --force
+
+# Verify component registration
+curl http://localhost:8000/api/components
+```
+
+### Performance Tuning
+
+- Enable caching for large requirement sets
+- Use pagination for requirement lists
+- Configure appropriate validation levels
+- Optimize trace queries with depth limits
 
 ### CLI Usage
 
@@ -81,23 +237,48 @@ telos viz requirements --project-id my-project-id --output requirements.png
 telos refine analyze --project-id my-project-id
 ```
 
-### API Usage
+## Development
 
-```python
-import requests
+### Running Tests
 
-# Base URL
-base_url = "http://localhost:8008"
+```bash
+# Run all tests
+pytest tests/
 
-# Create a project
-response = requests.post(f"{base_url}/api/projects", json={
-    "name": "API Project",
-    "description": "Created via API"
-})
-project_id = response.json()["project_id"]
+# Run with coverage
+pytest --cov=telos tests/
 
-# Add a requirement
-response = requests.post(f"{base_url}/api/projects/{project_id}/requirements", json={
+# Run specific test category
+pytest tests/unit/
+pytest tests/integration/
+```
+
+### Debug Mode
+
+```bash
+# Enable debug logging
+export TELOS_DEBUG=true
+export TELOS_LOG_LEVEL=DEBUG
+
+# Run with verbose output
+python -m telos.api.app --debug
+```
+
+### Requirements Best Practices
+
+1. Use clear, unambiguous language
+2. Include measurable acceptance criteria
+3. Specify priority and estimation
+4. Link related requirements
+5. Keep requirements atomic
+6. Version significant changes
+
+## Related Documentation
+
+- [Requirements Engineering Guide](/MetaData/ComponentDocumentation/Telos/REQUIREMENTS_GUIDE.md)
+- [Tracing and Impact Analysis](/MetaData/ComponentDocumentation/Telos/TRACING_GUIDE.md)
+- [Integration Guide](/MetaData/ComponentDocumentation/Telos/INTEGRATION_GUIDE.md)
+- [API Reference](/Telos/docs/api_reference.md)
     "title": "API Feature",
     "description": "This requirement was created via the API",
     "requirement_type": "functional",

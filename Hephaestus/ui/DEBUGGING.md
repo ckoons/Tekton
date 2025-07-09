@@ -1,1 +1,1 @@
-../../MetaData/TektonDocumentation/Developer_Reference/Debugging/UI_DEBUGGING.md
+/Users/cskoons/projects/github/Tekton/MetaData/ComponentDocumentation/Hephaestus/ui/DEBUGGING.md

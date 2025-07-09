@@ -1,1 +1,0 @@
-MetaData/TektonDocumentation/Handoffs/ClaudeHandoff-RhetorCompletion.md

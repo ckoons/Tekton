@@ -1,88 +1,315 @@
-# Hephaestus Documentation
+# Hephaestus
 
 ## Overview
 
-This documentation provides comprehensive information about the Hephaestus UI component of the Tekton AI orchestration system. Hephaestus serves as the unified user interface for interacting with all Tekton components through a combination of terminal and graphical interfaces.
+Hephaestus is the unified user interface for the Tekton ecosystem, providing both terminal and graphical interfaces for interacting with all Tekton components. It features a CSS-first architecture, Shadow DOM isolation, comprehensive semantic tagging, and advanced debugging tools for AI-assisted development.
 
-## Documentation Structure
+## Quick Start
 
-### Core Documentation
+```bash
+# Start the UI server
+./run_ui.sh
 
-- **[UI Architecture Guide](./ui/README.md)** - Main UI architecture reference
-- **[Technical Documentation](./technical_documentation.md)** - System design and components
-- **[Developer Guide](./developer_guide.md)** - Creating and extending components
-- **[Architecture Overview](./architecture.md)** - Visual diagrams and system flow
+# Or with MCP DevTools
+./run_mcp.sh
 
-### Development Guides
+# Access the UI
+open http://localhost:8088
+```
 
-- **[UI DevTools V2](./ui_dev_tools/)** - Revolutionary new UI debugging tools
-  - Based on "Code is Truth, Browser is Result" philosophy
-  - Discovers that browser ADDS 71 dynamic tags to components
-  - Tools: CodeReader, BrowserVerifier, Comparator, Navigator, SafeTester
-  - Launch with: `./run_mcp.sh`
-  - Full docs: `/MetaData/TektonDocumentation/Guides/UIDevToolsV2/`
-- **[How Tekton UI Works](./ui/docs/HowTektonUIWorks.md)** - Implementation details and lessons learned
-- **[Instrumentation Status](./docs/INSTRUMENTATION_STATUS.md)** - Component instrumentation progress
-- **[Debug Instrumentation](./ui/server/README_DEBUG.md)** - Python debug system
+## CSS-First Architecture (June 2025)
 
-### Reference Documents
+Hephaestus now uses a **CSS-first architecture** with:
+- Components loaded dynamically via minimal-loader.js when needed
+- Navigation managed by JavaScript event handlers  
+- Clean separation between navigation and content
+- No build step required - edit components directly
 
-- **[Component Index](./docs/INSTRUMENTATION_INDEX.md)** - Quick component reference
-- **[Testing Guide](./tests/README.md)** - Test suite documentation
-- **[API Reference](./docs/api_reference.md)** - Component APIs
+**📖 MUST READ**: [CSS-First Architecture Documentation](/MetaData/TektonDocumentation/Architecture/CSSFirstArchitecture.md)
 
-### Historical Documentation
-
-Archived documentation from previous sprints and migrations can be found in `./docs/archive/`
+Key benefits:
+- Edit component files directly in `ui/components/`
+- Changes appear after browser refresh
+- Navigation uses `#componentName` URL fragments
+- Components are loaded on-demand when clicked
 
 ## Key Features
 
-1. **Shadow DOM Isolation**: Components are loaded in isolated Shadow DOM contexts to prevent style bleeding and DOM conflicts.
+### 1. CSS-First Architecture
+- Direct component editing without build steps
+- Dynamic loading via minimal-loader.js
+- URL fragment-based navigation (#componentName)
+- Immediate updates on browser refresh
 
-2. **Component-Based Design**: Each Tekton subsystem has a dedicated UI component with its own HTML, CSS, and JavaScript.
+### 2. Shadow DOM Isolation
+- Prevents style bleeding between components
+- Isolated component contexts
+- Clean DOM separation
+- Theme propagation through boundaries
 
-3. **Theme System**: Consistent theming across components using CSS variables propagated through Shadow DOM boundaries.
+### 3. Semantic Tagging System
+- **100% Coverage**: All UI elements use `data-tekton-*` attributes
+- **Static Tags**: 75+ tags defined in source code
+- **Dynamic Tags**: 71+ tags added by browser at runtime
+- **Total Tags**: 146+ semantic tags in running components
+- Enables reliable AI/automation interaction
 
-4. **Utilities Library**: Common UI patterns implemented as reusable utilities for notifications, dialogs, tabs, and more.
+### 4. UI DevTools V2
+**Revolutionary debugging based on "Code is Truth, Browser is Result"**
+- **code_reader**: Read source files (the TRUTH)
+- **browser_verifier**: Check browser DOM (the RESULT)  
+- **comparator**: Understand differences (dynamic tags)
+- **navigator**: Navigate to components reliably
+- **safe_tester**: Test changes with preview
 
-5. **Service Integration**: Standardized patterns for integrating with Tekton services like LLM Adapter, Hermes message bus, and Engram memory system.
+Launch with: `./run_mcp.sh`
 
-6. **Loading State System**: Semantic HTML attributes track component loading lifecycle (pending → loading → loaded/error) with automatic timing and error reporting.
+### 5. Component Features
+- **Theme System**: Consistent theming with CSS variables
+- **Loading States**: Lifecycle tracking (pending → loading → loaded/error)
+- **Service Integration**: Standardized patterns for all Tekton services
+- **WebSocket Support**: Real-time backend communication
+- **Terminal Interface**: Command-line operations alongside GUI
 
-7. **100% Semantic Instrumentation**: All UI elements use `data-tekton-*` attributes for reliable AI/automation discovery and interaction.
-   - **Static tags**: 75+ semantic tags defined in source (e.g., rhetor component)
-   - **Dynamic tags**: System adds 71+ tags at runtime for navigation, loading, and state
-   - **Total**: 146+ semantic tags in running components
+### 6. Debug System
+- File trace logging for loaded JavaScript
+- Console filtering without code modification
+- Performance monitoring with zero overhead when disabled
+- Dead code identification
 
-8. **WebSocket Communication**: Real-time communication with backend services through a unified WebSocket client.
+Enable with: `HephaestusDebug.enableAll()`
 
-9. **Terminal Interface**: Terminal-based interaction alongside the graphical interface for command-line operations.
+## Configuration
 
-10. **UI DevTools V2**: Advanced debugging tools that compare source code (truth) with browser DOM (result) to diagnose discrepancies and understand dynamic behavior.
+### Environment Variables
 
-## Getting Started
+```bash
+# Hephaestus-specific settings
+HEPHAESTUS_PORT=8088                  # UI server port
+HEPHAESTUS_AI_PORT=45088              # AI specialist port  
+HEPHAESTUS_DEBUG=false                # Debug mode
+HEPHAESTUS_THEME=dark                 # Default theme
 
-To start working with Hephaestus:
+# DevTools settings
+MCP_SERVER_PORT=8088                  # MCP DevTools port
+MCP_DEBUG=false                       # MCP debug logging
+```
 
-1. **Setup**: Ensure you have the Tekton codebase cloned and set up locally
-2. **Run**: Use the `/Hephaestus/run_ui.sh` script to start the UI server
-3. **Access**: Open `http://localhost:8080` in your browser
-4. **Develop**: Follow the [Developer Guide](./developer_guide.md) to create or modify components
+### UI DevTools V2 Usage
 
-## Contributing
+```python
+import httpx
+import asyncio
 
-When contributing to Hephaestus, please:
+MCP_URL = "http://localhost:8088/api/mcp/v2/execute"
 
-1. Follow the established CSS naming convention
-2. Use Shadow DOM isolation for all components
-3. Implement proper theme support
-4. Add comprehensive error handling
-5. Test your components thoroughly
-6. Document any new features or changes
+async def devtools_request(tool_name, arguments):
+    async with httpx.AsyncClient() as client:
+        response = await client.post(MCP_URL, json={
+            "tool_name": tool_name,
+            "arguments": arguments
+        })
+        return response.json()
 
-## See Also
+# Example: Check component source vs browser
+result = await devtools_request("code_reader", {"component": "rhetor"})
+print(f"Source has {result['result']['semantic_tags']['total_count']} tags")
 
-- [DEVELOPMENT_STATUS.md](../DEVELOPMENT_STATUS.md) - Current development status and roadmap
-- [UI_STYLING_GUIDE.md](../UI_STYLING_GUIDE.md) - Detailed styling guidelines
-- [COMPONENT_ISOLATION_STRATEGY.md](../COMPONENT_ISOLATION_STRATEGY.md) - In-depth explanation of the isolation approach
-- [CSS_NAMING_CONVENTION.md](../CSS_NAMING_CONVENTION.md) - CSS naming conventions and examples
+result = await devtools_request("browser_verifier", {"component": "rhetor"})
+print(f"Browser has {result['result']['semantic_tags']['count']} tags")
+```
+
+## Component Structure
+
+```
+ui/components/
+├── <component-name>/
+│   └── <component-name>-component.html    # Complete component
+├── shared/
+│   └── component-template.html            # Template for new components
+└── terma/
+    └── terma-component.html              # Terminal integration
+
+ui/scripts/
+├── minimal-loader.js                      # Dynamic component loader
+├── debug-config.js                        # Debug system configuration
+└── <component-name>/
+    └── <component-name>-component.js      # Component JavaScript
+
+ui/styles/
+├── main.css                               # Global styles
+├── components.css                         # Component registry
+└── themes/                                # Theme files
+```
+
+## Development Workflow
+
+### 1. Creating a New Component
+
+```bash
+# Copy template
+cp ui/components/shared/component-template.html \
+   ui/components/mycomponent/mycomponent-component.html
+
+# Edit component
+# Add semantic tags: data-tekton-component="mycomponent"
+# Implement functionality
+
+# Register in components.css
+echo '.mycomponent-component { display: block; }' >> ui/styles/components.css
+```
+
+### 2. Testing with DevTools
+
+```python
+# Verify semantic tags
+result = await devtools_request("code_reader", {"component": "mycomponent"})
+
+# Test in browser
+result = await devtools_request("navigator", {"target": "mycomponent"})
+
+# Safe test changes
+result = await devtools_request("safe_tester", {
+    "area": "mycomponent",
+    "changes": [{"type": "text", "selector": ".title", "content": "New Title"}],
+    "preview": True
+})
+```
+
+### 3. Debugging
+
+```javascript
+// Enable debug output
+HephaestusDebug.enableAll()
+
+// Check component loading
+HephaestusDebug.enableFileTrace()
+
+// Navigate to component
+window.location.hash = '#mycomponent'
+```
+
+## API Reference
+
+### MCP DevTools API
+
+The Model Context Protocol server provides tools for UI development:
+
+#### Available Tools
+
+- `code_reader` - Read component source files
+- `browser_verifier` - Verify browser DOM state  
+- `comparator` - Compare source vs browser
+- `navigator` - Navigate to components
+- `safe_tester` - Test UI changes safely
+- `ui_capture` - Capture UI state
+- `ui_sandbox` - Sandbox for testing changes
+
+#### Tool Usage
+
+```python
+# Basic tool invocation
+result = await devtools_request("tool_name", {
+    "param1": "value1",
+    "param2": "value2"
+})
+```
+
+### Component API
+
+Each component exposes:
+
+```javascript
+class ComponentName {
+    // Lifecycle methods
+    connectedCallback()      // When attached to DOM
+    disconnectedCallback()   // When removed from DOM
+    
+    // State management
+    setState(newState)       // Update component state
+    getState()              // Get current state
+    
+    // Event handling
+    emit(eventName, data)    // Emit custom event
+    on(eventName, handler)   // Listen for events
+}
+```
+
+## Integration Points
+
+Hephaestus integrates with all Tekton components:
+
+- **Hermes**: Message bus for inter-component communication
+- **Engram**: Memory system for UI state persistence
+- **Rhetor**: LLM integration for chat interfaces
+- **Terma**: Terminal emulation and command execution
+- **All Components**: Unified UI representation
+
+### Service Integration Pattern
+
+```javascript
+// Example: Integrating with a Tekton service
+import { HermesConnector } from '/scripts/hermes-connector.js';
+
+const hermes = new HermesConnector();
+await hermes.connect();
+
+// Subscribe to messages
+hermes.subscribe('component.event', (data) => {
+    updateUI(data);
+});
+
+// Send messages
+hermes.send('component.action', { 
+    action: 'refresh',
+    component: 'rhetor' 
+});
+```
+
+## Troubleshooting
+
+### Common Issues
+
+#### Component Not Loading
+- Check browser console for errors
+- Verify component is registered in components.css
+- Enable debug: `HephaestusDebug.enableAll()`
+- Check file path in minimal-loader.js
+
+#### Semantic Tags Missing
+- Use DevTools to compare source vs browser
+- Remember: Browser ADDS tags, doesn't remove them
+- Check for typos in data-tekton-* attributes
+
+#### Theme Not Applied
+- Verify CSS variables in Shadow DOM
+- Check theme propagation in component
+- Inspect computed styles
+
+## Best Practices
+
+1. **Always Use Semantic Tags**
+   - Add `data-tekton-*` attributes to all interactive elements
+   - Use descriptive values: `data-tekton-action="submit-query"`
+
+2. **Follow CSS-First Principles**
+   - Edit components directly, no build step
+   - Use CSS for layout, JavaScript for behavior
+
+3. **Test with DevTools V2**
+   - Verify source truth with code_reader
+   - Check browser result with browser_verifier
+   - Always preview before applying changes
+
+4. **Document Components**
+   - Add comments explaining functionality
+   - Document data attributes used
+   - Include usage examples
+
+## Related Documentation
+
+- [CSS-First Architecture](/MetaData/TektonDocumentation/Architecture/CSSFirstArchitecture.md)
+- [UI DevTools V2 Guide](/MetaData/TektonDocumentation/Guides/UIDevToolsV2/README.md)
+- [Semantic Tagging Guide](/MetaData/TektonDocumentation/Guides/SemanticTagging.md)
+- [Component Development](/MetaData/ComponentDocumentation/Hephaestus/COMPONENT_GUIDE.md)
+- [Debug System](/Hephaestus/ui/DEBUGGING.md)

@@ -1,47 +1,186 @@
-# Budget Component
+# Budget
 
-Budget is a centralized component for managing LLM token allocations and cost tracking within the Tekton ecosystem. It provides comprehensive budget management, monitoring, and optimization services for all Tekton components.
+## Overview
 
-## Features
+Budget is the centralized cost and resource management component for the Tekton ecosystem. It tracks LLM token usage, manages allocations, enforces budget policies, and provides cost optimization insights across all components.
 
-- **Unified Budget Management**: Combines token allocation and cost tracking in a single system
-- **Automated Price Monitoring**: Automatically tracks and updates provider pricing information
-- **Budget Enforcement**: Configurable budget policies with different enforcement levels
-- **Detailed Reporting**: Comprehensive usage reporting and cost analysis
-- **LLM-Assisted Optimization**: AI-powered budget optimization recommendations
-- **Multiple Integration Methods**: Standardized API, CLI, and MCP protocol support
+## Key Features
 
-## Architecture
+- **Token Tracking**: Real-time monitoring of token consumption across all LLM providers
+- **Cost Management**: Automated price tracking and cost calculation
+- **Budget Enforcement**: Flexible policies (IGNORE, WARN, SOFT_LIMIT, HARD_LIMIT)
+- **Usage Analytics**: Detailed reporting with visualization support
+- **AI Optimization**: Budget AI specialist for intelligent resource allocation
+- **Multi-Provider Support**: Works with OpenAI, Anthropic, Ollama, and more
+- **MCP Integration**: Standard protocol support for seamless component integration
 
-Budget follows a layered architecture:
-
-1. **Core Layer**: Foundational budget tracking and enforcement
-2. **Integration Layer**: Adapters for different components and LLM providers
-3. **Service Layer**: API endpoints and event handlers
-4. **Reporting Layer**: Analytics and visualization capabilities
-
-## Installation
+## Quick Start
 
 ```bash
-# Clone the repository (if not already part of Tekton)
-git clone https://github.com/your-organization/budget.git
-
-# Install dependencies
-cd budget
-pip install -r requirements.txt
-
-# Install package
+# Install Budget
+cd Budget
 pip install -e .
+
+# Start the Budget server
+python -m budget.api.app
+# Or use the launch script
+./scripts/tekton-launch --components budget
+
+# Use the CLI
+budget status
+budget set-limit daily 10.0
+budget get-usage --format json
 ```
 
-## Usage
+## Configuration
 
-### Running the Component
+### Environment Variables
 
 ```bash
-# Start the Budget API server
-./run_budget.sh
+# Budget-specific settings
+BUDGET_PORT=8013                    # API port
+BUDGET_AI_PORT=45013                # AI specialist port
+BUDGET_DEFAULT_CURRENCY=USD         # Default currency
+BUDGET_ENFORCEMENT_LEVEL=WARN       # Default enforcement
+
+# Provider settings
+BUDGET_UPDATE_PRICES_ON_START=true  # Auto-update pricing
+BUDGET_PRICE_UPDATE_INTERVAL=3600   # Update interval (seconds)
 ```
+
+### Configuration File
+
+Create `.env.budget` for persistent settings:
+
+```bash
+# Budget limits (per period)
+DAILY_BUDGET_LIMIT=50.0
+WEEKLY_BUDGET_LIMIT=300.0
+MONTHLY_BUDGET_LIMIT=1000.0
+
+# Component allocations (percentage)
+RHETOR_ALLOCATION=30
+CODEX_ALLOCATION=25
+ERGON_ALLOCATION=20
+OTHER_ALLOCATION=25
+```
+
+## API Reference
+
+### REST API Endpoints
+
+- `POST /api/check` - Check if request is within budget
+- `POST /api/record` - Record token usage
+- `GET /api/usage/{period}` - Get usage for period
+- `GET /api/reports/summary` - Get usage summary
+- `POST /api/limits` - Set budget limits
+- `GET /api/providers/prices` - Get current pricing
+- `POST /api/optimize` - Get optimization suggestions
+- `GET /api/status` - Get system status
+
+### WebSocket Endpoints
+
+- `/ws` - Real-time usage updates
+- `/ws/alerts` - Budget alert notifications
+
+For detailed API documentation, run the server and visit `/docs`.
+
+## Integration Points
+
+Budget integrates seamlessly with:
+
+- **Rhetor**: Tracks LLM usage for all prompt operations
+- **Apollo**: Provides token allocation for predictive planning
+- **Ergon**: Monitors agent execution costs
+- **Hermes**: Publishes budget events and alerts
+- **AI Specialists**: Budget AI provides optimization insights
+
+### Example Integration
+
+```python
+from budget.client import BudgetClient
+
+client = BudgetClient(host="localhost", port=8013)
+
+# Check budget before LLM call
+allowed, info = client.check_budget(
+    provider="anthropic",
+    model="claude-3-sonnet",
+    estimated_tokens=1000,
+    component="rhetor"
+)
+
+if allowed:
+    # Make LLM call
+    response = llm.complete(prompt)
+    
+    # Record actual usage
+    client.record_usage(
+        provider="anthropic",
+        model="claude-3-sonnet",
+        input_tokens=response.input_tokens,
+        output_tokens=response.output_tokens,
+        component="rhetor"
+    )
+else:
+    print(f"Budget exceeded: {info['reason']}")
+```
+
+## Troubleshooting
+
+### Common Issues
+
+#### 1. Budget Limits Not Enforcing
+**Symptoms**: Requests continue despite exceeding limits
+
+**Solutions**:
+```bash
+# Check enforcement level
+budget config get enforcement_level
+
+# Set to strict enforcement
+budget config set enforcement_level HARD_LIMIT
+
+# Verify limits are set
+budget limits list
+```
+
+#### 2. Missing Usage Data
+**Symptoms**: Reports show zero usage despite activity
+
+**Solutions**:
+```bash
+# Check component integration
+budget debug integrations
+
+# Verify database connection
+budget db check
+
+# Force usage recalculation
+budget recalculate --period daily
+```
+
+#### 3. Incorrect Pricing
+**Symptoms**: Cost calculations don't match provider pricing
+
+**Solutions**:
+```bash
+# Update provider prices
+budget prices update --all
+
+# View current prices
+budget prices list
+
+# Set custom pricing
+budget prices set anthropic claude-3-opus --input 0.015 --output 0.075
+```
+
+### Performance Tuning
+
+- Enable caching for frequent budget checks
+- Use batch recording for high-volume operations  
+- Configure appropriate aggregation intervals
+- Set up database indexing for large datasets
 
 ### CLI Usage
 
@@ -82,30 +221,44 @@ client.record_completion(
 )
 ```
 
-## Integration with Tekton
-
-Budget integrates with the Tekton ecosystem through:
-
-1. **Single Port Architecture**: Follows Tekton's standardized port and path conventions (port 8013)
-2. **Hermes Integration**: Automatic registration with Hermes service registry on startup
-3. **Client Libraries**: Language-specific client libraries for API access
-4. **Component Adapters**: Dedicated adapters for Apollo and Rhetor
-5. **Event Publishing**: Budget-related events for reactive components
-6. **Shared Configuration**: Common configuration for budget settings
-7. **MCP Protocol**: Standard protocol for component communication
-
-See the [Integration Guide](/MetaData/ComponentDocumentation/Budget/INTEGRATION_GUIDE.md) for detailed instructions.
-
 ## Development
 
+### Running Tests
+
 ```bash
-# Run tests
+# Run all tests
 pytest tests/
 
-# Run with debug output
-TEKTON_DEBUG=true TEKTON_LOG_LEVEL=DEBUG python -m budget.api.app
+# Run with coverage
+pytest --cov=budget tests/
+
+# Run specific test category
+pytest tests/unit/
+pytest tests/integration/
 ```
 
-## License
+### Debug Mode
 
-See the LICENSE file for details.
+```bash
+# Enable debug logging
+export BUDGET_DEBUG=true
+export BUDGET_LOG_LEVEL=DEBUG
+
+# Run with verbose output
+python -m budget.api.app --debug
+```
+
+### Adding New Providers
+
+1. Create provider adapter in `budget/providers/`
+2. Implement `BaseProvider` interface
+3. Add pricing configuration
+4. Register in provider factory
+5. Add tests
+
+## Related Documentation
+
+- [Budget Integration Guide](/MetaData/ComponentDocumentation/Budget/INTEGRATION_GUIDE.md)
+- [API Reference](/Budget/docs/api_reference.md)
+- [Provider Configuration](/Budget/docs/providers.md)
+- [Budget Policies](/Budget/docs/policies.md)
