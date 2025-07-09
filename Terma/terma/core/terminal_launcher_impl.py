@@ -117,6 +117,8 @@ class ActiveTerminalRoster:
                     # Clean up mailboxes
                     if terminal_name:
                         remove_terminal_mailbox(terminal_name)
+                    # Clean up inbox snapshot
+                    self._cleanup_terminal_inbox(terma_id)
                 return
             
             if terma_id not in self._terminals:
@@ -171,6 +173,8 @@ class ActiveTerminalRoster:
                 # Clean up mailboxes
                 if terminal_name:
                     remove_terminal_mailbox(terminal_name)
+                # Clean up inbox snapshot
+                self._cleanup_terminal_inbox(terma_id)
     
     def _health_check_loop(self):
         """Periodically check terminal health."""
@@ -211,6 +215,43 @@ class ActiveTerminalRoster:
             self.remove_terminal(terma_id)
     
     
+    
+    def _cleanup_terminal_inbox(self, terma_id: str):
+        """Clean up inbox data for a terminated terminal."""
+        try:
+            tekton_root = os.environ.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
+            
+            # Clean up shared inbox snapshot if it belongs to this terminal
+            snapshot_file = os.path.join(tekton_root, ".tekton", "terma", ".inbox_snapshot")
+            if os.path.exists(snapshot_file):
+                try:
+                    with open(snapshot_file, 'r') as f:
+                        data = json.load(f)
+                    # Check if this snapshot belongs to the terminated terminal
+                    if data.get('session_id', '').startswith(terma_id[:8]):
+                        os.remove(snapshot_file)
+                        import logging
+                        logger = logging.getLogger("terma.roster")
+                        logger.info(f"Cleaned up inbox snapshot for terminal {terma_id[:8]}")
+                except Exception:
+                    # Best effort - file might be locked or corrupted
+                    pass
+            
+            # Clean up any command files from this terminal
+            cmd_dir = os.path.join(tekton_root, ".tekton", "terma", "commands")
+            if os.path.exists(cmd_dir):
+                for cmd_file in os.listdir(cmd_dir):
+                    if terma_id[:8] in cmd_file:
+                        try:
+                            os.remove(os.path.join(cmd_dir, cmd_file))
+                        except:
+                            pass
+                            
+        except Exception as e:
+            # Don't let cleanup errors affect terminal removal
+            import logging
+            logger = logging.getLogger("terma.roster")
+            logger.warning(f"Failed to clean up inbox for terminal {terma_id}: {e}")
     
     def stop(self):
         """Stop the health check thread."""
@@ -657,35 +698,66 @@ class TerminalLauncher:
     def terminate_terminal(self, pid: int) -> bool:
         """Terminate a terminal process and close the window."""
         try:
-            self.logger.info(f"Terminating terminal PID {pid}")
+            self.logger.info(f"Terminating terminal with PID {pid}")
             
-            # First, remove from roster BEFORE killing process
-            # This ensures the UI updates immediately
+            # First find the terminal and get the real PID
             session_id = None
+            real_pid = None
             
-            # Get session ID first
+            # Check if this is a synthetic PID
             if hasattr(self, '_session_mapping') and pid in self._session_mapping:
                 session_id = self._session_mapping[pid]
+                self.logger.info(f"Found session {session_id} for synthetic PID {pid}")
+                
+                # Get the real PID from the roster
+                for term in self.roster.get_terminals():
+                    if term.get("terma_id") == session_id:
+                        real_pid = term.get("pid")
+                        self.logger.info(f"Found real PID {real_pid} for session {session_id}")
+                        break
             else:
+                # This might be a real PID, search roster
                 for term in self.roster.get_terminals():
                     if term.get("pid") == pid:
                         session_id = term.get("terma_id")
+                        real_pid = pid
+                        self.logger.info(f"Using provided PID {pid} for session {session_id}")
                         break
             
-            # Remove from roster immediately
-            if session_id:
-                for term in self.roster.get_terminals():
-                    if term.get("terma_id") == session_id:
-                        self.roster.remove_terminal(session_id)
-                        self.logger.info(f"Removed session {session_id} from roster")
-                        break
+            if not session_id or not real_pid:
+                self.logger.warning(f"No terminal found for PID {pid}")
+                return False
             
-            # Now kill the aish-proxy process
+            # Remove from roster immediately (UI updates)
+            self.roster.remove_terminal(session_id)
+            self.logger.info(f"Removed session {session_id} from roster")
+            
+            # Try graceful shutdown first with SIGTERM using the REAL PID
             try:
-                os.kill(pid, signal.SIGKILL)  # Just kill it immediately
-                self.logger.info(f"Killed aish-proxy process {pid}")
+                os.kill(real_pid, signal.SIGTERM)
+                self.logger.info(f"Sent SIGTERM to aish-proxy process {real_pid}")
+                
+                # Wait up to 3 seconds for process to terminate gracefully
+                # Check every 0.5 seconds to see if process is gone
+                for i in range(6):  # 6 * 0.5 = 3 seconds
+                    time.sleep(0.5)
+                    try:
+                        os.kill(real_pid, 0)  # Check if process still exists
+                        # Process still alive, continue waiting
+                    except ProcessLookupError:
+                        self.logger.info(f"Process {real_pid} terminated gracefully")
+                        break
+                else:
+                    # Process didn't terminate after 3 seconds, use SIGKILL
+                    try:
+                        os.kill(real_pid, signal.SIGKILL)
+                        self.logger.info(f"Had to use SIGKILL on process {real_pid} after SIGTERM timeout")
+                    except ProcessLookupError:
+                        # Process died between checks
+                        pass
+                        
             except ProcessLookupError:
-                self.logger.info(f"Process {pid} already gone")
+                self.logger.info(f"Process {real_pid} already gone")
             
             # Now close the Terminal window
             # For macOS Terminal.app, we need to close windows containing our session
