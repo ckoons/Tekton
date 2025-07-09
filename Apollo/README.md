@@ -1,8 +1,8 @@
 # Apollo
 
-Apollo is the executive coordinator and predictive planning system responsible for managing operational health, token flow, and behavioral reliability of all LLM components in Tekton. It serves as the guardian-advisor, orchestrating context management and protocol enforcement through active collaboration with **Rhetor**, **Engram**, and **Synthesis**.
+## Overview
 
-![Apollo Icon](../images/icon.jpg)
+Apollo is the executive coordinator and predictive planning system for the Tekton ecosystem. It monitors operational health, manages token budgets, and ensures behavioral reliability of all LLM components through predictive analytics and intelligent resource allocation.
 
 ## Key Features
 
@@ -16,95 +16,152 @@ Apollo is the executive coordinator and predictive planning system responsible f
 ## Quick Start
 
 ```bash
-# Install dependencies and set up Apollo
-./setup.sh
+# Install Apollo
+cd Apollo
+pip install -e .
 
 # Start the Apollo server
-./run_apollo.sh
+python -m apollo.api.app
+# Or use the launch script
+./scripts/tekton-launch --components apollo
 
-# Use the CLI for status monitoring
-./apollo/cli/apollo status
+# Use the CLI
+apollo status
+apollo contexts
+apollo metrics all
 ```
 
-## Architecture
+## Configuration
 
-Apollo follows the modular observer-controller architecture, with the following core components:
-
-### Context Observer
-
-Monitors LLM context usage metrics from Rhetor, tracking token consumption rates and identifying patterns that might indicate performance issues or context degradation.
-
-### Predictive Engine
-
-Analyzes context metrics history to predict future states and identify potential issues before they occur, using a combination of heuristic rules and statistical models.
-
-### Action Planner
-
-Determines appropriate corrective actions based on current states and predictions, generating prioritized action plans for component interventions.
-
-### Protocol Enforcer
-
-Enforces communication protocols between components, validating messages against defined standards and ensuring consistent interactions.
-
-### Token Budget Manager
-
-Manages token budget allocation and enforcement across different model capabilities, ensuring efficient resource utilization.
-
-### Message Handler
-
-Provides messaging functionality for Apollo, including sending and receiving messages, managing subscriptions, and integrating with Hermes.
-
-### Apollo Manager
-
-High-level manager that coordinates all Apollo components, providing a simplified interface for the API layer.
-
-## Integration Points
-
-Apollo integrates with the following Tekton components:
-
-- **Rhetor**: For monitoring LLM operations and context metrics
-- **Hermes**: For message distribution across components
-- **Engram**: For persistent context memory and analysis
-- **Synthesis**: For action execution coordination
-
-## Using the Apollo CLI
-
-Apollo includes a command-line interface for interacting with its functionality:
+### Environment Variables
 
 ```bash
-# Check Apollo status
-./apollo/cli/apollo status
+# Apollo-specific settings
+APOLLO_PORT=8012              # API port
+APOLLO_AI_PORT=45012          # AI specialist port
+APOLLO_PREDICTION_INTERVAL=60 # Prediction cycle (seconds)
+APOLLO_ACTION_INTERVAL=10     # Action planning cycle (seconds)
 
-# List active contexts
-./apollo/cli/apollo contexts
+# Token budget defaults
+APOLLO_DEFAULT_BUDGET_PERIOD=DAILY
+APOLLO_DEFAULT_BUDGET_POLICY=WARN
+```
 
-# Get details for a specific context
-./apollo/cli/apollo context <context-id> --dashboard
+### Configuration File
 
-# View recommended actions
-./apollo/cli/apollo actions
+Create `.env.apollo` for persistent settings:
 
-# View system metrics
-./apollo/cli/apollo metrics all
+```bash
+# Model tier budgets (tokens)
+LOCAL_LIGHTWEIGHT_BUDGET=100000
+LOCAL_MIDWEIGHT_BUDGET=50000
+REMOTE_HEAVYWEIGHT_BUDGET=10000
 ```
 
 ## API Reference
 
-Apollo implements the Single Port Architecture pattern with path-based routing for all operations. See the [API Reference](docs/api_reference.md) for detailed documentation.
+### REST API Endpoints
 
-### Key Endpoints
+- `GET /api/contexts` - List all active contexts with metrics
+- `GET /api/contexts/{context_id}` - Get detailed context information
+- `GET /api/predictions` - Get context usage predictions
+- `GET /api/actions` - Get recommended optimization actions
+- `POST /api/budget/allocate` - Allocate token budget to operations
+- `GET /api/protocols` - List enforced communication protocols
+- `GET /api/status` - Get Apollo system status
+- `GET /metrics/health` - Health check endpoint
 
-- `GET /api/contexts`: Get all active contexts
-- `GET /api/predictions`: Get context predictions
-- `GET /api/actions`: Get recommended actions
-- `POST /api/budget/allocate`: Allocate token budget
-- `GET /api/protocols`: Get protocol definitions
-- `GET /api/status`: Get system status
-- `GET /metrics/health`: Get health metrics
+### WebSocket Endpoints
+
+- `/ws` - Real-time metric updates and alerts
+- `/ws/events` - Event stream for context changes
+
+For detailed API documentation, see [API Reference](docs/api_reference.md).
+
+## Integration Points
+
+Apollo seamlessly integrates with other Tekton components:
+
+- **Rhetor**: Monitors LLM operations and context usage metrics
+- **Hermes**: Distributes alerts and coordinates responses
+- **Engram**: Stores historical metrics for trend analysis
+- **Budget**: Coordinates token allocation across components
+- **AI Specialists**: Apollo AI provides predictive insights
+
+### Example Integration
+
+```python
+from apollo.client import ApolloClient
+
+client = ApolloClient(host="localhost", port=8012)
+
+# Monitor context usage
+context = client.create_context("chat_session")
+metrics = client.get_context_metrics(context.id)
+
+# Get predictions
+predictions = client.get_predictions(context.id)
+if predictions.risk_level == "high":
+    actions = client.get_recommended_actions(context.id)
+```
+
+## Troubleshooting
+
+### Common Issues
+
+#### 1. High Context Usage Warnings
+**Symptoms**: Frequent warnings about context exhaustion
+
+**Solutions**:
+```bash
+# Check current usage
+apollo metrics context
+
+# Adjust prediction sensitivity
+export APOLLO_PREDICTION_THRESHOLD=0.8
+
+# Increase budget temporarily
+apollo budget increase --tier LOCAL_MIDWEIGHT --amount 10000
+```
+
+#### 2. Apollo Not Starting
+**Symptoms**: Service fails to start or port conflicts
+
+**Solutions**:
+```bash
+# Check port availability
+lsof -i :8012
+
+# Check logs
+tail -f logs/apollo.log
+
+# Start with debug mode
+python -m apollo.api.app --debug
+```
+
+#### 3. Missing Metrics
+**Symptoms**: No data from Rhetor or other components
+
+**Solutions**:
+```bash
+# Verify Hermes connection
+curl http://localhost:8000/api/health
+
+# Check component registration
+apollo status --verbose
+
+# Re-register with Hermes
+apollo register
+```
+
+### Performance Tuning
+
+- Adjust prediction intervals based on load
+- Configure appropriate budget policies
+- Use caching for frequently accessed metrics
+- Enable batch processing for actions
 
 ## Development
-
-### Project Structure
 
 ```
 Apollo/

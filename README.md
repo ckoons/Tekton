@@ -17,7 +17,7 @@ Tekton serves as the "builder" - the central coordinator between various AI mode
 - **Task Routing**: Intelligently assigns tasks to the most appropriate models/agents
 - **Problem Decomposition**: Breaks complex problems into manageable subtasks
 - **Memory Integration**: Leverages Engram for persistent context across sessions
-- **Agent Management**: Works with Agenteer for specialized agent creation and workflow
+- **Agent Management**: Works with Ergon for specialized agent creation and workflow
 - **Resource Optimization**: Uses the right AI for each task based on complexity and requirements
 - **Zero-Downtime Restarts**: Advanced socket reuse enables immediate component restarts without port conflicts
 - **AI Specialists**: Each component has an intelligent AI assistant with specialized expertise
@@ -55,6 +55,8 @@ Tekton integrates with:
 - **Telos**: For User communication, requirements development & analysis, evaluation and goals
 - **Hermes**: For centralized coordination, database services, and component registration
 - **Terma**: Terminal interface with integrated LLM assistance
+- **aish**: AI-enhanced shell for intelligent terminal interactions and command orchestration
+- **Landmarks**: Code annotation and knowledge graph system for AI understanding
 - **LLM Adapter**: Unified interface for all LLM providers and models
 - **Local Models**: Deepseek Coder, CodeLlama, etc.
 - **Remote APIs**: Claude, GPT, etc.
@@ -289,6 +291,19 @@ AI specialists use `llama3.3:70b` by default. Override per component:
 ```bash
 ATHENA_AI_MODEL=llama3.1:70b
 RHETOR_AI_MODEL=qwen2.5-coder:32b
+```
+
+#### Port Allocation
+AI specialists use a fixed port system based on component ports:
+- **Formula**: AI port = 45000 + (component_port - 8000)
+- **Range**: 45000-45080
+- **Example**: Hermes (8000) → Hermes AI (45000)
+
+#### Communication
+All AI communication flows through the unified system:
+```python
+from shared.ai.simple_ai import ai_send_sync
+response = ai_send_sync("hermes-ai", "How's the system health?", "localhost", 45000)
 ```
 
 ### Monitoring

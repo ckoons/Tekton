@@ -1,10 +1,8 @@
-# Harmonia - Workflow Orchestration Engine
-
-![Harmonia](images/icon.jpg)
+# Harmonia
 
 ## Overview
 
-Harmonia is the workflow orchestration engine for the Tekton ecosystem. It coordinates complex workflows across components, manages state persistence, and handles task sequencing. Named after the Greek goddess of harmony and concord, Harmonia brings together various Tekton components to work in unison.
+Harmonia is the workflow orchestration engine for the Tekton ecosystem. It coordinates complex multi-component workflows, manages state persistence, and provides robust error handling and recovery mechanisms for reliable task execution.
 
 ## Key Features
 
@@ -19,62 +17,186 @@ Harmonia is the workflow orchestration engine for the Tekton ecosystem. It coord
 - **Real-time Monitoring**: Monitor workflow execution with real-time updates
 - **Cross-Component Integration**: Seamless integration with other Tekton components
 
-## Architecture
-
-Harmonia follows a modular architecture:
-
-1. **Core Engine**: The workflow execution engine and state management
-2. **API Layer**: HTTP REST API, WebSocket, and Event Stream endpoints
-3. **Storage Layer**: Persistent storage for workflows, state, and templates
-4. **Component Registry**: Integration with other Tekton components
-5. **Event System**: Real-time event propagation for workflow monitoring
-
 ## Quick Start
 
-### Installation
-
 ```bash
-# Clone the repository
-git clone https://github.com/yourusername/Tekton.git
-cd Tekton/Harmonia
+# Install Harmonia
+cd Harmonia
+pip install -e .
 
-# Run setup script
-./setup.sh
+# Start the Harmonia server
+python -m harmonia.api.app
+# Or use the launch script
+./scripts/tekton-launch --components harmonia
 
-# Activate virtual environment
-source venv/bin/activate
+# Use the CLI
+harmonia workflow list
+harmonia execution status <execution-id>
+harmonia template create --from-workflow <workflow-id>
 ```
 
-### Starting Harmonia
+## Configuration
+
+### Environment Variables
 
 ```bash
-# Start Harmonia with default settings
-./run_harmonia.sh
+# Harmonia-specific settings
+HARMONIA_PORT=8008                    # API port
+HARMONIA_AI_PORT=45008                # AI specialist port
+HARMONIA_DATA_DIR=~/.harmonia         # Data directory
+HARMONIA_MAX_CONCURRENT_WORKFLOWS=10  # Concurrent limit
 
-# Start with custom settings
-./run_harmonia.sh --port 8002 --data-dir ~/.harmonia --log-level DEBUG
+# Workflow settings
+HARMONIA_DEFAULT_TIMEOUT=3600         # Default task timeout (seconds)
+HARMONIA_RETRY_MAX_ATTEMPTS=3         # Max retry attempts
+HARMONIA_CHECKPOINT_INTERVAL=300      # Auto-checkpoint interval
 ```
 
-### Register with Hermes
+### Configuration File
+
+Create `.env.harmonia` for persistent settings:
 
 ```bash
-# Register Harmonia with Hermes
-python register_with_hermes.py --verify
+# Execution policies
+ENABLE_AUTO_RETRY=true
+ENABLE_CHECKPOINTS=true
+ENABLE_PARALLEL_EXECUTION=true
 
-# Or use the registration script directly
-python -m harmonia.scripts.register_with_hermes
+# Resource limits
+MAX_WORKFLOW_DEPTH=10
+MAX_TASK_DURATION=7200
 ```
 
-### Using Harmonia with Tekton
+## API Reference
 
+### REST API Endpoints
+
+- `POST /api/workflows` - Create a new workflow
+- `GET /api/workflows` - List all workflows
+- `GET /api/workflows/{id}` - Get workflow details
+- `POST /api/executions` - Execute a workflow
+- `GET /api/executions/{id}` - Get execution status
+- `POST /api/executions/{id}/pause` - Pause execution
+- `POST /api/executions/{id}/resume` - Resume execution
+- `POST /api/templates` - Create workflow template
+- `POST /api/checkpoints` - Create checkpoint
+- `GET /api/status` - Get system status
+
+### WebSocket Endpoints
+
+- `/ws/executions/{id}` - Real-time execution updates
+- `/ws/events` - Global workflow events
+
+### Server-Sent Events
+
+- `/events/executions/{id}` - Execution event stream
+
+For detailed API documentation, run the server and visit `/docs`.
+
+## Integration Points
+
+Harmonia seamlessly integrates with:
+
+- **Hermes**: Service discovery and event distribution
+- **Ergon**: Agent-based task execution
+- **Engram**: Workflow state persistence
+- **Prometheus**: Strategic workflow planning
+- **AI Specialists**: Harmonia AI for workflow optimization
+
+### Example Integration
+
+```python
+from harmonia.client import HarmoniaClient
+
+client = HarmoniaClient(host="localhost", port=8008)
+
+# Create multi-component workflow
+workflow = client.create_workflow(
+    name="data_processing_pipeline",
+    tasks=[
+        {
+            "name": "fetch_data",
+            "component": "ergon",
+            "action": "fetch_from_api",
+            "input": {"url": "https://api.example.com/data"}
+        },
+        {
+            "name": "analyze",
+            "component": "apollo",
+            "action": "analyze_metrics",
+            "input": {"data": "${tasks.fetch_data.output}"},
+            "depends_on": ["fetch_data"]
+        },
+        {
+            "name": "store",
+            "component": "engram",
+            "action": "store_results",
+            "input": {"results": "${tasks.analyze.output}"},
+            "depends_on": ["analyze"]
+        }
+    ]
+)
+
+# Execute with monitoring
+execution = client.execute_workflow(workflow.id)
+client.monitor_execution(execution.id)
+```
+
+## Troubleshooting
+
+### Common Issues
+
+#### 1. Workflow Stuck in Running State
+**Symptoms**: Workflow shows as running but no progress
+
+**Solutions**:
 ```bash
-# Start with Tekton launch script
-../scripts/tekton-launch --components harmonia
+# Check task status
+harmonia execution tasks <execution-id>
+
+# Force checkpoint
+harmonia checkpoint create <execution-id>
+
+# Retry failed tasks
+harmonia execution retry <execution-id>
 ```
 
-## API Usage
+#### 2. Component Communication Failures
+**Symptoms**: Tasks fail with connection errors
 
-Harmonia provides a comprehensive API for workflow management. Here are some examples:
+**Solutions**:
+```bash
+# Verify component registration
+harmonia components list
+
+# Test component connectivity
+harmonia components test <component-name>
+
+# Re-register with Hermes
+harmonia register
+```
+
+#### 3. State Recovery Issues
+**Symptoms**: Cannot restore from checkpoint
+
+**Solutions**:
+```bash
+# List available checkpoints
+harmonia checkpoint list --execution <execution-id>
+
+# Validate checkpoint
+harmonia checkpoint validate <checkpoint-id>
+
+# Force state rebuild
+harmonia state rebuild <execution-id>
+```
+
+### Performance Tuning
+
+- Adjust concurrent workflow limits based on resources
+- Enable parallel task execution for independent tasks
+- Configure appropriate checkpoint intervals
+- Use workflow templates for repeated patterns
 
 ### Creating a Workflow
 
@@ -292,31 +414,44 @@ if __name__ == "__main__":
     asyncio.run(main())
 ```
 
-## Integration with Other Components
+## Development
 
-Harmonia integrates with other Tekton components:
+### Running Tests
 
-- **Hermes**: Service discovery and registration
-- **Engram**: Long-term memory and state persistence
-- **Rhetor**: LLM interactions for workflow decisions
-- **Prometheus**: Metrics and monitoring
-- **Synthesis**: Task execution and integration
-- **Ergon**: Command execution and automation
+```bash
+# Run all tests
+pytest tests/
 
-## Documentation
+# Run with coverage
+pytest --cov=harmonia tests/
 
-For detailed documentation, see the following resources:
+# Run specific test category
+pytest tests/unit/
+pytest tests/integration/
+```
 
-- [Component Summaries](../MetaData/ComponentSummaries.md) - Overview of all Tekton components
-- [Tekton Architecture](../MetaData/TektonArchitecture.md) - Overall system architecture
-- [Component Integration](../MetaData/ComponentIntegration.md) - How components interact
-- [CLI Operations](../MetaData/CLI_Operations.md) - Command-line operations
-- [Single Port Architecture](../docs/SINGLE_PORT_ARCHITECTURE.md) - Design pattern for component communication
+### Debug Mode
 
-## Contributing
+```bash
+# Enable debug logging
+export HARMONIA_DEBUG=true
+export HARMONIA_LOG_LEVEL=DEBUG
 
-Contributions are welcome! Please see the [Contributing Guide](../CONTRIBUTING.md) for more information.
+# Run with verbose output
+python -m harmonia.api.app --debug
+```
 
-## License
+### Workflow Development
 
-This project is licensed under the terms of the [LICENSE](LICENSE) file.
+1. Use templates for reusable patterns
+2. Test workflows in isolation first
+3. Enable checkpoints for long-running workflows
+4. Use parameter validation
+5. Implement proper error handling
+
+## Related Documentation
+
+- [Workflow Templates Guide](/MetaData/ComponentDocumentation/Harmonia/TEMPLATES_GUIDE.md)
+- [State Management](/MetaData/ComponentDocumentation/Harmonia/STATE_MANAGEMENT.md)
+- [Component Integration](/MetaData/ComponentDocumentation/Harmonia/INTEGRATION_GUIDE.md)
+- [API Reference](/Harmonia/docs/api_reference.md)
