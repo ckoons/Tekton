@@ -95,6 +95,32 @@ class TektonCLI:
         
         return resolved
     
+    def _load_env_files(self, directory: Path):
+        """Load .env.tekton and .env.local files from the specified directory"""
+        # Load .env.tekton (tracked settings)
+        env_tekton = directory / '.env.tekton'
+        if env_tekton.exists():
+            with open(env_tekton, 'r') as f:
+                for line in f:
+                    line = line.strip()
+                    if line and not line.startswith('#') and '=' in line:
+                        key, value = line.split('=', 1)
+                        key = key.strip()
+                        value = value.strip().strip('"').strip("'")
+                        os.environ[key] = value
+        
+        # Load .env.local (secrets, overrides)
+        env_local = directory / '.env.local'
+        if env_local.exists():
+            with open(env_local, 'r') as f:
+                for line in f:
+                    line = line.strip()
+                    if line and not line.startswith('#') and '=' in line:
+                        key, value = line.split('=', 1)
+                        key = key.strip()
+                        value = value.strip().strip('"').strip("'")
+                        os.environ[key] = value
+    
     def cmd_start(self, args: List[str]):
         """Start Tekton components"""
         script_path = Path(self.tekton_root) / 'scripts' / 'enhanced_tekton_launcher.py'
@@ -134,7 +160,9 @@ class TektonCLI:
     
     def cmd_status(self, args: List[str]):
         """Show Tekton component status"""
-        return subprocess.call(['tekton-status'] + args)
+        # Run the Python script directly so environment is set correctly
+        script_path = Path(self.tekton_root) / 'scripts' / 'enhanced_tekton_status.py'
+        return subprocess.call([sys.executable, str(script_path)] + args)
     
     def cmd_revert(self, args: List[str]):
         """Revert Tekton changes"""
@@ -317,6 +345,7 @@ Run 'tekton help <command>' for detailed help on any command.""")
         parser.add_argument('-d', '--debug', action='store_true', help='Enable debug')
         parser.add_argument('-q', '--quiet', action='store_true', help='Quiet mode')
         parser.add_argument('-v', '--verbose', action='store_true', help='Verbose mode')
+        parser.add_argument('-c', '--coder', metavar='X', help='Use Coder-X directory (e.g., -c a for Coder-A)')
         parser.add_argument('--tekton', metavar='DIR', help='Use specific Tekton directory')
         parser.add_argument('--list', action='store_true', help='List Tekton directories')
         
@@ -334,10 +363,23 @@ Run 'tekton help <command>' for detailed help on any command.""")
             # Future: scan for other Tekton instances
             return 0
         
-        if global_args.tekton:
+        if global_args.coder:
+            # Use Coder-X directory
+            coder_letter = global_args.coder.upper()
+            coder_dir = Path.home() / 'projects' / 'github' / f'Coder-{coder_letter}'
+            if not coder_dir.exists():
+                print(f"Error: Coder-{coder_letter} directory does not exist: {coder_dir}", file=sys.stderr)
+                return 1
+            self.tekton_root = str(coder_dir)
+            os.environ['TEKTON_ROOT'] = self.tekton_root
+            # Load environment files from the Coder directory
+            self._load_env_files(coder_dir)
+        elif global_args.tekton:
             # Override TEKTON_ROOT for this command
             self.tekton_root = os.path.abspath(global_args.tekton)
             os.environ['TEKTON_ROOT'] = self.tekton_root
+            # Load environment files from the specified directory
+            self._load_env_files(Path(self.tekton_root))
         
         # Apply global flags to environment
         if global_args.debug:
