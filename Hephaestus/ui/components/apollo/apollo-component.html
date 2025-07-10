@@ -2201,6 +2201,27 @@
         color: #FF9800;
     }
     
+    /* Message content styling */
+    .apollo__message-text ul {
+        list-style: none;
+        padding-left: 0;
+        margin: 10px 0 0 0;
+    }
+    
+    .apollo__message-text ul li {
+        padding: 4px 0;
+        padding-left: 20px;
+        position: relative;
+    }
+    
+    .apollo__message-text ul li:before {
+        content: "•";
+        color: #FF9800;
+        font-weight: bold;
+        position: absolute;
+        left: 0;
+    }
+    
     /* Chat Input */
     .apollo__footer {
         background-color: var(--bg-secondary, #252535);
@@ -2223,7 +2244,7 @@
     .apollo__chat-prompt {
         font-size: 18px;
         font-weight: bold;
-        color: #4CAF50;
+        color: #FF9800; /* Apollo orange */
     }
     
     .apollo__chat-input {
@@ -2243,7 +2264,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        background-color: var(--color-primary, #7B1FA2);
+        background-color: #FF9800; /* Apollo orange */
         border: none;
         border-radius: 8px;
         color: white;
@@ -2253,7 +2274,14 @@
     }
     
     .apollo__send-button:hover {
-        background-color: var(--color-primary-hover, #6A1B9A);
+        background-color: #F57C00; /* Darker orange on hover */
+        transform: translateY(-1px);
+        box-shadow: 0 2px 8px rgba(255, 152, 0, 0.3);
+    }
+    
+    .apollo__send-button:active {
+        transform: translateY(0);
+        box-shadow: none;
     }
     
     /* ======== NEW STYLES FOR ENHANCED TABS ======== */
