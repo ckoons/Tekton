@@ -1002,9 +1002,17 @@
     }
 
     .synthesis__message--user .synthesis__message-content {
-        background-color: var(--color-primary-dark, #1976D2);
-        color: white;
-        border-radius: 12px 12px 0 12px;
+        background-color: rgba(76, 175, 80, 0.05);
+        color: var(--text-primary, #f0f0f0);
+        border-radius: 8px;
+        border-left: 3px solid #4CAF50;
+    }
+
+    .synthesis__message--ai .synthesis__message-content {
+        background-color: rgba(33, 150, 243, 0.05);
+        color: var(--text-primary, #f0f0f0);
+        border-radius: 8px;
+        border-left: 3px solid #2196F3;
     }
 
     .synthesis__message--system .synthesis__message-content {
@@ -1047,7 +1055,7 @@
     .synthesis__chat-prompt {
         font-family: monospace;
         font-size: 1.2rem;
-        color: #4CAF50; /* Match Athena's green terminal prompt */
+        color: #2196F3; /* Match Synthesis's blue theme color */
     }
 
     .synthesis__chat-input {
@@ -1072,7 +1080,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        background-color: var(--color-primary, #7B1FA2); /* Match Athena's purple */
+        background-color: #2196F3; /* Match Synthesis's blue theme color */
         border: none;
         border-radius: 8px;
         color: white;
@@ -1082,7 +1090,7 @@
     }
 
     .synthesis__send-button:hover {
-        background-color: var(--color-primary-hover, #6A1B9A); /* Match Athena's hover color */
+        background-color: #1976D2; /* Darker blue for hover */
     }
 </style>
 
@@ -1244,9 +1252,53 @@ window.synthesis_sendChat = function() {
         
         console.log('[SYNTHESIS] Message sent to', chatType || 'determined chat');
         
-        // Trigger component handler if available
-        if (window.synthesisComponent && typeof window.synthesisComponent.handleChatMessage === 'function') {
-            window.synthesisComponent.handleChatMessage(message, chatType);
+        // Send message to backend via window.AIChat
+        if (window.AIChat && typeof window.AIChat.sendMessage === 'function') {
+            const context = {
+                component: 'synthesis',
+                chatType: chatType,
+                context: 'execution-engine'
+            };
+            
+            window.AIChat.sendMessage(message, context).then(response => {
+                console.log('[SYNTHESIS] AI response received:', response);
+                
+                // Create AI response message element
+                const responseDiv = document.createElement('div');
+                responseDiv.className = 'synthesis__message synthesis__message--ai';
+                responseDiv.innerHTML = `
+                    <div class="synthesis__message-content">
+                        <div class="synthesis__message-text">${response}</div>
+                    </div>
+                `;
+                
+                chatContainer.appendChild(responseDiv);
+                
+                // Scroll to bottom
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+                
+            }).catch(error => {
+                console.error('[SYNTHESIS] Error sending message to AI:', error);
+                
+                // Show error message in chat
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'synthesis__message synthesis__message--system';
+                errorDiv.innerHTML = `
+                    <div class="synthesis__message-content">
+                        <div class="synthesis__message-text">Error: Unable to send message. Please try again.</div>
+                    </div>
+                `;
+                
+                chatContainer.appendChild(errorDiv);
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+            });
+        } else {
+            console.warn('[SYNTHESIS] window.AIChat not available');
+            
+            // Fallback to component handler if available
+            if (window.synthesisComponent && typeof window.synthesisComponent.handleChatMessage === 'function') {
+                window.synthesisComponent.handleChatMessage(message, chatType);
+            }
         }
     } catch (err) {
         console.error('[SYNTHESIS] Error in sending chat:', err);

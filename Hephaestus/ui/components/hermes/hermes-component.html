@@ -863,16 +863,19 @@
     }
     
     .hermes__message--user {
-        background-color: var(--color-primary, #4285F4);
-        color: white;
+        background-color: rgba(76, 175, 80, 0.05);
+        color: var(--text-primary, #f0f0f0);
         align-self: flex-end;
-        border-radius: 16px 16px 0 16px;
+        border-radius: 12px;
+        border-left: 3px solid #4CAF50;
     }
     
     .hermes__message--ai {
-        background-color: var(--bg-secondary, #252535);
+        background-color: rgba(66, 133, 244, 0.05);
+        color: var(--text-primary, #f0f0f0);
         align-self: flex-start;
-        border-radius: 16px 16px 16px 0;
+        border-radius: 12px;
+        border-left: 3px solid #4285F4;
     }
     
     /* Footer with Chat Input */
@@ -897,7 +900,7 @@
     .hermes__chat-prompt {
         font-size: 18px;
         font-weight: bold;
-        color: #4CAF50;
+        color: #4285F4;
     }
     
     .hermes__chat-input {
@@ -1126,7 +1129,7 @@ function hermes_sendChat() {
     // Add user message
     const userMessageDiv = document.createElement('div');
     userMessageDiv.className = 'hermes__message hermes__message--user';
-    userMessageDiv.innerHTML = `<div class="hermes__message-content"><div class="hermes__message-text"><strong>You:</strong> ${message}</div></div>`;
+    userMessageDiv.innerHTML = `<div class="hermes__message-content"><div class="hermes__message-text">${message}</div></div>`;
     messagesContainer.appendChild(userMessageDiv);
     
     // Clear input

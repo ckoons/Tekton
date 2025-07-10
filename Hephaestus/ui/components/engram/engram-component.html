@@ -1960,7 +1960,7 @@ function engram_sendChat() {
     // Add user message
     const userMessageDiv = document.createElement('div');
     userMessageDiv.className = 'engram__message engram__message--user';
-    userMessageDiv.innerHTML = `<div class="engram__message-content"><div class="engram__message-text"><strong>You:</strong> ${message}</div></div>`;
+    userMessageDiv.innerHTML = `<div class="engram__message-content"><div class="engram__message-text">${message}</div></div>`;
     messagesContainer.appendChild(userMessageDiv);
     
     // Clear input

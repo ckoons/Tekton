@@ -1379,7 +1379,7 @@ function terma_sendChat() {
     // Add user message
     const userMessageDiv = document.createElement('div');
     userMessageDiv.className = 'chat-message user-message';
-    userMessageDiv.innerHTML = `<strong>You:</strong> ${message}`;
+    userMessageDiv.innerHTML = message;
     messagesContainer.appendChild(userMessageDiv);
     
     // Clear input

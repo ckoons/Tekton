@@ -685,16 +685,19 @@
     }
     
     .prometheus__message--user {
-        background-color: var(--color-primary, #FF5722);
-        color: white;
+        background-color: rgba(76, 175, 80, 0.05);
+        color: var(--text-primary, #f0f0f0);
         align-self: flex-end;
         border-radius: 16px 16px 0 16px;
+        border-left: 3px solid #4CAF50;
     }
     
     .prometheus__message--ai {
-        background-color: var(--bg-secondary, #252535);
+        background-color: rgba(255, 87, 34, 0.05); /* Prometheus orange with 0.05 opacity */
+        color: var(--text-primary, #f0f0f0);
         align-self: flex-start;
         border-radius: 16px 16px 16px 0;
+        border-left: 3px solid #FF5722;
     }
     
     /* Chat Input */
@@ -719,7 +722,7 @@
     .prometheus__chat-prompt {
         font-size: 18px;
         font-weight: bold;
-        color: #4CAF50; /* Green */
+        color: #FF5722; /* Prometheus orange */
     }
     
     .prometheus__chat-input {
@@ -936,28 +939,53 @@ window.prometheus_sendChat = function() {
         // Scroll to bottom
         messagesContainer.scrollTop = messagesContainer.scrollHeight;
         
-        // Simulate AI response after a delay
-        setTimeout(() => {
+        // Use window.AIChat for AI response
+        if (window.AIChat && typeof window.AIChat === 'function') {
+            // Create AI message element with loading state
             const aiMessage = document.createElement('div');
             aiMessage.className = 'prometheus__message prometheus__message--ai';
-            
-            let responseText = '';
-            if (tabId === 'planningchat') {
-                responseText = 'I\'ll help you with your planning query. Processing your request...';
-            } else {
-                responseText = 'Message received in team chat. This would be shared with all team members.';
-            }
-            
             aiMessage.innerHTML = `
                 <div class="prometheus__message-content">
-                    <div class="prometheus__message-text">${responseText}</div>
+                    <div class="prometheus__message-text">Thinking...</div>
                 </div>
             `;
             messagesContainer.appendChild(aiMessage);
-            
-            // Scroll to bottom again
             messagesContainer.scrollTop = messagesContainer.scrollHeight;
-        }, 1000);
+            
+            // Determine the context based on the active tab
+            const context = tabId === 'planningchat' ? 'planning' : 'team';
+            const systemPrompt = tabId === 'planningchat' 
+                ? 'You are Prometheus, a planning and resource management assistant. Help with project scheduling, resource allocation, timeline analysis, and risk assessment.'
+                : 'You are responding in the Tekton team chat. Keep responses concise and collaborative.';
+            
+            // Call window.AIChat
+            window.AIChat(message, systemPrompt, context).then(response => {
+                // Update the AI message with the response
+                const messageText = aiMessage.querySelector('.prometheus__message-text');
+                if (messageText) {
+                    messageText.textContent = response;
+                }
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            }).catch(error => {
+                console.error('[PROMETHEUS] AI Chat error:', error);
+                const messageText = aiMessage.querySelector('.prometheus__message-text');
+                if (messageText) {
+                    messageText.textContent = 'Sorry, I encountered an error processing your request. Please try again.';
+                }
+            });
+        } else {
+            console.warn('[PROMETHEUS] window.AIChat not available');
+            // Fallback to a simple message
+            const aiMessage = document.createElement('div');
+            aiMessage.className = 'prometheus__message prometheus__message--ai';
+            aiMessage.innerHTML = `
+                <div class="prometheus__message-content">
+                    <div class="prometheus__message-text">AI Chat integration is not available. Please ensure the AI system is properly configured.</div>
+                </div>
+            `;
+            messagesContainer.appendChild(aiMessage);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
         
         console.log('[PROMETHEUS] Message sent:', message, 'to tab:', tabId);
         

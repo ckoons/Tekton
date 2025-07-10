@@ -583,34 +583,39 @@
     }
     
     .ergon__message {
-        border-radius: 16px;
+        border-radius: 8px;
         padding: 12px 16px;
         max-width: 85%;
         word-wrap: break-word;
         line-height: 1.4;
+        margin: 4px 0; /* Add vertical spacing */
     }
     
     .ergon__message--system {
-        background-color: var(--bg-tertiary, #333345);
+        background-color: rgba(0, 151, 167, 0.05); /* Light teal background for system messages */
         align-self: center;
         max-width: 90%;
         width: 600px;
         margin: 8px 0;
         border-radius: 8px;
         padding: 16px 24px;
+        border-left: 3px solid #0097A7;
     }
     
     .ergon__message--user {
-        background-color: var(--color-primary, #0097A7);
-        color: white;
+        background-color: rgba(76, 175, 80, 0.05); /* Light green background */
+        color: var(--text-primary, #f0f0f0);
         align-self: flex-end;
-        border-radius: 16px 16px 0 16px;
+        border-left: 3px solid #4CAF50; /* Green border for user messages */
+        border-radius: 8px;
     }
     
     .ergon__message--ai {
-        background-color: var(--bg-secondary, #252535);
+        background-color: rgba(0, 151, 167, 0.05); /* Light teal background with 0.05 opacity */
+        color: var(--text-primary, #f0f0f0);
         align-self: flex-start;
-        border-radius: 16px 16px 16px 0;
+        border-left: 3px solid #0097A7; /* Teal border for AI messages */
+        border-radius: 8px;
     }
     
     .ergon__message-content {
@@ -655,7 +660,7 @@
     .ergon__chat-prompt {
         font-size: 18px;
         font-weight: bold;
-        color: #4CAF50;
+        color: #0097A7; /* Changed to Ergon teal theme color */
     }
     
     .ergon__chat-input {
@@ -880,7 +885,7 @@ function ergon_sendChat() {
     // Add user message
     const userMessageDiv = document.createElement('div');
     userMessageDiv.className = 'ergon__message ergon__message--user';
-    userMessageDiv.innerHTML = `<div class="ergon__message-content"><div class="ergon__message-text"><strong>You:</strong> ${message}</div></div>`;
+    userMessageDiv.innerHTML = `<div class="ergon__message-content"><div class="ergon__message-text">${message}</div></div>`;
     messagesContainer.appendChild(userMessageDiv);
     
     // Clear input

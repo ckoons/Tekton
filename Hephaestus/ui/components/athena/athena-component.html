@@ -1009,7 +1009,7 @@ function athena_sendChat() {
     // Add user message
     const userMessageDiv = document.createElement('div');
     userMessageDiv.className = 'athena__message athena__message--user';
-    userMessageDiv.innerHTML = `<div class="athena__message-content"><div class="athena__message-text"><strong>You:</strong> ${message}</div></div>`;
+    userMessageDiv.innerHTML = `<div class="athena__message-content"><div class="athena__message-text">${message}</div></div>`;
     messagesContainer.appendChild(userMessageDiv);
     
     // Clear input

@@ -1719,7 +1719,7 @@ function budget_sendChat() {
     // Add user message
     const userMessageDiv = document.createElement('div');
     userMessageDiv.className = 'budget__message budget__message--user';
-    userMessageDiv.innerHTML = `<div class="budget__message-content"><div class="budget__message-text"><strong>You:</strong> ${message}</div></div>`;
+    userMessageDiv.innerHTML = `<div class="budget__message-content"><div class="budget__message-text">${message}</div></div>`;
     messagesContainer.appendChild(userMessageDiv);
     
     // Clear input

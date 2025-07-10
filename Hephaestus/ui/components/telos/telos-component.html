@@ -279,18 +279,13 @@
             <div id="reqchat-messages" class="telos__chat-messages">
                 <!-- Welcome message -->
                 <div class="telos__message telos__message--system">
-                    <div class="telos__message-content">
-                        <div class="telos__message-text">
-                            <h3 class="telos__message-title">Requirements Assistant</h3>
-                            <p>This chat provides assistance with requirements engineering. Ask questions about:</p>
-                            <ul>
-                                <li>Requirements drafting and refinement</li>
-                                <li>Requirements validation and analysis</li>
-                                <li>Traceability and relationships</li>
-                                <li>Best practices for requirements management</li>
-                            </ul>
-                        </div>
-                    </div>
+                    <strong>Telos:</strong> Welcome to the Requirements Assistant! I can help you with:
+                    <ul style="margin-top: 8px; margin-bottom: 0;">
+                        <li>Requirements drafting and refinement</li>
+                        <li>Requirements validation and analysis</li>
+                        <li>Traceability and relationships</li>
+                        <li>Best practices for requirements management</li>
+                    </ul>
                 </div>
             </div>
         </div>
@@ -300,12 +295,7 @@
             <div id="teamchat-messages" class="telos__chat-messages">
                 <!-- Welcome message -->
                 <div class="telos__message telos__message--system">
-                    <div class="telos__message-content">
-                        <div class="telos__message-text">
-                            <h3 class="telos__message-title">Tekton Team Chat</h3>
-                            <p>This chat is shared across all Tekton components. Use this for team communication and coordination.</p>
-                        </div>
-                    </div>
+                    <strong>System:</strong> This chat is shared across all Tekton components. Use this for team communication and coordination.
                 </div>
             </div>
         </div>
@@ -768,34 +758,51 @@
     }
     
     .telos__message {
-        border-radius: 16px;
-        padding: 12px 16px;
-        max-width: 85%;
+        margin-bottom: 12px;
+        padding: 8px 12px;
+        border-radius: 4px;
+        background-color: transparent;
+        position: relative;
         word-wrap: break-word;
         line-height: 1.4;
     }
     
+    .telos__message strong {
+        display: inline-block;
+        margin-right: 8px;
+        font-weight: 600;
+    }
+    
     .telos__message--system {
-        background-color: var(--bg-tertiary, #333345);
-        align-self: center;
-        max-width: 90%;
-        width: 600px;
+        background-color: rgba(52, 152, 219, 0.05); /* Telos blue with 0.05 opacity */
+        border-left: 3px solid #3498db;
+        font-style: italic;
+        max-width: 100%;
         margin: 8px 0;
-        border-radius: 8px;
-        padding: 16px 24px;
+    }
+    
+    .telos__message--system strong {
+        color: #3498db;
     }
     
     .telos__message--user {
-        background-color: var(--color-primary, #3498db);
-        color: white;
-        align-self: flex-end;
-        border-radius: 16px 16px 0 16px;
+        background-color: rgba(76, 175, 80, 0.05); /* Green with 0.05 opacity */
+        border-left: 3px solid #4CAF50;
+        margin-left: 0;
+    }
+    
+    .telos__message--user strong {
+        color: #4CAF50;
     }
     
     .telos__message--ai {
-        background-color: var(--bg-secondary, #252535);
-        align-self: flex-start;
-        border-radius: 16px 16px 16px 0;
+        background-color: rgba(52, 152, 219, 0.05); /* Telos blue with 0.05 opacity */
+        border-left: 3px solid #3498db;
+        margin-right: 0;
+    }
+    
+    .telos__message--ai strong {
+        color: #3498db;
     }
     
     /* Chat Input */
@@ -820,7 +827,7 @@
     .telos__chat-prompt {
         font-size: 18px;
         font-weight: bold;
-        color: #4CAF50;
+        color: #3498db; /* Telos blue color */
     }
     
     .telos__chat-input {
@@ -840,7 +847,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        background-color: var(--color-primary, #3498db);
+        background-color: #3498db; /* Telos blue color */
         border: none;
         border-radius: 8px;
         color: white;
@@ -850,7 +857,14 @@
     }
     
     .telos__send-button:hover {
-        background-color: var(--color-primary-hover, #2980b9);
+        background-color: #2980b9; /* Darker blue on hover */
+        transform: translateY(-1px);
+        box-shadow: 0 2px 8px rgba(52, 152, 219, 0.3);
+    }
+    
+    .telos__send-button:active {
+        transform: translateY(0);
+        box-shadow: none;
     }
     
     @keyframes telos-spin {
@@ -1016,11 +1030,7 @@ window.telos_sendChat = function() {
                 // Create user message
                 const userMsg = document.createElement('div');
                 userMsg.className = 'telos__message telos__message--user';
-                userMsg.innerHTML = `
-                    <div class="telos__message-content">
-                        <div class="telos__message-text">${message}</div>
-                    </div>
-                `;
+                userMsg.innerHTML = message;
                 panel.appendChild(userMsg);
                 
                 // Clear input
@@ -1031,26 +1041,64 @@ window.telos_sendChat = function() {
                 
                 console.log('[TELOS] Message sent to ' + tabId);
                 
-                // Call component method if available
-                if (window.telosComponent && typeof window.telosComponent.sendMessage === 'function') {
-                    window.telosComponent.sendMessage(message, tabId);
+                // Send to backend
+                if (tabId === 'reqchat') {
+                    // Requirements chat - direct message to telos-ai
+                    if (window.AIChat) {
+                        window.AIChat.sendMessage('telos-ai', message)
+                            .then(response => {
+                                const aiMsg = document.createElement('div');
+                                aiMsg.className = 'telos__message telos__message--ai';
+                                aiMsg.innerHTML = `<strong>Telos:</strong> ${response.content}`;
+                                panel.appendChild(aiMsg);
+                                panel.scrollTop = panel.scrollHeight;
+                            })
+                            .catch(err => {
+                                console.error('[TELOS] Failed to send message:', err);
+                                const errorDiv = document.createElement('div');
+                                errorDiv.className = 'telos__message telos__message--system';
+                                errorDiv.innerHTML = `<strong>System:</strong> Failed to connect to Telos AI`;
+                                panel.appendChild(errorDiv);
+                                panel.scrollTop = panel.scrollHeight;
+                            });
+                    } else {
+                        console.error('[TELOS] AIChat not available');
+                        const errorDiv = document.createElement('div');
+                        errorDiv.className = 'telos__message telos__message--system';
+                        errorDiv.innerHTML = `<strong>System:</strong> AI Chat system not available`;
+                        panel.appendChild(errorDiv);
+                        panel.scrollTop = panel.scrollHeight;
+                    }
+                } else if (tabId === 'teamchat') {
+                    // Team chat through Rhetor
+                    if (window.AIChat) {
+                        window.AIChat.teamChat(message, 'telos')
+                            .then(data => {
+                                // Display team responses
+                                if (data.responses && data.responses.length > 0) {
+                                    data.responses.forEach(resp => {
+                                        const aiMsg = document.createElement('div');
+                                        aiMsg.className = 'telos__message telos__message--ai';
+                                        const sender = resp.socket_id.replace('-ai', '').charAt(0).toUpperCase() + 
+                                                     resp.socket_id.replace('-ai', '').slice(1);
+                                        aiMsg.innerHTML = `<strong>${sender}:</strong> ${resp.content}`;
+                                        panel.appendChild(aiMsg);
+                                    });
+                                    panel.scrollTop = panel.scrollHeight;
+                                }
+                            })
+                            .catch(err => {
+                                console.error('[TELOS] Failed to send team message:', err);
+                                const errorDiv = document.createElement('div');
+                                errorDiv.className = 'telos__message telos__message--system';
+                                errorDiv.innerHTML = `<strong>System:</strong> Failed to send team message`;
+                                panel.appendChild(errorDiv);
+                                panel.scrollTop = panel.scrollHeight;
+                            });
+                    } else {
+                        console.error('[TELOS] AIChat not available for team chat');
+                    }
                 }
-                
-                // Simulate AI response after a delay
-                setTimeout(() => {
-                    const aiMsg = document.createElement('div');
-                    aiMsg.className = 'telos__message telos__message--ai';
-                    const responseText = tabId === 'reqchat' 
-                        ? 'I can help you with requirements engineering. What would you like to know?'
-                        : 'Team message received. This feature will be connected to the team communication system.';
-                    aiMsg.innerHTML = `
-                        <div class="telos__message-content">
-                            <div class="telos__message-text">${responseText}</div>
-                        </div>
-                    `;
-                    panel.appendChild(aiMsg);
-                    panel.scrollTop = panel.scrollHeight;
-                }, 1000);
             }
         } else {
             console.log('[TELOS] Send Chat: Not in a chat tab');
