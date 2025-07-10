@@ -46,7 +46,7 @@ class PurposeCommand:
     """Manages terminal purposes and playbook content."""
     
     def __init__(self):
-        self.tekton_root = os.environ.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
+        self.tekton_root = os.environ.get('TEKTON_MAIN_ROOT', os.environ.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton'))
         self.playbook_dir = Path(self.tekton_root) / ".tekton" / "playbook"
         self.terma_url = os.environ.get('TERMA_ENDPOINT', 'http://localhost:8004')
         
