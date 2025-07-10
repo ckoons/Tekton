@@ -1712,8 +1712,8 @@ function budget_sendChat() {
     if (!message) return;
     
     // Determine which tab is active
-    const budgetChatActive = document.querySelector('.budget__tab[data-tab="budget-chat"]').classList.contains('budget__tab--active');
-    const chatType = budgetChatActive ? 'budget-chat' : 'team-chat';
+    const budgetChatActive = document.querySelector('.budget__tab[data-tab="budgetchat"]').classList.contains('budget__tab--active');
+    const chatType = budgetChatActive ? 'budgetchat' : 'teamchat';
     const messagesContainer = document.getElementById(`${chatType}-messages`);
     
     // Add user message
@@ -1729,7 +1729,7 @@ function budget_sendChat() {
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
     
     // Send to backend
-    if (chatType === 'budget-chat') {
+    if (chatType === 'budgetchat') {
         // Direct message to budget-ai
         if (window.AIChat) {
             window.AIChat.sendMessage('budget-ai', message)
@@ -1776,16 +1776,16 @@ function budget_sendChat() {
 
 // Clear chat functionality
 function budget_clearChat() {
-    const budgetChatActive = document.querySelector('.budget__tab[data-tab="budget-chat"]').classList.contains('budget__tab--active');
-    const teamChatActive = document.querySelector('.budget__tab[data-tab="team-chat"]').classList.contains('budget__tab--active');
+    const budgetChatActive = document.querySelector('.budget__tab[data-tab="budgetchat"]').classList.contains('budget__tab--active');
+    const teamChatActive = document.querySelector('.budget__tab[data-tab="teamchat"]').classList.contains('budget__tab--active');
     
     if (budgetChatActive) {
-        const messagesContainer = document.getElementById('budget-chat-messages');
+        const messagesContainer = document.getElementById('budgetchat-messages');
         // Keep the welcome message, remove all others
         const messages = messagesContainer.querySelectorAll('.budget__message:not(.budget__message--system)');
         messages.forEach(msg => msg.remove());
     } else if (teamChatActive) {
-        const messagesContainer = document.getElementById('team-chat-messages');
+        const messagesContainer = document.getElementById('teamchat-messages');
         // Keep the welcome message, remove all others
         const messages = messagesContainer.querySelectorAll('.budget__message:not(.budget__message--system)');
         messages.forEach(msg => msg.remove());

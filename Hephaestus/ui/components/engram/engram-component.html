@@ -1953,8 +1953,8 @@ function engram_sendChat() {
     if (!message) return;
     
     // Determine which tab is active
-    const memoryChatActive = document.querySelector('.engram__tab[data-tab="memory"]').classList.contains('engram__tab--active');
-    const chatType = memoryChatActive ? 'memory' : 'teamchat';
+    const memoryChatActive = document.querySelector('.engram__tab[data-tab="chat"]').classList.contains('engram__tab--active');
+    const chatType = memoryChatActive ? 'chat' : 'teamchat';
     const messagesContainer = document.getElementById(`${chatType}-messages`);
     
     // Add user message
@@ -1970,7 +1970,7 @@ function engram_sendChat() {
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
     
     // Send to backend
-    if (chatType === 'memory') {
+    if (chatType === 'chat') {
         // Direct message to engram-ai
         if (window.AIChat) {
             window.AIChat.sendMessage('engram-ai', message)
@@ -2017,11 +2017,11 @@ function engram_sendChat() {
 
 // Clear chat functionality
 function engram_clearChat() {
-    const memoryChatActive = document.querySelector('.engram__tab[data-tab="memory"]').classList.contains('engram__tab--active');
+    const memoryChatActive = document.querySelector('.engram__tab[data-tab="chat"]').classList.contains('engram__tab--active');
     const teamchatActive = document.querySelector('.engram__tab[data-tab="teamchat"]').classList.contains('engram__tab--active');
     
     if (memoryChatActive) {
-        const messagesContainer = document.getElementById('memory-messages');
+        const messagesContainer = document.getElementById('chat-messages');
         // Keep the welcome message, remove all others
         const messages = messagesContainer.querySelectorAll('.engram__message:not(.engram__message--system)');
         messages.forEach(msg => msg.remove());

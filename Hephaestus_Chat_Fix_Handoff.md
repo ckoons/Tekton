@@ -114,22 +114,7 @@ function component_sendChat() {
 
 ### Remaining Components to Fix (in order):
 
-1. **Athena** (`/Hephaestus/ui/components/athena/athena-component.html`)
-   - Main chat tab: "chat" → Knowledge Chat
-   - Chat container IDs: "chat-messages", "teamchat-messages"
-   - AI name: "athena-ai"
-
-2. **Budget** (`/Hephaestus/ui/components/budget/budget-component.html`)
-   - Main chat tab: "budget-chat" → Budget Chat
-   - Chat container IDs: "budget-chat-messages", "team-chat-messages"
-   - AI name: "budget-ai"
-
-3. **Engram** (`/Hephaestus/ui/components/engram/engram-component.html`)
-   - Main chat tab: "memory" → Memory Chat
-   - Chat container IDs: "memory-messages", "teamchat-messages"
-   - AI name: "engram-ai"
-
-4. **Ergon** (`/Hephaestus/ui/components/ergon/ergon-component.html`)
+1. **Ergon** (`/Hephaestus/ui/components/ergon/ergon-component.html`)
    - Main chat tab: "tool-chat" → Tool Chat
    - Chat container IDs: "tool-chat-messages", "team-chat-messages"
    - AI name: "ergon-ai"
@@ -164,10 +149,33 @@ function component_sendChat() {
     - Chat container IDs: "execution-chat-messages", "team-chat-messages"
     - AI name: "synthesis-ai"
 
-11. **Telos** (`/Hephaestus/ui/components/telos/telos-component.html`)
+8. **Telos** (`/Hephaestus/ui/components/telos/telos-component.html`)
     - Main chat tab: "requirements-chat" → Requirements Chat
     - Chat container IDs: "requirements-chat-messages", "team-chat-messages"
     - AI name: "telos-ai"
+
+### Component Theme Colors Reference
+Each component should use its theme color for:
+- Prompt symbol (>)
+- Send button background
+- AI message borders and backgrounds
+- System message borders
+- Bullet points in lists
+
+| Component | Theme Color | Hex Code |
+|-----------|------------|----------|
+| Apollo | Orange | #FF9800 |
+| Athena | Purple | #7B1FA2 |
+| Budget | Green | #34A853 |
+| Engram | Green | #34A853 |
+| Ergon | Teal | #0097A7 |
+| Harmonia | Orange | #F57C00 |
+| Hermes | Blue | #4285F4 |
+| Metis | Mint | #00BFA5 |
+| Prometheus | Pink | #C2185B |
+| Sophia | Light Green | #7CB342 |
+| Synthesis | Indigo | #3949AB |
+| Telos | Dark Teal | #00796B |
 
 ### Final Fix: Rhetor CSS
 In `/Hephaestus/ui/components/rhetor/rhetor-component.html`, find line 2339:
