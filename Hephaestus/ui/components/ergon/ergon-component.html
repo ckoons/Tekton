@@ -680,7 +680,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        background-color: var(--color-primary, #0097A7);
+        background-color: #0097A7; /* Teal color for Ergon */
         border: none;
         border-radius: 8px;
         color: white;
@@ -690,7 +690,14 @@
     }
     
     .ergon__send-button:hover {
-        background-color: var(--color-primary-hover, #007A8A);
+        background-color: #007A8A; /* Darker teal on hover */
+        transform: translateY(-1px);
+        box-shadow: 0 2px 8px rgba(0, 151, 167, 0.3);
+    }
+    
+    .ergon__send-button:active {
+        transform: translateY(0);
+        box-shadow: none;
     }
     
     /* Panel Section Styling */

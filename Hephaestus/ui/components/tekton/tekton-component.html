@@ -913,6 +913,13 @@
     
     .tekton__send-button:hover {
         background-color: #FF8C00; /* Darker golden on hover */
+        transform: translateY(-1px);
+        box-shadow: 0 2px 8px rgba(255, 165, 0, 0.3);
+    }
+    
+    .tekton__send-button:active {
+        transform: translateY(0);
+        box-shadow: none;
     }
     
     @keyframes tekton-spin {

@@ -920,7 +920,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        background-color: var(--color-primary, #4285F4);
+        background-color: #4285F4; /* Blue color for Hermes */
         border: none;
         border-radius: 8px;
         color: white;
@@ -930,7 +930,14 @@
     }
     
     .hermes__send-button:hover {
-        background-color: var(--color-primary-hover, #3367D6);
+        background-color: #3367D6; /* Darker blue on hover */
+        transform: translateY(-1px);
+        box-shadow: 0 2px 8px rgba(66, 133, 244, 0.3);
+    }
+    
+    .hermes__send-button:active {
+        transform: translateY(0);
+        box-shadow: none;
     }
     
     .hermes__button-icon {
