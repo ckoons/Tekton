@@ -585,9 +585,14 @@
     <div class="budget__footer" data-tekton-zone="footer">
         <div class="budget__chat-input-container">
             <div class="budget__chat-prompt">></div>
-            <input type="text" id="chat-input" class="budget__chat-input" 
-                   placeholder="Ask about usage, costs, or budget settings">
-            <button id="send-button" class="budget__send-button" data-tekton-action="send-message" data-tekton-action-type="primary">Send</button>
+            <input type="text" id="budget-chat-input" class="budget__chat-input" 
+                   data-tekton-input="chat-input"
+                   data-tekton-input-type="chat"
+                   placeholder="Ask about usage, costs, or budget settings"
+                   onkeydown="if(event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); budget_sendChat(); }">
+            <button id="budget-send-button" class="budget__send-button" onclick="budget_sendChat(); return false;"
+                    data-tekton-action="send-message" 
+                    data-tekton-action-type="primary">Send</button>
         </div>
     </div>
 </div>
@@ -1218,35 +1223,75 @@
         gap: 12px;
     }
     
+    /* Messages - Following Numa's styling pattern */
     .budget__message {
-        border-radius: 16px;
-        padding: 12px 16px;
-        max-width: 85%;
-        word-wrap: break-word;
-        line-height: 1.4;
+        margin-bottom: 12px;
+        padding: 8px 12px;
+        border-radius: 4px;
+        background-color: transparent;
+        position: relative;
     }
     
+    .budget__message strong {
+        display: inline-block;
+        margin-right: 8px;
+        font-weight: 600;
+    }
+    
+    /* System messages */
     .budget__message--system {
-        background-color: var(--bg-tertiary, #333345);
-        align-self: center;
-        max-width: 90%;
-        width: 600px;
-        margin: 8px 0;
-        border-radius: 8px;
-        padding: 16px 24px;
+        background-color: rgba(52, 168, 83, 0.05);
+        border-left: 3px solid #34A853;
+        font-style: italic;
     }
     
+    .budget__message--system strong {
+        color: #34A853;
+    }
+    
+    /* User messages */
     .budget__message--user {
-        background-color: var(--color-primary, #34A853); /* Budget green from spec */
-        color: white;
+        background-color: rgba(76, 175, 80, 0.05);
+        border-left: 3px solid #4CAF50;
+        margin-left: 32px;
         align-self: flex-end;
-        border-radius: 16px 16px 0 16px;
     }
     
+    .budget__message--user strong {
+        color: #4CAF50;
+    }
+    
+    /* AI messages */
     .budget__message--ai {
-        background-color: var(--bg-secondary, #252535);
+        background-color: rgba(52, 168, 83, 0.05);
+        border-left: 3px solid #34A853;
+        margin-right: 32px;
         align-self: flex-start;
-        border-radius: 16px 16px 16px 0;
+    }
+    
+    .budget__message--ai strong {
+        color: #34A853;
+    }
+    
+    /* Message content styling */
+    .budget__message-text ul {
+        list-style: none;
+        padding-left: 0;
+        margin: 10px 0 0 0;
+    }
+    
+    .budget__message-text ul li {
+        padding: 4px 0;
+        padding-left: 20px;
+        position: relative;
+    }
+    
+    .budget__message-text ul li:before {
+        content: "•";
+        color: #34A853;
+        font-weight: bold;
+        position: absolute;
+        left: 0;
     }
     
     .budget__message-title {
@@ -1276,7 +1321,7 @@
     .budget__chat-prompt {
         font-size: 18px;
         font-weight: bold;
-        color: #4CAF50;
+        color: #34A853; /* Budget green */
     }
     
     .budget__chat-input {
@@ -1296,7 +1341,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        background-color: var(--color-primary, #34A853); /* Budget green from spec */
+        background-color: #34A853; /* Budget green */
         border: none;
         border-radius: 8px;
         color: white;
@@ -1306,7 +1351,14 @@
     }
     
     .budget__send-button:hover {
-        background-color: var(--color-primary-hover, #2D9249); /* Budget green darker */
+        background-color: #2D9249; /* Darker green on hover */
+        transform: translateY(-1px);
+        box-shadow: 0 2px 8px rgba(52, 168, 83, 0.3);
+    }
+    
+    .budget__send-button:active {
+        transform: translateY(0);
+        box-shadow: none;
     }
     
     /* Loading Indicator */
@@ -1650,5 +1702,93 @@ if (document.readyState === 'complete' || document.readyState === 'interactive')
     console.log('[BUDGET] Document already loaded, setting up Budget component immediately');
     budget_protectHtmlPanel();
     budget_loadComponent();
+}
+
+// Chat functionality - Following Numa's pattern
+function budget_sendChat() {
+    const input = document.getElementById('budget-chat-input');
+    const message = input.value.trim();
+    
+    if (!message) return;
+    
+    // Determine which tab is active
+    const budgetChatActive = document.querySelector('.budget__tab[data-tab="budget-chat"]').classList.contains('budget__tab--active');
+    const chatType = budgetChatActive ? 'budget-chat' : 'team-chat';
+    const messagesContainer = document.getElementById(`${chatType}-messages`);
+    
+    // Add user message
+    const userMessageDiv = document.createElement('div');
+    userMessageDiv.className = 'budget__message budget__message--user';
+    userMessageDiv.innerHTML = `<div class="budget__message-content"><div class="budget__message-text"><strong>You:</strong> ${message}</div></div>`;
+    messagesContainer.appendChild(userMessageDiv);
+    
+    // Clear input
+    input.value = '';
+    
+    // Scroll to bottom
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    
+    // Send to backend
+    if (chatType === 'budget-chat') {
+        // Direct message to budget-ai
+        if (window.AIChat) {
+            window.AIChat.sendMessage('budget-ai', message)
+                .then(response => {
+                    const aiMessageDiv = document.createElement('div');
+                    aiMessageDiv.className = 'budget__message budget__message--ai';
+                    aiMessageDiv.innerHTML = `<div class="budget__message-content"><div class="budget__message-text"><strong>Budget:</strong> ${response.content}</div></div>`;
+                    messagesContainer.appendChild(aiMessageDiv);
+                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                })
+                .catch(err => {
+                    console.error('Failed to send message:', err);
+                    const errorDiv = document.createElement('div');
+                    errorDiv.className = 'budget__message budget__message--system';
+                    errorDiv.innerHTML = `<div class="budget__message-content"><div class="budget__message-text"><strong>System:</strong> Failed to connect to Budget AI</div></div>`;
+                    messagesContainer.appendChild(errorDiv);
+                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                });
+        }
+    } else {
+        // Team chat
+        if (window.AIChat) {
+            window.AIChat.teamChat(message, 'budget')
+                .then(data => {
+                    // Display team responses
+                    if (data.responses && data.responses.length > 0) {
+                        data.responses.forEach(resp => {
+                            const aiMessageDiv = document.createElement('div');
+                            aiMessageDiv.className = 'budget__message budget__message--ai';
+                            const sender = resp.socket_id.replace('-ai', '').charAt(0).toUpperCase() + 
+                                         resp.socket_id.replace('-ai', '').slice(1);
+                            aiMessageDiv.innerHTML = `<div class="budget__message-content"><div class="budget__message-text"><strong>${sender}:</strong> ${resp.content}</div></div>`;
+                            messagesContainer.appendChild(aiMessageDiv);
+                        });
+                        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                    }
+                })
+                .catch(err => {
+                    console.error('Failed to send team message:', err);
+                });
+        }
+    }
+}
+
+// Clear chat functionality
+function budget_clearChat() {
+    const budgetChatActive = document.querySelector('.budget__tab[data-tab="budget-chat"]').classList.contains('budget__tab--active');
+    const teamChatActive = document.querySelector('.budget__tab[data-tab="team-chat"]').classList.contains('budget__tab--active');
+    
+    if (budgetChatActive) {
+        const messagesContainer = document.getElementById('budget-chat-messages');
+        // Keep the welcome message, remove all others
+        const messages = messagesContainer.querySelectorAll('.budget__message:not(.budget__message--system)');
+        messages.forEach(msg => msg.remove());
+    } else if (teamChatActive) {
+        const messagesContainer = document.getElementById('team-chat-messages');
+        // Keep the welcome message, remove all others
+        const messages = messagesContainer.querySelectorAll('.budget__message:not(.budget__message--system)');
+        messages.forEach(msg => msg.remove());
+    }
 }
 </script>

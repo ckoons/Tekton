@@ -230,9 +230,14 @@
     <div class="athena__footer" data-tekton-zone="footer">
         <div class="athena__chat-input-container">
             <div class="athena__chat-prompt">></div>
-            <input type="text" id="chat-input" class="athena__chat-input" 
-                   placeholder="Enter chat message for Athena knowledge graph queries, entities or information">
-            <button id="send-button" class="athena__send-button" data-tekton-action="send-message" data-tekton-action-type="primary">Send</button>
+            <input type="text" id="athena-chat-input" class="athena__chat-input" 
+                   data-tekton-input="chat-input"
+                   data-tekton-input-type="chat"
+                   placeholder="Enter chat message for Athena knowledge graph queries, entities or information"
+                   onkeydown="if(event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); athena_sendChat(); }">
+            <button id="athena-send-button" class="athena__send-button" onclick="athena_sendChat(); return false;"
+                    data-tekton-action="send-message" 
+                    data-tekton-action-type="primary">Send</button>
         </div>
     </div>
 </div>
@@ -514,35 +519,75 @@
         gap: 12px;
     }
     
+    /* Messages - Following Numa's styling pattern */
     .athena__message {
-        border-radius: 16px;
-        padding: 12px 16px;
-        max-width: 85%;
-        word-wrap: break-word;
-        line-height: 1.4;
+        margin-bottom: 12px;
+        padding: 8px 12px;
+        border-radius: 4px;
+        background-color: transparent;
+        position: relative;
     }
     
+    .athena__message strong {
+        display: inline-block;
+        margin-right: 8px;
+        font-weight: 600;
+    }
+    
+    /* System messages */
     .athena__message--system {
-        background-color: var(--bg-tertiary, #333345);
-        align-self: center;
-        max-width: 90%;
-        width: 600px;
-        margin: 8px 0;
-        border-radius: 8px;
-        padding: 16px 24px;
+        background-color: rgba(123, 31, 162, 0.05);
+        border-left: 3px solid #7B1FA2;
+        font-style: italic;
     }
     
+    .athena__message--system strong {
+        color: #7B1FA2;
+    }
+    
+    /* User messages */
     .athena__message--user {
-        background-color: var(--color-primary, #7B1FA2);
-        color: white;
+        background-color: rgba(76, 175, 80, 0.05);
+        border-left: 3px solid #4CAF50;
+        margin-left: 32px;
         align-self: flex-end;
-        border-radius: 16px 16px 0 16px;
     }
     
+    .athena__message--user strong {
+        color: #4CAF50;
+    }
+    
+    /* AI messages */
     .athena__message--ai {
-        background-color: var(--bg-secondary, #252535);
+        background-color: rgba(123, 31, 162, 0.05);
+        border-left: 3px solid #7B1FA2;
+        margin-right: 32px;
         align-self: flex-start;
-        border-radius: 16px 16px 16px 0;
+    }
+    
+    .athena__message--ai strong {
+        color: #7B1FA2;
+    }
+    
+    /* Message content styling */
+    .athena__message-text ul {
+        list-style: none;
+        padding-left: 0;
+        margin: 10px 0 0 0;
+    }
+    
+    .athena__message-text ul li {
+        padding: 4px 0;
+        padding-left: 20px;
+        position: relative;
+    }
+    
+    .athena__message-text ul li:before {
+        content: "•";
+        color: #7B1FA2;
+        font-weight: bold;
+        position: absolute;
+        left: 0;
     }
     
     /* Chat Input */
@@ -567,7 +612,7 @@
     .athena__chat-prompt {
         font-size: 18px;
         font-weight: bold;
-        color: #4CAF50;
+        color: #7B1FA2; /* Athena purple */
     }
     
     .athena__chat-input {
@@ -587,7 +632,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        background-color: var(--color-primary, #7B1FA2);
+        background-color: #7B1FA2; /* Athena purple */
         border: none;
         border-radius: 8px;
         color: white;
@@ -597,7 +642,14 @@
     }
     
     .athena__send-button:hover {
-        background-color: var(--color-primary-hover, #6A1B9A);
+        background-color: #6A1B9A; /* Darker purple on hover */
+        transform: translateY(-1px);
+        box-shadow: 0 2px 8px rgba(123, 31, 162, 0.3);
+    }
+    
+    .athena__send-button:active {
+        transform: translateY(0);
+        box-shadow: none;
     }
     
     /* Loading Indicator */
@@ -940,5 +992,93 @@ if (document.readyState === 'complete' || document.readyState === 'interactive')
     console.log('[ATHENA] Document already loaded, setting up Athena component immediately');
     athena_protectHtmlPanel();
     athena_loadComponent();
+}
+
+// Chat functionality - Following Numa's pattern
+function athena_sendChat() {
+    const input = document.getElementById('athena-chat-input');
+    const message = input.value.trim();
+    
+    if (!message) return;
+    
+    // Determine which tab is active
+    const knowledgeChatActive = document.querySelector('.athena__tab[data-tab="chat"]').classList.contains('athena__tab--active');
+    const chatType = knowledgeChatActive ? 'chat' : 'teamchat';
+    const messagesContainer = document.getElementById(`${chatType}-messages`);
+    
+    // Add user message
+    const userMessageDiv = document.createElement('div');
+    userMessageDiv.className = 'athena__message athena__message--user';
+    userMessageDiv.innerHTML = `<div class="athena__message-content"><div class="athena__message-text"><strong>You:</strong> ${message}</div></div>`;
+    messagesContainer.appendChild(userMessageDiv);
+    
+    // Clear input
+    input.value = '';
+    
+    // Scroll to bottom
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    
+    // Send to backend
+    if (chatType === 'chat') {
+        // Direct message to athena-ai
+        if (window.AIChat) {
+            window.AIChat.sendMessage('athena-ai', message)
+                .then(response => {
+                    const aiMessageDiv = document.createElement('div');
+                    aiMessageDiv.className = 'athena__message athena__message--ai';
+                    aiMessageDiv.innerHTML = `<div class="athena__message-content"><div class="athena__message-text"><strong>Athena:</strong> ${response.content}</div></div>`;
+                    messagesContainer.appendChild(aiMessageDiv);
+                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                })
+                .catch(err => {
+                    console.error('Failed to send message:', err);
+                    const errorDiv = document.createElement('div');
+                    errorDiv.className = 'athena__message athena__message--system';
+                    errorDiv.innerHTML = `<div class="athena__message-content"><div class="athena__message-text"><strong>System:</strong> Failed to connect to Athena AI</div></div>`;
+                    messagesContainer.appendChild(errorDiv);
+                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                });
+        }
+    } else {
+        // Team chat
+        if (window.AIChat) {
+            window.AIChat.teamChat(message, 'athena')
+                .then(data => {
+                    // Display team responses
+                    if (data.responses && data.responses.length > 0) {
+                        data.responses.forEach(resp => {
+                            const aiMessageDiv = document.createElement('div');
+                            aiMessageDiv.className = 'athena__message athena__message--ai';
+                            const sender = resp.socket_id.replace('-ai', '').charAt(0).toUpperCase() + 
+                                         resp.socket_id.replace('-ai', '').slice(1);
+                            aiMessageDiv.innerHTML = `<div class="athena__message-content"><div class="athena__message-text"><strong>${sender}:</strong> ${resp.content}</div></div>`;
+                            messagesContainer.appendChild(aiMessageDiv);
+                        });
+                        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                    }
+                })
+                .catch(err => {
+                    console.error('Failed to send team message:', err);
+                });
+        }
+    }
+}
+
+// Clear chat functionality
+function athena_clearChat() {
+    const knowledgeChatActive = document.querySelector('.athena__tab[data-tab="chat"]').classList.contains('athena__tab--active');
+    const teamchatActive = document.querySelector('.athena__tab[data-tab="teamchat"]').classList.contains('athena__tab--active');
+    
+    if (knowledgeChatActive) {
+        const messagesContainer = document.getElementById('chat-messages');
+        // Keep the welcome message, remove all others
+        const messages = messagesContainer.querySelectorAll('.athena__message:not(.athena__message--system)');
+        messages.forEach(msg => msg.remove());
+    } else if (teamchatActive) {
+        const messagesContainer = document.getElementById('teamchat-messages');
+        // Keep the welcome message, remove all others
+        const messages = messagesContainer.querySelectorAll('.athena__message:not(.athena__message--system)');
+        messages.forEach(msg => msg.remove());
+    }
 }
 </script>
