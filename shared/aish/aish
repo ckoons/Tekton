@@ -70,6 +70,9 @@ def _dispatch_command(command_type, args, shell):
     elif command_type == 'terma':
         from commands.terma import handle_terma_command
         return handle_terma_command(args.message)
+    elif command_type == 'review':
+        from commands.review import handle_command as handle_review_command
+        return handle_review_command(args.message or [])
     return False
 
 
@@ -284,6 +287,11 @@ Environment variables:
             print("  autoprompt stop                Stop autoprompt")
             print("  autoprompt status              Check autoprompt status")
             print()
+            print("SESSION CAPTURE:")
+            print("  aish review start              Start recording terminal session")
+            print("  aish review stop               Stop recording and save session")
+            print("  aish review list               List recent session recordings")
+            print()
             print("ADVANCED:")
             print("  echo \"msg\" | aish <ai>         Pipe input to AI")
             print("  aish <ai1> | aish <ai2>        Chain AI responses")
@@ -336,6 +344,9 @@ Environment variables:
     
     if args.ai_or_script == 'purpose':
         return _dispatch_command('purpose', args, shell)
+    
+    if args.ai_or_script == 'review':
+        return _dispatch_command('review', args, shell)
     
     # Check if first argument is an AI name (case-insensitive)
     if args.ai_or_script and args.ai_or_script.lower() in ai_names:
