@@ -1078,7 +1078,7 @@ window.sophia_sendChat = function() {
                     aiMessage.className = 'sophia__message sophia__message--ai';
                     aiMessage.innerHTML = `
                         <div class="sophia__message-content">
-                            <div class="sophia__message-text">${response.content || response.message || 'I received your message.'}</div>
+                            <div class="sophia__message-text">Sophia: ${response.content || response.message || 'I received your message.'}</div>
                         </div>
                     `;
                     messagesContainer.appendChild(aiMessage);
@@ -1095,7 +1095,7 @@ window.sophia_sendChat = function() {
                     errorMessage.className = 'sophia__message sophia__message--ai sophia__message--error';
                     errorMessage.innerHTML = `
                         <div class="sophia__message-content">
-                            <div class="sophia__message-text">Sorry, I couldn't process your message. Please try again.</div>
+                            <div class="sophia__message-text">Sophia: Sorry, I couldn't process your message. Please try again.</div>
                         </div>
                     `;
                     messagesContainer.appendChild(errorMessage);
@@ -1110,7 +1110,7 @@ window.sophia_sendChat = function() {
             aiMessage.className = 'sophia__message sophia__message--ai';
             aiMessage.innerHTML = `
                 <div class="sophia__message-content">
-                    <div class="sophia__message-text">AI Chat service is not available at the moment.</div>
+                    <div class="sophia__message-text">Sophia: AI Chat service is not available at the moment.</div>
                 </div>
             `;
             messagesContainer.appendChild(aiMessage);

@@ -540,7 +540,7 @@
     }
     
     .tekton__tab--active {
-        border-bottom-color: var(--color-primary, #FFA500); /* Tekton golden color */
+        border-bottom-color: #FFA500; /* Tekton golden color */
         font-weight: 500;
     }
     
@@ -796,7 +796,7 @@
         height: 40px;
         border: 4px solid rgba(255, 255, 255, 0.1);
         border-radius: 50%;
-        border-top: 4px solid var(--color-primary, #FFA500);
+        border-top: 4px solid #FFA500; /* Tekton golden color */
         animation: tekton-spin 1s linear infinite;
         margin-bottom: 16px;
     }
@@ -846,7 +846,7 @@
         color: var(--text-primary, #f0f0f0);
         align-self: flex-start;
         border-radius: 16px 16px 16px 0;
-        border-left: 3px solid #FFA500;
+        border-left: 3px solid #FFA500; /* Tekton golden color */
     }
     
     .tekton__message-title {
@@ -882,7 +882,7 @@
     .tekton__chat-prompt {
         font-size: 18px;
         font-weight: bold;
-        color: #FFA500;
+        color: #FFA500; /* Tekton golden color */
     }
     
     .tekton__chat-input {
@@ -902,7 +902,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        background-color: var(--color-primary, #FFA500);
+        background-color: #FFA500; /* Tekton golden color */
         border: none;
         border-radius: 8px;
         color: white;
@@ -912,7 +912,7 @@
     }
     
     .tekton__send-button:hover {
-        background-color: var(--color-primary-hover, #FF8C00);
+        background-color: #FF8C00; /* Darker golden on hover */
     }
     
     @keyframes tekton-spin {
@@ -1074,35 +1074,45 @@ window.tekton_sendChat = function() {
                 ? 'project_management' 
                 : 'team_chat';
             
-            window.AIChat.sendMessage(message, {
-                component: 'tekton',
-                context: context,
-                onResponse: (response) => {
+            // Call sendMessage with proper parameters
+            window.AIChat.sendMessage('tekton-ai', message)
+                .then(response => {
                     const aiMessage = document.createElement('div');
                     aiMessage.className = 'tekton__message tekton__message--ai';
                     aiMessage.innerHTML = `
                         <div class="tekton__message-content">
-                            <div class="tekton__message-text">${response}</div>
+                            <div class="tekton__message-text"><strong>Tekton:</strong> ${response.content || response}</div>
                         </div>
                     `;
                     chatContainer.appendChild(aiMessage);
                     chatContainer.scrollTop = chatContainer.scrollHeight;
-                },
-                onError: (error) => {
+                })
+                .catch(error => {
                     console.error('[TEKTON] Chat error:', error);
                     const errorMessage = document.createElement('div');
                     errorMessage.className = 'tekton__message tekton__message--ai';
                     errorMessage.innerHTML = `
                         <div class="tekton__message-content">
-                            <div class="tekton__message-text">Sorry, there was an error processing your message. Please try again.</div>
+                            <div class="tekton__message-text"><strong>Tekton:</strong> Sorry, there was an error processing your message. Please try again.</div>
                         </div>
                     `;
                     chatContainer.appendChild(errorMessage);
                     chatContainer.scrollTop = chatContainer.scrollHeight;
-                }
-            });
+                });
         } else {
-            console.warn('[TEKTON] window.AIChat not available');
+            console.warn('[TEKTON] window.AIChat not available, using fallback');
+            // Fallback implementation
+            setTimeout(() => {
+                const aiMessage = document.createElement('div');
+                aiMessage.className = 'tekton__message tekton__message--ai';
+                aiMessage.innerHTML = `
+                    <div class="tekton__message-content">
+                        <div class="tekton__message-text"><strong>Tekton:</strong> I am currently in development mode. Chat functionality will be available soon.</div>
+                    </div>
+                `;
+                chatContainer.appendChild(aiMessage);
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+            }, 500);
         }
         
         console.log('[TEKTON] Chat message sent:', message, 'to', chatType);

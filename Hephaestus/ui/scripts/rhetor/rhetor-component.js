@@ -1088,7 +1088,7 @@ console.log('[FILE_TRACE] Loading: rhetor-component.js');
       messageElement.className = 'rhetor__message rhetor__message--ai';
       messageElement.innerHTML = `
         <div class="rhetor__message-content">
-          <div class="rhetor__message-text">${this.formatResponseText(response)}</div>
+          <div class="rhetor__message-text">Rhetor: ${this.formatResponseText(response)}</div>
           <div class="rhetor__message-meta">Just now</div>
         </div>
       `;

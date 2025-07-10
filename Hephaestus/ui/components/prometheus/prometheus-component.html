@@ -963,7 +963,7 @@ window.prometheus_sendChat = function() {
                 // Update the AI message with the response
                 const messageText = aiMessage.querySelector('.prometheus__message-text');
                 if (messageText) {
-                    messageText.textContent = response;
+                    messageText.textContent = 'Prometheus: ' + response;
                 }
                 messagesContainer.scrollTop = messagesContainer.scrollHeight;
             }).catch(error => {

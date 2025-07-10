@@ -1644,7 +1644,7 @@ window.metis_sendChat = function() {
                         aiMsg.className = 'metis__message metis__message--ai';
                         aiMsg.innerHTML = `
                             <div class="metis__message-content">
-                                <div class="metis__message-text">${response}</div>
+                                <div class="metis__message-text">Metis: ${response}</div>
                             </div>
                         `;
                         messagesContainer.appendChild(aiMsg);
@@ -1658,7 +1658,7 @@ window.metis_sendChat = function() {
                         aiMsg.className = 'metis__message metis__message--ai';
                         aiMsg.innerHTML = `
                             <div class="metis__message-content">
-                                <div class="metis__message-text">Sorry, I'm having trouble processing your request right now.</div>
+                                <div class="metis__message-text">Metis: Sorry, I'm having trouble processing your request right now.</div>
                             </div>
                         `;
                         messagesContainer.appendChild(aiMsg);
@@ -1671,7 +1671,7 @@ window.metis_sendChat = function() {
                     aiMsg.className = 'metis__message metis__message--ai';
                     aiMsg.innerHTML = `
                         <div class="metis__message-content">
-                            <div class="metis__message-text">AI Chat service is not currently available.</div>
+                            <div class="metis__message-text">Metis: AI Chat service is not currently available.</div>
                         </div>
                     `;
                     messagesContainer.appendChild(aiMsg);

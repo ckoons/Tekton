@@ -3866,6 +3866,39 @@ window.rhetor_sendLLMChat = function() {
 };
 */
 
+// CHAT SENDING FUNCTION - Working implementation
+window.rhetor_sendChat = function() {
+    console.log('[RHETOR] Send chat clicked');
+    
+    const chatInput = document.getElementById('chat-input');
+    if (!chatInput) return false;
+    
+    const message = chatInput.value.trim();
+    if (!message) return false;
+    
+    // Check which radio button is checked to determine active tab
+    const checkedRadio = document.querySelector('input[name="rhetor-tab"]:checked');
+    if (!checkedRadio) return false;
+    
+    const tabId = checkedRadio.id.replace('tab-', '');
+    
+    // Only process for chat tabs
+    if (tabId === 'llmchat' || tabId === 'teamchat') {
+        // If rhetorComponent is available, use it
+        if (window.rhetorComponent) {
+            if (tabId === 'llmchat') {
+                window.rhetorComponent.processLLMChatMessage(message);
+            } else {
+                window.rhetorComponent.processTeamChatMessage(message);
+            }
+        }
+        // Clear input
+        chatInput.value = '';
+    }
+    
+    return false;
+};
+
 // CHAT CLEARING FUNCTION
 window.rhetor_clearChat = function() {
     console.log('[RHETOR] Clear chat clicked');
