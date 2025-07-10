@@ -445,12 +445,12 @@
     <div class="tekton__footer">
         <div class="tekton__chat-input-container">
             <div class="tekton__chat-prompt">></div>
-            <input type="text" id="chat-input" class="tekton__chat-input" 
+            <input type="text" id="tekton-chat-input" class="tekton__chat-input" 
                    placeholder="Enter chat message, project query, or GitHub command"
                    data-tekton-input="chat-input"
                    data-tekton-input-type="chat"
                    onkeypress="if(event.key==='Enter'){tekton_sendChat();return false;}">
-            <button id="send-button" class="tekton__send-button"
+            <button id="tekton-send-button" class="tekton__send-button"
                     data-tekton-action="send-chat"
                     data-tekton-action-type="primary"
                     onclick="tekton_sendChat(); return false;">Send</button>
@@ -902,22 +902,23 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        background-color: #FFA500; /* Tekton golden color */
+        background-color: #FFA500 !important; /* Tekton golden color - override shared CSS */
         border: none;
         border-radius: 8px;
-        color: white;
+        color: white !important;
         font-weight: 500;
         cursor: pointer;
         transition: all 0.2s ease;
     }
     
     .tekton__send-button:hover {
-        background-color: #FF8C00; /* Darker golden on hover */
+        background-color: #FF8C00 !important; /* Darker golden on hover - override shared CSS */
         transform: translateY(-1px);
         box-shadow: 0 2px 8px rgba(255, 165, 0, 0.3);
     }
     
     .tekton__send-button:active {
+        background-color: #E69500 !important; /* Even darker on active */
         transform: translateY(0);
         box-shadow: none;
     }
@@ -1013,7 +1014,7 @@ window.tekton_switchTab = function(tabId) {
 };
 
 // CHAT SEND FUNCTION
-window.tekton_sendChat = function() {
+function tekton_sendChat() {
     console.log('[TEKTON] Sending chat message');
     
     try {
@@ -1023,7 +1024,7 @@ window.tekton_sendChat = function() {
             return false;
         }
         
-        const chatInput = tektonContainer.querySelector('#chat-input');
+        const chatInput = document.getElementById('tekton-chat-input');
         if (!chatInput) {
             console.error('[TEKTON] Send Chat: Cannot find chat input');
             return false;
@@ -1096,9 +1097,12 @@ window.tekton_sendChat = function() {
                             console.error('[TEKTON] Chat error:', error);
                             const errorMessage = document.createElement('div');
                             errorMessage.className = 'tekton__message tekton__message--ai';
+                            const errorText = error.message.includes('fetch') || error.message.includes('NetworkError') 
+                                ? 'Unable to connect to Tekton AI. Please ensure the Rhetor service is running on port 8003.'
+                                : 'Sorry, there was an error processing your message. Please try again.';
                             errorMessage.innerHTML = `
                                 <div class="tekton__message-content">
-                                    <div class="tekton__message-text"><strong>Tekton:</strong> Sorry, there was an error processing your message. Please try again.</div>
+                                    <div class="tekton__message-text"><strong>Tekton:</strong> ${errorText}</div>
                                 </div>
                             `;
                             chatContainer.appendChild(errorMessage);
@@ -1166,7 +1170,7 @@ window.tekton_sendChat = function() {
 };
 
 // CHAT CLEARING FUNCTION
-window.tekton_clearChat = function() {
+function tekton_clearChat() {
     console.log('[TEKTON] Clearing chat messages');
     
     try {
