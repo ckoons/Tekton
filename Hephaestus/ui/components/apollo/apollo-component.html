@@ -2153,34 +2153,52 @@
     }
     
     .apollo__message {
-        border-radius: 16px;
-        padding: 12px 16px;
-        max-width: 85%;
-        word-wrap: break-word;
-        line-height: 1.4;
+        margin-bottom: 12px;
+        padding: 8px 12px;
+        border-radius: 4px;
+        background-color: transparent;
+        position: relative;
     }
     
+    .apollo__message strong {
+        display: inline-block;
+        margin-right: 8px;
+        font-weight: 600;
+    }
+    
+    /* System messages */
     .apollo__message--system {
-        background-color: var(--bg-tertiary, #333345);
-        align-self: center;
-        max-width: 90%;
-        width: 600px;
-        margin: 8px 0;
-        border-radius: 8px;
-        padding: 16px 24px;
+        background-color: rgba(255, 152, 0, 0.05);
+        border-left: 3px solid #FF9800;
+        font-style: italic;
     }
     
+    .apollo__message--system strong {
+        color: #FF9800;
+    }
+    
+    /* User messages */
     .apollo__message--user {
-        background-color: var(--color-primary, #7B1FA2);
-        color: white;
+        background-color: rgba(76, 175, 80, 0.05);
+        border-left: 3px solid #4CAF50;
+        margin-left: 32px;
         align-self: flex-end;
-        border-radius: 16px 16px 0 16px;
     }
     
+    .apollo__message--user strong {
+        color: #4CAF50;
+    }
+    
+    /* AI messages */
     .apollo__message--ai {
-        background-color: var(--bg-secondary, #252535);
+        background-color: rgba(255, 152, 0, 0.05);
+        border-left: 3px solid #FF9800;
+        margin-right: 32px;
         align-self: flex-start;
-        border-radius: 16px 16px 16px 0;
+    }
+    
+    .apollo__message--ai strong {
+        color: #FF9800;
     }
     
     /* Chat Input */
