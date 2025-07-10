@@ -1044,6 +1044,9 @@ function tekton_sendChat() {
         }
         
         const chatType = activeTab.getAttribute('data-tab');
+        console.log('[TEKTON] Active tab chatType:', chatType);
+        console.log('[TEKTON] Active tab element:', activeTab);
+        console.log('[TEKTON] Active tab data-tab attribute:', activeTab.getAttribute('data-tab'));
         let chatContainer;
         
         if (chatType === 'projectchat') {
@@ -1078,11 +1081,31 @@ function tekton_sendChat() {
         
         // Send to backend via window.AIChat
         if (window.AIChat) {
+            console.log('[TEKTON] window.AIChat found');
+            console.log('[TEKTON] chatType:', chatType);
+            console.log('[TEKTON] window.AIChat.sendMessage type:', typeof window.AIChat.sendMessage);
+            console.log('[TEKTON] window.AIChat.teamChat type:', typeof window.AIChat.teamChat);
+            
             if (chatType === 'projectchat') {
+                console.log('[TEKTON] Sending project chat message');
                 // Direct message to tekton-ai
                 if (typeof window.AIChat.sendMessage === 'function') {
-                    window.AIChat.sendMessage('tekton-ai', message)
+                    console.log('[TEKTON] Calling window.AIChat.sendMessage with:', 'tekton-ai', message);
+                    
+                    // Try tekton-ai first, then fall back to apollo-ai if it fails
+                    const tryAI = (aiName) => {
+                        console.log(`[TEKTON] Trying to send message to ${aiName}`);
+                        return window.AIChat.sendMessage(aiName, message);
+                    };
+                    
+                    tryAI('tekton_core-ai')
+                        .catch(error => {
+                            console.warn('[TEKTON] tekton_core-ai failed, trying apollo-ai as fallback:', error);
+                            // If tekton-ai fails, try apollo-ai as fallback
+                            return tryAI('apollo-ai');
+                        })
                         .then(response => {
+                            console.log('[TEKTON] Project chat response received:', response);
                             const aiMessage = document.createElement('div');
                             aiMessage.className = 'tekton__message tekton__message--ai';
                             aiMessage.innerHTML = `
@@ -1095,11 +1118,21 @@ function tekton_sendChat() {
                         })
                         .catch(error => {
                             console.error('[TEKTON] Chat error:', error);
+                            console.error('[TEKTON] Error details:', error.message, error.stack);
                             const errorMessage = document.createElement('div');
                             errorMessage.className = 'tekton__message tekton__message--ai';
-                            const errorText = error.message.includes('fetch') || error.message.includes('NetworkError') 
-                                ? 'Unable to connect to Tekton AI. Please ensure the Rhetor service is running on port 8003.'
-                                : 'Sorry, there was an error processing your message. Please try again.';
+                            let errorText = 'Sorry, there was an error processing your message. ';
+                            
+                            if (error.message && (error.message.includes('fetch') || error.message.includes('NetworkError'))) {
+                                errorText = 'Unable to connect to AI services. Please ensure the Rhetor service is running on port 8003.';
+                            } else if (error.message && error.message.includes('404')) {
+                                errorText = 'The Tekton AI specialist is not available. Please check that all AI services are running.';
+                            } else if (error.message && error.message.includes('500')) {
+                                errorText = 'The AI service encountered an error. Please try again.';
+                            } else {
+                                errorText += error.message || 'Please try again.';
+                            }
+                            
                             errorMessage.innerHTML = `
                                 <div class="tekton__message-content">
                                     <div class="tekton__message-text"><strong>Tekton:</strong> ${errorText}</div>
@@ -1108,12 +1141,17 @@ function tekton_sendChat() {
                             chatContainer.appendChild(errorMessage);
                             chatContainer.scrollTop = chatContainer.scrollHeight;
                         });
+                } else {
+                    console.error('[TEKTON] window.AIChat.sendMessage is not a function');
                 }
             } else if (chatType === 'teamchat') {
+                console.log('[TEKTON] Sending team chat message');
                 // Team chat
                 if (typeof window.AIChat.teamChat === 'function') {
+                    console.log('[TEKTON] Calling window.AIChat.teamChat with:', message, 'tekton');
                     window.AIChat.teamChat(message, 'tekton')
                         .then(data => {
+                            console.log('[TEKTON] Team chat response received:', data);
                             // Display team responses
                             if (data.responses && data.responses.length > 0) {
                                 data.responses.forEach(resp => {
@@ -1133,6 +1171,7 @@ function tekton_sendChat() {
                         })
                         .catch(error => {
                             console.error('[TEKTON] Team chat error:', error);
+                            console.error('[TEKTON] Team chat error details:', error.message, error.stack);
                             const errorMessage = document.createElement('div');
                             errorMessage.className = 'tekton__message tekton__message--system';
                             errorMessage.innerHTML = `
@@ -1143,6 +1182,8 @@ function tekton_sendChat() {
                             chatContainer.appendChild(errorMessage);
                             chatContainer.scrollTop = chatContainer.scrollHeight;
                         });
+                } else {
+                    console.error('[TEKTON] window.AIChat.teamChat is not a function');
                 }
             }
         } else {
