@@ -1076,36 +1076,71 @@ window.tekton_sendChat = function() {
         chatContainer.scrollTop = chatContainer.scrollHeight;
         
         // Send to backend via window.AIChat
-        if (window.AIChat && typeof window.AIChat.sendMessage === 'function') {
-            const context = chatType === 'projectchat' 
-                ? 'project_management' 
-                : 'team_chat';
-            
-            // Call sendMessage with proper parameters
-            window.AIChat.sendMessage('tekton-ai', message)
-                .then(response => {
-                    const aiMessage = document.createElement('div');
-                    aiMessage.className = 'tekton__message tekton__message--ai';
-                    aiMessage.innerHTML = `
-                        <div class="tekton__message-content">
-                            <div class="tekton__message-text"><strong>Tekton:</strong> ${response.content || response}</div>
-                        </div>
-                    `;
-                    chatContainer.appendChild(aiMessage);
-                    chatContainer.scrollTop = chatContainer.scrollHeight;
-                })
-                .catch(error => {
-                    console.error('[TEKTON] Chat error:', error);
-                    const errorMessage = document.createElement('div');
-                    errorMessage.className = 'tekton__message tekton__message--ai';
-                    errorMessage.innerHTML = `
-                        <div class="tekton__message-content">
-                            <div class="tekton__message-text"><strong>Tekton:</strong> Sorry, there was an error processing your message. Please try again.</div>
-                        </div>
-                    `;
-                    chatContainer.appendChild(errorMessage);
-                    chatContainer.scrollTop = chatContainer.scrollHeight;
-                });
+        if (window.AIChat) {
+            if (chatType === 'projectchat') {
+                // Direct message to tekton-ai
+                if (typeof window.AIChat.sendMessage === 'function') {
+                    window.AIChat.sendMessage('tekton-ai', message)
+                        .then(response => {
+                            const aiMessage = document.createElement('div');
+                            aiMessage.className = 'tekton__message tekton__message--ai';
+                            aiMessage.innerHTML = `
+                                <div class="tekton__message-content">
+                                    <div class="tekton__message-text"><strong>Tekton:</strong> ${response.content || response}</div>
+                                </div>
+                            `;
+                            chatContainer.appendChild(aiMessage);
+                            chatContainer.scrollTop = chatContainer.scrollHeight;
+                        })
+                        .catch(error => {
+                            console.error('[TEKTON] Chat error:', error);
+                            const errorMessage = document.createElement('div');
+                            errorMessage.className = 'tekton__message tekton__message--ai';
+                            errorMessage.innerHTML = `
+                                <div class="tekton__message-content">
+                                    <div class="tekton__message-text"><strong>Tekton:</strong> Sorry, there was an error processing your message. Please try again.</div>
+                                </div>
+                            `;
+                            chatContainer.appendChild(errorMessage);
+                            chatContainer.scrollTop = chatContainer.scrollHeight;
+                        });
+                }
+            } else if (chatType === 'teamchat') {
+                // Team chat
+                if (typeof window.AIChat.teamChat === 'function') {
+                    window.AIChat.teamChat(message, 'tekton')
+                        .then(data => {
+                            // Display team responses
+                            if (data.responses && data.responses.length > 0) {
+                                data.responses.forEach(resp => {
+                                    const aiMessage = document.createElement('div');
+                                    aiMessage.className = 'tekton__message tekton__message--ai';
+                                    const sender = resp.socket_id.replace('-ai', '').charAt(0).toUpperCase() + 
+                                                 resp.socket_id.replace('-ai', '').slice(1);
+                                    aiMessage.innerHTML = `
+                                        <div class="tekton__message-content">
+                                            <div class="tekton__message-text"><strong>${sender}:</strong> ${resp.content}</div>
+                                        </div>
+                                    `;
+                                    chatContainer.appendChild(aiMessage);
+                                });
+                                chatContainer.scrollTop = chatContainer.scrollHeight;
+                            }
+                        })
+                        .catch(error => {
+                            console.error('[TEKTON] Team chat error:', error);
+                            const errorMessage = document.createElement('div');
+                            errorMessage.className = 'tekton__message tekton__message--system';
+                            errorMessage.innerHTML = `
+                                <div class="tekton__message-content">
+                                    <div class="tekton__message-text"><strong>System:</strong> Failed to send team message.</div>
+                                </div>
+                            `;
+                            chatContainer.appendChild(errorMessage);
+                            chatContainer.scrollTop = chatContainer.scrollHeight;
+                        });
+                }
+            }
         } else {
             console.warn('[TEKTON] window.AIChat not available, using fallback');
             // Fallback implementation
