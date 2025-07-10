@@ -388,9 +388,10 @@
     <div class="sophia__footer" data-tekton-zone="footer">
         <div class="sophia__chat-input-container">
             <div class="sophia__chat-prompt">></div>
-            <input type="text" id="chat-input" class="sophia__chat-input" 
-                   placeholder="Enter chat message, research questions, or experiment ideas">
-            <button id="send-button" class="sophia__send-button" data-tekton-action="send-message" data-tekton-action-type="primary">Send</button>
+            <input type="text" id="sophia-chat-input" class="sophia__chat-input" 
+                   placeholder="Enter chat message, research questions, or experiment ideas"
+                   onkeypress="if(event.key === 'Enter') sophia_sendChat()">
+            <button id="sophia-send-button" class="sophia__send-button" onclick="sophia_sendChat()" data-tekton-action="send-message" data-tekton-action-type="primary">Send</button>
         </div>
     </div>
 </div>
@@ -917,7 +918,7 @@ window.sophia_switchTab = function(tabId) {
         }
         
         // Update chat input placeholder based on active tab
-        const chatInput = sophiaContainer.querySelector('#chat-input');
+        const chatInput = sophiaContainer.querySelector('#sophia-chat-input');
         if (chatInput) {
             if (tabId === 'researchchat') {
                 chatInput.placeholder = 'Enter research questions or AI intelligence queries...';
@@ -948,6 +949,93 @@ window.sophia_switchTab = function(tabId) {
         }
     } catch (err) {
         console.error('[SOPHIA] Error in tab switching:', err);
+    }
+    
+    return false; // Stop event propagation
+};
+
+// CHAT SENDING FUNCTION
+window.sophia_sendChat = function() {
+    console.log('[SOPHIA] Send chat clicked');
+    
+    try {
+        const sophiaContainer = document.querySelector('.sophia');
+        if (!sophiaContainer) {
+            console.error('[SOPHIA] Send Chat: Cannot find sophia container');
+            return false;
+        }
+        
+        // Get active tab ID
+        const activeTab = sophiaContainer.querySelector('.sophia__tab--active');
+        const tabId = activeTab ? activeTab.getAttribute('data-tab') : '';
+        
+        // Only process for chat tabs
+        if (tabId !== 'researchchat' && tabId !== 'teamchat') {
+            console.log('[SOPHIA] Not a chat tab, ignoring send');
+            return false;
+        }
+        
+        // Get input element
+        const chatInput = sophiaContainer.querySelector('#sophia-chat-input');
+        if (!chatInput) {
+            console.error('[SOPHIA] Cannot find chat input');
+            return false;
+        }
+        
+        const message = chatInput.value.trim();
+        if (!message) {
+            console.log('[SOPHIA] Empty message, not sending');
+            return false;
+        }
+        
+        // Get message container
+        const messagesContainer = sophiaContainer.querySelector('#' + tabId + '-messages');
+        if (!messagesContainer) {
+            console.error('[SOPHIA] Cannot find messages container');
+            return false;
+        }
+        
+        // Create user message element
+        const userMessage = document.createElement('div');
+        userMessage.className = 'sophia__message sophia__message--user';
+        userMessage.innerHTML = `
+            <div class="sophia__message-content">
+                <div class="sophia__message-text">${message}</div>
+            </div>
+        `;
+        messagesContainer.appendChild(userMessage);
+        
+        // Clear input
+        chatInput.value = '';
+        
+        // Scroll to bottom
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        
+        // Simulate AI response after a delay
+        setTimeout(() => {
+            const aiMessage = document.createElement('div');
+            aiMessage.className = 'sophia__message sophia__message--ai';
+            
+            let responseText = '';
+            if (tabId === 'researchchat') {
+                responseText = 'I\'m analyzing your research query about AI intelligence measurement. Let me provide some insights...';
+            } else {
+                responseText = 'Thanks for your message! This is the Tekton team chat where all components can communicate.';
+            }
+            
+            aiMessage.innerHTML = `
+                <div class="sophia__message-content">
+                    <div class="sophia__message-text">${responseText}</div>
+                </div>
+            `;
+            messagesContainer.appendChild(aiMessage);
+            
+            // Scroll to bottom
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }, 1000);
+        
+    } catch (err) {
+        console.error('[SOPHIA] Error sending chat:', err);
     }
     
     return false; // Stop event propagation

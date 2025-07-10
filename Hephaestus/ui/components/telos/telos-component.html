@@ -315,9 +315,12 @@
     <div class="telos__footer" data-tekton-zone="footer">
         <div class="telos__chat-input-container">
             <div class="telos__chat-prompt">></div>
-            <input type="text" id="chat-input" class="telos__chat-input" 
-                   placeholder="Enter chat message, requirements query, or validation request">
-            <button id="send-button" class="telos__send-button" data-tekton-action="send-message" data-tekton-action-type="primary">Send</button>
+            <input type="text" id="telos-chat-input" class="telos__chat-input" 
+                   placeholder="Enter chat message, requirements query, or validation request"
+                   onkeypress="if(event.key === 'Enter') { telos_sendChat(); return false; }">
+            <button id="telos-send-button" class="telos__send-button" 
+                    onclick="telos_sendChat(); return false;" 
+                    data-tekton-action="send-message" data-tekton-action-type="primary">Send</button>
         </div>
     </div>
 </div>
@@ -973,6 +976,87 @@ window.telos_clearChat = function() {
         }
     } catch (err) {
         console.error('[TELOS] Error clearing chat:', err);
+    }
+    
+    return false; // Stop event propagation
+};
+
+// CHAT SENDING FUNCTION
+window.telos_sendChat = function() {
+    console.log('[TELOS] Send chat clicked');
+    
+    try {
+        // Get telos container
+        const telosContainer = document.querySelector('.telos');
+        if (!telosContainer) {
+            console.error('[TELOS] Send Chat: Cannot find telos container');
+            return false;
+        }
+        
+        // Get chat input
+        const chatInput = telosContainer.querySelector('#telos-chat-input');
+        if (!chatInput) {
+            console.error('[TELOS] Send Chat: Cannot find chat input');
+            return false;
+        }
+        
+        const message = chatInput.value.trim();
+        if (!message) {
+            console.log('[TELOS] Send Chat: Empty message, ignoring');
+            return false;
+        }
+        
+        // Get active tab
+        const activeTab = telosContainer.querySelector('.telos__tab--active');
+        const tabId = activeTab ? activeTab.getAttribute('data-tab') : '';
+        
+        if (tabId === 'reqchat' || tabId === 'teamchat') {
+            const panel = telosContainer.querySelector('#' + tabId + '-messages');
+            if (panel) {
+                // Create user message
+                const userMsg = document.createElement('div');
+                userMsg.className = 'telos__message telos__message--user';
+                userMsg.innerHTML = `
+                    <div class="telos__message-content">
+                        <div class="telos__message-text">${message}</div>
+                    </div>
+                `;
+                panel.appendChild(userMsg);
+                
+                // Clear input
+                chatInput.value = '';
+                
+                // Scroll to bottom
+                panel.scrollTop = panel.scrollHeight;
+                
+                console.log('[TELOS] Message sent to ' + tabId);
+                
+                // Call component method if available
+                if (window.telosComponent && typeof window.telosComponent.sendMessage === 'function') {
+                    window.telosComponent.sendMessage(message, tabId);
+                }
+                
+                // Simulate AI response after a delay
+                setTimeout(() => {
+                    const aiMsg = document.createElement('div');
+                    aiMsg.className = 'telos__message telos__message--ai';
+                    const responseText = tabId === 'reqchat' 
+                        ? 'I can help you with requirements engineering. What would you like to know?'
+                        : 'Team message received. This feature will be connected to the team communication system.';
+                    aiMsg.innerHTML = `
+                        <div class="telos__message-content">
+                            <div class="telos__message-text">${responseText}</div>
+                        </div>
+                    `;
+                    panel.appendChild(aiMsg);
+                    panel.scrollTop = panel.scrollHeight;
+                }, 1000);
+            }
+        } else {
+            console.log('[TELOS] Send Chat: Not in a chat tab');
+        }
+    } catch (err) {
+        console.error('[TELOS] Error sending chat:', err);
     }
     
     return false; // Stop event propagation

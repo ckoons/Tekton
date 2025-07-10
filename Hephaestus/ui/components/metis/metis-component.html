@@ -528,9 +528,13 @@
     <div class="metis__footer" data-tekton-zone="footer">
         <div class="metis__chat-input-container">
             <div class="metis__chat-prompt">></div>
-            <input type="text" id="chat-input" class="metis__chat-input" 
-                   placeholder="Enter message for team or workflow chat">
-            <button id="send-button" class="metis__send-button" data-tekton-action="send-message" data-tekton-action-type="primary">Send</button>
+            <input type="text" id="metis-chat-input" class="metis__chat-input" 
+                   data-tekton-input="chat-input"
+                   data-tekton-input-type="chat"
+                   placeholder="Enter message for team or workflow chat"
+                   onkeydown="if(event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); metis_sendChat(); }">
+            <button id="metis-send-button" class="metis__send-button" onclick="metis_sendChat(); return false;"
+                    data-tekton-action="send-message" data-tekton-action-type="primary">Send</button>
         </div>
     </div>
 </div>
@@ -1582,6 +1586,85 @@ window.metis_clearChat = function() {
         }
     } catch (err) {
         console.error('[METIS] Error clearing chat:', err);
+    }
+    
+    return false; // Stop event propagation
+};
+
+// CHAT SEND FUNCTION
+window.metis_sendChat = function() {
+    console.log('[METIS] Send chat clicked');
+    
+    try {
+        const metisContainer = document.querySelector('.metis');
+        if (!metisContainer) {
+            console.error('[METIS] Send Chat: Cannot find metis container');
+            return false;
+        }
+        
+        const input = document.getElementById('metis-chat-input');
+        const message = input.value.trim();
+        
+        if (!message) {
+            console.log('[METIS] No message to send');
+            return false;
+        }
+        
+        // Get active tab
+        const activeTab = metisContainer.querySelector('.metis__tab--active');
+        const tabId = activeTab ? activeTab.getAttribute('data-tab') : '';
+        
+        if (tabId === 'workflow' || tabId === 'teamchat') {
+            const messagesContainer = metisContainer.querySelector('#' + tabId + '-messages');
+            
+            if (messagesContainer) {
+                // Create user message
+                const userMsg = document.createElement('div');
+                userMsg.className = 'metis__message metis__message--user';
+                userMsg.innerHTML = `
+                    <div class="metis__message-content">
+                        <div class="metis__message-text">${message}</div>
+                    </div>
+                `;
+                messagesContainer.appendChild(userMsg);
+                
+                // Scroll to bottom
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                
+                // Clear input
+                input.value = '';
+                
+                // Simulate AI response (in real implementation, this would call an API)
+                setTimeout(() => {
+                    const aiMsg = document.createElement('div');
+                    aiMsg.className = 'metis__message metis__message--ai';
+                    
+                    let responseText = '';
+                    if (tabId === 'workflow') {
+                        responseText = 'Processing your workflow query...';
+                    } else {
+                        responseText = 'Team chat message received.';
+                    }
+                    
+                    aiMsg.innerHTML = `
+                        <div class="metis__message-content">
+                            <div class="metis__message-text">${responseText}</div>
+                        </div>
+                    `;
+                    messagesContainer.appendChild(aiMsg);
+                    
+                    // Scroll to bottom
+                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                }, 1000);
+                
+                // Call component-specific method if available
+                if (window.metisComponent && typeof window.metisComponent.sendMessage === 'function') {
+                    window.metisComponent.sendMessage(tabId, message);
+                }
+            }
+        }
+    } catch (err) {
+        console.error('[METIS] Error sending chat:', err);
     }
     
     return false; // Stop event propagation

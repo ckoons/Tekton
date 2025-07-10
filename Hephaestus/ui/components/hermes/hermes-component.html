@@ -395,11 +395,12 @@
     <div class="hermes__footer" data-tekton-zone="footer">
         <div class="hermes__chat-input-container">
             <div class="hermes__chat-prompt">></div>
-            <input type="text" id="chat-input" class="hermes__chat-input" 
+            <input type="text" id="hermes-chat-input" class="hermes__chat-input" 
                    placeholder="Enter chat message for Hermes service registry, message monitoring or LLM chat"
                    data-tekton-input="chat-input"
-                   data-tekton-input-type="chat">
-            <button id="send-button" class="hermes__send-button"
+                   data-tekton-input-type="chat"
+                   onkeydown="if(event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); hermes_sendChat(); }">
+            <button id="hermes-send-button" class="hermes__send-button" onclick="hermes_sendChat(); return false;"
                     data-tekton-action="send-message"
                     data-tekton-action-type="primary">Send</button>
         </div>
@@ -1076,6 +1077,128 @@
         max-width: 350px;
     }
 </style>
+
+<script type="text/javascript">
+// Tab switching functionality
+function hermes_switchTab(tabName) {
+    const allTabs = document.querySelectorAll('.hermes__tab');
+    const allPanels = document.querySelectorAll('.hermes__panel');
+    
+    allTabs.forEach(tab => {
+        if (tab.dataset.tab === tabName) {
+            tab.classList.add('hermes__tab--active');
+        } else {
+            tab.classList.remove('hermes__tab--active');
+        }
+    });
+    
+    allPanels.forEach(panel => {
+        if (panel.id === `${tabName}-panel`) {
+            panel.classList.add('hermes__panel--active');
+        } else {
+            panel.classList.remove('hermes__panel--active');
+        }
+    });
+    
+    // Show/hide clear button for chat tabs
+    const clearButton = document.getElementById('clear-chat-btn');
+    if (clearButton) {
+        if (tabName === 'chat' || tabName === 'teamchat') {
+            clearButton.style.display = 'block';
+        } else {
+            clearButton.style.display = 'none';
+        }
+    }
+}
+
+// Chat functionality - Following Numa's pattern
+function hermes_sendChat() {
+    const input = document.getElementById('hermes-chat-input');
+    const message = input.value.trim();
+    
+    if (!message) return;
+    
+    // Determine which tab is active
+    const messageChatActive = document.querySelector('.hermes__tab[data-tab="chat"]').classList.contains('hermes__tab--active');
+    const chatType = messageChatActive ? 'chat' : 'teamchat';
+    const messagesContainer = document.getElementById(`${chatType}-messages`);
+    
+    // Add user message
+    const userMessageDiv = document.createElement('div');
+    userMessageDiv.className = 'hermes__message hermes__message--user';
+    userMessageDiv.innerHTML = `<div class="hermes__message-content"><div class="hermes__message-text"><strong>You:</strong> ${message}</div></div>`;
+    messagesContainer.appendChild(userMessageDiv);
+    
+    // Clear input
+    input.value = '';
+    
+    // Scroll to bottom
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    
+    // Send to backend
+    if (chatType === 'chat') {
+        // Direct message to hermes-ai
+        if (window.AIChat) {
+            window.AIChat.sendMessage('hermes-ai', message)
+                .then(response => {
+                    const aiMessageDiv = document.createElement('div');
+                    aiMessageDiv.className = 'hermes__message hermes__message--ai';
+                    aiMessageDiv.innerHTML = `<div class="hermes__message-content"><div class="hermes__message-text"><strong>Hermes:</strong> ${response.content}</div></div>`;
+                    messagesContainer.appendChild(aiMessageDiv);
+                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                })
+                .catch(err => {
+                    console.error('Failed to send message:', err);
+                    const errorDiv = document.createElement('div');
+                    errorDiv.className = 'hermes__message hermes__message--system';
+                    errorDiv.innerHTML = `<div class="hermes__message-content"><div class="hermes__message-text"><strong>System:</strong> Failed to connect to Hermes AI</div></div>`;
+                    messagesContainer.appendChild(errorDiv);
+                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                });
+        }
+    } else {
+        // Team chat
+        if (window.AIChat) {
+            window.AIChat.teamChat(message, 'hermes')
+                .then(data => {
+                    // Display team responses
+                    if (data.responses && data.responses.length > 0) {
+                        data.responses.forEach(resp => {
+                            const aiMessageDiv = document.createElement('div');
+                            aiMessageDiv.className = 'hermes__message hermes__message--ai';
+                            const sender = resp.socket_id.replace('-ai', '').charAt(0).toUpperCase() + 
+                                         resp.socket_id.replace('-ai', '').slice(1);
+                            aiMessageDiv.innerHTML = `<div class="hermes__message-content"><div class="hermes__message-text"><strong>${sender}:</strong> ${resp.content}</div></div>`;
+                            messagesContainer.appendChild(aiMessageDiv);
+                        });
+                        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                    }
+                })
+                .catch(err => {
+                    console.error('Failed to send team message:', err);
+                });
+        }
+    }
+}
+
+// Clear chat functionality
+function hermes_clearChat() {
+    const messageChatActive = document.querySelector('.hermes__tab[data-tab="chat"]').classList.contains('hermes__tab--active');
+    const teamChatActive = document.querySelector('.hermes__tab[data-tab="teamchat"]').classList.contains('hermes__tab--active');
+    
+    if (messageChatActive) {
+        const messagesContainer = document.getElementById('chat-messages');
+        // Keep the welcome message, remove all others
+        const messages = messagesContainer.querySelectorAll('.hermes__message:not(.hermes__message--system)');
+        messages.forEach(msg => msg.remove());
+    } else if (teamChatActive) {
+        const messagesContainer = document.getElementById('teamchat-messages');
+        // Keep the welcome message, remove all others
+        const messages = messagesContainer.querySelectorAll('.hermes__message:not(.hermes__message--system)');
+        messages.forEach(msg => msg.remove());
+    }
+}
+</script>
 
 <script type="text/javascript">
 // SIMPLIFIED COMPONENT SCRIPT - FULLY SELF-CONTAINED

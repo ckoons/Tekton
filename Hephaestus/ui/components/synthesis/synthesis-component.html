@@ -444,9 +444,10 @@
     <div class="synthesis__footer" data-tekton-zone="footer">
         <div class="synthesis__chat-input-container">
             <div class="synthesis__chat-prompt">></div>
-            <input type="text" id="chat-input" class="synthesis__chat-input" 
-                   placeholder="Enter chat message, execution questions, or workflow commands">
-            <button id="send-button" class="synthesis__send-button" data-tekton-action="send-message" data-tekton-action-type="primary">Send</button>
+            <input type="text" id="synthesis-chat-input" class="synthesis__chat-input" 
+                   placeholder="Enter chat message, execution questions, or workflow commands"
+                   onkeypress="if(event.key==='Enter'){synthesis_sendChat(); return false;}">
+            <button id="synthesis-send-button" class="synthesis__send-button" onclick="synthesis_sendChat(); return false;" data-tekton-action="send-message" data-tekton-action-type="primary">Send</button>
         </div>
     </div>
 </div>
@@ -1164,6 +1165,91 @@ window.synthesis_switchTab = function(tabId) {
         }
     } catch (err) {
         console.error('[SYNTHESIS] Error in tab switching:', err);
+    }
+    
+    return false; // Stop event propagation
+};
+
+// CHAT SENDING FUNCTION
+window.synthesis_sendChat = function() {
+    console.log('[SYNTHESIS] Sending chat message');
+    
+    try {
+        const synthesisContainer = document.querySelector('.synthesis');
+        if (!synthesisContainer) {
+            console.error('[SYNTHESIS] Send Chat: Cannot find synthesis container');
+            return false;
+        }
+        
+        const chatInput = synthesisContainer.querySelector('#synthesis-chat-input');
+        if (!chatInput) {
+            console.error('[SYNTHESIS] Send Chat: Cannot find chat input');
+            return false;
+        }
+        
+        const message = chatInput.value.trim();
+        if (!message) {
+            console.log('[SYNTHESIS] Send Chat: Empty message, ignoring');
+            return false;
+        }
+        
+        // Determine which chat to send to based on active tab
+        const activeTab = synthesisContainer.querySelector('.synthesis__tab--active');
+        if (!activeTab) {
+            console.error('[SYNTHESIS] Send Chat: Cannot determine active tab');
+            return false;
+        }
+        
+        const chatType = activeTab.getAttribute('data-tab');
+        let chatContainer;
+        
+        if (chatType === 'execchat') {
+            chatContainer = synthesisContainer.querySelector('#execchat-messages');
+        } else if (chatType === 'teamchat') {
+            chatContainer = synthesisContainer.querySelector('#teamchat-messages');
+        } else {
+            // For non-chat tabs, determine appropriate chat based on message content
+            if (message.toLowerCase().includes('exec') || message.toLowerCase().includes('workflow')) {
+                chatContainer = synthesisContainer.querySelector('#execchat-messages');
+                // Switch to execution chat tab
+                synthesis_switchTab('execchat');
+            } else {
+                chatContainer = synthesisContainer.querySelector('#teamchat-messages');
+                // Switch to team chat tab
+                synthesis_switchTab('teamchat');
+            }
+        }
+        
+        if (!chatContainer) {
+            console.error('[SYNTHESIS] Send Chat: Cannot find chat container');
+            return false;
+        }
+        
+        // Create user message element
+        const messageDiv = document.createElement('div');
+        messageDiv.className = 'synthesis__message synthesis__message--user';
+        messageDiv.innerHTML = `
+            <div class="synthesis__message-content">
+                <div class="synthesis__message-text">${message}</div>
+            </div>
+        `;
+        
+        chatContainer.appendChild(messageDiv);
+        
+        // Clear input
+        chatInput.value = '';
+        
+        // Scroll to bottom
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+        
+        console.log('[SYNTHESIS] Message sent to', chatType || 'determined chat');
+        
+        // Trigger component handler if available
+        if (window.synthesisComponent && typeof window.synthesisComponent.handleChatMessage === 'function') {
+            window.synthesisComponent.handleChatMessage(message, chatType);
+        }
+    } catch (err) {
+        console.error('[SYNTHESIS] Error in sending chat:', err);
     }
     
     return false; // Stop event propagation

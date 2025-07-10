@@ -34,6 +34,9 @@
             </div>
         </div>
         <div class="ergon__actions">
+            <button id="clear-chat-btn" class="ergon__action-button" style="display: none;" onclick="ergon_clearChat(); return false;" data-tekton-action="clear-chat" data-tekton-action-type="secondary">
+                <span class="ergon__button-label">Clear</span>
+            </button>
             <button id="create-agent-button" class="ergon__action-button" data-tekton-action="create-agent" data-tekton-action-type="primary">
                 <span class="ergon__button-label">Create Agent</span>
             </button>
@@ -275,9 +278,14 @@
     <div class="ergon__footer" data-tekton-zone="footer">
         <div class="ergon__chat-input-container">
             <div class="ergon__chat-prompt">></div>
-            <input type="text" id="chat-input" class="ergon__chat-input" 
-                   placeholder="Enter chat message for Ergon agent management, tools configuration, or MCP">
-            <button id="send-button" class="ergon__send-button" data-tekton-action="send-message" data-tekton-action-type="primary">Send</button>
+            <input type="text" id="ergon-chat-input" class="ergon__chat-input" 
+                   data-tekton-input="chat-input"
+                   data-tekton-input-type="chat"
+                   placeholder="Enter chat message for Ergon agent management, tools configuration, or MCP"
+                   onkeydown="if(event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); ergon_sendChat(); }">
+            <button id="ergon-send-button" class="ergon__send-button" onclick="ergon_sendChat(); return false;"
+                    data-tekton-action="send-message" 
+                    data-tekton-action-type="primary">Send</button>
         </div>
     </div>
 </div>
@@ -823,6 +831,128 @@
         66% { content: "..."; }
     }
 </style>
+
+<script type="text/javascript">
+// Tab switching functionality
+function ergon_switchTab(tabName) {
+    const allTabs = document.querySelectorAll('.ergon__tab');
+    const allPanels = document.querySelectorAll('.ergon__panel');
+    
+    allTabs.forEach(tab => {
+        if (tab.dataset.tab === tabName) {
+            tab.classList.add('ergon__tab--active');
+        } else {
+            tab.classList.remove('ergon__tab--active');
+        }
+    });
+    
+    allPanels.forEach(panel => {
+        if (panel.id === `${tabName}-panel`) {
+            panel.classList.add('ergon__panel--active');
+        } else {
+            panel.classList.remove('ergon__panel--active');
+        }
+    });
+    
+    // Show/hide clear button for chat tabs
+    const clearButton = document.getElementById('clear-chat-btn');
+    if (clearButton) {
+        if (tabName === 'ergon' || tabName === 'awt-team') {
+            clearButton.style.display = 'block';
+        } else {
+            clearButton.style.display = 'none';
+        }
+    }
+}
+
+// Chat functionality - Following Numa's pattern
+function ergon_sendChat() {
+    const input = document.getElementById('ergon-chat-input');
+    const message = input.value.trim();
+    
+    if (!message) return;
+    
+    // Determine which tab is active
+    const toolChatActive = document.querySelector('.ergon__tab[data-tab="ergon"]').classList.contains('ergon__tab--active');
+    const chatType = toolChatActive ? 'ergon' : 'awt-team';
+    const messagesContainer = document.getElementById(`${chatType}-messages`);
+    
+    // Add user message
+    const userMessageDiv = document.createElement('div');
+    userMessageDiv.className = 'ergon__message ergon__message--user';
+    userMessageDiv.innerHTML = `<div class="ergon__message-content"><div class="ergon__message-text"><strong>You:</strong> ${message}</div></div>`;
+    messagesContainer.appendChild(userMessageDiv);
+    
+    // Clear input
+    input.value = '';
+    
+    // Scroll to bottom
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    
+    // Send to backend
+    if (chatType === 'ergon') {
+        // Direct message to ergon-ai
+        if (window.AIChat) {
+            window.AIChat.sendMessage('ergon-ai', message)
+                .then(response => {
+                    const aiMessageDiv = document.createElement('div');
+                    aiMessageDiv.className = 'ergon__message ergon__message--ai';
+                    aiMessageDiv.innerHTML = `<div class="ergon__message-content"><div class="ergon__message-text"><strong>Ergon:</strong> ${response.content}</div></div>`;
+                    messagesContainer.appendChild(aiMessageDiv);
+                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                })
+                .catch(err => {
+                    console.error('Failed to send message:', err);
+                    const errorDiv = document.createElement('div');
+                    errorDiv.className = 'ergon__message ergon__message--system';
+                    errorDiv.innerHTML = `<div class="ergon__message-content"><div class="ergon__message-text"><strong>System:</strong> Failed to connect to Ergon AI</div></div>`;
+                    messagesContainer.appendChild(errorDiv);
+                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                });
+        }
+    } else {
+        // Team chat
+        if (window.AIChat) {
+            window.AIChat.teamChat(message, 'ergon')
+                .then(data => {
+                    // Display team responses
+                    if (data.responses && data.responses.length > 0) {
+                        data.responses.forEach(resp => {
+                            const aiMessageDiv = document.createElement('div');
+                            aiMessageDiv.className = 'ergon__message ergon__message--ai';
+                            const sender = resp.socket_id.replace('-ai', '').charAt(0).toUpperCase() + 
+                                         resp.socket_id.replace('-ai', '').slice(1);
+                            aiMessageDiv.innerHTML = `<div class="ergon__message-content"><div class="ergon__message-text"><strong>${sender}:</strong> ${resp.content}</div></div>`;
+                            messagesContainer.appendChild(aiMessageDiv);
+                        });
+                        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                    }
+                })
+                .catch(err => {
+                    console.error('Failed to send team message:', err);
+                });
+        }
+    }
+}
+
+// Clear chat functionality
+function ergon_clearChat() {
+    const ergonChatActive = document.querySelector('.ergon__tab[data-tab="ergon"]').classList.contains('ergon__tab--active');
+    const teamChatActive = document.querySelector('.ergon__tab[data-tab="awt-team"]').classList.contains('ergon__tab--active');
+    
+    if (ergonChatActive) {
+        const messagesContainer = document.getElementById('ergon-messages');
+        // Keep the welcome message, remove all others
+        const messages = messagesContainer.querySelectorAll('.ergon__message:not(.ergon__message--system)');
+        messages.forEach(msg => msg.remove());
+    } else if (teamChatActive) {
+        const messagesContainer = document.getElementById('awt-team-messages');
+        // Keep the welcome message, remove all others
+        const messages = messagesContainer.querySelectorAll('.ergon__message:not(.ergon__message--system)');
+        messages.forEach(msg => msg.remove());
+    }
+}
+</script>
 
 <script type="text/javascript">
 // SIMPLIFIED COMPONENT SCRIPT - FULLY SELF-CONTAINED

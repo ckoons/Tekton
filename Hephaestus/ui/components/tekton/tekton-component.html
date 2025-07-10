@@ -448,10 +448,12 @@
             <input type="text" id="chat-input" class="tekton__chat-input" 
                    placeholder="Enter chat message, project query, or GitHub command"
                    data-tekton-input="chat-input"
-                   data-tekton-input-type="chat">
+                   data-tekton-input-type="chat"
+                   onkeypress="if(event.key==='Enter'){tekton_sendChat();return false;}">
             <button id="send-button" class="tekton__send-button"
                     data-tekton-action="send-chat"
-                    data-tekton-action-type="primary">Send</button>
+                    data-tekton-action-type="primary"
+                    onclick="tekton_sendChat(); return false;">Send</button>
         </div>
     </div>
 </div>
@@ -995,6 +997,93 @@ window.tekton_switchTab = function(tabId) {
         }
     } catch (err) {
         console.error('[TEKTON] Error in tab switching:', err);
+    }
+    
+    return false; // Stop event propagation
+};
+
+// CHAT SEND FUNCTION
+window.tekton_sendChat = function() {
+    console.log('[TEKTON] Sending chat message');
+    
+    try {
+        const tektonContainer = document.querySelector('.tekton');
+        if (!tektonContainer) {
+            console.error('[TEKTON] Send Chat: Cannot find tekton container');
+            return false;
+        }
+        
+        const chatInput = tektonContainer.querySelector('#chat-input');
+        if (!chatInput) {
+            console.error('[TEKTON] Send Chat: Cannot find chat input');
+            return false;
+        }
+        
+        const message = chatInput.value.trim();
+        if (!message) {
+            console.log('[TEKTON] Send Chat: Empty message, not sending');
+            return false;
+        }
+        
+        // Determine which chat panel is active
+        const activeTab = tektonContainer.querySelector('.tekton__tab--active');
+        if (!activeTab) {
+            console.error('[TEKTON] Send Chat: Cannot determine active tab');
+            return false;
+        }
+        
+        const chatType = activeTab.getAttribute('data-tab');
+        let chatContainer;
+        
+        if (chatType === 'projectchat') {
+            chatContainer = tektonContainer.querySelector('#projectchat-messages');
+        } else if (chatType === 'teamchat') {
+            chatContainer = tektonContainer.querySelector('#teamchat-messages');
+        } else {
+            console.log('[TEKTON] Send Chat: Not on a chat tab, ignoring');
+            return false;
+        }
+        
+        if (!chatContainer) {
+            console.error('[TEKTON] Send Chat: Cannot find chat container for', chatType);
+            return false;
+        }
+        
+        // Add user message
+        const userMessage = document.createElement('div');
+        userMessage.className = 'tekton__message tekton__message--user';
+        userMessage.innerHTML = `
+            <div class="tekton__message-content">
+                <div class="tekton__message-text">${message}</div>
+            </div>
+        `;
+        chatContainer.appendChild(userMessage);
+        
+        // Clear input
+        chatInput.value = '';
+        
+        // Scroll to bottom
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+        
+        // Simulate AI response after a short delay
+        setTimeout(() => {
+            const aiMessage = document.createElement('div');
+            aiMessage.className = 'tekton__message tekton__message--ai';
+            const responseText = chatType === 'projectchat' 
+                ? `I'll help you with your project management query: "${message}"` 
+                : `Team message received: "${message}"`;
+            aiMessage.innerHTML = `
+                <div class="tekton__message-content">
+                    <div class="tekton__message-text">${responseText}</div>
+                </div>
+            `;
+            chatContainer.appendChild(aiMessage);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }, 1000);
+        
+        console.log('[TEKTON] Chat message sent:', message, 'to', chatType);
+    } catch (err) {
+        console.error('[TEKTON] Error in sending chat:', err);
     }
     
     return false; // Stop event propagation

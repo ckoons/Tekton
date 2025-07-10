@@ -269,9 +269,10 @@
     <div class="prometheus__footer" data-tekton-zone="footer">
         <div class="prometheus__chat-input-container">
             <div class="prometheus__chat-prompt">></div>
-            <input type="text" id="chat-input" class="prometheus__chat-input" 
-                   placeholder="Enter chat message, project instructions, or planning queries">
-            <button id="send-button" class="prometheus__send-button" data-tekton-action="send-message" data-tekton-action-type="primary">Send</button>
+            <input type="text" id="prometheus-chat-input" class="prometheus__chat-input" 
+                   placeholder="Enter chat message, project instructions, or planning queries"
+                   onkeypress="if(event.key === 'Enter') { prometheus_sendChat(); }">
+            <button id="prometheus-send-button" class="prometheus__send-button" onclick="prometheus_sendChat(); return false;" data-tekton-action="send-message" data-tekton-action-type="primary">Send</button>
         </div>
     </div>
 </div>
@@ -876,6 +877,95 @@ window.prometheus_switchTab = function(tabId) {
     }
     
     return false; // Stop event propagation
+};
+
+// SEND CHAT FUNCTION
+window.prometheus_sendChat = function() {
+    console.log('[PROMETHEUS] Send chat clicked');
+    
+    try {
+        const prometheusContainer = document.querySelector('.prometheus');
+        if (!prometheusContainer) {
+            console.error('[PROMETHEUS] Send Chat: Cannot find prometheus container');
+            return false;
+        }
+        
+        // Get the chat input
+        const chatInput = prometheusContainer.querySelector('#prometheus-chat-input');
+        if (!chatInput) {
+            console.error('[PROMETHEUS] Cannot find chat input');
+            return false;
+        }
+        
+        const message = chatInput.value.trim();
+        if (!message) {
+            console.log('[PROMETHEUS] Empty message, not sending');
+            return false;
+        }
+        
+        // Get active tab to determine which chat to send to
+        const activeTab = prometheusContainer.querySelector('.prometheus__tab--active');
+        const tabId = activeTab ? activeTab.getAttribute('data-tab') : '';
+        
+        // Only process for chat tabs
+        if (tabId !== 'planningchat' && tabId !== 'teamchat') {
+            console.log('[PROMETHEUS] Not on a chat tab, ignoring send');
+            return false;
+        }
+        
+        // Get the messages container for the active chat
+        const messagesContainer = prometheusContainer.querySelector('#' + tabId + '-messages');
+        if (!messagesContainer) {
+            console.error('[PROMETHEUS] Cannot find messages container for:', tabId);
+            return false;
+        }
+        
+        // Create user message element
+        const userMessage = document.createElement('div');
+        userMessage.className = 'prometheus__message prometheus__message--user';
+        userMessage.innerHTML = `
+            <div class="prometheus__message-content">
+                <div class="prometheus__message-text">${message}</div>
+            </div>
+        `;
+        messagesContainer.appendChild(userMessage);
+        
+        // Clear input
+        chatInput.value = '';
+        
+        // Scroll to bottom
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        
+        // Simulate AI response after a delay
+        setTimeout(() => {
+            const aiMessage = document.createElement('div');
+            aiMessage.className = 'prometheus__message prometheus__message--ai';
+            
+            let responseText = '';
+            if (tabId === 'planningchat') {
+                responseText = 'I\'ll help you with your planning query. Processing your request...';
+            } else {
+                responseText = 'Message received in team chat. This would be shared with all team members.';
+            }
+            
+            aiMessage.innerHTML = `
+                <div class="prometheus__message-content">
+                    <div class="prometheus__message-text">${responseText}</div>
+                </div>
+            `;
+            messagesContainer.appendChild(aiMessage);
+            
+            // Scroll to bottom again
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }, 1000);
+        
+        console.log('[PROMETHEUS] Message sent:', message, 'to tab:', tabId);
+        
+    } catch (err) {
+        console.error('[PROMETHEUS] Error sending chat:', err);
+    }
+    
+    return false; // Prevent default
 };
 
 // CHAT CLEARING FUNCTION

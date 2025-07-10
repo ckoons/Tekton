@@ -326,9 +326,14 @@
     <div class="harmonia__footer" data-tekton-zone="footer">
         <div class="harmonia__chat-input-container">
             <div class="harmonia__chat-prompt">></div>
-            <input type="text" id="chat-input" class="harmonia__chat-input" 
-                   placeholder="Enter chat message, workflow questions, or execution queries">
-            <button id="send-button" class="harmonia__send-button" data-tekton-action="send-message" data-tekton-action-type="primary">Send</button>
+            <input type="text" id="harmonia-chat-input" class="harmonia__chat-input" 
+                   data-tekton-input="chat-input"
+                   data-tekton-input-type="chat"
+                   placeholder="Enter chat message, workflow questions, or execution queries"
+                   onkeydown="if(event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); harmonia_sendChat(); }">
+            <button id="harmonia-send-button" class="harmonia__send-button" onclick="harmonia_sendChat(); return false;"
+                    data-tekton-action="send-message" 
+                    data-tekton-action-type="primary">Send</button>
         </div>
     </div>
 </div>
@@ -940,6 +945,128 @@
     background-color: var(--color-primary-hover, #6A1B9A);
 }
 </style>
+
+<script type="text/javascript">
+// Tab switching functionality
+function harmonia_switchTab(tabName) {
+    const allTabs = document.querySelectorAll('.harmonia__tab');
+    const allPanels = document.querySelectorAll('.harmonia__panel');
+    
+    allTabs.forEach(tab => {
+        if (tab.dataset.tab === tabName) {
+            tab.classList.add('harmonia__tab--active');
+        } else {
+            tab.classList.remove('harmonia__tab--active');
+        }
+    });
+    
+    allPanels.forEach(panel => {
+        if (panel.id === `${tabName}-panel`) {
+            panel.classList.add('harmonia__panel--active');
+        } else {
+            panel.classList.remove('harmonia__panel--active');
+        }
+    });
+    
+    // Show/hide clear button for chat tabs
+    const clearButton = document.getElementById('clear-chat-btn');
+    if (clearButton) {
+        if (tabName === 'workflowchat' || tabName === 'teamchat') {
+            clearButton.style.display = 'block';
+        } else {
+            clearButton.style.display = 'none';
+        }
+    }
+}
+
+// Chat functionality - Following Numa's pattern
+function harmonia_sendChat() {
+    const input = document.getElementById('harmonia-chat-input');
+    const message = input.value.trim();
+    
+    if (!message) return;
+    
+    // Determine which tab is active
+    const workflowChatActive = document.querySelector('.harmonia__tab[data-tab="workflowchat"]').classList.contains('harmonia__tab--active');
+    const chatType = workflowChatActive ? 'workflowchat' : 'teamchat';
+    const messagesContainer = document.getElementById(`${chatType}-messages`);
+    
+    // Add user message
+    const userMessageDiv = document.createElement('div');
+    userMessageDiv.className = 'harmonia__message harmonia__message--user';
+    userMessageDiv.innerHTML = `<div class="harmonia__message-content"><div class="harmonia__message-text"><strong>You:</strong> ${message}</div></div>`;
+    messagesContainer.appendChild(userMessageDiv);
+    
+    // Clear input
+    input.value = '';
+    
+    // Scroll to bottom
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    
+    // Send to backend
+    if (chatType === 'workflowchat') {
+        // Direct message to harmonia-ai
+        if (window.AIChat) {
+            window.AIChat.sendMessage('harmonia-ai', message)
+                .then(response => {
+                    const aiMessageDiv = document.createElement('div');
+                    aiMessageDiv.className = 'harmonia__message harmonia__message--ai';
+                    aiMessageDiv.innerHTML = `<div class="harmonia__message-content"><div class="harmonia__message-text"><strong>Harmonia:</strong> ${response.content}</div></div>`;
+                    messagesContainer.appendChild(aiMessageDiv);
+                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                })
+                .catch(err => {
+                    console.error('Failed to send message:', err);
+                    const errorDiv = document.createElement('div');
+                    errorDiv.className = 'harmonia__message harmonia__message--system';
+                    errorDiv.innerHTML = `<div class="harmonia__message-content"><div class="harmonia__message-text"><strong>System:</strong> Failed to connect to Harmonia AI</div></div>`;
+                    messagesContainer.appendChild(errorDiv);
+                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                });
+        }
+    } else {
+        // Team chat
+        if (window.AIChat) {
+            window.AIChat.teamChat(message, 'harmonia')
+                .then(data => {
+                    // Display team responses
+                    if (data.responses && data.responses.length > 0) {
+                        data.responses.forEach(resp => {
+                            const aiMessageDiv = document.createElement('div');
+                            aiMessageDiv.className = 'harmonia__message harmonia__message--ai';
+                            const sender = resp.socket_id.replace('-ai', '').charAt(0).toUpperCase() + 
+                                         resp.socket_id.replace('-ai', '').slice(1);
+                            aiMessageDiv.innerHTML = `<div class="harmonia__message-content"><div class="harmonia__message-text"><strong>${sender}:</strong> ${resp.content}</div></div>`;
+                            messagesContainer.appendChild(aiMessageDiv);
+                        });
+                        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                    }
+                })
+                .catch(err => {
+                    console.error('Failed to send team message:', err);
+                });
+        }
+    }
+}
+
+// Clear chat functionality
+function harmonia_clearChat() {
+    const workflowChatActive = document.querySelector('.harmonia__tab[data-tab="workflowchat"]').classList.contains('harmonia__tab--active');
+    const teamChatActive = document.querySelector('.harmonia__tab[data-tab="teamchat"]').classList.contains('harmonia__tab--active');
+    
+    if (workflowChatActive) {
+        const messagesContainer = document.getElementById('workflowchat-messages');
+        // Keep the welcome message, remove all others
+        const messages = messagesContainer.querySelectorAll('.harmonia__message:not(.harmonia__message--system)');
+        messages.forEach(msg => msg.remove());
+    } else if (teamChatActive) {
+        const messagesContainer = document.getElementById('teamchat-messages');
+        // Keep the welcome message, remove all others
+        const messages = messagesContainer.querySelectorAll('.harmonia__message:not(.harmonia__message--system)');
+        messages.forEach(msg => msg.remove());
+    }
+}
+</script>
 
 <script>
 // IMMEDIATELY SET UP UI MANAGER PROTECTION
