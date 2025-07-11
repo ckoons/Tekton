@@ -276,11 +276,7 @@ Each component has a specialized AI assistant:
 
 ### Configuration
 
-AI specialists are enabled by default. To disable them:
-```bash
-# Add to .env.tekton only if you want to disable AIs
-TEKTON_REGISTER_AI=false
-```
+AI specialists are always enabled and use fixed ports paired with their components.
 
 Configure AI provider (defaults to ollama):
 ```bash

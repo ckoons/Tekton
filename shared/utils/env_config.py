@@ -411,7 +411,7 @@ class NumaConfig(BaseComponentConfig):
     def from_env(cls) -> 'NumaConfig':
         return cls(
             port=cls._get_required_env('NUMA_PORT', 'int'),
-            ai_enabled=cls._get_env_value('TEKTON_REGISTER_AI', False, 'bool'),
+            ai_enabled=True,  # AI is always enabled with fixed ports
             companion_enabled=cls._get_env_value('NUMA_COMPANION_ENABLED', True, 'bool')
         )
 
@@ -427,7 +427,7 @@ class NoesisConfig(BaseComponentConfig):
     def from_env(cls) -> 'NoesisConfig':
         return cls(
             port=cls._get_required_env('NOESIS_PORT', 'int'),
-            ai_enabled=cls._get_env_value('TEKTON_REGISTER_AI', False, 'bool'),
+            ai_enabled=True,  # AI is always enabled with fixed ports
             discovery_mode=cls._get_env_value('NOESIS_DISCOVERY_MODE', 'placeholder', 'str')
         )
 
@@ -455,7 +455,6 @@ class TektonConfig(BaseModel):
     # Feature flags
     mcp_enabled: bool = True
     notifications_enabled: bool = True
-    register_ai: bool = True
     
     @classmethod
     def from_env(cls) -> 'TektonConfig':
@@ -471,8 +470,7 @@ class TektonConfig(BaseModel):
             theme_mode=cls._get_env_value('TEKTON_THEME_MODE', 'dark', 'str'),
             theme_color=cls._get_env_value('TEKTON_THEME_COLOR', 'blue', 'str'),
             mcp_enabled=cls._get_env_value('TEKTON_MCP_ENABLED', True, 'bool'),
-            notifications_enabled=cls._get_env_value('TEKTON_NOTIFICATIONS_ENABLED', True, 'bool'),
-            register_ai=cls._get_env_value('TEKTON_REGISTER_AI', True, 'bool')  # Still True - AIs are active, just not using old registry
+            notifications_enabled=cls._get_env_value('TEKTON_NOTIFICATIONS_ENABLED', True, 'bool')
         )
     
     @classmethod

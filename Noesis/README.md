@@ -27,10 +27,6 @@ Noesis runs on port **8015** (configurable via `NOESIS_PORT` environment variabl
 ```bash
 # Basic startup
 ./run_noesis.sh
-
-# With AI registration enabled
-export TEKTON_REGISTER_AI=true
-./run_noesis.sh
 ```
 
 ## API Endpoints
@@ -44,7 +40,6 @@ export TEKTON_REGISTER_AI=true
 ## Environment Variables
 
 - `NOESIS_PORT` - Port to run on (default: 8015)
-- `TEKTON_REGISTER_AI` - Enable AI registration (default: false)
 - `HERMES_URL` - Hermes service URL (default: http://localhost:8001)
 - `RHETOR_URL` - Rhetor service URL (default: http://localhost:8003)
 

@@ -435,9 +435,7 @@ class EnhancedStatusChecker:
     
     async def check_ai_status(self, component_name: str) -> Dict[str, str]:
         """Check AI status for a component."""
-        # Check if AI is enabled globally from Tekton config
-        if not self.env_config.tekton.register_ai:
-            return {'model': None, 'health': 'none'}
+        # AI is always enabled with fixed ports
         
         # Calculate AI port from component port
         component_port = self.env_config.get_port(component_name.lower())

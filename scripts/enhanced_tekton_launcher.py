@@ -622,11 +622,8 @@ class EnhancedComponentLauncher:
                     component_name
                 )
                 
-                # Launch AI if enabled (check Tekton config, not OS environ)
-                # Note: register_ai still controls AI launching, but we no longer use the old registry system
-                env_config = get_env_config()
-                if env_config.tekton.register_ai:
-                    await self.launch_component_ai(component_name)
+                # Always launch AI - components and AIs are paired with fixed ports
+                await self.launch_component_ai(component_name)
             else:
                 result.state = ComponentState.UNHEALTHY
                 result.message = f"Launched but failed health check within {timeout}s"
@@ -1152,11 +1149,6 @@ async def main():
         nargs='*',
         help="Launch only AI specialists for components (optionally specify which)"
     )
-    parser.add_argument(
-        "--no-ai",
-        action="store_true",
-        help="Disable AI launching even if TEKTON_REGISTER_AI is set"
-    )
     
     args = parser.parse_args()
     
@@ -1225,10 +1217,6 @@ async def main():
             await process.wait()
             return
         
-        # Handle --no-ai flag
-        if args.no_ai:
-            os.environ['TEKTON_REGISTER_AI'] = 'false'
-            launcher.log("AI launching disabled by --no-ai flag", "info")
         
         if not components:
             launcher.log("No components selected", "warning")

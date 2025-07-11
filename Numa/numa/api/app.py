@@ -183,7 +183,7 @@ async def get_status():
     return {
         "component": "numa",
         "status": "active",
-        "ai_enabled": os.environ.get("TEKTON_REGISTER_AI", "false").lower() == "true",
+        "ai_enabled": True,  # AI is always enabled with fixed ports
         "connected_components": [],  # TODO: Query from Hermes
         "last_activity": datetime.now().isoformat(),
         "capabilities": {
