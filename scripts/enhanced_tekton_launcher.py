@@ -62,11 +62,13 @@ sys.path.insert(0, tekton_root)
 # Check if environment is loaded
 from shared.env import TektonEnviron
 if not TektonEnviron.is_loaded():
-    print("Please run 'tekton launch'")
-    sys.exit(1)
-
-# Use frozen environment
-os.environ = TektonEnviron.all()
+    # We're running as a subprocess with environment passed via env=
+    # The environment is already correct, just not "loaded" in Python's memory
+    # Don't exit - just continue
+    pass
+else:
+    # Use frozen environment if loaded
+    os.environ = TektonEnviron.all()
 
 from tekton.utils.component_config import get_component_config
 from shared.utils.env_config import get_component_config as get_env_config

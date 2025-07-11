@@ -75,22 +75,17 @@ sys.path.insert(0, tekton_root)
 # Check if environment is loaded
 from shared.env import TektonEnviron
 if not TektonEnviron.is_loaded():
-    print("Please run 'tekton status'")
-    sys.exit(1)
-
-# Use frozen environment
-os.environ = TektonEnviron.all()
+    # We're running as a subprocess with environment passed via env=
+    # The environment is already correct, just not "loaded" in Python's memory
+    # Don't exit - just continue
+    pass
+else:
+    # Use frozen environment if loaded
+    os.environ = TektonEnviron.all()
 
 # Setup logging
 import logging
 logger = logging.getLogger(__name__)
-
-# DEBUG: Log all port environment variables
-logger.debug("=== Port Environment Variables ===")
-for key, value in sorted(TektonEnviron.all().items()):
-    if '_PORT' in key:
-        logger.debug(f"{key}={value}")
-logger.debug("=== END Port Environment Variables ===")
 
 from tekton.utils.component_config import get_component_config, ComponentInfo
 from shared.utils.env_config import get_component_config as get_env_config

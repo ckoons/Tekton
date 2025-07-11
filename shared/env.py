@@ -102,18 +102,18 @@ class TektonEnviron:
             from shared.env import TektonEnviron
             os.environ = TektonEnviron.all()
         """
-        if not _is_loaded:
-            # If accessed before load, return current os.environ
+        if not _is_loaded and os.environ.get('_TEKTON_ENV_FROZEN') != '1':
+            # If accessed before load AND not in a subprocess with frozen env
             logger.warning("TektonEnviron accessed before TektonEnvironLock.load() - returning current os.environ")
-            return dict(os.environ)
-        return dict(_frozen_env)  # Return a copy
+        return dict(os.environ)  # Always return current environment
     
     @staticmethod
     def get(key: str, default: Optional[str] = None) -> Optional[str]:
         """Get a single environment variable."""
-        if not _is_loaded:
-            return os.environ.get(key, default)
-        return _frozen_env.get(key, default)
+        if not _is_loaded and os.environ.get('_TEKTON_ENV_FROZEN') != '1':
+            # If accessed before load AND not in a subprocess with frozen env
+            logger.warning(f"TektonEnviron.get('{key}') called before TektonEnvironLock.load()")
+        return os.environ.get(key, default)  # Always use current environment
     
     @staticmethod
     def set(key: str, value: str) -> None:
