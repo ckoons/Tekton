@@ -58,10 +58,16 @@ class ComponentConfig:
             
         # Parse components
         for comp_id, comp_data in self._config.get('components', {}).items():
+            # Get port from TektonEnviron (single source of truth)
+            from shared.env import TektonEnviron
+            env_var = f"{comp_id.upper()}_PORT"
+            port_str = TektonEnviron.get(env_var)
+            port = int(port_str) if port_str else comp_data['port']  # Fallback to YAML if env not set
+            
             self._components[comp_id] = ComponentInfo(
                 id=comp_id,
                 name=comp_data['name'],
-                port=comp_data['port'],
+                port=port,
                 description=comp_data['description'],
                 category=comp_data['category'],
                 startup_priority=comp_data.get('startup_priority', 0),
@@ -71,14 +77,36 @@ class ComponentConfig:
             
         # Parse services
         for svc_id, svc_data in self._config.get('services', {}).items():
+            # Get ports from TektonEnviron (single source of truth)
+            from shared.env import TektonEnviron
+            
+            # Handle different port types
+            port = None
+            if 'port' in svc_data:
+                env_var = f"{svc_id.upper()}_PORT"
+                port_str = TektonEnviron.get(env_var)
+                port = int(port_str) if port_str else svc_data.get('port')
+            
+            http_port = None
+            if 'http_port' in svc_data:
+                env_var = f"{svc_id.upper()}_HTTP_PORT"
+                port_str = TektonEnviron.get(env_var)
+                http_port = int(port_str) if port_str else svc_data.get('http_port')
+            
+            ws_port = None
+            if 'ws_port' in svc_data:
+                env_var = f"{svc_id.upper()}_WS_PORT"
+                port_str = TektonEnviron.get(env_var)
+                ws_port = int(port_str) if port_str else svc_data.get('ws_port')
+            
             self._services[svc_id] = ServiceInfo(
                 id=svc_id,
                 name=svc_data['name'],
                 description=svc_data['description'],
                 category=svc_data['category'],
-                port=svc_data.get('port'),
-                http_port=svc_data.get('http_port'),
-                ws_port=svc_data.get('ws_port')
+                port=port,
+                http_port=http_port,
+                ws_port=ws_port
             )
     
     def get_component(self, component_id: str) -> Optional[ComponentInfo]:

@@ -118,20 +118,19 @@ def get_component_port(component_name: Optional[str] = None) -> int:
         raise ValueError("Unable to determine component name")
     
     component_name = component_name.lower().replace("-", "_")
-    ports = load_port_assignments()
     
-    if component_name not in ports:
-        raise ValueError(f"Unknown component: {component_name}")
-    
-    # Check for environment variable override
+    # Single source of truth: TektonEnviron
+    from shared.env import TektonEnviron
     env_var = f"{component_name.upper()}_PORT"
-    if env_var in os.environ:
-        try:
-            return int(os.environ[env_var])
-        except ValueError:
-            pass
+    port = TektonEnviron.get(env_var)
     
-    return ports[component_name]
+    if port:
+        try:
+            return int(port)
+        except ValueError:
+            raise ValueError(f"Invalid port value for {component_name}: {port}")
+    
+    raise ValueError(f"Port not found for component: {component_name}")
 
 
 def get_component_url(component_name: str, host: str = "localhost", 
