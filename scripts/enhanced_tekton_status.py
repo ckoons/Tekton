@@ -81,6 +81,17 @@ if not TektonEnviron.is_loaded():
 # Use frozen environment
 os.environ = TektonEnviron.all()
 
+# Setup logging
+import logging
+logger = logging.getLogger(__name__)
+
+# DEBUG: Log all port environment variables
+logger.debug("=== Port Environment Variables ===")
+for key, value in sorted(TektonEnviron.all().items()):
+    if '_PORT' in key:
+        logger.debug(f"{key}={value}")
+logger.debug("=== END Port Environment Variables ===")
+
 from tekton.utils.component_config import get_component_config, ComponentInfo
 from shared.utils.env_config import get_component_config as get_env_config
 # Registry client removed - using direct port checks
@@ -241,6 +252,12 @@ class EnhancedStatusChecker:
     def __init__(self, store_metrics: bool = True, timeout: float = 2.0, quick_mode: bool = False):
         self.config = get_component_config()
         self.env_config = get_env_config()  # For AI port calculations
+        
+        # DEBUG: Log component ports from config
+        logger.debug("=== Component Ports from Config ===")
+        for comp_id, comp_info in self.config.get_all_components().items():
+            logger.debug(f"{comp_id}: port={comp_info.port}")
+        logger.debug("=== END Component Ports from Config ===")
         self.storage = MetricsStorage() if store_metrics else None
         self.session = None
         self.timeout = timeout
@@ -358,6 +375,7 @@ class EnhancedStatusChecker:
         start_time = time.time()
         
         # Initialize metrics with defaults
+        logger.debug(f"Checking {comp_name} on port {comp_info.port}")
         metrics = ComponentMetrics(
             name=comp_name,
             port=comp_info.port,
@@ -911,6 +929,9 @@ class EnhancedStatusChecker:
             else:
                 comp_info = self.config.get_component(metrics.name)
                 display_name = comp_info.name if comp_info else metrics.name.title()
+            
+            # DEBUG: Log port being displayed
+            logger.debug(f"Displaying {display_name} with port {metrics.port}")
             
             row = [
                 display_name,

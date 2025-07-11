@@ -435,8 +435,30 @@ if __name__ == '__main__':
         print("Error: TEKTON_ROOT environment variable not set")
         sys.exit(1)
     
+    # Check for --coder argument before loading environment
+    if '--coder' in sys.argv or '-c' in sys.argv:
+        # Find the coder argument value
+        coder_letter = None
+        for i, arg in enumerate(sys.argv):
+            if arg in ['--coder', '-c'] and i + 1 < len(sys.argv):
+                coder_letter = sys.argv[i + 1].upper()
+                break
+        
+        if coder_letter:
+            # Build path to Coder directory (sibling of current TEKTON_ROOT)
+            current_tekton = Path(os.environ['TEKTON_ROOT'])
+            coder_dir = current_tekton.parent / f'Coder-{coder_letter}'
+            env_local = coder_dir / '.env.local'
+            
+            # Verify .env.local exists
+            if not env_local.exists():
+                print(f"Error: Coder-{coder_letter} environment not found at {env_local}")
+                sys.exit(1)
+            
+            # Set TEKTON_ROOT to Coder directory
+            os.environ['TEKTON_ROOT'] = str(coder_dir)
+    
     # Add TEKTON_ROOT to Python path
-    import sys
     sys.path.insert(0, os.environ['TEKTON_ROOT'])
     
     # Load and freeze environment
