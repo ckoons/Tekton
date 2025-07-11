@@ -123,20 +123,22 @@ class TektonCLI:
     
     def cmd_start(self, args: List[str]):
         """Start Tekton components"""
+        from shared.env import TektonEnviron
         script_path = Path(self.tekton_root) / 'scripts' / 'enhanced_tekton_launcher.py'
         if script_path.exists():
             cmd = [sys.executable, str(script_path)] + args
-            return subprocess.call(cmd)
+            return subprocess.call(cmd, env=TektonEnviron.all())
         else:
             # Try tekton-launch as fallback
-            return subprocess.call(['tekton-launch'] + args)
+            return subprocess.call(['tekton-launch'] + args, env=TektonEnviron.all())
     
     def cmd_stop(self, args: List[str]):
         """Stop Tekton components"""
+        from shared.env import TektonEnviron
         script_path = Path(self.tekton_root) / 'scripts' / 'enhanced_tekton_killer.py'
         if script_path.exists():
             cmd = [sys.executable, str(script_path)] + args
-            return subprocess.call(cmd)
+            return subprocess.call(cmd, env=TektonEnviron.all())
         else:
             # Look for fallback kill scripts
             kill_scripts = [
@@ -149,9 +151,9 @@ class TektonCLI:
                 script_path = Path(self.tekton_root) / script
                 if script_path.exists():
                     if script.endswith('.sh'):
-                        return subprocess.call(['bash', str(script_path)] + args)
+                        return subprocess.call(['bash', str(script_path)] + args, env=TektonEnviron.all())
                     elif script.endswith('.py'):
-                        return subprocess.call([sys.executable, str(script_path)] + args)
+                        return subprocess.call([sys.executable, str(script_path)] + args, env=TektonEnviron.all())
                     else:
                         return subprocess.call([str(script_path)] + args)
             
@@ -160,9 +162,10 @@ class TektonCLI:
     
     def cmd_status(self, args: List[str]):
         """Show Tekton component status"""
+        from shared.env import TektonEnviron
         # Run the Python script directly so environment is set correctly
         script_path = Path(self.tekton_root) / 'scripts' / 'enhanced_tekton_status.py'
-        return subprocess.call([sys.executable, str(script_path)] + args)
+        return subprocess.call([sys.executable, str(script_path)] + args, env=TektonEnviron.all())
     
     def cmd_revert(self, args: List[str]):
         """Revert Tekton changes"""
@@ -426,4 +429,18 @@ def main():
 
 
 if __name__ == '__main__':
+    # TEKTON_ROOT must be set in environment already
+    # (we can run from any directory)
+    if 'TEKTON_ROOT' not in os.environ:
+        print("Error: TEKTON_ROOT environment variable not set")
+        sys.exit(1)
+    
+    # Add TEKTON_ROOT to Python path
+    import sys
+    sys.path.insert(0, os.environ['TEKTON_ROOT'])
+    
+    # Load and freeze environment
+    from shared.env import TektonEnvironLock
+    TektonEnvironLock.load()
+    
     main()

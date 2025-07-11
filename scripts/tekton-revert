@@ -28,6 +28,17 @@ class TektonReverter:
     
     def __init__(self):
         self.tekton_root = self._find_tekton_root()
+        
+        # Add tekton root to path and check environment
+        sys.path.insert(0, str(self.tekton_root))
+        from shared.env import TektonEnviron
+        if not TektonEnviron.is_loaded():
+            print("Please run 'tekton revert'")
+            sys.exit(1)
+        
+        # Use frozen environment
+        os.environ = TektonEnviron.all()
+        
         self.structure = self._load_structure()
         self.changes = defaultdict(list)
         

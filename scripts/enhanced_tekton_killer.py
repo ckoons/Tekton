@@ -56,6 +56,15 @@ def find_tekton_root():
 tekton_root = find_tekton_root()
 sys.path.insert(0, tekton_root)
 
+# Check if environment is loaded
+from shared.env import TektonEnviron
+if not TektonEnviron.is_loaded():
+    print("Please run 'tekton kill'")
+    sys.exit(1)
+
+# Use frozen environment
+os.environ = TektonEnviron.all()
+
 from tekton.utils.component_config import get_component_config
 from shared.utils.env_config import get_component_config as get_env_config
 from tekton.utils.port_config import get_component_port
