@@ -891,8 +891,8 @@ class EnhancedComponentLauncher:
         """Get the launch command for a component"""
         component_dir = self.get_component_directory(component_name)
         
-        # Components that should use python -m (have __main__.py and no shell scripts)
-        module_components = ['apollo', 'numa', 'noesis', 'terma']
+        # Components that should use python -m (have __main__.py and proper initialization)
+        module_components = ['apollo', 'athena', 'numa', 'noesis', 'terma']
         
         if component_name in module_components:
             # Use Python module execution
