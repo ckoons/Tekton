@@ -48,30 +48,29 @@ class RhetorLLMAdapter:
     async def initialize(self):
         """Initialize the Rhetor LLM client."""
         try:
-            from rhetor.core.llm_client import LLMClient
-            if not self.client:
-                self.client = LLMClient()
-                await self.client.initialize()
-            logger.info("Successfully initialized Rhetor LLM client")
-            return True
-        except ImportError:
-            logger.warning("Direct Rhetor LLM client not available, trying component client")
-            try:
-                from rhetor.client import get_rhetor_prompt_client
-                if not self.rhetor_client:
-                    self.rhetor_client = await get_rhetor_prompt_client()
-                logger.info("Successfully initialized Rhetor prompt client")
-                return True
-            except (ImportError, Exception) as e:
-                logger.error(f"Failed to initialize Rhetor clients: {e}")
-                return False
+            # Use HTTP-based communication with Rhetor instead of direct imports
+            import aiohttp
+            rhetor_url = self.rhetor_url or get_component_api_url("rhetor")
+            
+            # Test connection to Rhetor
+            async with aiohttp.ClientSession() as session:
+                async with session.get(f"{rhetor_url}/health") as response:
+                    if response.status == 200:
+                        logger.info(f"Successfully connected to Rhetor at {rhetor_url}")
+                        return True
+                    else:
+                        logger.error(f"Rhetor health check failed: {response.status}")
+                        return False
+        except Exception as e:
+            logger.error(f"Failed to connect to Rhetor: {e}")
+            return False
     
     async def _ensure_initialized(self):
         """Ensure the client is initialized."""
-        if not self.client and not self.rhetor_client:
-            success = await self.initialize()
-            if not success:
-                raise RuntimeError("Failed to initialize Rhetor LLM adapter")
+        # With HTTP communication, we just need to verify connection
+        success = await self.initialize()
+        if not success:
+            raise RuntimeError("Failed to initialize Rhetor LLM adapter")
     
     def _format_messages(self, messages: List[Dict[str, str]]) -> List[Dict[str, str]]:
         """Format messages to Rhetor's expected format."""
@@ -106,46 +105,31 @@ class RhetorLLMAdapter:
         context_id = str(uuid.uuid4())
         provider_id = self._extract_provider_from_model()
         
-        if self.client:
-            # Use direct LLM client
-            response = await self.client.chat_complete(
-                messages=formatted_messages,
-                context_id=context_id,
-                model_id=self.model_name,
-                provider_id=provider_id,
-                options={
-                    "temperature": self.temperature,
-                    "max_tokens": self.max_tokens,
-                }
-            )
-            
-            if "error" in response:
-                logger.error(f"Error from Rhetor: {response['error']}")
-                raise RuntimeError(f"Rhetor LLM error: {response['error']}")
-            
-            return response.get("content", "")
+        # Use HTTP API to communicate with Rhetor
+        import aiohttp
+        rhetor_url = self.rhetor_url or get_component_api_url("rhetor")
         
-        elif self.rhetor_client:
-            # Use Rhetor prompt client
-            response = await self.rhetor_client.invoke_capability(
-                "generate_completion",
-                {
-                    "messages": formatted_messages,
-                    "model": self.model_name,
-                    "temperature": self.temperature,
-                    "max_tokens": self.max_tokens,
-                }
-            )
-            
-            if isinstance(response, dict) and "content" in response:
-                return response["content"]
-            elif isinstance(response, dict) and "error" in response:
-                logger.error(f"Error from Rhetor: {response['error']}")
-                raise RuntimeError(f"Rhetor LLM error: {response['error']}")
-            else:
-                return str(response)
+        payload = {
+            "messages": formatted_messages,
+            "model": self.model_name,
+            "temperature": self.temperature,
+            "max_tokens": self.max_tokens,
+            "context_id": context_id
+        }
         
-        raise RuntimeError("No Rhetor client available")
+        try:
+            async with aiohttp.ClientSession() as session:
+                async with session.post(f"{rhetor_url}/api/v1/chat/completions", json=payload) as response:
+                    if response.status == 200:
+                        result = await response.json()
+                        return result.get("content", result.get("message", ""))
+                    else:
+                        error_text = await response.text()
+                        logger.error(f"Rhetor API error {response.status}: {error_text}")
+                        raise RuntimeError(f"Rhetor API error: {response.status}")
+        except Exception as e:
+            logger.error(f"Failed to communicate with Rhetor: {e}")
+            raise RuntimeError(f"Rhetor communication error: {e}")
     
     async def acomplete(self, messages: List[Dict[str, str]]) -> str:
         """

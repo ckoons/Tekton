@@ -680,10 +680,20 @@ class EnhancedComponentLauncher:
             # Add Tekton root to PYTHONPATH for shared imports
             tekton_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
             current_pythonpath = env.get('PYTHONPATH', '')
-            if current_pythonpath:
-                env['PYTHONPATH'] = f"{tekton_root}:{current_pythonpath}"
+            
+            # Special case for tekton-core: add component directory to PYTHONPATH too
+            normalized_name = self.normalize_component_name(component_name)
+            if normalized_name == "tekton_core":
+                component_dir = self.get_component_directory(component_name)
+                if current_pythonpath:
+                    env['PYTHONPATH'] = f"{component_dir}:{tekton_root}:{current_pythonpath}"
+                else:
+                    env['PYTHONPATH'] = f"{component_dir}:{tekton_root}"
             else:
-                env['PYTHONPATH'] = tekton_root
+                if current_pythonpath:
+                    env['PYTHONPATH'] = f"{tekton_root}:{current_pythonpath}"
+                else:
+                    env['PYTHONPATH'] = tekton_root
             
             # Change to component directory
             component_dir = self.get_component_directory(component_name)
@@ -870,20 +880,32 @@ class EnhancedComponentLauncher:
                 self.log(f"Error killing process on port {port}: {e}", "warning")
         return False
     
+    def normalize_component_name(self, component_name: str) -> str:
+        """Normalize component name for internal processing"""
+        # Handle special cases where CLI name differs from internal name
+        name_mappings = {
+            "tekton-core": "tekton_core",
+            "penia": "budget",  # Penia is Greek name for Budget
+        }
+        return name_mappings.get(component_name, component_name)
+    
     def get_component_directory(self, component_name: str) -> str:
         """Get the directory for a component"""
         # Use the globally found tekton_root instead of calculating from __file__
         base_dir = tekton_root
+        
+        # Normalize the component name first
+        normalized_name = self.normalize_component_name(component_name)
         
         dir_mappings = {
             "tekton_core": "tekton-core",
             # "llm_adapter": "LLMAdapter", # Removed - use Rhetor with tekton-llm-client
         }
         
-        if component_name in dir_mappings:
-            return os.path.join(base_dir, dir_mappings[component_name])
+        if normalized_name in dir_mappings:
+            return os.path.join(base_dir, dir_mappings[normalized_name])
         else:
-            dir_name = component_name.replace("_", "-")
+            dir_name = normalized_name.replace("_", "-")
             dir_name = dir_name[0].upper() + dir_name[1:] if dir_name else ""
             return os.path.join(base_dir, dir_name)
             
@@ -891,12 +913,25 @@ class EnhancedComponentLauncher:
         """Get the launch command for a component"""
         component_dir = self.get_component_directory(component_name)
         
-        # Components that should use python -m (have __main__.py and proper initialization)
-        module_components = ['apollo', 'athena', 'numa', 'noesis', 'terma']
+        # Normalize component name for internal logic
+        normalized_name = self.normalize_component_name(component_name)
         
-        if component_name in module_components:
-            # Use Python module execution
-            return [sys.executable, "-m", component_name]
+        # Components that should use python -m (have __main__.py and proper initialization)
+        module_components = [
+            'apollo', 'athena', 'numa', 'noesis', 'terma',  # Already migrated
+            'budget', 'engram', 'ergon', 'hephaestus', 'harmonia', 
+            'metis', 'prometheus', 'rhetor', 'sophia', 'synthesis', 
+            'telos', 'hermes', 'tekton_core'  # All migrated to Python modules
+        ]
+        
+        if normalized_name in module_components:
+            # Use Python module execution with normalized name
+            if normalized_name == "tekton_core":
+                # Special handling for tekton_core - use the original working approach
+                return [sys.executable, "-m", "tekton.api.app"]
+            else:
+                # Standard module execution
+                return [sys.executable, "-m", normalized_name]
             
         # For other components, look for run scripts
         run_script = None

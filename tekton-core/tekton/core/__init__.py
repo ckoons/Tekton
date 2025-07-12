@@ -10,6 +10,7 @@ from tekton.core.startup_coordinator import StartUpCoordinator, EnhancedStartUpC
 from tekton.core.component_registration import ComponentRegistration
 from tekton.core.component_discovery import ComponentDiscovery
 from tekton.core.heartbeat_monitor import HeartbeatMonitor, ComponentHeartbeat
+from tekton.core.tekton_core_component import TektonCoreComponent
 
 # Import from refactored modules
 from tekton.core.lifecycle import (
@@ -48,6 +49,7 @@ __all__ = [
     'ComponentDiscovery',
     'HeartbeatMonitor',
     'ComponentHeartbeat',
+    'TektonCoreComponent',
     # New components
     'ComponentState',
     'ReadinessCondition',
