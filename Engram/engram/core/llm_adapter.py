@@ -12,6 +12,8 @@ import json
 import logging
 import asyncio
 from typing import Dict, List, Any, Optional, Union, AsyncGenerator, Callable
+from shared.env import TektonEnviron
+from shared.urls import tekton_url
 
 # Import enhanced tekton-llm-client features
 from tekton_llm_client import (
@@ -47,12 +49,12 @@ class LLMAdapter:
             adapter_url: URL for the LLM adapter service
         """
         # Load client settings from environment or config
-        rhetor_port = get_env("RHETOR_PORT", "8003")
-        default_adapter_url = f"http://localhost:{rhetor_port}"
+        # Use tekton_url to construct the URL properly
+        default_adapter_url = tekton_url("rhetor")
         
-        self.adapter_url = adapter_url or get_env("LLM_ADAPTER_URL", default_adapter_url)
-        self.default_provider = get_env("LLM_PROVIDER", "anthropic")
-        self.default_model = get_env("LLM_MODEL", "claude-3-haiku-20240307")
+        self.adapter_url = adapter_url or TektonEnviron.get("LLM_ADAPTER_URL", default_adapter_url)
+        self.default_provider = TektonEnviron.get("LLM_PROVIDER", "anthropic")
+        self.default_model = TektonEnviron.get("LLM_MODEL", "claude-3-haiku-20240307")
         
         # Initialize client settings
         self.client_settings = ClientSettings(

@@ -16,6 +16,7 @@ import time
 from datetime import datetime
 from pathlib import Path
 from typing import Dict, List, Any, Optional, Union
+from shared.env import TektonEnviron
 
 # Configure logging
 logging.basicConfig(
@@ -40,7 +41,7 @@ from engram.core.memory_faiss.search import (
 )
 
 # Check if fallback mode is forced (set by environment variable)
-USE_FALLBACK = os.environ.get('ENGRAM_USE_FALLBACK', '').lower() in ('1', 'true', 'yes')
+USE_FALLBACK = TektonEnviron.get('ENGRAM_USE_FALLBACK', '').lower() in ('1', 'true', 'yes')
 
 # Try to import vector database components (optional dependencies)
 HAS_VECTOR_DB = False

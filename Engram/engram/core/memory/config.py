@@ -9,6 +9,7 @@ including vector database dependencies and fallback mode.
 import logging
 import os
 from typing import Optional, Tuple, Dict, Any
+from shared.env import TektonEnviron
 
 # Configure logging
 logging.basicConfig(
@@ -23,7 +24,7 @@ VECTOR_DB_NAME = None
 VECTOR_DB_VERSION = None
 
 # Check if fallback mode is forced (set by environment variable)
-USE_FALLBACK = os.environ.get('ENGRAM_USE_FALLBACK', '').lower() in ('1', 'true', 'yes')
+USE_FALLBACK = TektonEnviron.get('ENGRAM_USE_FALLBACK', '').lower() in ('1', 'true', 'yes')
 
 # Get vector DB preference from Tekton configuration system
 try:
@@ -40,7 +41,7 @@ except Exception as e:
     VECTOR_GPU_ENABLED = True
 
 # Allow override for testing purposes
-FORCE_VECTOR_DB = os.environ.get('ENGRAM_FORCE_VECTOR_DB', '').lower()
+FORCE_VECTOR_DB = TektonEnviron.get('ENGRAM_FORCE_VECTOR_DB', '').lower()
 if FORCE_VECTOR_DB and FORCE_VECTOR_DB in ['faiss', 'chromadb', 'lancedb', 'qdrant']:
     PREFERRED_VECTOR_DB = FORCE_VECTOR_DB
     logger.info(f"Vector DB forced via environment variable: {FORCE_VECTOR_DB.upper()}")
