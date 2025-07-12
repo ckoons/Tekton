@@ -13,6 +13,11 @@ import logging
 import aiohttp
 from typing import Dict, Any, Optional
 
+# Add Tekton's shared directory to Python path
+import os
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', '..', '..'))
+from shared.urls import tekton_url
+
 # Configure logging to stderr so it doesn't interfere with stdio protocol
 logging.basicConfig(
     level=logging.ERROR,
@@ -21,7 +26,7 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-HERMES_URL = "http://localhost:8001/api/mcp/v2"
+HERMES_URL = tekton_url("hermes", "/api/mcp/v2")
 
 
 class HermesMCPBridge:

@@ -10,6 +10,7 @@ from typing import List, Dict, Any, Optional
 
 from shared.utils.standard_component import StandardComponentBase
 from shared.utils.env_manager import TektonEnvManager
+from shared.urls import tekton_url
 
 logger = logging.getLogger(__name__)
 
@@ -130,7 +131,7 @@ class HermesComponent(StandardComponentBase):
             name="Hermes API Server",
             version="0.1.0",
             component_type="hermes",
-            endpoint=f"http://localhost:8001/api",
+            endpoint=tekton_url("hermes", "/api"),
             capabilities=[
                 "registration", 
                 "service_discovery", 
@@ -179,7 +180,7 @@ class HermesComponent(StandardComponentBase):
             name="Hermes A2A Service",
             version="0.1.0",
             component_type="hermes",
-            endpoint=f"http://localhost:8001/api/a2a",
+            endpoint=tekton_url("hermes", "/api/a2a"),
             capabilities=["a2a", "agent_registry", "task_management", "conversation_management"],
             metadata={
                 "description": "Agent-to-Agent communication service for Tekton ecosystem"
@@ -199,7 +200,7 @@ class HermesComponent(StandardComponentBase):
             name="Hermes MCP Service",
             version="0.1.0",
             component_type="hermes",
-            endpoint=f"http://localhost:8001/api/mcp/v2",
+            endpoint=tekton_url("hermes", "/api/mcp/v2"),
             capabilities=["mcp", "tool_registry", "message_processing", "context_management"],
             metadata={
                 "description": "Multimodal Cognitive Protocol service for Tekton ecosystem"
