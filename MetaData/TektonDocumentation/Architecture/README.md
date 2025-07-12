@@ -23,6 +23,7 @@ This directory contains the architectural documentation for the Tekton system. T
 
 ### Configuration and Environment
 - [Environment Management](./ENVIRONMENT_MANAGEMENT.md): Environment variable management
+- [Single Environment Read](./SingleEnvironmentRead.md): Unified environment loading system
 - [Centralized Config](./CENTRALIZED_CONFIG.md): Configuration management patterns
 - [Port Management Guide](./PORT_MANAGEMENT_GUIDE.md): Port allocation and management
 
