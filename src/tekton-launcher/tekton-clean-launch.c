@@ -31,7 +31,7 @@ static char* find_tekton_root(void);
 static void load_env_file(const char *filepath, env_list_t *env);
 static void set_environment(env_list_t *env);
 static char* get_env_value(env_list_t *env, const char *key);
-static void parse_arguments(int argc, char *argv[], char **coder_letter, char **subcommand, char ***sub_args);
+static void parse_arguments(int argc, char *argv[], char **coder_letter, char **subcommand, char ***sub_args, int *debug);
 static void execute_python_script(const char *script_name, char **args);
 static env_list_t* create_env_list(void);
 static void free_env_list(env_list_t *env);
@@ -42,6 +42,7 @@ int main(int argc, char *argv[]) {
     char *coder_letter = NULL;
     char *subcommand = NULL;
     char **sub_args = NULL;
+    int debug = 0;
     env_list_t *env;
     char path[MAX_PATH];
     
@@ -52,8 +53,8 @@ int main(int argc, char *argv[]) {
         return 1;
     }
     
-    /* Parse arguments to find --coder flag */
-    parse_arguments(argc, argv, &coder_letter, &subcommand, &sub_args);
+    /* Parse arguments to find global options */
+    parse_arguments(argc, argv, &coder_letter, &subcommand, &sub_args, &debug);
     
     /* If --coder specified, verify and switch TEKTON_ROOT */
     if (coder_letter) {
@@ -93,11 +94,34 @@ int main(int argc, char *argv[]) {
     /* Set the frozen environment marker */
     add_env_var(env, "_TEKTON_ENV_FROZEN", "1");
     
+    /* Set debug logging if requested */
+    if (debug) {
+        add_env_var(env, "TEKTON_DEBUG", "1");
+        add_env_var(env, "DEBUG", "1");
+    }
+    
     /* Apply all environment variables */
     set_environment(env);
     
+    /* Handle help - show help if no subcommand or help requested */
+    if (!subcommand || strcmp(subcommand, "help") == 0 || 
+        strcmp(subcommand, "--help") == 0 || strcmp(subcommand, "-h") == 0) {
+        printf("Usage: tekton [options] [command] [args...]\n\n");
+        printf("Global options:\n");
+        printf("  -c, --coder <letter>  Use Coder-<letter> environment\n");
+        printf("  -d, --debug           Enable debug logging\n");
+        printf("  -h, --help            Show this help message\n\n");
+        printf("Commands:\n");
+        printf("  status                Show component status\n");
+        printf("  start, launch         Start components\n");
+        printf("  stop, kill            Stop components\n");
+        printf("  revert                Revert changes\n");
+        printf("  help                  Show this help message\n");
+        return 0;
+    }
+    
     /* Route to appropriate Python script */
-    if (!subcommand || strcmp(subcommand, "status") == 0) {
+    if (strcmp(subcommand, "status") == 0) {
         execute_python_script("enhanced_tekton_status.py", sub_args);
     } else if (strcmp(subcommand, "start") == 0 || strcmp(subcommand, "launch") == 0) {
         execute_python_script("enhanced_tekton_launcher.py", sub_args);
@@ -227,27 +251,50 @@ static void set_environment(env_list_t *env) {
     }
 }
 
-static void parse_arguments(int argc, char *argv[], char **coder_letter, char **subcommand, char ***sub_args) {
+static void parse_arguments(int argc, char *argv[], char **coder_letter, char **subcommand, char ***sub_args, int *debug) {
     int i;
+    int new_argc = 1;  /* Start with program name */
+    char *new_argv[MAX_ARGS];
     
-    /* Look for --coder or -c */
+    /* Copy program name */
+    new_argv[0] = argv[0];
+    
+    /* Process all arguments, extracting global options */
     for (i = 1; i < argc; i++) {
+        /* Check for --coder or -c */
         if ((strcmp(argv[i], "--coder") == 0 || strcmp(argv[i], "-c") == 0) && i + 1 < argc) {
             *coder_letter = argv[i + 1];
-            /* Remove these args from the list */
-            for (int j = i; j < argc - 2; j++) {
-                argv[j] = argv[j + 2];
-            }
-            argc -= 2;
-            i--;
+            i++;  /* Skip the next arg (the letter) */
+            continue;
         }
+        
+        /* Check for --debug or -d */
+        if (strcmp(argv[i], "--debug") == 0 || strcmp(argv[i], "-d") == 0) {
+            *debug = 1;
+            continue;
+        }
+        
+        /* Check for help flags (these become the subcommand) */
+        if (strcmp(argv[i], "--help") == 0 || strcmp(argv[i], "-h") == 0) {
+            *subcommand = argv[i];
+            return;  /* No need to process further */
+        }
+        
+        /* Everything else goes into new_argv */
+        new_argv[new_argc++] = argv[i];
     }
     
     /* First remaining arg is subcommand */
-    if (argc > 1) {
-        *subcommand = argv[1];
-        if (argc > 2) {
-            *sub_args = &argv[2];
+    if (new_argc > 1) {
+        *subcommand = new_argv[1];
+        if (new_argc > 2) {
+            /* Create sub_args array */
+            static char *sub_args_array[MAX_ARGS];
+            for (i = 2; i < new_argc; i++) {
+                sub_args_array[i-2] = new_argv[i];
+            }
+            sub_args_array[new_argc-2] = NULL;
+            *sub_args = sub_args_array;
         }
     }
 }
