@@ -90,6 +90,7 @@ CLAUDE.md
 **/CLAUDE.md
 **/.claude/settings.local.json
 .tekton/*
+landmarks/data/registry.json
 
 # Landmark operational data (not the system itself)
 landmarks/data/*.json
