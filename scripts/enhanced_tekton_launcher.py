@@ -888,9 +888,17 @@ class EnhancedComponentLauncher:
             return os.path.join(base_dir, dir_name)
             
     def get_component_command(self, component_name: str) -> List[str]:
-        """Get the launch command for a component (original logic)"""
+        """Get the launch command for a component"""
         component_dir = self.get_component_directory(component_name)
+        
+        # Components that should use python -m (have __main__.py and no shell scripts)
+        module_components = ['apollo', 'numa', 'noesis', 'terma']
+        
+        if component_name in module_components:
+            # Use Python module execution
+            return [sys.executable, "-m", component_name]
             
+        # For other components, look for run scripts
         run_script = None
         for script_name in [f"run_{component_name}.sh", f"run_{component_name}.py"]:
             script_path = os.path.join(component_dir, script_name)
