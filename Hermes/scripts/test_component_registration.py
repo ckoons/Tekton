@@ -24,6 +24,8 @@ import signal
 import subprocess
 from pathlib import Path
 from typing import Dict, List, Any, Optional, Tuple
+from shared.env import TektonEnviron
+from shared.urls import tekton_url
 
 # Configure logging
 logging.basicConfig(
@@ -51,12 +53,12 @@ except ImportError as e:
 
 # Component paths
 COMPONENT_PATHS = {
-    "sophia": os.path.join(tekton_root, "Sophia"),
-    "prometheus": os.path.join(tekton_root, "Prometheus"),
-    "telos": os.path.join(tekton_root, "Telos"),
-    "harmonia": os.path.join(tekton_root, "Harmonia"),
-    "rhetor": os.path.join(tekton_root, "Rhetor"),
-    "athena": os.path.join(tekton_root, "Athena")
+    "sophia": os.path.join(str(tekton_root), "Sophia"),
+    "prometheus": os.path.join(str(tekton_root), "Prometheus"),
+    "telos": os.path.join(str(tekton_root), "Telos"),
+    "harmonia": os.path.join(str(tekton_root), "Harmonia"),
+    "rhetor": os.path.join(str(tekton_root), "Rhetor"),
+    "athena": os.path.join(str(tekton_root), "Athena")
 }
 
 # Expected component IDs
@@ -82,7 +84,7 @@ def parse_arguments():
     parser.add_argument(
         "--hermes-url",
         help="URL of the Hermes API",
-        default=os.environ.get("HERMES_URL", "http://localhost:8000/api")
+        default=tekton_url("hermes", "/api")
     )
     parser.add_argument(
         "--timeout",

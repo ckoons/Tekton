@@ -10,6 +10,7 @@ import logging
 import asyncio
 import time
 from typing import Dict, List, Any, Optional, Callable
+from shared.env import TektonEnviron
 
 from hermes.api.client import HermesClient
 
@@ -50,7 +51,7 @@ class ComponentRegistration:
         self.capabilities = capabilities or []
         
         # Get Hermes endpoint from environment if not provided
-        self.hermes_endpoint = hermes_endpoint or os.environ.get(
+        self.hermes_endpoint = hermes_endpoint or TektonEnviron.get(
             "TEKTON_HERMES_ENDPOINT", "localhost:5555"
         )
         

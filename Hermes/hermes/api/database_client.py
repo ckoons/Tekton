@@ -10,6 +10,8 @@ import logging
 import aiohttp
 import json
 from typing import Dict, List, Any, Optional, Union, Tuple
+from shared.env import TektonEnviron
+from shared.urls import tekton_url
 
 # Import specific client implementations
 from hermes.api.database.vector_client import VectorDatabaseClient
@@ -47,13 +49,12 @@ class DatabaseClient:
         self.component_id = component_id
         self.use_mcp = use_mcp
         
-        # Set default endpoint based on MCP mode
+        # Set default endpoint - always use Hermes API endpoint
         if endpoint:
             self.endpoint = endpoint
-        elif use_mcp:
-            self.endpoint = os.environ.get("HERMES_DB_MCP_ENDPOINT", "http://localhost:8002")
         else:
-            self.endpoint = os.environ.get("HERMES_DB_API_ENDPOINT", "http://localhost:8000/api")
+            # Both MCP and direct API use the same Hermes endpoint
+            self.endpoint = tekton_url("hermes", "/api")
         
         # Create the request handler
         self.request_handler = BaseRequest(

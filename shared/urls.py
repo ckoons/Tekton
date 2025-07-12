@@ -23,8 +23,8 @@ Examples:
     url = tekton_url("hermes", "/api")  # -> http://coder-b.local:6001/api
 """
 
-import os
 from typing import Optional
+from shared.env import TektonEnviron
 
 # Cache for efficiency
 _url_cache = {}
@@ -55,19 +55,19 @@ def tekton_url(component: str, path: str = "", host: Optional[str] = None, schem
     # Host resolution with proper precedence
     if host is None:
         # Check component-specific host first
-        component_host = os.environ.get(f"{env_component}_HOST")
+        component_host = TektonEnviron.get(f"{env_component}_HOST")
         if component_host:
             host = component_host
         else:
             # Fall back to global TEKTON_HOST or localhost
-            host = os.environ.get("TEKTON_HOST", "localhost")
+            host = TektonEnviron.get("TEKTON_HOST", "localhost")
     
     # Use component name in cache key to handle different normalizations
     cache_key = f"{component}:{host}:{scheme}"
     
     if cache_key not in _url_cache:
         # Get port from environment
-        port = os.environ.get(f"{env_component}_PORT")
+        port = TektonEnviron.get(f"{env_component}_PORT")
         
         if not port:
             # Fallback to component config if available

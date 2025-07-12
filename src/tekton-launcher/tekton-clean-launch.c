@@ -253,16 +253,27 @@ static void set_environment(env_list_t *env) {
 
 static void parse_arguments(int argc, char *argv[], char **coder_letter, char **subcommand, char ***sub_args, int *debug) {
     int i;
-    int new_argc = 1;  /* Start with program name */
-    char *new_argv[MAX_ARGS];
+    int subcommand_index = -1;
     
-    /* Copy program name */
-    new_argv[0] = argv[0];
-    
-    /* Process all arguments, extracting global options */
+    /* First, find the subcommand (first non-option argument) */
     for (i = 1; i < argc; i++) {
+        if (argv[i][0] != '-') {
+            /* Check if this is a value for a previous option */
+            if (i > 1 && (strcmp(argv[i-1], "--coder") == 0 || strcmp(argv[i-1], "-c") == 0)) {
+                continue;  /* This is a value for --coder/-c */
+            }
+            /* This is the subcommand */
+            subcommand_index = i;
+            *subcommand = argv[i];
+            break;
+        }
+    }
+    
+    /* Process only global options (before subcommand) */
+    int limit = (subcommand_index > 0) ? subcommand_index : argc;
+    for (i = 1; i < limit; i++) {
         /* Check for --coder or -c */
-        if ((strcmp(argv[i], "--coder") == 0 || strcmp(argv[i], "-c") == 0) && i + 1 < argc) {
+        if ((strcmp(argv[i], "--coder") == 0 || strcmp(argv[i], "-c") == 0) && i + 1 < limit) {
             *coder_letter = argv[i + 1];
             i++;  /* Skip the next arg (the letter) */
             continue;
@@ -274,28 +285,23 @@ static void parse_arguments(int argc, char *argv[], char **coder_letter, char **
             continue;
         }
         
-        /* Check for help flags (these become the subcommand) */
+        /* Check for help flags */
         if (strcmp(argv[i], "--help") == 0 || strcmp(argv[i], "-h") == 0) {
-            *subcommand = argv[i];
+            *subcommand = "help";
             return;  /* No need to process further */
         }
-        
-        /* Everything else goes into new_argv */
-        new_argv[new_argc++] = argv[i];
     }
     
-    /* First remaining arg is subcommand */
-    if (new_argc > 1) {
-        *subcommand = new_argv[1];
-        if (new_argc > 2) {
-            /* Create sub_args array */
-            static char *sub_args_array[MAX_ARGS];
-            for (i = 2; i < new_argc; i++) {
-                sub_args_array[i-2] = new_argv[i];
-            }
-            sub_args_array[new_argc-2] = NULL;
-            *sub_args = sub_args_array;
+    /* Collect subcommand arguments if we found a subcommand */
+    if (subcommand_index > 0 && subcommand_index + 1 < argc) {
+        /* Create sub_args array with everything after the subcommand */
+        static char *sub_args_array[MAX_ARGS];
+        int j = 0;
+        for (i = subcommand_index + 1; i < argc; i++) {
+            sub_args_array[j++] = argv[i];
         }
+        sub_args_array[j] = NULL;
+        *sub_args = sub_args_array;
     }
 }
 

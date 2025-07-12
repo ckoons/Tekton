@@ -8,6 +8,7 @@ import atexit
 from pathlib import Path
 from typing import List, Dict, Any, Optional
 
+from shared.env import TektonEnviron
 from shared.utils.standard_component import StandardComponentBase
 from shared.utils.env_manager import TektonEnvManager
 from shared.urls import tekton_url
@@ -61,12 +62,12 @@ class HermesComponent(StandardComponentBase):
             self.registration_manager = RegistrationManager(
                 service_registry=self.service_registry,
                 message_bus=self.message_bus,
-                secret_key=os.environ.get("HERMES_SECRET_KEY", "tekton-secret-key"),
+                secret_key="tekton-secret-key",
             )
             
             # Create database manager
             self.database_manager = DatabaseManager(
-                base_path=os.environ.get("HERMES_DATA_DIR", "~/.tekton/data")
+                base_path=os.path.join(TektonEnviron.get('TEKTON_ROOT'), '.tekton', 'data')
             )
             
             # Check environment variable for disabling A2A security
@@ -152,7 +153,7 @@ class HermesComponent(StandardComponentBase):
         
         # Register the database MCP server
         db_component_id = "hermes-database-mcp"
-        db_port = self.config.db_mcp_port if hasattr(self.config, 'db_mcp_port') else int(os.environ.get("DB_MCP_PORT", 8088))
+        db_port = self.config.db_mcp_port if hasattr(self.config, 'db_mcp_port') else int(TektonEnviron.get("DB_MCP_PORT"))
         
         success, _ = self.registration_manager.register_component(
             component_id=db_component_id,
@@ -215,9 +216,9 @@ class HermesComponent(StandardComponentBase):
     async def start_database_mcp_server(self):
         """Start the Database MCP server as a separate process."""
         # Get configuration from environment
-        db_mcp_port = self.config.db_mcp_port if hasattr(self.config, 'db_mcp_port') else int(os.environ.get("DB_MCP_PORT", 8088))
-        db_mcp_host = os.environ.get("DB_MCP_HOST", "127.0.0.1")
-        debug_mode = os.environ.get("DEBUG", "False").lower() == "true"
+        db_mcp_port = self.config.db_mcp_port if hasattr(self.config, 'db_mcp_port') else int(TektonEnviron.get("DB_MCP_PORT"))
+        db_mcp_host = TektonEnviron.get("DB_MCP_HOST", "127.0.0.1")
+        debug_mode = TektonEnviron.get("DEBUG", "False").lower() == "true"
         
         # Find the script path
         project_root = Path(__file__).parent.parent.parent.parent

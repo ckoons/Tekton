@@ -14,6 +14,8 @@ import argparse
 import logging
 import json
 from typing import Dict, List, Any
+from shared.env import TektonEnviron
+from shared.urls import tekton_url
 
 # Configure logging
 logging.basicConfig(
@@ -28,7 +30,7 @@ def main():
     parser = argparse.ArgumentParser(description="Test Hermes Registration Protocol")
     parser.add_argument(
         "--api-endpoint",
-        default=os.environ.get("HERMES_API_ENDPOINT", "http://localhost:8000/api"),
+        default=tekton_url("hermes", "/api"),
         help="Hermes API endpoint URL"
     )
     parser.add_argument(

@@ -15,6 +15,8 @@ from fastapi import APIRouter, HTTPException, Request, WebSocket, WebSocketDisco
 from fastapi.responses import StreamingResponse
 from pydantic import Field
 from tekton.models import TektonBaseModel
+from shared.env import TektonEnviron
+from shared.urls import tekton_url
 
 from landmarks import api_contract, integration_point, performance_boundary
 
@@ -34,9 +36,10 @@ llm_router = APIRouter(prefix="/llm", tags=["llm"])
 
 # Initialize LLM client with Rhetor endpoint
 config = get_component_config()
-rhetor_port = config.rhetor.port if hasattr(config, 'rhetor') else int(os.environ.get('RHETOR_PORT'))
+rhetor_port_str = TektonEnviron.get('RHETOR_PORT')
+rhetor_port = config.rhetor.port if hasattr(config, 'rhetor') else int(rhetor_port_str) if rhetor_port_str else 8003
 llm_client = LLMClient(
-    adapter_url=f"http://localhost:{rhetor_port}"
+    adapter_url=tekton_url("rhetor")
 )
 
 # Pydantic models for request/response validation

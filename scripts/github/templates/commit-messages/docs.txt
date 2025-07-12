@@ -1,9 +1,0 @@
-docs: {title}
-
-- {what_was_documented}
-- {why_it_was_documented}
-- {additional_context}
-
-🤖 Generated with [Claude Code](https://claude.ai/code)
-Design & Engineering Guidance by Casey Koons <cskoons@gmail.com>
-Co-Authored-By: Casey Koons <cskoons@gmail.com> & Claude <noreply@anthropic.com>

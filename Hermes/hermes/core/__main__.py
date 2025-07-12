@@ -9,9 +9,7 @@ script_path = os.path.realpath(__file__)
 tekton_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(script_path))))
 sys.path.insert(0, tekton_root)
 
-# Set TEKTON_ROOT environment variable
-if 'TEKTON_ROOT' not in os.environ:
-    os.environ['TEKTON_ROOT'] = tekton_root
+# TEKTON_ROOT should already be set by the launcher
 
 from .ai_specialist import main
 

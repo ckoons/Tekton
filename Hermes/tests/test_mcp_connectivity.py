@@ -8,11 +8,12 @@ after the Phase 1 fixes from YetAnotherMCP Sprint.
 
 import asyncio
 import sys
-import os
 import logging
 import json
 import aiohttp
 from datetime import datetime
+from shared.env import TektonEnviron
+from shared.urls import tekton_url
 
 # Configure logging
 logging.basicConfig(
@@ -22,6 +23,7 @@ logging.basicConfig(
 logger = logging.getLogger("mcp_test")
 
 # Add proper imports for Tekton environment
+import os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..'))
 
 try:
@@ -30,14 +32,15 @@ try:
     HERMES_PORT = config.hermes.port
 except (ImportError, AttributeError) as e:
     # Must get from environment - no hardcoded fallback
-    HERMES_PORT = int(os.environ.get("HERMES_PORT"))
-    if not HERMES_PORT:
+    hermes_port_str = TektonEnviron.get("HERMES_PORT")
+    if not hermes_port_str:
         logger.error("HERMES_PORT not found in environment")
         sys.exit(1)
+    HERMES_PORT = int(hermes_port_str)
 
 # Hermes URL
-HERMES_URL = f"http://localhost:{HERMES_PORT}"
-MCP_V2_BASE = f"{HERMES_URL}/api/mcp/v2"
+HERMES_URL = tekton_url("hermes")
+MCP_V2_BASE = tekton_url("hermes", "/api/mcp/v2")
 
 # Test results
 test_results = {

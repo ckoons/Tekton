@@ -30,7 +30,7 @@ def get_shared_registration_manager():
         _registration_manager = RegistrationManager(
             service_registry=_service_registry,
             message_bus=_message_bus,
-            secret_key=os.environ.get("HERMES_SECRET_KEY", "tekton-secret-key")
+            secret_key="tekton-secret-key"
         )
         
         print("[HERMES] Created singleton RegistrationManager")
