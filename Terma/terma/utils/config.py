@@ -5,10 +5,6 @@ import json
 import logging
 from pathlib import Path
 from typing import Dict, Any, Optional, List
-from dotenv import load_dotenv
-
-# Load environment variables from .env file if present
-load_dotenv()
 
 logger = logging.getLogger(__name__)
 

@@ -9,7 +9,6 @@ import os
 import json
 import sys
 from github import Github, GithubException
-from dotenv import load_dotenv
 
 def print_json(data):
     """Print JSON data in a formatted way"""
@@ -25,9 +24,6 @@ def print_json(data):
 
 def main():
     """Main function to demonstrate GitHub API interactions."""
-    # Load environment variables
-    load_dotenv()
-    
     # Get GitHub API token from environment
     github_token = os.getenv("GITHUB_API_TOKEN")
     if not github_token:

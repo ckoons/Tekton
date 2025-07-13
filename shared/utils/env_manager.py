@@ -27,12 +27,6 @@ from pathlib import Path
 from typing import Dict, Optional, Any, List, Union
 import logging
 
-try:
-    from dotenv import load_dotenv, set_key
-    DOTENV_AVAILABLE = True
-except ImportError:
-    DOTENV_AVAILABLE = False
-
 logger = logging.getLogger(__name__)
 
 class TektonEnvManager:
@@ -66,9 +60,6 @@ class TektonEnvManager:
         # Track loaded environment state
         self._loaded_env: Dict[str, str] = {}
         self._original_env: Dict[str, str] = {}
-        
-        if not DOTENV_AVAILABLE:
-            logger.warning("python-dotenv not available. Install with: pip install python-dotenv")
     
     def _find_tekton_root(self) -> Path:
         """
@@ -120,6 +111,12 @@ class TektonEnvManager:
         Returns:
             Dictionary of all environment variables after loading
         """
+        # Check if environment is already frozen by C launcher
+        if os.environ.get('_TEKTON_ENV_FROZEN') == '1':
+            logger.debug("Environment already loaded by Tekton launcher, skipping reload")
+            self._loaded_env = dict(os.environ)
+            return dict(os.environ)
+        
         # Store original environment
         self._original_env = dict(os.environ)
         
@@ -149,14 +146,9 @@ class TektonEnvManager:
         for env_file, file_type in env_files:
             if env_file.exists():
                 try:
-                    if DOTENV_AVAILABLE:
-                        # Use dotenv for proper parsing
-                        load_dotenv(env_file, override=True)
-                        loaded_files.append(f"{file_type} ({env_file})")
-                    else:
-                        # Fallback manual parsing
-                        self._load_env_file_manual(env_file)
-                        loaded_files.append(f"{file_type} ({env_file}) [manual]")
+                    # Always use manual parsing now
+                    self._load_env_file_manual(env_file)
+                    loaded_files.append(f"{file_type} ({env_file})")
                 except Exception as e:
                     logger.error(f"Error loading {file_type} env file {env_file}: {e}")
         
@@ -265,22 +257,8 @@ class TektonEnvManager:
             self.create_tekton_env_template()
         
         try:
-            if DOTENV_AVAILABLE:
-                # Use dotenv for proper handling
-                for key, value in settings.items():
-                    # Convert value to string
-                    if isinstance(value, bool):
-                        str_value = 'true' if value else 'false'
-                    else:
-                        str_value = str(value)
-                    
-                    set_key(str(self.tekton_env), key, str_value)
-                    os.environ[key] = str_value
-                    
-                logger.info(f"Saved {len(settings)} settings to {self.tekton_env}")
-            else:
-                # Fallback manual saving
-                self._save_env_file_manual(self.tekton_env, settings)
+            # Always use manual saving now
+            self._save_env_file_manual(self.tekton_env, settings)
                 
         except Exception as e:
             logger.error(f"Error saving settings to {self.tekton_env}: {e}")

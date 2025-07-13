@@ -9,7 +9,6 @@ import argparse
 from typing import Dict, Any, List, Optional
 import logging
 from github import Github, GithubException, BadCredentialsException, UnknownObjectException
-from dotenv import load_dotenv
 
 # Configure logger
 logger = logging.getLogger(__name__)
