@@ -114,7 +114,7 @@ except ImportError:
 - `SOPHIA_PORT`: 8014 (Machine learning)
 
 ### Specialized Ports
-- `TERMA_WS_PORT`: 8767 (Terma WebSocket legacy)
+# Currently no specialized service ports
 
 ### Terminal Settings
 - `TEKTON_TERMINAL_MODE`: Terminal mode ('advanced' or 'simple')

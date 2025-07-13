@@ -78,8 +78,6 @@ def load_port_assignments() -> Dict[str, int]:
                         component_key = "hephaestus"
                     elif component == "Tekton Core":
                         component_key = "tekton_core"
-                    elif component == "Terma WS":
-                        component_key = "terma_ws"
                         
                     port_assignments[component_key] = port
                 except ValueError:
@@ -232,12 +230,6 @@ def get_terma_port() -> int:
     return get_component_port("terma")
 
 
-def get_terma_ws_port() -> int:
-    """Get Terma WebSocket port."""
-    return get_component_port("terma_ws")
-
-
-
 
 # Utility functions for URL construction
 def get_rhetor_url(host: str = "localhost", protocol: str = "http") -> str:
@@ -289,7 +281,6 @@ __all__ = [
     'get_tekton_core_port',
     'get_telos_port',
     'get_terma_port',
-    'get_terma_ws_port',
     # URL helper functions
     'get_rhetor_url',
     'get_hermes_url',

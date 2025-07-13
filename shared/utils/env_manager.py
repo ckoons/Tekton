@@ -244,8 +244,7 @@ class TektonEnvManager:
             'BUDGET_PORT',
             'SOPHIA_PORT',
             'NUMA_PORT',
-            'NOESIS_PORT',
-            'TERMA_WS_PORT'
+            'NOESIS_PORT'
         ]
         
         for key, value in os.environ.items():
@@ -418,8 +417,6 @@ BUDGET_PORT=8013
 SOPHIA_PORT=8014
 
 # Specialized Service Ports
-# WebSocket for Terma Terminal (legacy)
-TERMA_WS_PORT=8767
 
 # Terminal Settings
 # Terminal mode: 'advanced' or 'simple'

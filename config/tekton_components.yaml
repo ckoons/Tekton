@@ -177,11 +177,6 @@ components:
     dependencies: ["hermes"]
     
 # Specialized Services (not primary components)
-services:
+services: {}
   # LLMAdapter removed - use Rhetor (port 8003) with tekton-llm-client instead
-  
-  terma_ws:
-    name: "Terma WebSocket"
-    port: 8767
-    description: "Legacy WebSocket service for Terma"
-    category: "service"
+  # terma_ws removed - WebSocket functionality integrated into main Terma component
