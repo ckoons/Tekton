@@ -10,7 +10,7 @@ import logging
 import asyncio
 from typing import Dict, Any, List, Optional, Union, Callable, AsyncGenerator
 import uuid
-from ergon.utils.tekton_integration import get_component_api_url
+from shared.urls import tekton_url
 
 logger = logging.getLogger(__name__)
 
@@ -41,7 +41,7 @@ class RhetorLLMAdapter:
         self.model_name = model_name or os.environ.get("RHETOR_DEFAULT_MODEL", "claude-3-sonnet-20240229")
         self.temperature = temperature
         self.max_tokens = max_tokens
-        self.rhetor_url = rhetor_url or os.environ.get("RHETOR_API_URL", get_component_api_url("rhetor"))
+        self.rhetor_url = rhetor_url or os.environ.get("RHETOR_API_URL", tekton_url("rhetor", "/api"))
         self.client = None
         self.rhetor_client = None
     
@@ -50,11 +50,13 @@ class RhetorLLMAdapter:
         try:
             # Use HTTP-based communication with Rhetor instead of direct imports
             import aiohttp
-            rhetor_url = self.rhetor_url or get_component_api_url("rhetor")
+            rhetor_url = self.rhetor_url or tekton_url("rhetor", "/api")
             
             # Test connection to Rhetor
+            # Use base URL for health check (without /api prefix)
+            health_url = tekton_url("rhetor", "/health")
             async with aiohttp.ClientSession() as session:
-                async with session.get(f"{rhetor_url}/health") as response:
+                async with session.get(health_url) as response:
                     if response.status == 200:
                         logger.info(f"Successfully connected to Rhetor at {rhetor_url}")
                         return True
@@ -107,7 +109,7 @@ class RhetorLLMAdapter:
         
         # Use HTTP API to communicate with Rhetor
         import aiohttp
-        rhetor_url = self.rhetor_url or get_component_api_url("rhetor")
+        rhetor_url = self.rhetor_url or tekton_url("rhetor", "/api")
         
         payload = {
             "messages": formatted_messages,
