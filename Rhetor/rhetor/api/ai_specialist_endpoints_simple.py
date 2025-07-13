@@ -1,7 +1,7 @@
 """
 Simplified AI Specialist HTTP endpoints for Rhetor.
 
-Uses the simple AI manager that reads from tekton_components.yaml.
+Uses the simple AI manager that reads from component_config (ports from environment).
 """
 
 from typing import Dict, List, Optional, Any

@@ -62,7 +62,10 @@ class ComponentConfig:
             from shared.env import TektonEnviron
             env_var = f"{comp_id.upper()}_PORT"
             port_str = TektonEnviron.get(env_var)
-            port = int(port_str) if port_str else comp_data['port']  # Fallback to YAML if env not set
+            if not port_str:
+                raise ValueError(f"Port for component '{comp_id}' not found in environment. "
+                               f"Please set {env_var} environment variable.")
+            port = int(port_str)
             
             self._components[comp_id] = ComponentInfo(
                 id=comp_id,
@@ -85,7 +88,10 @@ class ComponentConfig:
             if 'port' in svc_data:
                 env_var = f"{svc_id.upper()}_PORT"
                 port_str = TektonEnviron.get(env_var)
-                port = int(port_str) if port_str else svc_data.get('port')
+                if not port_str:
+                    raise ValueError(f"Port for service '{svc_id}' not found in environment. "
+                                   f"Please set {env_var} environment variable.")
+                port = int(port_str)
             
             http_port = None
             if 'http_port' in svc_data:
