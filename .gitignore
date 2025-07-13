@@ -129,7 +129,9 @@ ci_memory/*/ci_registry.json
 .gitignore.template
 
 # Vector stores and ML artifacts
-vector_store/
+# Only ignore vector store data directories, not source code
+**/data/vector_store/
+**/vectors/
 *.index
 *.faiss
 *.pkl
