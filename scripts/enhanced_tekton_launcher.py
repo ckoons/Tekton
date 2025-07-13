@@ -1105,7 +1105,8 @@ class EnhancedComponentLauncher:
             process = await asyncio.create_subprocess_exec(
                 *cmd,
                 stdout=asyncio.subprocess.PIPE,
-                stderr=asyncio.subprocess.STDOUT  # Combine stdout and stderr
+                stderr=asyncio.subprocess.STDOUT,  # Combine stdout and stderr
+                env=os.environ  # Pass environment so AI launcher can read port variables
             )
             
             # Wait for it to complete and get output
@@ -1265,7 +1266,8 @@ async def main():
             process = await asyncio.create_subprocess_exec(
                 *ai_cmd,
                 stdout=None,
-                stderr=None
+                stderr=None,
+                env=os.environ  # Pass environment so AI launcher can read port variables
             )
             
             await process.wait()
