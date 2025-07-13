@@ -488,7 +488,9 @@ class ComponentConfig:
     def __init__(self):
         """Initialize component configuration."""
         self.env_manager = get_env_manager()
-        self.env_manager.load_environment()
+        # Only load environment if not already frozen by C launcher
+        if os.environ.get('_TEKTON_ENV_FROZEN') != '1':
+            self.env_manager.load_environment()
         
         # Load all component configs
         self._load_configs()

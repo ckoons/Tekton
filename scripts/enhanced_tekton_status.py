@@ -74,23 +74,43 @@ sys.path.insert(0, tekton_root)
 
 # Check if environment is loaded
 from shared.env import TektonEnviron
+print(f"DEBUG: Before import - HEPHAESTUS_MCP_PORT in os.environ = '{os.environ.get('HEPHAESTUS_MCP_PORT')}'")
+print(f"DEBUG: Before import - ENGRAM_PORT in os.environ = '{os.environ.get('ENGRAM_PORT')}'")
+print(f"DEBUG: TektonEnviron.is_loaded() = {TektonEnviron.is_loaded()}")
+
 if not TektonEnviron.is_loaded():
     # We're running as a subprocess with environment passed via env=
     # The environment is already correct, just not "loaded" in Python's memory
     # Don't exit - just continue
+    print(f"DEBUG: TektonEnviron not loaded, using passed environment")
+    print(f"DEBUG: TEKTON_ROOT = {os.environ.get('TEKTON_ROOT')}")
+    print(f"DEBUG: ENGRAM_PORT = {os.environ.get('ENGRAM_PORT')}")
+    print(f"DEBUG: HEPHAESTUS_MCP_PORT = {os.environ.get('HEPHAESTUS_MCP_PORT')}")
     pass
 else:
     # Use frozen environment if loaded
-    os.environ = TektonEnviron.all()
+    print(f"DEBUG: TektonEnviron is loaded, using TektonEnviron.all()")
+    print(f"DEBUG: BEFORE update - os.environ['HEPHAESTUS_MCP_PORT'] = '{os.environ.get('HEPHAESTUS_MCP_PORT')}'")
+    frozen_env = TektonEnviron.all()
+    print(f"DEBUG: TektonEnviron.all() returned HEPHAESTUS_MCP_PORT = '{frozen_env.get('HEPHAESTUS_MCP_PORT')}'")
+    print(f"DEBUG: TektonEnviron.all() returned ENGRAM_PORT = '{frozen_env.get('ENGRAM_PORT')}'")
+    # NOTE: TektonEnviron.all() returns os.environ, not _frozen_env!
+    # This means we're getting the wrong environment data
+    # For now, just use what we have in os.environ already
+    print(f"DEBUG: NOT updating os.environ - it already has the correct values from C launcher")
 
 # Setup logging
 import logging
 logger = logging.getLogger(__name__)
 
+print(f"DEBUG: AFTER env setup - os.environ['HEPHAESTUS_MCP_PORT'] = '{os.environ.get('HEPHAESTUS_MCP_PORT')}'")
+
 from tekton.utils.component_config import get_component_config, ComponentInfo
 from shared.utils.env_config import get_component_config as get_env_config
 # Registry client removed - using direct port checks
 # from shared.ai.registry_client import AIRegistryClient
+
+print(f"DEBUG: AFTER imports - os.environ['HEPHAESTUS_MCP_PORT'] = '{os.environ.get('HEPHAESTUS_MCP_PORT')}'")
 
 
 @dataclass
@@ -245,8 +265,11 @@ class EnhancedStatusChecker:
     """Advanced status checker with comprehensive monitoring"""
     
     def __init__(self, store_metrics: bool = True, timeout: float = 2.0, quick_mode: bool = False):
+        print(f"DEBUG: EnhancedStatusChecker.__init__ - os.environ['HEPHAESTUS_MCP_PORT'] = '{os.environ.get('HEPHAESTUS_MCP_PORT')}'")
         self.config = get_component_config()
+        print(f"DEBUG: After get_component_config() - os.environ['HEPHAESTUS_MCP_PORT'] = '{os.environ.get('HEPHAESTUS_MCP_PORT')}'")
         self.env_config = get_env_config()  # For AI port calculations
+        print(f"DEBUG: After get_env_config() - os.environ['HEPHAESTUS_MCP_PORT'] = '{os.environ.get('HEPHAESTUS_MCP_PORT')}'")
         
         # DEBUG: Log component ports from config
         logger.debug("=== Component Ports from Config ===")
@@ -301,7 +324,15 @@ class EnhancedStatusChecker:
         """Check UI DevTools MCP status"""
         # UI DevTools is a special case - it's an MCP server
         # Get port from environment
-        port = int(TektonEnviron.get('HEPHAESTUS_MCP_PORT', '8088'))
+        env_value = TektonEnviron.get('HEPHAESTUS_MCP_PORT', '8088')
+        print(f"DEBUG: TektonEnviron.get('HEPHAESTUS_MCP_PORT', '8088') returned = '{env_value}'")
+        print(f"DEBUG: os.environ.get('HEPHAESTUS_MCP_PORT') = '{os.environ.get('HEPHAESTUS_MCP_PORT')}'")
+        print(f"DEBUG: TektonEnviron.is_loaded() = {TektonEnviron.is_loaded()}")
+        # Let's also check what TektonEnviron.all() has
+        all_env = TektonEnviron.all()
+        print(f"DEBUG: TektonEnviron.all()['HEPHAESTUS_MCP_PORT'] = '{all_env.get('HEPHAESTUS_MCP_PORT')}'")
+        port = int(env_value)
+        print(f"DEBUG: Using UI DevTools port = {port}")
         metrics = ComponentMetrics(
             name="ui_dev_tools",
             port=port,
