@@ -1106,7 +1106,7 @@ class EnhancedComponentLauncher:
                 *cmd,
                 stdout=asyncio.subprocess.PIPE,
                 stderr=asyncio.subprocess.STDOUT,  # Combine stdout and stderr
-                env=os.environ  # Pass environment so AI launcher can read port variables
+                env=TektonEnviron.all()  # Pass frozen environment so AI launcher can read port variables
             )
             
             # Wait for it to complete and get output
@@ -1267,7 +1267,7 @@ async def main():
                 *ai_cmd,
                 stdout=None,
                 stderr=None,
-                env=os.environ  # Pass environment so AI launcher can read port variables
+                env=TektonEnviron.all()  # Pass frozen environment so AI launcher can read port variables
             )
             
             await process.wait()
