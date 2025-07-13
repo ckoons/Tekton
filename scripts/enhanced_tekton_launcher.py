@@ -392,7 +392,8 @@ class EnhancedComponentLauncher:
     async def launch_ui_devtools_mcp(self) -> LaunchResult:
         """Launch the UI DevTools MCP server"""
         launch_start = time.time()
-        port = 8088
+        # Get port from environment
+        port = int(TektonEnviron.get('HEPHAESTUS_MCP_PORT', '8088'))
         
         # Check if already running
         if not self.check_port_available(port):

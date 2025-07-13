@@ -299,10 +299,12 @@ class EnhancedStatusChecker:
             
     async def check_ui_devtools_status(self) -> ComponentMetrics:
         """Check UI DevTools MCP status"""
-        # UI DevTools is a special case - it's an MCP server on port 8088
+        # UI DevTools is a special case - it's an MCP server
+        # Get port from environment
+        port = int(TektonEnviron.get('HEPHAESTUS_MCP_PORT', '8088'))
         metrics = ComponentMetrics(
             name="ui_dev_tools",
-            port=8088,
+            port=port,
             status="unknown",
             version="unknown",
             response_time=None,
@@ -322,7 +324,7 @@ class EnhancedStatusChecker:
         start_time = time.time()
         
         # Check process information
-        process_info = self.get_process_info(8088)
+        process_info = self.get_process_info(port)
         metrics.process_info = process_info
         
         if not process_info:
@@ -338,7 +340,7 @@ class EnhancedStatusChecker:
             
         # Check health endpoint
         try:
-            url = "http://localhost:8088/health"
+            url = f"http://localhost:{port}/health"
             async with self.session.get(url) as resp:
                 metrics.response_time = time.time() - start_time
                 if resp.status == 200:
