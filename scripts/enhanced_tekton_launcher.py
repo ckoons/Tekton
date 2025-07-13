@@ -568,30 +568,6 @@ class EnhancedComponentLauncher:
                     message=f"Unknown component: {component_name}",
                     startup_time=time.time() - launch_start
                 )
-            
-            # Special handling for Penia/Budget twin components
-            # They share the same port and are the same component
-            if component_name.lower() in ["penia", "budget"] and not self.check_port_available(comp_info.port):
-                # Port is in use - check if it's healthy
-                health = await self.enhanced_health_check(component_name, comp_info.port)
-                if health.healthy:
-                    # The component (or its twin) is already running
-                    twin_name = "budget" if component_name.lower() == "penia" else "penia"
-                    self.log(f"Already running (shares identity with {twin_name})", "success", component_name)
-                    result = LaunchResult(
-                        component_name=component_name,
-                        success=True,
-                        state=ComponentState.HEALTHY,
-                        port=comp_info.port,
-                        message=f"Already running on port {comp_info.port}",
-                        startup_time=0,
-                        health_check_time=health.response_time,
-                        log_file=self.get_log_file_path("budget")  # Always use budget log
-                    )
-                    self.launched_components[component_name] = result
-                    # Also mark the twin as launched
-                    self.launched_components[twin_name] = result
-                    return result
                 
             port = comp_info.port
             
