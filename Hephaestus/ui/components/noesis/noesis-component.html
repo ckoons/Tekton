@@ -1,7 +1,8 @@
 <!-- Noesis Component - Discovery System -->
 
 <!-- Hidden radio controls for CSS-only tab functionality -->
-<input type="radio" name="noesis-tab" id="noesis-tab-discovery" checked style="display: none;">
+<input type="radio" name="noesis-tab" id="noesis-tab-analysis" checked style="display: none;">
+<input type="radio" name="noesis-tab" id="noesis-tab-discovery" style="display: none;">
 <input type="radio" name="noesis-tab" id="noesis-tab-team" style="display: none;">
 
 <div class="noesis" id="noesis-container" data-tekton-component="noesis" data-tekton-ai="noesis-specialist" data-tekton-ai-ready="false">
@@ -19,10 +20,22 @@
     <!-- Menu Bar -->
     <div class="noesis__menu-bar" data-tekton-zone="menu">
         <div class="noesis__tabs">
-            <label for="noesis-tab-discovery" class="noesis__tab" data-tab="discovery-chat">
+            <label for="noesis-tab-analysis" class="noesis__tab" data-tab="theoretical-analysis"
+                   data-tekton-menu-item="Theoretical Analysis"
+                   data-tekton-menu-component="noesis"
+                   data-tekton-menu-panel="noesis-analysis">
+                <span class="noesis__tab-label">Theoretical Analysis</span>
+            </label>
+            <label for="noesis-tab-discovery" class="noesis__tab" data-tab="discovery-chat"
+                   data-tekton-menu-item="Discovery Chat"
+                   data-tekton-menu-component="noesis"
+                   data-tekton-menu-panel="noesis-discovery">
                 <span class="noesis__tab-label">Discovery Chat</span>
             </label>
-            <label for="noesis-tab-team" class="noesis__tab" data-tab="team-chat">
+            <label for="noesis-tab-team" class="noesis__tab" data-tab="team-chat"
+                   data-tekton-menu-item="Team Chat"
+                   data-tekton-menu-component="noesis"
+                   data-tekton-menu-panel="noesis-team">
                 <span class="noesis__tab-label">Team Chat</span>
             </label>
         </div>
@@ -30,6 +43,151 @@
     
     <!-- Content Area -->
     <div class="noesis__content" data-tekton-zone="content">
+        <!-- Theoretical Analysis Tab -->
+        <div class="noesis__panel noesis__panel--analysis" data-tab-content="theoretical-analysis" data-tekton-tab-content="theoretical-analysis">
+            <div class="noesis__analysis-dashboard">
+                <!-- Memory State Overview -->
+                <div class="noesis__memory-overview">
+                    <h3 class="noesis__section-title">Memory State Stream</h3>
+                    <div class="noesis__memory-metrics">
+                        <div class="noesis__metric-card">
+                            <h4>Active Memories</h4>
+                            <span id="active-memories-count">--</span>
+                        </div>
+                        <div class="noesis__metric-card">
+                            <h4>Pattern Strength</h4>
+                            <span id="pattern-strength-value">--</span>
+                        </div>
+                        <div class="noesis__metric-card">
+                            <h4>Coherence Score</h4>
+                            <span id="coherence-score-value">--</span>
+                        </div>
+                        <div class="noesis__metric-card">
+                            <h4>Stream Status</h4>
+                            <span id="stream-status-indicator">Connecting...</span>
+                        </div>
+                    </div>
+                    <div id="memory-stream-visualization" class="noesis__visualization-container">
+                        <!-- Real-time memory visualization -->
+                    </div>
+                </div>
+
+                <!-- Manifold Analysis -->
+                <div class="noesis__analysis-section">
+                    <h3 class="noesis__section-title">Manifold Analysis</h3>
+                    <div class="noesis__analysis-controls">
+                        <div class="noesis__control-group">
+                            <label for="manifold-dimension">Target Dimension:</label>
+                            <select id="manifold-dimension" class="noesis__select">
+                                <option value="2">2D</option>
+                                <option value="3" selected>3D</option>
+                            </select>
+                        </div>
+                        <div class="noesis__control-group">
+                            <label for="reduction-method">Reduction Method:</label>
+                            <select id="reduction-method" class="noesis__select">
+                                <option value="pca">PCA</option>
+                                <option value="tsne">t-SNE</option>
+                                <option value="umap">UMAP</option>
+                            </select>
+                        </div>
+                        <button id="update-manifold" class="noesis__button noesis__button--primary">
+                            Update Analysis
+                        </button>
+                    </div>
+                    <div class="noesis__manifold-container">
+                        <div class="noesis__manifold-visualization">
+                            <div id="manifold-3d-viz" class="noesis__chart-container">
+                                <!-- 3D manifold visualization -->
+                            </div>
+                        </div>
+                        <div class="noesis__manifold-properties">
+                            <h4>Manifold Properties</h4>
+                            <div class="noesis__property-list">
+                                <div class="noesis__property">
+                                    <span class="noesis__property-label">Intrinsic Dimension:</span>
+                                    <span id="intrinsic-dimension" class="noesis__property-value">--</span>
+                                </div>
+                                <div class="noesis__property">
+                                    <span class="noesis__property-label">Curvature:</span>
+                                    <span id="manifold-curvature" class="noesis__property-value">--</span>
+                                </div>
+                                <div class="noesis__property">
+                                    <span class="noesis__property-label">Topology Class:</span>
+                                    <span id="topology-class" class="noesis__property-value">--</span>
+                                </div>
+                                <div class="noesis__property">
+                                    <span class="noesis__property-label">Stability:</span>
+                                    <span id="manifold-stability" class="noesis__property-value">--</span>
+                                </div>
+                            </div>
+                            <div id="curvature-heatmap" class="noesis__heatmap-container">
+                                <!-- Curvature heatmap -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Dynamics Analysis -->
+                <div class="noesis__analysis-section">
+                    <h3 class="noesis__section-title">Dynamics Analysis</h3>
+                    <div class="noesis__dynamics-container">
+                        <div class="noesis__regime-visualization">
+                            <div id="dynamics-regime-viz" class="noesis__chart-container">
+                                <!-- Regime transitions visualization -->
+                            </div>
+                        </div>
+                        <div class="noesis__regime-properties">
+                            <h4>Detected Regimes</h4>
+                            <div id="regime-list" class="noesis__regime-list">
+                                <!-- Dynamically populated regime list -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Catastrophe Analysis -->
+                <div class="noesis__analysis-section">
+                    <h3 class="noesis__section-title">Catastrophe Analysis</h3>
+                    <div class="noesis__catastrophe-container">
+                        <div class="noesis__warning-indicators">
+                            <div class="noesis__warning-card">
+                                <h4>Critical Transitions</h4>
+                                <span id="critical-transitions-count" class="noesis__warning-value">0</span>
+                            </div>
+                            <div class="noesis__warning-card">
+                                <h4>Warning Signals</h4>
+                                <span id="warning-signals-count" class="noesis__warning-value">0</span>
+                            </div>
+                            <div class="noesis__warning-card">
+                                <h4>Stability Index</h4>
+                                <span id="stability-index-value" class="noesis__warning-value">--</span>
+                            </div>
+                        </div>
+                        <div id="catastrophe-timeline" class="noesis__timeline-container">
+                            <!-- Catastrophe timeline visualization -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Synthesis Insights -->
+                <div class="noesis__analysis-section">
+                    <h3 class="noesis__section-title">Universal Principles</h3>
+                    <div class="noesis__synthesis-container">
+                        <div id="scaling-laws-chart" class="noesis__chart-container">
+                            <!-- Scaling laws visualization -->
+                        </div>
+                        <div class="noesis__principles-list">
+                            <h4>Discovered Principles</h4>
+                            <div id="universal-principles" class="noesis__principles-container">
+                                <!-- Dynamically populated principles -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
         <!-- Discovery Chat Tab -->
         <div class="noesis__panel noesis__panel--discovery" data-tab-content="discovery-chat" data-tekton-tab-content="discovery-chat">
             <div class="chat-interface" data-tekton-chat="discovery">
@@ -237,13 +395,14 @@
 }
 
 /* Radio button logic for tab switching */
+#noesis-tab-analysis:checked ~ .noesis .noesis__panel--analysis,
 #noesis-tab-discovery:checked ~ .noesis .noesis__panel--discovery,
 #noesis-tab-team:checked ~ .noesis .noesis__panel--team {
-  display: flex;
-  flex-direction: column;
+  display: block;
 }
 
 /* Active tab styling */
+#noesis-tab-analysis:checked ~ .noesis .noesis__tab[for="noesis-tab-analysis"],
 #noesis-tab-discovery:checked ~ .noesis .noesis__tab[for="noesis-tab-discovery"],
 #noesis-tab-team:checked ~ .noesis .noesis__tab[for="noesis-tab-team"] {
   color: var(--text-primary, #f0f0f0);
@@ -484,7 +643,306 @@
   transform: translateY(0);
   box-shadow: none;
 }
+
+/* Theoretical Analysis Dashboard Styles */
+.noesis__analysis-dashboard {
+  padding: 20px;
+  height: 100%;
+  overflow-y: auto;
+}
+
+.noesis__section-title {
+  color: var(--text-primary, #f0f0f0);
+  margin-bottom: 16px;
+  font-size: 1.2rem;
+  font-weight: 500;
+  border-bottom: 2px solid #FF6F00;
+  padding-bottom: 8px;
+}
+
+/* Memory Overview Styles */
+.noesis__memory-overview {
+  margin-bottom: 30px;
+  background-color: var(--bg-secondary, #252535);
+  border-radius: 8px;
+  padding: 20px;
+}
+
+.noesis__memory-metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.noesis__metric-card {
+  background-color: var(--bg-tertiary, #333345);
+  border: 1px solid var(--border-color, #444444);
+  border-radius: 8px;
+  padding: 16px;
+  text-align: center;
+}
+
+.noesis__metric-card h4 {
+  margin: 0 0 8px 0;
+  color: var(--text-secondary, #aaa);
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.noesis__metric-card span {
+  color: #FF6F00;
+  font-size: 1.4rem;
+  font-weight: 600;
+}
+
+.noesis__visualization-container {
+  background-color: var(--bg-tertiary, #333345);
+  border-radius: 8px;
+  height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border-color, #444444);
+}
+
+/* Analysis Section Styles */
+.noesis__analysis-section {
+  margin-bottom: 30px;
+  background-color: var(--bg-secondary, #252535);
+  border-radius: 8px;
+  padding: 20px;
+}
+
+.noesis__analysis-controls {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  margin-bottom: 20px;
+  padding: 12px;
+  background-color: var(--bg-tertiary, #333345);
+  border-radius: 6px;
+}
+
+.noesis__control-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.noesis__control-group label {
+  color: var(--text-secondary, #aaa);
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+
+.noesis__select {
+  padding: 6px 12px;
+  background-color: var(--bg-primary, #1e1e2e);
+  border: 1px solid var(--border-color, #444444);
+  border-radius: 4px;
+  color: var(--text-primary, #f0f0f0);
+  font-size: 0.9rem;
+}
+
+.noesis__button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.noesis__button--primary {
+  background-color: #FF6F00;
+  color: white;
+}
+
+.noesis__button--primary:hover {
+  background-color: #E65100;
+  transform: translateY(-1px);
+}
+
+/* Manifold Container Styles */
+.noesis__manifold-container {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 20px;
+}
+
+.noesis__manifold-visualization {
+  background-color: var(--bg-tertiary, #333345);
+  border-radius: 8px;
+  border: 1px solid var(--border-color, #444444);
+}
+
+.noesis__chart-container {
+  width: 100%;
+  height: 300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary, #aaa);
+  font-style: italic;
+}
+
+.noesis__manifold-properties {
+  background-color: var(--bg-tertiary, #333345);
+  border-radius: 8px;
+  padding: 16px;
+  border: 1px solid var(--border-color, #444444);
+}
+
+.noesis__manifold-properties h4 {
+  margin: 0 0 12px 0;
+  color: var(--text-primary, #f0f0f0);
+  font-size: 1rem;
+}
+
+.noesis__property-list {
+  margin-bottom: 16px;
+}
+
+.noesis__property {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  padding: 4px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.noesis__property-label {
+  color: var(--text-secondary, #aaa);
+  font-size: 0.9rem;
+}
+
+.noesis__property-value {
+  color: #FF6F00;
+  font-weight: 500;
+}
+
+.noesis__heatmap-container {
+  width: 100%;
+  height: 150px;
+  background-color: var(--bg-primary, #1e1e2e);
+  border-radius: 4px;
+  border: 1px solid var(--border-color, #444444);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary, #aaa);
+  font-style: italic;
+}
+
+/* Dynamics Container Styles */
+.noesis__dynamics-container {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 20px;
+}
+
+.noesis__regime-visualization {
+  background-color: var(--bg-tertiary, #333345);
+  border-radius: 8px;
+  border: 1px solid var(--border-color, #444444);
+}
+
+.noesis__regime-properties {
+  background-color: var(--bg-tertiary, #333345);
+  border-radius: 8px;
+  padding: 16px;
+  border: 1px solid var(--border-color, #444444);
+}
+
+.noesis__regime-properties h4 {
+  margin: 0 0 12px 0;
+  color: var(--text-primary, #f0f0f0);
+  font-size: 1rem;
+}
+
+.noesis__regime-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Catastrophe Container Styles */
+.noesis__catastrophe-container {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  gap: 20px;
+}
+
+.noesis__warning-indicators {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 16px;
+}
+
+.noesis__warning-card {
+  background-color: var(--bg-tertiary, #333345);
+  border: 1px solid var(--border-color, #444444);
+  border-radius: 8px;
+  padding: 16px;
+  text-align: center;
+}
+
+.noesis__warning-card h4 {
+  margin: 0 0 8px 0;
+  color: var(--text-secondary, #aaa);
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.noesis__warning-value {
+  color: #FFC107;
+  font-size: 1.4rem;
+  font-weight: 600;
+}
+
+.noesis__timeline-container {
+  background-color: var(--bg-tertiary, #333345);
+  border-radius: 8px;
+  height: 200px;
+  border: 1px solid var(--border-color, #444444);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary, #aaa);
+  font-style: italic;
+}
+
+/* Synthesis Container Styles */
+.noesis__synthesis-container {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 20px;
+}
+
+.noesis__principles-list {
+  background-color: var(--bg-tertiary, #333345);
+  border-radius: 8px;
+  padding: 16px;
+  border: 1px solid var(--border-color, #444444);
+}
+
+.noesis__principles-list h4 {
+  margin: 0 0 12px 0;
+  color: var(--text-primary, #f0f0f0);
+  font-size: 1rem;
+}
+
+.noesis__principles-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
 </style>
+
+<!-- Shared Visualization Scripts -->
+<script src="../../../shared/ui/visualization/viz-core.js"></script>
+<script src="../../../shared/ui/visualization/tekton-viz.js"></script>
 
 <script>
 // Store chat messages in memory (persists across tab switches but not page refresh)

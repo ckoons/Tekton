@@ -29,6 +29,9 @@
             <div class="sophia__tab" data-tab="researchchat" onclick="sophia_switchTab('researchchat'); return false;" data-tekton-menu-item="Research Chat" data-tekton-menu-component="sophia" data-tekton-menu-active="false" data-tekton-menu-panel="researchchat-panel" data-tekton-nav-target="researchchat-panel">
                 <span class="sophia__tab-label">Research Chat</span>
             </div>
+            <div class="sophia__tab" data-tab="theory-validation" onclick="sophia_switchTab('theory-validation'); return false;" data-tekton-menu-item="Theory Validation" data-tekton-menu-component="sophia" data-tekton-menu-active="false" data-tekton-menu-panel="theory-validation-panel" data-tekton-nav-target="theory-validation-panel">
+                <span class="sophia__tab-label">Theory Validation</span>
+            </div>
             <div class="sophia__tab" data-tab="teamchat" onclick="sophia_switchTab('teamchat'); return false;" data-tekton-menu-item="Team Chat" data-tekton-menu-component="sophia" data-tekton-menu-active="false" data-tekton-menu-panel="teamchat-panel" data-tekton-nav-target="teamchat-panel">
                 <span class="sophia__tab-label">Team Chat</span>
             </div>
@@ -362,6 +365,167 @@
                                 <li>Computational Spectral Analysis</li>
                                 <li>Research methodologies and approaches</li>
                             </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Theory Validation Tab -->
+        <div id="theory-validation-panel" class="sophia__panel" data-tekton-panel="theory-validation" data-tekton-panel-for="Theory Validation" data-tekton-panel-component="sophia" data-tekton-panel-active="false">
+            <div class="sophia__theory-validation">
+                <!-- Active Protocols -->
+                <div class="sophia__protocols-section">
+                    <h3 class="sophia__section-title">Active Theory-Experiment Protocols</h3>
+                    <div class="sophia__control-bar">
+                        <div class="sophia__filter-container">
+                            <div class="sophia__input-group">
+                                <span class="sophia__input-label">Protocol Type</span>
+                                <select id="sophia-protocol-type-filter" class="sophia__select">
+                                    <option value="">All Types</option>
+                                    <option value="theory_validation">Theory Validation</option>
+                                    <option value="hypothesis_generation">Hypothesis Generation</option>
+                                    <option value="experiment_design">Experiment Design</option>
+                                    <option value="iterative_refinement">Iterative Refinement</option>
+                                </select>
+                            </div>
+                            <div class="sophia__input-group">
+                                <span class="sophia__input-label">Status</span>
+                                <select id="sophia-protocol-status-filter" class="sophia__select">
+                                    <option value="">All Statuses</option>
+                                    <option value="active">Active</option>
+                                    <option value="completed">Completed</option>
+                                    <option value="paused">Paused</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="sophia__actions">
+                            <button id="new-protocol-btn" class="sophia__action-button" data-tekton-action="new-protocol" data-tekton-action-type="primary">
+                                <span class="sophia__button-icon">+</span>
+                                <span class="sophia__button-label">New Protocol</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div id="protocols-list" class="sophia__protocols-container">
+                        <!-- Protocol cards will be populated here -->
+                        <div class="sophia__protocol-card">
+                            <div class="sophia__protocol-header">
+                                <h4>Manifold Dimensionality Validation</h4>
+                                <span class="sophia__status sophia__status--running">Active</span>
+                            </div>
+                            <div class="sophia__protocol-details">
+                                <p><strong>Type:</strong> Theory Validation</p>
+                                <p><strong>Theory:</strong> Collective AI state space has intrinsic dimension ~6</p>
+                                <p><strong>Experiment:</strong> Multi-scale dimensionality measurement</p>
+                                <p><strong>Progress:</strong> 3/5 experiments completed</p>
+                            </div>
+                            <div class="sophia__protocol-actions">
+                                <button class="sophia__button sophia__button--small">View Results</button>
+                                <button class="sophia__button sophia__button--small">Monitor</button>
+                            </div>
+                        </div>
+                        
+                        <div class="sophia__protocol-card">
+                            <div class="sophia__protocol-header">
+                                <h4>Scaling Law Verification</h4>
+                                <span class="sophia__status sophia__status--completed">Completed</span>
+                            </div>
+                            <div class="sophia__protocol-details">
+                                <p><strong>Type:</strong> Hypothesis Generation</p>
+                                <p><strong>Theory:</strong> D(N) ∝ N^0.4 scaling relationship</p>
+                                <p><strong>Experiment:</strong> Cross-scale validation</p>
+                                <p><strong>Result:</strong> Confirmed with 95% confidence</p>
+                            </div>
+                            <div class="sophia__protocol-actions">
+                                <button class="sophia__button sophia__button--small">View Results</button>
+                                <button class="sophia__button sophia__button--small">Export</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Workflow Visualization -->
+                <div class="sophia__workflow-section">
+                    <h3 class="sophia__section-title">Theory-Experiment Workflow</h3>
+                    <div id="workflow-diagram" class="sophia__workflow-container">
+                        <div class="sophia__workflow-step sophia__workflow-step--active">
+                            <div class="sophia__step-icon">1</div>
+                            <div class="sophia__step-content">
+                                <h4>Noesis Analysis</h4>
+                                <p>Theoretical pattern discovery</p>
+                            </div>
+                        </div>
+                        <div class="sophia__workflow-arrow">→</div>
+                        <div class="sophia__workflow-step sophia__workflow-step--active">
+                            <div class="sophia__step-icon">2</div>
+                            <div class="sophia__step-content">
+                                <h4>Hypothesis Generation</h4>
+                                <p>Convert analysis to testable predictions</p>
+                            </div>
+                        </div>
+                        <div class="sophia__workflow-arrow">→</div>
+                        <div class="sophia__workflow-step sophia__workflow-step--pending">
+                            <div class="sophia__step-icon">3</div>
+                            <div class="sophia__step-content">
+                                <h4>Experiment Design</h4>
+                                <p>Create validation protocols</p>
+                            </div>
+                        </div>
+                        <div class="sophia__workflow-arrow">→</div>
+                        <div class="sophia__workflow-step sophia__workflow-step--pending">
+                            <div class="sophia__step-icon">4</div>
+                            <div class="sophia__step-content">
+                                <h4>Validation</h4>
+                                <p>Execute experiments and analyze results</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Validation Results -->
+                <div class="sophia__results-section">
+                    <h3 class="sophia__section-title">Recent Validation Results</h3>
+                    <div class="sophia__results-grid">
+                        <div class="sophia__result-card sophia__result-card--confirmed">
+                            <div class="sophia__result-header">
+                                <h4>Scaling Law D(N) ∝ N^0.4</h4>
+                                <span class="sophia__result-status">Confirmed</span>
+                            </div>
+                            <div class="sophia__result-metrics">
+                                <div class="sophia__metric">
+                                    <span class="sophia__metric-label">Confidence:</span>
+                                    <span class="sophia__metric-value">95.2%</span>
+                                </div>
+                                <div class="sophia__metric">
+                                    <span class="sophia__metric-label">R²:</span>
+                                    <span class="sophia__metric-value">0.847</span>
+                                </div>
+                                <div class="sophia__metric">
+                                    <span class="sophia__metric-label">P-value:</span>
+                                    <span class="sophia__metric-value">< 0.001</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="sophia__result-card sophia__result-card--partial">
+                            <div class="sophia__result-header">
+                                <h4>Critical Transition at N=8000</h4>
+                                <span class="sophia__result-status">Partially Confirmed</span>
+                            </div>
+                            <div class="sophia__result-metrics">
+                                <div class="sophia__metric">
+                                    <span class="sophia__metric-label">Evidence:</span>
+                                    <span class="sophia__metric-value">Strong</span>
+                                </div>
+                                <div class="sophia__metric">
+                                    <span class="sophia__metric-label">Variance:</span>
+                                    <span class="sophia__metric-value">±1200</span>
+                                </div>
+                                <div class="sophia__metric">
+                                    <span class="sophia__metric-label">Replications:</span>
+                                    <span class="sophia__metric-value">3/5</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -895,6 +1059,217 @@
     
     .sophia__message--system li {
         margin: 6px 0;
+    }
+    
+    /* Theory Validation Styles */
+    .sophia__theory-validation {
+        padding: 20px;
+        height: 100%;
+        overflow-y: auto;
+    }
+    
+    .sophia__protocols-section,
+    .sophia__workflow-section,
+    .sophia__results-section {
+        margin-bottom: 30px;
+    }
+    
+    .sophia__protocols-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+        gap: 20px;
+        margin-top: 16px;
+    }
+    
+    .sophia__protocol-card {
+        background-color: var(--bg-secondary, #252535);
+        border: 1px solid var(--border-color, #444444);
+        border-radius: 8px;
+        padding: 16px;
+        transition: transform 0.2s ease;
+    }
+    
+    .sophia__protocol-card:hover {
+        transform: translateY(-2px);
+        border-color: #4CAF50;
+    }
+    
+    .sophia__protocol-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 12px;
+    }
+    
+    .sophia__protocol-header h4 {
+        margin: 0;
+        color: var(--text-primary, #f0f0f0);
+        font-size: 1.1rem;
+    }
+    
+    .sophia__protocol-details {
+        margin-bottom: 16px;
+    }
+    
+    .sophia__protocol-details p {
+        margin: 4px 0;
+        color: var(--text-secondary, #aaa);
+        font-size: 0.9rem;
+    }
+    
+    .sophia__protocol-actions {
+        display: flex;
+        gap: 8px;
+    }
+    
+    .sophia__workflow-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 16px;
+        padding: 20px;
+        background-color: var(--bg-secondary, #252535);
+        border-radius: 8px;
+        margin-top: 16px;
+        flex-wrap: wrap;
+    }
+    
+    .sophia__workflow-step {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+        padding: 16px;
+        background-color: var(--bg-tertiary, #333345);
+        border-radius: 8px;
+        border: 2px solid transparent;
+        min-width: 140px;
+        text-align: center;
+        transition: all 0.2s ease;
+    }
+    
+    .sophia__workflow-step--active {
+        border-color: #4CAF50;
+        background-color: rgba(76, 175, 80, 0.1);
+    }
+    
+    .sophia__workflow-step--pending {
+        opacity: 0.6;
+        border-color: var(--border-color, #444444);
+    }
+    
+    .sophia__step-icon {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background-color: #4CAF50;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+    }
+    
+    .sophia__workflow-step--pending .sophia__step-icon {
+        background-color: var(--text-secondary, #aaa);
+    }
+    
+    .sophia__step-content h4 {
+        margin: 0 0 4px 0;
+        color: var(--text-primary, #f0f0f0);
+        font-size: 0.9rem;
+    }
+    
+    .sophia__step-content p {
+        margin: 0;
+        color: var(--text-secondary, #aaa);
+        font-size: 0.8rem;
+    }
+    
+    .sophia__workflow-arrow {
+        font-size: 1.5rem;
+        color: #4CAF50;
+        font-weight: bold;
+    }
+    
+    .sophia__results-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 20px;
+        margin-top: 16px;
+    }
+    
+    .sophia__result-card {
+        background-color: var(--bg-secondary, #252535);
+        border: 1px solid var(--border-color, #444444);
+        border-radius: 8px;
+        padding: 16px;
+        transition: transform 0.2s ease;
+    }
+    
+    .sophia__result-card--confirmed {
+        border-left: 4px solid #4CAF50;
+    }
+    
+    .sophia__result-card--partial {
+        border-left: 4px solid #FFC107;
+    }
+    
+    .sophia__result-card--rejected {
+        border-left: 4px solid #F44336;
+    }
+    
+    .sophia__result-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 12px;
+    }
+    
+    .sophia__result-header h4 {
+        margin: 0;
+        color: var(--text-primary, #f0f0f0);
+        font-size: 1rem;
+    }
+    
+    .sophia__result-status {
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 0.8rem;
+        font-weight: 500;
+    }
+    
+    .sophia__result-card--confirmed .sophia__result-status {
+        background-color: rgba(76, 175, 80, 0.2);
+        color: #4CAF50;
+    }
+    
+    .sophia__result-card--partial .sophia__result-status {
+        background-color: rgba(255, 193, 7, 0.2);
+        color: #FFC107;
+    }
+    
+    .sophia__result-metrics {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+        gap: 12px;
+    }
+    
+    .sophia__metric {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+    
+    .sophia__metric-label {
+        color: var(--text-secondary, #aaa);
+        font-size: 0.8rem;
+    }
+    
+    .sophia__metric-value {
+        color: #4CAF50;
+        font-weight: 600;
+        font-size: 0.9rem;
     }
 </style>
 
