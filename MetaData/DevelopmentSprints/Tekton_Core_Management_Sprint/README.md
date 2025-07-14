@@ -85,17 +85,23 @@ tekton-dashboard/
 ### Phase 1: Minimum Viable Product (Weeks 1-2)
 
 **Core Infrastructure**
-- [ ] Project registry system (JSON-based storage)
-- [ ] Basic dashboard showing active projects as visual bubbles
-- [ ] Project detail view (status, branch, assigned AI, current task)
-- [ ] Simple merge queue with merge/reject buttons
-- [ ] A/B conflict resolution interface
+- [x] **Session 1 COMPLETE**: TektonCore MVP UI Foundation
+  - [x] Perfect Terma-matching CSS-only tab switching
+  - [x] Complete New Project form with CI selection
+  - [x] Clean placeholder messages for all panels
+  - [x] Safety-first architecture (NEVER DELETE REPOS)
+- [ ] Project registry system (`$TEKTON_ROOT/config/projects.json`)
+- [ ] Tekton self-management (dogfooding - auto-add as first project)
+- [ ] Git remote detection for existing projects
+- [ ] Project bubbles with GitHub action buttons
+- [ ] Remove from Dashboard functionality
 
-**Success Criteria**
-- Visual oversight of parallel Claude development work
-- Manual merge coordination through clean interface
-- Project tracking and status management
-- Foundation for automation and learning
+**Success Criteria** 
+- [x] Beautiful, functional UI integrated into existing Tekton component
+- [ ] Tekton managing itself as first project
+- [ ] Git repository detection and management
+- [ ] Visual project bubbles with fork/upstream actions
+- [ ] Import existing git projects workflow
 
 ### Phase 2: Intelligent Coordination (Weeks 3-4)
 
