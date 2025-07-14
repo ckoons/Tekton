@@ -132,6 +132,7 @@ async def discovery():
             EndpointInfo(path="/api/v1/intelligence", method="*", description="Intelligence measurement"),
             EndpointInfo(path="/api/v1/research", method="*", description="Research project management"),
             EndpointInfo(path="/api/v1/components", method="*", description="Component management"),
+            EndpointInfo(path="/api/v1/analytics", method="*", description="Advanced analytics"),
             EndpointInfo(path="/ws", method="WS", description="WebSocket connection")
         ],
         capabilities=component.get_capabilities() if component else [],
@@ -320,7 +321,8 @@ from sophia.api.endpoints import (
     recommendations,
     intelligence,
     research,
-    components
+    components,
+    analytics
 )
 
 # Include endpoint routers
@@ -330,6 +332,7 @@ routers.v1.include_router(recommendations.router, prefix="/recommendations", tag
 routers.v1.include_router(intelligence.router, prefix="/intelligence", tags=["Intelligence"])
 routers.v1.include_router(research.router, prefix="/research", tags=["Research"])
 routers.v1.include_router(components.router, prefix="/components", tags=["Components"])
+routers.v1.include_router(analytics.router, prefix="/analytics", tags=["Analytics"])
 
 # Import and include MCP router
 try:

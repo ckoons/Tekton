@@ -32,6 +32,7 @@ class SophiaComponent(StandardComponentBase):
         self.ml_engine = None
         self.llm_integration = None
         self.mcp_bridge = None
+        self.chorus_tracker = None
         self.active_connections = []
         self.initialized = False
         
@@ -87,6 +88,15 @@ class SophiaComponent(StandardComponentBase):
             except Exception as llm_error:
                 logger.warning(f"Failed to initialize LLM Integration: {llm_error}")
                 # LLM integration is optional
+            
+            # Initialize Greek Chorus cognition tracking
+            try:
+                from sophia.core.chorus_cognition import initialize_chorus_cognition_tracking
+                self.chorus_tracker = await initialize_chorus_cognition_tracking(self)
+                logger.info("Greek Chorus cognition tracking initialized")
+            except Exception as chorus_error:
+                logger.warning(f"Failed to initialize Greek Chorus tracking: {chorus_error}")
+                # Greek Chorus tracking is optional
             
             # Mark as initialized
             self.initialized = True
@@ -172,7 +182,12 @@ class SophiaComponent(StandardComponentBase):
             "experiments",
             "recommendations",
             "intelligence",
-            "ml"
+            "ml",
+            "advanced_analytics",
+            "pattern_detection",
+            "causal_analysis",
+            "predictions",
+            "collective_intelligence"
         ]
     
     def get_metadata(self) -> Dict[str, Any]:

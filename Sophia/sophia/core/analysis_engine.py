@@ -35,6 +35,7 @@ class AnalysisEngine:
         self.cache_expiry = {}
         self.analysis_tasks = {}
         self.baseline_data = {}
+        self.advanced_analytics = None
         
     async def initialize(self) -> bool:
         """
@@ -50,6 +51,13 @@ class AnalysisEngine:
         
         # Load baseline data if available
         await self._load_baseline_data()
+        
+        # Initialize advanced analytics
+        from .advanced_analytics import AdvancedAnalytics
+        self.advanced_analytics = AdvancedAnalytics(
+            metrics_engine=self.metrics_engine,
+            analysis_engine=self
+        )
         
         self.is_initialized = True
         logger.info("Sophia Analysis Engine initialized successfully")
@@ -1856,6 +1864,289 @@ class AnalysisEngine:
             "randomization_quality": "high",
             "measurement_validity": "high"
         }
+    
+    # Advanced Analytics Integration Methods
+    
+    async def detect_multi_dimensional_patterns(
+        self,
+        component_filter: Optional[str] = None,
+        dimensions: Optional[List[str]] = None,
+        time_window: str = "24h"
+    ) -> List[Dict[str, Any]]:
+        """
+        Detect patterns across multiple dimensions using advanced analytics.
+        
+        Args:
+            component_filter: Filter by component name pattern
+            dimensions: Dimensions to analyze (default: metrics, components, time)
+            time_window: Time window for analysis
+            
+        Returns:
+            List of detected pattern matches
+        """
+        if not self.advanced_analytics:
+            return []
+        
+        # Calculate time range
+        end_time = datetime.utcnow()
+        if time_window.endswith("h"):
+            start_time = end_time - timedelta(hours=int(time_window[:-1]))
+        elif time_window.endswith("d"):
+            start_time = end_time - timedelta(days=int(time_window[:-1]))
+        else:
+            start_time = end_time - timedelta(hours=24)
+        
+        # Get multi-component data
+        components = await self.metrics_engine.get_registered_components()
+        if component_filter:
+            components = [c for c in components if component_filter in c["component_id"]]
+        
+        # Collect data from all components
+        data = {}
+        for component in components:
+            component_id = component["component_id"]
+            metrics = await self.metrics_engine.query_metrics(
+                source=component_id,
+                start_time=start_time.isoformat() + "Z",
+                end_time=end_time.isoformat() + "Z",
+                limit=1000
+            )
+            if metrics:
+                data[component_id] = metrics
+        
+        # Use advanced analytics for pattern detection
+        if not dimensions:
+            dimensions = ["value", "timestamp", "metric_id"]
+        
+        patterns = await self.advanced_analytics.detect_multi_dimensional_patterns(
+            data=data,
+            dimensions=dimensions,
+            time_window=(start_time, end_time)
+        )
+        
+        # Convert PatternMatch objects to dicts
+        return [p.to_dict() for p in patterns]
+    
+    async def analyze_causal_relationships(
+        self,
+        target_metric: str,
+        candidate_causes: List[str],
+        time_window: str = "7d",
+        max_lag: int = 10
+    ) -> List[Dict[str, Any]]:
+        """
+        Analyze causal relationships between metrics.
+        
+        Args:
+            target_metric: The effect metric to analyze
+            candidate_causes: List of potential causal metrics
+            time_window: Time window for analysis
+            max_lag: Maximum time lag to consider
+            
+        Returns:
+            List of discovered causal relationships
+        """
+        if not self.advanced_analytics:
+            return []
+        
+        # Calculate time range
+        end_time = datetime.utcnow()
+        if time_window.endswith("d"):
+            start_time = end_time - timedelta(days=int(time_window[:-1]))
+        else:
+            start_time = end_time - timedelta(days=7)
+        
+        # Get data for all metrics
+        data = {}
+        for metric_id in [target_metric] + candidate_causes:
+            metrics = await self.metrics_engine.query_metrics(
+                metric_id=metric_id,
+                start_time=start_time.isoformat() + "Z",
+                end_time=end_time.isoformat() + "Z",
+                limit=10000
+            )
+            if metrics:
+                data[metric_id] = metrics
+        
+        # Analyze causal relationships
+        relationships = await self.advanced_analytics.perform_causal_analysis(
+            data=data,
+            target_metric=target_metric,
+            candidate_causes=candidate_causes,
+            max_lag=max_lag
+        )
+        
+        # Convert CausalRelationship objects to dicts
+        return [r.to_dict() for r in relationships]
+    
+    async def detect_complex_events(
+        self,
+        event_types: Optional[List[str]] = None,
+        time_window: str = "24h"
+    ) -> List[Dict[str, Any]]:
+        """
+        Detect complex multi-component event patterns.
+        
+        Args:
+            event_types: Specific event types to look for
+            time_window: Time window for analysis
+            
+        Returns:
+            List of detected complex events
+        """
+        if not self.advanced_analytics:
+            return []
+        
+        # Calculate time range
+        end_time = datetime.utcnow()
+        if time_window.endswith("h"):
+            start_time = end_time - timedelta(hours=int(time_window[:-1]))
+        else:
+            start_time = end_time - timedelta(hours=24)
+        
+        # Get all component data
+        components = await self.metrics_engine.get_registered_components()
+        data = {}
+        
+        for component in components:
+            component_id = component["component_id"]
+            metrics = await self.metrics_engine.query_metrics(
+                source=component_id,
+                start_time=start_time.isoformat() + "Z",
+                end_time=end_time.isoformat() + "Z",
+                limit=5000
+            )
+            if metrics:
+                data[component_id] = metrics
+        
+        # Create event templates if specific types requested
+        event_templates = None
+        if event_types:
+            event_templates = {
+                event_type: {"type": event_type}
+                for event_type in event_types
+            }
+        
+        # Detect complex events
+        events = await self.advanced_analytics.detect_complex_events(
+            data=data,
+            event_templates=event_templates
+        )
+        
+        # Convert ComplexEvent objects to dicts
+        return [e.to_dict() for e in events]
+    
+    async def predict_metrics(
+        self,
+        metric_ids: List[str],
+        prediction_horizon: int = 24,
+        confidence_level: float = 0.95
+    ) -> Dict[str, Any]:
+        """
+        Perform predictive analytics on metrics.
+        
+        Args:
+            metric_ids: List of metric IDs to predict
+            prediction_horizon: Number of time steps to predict
+            confidence_level: Confidence level for prediction intervals
+            
+        Returns:
+            Predictions with confidence intervals
+        """
+        if not self.advanced_analytics:
+            return {}
+        
+        # Get historical data for each metric
+        historical_data = {}
+        
+        for metric_id in metric_ids:
+            # Get last 30 days of data
+            end_time = datetime.utcnow()
+            start_time = end_time - timedelta(days=30)
+            
+            metrics = await self.metrics_engine.query_metrics(
+                metric_id=metric_id,
+                start_time=start_time.isoformat() + "Z",
+                end_time=end_time.isoformat() + "Z",
+                limit=10000
+            )
+            
+            if metrics:
+                historical_data[metric_id] = metrics
+        
+        # Perform predictions
+        predictions = await self.advanced_analytics.perform_predictive_analytics(
+            historical_data=historical_data,
+            prediction_horizon=prediction_horizon,
+            confidence_level=confidence_level
+        )
+        
+        return predictions
+    
+    async def analyze_network_effects(
+        self,
+        time_window: str = "24h"
+    ) -> Dict[str, Any]:
+        """
+        Analyze network effects and information flow between components.
+        
+        Args:
+            time_window: Time window for analysis
+            
+        Returns:
+            Network analysis results
+        """
+        if not self.advanced_analytics:
+            return {}
+        
+        # Get component list
+        components = await self.metrics_engine.get_registered_components()
+        component_ids = [c["component_id"] for c in components]
+        
+        # Calculate time range
+        end_time = datetime.utcnow()
+        if time_window.endswith("h"):
+            start_time = end_time - timedelta(hours=int(time_window[:-1]))
+        else:
+            start_time = end_time - timedelta(hours=24)
+        
+        # Get interaction data (simplified - based on API calls)
+        interaction_data = {}
+        
+        for component in components:
+            component_id = component["component_id"]
+            
+            # Look for API call metrics
+            api_metrics = await self.metrics_engine.query_metrics(
+                metric_id="api.request_count",
+                source=component_id,
+                start_time=start_time.isoformat() + "Z",
+                end_time=end_time.isoformat() + "Z"
+            )
+            
+            if api_metrics:
+                interactions = []
+                for metric in api_metrics:
+                    # Extract target from context if available
+                    context = metric.get("context", {})
+                    target = context.get("target_component")
+                    if target:
+                        interactions.append({
+                            "target": target,
+                            "strength": metric.get("value", 1),
+                            "timestamp": metric.get("timestamp")
+                        })
+                
+                if interactions:
+                    interaction_data[component_id] = interactions
+        
+        # Analyze network effects
+        network_analysis = await self.advanced_analytics.analyze_network_effects(
+            interaction_data=interaction_data,
+            components=component_ids
+        )
+        
+        return network_analysis
 
 # Global singleton instance
 _analysis_engine = AnalysisEngine()
