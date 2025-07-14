@@ -230,7 +230,6 @@ def get_terma_port() -> int:
     return get_component_port("terma")
 
 
-
 # Utility functions for URL construction
 def get_rhetor_url(host: str = "localhost", protocol: str = "http") -> str:
     """Get Rhetor base URL."""

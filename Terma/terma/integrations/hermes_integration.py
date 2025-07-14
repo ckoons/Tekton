@@ -179,8 +179,7 @@ class HermesIntegration:
                 "version": "0.1.0",
                 "capabilities": self.capabilities,
                 "endpoints": {
-                    "api": "http://localhost:8765/api",
-                    "websocket": "ws://localhost:8765/ws"
+                    "api": f"http://localhost:{os.environ.get('TERMA_PORT', 8015)}/api"
                 }
             }
             
