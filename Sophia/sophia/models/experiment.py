@@ -34,6 +34,15 @@ class ExperimentType(str, Enum):
     PARAMETER_TUNING = "parameter_tuning"
     BEFORE_AFTER = "before_after"
     BASELINE_COMPARISON = "baseline_comparison"
+    
+    # Theory validation experiment types
+    MANIFOLD_VALIDATION = "manifold_validation"
+    DYNAMICS_VALIDATION = "dynamics_validation"
+    CATASTROPHE_VALIDATION = "catastrophe_validation"
+    SCALING_VALIDATION = "scaling_validation"
+    REGIME_TRANSITION = "regime_transition"
+    CRITICAL_POINT = "critical_point"
+    EMERGENCE_DETECTION = "emergence_detection"
 
 
 class ExperimentCreate(TektonBaseModel):

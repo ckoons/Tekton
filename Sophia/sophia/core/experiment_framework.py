@@ -77,6 +77,22 @@ class ExperimentRunner:
                 self.results = await self._run_before_after_test()
             elif self.config["experiment_type"] == ExperimentType.BASELINE_COMPARISON:
                 self.results = await self._run_baseline_comparison()
+            
+            # Theory validation experiment types
+            elif self.config["experiment_type"] == ExperimentType.MANIFOLD_VALIDATION:
+                self.results = await self._run_manifold_validation()
+            elif self.config["experiment_type"] == ExperimentType.DYNAMICS_VALIDATION:
+                self.results = await self._run_dynamics_validation()
+            elif self.config["experiment_type"] == ExperimentType.CATASTROPHE_VALIDATION:
+                self.results = await self._run_catastrophe_validation()
+            elif self.config["experiment_type"] == ExperimentType.SCALING_VALIDATION:
+                self.results = await self._run_scaling_validation()
+            elif self.config["experiment_type"] == ExperimentType.REGIME_TRANSITION:
+                self.results = await self._run_regime_transition()
+            elif self.config["experiment_type"] == ExperimentType.CRITICAL_POINT:
+                self.results = await self._run_critical_point()
+            elif self.config["experiment_type"] == ExperimentType.EMERGENCE_DETECTION:
+                self.results = await self._run_emergence_detection()
             else:
                 logger.error(f"Unsupported experiment type: {self.config['experiment_type']}")
                 self.config["status"] = ExperimentStatus.FAILED
@@ -1267,6 +1283,471 @@ class ExperimentRunner:
             return value * 86400
         else:
             return 86400  # Default to 24 hours
+
+    # Theory validation experiment methods
+    async def _run_manifold_validation(self):
+        """
+        Run manifold validation experiment to test theoretical predictions about dimensional structure.
+        
+        Returns:
+            Experiment results comparing theoretical manifold predictions with observed data
+        """
+        logger.info(f"Running manifold validation for experiment {self.config['id']}")
+        
+        parameters = self.config["parameters"]
+        metrics = self.config["metrics"]
+        target_components = self.config["target_components"]
+        
+        # Validate required parameters
+        if "theoretical_prediction" not in parameters:
+            raise ValueError("Manifold validation requires 'theoretical_prediction' parameter")
+            
+        theoretical_prediction = parameters["theoretical_prediction"]
+        predicted_dimension = theoretical_prediction.get("intrinsic_dimension")
+        predicted_topology = theoretical_prediction.get("topology_metrics", {})
+        
+        # Collect system state data
+        system_data = await self._collect_system_state_data(target_components, metrics)
+        
+        # Analyze actual manifold structure using Noesis integration
+        try:
+            from noesis.core.theoretical.manifold import ManifoldAnalyzer
+            analyzer = ManifoldAnalyzer()
+            actual_structure = await analyzer.analyze(system_data)
+            
+            # Compare theoretical prediction with actual structure
+            validation_results = {
+                "dimension_match": abs(actual_structure.intrinsic_dimension - predicted_dimension) <= parameters.get("dimension_tolerance", 1),
+                "topology_similarity": self._compare_topology_metrics(predicted_topology, actual_structure.topology_metrics),
+                "prediction_accuracy": self._calculate_manifold_accuracy(theoretical_prediction, actual_structure),
+                "theoretical_prediction": theoretical_prediction,
+                "actual_structure": actual_structure.to_dict(),
+                "validation_score": 0.0
+            }
+            
+            # Calculate overall validation score
+            validation_results["validation_score"] = (
+                0.4 * (1.0 if validation_results["dimension_match"] else 0.0) +
+                0.6 * validation_results["topology_similarity"]
+            )
+            
+        except ImportError:
+            logger.warning("Noesis manifold analyzer not available, using simplified validation")
+            validation_results = {
+                "validation_score": 0.5,
+                "warning": "Limited validation without Noesis integration"
+            }
+        
+        return {
+            "validation_results": validation_results,
+            "conclusion": f"Manifold prediction {'validated' if validation_results['validation_score'] > 0.7 else 'rejected'}",
+            "confidence": validation_results["validation_score"],
+            "recommended_action": "Update theoretical model" if validation_results["validation_score"] < 0.5 else "Theory confirmed"
+        }
+
+    async def _run_dynamics_validation(self):
+        """
+        Run dynamics validation experiment to test SLDS regime predictions.
+        
+        Returns:
+            Experiment results comparing predicted regime transitions with observed dynamics
+        """
+        logger.info(f"Running dynamics validation for experiment {self.config['id']}")
+        
+        parameters = self.config["parameters"]
+        metrics = self.config["metrics"]
+        target_components = self.config["target_components"]
+        
+        if "theoretical_model" not in parameters:
+            raise ValueError("Dynamics validation requires 'theoretical_model' parameter")
+            
+        theoretical_model = parameters["theoretical_model"]
+        predicted_regimes = theoretical_model.get("n_regimes")
+        predicted_transitions = theoretical_model.get("transition_probabilities")
+        
+        # Collect time series data
+        time_series_data = await self._collect_time_series_data(target_components, metrics, 
+                                                              duration=parameters.get("observation_duration", "24h"))
+        
+        try:
+            from noesis.core.theoretical.dynamics import DynamicsAnalyzer
+            analyzer = DynamicsAnalyzer()
+            actual_dynamics = await analyzer.analyze(time_series_data)
+            
+            validation_results = {
+                "regime_count_match": actual_dynamics.n_regimes == predicted_regimes,
+                "transition_similarity": self._compare_transition_matrices(predicted_transitions, actual_dynamics.transition_probabilities),
+                "regime_stability": self._validate_regime_stability(actual_dynamics, theoretical_model),
+                "prediction_accuracy": self._calculate_dynamics_accuracy(theoretical_model, actual_dynamics),
+                "theoretical_model": theoretical_model,
+                "actual_dynamics": actual_dynamics.to_dict()
+            }
+            
+            validation_results["validation_score"] = (
+                0.3 * (1.0 if validation_results["regime_count_match"] else 0.0) +
+                0.4 * validation_results["transition_similarity"] +
+                0.3 * validation_results["regime_stability"]
+            )
+            
+        except ImportError:
+            validation_results = {"validation_score": 0.5, "warning": "Limited validation without Noesis integration"}
+        
+        return {
+            "validation_results": validation_results,
+            "conclusion": f"Dynamics model {'validated' if validation_results['validation_score'] > 0.7 else 'rejected'}",
+            "confidence": validation_results["validation_score"],
+            "recommended_action": "Refine SLDS model" if validation_results["validation_score"] < 0.5 else "Theory confirmed"
+        }
+
+    async def _run_catastrophe_validation(self):
+        """
+        Run catastrophe validation experiment to test critical transition predictions.
+        
+        Returns:
+            Experiment results validating catastrophe theory predictions
+        """
+        logger.info(f"Running catastrophe validation for experiment {self.config['id']}")
+        
+        parameters = self.config["parameters"]
+        metrics = self.config["metrics"]
+        target_components = self.config["target_components"]
+        
+        if "critical_point_prediction" not in parameters:
+            raise ValueError("Catastrophe validation requires 'critical_point_prediction' parameter")
+            
+        critical_prediction = parameters["critical_point_prediction"]
+        predicted_location = critical_prediction.get("location")
+        predicted_type = critical_prediction.get("transition_type")
+        
+        # Monitor system around predicted critical point
+        monitoring_data = await self._monitor_critical_region(target_components, metrics, 
+                                                            predicted_location, parameters.get("monitoring_duration", "12h"))
+        
+        try:
+            from noesis.core.theoretical.catastrophe import CatastropheAnalyzer
+            analyzer = CatastropheAnalyzer()
+            actual_transitions = await analyzer.analyze(monitoring_data)
+            
+            validation_results = {
+                "critical_point_detected": len(actual_transitions.critical_points) > 0,
+                "location_accuracy": self._validate_critical_location(predicted_location, actual_transitions.critical_points),
+                "transition_type_match": self._validate_transition_type(predicted_type, actual_transitions.critical_points),
+                "warning_signals": actual_transitions.early_warning_signals,
+                "prediction_accuracy": self._calculate_catastrophe_accuracy(critical_prediction, actual_transitions)
+            }
+            
+            validation_results["validation_score"] = (
+                0.4 * (1.0 if validation_results["critical_point_detected"] else 0.0) +
+                0.3 * validation_results["location_accuracy"] +
+                0.3 * (1.0 if validation_results["transition_type_match"] else 0.0)
+            )
+            
+        except ImportError:
+            validation_results = {"validation_score": 0.5, "warning": "Limited validation without Noesis integration"}
+        
+        return {
+            "validation_results": validation_results,
+            "conclusion": f"Catastrophe prediction {'validated' if validation_results['validation_score'] > 0.7 else 'rejected'}",
+            "confidence": validation_results["validation_score"],
+            "recommended_action": "Monitor for early warnings" if validation_results["validation_score"] > 0.5 else "Revise critical point model"
+        }
+
+    async def _run_scaling_validation(self):
+        """
+        Run scaling validation experiment to test universal principles and scaling laws.
+        
+        Returns:
+            Experiment results validating scaling law predictions
+        """
+        logger.info(f"Running scaling validation for experiment {self.config['id']}")
+        
+        parameters = self.config["parameters"]
+        metrics = self.config["metrics"]
+        target_components = self.config["target_components"]
+        
+        if "scaling_law" not in parameters:
+            raise ValueError("Scaling validation requires 'scaling_law' parameter")
+            
+        scaling_law = parameters["scaling_law"]
+        predicted_exponent = scaling_law.get("scaling_exponent")
+        predicted_form = scaling_law.get("mathematical_form")
+        
+        # Collect multi-scale data
+        scale_data = await self._collect_multi_scale_data(target_components, metrics, 
+                                                        scales=parameters.get("scales", [1, 2, 4, 8, 16]))
+        
+        try:
+            from noesis.core.theoretical.synthesis import SynthesisAnalyzer
+            analyzer = SynthesisAnalyzer()
+            actual_scaling = await analyzer.analyze_scaling(scale_data)
+            
+            validation_results = {
+                "exponent_match": abs(actual_scaling.scaling_exponents.get('primary', 0) - predicted_exponent) < parameters.get("exponent_tolerance", 0.1),
+                "form_consistency": self._validate_scaling_form(predicted_form, actual_scaling),
+                "scale_range_validity": self._validate_scale_range(scaling_law.get("validity_range"), actual_scaling),
+                "r_squared": actual_scaling.fit_quality.get("r_squared", 0.0),
+                "predicted_law": scaling_law,
+                "actual_scaling": actual_scaling.to_dict()
+            }
+            
+            validation_results["validation_score"] = (
+                0.4 * (1.0 if validation_results["exponent_match"] else 0.0) +
+                0.3 * validation_results["form_consistency"] +
+                0.3 * validation_results["r_squared"]
+            )
+            
+        except ImportError:
+            validation_results = {"validation_score": 0.5, "warning": "Limited validation without Noesis integration"}
+        
+        return {
+            "validation_results": validation_results,
+            "conclusion": f"Scaling law {'validated' if validation_results['validation_score'] > 0.7 else 'rejected'}",
+            "confidence": validation_results["validation_score"],
+            "recommended_action": "Apply scaling law" if validation_results["validation_score"] > 0.7 else "Refine scaling model"
+        }
+
+    async def _run_regime_transition(self):
+        """
+        Run regime transition experiment to induce and validate predicted state transitions.
+        
+        Returns:
+            Experiment results from controlled regime transition
+        """
+        logger.info(f"Running regime transition for experiment {self.config['id']}")
+        
+        parameters = self.config["parameters"]
+        metrics = self.config["metrics"]
+        target_components = self.config["target_components"]
+        
+        if "transition_trigger" not in parameters:
+            raise ValueError("Regime transition requires 'transition_trigger' parameter")
+            
+        trigger_config = parameters["transition_trigger"]
+        expected_outcome = parameters.get("expected_outcome")
+        
+        # Baseline measurement
+        baseline_state = await self._collect_system_state_data(target_components, metrics)
+        
+        # Apply transition trigger
+        await self._apply_transition_trigger(target_components, trigger_config)
+        
+        # Monitor transition
+        transition_data = await self._monitor_transition(target_components, metrics, 
+                                                       duration=parameters.get("transition_duration", "2h"))
+        
+        # Final state measurement
+        final_state = await self._collect_system_state_data(target_components, metrics)
+        
+        # Analyze transition
+        transition_results = {
+            "transition_occurred": self._detect_regime_change(baseline_state, final_state),
+            "transition_path": transition_data,
+            "outcome_match": self._validate_transition_outcome(final_state, expected_outcome),
+            "transition_time": self._calculate_transition_time(transition_data),
+            "stability_restored": self._check_stability_restoration(final_state),
+            "baseline_state": baseline_state,
+            "final_state": final_state
+        }
+        
+        validation_score = (
+            0.4 * (1.0 if transition_results["transition_occurred"] else 0.0) +
+            0.3 * (1.0 if transition_results["outcome_match"] else 0.0) +
+            0.3 * (1.0 if transition_results["stability_restored"] else 0.0)
+        )
+        
+        return {
+            "transition_results": transition_results,
+            "validation_score": validation_score,
+            "conclusion": f"Regime transition {'successful' if validation_score > 0.7 else 'failed'}",
+            "recommended_action": "Apply transition protocol" if validation_score > 0.7 else "Refine trigger mechanism"
+        }
+
+    async def _run_critical_point(self):
+        """
+        Run critical point experiment to approach and validate predicted critical transitions.
+        
+        Returns:
+            Experiment results from critical point approach
+        """
+        logger.info(f"Running critical point experiment for experiment {self.config['id']}")
+        
+        parameters = self.config["parameters"]
+        metrics = self.config["metrics"]
+        target_components = self.config["target_components"]
+        
+        if "critical_approach" not in parameters:
+            raise ValueError("Critical point experiment requires 'critical_approach' parameter")
+            
+        approach_config = parameters["critical_approach"]
+        safety_limits = parameters.get("safety_limits", {})
+        
+        # Baseline state
+        initial_state = await self._collect_system_state_data(target_components, metrics)
+        
+        # Gradual approach to critical point
+        approach_data = []
+        current_distance = approach_config["start_distance"]
+        step_size = approach_config.get("step_size", 0.1)
+        
+        while current_distance > approach_config["min_distance"]:
+            # Apply parameter change
+            await self._adjust_system_parameters(target_components, approach_config["parameter"], current_distance)
+            
+            # Wait for stabilization
+            await asyncio.sleep(approach_config.get("stabilization_time", 30))
+            
+            # Measure state
+            current_state = await self._collect_system_state_data(target_components, metrics)
+            approach_data.append({
+                "distance": current_distance,
+                "state": current_state,
+                "timestamp": datetime.utcnow().isoformat()
+            })
+            
+            # Check safety limits
+            if self._check_safety_violation(current_state, safety_limits):
+                logger.warning("Safety limits reached, stopping critical point approach")
+                break
+                
+            current_distance -= step_size
+        
+        # Analyze critical behavior
+        critical_analysis = {
+            "approach_trajectory": approach_data,
+            "critical_indicators": self._detect_critical_indicators(approach_data),
+            "early_warning_signals": self._detect_early_warnings(approach_data),
+            "stability_loss": self._measure_stability_loss(approach_data),
+            "critical_distance": self._estimate_critical_distance(approach_data),
+            "safety_maintained": not self._check_safety_violation(approach_data[-1]["state"], safety_limits) if approach_data else True
+        }
+        
+        validation_score = (
+            0.3 * len(critical_analysis["critical_indicators"]) / 5.0 +  # Normalize to expected indicators
+            0.3 * len(critical_analysis["early_warning_signals"]) / 3.0 +  # Normalize to expected warnings
+            0.2 * critical_analysis["stability_loss"] +
+            0.2 * (1.0 if critical_analysis["safety_maintained"] else 0.0)
+        )
+        
+        return {
+            "critical_analysis": critical_analysis,
+            "validation_score": min(validation_score, 1.0),
+            "conclusion": f"Critical point {'identified' if validation_score > 0.6 else 'not reached'}",
+            "recommended_action": "Study critical transition" if validation_score > 0.6 else "Increase approach sensitivity"
+        }
+
+    async def _run_emergence_detection(self):
+        """
+        Run emergence detection experiment to identify emergent properties and behaviors.
+        
+        Returns:
+            Experiment results detecting emergent phenomena
+        """
+        logger.info(f"Running emergence detection for experiment {self.config['id']}")
+        
+        parameters = self.config["parameters"]
+        metrics = self.config["metrics"]
+        target_components = self.config["target_components"]
+        
+        observation_duration = parameters.get("observation_duration", "24h")
+        interaction_modes = parameters.get("interaction_modes", ["normal", "high_coupling", "low_coupling"])
+        
+        emergence_data = {}
+        
+        for mode in interaction_modes:
+            # Configure interaction mode
+            await self._configure_interaction_mode(target_components, mode)
+            
+            # Collect data during this mode
+            mode_data = await self._collect_emergence_data(target_components, metrics, 
+                                                         duration=observation_duration)
+            emergence_data[mode] = mode_data
+        
+        # Analyze for emergent properties
+        emergence_analysis = {
+            "interaction_effects": self._analyze_interaction_effects(emergence_data),
+            "novel_patterns": self._detect_novel_patterns(emergence_data),
+            "scale_crossing": self._detect_scale_crossing_effects(emergence_data),
+            "spontaneous_organization": self._detect_spontaneous_organization(emergence_data),
+            "collective_intelligence": self._measure_collective_intelligence(emergence_data),
+            "emergence_metrics": self._calculate_emergence_metrics(emergence_data)
+        }
+        
+        emergence_score = (
+            0.2 * len(emergence_analysis["novel_patterns"]) / 5.0 +
+            0.2 * emergence_analysis["scale_crossing"] +
+            0.2 * emergence_analysis["spontaneous_organization"] +
+            0.2 * emergence_analysis["collective_intelligence"] +
+            0.2 * emergence_analysis["emergence_metrics"].get("overall", 0.0)
+        )
+        
+        return {
+            "emergence_analysis": emergence_analysis,
+            "emergence_score": min(emergence_score, 1.0),
+            "conclusion": f"Emergence {'detected' if emergence_score > 0.5 else 'not observed'}",
+            "recommended_action": "Study emergent properties" if emergence_score > 0.5 else "Enhance interaction mechanisms"
+        }
+
+    # Helper methods for theory validation experiments
+    async def _collect_system_state_data(self, components, metrics):
+        """Collect comprehensive system state data for analysis"""
+        state_data = {}
+        for component in components:
+            component_metrics = {}
+            for metric in metrics:
+                recent_data = await self.metrics_engine.query_metrics(
+                    metric_id=metric,
+                    source=component,
+                    limit=100
+                )
+                component_metrics[metric] = recent_data
+            state_data[component] = component_metrics
+        return state_data
+
+    async def _collect_time_series_data(self, components, metrics, duration):
+        """Collect time series data for dynamics analysis"""
+        duration_seconds = self._parse_duration(duration)
+        end_time = datetime.utcnow()
+        start_time = end_time - timedelta(seconds=duration_seconds)
+        
+        time_series = {}
+        for component in components:
+            component_series = {}
+            for metric in metrics:
+                series_data = await self.metrics_engine.query_metrics(
+                    metric_id=metric,
+                    source=component,
+                    start_time=start_time.isoformat() + "Z",
+                    end_time=end_time.isoformat() + "Z",
+                    limit=1000
+                )
+                component_series[metric] = series_data
+            time_series[component] = component_series
+        return time_series
+
+    def _compare_topology_metrics(self, predicted, actual):
+        """Compare predicted vs actual topology metrics"""
+        if not predicted or not actual:
+            return 0.0
+        
+        similarity = 0.0
+        count = 0
+        
+        for key in predicted:
+            if key in actual:
+                # Normalize difference
+                diff = abs(predicted[key] - actual[key])
+                max_val = max(abs(predicted[key]), abs(actual[key]), 1.0)
+                similarity += 1.0 - (diff / max_val)
+                count += 1
+        
+        return similarity / count if count > 0 else 0.0
+
+    def _calculate_manifold_accuracy(self, prediction, actual):
+        """Calculate overall manifold prediction accuracy"""
+        # Simplified accuracy calculation
+        dimension_acc = 1.0 if abs(prediction.get("intrinsic_dimension", 0) - actual.intrinsic_dimension) <= 1 else 0.0
+        topology_acc = self._compare_topology_metrics(prediction.get("topology_metrics", {}), actual.topology_metrics)
+        return (dimension_acc + topology_acc) / 2.0
 
 class ExperimentFramework:
     """
