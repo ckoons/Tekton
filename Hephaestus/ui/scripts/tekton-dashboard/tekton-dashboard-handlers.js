@@ -420,6 +420,318 @@ console.log('[FILE_TRACE] Loading: tekton-dashboard-handlers.js');
             });
     }
     
+    // Project management functions
+    async function loadProjects() {
+        if (!tektonService) return;
+        
+        try {
+            const projects = await tektonService.getProjects();
+            updateProjectsDisplay(projects);
+        } catch (error) {
+            console.error('Failed to load projects:', error);
+            showNotification('Failed to load projects', 'error');
+        }
+    }
+    
+    function filterProjects() {
+        const filter = component.state.get('projectFilter');
+        const searchTerm = component.state.get('searchTerms.projects').toLowerCase();
+        
+        const projectCards = component.$$('.tekton-dashboard__project-card');
+        
+        projectCards.forEach(card => {
+            const projectName = card.getAttribute('data-project-name')?.toLowerCase() || '';
+            const projectState = card.getAttribute('data-project-state') || '';
+            
+            let showCard = true;
+            
+            // Apply filter
+            if (filter !== 'all') {
+                if (filter === 'active' && !['active', 'approved', 'planning'].includes(projectState)) {
+                    showCard = false;
+                } else if (filter === 'archived' && projectState !== 'archived') {
+                    showCard = false;
+                }
+            }
+            
+            // Apply search
+            if (searchTerm && !projectName.includes(searchTerm)) {
+                showCard = false;
+            }
+            
+            card.style.display = showCard ? 'block' : 'none';
+        });
+    }
+    
+    function updateProjectsDisplay(projects) {
+        const container = elements.containers.projectsList;
+        if (!container) return;
+        
+        if (!projects || projects.length === 0) {
+            container.innerHTML = '<div class="tekton-dashboard__placeholder-message">No projects found. Create your first project using the "New Project" button.</div>';
+            return;
+        }
+        
+        // Create project bubbles
+        const projectBubbles = projects.map(project => createProjectBubble(project)).join('');
+        
+        container.innerHTML = `
+            <div class="tekton-dashboard__projects-grid">
+                ${projectBubbles}
+            </div>
+        `;
+        
+        // Add click handlers to project cards
+        container.addEventListener('click', (event) => {
+            const projectCard = event.target.closest('.tekton-dashboard__project-card');
+            if (projectCard) {
+                const projectId = projectCard.getAttribute('data-project-id');
+                if (projectId) {
+                    openProjectDetailModal(projectId);
+                }
+            }
+        });
+        
+        // Apply current filters
+        filterProjects();
+    }
+    
+    function createProjectBubble(project) {
+        const stateClass = `tekton-dashboard__project-card--${project.state}`;
+        const progressClass = getProgressClass(project.task_count || 0);
+        
+        return `
+            <div class="tekton-dashboard__project-card ${stateClass}" 
+                 data-project-id="${project.id}" 
+                 data-project-name="${project.name}"
+                 data-project-state="${project.state}">
+                <div class="tekton-dashboard__project-bubble">
+                    <div class="tekton-dashboard__project-header">
+                        <h3 class="tekton-dashboard__project-name">${escapeHtml(project.name)}</h3>
+                        <span class="tekton-dashboard__project-state tekton-dashboard__project-state--${project.state}">
+                            ${project.state.replace('_', ' ')}
+                        </span>
+                    </div>
+                    
+                    <div class="tekton-dashboard__project-description">
+                        ${escapeHtml(project.description || 'No description')}
+                    </div>
+                    
+                    <div class="tekton-dashboard__project-stats">
+                        <div class="tekton-dashboard__project-stat">
+                            <span class="tekton-dashboard__project-stat-label">Tasks:</span>
+                            <span class="tekton-dashboard__project-stat-value">${project.task_count || 0}</span>
+                        </div>
+                        <div class="tekton-dashboard__project-stat">
+                            <span class="tekton-dashboard__project-stat-label">AI:</span>
+                            <span class="tekton-dashboard__project-stat-value">${project.companion_ai || 'Unassigned'}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="tekton-dashboard__project-meta">
+                        <div class="tekton-dashboard__project-updated">
+                            Updated: ${formatDate(project.updated_at)}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+    
+    function displayProjectDetails(project) {
+        if (!elements.modals.projectDetailBody) return;
+        
+        const projectData = project.project || project;
+        const taskStats = project.task_stats || {};
+        const activeTasks = project.active_tasks || [];
+        const readyTasks = project.ready_tasks || [];
+        
+        elements.modals.projectDetailBody.innerHTML = `
+            <div class="tekton-dashboard__project-details">
+                <div class="tekton-dashboard__project-overview">
+                    <div class="tekton-dashboard__project-info">
+                        <h4>Project Information</h4>
+                        <div class="tekton-dashboard__info-grid">
+                            <div class="tekton-dashboard__info-item">
+                                <label>Name:</label>
+                                <span>${escapeHtml(projectData.name)}</span>
+                            </div>
+                            <div class="tekton-dashboard__info-item">
+                                <label>State:</label>
+                                <span class="tekton-dashboard__project-state--${projectData.state}">
+                                    ${projectData.state.replace('_', ' ')}
+                                </span>
+                            </div>
+                            <div class="tekton-dashboard__info-item">
+                                <label>Companion AI:</label>
+                                <span>${projectData.companion_ai || 'Unassigned'}</span>
+                            </div>
+                            <div class="tekton-dashboard__info-item">
+                                <label>Repository:</label>
+                                <span>${projectData.repo_url ? `<a href="${projectData.repo_url}" target="_blank">${projectData.repo_url}</a>` : 'None'}</span>
+                            </div>
+                            <div class="tekton-dashboard__info-item">
+                                <label>Created:</label>
+                                <span>${formatDate(projectData.created_at)}</span>
+                            </div>
+                            <div class="tekton-dashboard__info-item">
+                                <label>Last Activity:</label>
+                                <span>${formatDate(projectData.last_activity)}</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="tekton-dashboard__project-description">
+                        <h4>Description</h4>
+                        <p>${escapeHtml(projectData.description || 'No description available')}</p>
+                    </div>
+                </div>
+                
+                <div class="tekton-dashboard__task-summary">
+                    <h4>Task Summary</h4>
+                    <div class="tekton-dashboard__task-stats">
+                        <div class="tekton-dashboard__task-stat">
+                            <span class="tekton-dashboard__task-stat-value">${taskStats.total || 0}</span>
+                            <span class="tekton-dashboard__task-stat-label">Total</span>
+                        </div>
+                        <div class="tekton-dashboard__task-stat">
+                            <span class="tekton-dashboard__task-stat-value">${taskStats.in_progress || 0}</span>
+                            <span class="tekton-dashboard__task-stat-label">In Progress</span>
+                        </div>
+                        <div class="tekton-dashboard__task-stat">
+                            <span class="tekton-dashboard__task-stat-value">${taskStats.ready_for_merge || 0}</span>
+                            <span class="tekton-dashboard__task-stat-label">Ready for Merge</span>
+                        </div>
+                        <div class="tekton-dashboard__task-stat">
+                            <span class="tekton-dashboard__task-stat-value">${taskStats.completed || 0}</span>
+                            <span class="tekton-dashboard__task-stat-label">Completed</span>
+                        </div>
+                    </div>
+                    
+                    <div class="tekton-dashboard__progress-bar">
+                        <div class="tekton-dashboard__progress-fill" style="width: ${project.progress || 0}%"></div>
+                        <span class="tekton-dashboard__progress-text">${Math.round(project.progress || 0)}% Complete</span>
+                    </div>
+                </div>
+                
+                ${activeTasks.length > 0 ? `
+                    <div class="tekton-dashboard__active-tasks">
+                        <h4>Active Tasks</h4>
+                        <div class="tekton-dashboard__task-list">
+                            ${activeTasks.map(task => `
+                                <div class="tekton-dashboard__task-item">
+                                    <div class="tekton-dashboard__task-header">
+                                        <span class="tekton-dashboard__task-title">${escapeHtml(task.title)}</span>
+                                        <span class="tekton-dashboard__task-state tekton-dashboard__task-state--${task.state}">
+                                            ${task.state.replace('_', ' ')}
+                                        </span>
+                                    </div>
+                                    <div class="tekton-dashboard__task-meta">
+                                        <span class="tekton-dashboard__task-ai">AI: ${task.assigned_ai || 'Unassigned'}</span>
+                                        <span class="tekton-dashboard__task-branch">Branch: ${task.branch || 'None'}</span>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                ` : ''}
+                
+                ${readyTasks.length > 0 ? `
+                    <div class="tekton-dashboard__ready-tasks">
+                        <h4>Ready for Merge</h4>
+                        <div class="tekton-dashboard__task-list">
+                            ${readyTasks.map(task => `
+                                <div class="tekton-dashboard__task-item">
+                                    <div class="tekton-dashboard__task-header">
+                                        <span class="tekton-dashboard__task-title">${escapeHtml(task.title)}</span>
+                                        <button class="tekton-dashboard__task-merge-btn" data-task-id="${task.id}">
+                                            Merge
+                                        </button>
+                                    </div>
+                                    <div class="tekton-dashboard__task-meta">
+                                        <span class="tekton-dashboard__task-ai">AI: ${task.assigned_ai || 'Unassigned'}</span>
+                                        <span class="tekton-dashboard__task-branch">Branch: ${task.branch || 'None'}</span>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                ` : ''}
+            </div>
+        `;
+        
+        // Add event handlers for merge buttons
+        elements.modals.projectDetailBody.addEventListener('click', (event) => {
+            if (event.target.classList.contains('tekton-dashboard__task-merge-btn')) {
+                const taskId = event.target.getAttribute('data-task-id');
+                if (taskId) {
+                    handleTaskMerge(projectData.id, taskId);
+                }
+            }
+        });
+    }
+    
+    async function handleTaskMerge(projectId, taskId) {
+        try {
+            showNotification('Submitting merge request...', 'info');
+            
+            // For MVP, we'll simulate merge request submission
+            // In production, this would get the actual repo path and branch info
+            const mergeData = {
+                project_id: projectId,
+                task_id: taskId,
+                ai_worker: 'current_ai', // Would be determined from task
+                branch: `sprint/task-${taskId}`, // Would be from task data
+                repo_path: process.cwd() // Would be from project data
+            };
+            
+            const result = await tektonService.submitMergeRequest(mergeData);
+            
+            if (result) {
+                showNotification('Merge request submitted successfully', 'success');
+                // Refresh project details
+                const projectId = component.state.get('modalState.projectDetail.projectId');
+                if (projectId) {
+                    const details = await tektonService.getProjectDetails(projectId);
+                    if (details) {
+                        displayProjectDetails(details);
+                    }
+                }
+            } else {
+                showNotification('Failed to submit merge request', 'error');
+            }
+        } catch (error) {
+            console.error('Failed to submit merge request:', error);
+            showNotification(`Failed to submit merge request: ${error.message}`, 'error');
+        }
+    }
+    
+    // Utility functions
+    function getProgressClass(taskCount) {
+        if (taskCount === 0) return 'tekton-dashboard__progress--empty';
+        if (taskCount < 5) return 'tekton-dashboard__progress--low';
+        if (taskCount < 10) return 'tekton-dashboard__progress--medium';
+        return 'tekton-dashboard__progress--high';
+    }
+    
+    function formatDate(dateString) {
+        if (!dateString) return 'Unknown';
+        
+        try {
+            const date = new Date(dateString);
+            return date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        } catch (error) {
+            return 'Invalid date';
+        }
+    }
+    
+    function escapeHtml(text) {
+        if (!text) return '';
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+    
     // Service event handlers
     function handleStatusUpdate(event) {
         const { status, metrics } = event.detail;
