@@ -27,10 +27,6 @@ Numa runs on port **8016** (configurable via `NUMA_PORT` environment variable).
 ```bash
 # Basic startup
 ./run_numa.sh
-
-# With AI registration enabled
-export TEKTON_REGISTER_AI=true
-./run_numa.sh
 ```
 
 ## API Endpoints
@@ -44,7 +40,6 @@ export TEKTON_REGISTER_AI=true
 ## Environment Variables
 
 - `NUMA_PORT` - Port to run on (default: 8016)
-- `TEKTON_REGISTER_AI` - Enable AI registration (default: false)
 - `HERMES_URL` - Hermes service URL (default: http://localhost:8001)
 - `RHETOR_URL` - Rhetor service URL (default: http://localhost:8003)
 
@@ -59,7 +54,7 @@ Numa operates as a peer AI with platform-wide visibility:
 ## Development Status
 
 This is a bare-bones implementation. Future enhancements will include:
-- Full AI specialist integration when TEKTON_REGISTER_AI is enabled
+- Full AI specialist integration with fixed port system
 - Hermes registration for service discovery
 - Socket-based communication with other AIs
 - Platform pattern analysis and insights

@@ -1,7 +1,7 @@
 """
 Simple AI Manager for Rhetor
 
-Reads AI configuration from tekton_components.yaml and manages AI interactions.
+Reads AI configuration from component_config (ports from environment) and manages AI interactions.
 No complex discovery - just fixed ports and health checks.
 """
 import asyncio
@@ -22,7 +22,7 @@ class AIManager:
     """
     Simple AI manager for Rhetor.
     
-    - Reads components from tekton_components.yaml
+    - Reads components from component_config (ports from environment)
     - Calculates AI ports using standard formula
     - Checks health by attempting connection
     - Manages roster of active AIs

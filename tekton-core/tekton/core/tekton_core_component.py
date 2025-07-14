@@ -3,10 +3,10 @@ import logging
 from typing import List, Dict, Any
 
 from shared.utils.standard_component import StandardComponentBase
-from tekton.core.component_lifecycle import ComponentRegistry
-from tekton.core.heartbeat_monitor import HeartbeatMonitor
-from tekton.core.resource_monitor import ResourceMonitor
-from tekton.core.monitoring_dashboard import MonitoringDashboard
+from .component_lifecycle import ComponentRegistry
+from .heartbeat_monitor import HeartbeatMonitor
+from .resource_monitor import ResourceMonitor
+from .monitoring_dashboard import MonitoringDashboard
 
 logger = logging.getLogger(__name__)
 

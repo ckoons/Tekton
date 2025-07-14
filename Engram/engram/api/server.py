@@ -28,6 +28,7 @@ if tekton_root not in sys.path:
 from shared.utils.health_check import create_health_response
 from shared.utils.hermes_registration import HermesRegistration, heartbeat_loop
 from shared.utils.logging_setup import setup_component_logging
+from shared.urls import tekton_url
 from shared.utils.env_config import get_component_config
 from shared.utils.global_config import GlobalConfig
 from shared.utils.errors import StartupError
@@ -446,7 +447,7 @@ routers.v1.add_api_route(
         ],
         capabilities=engram_component.get_capabilities(),
         dependencies={
-            "hermes": "http://localhost:8001"
+            "hermes": tekton_url("hermes")
         },
         metadata=engram_component.get_metadata()
     ),

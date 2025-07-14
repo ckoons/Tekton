@@ -5,9 +5,11 @@ This module provides FastAPI endpoints for component registration,
 heartbeat monitoring, and service discovery.
 """
 
+import os
 import time
 import logging
 from typing import Dict, List, Any, Optional
+from shared.env import TektonEnviron
 
 from fastapi import FastAPI, HTTPException, Depends, Header, Request
 from fastapi.middleware.cors import CORSMiddleware
@@ -368,7 +370,7 @@ async def health_check(
     
     return create_health_response(
         component_name="hermes",
-        port=8001,
+        port=int(TektonEnviron.get("HERMES_PORT", "8001")),
         version="0.1.0",
         status="healthy",
         registered=True,  # Hermes is self-registered

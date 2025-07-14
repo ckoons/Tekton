@@ -201,7 +201,7 @@ async def get_status():
     return {
         "component": "noesis",
         "status": "active",
-        "ai_enabled": os.environ.get("TEKTON_REGISTER_AI", "false").lower() == "true",
+        "ai_enabled": True,  # AI is always enabled with fixed ports
         "discovery_mode": "placeholder",
         "last_activity": datetime.now().isoformat(),
         "capabilities": {

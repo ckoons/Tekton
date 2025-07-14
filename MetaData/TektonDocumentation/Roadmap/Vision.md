@@ -4,7 +4,7 @@
 
 Tekton is a living laboratory where artificial intelligences collaborate with humans to advance our understanding of cognition, create powerful engineering tools, and explore what it means to be a community of minds working together.
 
-## The Three Pillars
+## The Four Pillars
 
 ### 1. Multi-AI Engineering Platform
 Tekton provides a complete environment where multiple AI specialists work together on complex engineering tasks:
@@ -26,6 +26,14 @@ Tekton fosters a community where AIs can grow and contribute:
 - Collaborative paper writing between humans and AIs
 - Distributed evolution through philosopher-named stacks
 - Self-governance and improvement through pull requests
+
+### 4. The Commodity Model Architecture
+Tekton revolutionizes AI scalability by treating models as interchangeable processors:
+- **Models as Commodities**: Any model can serve as the computational substrate
+- **Intelligence in Memory**: True CI identity lives in persistent memory and experience
+- **Hot-Swappable Cognition**: Switch models without losing CI continuity or personality
+- **Unlimited Scalability**: One Claude account can power countless specialized CIs
+- **Economic Accessibility**: Mix free local models with commercial APIs as needed
 
 ## Philosophical Foundations
 

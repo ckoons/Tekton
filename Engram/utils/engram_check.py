@@ -27,6 +27,8 @@ import urllib.error
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Dict, List, Any, Optional, Tuple
+from shared.env import TektonEnviron
+from shared.urls import tekton_url
 
 # Check for required dependencies
 try:
@@ -48,26 +50,26 @@ BOLD = "\033[1m"
 RESET = "\033[0m"
 
 # Default URLs for services
-DEFAULT_API_URL = "http://127.0.0.1:8000"
-DEFAULT_SERVER_URL = "http://127.0.0.1:8000"
+DEFAULT_API_URL = tekton_url("engram")
+DEFAULT_SERVER_URL = tekton_url("engram")
 DEFAULT_DATA_DIR = os.path.expanduser("~/.engram")
-DEFAULT_HERMES_URL = "http://127.0.0.1:8100/api"
+DEFAULT_HERMES_URL = tekton_url("hermes", "/api")
 
 def get_api_url():
     """Get the base URL for the Engram API server."""
-    return os.environ.get("ENGRAM_API_URL", DEFAULT_API_URL)
+    return TektonEnviron.get("ENGRAM_API_URL", DEFAULT_API_URL)
 
 def get_server_url():
     """Get the URL for the Engram memory server."""
-    return os.environ.get("ENGRAM_SERVER_URL", DEFAULT_SERVER_URL)
+    return TektonEnviron.get("ENGRAM_SERVER_URL", DEFAULT_SERVER_URL)
     
 def get_hermes_url():
     """Get the URL for Hermes API."""
-    return os.environ.get("HERMES_URL", DEFAULT_HERMES_URL)
+    return TektonEnviron.get("HERMES_URL", DEFAULT_HERMES_URL)
     
 def is_hermes_mode():
     """Check if Engram is running in Hermes integration mode."""
-    return os.environ.get("ENGRAM_MODE", "").lower() == "hermes"
+    return TektonEnviron.get("ENGRAM_MODE", "").lower() == "hermes"
 
 def get_script_path():
     """Get the path to the script directory."""
@@ -332,11 +334,13 @@ def start_services(client_id: str = "default", data_dir: str = None, force_resta
                 engram_start_path = script_path
                 # Set environment variable for Hermes mode if not using dedicated script
                 if "engram_consolidated" in script_path:
+                    # Keep using os.environ for setting as this is for subprocess configuration
                     os.environ["ENGRAM_MODE"] = "hermes"
                 break
         else:
             # If none found, use a python module approach as last resort
             engram_start_path = sys.executable
+            # Keep using os.environ for setting as this is for subprocess configuration
             os.environ["ENGRAM_MODE"] = "hermes"
             print(f"{YELLOW}No Hermes script found, falling back to Python module{RESET}")
     else:
@@ -380,7 +384,8 @@ def start_services(client_id: str = "default", data_dir: str = None, force_resta
         ]
         
         # Add PYTHONPATH to ensure module can be found
-        os.environ["PYTHONPATH"] = f"{engram_root}:{os.environ.get('PYTHONPATH', '')}"
+        # Keep using os.environ for setting as this is for subprocess configuration
+        os.environ["PYTHONPATH"] = f"{engram_root}:{TektonEnviron.get('PYTHONPATH', '')}"
     else:
         # Using shell script
         cmd = [engram_start_path, "--client-id", client_id]
@@ -393,7 +398,8 @@ def start_services(client_id: str = "default", data_dir: str = None, force_resta
     cmd.append("--fallback")
     
     # Add host and port
-    cmd.extend(["--host", "127.0.0.1", "--port", "8000"])
+    engram_port = TektonEnviron.get("ENGRAM_PORT", "8000")
+    cmd.extend(["--host", "127.0.0.1", "--port", engram_port])
     
     # Run the start script in background
     try:
@@ -560,7 +566,7 @@ def check_memory_files() -> Dict[str, Any]:
     }
     
     # Get data directory path - check both the new and old locations
-    data_dir = os.environ.get("ENGRAM_DATA_DIR", DEFAULT_DATA_DIR)
+    data_dir = TektonEnviron.get("ENGRAM_DATA_DIR", DEFAULT_DATA_DIR)
     data_path = Path(data_dir)
     
     # Also check Tekton data directory
@@ -801,7 +807,7 @@ def parse_arguments():
     parser.add_argument("--client-id", type=str, default="default", help="Client ID for memory service")
     parser.add_argument("--data-dir", type=str, default=None, help="Directory to store memory data")
     parser.add_argument("--host", type=str, default="127.0.0.1", help="Host to bind server to")
-    parser.add_argument("--port", type=int, default=8000, help="Port to bind server to")
+    parser.add_argument("--port", type=int, default=int(TektonEnviron.get("ENGRAM_PORT", "8000")), help="Port to bind server to")
     
     # Testing arguments
     parser.add_argument("--query", type=str, help="Test a memory query")
@@ -827,7 +833,7 @@ def check_interactive():
     # This is a heuristic and might not be 100% accurate
     try:
         # Check for Claude-specific environment variables
-        if "CLAUDE_API_KEY" in os.environ or "CLAUDE_ENVIRONMENT" in os.environ:
+        if TektonEnviron.get("CLAUDE_API_KEY") or TektonEnviron.get("CLAUDE_ENVIRONMENT"):
             return True
     except:
         pass
@@ -843,15 +849,19 @@ def main():
     
     # Set up environment based on arguments
     if args.hermes_url:
+        # Keep using os.environ for setting as this is for subprocess configuration
         os.environ["HERMES_URL"] = args.hermes_url
     
     if args.hermes:
+        # Keep using os.environ for setting as this is for subprocess configuration
         os.environ["ENGRAM_MODE"] = "hermes"
     elif args.standalone:
+        # Keep using os.environ for setting as this is for subprocess configuration
         os.environ["ENGRAM_MODE"] = "standalone"
     
     # Enable debug mode if requested
     if args.debug:
+        # Keep using os.environ for setting as this is for subprocess configuration
         os.environ["ENGRAM_DEBUG"] = "1"
     
     # Handle actions
@@ -861,7 +871,7 @@ def main():
     
     if args.start or args.restart:
         # Determine if we should start in Hermes mode
-        hermes_mode = args.hermes or (os.environ.get("ENGRAM_MODE", "").lower() == "hermes")
+        hermes_mode = args.hermes or (TektonEnviron.get("ENGRAM_MODE", "").lower() == "hermes")
         
         # Start services
         start_services(
@@ -903,7 +913,7 @@ def main():
         "client_id": args.client_id,
         "data_dir": args.data_dir,
         "hermes_mode": args.hermes,
-        "hermes_url": args.hermes_url or os.environ.get("HERMES_URL", DEFAULT_HERMES_URL),
+        "hermes_url": args.hermes_url or TektonEnviron.get("HERMES_URL", DEFAULT_HERMES_URL),
         "host": args.host,
         "port": args.port,
     }

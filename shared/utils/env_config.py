@@ -372,7 +372,6 @@ class TermaConfig(BaseComponentConfig):
     """Configuration for Terma terminal system."""
     
     port: int
-    ws_port: int
     terminal_enabled: bool = True
     max_sessions: int = 10
     
@@ -380,7 +379,6 @@ class TermaConfig(BaseComponentConfig):
     def from_env(cls) -> 'TermaConfig':
         return cls(
             port=cls._get_required_env('TERMA_PORT', 'int'),
-            ws_port=cls._get_required_env('TERMA_WS_PORT', 'int'),
             terminal_enabled=cls._get_env_value('TERMA_TERMINAL_ENABLED', True, 'bool'),
             max_sessions=cls._get_env_value('TERMA_MAX_SESSIONS', 10, 'int')
         )
@@ -411,7 +409,7 @@ class NumaConfig(BaseComponentConfig):
     def from_env(cls) -> 'NumaConfig':
         return cls(
             port=cls._get_required_env('NUMA_PORT', 'int'),
-            ai_enabled=cls._get_env_value('TEKTON_REGISTER_AI', False, 'bool'),
+            ai_enabled=True,  # AI is always enabled with fixed ports
             companion_enabled=cls._get_env_value('NUMA_COMPANION_ENABLED', True, 'bool')
         )
 
@@ -427,7 +425,7 @@ class NoesisConfig(BaseComponentConfig):
     def from_env(cls) -> 'NoesisConfig':
         return cls(
             port=cls._get_required_env('NOESIS_PORT', 'int'),
-            ai_enabled=cls._get_env_value('TEKTON_REGISTER_AI', False, 'bool'),
+            ai_enabled=True,  # AI is always enabled with fixed ports
             discovery_mode=cls._get_env_value('NOESIS_DISCOVERY_MODE', 'placeholder', 'str')
         )
 
@@ -455,7 +453,6 @@ class TektonConfig(BaseModel):
     # Feature flags
     mcp_enabled: bool = True
     notifications_enabled: bool = True
-    register_ai: bool = True
     
     @classmethod
     def from_env(cls) -> 'TektonConfig':
@@ -471,8 +468,7 @@ class TektonConfig(BaseModel):
             theme_mode=cls._get_env_value('TEKTON_THEME_MODE', 'dark', 'str'),
             theme_color=cls._get_env_value('TEKTON_THEME_COLOR', 'blue', 'str'),
             mcp_enabled=cls._get_env_value('TEKTON_MCP_ENABLED', True, 'bool'),
-            notifications_enabled=cls._get_env_value('TEKTON_NOTIFICATIONS_ENABLED', True, 'bool'),
-            register_ai=cls._get_env_value('TEKTON_REGISTER_AI', True, 'bool')  # Still True - AIs are active, just not using old registry
+            notifications_enabled=cls._get_env_value('TEKTON_NOTIFICATIONS_ENABLED', True, 'bool')
         )
     
     @classmethod
@@ -492,7 +488,9 @@ class ComponentConfig:
     def __init__(self):
         """Initialize component configuration."""
         self.env_manager = get_env_manager()
-        self.env_manager.load_environment()
+        # Only load environment if not already frozen by C launcher
+        if os.environ.get('_TEKTON_ENV_FROZEN') != '1':
+            self.env_manager.load_environment()
         
         # Load all component configs
         self._load_configs()

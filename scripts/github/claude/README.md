@@ -1,1 +1,0 @@
-../../../MetaData/ComponentDocumentation/Scripts/github_claude_README.md

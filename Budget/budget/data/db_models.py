@@ -551,9 +551,15 @@ class DatabaseRepository:
                     if field in data and isinstance(data[field], dict):
                         data[field] = json.dumps(data[field])
                         
-                # Update fields
+                # Update fields, skipping relationships
                 for key, value in data.items():
                     if hasattr(existing, key):
+                        # Skip SQLAlchemy relationships
+                        if hasattr(self.model_class, key):
+                            prop = getattr(self.model_class, key).property
+                            if hasattr(prop, 'mapper'):
+                                # This is a relationship, skip it
+                                continue
                         setattr(existing, key, value)
             else:
                 # Copy fields from model to existing

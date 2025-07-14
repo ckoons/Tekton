@@ -11,6 +11,7 @@ import json
 import logging
 from pathlib import Path
 from typing import Dict, Any, Optional
+from shared.env import TektonEnviron
 
 # Configure logging
 logger = logging.getLogger("engram.config")
@@ -23,9 +24,9 @@ DEFAULT_CONFIG = {
     
     # Server settings
     "host": "127.0.0.1",
-    "port": 8000,
+    "port": int(TektonEnviron.get("ENGRAM_PORT", "8000")),
     "mcp_host": "127.0.0.1",
-    "mcp_port": 8001,
+    "mcp_port": int(TektonEnviron.get("ENGRAM_MCP_PORT", "8001")),
     "enable_mcp": True,
     
     # Feature settings
@@ -86,18 +87,19 @@ class EngramConfig:
         # Example: ENGRAM_CLIENT_ID=custom-id
         for key in self.config.keys():
             env_key = f"ENGRAM_{key.upper()}"
-            if env_key in os.environ:
+            env_value = TektonEnviron.get(env_key)
+            if env_value is not None:
                 # Convert value to appropriate type based on default
                 default_type = type(self.config[key])
                 try:
                     if default_type == bool:
                         # Special handling for boolean values
-                        val = os.environ[env_key].lower()
+                        val = TektonEnviron.get(env_key, '').lower()
                         self.config[key] = val in ('true', 'yes', '1', 'y')
                     elif default_type == int:
-                        self.config[key] = int(os.environ[env_key])
+                        self.config[key] = int(TektonEnviron.get(env_key, '0'))
                     else:
-                        self.config[key] = default_type(os.environ[env_key])
+                        self.config[key] = default_type(TektonEnviron.get(env_key, ''))
                     logger.debug(f"Set {key}={self.config[key]} from environment")
                 except Exception as e:
                     logger.warning(f"Error processing environment variable {env_key}: {e}")

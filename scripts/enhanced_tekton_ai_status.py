@@ -267,14 +267,8 @@ class AIStatus:
             print(tabulate(empty_data, headers=headers, tablefmt='fancy_grid'))
             
             # Check global AI status
-            # Check Tekton config for AI status
-            config = get_component_config()
-            ai_enabled = config.tekton.register_ai
-            if not ai_enabled:
-                print("\nNo AI specialists running (AI support disabled)")
-                print("Set TEKTON_REGISTER_AI=true in .env.tekton to enable AI support")
-            else:
-                print("\nNo AI specialists are currently running.")
+            # AI is always enabled with fixed ports
+            print("\nNo AI specialists are currently running.")
         
         # Show full details if requested
         if show_full and ai_status:

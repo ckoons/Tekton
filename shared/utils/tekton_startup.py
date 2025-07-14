@@ -64,28 +64,12 @@ def initialize_tekton_environment(
             if not ENV_MANAGER_AVAILABLE:
                 print(f"[{component_name.upper()}] TektonEnvManager not available, using basic environment")
             
-            # Try to load basic .env files with python-dotenv
-            try:
-                from dotenv import load_dotenv
-                
-                # Look for .env.tekton in parent directories
-                current = Path.cwd()
-                env_file = None
-                
-                for path in [current] + list(current.parents):
-                    candidate = path / ".env.tekton"
-                    if candidate.exists():
-                        env_file = candidate
-                        break
-                
-                if env_file:
-                    load_dotenv(env_file)
-                    print(f"[{component_name.upper()}] Loaded environment from {env_file}")
-                else:
-                    print(f"[{component_name.upper()}] No .env.tekton file found, using system environment")
-                    
-            except ImportError:
-                print(f"[{component_name.upper()}] python-dotenv not available, using system environment only")
+            # Check if environment is already loaded by C launcher
+            if os.environ.get('_TEKTON_ENV_FROZEN') == '1':
+                print(f"[{component_name.upper()}] Using environment loaded by Tekton launcher")
+            else:
+                print(f"[{component_name.upper()}] Warning: Environment not loaded by Tekton launcher")
+                print(f"[{component_name.upper()}] Please run this component using the 'tekton' command")
             
             # Configure logging
             setup_component_logging(component_name, log_level)

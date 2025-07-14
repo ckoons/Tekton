@@ -35,7 +35,6 @@ Some components may use additional ports for specialized services:
 
 | Service        | Port | Description                               | Environment Variable   |
 |----------------|------|-------------------------------------------|------------------------|
-| Terma WS       | 8767 | WebSocket for Terma Terminal (legacy)     | `TERMA_WS_PORT`        |
 
 ## Usage
 

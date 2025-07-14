@@ -247,11 +247,13 @@ class HermesClient:
             try:
                 db_port = config.hermes.db_mcp_port
             except (AttributeError, TypeError):
-                db_port = int(os.environ.get("DB_MCP_PORT"))
+                db_port_str = TektonEnviron.get("DB_MCP_PORT")
+                db_port = int(db_port_str) if db_port_str else 8500
             endpoint = f"http://{host_base}:{db_port}"
         else:
             # REST API endpoint
-            api_port = config.hermes.port if hasattr(config, 'hermes') else int(os.environ.get("HERMES_PORT"))
+            api_port_str = TektonEnviron.get("HERMES_PORT")
+            api_port = config.hermes.port if hasattr(config, 'hermes') else int(api_port_str) if api_port_str else 8001
             endpoint = f"http://{host_base}:{api_port}/api"
         
         # Create database client

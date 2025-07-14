@@ -59,6 +59,17 @@ def find_tekton_root():
 tekton_root = find_tekton_root()
 sys.path.insert(0, tekton_root)
 
+# Check if environment is loaded
+from shared.env import TektonEnviron
+if not TektonEnviron.is_loaded():
+    # We're running as a subprocess with environment passed via env=
+    # The environment is already correct, just not "loaded" in Python's memory
+    # Don't exit - just continue
+    pass
+else:
+    # Use frozen environment if loaded
+    os.environ = TektonEnviron.all()
+
 from tekton.utils.component_config import get_component_config
 from shared.utils.env_config import get_component_config as get_env_config
 from tekton.utils.port_config import get_component_port
@@ -381,7 +392,8 @@ class EnhancedComponentLauncher:
     async def launch_ui_devtools_mcp(self) -> LaunchResult:
         """Launch the UI DevTools MCP server"""
         launch_start = time.time()
-        port = 8088
+        # Get port from environment
+        port = int(TektonEnviron.get('HEPHAESTUS_MCP_PORT', '8088'))
         
         # Check if already running
         if not self.check_port_available(port):
@@ -622,11 +634,8 @@ class EnhancedComponentLauncher:
                     component_name
                 )
                 
-                # Launch AI if enabled (check Tekton config, not OS environ)
-                # Note: register_ai still controls AI launching, but we no longer use the old registry system
-                env_config = get_env_config()
-                if env_config.tekton.register_ai:
-                    await self.launch_component_ai(component_name)
+                # Always launch AI - components and AIs are paired with fixed ports
+                await self.launch_component_ai(component_name)
             else:
                 result.state = ComponentState.UNHEALTHY
                 result.message = f"Launched but failed health check within {timeout}s"
@@ -672,10 +681,20 @@ class EnhancedComponentLauncher:
             # Add Tekton root to PYTHONPATH for shared imports
             tekton_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
             current_pythonpath = env.get('PYTHONPATH', '')
-            if current_pythonpath:
-                env['PYTHONPATH'] = f"{tekton_root}:{current_pythonpath}"
+            
+            # Special case for tekton-core: add component directory to PYTHONPATH too
+            normalized_name = self.normalize_component_name(component_name)
+            if normalized_name == "tekton_core":
+                component_dir = self.get_component_directory(component_name)
+                if current_pythonpath:
+                    env['PYTHONPATH'] = f"{component_dir}:{tekton_root}:{current_pythonpath}"
+                else:
+                    env['PYTHONPATH'] = f"{component_dir}:{tekton_root}"
             else:
-                env['PYTHONPATH'] = tekton_root
+                if current_pythonpath:
+                    env['PYTHONPATH'] = f"{tekton_root}:{current_pythonpath}"
+                else:
+                    env['PYTHONPATH'] = tekton_root
             
             # Change to component directory
             component_dir = self.get_component_directory(component_name)
@@ -862,27 +881,60 @@ class EnhancedComponentLauncher:
                 self.log(f"Error killing process on port {port}: {e}", "warning")
         return False
     
+    def normalize_component_name(self, component_name: str) -> str:
+        """Normalize component name for internal processing"""
+        # Handle special cases where CLI name differs from internal name
+        name_mappings = {
+            "tekton-core": "tekton_core",
+            "penia": "budget",  # Penia is Greek name for Budget
+        }
+        return name_mappings.get(component_name, component_name)
+    
     def get_component_directory(self, component_name: str) -> str:
         """Get the directory for a component"""
         # Use the globally found tekton_root instead of calculating from __file__
         base_dir = tekton_root
+        
+        # Normalize the component name first
+        normalized_name = self.normalize_component_name(component_name)
         
         dir_mappings = {
             "tekton_core": "tekton-core",
             # "llm_adapter": "LLMAdapter", # Removed - use Rhetor with tekton-llm-client
         }
         
-        if component_name in dir_mappings:
-            return os.path.join(base_dir, dir_mappings[component_name])
+        if normalized_name in dir_mappings:
+            return os.path.join(base_dir, dir_mappings[normalized_name])
         else:
-            dir_name = component_name.replace("_", "-")
+            dir_name = normalized_name.replace("_", "-")
             dir_name = dir_name[0].upper() + dir_name[1:] if dir_name else ""
             return os.path.join(base_dir, dir_name)
             
     def get_component_command(self, component_name: str) -> List[str]:
-        """Get the launch command for a component (original logic)"""
+        """Get the launch command for a component"""
         component_dir = self.get_component_directory(component_name)
+        
+        # Normalize component name for internal logic
+        normalized_name = self.normalize_component_name(component_name)
+        
+        # Components that should use python -m (have __main__.py and proper initialization)
+        module_components = [
+            'apollo', 'athena', 'numa', 'noesis', 'terma',  # Already migrated
+            'budget', 'engram', 'ergon', 'hephaestus', 'harmonia', 
+            'metis', 'prometheus', 'rhetor', 'sophia', 'synthesis', 
+            'telos', 'hermes', 'tekton_core'  # All migrated to Python modules
+        ]
+        
+        if normalized_name in module_components:
+            # Use Python module execution with normalized name
+            if normalized_name == "tekton_core":
+                # Special handling for tekton_core - use the original working approach
+                return [sys.executable, "-m", "tekton.api.app"]
+            else:
+                # Standard module execution
+                return [sys.executable, "-m", normalized_name]
             
+        # For other components, look for run scripts
         run_script = None
         for script_name in [f"run_{component_name}.sh", f"run_{component_name}.py"]:
             script_path = os.path.join(component_dir, script_name)
@@ -1054,7 +1106,8 @@ class EnhancedComponentLauncher:
             process = await asyncio.create_subprocess_exec(
                 *cmd,
                 stdout=asyncio.subprocess.PIPE,
-                stderr=asyncio.subprocess.STDOUT  # Combine stdout and stderr
+                stderr=asyncio.subprocess.STDOUT,  # Combine stdout and stderr
+                env=TektonEnviron.all()  # Pass frozen environment so AI launcher can read port variables
             )
             
             # Wait for it to complete and get output
@@ -1152,11 +1205,6 @@ async def main():
         nargs='*',
         help="Launch only AI specialists for components (optionally specify which)"
     )
-    parser.add_argument(
-        "--no-ai",
-        action="store_true",
-        help="Disable AI launching even if TEKTON_REGISTER_AI is set"
-    )
     
     args = parser.parse_args()
     
@@ -1219,16 +1267,13 @@ async def main():
             process = await asyncio.create_subprocess_exec(
                 *ai_cmd,
                 stdout=None,
-                stderr=None
+                stderr=None,
+                env=TektonEnviron.all()  # Pass frozen environment so AI launcher can read port variables
             )
             
             await process.wait()
             return
         
-        # Handle --no-ai flag
-        if args.no_ai:
-            os.environ['TEKTON_REGISTER_AI'] = 'false'
-            launcher.log("AI launching disabled by --no-ai flag", "info")
         
         if not components:
             launcher.log("No components selected", "warning")

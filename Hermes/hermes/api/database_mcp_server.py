@@ -14,6 +14,7 @@ import os
 import sys
 from pathlib import Path
 from typing import Dict, List, Any, Optional, Union
+from shared.env import TektonEnviron
 
 from fastapi import FastAPI, Body, HTTPException, Query, APIRouter, Header, Depends, Request
 from fastapi.middleware.cors import CORSMiddleware
@@ -50,15 +51,22 @@ app.add_middleware(
 # Global service instances
 database_manager = None
 mcp_adapter = None
+data_dir_override = None  # Set by command line argument
 
 @app.on_event("startup")
 async def startup_event():
     """Initialize services on startup."""
     global database_manager, mcp_adapter
     
-    # Get data directory from environment
-    data_dir = os.environ.get("HERMES_DATA_DIR", "~/.tekton/data")
-    expanded_data_dir = os.path.expanduser(data_dir)
+    # Get data directory - use override if set by command line
+    global data_dir_override
+    if data_dir_override:
+        data_dir = data_dir_override
+    else:
+        # Use TEKTON_ROOT/.tekton/data as default
+        tekton_root = TektonEnviron.get("TEKTON_ROOT")
+        data_dir = os.path.join(tekton_root, ".tekton", "data")
+    expanded_data_dir = data_dir  # No expanduser since we don't use ~
     
     # Initialize database manager
     try:
@@ -142,9 +150,10 @@ def main():
     """Main entry point for the CLI command."""
     args = parse_arguments()
     
-    # Override with command line arguments if provided
+    # Store data directory override if provided
+    global data_dir_override
     if args.data_dir:
-        os.environ["HERMES_DATA_DIR"] = args.data_dir
+        data_dir_override = args.data_dir
     
     if args.debug:
         logging.getLogger().setLevel(logging.DEBUG)
@@ -152,7 +161,12 @@ def main():
     
     # Start the server
     logger.info(f"Starting Hermes Database MCP server on {args.host}:{args.port}")
-    logger.info(f"Data directory: {os.environ.get('HERMES_DATA_DIR', '~/.tekton/data')}")
+    # Log data directory that will be used
+    if data_dir_override:
+        logger.info(f"Data directory: {data_dir_override}")
+    else:
+        tekton_root = TektonEnviron.get("TEKTON_ROOT")
+        logger.info(f"Data directory: {os.path.join(tekton_root, '.tekton', 'data')}")
     
     uvicorn.run(app, host=args.host, port=args.port)
 

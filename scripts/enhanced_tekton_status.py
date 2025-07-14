@@ -72,6 +72,25 @@ def find_tekton_root():
 tekton_root = find_tekton_root()
 sys.path.insert(0, tekton_root)
 
+# Check if environment is loaded
+from shared.env import TektonEnviron
+
+if not TektonEnviron.is_loaded():
+    # We're running as a subprocess with environment passed via env=
+    # The environment is already correct, just not "loaded" in Python's memory
+    # Don't exit - just continue
+    pass
+else:
+    # Use frozen environment if loaded
+    frozen_env = TektonEnviron.all()
+    # NOTE: TektonEnviron.all() returns os.environ, not _frozen_env!
+    # This means we're getting the wrong environment data
+    # For now, just use what we have in os.environ already
+
+# Setup logging
+import logging
+logger = logging.getLogger(__name__)
+
 from tekton.utils.component_config import get_component_config, ComponentInfo
 from shared.utils.env_config import get_component_config as get_env_config
 # Registry client removed - using direct port checks
@@ -232,6 +251,12 @@ class EnhancedStatusChecker:
     def __init__(self, store_metrics: bool = True, timeout: float = 2.0, quick_mode: bool = False):
         self.config = get_component_config()
         self.env_config = get_env_config()  # For AI port calculations
+        
+        # DEBUG: Log component ports from config
+        logger.debug("=== Component Ports from Config ===")
+        for comp_id, comp_info in self.config.get_all_components().items():
+            logger.debug(f"{comp_id}: port={comp_info.port}")
+        logger.debug("=== END Component Ports from Config ===")
         self.storage = MetricsStorage() if store_metrics else None
         self.session = None
         self.timeout = timeout
@@ -278,10 +303,13 @@ class EnhancedStatusChecker:
             
     async def check_ui_devtools_status(self) -> ComponentMetrics:
         """Check UI DevTools MCP status"""
-        # UI DevTools is a special case - it's an MCP server on port 8088
+        # UI DevTools is a special case - it's an MCP server
+        # Get port from environment
+        env_value = TektonEnviron.get('HEPHAESTUS_MCP_PORT', '8088')
+        port = int(env_value)
         metrics = ComponentMetrics(
             name="ui_dev_tools",
-            port=8088,
+            port=port,
             status="unknown",
             version="unknown",
             response_time=None,
@@ -301,7 +329,7 @@ class EnhancedStatusChecker:
         start_time = time.time()
         
         # Check process information
-        process_info = self.get_process_info(8088)
+        process_info = self.get_process_info(port)
         metrics.process_info = process_info
         
         if not process_info:
@@ -317,7 +345,7 @@ class EnhancedStatusChecker:
             
         # Check health endpoint
         try:
-            url = "http://localhost:8088/health"
+            url = f"http://localhost:{port}/health"
             async with self.session.get(url) as resp:
                 metrics.response_time = time.time() - start_time
                 if resp.status == 200:
@@ -349,6 +377,7 @@ class EnhancedStatusChecker:
         start_time = time.time()
         
         # Initialize metrics with defaults
+        logger.debug(f"Checking {comp_name} on port {comp_info.port}")
         metrics = ComponentMetrics(
             name=comp_name,
             port=comp_info.port,
@@ -435,9 +464,7 @@ class EnhancedStatusChecker:
     
     async def check_ai_status(self, component_name: str) -> Dict[str, str]:
         """Check AI status for a component."""
-        # Check if AI is enabled globally from Tekton config
-        if not self.env_config.tekton.register_ai:
-            return {'model': None, 'health': 'none'}
+        # AI is always enabled with fixed ports
         
         # Calculate AI port from component port
         component_port = self.env_config.get_port(component_name.lower())
@@ -904,6 +931,9 @@ class EnhancedStatusChecker:
             else:
                 comp_info = self.config.get_component(metrics.name)
                 display_name = comp_info.name if comp_info else metrics.name.title()
+            
+            # DEBUG: Log port being displayed
+            logger.debug(f"Displaying {display_name} with port {metrics.port}")
             
             row = [
                 display_name,

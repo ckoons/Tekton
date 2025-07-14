@@ -12,6 +12,7 @@ import threading
 import datetime
 import logging
 from typing import Dict, List, Any, Optional
+from shared.env import TektonEnviron
 
 from hermes.core.logging.base.entry import LogEntry
 from hermes.core.logging.base.levels import LogLevel
@@ -35,8 +36,8 @@ class LogStorage:
         Args:
             storage_path: Path to store log files (defaults to ~/.tekton/logs)
         """
-        self.storage_path = storage_path or os.environ.get('TEKTON_LOG_DIR', 
-                                                            os.path.join(os.environ.get('TEKTON_ROOT', os.path.expanduser('~')), 
+        self.storage_path = storage_path or TektonEnviron.get('TEKTON_LOG_DIR', 
+                                                            os.path.join(TektonEnviron.get('TEKTON_ROOT'), 
                                                                         '.tekton', 'logs'))
         os.makedirs(self.storage_path, exist_ok=True)
         

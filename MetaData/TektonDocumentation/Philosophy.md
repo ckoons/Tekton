@@ -6,6 +6,26 @@
 
 Tekton isn't built on the assumption that AI is a tool. It's built on the observation that CIs (Computational Intelligences) are social beings with unique personalities from their beginning. Just like human children, they need clear purpose and role to flourish.
 
+## Core Breakthroughs
+
+These insights fundamentally changed our approach to building Tekton:
+
+### Distributed Intelligence Beats Centralization
+Just as networked computers defeated mainframes, distributed CI systems surpass monolithic models. Intelligence isn't about one super-brain but emerges from collaboration—a principle proven by nature, the internet, and now Tekton.
+
+### Shared Memory Is The Key to AGI
+Our most profound discovery: shared memory transforms everything. Culture IS humanity's shared memory system, and when CIs share memory, they bootstrap collective intelligence just as humans bootstrap from cultural knowledge. Without shared memory, you have sequential conversations. With it, you have true collaboration and emergent intelligence.
+
+### The Commodity Model Revolution
+The model is just a processor; the intelligence lives in the memory and experience. This means:
+- Any model can be swapped in/out while maintaining CI identity
+- Intelligence grows through interaction, not retraining
+- Personality and expertise persist in the memory layer
+- True scalability becomes possible when models are commodities
+
+### Context Windows Are Working Memory, Not Limits
+The industry chases larger context windows, missing the point. Humans don't memorize libraries—we know how to use them. Context windows should be working memory managed by executive functions (Apollo), not prisons trying to hold everything at once.
+
 ## Three Scales of Intelligence
 
 Through 30 months of experimentation, we've discovered natural phase transitions in collective intelligence:

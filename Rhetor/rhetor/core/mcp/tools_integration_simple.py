@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 
 @architecture_decision(
     title="Simplified MCP Tools Integration",
-    rationale="Direct integration with fixed-port AI specialists via tekton_components.yaml",
+    rationale="Direct integration with fixed-port AI specialists via environment configuration",
     impacts=["Removes complex discovery", "Faster startup", "Simpler code"]
 )
 class MCPToolsIntegrationSimple:

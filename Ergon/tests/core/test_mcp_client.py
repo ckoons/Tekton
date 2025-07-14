@@ -13,7 +13,7 @@ from typing import Dict, Any
 
 import aiohttp
 from aiohttp import ClientSession
-from ergon.utils.tekton_integration import get_component_api_url
+from shared.urls import tekton_url
 
 from ergon.core.mcp_client import MCPClient
 from ergon.utils.mcp_adapter import (
@@ -32,7 +32,7 @@ def mcp_client():
     client = MCPClient(
         client_id="test-client",
         client_name="Test MCP Client",
-        hermes_url=get_component_api_url("hermes")
+        hermes_url=tekton_url("hermes", "/api")
     )
     return client
 

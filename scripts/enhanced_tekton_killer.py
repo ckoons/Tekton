@@ -56,6 +56,17 @@ def find_tekton_root():
 tekton_root = find_tekton_root()
 sys.path.insert(0, tekton_root)
 
+# Check if environment is loaded
+from shared.env import TektonEnviron
+if not TektonEnviron.is_loaded():
+    # We're running as a subprocess with environment passed via env=
+    # The environment is already correct, just not "loaded" in Python's memory
+    # Don't exit - just continue
+    pass
+else:
+    # Use frozen environment if loaded
+    os.environ = TektonEnviron.all()
+
 from tekton.utils.component_config import get_component_config
 from shared.utils.env_config import get_component_config as get_env_config
 from tekton.utils.port_config import get_component_port
@@ -417,11 +428,7 @@ class EnhancedComponentKiller:
     async def terminate_component_ai(self, component_name: str):
         """Terminate AI specialist for a component if running"""
         # Check if AI is enabled from Tekton config
-        # Note: register_ai still controls AI termination, but we no longer use the old registry system
-        env_config = get_env_config()
-        if not env_config.tekton.register_ai:
-            self.log("AI support disabled, skipping AI termination", "info", component_name)
-            return
+        # AI is always enabled with fixed ports - always try to terminate
         
         try:
             # Use the AI killer script with force flag
@@ -907,17 +914,19 @@ async def main():
         # UI DevTools only option
         if args.ui_dev_tools:
             killer.log("🛠️  Killing UI DevTools MCP server", "info")
+            # Get port from environment
+            port = int(TektonEnviron.get('HEPHAESTUS_MCP_PORT', '8088'))
             # Use the force kill approach since MCP doesn't have graceful shutdown
-            process_info = killer.get_detailed_process_info(8088)
+            process_info = killer.get_detailed_process_info(port)
             if process_info:
-                killer.log(f"Found UI DevTools MCP on port 8088, PID {process_info.pid}", "info")
+                killer.log(f"Found UI DevTools MCP on port {port}, PID {process_info.pid}", "info")
                 success, message = await killer.force_kill_process(process_info, "ui_dev_tools")
                 if success:
                     killer.log("✅ UI DevTools MCP server terminated", "success")
                 else:
                     killer.log(f"❌ Failed to kill UI DevTools MCP: {message}", "error")
             else:
-                killer.log("UI DevTools MCP not running on port 8088", "info")
+                killer.log(f"UI DevTools MCP not running on port {port}", "info")
             return
         
         # Handle AI-only mode
@@ -972,10 +981,12 @@ async def main():
             # Default to all running components + UI DevTools MCP
             components = killer.get_running_components()
             
-            # Check if UI DevTools MCP is running on port 8088
-            ui_devtools_process = killer.get_detailed_process_info(8088)
+            # Check if UI DevTools MCP is running
+            # Get port from environment
+            ui_port = int(TektonEnviron.get('HEPHAESTUS_MCP_PORT', '8088'))
+            ui_devtools_process = killer.get_detailed_process_info(ui_port)
             if ui_devtools_process:
-                killer.log("🛠️  UI DevTools MCP detected on port 8088 - will be killed", "info")
+                killer.log(f"🛠️  UI DevTools MCP detected on port {ui_port} - will be killed", "info")
             
         if not components:
             killer.log("No running components found", "info")
@@ -1010,7 +1021,9 @@ async def main():
         
         # Kill UI DevTools MCP if no args or killing hephaestus
         if not args.components or args.components.lower() == 'all' or 'hephaestus' in components:
-            ui_devtools_process = killer.get_detailed_process_info(8088)
+            # Get port from environment
+            ui_port = int(TektonEnviron.get('HEPHAESTUS_MCP_PORT', '8088'))
+            ui_devtools_process = killer.get_detailed_process_info(ui_port)
             if ui_devtools_process:
                 print("\n🛠️  Cleaning up UI DevTools MCP server...")
                 success, message = await killer.force_kill_process(ui_devtools_process, "ui_dev_tools")

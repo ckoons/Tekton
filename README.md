@@ -189,24 +189,34 @@ See [ENVIRONMENT_MANAGEMENT.md](./ENVIRONMENT_MANAGEMENT.md) for complete docume
 
 ### Running Tekton
 
-Tekton provides unified scripts to launch, stop, and monitor all components in the correct order:
+Tekton uses a small C launcher program that handles environment setup and manages the Python scripts. This architecture ensures consistent environment configuration across all Tekton operations, similar to how Git, Docker, and other tools use compiled launchers.
 
 ```bash
 # Launch all available Tekton components
-./scripts/tekton-launch --components all
+tekton start --components all
 
 # Launch specific components
-./scripts/tekton-launch --components engram,hermes,ergon
+tekton start --components engram,hermes,ergon
 
 # Launch with interactive component selection
-./scripts/tekton-launch
+tekton start
 
 # Stop all running Tekton components
-./scripts/tekton-kill
+tekton stop
 
 # Check status of Tekton components and system resources
-./scripts/tekton-status
+tekton status
+
+# Work with different Tekton instances (e.g., development environments)
+tekton --coder a status  # Check status of Coder-A instance
+tekton --coder b start   # Launch Coder-B instance
 ```
+
+The `tekton` command is a compiled C program that:
+- Loads environment files in the correct order (system → user → project → local)
+- Sets up a frozen environment state before Python starts
+- Routes to the appropriate Python management scripts
+- Supports multiple Tekton instances via the --coder flag
 
 The launch script supports various options:
 - `--components`: Comma-separated list of components to launch (engram, hermes, ergon, rhetor, athena, prometheus, harmonia, sophia, telos, hephaestus)
@@ -240,10 +250,7 @@ The launch script manages these ports automatically:
 - When launching individual components, only processes using that component's specific port are terminated
 - This allows Hermes to dynamically manage component lifecycle while preventing port conflicts
 
-Convenient symlinks are also available in ~/utils:
-- `~/utils/tekton-launch`
-- `~/utils/tekton-kill`
-- `~/utils/tekton-status`
+The compiled launcher ensures consistent environment handling across all Tekton operations.
 
 ### Managing Requirements
 
@@ -276,11 +283,7 @@ Each component has a specialized AI assistant:
 
 ### Configuration
 
-AI specialists are enabled by default. To disable them:
-```bash
-# Add to .env.tekton only if you want to disable AIs
-TEKTON_REGISTER_AI=false
-```
+AI specialists are always enabled and use fixed ports paired with their components.
 
 Configure AI provider (defaults to ollama):
 ```bash

@@ -454,11 +454,7 @@ async def main():
     
     args = parser.parse_args()
     
-    # Check if AI is enabled globally from Tekton config
-    config = get_component_config()
-    if not config.tekton.register_ai:
-        print("AI support is disabled. Set TEKTON_REGISTER_AI=true in .env.tekton to enable.")
-        sys.exit(1)
+    # AI is always enabled with fixed ports - no need to check
     
     launcher = AILauncher(verbose=args.verbose)
     

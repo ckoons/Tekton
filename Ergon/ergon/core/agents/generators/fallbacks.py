@@ -27,16 +27,12 @@ def generate_fallback_main_file(
     return f"""from pydantic_ai import Agent
 from pydantic_ai.models.anthropic import AnthropicModel
 from pydantic_ai.models.openai import OpenAIModel
-from dotenv import load_dotenv
 import os
 import asyncio
 from typing import Optional
 
 # Import prompts and tools
 from agent_prompts import SYSTEM_PROMPT
-
-# Load environment variables
-load_dotenv()
 
 def create_agent() -> Agent:
     \"\"\"

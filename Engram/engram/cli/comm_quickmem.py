@@ -10,9 +10,10 @@ import os
 import asyncio
 import json
 from typing import Dict, List, Optional, Any, Union
+from shared.env import TektonEnviron
 
 # Configure client ID
-client_id = os.environ.get("ENGRAM_CLIENT_ID", "claude")
+client_id = TektonEnviron.get("ENGRAM_CLIENT_ID", "claude")
 
 # Import core components
 try:

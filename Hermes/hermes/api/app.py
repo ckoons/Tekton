@@ -12,6 +12,7 @@ import asyncio
 import time
 from fastapi import FastAPI, APIRouter
 from fastapi.middleware.cors import CORSMiddleware
+from shared.env import TektonEnviron
 
 # Add Tekton root to path if not already present
 tekton_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..'))
@@ -179,9 +180,10 @@ def run_server():
     """Run the Hermes API server (for backward compatibility)."""
     import uvicorn
     
-    host = os.environ.get("HOST", "0.0.0.0")
-    port = int(os.environ.get("PORT", 8000))
-    debug = os.environ.get("DEBUG", "False").lower() == "true"
+    host = TektonEnviron.get("HOST", "0.0.0.0")
+    port_str = TektonEnviron.get("PORT", "8000")
+    port = int(port_str)
+    debug = TektonEnviron.get("DEBUG", "False").lower() == "true"
     
     uvicorn.run(
         "hermes.api.app:app",

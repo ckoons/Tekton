@@ -16,6 +16,7 @@ if tekton_root not in sys.path:
     sys.path.append(tekton_root)
 
 from shared.utils.env_config import get_component_config
+from shared.urls import tekton_url
 
 logger = logging.getLogger(__name__)
 
@@ -181,7 +182,7 @@ def get_environment_config() -> Dict[str, Any]:
         config["components"][component] = {
             "port": port,
             "urls": {
-                "api": get_component_api_url(component),
+                "api": tekton_url(component, "/api"),
                 "ws": get_component_websocket_url(component),
                 "health": get_component_health_url(component)
             }

@@ -5,10 +5,6 @@ import json
 import logging
 from pathlib import Path
 from typing import Dict, Any, Optional, List
-from dotenv import load_dotenv
-
-# Load environment variables from .env file if present
-load_dotenv()
 
 logger = logging.getLogger(__name__)
 
@@ -79,7 +75,7 @@ class Config:
             },
             "server": {
                 "host": "0.0.0.0",
-                "port": 8765
+                "port": int(os.environ.get("TERMA_PORT", 8015))
             },
             "llm": {
                 "provider": "claude",

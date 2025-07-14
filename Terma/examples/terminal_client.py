@@ -3,8 +3,9 @@
 Terma Terminal Client Example
 
 This example demonstrates how to use the Terma terminal system
-from Python code, including session management, terminal I/O,
-and LLM assistance.
+from Python code. Note: Terma v2.0 uses native terminal applications
+instead of WebSocket-based web terminals. This example shows the
+legacy WebSocket approach for reference only.
 """
 
 import argparse
@@ -356,6 +357,10 @@ def parse_args():
 
 async def main():
     """Main entry point"""
+    print("WARNING: This example uses the legacy WebSocket-based terminal approach.")
+    print("Terma v2.0 now uses native terminal applications with aish.")
+    print("This example is preserved for reference only.\n")
+    
     args = parse_args()
     
     if args.interactive:

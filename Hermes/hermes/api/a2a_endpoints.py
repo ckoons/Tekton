@@ -11,6 +11,7 @@ import logging
 import json
 from typing import Dict, Any, Optional, Union, List
 from datetime import datetime
+from shared.env import TektonEnviron
 
 from fastapi import APIRouter, Request, HTTPException, Depends, WebSocket, WebSocketDisconnect, Query
 from fastapi.responses import JSONResponse, StreamingResponse
@@ -179,7 +180,8 @@ def _get_hermes_port() -> int:
     try:
         return config.hermes.port
     except (AttributeError, TypeError):
-        return int(os.environ.get('HERMES_PORT'))
+        port_str = TektonEnviron.get('HERMES_PORT')
+        return int(port_str) if port_str else 8001
 
 
 @a2a_router.get("/.well-known/agent.json")

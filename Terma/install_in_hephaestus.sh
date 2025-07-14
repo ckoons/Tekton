@@ -60,8 +60,8 @@ ln -sf "${SCRIPT_DIR}/ui/css/terma-terminal.css" "${HEPHAESTUS_DIR}/ui/css/terma
 ln -sf "${SCRIPT_DIR}/ui/js/terma-terminal.js" "${HEPHAESTUS_DIR}/ui/js/terma-terminal.js"
 
 # Note about fixed ports - we're using explicit ports in the code now
-echo "Note: Using fixed ports: 8765 for API server and 8767 for WebSocket server"
-echo "These ports match the TERMA_API_PORT and TERMA_WS_PORT values in tekton-launch"
+echo "Note: Using fixed port: 8765 for API server"
+echo "This port matches the TERMA_API_PORT value in tekton-launch"
 
 # Add the component to the Hephaestus component registry
 REGISTRY_FILE="${HEPHAESTUS_DIR}/ui/server/component_registry.json"

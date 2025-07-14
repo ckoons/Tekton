@@ -5,7 +5,6 @@ components:
   # Core Infrastructure
   tekton_core:
     name: "Tekton Core"
-    port: 8010
     description: "Core orchestration and startup management"
     category: "infrastructure"
     startup_priority: 6  # Move to end - utility component
@@ -13,7 +12,6 @@ components:
     
   hermes:
     name: "Hermes"
-    port: 8001
     description: "Service registry, messaging, and component coordination"
     category: "infrastructure"
     startup_priority: 1
@@ -22,7 +20,6 @@ components:
   # Memory and Knowledge
   engram:
     name: "Engram"
-    port: 8000
     description: "Persistent memory and knowledge management system"
     category: "memory"
     startup_priority: 2
@@ -30,7 +27,6 @@ components:
     
   athena:
     name: "Athena"
-    port: 8005
     description: "Knowledge graph and relationship management"
     category: "knowledge"
     startup_priority: 3
@@ -39,7 +35,6 @@ components:
   # AI and Intelligence
   rhetor:
     name: "Rhetor"
-    port: 8003
     description: "Multi-provider LLM orchestration and management"
     category: "ai"
     startup_priority: 3
@@ -52,7 +47,6 @@ components:
     
   sophia:
     name: "Sophia"
-    port: 8014
     description: "Machine learning and system intelligence measurement"
     category: "ai"
     startup_priority: 4
@@ -64,7 +58,6 @@ components:
       
   apollo:
     name: "Apollo"
-    port: 8012
     description: "Local attention and prediction system"
     category: "ai"
     startup_priority: 4
@@ -72,7 +65,6 @@ components:
     
   numa:
     name: "Numa"
-    port: 8016
     description: "Platform AI mentor providing guidance and oversight"
     category: "ai"
     startup_priority: 6  # Starts after all components for platform-wide view
@@ -85,7 +77,6 @@ components:
     
   noesis:
     name: "Noesis"
-    port: 8015
     description: "Discovery system for pattern recognition and insights"
     category: "ai"
     startup_priority: 5  # Starts after core AI components
@@ -99,7 +90,6 @@ components:
   # Planning and Execution
   prometheus:
     name: "Prometheus"
-    port: 8006
     description: "Strategic planning and goal management"
     category: "planning"
     startup_priority: 4
@@ -107,7 +97,6 @@ components:
     
   telos:
     name: "Telos"
-    port: 8008
     description: "Requirements tracking and validation"
     category: "planning"
     startup_priority: 3
@@ -115,7 +104,6 @@ components:
     
   metis:
     name: "Metis"
-    port: 8011
     description: "Task breakdown and management"
     category: "planning"
     startup_priority: 4
@@ -124,7 +112,6 @@ components:
   # Workflow and Execution
   harmonia:
     name: "Harmonia"
-    port: 8007
     description: "Workflow orchestration and state management"
     category: "workflow"
     startup_priority: 4
@@ -132,7 +119,6 @@ components:
     
   synthesis:
     name: "Synthesis"
-    port: 8009
     description: "Code synthesis and execution engine"
     category: "execution"
     startup_priority: 5
@@ -140,7 +126,6 @@ components:
     
   ergon:
     name: "Ergon"
-    port: 8002
     description: "Agent system for specialized task execution"
     category: "execution"
     startup_priority: 4
@@ -149,7 +134,6 @@ components:
   # Resource Management
   penia:
     name: "Penia"
-    port: 8013
     description: "Token usage and cost management"
     category: "resources"
     startup_priority: 3
@@ -162,7 +146,6 @@ components:
   # User Interface
   hephaestus:
     name: "Hephaestus"
-    port: 8080
     description: "Web-based user interface"
     category: "ui"
     startup_priority: 5
@@ -170,18 +153,12 @@ components:
     
   terma:
     name: "Terma"
-    port: 8004
     description: "Terminal interface and command execution"
     category: "ui"
     startup_priority: 5
     dependencies: ["hermes"]
     
 # Specialized Services (not primary components)
-services:
+services: {}
   # LLMAdapter removed - use Rhetor (port 8003) with tekton-llm-client instead
-  
-  terma_ws:
-    name: "Terma WebSocket"
-    port: 8767
-    description: "Legacy WebSocket service for Terma"
-    category: "service"
+  # terma_ws removed - WebSocket functionality integrated into main Terma component
