@@ -3,6 +3,9 @@
   This component provides the Sophia dashboard for the Tekton UI.
 -->
 
+<!-- Load Sophia Analytics styles -->
+<link rel="stylesheet" href="styles/sophia-analytics.css">
+
 <div id="sophia-dashboard" class="sophia-container">
   <header class="sophia-header">
     <h2>Sophia - Continuous Improvement & AI Research</h2>
@@ -14,6 +17,9 @@
         <option value="experiments">Experiments</option>
         <option value="recommendations">Recommendations</option>
         <option value="research">Research Projects</option>
+        <option value="analytics">Advanced Analytics</option>
+        <option value="theory-validation">Theory Validation</option>
+        <option value="collective-intelligence">Collective Intelligence</option>
       </select>
     </div>
   </header>
@@ -354,6 +360,290 @@
         </div>
       </div>
     </div>
+    
+    <!-- Advanced Analytics View -->
+    <div id="sophia-analytics-view" class="sophia-view" style="display: none;">
+      <div class="sophia-analytics-controls">
+        <div class="sophia-filter-bar">
+          <div class="input-group">
+            <span class="input-group-text">Analysis Type</span>
+            <select id="sophia-analytics-type" class="form-select">
+              <option value="patterns">Pattern Detection</option>
+              <option value="causality">Causal Analysis</option>
+              <option value="events">Complex Events</option>
+              <option value="predictions">Predictions</option>
+              <option value="network">Network Analysis</option>
+            </select>
+          </div>
+          <div class="input-group">
+            <span class="input-group-text">Time Window</span>
+            <select id="sophia-analytics-timewindow" class="form-select">
+              <option value="1h">Last Hour</option>
+              <option value="6h">Last 6 Hours</option>
+              <option value="24h" selected>Last 24 Hours</option>
+              <option value="7d">Last 7 Days</option>
+              <option value="30d">Last 30 Days</option>
+            </select>
+          </div>
+          <button id="sophia-analytics-run-btn" class="btn btn-primary">Run Analysis</button>
+        </div>
+      </div>
+      
+      <!-- Pattern Detection Section -->
+      <div id="sophia-patterns-section" class="sophia-analytics-section">
+        <h3>Multi-Dimensional Pattern Analysis</h3>
+        <div class="sophia-pattern-controls">
+          <div class="input-group">
+            <span class="input-group-text">Dimensions</span>
+            <select id="sophia-pattern-dimensions" class="form-select" multiple>
+              <option value="value" selected>Metric Values</option>
+              <option value="timestamp" selected>Time</option>
+              <option value="metric_id" selected>Metric Types</option>
+              <option value="component">Components</option>
+              <option value="tags">Tags</option>
+            </select>
+          </div>
+        </div>
+        <div id="sophia-pattern-results" class="sophia-results-container">
+          <!-- Pattern detection results -->
+        </div>
+      </div>
+      
+      <!-- Causal Analysis Section -->
+      <div id="sophia-causality-section" class="sophia-analytics-section" style="display: none;">
+        <h3>Causal Relationship Analysis</h3>
+        <div class="sophia-causality-controls">
+          <div class="input-group">
+            <span class="input-group-text">Target Metric</span>
+            <select id="sophia-causality-target" class="form-select">
+              <option value="">Select target metric...</option>
+              <!-- Dynamically populated -->
+            </select>
+          </div>
+          <div class="input-group">
+            <span class="input-group-text">Candidate Causes</span>
+            <select id="sophia-causality-candidates" class="form-select" multiple>
+              <!-- Dynamically populated -->
+            </select>
+          </div>
+          <div class="input-group">
+            <span class="input-group-text">Max Lag</span>
+            <input type="number" id="sophia-causality-lag" class="form-control" value="10" min="1" max="100">
+          </div>
+        </div>
+        <div id="sophia-causality-results" class="sophia-results-container">
+          <!-- Causal analysis results -->
+        </div>
+      </div>
+      
+      <!-- Complex Events Section -->
+      <div id="sophia-events-section" class="sophia-analytics-section" style="display: none;">
+        <h3>Complex Event Detection</h3>
+        <div class="sophia-events-controls">
+          <div class="input-group">
+            <span class="input-group-text">Event Types</span>
+            <select id="sophia-event-types" class="form-select" multiple>
+              <option value="cascade_failure">Cascade Failures</option>
+              <option value="synchronization_event">Synchronization Events</option>
+              <option value="emergence_event">Emergence Events</option>
+            </select>
+          </div>
+        </div>
+        <div id="sophia-events-timeline" class="sophia-timeline-container">
+          <!-- Event timeline visualization -->
+        </div>
+        <div id="sophia-events-results" class="sophia-results-container">
+          <!-- Complex event details -->
+        </div>
+      </div>
+      
+      <!-- Predictions Section -->
+      <div id="sophia-predictions-section" class="sophia-analytics-section" style="display: none;">
+        <h3>Metric Predictions</h3>
+        <div class="sophia-predictions-controls">
+          <div class="input-group">
+            <span class="input-group-text">Metrics to Predict</span>
+            <select id="sophia-prediction-metrics" class="form-select" multiple>
+              <!-- Dynamically populated -->
+            </select>
+          </div>
+          <div class="input-group">
+            <span class="input-group-text">Horizon (hours)</span>
+            <input type="number" id="sophia-prediction-horizon" class="form-control" value="24" min="1" max="168">
+          </div>
+          <div class="input-group">
+            <span class="input-group-text">Confidence</span>
+            <select id="sophia-prediction-confidence" class="form-select">
+              <option value="0.90">90%</option>
+              <option value="0.95" selected>95%</option>
+              <option value="0.99">99%</option>
+            </select>
+          </div>
+        </div>
+        <div id="sophia-predictions-chart" class="sophia-chart">
+          <!-- Predictions chart -->
+        </div>
+      </div>
+      
+      <!-- Network Analysis Section -->
+      <div id="sophia-network-section" class="sophia-analytics-section" style="display: none;">
+        <h3>Network Effects Analysis</h3>
+        <div id="sophia-network-visualization" class="sophia-network-container">
+          <!-- Network graph visualization -->
+        </div>
+        <div id="sophia-network-metrics" class="sophia-metrics-container">
+          <!-- Network metrics display -->
+        </div>
+      </div>
+    </div>
+    
+    <!-- Theory Validation View -->
+    <div id="sophia-theory-validation-view" class="sophia-view" style="display: none;">
+      <div class="sophia-theory-controls">
+        <div class="sophia-filter-bar">
+          <div class="input-group">
+            <span class="input-group-text">Protocol Type</span>
+            <select id="sophia-theory-protocol-type" class="form-select">
+              <option value="theory_validation">Theory Validation</option>
+              <option value="hypothesis_generation">Hypothesis Generation</option>
+              <option value="experiment_design">Experiment Design</option>
+              <option value="results_interpretation">Results Interpretation</option>
+              <option value="iterative_refinement">Iterative Refinement</option>
+            </select>
+          </div>
+          <button id="sophia-theory-new-protocol-btn" class="btn btn-primary">New Protocol</button>
+        </div>
+      </div>
+      
+      <!-- Active Protocols -->
+      <div class="sophia-theory-protocols">
+        <h3>Active Theory-Experiment Protocols</h3>
+        <div id="sophia-protocols-list" class="sophia-protocols-container">
+          <!-- Protocol cards -->
+        </div>
+      </div>
+      
+      <!-- Theory-Experiment Workflow -->
+      <div class="sophia-theory-workflow">
+        <h3>Theory-Experiment Workflow</h3>
+        <div id="sophia-workflow-diagram" class="sophia-workflow-container">
+          <!-- Workflow visualization -->
+        </div>
+      </div>
+      
+      <!-- Validation Results -->
+      <div class="sophia-validation-results">
+        <h3>Validation Results</h3>
+        <div id="sophia-validation-summary" class="sophia-summary-container">
+          <!-- Validation summary -->
+        </div>
+      </div>
+    </div>
+    
+    <!-- Collective Intelligence View -->
+    <div id="sophia-collective-intelligence-view" class="sophia-view" style="display: none;">
+      <div class="sophia-ci-controls">
+        <div class="sophia-filter-bar">
+          <div class="input-group">
+            <span class="input-group-text">View Mode</span>
+            <select id="sophia-ci-view-mode" class="form-select">
+              <option value="chorus">Greek Chorus Workflow</option>
+              <option value="test-taker">Test Taker Protocol</option>
+              <option value="performance">Performance Analysis</option>
+              <option value="evolution">Evolution Tracking</option>
+            </select>
+          </div>
+          <div class="input-group">
+            <span class="input-group-text">Time Range</span>
+            <select id="sophia-ci-timerange" class="form-select">
+              <option value="1h">Last Hour</option>
+              <option value="6h">Last 6 Hours</option>
+              <option value="24h" selected>Last 24 Hours</option>
+              <option value="7d">Last 7 Days</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Greek Chorus View -->
+      <div id="sophia-chorus-section" class="sophia-ci-section">
+        <h3>Greek Chorus Workflow Monitor</h3>
+        <div class="sophia-chorus-workflow">
+          <div id="sophia-chorus-steps" class="sophia-workflow-steps">
+            <!-- Workflow step visualization -->
+          </div>
+          <div id="sophia-chorus-memory" class="sophia-memory-view">
+            <h4>Shared Memory State</h4>
+            <!-- Shared memory visualization -->
+          </div>
+        </div>
+      </div>
+      
+      <!-- Test Taker Protocol View -->
+      <div id="sophia-test-taker-section" class="sophia-ci-section" style="display: none;">
+        <h3>Test Taker Protocol</h3>
+        <div class="sophia-test-phases">
+          <div class="sophia-phase-card">
+            <h4>Phase 1: Parallel Quick</h4>
+            <div id="sophia-phase1-metrics" class="sophia-phase-metrics">
+              <!-- Phase 1 metrics -->
+            </div>
+          </div>
+          <div class="sophia-phase-card">
+            <h4>Phase 2: Focused Second</h4>
+            <div id="sophia-phase2-metrics" class="sophia-phase-metrics">
+              <!-- Phase 2 metrics -->
+            </div>
+          </div>
+          <div class="sophia-phase-card">
+            <h4>Phase 3: Collective Hard</h4>
+            <div id="sophia-phase3-metrics" class="sophia-phase-metrics">
+              <!-- Phase 3 metrics -->
+            </div>
+          </div>
+        </div>
+        <div id="sophia-problem-solving-chart" class="sophia-chart">
+          <!-- Problem solving performance chart -->
+        </div>
+      </div>
+      
+      <!-- Performance Analysis View -->
+      <div id="sophia-ci-performance-section" class="sophia-ci-section" style="display: none;">
+        <h3>Collective Intelligence Performance</h3>
+        <div class="sophia-ci-metrics-grid">
+          <div class="sophia-metric-card">
+            <h4>Success Rate</h4>
+            <div id="sophia-ci-success-rate" class="sophia-metric-value">--</div>
+          </div>
+          <div class="sophia-metric-card">
+            <h4>Emergence Strength</h4>
+            <div id="sophia-ci-emergence" class="sophia-metric-value">--</div>
+          </div>
+          <div class="sophia-metric-card">
+            <h4>Team Effectiveness</h4>
+            <div id="sophia-ci-team-effectiveness" class="sophia-metric-value">--</div>
+          </div>
+          <div class="sophia-metric-card">
+            <h4>Learning Rate</h4>
+            <div id="sophia-ci-learning-rate" class="sophia-metric-value">--</div>
+          </div>
+        </div>
+        <div id="sophia-ci-performance-chart" class="sophia-chart">
+          <!-- Performance trends chart -->
+        </div>
+      </div>
+      
+      <!-- Evolution Tracking View -->
+      <div id="sophia-ci-evolution-section" class="sophia-ci-section" style="display: none;">
+        <h3>Collective Evolution</h3>
+        <div id="sophia-workflow-evolution" class="sophia-evolution-timeline">
+          <!-- Workflow evolution timeline -->
+        </div>
+        <div id="sophia-cognitive-complexity-chart" class="sophia-chart">
+          <!-- Cognitive complexity evolution -->
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -363,3 +653,5 @@
 <script src="scripts/sophia-charts.js"></script>
 <!-- Load the Sophia recommendations script -->
 <script src="scripts/sophia-recommendations.js"></script>
+<!-- Load the Sophia analytics script -->
+<script src="scripts/sophia-analytics.js"></script>

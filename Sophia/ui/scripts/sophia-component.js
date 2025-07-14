@@ -353,6 +353,33 @@ function refreshCurrentView() {
         });
       break;
       
+    case 'analytics':
+      // Analytics view is handled by sophia-analytics.js
+      if (window.SophiaAnalytics) {
+        // Trigger initial analytics load
+        setTimeout(() => {
+          const analyticsType = document.getElementById('sophia-analytics-type');
+          if (analyticsType) {
+            analyticsType.dispatchEvent(new Event('change'));
+          }
+        }, 100);
+      }
+      break;
+      
+    case 'theory-validation':
+      loadTheoryValidationProtocols()
+        .then(() => {
+          updateTheoryValidationView();
+        });
+      break;
+      
+    case 'collective-intelligence':
+      loadCollectiveIntelligenceData()
+        .then(() => {
+          updateCollectiveIntelligenceView();
+        });
+      break;
+      
     default:
       console.warn(`Unknown view: ${sophiaState.currentView}`);
   }
@@ -526,6 +553,117 @@ function updateResearchList() {
 
 function showResearchModal() {
   console.log('Showing research modal...');
+}
+
+/**
+ * Load theory validation protocols
+ * @returns {Promise} A promise that resolves when protocols are loaded
+ */
+async function loadTheoryValidationProtocols() {
+  try {
+    // This would be a call to Noesis API to get active protocols
+    const response = await fetch(`${sophiaConfig.apiUrl}/theory-validation/protocols`);
+    if (!response.ok) {
+      throw new Error(`HTTP error ${response.status}`);
+    }
+    const data = await response.json();
+    sophiaState.theoryProtocols = data;
+  } catch (error) {
+    console.error('Error loading theory validation protocols:', error);
+    sophiaState.theoryProtocols = [];
+  }
+}
+
+/**
+ * Update theory validation view
+ */
+function updateTheoryValidationView() {
+  const protocolsList = document.getElementById('sophia-protocols-list');
+  if (!protocolsList) return;
+  
+  protocolsList.innerHTML = '';
+  
+  if (!sophiaState.theoryProtocols || sophiaState.theoryProtocols.length === 0) {
+    protocolsList.innerHTML = '<p class="text-muted">No active theory-experiment protocols</p>';
+    return;
+  }
+  
+  sophiaState.theoryProtocols.forEach(protocol => {
+    const card = document.createElement('div');
+    card.className = 'protocol-card';
+    card.innerHTML = `
+      <div class="protocol-header">
+        <h4>${protocol.protocol_id}</h4>
+        <span class="protocol-status ${protocol.status}">${protocol.status}</span>
+      </div>
+      <div class="protocol-body">
+        <p><strong>Type:</strong> ${protocol.protocol_type}</p>
+        <p><strong>Iteration:</strong> ${protocol.iteration}</p>
+        <p><strong>Created:</strong> ${new Date(protocol.created_at).toLocaleString()}</p>
+      </div>
+      <div class="protocol-actions">
+        <button class="btn btn-sm btn-primary" onclick="viewProtocolDetails('${protocol.protocol_id}')">
+          View Details
+        </button>
+      </div>
+    `;
+    protocolsList.appendChild(card);
+  });
+}
+
+/**
+ * Load collective intelligence data
+ * @returns {Promise} A promise that resolves when CI data is loaded
+ */
+async function loadCollectiveIntelligenceData() {
+  try {
+    const response = await fetch(`${sophiaConfig.apiUrl}/collective-intelligence/analysis`);
+    if (!response.ok) {
+      throw new Error(`HTTP error ${response.status}`);
+    }
+    const data = await response.json();
+    sophiaState.collectiveIntelligence = data;
+  } catch (error) {
+    console.error('Error loading collective intelligence data:', error);
+    sophiaState.collectiveIntelligence = {};
+  }
+}
+
+/**
+ * Update collective intelligence view
+ */
+function updateCollectiveIntelligenceView() {
+  const ciData = sophiaState.collectiveIntelligence;
+  if (!ciData) return;
+  
+  // Update performance metrics
+  if (ciData.performance_metrics) {
+    const successRate = document.getElementById('sophia-ci-success-rate');
+    if (successRate) {
+      successRate.textContent = `${(ciData.performance_metrics.overall_success_rate * 100).toFixed(1)}%`;
+    }
+  }
+  
+  if (ciData.emergence_patterns) {
+    const emergence = document.getElementById('sophia-ci-emergence');
+    if (emergence) {
+      emergence.textContent = `${(ciData.emergence_patterns.emergence_strength * 100).toFixed(1)}%`;
+    }
+  }
+  
+  if (ciData.team_dynamics) {
+    const teamEffectiveness = document.getElementById('sophia-ci-team-effectiveness');
+    if (teamEffectiveness && ciData.team_dynamics.best_teams && ciData.team_dynamics.best_teams[0]) {
+      teamEffectiveness.textContent = `${(ciData.team_dynamics.best_teams[0][1] * 100).toFixed(1)}%`;
+    }
+  }
+  
+  if (ciData.cognitive_evolution) {
+    const learningRate = document.getElementById('sophia-ci-learning-rate');
+    if (learningRate) {
+      learningRate.textContent = `${(ciData.cognitive_evolution.collective_learning_rate * 100).toFixed(1)}%`;
+    }
+  }
 }
 
 // Cleanup when component is unmounted
