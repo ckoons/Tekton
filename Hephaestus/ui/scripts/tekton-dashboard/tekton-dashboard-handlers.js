@@ -823,6 +823,388 @@ console.log('[FILE_TRACE] Loading: tekton-dashboard-handlers.js');
         displayConnectionError();
     }
     
+    // Merge Queue Event Handlers
+    function loadMergeQueue() {
+        if (!tektonService) return;
+        
+        showNotification('Loading merge queue...', 'info');
+        
+        tektonService.getMergeQueue()
+            .then(queue => {
+                updateMergeQueueDisplay(queue);
+            })
+            .catch(error => {
+                console.error('Failed to load merge queue:', error);
+                showNotification('Failed to load merge queue', 'error');
+            });
+    }
+    
+    function updateMergeQueueDisplay(queue) {
+        const container = document.getElementById('merge-queue-container');
+        if (!container) return;
+        
+        if (!queue || queue.length === 0) {
+            container.innerHTML = '<div class="tekton-dashboard__placeholder-message">No merge requests in queue</div>';
+            return;
+        }
+        
+        container.innerHTML = queue.map(mr => createMergeRequestCard(mr)).join('');
+        
+        // Add click handlers
+        container.addEventListener('click', (event) => {
+            const card = event.target.closest('.tekton-dashboard__merge-request-card');
+            if (card) {
+                const mergeId = card.getAttribute('data-merge-id');
+                if (mergeId) {
+                    openMergeDetailModal(mergeId);
+                }
+            }
+            
+            // Handle quick actions
+            if (event.target.classList.contains('tekton-dashboard__merge-action-btn')) {
+                event.stopPropagation();
+                const action = event.target.getAttribute('data-action');
+                const mergeId = event.target.getAttribute('data-merge-id');
+                
+                if (action === 'merge') {
+                    handleQuickMerge(mergeId);
+                } else if (action === 'reject') {
+                    handleQuickReject(mergeId);
+                }
+            }
+        });
+    }
+    
+    function createMergeRequestCard(mergeRequest) {
+        const stateClass = `tekton-dashboard__merge-request-card--${mergeRequest.state}`;
+        const canMerge = mergeRequest.state === 'clean' || mergeRequest.state === 'conflicted';
+        
+        return `
+            <div class="tekton-dashboard__merge-request-card ${stateClass}" data-merge-id="${mergeRequest.id}">
+                <div class="tekton-dashboard__merge-request-header">
+                    <div class="tekton-dashboard__merge-request-info">
+                        <h4 class="tekton-dashboard__merge-request-title">
+                            ${escapeHtml(mergeRequest.ai_worker)} - Task ${mergeRequest.task_id.substring(0, 8)}
+                        </h4>
+                        <div class="tekton-dashboard__merge-request-branch">
+                            ${escapeHtml(mergeRequest.branch)}
+                        </div>
+                    </div>
+                    <div class="tekton-dashboard__merge-request-status">
+                        <span class="tekton-dashboard__merge-state tekton-dashboard__merge-state--${mergeRequest.state}">
+                            ${mergeRequest.state.replace('_', ' ')}
+                        </span>
+                        ${mergeRequest.state === 'conflicted' ? `
+                            <span style="color: var(--color-danger); font-size: var(--font-size-sm);">
+                                ${mergeRequest.conflicts_count} conflicts
+                            </span>
+                        ` : ''}
+                    </div>
+                </div>
+                
+                <div class="tekton-dashboard__merge-request-meta">
+                    <div class="tekton-dashboard__merge-request-meta-item">
+                        <span>Project:</span>
+                        <strong>${mergeRequest.project_id.substring(0, 8)}</strong>
+                    </div>
+                    <div class="tekton-dashboard__merge-request-meta-item">
+                        <span>Created:</span>
+                        <strong>${formatDate(mergeRequest.created_at)}</strong>
+                    </div>
+                    ${mergeRequest.analyzed_at ? `
+                        <div class="tekton-dashboard__merge-request-meta-item">
+                            <span>Analyzed:</span>
+                            <strong>${formatDate(mergeRequest.analyzed_at)}</strong>
+                        </div>
+                    ` : ''}
+                </div>
+                
+                ${canMerge ? `
+                    <div class="tekton-dashboard__merge-request-actions">
+                        <button class="tekton-dashboard__merge-action-btn tekton-dashboard__merge-action-btn--view">
+                            View Details
+                        </button>
+                        ${mergeRequest.state === 'clean' ? `
+                            <button class="tekton-dashboard__merge-action-btn tekton-dashboard__merge-action-btn--merge"
+                                    data-action="merge" 
+                                    data-merge-id="${mergeRequest.id}">
+                                Merge
+                            </button>
+                        ` : ''}
+                        <button class="tekton-dashboard__merge-action-btn tekton-dashboard__merge-action-btn--reject"
+                                data-action="reject" 
+                                data-merge-id="${mergeRequest.id}">
+                            Reject
+                        </button>
+                    </div>
+                ` : ''}
+            </div>
+        `;
+    }
+    
+    function handleMergeQueueFilter(event) {
+        const filter = event.target.value;
+        const cards = document.querySelectorAll('.tekton-dashboard__merge-request-card');
+        
+        cards.forEach(card => {
+            const state = card.getAttribute('data-merge-id');
+            // Note: We'd need to store state as data attribute for proper filtering
+            card.style.display = filter === 'all' || card.classList.contains(`tekton-dashboard__merge-request-card--${filter}`) ? 'block' : 'none';
+        });
+    }
+    
+    function handleMergeQueueSearch(event) {
+        const searchTerm = event.target.value.toLowerCase();
+        const cards = document.querySelectorAll('.tekton-dashboard__merge-request-card');
+        
+        cards.forEach(card => {
+            const text = card.textContent.toLowerCase();
+            card.style.display = text.includes(searchTerm) ? 'block' : 'none';
+        });
+    }
+    
+    function openMergeDetailModal(mergeId) {
+        if (!tektonService) return;
+        
+        // Show loading state
+        const modalBody = document.getElementById('merge-modal-body');
+        if (modalBody) {
+            modalBody.innerHTML = '<div class="tekton-dashboard__loading">Loading merge request details...</div>';
+        }
+        
+        // Update modal state
+        component.state.set('modalState.mergeDetail', {
+            isOpen: true,
+            mergeId: mergeId
+        });
+        
+        // Show modal
+        const modal = document.getElementById('merge-detail-modal');
+        if (modal) {
+            modal.style.display = 'flex';
+        }
+        
+        // Load merge details
+        tektonService.getMergeRequestDetails(mergeId)
+            .then(details => {
+                displayMergeDetails(details);
+            })
+            .catch(error => {
+                console.error('Failed to load merge details:', error);
+                if (modalBody) {
+                    modalBody.innerHTML = `<div class="tekton-dashboard__placeholder-message">Error: ${error.message}</div>`;
+                }
+            });
+    }
+    
+    function closeMergeDetailModal() {
+        // Update modal state
+        component.state.set('modalState.mergeDetail', {
+            isOpen: false,
+            mergeId: null
+        });
+        
+        // Hide modal
+        const modal = document.getElementById('merge-detail-modal');
+        if (modal) {
+            modal.style.display = 'none';
+        }
+    }
+    
+    function displayMergeDetails(mergeRequest) {
+        const modalBody = document.getElementById('merge-modal-body');
+        if (!modalBody) return;
+        
+        const modalTitle = document.getElementById('merge-modal-title');
+        if (modalTitle) {
+            modalTitle.textContent = `Merge Request: ${mergeRequest.ai_worker} - ${mergeRequest.branch}`;
+        }
+        
+        modalBody.innerHTML = `
+            <div class="tekton-dashboard__merge-details">
+                <div class="tekton-dashboard__project-info">
+                    <h4>Merge Request Information</h4>
+                    <div class="tekton-dashboard__info-grid">
+                        <div class="tekton-dashboard__info-item">
+                            <label>ID:</label>
+                            <span>${mergeRequest.id}</span>
+                        </div>
+                        <div class="tekton-dashboard__info-item">
+                            <label>Project:</label>
+                            <span>${mergeRequest.project_id}</span>
+                        </div>
+                        <div class="tekton-dashboard__info-item">
+                            <label>Task:</label>
+                            <span>${mergeRequest.task_id}</span>
+                        </div>
+                        <div class="tekton-dashboard__info-item">
+                            <label>AI Worker:</label>
+                            <span>${mergeRequest.ai_worker}</span>
+                        </div>
+                        <div class="tekton-dashboard__info-item">
+                            <label>Branch:</label>
+                            <span style="font-family: var(--font-family-mono);">${mergeRequest.branch}</span>
+                        </div>
+                        <div class="tekton-dashboard__info-item">
+                            <label>State:</label>
+                            <span class="tekton-dashboard__merge-state tekton-dashboard__merge-state--${mergeRequest.state}">
+                                ${mergeRequest.state.replace('_', ' ')}
+                            </span>
+                        </div>
+                        <div class="tekton-dashboard__info-item">
+                            <label>Created:</label>
+                            <span>${formatDate(mergeRequest.created_at)}</span>
+                        </div>
+                        ${mergeRequest.analyzed_at ? `
+                            <div class="tekton-dashboard__info-item">
+                                <label>Analyzed:</label>
+                                <span>${formatDate(mergeRequest.analyzed_at)}</span>
+                            </div>
+                        ` : ''}
+                    </div>
+                </div>
+                
+                ${mergeRequest.conflicts && mergeRequest.conflicts.length > 0 ? `
+                    <div class="tekton-dashboard__merge-conflict-section">
+                        <h4>Conflicts (${mergeRequest.conflicts.length})</h4>
+                        <div class="tekton-dashboard__conflict-list">
+                            ${mergeRequest.conflicts.map(conflict => `
+                                <div class="tekton-dashboard__conflict-item">
+                                    <div class="tekton-dashboard__conflict-header">
+                                        <span class="tekton-dashboard__conflict-type">
+                                            ${conflict.type.replace('_', ' ')}
+                                        </span>
+                                        <span class="tekton-dashboard__conflict-severity tekton-dashboard__conflict-severity--${conflict.severity}">
+                                            ${conflict.severity}
+                                        </span>
+                                    </div>
+                                    <p>${escapeHtml(conflict.description)}</p>
+                                    <div class="tekton-dashboard__conflict-files">
+                                        Files: ${conflict.files.join(', ')}
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                ` : ''}
+                
+                ${mergeRequest.metadata ? `
+                    <div class="tekton-dashboard__project-info">
+                        <h4>Additional Information</h4>
+                        <pre style="font-size: var(--font-size-sm); overflow: auto;">${JSON.stringify(mergeRequest.metadata, null, 2)}</pre>
+                    </div>
+                ` : ''}
+            </div>
+        `;
+        
+        // Update button states based on merge state
+        const mergeBtn = document.getElementById('merge-modal-merge');
+        const rejectBtn = document.getElementById('merge-modal-reject');
+        
+        if (mergeBtn) {
+            mergeBtn.style.display = (mergeRequest.state === 'clean' || mergeRequest.state === 'conflicted') ? 'inline-flex' : 'none';
+        }
+        if (rejectBtn) {
+            rejectBtn.style.display = (mergeRequest.state !== 'merged' && mergeRequest.state !== 'rejected') ? 'inline-flex' : 'none';
+        }
+    }
+    
+    async function handleMergeMergeRequest() {
+        const mergeId = component.state.get('modalState.mergeDetail.mergeId');
+        if (!mergeId || !tektonService) return;
+        
+        if (!confirm('Are you sure you want to merge this request?')) {
+            return;
+        }
+        
+        try {
+            showNotification('Executing merge...', 'info');
+            
+            const result = await tektonService.executeMerge(mergeId);
+            
+            if (result) {
+                showNotification('Merge executed successfully', 'success');
+                closeMergeDetailModal();
+                loadMergeQueue(); // Refresh the queue
+            } else {
+                showNotification('Failed to execute merge', 'error');
+            }
+        } catch (error) {
+            console.error('Failed to execute merge:', error);
+            showNotification(`Failed to execute merge: ${error.message}`, 'error');
+        }
+    }
+    
+    async function handleRejectMergeRequest() {
+        const mergeId = component.state.get('modalState.mergeDetail.mergeId');
+        if (!mergeId || !tektonService) return;
+        
+        const reason = prompt('Please provide a reason for rejecting this merge request:');
+        if (!reason) {
+            return;
+        }
+        
+        try {
+            showNotification('Rejecting merge request...', 'info');
+            
+            const result = await tektonService.rejectMergeRequest(mergeId, reason);
+            
+            if (result) {
+                showNotification('Merge request rejected', 'success');
+                closeMergeDetailModal();
+                loadMergeQueue(); // Refresh the queue
+            } else {
+                showNotification('Failed to reject merge request', 'error');
+            }
+        } catch (error) {
+            console.error('Failed to reject merge request:', error);
+            showNotification(`Failed to reject merge request: ${error.message}`, 'error');
+        }
+    }
+    
+    async function handleQuickMerge(mergeId) {
+        if (!confirm('Are you sure you want to merge this request?')) {
+            return;
+        }
+        
+        try {
+            showNotification('Executing merge...', 'info');
+            const result = await tektonService.executeMerge(mergeId);
+            
+            if (result) {
+                showNotification('Merge executed successfully', 'success');
+                loadMergeQueue();
+            } else {
+                showNotification('Failed to execute merge', 'error');
+            }
+        } catch (error) {
+            console.error('Failed to execute merge:', error);
+            showNotification(`Failed to execute merge: ${error.message}`, 'error');
+        }
+    }
+    
+    async function handleQuickReject(mergeId) {
+        const reason = prompt('Please provide a reason for rejecting this merge request:');
+        if (!reason) {
+            return;
+        }
+        
+        try {
+            showNotification('Rejecting merge request...', 'info');
+            const result = await tektonService.rejectMergeRequest(mergeId, reason);
+            
+            if (result) {
+                showNotification('Merge request rejected', 'success');
+                loadMergeQueue();
+            } else {
+                showNotification('Failed to reject merge request', 'error');
+            }
+        } catch (error) {
+            console.error('Failed to reject merge request:', error);
+            showNotification(`Failed to reject merge request: ${error.message}`, 'error');
+        }
+    }
+    
     // Expose handlers to component scope
     Object.assign(component, {
         refreshSystemStatus,
@@ -856,7 +1238,14 @@ console.log('[FILE_TRACE] Loading: tekton-dashboard-handlers.js');
         handleNewLogEntry,
         handleHealthCheckCompleted,
         handleServiceError,
-        handleConnectionFailure
+        handleConnectionFailure,
+        loadMergeQueue,
+        handleMergeQueueFilter,
+        handleMergeQueueSearch,
+        openMergeDetailModal,
+        closeMergeDetailModal,
+        handleMergeMergeRequest,
+        handleRejectMergeRequest
     });
     
 })(component);

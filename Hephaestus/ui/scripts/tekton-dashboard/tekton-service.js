@@ -45,6 +45,76 @@ class TektonService extends window.tektonUI.componentUtils.BaseService {
         // Initialize with persisted state if available
         this._loadPersistedState();
     }
+    
+    /**
+     * Get the merge queue
+     * @returns {Promise<Array>} - Promise resolving to merge queue
+     */
+    async getMergeQueue() {
+        try {
+            const response = await this.apiCall('/v1/merge-queue');
+            return response.queue || [];
+        } catch (error) {
+            console.error('Failed to get merge queue:', error);
+            throw error;
+        }
+    }
+    
+    /**
+     * Get merge request details
+     * @param {string} mergeId - Merge request ID
+     * @returns {Promise<Object>} - Promise resolving to merge request details
+     */
+    async getMergeRequestDetails(mergeId) {
+        try {
+            const response = await this.apiCall(`/v1/merge-requests/${mergeId}`);
+            return response;
+        } catch (error) {
+            console.error('Failed to get merge request details:', error);
+            throw error;
+        }
+    }
+    
+    /**
+     * Execute a merge
+     * @param {string} mergeId - Merge request ID
+     * @returns {Promise<boolean>} - Promise resolving to success status
+     */
+    async executeMerge(mergeId) {
+        try {
+            const response = await this.apiCall(`/v1/merge-requests/${mergeId}/execute`, {
+                method: 'POST'
+            });
+            return response.message === 'Merge executed successfully';
+        } catch (error) {
+            console.error('Failed to execute merge:', error);
+            throw error;
+        }
+    }
+    
+    /**
+     * Reject a merge request
+     * @param {string} mergeId - Merge request ID
+     * @param {string} reason - Reason for rejection
+     * @returns {Promise<boolean>} - Promise resolving to success status
+     */
+    async rejectMergeRequest(mergeId, reason) {
+        try {
+            // For MVP, we'll update the merge state to rejected
+            // In production, this would call the actual API endpoint
+            const response = await this.apiCall(`/v1/merge-requests/${mergeId}/resolve`, {
+                method: 'POST',
+                body: JSON.stringify({
+                    chosen_option: 'reject',
+                    reason: reason
+                })
+            });
+            return response.message === 'Merge conflict resolved';
+        } catch (error) {
+            console.error('Failed to reject merge request:', error);
+            throw error;
+        }
+    }
 
     /**
      * Connect to the Tekton API

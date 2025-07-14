@@ -1068,6 +1068,283 @@
   background-color: var(--color-primary-hover);
 }
 
+/* Merge Queue Styles */
+.tekton-dashboard__merge-queue {
+  padding: var(--spacing-md);
+  overflow: auto;
+  flex: 1;
+}
+
+.tekton-dashboard__merge-queue-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.tekton-dashboard__merge-request-card {
+  background-color: var(--bg-card);
+  border-radius: var(--border-radius-md);
+  padding: var(--spacing-md);
+  box-shadow: var(--box-shadow-sm);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  cursor: pointer;
+  border-left: 4px solid transparent;
+}
+
+.tekton-dashboard__merge-request-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--box-shadow-md);
+}
+
+.tekton-dashboard__merge-request-card--pending {
+  border-left-color: #f59e0b;
+}
+
+.tekton-dashboard__merge-request-card--analyzing {
+  border-left-color: #6366f1;
+}
+
+.tekton-dashboard__merge-request-card--clean {
+  border-left-color: #10b981;
+}
+
+.tekton-dashboard__merge-request-card--conflicted {
+  border-left-color: #ef4444;
+}
+
+.tekton-dashboard__merge-request-card--merged {
+  border-left-color: #059669;
+  opacity: 0.8;
+}
+
+.tekton-dashboard__merge-request-card--rejected {
+  border-left-color: #6b7280;
+  opacity: 0.7;
+}
+
+.tekton-dashboard__merge-request-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-sm);
+}
+
+.tekton-dashboard__merge-request-info {
+  flex: 1;
+}
+
+.tekton-dashboard__merge-request-title {
+  font-size: var(--font-size-md);
+  font-weight: 600;
+  margin: 0 0 var(--spacing-xs) 0;
+  color: var(--text-primary);
+}
+
+.tekton-dashboard__merge-request-branch {
+  font-family: var(--font-family-mono);
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+}
+
+.tekton-dashboard__merge-request-status {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--spacing-xs);
+}
+
+.tekton-dashboard__merge-state {
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--border-radius-full);
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.tekton-dashboard__merge-state--pending {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+.tekton-dashboard__merge-state--analyzing {
+  background-color: #e0e7ff;
+  color: #3730a3;
+}
+
+.tekton-dashboard__merge-state--clean {
+  background-color: #d1fae5;
+  color: #065f46;
+}
+
+.tekton-dashboard__merge-state--conflicted {
+  background-color: #fee2e2;
+  color: #991b1b;
+}
+
+.tekton-dashboard__merge-state--merged {
+  background-color: #a7f3d0;
+  color: #064e3b;
+}
+
+.tekton-dashboard__merge-state--rejected {
+  background-color: #e5e7eb;
+  color: #374151;
+}
+
+.tekton-dashboard__merge-request-meta {
+  display: flex;
+  gap: var(--spacing-lg);
+  margin-top: var(--spacing-sm);
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+}
+
+.tekton-dashboard__merge-request-meta-item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+.tekton-dashboard__merge-request-actions {
+  display: flex;
+  gap: var(--spacing-sm);
+  margin-top: var(--spacing-md);
+  justify-content: flex-end;
+}
+
+.tekton-dashboard__merge-action-btn {
+  padding: var(--spacing-xs) var(--spacing-md);
+  border-radius: var(--border-radius-sm);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid var(--border-color);
+}
+
+.tekton-dashboard__merge-action-btn--merge {
+  background-color: var(--color-primary);
+  color: white;
+  border-color: var(--color-primary);
+}
+
+.tekton-dashboard__merge-action-btn--merge:hover {
+  background-color: var(--color-primary-hover);
+  border-color: var(--color-primary-hover);
+}
+
+.tekton-dashboard__merge-action-btn--reject {
+  background-color: var(--color-danger);
+  color: white;
+  border-color: var(--color-danger);
+}
+
+.tekton-dashboard__merge-action-btn--reject:hover {
+  background-color: var(--color-danger-hover);
+  border-color: var(--color-danger-hover);
+}
+
+.tekton-dashboard__merge-action-btn--view {
+  background-color: var(--bg-tertiary);
+  color: var(--text-primary);
+}
+
+.tekton-dashboard__merge-action-btn--view:hover {
+  background-color: var(--bg-hover);
+}
+
+/* Merge Detail Modal Styles */
+.tekton-dashboard__modal-content--wide {
+  width: 800px;
+  max-width: 90%;
+}
+
+.tekton-dashboard__merge-details {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+
+.tekton-dashboard__merge-conflict-section {
+  background-color: var(--bg-tertiary);
+  border-radius: var(--border-radius-md);
+  padding: var(--spacing-md);
+}
+
+.tekton-dashboard__conflict-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  margin-top: var(--spacing-sm);
+}
+
+.tekton-dashboard__conflict-item {
+  background-color: var(--bg-card);
+  border-radius: var(--border-radius-sm);
+  padding: var(--spacing-sm);
+  border: 1px solid var(--border-color);
+}
+
+.tekton-dashboard__conflict-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-xs);
+}
+
+.tekton-dashboard__conflict-type {
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.tekton-dashboard__conflict-severity {
+  padding: 2px var(--spacing-xs);
+  border-radius: var(--border-radius-sm);
+  font-size: var(--font-size-xs);
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+.tekton-dashboard__conflict-severity--low {
+  background-color: #dbeafe;
+  color: #1e40af;
+}
+
+.tekton-dashboard__conflict-severity--medium {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+.tekton-dashboard__conflict-severity--high {
+  background-color: #fee2e2;
+  color: #991b1b;
+}
+
+.tekton-dashboard__conflict-severity--critical {
+  background-color: #991b1b;
+  color: white;
+}
+
+.tekton-dashboard__conflict-files {
+  font-family: var(--font-family-mono);
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+  margin-top: var(--spacing-xs);
+}
+
+.tekton-dashboard__button--danger {
+  background-color: var(--color-danger);
+  color: white;
+  border-color: var(--color-danger);
+}
+
+.tekton-dashboard__button--danger:hover {
+  background-color: var(--color-danger-hover);
+  border-color: var(--color-danger-hover);
+}
+
 /* Animations */
 @keyframes pulse-glow {
   0%, 100% {
