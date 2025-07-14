@@ -37,7 +37,7 @@ except ImportError:
             return func
         return decorator
 
-from core.purpose_matcher import parse_purpose_list
+from shared.aish.src.core.purpose_matcher import parse_purpose_list
 
 logger = logging.getLogger("aish.purpose")
 
@@ -148,6 +148,27 @@ class PurposeCommand:
             if exact_file.exists() and str(exact_file) not in project_files + task_files:
                 print(f"\n(from {exact_file.relative_to(self.playbook_dir)})")
                 with open(exact_file) as f:
+                    print(f.read())
+                found = True
+        
+        # Check lessons directory
+        lessons_dir = self.playbook_dir / "lessons"
+        if lessons_dir.exists():
+            lesson_files = glob.glob(
+                str(lessons_dir / f"*{purpose.lower()}*.md"),
+                recursive=False
+            )
+            for lf in lesson_files:
+                print(f"\n(from {Path(lf).relative_to(self.playbook_dir)})")
+                with open(lf) as f:
+                    print(f.read())
+                found = True
+                
+            # Also check for exact match in lessons
+            exact_lesson = lessons_dir / f"{purpose.lower()}.md"
+            if exact_lesson.exists() and str(exact_lesson) not in lesson_files:
+                print(f"\n(from {exact_lesson.relative_to(self.playbook_dir)})")
+                with open(exact_lesson) as f:
                     print(f.read())
                 found = True
         
