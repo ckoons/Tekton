@@ -4,16 +4,17 @@ Mathematical models for understanding collective AI cognition
 """
 
 from .base import MathematicalFramework, AnalysisResult
-from .manifold import ManifoldAnalyzer, ManifoldStructure
+from .manifold import ManifoldAnalyzer, ManifoldStructure, TrajectoryAnalysis
 from .dynamics import DynamicsAnalyzer, SLDSModel, RegimeIdentification
 from .catastrophe import CatastropheAnalyzer, CriticalPoint, StabilityLandscape
-from .synthesis import SynthesisAnalyzer, UniversalPrinciple
+from .synthesis import SynthesisAnalyzer, UniversalPrinciple, ScalingAnalysis
 
 __all__ = [
     'MathematicalFramework',
     'AnalysisResult',
     'ManifoldAnalyzer',
     'ManifoldStructure',
+    'TrajectoryAnalysis',
     'DynamicsAnalyzer',
     'SLDSModel',
     'RegimeIdentification',
@@ -21,5 +22,6 @@ __all__ = [
     'CriticalPoint',
     'StabilityLandscape',
     'SynthesisAnalyzer',
-    'UniversalPrinciple'
+    'UniversalPrinciple',
+    'ScalingAnalysis'
 ]
