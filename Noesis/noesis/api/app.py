@@ -47,8 +47,10 @@ app = FastAPI(
 # Import and include analysis endpoints
 from .analysis_endpoints import router as analysis_router
 from .sophia_endpoints import router as sophia_router
+from .streaming_endpoints import streaming_router
 app.include_router(analysis_router)
 app.include_router(sophia_router)
+app.include_router(streaming_router)
 
 # Add CORS middleware
 app.add_middleware(
@@ -61,6 +63,19 @@ app.add_middleware(
 
 # Global registration instance
 hermes_registration: Optional[HermesRegistration] = None
+
+# Global component instance for dependency injection
+noesis_component = None
+
+async def get_component_instance():
+    """Get the Noesis component instance for API endpoints"""
+    global noesis_component
+    if noesis_component is None:
+        # Initialize component if not already done
+        from noesis.core.noesis_component import NoesisComponent
+        noesis_component = NoesisComponent()
+        await noesis_component.init()
+    return noesis_component
 
 class DiscoveryChatRequest(BaseModel):
     """Request model for discovery chat"""
@@ -229,6 +244,14 @@ async def startup_event():
     """Register with Hermes on startup"""
     print(f"Noesis starting on port {NOESIS_PORT}")
     
+    # Initialize Noesis component
+    global noesis_component
+    try:
+        await get_component_instance()
+        print("✅ Noesis component initialized")
+    except Exception as e:
+        print(f"⚠️ Warning: Noesis component initialization failed: {e}")
+    
     # Register with Hermes
     global hermes_registration
     hermes_registration = HermesRegistration(HERMES_URL)
@@ -245,7 +268,10 @@ async def startup_event():
             "theoretical_analysis",
             "manifold_analysis",
             "dynamics_modeling",
-            "catastrophe_detection"
+            "catastrophe_detection",
+            "engram_streaming",
+            "memory_analysis",
+            "real_time_insights"
         ],
         metadata={
             "description": "Discovery System",
@@ -270,6 +296,17 @@ async def startup_event():
 async def shutdown_event():
     """Cleanup on shutdown"""
     print("Noesis shutting down...")
+    
+    # Cleanup component
+    global noesis_component
+    if noesis_component:
+        try:
+            await noesis_component.shutdown()
+            print("✅ Noesis component shut down")
+        except Exception as e:
+            print(f"⚠️ Warning: Error during component shutdown: {e}")
+    
+    # Deregister from Hermes
     if hermes_registration:
         await hermes_registration.deregister("noesis")
 
