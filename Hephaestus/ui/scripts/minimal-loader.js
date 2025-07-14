@@ -25,7 +25,8 @@ class MinimalLoader {
       'settings': '/components/settings/settings-component.html',
       'numa': '/components/numa/numa-component.html',
       'noesis': '/components/noesis/noesis-component.html',
-      'terma': '/components/terma/terma-component.html'
+      'terma': '/components/terma/terma-component.html',
+      'tekton-dashboard': '/components/tekton-dashboard/tekton-dashboard.html'
     };
     
     // Keep track of the current component to prevent reloading

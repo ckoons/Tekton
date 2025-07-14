@@ -40,6 +40,10 @@ console.log('[FILE_TRACE] Loading: tekton-dashboard.js');
                     },
                     createProject: {
                         isOpen: false
+                    },
+                    mergeDetail: {
+                        isOpen: false,
+                        mergeId: null
                     }
                 }
             },
@@ -276,6 +280,23 @@ console.log('[FILE_TRACE] Loading: tekton-dashboard.js');
             elements.buttons.resourcesTimeRange.value = component.state.get('resourceTimeRange');
         }
         
+        // Merge Queue tab event handlers
+        const mergeQueueFilter = component.$('#merge-queue-filter');
+        const mergeQueueSearch = component.$('#merge-queue-search');
+        const refreshMergeQueue = component.$('#refresh-merge-queue');
+        
+        if (mergeQueueFilter) {
+            mergeQueueFilter.addEventListener('change', handleMergeQueueFilter);
+        }
+        
+        if (mergeQueueSearch) {
+            mergeQueueSearch.addEventListener('input', handleMergeQueueSearch);
+        }
+        
+        if (refreshMergeQueue) {
+            refreshMergeQueue.addEventListener('click', loadMergeQueue);
+        }
+        
         // Modal event handlers
         setupModalEventHandlers();
     }
@@ -319,6 +340,28 @@ console.log('[FILE_TRACE] Loading: tekton-dashboard.js');
         
         if (elements.modals.createProjectSubmit) {
             elements.modals.createProjectSubmit.addEventListener('click', handleCreateProject);
+        }
+        
+        // Merge Detail Modal
+        const mergeDetailClose = component.$('#close-merge-modal');
+        const mergeDetailCancel = component.$('#merge-modal-cancel');
+        const mergeDetailMerge = component.$('#merge-modal-merge');
+        const mergeDetailReject = component.$('#merge-modal-reject');
+        
+        if (mergeDetailClose) {
+            mergeDetailClose.addEventListener('click', closeMergeDetailModal);
+        }
+        
+        if (mergeDetailCancel) {
+            mergeDetailCancel.addEventListener('click', closeMergeDetailModal);
+        }
+        
+        if (mergeDetailMerge) {
+            mergeDetailMerge.addEventListener('click', handleMergeMergeRequest);
+        }
+        
+        if (mergeDetailReject) {
+            mergeDetailReject.addEventListener('click', handleRejectMergeRequest);
         }
         
         if (elements.modals.createProjectForm) {
@@ -387,6 +430,17 @@ console.log('[FILE_TRACE] Loading: tekton-dashboard.js');
             (state) => {
                 if (elements.modals.createProject) {
                     elements.modals.createProject.style.display = state.modalState.createProject.isOpen ? 'flex' : 'none';
+                }
+            }
+        );
+        
+        component.utils.lifecycle.registerStateEffect(
+            component,
+            ['modalState.mergeDetail.isOpen'],
+            (state) => {
+                const mergeDetailModal = component.$('#merge-detail-modal');
+                if (mergeDetailModal) {
+                    mergeDetailModal.style.display = state.modalState.mergeDetail.isOpen ? 'flex' : 'none';
                 }
             }
         );
@@ -495,6 +549,9 @@ console.log('[FILE_TRACE] Loading: tekton-dashboard.js');
                 break;
             case 'projects':
                 loadProjects();
+                break;
+            case 'merge-queue':
+                loadMergeQueue();
                 break;
             case 'github':
                 loadGitHubPanel();

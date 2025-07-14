@@ -39,6 +39,10 @@
       <span class="tekton-dashboard__tab-icon">📁</span>
       <span class="tekton-dashboard__tab-label">Projects</span>
     </button>
+    <button class="tekton-dashboard__tab-button" data-tab="merge-queue">
+      <span class="tekton-dashboard__tab-icon">🔀</span>
+      <span class="tekton-dashboard__tab-label">Merge Queue</span>
+    </button>
     <button class="tekton-dashboard__tab-button" data-tab="github">
       <span class="tekton-dashboard__tab-icon">🐙</span>
       <span class="tekton-dashboard__tab-label">GitHub</span>
@@ -317,6 +321,35 @@
       </div>
     </div>
     
+    <!-- Merge Queue Tab -->
+    <div class="tekton-dashboard__tab-panel" data-panel="merge-queue">
+      <div class="tekton-dashboard__panel-header">
+        <div class="tekton-dashboard__search">
+          <input type="text" id="merge-queue-search" class="tekton-dashboard__search-input" placeholder="Search merge requests...">
+          <select id="merge-queue-filter" class="tekton-dashboard__select">
+            <option value="all">All States</option>
+            <option value="pending">Pending</option>
+            <option value="clean">Clean</option>
+            <option value="conflicted">Conflicted</option>
+            <option value="merged">Merged</option>
+          </select>
+        </div>
+        <div class="tekton-dashboard__panel-actions">
+          <button class="tekton-dashboard__action-button" id="refresh-merge-queue">
+            <span class="tekton-dashboard__action-icon">🔄</span>
+            Refresh
+          </button>
+        </div>
+      </div>
+      
+      <div class="tekton-dashboard__merge-queue">
+        <div class="tekton-dashboard__merge-queue-container" id="merge-queue-container">
+          <!-- Merge requests will be added dynamically -->
+          <div class="tekton-dashboard__placeholder-message">No merge requests in queue</div>
+        </div>
+      </div>
+    </div>
+    
     <!-- GitHub Tab -->
     <div class="tekton-dashboard__tab-panel" data-panel="github">
       <div id="github-panel-container">
@@ -398,6 +431,25 @@
       <div class="tekton-dashboard__modal-footer">
         <button class="tekton-dashboard__button tekton-dashboard__button--secondary" id="create-project-cancel">Cancel</button>
         <button class="tekton-dashboard__button tekton-dashboard__button--primary" id="create-project-submit">Create Project</button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Merge Detail Modal -->
+  <div class="tekton-dashboard__modal" id="merge-detail-modal" style="display: none;">
+    <div class="tekton-dashboard__modal-overlay"></div>
+    <div class="tekton-dashboard__modal-content tekton-dashboard__modal-content--wide">
+      <div class="tekton-dashboard__modal-header">
+        <h3 class="tekton-dashboard__modal-title" id="merge-modal-title">Merge Request Details</h3>
+        <button class="tekton-dashboard__modal-close" id="close-merge-modal">&times;</button>
+      </div>
+      <div class="tekton-dashboard__modal-body" id="merge-modal-body">
+        <!-- Merge details will be added dynamically -->
+      </div>
+      <div class="tekton-dashboard__modal-footer">
+        <button class="tekton-dashboard__button tekton-dashboard__button--secondary" id="merge-modal-cancel">Close</button>
+        <button class="tekton-dashboard__button tekton-dashboard__button--danger" id="merge-modal-reject">Reject</button>
+        <button class="tekton-dashboard__button tekton-dashboard__button--primary" id="merge-modal-merge">Merge</button>
       </div>
     </div>
   </div>

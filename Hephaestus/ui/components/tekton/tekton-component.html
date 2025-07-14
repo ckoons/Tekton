@@ -1,4 +1,13 @@
 <!-- Tekton Core Component - Project Management -->
+
+<!-- Hidden radio controls for CSS-only tab functionality -->
+<input type="radio" name="tekton-tab" id="tekton-tab-dashboard" checked style="display: none;">
+<input type="radio" name="tekton-tab" id="tekton-tab-new-project" style="display: none;">
+<input type="radio" name="tekton-tab" id="tekton-tab-merges" style="display: none;">
+<input type="radio" name="tekton-tab" id="tekton-tab-conflicts" style="display: none;">
+<input type="radio" name="tekton-tab" id="tekton-tab-projectchat" style="display: none;">
+<input type="radio" name="tekton-tab" id="tekton-tab-teamchat" style="display: none;">
+
 <div class="tekton"
      data-tekton-area="tekton"
      data-tekton-component="tekton"
@@ -18,60 +27,42 @@
     <!-- Tekton Menu Bar with Tab Navigation -->
     <div class="tekton__menu-bar" data-tekton-zone="menu" data-tekton-nav="component-menu">
         <div class="tekton__tabs">
-            <div class="tekton__tab tekton__tab--active" data-tab="projects"
-                 data-tekton-menu-item="Projects"
-                 data-tekton-menu-component="tekton"
-                 data-tekton-menu-active="true"
-                 data-tekton-menu-panel="projects-panel"
-                 data-tekton-nav-target="projects"
-                 onclick="tekton_switchTab('projects'); return false;">
-                <span class="tekton__tab-label">Projects</span>
-            </div>
-            <div class="tekton__tab" data-tab="repositories"
-                 data-tekton-menu-item="Repositories"
-                 data-tekton-menu-component="tekton"
-                 data-tekton-menu-active="false"
-                 data-tekton-menu-panel="repositories-panel"
-                 data-tekton-nav-target="repositories"
-                 onclick="tekton_switchTab('repositories'); return false;">
-                <span class="tekton__tab-label">Repositories</span>
-            </div>
-            <div class="tekton__tab" data-tab="branches"
-                 data-tekton-menu-item="Branches"
-                 data-tekton-menu-component="tekton"
-                 data-tekton-menu-active="false"
-                 data-tekton-menu-panel="branches-panel"
-                 data-tekton-nav-target="branches"
-                 onclick="tekton_switchTab('branches'); return false;">
-                <span class="tekton__tab-label">Branches</span>
-            </div>
-            <div class="tekton__tab" data-tab="actions"
-                 data-tekton-menu-item="Actions"
-                 data-tekton-menu-component="tekton"
-                 data-tekton-menu-active="false"
-                 data-tekton-menu-panel="actions-panel"
-                 data-tekton-nav-target="actions"
-                 onclick="tekton_switchTab('actions'); return false;">
-                <span class="tekton__tab-label">Actions</span>
-            </div>
-            <div class="tekton__tab" data-tab="projectchat"
-                 data-tekton-menu-item="Project Chat"
-                 data-tekton-menu-component="tekton"
-                 data-tekton-menu-active="false"
-                 data-tekton-menu-panel="projectchat-panel"
-                 data-tekton-nav-target="projectchat"
-                 onclick="tekton_switchTab('projectchat'); return false;">
+            <label for="tekton-tab-dashboard" class="tekton__tab" data-tab="dashboard"
+                   data-tekton-menu-item="Dashboard"
+                   data-tekton-menu-component="tekton"
+                   data-tekton-menu-panel="dashboard-panel">
+                <span class="tekton__tab-label">Dashboard</span>
+            </label>
+            <label for="tekton-tab-new-project" class="tekton__tab" data-tab="new-project"
+                   data-tekton-menu-item="New Project"
+                   data-tekton-menu-component="tekton"
+                   data-tekton-menu-panel="new-project-panel">
+                <span class="tekton__tab-label">New Project</span>
+            </label>
+            <label for="tekton-tab-merges" class="tekton__tab" data-tab="merges"
+                   data-tekton-menu-item="Merges"
+                   data-tekton-menu-component="tekton"
+                   data-tekton-menu-panel="merges-panel">
+                <span class="tekton__tab-label">Merges</span>
+            </label>
+            <label for="tekton-tab-conflicts" class="tekton__tab" data-tab="conflicts"
+                   data-tekton-menu-item="Conflicts"
+                   data-tekton-menu-component="tekton"
+                   data-tekton-menu-panel="conflicts-panel">
+                <span class="tekton__tab-label">Conflicts</span>
+            </label>
+            <label for="tekton-tab-projectchat" class="tekton__tab" data-tab="projectchat"
+                   data-tekton-menu-item="Project Chat"
+                   data-tekton-menu-component="tekton"
+                   data-tekton-menu-panel="projectchat-panel">
                 <span class="tekton__tab-label">Project Chat</span>
-            </div>
-            <div class="tekton__tab" data-tab="teamchat"
-                 data-tekton-menu-item="Team Chat"
-                 data-tekton-menu-component="tekton"
-                 data-tekton-menu-active="false"
-                 data-tekton-menu-panel="teamchat-panel"
-                 data-tekton-nav-target="teamchat"
-                 onclick="tekton_switchTab('teamchat'); return false;">
+            </label>
+            <label for="tekton-tab-teamchat" class="tekton__tab" data-tab="teamchat"
+                   data-tekton-menu-item="Team Chat"
+                   data-tekton-menu-component="tekton"
+                   data-tekton-menu-panel="teamchat-panel">
                 <span class="tekton__tab-label">Team Chat</span>
-            </div>
+            </label>
         </div>
         <div class="tekton__actions">
             <button id="clear-chat-btn" class="tekton__action-button" style="display: none;"
@@ -85,324 +76,102 @@
     
     <!-- Tekton Content Area -->
     <div class="tekton__content" data-tekton-zone="content" data-tekton-scrollable="true">
-        <!-- Projects Tab (Default Active Tab) -->
-        <div id="projects-panel" class="tekton__panel tekton__panel--active"
-             data-tekton-panel="projects"
-             data-tekton-panel-for="Projects"
-             data-tekton-panel-component="tekton"
-             data-tekton-panel-active="true">
+        <!-- Dashboard Tab (Default Active Tab) -->
+        <div id="dashboard-panel" class="tekton__panel tekton__panel--dashboard"
+             data-tekton-panel="dashboard"
+             data-tekton-panel-for="Dashboard"
+             data-tekton-panel-component="tekton">
             <div class="tekton__projects">
-                <div class="tekton__control-bar">
-                    <div class="tekton__search-container">
-                        <input type="text" id="project-search" class="tekton__search-input" placeholder="Search projects..."
-                               data-tekton-input="project-search"
-                               data-tekton-input-type="search">
-                        <button id="project-search-btn" class="tekton__search-button"
-                                data-tekton-action="search-projects"
-                                data-tekton-action-type="primary">Search</button>
-                    </div>
-                    <div class="tekton__actions">
-                        <button id="new-project-btn" class="tekton__action-button"
-                                data-tekton-action="new-project"
-                                data-tekton-action-type="primary">
-                            <span class="tekton__button-icon">+</span>
-                            <span class="tekton__button-label">New Project</span>
-                        </button>
-                        <button id="import-project-btn" class="tekton__action-button"
-                                data-tekton-action="import-project"
-                                data-tekton-action-type="secondary">
-                            <span class="tekton__button-icon">↓</span>
-                            <span class="tekton__button-label">Import</span>
-                        </button>
-                    </div>
-                </div>
-                <div class="tekton__project-list-container">
-                    <div id="project-list-loading" class="tekton__loading-indicator">
-                        <div class="tekton__spinner"></div>
-                        <div class="tekton__loading-text">Loading projects...</div>
-                    </div>
-                    <div id="project-list" class="tekton__project-list" style="display: none;">
-                        <!-- Sample projects for UI testing -->
-                        <div class="tekton__project-item">
-                            <div class="tekton__project-info">
-                                <div class="tekton__project-name">Tekton</div>
-                                <div class="tekton__project-meta">
-                                    <span class="tekton__project-repo">cskoons/Tekton</span>
-                                    <span class="tekton__project-branch">sprint/Clean_Slate_051125</span>
-                                </div>
-                            </div>
-                            <div class="tekton__project-actions">
-                                <button class="tekton__project-action-btn"
-                                        data-tekton-action="open-project"
-                                        data-tekton-action-type="primary">Open</button>
-                                <button class="tekton__project-action-btn"
-                                        data-tekton-action="project-settings"
-                                        data-tekton-action-type="secondary">Settings</button>
-                            </div>
-                        </div>
-                        <div class="tekton__project-item">
-                            <div class="tekton__project-info">
-                                <div class="tekton__project-name">Sample Project</div>
-                                <div class="tekton__project-meta">
-                                    <span class="tekton__project-repo">cskoons/sample-project</span>
-                                    <span class="tekton__project-branch">main</span>
-                                </div>
-                            </div>
-                            <div class="tekton__project-actions">
-                                <button class="tekton__project-action-btn"
-                                        data-tekton-action="open-project"
-                                        data-tekton-action-type="primary">Open</button>
-                                <button class="tekton__project-action-btn"
-                                        data-tekton-action="project-settings"
-                                        data-tekton-action-type="secondary">Settings</button>
-                            </div>
-                        </div>
-                    </div>
+                <div class="tekton__projects-list" id="projects-list">
+                    <!-- Projects will be populated dynamically -->
+                    <div class="tekton__placeholder-message">Create a New Project<br>No projects are currently managed by Tekton</div>
                 </div>
             </div>
         </div>
         
-        <!-- Repositories Tab -->
-        <div id="repositories-panel" class="tekton__panel">
-            <div class="tekton__repositories">
-                <div class="tekton__control-bar">
-                    <div class="tekton__search-container">
-                        <input type="text" id="repo-search" class="tekton__search-input" placeholder="Search repositories..."
-                               data-tekton-input="repo-search"
-                               data-tekton-input-type="search">
-                        <button id="repo-search-btn" class="tekton__search-button"
-                                data-tekton-action="search-repositories"
-                                data-tekton-action-type="primary">Search</button>
+        <!-- New Project Tab -->
+        <div id="new-project-panel" class="tekton__panel tekton__panel--new-project"
+             data-tekton-panel="new-project"
+             data-tekton-panel-for="New Project"
+             data-tekton-panel-component="tekton">
+            <div class="tekton__new-project">
+                <div class="tekton__new-project-form">
+                    <h3 class="tekton__form-title">Create New Project</h3>
+                    
+                    <div class="tekton__form-field">
+                        <label for="github-url" class="tekton__form-label">GitHub URL:</label>
+                        <input type="text" id="github-url" class="tekton__form-input" 
+                               placeholder="https://github.com/user/repository"
+                               onchange="clearProjectFields()"
+                               oninput="clearProjectFields()">
                     </div>
-                    <div class="tekton__actions">
-                        <button id="clone-repo-btn" class="tekton__action-button"
-                                data-tekton-action="clone-repository"
-                                data-tekton-action-type="primary">
-                            <span class="tekton__button-icon">↓</span>
-                            <span class="tekton__button-label">Clone</span>
-                        </button>
-                        <button id="create-repo-btn" class="tekton__action-button"
-                                data-tekton-action="create-repository"
-                                data-tekton-action-type="primary">
-                            <span class="tekton__button-icon">+</span>
-                            <span class="tekton__button-label">Create</span>
-                        </button>
+                    
+                    <div class="tekton__form-field">
+                        <label for="local-directory" class="tekton__form-label">Local Directory:</label>
+                        <input type="text" id="local-directory" class="tekton__form-input" 
+                               placeholder="/path/to/local/clone">
                     </div>
-                </div>
-                <div class="tekton__repositories-list-container">
-                    <div id="repositories-list-loading" class="tekton__loading-indicator">
-                        <div class="tekton__spinner"></div>
-                        <div class="tekton__loading-text">Loading repositories...</div>
+                    
+                    <div class="tekton__form-field">
+                        <label for="forked-repository" class="tekton__form-label">Forked Repository:</label>
+                        <input type="text" id="forked-repository" class="tekton__form-input" 
+                               placeholder="https://github.com/your-username/repository">
                     </div>
-                    <div id="repositories-list" class="tekton__repositories-list" style="display: none;">
-                        <table class="tekton__repositories-table">
-                            <thead>
-                                <tr>
-                                    <th>Repository</th>
-                                    <th>Owner</th>
-                                    <th>Branches</th>
-                                    <th>Last Updated</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <!-- Sample repositories for UI testing -->
-                                <tr class="tekton__repository-row">
-                                    <td>Tekton</td>
-                                    <td>cskoons</td>
-                                    <td>4</td>
-                                    <td>Today</td>
-                                    <td>
-                                        <button class="tekton__table-action-btn"
-                                                data-tekton-action="open-repository"
-                                                data-tekton-action-type="primary">Open</button>
-                                        <button class="tekton__table-action-btn"
-                                                data-tekton-action="fork-repository"
-                                                data-tekton-action-type="secondary">Fork</button>
-                                    </td>
-                                </tr>
-                                <tr class="tekton__repository-row">
-                                    <td>sample-project</td>
-                                    <td>cskoons</td>
-                                    <td>1</td>
-                                    <td>Yesterday</td>
-                                    <td>
-                                        <button class="tekton__table-action-btn"
-                                                data-tekton-action="open-repository"
-                                                data-tekton-action-type="primary">Open</button>
-                                        <button class="tekton__table-action-btn"
-                                                data-tekton-action="fork-repository"
-                                                data-tekton-action-type="secondary">Fork</button>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
+                    
+                    <div class="tekton__form-field">
+                        <label for="upstream-repository" class="tekton__form-label">Upstream Repository:</label>
+                        <input type="text" id="upstream-repository" class="tekton__form-input" 
+                               placeholder="https://github.com/original-user/repository">
                     </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Branches Tab -->
-        <div id="branches-panel" class="tekton__panel">
-            <div class="tekton__branches">
-                <div class="tekton__control-bar">
-                    <div class="tekton__filter-container">
-                        <select id="repo-filter" class="tekton__filter-select"
-                                data-tekton-input="repo-filter"
-                                data-tekton-input-type="select">
-                            <option value="all">All Repositories</option>
-                            <option value="tekton">Tekton</option>
-                            <option value="sample">sample-project</option>
+                    
+                    <div class="tekton__form-field">
+                        <label for="companion-intelligence" class="tekton__form-label">Companion Intelligence - CI:</label>
+                        <select id="companion-intelligence" class="tekton__form-select">
+                            <option value="llama3.3:70b">llama3.3:70b (Default)</option>
+                            <option value="llama3.2:3b">llama3.2:3b</option>
+                            <option value="llama3.1:8b">llama3.1:8b</option>
+                            <option value="qwen2.5:14b">qwen2.5:14b</option>
+                            <option value="claude-3-5-sonnet-20241022">Claude 3.5 Sonnet</option>
+                            <option value="gpt-4o">GPT-4o</option>
+                            <option value="gpt-4o-mini">GPT-4o Mini</option>
                         </select>
-                        <button id="apply-filter-btn" class="tekton__filter-button"
-                                data-tekton-action="apply-filter"
-                                data-tekton-action-type="primary">Apply</button>
                     </div>
-                    <div class="tekton__actions">
-                        <button id="create-branch-btn" class="tekton__action-button"
-                                data-tekton-action="create-branch"
-                                data-tekton-action-type="primary">
-                            <span class="tekton__button-icon">+</span>
-                            <span class="tekton__button-label">New Branch</span>
-                        </button>
-                        <button id="merge-branch-btn" class="tekton__action-button"
-                                data-tekton-action="merge-branch"
-                                data-tekton-action-type="secondary">
-                            <span class="tekton__button-icon">⋈</span>
-                            <span class="tekton__button-label">Merge</span>
-                        </button>
-                    </div>
-                </div>
-                <div class="tekton__branches-list-container">
-                    <div id="branches-list-loading" class="tekton__loading-indicator">
-                        <div class="tekton__spinner"></div>
-                        <div class="tekton__loading-text">Loading branches...</div>
-                    </div>
-                    <div id="branches-list" class="tekton__branches-list" style="display: none;">
-                        <table class="tekton__branches-table">
-                            <thead>
-                                <tr>
-                                    <th>Branch</th>
-                                    <th>Repository</th>
-                                    <th>Status</th>
-                                    <th>Last Commit</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <!-- Sample branches for UI testing -->
-                                <tr class="tekton__branch-row">
-                                    <td>main</td>
-                                    <td>Tekton</td>
-                                    <td>Current</td>
-                                    <td>2 days ago</td>
-                                    <td>
-                                        <button class="tekton__table-action-btn"
-                                                data-tekton-action="checkout-branch"
-                                                data-tekton-action-type="primary">Checkout</button>
-                                        <button class="tekton__table-action-btn"
-                                                data-tekton-action="pull-branch"
-                                                data-tekton-action-type="secondary">Pull</button>
-                                    </td>
-                                </tr>
-                                <tr class="tekton__branch-row tekton__branch-row--active">
-                                    <td>sprint/Clean_Slate_051125</td>
-                                    <td>Tekton</td>
-                                    <td>Active</td>
-                                    <td>Today</td>
-                                    <td>
-                                        <button class="tekton__table-action-btn"
-                                                data-tekton-action="checkout-branch"
-                                                data-tekton-action-type="primary">Checkout</button>
-                                        <button class="tekton__table-action-btn"
-                                                data-tekton-action="pull-branch"
-                                                data-tekton-action-type="secondary">Pull</button>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
+                    
+                    <div class="tekton__form-actions">
+                        <button class="tekton__button tekton__button--secondary" onclick="cancelNewProject()">Cancel</button>
+                        <button class="tekton__button tekton__button--primary" onclick="prepareNewProject()">Prepare</button>
+                        <button class="tekton__button tekton__button--success" id="create-project-btn" disabled onclick="createNewProject()">Create</button>
                     </div>
                 </div>
             </div>
         </div>
         
-        <!-- Actions Tab -->
-        <div id="actions-panel" class="tekton__panel">
-            <div class="tekton__actions-panel">
-                <h3 class="tekton__section-title">GitHub Actions</h3>
-                
-                <div class="tekton__action-cards">
-                    <div class="tekton__action-card">
-                        <h4 class="tekton__action-card-title">Repository Operations</h4>
-                        <div class="tekton__action-card-content">
-                            <button class="tekton__card-action-btn"
-                                    data-tekton-action="clone-repository"
-                                    data-tekton-action-type="primary">Clone Repository</button>
-                            <button class="tekton__card-action-btn"
-                                    data-tekton-action="create-repository"
-                                    data-tekton-action-type="primary">Create Repository</button>
-                            <button class="tekton__card-action-btn"
-                                    data-tekton-action="fork-repository"
-                                    data-tekton-action-type="secondary">Fork Repository</button>
-                        </div>
-                    </div>
-                    
-                    <div class="tekton__action-card">
-                        <h4 class="tekton__action-card-title">Branch Management</h4>
-                        <div class="tekton__action-card-content">
-                            <button class="tekton__card-action-btn"
-                                    data-tekton-action="create-branch"
-                                    data-tekton-action-type="primary">Create Branch</button>
-                            <button class="tekton__card-action-btn"
-                                    data-tekton-action="merge-branch"
-                                    data-tekton-action-type="primary">Merge Branch</button>
-                            <button class="tekton__card-action-btn"
-                                    data-tekton-action="sync-branch"
-                                    data-tekton-action-type="secondary">Sync Branch</button>
-                            <button class="tekton__card-action-btn"
-                                    data-tekton-action="delete-branch"
-                                    data-tekton-action-type="secondary">Delete Branch</button>
-                        </div>
-                    </div>
-                    
-                    <div class="tekton__action-card">
-                        <h4 class="tekton__action-card-title">Commit Operations</h4>
-                        <div class="tekton__action-card-content">
-                            <button class="tekton__card-action-btn"
-                                    data-tekton-action="create-commit"
-                                    data-tekton-action-type="primary">Create Commit</button>
-                            <button class="tekton__card-action-btn"
-                                    data-tekton-action="push-changes"
-                                    data-tekton-action-type="primary">Push Changes</button>
-                            <button class="tekton__card-action-btn"
-                                    data-tekton-action="pull-changes"
-                                    data-tekton-action-type="secondary">Pull Changes</button>
-                            <button class="tekton__card-action-btn"
-                                    data-tekton-action="view-history"
-                                    data-tekton-action-type="secondary">View History</button>
-                        </div>
-                    </div>
-                    
-                    <div class="tekton__action-card">
-                        <h4 class="tekton__action-card-title">Pull Requests</h4>
-                        <div class="tekton__action-card-content">
-                            <button class="tekton__card-action-btn"
-                                    data-tekton-action="create-pr"
-                                    data-tekton-action-type="primary">Create PR</button>
-                            <button class="tekton__card-action-btn"
-                                    data-tekton-action="list-prs"
-                                    data-tekton-action-type="secondary">List PRs</button>
-                            <button class="tekton__card-action-btn"
-                                    data-tekton-action="review-pr"
-                                    data-tekton-action-type="secondary">Review PR</button>
-                            <button class="tekton__card-action-btn"
-                                    data-tekton-action="merge-pr"
-                                    data-tekton-action-type="primary">Merge PR</button>
-                        </div>
-                    </div>
+        <!-- Merges Tab -->
+        <div id="merges-panel" class="tekton__panel tekton__panel--merges"
+             data-tekton-panel="merges"
+             data-tekton-panel-for="Merges"
+             data-tekton-panel-component="tekton">
+            <div class="tekton__merges">
+                <div class="tekton__merges-container" id="merges-container">
+                    <!-- Merges will be populated dynamically -->
+                    <div class="tekton__placeholder-message">No Merges Pending</div>
                 </div>
             </div>
         </div>
+        
+        <!-- Conflicts Tab -->
+        <div id="conflicts-panel" class="tekton__panel tekton__panel--conflicts"
+             data-tekton-panel="conflicts"
+             data-tekton-panel-for="Conflicts"
+             data-tekton-panel-component="tekton">
+            <div class="tekton__conflicts">
+                <div class="tekton__conflicts-container" id="conflicts-container">
+                    <!-- Conflicts will be populated dynamically -->
+                    <div class="tekton__placeholder-message">No Merge Conflicts Pending</div>
+                </div>
+            </div>
+        </div>
+        
         
         <!-- Project Chat Tab -->
         <div id="projectchat-panel" class="tekton__panel">
@@ -923,6 +692,150 @@
         box-shadow: none;
     }
     
+    /* Clean Panel Styles */
+    .tekton__placeholder-message {
+        text-align: center;
+        padding: 40px;
+        color: var(--text-secondary, #aaaaaa);
+        font-style: italic;
+    }
+    
+    .tekton__projects-list,
+    .tekton__merge-queue-container,
+    .tekton__conflicts-container {
+        padding: 16px;
+        min-height: 300px;
+    }
+    
+    /* New Project Form Styles */
+    .tekton__new-project {
+        padding: 20px;
+    }
+    
+    .tekton__new-project-form {
+        max-width: 600px;
+        margin: 0 auto;
+    }
+    
+    .tekton__form-title {
+        margin-bottom: 20px;
+        font-size: 1.3rem;
+        color: var(--text-primary, #f0f0f0);
+        text-align: left; /* Align to left like Terma */
+    }
+    
+    .tekton__form-field {
+        margin-bottom: 16px;
+    }
+    
+    .tekton__form-label {
+        display: block;
+        margin-bottom: 4px;
+        font-weight: 500;
+        color: var(--text-primary, #f0f0f0);
+    }
+    
+    .tekton__form-input,
+    .tekton__form-select {
+        width: 100%;
+        padding: 10px 12px;
+        background-color: var(--bg-tertiary, #333345);
+        border: 1px solid var(--border-color, #444444);
+        border-radius: 4px;
+        color: var(--text-primary, #f0f0f0);
+        font-size: 14px;
+    }
+    
+    .tekton__form-input:focus,
+    .tekton__form-select:focus {
+        outline: none;
+        border-color: #FFA500;
+        box-shadow: 0 0 0 2px rgba(255, 165, 0, 0.2);
+    }
+    
+    .tekton__form-actions {
+        display: flex;
+        gap: 12px;
+        justify-content: center; /* Center buttons like Terma */
+        margin-top: 24px;
+    }
+    
+    .tekton__button {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 4px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    
+    .tekton__button--secondary {
+        background-color: #6c757d; /* Metallic grey */
+        color: white;
+        border: 1px solid #5a6268;
+    }
+    
+    .tekton__button--secondary:hover {
+        background-color: #5a6268; /* Darker metallic grey on hover */
+    }
+    
+    .tekton__button--primary {
+        background-color: #007bff;
+        color: white;
+    }
+    
+    .tekton__button--primary:hover {
+        background-color: #0056b3;
+    }
+    
+    .tekton__button--success {
+        background-color: #28a745;
+        color: white;
+    }
+    
+    .tekton__button--success:hover:not(:disabled) {
+        background-color: #1e7e34;
+    }
+    
+    .tekton__button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+    
+    
+    /* Tab switching functionality - EXACT MATCH TO TERMA */
+    .tekton__panel {
+        display: none;
+    }
+    
+    #tekton-tab-dashboard:checked ~ .tekton .tekton__panel--dashboard,
+    #tekton-tab-new-project:checked ~ .tekton .tekton__panel--new-project,
+    #tekton-tab-merges:checked ~ .tekton .tekton__panel--merges,
+    #tekton-tab-conflicts:checked ~ .tekton .tekton__panel--conflicts,
+    #tekton-tab-projectchat:checked ~ .tekton #projectchat-panel,
+    #tekton-tab-teamchat:checked ~ .tekton #teamchat-panel {
+        display: flex;
+        flex-direction: column;
+    }
+    
+    /* Active tab styling */
+    #tekton-tab-dashboard:checked ~ .tekton .tekton__tab[data-tab="dashboard"],
+    #tekton-tab-new-project:checked ~ .tekton .tekton__tab[data-tab="new-project"],
+    #tekton-tab-merges:checked ~ .tekton .tekton__tab[data-tab="merges"],
+    #tekton-tab-conflicts:checked ~ .tekton .tekton__tab[data-tab="conflicts"],
+    #tekton-tab-projectchat:checked ~ .tekton .tekton__tab[data-tab="projectchat"],
+    #tekton-tab-teamchat:checked ~ .tekton .tekton__tab[data-tab="teamchat"] {
+        background-color: var(--bg-tertiary, #2a2a3a);
+        border-bottom: 2px solid #FFA500;
+    }
+    
+    /* Clear button visibility for chat tabs */
+    #tekton-tab-projectchat:checked ~ .tekton #clear-chat-btn,
+    #tekton-tab-teamchat:checked ~ .tekton #clear-chat-btn {
+        display: block !important;
+    }
+    
     @keyframes tekton-spin {
         0% { transform: rotate(0deg); }
         100% { transform: rotate(360deg); }
@@ -1258,6 +1171,92 @@ function tekton_clearChat() {
     
     return false; // Stop event propagation
 };
+
+// NEW PROJECT FUNCTIONS
+function clearProjectFields() {
+    console.log('[TEKTON] Clearing project fields');
+    document.getElementById('local-directory').value = '';
+    document.getElementById('forked-repository').value = '';
+    document.getElementById('upstream-repository').value = '';
+    document.getElementById('companion-intelligence').value = 'llama3.3:70b'; // Reset to default
+    document.getElementById('create-project-btn').disabled = true;
+    return false;
+}
+
+function cancelNewProject() {
+    console.log('[TEKTON] Cancelling new project');
+    document.getElementById('github-url').value = '';
+    clearProjectFields();
+    return false;
+}
+
+function prepareNewProject() {
+    console.log('[TEKTON] Preparing new project');
+    
+    const githubUrl = document.getElementById('github-url').value.trim();
+    if (!githubUrl) {
+        alert('Please enter a GitHub URL');
+        return false;
+    }
+    
+    // Basic GitHub URL validation
+    const githubPattern = /^https:\/\/github\.com\/([^\/]+)\/([^\/]+)$/;
+    const match = githubUrl.match(githubPattern);
+    
+    if (!match) {
+        alert('Please enter a valid GitHub URL (e.g., https://github.com/user/repository)');
+        return false;
+    }
+    
+    const username = match[1];
+    const repoName = match[2];
+    
+    // Set up the other fields
+    document.getElementById('local-directory').value = `/Users/cskoons/projects/github/${username}/${repoName}`;
+    document.getElementById('forked-repository').value = `https://github.com/cskoons/${repoName}`;
+    document.getElementById('upstream-repository').value = githubUrl;
+    
+    // Enable the Create button
+    document.getElementById('create-project-btn').disabled = false;
+    
+    console.log('[TEKTON] Project prepared:', { username, repoName });
+    return false;
+}
+
+function createNewProject() {
+    console.log('[TEKTON] Creating new project');
+    
+    const githubUrl = document.getElementById('github-url').value.trim();
+    const localDirectory = document.getElementById('local-directory').value.trim();
+    const forkedRepo = document.getElementById('forked-repository').value.trim();
+    const upstreamRepo = document.getElementById('upstream-repository').value.trim();
+    const companionAI = document.getElementById('companion-intelligence').value;
+    
+    if (!githubUrl || !localDirectory) {
+        alert('Please prepare the project first');
+        return false;
+    }
+    
+    console.log('[TEKTON] Project details:', { 
+        githubUrl, 
+        localDirectory, 
+        forkedRepo, 
+        upstreamRepo, 
+        companionAI 
+    });
+    
+    // TODO: Implement actual project creation logic
+    alert(`Project creation functionality will be implemented soon.\nCI: ${companionAI}`);
+    
+    // Clear the form after creation
+    cancelNewProject();
+    
+    // Switch to dashboard to show the new project
+    document.getElementById('tekton-tab-dashboard').checked = true;
+    tekton_switchTab('dashboard');
+    
+    return false;
+}
 
 // LOAD COMPONENT
 // Load after defining tab switching to ensure it's available

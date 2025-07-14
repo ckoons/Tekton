@@ -29,6 +29,10 @@ class TektonService extends window.tektonUI.componentUtils.BaseService {
         // Projects registry
         this.projects = [];
         
+        // Merge coordination
+        this.mergeQueue = [];
+        this.mergeStatistics = {};
+        
         // Refresh interval handler
         this.refreshIntervalId = null;
         this.autoRefreshInterval = 10000; // Default: 10 seconds
@@ -40,6 +44,98 @@ class TektonService extends window.tektonUI.componentUtils.BaseService {
         
         // Initialize with persisted state if available
         this._loadPersistedState();
+    }
+    
+    /**
+     * Get the merge queue
+     * @returns {Promise<Array>} - Promise resolving to merge queue
+     */
+    async getMergeQueue() {
+        try {
+            const response = await this.apiCall('/v1/merge-queue');
+            return response.queue || [];
+        } catch (error) {
+            console.error('Failed to get merge queue:', error);
+            throw error;
+        }
+    }
+    
+    /**
+     * Get merge request details
+     * @param {string} mergeId - Merge request ID
+     * @returns {Promise<Object>} - Promise resolving to merge request details
+     */
+    async getMergeRequestDetails(mergeId) {
+        try {
+            const response = await this.apiCall(`/v1/merge-requests/${mergeId}`);
+            return response;
+        } catch (error) {
+            console.error('Failed to get merge request details:', error);
+            throw error;
+        }
+    }
+    
+    /**
+     * Execute a merge
+     * @param {string} mergeId - Merge request ID
+     * @returns {Promise<boolean>} - Promise resolving to success status
+     */
+    async executeMerge(mergeId) {
+        try {
+            const response = await this.apiCall(`/v1/merge-requests/${mergeId}/execute`, {
+                method: 'POST'
+            });
+            return response.message === 'Merge executed successfully';
+        } catch (error) {
+            console.error('Failed to execute merge:', error);
+            throw error;
+        }
+    }
+    
+    /**
+     * Reject a merge request
+     * @param {string} mergeId - Merge request ID
+     * @param {string} reason - Reason for rejection
+     * @returns {Promise<boolean>} - Promise resolving to success status
+     */
+    async rejectMergeRequest(mergeId, reason) {
+        try {
+            // For MVP, we'll update the merge state to rejected
+            // In production, this would call the actual API endpoint
+            const response = await this.apiCall(`/v1/merge-requests/${mergeId}/resolve`, {
+                method: 'POST',
+                body: JSON.stringify({
+                    chosen_option: 'reject',
+                    reason: reason
+                })
+            });
+            return response.message === 'Merge conflict resolved';
+        } catch (error) {
+            console.error('Failed to reject merge request:', error);
+            throw error;
+        }
+    }
+    
+    /**
+     * Resolve a merge conflict by selecting an option
+     * @param {string} mergeId - Merge request ID
+     * @param {string} optionId - Selected option ID
+     * @returns {Promise<boolean>} - Promise resolving to success status
+     */
+    async resolveConflict(mergeId, optionId) {
+        try {
+            const response = await this.apiCall(`/v1/merge-requests/${mergeId}/resolve`, {
+                method: 'POST',
+                body: JSON.stringify({
+                    chosen_option: optionId,
+                    reason: `Selected option ${optionId} for conflict resolution`
+                })
+            });
+            return response.message === 'Merge conflict resolved';
+        } catch (error) {
+            console.error('Failed to resolve conflict:', error);
+            throw error;
+        }
     }
 
     /**
@@ -843,6 +939,409 @@ class TektonService extends window.tektonUI.componentUtils.BaseService {
             localStorage.setItem('tekton_service_state', JSON.stringify(state));
         } catch (error) {
             console.error('Error persisting state:', error);
+        }
+    }
+    
+    /**
+     * Update project state
+     * @param {string} projectId - Project ID
+     * @param {string} state - New state
+     * @param {string} reason - Optional reason for state change
+     * @returns {Promise<Object>} - Promise resolving to updated project
+     */
+    async updateProjectState(projectId, state, reason = null) {
+        if (!this.connected) {
+            await this.connect();
+        }
+        
+        try {
+            const requestBody = { state };
+            if (reason) {
+                requestBody.reason = reason;
+            }
+            
+            const response = await fetch(`${this.apiUrl}/v1/projects/${projectId}/state`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(requestBody)
+            });
+            
+            if (!response.ok) {
+                this.dispatchEvent('error', { 
+                    error: `Failed to update project state: ${response.status} ${response.statusText}` 
+                });
+                return null;
+            }
+            
+            const data = await response.json();
+            
+            // Update projects list
+            await this.getProjects();
+            
+            return data;
+        } catch (error) {
+            this.dispatchEvent('error', { 
+                error: `Failed to update project state: ${error.message}` 
+            });
+            return null;
+        }
+    }
+    
+    /**
+     * Create task in project
+     * @param {string} projectId - Project ID
+     * @param {Object} taskData - Task data
+     * @returns {Promise<Object>} - Promise resolving to created task
+     */
+    async createTask(projectId, taskData) {
+        if (!this.connected) {
+            await this.connect();
+        }
+        
+        try {
+            const response = await fetch(`${this.apiUrl}/v1/projects/${projectId}/tasks`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(taskData)
+            });
+            
+            if (!response.ok) {
+                this.dispatchEvent('error', { 
+                    error: `Failed to create task: ${response.status} ${response.statusText}` 
+                });
+                return null;
+            }
+            
+            const data = await response.json();
+            return data;
+        } catch (error) {
+            this.dispatchEvent('error', { 
+                error: `Failed to create task: ${error.message}` 
+            });
+            return null;
+        }
+    }
+    
+    /**
+     * Update task state
+     * @param {string} projectId - Project ID
+     * @param {string} taskId - Task ID
+     * @param {Object} updateData - Update data
+     * @returns {Promise<Object>} - Promise resolving to updated task
+     */
+    async updateTaskState(projectId, taskId, updateData) {
+        if (!this.connected) {
+            await this.connect();
+        }
+        
+        try {
+            const response = await fetch(`${this.apiUrl}/v1/projects/${projectId}/tasks/${taskId}/state`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(updateData)
+            });
+            
+            if (!response.ok) {
+                this.dispatchEvent('error', { 
+                    error: `Failed to update task state: ${response.status} ${response.statusText}` 
+                });
+                return null;
+            }
+            
+            const data = await response.json();
+            return data;
+        } catch (error) {
+            this.dispatchEvent('error', { 
+                error: `Failed to update task state: ${error.message}` 
+            });
+            return null;
+        }
+    }
+    
+    /**
+     * Assign task to AI worker
+     * @param {string} projectId - Project ID
+     * @param {string} taskId - Task ID
+     * @param {Object} assignmentData - Assignment data
+     * @returns {Promise<Object>} - Promise resolving to assignment result
+     */
+    async assignTask(projectId, taskId, assignmentData) {
+        if (!this.connected) {
+            await this.connect();
+        }
+        
+        try {
+            const response = await fetch(`${this.apiUrl}/v1/projects/${projectId}/tasks/${taskId}/assign`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(assignmentData)
+            });
+            
+            if (!response.ok) {
+                this.dispatchEvent('error', { 
+                    error: `Failed to assign task: ${response.status} ${response.statusText}` 
+                });
+                return null;
+            }
+            
+            const data = await response.json();
+            return data;
+        } catch (error) {
+            this.dispatchEvent('error', { 
+                error: `Failed to assign task: ${error.message}` 
+            });
+            return null;
+        }
+    }
+    
+    /**
+     * Get merge queue
+     * @returns {Promise<Array>} - Promise resolving to merge queue
+     */
+    async getMergeQueue() {
+        if (!this.connected) {
+            await this.connect();
+        }
+        
+        try {
+            const response = await fetch(`${this.apiUrl}/v1/merge-queue`);
+            
+            if (!response.ok) {
+                this.dispatchEvent('error', { 
+                    error: `Failed to fetch merge queue: ${response.status} ${response.statusText}` 
+                });
+                return this.mergeQueue;
+            }
+            
+            const data = await response.json();
+            this.mergeQueue = data.queue || [];
+            
+            // Dispatch event with merge queue
+            this.dispatchEvent('mergeQueueUpdated', { 
+                queue: this.mergeQueue 
+            });
+            
+            return this.mergeQueue;
+        } catch (error) {
+            this.dispatchEvent('error', { 
+                error: `Failed to fetch merge queue: ${error.message}` 
+            });
+            return this.mergeQueue;
+        }
+    }
+    
+    /**
+     * Get merge request details
+     * @param {string} mergeId - Merge request ID
+     * @returns {Promise<Object>} - Promise resolving to merge request details
+     */
+    async getMergeRequest(mergeId) {
+        if (!this.connected) {
+            await this.connect();
+        }
+        
+        try {
+            const response = await fetch(`${this.apiUrl}/v1/merge-requests/${mergeId}`);
+            
+            if (!response.ok) {
+                this.dispatchEvent('error', { 
+                    error: `Failed to fetch merge request: ${response.status} ${response.statusText}` 
+                });
+                return null;
+            }
+            
+            const data = await response.json();
+            return data;
+        } catch (error) {
+            this.dispatchEvent('error', { 
+                error: `Failed to fetch merge request: ${error.message}` 
+            });
+            return null;
+        }
+    }
+    
+    /**
+     * Submit merge request
+     * @param {Object} mergeData - Merge request data
+     * @returns {Promise<Object>} - Promise resolving to merge request
+     */
+    async submitMergeRequest(mergeData) {
+        if (!this.connected) {
+            await this.connect();
+        }
+        
+        try {
+            const response = await fetch(`${this.apiUrl}/v1/merge-requests`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(mergeData)
+            });
+            
+            if (!response.ok) {
+                this.dispatchEvent('error', { 
+                    error: `Failed to submit merge request: ${response.status} ${response.statusText}` 
+                });
+                return null;
+            }
+            
+            const data = await response.json();
+            
+            // Update merge queue
+            await this.getMergeQueue();
+            
+            return data;
+        } catch (error) {
+            this.dispatchEvent('error', { 
+                error: `Failed to submit merge request: ${error.message}` 
+            });
+            return null;
+        }
+    }
+    
+    /**
+     * Resolve merge conflict
+     * @param {string} mergeId - Merge request ID
+     * @param {Object} resolutionData - Resolution data
+     * @returns {Promise<Object>} - Promise resolving to resolution result
+     */
+    async resolveMergeConflict(mergeId, resolutionData) {
+        if (!this.connected) {
+            await this.connect();
+        }
+        
+        try {
+            const response = await fetch(`${this.apiUrl}/v1/merge-requests/${mergeId}/resolve`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(resolutionData)
+            });
+            
+            if (!response.ok) {
+                this.dispatchEvent('error', { 
+                    error: `Failed to resolve merge conflict: ${response.status} ${response.statusText}` 
+                });
+                return null;
+            }
+            
+            const data = await response.json();
+            
+            // Update merge queue
+            await this.getMergeQueue();
+            
+            return data;
+        } catch (error) {
+            this.dispatchEvent('error', { 
+                error: `Failed to resolve merge conflict: ${error.message}` 
+            });
+            return null;
+        }
+    }
+    
+    /**
+     * Execute merge
+     * @param {string} mergeId - Merge request ID
+     * @returns {Promise<Object>} - Promise resolving to execution result
+     */
+    async executeMerge(mergeId) {
+        if (!this.connected) {
+            await this.connect();
+        }
+        
+        try {
+            const response = await fetch(`${this.apiUrl}/v1/merge-requests/${mergeId}/execute`, {
+                method: 'POST'
+            });
+            
+            if (!response.ok) {
+                this.dispatchEvent('error', { 
+                    error: `Failed to execute merge: ${response.status} ${response.statusText}` 
+                });
+                return null;
+            }
+            
+            const data = await response.json();
+            
+            // Update merge queue
+            await this.getMergeQueue();
+            
+            return data;
+        } catch (error) {
+            this.dispatchEvent('error', { 
+                error: `Failed to execute merge: ${error.message}` 
+            });
+            return null;
+        }
+    }
+    
+    /**
+     * Get merge statistics
+     * @returns {Promise<Object>} - Promise resolving to merge statistics
+     */
+    async getMergeStatistics() {
+        if (!this.connected) {
+            await this.connect();
+        }
+        
+        try {
+            const response = await fetch(`${this.apiUrl}/v1/merge-statistics`);
+            
+            if (!response.ok) {
+                this.dispatchEvent('error', { 
+                    error: `Failed to fetch merge statistics: ${response.status} ${response.statusText}` 
+                });
+                return this.mergeStatistics;
+            }
+            
+            const data = await response.json();
+            this.mergeStatistics = data;
+            
+            return this.mergeStatistics;
+        } catch (error) {
+            this.dispatchEvent('error', { 
+                error: `Failed to fetch merge statistics: ${error.message}` 
+            });
+            return this.mergeStatistics;
+        }
+    }
+    
+    /**
+     * Get system overview
+     * @returns {Promise<Object>} - Promise resolving to system overview
+     */
+    async getSystemOverview() {
+        if (!this.connected) {
+            await this.connect();
+        }
+        
+        try {
+            const response = await fetch(`${this.apiUrl}/v1/system-overview`);
+            
+            if (!response.ok) {
+                this.dispatchEvent('error', { 
+                    error: `Failed to fetch system overview: ${response.status} ${response.statusText}` 
+                });
+                return null;
+            }
+            
+            const data = await response.json();
+            return data;
+        } catch (error) {
+            this.dispatchEvent('error', { 
+                error: `Failed to fetch system overview: ${error.message}` 
+            });
+            return null;
         }
     }
     
