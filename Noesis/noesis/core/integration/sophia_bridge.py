@@ -57,8 +57,9 @@ class SophiaBridge:
     Bridge for integrating Noesis theoretical analysis with Sophia experiments
     """
     
-    def __init__(self, sophia_url: str = "http://localhost:8003"):
-        self.sophia_url = sophia_url
+    def __init__(self, sophia_url: str = None):
+        from shared.urls import tekton_url
+        self.sophia_url = sophia_url or tekton_url("sophia")
         self.client = httpx.AsyncClient(timeout=30.0)
         self.active_protocols: Dict[str, TheoryExperimentProtocol] = {}
         

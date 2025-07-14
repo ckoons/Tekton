@@ -167,17 +167,24 @@ async def health():
     }
 
 
+# Import WebSocket manager
+from sophia.core.realtime_manager import get_websocket_manager
+
 # WebSocket endpoint
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
-    """WebSocket endpoint for real-time communication."""
-    await websocket.accept()
-    
-    # Add to active connections
-    if component:
-        component.active_connections.append(websocket)
+    """WebSocket endpoint for real-time communication using tekton_url standards."""
+    websocket_manager = get_websocket_manager()
+    client_id = None
     
     try:
+        # Accept connection and get client ID
+        client_id = await websocket_manager.connect(websocket)
+        
+        # Add to component's active connections for backward compatibility
+        if component:
+            component.active_connections.append(websocket)
+        
         while True:
             # Receive message from client
             data = await websocket.receive_json()
@@ -189,11 +196,81 @@ async def websocket_endpoint(websocket: WebSocket):
                 await websocket.send_json({"type": "pong", "timestamp": time.time()})
             
             elif message_type == "subscribe":
-                # Handle subscription to specific event types
+                # Handle subscription to specific event types using WebSocket manager
                 event_types = data.get("event_types", [])
+                await websocket_manager.subscribe_to_events(websocket, event_types)
+                
                 await websocket.send_json({
                     "type": "subscribed",
                     "event_types": event_types,
+                    "client_id": client_id,
+                    "timestamp": time.time()
+                })
+            
+            elif message_type == "unsubscribe":
+                # Handle unsubscription from event types
+                event_types = data.get("event_types", [])
+                if hasattr(websocket, "subscriptions"):
+                    websocket.subscriptions.difference_update(event_types)
+                
+                await websocket.send_json({
+                    "type": "unsubscribed",
+                    "event_types": event_types,
+                    "timestamp": time.time()
+                })
+            
+            elif message_type == "experiment_monitor":
+                # Handle experiment monitoring subscription using WebSocket manager
+                experiment_id = data.get("experiment_id")
+                if experiment_id:
+                    await websocket_manager.monitor_experiment(websocket, experiment_id)
+                    
+                    # Send current experiment status if framework is available
+                    if component and hasattr(component, 'experiment_framework') and component.experiment_framework:
+                        try:
+                            status = await component.experiment_framework.get_experiment_status(experiment_id)
+                            await websocket.send_json({
+                                "type": "experiment_status",
+                                "experiment_id": experiment_id,
+                                "status": status,
+                                "timestamp": time.time()
+                            })
+                        except Exception as e:
+                            logger.warning(f"Could not get experiment status: {e}")
+                            await websocket.send_json({
+                                "type": "experiment_monitor_started",
+                                "experiment_id": experiment_id,
+                                "timestamp": time.time()
+                            })
+            
+            elif message_type == "metrics_stream":
+                # Handle real-time metrics streaming using WebSocket manager
+                metric_filter = data.get("filter", {})
+                await websocket_manager.subscribe_to_metrics(websocket, metric_filter)
+                
+                await websocket.send_json({
+                    "type": "metrics_stream_started",
+                    "filter": metric_filter,
+                    "timestamp": time.time()
+                })
+            
+            elif message_type == "theory_validation":
+                # Handle theory validation event subscription using WebSocket manager
+                validation_types = data.get("validation_types", [])
+                await websocket_manager.subscribe_to_theory_validation(websocket, validation_types)
+                
+                await websocket.send_json({
+                    "type": "theory_validation_subscribed",
+                    "validation_types": validation_types,
+                    "timestamp": time.time()
+                })
+            
+            elif message_type == "connection_stats":
+                # Handle request for connection statistics
+                stats = await websocket_manager.get_connection_stats()
+                await websocket.send_json({
+                    "type": "connection_stats",
+                    "data": stats,
                     "timestamp": time.time()
                 })
             
@@ -201,12 +278,13 @@ async def websocket_endpoint(websocket: WebSocket):
                 # Handle real-time metric submission
                 if component and component.metrics_engine:
                     metric_data = data.get("data", {})
-                    await component.metrics_engine.submit_metric(
-                        component_name=metric_data.get("component_name"),
-                        metric_name=metric_data.get("metric_name"),
+                    await component.metrics_engine.record_metric(
+                        metric_id=metric_data.get("metric_id"),
                         value=metric_data.get("value"),
+                        source=metric_data.get("source"),
                         timestamp=metric_data.get("timestamp"),
-                        tags=metric_data.get("tags", {})
+                        context=metric_data.get("context"),
+                        tags=metric_data.get("tags")
                     )
                     await websocket.send_json({
                         "type": "metric_received",
@@ -221,11 +299,16 @@ async def websocket_endpoint(websocket: WebSocket):
                 })
     
     except WebSocketDisconnect:
-        # Remove from active connections
+        # Handle disconnection using WebSocket manager
+        websocket_manager.disconnect(websocket)
+        # Remove from component's active connections for backward compatibility
         if component and websocket in component.active_connections:
             component.active_connections.remove(websocket)
+        logger.info(f"WebSocket client disconnected: {client_id}")
     except Exception as e:
         logger.error(f"WebSocket error: {e}")
+        # Handle error disconnection using WebSocket manager
+        websocket_manager.disconnect(websocket)
         if component and websocket in component.active_connections:
             component.active_connections.remove(websocket)
 

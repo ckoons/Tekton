@@ -30,8 +30,10 @@ from shared.utils.hermes_registration import HermesRegistration, heartbeat_loop
 
 config = get_component_config()
 NOESIS_PORT = config.noesis.port
-HERMES_URL = os.environ.get("HERMES_URL", f"http://localhost:{config.hermes.port}")
-RHETOR_URL = os.environ.get("RHETOR_URL", f"http://localhost:{config.rhetor.port}")
+# Use tekton_url for proper URL construction
+from shared.urls import tekton_url
+HERMES_URL = os.environ.get("HERMES_URL", tekton_url("hermes"))
+RHETOR_URL = os.environ.get("RHETOR_URL", tekton_url("rhetor"))
 
 # Component version
 COMPONENT_VERSION = "0.1.0"

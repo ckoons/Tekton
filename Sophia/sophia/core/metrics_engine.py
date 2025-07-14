@@ -648,6 +648,21 @@ class MetricsEngine:
             )
             return memory_success and db_success
         
+        # Notify WebSocket clients of new metric
+        if memory_success:
+            try:
+                from sophia.core.realtime_manager import notify_metrics_collected
+                await notify_metrics_collected({
+                    "metric_id": metric_id,
+                    "value": numeric_value if numeric_value is not None else value,
+                    "source": source,
+                    "timestamp": metric["timestamp"],
+                    "context": context,
+                    "tags": tags
+                })
+            except Exception as e:
+                logger.debug(f"Could not send real-time metric notification: {e}")
+        
         return memory_success
         
     async def query_metrics(

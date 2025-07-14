@@ -62,6 +62,17 @@ class ExperimentRunner:
             
             logger.info(f"Starting experiment {self.config['id']} of type {self.config['experiment_type']}")
             
+            # Notify WebSocket clients of experiment start
+            try:
+                from sophia.core.realtime_manager import notify_experiment_progress
+                await notify_experiment_progress(self.config['id'], {
+                    "status": "running",
+                    "experiment_type": self.config['experiment_type'],
+                    "start_time": self.start_time.isoformat() + "Z"
+                })
+            except Exception as e:
+                logger.debug(f"Could not send experiment start notification: {e}")
+            
             # Execute based on experiment type
             if self.config["experiment_type"] == ExperimentType.A_B_TEST:
                 self.results = await self._run_ab_test()
@@ -106,6 +117,18 @@ class ExperimentRunner:
             self.is_running = False
             
             logger.info(f"Experiment {self.config['id']} completed successfully")
+            
+            # Notify WebSocket clients of experiment completion
+            try:
+                from sophia.core.realtime_manager import notify_experiment_progress
+                await notify_experiment_progress(self.config['id'], {
+                    "status": "completed",
+                    "results": self.results,
+                    "end_time": self.end_time.isoformat() + "Z"
+                })
+            except Exception as e:
+                logger.debug(f"Could not send experiment completion notification: {e}")
+            
             return True
         except Exception as e:
             logger.error(f"Error running experiment {self.config['id']}: {e}")
@@ -1338,12 +1361,27 @@ class ExperimentRunner:
                 "warning": "Limited validation without Noesis integration"
             }
         
-        return {
+        result = {
             "validation_results": validation_results,
             "conclusion": f"Manifold prediction {'validated' if validation_results['validation_score'] > 0.7 else 'rejected'}",
             "confidence": validation_results["validation_score"],
             "recommended_action": "Update theoretical model" if validation_results["validation_score"] < 0.5 else "Theory confirmed"
         }
+        
+        # Notify WebSocket clients of theory validation result
+        try:
+            from sophia.core.realtime_manager import notify_theory_validation_result
+            await notify_theory_validation_result("manifold_validation", {
+                "experiment_id": self.config['id'],
+                "validation_score": validation_results["validation_score"],
+                "conclusion": result["conclusion"],
+                "theoretical_prediction": theoretical_prediction,
+                "timestamp": datetime.utcnow().isoformat() + "Z"
+            })
+        except Exception as e:
+            logger.debug(f"Could not send theory validation notification: {e}")
+        
+        return result
 
     async def _run_dynamics_validation(self):
         """
