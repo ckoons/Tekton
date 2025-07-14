@@ -372,7 +372,6 @@ class TermaConfig(BaseComponentConfig):
     """Configuration for Terma terminal system."""
     
     port: int
-    ws_port: int
     terminal_enabled: bool = True
     max_sessions: int = 10
     
@@ -380,7 +379,6 @@ class TermaConfig(BaseComponentConfig):
     def from_env(cls) -> 'TermaConfig':
         return cls(
             port=cls._get_required_env('TERMA_PORT', 'int'),
-            ws_port=cls._get_required_env('TERMA_WS_PORT', 'int'),
             terminal_enabled=cls._get_env_value('TERMA_TERMINAL_ENABLED', True, 'bool'),
             max_sessions=cls._get_env_value('TERMA_MAX_SESSIONS', 10, 'int')
         )

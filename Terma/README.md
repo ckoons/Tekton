@@ -1,19 +1,18 @@
 # Terma: Terminal Integration for Tekton
 
-Terma is an advanced terminal system designed for integration with the Tekton ecosystem. It provides rich terminal functionality with features such as PTY-based terminal sessions, WebSocket communication, LLM assistance, and Hephaestus UI integration.
+Terma is an advanced terminal system designed for integration with the Tekton ecosystem. Terma v2.0 is a native terminal orchestrator that works seamlessly with aish (AI Shell) for enhanced terminal experiences.
 
 ![Terma Terminal](./images/icon.jpg)
 
 ## Features
 
-- **PTY-based Terminal**: Full terminal emulation with support for interactive applications
-- **WebSocket Communication**: Real-time terminal interaction with reconnection support
-- **Session Management**: Create, manage, and monitor terminal sessions with recovery
+- **Native Terminal Orchestrator**: Clean replacement for web-based terminals using native applications
+- **aish Integration**: Seamless integration with AI Shell for enhanced terminal experiences
+- **Session Management**: Create, manage, and monitor terminal sessions
 - **LLM Assistance**: AI-powered help with terminal commands and output analysis
 - **Hermes Integration**: Seamless communication with other Tekton components
 - **Hephaestus UI Integration**: Rich terminal UI with theme support
 - **Multiple LLM Providers**: Support for Claude, OpenAI, and other LLM services
-- **Markdown Rendering**: Beautiful rendering of LLM responses with syntax highlighting
 - **Single Port Architecture**: Compatible with Tekton's unified port management system
 - **FastMCP Integration**: Comprehensive Model Context Protocol support for external integrations
 
@@ -35,30 +34,16 @@ python -m terma.cli.main
 
 ### Basic Usage
 
-Create a terminal session:
+Terma v2.0 works as a native terminal orchestrator with aish:
 
 ```bash
-curl -X POST http://localhost:8765/api/sessions \
-  -H "Content-Type: application/json" \
-  -d '{"shell_command": "/bin/bash"}'
-```
+# Start Terma service
+python -m terma.api.main
 
-Connect to the terminal via WebSocket:
+# Use aish with Terma integration
+aish
 
-```javascript
-const socket = new WebSocket("ws://localhost:8765/ws/your-session-id");
-
-socket.onmessage = (event) => {
-    const message = JSON.parse(event.data);
-    if (message.type === "output") {
-        console.log(message.data);
-    }
-};
-
-socket.send(JSON.stringify({
-    type: "input",
-    data: "ls -la\n"
-}));
+# Terminal sessions are managed natively through aish
 ```
 
 ### Hephaestus Integration

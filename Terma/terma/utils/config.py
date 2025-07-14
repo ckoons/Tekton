@@ -79,7 +79,7 @@ class Config:
             },
             "server": {
                 "host": "0.0.0.0",
-                "port": 8765
+                "port": int(os.environ.get("TERMA_PORT", 8015))
             },
             "llm": {
                 "provider": "claude",

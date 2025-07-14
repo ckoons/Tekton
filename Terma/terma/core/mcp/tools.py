@@ -115,7 +115,6 @@ async def create_terminal_session(
         return {
             "success": True,
             "session": session_config,
-            "websocket_url": f"ws://localhost:8765/ws/{session_id}",
             "api_endpoints": {
                 "write": f"/api/sessions/{session_id}/write",
                 "read": f"/api/sessions/{session_id}/read",
