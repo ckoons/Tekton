@@ -12,6 +12,8 @@ import asyncio
 import logging
 from datetime import datetime, timedelta
 from typing import Dict, List, Any, Optional, Union, Set, Tuple
+from math import ceil
+from .database import get_database
 
 logger = logging.getLogger("sophia.metrics_engine")
 
@@ -518,7 +520,7 @@ class MetricsEngine:
     def __init__(self):
         """Initialize the metrics engine."""
         self.store = MetricsStore()
-        self.persistent_storage = None  # For future integration with Engram
+        self.database = None
         self.is_initialized = False
         self.polling_tasks = {}
         self.metric_definitions = {}
@@ -532,11 +534,11 @@ class MetricsEngine:
         """
         logger.info("Initializing Sophia Metrics Engine...")
         
+        # Initialize database
+        self.database = await get_database()
+        
         # Load metric definitions
         await self._load_metric_definitions()
-        
-        # Initialize persistent storage (future)
-        # self.persistent_storage = await self._initialize_persistent_storage()
         
         self.is_initialized = True
         logger.info("Sophia Metrics Engine initialized successfully")
@@ -557,8 +559,8 @@ class MetricsEngine:
                 
         logger.info("Starting Sophia Metrics Engine...")
         
-        # Start polling components for metrics (future)
-        # await self._start_polling_tasks()
+        # Start polling components for metrics
+        await self._start_polling_tasks()
         
         logger.info("Sophia Metrics Engine started successfully")
         return True
@@ -577,8 +579,8 @@ class MetricsEngine:
             task.cancel()
         self.polling_tasks = {}
         
-        # Close persistent storage (future)
-        # await self._close_persistent_storage()
+        # Close persistent storage connections
+        await self._close_persistent_storage()
         
         logger.info("Sophia Metrics Engine stopped successfully")
         return True
@@ -631,8 +633,22 @@ class MetricsEngine:
         if not await self._validate_metric(metric):
             return False
             
-        # Store the metric
-        return await self.store.store_metric(metric)
+        # Store the metric in both memory and database
+        memory_success = await self.store.store_metric(metric)
+        
+        # Also save to database if available
+        if self.database and numeric_value is not None:
+            db_success = await self.database.save_metric(
+                component_name=source or "unknown",
+                metric_name=metric_id,
+                value=numeric_value,
+                tags=dict(zip(tags or [], [True] * len(tags or []))),
+                context=context,
+                timestamp=metric["timestamp"]
+            )
+            return memory_success and db_success
+        
+        return memory_success
         
     async def query_metrics(
         self,
@@ -898,6 +914,225 @@ class MetricsEngine:
             Dictionary of metric definitions
         """
         return self.metric_definitions
+    
+    async def _start_polling_tasks(self) -> bool:
+        """
+        Start background tasks for polling metrics from components.
+        
+        Returns:
+            True if successful
+        """
+        try:
+            # Start system resource monitoring
+            self.polling_tasks["system_resources"] = asyncio.create_task(
+                self._poll_system_resources()
+            )
+            
+            # Start component health monitoring
+            self.polling_tasks["component_health"] = asyncio.create_task(
+                self._poll_component_health()
+            )
+            
+            # Start database maintenance task
+            self.polling_tasks["database_maintenance"] = asyncio.create_task(
+                self._database_maintenance_task()
+            )
+            
+            logger.info("Started all metrics polling tasks")
+            return True
+            
+        except Exception as e:
+            logger.error(f"Error starting polling tasks: {str(e)}")
+            return False
+    
+    async def _close_persistent_storage(self) -> bool:
+        """
+        Close persistent storage connections.
+        
+        Returns:
+            True if successful
+        """
+        try:
+            # Close database connection if open
+            if self.database:
+                await self.database.close()
+                logger.info("Closed database connection")
+            
+            # Clear memory store periodically to prevent memory leaks
+            if hasattr(self.store, 'memory_store') and len(self.store.memory_store) > 50000:
+                # Keep only recent 10000 records
+                self.store.memory_store = self.store.memory_store[-10000:]
+                self.store._rebuild_indices()
+                logger.info("Trimmed memory store for memory efficiency")
+            
+            return True
+            
+        except Exception as e:
+            logger.error(f"Error closing persistent storage: {str(e)}")
+            return False
+    
+    async def _poll_system_resources(self) -> None:
+        """Poll system resource metrics."""
+        try:
+            while True:
+                await asyncio.sleep(30)  # Poll every 30 seconds
+                
+                try:
+                    # Record basic system metrics
+                    await self._collect_system_metrics()
+                    
+                except Exception as e:
+                    logger.error(f"Error collecting system metrics: {str(e)}")
+                    
+        except asyncio.CancelledError:
+            logger.info("System resource polling task cancelled")
+        except Exception as e:
+            logger.error(f"Unexpected error in system resource polling: {str(e)}")
+    
+    async def _poll_component_health(self) -> None:
+        """Poll component health metrics."""
+        try:
+            while True:
+                await asyncio.sleep(60)  # Poll every minute
+                
+                try:
+                    # Record component health metrics
+                    await self._collect_component_health_metrics()
+                    
+                except Exception as e:
+                    logger.error(f"Error collecting component health metrics: {str(e)}")
+                    
+        except asyncio.CancelledError:
+            logger.info("Component health polling task cancelled")
+        except Exception as e:
+            logger.error(f"Unexpected error in component health polling: {str(e)}")
+    
+    async def _database_maintenance_task(self) -> None:
+        """Perform periodic database maintenance."""
+        try:
+            while True:
+                await asyncio.sleep(3600)  # Run every hour
+                
+                try:
+                    # Clean up old metrics (keep last 7 days)
+                    if self.database:
+                        cutoff_time = (datetime.utcnow() - timedelta(days=7)).isoformat() + "Z"
+                        await self.database.connection.execute(
+                            "DELETE FROM metrics WHERE timestamp < ?", (cutoff_time,)
+                        )
+                        await self.database.connection.commit()
+                        logger.info("Cleaned up old metrics from database")
+                    
+                    # Clear old cache entries
+                    current_time = datetime.utcnow()
+                    expired_keys = [
+                        key for key, expiry in self.store.cache_expiry.items()
+                        if current_time > expiry
+                    ]
+                    
+                    for key in expired_keys:
+                        if key in self.store.aggregation_cache:
+                            del self.store.aggregation_cache[key]
+                        if key in self.store.cache_expiry:
+                            del self.store.cache_expiry[key]
+                    
+                    if expired_keys:
+                        logger.info(f"Cleaned up {len(expired_keys)} expired cache entries")
+                    
+                except Exception as e:
+                    logger.error(f"Error in database maintenance: {str(e)}")
+                    
+        except asyncio.CancelledError:
+            logger.info("Database maintenance task cancelled")
+        except Exception as e:
+            logger.error(f"Unexpected error in database maintenance: {str(e)}")
+    
+    async def _collect_system_metrics(self) -> None:
+        """Collect basic system metrics."""
+        try:
+            import psutil
+            
+            # CPU usage
+            cpu_percent = psutil.cpu_percent(interval=1)
+            await self.record_metric(
+                metric_id="res.cpu_usage",
+                value=cpu_percent,
+                source="system",
+                tags=["system", "resource"]
+            )
+            
+            # Memory usage
+            memory = psutil.virtual_memory()
+            await self.record_metric(
+                metric_id="res.memory_usage",
+                value=memory.used / (1024 * 1024),  # MB
+                source="system",
+                tags=["system", "resource"]
+            )
+            
+            # Disk usage
+            disk = psutil.disk_usage('/')
+            disk_usage_percent = (disk.used / disk.total) * 100
+            await self.record_metric(
+                metric_id="res.disk_usage",
+                value=disk_usage_percent,
+                source="system",
+                tags=["system", "resource"]
+            )
+            
+        except ImportError:
+            # psutil not available, collect basic metrics
+            await self.record_metric(
+                metric_id="ops.uptime",
+                value=100.0,  # Assume system is up if we're running
+                source="system",
+                tags=["system", "operational"]
+            )
+        except Exception as e:
+            logger.error(f"Error collecting system metrics: {str(e)}")
+    
+    async def _collect_component_health_metrics(self) -> None:
+        """Collect component health metrics."""
+        try:
+            # Record that the metrics engine itself is healthy
+            await self.record_metric(
+                metric_id="ops.uptime",
+                value=100.0,
+                source="sophia_metrics_engine",
+                tags=["sophia", "operational"]
+            )
+            
+            # Record metrics collection rate
+            current_time = datetime.utcnow()
+            recent_metrics = await self.store.query_metrics(
+                start_time=(current_time - timedelta(minutes=5)).isoformat() + "Z",
+                end_time=current_time.isoformat() + "Z",
+                limit=1000
+            )
+            
+            metrics_per_minute = len(recent_metrics) / 5.0
+            await self.record_metric(
+                metric_id="perf.throughput",
+                value=metrics_per_minute,
+                source="sophia_metrics_engine",
+                tags=["sophia", "performance"]
+            )
+            
+            # Record database performance if available
+            if self.database:
+                start_time = time.time()
+                await self.database.connection.execute("SELECT COUNT(*) FROM metrics")
+                query_time = (time.time() - start_time) * 1000  # ms
+                
+                await self.record_metric(
+                    metric_id="perf.processing_time",
+                    value=query_time,
+                    source="sophia_database",
+                    tags=["sophia", "database", "performance"]
+                )
+            
+        except Exception as e:
+            logger.error(f"Error collecting component health metrics: {str(e)}")
 
 # Global singleton instance
 _metrics_engine = MetricsEngine()

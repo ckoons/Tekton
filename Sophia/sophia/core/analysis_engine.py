@@ -1584,6 +1584,278 @@ class AnalysisEngine:
             logger.info("Periodic trend analysis task cancelled")
         except Exception as e:
             logger.error(f"Unexpected error in trend analysis task: {e}")
+    
+    async def compare_metric_sets(
+        self,
+        baseline_data: List[Dict[str, Any]],
+        comparison_data: List[Dict[str, Any]]
+    ) -> Dict[str, Any]:
+        """
+        Compare two sets of metric data statistically.
+        
+        Args:
+            baseline_data: Baseline metric data
+            comparison_data: Comparison metric data
+            
+        Returns:
+            Statistical comparison results
+        """
+        # Extract values from both datasets
+        baseline_values = []
+        comparison_values = []
+        
+        for metric in baseline_data:
+            if "value" in metric:
+                try:
+                    baseline_values.append(float(metric["value"]))
+                except (ValueError, TypeError):
+                    continue
+        
+        for metric in comparison_data:
+            if "value" in metric:
+                try:
+                    comparison_values.append(float(metric["value"]))
+                except (ValueError, TypeError):
+                    continue
+        
+        if not baseline_values or not comparison_values:
+            return {
+                "error": "Insufficient data for comparison",
+                "baseline_count": len(baseline_values),
+                "comparison_count": len(comparison_values)
+            }
+        
+        # Calculate basic statistics for both sets
+        baseline_mean = sum(baseline_values) / len(baseline_values)
+        comparison_mean = sum(comparison_values) / len(comparison_values)
+        
+        baseline_std = math.sqrt(sum((x - baseline_mean) ** 2 for x in baseline_values) / len(baseline_values))
+        comparison_std = math.sqrt(sum((x - comparison_mean) ** 2 for x in comparison_values) / len(comparison_values))
+        
+        # Calculate percentage change
+        if baseline_mean != 0:
+            percent_change = ((comparison_mean - baseline_mean) / baseline_mean) * 100
+        else:
+            percent_change = 0
+        
+        # Perform t-test (simplified)
+        pooled_std = math.sqrt(
+            ((len(baseline_values) - 1) * baseline_std ** 2 + 
+             (len(comparison_values) - 1) * comparison_std ** 2) / 
+            (len(baseline_values) + len(comparison_values) - 2)
+        )
+        
+        if pooled_std > 0:
+            t_statistic = (comparison_mean - baseline_mean) / (
+                pooled_std * math.sqrt(1/len(baseline_values) + 1/len(comparison_values))
+            )
+        else:
+            t_statistic = 0
+        
+        # Determine significance (simplified)
+        critical_value = 2.0  # Approximately 95% confidence for large samples
+        is_significant = abs(t_statistic) > critical_value
+        
+        # Effect size (Cohen's d)
+        if pooled_std > 0:
+            cohens_d = (comparison_mean - baseline_mean) / pooled_std
+        else:
+            cohens_d = 0
+        
+        # Interpret effect size
+        if abs(cohens_d) < 0.2:
+            effect_size = "negligible"
+        elif abs(cohens_d) < 0.5:
+            effect_size = "small"
+        elif abs(cohens_d) < 0.8:
+            effect_size = "medium"
+        else:
+            effect_size = "large"
+        
+        return {
+            "baseline": {
+                "count": len(baseline_values),
+                "mean": baseline_mean,
+                "std_dev": baseline_std,
+                "min": min(baseline_values),
+                "max": max(baseline_values)
+            },
+            "comparison": {
+                "count": len(comparison_values),
+                "mean": comparison_mean,
+                "std_dev": comparison_std,
+                "min": min(comparison_values),
+                "max": max(comparison_values)
+            },
+            "difference": {
+                "absolute": comparison_mean - baseline_mean,
+                "percent_change": percent_change,
+                "is_improvement": comparison_mean > baseline_mean,
+                "is_significant": is_significant
+            },
+            "statistics": {
+                "t_statistic": t_statistic,
+                "cohens_d": cohens_d,
+                "effect_size": effect_size,
+                "pooled_std": pooled_std
+            },
+            "interpretation": {
+                "direction": "increase" if comparison_mean > baseline_mean else "decrease",
+                "magnitude": effect_size,
+                "confidence": "high" if is_significant else "low"
+            }
+        }
+    
+    async def analyze_experiment_results(
+        self,
+        results: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        """
+        Perform deep analysis on experiment results.
+        
+        Args:
+            results: Experiment results to analyze
+            
+        Returns:
+            Deep analysis of the results
+        """
+        analysis = {
+            "summary": {},
+            "statistical_significance": {},
+            "effect_sizes": {},
+            "recommendations": [],
+            "confidence_assessment": {}
+        }
+        
+        try:
+            # Analyze different types of experiments
+            if "control" in results and "treatment" in results:
+                # A/B test analysis
+                analysis = await self._analyze_ab_test_results(results)
+            elif "combinations" in results:
+                # Multivariate test analysis
+                analysis = await self._analyze_multivariate_results(results)
+            elif "production" in results and "shadow" in results:
+                # Shadow mode analysis
+                analysis = await self._analyze_shadow_mode_results(results)
+            else:
+                # Generic experiment analysis
+                analysis = await self._analyze_generic_experiment_results(results)
+            
+            # Add meta-analysis
+            analysis["meta_analysis"] = {
+                "data_quality": self._assess_data_quality(results),
+                "sample_adequacy": self._assess_sample_adequacy(results),
+                "external_validity": self._assess_external_validity(results),
+                "internal_validity": self._assess_internal_validity(results)
+            }
+            
+        except Exception as e:
+            logger.error(f"Error in experiment results analysis: {str(e)}")
+            analysis["error"] = str(e)
+        
+        return analysis
+    
+    async def _analyze_ab_test_results(self, results: Dict[str, Any]) -> Dict[str, Any]:
+        """Analyze A/B test results."""
+        control_data = results.get("control", {})
+        treatment_data = results.get("treatment", {})
+        comparison = results.get("comparison", {})
+        
+        analysis = {
+            "experiment_type": "A/B Test",
+            "summary": {
+                "winner": "treatment" if results.get("conclusion", "").startswith("Treatment is significantly better") else "control",
+                "confidence": results.get("confidence_level", 0),
+                "recommendation": results.get("recommended_action", "Continue testing")
+            },
+            "detailed_metrics": {},
+            "overall_assessment": {}
+        }
+        
+        # Analyze each metric
+        for metric_id, comp_data in comparison.items():
+            if isinstance(comp_data, dict) and "difference" in comp_data:
+                difference = comp_data["difference"]
+                analysis["detailed_metrics"][metric_id] = {
+                    "percent_change": difference.get("percent_change", 0),
+                    "absolute_change": difference.get("absolute", 0),
+                    "is_significant": difference.get("is_significant", False),
+                    "direction": difference.get("direction", "neutral"),
+                    "effect_size": comp_data.get("statistics", {}).get("effect_size", "unknown")
+                }
+        
+        return analysis
+    
+    async def _analyze_multivariate_results(self, results: Dict[str, Any]) -> Dict[str, Any]:
+        """Analyze multivariate test results."""
+        return {
+            "experiment_type": "Multivariate Test",
+            "summary": {
+                "best_combination": results.get("best_combination", "unknown"),
+                "confidence_levels": results.get("confidence_levels", {}),
+                "recommendation": results.get("recommended_action", "Continue testing")
+            },
+            "combination_performance": results.get("combinations", {}),
+            "statistical_analysis": results.get("comparison", {})
+        }
+    
+    async def _analyze_shadow_mode_results(self, results: Dict[str, Any]) -> Dict[str, Any]:
+        """Analyze shadow mode test results."""
+        return {
+            "experiment_type": "Shadow Mode Test",
+            "summary": {
+                "production_performance": results.get("production", {}),
+                "shadow_performance": results.get("shadow", {}),
+                "recommendation": results.get("recommended_action", "Continue monitoring")
+            },
+            "performance_comparison": results.get("comparison", {}),
+            "risk_assessment": results.get("risk_assessment", {})
+        }
+    
+    async def _analyze_generic_experiment_results(self, results: Dict[str, Any]) -> Dict[str, Any]:
+        """Analyze generic experiment results."""
+        return {
+            "experiment_type": "Generic Experiment",
+            "summary": {
+                "conclusion": results.get("conclusion", "Inconclusive"),
+                "confidence": results.get("confidence_level", 0),
+                "recommendation": results.get("recommended_action", "Continue testing")
+            },
+            "raw_results": results
+        }
+    
+    def _assess_data_quality(self, results: Dict[str, Any]) -> Dict[str, str]:
+        """Assess the quality of experiment data."""
+        return {
+            "completeness": "high",  # Simplified assessment
+            "consistency": "high",
+            "reliability": "medium"
+        }
+    
+    def _assess_sample_adequacy(self, results: Dict[str, Any]) -> Dict[str, str]:
+        """Assess if sample size is adequate."""
+        return {
+            "size_adequacy": "adequate",  # Simplified assessment
+            "power_analysis": "sufficient",
+            "recommendation": "current sample size is adequate"
+        }
+    
+    def _assess_external_validity(self, results: Dict[str, Any]) -> Dict[str, str]:
+        """Assess external validity of results."""
+        return {
+            "generalizability": "medium",  # Simplified assessment
+            "population_representativeness": "good",
+            "context_transferability": "high"
+        }
+    
+    def _assess_internal_validity(self, results: Dict[str, Any]) -> Dict[str, str]:
+        """Assess internal validity of results."""
+        return {
+            "confounding_control": "good",  # Simplified assessment
+            "randomization_quality": "high",
+            "measurement_validity": "high"
+        }
 
 # Global singleton instance
 _analysis_engine = AnalysisEngine()

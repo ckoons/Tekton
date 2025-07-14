@@ -15,6 +15,7 @@ from enum import Enum
 
 from .metrics_engine import get_metrics_engine
 from .analysis_engine import get_analysis_engine
+from .database import get_database
 from sophia.models.experiment import ExperimentStatus, ExperimentType
 
 # Configure logging
@@ -1280,6 +1281,7 @@ class ExperimentFramework:
         self.is_initialized = False
         self.metrics_engine = None
         self.analysis_engine = None
+        self.database = None
         self.experiments = {}
         self.active_runners = {}
         
@@ -1292,11 +1294,12 @@ class ExperimentFramework:
         """
         logger.info("Initializing Sophia Experiment Framework...")
         
-        # Get required engines
+        # Get required engines and database
         self.metrics_engine = await get_metrics_engine()
         self.analysis_engine = await get_analysis_engine()
+        self.database = await get_database()
         
-        # Load existing experiments
+        # Load existing experiments from database
         await self._load_experiments()
         
         self.is_initialized = True
@@ -1431,11 +1434,9 @@ class ExperimentFramework:
             "results": None
         }
         
-        # Store experiment
+        # Store experiment in memory and database
         self.experiments[experiment_id] = experiment
-        
-        # Save experiments
-        await self._save_experiments()
+        await self.database.save_experiment(experiment)
         
         logger.info(f"Created experiment {experiment_id}: {name}")
         return experiment_id
@@ -1828,27 +1829,21 @@ class ExperimentFramework:
             
     async def _load_experiments(self) -> bool:
         """
-        Load experiments from storage.
+        Load experiments from database.
         
         Returns:
             True if successful
         """
-        # Define the experiments file path
-        file_path = os.path.join(os.path.dirname(__file__), "..", "..", "data", "experiments", "experiments.json")
-        
-        # Create directory if it doesn't exist
-        os.makedirs(os.path.dirname(file_path), exist_ok=True)
-        
-        # Load experiments
         try:
-            if os.path.exists(file_path):
-                with open(file_path, "r") as f:
-                    self.experiments = json.load(f)
-                logger.info(f"Loaded {len(self.experiments)} experiments from {file_path}")
-            else:
-                self.experiments = {}
-                logger.info(f"No experiments file found at {file_path}, starting with empty state")
-                
+            # Load all experiments from database
+            experiment_list = await self.database.query_experiments()
+            
+            # Convert to dictionary format for compatibility
+            self.experiments = {}
+            for exp in experiment_list:
+                self.experiments[exp['id']] = exp
+            
+            logger.info(f"Loaded {len(self.experiments)} experiments from database")
             return True
         except Exception as e:
             logger.error(f"Error loading experiments: {e}")
@@ -1857,22 +1852,17 @@ class ExperimentFramework:
             
     async def _save_experiments(self) -> bool:
         """
-        Save experiments to storage.
+        Save experiments to database.
         
         Returns:
             True if successful
         """
-        # Define the experiments file path
-        file_path = os.path.join(os.path.dirname(__file__), "..", "..", "data", "experiments", "experiments.json")
-        
-        # Create directory if it doesn't exist
-        os.makedirs(os.path.dirname(file_path), exist_ok=True)
-        
-        # Save experiments
         try:
-            with open(file_path, "w") as f:
-                json.dump(self.experiments, f, indent=2)
-            logger.info(f"Saved {len(self.experiments)} experiments to {file_path}")
+            # Save all experiments to database
+            for experiment in self.experiments.values():
+                await self.database.save_experiment(experiment)
+            
+            logger.info(f"Saved {len(self.experiments)} experiments to database")
             return True
         except Exception as e:
             logger.error(f"Error saving experiments: {e}")
