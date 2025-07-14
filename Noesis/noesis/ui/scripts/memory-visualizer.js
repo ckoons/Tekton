@@ -1,6 +1,7 @@
 /**
  * Memory Visualizer for Noesis Dashboard
  * Creates visualizations for memory states, thought distributions, and memory metrics
+ * Uses shared TektonViz visualization framework
  */
 
 class MemoryVisualizer {
@@ -9,14 +10,22 @@ class MemoryVisualizer {
         this.data = null;
         this.isInitialized = false;
         
-        console.log('🧠 Memory Visualizer initialized');
+        // Initialize shared visualization components
+        this.tektonViz = new TektonViz('chartjs');
+        this.canvasViz = new TektonViz('canvas');
+        
+        console.log('🧠 Memory Visualizer initialized with TektonViz');
     }
     
     async init() {
         try {
+            // Initialize TektonViz components
+            await this.tektonViz.init('memory-charts-container');
+            await this.canvasViz.init('memory-canvas-container');
+            
             this.setupCharts();
             this.isInitialized = true;
-            console.log('✅ Memory Visualizer ready');
+            console.log('✅ Memory Visualizer ready with TektonViz');
         } catch (error) {
             console.error('❌ Memory Visualizer initialization failed:', error);
             throw error;

@@ -1,6 +1,18 @@
 /**
  * Unified visualization API for Tekton components
  * Provides high-level visualization methods that work with any renderer
+ * 
+ * @example
+ * // Basic usage with Chart.js renderer
+ * const viz = new TektonViz('chartjs');
+ * await viz.init('chart-container');
+ * await viz.drawTimeSeries(timeSeriesData);
+ * 
+ * @example
+ * // High-performance canvas rendering
+ * const viz = new TektonViz('canvas');
+ * await viz.init('canvas-container');
+ * await viz.drawManifold(manifoldData);
  */
 
 class TektonViz {

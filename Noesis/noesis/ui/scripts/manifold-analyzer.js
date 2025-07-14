@@ -1,6 +1,7 @@
 /**
  * Manifold Analyzer for Noesis Dashboard
  * Creates 3D visualizations and analysis of memory state manifolds
+ * Uses shared TektonViz framework for consistent visualization
  */
 
 class ManifoldAnalyzer {
@@ -11,7 +12,11 @@ class ManifoldAnalyzer {
         this.isInitialized = false;
         this.currentReductionMethod = 'pca';
         
-        console.log('🌐 Manifold Analyzer initialized');
+        // Initialize TektonViz for manifold visualizations
+        this.tektonViz = new TektonViz('canvas');
+        this.heatmapViz = new TektonViz('chartjs');
+        
+        console.log('🌐 Manifold Analyzer initialized with TektonViz');
     }
     
     async init() {
