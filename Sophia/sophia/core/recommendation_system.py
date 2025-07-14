@@ -18,8 +18,9 @@ from enum import Enum
 # Import other core engines
 from .metrics_engine import get_metrics_engine
 from .analysis_engine import get_analysis_engine
-from .experiment_framework import get_experiment_framework
-from .llm_adapter import get_llm_adapter
+from .database import get_database
+# Note: LLM adapter and experiment framework may not be available yet
+# We'll handle their absence gracefully
 
 logger = logging.getLogger("sophia.recommendation_system")
 
@@ -71,6 +72,7 @@ class RecommendationSystem:
         self.metrics_engine = None
         self.analysis_engine = None
         self.experiment_framework = None
+        self.database = None
         self.generation_tasks = {}
         
     async def initialize(self) -> bool:
@@ -85,7 +87,17 @@ class RecommendationSystem:
         # Get required engines
         self.metrics_engine = await get_metrics_engine()
         self.analysis_engine = await get_analysis_engine()
-        self.experiment_framework = await get_experiment_framework()
+        
+        # Initialize database
+        self.database = await get_database()
+        
+        # Try to get experiment framework (may not be available yet)
+        try:
+            from .experiment_framework import get_experiment_framework
+            self.experiment_framework = await get_experiment_framework()
+        except ImportError:
+            logger.warning("Experiment framework not available, some features will be limited")
+            self.experiment_framework = None
         
         # Load recommendations if available
         await self._load_recommendations()
@@ -556,21 +568,26 @@ class RecommendationSystem:
             try:
                 logger.info(f"Generating LLM-based recommendations for component {component_id}")
                 
-                # Get LLM adapter
-                llm_adapter = await get_llm_adapter()
-                
-                # Generate LLM-enhanced analysis
-                llm_analysis = await llm_adapter.analyze_metrics(
-                    metrics_data=analysis,
-                    component_id=component_id
-                )
-                
-                # Generate recommendations based on LLM analysis
-                llm_recommendations = await llm_adapter.generate_recommendations(
-                    analysis_results=llm_analysis,
-                    target_component=component_id,
-                    count=5  # Request 5 recommendations
-                )
+                # Try to get LLM adapter (may not be available)
+                try:
+                    from .llm_adapter import get_llm_adapter
+                    llm_adapter = await get_llm_adapter()
+                    
+                    # Generate LLM-enhanced analysis
+                    llm_analysis = await llm_adapter.analyze_metrics(
+                        metrics_data=analysis,
+                        component_id=component_id
+                    )
+                    
+                    # Generate recommendations based on LLM analysis
+                    llm_recommendations = await llm_adapter.generate_recommendations(
+                        analysis_results=llm_analysis,
+                        target_component=component_id,
+                        count=5  # Request 5 recommendations
+                    )
+                except ImportError:
+                    logger.warning("LLM adapter not available, using rule-based recommendations only")
+                    llm_recommendations = []
                 
                 # Create recommendations from LLM output
                 created_recommendations = []
@@ -705,6 +722,11 @@ class RecommendationSystem:
             Generated recommendation or None if unsuccessful
         """
         try:
+            # Check if experiment framework is available
+            if not self.experiment_framework:
+                logger.warning("Experiment framework not available, cannot generate recommendation from experiment")
+                return None
+                
             # Get experiment report
             report = await self.experiment_framework.generate_experiment_report(
                 experiment_id=experiment_id
@@ -737,25 +759,30 @@ class RecommendationSystem:
             try:
                 logger.info(f"Generating LLM-enhanced recommendation for experiment {experiment_id}")
                 
-                # Get LLM adapter
-                llm_adapter = await get_llm_adapter()
-                
-                # Create hypothesis from experiment details
-                hypothesis = f"Implementing the changes tested in experiment '{report['name']}' will improve {', '.join(report['metrics'])}"
-                
-                # Generate a well-designed experiment with LLM
-                experiment_design = await llm_adapter.design_experiment(
-                    hypothesis=hypothesis,
-                    available_components=report["components"],
-                    metrics_summary={"metrics": report["metrics"], "conclusion": report["conclusion"]}
-                )
+                # Try to get LLM adapter (may not be available)
+                try:
+                    from .llm_adapter import get_llm_adapter
+                    llm_adapter = await get_llm_adapter()
+                    
+                    # Create hypothesis from experiment details
+                    hypothesis = f"Implementing the changes tested in experiment '{report['name']}' will improve {', '.join(report['metrics'])}"
+                    
+                    # Generate a well-designed experiment with LLM
+                    experiment_design = await llm_adapter.design_experiment(
+                        hypothesis=hypothesis,
+                        available_components=report["components"],
+                        metrics_summary={"metrics": report["metrics"], "conclusion": report["conclusion"]}
+                    )
+                except ImportError:
+                    logger.warning("LLM adapter not available, using basic experiment-based recommendation")
+                    experiment_design = None
                 
                 # Generate a recommendation based on the experiment
                 title = f"Implement changes from experiment: {report['name']}"
                 
                 # Create implementation plan from the experiment design
-                implementation_steps = experiment_design.get("implementation_steps", [])
-                if not implementation_steps:
+                implementation_steps = experiment_design.get("implementation_steps", []) if experiment_design else []
+                if not implementation_steps and experiment_design:
                     implementation_steps = experiment_design.get("methodology", [])
                     
                 # Format the implementation plan
@@ -774,26 +801,35 @@ class RecommendationSystem:
                         f"4. Compare performance before and after implementation to verify expected improvements"
                     )
                     
-                # Enhance the description with LLM
-                llm_explanation = await llm_adapter.explain_analysis(
-                    analysis_data={
-                        "experiment": report["name"],
-                        "conclusion": report["conclusion"],
-                        "metrics": report["metrics"],
-                        "components": report["components"]
-                    },
-                    audience="technical"
-                )
+                # Enhance the description with LLM if available
+                if 'llm_adapter' in locals() and llm_adapter:
+                    try:
+                        llm_explanation = await llm_adapter.explain_analysis(
+                            analysis_data={
+                                "experiment": report["name"],
+                                "conclusion": report["conclusion"],
+                                "metrics": report["metrics"],
+                                "components": report["components"]
+                            },
+                            audience="technical"
+                        )
+                        description = llm_explanation if llm_explanation else None
+                    except Exception as e:
+                        logger.warning(f"LLM explanation failed: {e}")
+                        description = None
+                else:
+                    description = None
                 
-                description = llm_explanation if llm_explanation else (
-                    f"Based on the results of experiment '{report['name']}', "
-                    f"we recommend implementing the tested changes. "
-                    f"\n\nExperiment conclusion: {report['conclusion']}"
-                )
+                if not description:
+                    description = (
+                        f"Based on the results of experiment '{report['name']}', "
+                        f"we recommend implementing the tested changes. "
+                        f"\n\nExperiment conclusion: {report['conclusion']}"
+                    )
                 
                 # Create acceptance criteria
                 acceptance_criteria = []
-                success_criteria = experiment_design.get("success_criteria", [])
+                success_criteria = experiment_design.get("success_criteria", []) if experiment_design else []
                 
                 if success_criteria and isinstance(success_criteria, list):
                     acceptance_criteria = success_criteria
@@ -809,7 +845,7 @@ class RecommendationSystem:
                     title=title,
                     description=description,
                     component_ids=report["components"],
-                    impact_areas=experiment_design.get("impact_areas", ["performance"]),
+                    impact_areas=experiment_design.get("impact_areas", ["performance"]) if experiment_design else ["performance"],
                     estimated_impact=0.8,  # High impact since it's validated by experiment
                     effort_estimate=RecommendationImpact.MEDIUM,
                     implementation_plan=implementation_plan,
@@ -1620,10 +1656,30 @@ class RecommendationSystem:
         Returns:
             True if successful
         """
-        # This would normally load from a file or database
-        # For now, initialize with empty data
-        self.recommendations = {}
-        return True
+        try:
+            if self.database:
+                # Load recommendations from database
+                recommendations_data = await self.database.get_all_recommendations()
+                self.recommendations = {}
+                
+                for rec_data in recommendations_data:
+                    rec_id = rec_data.get('id')
+                    if rec_id:
+                        self.recommendations[rec_id] = rec_data
+                        
+                logger.info(f"Loaded {len(self.recommendations)} recommendations from database")
+            else:
+                # Fallback to empty data if no database
+                self.recommendations = {}
+                logger.warning("No database available, starting with empty recommendations")
+                
+            return True
+            
+        except Exception as e:
+            logger.error(f"Error loading recommendations: {e}")
+            # Fallback to empty data on error
+            self.recommendations = {}
+            return False
         
     async def _save_recommendations(self) -> bool:
         """
@@ -1632,10 +1688,31 @@ class RecommendationSystem:
         Returns:
             True if successful
         """
-        # This would normally save to a file or database
-        # For now, just log the current count
-        logger.debug(f"Would save {len(self.recommendations)} recommendations to storage")
-        return True
+        try:
+            if self.database:
+                # Save recommendations to database
+                for rec_id, recommendation in self.recommendations.items():
+                    await self.database.save_recommendation(
+                        recommendation_id=rec_id,
+                        title=recommendation.get('title', ''),
+                        description=recommendation.get('description', ''),
+                        priority=recommendation.get('priority', 'medium'),
+                        status=recommendation.get('status', 'proposed'),
+                        source=recommendation.get('source', 'analysis'),
+                        context=recommendation,
+                        created_at=recommendation.get('created_at'),
+                        updated_at=recommendation.get('updated_at')
+                    )
+                    
+                logger.debug(f"Saved {len(self.recommendations)} recommendations to database")
+            else:
+                logger.warning(f"No database available, cannot save {len(self.recommendations)} recommendations")
+                
+            return True
+            
+        except Exception as e:
+            logger.error(f"Error saving recommendations: {e}")
+            return False
 
 # Global singleton instance
 _recommendation_system = RecommendationSystem()

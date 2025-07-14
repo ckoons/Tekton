@@ -16,6 +16,7 @@ from enum import Enum
 
 from .metrics_engine import get_metrics_engine
 from .analysis_engine import get_analysis_engine
+from .database import get_database
 from sophia.models.intelligence import IntelligenceDimension, MeasurementMethod
 
 # Configure logging
@@ -915,6 +916,7 @@ class IntelligenceMeasurement:
         self.is_initialized = False
         self.metrics_engine = None
         self.analysis_engine = None
+        self.database = None
         self.measurer = None
         self.measurements = {}
         self.profiles = {}
@@ -928,9 +930,10 @@ class IntelligenceMeasurement:
         """
         logger.info("Initializing Sophia Intelligence Measurement Framework...")
         
-        # Get required engines
+        # Get required engines and database
         self.metrics_engine = await get_metrics_engine()
         self.analysis_engine = await get_analysis_engine()
+        self.database = await get_database()
         
         # Create intelligence measurer
         self.measurer = IntelligenceMeasurer(
@@ -1050,14 +1053,17 @@ class IntelligenceMeasurement:
             "tags": tags or []
         }
         
-        # Store measurement
+        # Store measurement in memory and database
         self.measurements[measurement_id] = measurement
+        
+        # Save to database
+        await self._save_measurement_to_database(measurement)
         
         # Update component profile
         await self._update_component_profile(component_id, measurement)
         
-        # Save measurements and profiles
-        await self._save_measurements()
+        # Save profiles to database
+        await self._save_profile_to_database(component_id, self.profiles[component_id])
         
         logger.info(f"Recorded intelligence measurement {measurement_id} for component {component_id}")
         return measurement_id
@@ -1534,10 +1540,135 @@ class IntelligenceMeasurement:
             
         # Store updated profile
         self.profiles[component_id] = profile
+    
+    async def _save_measurement_to_database(self, measurement: Dict[str, Any]) -> bool:
+        """
+        Save intelligence measurement to database.
+        
+        Args:
+            measurement: Measurement to save
+            
+        Returns:
+            True if successful
+        """
+        try:
+            await self.database.connection.execute("""
+                INSERT INTO intelligence_measurements 
+                (component_name, dimension, value, context, measurement_type, timestamp)
+                VALUES (?, ?, ?, ?, ?, ?)
+            """, (
+                measurement.get('component_id'),
+                measurement.get('dimension'),
+                measurement.get('score'),
+                json.dumps({
+                    'measurement_method': measurement.get('measurement_method'),
+                    'confidence': measurement.get('confidence'),
+                    'context': measurement.get('context'),
+                    'evidence': measurement.get('evidence'),
+                    'evaluator': measurement.get('evaluator'),
+                    'tags': measurement.get('tags', [])
+                }),
+                measurement.get('measurement_method'),
+                measurement.get('timestamp')
+            ))
+            await self.database.connection.commit()
+            return True
+        except Exception as e:
+            logger.error(f"Error saving measurement to database: {str(e)}")
+            return False
+    
+    async def _save_profile_to_database(self, component_id: str, profile: Dict[str, Any]) -> bool:
+        """
+        Save intelligence profile to database.
+        
+        Args:
+            component_id: Component ID
+            profile: Profile to save
+            
+        Returns:
+            True if successful
+        """
+        try:
+            # Use the database method we implemented earlier
+            await self.database.save_intelligence_profile(component_id, profile)
+            return True
+        except Exception as e:
+            logger.error(f"Error saving profile to database: {str(e)}")
+            return False
         
     async def _load_measurements(self) -> bool:
         """
-        Load measurements and profiles from storage.
+        Load measurements and profiles from database.
+        
+        Returns:
+            True if successful
+        """
+        try:
+            # Load intelligence measurements from database
+            cursor = await self.database.connection.execute("""
+                SELECT * FROM intelligence_measurements ORDER BY timestamp DESC
+            """)
+            measurement_rows = await cursor.fetchall()
+            
+            # Convert database rows to measurement objects
+            self.measurements = {}
+            for row in measurement_rows:
+                measurement_id = str(uuid.uuid4())  # Generate ID for in-memory storage
+                
+                # Parse context JSON
+                context_data = {}
+                if row['context']:
+                    try:
+                        context_data = json.loads(row['context'])
+                    except json.JSONDecodeError:
+                        logger.warning(f"Failed to parse context for measurement: {row['context']}")
+                
+                measurement = {
+                    'id': measurement_id,
+                    'component_id': row['component_name'],
+                    'dimension': row['dimension'], 
+                    'score': row['value'],
+                    'timestamp': row['timestamp'],
+                    'measurement_method': context_data.get('measurement_method', row['measurement_type']),
+                    'confidence': context_data.get('confidence', 0.0),
+                    'context': context_data.get('context', {}),
+                    'evidence': context_data.get('evidence', {}),
+                    'evaluator': context_data.get('evaluator'),
+                    'tags': context_data.get('tags', [])
+                }
+                
+                self.measurements[measurement_id] = measurement
+            
+            logger.info(f"Loaded {len(self.measurements)} measurements from database")
+            
+            # Load intelligence profiles from database
+            cursor = await self.database.connection.execute("""
+                SELECT * FROM intelligence_profiles
+            """)
+            profile_rows = await cursor.fetchall()
+            
+            self.profiles = {}
+            for row in profile_rows:
+                try:
+                    profile_data = json.loads(row['profile_data'])
+                    self.profiles[row['component_name']] = profile_data
+                except json.JSONDecodeError:
+                    logger.warning(f"Failed to parse profile data for component: {row['component_name']}")
+            
+            logger.info(f"Loaded {len(self.profiles)} profiles from database")
+            
+            # Fallback: also try to load from JSON files for backward compatibility
+            await self._load_from_json_fallback()
+            
+            return True
+        except Exception as e:
+            logger.error(f"Error loading measurements from database: {e}")
+            # Fallback to JSON file loading
+            return await self._load_from_json_fallback()
+    
+    async def _load_from_json_fallback(self) -> bool:
+        """
+        Fallback method to load from JSON files for backward compatibility.
         
         Returns:
             True if successful
@@ -1546,64 +1677,76 @@ class IntelligenceMeasurement:
         measurements_file = os.path.join(os.path.dirname(__file__), "..", "..", "data", "intelligence", "measurements.json")
         profiles_file = os.path.join(os.path.dirname(__file__), "..", "..", "data", "intelligence", "profiles.json")
         
-        # Create directories if they don't exist
-        os.makedirs(os.path.dirname(measurements_file), exist_ok=True)
-        
-        # Load measurements
         try:
+            # Load measurements from JSON if file exists
             if os.path.exists(measurements_file):
                 with open(measurements_file, "r") as f:
-                    self.measurements = json.load(f)
-                logger.info(f"Loaded {len(self.measurements)} measurements from {measurements_file}")
-            else:
-                self.measurements = {}
-                logger.info(f"No measurements file found at {measurements_file}, starting with empty state")
+                    json_measurements = json.load(f)
                 
-            # Load profiles
+                # Merge with existing measurements (database takes precedence)
+                for measurement_id, measurement in json_measurements.items():
+                    if measurement_id not in self.measurements:
+                        self.measurements[measurement_id] = measurement
+                
+                logger.info(f"Loaded additional {len(json_measurements)} measurements from JSON fallback")
+                
+            # Load profiles from JSON if file exists  
             if os.path.exists(profiles_file):
                 with open(profiles_file, "r") as f:
-                    self.profiles = json.load(f)
-                logger.info(f"Loaded {len(self.profiles)} profiles from {profiles_file}")
-            else:
-                self.profiles = {}
-                logger.info(f"No profiles file found at {profiles_file}, starting with empty state")
+                    json_profiles = json.load(f)
+                
+                # Merge with existing profiles (database takes precedence)
+                for component_id, profile in json_profiles.items():
+                    if component_id not in self.profiles:
+                        self.profiles[component_id] = profile
+                
+                logger.info(f"Loaded additional {len(json_profiles)} profiles from JSON fallback")
                 
             return True
         except Exception as e:
-            logger.error(f"Error loading measurements: {e}")
-            self.measurements = {}
-            self.profiles = {}
+            logger.error(f"Error loading from JSON fallback: {e}")
+            # Initialize with empty state if all loading fails
+            if not hasattr(self, 'measurements') or not self.measurements:
+                self.measurements = {}
+            if not hasattr(self, 'profiles') or not self.profiles:
+                self.profiles = {}
             return False
             
     async def _save_measurements(self) -> bool:
         """
-        Save measurements and profiles to storage.
+        Save measurements and profiles to storage (database).
+        
+        Note: This method is now mostly for backward compatibility.
+        Measurements and profiles are saved directly to database in real-time.
         
         Returns:
             True if successful
         """
-        # Define the measurements file path
-        measurements_file = os.path.join(os.path.dirname(__file__), "..", "..", "data", "intelligence", "measurements.json")
-        profiles_file = os.path.join(os.path.dirname(__file__), "..", "..", "data", "intelligence", "profiles.json")
+        # Since we're now saving to database in real-time, this method
+        # is primarily for backward compatibility and JSON backup
         
-        # Create directories if they don't exist
-        os.makedirs(os.path.dirname(measurements_file), exist_ok=True)
-        
-        # Save measurements
         try:
+            # Optional: Save JSON backup files
+            measurements_file = os.path.join(os.path.dirname(__file__), "..", "..", "data", "intelligence", "measurements.json")
+            profiles_file = os.path.join(os.path.dirname(__file__), "..", "..", "data", "intelligence", "profiles.json")
+            
+            # Create directories if they don't exist
+            os.makedirs(os.path.dirname(measurements_file), exist_ok=True)
+            
+            # Save JSON backups
             with open(measurements_file, "w") as f:
                 json.dump(self.measurements, f, indent=2)
-            logger.info(f"Saved {len(self.measurements)} measurements to {measurements_file}")
             
-            # Save profiles
             with open(profiles_file, "w") as f:
                 json.dump(self.profiles, f, indent=2)
-            logger.info(f"Saved {len(self.profiles)} profiles to {profiles_file}")
             
+            logger.info(f"Saved JSON backups: {len(self.measurements)} measurements, {len(self.profiles)} profiles")
             return True
+            
         except Exception as e:
-            logger.error(f"Error saving measurements: {e}")
-            return False
+            logger.warning(f"Error saving JSON backups (non-critical): {e}")
+            # Return True since database is the primary storage
+            return True
             
     def _create_default_dimensions(self) -> Dict[str, Dict[str, Any]]:
         """
