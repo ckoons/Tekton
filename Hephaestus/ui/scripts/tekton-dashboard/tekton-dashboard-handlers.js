@@ -1088,6 +1088,70 @@ console.log('[FILE_TRACE] Loading: tekton-dashboard-handlers.js');
                     </div>
                 ` : ''}
                 
+                ${mergeRequest.options && mergeRequest.options.length > 0 ? `
+                    <div class="tekton-dashboard__merge-options-section">
+                        <h4>Resolution Options</h4>
+                        <div class="tekton-dashboard__merge-options-container">
+                            ${mergeRequest.options.map((option, index) => `
+                                <div class="tekton-dashboard__merge-option ${mergeRequest.resolution_choice === option.id ? 'tekton-dashboard__merge-option--selected' : ''}" 
+                                     data-option-id="${option.id}">
+                                    <div class="tekton-dashboard__merge-option-header">
+                                        <h5 class="tekton-dashboard__merge-option-title">
+                                            Option ${String.fromCharCode(65 + index)}: ${escapeHtml(option.approach)}
+                                        </h5>
+                                        <span class="tekton-dashboard__merge-option-source">
+                                            ${option.ai_worker} / ${option.branch}
+                                        </span>
+                                    </div>
+                                    
+                                    <div class="tekton-dashboard__merge-option-stats">
+                                        <div class="tekton-dashboard__merge-option-stat">
+                                            <span class="tekton-dashboard__stat-label">Code Quality:</span>
+                                            <span class="tekton-dashboard__stat-value">${option.code_quality}</span>
+                                        </div>
+                                        <div class="tekton-dashboard__merge-option-stat">
+                                            <span class="tekton-dashboard__stat-label">Test Coverage:</span>
+                                            <span class="tekton-dashboard__stat-value">${option.test_coverage}</span>
+                                        </div>
+                                        <div class="tekton-dashboard__merge-option-stat">
+                                            <span class="tekton-dashboard__stat-label">Changes:</span>
+                                            <span class="tekton-dashboard__stat-value">+${option.lines_added} / -${option.lines_removed}</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="tekton-dashboard__merge-option-pros-cons">
+                                        <div class="tekton-dashboard__pros">
+                                            <h6>Pros:</h6>
+                                            <ul>
+                                                ${option.pros.map(pro => `<li>${escapeHtml(pro)}</li>`).join('')}
+                                            </ul>
+                                        </div>
+                                        <div class="tekton-dashboard__cons">
+                                            <h6>Cons:</h6>
+                                            <ul>
+                                                ${option.cons.map(con => `<li>${escapeHtml(con)}</li>`).join('')}
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="tekton-dashboard__merge-option-files">
+                                        <details>
+                                            <summary>Files Changed (${option.files_changed.length})</summary>
+                                            <ul class="tekton-dashboard__file-list">
+                                                ${option.files_changed.map(file => `<li>${escapeHtml(file)}</li>`).join('')}
+                                            </ul>
+                                        </details>
+                                    </div>
+                                    
+                                    <button class="tekton-dashboard__option-select-btn" data-option-id="${option.id}">
+                                        Select Option ${String.fromCharCode(65 + index)}
+                                    </button>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                ` : ''}
+                
                 ${mergeRequest.metadata ? `
                     <div class="tekton-dashboard__project-info">
                         <h4>Additional Information</h4>
@@ -1097,27 +1161,87 @@ console.log('[FILE_TRACE] Loading: tekton-dashboard-handlers.js');
             </div>
         `;
         
+        // Add event handlers for option selection
+        modalBody.addEventListener('click', (event) => {
+            if (event.target.classList.contains('tekton-dashboard__option-select-btn')) {
+                const optionId = event.target.getAttribute('data-option-id');
+                selectMergeOption(mergeRequest.id, optionId);
+            }
+        });
+        
         // Update button states based on merge state
         const mergeBtn = document.getElementById('merge-modal-merge');
         const rejectBtn = document.getElementById('merge-modal-reject');
         
         if (mergeBtn) {
-            mergeBtn.style.display = (mergeRequest.state === 'clean' || mergeRequest.state === 'conflicted') ? 'inline-flex' : 'none';
+            // For conflicted merges, only show merge button if an option is selected
+            if (mergeRequest.state === 'conflicted') {
+                mergeBtn.style.display = mergeRequest.resolution_choice ? 'inline-flex' : 'none';
+                mergeBtn.textContent = mergeRequest.resolution_choice ? 'Merge with Selected Option' : 'Merge';
+            } else {
+                mergeBtn.style.display = mergeRequest.state === 'clean' ? 'inline-flex' : 'none';
+            }
         }
         if (rejectBtn) {
             rejectBtn.style.display = (mergeRequest.state !== 'merged' && mergeRequest.state !== 'rejected') ? 'inline-flex' : 'none';
         }
     }
     
+    function selectMergeOption(mergeId, optionId) {
+        // Update UI to show selected option
+        const options = document.querySelectorAll('.tekton-dashboard__merge-option');
+        options.forEach(opt => {
+            opt.classList.remove('tekton-dashboard__merge-option--selected');
+            if (opt.getAttribute('data-option-id') === optionId) {
+                opt.classList.add('tekton-dashboard__merge-option--selected');
+            }
+        });
+        
+        // Store selected option in component state
+        const currentState = component.state.get('modalState.mergeDetail');
+        component.state.set('modalState.mergeDetail', {
+            ...currentState,
+            selectedOption: optionId
+        });
+        
+        // Enable merge button
+        const mergeBtn = document.getElementById('merge-modal-merge');
+        if (mergeBtn) {
+            mergeBtn.style.display = 'inline-flex';
+            mergeBtn.textContent = 'Merge with Selected Option';
+        }
+        
+        showNotification(`Selected Option ${optionId === 'option_a' ? 'A' : 'B'}`, 'info');
+    }
+    
     async function handleMergeMergeRequest() {
         const mergeId = component.state.get('modalState.mergeDetail.mergeId');
+        const selectedOption = component.state.get('modalState.mergeDetail.selectedOption');
         if (!mergeId || !tektonService) return;
+        
+        // Check if we need to resolve conflicts first
+        const mergeDetails = await tektonService.getMergeRequestDetails(mergeId);
+        if (mergeDetails.state === 'conflicted' && !selectedOption && !mergeDetails.resolution_choice) {
+            showNotification('Please select a resolution option first', 'warning');
+            return;
+        }
         
         if (!confirm('Are you sure you want to merge this request?')) {
             return;
         }
         
         try {
+            // If conflicted and option selected, resolve first
+            if (mergeDetails.state === 'conflicted' && selectedOption) {
+                showNotification('Resolving conflicts...', 'info');
+                
+                const resolveResult = await tektonService.resolveConflict(mergeId, selectedOption);
+                if (!resolveResult) {
+                    showNotification('Failed to resolve conflicts', 'error');
+                    return;
+                }
+            }
+            
             showNotification('Executing merge...', 'info');
             
             const result = await tektonService.executeMerge(mergeId);

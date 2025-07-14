@@ -115,6 +115,28 @@ class TektonService extends window.tektonUI.componentUtils.BaseService {
             throw error;
         }
     }
+    
+    /**
+     * Resolve a merge conflict by selecting an option
+     * @param {string} mergeId - Merge request ID
+     * @param {string} optionId - Selected option ID
+     * @returns {Promise<boolean>} - Promise resolving to success status
+     */
+    async resolveConflict(mergeId, optionId) {
+        try {
+            const response = await this.apiCall(`/v1/merge-requests/${mergeId}/resolve`, {
+                method: 'POST',
+                body: JSON.stringify({
+                    chosen_option: optionId,
+                    reason: `Selected option ${optionId} for conflict resolution`
+                })
+            });
+            return response.message === 'Merge conflict resolved';
+        } catch (error) {
+            console.error('Failed to resolve conflict:', error);
+            throw error;
+        }
+    }
 
     /**
      * Connect to the Tekton API

@@ -1345,6 +1345,194 @@
   border-color: var(--color-danger-hover);
 }
 
+/* A/B Conflict Resolution Styles */
+.tekton-dashboard__merge-options-section {
+  background-color: var(--bg-secondary);
+  border-radius: var(--border-radius-md);
+  padding: var(--spacing-md);
+  margin-top: var(--spacing-lg);
+}
+
+.tekton-dashboard__merge-options-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: var(--spacing-lg);
+  margin-top: var(--spacing-md);
+}
+
+.tekton-dashboard__merge-option {
+  background-color: var(--bg-card);
+  border-radius: var(--border-radius-md);
+  padding: var(--spacing-md);
+  border: 2px solid var(--border-color);
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.tekton-dashboard__merge-option:hover {
+  border-color: var(--color-primary);
+  box-shadow: var(--box-shadow-md);
+}
+
+.tekton-dashboard__merge-option--selected {
+  border-color: var(--color-primary);
+  background-color: rgba(var(--primary-rgb), 0.05);
+  box-shadow: 0 0 0 4px rgba(var(--primary-rgb), 0.2);
+}
+
+.tekton-dashboard__merge-option-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: var(--spacing-md);
+  padding-bottom: var(--spacing-sm);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.tekton-dashboard__merge-option-title {
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+  margin: 0;
+  color: var(--text-primary);
+}
+
+.tekton-dashboard__merge-option-source {
+  font-family: var(--font-family-mono);
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+  background-color: var(--bg-tertiary);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--border-radius-sm);
+}
+
+.tekton-dashboard__merge-option-stats {
+  display: flex;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-md);
+  padding: var(--spacing-sm);
+  background-color: var(--bg-tertiary);
+  border-radius: var(--border-radius-sm);
+}
+
+.tekton-dashboard__merge-option-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+}
+
+.tekton-dashboard__stat-label {
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  margin-bottom: 2px;
+}
+
+.tekton-dashboard__stat-value {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.tekton-dashboard__merge-option-pros-cons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-md);
+}
+
+.tekton-dashboard__pros,
+.tekton-dashboard__cons {
+  background-color: var(--bg-tertiary);
+  border-radius: var(--border-radius-sm);
+  padding: var(--spacing-sm);
+}
+
+.tekton-dashboard__pros h6,
+.tekton-dashboard__cons h6 {
+  margin: 0 0 var(--spacing-xs) 0;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+}
+
+.tekton-dashboard__pros h6 {
+  color: var(--color-success);
+}
+
+.tekton-dashboard__cons h6 {
+  color: var(--color-warning);
+}
+
+.tekton-dashboard__pros ul,
+.tekton-dashboard__cons ul {
+  margin: 0;
+  padding-left: var(--spacing-md);
+  font-size: var(--font-size-sm);
+}
+
+.tekton-dashboard__pros li,
+.tekton-dashboard__cons li {
+  margin-bottom: var(--spacing-xs);
+}
+
+.tekton-dashboard__merge-option-files {
+  margin-bottom: var(--spacing-md);
+}
+
+.tekton-dashboard__merge-option-files details {
+  background-color: var(--bg-tertiary);
+  border-radius: var(--border-radius-sm);
+  padding: var(--spacing-sm);
+  cursor: pointer;
+}
+
+.tekton-dashboard__merge-option-files summary {
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  color: var(--text-primary);
+  outline: none;
+}
+
+.tekton-dashboard__merge-option-files summary:hover {
+  color: var(--color-primary);
+}
+
+.tekton-dashboard__file-list {
+  margin: var(--spacing-sm) 0 0 0;
+  padding-left: var(--spacing-md);
+  font-family: var(--font-family-mono);
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+}
+
+.tekton-dashboard__option-select-btn {
+  width: 100%;
+  padding: var(--spacing-sm) var(--spacing-md);
+  background-color: var(--color-primary);
+  color: white;
+  border: none;
+  border-radius: var(--border-radius-sm);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tekton-dashboard__option-select-btn:hover {
+  background-color: var(--color-primary-hover);
+  transform: translateY(-2px);
+  box-shadow: var(--box-shadow-sm);
+}
+
+.tekton-dashboard__merge-option--selected .tekton-dashboard__option-select-btn {
+  background-color: var(--color-success);
+}
+
+.tekton-dashboard__merge-option--selected .tekton-dashboard__option-select-btn:hover {
+  background-color: var(--color-success-hover);
+}
+
 /* Animations */
 @keyframes pulse-glow {
   0%, 100% {
