@@ -44,7 +44,9 @@ app = FastAPI(
 
 # Import and include analysis endpoints
 from .analysis_endpoints import router as analysis_router
+from .sophia_endpoints import router as sophia_router
 app.include_router(analysis_router)
+app.include_router(sophia_router)
 
 # Add CORS middleware
 app.add_middleware(
