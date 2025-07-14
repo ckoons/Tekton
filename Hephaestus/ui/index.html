@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="styles/profile.css">
     <link rel="stylesheet" href="styles/rhetor/rhetor-component.css">
     <link rel="stylesheet" href="styles/rhetor/rhetor-dashboard.css">
+    <link rel="stylesheet" href="styles/tekton-dashboard/tekton-dashboard.css">
     
     <!-- Apply theme immediately -->
     <script>
@@ -69,6 +70,9 @@
         }
         .nav-item[data-component="terma"] .status-indicator { 
             background-color: #5D4037; /* Brown */
+        }
+        .nav-item[data-component="tekton-dashboard"] .status-indicator { 
+            background-color: #00bfff; /* Sky Blue */
         }
         .nav-item[data-component="budget"] .status-indicator { 
             background-color: #34A853; /* Green */
@@ -281,6 +285,10 @@
                     </li>
                     <li class="nav-item" data-component="terma" data-tekton-nav-item="terma" data-tekton-nav-target="terma" data-tekton-state="inactive">
                         <span class="nav-label" data-greek-name="Terma - Terminal" data-functional-name="Terminal">Terma - Terminal</span>
+                        <span class="status-indicator"></span>
+                    </li>
+                    <li class="nav-item" data-component="tekton-dashboard" data-tekton-nav-item="tekton-dashboard" data-tekton-nav-target="tekton-dashboard" data-tekton-state="inactive">
+                        <span class="nav-label">Tekton Dashboard</span>
                         <span class="status-indicator"></span>
                     </li>
                 </ul>
