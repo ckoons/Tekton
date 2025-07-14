@@ -1,10 +1,10 @@
 <!-- Tekton Core Component - Project Management -->
 
 <!-- Hidden radio controls for CSS-only tab functionality -->
-<input type="radio" name="tekton-tab" id="tekton-tab-project-registry" checked style="display: none;">
-<input type="radio" name="tekton-tab" id="tekton-tab-merge-queue" style="display: none;">
-<input type="radio" name="tekton-tab" id="tekton-tab-conflict-resolution" style="display: none;">
-<input type="radio" name="tekton-tab" id="tekton-tab-dashboard" style="display: none;">
+<input type="radio" name="tekton-tab" id="tekton-tab-dashboard" checked style="display: none;">
+<input type="radio" name="tekton-tab" id="tekton-tab-new-project" style="display: none;">
+<input type="radio" name="tekton-tab" id="tekton-tab-merges" style="display: none;">
+<input type="radio" name="tekton-tab" id="tekton-tab-conflicts" style="display: none;">
 <input type="radio" name="tekton-tab" id="tekton-tab-projectchat" style="display: none;">
 <input type="radio" name="tekton-tab" id="tekton-tab-teamchat" style="display: none;">
 
@@ -27,29 +27,29 @@
     <!-- Tekton Menu Bar with Tab Navigation -->
     <div class="tekton__menu-bar" data-tekton-zone="menu" data-tekton-nav="component-menu">
         <div class="tekton__tabs">
-            <label for="tekton-tab-project-registry" class="tekton__tab" data-tab="project-registry"
-                   data-tekton-menu-item="Project Registry"
-                   data-tekton-menu-component="tekton"
-                   data-tekton-menu-panel="project-registry-panel">
-                <span class="tekton__tab-label">Project Registry</span>
-            </label>
-            <label for="tekton-tab-merge-queue" class="tekton__tab" data-tab="merge-queue"
-                   data-tekton-menu-item="Merge Queue"
-                   data-tekton-menu-component="tekton"
-                   data-tekton-menu-panel="merge-queue-panel">
-                <span class="tekton__tab-label">Merge Queue</span>
-            </label>
-            <label for="tekton-tab-conflict-resolution" class="tekton__tab" data-tab="conflict-resolution"
-                   data-tekton-menu-item="Conflict Resolution"
-                   data-tekton-menu-component="tekton"
-                   data-tekton-menu-panel="conflict-resolution-panel">
-                <span class="tekton__tab-label">Conflict Resolution</span>
-            </label>
             <label for="tekton-tab-dashboard" class="tekton__tab" data-tab="dashboard"
                    data-tekton-menu-item="Dashboard"
                    data-tekton-menu-component="tekton"
                    data-tekton-menu-panel="dashboard-panel">
                 <span class="tekton__tab-label">Dashboard</span>
+            </label>
+            <label for="tekton-tab-new-project" class="tekton__tab" data-tab="new-project"
+                   data-tekton-menu-item="New Project"
+                   data-tekton-menu-component="tekton"
+                   data-tekton-menu-panel="new-project-panel">
+                <span class="tekton__tab-label">New Project</span>
+            </label>
+            <label for="tekton-tab-merges" class="tekton__tab" data-tab="merges"
+                   data-tekton-menu-item="Merges"
+                   data-tekton-menu-component="tekton"
+                   data-tekton-menu-panel="merges-panel">
+                <span class="tekton__tab-label">Merges</span>
+            </label>
+            <label for="tekton-tab-conflicts" class="tekton__tab" data-tab="conflicts"
+                   data-tekton-menu-item="Conflicts"
+                   data-tekton-menu-component="tekton"
+                   data-tekton-menu-panel="conflicts-panel">
+                <span class="tekton__tab-label">Conflicts</span>
             </label>
             <label for="tekton-tab-projectchat" class="tekton__tab" data-tab="projectchat"
                    data-tekton-menu-item="Project Chat"
@@ -76,212 +76,102 @@
     
     <!-- Tekton Content Area -->
     <div class="tekton__content" data-tekton-zone="content" data-tekton-scrollable="true">
-        <!-- Project Registry Tab (Default Active Tab) -->
-        <div id="project-registry-panel" class="tekton__panel tekton__panel--project-registry"
-             data-tekton-panel="project-registry"
-             data-tekton-panel-for="Project Registry"
-             data-tekton-panel-component="tekton">
-            <div class="tekton__panel-header">
-                <div class="tekton__search">
-                    <input type="text" id="projects-search" class="tekton__search-input" placeholder="Search projects...">
-                    <select id="projects-filter" class="tekton__select">
-                        <option value="all">All Projects</option>
-                        <option value="active">Active</option>
-                        <option value="archived">Archived</option>
-                    </select>
-                </div>
-                <div class="tekton__panel-actions">
-                    <button class="tekton__action-button tekton__action-button--primary" id="create-project">
-                        <span class="tekton__action-icon">➕</span>
-                        New Project
-                    </button>
-                </div>
-            </div>
-            
-            <div class="tekton__projects">
-                <div class="tekton__projects-list" id="projects-list">
-                    <!-- Sample project bubbles for MVP demonstration -->
-                    <div class="tekton__project-bubble tekton__project-bubble--active">
-                        <div class="tekton__project-name">Tekton Core</div>
-                        <div class="tekton__project-status">Active Development</div>
-                        <div class="tekton__project-branch">sprint/aish</div>
-                        <div class="tekton__project-ai">AI: Claude</div>
-                    </div>
-                    <div class="tekton__project-bubble tekton__project-bubble--pending">
-                        <div class="tekton__project-name">AI Integration</div>
-                        <div class="tekton__project-status">Pending Review</div>
-                        <div class="tekton__project-branch">feature/ai-sync</div>
-                        <div class="tekton__project-ai">AI: Apollo</div>
-                    </div>
-                    <div class="tekton__project-bubble tekton__project-bubble--completed">
-                        <div class="tekton__project-name">UI Cleanup</div>
-                        <div class="tekton__project-status">Completed</div>
-                        <div class="tekton__project-branch">main</div>
-                        <div class="tekton__project-ai">AI: Rhetor</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Merge Queue Tab -->
-        <div id="merge-queue-panel" class="tekton__panel tekton__panel--merge-queue"
-             data-tekton-panel="merge-queue"
-             data-tekton-panel-for="Merge Queue"
-             data-tekton-panel-component="tekton">
-            <div class="tekton__panel-header">
-                <div class="tekton__search">
-                    <input type="text" id="merge-queue-search" class="tekton__search-input" placeholder="Search merge requests...">
-                    <select id="merge-queue-filter" class="tekton__select">
-                        <option value="all">All States</option>
-                        <option value="pending">Pending</option>
-                        <option value="clean">Clean</option>
-                        <option value="conflicted">Conflicted</option>
-                        <option value="merged">Merged</option>
-                    </select>
-                </div>
-                <div class="tekton__panel-actions">
-                    <button class="tekton__action-button" id="refresh-merge-queue">
-                        <span class="tekton__action-icon">🔄</span>
-                        Refresh
-                    </button>
-                </div>
-            </div>
-            
-            <div class="tekton__merge-queue">
-                <div class="tekton__merge-queue-container" id="merge-queue-container">
-                    <!-- Sample merge requests for MVP demonstration -->
-                    <div class="tekton__merge-request tekton__merge-request--ready">
-                        <div class="tekton__merge-header">
-                            <div class="tekton__merge-title">Add TektonCore MVP Implementation</div>
-                            <div class="tekton__merge-status">Ready to Merge</div>
-                        </div>
-                        <div class="tekton__merge-details">
-                            <div class="tekton__merge-branch">sprint/aish → main</div>
-                            <div class="tekton__merge-conflicts">No conflicts</div>
-                        </div>
-                        <div class="tekton__merge-actions">
-                            <button class="tekton__button tekton__button--success">Merge</button>
-                            <button class="tekton__button tekton__button--danger">Reject</button>
-                        </div>
-                    </div>
-                    <div class="tekton__merge-request tekton__merge-request--conflict">
-                        <div class="tekton__merge-header">
-                            <div class="tekton__merge-title">UI Component Updates</div>
-                            <div class="tekton__merge-status">Has Conflicts</div>
-                        </div>
-                        <div class="tekton__merge-details">
-                            <div class="tekton__merge-branch">feature/ui-update → main</div>
-                            <div class="tekton__merge-conflicts">3 conflicts in styles/</div>
-                        </div>
-                        <div class="tekton__merge-actions">
-                            <button class="tekton__button tekton__button--warning">Resolve</button>
-                            <button class="tekton__button tekton__button--danger">Reject</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Conflict Resolution Tab -->
-        <div id="conflict-resolution-panel" class="tekton__panel tekton__panel--conflict-resolution"
-             data-tekton-panel="conflict-resolution"
-             data-tekton-panel-for="Conflict Resolution"
-             data-tekton-panel-component="tekton">
-            <div class="tekton__panel-header">
-                <div class="tekton__search">
-                    <input type="text" id="conflicts-search" class="tekton__search-input" placeholder="Search conflicts...">
-                    <select id="conflicts-filter" class="tekton__select">
-                        <option value="all">All Conflicts</option>
-                        <option value="pending">Pending</option>
-                        <option value="resolved">Resolved</option>
-                        <option value="critical">Critical</option>
-                    </select>
-                </div>
-                <div class="tekton__panel-actions">
-                    <button class="tekton__action-button" id="refresh-conflicts">
-                        <span class="tekton__action-icon">🔄</span>
-                        Refresh
-                    </button>
-                </div>
-            </div>
-            
-            <div class="tekton__conflicts">
-                <div class="tekton__conflicts-container" id="conflicts-container">
-                    <!-- Sample conflicts for MVP demonstration -->
-                    <div class="tekton__conflict-item">
-                        <div class="tekton__conflict-header">
-                            <div class="tekton__conflict-file">styles/tekton-dashboard.css</div>
-                            <div class="tekton__conflict-type">Merge Conflict</div>
-                        </div>
-                        <div class="tekton__conflict-options">
-                            <div class="tekton__conflict-choice">
-                                <button class="tekton__button tekton__button--choice-a">Accept A: Current</button>
-                                <div class="tekton__conflict-preview">Current styling approach</div>
-                            </div>
-                            <div class="tekton__conflict-choice">
-                                <button class="tekton__button tekton__button--choice-b">Accept B: Incoming</button>
-                                <div class="tekton__conflict-preview">Updated BEM methodology</div>
-                            </div>
-                            <div class="tekton__conflict-choice">
-                                <button class="tekton__button tekton__button--manual">Manual Resolve</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Dashboard Tab -->
+        <!-- Dashboard Tab (Default Active Tab) -->
         <div id="dashboard-panel" class="tekton__panel tekton__panel--dashboard"
              data-tekton-panel="dashboard"
              data-tekton-panel-for="Dashboard"
              data-tekton-panel-component="tekton">
-            <div class="tekton__panel-header">
-                <div class="tekton__search">
-                    <input type="text" id="dashboard-search" class="tekton__search-input" placeholder="Search components...">
-                    <select id="dashboard-filter" class="tekton__select">
-                        <option value="all">All Components</option>
-                        <option value="active">Active</option>
-                        <option value="inactive">Inactive</option>
-                        <option value="error">Error</option>
-                    </select>
-                </div>
-                <div class="tekton__panel-actions">
-                    <button class="tekton__action-button" id="refresh-dashboard">
-                        <span class="tekton__action-icon">🔄</span>
-                        Refresh
-                    </button>
+            <div class="tekton__projects">
+                <div class="tekton__projects-list" id="projects-list">
+                    <!-- Projects will be populated dynamically -->
+                    <div class="tekton__placeholder-message">Create a New Project<br>No projects are currently managed by Tekton</div>
                 </div>
             </div>
-            
-            <div class="tekton__dashboard">
-                <div class="tekton__dashboard-container" id="dashboard-container">
-                    <!-- System status for MVP demonstration -->
-                    <div class="tekton__status-grid">
-                        <div class="tekton__status-card">
-                            <div class="tekton__status-title">Components</div>
-                            <div class="tekton__status-value">18 / 18</div>
-                            <div class="tekton__status-indicator tekton__status-indicator--healthy"></div>
-                        </div>
-                        <div class="tekton__status-card">
-                            <div class="tekton__status-title">AI Services</div>
-                            <div class="tekton__status-value">16 / 18</div>
-                            <div class="tekton__status-indicator tekton__status-indicator--warning"></div>
-                        </div>
-                        <div class="tekton__status-card">
-                            <div class="tekton__status-title">Active Projects</div>
-                            <div class="tekton__status-value">3</div>
-                            <div class="tekton__status-indicator tekton__status-indicator--healthy"></div>
-                        </div>
-                        <div class="tekton__status-card">
-                            <div class="tekton__status-title">Merge Queue</div>
-                            <div class="tekton__status-value">2 pending</div>
-                            <div class="tekton__status-indicator tekton__status-indicator--info"></div>
-                        </div>
+        </div>
+        
+        <!-- New Project Tab -->
+        <div id="new-project-panel" class="tekton__panel tekton__panel--new-project"
+             data-tekton-panel="new-project"
+             data-tekton-panel-for="New Project"
+             data-tekton-panel-component="tekton">
+            <div class="tekton__new-project">
+                <div class="tekton__new-project-form">
+                    <h3 class="tekton__form-title">Create New Project</h3>
+                    
+                    <div class="tekton__form-field">
+                        <label for="github-url" class="tekton__form-label">GitHub URL:</label>
+                        <input type="text" id="github-url" class="tekton__form-input" 
+                               placeholder="https://github.com/user/repository"
+                               onchange="clearProjectFields()"
+                               oninput="clearProjectFields()">
+                    </div>
+                    
+                    <div class="tekton__form-field">
+                        <label for="local-directory" class="tekton__form-label">Local Directory:</label>
+                        <input type="text" id="local-directory" class="tekton__form-input" 
+                               placeholder="/path/to/local/clone">
+                    </div>
+                    
+                    <div class="tekton__form-field">
+                        <label for="forked-repository" class="tekton__form-label">Forked Repository:</label>
+                        <input type="text" id="forked-repository" class="tekton__form-input" 
+                               placeholder="https://github.com/your-username/repository">
+                    </div>
+                    
+                    <div class="tekton__form-field">
+                        <label for="upstream-repository" class="tekton__form-label">Upstream Repository:</label>
+                        <input type="text" id="upstream-repository" class="tekton__form-input" 
+                               placeholder="https://github.com/original-user/repository">
+                    </div>
+                    
+                    <div class="tekton__form-field">
+                        <label for="companion-intelligence" class="tekton__form-label">Companion Intelligence - CI:</label>
+                        <select id="companion-intelligence" class="tekton__form-select">
+                            <option value="llama3.3:70b">llama3.3:70b (Default)</option>
+                            <option value="llama3.2:3b">llama3.2:3b</option>
+                            <option value="llama3.1:8b">llama3.1:8b</option>
+                            <option value="qwen2.5:14b">qwen2.5:14b</option>
+                            <option value="claude-3-5-sonnet-20241022">Claude 3.5 Sonnet</option>
+                            <option value="gpt-4o">GPT-4o</option>
+                            <option value="gpt-4o-mini">GPT-4o Mini</option>
+                        </select>
+                    </div>
+                    
+                    <div class="tekton__form-actions">
+                        <button class="tekton__button tekton__button--secondary" onclick="cancelNewProject()">Cancel</button>
+                        <button class="tekton__button tekton__button--primary" onclick="prepareNewProject()">Prepare</button>
+                        <button class="tekton__button tekton__button--success" id="create-project-btn" disabled onclick="createNewProject()">Create</button>
                     </div>
                 </div>
             </div>
         </div>
+        
+        <!-- Merges Tab -->
+        <div id="merges-panel" class="tekton__panel tekton__panel--merges"
+             data-tekton-panel="merges"
+             data-tekton-panel-for="Merges"
+             data-tekton-panel-component="tekton">
+            <div class="tekton__merges">
+                <div class="tekton__merges-container" id="merges-container">
+                    <!-- Merges will be populated dynamically -->
+                    <div class="tekton__placeholder-message">No Merges Pending</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Conflicts Tab -->
+        <div id="conflicts-panel" class="tekton__panel tekton__panel--conflicts"
+             data-tekton-panel="conflicts"
+             data-tekton-panel-for="Conflicts"
+             data-tekton-panel-component="tekton">
+            <div class="tekton__conflicts">
+                <div class="tekton__conflicts-container" id="conflicts-container">
+                    <!-- Conflicts will be populated dynamically -->
+                    <div class="tekton__placeholder-message">No Merge Conflicts Pending</div>
+                </div>
+            </div>
+        </div>
+        
         
         <!-- Project Chat Tab -->
         <div id="projectchat-panel" class="tekton__panel">
@@ -802,50 +692,7 @@
         box-shadow: none;
     }
     
-    /* MVP Panel Styles */
-    .tekton__panel-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 16px;
-        background-color: var(--bg-secondary, #252535);
-        border-bottom: 1px solid var(--border-color, #444444);
-    }
-    
-    .tekton__search {
-        display: flex;
-        gap: 12px;
-        align-items: center;
-    }
-    
-    .tekton__select {
-        padding: 8px 12px;
-        background-color: var(--bg-tertiary, #333345);
-        border: 1px solid var(--border-color, #444444);
-        border-radius: 4px;
-        color: var(--text-primary, #f0f0f0);
-        min-width: 140px;
-    }
-    
-    .tekton__panel-actions {
-        display: flex;
-        gap: 8px;
-    }
-    
-    .tekton__action-button--primary {
-        background-color: #FFA500;
-        color: white;
-        border: none;
-    }
-    
-    .tekton__action-button--primary:hover {
-        background-color: #FF8C00;
-    }
-    
-    .tekton__action-icon {
-        margin-right: 8px;
-    }
-    
+    /* Clean Panel Styles */
     .tekton__placeholder-message {
         text-align: center;
         padding: 40px;
@@ -855,256 +702,132 @@
     
     .tekton__projects-list,
     .tekton__merge-queue-container,
-    .tekton__conflicts-container,
-    .tekton__dashboard-container {
+    .tekton__conflicts-container {
         padding: 16px;
         min-height: 300px;
     }
     
-    /* Project Bubbles */
-    .tekton__project-bubble {
-        display: inline-block;
-        width: 200px;
-        height: 140px;
-        margin: 12px;
-        padding: 16px;
-        border-radius: 12px;
-        border: 2px solid transparent;
-        background-color: var(--bg-secondary, #252535);
-        cursor: pointer;
-        transition: all 0.3s ease;
-        position: relative;
+    /* New Project Form Styles */
+    .tekton__new-project {
+        padding: 20px;
     }
     
-    .tekton__project-bubble--active {
-        border-color: #4CAF50;
-        box-shadow: 0 0 12px rgba(76, 175, 80, 0.3);
+    .tekton__new-project-form {
+        max-width: 600px;
+        margin: 0 auto;
     }
     
-    .tekton__project-bubble--pending {
-        border-color: #FFA500;
-        box-shadow: 0 0 12px rgba(255, 165, 0, 0.3);
+    .tekton__form-title {
+        margin-bottom: 20px;
+        font-size: 1.3rem;
+        color: var(--text-primary, #f0f0f0);
+        text-align: left; /* Align to left like Terma */
     }
     
-    .tekton__project-bubble--completed {
-        border-color: #2196F3;
-        box-shadow: 0 0 12px rgba(33, 150, 243, 0.3);
-    }
-    
-    .tekton__project-name {
-        font-size: 1.1rem;
-        font-weight: 600;
-        margin-bottom: 8px;
-    }
-    
-    .tekton__project-status,
-    .tekton__project-branch,
-    .tekton__project-ai {
-        font-size: 0.85rem;
-        margin-bottom: 4px;
-        opacity: 0.8;
-    }
-    
-    /* Merge Requests */
-    .tekton__merge-request {
-        background-color: var(--bg-secondary, #252535);
-        border-radius: 8px;
-        padding: 16px;
-        margin-bottom: 12px;
-        border-left: 4px solid;
-    }
-    
-    .tekton__merge-request--ready {
-        border-left-color: #4CAF50;
-    }
-    
-    .tekton__merge-request--conflict {
-        border-left-color: #f44336;
-    }
-    
-    .tekton__merge-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 12px;
-    }
-    
-    .tekton__merge-title {
-        font-size: 1.1rem;
-        font-weight: 500;
-    }
-    
-    .tekton__merge-status {
-        font-size: 0.85rem;
-        padding: 4px 8px;
-        border-radius: 4px;
-        background-color: var(--bg-tertiary, #333345);
-    }
-    
-    .tekton__merge-details {
-        margin-bottom: 12px;
-        font-size: 0.9rem;
-        opacity: 0.8;
-    }
-    
-    .tekton__merge-actions {
-        display: flex;
-        gap: 8px;
-    }
-    
-    .tekton__button {
-        padding: 8px 16px;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        font-size: 0.9rem;
-        transition: all 0.2s ease;
-    }
-    
-    .tekton__button--success {
-        background-color: #4CAF50;
-        color: white;
-    }
-    
-    .tekton__button--danger {
-        background-color: #f44336;
-        color: white;
-    }
-    
-    .tekton__button--warning {
-        background-color: #FF9800;
-        color: white;
-    }
-    
-    /* Conflict Resolution */
-    .tekton__conflict-item {
-        background-color: var(--bg-secondary, #252535);
-        border-radius: 8px;
-        padding: 16px;
-        margin-bottom: 12px;
-        border-left: 4px solid #FF9800;
-    }
-    
-    .tekton__conflict-header {
-        display: flex;
-        justify-content: space-between;
+    .tekton__form-field {
         margin-bottom: 16px;
     }
     
-    .tekton__conflict-file {
-        font-family: monospace;
-        font-size: 0.9rem;
-    }
-    
-    .tekton__conflict-options {
-        display: grid;
-        grid-template-columns: 1fr 1fr 1fr;
-        gap: 12px;
-    }
-    
-    .tekton__conflict-choice {
-        text-align: center;
-    }
-    
-    .tekton__conflict-preview {
-        font-size: 0.8rem;
-        margin-top: 8px;
-        opacity: 0.7;
-    }
-    
-    .tekton__button--choice-a {
-        background-color: #2196F3;
-        color: white;
-        width: 100%;
-    }
-    
-    .tekton__button--choice-b {
-        background-color: #9C27B0;
-        color: white;
-        width: 100%;
-    }
-    
-    .tekton__button--manual {
-        background-color: var(--bg-tertiary, #333345);
+    .tekton__form-label {
+        display: block;
+        margin-bottom: 4px;
+        font-weight: 500;
         color: var(--text-primary, #f0f0f0);
-        border: 1px solid var(--border-color, #444444);
+    }
+    
+    .tekton__form-input,
+    .tekton__form-select {
         width: 100%;
+        padding: 10px 12px;
+        background-color: var(--bg-tertiary, #333345);
+        border: 1px solid var(--border-color, #444444);
+        border-radius: 4px;
+        color: var(--text-primary, #f0f0f0);
+        font-size: 14px;
     }
     
-    /* Dashboard Status Grid */
-    .tekton__status-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 16px;
+    .tekton__form-input:focus,
+    .tekton__form-select:focus {
+        outline: none;
+        border-color: #FFA500;
+        box-shadow: 0 0 0 2px rgba(255, 165, 0, 0.2);
     }
     
-    .tekton__status-card {
-        background-color: var(--bg-secondary, #252535);
-        border-radius: 8px;
-        padding: 20px;
-        text-align: center;
-        position: relative;
+    .tekton__form-actions {
+        display: flex;
+        gap: 12px;
+        justify-content: center; /* Center buttons like Terma */
+        margin-top: 24px;
     }
     
-    .tekton__status-title {
-        font-size: 0.9rem;
-        opacity: 0.8;
-        margin-bottom: 8px;
+    .tekton__button {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 4px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
     }
     
-    .tekton__status-value {
-        font-size: 1.8rem;
-        font-weight: 600;
-        margin-bottom: 12px;
+    .tekton__button--secondary {
+        background-color: #6c757d; /* Metallic grey */
+        color: white;
+        border: 1px solid #5a6268;
     }
     
-    .tekton__status-indicator {
-        width: 12px;
-        height: 12px;
-        border-radius: 50%;
-        position: absolute;
-        top: 16px;
-        right: 16px;
+    .tekton__button--secondary:hover {
+        background-color: #5a6268; /* Darker metallic grey on hover */
     }
     
-    .tekton__status-indicator--healthy {
-        background-color: #4CAF50;
+    .tekton__button--primary {
+        background-color: #007bff;
+        color: white;
     }
     
-    .tekton__status-indicator--warning {
-        background-color: #FF9800;
+    .tekton__button--primary:hover {
+        background-color: #0056b3;
     }
     
-    .tekton__status-indicator--info {
-        background-color: #2196F3;
+    .tekton__button--success {
+        background-color: #28a745;
+        color: white;
     }
     
-    /* Radio button logic for CSS-only tab switching */
-    /* Hide all panels by default */
+    .tekton__button--success:hover:not(:disabled) {
+        background-color: #1e7e34;
+    }
+    
+    .tekton__button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+    
+    
+    /* Tab switching functionality - EXACT MATCH TO TERMA */
     .tekton__panel {
         display: none;
     }
     
-    /* Show panels when corresponding radio button is checked */
-    #tekton-tab-project-registry:checked ~ .tekton .tekton__panel--project-registry,
-    #tekton-tab-merge-queue:checked ~ .tekton .tekton__panel--merge-queue,
-    #tekton-tab-conflict-resolution:checked ~ .tekton .tekton__panel--conflict-resolution,
     #tekton-tab-dashboard:checked ~ .tekton .tekton__panel--dashboard,
+    #tekton-tab-new-project:checked ~ .tekton .tekton__panel--new-project,
+    #tekton-tab-merges:checked ~ .tekton .tekton__panel--merges,
+    #tekton-tab-conflicts:checked ~ .tekton .tekton__panel--conflicts,
     #tekton-tab-projectchat:checked ~ .tekton #projectchat-panel,
     #tekton-tab-teamchat:checked ~ .tekton #teamchat-panel {
-        display: block;
+        display: flex;
+        flex-direction: column;
     }
     
-    /* Style active tabs when corresponding radio button is checked */
-    #tekton-tab-project-registry:checked ~ .tekton .tekton__tab[data-tab="project-registry"],
-    #tekton-tab-merge-queue:checked ~ .tekton .tekton__tab[data-tab="merge-queue"],
-    #tekton-tab-conflict-resolution:checked ~ .tekton .tekton__tab[data-tab="conflict-resolution"],
+    /* Active tab styling */
     #tekton-tab-dashboard:checked ~ .tekton .tekton__tab[data-tab="dashboard"],
+    #tekton-tab-new-project:checked ~ .tekton .tekton__tab[data-tab="new-project"],
+    #tekton-tab-merges:checked ~ .tekton .tekton__tab[data-tab="merges"],
+    #tekton-tab-conflicts:checked ~ .tekton .tekton__tab[data-tab="conflicts"],
     #tekton-tab-projectchat:checked ~ .tekton .tekton__tab[data-tab="projectchat"],
     #tekton-tab-teamchat:checked ~ .tekton .tekton__tab[data-tab="teamchat"] {
-        border-bottom-color: #FFA500; /* Tekton golden color */
-        font-weight: 500;
-        color: var(--text-primary, #f0f0f0);
+        background-color: var(--bg-tertiary, #2a2a3a);
+        border-bottom: 2px solid #FFA500;
     }
     
     /* Clear button visibility for chat tabs */
@@ -1448,6 +1171,92 @@ function tekton_clearChat() {
     
     return false; // Stop event propagation
 };
+
+// NEW PROJECT FUNCTIONS
+function clearProjectFields() {
+    console.log('[TEKTON] Clearing project fields');
+    document.getElementById('local-directory').value = '';
+    document.getElementById('forked-repository').value = '';
+    document.getElementById('upstream-repository').value = '';
+    document.getElementById('companion-intelligence').value = 'llama3.3:70b'; // Reset to default
+    document.getElementById('create-project-btn').disabled = true;
+    return false;
+}
+
+function cancelNewProject() {
+    console.log('[TEKTON] Cancelling new project');
+    document.getElementById('github-url').value = '';
+    clearProjectFields();
+    return false;
+}
+
+function prepareNewProject() {
+    console.log('[TEKTON] Preparing new project');
+    
+    const githubUrl = document.getElementById('github-url').value.trim();
+    if (!githubUrl) {
+        alert('Please enter a GitHub URL');
+        return false;
+    }
+    
+    // Basic GitHub URL validation
+    const githubPattern = /^https:\/\/github\.com\/([^\/]+)\/([^\/]+)$/;
+    const match = githubUrl.match(githubPattern);
+    
+    if (!match) {
+        alert('Please enter a valid GitHub URL (e.g., https://github.com/user/repository)');
+        return false;
+    }
+    
+    const username = match[1];
+    const repoName = match[2];
+    
+    // Set up the other fields
+    document.getElementById('local-directory').value = `/Users/cskoons/projects/github/${username}/${repoName}`;
+    document.getElementById('forked-repository').value = `https://github.com/cskoons/${repoName}`;
+    document.getElementById('upstream-repository').value = githubUrl;
+    
+    // Enable the Create button
+    document.getElementById('create-project-btn').disabled = false;
+    
+    console.log('[TEKTON] Project prepared:', { username, repoName });
+    return false;
+}
+
+function createNewProject() {
+    console.log('[TEKTON] Creating new project');
+    
+    const githubUrl = document.getElementById('github-url').value.trim();
+    const localDirectory = document.getElementById('local-directory').value.trim();
+    const forkedRepo = document.getElementById('forked-repository').value.trim();
+    const upstreamRepo = document.getElementById('upstream-repository').value.trim();
+    const companionAI = document.getElementById('companion-intelligence').value;
+    
+    if (!githubUrl || !localDirectory) {
+        alert('Please prepare the project first');
+        return false;
+    }
+    
+    console.log('[TEKTON] Project details:', { 
+        githubUrl, 
+        localDirectory, 
+        forkedRepo, 
+        upstreamRepo, 
+        companionAI 
+    });
+    
+    // TODO: Implement actual project creation logic
+    alert(`Project creation functionality will be implemented soon.\nCI: ${companionAI}`);
+    
+    // Clear the form after creation
+    cancelNewProject();
+    
+    // Switch to dashboard to show the new project
+    document.getElementById('tekton-tab-dashboard').checked = true;
+    tekton_switchTab('dashboard');
+    
+    return false;
+}
 
 // LOAD COMPONENT
 // Load after defining tab switching to ensure it's available
