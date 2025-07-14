@@ -42,6 +42,10 @@ app = FastAPI(
     version=COMPONENT_VERSION
 )
 
+# Import and include analysis endpoints
+from .analysis_endpoints import router as analysis_router
+app.include_router(analysis_router)
+
 # Add CORS middleware
 app.add_middleware(
     CORSMiddleware,
@@ -103,7 +107,11 @@ async def health_check():
             "discovery_chat",
             "team_chat",
             "pattern_recognition",
-            "insight_generation"
+            "insight_generation",
+            "theoretical_analysis",
+            "manifold_analysis",
+            "dynamics_modeling",
+            "catastrophe_detection"
         ]
     }
 
@@ -198,7 +206,11 @@ async def get_status():
             "discovery_chat": True,
             "team_chat": True,
             "pattern_recognition": False,  # Not yet implemented
-            "insight_generation": False     # Not yet implemented
+            "insight_generation": False,    # Not yet implemented
+            "theoretical_analysis": True,
+            "manifold_analysis": True,
+            "dynamics_modeling": True,
+            "catastrophe_detection": True
         }
     }
 
@@ -225,7 +237,11 @@ async def startup_event():
             "discovery_chat",
             "team_chat",
             "pattern_recognition", 
-            "insight_generation"
+            "insight_generation",
+            "theoretical_analysis",
+            "manifold_analysis",
+            "dynamics_modeling",
+            "catastrophe_detection"
         ],
         metadata={
             "description": "Discovery System",
