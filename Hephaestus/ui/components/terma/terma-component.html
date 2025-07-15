@@ -190,7 +190,8 @@
                     <div class="terma__launch-button-container">
                         <button id="terma-launch-btn" class="terma__button terma__button--primary"
                                 data-tekton-action="launch-terminal"
-                                data-tekton-action-type="primary">
+                                data-tekton-action-type="primary"
+                                onclick="terma_launchTerminal()">
                             Launch Terminal
                         </button>
                     </div>
@@ -1361,11 +1362,70 @@
 </style>
 
 <script>
-// Terma component initialization
+// Terma component
 console.log('[Terma] Component loaded');
 
+// Simple launch function following Numa pattern
+window.terma_launchTerminal = function() {
+    console.log('[Terma] Launch Terminal clicked');
+    
+    const nameInput = document.getElementById('terma-terminal-name');
+    const templateSelect = document.getElementById('terma-terminal-template');
+    const purposeInput = document.getElementById('terma-terminal-purpose');
+    const workingDirInput = document.getElementById('terma-working-dir');
+    const startupCmdInput = document.getElementById('terma-startup-cmd');
+    const statusDiv = document.getElementById('terma-launch-status');
+    
+    const name = nameInput.value.trim() || 'aish Terminal';
+    const template = templateSelect.value;
+    const purpose = purposeInput.value.trim();
+    const workingDir = workingDirInput ? workingDirInput.value.trim() : null;
+    const startupCmd = startupCmdInput ? startupCmdInput.value.trim() : null;
+    
+    console.log('[Terma] Launch params:', { name, template, purpose });
+    
+    // Clear status
+    statusDiv.textContent = 'Launching terminal...';
+    statusDiv.className = 'terma__launch-status';
+    
+    // Build request
+    const requestBody = { name };
+    if (template) requestBody.template = template;
+    if (purpose) requestBody.purpose = purpose;
+    if (workingDir) requestBody.working_dir = workingDir;
+    if (startupCmd) requestBody.startup_command = startupCmd;
+    
+    const url = termaUrl('/api/mcp/v2/tools/launch_terminal');
+    console.log('[Terma] Calling:', url);
+    
+    fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(requestBody)
+    })
+    .then(response => {
+        console.log('[Terma] Response:', response.status);
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        return response.json();
+    })
+    .then(result => {
+        statusDiv.textContent = `✓ Terminal launched (PID: ${result.pid})`;
+        statusDiv.className = 'terma__launch-status success';
+        // Clear form
+        nameInput.value = '';
+        purposeInput.value = '';
+        templateSelect.value = '';
+        updateTerminalsList();
+    })
+    .catch(error => {
+        console.error('[Terma] Launch error:', error);
+        statusDiv.textContent = `✗ Error: ${error.message}`;
+        statusDiv.className = 'terma__launch-status error';
+    });
+}
+
 // Chat functionality
-function terma_sendChat() {
+window.terma_sendChat = function() {
     const input = document.getElementById('terma-chat-input');
     const message = input.value.trim();
     
@@ -1529,6 +1589,7 @@ function updateTemplateDetails() {
     }
 }
 
+
 // Launch Terminal functionality
 function initializeTermaLauncher() {
     const launchBtn = document.getElementById('terma-launch-btn');
@@ -1559,13 +1620,24 @@ function initializeTermaLauncher() {
             console.log('[Terma] Launch button clicked', { name, template, purpose, workingDir, startupCmd });
             console.log('[Terma] Timestamp:', new Date().toISOString());
             
+            // Debug: Check termaUrl function
+            console.log('[Terma] DEBUG: termaUrl function exists?', typeof termaUrl);
+            console.log('[Terma] DEBUG: window.TERMA_PORT =', window.TERMA_PORT);
+            const testUrl = termaUrl('/test');
+            console.log('[Terma] DEBUG: termaUrl("/test") =', testUrl);
+            
             // Clear previous status
             statusDiv.textContent = 'Checking terminal name availability...';
             statusDiv.className = 'terma__launch-status';
             
             try {
                 // First, check if terminal name is already in use
-                const listResponse = await fetch(termaUrl('/api/mcp/v2/terminals/list'));
+                const listUrl = termaUrl('/api/mcp/v2/terminals/list');
+                console.log('[Terma] DEBUG: Fetching terminal list from:', listUrl);
+                
+                const listResponse = await fetch(listUrl);
+                console.log('[Terma] DEBUG: List response status:', listResponse.status, listResponse.statusText);
+                
                 if (listResponse.ok) {
                     const listData = await listResponse.json();
                     const existingNames = listData.terminals ? listData.terminals.map(t => t.name) : [];
@@ -1601,13 +1673,19 @@ function initializeTermaLauncher() {
                     requestBody.startup_command = startupCmd;
                 }
                 
-                const response = await fetch(termaUrl('/api/mcp/v2/tools/launch_terminal'), {
+                const launchUrl = termaUrl('/api/mcp/v2/tools/launch_terminal');
+                console.log('[Terma] DEBUG: Launching terminal with URL:', launchUrl);
+                console.log('[Terma] DEBUG: Request body:', JSON.stringify(requestBody, null, 2));
+                
+                const response = await fetch(launchUrl, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify(requestBody)
                 });
+                
+                console.log('[Terma] DEBUG: Launch response status:', response.status, response.statusText);
                 
                 if (response.ok) {
                     const result = await response.json();
@@ -1633,12 +1711,15 @@ function initializeTermaLauncher() {
                     updateTerminalsList();
                 } else {
                     const error = await response.text();
-                    console.error('Launch failed:', response.status, error);
+                    console.error('[Terma] DEBUG: Launch failed:', response.status, error);
+                    console.error('[Terma] DEBUG: Response headers:', [...response.headers.entries()]);
                     statusDiv.textContent = `✗ Launch failed: ${error}`;
                     statusDiv.className = 'terma__launch-status error';
                 }
             } catch (error) {
-                console.error('Launch error:', error);
+                console.error('[Terma] DEBUG: Launch error:', error);
+                console.error('[Terma] DEBUG: Error type:', error.constructor.name);
+                console.error('[Terma] DEBUG: Error stack:', error.stack);
                 statusDiv.textContent = `✗ Error: Cannot connect to Terma service`;
                 statusDiv.className = 'terma__launch-status error';
             } finally {
@@ -1801,7 +1882,7 @@ async function fetchTerminalList() {
 }
 
 // Auto-refresh dashboard
-let dashboardRefreshInterval = null;
+window.termaDashboardRefreshInterval = window.termaDashboardRefreshInterval || null;
 
 function startDashboardRefresh() {
     // Stop any existing interval
@@ -1811,7 +1892,7 @@ function startDashboardRefresh() {
     updateTerminalsList();
     
     // Then update every 5 seconds
-    dashboardRefreshInterval = setInterval(() => {
+    window.termaDashboardRefreshInterval = setInterval(() => {
         const dashboardTab = document.getElementById('terma-tab-dashboard');
         if (dashboardTab && dashboardTab.checked) {
             updateTerminalsList();
@@ -1820,9 +1901,9 @@ function startDashboardRefresh() {
 }
 
 function stopDashboardRefresh() {
-    if (dashboardRefreshInterval) {
-        clearInterval(dashboardRefreshInterval);
-        dashboardRefreshInterval = null;
+    if (window.termaDashboardRefreshInterval) {
+        clearInterval(window.termaDashboardRefreshInterval);
+        window.termaDashboardRefreshInterval = null;
     }
 }
 
@@ -1853,6 +1934,17 @@ if (!window.termaInitialized) {
     setTimeout(() => {
         console.log('[Terma] Initializing component');
         console.log('[Terma] Init timestamp:', new Date().toISOString());
+        
+        // Debug: Check if URL functions are available
+        console.log('[Terma] DEBUG: window.termaUrl =', window.termaUrl);
+        console.log('[Terma] DEBUG: window.TERMA_PORT =', window.TERMA_PORT);
+        
+        // Force update ports from server if not already done
+        if (window.updatePortsFromServer && typeof window.updatePortsFromServer === 'function') {
+            console.log('[Terma] Updating ports from server...');
+            window.updatePortsFromServer();
+        }
+        
         initializeTermaLauncher();
         
         // Also check if dashboard is already active and start auto-refresh
@@ -1894,13 +1986,13 @@ async function showTerminal(pid) {
 }
 
 // Command Dialog Functions
-let currentTerminalId = null;
-let commandPending = false;
+window.termaCurrentTerminalId = window.termaCurrentTerminalId || null;
+window.termaCommandPending = window.termaCommandPending || false;
 
 function openCommandDialog(termaId, terminalName, pid) {
     console.log('[Terma] Opening command dialog for terminal:', termaId, terminalName);
-    currentTerminalId = termaId;
-    currentTerminalInfo = { name: terminalName, pid: pid };
+    window.termaCurrentTerminalId = termaId;
+    window.termaCurrentTerminalInfo = { name: terminalName, pid: pid };
     
     const overlay = document.getElementById('terma-command-dialog-overlay');
     const input = document.getElementById('terma-command-input');
@@ -1922,8 +2014,8 @@ function closeCommandDialog() {
     console.log('[Terma] Closing command dialog');
     const overlay = document.getElementById('terma-command-dialog-overlay');
     overlay.style.display = 'none';
-    currentTerminalId = null;
-    commandPending = false;
+    window.termaCurrentTerminalId = null;
+    window.termaCommandPending = false;
 }
 
 function clearCommandResponses() {
@@ -1931,14 +2023,14 @@ function clearCommandResponses() {
     responsesDiv.innerHTML = '';
 }
 
-// Store current terminal info for commands
-let currentTerminalInfo = null;
+// Store current terminal info for commands  
+window.termaCurrentTerminalInfo = window.termaCurrentTerminalInfo || null;
 
 async function sendTerminalCommand() {
     const input = document.getElementById('terma-command-input');
     const command = input.value.trim();
     
-    if (!command || !currentTerminalId) {
+    if (!command || !window.termaCurrentTerminalId) {
         return;
     }
     
@@ -1947,7 +2039,7 @@ async function sendTerminalCommand() {
     //     return;
     // }
     
-    console.log('[Terma] Sending command to terminal:', currentTerminalId, command);
+    console.log('[Terma] Sending command to terminal:', window.termaCurrentTerminalId, command);
     
     // Add command to response area immediately
     const responsesDiv = document.getElementById('terma-command-responses');
@@ -1955,16 +2047,16 @@ async function sendTerminalCommand() {
     // Add separator if this is first command or different terminal
     const lastEntry = responsesDiv.lastElementChild;
     const needsSeparator = !lastEntry || !lastEntry.classList.contains('terma__command-entry') || 
-                          lastEntry.dataset.termaId !== currentTerminalId;
+                          lastEntry.dataset.termaId !== window.termaCurrentTerminalId;
     
-    if (needsSeparator && currentTerminalInfo) {
+    if (needsSeparator && window.termaCurrentTerminalInfo) {
         const separatorDiv = document.createElement('div');
         separatorDiv.className = 'terma__history-separator';
         const timestamp = new Date().toLocaleString();
         separatorDiv.innerHTML = `
             <div class="terma__separator-line"></div>
             <div class="terma__separator-text">
-                ${timestamp} : ${currentTerminalInfo.pid} ${currentTerminalInfo.name}
+                ${timestamp} : ${window.termaCurrentTerminalInfo.pid} ${window.termaCurrentTerminalInfo.name}
             </div>
             <div class="terma__separator-line"></div>
         `;
@@ -1973,7 +2065,7 @@ async function sendTerminalCommand() {
     
     const entryDiv = document.createElement('div');
     entryDiv.className = 'terma__command-entry';
-    entryDiv.dataset.termaId = currentTerminalId;
+    entryDiv.dataset.termaId = window.termaCurrentTerminalId;
     entryDiv.innerHTML = `
         <div class="terma__command-prompt">$ ${escapeHtml(command)}</div>
         <div class="terma__command-output terma__command-pending">Executing...</div>
@@ -1987,7 +2079,7 @@ async function sendTerminalCommand() {
     input.value = '';
     
     // Mark command as pending
-    commandPending = true;
+    window.termaCommandPending = true;
     const outputDiv = entryDiv.querySelector('.terma__command-output');
     
     try {
@@ -1998,7 +2090,7 @@ async function sendTerminalCommand() {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                terma_id: currentTerminalId,
+                terma_id: window.termaCurrentTerminalId,
                 command: command
             })
         });
@@ -2014,7 +2106,7 @@ async function sendTerminalCommand() {
                 if (attempts >= maxAttempts) {
                     outputDiv.textContent = 'Command timed out';
                     outputDiv.className = 'terma__command-output terma__command-error';
-                    commandPending = false;
+                    window.termaCommandPending = false;
                     return;
                 }
                 
@@ -2032,7 +2124,7 @@ async function sendTerminalCommand() {
                             
                             // Scroll to bottom
                             responsesDiv.scrollTop = responsesDiv.scrollHeight;
-                            commandPending = false;
+                            window.termaCommandPending = false;
                         } else {
                             // Continue polling
                             attempts++;
@@ -2060,13 +2152,13 @@ async function sendTerminalCommand() {
             console.error('[Terma] Send command failed:', response.status, errorText);
             outputDiv.textContent = `Failed to send command: ${response.status} - ${errorText}`;
             outputDiv.className = 'terma__command-output terma__command-error';
-            commandPending = false;
+            window.termaCommandPending = false;
         }
     } catch (error) {
         console.error('[Terma] Error sending command:', error);
         outputDiv.textContent = 'Error: Cannot connect to Terma service';
         outputDiv.className = 'terma__command-output terma__command-error';
-        commandPending = false;
+        window.termaCommandPending = false;
     }
 }
 
