@@ -8,12 +8,12 @@ coordination, monitoring, and management capabilities.
 import os
 import sys
 from datetime import datetime
-from typing import Dict, List, Optional, Any
+from typing import Dict, List, Optional
 
-from fastapi import FastAPI, HTTPException, Request, Query
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 # Add Tekton root to path if not already present
 tekton_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..'))
@@ -23,6 +23,36 @@ if tekton_root not in sys.path:
 # Import shared utils
 from shared.utils.global_config import GlobalConfig
 from shared.utils.logging_setup import setup_component_logging as setup_component_logger
+
+# Import landmarks for code annotation
+try:
+    from landmarks import (
+        architecture_decision,
+        integration_point,
+        api_contract,
+        state_checkpoint
+    )
+except ImportError:
+    # Landmarks not available, define no-op decorators
+    def architecture_decision(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+    
+    def integration_point(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+    
+    def api_contract(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+    
+    def state_checkpoint(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
 from shared.api import (
     create_standard_routers,
     mount_standard_routers,
@@ -40,8 +70,7 @@ logger = setup_component_logging("tekton_core")
 from tekton.core.tekton_core_component import TektonCoreComponent
 
 # Import project management and merge coordination
-from tekton.core.project_manager import ProjectManager, ProjectState, TaskState
-from tekton.core.project_manager_v2 import ProjectManager as ProjectManagerV2
+from tekton.core.project_manager_v2 import ProjectManager
 from tekton.core.merge_coordinator import MergeCoordinator, MergeState
 
 # Import our new projects API
@@ -52,10 +81,23 @@ component = TektonCoreComponent()
 
 # Initialize project management - use shared instance for consistency
 from tekton.core.shared_instances import get_project_manager
-project_manager_v2 = get_project_manager()
-project_manager = ProjectManager()  # Keep V1 for legacy endpoints
+
+# Architecture Decision: Single ProjectManager instance eliminates V1/V2 confusion
+project_manager = get_project_manager()  # One instance, no V1/V2 confusion
 merge_coordinator = MergeCoordinator()
 
+@integration_point(
+    title="TektonCore Startup Integration",
+    target_component="hermes",
+    protocol="HTTP Registration",
+    data_flow="Component registration and capabilities publishing",
+    description="Registers TektonCore with Hermes message bus during startup"
+)
+@architecture_decision(
+    title="Tekton Self-Management on Startup",
+    description="Automatically creates Tekton project for dogfooding",
+    rationale="Ensures Tekton manages itself using its own project management system"
+)
 async def startup_callback():
     """Initialize component during startup."""
     # Initialize the component (registers with Hermes, etc.)
@@ -64,10 +106,10 @@ async def startup_callback():
         metadata=component.get_metadata()
     )
     
-    # Initialize Tekton self-management project using V2 manager
+    # Initialize Tekton self-management project
     logger.info("Creating Tekton self-management project")
     try:
-        await project_manager_v2._ensure_tekton_self_check()
+        await project_manager._check_tekton_self_management()
         logger.info("Tekton self-management project created successfully")
     except Exception as e:
         logger.error(f"Failed to create Tekton self-management project: {e}")
@@ -96,6 +138,14 @@ app.add_middleware(
 routers = create_standard_routers(component.component_name.replace("_", " ").title())
 
 # Add infrastructure endpoints to root router
+@api_contract(
+    title="Health Check API",
+    endpoint="/health",
+    method="GET",
+    request_schema={},
+    response_schema={"status": "string", "uptime": "float", "version": "string"},
+    description="Standard health check endpoint for monitoring systems"
+)
 @routers.root.get("/health")
 async def health():
     """Health check endpoint."""
@@ -235,229 +285,21 @@ async def get_tekton_root():
         "tekton_root": tekton_root
     }
 
-# Pydantic models for API requests
-class CreateProjectRequest(BaseModel):
-    name: str
-    description: str
-    repo_url: Optional[str] = None
-    working_dir: Optional[str] = None
-    companion_ai: Optional[str] = None
-
-class CreateTaskRequest(BaseModel):
-    title: str
-    description: str
-    priority: str = "medium"
-    estimated_hours: Optional[int] = None
-    dependencies: List[str] = []
-
-class UpdateProjectStateRequest(BaseModel):
-    state: str
-    reason: Optional[str] = None
-
-class UpdateTaskStateRequest(BaseModel):
-    state: str
-    assigned_ai: Optional[str] = None
-    branch: Optional[str] = None
-
-class AssignTaskRequest(BaseModel):
-    ai_name: str
-    branch: Optional[str] = None
-
+# Pydantic models for merge coordination
 class SubmitMergeRequest(BaseModel):
-    project_id: str
-    task_id: str
-    ai_worker: str
-    branch: str
-    repo_path: str
+    """Request to submit a new merge request for AI worker coordination."""
+    project_id: str = Field(..., description="Project identifier")
+    task_id: str = Field(..., description="Task identifier")
+    ai_worker: str = Field(..., description="AI worker name submitting the merge")
+    branch: str = Field(..., description="Git branch with changes")
+    repo_path: str = Field(..., description="Repository path for merge analysis")
 
 class ResolveMergeRequest(BaseModel):
-    chosen_option: str
-    reason: Optional[str] = None
+    """Request to resolve a merge conflict by choosing an option."""
+    chosen_option: str = Field(..., description="Selected merge option identifier")
+    reason: Optional[str] = Field(None, description="Reason for choosing this option")
 
-# Project endpoints are now handled by the projects.py router at /api/projects
-
-# Also need the remove endpoint at v1 level for UI
-@routers.v1.delete("/projects/{project_id}")
-async def remove_project_v1(project_id: str):
-    """Remove project from dashboard (does not delete repository)"""
-    try:
-        success = project_manager_v2.registry.remove_project(project_id)
-        
-        if not success:
-            raise HTTPException(status_code=404, detail="Project not found")
-        
-        return {
-            "message": "Project removed from dashboard",
-            "project_id": project_id,
-            "note": "Repository files remain untouched"
-        }
-    except HTTPException:
-        raise
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
-# Project Management API Endpoints (V1 - for compatibility)
-@routers.v1.get("/projects")
-async def list_projects(state: Optional[str] = Query(None)):
-    """List all projects, optionally filtered by state"""
-    try:
-        filter_state = ProjectState(state) if state else None
-        projects = project_manager.registry.list_projects(filter_state)
-        
-        return {
-            "projects": [
-                {
-                    "id": p.id,
-                    "name": p.name,
-                    "description": p.description,
-                    "state": p.state.value,
-                    "repo_url": p.repo_url,
-                    "companion_ai": p.companion_ai,
-                    "created_at": p.created_at,
-                    "updated_at": p.updated_at,
-                    "last_activity": p.last_activity,
-                    "task_count": len(p.tasks)
-                }
-                for p in projects
-            ],
-            "total": len(projects)
-        }
-    except Exception as e:
-        logger.error(f"Failed to list projects: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
-
-@routers.v1.post("/projects")
-async def create_project(request: CreateProjectRequest):
-    """Create a new project"""
-    try:
-        project = project_manager.registry.create_project(
-            name=request.name,
-            description=request.description,
-            repo_url=request.repo_url,
-            working_dir=request.working_dir,
-            companion_ai=request.companion_ai
-        )
-        
-        return {
-            "id": project.id,
-            "name": project.name,
-            "description": project.description,
-            "state": project.state.value,
-            "created_at": project.created_at
-        }
-    except Exception as e:
-        logger.error(f"Failed to create project: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
-
-@routers.v1.get("/projects/{project_id}")
-async def get_project(project_id: str):
-    """Get project details"""
-    try:
-        summary = await project_manager.get_project_summary(project_id)
-        return summary
-    except ValueError as e:
-        raise HTTPException(status_code=404, detail=str(e))
-    except Exception as e:
-        logger.error(f"Failed to get project {project_id}: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
-
-@routers.v1.put("/projects/{project_id}/state")
-async def update_project_state(project_id: str, request: UpdateProjectStateRequest):
-    """Update project state"""
-    try:
-        new_state = ProjectState(request.state)
-        project = await project_manager.transition_project_state(
-            project_id, new_state, request.reason
-        )
-        
-        return {
-            "id": project.id,
-            "name": project.name,
-            "state": project.state.value,
-            "updated_at": project.updated_at
-        }
-    except ValueError as e:
-        raise HTTPException(status_code=404, detail=str(e))
-    except Exception as e:
-        logger.error(f"Failed to update project state: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
-
-@routers.v1.post("/projects/{project_id}/tasks")
-async def create_task(project_id: str, request: CreateTaskRequest):
-    """Create a new task in project"""
-    try:
-        task = await project_manager.add_task(
-            project_id=project_id,
-            title=request.title,
-            description=request.description,
-            priority=request.priority,
-            estimated_hours=request.estimated_hours,
-            dependencies=request.dependencies
-        )
-        
-        return {
-            "id": task.id,
-            "title": task.title,
-            "description": task.description,
-            "state": task.state.value,
-            "priority": task.priority,
-            "created_at": task.created_at
-        }
-    except ValueError as e:
-        raise HTTPException(status_code=404, detail=str(e))
-    except Exception as e:
-        logger.error(f"Failed to create task: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
-
-@routers.v1.put("/projects/{project_id}/tasks/{task_id}/state")
-async def update_task_state(project_id: str, task_id: str, request: UpdateTaskStateRequest):
-    """Update task state"""
-    try:
-        new_state = TaskState(request.state)
-        task = await project_manager.update_task_state(
-            project_id=project_id,
-            task_id=task_id,
-            new_state=new_state,
-            assigned_ai=request.assigned_ai,
-            branch=request.branch
-        )
-        
-        return {
-            "id": task.id,
-            "title": task.title,
-            "state": task.state.value,
-            "assigned_ai": task.assigned_ai,
-            "branch": task.branch,
-            "updated_at": task.updated_at
-        }
-    except ValueError as e:
-        raise HTTPException(status_code=404, detail=str(e))
-    except Exception as e:
-        logger.error(f"Failed to update task state: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
-
-@routers.v1.post("/projects/{project_id}/tasks/{task_id}/assign")
-async def assign_task(project_id: str, task_id: str, request: AssignTaskRequest):
-    """Assign task to AI worker"""
-    try:
-        branch = await project_manager.assign_task(
-            project_id=project_id,
-            task_id=task_id,
-            ai_name=request.ai_name,
-            branch=request.branch
-        )
-        
-        return {
-            "task_id": task_id,
-            "assigned_ai": request.ai_name,
-            "branch": branch,
-            "message": f"Task assigned to {request.ai_name} on branch {branch}"
-        }
-    except ValueError as e:
-        raise HTTPException(status_code=404, detail=str(e))
-    except Exception as e:
-        logger.error(f"Failed to assign task: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+# All project endpoints are now handled by the projects.py router at /api/projects
 
 # Merge Coordination API Endpoints
 @routers.v1.get("/merge-queue")
@@ -639,6 +481,7 @@ async def get_system_overview():
 mount_standard_routers(app, routers)
 
 # Mount our enhanced projects API - SIMPLE
+# Integration Point: Projects API Integration - Primary API integration for project management UI
 app.include_router(projects_v2.router)
 
 # Add request logging middleware

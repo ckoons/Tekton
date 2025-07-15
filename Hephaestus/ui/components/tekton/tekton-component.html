@@ -1,5 +1,8 @@
 <!-- Tekton Core Component - Project Management -->
 
+<!-- Required JavaScript utilities -->
+<script src="/scripts/tekton-urls.js"></script>
+
 <!-- Hidden radio controls for CSS-only tab functionality -->
 <input type="radio" name="tekton-tab" id="tekton-tab-dashboard" checked style="display: none;">
 <input type="radio" name="tekton-tab" id="tekton-tab-new-project" style="display: none;">
@@ -1958,16 +1961,16 @@ function tekton_protectHtmlPanel() {
 // This ensures the functions are available before the tab events need them
 window.addEventListener('DOMContentLoaded', function() {
     console.log('[TEKTON] DOM loaded, setting up Tekton component');
-    // DEPRECATED: tekton_protectHtmlPanel(); - Removed panel protection
-    tekton_loadComponent();
+    // Load dashboard projects since dashboard tab is checked by default
+    loadProjectsDashboard();
 });
 
 // IMMEDIATE PROTECTION
 // In case the DOM is already loaded
 if (document.readyState === 'complete' || document.readyState === 'interactive') {
     console.log('[TEKTON] Document already loaded, setting up Tekton component immediately');
-    // DEPRECATED: tekton_protectHtmlPanel(); - Removed panel protection
-    tekton_loadComponent();
+    // Load dashboard projects since dashboard tab is checked by default
+    loadProjectsDashboard();
 }
 </script>
 
