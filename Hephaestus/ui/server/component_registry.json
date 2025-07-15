@@ -77,10 +77,7 @@
         "component_isolation"
       ],
       "componentPath": "components/profile/profile-component.html",
-      "scripts": [
-        "scripts/profile/profile-service.js",
-        "scripts/profile/profile-component.js"
-      ],
+      "scripts": [],
       "styles": [
         "styles/profile/profile-component.css"
       ],
@@ -99,10 +96,7 @@
         "component_isolation"
       ],
       "componentPath": "components/settings/settings-component.html",
-      "scripts": [
-        "scripts/settings/settings-service.js",
-        "scripts/settings/settings-component.js"
-      ],
+      "scripts": [],
       "styles": [
         "styles/settings/settings-component.css"
       ],

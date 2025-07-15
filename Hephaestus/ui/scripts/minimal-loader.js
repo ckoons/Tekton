@@ -262,6 +262,64 @@ class MinimalLoader {
           console.error('MinimalLoader: initializeSettingsUI not found!');
         }
       }
+      
+      // Load Profile data when component loads
+      if (componentId === 'profile') {
+        setTimeout(() => {
+          if (window.profile_resetChanges) {
+            console.log('MinimalLoader: Loading profile data from backend');
+            window.profile_resetChanges();
+          }
+        }, 200);
+      }
+      
+      // Load Settings data when component loads
+      if (componentId === 'settings') {
+        setTimeout(async () => {
+          try {
+            console.log('MinimalLoader: Loading settings data from backend');
+            const response = await fetch('/api/settings', {
+              method: 'GET',
+              headers: {
+                'Content-Type': 'application/json',
+                'Cache-Control': 'no-cache'
+              }
+            });
+            
+            if (response.ok) {
+              const settingsData = await response.json();
+              
+              // Apply loaded settings to UI
+              if (settingsData.themeBase) {
+                const themeRadio = document.querySelector(`input[name="theme-mode"][value="${settingsData.themeBase}"]`);
+                if (themeRadio) themeRadio.checked = true;
+              }
+              
+              if (settingsData.accentPreset) {
+                const accentRadio = document.querySelector(`input[name="accent-color"][value="${settingsData.accentPreset}"]`);
+                if (accentRadio) accentRadio.checked = true;
+              }
+              
+              if (settingsData.showGreekNames !== undefined) {
+                const greekCheckbox = document.getElementById('greek-names-setting');
+                if (greekCheckbox) greekCheckbox.checked = settingsData.showGreekNames;
+              }
+              
+              if (settingsData.terminalFontSize) {
+                const fontSelect = document.getElementById('terminal-font-setting');
+                if (fontSelect) fontSelect.value = settingsData.terminalFontSize;
+              }
+              
+              // Apply the loaded theme
+              if (window.applyTheme) {
+                window.applyTheme();
+              }
+            }
+          } catch (error) {
+            console.error('MinimalLoader: Error loading settings:', error);
+          }
+        }, 200);
+      }
     } catch (error) {
       console.error(`MinimalLoader: Error loading ${componentId}:`, error);
       

@@ -282,6 +282,55 @@
 </div>
 
 <script>
+// Save settings to backend
+async function saveSettingsToBackend() {
+  try {
+    // Gather all settings
+    const settingsData = {
+      showGreekNames: document.getElementById('greek-names-setting')?.checked || false,
+      themeBase: document.querySelector('input[name="theme-mode"]:checked')?.value || 'pure-black',
+      accentColor: '#007bff', // We'll calculate this from the preset
+      accentPreset: document.querySelector('input[name="accent-color"]:checked')?.value || 'blue',
+      terminalFontSize: document.getElementById('terminal-font-setting')?.value || 'medium',
+      terminalFontSizePx: 14,
+      terminalFontFamily: "'Courier New', monospace",
+      terminalTheme: "default",
+      terminalCursorStyle: "block",
+      terminalCursorBlink: true,
+      terminalScrollback: true,
+      terminalScrollbackLines: 1000,
+      chatHistoryEnabled: true,
+      maxChatHistoryEntries: 50
+    };
+    
+    // Set accent color based on preset
+    const accentColors = {
+      'blue': '#007bff',
+      'green': '#28a745',
+      'purple': '#6f42c1',
+      'orange': '#fd7e14'
+    };
+    settingsData.accentColor = accentColors[settingsData.accentPreset] || '#007bff';
+    
+    // Save to backend
+    const response = await fetch('/api/settings', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(settingsData)
+    });
+    
+    if (response.ok) {
+      console.log('[SETTINGS] Settings saved to backend successfully');
+    } else {
+      console.error('[SETTINGS] Failed to save settings:', response.status);
+    }
+  } catch (error) {
+    console.error('[SETTINGS] Error saving settings:', error);
+  }
+}
+
 // Direct theme application - brute force approach
 function applyTheme() {
   const checkedTheme = document.querySelector('input[name="theme-mode"]:checked');
@@ -342,6 +391,9 @@ function applyTheme() {
       console.log('Applied Greek names setting:', greekNames);
     }
   }
+  
+  // Save settings to backend
+  saveSettingsToBackend();
   
   console.log('=== THEME APPLICATION COMPLETE ===');
 }

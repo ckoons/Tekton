@@ -263,14 +263,7 @@ window.profile_resetChanges = async function() {
     return false; // Stop event propagation
 };
 
-// Load profile data on component load
-window.addEventListener('DOMContentLoaded', function() {
-    // Small delay to ensure elements are ready
-    setTimeout(function() {
-        console.log('[PROFILE] Loading initial profile data');
-        window.profile_resetChanges(); // This loads the data from backend
-    }, 500);
-});
+// Profile data will be loaded by minimal-loader.js when component is displayed
 </script>
     
     <!-- Profile Content Area -->
