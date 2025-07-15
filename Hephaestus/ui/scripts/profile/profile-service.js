@@ -29,8 +29,8 @@ class ProfileService extends window.tektonUI.componentUtils.BaseService {
      * Initialize the profile service
      * @returns {ProfileService} The service instance
      */
-    init() {
-        this.load();
+    async init() {
+        await this.load();
         this.initialized = true;
         console.log('Profile service initialized');
         
@@ -62,60 +62,102 @@ class ProfileService extends window.tektonUI.componentUtils.BaseService {
     }
     
     /**
-     * Load profile from storage
+     * Load profile from backend
      * @returns {Object} The loaded profile
      */
-    load() {
-        if (window.storageManager) {
-            const savedProfile = window.storageManager.getItem('user_profile');
-            if (savedProfile) {
-                try {
-                    const parsed = JSON.parse(savedProfile);
-                    // Update profile, preserving defaults for any missing values
-                    this.profile = {
-                        ...this.profile,
-                        ...parsed
-                    };
-                    
-                    // Ensure emails is always an array
-                    if (!Array.isArray(this.profile.emails)) {
-                        this.profile.emails = this.profile.emails ? [this.profile.emails] : [''];
-                    }
-                    
-                    // Ensure socialAccounts exists
-                    if (!this.profile.socialAccounts) {
-                        this.profile.socialAccounts = {
-                            x: '',
-                            bluesky: '',
-                            wechat: '',
-                            whatsapp: '',
-                            github: ''
-                        };
-                    }
-                    
-                    console.log('Profile loaded from storage');
-                    this.dispatchEvent('profileLoaded', this.profile);
-                } catch (e) {
-                    console.error('Error parsing profile:', e);
+    async load() {
+        try {
+            // Fetch profile from backend
+            const response = await fetch('/api/profile', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Cache-Control': 'no-cache'
                 }
+            });
+            
+            if (response.ok) {
+                const data = await response.json();
+                this.profile = data;
+                
+                // Ensure emails is always an array
+                if (!Array.isArray(this.profile.emails)) {
+                    this.profile.emails = this.profile.emails ? [this.profile.emails] : [''];
+                }
+                
+                // Also save to localStorage for caching
+                if (window.storageManager) {
+                    window.storageManager.setItem('user_profile', JSON.stringify(this.profile));
+                }
+                
+                console.log('Profile loaded from backend');
+                this.dispatchEvent('profileLoaded', this.profile);
             } else {
-                console.log('No saved profile found, using defaults');
+                console.error('Failed to load profile from backend:', response.status);
+                // Fall back to localStorage if available
+                this.loadFromLocalStorage();
             }
+        } catch (error) {
+            console.error('Error loading profile from backend:', error);
+            // Fall back to localStorage if available
+            this.loadFromLocalStorage();
         }
         return this.profile;
     }
     
     /**
-     * Save profile to storage
+     * Load profile from localStorage (fallback)
+     */
+    loadFromLocalStorage() {
+        if (window.storageManager) {
+            const savedProfile = window.storageManager.getItem('user_profile');
+            if (savedProfile) {
+                try {
+                    const parsed = JSON.parse(savedProfile);
+                    this.profile = {
+                        ...this.profile,
+                        ...parsed
+                    };
+                    console.log('Profile loaded from localStorage (fallback)');
+                } catch (e) {
+                    console.error('Error parsing profile from localStorage:', e);
+                }
+            }
+        }
+    }
+    
+    /**
+     * Save profile to backend
      * @returns {ProfileService} The service instance
      */
-    save() {
-        if (window.storageManager) {
-            window.storageManager.setItem('user_profile', JSON.stringify(this.profile));
-            console.log('Profile saved to storage');
+    async save() {
+        try {
+            // Save to backend
+            const response = await fetch('/api/profile', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(this.profile)
+            });
             
-            // Dispatch event
-            this.dispatchEvent('profileSaved', this.profile);
+            if (response.ok) {
+                console.log('Profile saved to backend');
+                
+                // Also update localStorage cache
+                if (window.storageManager) {
+                    window.storageManager.setItem('user_profile', JSON.stringify(this.profile));
+                }
+                
+                // Dispatch event
+                this.dispatchEvent('profileSaved', this.profile);
+            } else {
+                console.error('Failed to save profile to backend:', response.status);
+                throw new Error(`Failed to save profile: ${response.status}`);
+            }
+        } catch (error) {
+            console.error('Error saving profile:', error);
+            throw error;
         }
         return this;
     }

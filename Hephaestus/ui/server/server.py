@@ -83,6 +83,10 @@ class TektonUIRequestHandler(SimpleHTTPRequestHandler):
             # Handle settings endpoints
             self.handle_settings_request("GET")
             return
+        elif self.path.startswith("/api/profile"):
+            # Handle profile endpoints
+            self.handle_profile_request("GET")
+            return
         elif self.path.startswith("/api/"):
             self.proxy_api_request("GET")
             return
@@ -476,6 +480,10 @@ class TektonUIRequestHandler(SimpleHTTPRequestHandler):
             # Handle settings endpoints
             self.handle_settings_request("POST")
             return
+        elif self.path.startswith("/api/profile"):
+            # Handle profile endpoints
+            self.handle_profile_request("POST")
+            return
         elif self.path.startswith("/api/"):
             self.proxy_api_request("POST")
             return
@@ -725,71 +733,183 @@ class TektonUIRequestHandler(SimpleHTTPRequestHandler):
             self.send_error(500, f"Environment request error: {str(e)}")
             
     def handle_settings_request(self, method):
-        """Handle settings API requests"""
+        """Handle settings data requests"""
         try:
+            import json
+            import os
+            
+            # Get settings file path
+            tekton_root = os.environ.get('TEKTON_ROOT', os.path.expanduser('~'))
+            settings_dir = os.path.join(tekton_root, '.tekton')
+            settings_path = os.path.join(settings_dir, 'settings.json')
+            
+            # Default settings structure
+            default_settings = {
+                "showGreekNames": True,
+                "themeBase": "pure-black",
+                "accentColor": "#007bff",
+                "accentPreset": "blue",
+                "terminalFontSize": "medium",
+                "terminalFontSizePx": 14,
+                "terminalFontFamily": "'Courier New', monospace",
+                "terminalTheme": "default",
+                "terminalCursorStyle": "block",
+                "terminalCursorBlink": True,
+                "terminalScrollback": True,
+                "terminalScrollbackLines": 1000,
+                "chatHistoryEnabled": True,
+                "maxChatHistoryEntries": 50
+            }
+            
             if method == "GET":
-                # Load current settings from environment
+                # Create directory and file with defaults if doesn't exist
+                if not os.path.exists(settings_path):
+                    os.makedirs(settings_dir, exist_ok=True)
+                    with open(settings_path, 'w') as f:
+                        json.dump(default_settings, f, indent=2)
+                    logger.info(f"Created default settings at {settings_path}")
                 
-                try:
-                    from env_manager import TektonEnvManager
-                    env_manager = TektonEnvManager()
-                    tekton_vars = env_manager.get_tekton_variables()
+                # Read and return settings data
+                with open(settings_path, 'r') as f:
+                    data = json.load(f)
                     
-                    # Send response
-                    self.send_response(200)
-                    self.send_header("Content-Type", "application/json")
-                    self.send_header("Cache-Control", "no-cache, no-store, must-revalidate")
-                    self.send_header("Access-Control-Allow-Origin", "*")
-                    self.end_headers()
-                    
-                    import json
-                    self.wfile.write(json.dumps(tekton_vars).encode('utf-8'))
-                    
-                except ImportError as e:
-                    logger.error(f"Could not import TektonEnvManager: {e}")
-                    self.send_error(500, "TektonEnvManager not available")
-                    
+                self.send_response(200)
+                self.send_header("Content-Type", "application/json")
+                self.send_header("Cache-Control", "no-cache, no-store, must-revalidate")
+                self.send_header("Access-Control-Allow-Origin", "*")
+                self.end_headers()
+                self.wfile.write(json.dumps(data).encode('utf-8'))
+                
             elif method == "POST":
-                # Save settings to .env.tekton
+                # Read request data
+                content_length = int(self.headers.get('Content-Length', 0))
+                post_data = self.rfile.read(content_length)
+                
+                # Validate JSON
                 try:
-                    # Read request body
-                    content_length = int(self.headers.get('Content-Length', 0))
-                    post_data = self.rfile.read(content_length)
-                    
-                    import json
-                    settings = json.loads(post_data.decode('utf-8'))
-                    
-                    # Load TektonEnvManager and save settings
-                    from env_manager import TektonEnvManager
-                    
-                    env_manager = TektonEnvManager()
-                    env_manager.save_tekton_settings(settings)
-                    
-                    # Send success response
-                    self.send_response(200)
-                    self.send_header("Content-Type", "application/json")
-                    self.send_header("Access-Control-Allow-Origin", "*")
-                    self.end_headers()
-                    
-                    response = {"status": "success", "message": "Settings saved successfully"}
-                    self.wfile.write(json.dumps(response).encode('utf-8'))
-                    
-                except ImportError as e:
-                    logger.error(f"Could not import TektonEnvManager: {e}")
-                    self.send_error(500, "TektonEnvManager not available")
+                    settings_data = json.loads(post_data.decode('utf-8'))
                 except json.JSONDecodeError as e:
                     logger.error(f"Invalid JSON in settings request: {e}")
                     self.send_error(400, "Invalid JSON data")
-                except Exception as e:
-                    logger.error(f"Error saving settings: {e}")
-                    self.send_error(500, f"Settings save error: {str(e)}")
-                    
+                    return
+                
+                # Ensure directory exists
+                os.makedirs(settings_dir, exist_ok=True)
+                
+                # Write to file
+                with open(settings_path, 'w') as f:
+                    json.dump(settings_data, f, indent=2)
+                
+                logger.info(f"Settings saved to {settings_path}")
+                
+                # Send success response
+                self.send_response(200)
+                self.send_header("Content-Type", "application/json")
+                self.send_header("Access-Control-Allow-Origin", "*")
+                self.end_headers()
+                
+                response = {"status": "success", "message": "Settings saved successfully"}
+                self.wfile.write(json.dumps(response).encode('utf-8'))
+                
             else:
                 self.send_error(405, "Method not allowed for settings endpoint")
                 
         except Exception as e:
             logger.error(f"Error handling settings request: {e}")
             self.send_error(500, f"Settings request error: {str(e)}")
+            
+    def handle_profile_request(self, method):
+        """Handle profile data requests"""
+        try:
+            import json
+            import os
+            
+            # Get profile file path
+            tekton_root = os.environ.get('TEKTON_ROOT', os.path.expanduser('~'))
+            profile_dir = os.path.join(tekton_root, '.tekton')
+            profile_path = os.path.join(profile_dir, 'profile.json')
+            
+            # Default profile structure
+            default_profile = {
+                "givenName": "",
+                "familyName": "",
+                "displayName": "",
+                "emails": [""],
+                "phoneNumber": "",
+                "address": "",
+                "socialAccounts": {
+                    "x": "",
+                    "bluesky": "",
+                    "linkedin": "",
+                    "wechat": "",
+                    "whatsapp": "",
+                    "github": ""
+                },
+                "preferences": {
+                    "defaultPage": "dashboard",
+                    "timezone": "UTC",
+                    "dateFormat": "MM/DD/YYYY",
+                    "emailNotifications": True,
+                    "chatNotifications": True
+                }
+            }
+            
+            if method == "GET":
+                # Create directory and file with defaults if doesn't exist
+                if not os.path.exists(profile_path):
+                    os.makedirs(profile_dir, exist_ok=True)
+                    with open(profile_path, 'w') as f:
+                        json.dump(default_profile, f, indent=2)
+                    logger.info(f"Created default profile at {profile_path}")
+                
+                # Read and return profile data
+                with open(profile_path, 'r') as f:
+                    data = json.load(f)
+                    
+                self.send_response(200)
+                self.send_header("Content-Type", "application/json")
+                self.send_header("Cache-Control", "no-cache, no-store, must-revalidate")
+                self.send_header("Access-Control-Allow-Origin", "*")
+                self.end_headers()
+                self.wfile.write(json.dumps(data).encode('utf-8'))
+                
+            elif method == "POST":
+                # Read request data
+                content_length = int(self.headers.get('Content-Length', 0))
+                post_data = self.rfile.read(content_length)
+                
+                # Validate JSON
+                try:
+                    profile_data = json.loads(post_data.decode('utf-8'))
+                except json.JSONDecodeError as e:
+                    logger.error(f"Invalid JSON in profile request: {e}")
+                    self.send_error(400, "Invalid JSON data")
+                    return
+                
+                # Ensure directory exists
+                os.makedirs(profile_dir, exist_ok=True)
+                
+                # Write to file
+                with open(profile_path, 'w') as f:
+                    json.dump(profile_data, f, indent=2)
+                
+                logger.info(f"Profile saved to {profile_path}")
+                
+                # Send success response
+                self.send_response(200)
+                self.send_header("Content-Type", "application/json")
+                self.send_header("Access-Control-Allow-Origin", "*")
+                self.end_headers()
+                
+                response = {"status": "success", "message": "Profile saved successfully"}
+                self.wfile.write(json.dumps(response).encode('utf-8'))
+                
+            else:
+                self.send_error(405, "Method not allowed for profile endpoint")
+                
+        except Exception as e:
+            logger.error(f"Error handling profile request: {e}")
+            self.send_error(500, f"Profile request error: {str(e)}")
         
     def log_message(self, format, *args):
         """Override to use our logger"""

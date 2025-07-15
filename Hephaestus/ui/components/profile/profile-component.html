@@ -141,15 +141,51 @@ window.profile_switchTab = function(tabId) {
 };
 
 // Profile Save Function
-window.profile_saveProfile = function() {
+window.profile_saveProfile = async function() {
     console.log('[PROFILE] Save profile button clicked');
     
     try {
-        if (window.profileComponent && typeof window.profileComponent.saveProfile === 'function') {
-            window.profileComponent.saveProfile();
+        // Gather all form data
+        const profileData = {
+            givenName: document.getElementById('given-name')?.value || '',
+            familyName: document.getElementById('family-name')?.value || '',
+            displayName: document.getElementById('display-name')?.value || '',
+            phoneNumber: document.getElementById('phone-number')?.value || '',
+            address: document.getElementById('address')?.value || '',
+            emails: Array.from(document.querySelectorAll('.profile__input--email'))
+                .map(input => input.value)
+                .filter(email => email.trim() !== ''),
+            socialAccounts: {
+                x: document.getElementById('x-account')?.value || '',
+                bluesky: document.getElementById('bluesky-account')?.value || '',
+                linkedin: document.getElementById('linkedin-account')?.value || '',
+                wechat: document.getElementById('wechat-account')?.value || '',
+                whatsapp: document.getElementById('whatsapp-account')?.value || '',
+                github: document.getElementById('github-account')?.value || ''
+            },
+            preferences: {
+                defaultPage: document.getElementById('default-page')?.value || 'dashboard',
+                timezone: document.getElementById('timezone')?.value || 'UTC',
+                dateFormat: document.getElementById('date-format')?.value || 'MM/DD/YYYY',
+                emailNotifications: document.getElementById('email-notif-toggle')?.checked || false,
+                chatNotifications: document.getElementById('chat-notif-toggle')?.checked || false
+            }
+        };
+        
+        // Save to backend
+        const response = await fetch('/api/profile', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(profileData)
+        });
+        
+        if (response.ok) {
+            console.log('[PROFILE] Profile saved successfully');
+            // Could show a success message here
         } else {
-            console.log('[PROFILE] Component not available for saving, will try again');
-            setTimeout(window.profile_saveProfile, 1000); // Retry after 1 second
+            console.error('[PROFILE] Failed to save profile:', response.status);
         }
     } catch (err) {
         console.error('[PROFILE] Error saving profile:', err);
@@ -159,15 +195,66 @@ window.profile_saveProfile = function() {
 };
 
 // Reset Changes Function
-window.profile_resetChanges = function() {
+window.profile_resetChanges = async function() {
     console.log('[PROFILE] Reset changes button clicked');
     
     try {
-        if (window.profileComponent && typeof window.profileComponent.resetChanges === 'function') {
-            window.profileComponent.resetChanges();
+        // Reload profile data from backend
+        const response = await fetch('/api/profile', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Cache-Control': 'no-cache'
+            }
+        });
+        
+        if (response.ok) {
+            const profileData = await response.json();
+            
+            // Populate form fields
+            document.getElementById('given-name').value = profileData.givenName || '';
+            document.getElementById('family-name').value = profileData.familyName || '';
+            document.getElementById('display-name').value = profileData.displayName || '';
+            document.getElementById('phone-number').value = profileData.phoneNumber || '';
+            document.getElementById('address').value = profileData.address || '';
+            
+            // Social accounts
+            document.getElementById('x-account').value = profileData.socialAccounts?.x || '';
+            document.getElementById('bluesky-account').value = profileData.socialAccounts?.bluesky || '';
+            document.getElementById('linkedin-account').value = profileData.socialAccounts?.linkedin || '';
+            document.getElementById('wechat-account').value = profileData.socialAccounts?.wechat || '';
+            document.getElementById('whatsapp-account').value = profileData.socialAccounts?.whatsapp || '';
+            document.getElementById('github-account').value = profileData.socialAccounts?.github || '';
+            
+            // Preferences
+            if (profileData.preferences) {
+                document.getElementById('default-page').value = profileData.preferences.defaultPage || 'dashboard';
+                document.getElementById('timezone').value = profileData.preferences.timezone || 'UTC';
+                document.getElementById('date-format').value = profileData.preferences.dateFormat || 'MM/DD/YYYY';
+                document.getElementById('email-notif-toggle').checked = profileData.preferences.emailNotifications || false;
+                document.getElementById('chat-notif-toggle').checked = profileData.preferences.chatNotifications || false;
+            }
+            
+            // Handle emails (clear existing and repopulate)
+            const emailContainer = document.querySelector('.profile__emails-fields');
+            if (emailContainer) {
+                emailContainer.innerHTML = '';
+                (profileData.emails || ['']).forEach(email => {
+                    const emailItem = document.createElement('div');
+                    emailItem.className = 'profile__emails-item';
+                    emailItem.innerHTML = `
+                        <input type="email" class="profile__input profile__input--email" placeholder="Email Address" value="${email || ''}">
+                        <button class="profile__button profile__button--remove">
+                            <span class="profile__button-icon">-</span>
+                        </button>
+                    `;
+                    emailContainer.appendChild(emailItem);
+                });
+            }
+            
+            console.log('[PROFILE] Profile reset to saved values');
         } else {
-            console.log('[PROFILE] Component not available for reset, will try again');
-            setTimeout(window.profile_resetChanges, 1000); // Retry after 1 second
+            console.error('[PROFILE] Failed to load profile:', response.status);
         }
     } catch (err) {
         console.error('[PROFILE] Error resetting changes:', err);
@@ -175,6 +262,15 @@ window.profile_resetChanges = function() {
     
     return false; // Stop event propagation
 };
+
+// Load profile data on component load
+window.addEventListener('DOMContentLoaded', function() {
+    // Small delay to ensure elements are ready
+    setTimeout(function() {
+        console.log('[PROFILE] Loading initial profile data');
+        window.profile_resetChanges(); // This loads the data from backend
+    }, 500);
+});
 </script>
     
     <!-- Profile Content Area -->
@@ -588,16 +684,31 @@ window.profile_resetChanges = function() {
         align-items: center;
         gap: 6px;
         padding: 6px 12px;
-        background-color: var(--bg-tertiary, #333345);
-        border: 1px solid var(--border-color, #444444);
+        background: linear-gradient(145deg, #4a4a5a, #2a2a3a);
+        border: 1px solid #555566;
         border-radius: 4px;
-        color: var(--text-primary, #f0f0f0);
+        color: #e0e0e0;
         cursor: pointer;
         transition: all 0.2s ease;
+        box-shadow: 
+            inset 1px 1px 2px rgba(255, 255, 255, 0.1),
+            inset -1px -1px 2px rgba(0, 0, 0, 0.3),
+            2px 2px 4px rgba(0, 0, 0, 0.2);
     }
     
     .profile__action-button:hover {
-        background-color: var(--bg-hover, #3a3a4a);
+        background: linear-gradient(145deg, #525263, #323243);
+        box-shadow: 
+            inset 1px 1px 2px rgba(255, 255, 255, 0.15),
+            inset -1px -1px 2px rgba(0, 0, 0, 0.4),
+            2px 2px 5px rgba(0, 0, 0, 0.3);
+    }
+    
+    .profile__action-button:active {
+        background: linear-gradient(145deg, #2a2a3a, #4a4a5a);
+        box-shadow: 
+            inset 2px 2px 4px rgba(0, 0, 0, 0.3),
+            inset -1px -1px 2px rgba(255, 255, 255, 0.05);
     }
     
     /* Content Area */
