@@ -5,9 +5,14 @@
 <input type="radio" name="noesis-tab" id="noesis-tab-discovery" style="display: none;">
 <input type="radio" name="noesis-tab" id="noesis-tab-team" style="display: none;">
 
-<div class="noesis" id="noesis-container" data-tekton-component="noesis" data-tekton-ai="noesis-specialist" data-tekton-ai-ready="false">
+<div class="noesis" id="noesis-container" 
+     data-tekton-component="noesis"
+     data-tekton-area="noesis"
+     data-tekton-type="component-workspace"
+     data-tekton-ai="noesis-specialist"
+     data-tekton-ai-ready="false">
     <!-- Component Header with Title -->
-    <div class="noesis__header" data-tekton-zone="header">
+    <div class="noesis__header" data-tekton-zone="header" data-tekton-section="header">
         <div class="noesis__title-container">
             <img src="/images/hexagon.jpg" alt="Tekton" class="noesis__icon">
             <h2 class="noesis__title">
@@ -18,86 +23,97 @@
     </div>
     
     <!-- Menu Bar -->
-    <div class="noesis__menu-bar" data-tekton-zone="menu">
+    <div class="noesis__menu-bar" data-tekton-zone="menu" data-tekton-nav="component-menu">
         <div class="noesis__tabs">
             <label for="noesis-tab-analysis" class="noesis__tab" data-tab="theoretical-analysis"
                    data-tekton-menu-item="Theoretical Analysis"
                    data-tekton-menu-component="noesis"
-                   data-tekton-menu-panel="noesis-analysis">
+                   data-tekton-menu-panel="theoretical-analysis-panel"
+                   data-tekton-nav-target="theoretical-analysis-panel"
+                   data-tekton-menu-active="true">
                 <span class="noesis__tab-label">Theoretical Analysis</span>
             </label>
             <label for="noesis-tab-discovery" class="noesis__tab" data-tab="discovery-chat"
                    data-tekton-menu-item="Discovery Chat"
                    data-tekton-menu-component="noesis"
-                   data-tekton-menu-panel="noesis-discovery">
+                   data-tekton-menu-panel="discovery-chat-panel"
+                   data-tekton-nav-target="discovery-chat-panel"
+                   data-tekton-menu-active="false">
                 <span class="noesis__tab-label">Discovery Chat</span>
             </label>
             <label for="noesis-tab-team" class="noesis__tab" data-tab="team-chat"
                    data-tekton-menu-item="Team Chat"
                    data-tekton-menu-component="noesis"
-                   data-tekton-menu-panel="noesis-team">
+                   data-tekton-menu-panel="team-chat-panel"
+                   data-tekton-nav-target="team-chat-panel"
+                   data-tekton-menu-active="false">
                 <span class="noesis__tab-label">Team Chat</span>
             </label>
         </div>
     </div>
     
     <!-- Content Area -->
-    <div class="noesis__content" data-tekton-zone="content">
+    <div class="noesis__content" data-tekton-zone="content" data-tekton-scrollable="true">
         <!-- Theoretical Analysis Tab -->
-        <div class="noesis__panel noesis__panel--analysis" data-tab-content="theoretical-analysis" data-tekton-tab-content="theoretical-analysis">
+        <div id="theoretical-analysis-panel" class="noesis__panel noesis__panel--analysis" 
+             data-tab-content="theoretical-analysis" 
+             data-tekton-panel="theoretical-analysis"
+             data-tekton-panel-for="Theoretical Analysis"
+             data-tekton-panel-component="noesis"
+             data-tekton-panel-active="true">
             <div class="noesis__analysis-dashboard">
                 <!-- Memory State Overview -->
-                <div class="noesis__memory-overview">
+                <div class="noesis__memory-overview" data-tekton-section="memory-stream">
                     <h3 class="noesis__section-title">Memory State Stream</h3>
                     <div class="noesis__memory-metrics">
                         <div class="noesis__metric-card">
                             <h4>Active Memories</h4>
-                            <span id="active-memories-count">--</span>
+                            <span id="active-memories-count" data-tekton-metric="active-memories" data-tekton-metric-type="count">--</span>
                         </div>
                         <div class="noesis__metric-card">
                             <h4>Pattern Strength</h4>
-                            <span id="pattern-strength-value">--</span>
+                            <span id="pattern-strength-value" data-tekton-metric="pattern-strength" data-tekton-metric-type="score">--</span>
                         </div>
                         <div class="noesis__metric-card">
                             <h4>Coherence Score</h4>
-                            <span id="coherence-score-value">--</span>
+                            <span id="coherence-score-value" data-tekton-metric="coherence-score" data-tekton-metric-type="score">--</span>
                         </div>
                         <div class="noesis__metric-card">
                             <h4>Stream Status</h4>
-                            <span id="stream-status-indicator">Connecting...</span>
+                            <span id="stream-status-indicator" data-tekton-status="stream-status" data-tekton-state="connecting">Connecting...</span>
                         </div>
                     </div>
-                    <div id="memory-stream-visualization" class="noesis__visualization-container">
+                    <div id="memory-stream-visualization" class="noesis__visualization-container" data-tekton-viz="memory-stream" data-tekton-viz-type="stream">
                         <!-- Real-time memory visualization -->
                     </div>
                 </div>
 
                 <!-- Manifold Analysis -->
-                <div class="noesis__analysis-section">
+                <div class="noesis__analysis-section" data-tekton-section="manifold-analysis">
                     <h3 class="noesis__section-title">Manifold Analysis</h3>
                     <div class="noesis__analysis-controls">
                         <div class="noesis__control-group">
                             <label for="manifold-dimension">Target Dimension:</label>
-                            <select id="manifold-dimension" class="noesis__select">
+                            <select id="manifold-dimension" class="noesis__select" data-tekton-input="manifold-dimension" data-tekton-input-type="select">
                                 <option value="2">2D</option>
                                 <option value="3" selected>3D</option>
                             </select>
                         </div>
                         <div class="noesis__control-group">
                             <label for="reduction-method">Reduction Method:</label>
-                            <select id="reduction-method" class="noesis__select">
+                            <select id="reduction-method" class="noesis__select" data-tekton-input="reduction-method" data-tekton-input-type="select">
                                 <option value="pca">PCA</option>
                                 <option value="tsne">t-SNE</option>
                                 <option value="umap">UMAP</option>
                             </select>
                         </div>
-                        <button id="update-manifold" class="noesis__button noesis__button--primary">
+                        <button id="update-manifold" class="noesis__button noesis__button--primary" data-tekton-action="update-manifold" data-tekton-action-type="primary">
                             Update Analysis
                         </button>
                     </div>
                     <div class="noesis__manifold-container">
                         <div class="noesis__manifold-visualization">
-                            <div id="manifold-3d-viz" class="noesis__chart-container">
+                            <div id="manifold-3d-viz" class="noesis__chart-container" data-tekton-viz="manifold-3d" data-tekton-viz-type="3d-scatter">
                                 <!-- 3D manifold visualization -->
                             </div>
                         </div>
@@ -106,22 +122,22 @@
                             <div class="noesis__property-list">
                                 <div class="noesis__property">
                                     <span class="noesis__property-label">Intrinsic Dimension:</span>
-                                    <span id="intrinsic-dimension" class="noesis__property-value">--</span>
+                                    <span id="intrinsic-dimension" class="noesis__property-value" data-tekton-metric="intrinsic-dimension" data-tekton-metric-type="dimension">--</span>
                                 </div>
                                 <div class="noesis__property">
                                     <span class="noesis__property-label">Curvature:</span>
-                                    <span id="manifold-curvature" class="noesis__property-value">--</span>
+                                    <span id="manifold-curvature" class="noesis__property-value" data-tekton-metric="manifold-curvature" data-tekton-metric-type="curvature">--</span>
                                 </div>
                                 <div class="noesis__property">
                                     <span class="noesis__property-label">Topology Class:</span>
-                                    <span id="topology-class" class="noesis__property-value">--</span>
+                                    <span id="topology-class" class="noesis__property-value" data-tekton-metric="topology-class" data-tekton-metric-type="classification">--</span>
                                 </div>
                                 <div class="noesis__property">
                                     <span class="noesis__property-label">Stability:</span>
-                                    <span id="manifold-stability" class="noesis__property-value">--</span>
+                                    <span id="manifold-stability" class="noesis__property-value" data-tekton-metric="manifold-stability" data-tekton-metric-type="stability">--</span>
                                 </div>
                             </div>
-                            <div id="curvature-heatmap" class="noesis__heatmap-container">
+                            <div id="curvature-heatmap" class="noesis__heatmap-container" data-tekton-viz="curvature-heatmap" data-tekton-viz-type="heatmap">
                                 <!-- Curvature heatmap -->
                             </div>
                         </div>
@@ -129,17 +145,17 @@
                 </div>
 
                 <!-- Dynamics Analysis -->
-                <div class="noesis__analysis-section">
+                <div class="noesis__analysis-section" data-tekton-section="dynamics-analysis">
                     <h3 class="noesis__section-title">Dynamics Analysis</h3>
                     <div class="noesis__dynamics-container">
                         <div class="noesis__regime-visualization">
-                            <div id="dynamics-regime-viz" class="noesis__chart-container">
+                            <div id="dynamics-regime-viz" class="noesis__chart-container" data-tekton-viz="dynamics-regimes" data-tekton-viz-type="timeline">
                                 <!-- Regime transitions visualization -->
                             </div>
                         </div>
                         <div class="noesis__regime-properties">
                             <h4>Detected Regimes</h4>
-                            <div id="regime-list" class="noesis__regime-list">
+                            <div id="regime-list" class="noesis__regime-list" data-tekton-list="regime-list" data-tekton-list-type="dynamic">
                                 <!-- Dynamically populated regime list -->
                             </div>
                         </div>
@@ -147,39 +163,39 @@
                 </div>
 
                 <!-- Catastrophe Analysis -->
-                <div class="noesis__analysis-section">
+                <div class="noesis__analysis-section" data-tekton-section="catastrophe-analysis">
                     <h3 class="noesis__section-title">Catastrophe Analysis</h3>
                     <div class="noesis__catastrophe-container">
                         <div class="noesis__warning-indicators">
                             <div class="noesis__warning-card">
                                 <h4>Critical Transitions</h4>
-                                <span id="critical-transitions-count" class="noesis__warning-value">0</span>
+                                <span id="critical-transitions-count" class="noesis__warning-value" data-tekton-metric="critical-transitions" data-tekton-metric-type="count">0</span>
                             </div>
                             <div class="noesis__warning-card">
                                 <h4>Warning Signals</h4>
-                                <span id="warning-signals-count" class="noesis__warning-value">0</span>
+                                <span id="warning-signals-count" class="noesis__warning-value" data-tekton-metric="warning-signals" data-tekton-metric-type="count">0</span>
                             </div>
                             <div class="noesis__warning-card">
                                 <h4>Stability Index</h4>
-                                <span id="stability-index-value" class="noesis__warning-value">--</span>
+                                <span id="stability-index-value" class="noesis__warning-value" data-tekton-metric="stability-index" data-tekton-metric-type="index">--</span>
                             </div>
                         </div>
-                        <div id="catastrophe-timeline" class="noesis__timeline-container">
+                        <div id="catastrophe-timeline" class="noesis__timeline-container" data-tekton-viz="catastrophe-timeline" data-tekton-viz-type="timeline">
                             <!-- Catastrophe timeline visualization -->
                         </div>
                     </div>
                 </div>
 
                 <!-- Synthesis Insights -->
-                <div class="noesis__analysis-section">
+                <div class="noesis__analysis-section" data-tekton-section="synthesis-insights">
                     <h3 class="noesis__section-title">Universal Principles</h3>
                     <div class="noesis__synthesis-container">
-                        <div id="scaling-laws-chart" class="noesis__chart-container">
+                        <div id="scaling-laws-chart" class="noesis__chart-container" data-tekton-viz="scaling-laws" data-tekton-viz-type="line-chart">
                             <!-- Scaling laws visualization -->
                         </div>
                         <div class="noesis__principles-list">
                             <h4>Discovered Principles</h4>
-                            <div id="universal-principles" class="noesis__principles-container">
+                            <div id="universal-principles" class="noesis__principles-container" data-tekton-list="principles-list" data-tekton-list-type="dynamic">
                                 <!-- Dynamically populated principles -->
                             </div>
                         </div>
@@ -189,30 +205,40 @@
         </div>
         
         <!-- Discovery Chat Tab -->
-        <div class="noesis__panel noesis__panel--discovery" data-tab-content="discovery-chat" data-tekton-tab-content="discovery-chat">
-            <div class="chat-interface" data-tekton-chat="discovery">
+        <div id="discovery-chat-panel" class="noesis__panel noesis__panel--discovery" 
+             data-tab-content="discovery-chat" 
+             data-tekton-panel="discovery-chat"
+             data-tekton-panel-for="Discovery Chat"
+             data-tekton-panel-component="noesis"
+             data-tekton-panel-active="false">
+            <div class="chat-interface" data-tekton-chat="discovery" data-tekton-chat-type="discovery">
                 <div class="discovery-controls">
                     <label for="noesis-search-scope">Search Scope:</label>
-                    <select id="noesis-search-scope" class="discovery-select">
+                    <select id="noesis-search-scope" class="discovery-select" data-tekton-input="search-scope" data-tekton-input-type="select">
                         <option value="all">All Patterns</option>
                         <option value="components">Component Patterns</option>
                         <option value="patterns">Behavioral Patterns</option>
                         <option value="insights">System Insights</option>
                     </select>
                 </div>
-                <div class="chat-messages" id="noesis-discovery-messages" data-tekton-messages="discovery">
+                <div class="chat-messages" id="noesis-discovery-messages" data-tekton-chat-messages="discovery">
                     <!-- Initial message will be added by first AI response -->
                 </div>
             </div>
         </div>
         
         <!-- Team Chat Tab -->
-        <div class="noesis__panel noesis__panel--team" data-tab-content="team-chat" data-tekton-tab-content="team-chat">
-            <div class="chat-interface" data-tekton-chat="team">
+        <div id="team-chat-panel" class="noesis__panel noesis__panel--team" 
+             data-tab-content="team-chat" 
+             data-tekton-panel="team-chat"
+             data-tekton-panel-for="Team Chat"
+             data-tekton-panel-component="noesis"
+             data-tekton-panel-active="false">
+            <div class="chat-interface" data-tekton-chat="team" data-tekton-chat-type="team">
                 <div class="team-chat-header">
                     <p>Share discoveries with other AI specialists</p>
                 </div>
-                <div class="chat-messages" id="noesis-team-messages" data-tekton-messages="team">
+                <div class="chat-messages" id="noesis-team-messages" data-tekton-chat-messages="team">
                     <div class="chat-message system-message">
                         <strong>System:</strong> Team Chat allows Noesis to share discoveries with other specialists.
                     </div>
@@ -232,7 +258,8 @@
                    onkeydown="if(event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); noesis_sendChat(); }">
             <button class="noesis__send-button" id="noesis-send-button" onclick="noesis_sendChat(); return false;"
                     data-tekton-action="send-message"
-                    data-tekton-action-type="primary">Discover</button>
+                    data-tekton-action-type="primary"
+                    data-tekton-trigger="send-discovery-message">Discover</button>
         </div>
     </div>
 </div>
