@@ -36,6 +36,7 @@ class AnalysisEngine:
         self.analysis_tasks = {}
         self.baseline_data = {}
         self.advanced_analytics = None
+        self._shutdown_flag = False
         
     async def initialize(self) -> bool:
         """
@@ -95,6 +96,9 @@ class AnalysisEngine:
         """
         logger.info("Stopping Sophia Analysis Engine...")
         
+        # Set shutdown flag first
+        self._shutdown_flag = True
+        
         # Cancel background tasks and await their completion
         if self.analysis_tasks:
             tasks_to_cancel = []
@@ -103,13 +107,15 @@ class AnalysisEngine:
                 task.cancel()
                 tasks_to_cancel.append((task_name, task))
             
-            # Wait for all tasks to complete cancellation
+            # Wait for all tasks to complete cancellation with timeout
             for task_name, task in tasks_to_cancel:
                 try:
-                    await task
+                    await asyncio.wait_for(task, timeout=10.0)
                 except asyncio.CancelledError:
                     # This is expected when a task is cancelled
                     logger.debug(f"Task {task_name} cancelled successfully")
+                except asyncio.TimeoutError:
+                    logger.warning(f"Task {task_name} did not respond to cancellation within timeout")
                 except Exception as e:
                     logger.warning(f"Error while cancelling task {task_name}: {e}")
             
@@ -1567,9 +1573,15 @@ class AnalysisEngine:
     async def _periodic_trend_analysis(self) -> None:
         """Run periodic trend analysis as a background task."""
         try:
-            while True:
+            while not self._shutdown_flag:
                 # Sleep first to prevent immediate analysis on startup
-                await asyncio.sleep(3600)  # Run hourly
+                try:
+                    await asyncio.wait_for(asyncio.sleep(3600), timeout=10.0)  # Run hourly with interruptible sleep
+                except asyncio.TimeoutError:
+                    continue  # Check shutdown flag again
+                
+                if self._shutdown_flag:
+                    break
                 
                 try:
                     logger.info("Running periodic trend analysis")
@@ -1589,6 +1601,8 @@ class AnalysisEngine:
                     
                     # Analyze each metric
                     for metric_id in metric_ids:
+                        if self._shutdown_flag:
+                            break
                         try:
                             await self.analyze_metric_patterns(
                                 metric_id=metric_id,
@@ -1606,6 +1620,8 @@ class AnalysisEngine:
             logger.info("Periodic trend analysis task cancelled")
         except Exception as e:
             logger.error(f"Unexpected error in trend analysis task: {e}")
+        finally:
+            logger.info("Periodic trend analysis task exiting")
     
     async def compare_metric_sets(
         self,

@@ -58,49 +58,13 @@ COMPONENT_DESCRIPTION = "Machine learning and continuous improvement system for 
 component = SophiaComponent()
 
 
-# Startup callback for component initialization
-async def startup_callback():
-    """Component startup callback."""
-    global component
-    try:
-        await component.initialize(
-            capabilities=component.get_capabilities(),
-            metadata=component.get_metadata()
-        )
-        
-        # Initialize MCP bridge after component startup
-        await component.initialize_mcp_bridge()
-        
-        logger.info(f"Sophia API server started successfully")
-    except Exception as e:
-        logger.error(f"Failed to start Sophia: {e}")
-        raise
-
-
-# Shutdown callback for proper cleanup
-async def shutdown_callback():
-    """Component shutdown callback."""
-    global component
-    logger.info("Sophia shutting down...")
-    
-    try:
-        if component:
-            # Cleanup component resources
-            await component.cleanup()
-            logger.info("Sophia component cleaned up successfully")
-    except Exception as e:
-        logger.error(f"Error during Sophia shutdown: {e}")
-
-
 # Create FastAPI app with OpenAPI configuration
 app = FastAPI(
     **get_openapi_configuration(
         component_name=COMPONENT_NAME,
         component_version=COMPONENT_VERSION,
         component_description=COMPONENT_DESCRIPTION
-    ),
-    on_startup=[startup_callback],
-    on_shutdown=[shutdown_callback]
+    )
 )
 
 # Enable CORS
@@ -360,6 +324,28 @@ except ImportError:
 # Mount standard routers
 mount_standard_routers(app, routers)
 
+@app.on_event("startup")
+async def startup_event():
+    """Component startup callback."""
+    global component
+    try:
+        # Wait 10 seconds to allow uvicorn to complete its startup sequence
+        logger.info("Waiting for uvicorn startup to complete...")
+        await asyncio.sleep(10)
+        
+        await component.initialize(
+            capabilities=component.get_capabilities(),
+            metadata=component.get_metadata()
+        )
+        
+        # Initialize MCP bridge after component startup
+        await component.initialize_mcp_bridge()
+        
+        logger.info(f"Sophia API server started successfully")
+    except Exception as e:
+        logger.error(f"Failed to start Sophia: {e}")
+        raise
+
 # Include custom MCP routes
 try:
     from sophia.core.mcp.hermes_bridge import get_mcp_routes
@@ -370,15 +356,32 @@ except Exception as e:
     logger.debug(f"MCP routes not available: {e}")
 
 
+@app.on_event("shutdown")
+async def shutdown_event():
+    """Cleanup on shutdown"""
+    global component
+    logger.info("=== SOPHIA SHUTDOWN INITIATED ===")
+    logger.info("Sophia shutting down...")
+    
+    try:
+        if component:
+            logger.info("Cleaning up component resources...")
+            # Cleanup component resources
+            await component.cleanup()
+            logger.info("Sophia component cleaned up successfully")
+        else:
+            logger.warning("No component instance to cleanup")
+    except Exception as e:
+        logger.error(f"Error during Sophia shutdown: {e}")
+    finally:
+        logger.info("=== SOPHIA SHUTDOWN COMPLETE ===")
+
+
 if __name__ == "__main__":
-    from shared.utils.socket_server import run_component_server
+    import uvicorn
     
     global_config = GlobalConfig.get_instance()
     port = global_config.config.sophia.port
     
-    run_component_server(
-        component_name="sophia",
-        app_module="sophia.api.app",
-        default_port=port,
-        reload=False
-    )
+    print(f"Starting Sophia on port {port}...")
+    uvicorn.run(app, host="0.0.0.0", port=port)

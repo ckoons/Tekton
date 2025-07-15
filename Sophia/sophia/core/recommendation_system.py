@@ -74,6 +74,7 @@ class RecommendationSystem:
         self.experiment_framework = None
         self.database = None
         self.generation_tasks = {}
+        self._shutdown_flag = False
         
     async def initialize(self) -> bool:
         """
@@ -138,6 +139,9 @@ class RecommendationSystem:
         """
         logger.info("Stopping Sophia Recommendation System...")
         
+        # Set shutdown flag first
+        self._shutdown_flag = True
+        
         # Cancel background tasks and await their completion
         if self.generation_tasks:
             tasks_to_cancel = []
@@ -146,13 +150,15 @@ class RecommendationSystem:
                 task.cancel()
                 tasks_to_cancel.append((task_name, task))
             
-            # Wait for all tasks to complete cancellation
+            # Wait for all tasks to complete cancellation with timeout
             for task_name, task in tasks_to_cancel:
                 try:
-                    await task
+                    await asyncio.wait_for(task, timeout=10.0)
                 except asyncio.CancelledError:
                     # This is expected when a task is cancelled
                     logger.debug(f"Task {task_name} cancelled successfully")
+                except asyncio.TimeoutError:
+                    logger.warning(f"Task {task_name} did not respond to cancellation within timeout")
                 except Exception as e:
                     logger.warning(f"Error while cancelling task {task_name}: {e}")
             
@@ -1615,9 +1621,12 @@ class RecommendationSystem:
         """Run periodic recommendation generation as a background task."""
         try:
             # Initial delay to allow system to stabilize
-            await asyncio.sleep(300)  # 5 minutes
+            try:
+                await asyncio.wait_for(asyncio.sleep(300), timeout=10.0)  # 5 minutes with interruptible sleep
+            except asyncio.TimeoutError:
+                pass  # Check shutdown flag
             
-            while True:
+            while not self._shutdown_flag:
                 try:
                     logger.info("Running periodic recommendation generation")
                     
@@ -1628,6 +1637,8 @@ class RecommendationSystem:
                     
                     # Generate recommendations for each component
                     for component_id in component_ids:
+                        if self._shutdown_flag:
+                            break
                         try:
                             recommendations = await self.generate_recommendations_from_analysis(
                                 component_id=component_id,
@@ -1639,6 +1650,9 @@ class RecommendationSystem:
                         except Exception as e:
                             logger.error(f"Error generating recommendations for {component_id}: {e}")
                             
+                    if self._shutdown_flag:
+                        break
+                        
                     # Generate cross-component recommendations
                     try:
                         cross_recommendations = await self.generate_cross_component_recommendations(
@@ -1650,18 +1664,33 @@ class RecommendationSystem:
                     except Exception as e:
                         logger.error(f"Error generating cross-component recommendations: {e}")
                         
-                    # Sleep until next run (daily)
+                    # Sleep until next run (daily) with interruptible sleep
                     logger.info("Completed periodic recommendation generation")
-                    await asyncio.sleep(86400)  # 24 hours
+                    for _ in range(864):  # 24 hours in 100-second intervals
+                        if self._shutdown_flag:
+                            break
+                        try:
+                            await asyncio.wait_for(asyncio.sleep(100), timeout=10.0)
+                        except asyncio.TimeoutError:
+                            continue
                     
                 except Exception as e:
                     logger.error(f"Error in periodic recommendation generation: {e}")
-                    await asyncio.sleep(3600)  # 1 hour before retry
+                    # Sleep 1 hour before retry with interruptible sleep
+                    for _ in range(36):  # 1 hour in 100-second intervals
+                        if self._shutdown_flag:
+                            break
+                        try:
+                            await asyncio.wait_for(asyncio.sleep(100), timeout=10.0)
+                        except asyncio.TimeoutError:
+                            continue
                     
         except asyncio.CancelledError:
             logger.info("Periodic recommendation generation task cancelled")
         except Exception as e:
             logger.error(f"Unexpected error in recommendation generation task: {e}")
+        finally:
+            logger.info("Periodic recommendation generation task exiting")
             
     async def _load_recommendations(self) -> bool:
         """

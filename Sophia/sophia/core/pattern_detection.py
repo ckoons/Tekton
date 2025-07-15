@@ -67,6 +67,7 @@ class PatternEngine:
         self.detection_tasks = {}
         self.pattern_cache = {}
         self.cache_expiry = {}
+        self._shutdown_flag = False
         
     async def initialize(self) -> bool:
         """
@@ -117,10 +118,27 @@ class PatternEngine:
         """
         logger.info("Stopping Sophia Pattern Detection Engine...")
         
-        # Cancel background tasks
-        for task_name, task in self.detection_tasks.items():
-            logger.info(f"Cancelling task: {task_name}")
-            task.cancel()
+        # Set shutdown flag first
+        self._shutdown_flag = True
+        
+        # Cancel background tasks and await their completion
+        if self.detection_tasks:
+            tasks_to_cancel = []
+            for task_name, task in self.detection_tasks.items():
+                logger.info(f"Cancelling task: {task_name}")
+                task.cancel()
+                tasks_to_cancel.append((task_name, task))
+            
+            # Wait for all tasks to complete cancellation with timeout
+            for task_name, task in tasks_to_cancel:
+                try:
+                    await asyncio.wait_for(task, timeout=10.0)
+                except asyncio.CancelledError:
+                    logger.debug(f"Task {task_name} cancelled successfully")
+                except asyncio.TimeoutError:
+                    logger.warning(f"Task {task_name} did not respond to cancellation within timeout")
+                except Exception as e:
+                    logger.warning(f"Error while cancelling task {task_name}: {e}")
             
         self.detection_tasks = {}
         
@@ -1335,10 +1353,13 @@ class PatternEngine:
     async def _detect_persistent_patterns(self) -> None:
         """Run persistent pattern detection as a background task."""
         try:
-            # Sleep to allow system startup
-            await asyncio.sleep(300)  # 5 minutes
+            # Sleep to allow system startup with interruptible sleep
+            try:
+                await asyncio.wait_for(asyncio.sleep(300), timeout=10.0)  # 5 minutes
+            except asyncio.TimeoutError:
+                pass  # Check shutdown flag
             
-            while True:
+            while not self._shutdown_flag:
                 try:
                     logger.info("Running persistent pattern detection")
                     
@@ -1348,6 +1369,8 @@ class PatternEngine:
                     
                     # Detect patterns for each component
                     for component_id in component_ids:
+                        if self._shutdown_flag:
+                            break
                         try:
                             patterns = await self.detect_component_behavior_patterns(
                                 component_id=component_id,
@@ -1358,18 +1381,36 @@ class PatternEngine:
                             
                         except Exception as e:
                             logger.error(f"Error detecting patterns for {component_id}: {e}")
+                    
+                    if self._shutdown_flag:
+                        break
                             
-                    # Sleep until next run (daily)
-                    await asyncio.sleep(86400)  # 24 hours
+                    # Sleep until next run (daily) with interruptible sleep
+                    for _ in range(864):  # 24 hours in 100-second intervals
+                        if self._shutdown_flag:
+                            break
+                        try:
+                            await asyncio.wait_for(asyncio.sleep(100), timeout=10.0)
+                        except asyncio.TimeoutError:
+                            continue
                     
                 except Exception as e:
                     logger.error(f"Error in persistent pattern detection: {e}")
-                    await asyncio.sleep(3600)  # Retry after 1 hour
+                    # Retry after 1 hour with interruptible sleep
+                    for _ in range(36):  # 1 hour in 100-second intervals
+                        if self._shutdown_flag:
+                            break
+                        try:
+                            await asyncio.wait_for(asyncio.sleep(100), timeout=10.0)
+                        except asyncio.TimeoutError:
+                            continue
                     
         except asyncio.CancelledError:
             logger.info("Persistent pattern detection task cancelled")
         except Exception as e:
             logger.error(f"Unexpected error in pattern detection task: {e}")
+        finally:
+            logger.info("Persistent pattern detection task exiting")
             
 # Global singleton instance
 _pattern_engine = PatternEngine()

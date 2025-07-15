@@ -1835,6 +1835,8 @@ class ExperimentFramework:
         self.database = None
         self.experiments = {}
         self.active_runners = {}
+        self.background_tasks = {}
+        self._shutdown_flag = False
         
     async def initialize(self) -> bool:
         """
@@ -1899,6 +1901,31 @@ class ExperimentFramework:
             True if successful
         """
         logger.info("Stopping Sophia Experiment Framework...")
+        
+        # Set shutdown flag first
+        self._shutdown_flag = True
+        
+        # Cancel background tasks and await their completion
+        if self.background_tasks:
+            tasks_to_cancel = []
+            for task_name, task in self.background_tasks.items():
+                logger.info(f"Cancelling task: {task_name}")
+                task.cancel()
+                tasks_to_cancel.append((task_name, task))
+            
+            # Wait for all tasks to complete cancellation with timeout
+            for task_name, task in tasks_to_cancel:
+                try:
+                    await asyncio.wait_for(task, timeout=10.0)
+                except asyncio.CancelledError:
+                    logger.debug(f"Task {task_name} cancelled successfully")
+                except asyncio.TimeoutError:
+                    logger.warning(f"Task {task_name} did not respond to cancellation within timeout")
+                except Exception as e:
+                    logger.warning(f"Error while cancelling task {task_name}: {e}")
+            
+            self.background_tasks = {}
+            logger.info("All background tasks cancelled")
         
         # Stop all active runners
         for exp_id, runner in self.active_runners.items():
@@ -2156,8 +2183,9 @@ class ExperimentFramework:
         # Store the runner
         self.active_runners[experiment_id] = runner
         
-        # Start the runner in the background
-        asyncio.create_task(self._run_experiment(experiment_id, runner))
+        # Start the runner in the background and track the task
+        task = asyncio.create_task(self._run_experiment(experiment_id, runner))
+        self.background_tasks[f"experiment_{experiment_id}"] = task
         
         logger.info(f"Started experiment {experiment_id}")
         return True
@@ -2194,6 +2222,13 @@ class ExperimentFramework:
         # Remove the runner
         del self.active_runners[experiment_id]
         
+        # Cancel and remove background task if it exists
+        task_key = f"experiment_{experiment_id}"
+        if task_key in self.background_tasks:
+            task = self.background_tasks[task_key]
+            task.cancel()
+            del self.background_tasks[task_key]
+        
         # Save experiments
         await self._save_experiments()
         
@@ -2229,8 +2264,9 @@ class ExperimentFramework:
         # Update status
         experiment["status"] = ExperimentStatus.ANALYZING
         
-        # Start analysis in the background
-        asyncio.create_task(self._analyze_experiment_results(experiment_id))
+        # Start analysis in the background and track the task
+        task = asyncio.create_task(self._analyze_experiment_results(experiment_id))
+        self.background_tasks[f"analysis_{experiment_id}"] = task
         
         logger.info(f"Started analysis for experiment {experiment_id}")
         return True
@@ -2336,6 +2372,11 @@ class ExperimentFramework:
                 
             # Save experiments
             await self._save_experiments()
+        finally:
+            # Clean up background task reference
+            task_key = f"experiment_{experiment_id}"
+            if task_key in self.background_tasks:
+                del self.background_tasks[task_key]
             
     async def _analyze_experiment_results(self, experiment_id: str) -> None:
         """
@@ -2377,6 +2418,11 @@ class ExperimentFramework:
                 
             # Save experiments
             await self._save_experiments()
+        finally:
+            # Clean up background task reference
+            task_key = f"analysis_{experiment_id}"
+            if task_key in self.background_tasks:
+                del self.background_tasks[task_key]
             
     async def _load_experiments(self) -> bool:
         """

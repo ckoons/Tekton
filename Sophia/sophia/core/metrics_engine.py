@@ -524,6 +524,7 @@ class MetricsEngine:
         self.is_initialized = False
         self.polling_tasks = {}
         self.metric_definitions = {}
+        self._shutdown_flag = False
         
     async def initialize(self) -> bool:
         """
@@ -573,6 +574,9 @@ class MetricsEngine:
             True if successful
         """
         logger.info("Stopping Sophia Metrics Engine...")
+        
+        # Set shutdown flag to help loops exit gracefully
+        self._shutdown_flag = True
         
         # Stop polling tasks and await their cancellation
         if self.polling_tasks:
@@ -1003,9 +1007,17 @@ class MetricsEngine:
     async def _poll_system_resources(self) -> None:
         """Poll system resource metrics."""
         try:
-            while True:
-                await asyncio.sleep(30)  # Poll every 30 seconds
+            while not self._shutdown_flag:
+                # Use wait_for to make sleep interruptible
+                try:
+                    await asyncio.wait_for(asyncio.sleep(30), timeout=10.0)  # Poll every 30 seconds
+                except asyncio.TimeoutError:
+                    # Check shutdown flag every 10 seconds
+                    continue
                 
+                if self._shutdown_flag:
+                    break
+                    
                 try:
                     # Record basic system metrics
                     await self._collect_system_metrics()
@@ -1021,9 +1033,17 @@ class MetricsEngine:
     async def _poll_component_health(self) -> None:
         """Poll component health metrics."""
         try:
-            while True:
-                await asyncio.sleep(60)  # Poll every minute
+            while not self._shutdown_flag:
+                # Use wait_for to make sleep interruptible
+                try:
+                    await asyncio.wait_for(asyncio.sleep(60), timeout=10.0)  # Poll every minute
+                except asyncio.TimeoutError:
+                    # Check shutdown flag every 10 seconds
+                    continue
                 
+                if self._shutdown_flag:
+                    break
+                    
                 try:
                     # Record component health metrics
                     await self._collect_component_health_metrics()
@@ -1039,9 +1059,17 @@ class MetricsEngine:
     async def _database_maintenance_task(self) -> None:
         """Perform periodic database maintenance."""
         try:
-            while True:
-                await asyncio.sleep(3600)  # Run every hour
+            while not self._shutdown_flag:
+                # Use wait_for to make sleep interruptible
+                try:
+                    await asyncio.wait_for(asyncio.sleep(3600), timeout=10.0)  # Run every hour
+                except asyncio.TimeoutError:
+                    # Check shutdown flag every 10 seconds
+                    continue
                 
+                if self._shutdown_flag:
+                    break
+                    
                 try:
                     # Clean up old metrics (keep last 7 days)
                     if self.database:
