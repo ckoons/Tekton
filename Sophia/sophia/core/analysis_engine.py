@@ -95,12 +95,26 @@ class AnalysisEngine:
         """
         logger.info("Stopping Sophia Analysis Engine...")
         
-        # Cancel background tasks
-        for task_name, task in self.analysis_tasks.items():
-            logger.info(f"Cancelling task: {task_name}")
-            task.cancel()
+        # Cancel background tasks and await their completion
+        if self.analysis_tasks:
+            tasks_to_cancel = []
+            for task_name, task in self.analysis_tasks.items():
+                logger.info(f"Cancelling task: {task_name}")
+                task.cancel()
+                tasks_to_cancel.append((task_name, task))
             
-        self.analysis_tasks = {}
+            # Wait for all tasks to complete cancellation
+            for task_name, task in tasks_to_cancel:
+                try:
+                    await task
+                except asyncio.CancelledError:
+                    # This is expected when a task is cancelled
+                    logger.debug(f"Task {task_name} cancelled successfully")
+                except Exception as e:
+                    logger.warning(f"Error while cancelling task {task_name}: {e}")
+            
+            self.analysis_tasks = {}
+            logger.info("All analysis tasks cancelled")
         
         logger.info("Sophia Analysis Engine stopped successfully")
         return True

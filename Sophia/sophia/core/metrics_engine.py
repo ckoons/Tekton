@@ -574,10 +574,24 @@ class MetricsEngine:
         """
         logger.info("Stopping Sophia Metrics Engine...")
         
-        # Stop polling tasks
-        for task in self.polling_tasks.values():
-            task.cancel()
-        self.polling_tasks = {}
+        # Stop polling tasks and await their cancellation
+        if self.polling_tasks:
+            tasks_to_cancel = list(self.polling_tasks.values())
+            for task in tasks_to_cancel:
+                task.cancel()
+            
+            # Wait for all tasks to complete cancellation
+            for task in tasks_to_cancel:
+                try:
+                    await task
+                except asyncio.CancelledError:
+                    # This is expected when a task is cancelled
+                    pass
+                except Exception as e:
+                    logger.warning(f"Error while cancelling task: {e}")
+            
+            self.polling_tasks = {}
+            logger.info("All polling tasks cancelled")
         
         # Close persistent storage connections
         await self._close_persistent_storage()

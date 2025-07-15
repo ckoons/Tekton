@@ -77,6 +77,21 @@ async def startup_callback():
         raise
 
 
+# Shutdown callback for proper cleanup
+async def shutdown_callback():
+    """Component shutdown callback."""
+    global component
+    logger.info("Sophia shutting down...")
+    
+    try:
+        if component:
+            # Cleanup component resources
+            await component.cleanup()
+            logger.info("Sophia component cleaned up successfully")
+    except Exception as e:
+        logger.error(f"Error during Sophia shutdown: {e}")
+
+
 # Create FastAPI app with OpenAPI configuration
 app = FastAPI(
     **get_openapi_configuration(
@@ -84,7 +99,8 @@ app = FastAPI(
         component_version=COMPONENT_VERSION,
         component_description=COMPONENT_DESCRIPTION
     ),
-    on_startup=[startup_callback]
+    on_startup=[startup_callback],
+    on_shutdown=[shutdown_callback]
 )
 
 # Enable CORS

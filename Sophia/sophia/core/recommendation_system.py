@@ -138,12 +138,26 @@ class RecommendationSystem:
         """
         logger.info("Stopping Sophia Recommendation System...")
         
-        # Cancel background tasks
-        for task_name, task in self.generation_tasks.items():
-            logger.info(f"Cancelling task: {task_name}")
-            task.cancel()
+        # Cancel background tasks and await their completion
+        if self.generation_tasks:
+            tasks_to_cancel = []
+            for task_name, task in self.generation_tasks.items():
+                logger.info(f"Cancelling task: {task_name}")
+                task.cancel()
+                tasks_to_cancel.append((task_name, task))
             
-        self.generation_tasks = {}
+            # Wait for all tasks to complete cancellation
+            for task_name, task in tasks_to_cancel:
+                try:
+                    await task
+                except asyncio.CancelledError:
+                    # This is expected when a task is cancelled
+                    logger.debug(f"Task {task_name} cancelled successfully")
+                except Exception as e:
+                    logger.warning(f"Error while cancelling task {task_name}: {e}")
+            
+            self.generation_tasks = {}
+            logger.info("All generation tasks cancelled")
         
         logger.info("Sophia Recommendation System stopped successfully")
         return True
