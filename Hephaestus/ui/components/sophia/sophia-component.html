@@ -372,16 +372,22 @@
         </div>
         
         <!-- Theory Validation Tab -->
-        <div id="theory-validation-panel" class="sophia__panel" data-tekton-panel="theory-validation" data-tekton-panel-for="Theory Validation" data-tekton-panel-component="sophia" data-tekton-panel-active="false">
+        <div id="theory-validation-panel" class="sophia__panel" 
+             data-tekton-panel="theory-validation" 
+             data-tekton-panel-for="Theory Validation" 
+             data-tekton-panel-component="sophia" 
+             data-tekton-panel-active="false">
             <div class="sophia__theory-validation">
                 <!-- Active Protocols -->
-                <div class="sophia__protocols-section">
+                <div class="sophia__protocols-section" data-tekton-section="theory-protocols">
                     <h3 class="sophia__section-title">Active Theory-Experiment Protocols</h3>
                     <div class="sophia__control-bar">
                         <div class="sophia__filter-container">
                             <div class="sophia__input-group">
                                 <span class="sophia__input-label">Protocol Type</span>
-                                <select id="sophia-protocol-type-filter" class="sophia__select">
+                                <select id="sophia-protocol-type-filter" class="sophia__select" 
+                                        data-tekton-input="protocol-type-filter" 
+                                        data-tekton-input-type="select">
                                     <option value="">All Types</option>
                                     <option value="theory_validation">Theory Validation</option>
                                     <option value="hypothesis_generation">Hypothesis Generation</option>
@@ -391,7 +397,9 @@
                             </div>
                             <div class="sophia__input-group">
                                 <span class="sophia__input-label">Status</span>
-                                <select id="sophia-protocol-status-filter" class="sophia__select">
+                                <select id="sophia-protocol-status-filter" class="sophia__select" 
+                                        data-tekton-input="protocol-status-filter" 
+                                        data-tekton-input-type="select">
                                     <option value="">All Statuses</option>
                                     <option value="active">Active</option>
                                     <option value="completed">Completed</option>
@@ -400,18 +408,27 @@
                             </div>
                         </div>
                         <div class="sophia__actions">
-                            <button id="new-protocol-btn" class="sophia__action-button" data-tekton-action="new-protocol" data-tekton-action-type="primary">
+                            <button id="new-protocol-btn" class="sophia__action-button" 
+                                    data-tekton-action="new-protocol" 
+                                    data-tekton-action-type="primary"
+                                    data-tekton-trigger="create-theory-protocol">
                                 <span class="sophia__button-icon">+</span>
                                 <span class="sophia__button-label">New Protocol</span>
                             </button>
                         </div>
                     </div>
-                    <div id="protocols-list" class="sophia__protocols-container">
+                    <div id="protocols-list" class="sophia__protocols-container" 
+                         data-tekton-list="protocols-list" 
+                         data-tekton-list-type="dynamic">
                         <!-- Protocol cards will be populated here -->
-                        <div class="sophia__protocol-card">
+                        <div class="sophia__protocol-card" 
+                             data-tekton-item="protocol-card" 
+                             data-tekton-item-id="manifold-validation-001">
                             <div class="sophia__protocol-header">
                                 <h4>Manifold Dimensionality Validation</h4>
-                                <span class="sophia__status sophia__status--running">Active</span>
+                                <span class="sophia__status sophia__status--running" 
+                                      data-tekton-status="protocol-status" 
+                                      data-tekton-state="active">Active</span>
                             </div>
                             <div class="sophia__protocol-details">
                                 <p><strong>Type:</strong> Theory Validation</p>
@@ -420,15 +437,21 @@
                                 <p><strong>Progress:</strong> 3/5 experiments completed</p>
                             </div>
                             <div class="sophia__protocol-actions">
-                                <button class="sophia__button sophia__button--small">View Results</button>
-                                <button class="sophia__button sophia__button--small">Monitor</button>
+                                <button class="sophia__button sophia__button--small" 
+                                        data-tekton-action="view-results" 
+                                        data-tekton-action-type="secondary">View Results</button>
+                                <button class="sophia__button sophia__button--small" 
+                                        data-tekton-action="monitor-protocol" 
+                                        data-tekton-action-type="secondary">Monitor</button>
                             </div>
                         </div>
                         
                         <div class="sophia__protocol-card">
                             <div class="sophia__protocol-header">
                                 <h4>Scaling Law Verification</h4>
-                                <span class="sophia__status sophia__status--completed">Completed</span>
+                                <span class="sophia__status sophia__status--completed" 
+                                      data-tekton-status="protocol-status" 
+                                      data-tekton-state="completed">Completed</span>
                             </div>
                             <div class="sophia__protocol-details">
                                 <p><strong>Type:</strong> Hypothesis Generation</p>
@@ -445,10 +468,14 @@
                 </div>
 
                 <!-- Workflow Visualization -->
-                <div class="sophia__workflow-section">
+                <div class="sophia__workflow-section" data-tekton-section="theory-workflow">
                     <h3 class="sophia__section-title">Theory-Experiment Workflow</h3>
-                    <div id="workflow-diagram" class="sophia__workflow-container">
-                        <div class="sophia__workflow-step sophia__workflow-step--active">
+                    <div id="workflow-diagram" class="sophia__workflow-container" 
+                         data-tekton-viz="workflow-diagram" 
+                         data-tekton-viz-type="workflow">
+                        <div class="sophia__workflow-step sophia__workflow-step--active" 
+                             data-tekton-workflow-step="1" 
+                             data-tekton-state="active">
                             <div class="sophia__step-icon">1</div>
                             <div class="sophia__step-content">
                                 <h4>Noesis Analysis</h4>
@@ -456,7 +483,9 @@
                             </div>
                         </div>
                         <div class="sophia__workflow-arrow">→</div>
-                        <div class="sophia__workflow-step sophia__workflow-step--active">
+                        <div class="sophia__workflow-step sophia__workflow-step--active" 
+                             data-tekton-workflow-step="2" 
+                             data-tekton-state="active">
                             <div class="sophia__step-icon">2</div>
                             <div class="sophia__step-content">
                                 <h4>Hypothesis Generation</h4>
@@ -464,7 +493,9 @@
                             </div>
                         </div>
                         <div class="sophia__workflow-arrow">→</div>
-                        <div class="sophia__workflow-step sophia__workflow-step--pending">
+                        <div class="sophia__workflow-step sophia__workflow-step--pending" 
+                             data-tekton-workflow-step="3" 
+                             data-tekton-state="pending">
                             <div class="sophia__step-icon">3</div>
                             <div class="sophia__step-content">
                                 <h4>Experiment Design</h4>
@@ -472,7 +503,9 @@
                             </div>
                         </div>
                         <div class="sophia__workflow-arrow">→</div>
-                        <div class="sophia__workflow-step sophia__workflow-step--pending">
+                        <div class="sophia__workflow-step sophia__workflow-step--pending" 
+                             data-tekton-workflow-step="4" 
+                             data-tekton-state="pending">
                             <div class="sophia__step-icon">4</div>
                             <div class="sophia__step-content">
                                 <h4>Validation</h4>
@@ -483,47 +516,67 @@
                 </div>
 
                 <!-- Validation Results -->
-                <div class="sophia__results-section">
+                <div class="sophia__results-section" data-tekton-section="validation-results">
                     <h3 class="sophia__section-title">Recent Validation Results</h3>
-                    <div class="sophia__results-grid">
-                        <div class="sophia__result-card sophia__result-card--confirmed">
+                    <div class="sophia__results-grid" data-tekton-grid="results-grid">
+                        <div class="sophia__result-card sophia__result-card--confirmed" 
+                             data-tekton-item="result-card" 
+                             data-tekton-result-status="confirmed">
                             <div class="sophia__result-header">
                                 <h4>Scaling Law D(N) ∝ N^0.4</h4>
-                                <span class="sophia__result-status">Confirmed</span>
+                                <span class="sophia__result-status" 
+                                      data-tekton-status="result-status" 
+                                      data-tekton-state="confirmed">Confirmed</span>
                             </div>
                             <div class="sophia__result-metrics">
                                 <div class="sophia__metric">
                                     <span class="sophia__metric-label">Confidence:</span>
-                                    <span class="sophia__metric-value">95.2%</span>
+                                    <span class="sophia__metric-value" 
+                                          data-tekton-metric="confidence" 
+                                          data-tekton-metric-type="percentage">95.2%</span>
                                 </div>
                                 <div class="sophia__metric">
                                     <span class="sophia__metric-label">R²:</span>
-                                    <span class="sophia__metric-value">0.847</span>
+                                    <span class="sophia__metric-value" 
+                                          data-tekton-metric="r-squared" 
+                                          data-tekton-metric-type="score">0.847</span>
                                 </div>
                                 <div class="sophia__metric">
                                     <span class="sophia__metric-label">P-value:</span>
-                                    <span class="sophia__metric-value">< 0.001</span>
+                                    <span class="sophia__metric-value" 
+                                          data-tekton-metric="p-value" 
+                                          data-tekton-metric-type="statistical">< 0.001</span>
                                 </div>
                             </div>
                         </div>
                         
-                        <div class="sophia__result-card sophia__result-card--partial">
+                        <div class="sophia__result-card sophia__result-card--partial" 
+                             data-tekton-item="result-card" 
+                             data-tekton-result-status="partial">
                             <div class="sophia__result-header">
                                 <h4>Critical Transition at N=8000</h4>
-                                <span class="sophia__result-status">Partially Confirmed</span>
+                                <span class="sophia__result-status" 
+                                      data-tekton-status="result-status" 
+                                      data-tekton-state="partial">Partially Confirmed</span>
                             </div>
                             <div class="sophia__result-metrics">
                                 <div class="sophia__metric">
                                     <span class="sophia__metric-label">Evidence:</span>
-                                    <span class="sophia__metric-value">Strong</span>
+                                    <span class="sophia__metric-value" 
+                                          data-tekton-metric="evidence-strength" 
+                                          data-tekton-metric-type="qualitative">Strong</span>
                                 </div>
                                 <div class="sophia__metric">
                                     <span class="sophia__metric-label">Variance:</span>
-                                    <span class="sophia__metric-value">±1200</span>
+                                    <span class="sophia__metric-value" 
+                                          data-tekton-metric="variance" 
+                                          data-tekton-metric-type="range">±1200</span>
                                 </div>
                                 <div class="sophia__metric">
                                     <span class="sophia__metric-label">Replications:</span>
-                                    <span class="sophia__metric-value">3/5</span>
+                                    <span class="sophia__metric-value" 
+                                          data-tekton-metric="replications" 
+                                          data-tekton-metric-type="ratio">3/5</span>
                                 </div>
                             </div>
                         </div>

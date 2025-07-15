@@ -6,7 +6,9 @@ from shared.utils.standard_component import StandardComponentBase
 from landmarks import (
     architecture_decision,
     state_checkpoint,
-    performance_boundary
+    performance_boundary,
+    integration_point,
+    danger_zone
 )
 
 logger = logging.getLogger(__name__)
@@ -149,6 +151,12 @@ class NoesisComponent(StandardComponentBase):
         
         return metadata
     
+    @integration_point(
+        title="Theoretical Framework Initialization",
+        target_component="Mathematical analysis modules (manifold, dynamics, catastrophe, synthesis)",
+        protocol="Python module imports and instantiation",
+        data_flow="One-way initialization, bidirectional analysis requests"
+    )
     async def _init_theoretical_framework(self):
         """Initialize the theoretical analysis framework"""
         try:
@@ -181,6 +189,13 @@ class NoesisComponent(StandardComponentBase):
             logger.error(f"Error initializing theoretical framework: {e}")
             self.theoretical_framework = None
     
+    @integration_point(
+        title="Engram Memory Stream Integration",
+        target_component="Engram API (port 8002)",
+        protocol="HTTP polling with 5-second intervals",
+        data_flow="Unidirectional - Engram memory states to Noesis analysis",
+        critical_notes="Failover to cached data if Engram unavailable"
+    )
     async def _init_stream_manager(self):
         """Initialize the stream manager for Engram integration"""
         try:
@@ -225,6 +240,12 @@ class NoesisComponent(StandardComponentBase):
             return self.stream_manager.get_analysis_results()
         return {"error": "Stream manager not available"}
     
+    @performance_boundary(
+        title="Manifold Analysis Computation",
+        sla="<2s for datasets up to 10k points",
+        optimization_notes="Uses incremental PCA for large datasets, caches eigendecompositions",
+        metrics={"max_points": "10000", "target_latency": "2s"}
+    )
     async def perform_manifold_analysis(self, data: Any) -> Dict[str, Any]:
         """Perform manifold analysis on provided data"""
         if self.manifold_analyzer:
@@ -235,6 +256,19 @@ class NoesisComponent(StandardComponentBase):
                 return {"error": f"Manifold analysis failed: {e}"}
         return {"error": "Manifold analyzer not available"}
     
+    @performance_boundary(
+        title="SLDS Dynamics Analysis",
+        sla="<5s for time series up to 1000 steps",
+        optimization_notes="EM algorithm with early stopping, parallel regime detection",
+        metrics={"max_timesteps": "1000", "target_latency": "5s"}
+    )
+    @danger_zone(
+        title="Complex EM Algorithm Implementation",
+        risk_level="medium",
+        risks=["Convergence failures", "Memory intensive for large time series"],
+        mitigations=["Early stopping criteria", "Batch processing for large datasets"],
+        review_required=True
+    )
     async def perform_dynamics_analysis(self, data: Any) -> Dict[str, Any]:
         """Perform dynamics analysis on provided data"""
         if self.dynamics_analyzer:

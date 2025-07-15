@@ -10,10 +10,29 @@ from datetime import datetime, timedelta
 
 from .engram_stream import EngramDataStreamer, NoesisMemoryAnalyzer
 from ..theoretical.base import MathematicalFramework
+from landmarks import (
+    architecture_decision,
+    integration_point,
+    performance_boundary,
+    state_checkpoint
+)
 
 logger = logging.getLogger(__name__)
 
 
+@architecture_decision(
+    title="Streaming Analysis Architecture",
+    rationale="Real-time theoretical analysis of streaming data enables early warning systems and dynamic insights",
+    alternatives_considered=["Batch processing at intervals", "On-demand analysis only"],
+    decided_by="Noesis Team"
+)
+@state_checkpoint(
+    title="Stream Analysis State",
+    state_type="ephemeral",
+    persistence=False,
+    consistency_requirements="Analysis results cached with 1-hour retention",
+    recovery_strategy="Restart streaming and rebuild analysis cache from live data"
+)
 class TheoreticalStreamManager:
     """
     Manages data streams for theoretical analysis in Noesis
@@ -37,6 +56,13 @@ class TheoreticalStreamManager:
         
         logger.info("Initialized theoretical stream manager")
     
+    @integration_point(
+        title="Stream Manager Configuration",
+        target_component="Engram API and theoretical analyzers",
+        protocol="Configuration-based initialization",
+        data_flow="Configuration → Stream components",
+        critical_notes="Must validate Engram availability before starting streams"
+    )
     async def initialize(self, config: Optional[Dict[str, Any]] = None) -> None:
         """Initialize stream manager with configuration"""
         config = config or {}
@@ -66,6 +92,12 @@ class TheoreticalStreamManager:
             logger.error(f"Failed to initialize stream manager: {e}")
             raise
     
+    @performance_boundary(
+        title="Streaming Analysis Pipeline",
+        sla="Process updates within 1s of receipt",
+        optimization_notes="Parallel analysis, incremental updates, result caching",
+        metrics={"update_latency": "1s", "poll_interval": "5s"}
+    )
     async def start_streaming(self) -> None:
         """Start all data streams"""
         if self.is_active:

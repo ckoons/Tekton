@@ -17,6 +17,7 @@ from .metrics_engine import get_metrics_engine
 from .analysis_engine import get_analysis_engine
 from .database import get_database
 from sophia.models.experiment import ExperimentStatus, ExperimentType
+from landmarks import integration_point, performance_boundary
 
 # Configure logging
 logger = logging.getLogger("sophia.experiment_framework")
@@ -1308,6 +1309,13 @@ class ExperimentRunner:
             return 86400  # Default to 24 hours
 
     # Theory validation experiment methods
+    @integration_point(
+        title="Noesis-Sophia Manifold Validation Bridge",
+        target_component="Noesis ManifoldAnalyzer",
+        protocol="Direct Python module import and async analysis",
+        data_flow="System state data → Noesis analysis → Validation results",
+        critical_notes="Falls back to simplified validation if Noesis unavailable"
+    )
     async def _run_manifold_validation(self):
         """
         Run manifold validation experiment to test theoretical predictions about dimensional structure.
@@ -1383,6 +1391,12 @@ class ExperimentRunner:
         
         return result
 
+    @integration_point(
+        title="SLDS Dynamics Theory Validation",
+        target_component="Noesis DynamicsAnalyzer",
+        protocol="Direct Python module import and time series analysis",
+        data_flow="Time series data → Regime detection → Transition validation"
+    )
     async def _run_dynamics_validation(self):
         """
         Run dynamics validation experiment to test SLDS regime predictions.
@@ -1437,6 +1451,18 @@ class ExperimentRunner:
             "recommended_action": "Refine SLDS model" if validation_results["validation_score"] < 0.5 else "Theory confirmed"
         }
 
+    @integration_point(
+        title="Catastrophe Theory Validation",
+        target_component="Noesis CatastropheAnalyzer",
+        protocol="Direct Python module import and stability analysis",
+        data_flow="System trajectory → Critical point detection → Warning signal validation"
+    )
+    @performance_boundary(
+        title="Critical Transition Detection",
+        sla="Detect transitions within 300s of occurrence",
+        optimization_notes="Early warning signals, sliding window analysis",
+        metrics={"detection_latency": "300s", "false_positive_rate": "<5%"}
+    )
     async def _run_catastrophe_validation(self):
         """
         Run catastrophe validation experiment to test critical transition predictions.
@@ -1490,6 +1516,12 @@ class ExperimentRunner:
             "recommended_action": "Monitor for early warnings" if validation_results["validation_score"] > 0.5 else "Revise critical point model"
         }
 
+    @integration_point(
+        title="Scaling Law Validation",
+        target_component="Noesis SynthesisAnalyzer",
+        protocol="Direct Python module import and cross-scale analysis",
+        data_flow="Multi-scale data → Scaling analysis → Law validation"
+    )
     async def _run_scaling_validation(self):
         """
         Run scaling validation experiment to test universal principles and scaling laws.
