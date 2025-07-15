@@ -8,10 +8,12 @@
 <input type="radio" name="tekton-tab" id="tekton-tab-projectchat" style="display: none;">
 <input type="radio" name="tekton-tab" id="tekton-tab-teamchat" style="display: none;">
 
-<div class="tekton"
-     data-tekton-area="tekton"
+<div class="tekton" id="tekton-container"
      data-tekton-component="tekton"
+     data-tekton-area="tekton"
      data-tekton-type="component-workspace"
+     data-tekton-ai="tekton-orchestrator"
+     data-tekton-ai-ready="false"
      data-tekton-description="Core project management and orchestration">
     <!-- Component Header with Title -->
     <div class="tekton__header" data-tekton-zone="header" data-tekton-section="header">
@@ -52,10 +54,10 @@
                 <span class="tekton__tab-label">Conflicts</span>
             </label>
             <label for="tekton-tab-projectchat" class="tekton__tab" data-tab="projectchat"
-                   data-tekton-menu-item="Project Chat"
+                   data-tekton-menu-item="Builder Chat"
                    data-tekton-menu-component="tekton"
                    data-tekton-menu-panel="projectchat-panel">
-                <span class="tekton__tab-label">Project Chat</span>
+                <span class="tekton__tab-label">Builder Chat</span>
             </label>
             <label for="tekton-tab-teamchat" class="tekton__tab" data-tab="teamchat"
                    data-tekton-menu-item="Team Chat"
@@ -80,9 +82,12 @@
         <div id="dashboard-panel" class="tekton__panel tekton__panel--dashboard"
              data-tekton-panel="dashboard"
              data-tekton-panel-for="Dashboard"
-             data-tekton-panel-component="tekton">
-            <div class="tekton__projects">
-                <div class="tekton__projects-list" id="projects-list">
+             data-tekton-panel-component="tekton"
+             data-tekton-tab-content="dashboard">
+            <div class="tekton__projects" data-tekton-element="projects-container">
+                <div class="tekton__projects-list" id="projects-list"
+                     data-tekton-element="projects-list"
+                     data-tekton-list="projects">
                     <!-- Projects will be populated dynamically -->
                     <div class="tekton__placeholder-message">Create a New Project<br>No projects are currently managed by Tekton</div>
                 </div>
@@ -93,40 +98,51 @@
         <div id="new-project-panel" class="tekton__panel tekton__panel--new-project"
              data-tekton-panel="new-project"
              data-tekton-panel-for="New Project"
-             data-tekton-panel-component="tekton">
-            <div class="tekton__new-project">
-                <div class="tekton__new-project-form">
-                    <h3 class="tekton__form-title">Create New Project</h3>
+             data-tekton-panel-component="tekton"
+             data-tekton-tab-content="new-project">
+            <div class="tekton__new-project" data-tekton-element="new-project-container">
+                <h3 class="tekton__section-title" data-tekton-element="section-title">Create New Project</h3>
+                <div class="tekton__new-project-form" data-tekton-element="project-form">
                     
-                    <div class="tekton__form-field">
+                    <div class="tekton__form-field" data-tekton-element="form-field">
                         <label for="github-url" class="tekton__form-label">GitHub URL:</label>
                         <input type="text" id="github-url" class="tekton__form-input" 
                                placeholder="https://github.com/user/repository"
                                onchange="clearProjectFields()"
-                               oninput="clearProjectFields()">
+                               oninput="clearProjectFields()"
+                               data-tekton-input="github-url"
+                               data-tekton-input-type="url">
                     </div>
                     
-                    <div class="tekton__form-field">
+                    <div class="tekton__form-field" data-tekton-element="form-field">
                         <label for="local-directory" class="tekton__form-label">Local Directory:</label>
                         <input type="text" id="local-directory" class="tekton__form-input" 
-                               placeholder="/path/to/local/clone">
+                               placeholder="/path/to/local/clone"
+                               data-tekton-input="local-directory"
+                               data-tekton-input-type="path">
                     </div>
                     
-                    <div class="tekton__form-field">
+                    <div class="tekton__form-field" data-tekton-element="form-field">
                         <label for="forked-repository" class="tekton__form-label">Forked Repository:</label>
                         <input type="text" id="forked-repository" class="tekton__form-input" 
-                               placeholder="https://github.com/your-username/repository">
+                               placeholder="https://github.com/your-username/repository"
+                               data-tekton-input="forked-repository"
+                               data-tekton-input-type="url">
                     </div>
                     
-                    <div class="tekton__form-field">
+                    <div class="tekton__form-field" data-tekton-element="form-field">
                         <label for="upstream-repository" class="tekton__form-label">Upstream Repository:</label>
                         <input type="text" id="upstream-repository" class="tekton__form-input" 
-                               placeholder="https://github.com/original-user/repository">
+                               placeholder="https://github.com/original-user/repository"
+                               data-tekton-input="upstream-repository"
+                               data-tekton-input-type="url">
                     </div>
                     
-                    <div class="tekton__form-field">
+                    <div class="tekton__form-field" data-tekton-element="form-field">
                         <label for="companion-intelligence" class="tekton__form-label">Companion Intelligence - CI:</label>
-                        <select id="companion-intelligence" class="tekton__form-select">
+                        <select id="companion-intelligence" class="tekton__form-select"
+                                data-tekton-input="companion-intelligence"
+                                data-tekton-input-type="select">
                             <option value="llama3.3:70b">llama3.3:70b (Default)</option>
                             <option value="llama3.2:3b">llama3.2:3b</option>
                             <option value="llama3.1:8b">llama3.1:8b</option>
@@ -137,10 +153,16 @@
                         </select>
                     </div>
                     
-                    <div class="tekton__form-actions">
-                        <button class="tekton__button tekton__button--secondary" onclick="cancelNewProject()">Cancel</button>
-                        <button class="tekton__button tekton__button--primary" onclick="prepareNewProject()">Prepare</button>
-                        <button class="tekton__button tekton__button--success" id="create-project-btn" disabled onclick="createNewProject()">Create</button>
+                    <div class="tekton__form-actions" data-tekton-element="form-actions">
+                        <button class="tekton__button tekton__button--secondary" onclick="cancelNewProject()"
+                                data-tekton-action="cancel-project"
+                                data-tekton-action-type="secondary">Cancel</button>
+                        <button class="tekton__button tekton__button--primary" onclick="prepareNewProject()"
+                                data-tekton-action="prepare-project"
+                                data-tekton-action-type="primary">Prepare</button>
+                        <button class="tekton__button tekton__button--success" id="create-project-btn" disabled onclick="createNewProject()"
+                                data-tekton-action="create-project"
+                                data-tekton-action-type="primary">Create</button>
                     </div>
                 </div>
             </div>
@@ -151,8 +173,10 @@
              data-tekton-panel="merges"
              data-tekton-panel-for="Merges"
              data-tekton-panel-component="tekton">
-            <div class="tekton__merges">
-                <div class="tekton__merges-container" id="merges-container">
+            <div class="tekton__merges" data-tekton-element="merges-container">
+                <div class="tekton__merges-container" id="merges-container"
+                     data-tekton-element="merges-list"
+                     data-tekton-list="merges">
                     <!-- Merges will be populated dynamically -->
                     <div class="tekton__placeholder-message">No Merges Pending</div>
                 </div>
@@ -164,8 +188,10 @@
              data-tekton-panel="conflicts"
              data-tekton-panel-for="Conflicts"
              data-tekton-panel-component="tekton">
-            <div class="tekton__conflicts">
-                <div class="tekton__conflicts-container" id="conflicts-container">
+            <div class="tekton__conflicts" data-tekton-element="conflicts-container">
+                <div class="tekton__conflicts-container" id="conflicts-container"
+                     data-tekton-element="conflicts-list"
+                     data-tekton-list="conflicts">
                     <!-- Conflicts will be populated dynamically -->
                     <div class="tekton__placeholder-message">No Merge Conflicts Pending</div>
                 </div>
@@ -174,10 +200,18 @@
         
         
         <!-- Project Chat Tab -->
-        <div id="projectchat-panel" class="tekton__panel">
-            <div id="projectchat-messages" class="tekton__chat-messages">
+        <div id="projectchat-panel" class="tekton__panel"
+             data-tekton-panel="projectchat"
+             data-tekton-panel-for="Project Chat"
+             data-tekton-panel-component="tekton"
+             data-tekton-tab-content="projectchat">
+            <div id="projectchat-messages" class="tekton__chat-messages"
+                 data-tekton-element="chat-messages"
+                 data-tekton-chat="project-chat">
                 <!-- Welcome message -->
-                <div class="tekton__message tekton__message--system">
+                <div class="tekton__message tekton__message--system"
+                     data-tekton-element="chat-message"
+                     data-tekton-message-type="system">
                     <div class="tekton__message-content">
                         <div class="tekton__message-text">
                             <h3 class="tekton__message-title">Project Management Assistant</h3>
@@ -195,10 +229,18 @@
         </div>
         
         <!-- Team Chat Tab -->
-        <div id="teamchat-panel" class="tekton__panel">
-            <div id="teamchat-messages" class="tekton__chat-messages">
+        <div id="teamchat-panel" class="tekton__panel"
+             data-tekton-panel="teamchat"
+             data-tekton-panel-for="Team Chat"
+             data-tekton-panel-component="tekton"
+             data-tekton-tab-content="teamchat">
+            <div id="teamchat-messages" class="tekton__chat-messages"
+                 data-tekton-element="chat-messages"
+                 data-tekton-chat="team-chat">
                 <!-- Welcome message -->
-                <div class="tekton__message tekton__message--system">
+                <div class="tekton__message tekton__message--system"
+                     data-tekton-element="chat-message"
+                     data-tekton-message-type="system">
                     <div class="tekton__message-content">
                         <div class="tekton__message-text">
                             <h3 class="tekton__message-title">Tekton Team Chat</h3>
@@ -211,8 +253,8 @@
     </div>
     
     <!-- Footer with Chat Input -->
-    <div class="tekton__footer">
-        <div class="tekton__chat-input-container">
+    <div class="tekton__footer" data-tekton-zone="footer" data-tekton-section="footer">
+        <div class="tekton__chat-input-container" data-tekton-element="chat-input-container">
             <div class="tekton__chat-prompt">></div>
             <input type="text" id="tekton-chat-input" class="tekton__chat-input" 
                    placeholder="Enter chat message, project query, or GitHub command"
@@ -545,6 +587,234 @@
         cursor: pointer;
         text-align: left;
         transition: all 0.2s ease;
+    }
+    
+    /* Project Card Styles */
+    .tekton__project-card {
+        background-color: var(--bg-secondary, #252535);
+        border: 1px solid var(--border-color, #444444);
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 16px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    
+    .tekton__project-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 16px;
+        border-bottom: 1px solid var(--border-color, #444444);
+        padding-bottom: 12px;
+    }
+    
+    .tekton__project-name {
+        margin: 0;
+        font-size: 1.3rem;
+        font-weight: 500;
+        color: var(--text-primary, #f0f0f0);
+    }
+    
+    .tekton__project-ai {
+        font-size: 0.9rem;
+        font-weight: normal;
+        opacity: 0.7;
+        margin-left: 8px;
+    }
+    
+    .tekton__project-badge {
+        background-color: var(--accent-color, #5a9fd4);
+        color: white;
+        padding: 4px 12px;
+        border-radius: 12px;
+        font-size: 0.8rem;
+        font-weight: 500;
+    }
+    
+    .tekton__project-remotes {
+        margin: 16px 0;
+    }
+    
+    .tekton__remote-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 12px;
+        padding: 8px 0;
+    }
+    
+    .tekton__remote-label {
+        font-weight: 500;
+        min-width: 80px;
+        color: var(--text-secondary, #d0d0d0);
+    }
+    
+    .tekton__remote-missing {
+        font-size: 0.9rem;
+        opacity: 0.6;
+        font-style: italic;
+    }
+    
+    /* Button Styles - Following Terma Pattern */
+    .tekton__button {
+        padding: 10px 24px;
+        border: none;
+        border-radius: 4px;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        font-weight: 500;
+    }
+    
+    .tekton__button--primary {
+        background-color: var(--accent-color, #5a9fd4);
+        color: white;
+    }
+    
+    .tekton__button--primary:hover {
+        background-color: var(--accent-hover, #4a8fc4);
+        transform: translateY(-1px);
+        box-shadow: 0 2px 8px rgba(90, 159, 212, 0.3);
+    }
+    
+    .tekton__button--secondary {
+        background-color: var(--bg-tertiary, #333345);
+        color: var(--text-primary, #f0f0f0);
+        border: 1px solid var(--border-color, #444444);
+    }
+    
+    .tekton__button--secondary:hover {
+        background-color: var(--bg-hover, #404055);
+        border-color: var(--accent-color, #5a9fd4);
+    }
+    
+    .tekton__button--danger {
+        background-color: transparent;
+        color: var(--danger-color, #dc3545);
+        border: 1px solid var(--danger-color, #dc3545);
+    }
+    
+    .tekton__button--danger:hover {
+        background-color: var(--danger-color, #dc3545);
+        color: white;
+    }
+    
+    .tekton__button--small {
+        padding: 6px 16px;
+        font-size: 0.9rem;
+    }
+    
+    .tekton__button:active {
+        transform: translateY(0);
+        box-shadow: none;
+    }
+    
+    .tekton__project-footer {
+        display: flex;
+        justify-content: flex-end;
+        margin-top: 16px;
+        padding-top: 12px;
+        border-top: 1px solid var(--border-color, #444444);
+    }
+    
+    .tekton__remove-btn {
+        padding: 6px 16px;
+        background-color: transparent;
+        border: 1px solid var(--danger-color, #dc3545);
+        border-radius: 4px;
+        color: var(--danger-color, #dc3545);
+        cursor: pointer;
+        font-size: 0.9rem;
+        transition: all 0.2s ease;
+    }
+    
+    .tekton__remove-btn:hover {
+        background-color: var(--danger-color, #dc3545);
+        color: white;
+    }
+    
+    .tekton__error-message {
+        padding: 20px;
+        text-align: center;
+        color: var(--danger-color, #dc3545);
+        background-color: rgba(220, 53, 69, 0.1);
+        border: 1px solid var(--danger-color, #dc3545);
+        border-radius: 8px;
+        margin: 20px;
+    }
+    
+    /* Error Modal Styles */
+    .tekton__error-modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, 0.7);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 10000;
+    }
+    
+    .tekton__error-modal {
+        background-color: var(--bg-primary, #1a1a2a);
+        border: 1px solid var(--border-color, #444444);
+        border-radius: 8px;
+        width: 90%;
+        max-width: 600px;
+        max-height: 80vh;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+    }
+    
+    .tekton__error-modal-header {
+        padding: 20px;
+        border-bottom: 1px solid var(--border-color, #444444);
+    }
+    
+    .tekton__error-modal-title {
+        margin: 0;
+        font-size: 1.3rem;
+        color: var(--danger-color, #dc3545);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .tekton__error-modal-body {
+        padding: 20px;
+        flex: 1;
+        overflow-y: auto;
+    }
+    
+    .tekton__error-description {
+        margin-bottom: 16px;
+        font-size: 1.1rem;
+        color: var(--text-primary, #f0f0f0);
+    }
+    
+    .tekton__error-output {
+        background-color: var(--bg-tertiary, #333345);
+        border: 1px solid var(--border-color, #444444);
+        border-radius: 4px;
+        padding: 16px;
+        font-family: monospace;
+        font-size: 0.9rem;
+        white-space: pre-wrap;
+        word-break: break-all;
+        color: var(--danger-color, #dc3545);
+        max-height: 300px;
+        overflow-y: auto;
+    }
+    
+    .tekton__error-modal-footer {
+        padding: 20px;
+        border-top: 1px solid var(--border-color, #444444);
+        display: flex;
+        gap: 12px;
+        justify-content: flex-end;
     }
     
     .tekton__card-action-btn:hover {
@@ -901,6 +1171,15 @@ window.tekton_switchTab = function(tabId) {
             clearButton.style.display = (tabId === 'projectchat' || tabId === 'teamchat') ? 'block' : 'none';
         }
         
+        // Load dashboard projects when switching to dashboard tab
+        if (tabId === 'dashboard') {
+            loadProjectsDashboard();
+            startDashboardAutoRefresh();
+        } else {
+            // Stop refresh when switching away
+            stopDashboardAutoRefresh();
+        }
+        
         // Update component state
         if (window.tektonComponent) {
             window.tektonComponent.state = window.tektonComponent.state || {};
@@ -1199,8 +1478,8 @@ function prepareNewProject() {
         return false;
     }
     
-    // Basic GitHub URL validation
-    const githubPattern = /^https:\/\/github\.com\/([^\/]+)\/([^\/]+)$/;
+    // Basic GitHub URL validation (with optional .git suffix)
+    const githubPattern = /^https:\/\/github\.com\/([^\/]+)\/([^\/]+?)(\.git)?$/;
     const match = githubUrl.match(githubPattern);
     
     if (!match) {
@@ -1209,11 +1488,32 @@ function prepareNewProject() {
     }
     
     const username = match[1];
-    const repoName = match[2];
+    let repoName = match[2];
     
-    // Set up the other fields
-    document.getElementById('local-directory').value = `/Users/cskoons/projects/github/${username}/${repoName}`;
-    document.getElementById('forked-repository').value = `https://github.com/cskoons/${repoName}`;
+    // Remove .git suffix if present
+    if (repoName.endsWith('.git')) {
+        repoName = repoName.slice(0, -4);
+    }
+    
+    // Get the actual resolved path - need to make API call to get TEKTON_ROOT
+    // For now, show the resolved path format that backend will use
+    fetch(tektonCoreUrl('/api/v1/config/tekton-root'))
+        .then(response => response.json())
+        .then(data => {
+            const tektonRoot = data.tekton_root;
+            const parentDir = tektonRoot.split('/').slice(0, -1).join('/');
+            const fullPath = `${parentDir}/${repoName}`;
+            document.getElementById('local-directory').value = fullPath;
+        })
+        .catch(error => {
+            console.error('Could not get TEKTON_ROOT:', error);
+            // Fallback to template format
+            document.getElementById('local-directory').value = `$TEKTON_ROOT/../${repoName}`;
+        });
+    
+    // Set forked repo to use ckoons (your fork), matching the input URL format
+    const gitSuffix = githubUrl.endsWith('.git') ? '.git' : '';
+    document.getElementById('forked-repository').value = `https://github.com/ckoons/${repoName}${gitSuffix}`;
     document.getElementById('upstream-repository').value = githubUrl;
     
     // Enable the Create button
@@ -1223,7 +1523,7 @@ function prepareNewProject() {
     return false;
 }
 
-function createNewProject() {
+async function createNewProject() {
     console.log('[TEKTON] Creating new project');
     
     const githubUrl = document.getElementById('github-url').value.trim();
@@ -1237,25 +1537,301 @@ function createNewProject() {
         return false;
     }
     
-    console.log('[TEKTON] Project details:', { 
-        githubUrl, 
-        localDirectory, 
-        forkedRepo, 
-        upstreamRepo, 
-        companionAI 
-    });
+    const projectData = {
+        github_url: githubUrl,
+        local_directory: localDirectory,
+        forked_repository: forkedRepo || null,
+        upstream_repository: upstreamRepo || null,
+        companion_intelligence: companionAI,
+        description: `Project from ${githubUrl}`
+    };
     
-    // TODO: Implement actual project creation logic
-    alert(`Project creation functionality will be implemented soon.\nCI: ${companionAI}`);
+    console.log('[TEKTON] Creating project with data:', projectData);
     
-    // Clear the form after creation
-    cancelNewProject();
-    
-    // Switch to dashboard to show the new project
-    document.getElementById('tekton-tab-dashboard').checked = true;
-    tekton_switchTab('dashboard');
+    try {
+        // Call TektonCore API to create project
+        const apiUrl = tektonCoreUrl('/api/projects');
+        console.log('[TEKTON] Generated API URL:', apiUrl);
+        console.log('[TEKTON] Making API call to:', apiUrl);
+        console.log('[TEKTON] Request data:', JSON.stringify(projectData, null, 2));
+        
+        const response = await fetch(apiUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(projectData)
+        });
+        
+        console.log('[TEKTON] API response status:', response.status, response.statusText);
+        
+        if (!response.ok) {
+            const error = await response.text();
+            console.log('[TEKTON] API error response:', error);
+            throw new Error(`Failed to create project: ${error}`);
+        }
+        
+        const result = await response.json();
+        console.log('[TEKTON] API response data:', result);
+        console.log('[TEKTON] Project created successfully:', result);
+        
+        // Show success message  
+        alert(`Project '${result.name}' created successfully!`);
+        
+        // Clear the form after creation
+        cancelNewProject();
+        
+        // Switch to dashboard to show the new project
+        document.getElementById('tekton-tab-dashboard').checked = true;
+        tekton_switchTab('dashboard');
+        
+        // Refresh project list
+        await loadProjectsDashboard();
+        
+    } catch (error) {
+        console.error('[TEKTON] Failed to create project:', error);
+        alert(`Failed to create project: ${error.message}`);
+    }
     
     return false;
+}
+
+async function loadProjectsDashboard() {
+    console.log('[TEKTON] Loading projects dashboard');
+    
+    try {
+        // Fetch projects from TektonCore API
+        const response = await fetch(tektonCoreUrl('/api/projects'));
+        
+        if (!response.ok) {
+            throw new Error(`Failed to fetch projects: ${response.statusText}`);
+        }
+        
+        const data = await response.json();
+        console.log('[TEKTON] Loaded projects:', data);
+        
+        const projectsList = document.getElementById('projects-list');
+        
+        if (data.projects.length === 0) {
+            projectsList.innerHTML = '<div class="tekton__placeholder-message">Create a New Project<br>No projects are currently managed by Tekton</div>';
+            return;
+        }
+        
+        // Clear existing content
+        projectsList.innerHTML = '';
+        
+        // Create project cards
+        data.projects.forEach(project => {
+            const projectCard = createProjectCard(project);
+            projectsList.appendChild(projectCard);
+        });
+        
+    } catch (error) {
+        console.error('[TEKTON] Failed to load projects:', error);
+        const projectsList = document.getElementById('projects-list');
+        projectsList.innerHTML = `<div class="tekton__error-message">Failed to load projects: ${error.message}</div>`;
+    }
+}
+
+function createProjectCard(project) {
+    const card = document.createElement('div');
+    card.className = 'tekton__project-card';
+    card.setAttribute('data-project-id', project.id);
+    
+    // Create card HTML
+    card.innerHTML = `
+        <div class="tekton__project-header">
+            <h3 class="tekton__project-name">${project.name} 
+                <span class="tekton__project-ai">(${project.companion_intelligence || 'llama3.3:70b'})</span>
+            </h3>
+            ${project.is_tekton_self ? '<span class="tekton__project-badge">Self-Managing</span>' : ''}
+        </div>
+        
+        <div class="tekton__project-remotes">
+            ${project.forked_repository ? `
+                <div class="tekton__remote-row">
+                    <span class="tekton__remote-label">Fork:</span>
+                    <button class="tekton__button tekton__button--secondary tekton__button--small" onclick="gitAction('${project.id}', 'status', 'fork', event)">Status</button>
+                    <button class="tekton__button tekton__button--secondary tekton__button--small" onclick="gitAction('${project.id}', 'pull', 'fork', event)">Pull</button>
+                    <button class="tekton__button tekton__button--secondary tekton__button--small" onclick="gitAction('${project.id}', 'push', 'fork', event)">Push</button>
+                </div>
+            ` : '<div class="tekton__remote-row"><span class="tekton__remote-missing">No fork repository configured</span></div>'}
+            
+            ${project.upstream_repository ? `
+                <div class="tekton__remote-row">
+                    <span class="tekton__remote-label">Upstream:</span>
+                    <button class="tekton__button tekton__button--secondary tekton__button--small" onclick="gitAction('${project.id}', 'pull', 'upstream', event)">Pull</button>
+                    <button class="tekton__button tekton__button--secondary tekton__button--small" onclick="gitAction('${project.id}', 'pr', 'upstream', event)">Pull Request</button>
+                </div>
+            ` : '<div class="tekton__remote-row"><span class="tekton__remote-missing">No upstream repository configured</span></div>'}
+        </div>
+        
+        <div class="tekton__project-footer">
+            <button class="tekton__button tekton__button--danger tekton__button--small" onclick="removeProject('${project.id}', '${project.name}')">Remove from Dashboard</button>
+        </div>
+    `;
+    
+    return card;
+}
+
+// Git action state for retry functionality
+let lastGitAction = null;
+
+async function gitAction(projectId, action, remote, event) {
+    console.log(`[TEKTON] Git action: ${action} on ${remote} for project ${projectId}`);
+    
+    // Store for retry
+    lastGitAction = { projectId, action, remote };
+    
+    try {
+        let endpoint = '';
+        let method = 'POST';
+        let url = '';
+        
+        // Build endpoint based on action
+        switch (action) {
+            case 'status':
+                endpoint = `/api/v1/projects/${projectId}/git/status`;
+                break;
+            case 'pull':
+                endpoint = `/api/v1/projects/${projectId}/git/pull?remote=${remote}`;
+                break;
+            case 'push':
+                endpoint = `/api/v1/projects/${projectId}/git/push`;
+                break;
+            case 'pr':
+                // Pull request is not yet implemented
+                alert('Pull Request functionality coming soon');
+                return;
+            default:
+                console.error(`[TEKTON] Unknown git action: ${action}`);
+                return;
+        }
+        
+        url = tektonCoreUrl(endpoint);
+        
+        // Show subtle loading indicator on the button
+        const button = event.target;
+        const originalText = button.textContent;
+        button.textContent = '...';
+        button.disabled = true;
+        
+        const response = await fetch(url, { method });
+        const result = await response.json();
+        
+        // Restore button
+        button.textContent = originalText;
+        button.disabled = false;
+        
+        if (response.ok && result.return_code === 0) {
+            // Success - silent, just log
+            console.log(`[TEKTON] Git ${action} succeeded for ${result.project_name}`);
+            
+            // If it was a pull or push, refresh the project status
+            if (action === 'pull' || action === 'push') {
+                setTimeout(() => refreshProjectStatus(projectId), 1000);
+            }
+        } else {
+            // Error - show modal
+            showGitErrorModal(action, remote, result);
+        }
+        
+    } catch (error) {
+        console.error(`[TEKTON] Git action failed:`, error);
+        
+        // Restore button if it exists
+        if (event && event.target) {
+            const button = event.target;
+            button.textContent = button.textContent.replace('...', '');
+            button.disabled = false;
+        }
+        
+        // Show error modal
+        showGitErrorModal(action, remote, {
+            project_name: 'Unknown',
+            error: error.message,
+            output: `Network error: ${error.message}`
+        });
+    }
+}
+
+function showGitErrorModal(action, remote, result) {
+    const modal = document.getElementById('tekton-error-modal-overlay');
+    const title = document.getElementById('tekton-error-modal-title');
+    const description = document.getElementById('tekton-error-description');
+    const output = document.getElementById('tekton-error-output');
+    
+    title.textContent = `Git ${action} Failed`;
+    description.textContent = `Failed to ${action} from ${remote} for "${result.project_name || 'project'}"`;
+    output.textContent = result.output || result.error || 'No error details available';
+    
+    modal.style.display = 'flex';
+}
+
+function closeErrorModal() {
+    const modal = document.getElementById('tekton-error-modal-overlay');
+    modal.style.display = 'none';
+}
+
+async function retryLastGitAction() {
+    if (lastGitAction) {
+        closeErrorModal();
+        await gitAction(lastGitAction.projectId, lastGitAction.action, lastGitAction.remote);
+    }
+}
+
+async function refreshProjectStatus(projectId) {
+    console.log(`[TEKTON] Refreshing status for project ${projectId}`);
+    // This will be implemented with auto-refresh
+}
+
+// Auto-refresh functionality
+let dashboardRefreshInterval = null;
+
+function startDashboardAutoRefresh() {
+    // Stop any existing interval
+    stopDashboardAutoRefresh();
+    
+    // Refresh every 30 seconds (reasonable for git repos)
+    dashboardRefreshInterval = setInterval(() => {
+        const dashboardTab = document.getElementById('tekton-tab-dashboard');
+        if (dashboardTab && dashboardTab.checked) {
+            console.log('[TEKTON] Auto-refreshing dashboard');
+            loadProjectsDashboard();
+        }
+    }, 30000);
+}
+
+function stopDashboardAutoRefresh() {
+    if (dashboardRefreshInterval) {
+        clearInterval(dashboardRefreshInterval);
+        dashboardRefreshInterval = null;
+    }
+}
+
+async function removeProject(projectId, projectName) {
+    if (!confirm(`Are you sure you want to remove "${projectName}" from the dashboard?\n\nThis will NOT delete any files or repositories.`)) {
+        return;
+    }
+    
+    try {
+        const response = await fetch(tektonCoreUrl(`/api/v1/projects/${projectId}`), {
+            method: 'DELETE'
+        });
+        
+        if (!response.ok) {
+            throw new Error(`Failed to remove project: ${response.statusText}`);
+        }
+        
+        console.log(`[TEKTON] Project ${projectName} removed from dashboard`);
+        
+        // Reload projects list
+        await loadProjectsDashboard();
+        
+    } catch (error) {
+        console.error('[TEKTON] Failed to remove project:', error);
+        alert(`Failed to remove project: ${error.message}`);
+    }
 }
 
 // LOAD COMPONENT
@@ -1360,3 +1936,27 @@ if (document.readyState === 'complete' || document.readyState === 'interactive')
     tekton_loadComponent();
 }
 </script>
+
+<!-- Error Modal (hidden by default) -->
+<div class="tekton__error-modal-overlay" id="tekton-error-modal-overlay" style="display: none;">
+    <div class="tekton__error-modal">
+        <div class="tekton__error-modal-header">
+            <h3 class="tekton__error-modal-title" id="tekton-error-modal-title">Git Operation Failed</h3>
+        </div>
+        
+        <div class="tekton__error-modal-body">
+            <div class="tekton__error-description" id="tekton-error-description">
+                <!-- Error description will be inserted here -->
+            </div>
+            
+            <div class="tekton__error-output" id="tekton-error-output">
+                <!-- Git command output will be inserted here -->
+            </div>
+        </div>
+        
+        <div class="tekton__error-modal-footer">
+            <button class="tekton__button tekton__button--secondary" onclick="closeErrorModal()">Cancel</button>
+            <button class="tekton__button tekton__button--primary" id="tekton-error-retry-btn" onclick="retryLastGitAction()">Retry</button>
+        </div>
+    </div>
+</div>

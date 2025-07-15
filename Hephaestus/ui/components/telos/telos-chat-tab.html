@@ -154,7 +154,7 @@
                     return;
                 }
                 
-                const apiUrl = window.RHETOR_API_URL || 'http://localhost:8003';
+                const apiUrl = window.RHETOR_API_URL || rhetorUrl();
                 
                 this.state.llmClient = new LLMAdapterClient({
                     apiUrl,

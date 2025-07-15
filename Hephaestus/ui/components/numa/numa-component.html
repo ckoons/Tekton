@@ -520,7 +520,7 @@ function numa_sendChat() {
                 });
         } else {
             // Fallback to component's own endpoint
-            fetch('http://localhost:8016/api/companion-chat', {
+            fetch(numaUrl('/api/companion-chat'), {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ message: message, user_id: 'default' })

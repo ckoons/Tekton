@@ -954,7 +954,7 @@ window.noesisChats = window.noesisChats || {
 // Initialize Noesis component when loaded
 setTimeout(() => {
     // Check Noesis health status
-    fetch('http://localhost:8015/health')
+    fetch(noesisUrl('/health'))
         .then(response => response.json())
         .then(data => {
             if (data.status === 'healthy') {

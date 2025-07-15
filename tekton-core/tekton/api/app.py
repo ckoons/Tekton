@@ -32,21 +32,27 @@ from shared.api import (
     EndpointInfo
 )
 
-# Use shared logger
-logger = setup_component_logger("tekton_core")
+# Use shared logger  
+from shared.utils.logging_setup import setup_component_logging
+logger = setup_component_logging("tekton_core")
 
 # Import TektonCore component
 from tekton.core.tekton_core_component import TektonCoreComponent
 
 # Import project management and merge coordination
 from tekton.core.project_manager import ProjectManager, ProjectState, TaskState
+from tekton.core.project_manager_v2 import ProjectManager as ProjectManagerV2
 from tekton.core.merge_coordinator import MergeCoordinator, MergeState
+
+# Import our new projects API
+from tekton.api import projects as projects_v2
 
 # Create component instance (singleton)
 component = TektonCoreComponent()
 
-# Initialize project management
+# Initialize project management - use V2 for new endpoints, keep V1 for compatibility
 project_manager = ProjectManager()
+project_manager_v2 = ProjectManagerV2()
 merge_coordinator = MergeCoordinator()
 
 async def startup_callback():
@@ -210,6 +216,15 @@ async def get_dashboard():
         "metrics": {}
     }
 
+# Configuration endpoints
+@routers.v1.get("/config/tekton-root")
+async def get_tekton_root():
+    """Get the TEKTON_ROOT environment variable"""
+    tekton_root = os.environ.get("TEKTON_ROOT", os.getcwd())
+    return {
+        "tekton_root": tekton_root
+    }
+
 # Pydantic models for API requests
 class CreateProjectRequest(BaseModel):
     name: str
@@ -249,7 +264,29 @@ class ResolveMergeRequest(BaseModel):
     chosen_option: str
     reason: Optional[str] = None
 
-# Project Management API Endpoints
+# Project endpoints are now handled by the projects.py router at /api/projects
+
+# Also need the remove endpoint at v1 level for UI
+@routers.v1.delete("/projects/{project_id}")
+async def remove_project_v1(project_id: str):
+    """Remove project from dashboard (does not delete repository)"""
+    try:
+        success = project_manager_v2.registry.remove_project(project_id)
+        
+        if not success:
+            raise HTTPException(status_code=404, detail="Project not found")
+        
+        return {
+            "message": "Project removed from dashboard",
+            "project_id": project_id,
+            "note": "Repository files remain untouched"
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+# Project Management API Endpoints (V1 - for compatibility)
 @routers.v1.get("/projects")
 async def list_projects(state: Optional[str] = Query(None)):
     """List all projects, optionally filtered by state"""
@@ -590,6 +627,17 @@ async def get_system_overview():
 
 # Mount standard routers
 mount_standard_routers(app, routers)
+
+# Mount our enhanced projects API
+app.include_router(projects_v2.router)
+
+# Add request logging middleware
+@app.middleware("http")
+async def log_requests(request, call_next):
+    logger.info(f"[REQUEST] {request.method} {request.url.path}")
+    response = await call_next(request)
+    logger.info(f"[RESPONSE] {response.status_code}")
+    return response
 
 
 @app.exception_handler(Exception)

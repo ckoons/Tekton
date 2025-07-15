@@ -4412,7 +4412,7 @@ async function rhetor_sendLLMChatMessage(message) {
     
     try {
         // Use direct specialist endpoint for single AI chat
-        const response = await fetch('http://localhost:8003/api/v1/ai/specialists/rhetor-ai/message', {
+        const response = await fetch(rhetorUrl('/api/v1/ai/specialists/rhetor-ai/message'), {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -4467,7 +4467,7 @@ async function rhetor_sendTeamChatMessage(message) {
     
     try {
         // Call the team chat endpoint
-        const response = await fetch('http://localhost:8003/api/team-chat', {
+        const response = await fetch(rhetorUrl('/api/team-chat'), {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

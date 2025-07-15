@@ -20,7 +20,10 @@ window.TEKTON_CORE_PORT = 8010; // Default Tekton Core port
 window.METIS_PORT = 8011;       // Default Metis port
 window.APOLLO_PORT = 8012;      // Default Apollo port
 window.BUDGET_PORT = 8013;      // Default Budget port
+window.PENIA_PORT = 8013;       // Default Penia port (same as budget)
 window.SOPHIA_PORT = 8014;      // Default Sophia port
+window.NOESIS_PORT = 8015;      // Default Noesis port
+window.NUMA_PORT = 8016;        // Default Numa port
 
 // UI Display settings - now managed by SettingsManager
 // window.SHOW_GREEK_NAMES is set dynamically from saved settings

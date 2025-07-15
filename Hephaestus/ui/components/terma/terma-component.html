@@ -1565,7 +1565,7 @@ function initializeTermaLauncher() {
             
             try {
                 // First, check if terminal name is already in use
-                const listResponse = await fetch('http://localhost:8004/api/mcp/v2/terminals/list');
+                const listResponse = await fetch(termaUrl('/api/mcp/v2/terminals/list'));
                 if (listResponse.ok) {
                     const listData = await listResponse.json();
                     const existingNames = listData.terminals ? listData.terminals.map(t => t.name) : [];
@@ -1601,7 +1601,7 @@ function initializeTermaLauncher() {
                     requestBody.startup_command = startupCmd;
                 }
                 
-                const response = await fetch('http://localhost:8004/api/mcp/v2/tools/launch_terminal', {
+                const response = await fetch(termaUrl('/api/mcp/v2/tools/launch_terminal'), {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -1654,7 +1654,7 @@ function initializeTermaLauncher() {
 // Update terminals list in dashboard
 async function updateTerminalsList() {
     try {
-        const response = await fetch('http://localhost:8004/api/mcp/v2/terminal-status');
+        const response = await fetch(termaUrl('/api/mcp/v2/terminal-status'));
         if (response.ok) {
             const status = await response.json();
             const listDiv = document.getElementById('terma-terminals-list');
@@ -1697,7 +1697,7 @@ async function updateTerminalsList() {
 // Fetch and display terminal list
 async function fetchTerminalList() {
     try {
-        const response = await fetch('http://localhost:8004/api/mcp/v2/terminals/list');
+        const response = await fetch(termaUrl('/api/mcp/v2/terminals/list'));
         if (!response.ok) {
             throw new Error(`Failed to fetch terminals: ${response.status}`);
         }
@@ -1869,7 +1869,7 @@ if (!window.termaInitialized) {
 async function showTerminal(pid) {
     console.log('[Terma] Show terminal:', pid);
     try {
-        const response = await fetch(`http://localhost:8004/api/mcp/v2/terminals/${pid}/show`, {
+        const response = await fetch(termaUrl(`/api/mcp/v2/terminals/${pid}/show`), {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -1992,7 +1992,7 @@ async function sendTerminalCommand() {
     
     try {
         // Send command to Terma
-        const response = await fetch('http://localhost:8004/api/mcp/v2/terminals/command', {
+        const response = await fetch(termaUrl('/api/mcp/v2/terminals/command'), {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -2019,7 +2019,7 @@ async function sendTerminalCommand() {
                 }
                 
                 try {
-                    const statusResponse = await fetch(`http://localhost:8004/api/mcp/v2/terminals/command/${result.command_id}/status`);
+                    const statusResponse = await fetch(termaUrl(`/api/mcp/v2/terminals/command/${result.command_id}/status`));
                     if (statusResponse.ok) {
                         const status = await statusResponse.json();
                         
@@ -2094,7 +2094,7 @@ async function terminateTerminal(pid) {
     }
     
     try {
-        const response = await fetch(`http://localhost:8004/api/mcp/v2/terminals/${pid}/terminate`, {
+        const response = await fetch(termaUrl(`/api/mcp/v2/terminals/${pid}/terminate`), {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -2160,7 +2160,7 @@ function sendPrompt() {
         try {
             // Send prompt via Terma's route-message endpoint
             const promptMessage = `[PROMPT] ${message}`;
-            const response = await fetch('http://localhost:8004/api/mcp/v2/terminals/route-message', {
+            const response = await fetch(termaUrl('/api/mcp/v2/terminals/route-message'), {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
