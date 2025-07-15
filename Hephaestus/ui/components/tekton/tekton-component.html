@@ -38,7 +38,8 @@
             <label for="tekton-tab-new-project" class="tekton__tab" data-tab="new-project"
                    data-tekton-menu-item="New Project"
                    data-tekton-menu-component="tekton"
-                   data-tekton-menu-panel="new-project-panel">
+                   data-tekton-menu-panel="new-project-panel"
+                   onclick="clearNewProjectFields()">
                 <span class="tekton__tab-label">New Project</span>
             </label>
             <label for="tekton-tab-merges" class="tekton__tab" data-tab="merges"
@@ -1469,6 +1470,22 @@ function cancelNewProject() {
     return false;
 }
 
+function clearNewProjectFields() {
+    console.log('[TEKTON] Clearing new project fields');
+    
+    // Clear all form fields
+    document.getElementById('github-url').value = '';
+    document.getElementById('local-directory').value = '';
+    document.getElementById('forked-repository').value = '';
+    document.getElementById('upstream-repository').value = '';
+    document.getElementById('companion-intelligence').selectedIndex = 0;
+    
+    // Disable the Create button
+    document.getElementById('create-project-btn').disabled = true;
+    
+    console.log('[TEKTON] Project fields cleared');
+}
+
 function prepareNewProject() {
     console.log('[TEKTON] Preparing new project');
     
@@ -1526,6 +1543,14 @@ function prepareNewProject() {
 async function createNewProject() {
     console.log('[TEKTON] Creating new project');
     
+    // Disable Create button immediately to prevent double-clicking
+    const createBtn = document.getElementById('create-project-btn');
+    const prepareBtn = document.querySelector('button[onclick="prepareNewProject()"]');
+    
+    createBtn.disabled = true;
+    createBtn.textContent = 'Creating...';
+    prepareBtn.disabled = true;
+    
     const githubUrl = document.getElementById('github-url').value.trim();
     const localDirectory = document.getElementById('local-directory').value.trim();
     const forkedRepo = document.getElementById('forked-repository').value.trim();
@@ -1534,6 +1559,10 @@ async function createNewProject() {
     
     if (!githubUrl || !localDirectory) {
         alert('Please prepare the project first');
+        // Re-enable buttons
+        createBtn.disabled = false;
+        createBtn.textContent = 'Create';
+        prepareBtn.disabled = false;
         return false;
     }
     
@@ -1591,6 +1620,11 @@ async function createNewProject() {
     } catch (error) {
         console.error('[TEKTON] Failed to create project:', error);
         alert(`Failed to create project: ${error.message}`);
+        
+        // Re-enable buttons on error
+        createBtn.disabled = false;
+        createBtn.textContent = 'Create';
+        prepareBtn.disabled = false;
     }
     
     return false;

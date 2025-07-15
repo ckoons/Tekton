@@ -50,8 +50,9 @@ except ImportError:
 # Initialize router
 router = APIRouter(prefix="/api/projects", tags=["projects"])
 
-# Initialize project manager with correct path
-project_manager = ProjectManager()
+# Initialize project manager - use shared instance for consistency
+from tekton.core.shared_instances import get_project_manager
+project_manager = get_project_manager()
 
 
 # Simple test endpoint

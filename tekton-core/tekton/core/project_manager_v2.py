@@ -181,6 +181,81 @@ class ProjectNameExtractor:
 
 
 @integration_point(
+    title="GitHub CLI Validation",
+    target_component="github_cli",
+    protocol="subprocess",
+    data_flow="GitHubCLIValidator → gh command → validation status",
+    description="Validates GitHub CLI installation and authentication"
+)
+class GitHubCLIValidator:
+    """Utility class for validating GitHub CLI setup"""
+    
+    @staticmethod
+    def validate_github_cli() -> Tuple[bool, str]:
+        """
+        Validate GitHub CLI installation and authentication.
+        
+        Returns:
+            Tuple[bool, str]: (is_valid, error_message)
+        """
+        try:
+            # Check gh installed
+            version_cmd = ["gh", "--version"]
+            logger.info(f"[GIT] Executing command: {' '.join(version_cmd)}")
+            
+            result = subprocess.run(
+                version_cmd, 
+                capture_output=True, 
+                text=True, 
+                check=True
+            )
+            
+            logger.info(f"[GIT] Version command completed with exit code: {result.returncode}")
+            if result.stdout:
+                logger.info(f"[GIT] GitHub CLI version: {result.stdout.strip()}")
+            
+            # Check gh authenticated
+            auth_cmd = ["gh", "auth", "status"]
+            logger.info(f"[GIT] Executing command: {' '.join(auth_cmd)}")
+            
+            result = subprocess.run(
+                auth_cmd, 
+                capture_output=True, 
+                text=True, 
+                check=True
+            )
+            
+            logger.info(f"[GIT] Auth command completed with exit code: {result.returncode}")
+            if result.stdout:
+                logger.info(f"[GIT] Auth command stdout: {result.stdout}")
+            if result.stderr:
+                logger.info(f"[GIT] Auth command stderr: {result.stderr}")
+            
+            logger.info("[GIT] GitHub CLI authentication verified")
+            
+            return True, ""
+            
+        except FileNotFoundError:
+            error_msg = "GitHub CLI (gh) is not installed. Please install it from https://cli.github.com/ and run 'gh auth login'"
+            logger.error(f"[GIT] {error_msg}")
+            return False, error_msg
+            
+        except subprocess.CalledProcessError as e:
+            logger.error(f"[GIT] Command failed with exit code: {e.returncode}")
+            if e.stdout:
+                logger.error(f"[GIT] Command stdout: {e.stdout}")
+            if e.stderr:
+                logger.error(f"[GIT] Command stderr: {e.stderr}")
+                
+            if "gh auth" in str(e.cmd):
+                error_msg = "GitHub CLI is not authenticated. Please run 'gh auth login' and try again"
+            else:
+                error_msg = f"GitHub CLI error: {e.stderr.strip() if e.stderr else 'Unknown error'}"
+            logger.error(f"[GIT] {error_msg}")
+            return False, error_msg
+
+
+@integration_point(
     title="Git Remote Detection",
     target_component="git",
     protocol="subprocess",
@@ -208,12 +283,21 @@ class GitRemoteDetector:
             
         try:
             # Run git remote -v to get all remotes
+            remote_cmd = ["git", "-C", directory, "remote", "-v"]
+            logger.info(f"[GIT] Executing command: {' '.join(remote_cmd)}")
+            
             result = subprocess.run(
-                ["git", "-C", directory, "remote", "-v"],
+                remote_cmd,
                 capture_output=True,
                 text=True,
                 check=False
             )
+            
+            logger.info(f"[GIT] Remote command completed with exit code: {result.returncode}")
+            if result.stdout:
+                logger.info(f"[GIT] Remote command stdout: {result.stdout}")
+            if result.stderr:
+                logger.info(f"[GIT] Remote command stderr: {result.stderr}")
             
             if result.returncode == 0:
                 # Parse output
@@ -228,11 +312,13 @@ class GitRemoteDetector:
                         
                         if remote_name == "origin":
                             remotes.origin = remote_url
+                            logger.info(f"[GIT] Found origin remote: {remote_url}")
                         elif remote_name == "upstream":
                             remotes.upstream = remote_url
+                            logger.info(f"[GIT] Found upstream remote: {remote_url}")
                             
         except Exception as e:
-            logger.warning(f"Failed to detect git remotes in {directory}: {e}")
+            logger.warning(f"[GIT] Failed to detect git remotes in {directory}: {e}")
             
         return remotes
     
@@ -469,7 +555,7 @@ class ProjectManager:
         """Initialize project manager"""
         self.registry = ProjectRegistry(storage_path)
         self.git_detector = GitRemoteDetector()
-        self.name_extractor = ProjectNameExtractor()
+        self.github_validator = GitHubCLIValidator()
         self._tekton_self_check_done = False
         
         logger.info("Enhanced project manager initialized")
@@ -506,7 +592,7 @@ class ProjectManager:
                 return
             
             # Detect git remotes
-            remotes = await self.git_detector.detect_remotes(tekton_root)
+            remotes = await GitRemoteDetector.detect_remotes(tekton_root)
             
             # Create Tekton self-management project
             project = self.registry.create_project(
@@ -552,15 +638,23 @@ class ProjectManager:
         companion_intelligence: str = "llama3.3:70b",
         description: str = ""
     ) -> Project:
-        """Create project from GitHub URL"""
+        """Create project from GitHub URL using GitHub CLI workflow"""
         
         # Ensure Tekton self-check has run
         await self._ensure_tekton_self_check()
         
+        # Step 1: Validate GitHub CLI setup
+        logger.info(f"[GIT] Validating GitHub CLI setup for project: {github_url}")
+        is_valid, error_message = self.github_validator.validate_github_cli()
+        if not is_valid:
+            logger.error(f"[GIT] GitHub CLI validation failed: {error_message}")
+            raise ValueError(error_message)
+        logger.info("[GIT] GitHub CLI validation passed")
+        
         # Extract project name to check for duplicates
-        project_name = self.name_extractor.extract_from_github_url(github_url)
+        project_name = ProjectNameExtractor.extract_from_github_url(github_url)
         if not project_name:
-            project_name = self.name_extractor.extract_from_directory(local_directory)
+            project_name = ProjectNameExtractor.extract_from_directory(local_directory)
         
         # Check if project already exists
         existing_project = self.registry.get_project_by_name(project_name)
@@ -577,35 +671,86 @@ class ProjectManager:
             local_directory = corrected_local_directory
             logger.info(f"Corrected local directory to: {local_directory}")
         
-        # Create directory and clone if it doesn't exist
-        if not os.path.exists(local_directory):
-            logger.info(f"Creating directory and cloning project: {local_directory}")
-            os.makedirs(local_directory, exist_ok=True)
+        # Step 2: Create fork using GitHub CLI
+        try:
+            fork_cmd = ["gh", "repo", "fork", github_url, "--clone=false"]
+            logger.info(f"[GIT] Executing command: {' '.join(fork_cmd)}")
+            logger.info(f"[GIT] Creating fork of {github_url}")
             
-            # Clone the repository
+            result = subprocess.run(
+                fork_cmd,
+                capture_output=True,
+                text=True,
+                check=False  # Don't fail if fork already exists
+            )
+            
+            logger.info(f"[GIT] Fork command completed with exit code: {result.returncode}")
+            if result.stdout:
+                logger.info(f"[GIT] Fork command stdout: {result.stdout}")
+            if result.stderr:
+                logger.info(f"[GIT] Fork command stderr: {result.stderr}")
+            
+            if result.returncode == 0:
+                logger.info("[GIT] Fork created successfully")
+            else:
+                # Check if fork already exists
+                if "already exists" in result.stderr.lower():
+                    logger.info("[GIT] Fork already exists, continuing")
+                else:
+                    logger.warning(f"[GIT] Fork creation failed: {result.stderr}")
+                    # Continue anyway - might be able to clone original
+                    
+        except subprocess.CalledProcessError as e:
+            logger.warning(f"[GIT] Fork creation failed: {e.stderr}")
+            # Continue anyway - might be able to clone original
+        
+        # Step 3: Clone the repository using GitHub CLI
+        if not os.path.exists(local_directory):
+            clone_cmd = ["gh", "repo", "clone", github_url, local_directory]
+            logger.info(f"[GIT] Executing command: {' '.join(clone_cmd)}")
+            logger.info(f"[GIT] Cloning repository to: {local_directory}")
+            
             try:
                 result = subprocess.run(
-                    ["git", "clone", github_url, local_directory],
+                    clone_cmd,
                     capture_output=True,
                     text=True,
                     check=True
                 )
-                logger.info(f"Successfully cloned {github_url} to {local_directory}")
+                
+                logger.info(f"[GIT] Clone command completed with exit code: {result.returncode}")
+                if result.stdout:
+                    logger.info(f"[GIT] Clone command stdout: {result.stdout}")
+                if result.stderr:
+                    logger.info(f"[GIT] Clone command stderr: {result.stderr}")
+                    
+                logger.info(f"[GIT] Successfully cloned {github_url} to {local_directory}")
+                
             except subprocess.CalledProcessError as e:
-                logger.error(f"Failed to clone repository: {e.stderr}")
+                logger.error(f"[GIT] Clone command failed with exit code: {e.returncode}")
+                if e.stdout:
+                    logger.error(f"[GIT] Clone command stdout: {e.stdout}")
+                if e.stderr:
+                    logger.error(f"[GIT] Clone command stderr: {e.stderr}")
+                logger.error(f"[GIT] Failed to clone repository: {e.stderr}")
                 raise ValueError(f"Failed to clone repository: {e.stderr}")
         
-        # Auto-detect git remotes if directory exists and is a git repo
+        # Step 4: Auto-detect git remotes (GitHub CLI should set these up properly)
         if os.path.exists(local_directory) and self.git_detector.is_git_repository(local_directory):
-            remotes = await self.git_detector.detect_remotes(local_directory)
+            logger.info(f"[GIT] Detecting git remotes in: {local_directory}")
+            remotes = await GitRemoteDetector.detect_remotes(local_directory)
+            
+            logger.info(f"[GIT] Detected remotes - origin: {remotes.origin}, upstream: {remotes.upstream}")
             
             # Use detected remotes if not provided
             if not forked_repository and remotes.origin:
                 forked_repository = remotes.origin
+                logger.info(f"[GIT] Using detected origin as forked repository: {forked_repository}")
             if not upstream_repository and remotes.upstream:
                 upstream_repository = remotes.upstream
+                logger.info(f"[GIT] Using detected upstream as upstream repository: {upstream_repository}")
         
-        # Create project
+        # Step 5: Create project
         project = self.registry.create_project(
             github_url=github_url,
             local_directory=local_directory,
@@ -627,7 +772,7 @@ class ProjectManager:
             raise ValueError(f"Directory {local_directory} is not a git repository")
         
         # Detect remotes
-        remotes = await self.git_detector.detect_remotes(local_directory)
+        remotes = await GitRemoteDetector.detect_remotes(local_directory)
         
         # Determine primary GitHub URL
         github_url = remotes.origin or remotes.upstream
@@ -635,9 +780,9 @@ class ProjectManager:
             raise ValueError(f"No git remotes found in {local_directory}")
         
         # Extract project name
-        name = self.name_extractor.extract_from_github_url(github_url)
+        name = ProjectNameExtractor.extract_from_github_url(github_url)
         if not name:
-            name = self.name_extractor.extract_from_directory(local_directory)
+            name = ProjectNameExtractor.extract_from_directory(local_directory)
         
         # Create project
         project = self.registry.create_project(
@@ -666,7 +811,7 @@ class ProjectManager:
             return project
         
         # Detect current remotes
-        remotes = await self.git_detector.detect_remotes(project.local_directory)
+        remotes = await GitRemoteDetector.detect_remotes(project.local_directory)
         
         # Update if changed
         updated = False

@@ -50,9 +50,10 @@ from tekton.api import projects as projects_v2
 # Create component instance (singleton)
 component = TektonCoreComponent()
 
-# Initialize project management - use V2 for new endpoints, keep V1 for compatibility
-project_manager = ProjectManager()
-project_manager_v2 = ProjectManagerV2()
+# Initialize project management - use shared instance for consistency
+from tekton.core.shared_instances import get_project_manager
+project_manager_v2 = get_project_manager()
+project_manager = ProjectManager()  # Keep V1 for legacy endpoints
 merge_coordinator = MergeCoordinator()
 
 async def startup_callback():
@@ -62,6 +63,15 @@ async def startup_callback():
         capabilities=component.get_capabilities(),
         metadata=component.get_metadata()
     )
+    
+    # Initialize Tekton self-management project using V2 manager
+    logger.info("Creating Tekton self-management project")
+    try:
+        await project_manager_v2._ensure_tekton_self_check()
+        logger.info("Tekton self-management project created successfully")
+    except Exception as e:
+        logger.error(f"Failed to create Tekton self-management project: {e}")
+        # Don't fail startup if this fails
 
 # Create FastAPI application using component's create_app
 app = component.create_app(
@@ -628,7 +638,7 @@ async def get_system_overview():
 # Mount standard routers
 mount_standard_routers(app, routers)
 
-# Mount our enhanced projects API
+# Mount our enhanced projects API - SIMPLE
 app.include_router(projects_v2.router)
 
 # Add request logging middleware
