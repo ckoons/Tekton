@@ -1330,6 +1330,13 @@ function tekton_sendChat() {
         console.log('[TEKTON] Active tab data-tab attribute:', activeTab.getAttribute('data-tab'));
         let chatContainer;
         
+        // Handle projectschat specially - it has its own complete implementation
+        if (chatType === 'projectschat') {
+            console.log('[TEKTON] Delegating to sendProjectsChat()');
+            sendProjectsChat();
+            return true;
+        }
+        
         if (chatType === 'projectchat') {
             chatContainer = tektonContainer.querySelector('#projectchat-messages');
         } else if (chatType === 'teamchat') {
