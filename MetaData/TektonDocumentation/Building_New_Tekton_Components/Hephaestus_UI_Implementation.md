@@ -392,6 +392,118 @@ function debugEventListeners(componentId) {
 }
 ```
 
+## Projects Chat Implementation Example
+
+### Complete Feature Implementation
+
+The Projects Chat feature serves as an excellent example of the documentation-first development process and simple implementation patterns:
+
+#### 1. Architecture Documentation First
+- **Socket architecture**: Defined port assignment strategy (base + 100)
+- **On-demand CI lifecycle**: Documented CI creation patterns
+- **Integration points**: Mapped connections to existing systems
+
+#### 2. Implementation Documentation
+- **HTML structure**: Minimal changes, reuse existing patterns
+- **CSS implementation**: Simple show/hide logic, consistent styling
+- **JavaScript**: Minimal functions, clear data structures
+- **Backend integration**: Single API endpoint, socket communication
+
+#### 3. User and Training Documentation
+- **User guide**: Clear instructions for project selection and communication
+- **CI training**: How AIs use the system for project coordination
+- **Troubleshooting**: Common issues and solutions
+
+#### 4. Key Implementation Patterns
+
+**Simple Data Structure**:
+```javascript
+// List of dicts as requested - simple and effective
+const projectCIs = [
+    {
+        project_name: "Tekton",
+        ci_socket: "numa-ai", 
+        socket_port: 42016
+    },
+    {
+        project_name: "Claude-Code",
+        ci_socket: "project-claude-code-ai",
+        socket_port: 42100
+    }
+];
+```
+
+**Socket Communication**:
+```javascript
+// Reuse existing aish MessageHandler patterns
+async function sendToProjectCI(projectName, message, projectCI) {
+    const response = await fetch('/api/projects/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            project_name: projectName,
+            message: message,
+            ci_socket: projectCI.ci_socket
+        })
+    });
+    // Handle response...
+}
+```
+
+**CSS-Only Tab Switching**:
+```css
+/* Show submenu when Projects Chat tab is active */
+#tekton-tab-projectschat:checked ~ .tekton .tekton__submenu-bar {
+    display: flex !important;
+}
+
+/* Show panel when Projects Chat tab is active */  
+#tekton-tab-projectschat:checked ~ .tekton #projectschat-panel {
+    display: flex;
+    flex-direction: column;
+}
+```
+
+#### 5. Documentation-First Benefits
+
+**Clear Implementation Path**:
+- Architecture decisions documented before coding
+- Implementation details planned with specific code examples
+- User experience designed with clear workflows
+- Training materials prepared for CI adoption
+
+**Reduced Development Risk**:
+- Edge cases identified in documentation phase
+- Integration points mapped to existing systems
+- Error handling planned with specific scenarios
+- Performance considerations documented upfront
+
+**Maintainable Code**:
+- Implementation follows documented patterns
+- Code matches architectural decisions
+- Future enhancements planned and documented
+- Knowledge transfer facilitated by comprehensive docs
+
+#### 6. "Simple, Works, Hard to Screw Up" Philosophy
+
+**Simple**:
+- Reuse existing HTML/CSS patterns
+- Minimal JavaScript functions
+- Single API endpoint
+- Clear data structures
+
+**Works**:
+- Leverages proven socket communication
+- Integrates with existing project management
+- Follows established UI patterns
+- Tested against real use cases
+
+**Hard to Screw Up**:
+- Clear error handling paths
+- Consistent with existing patterns
+- Well-documented decision points
+- Maintainable code structure
+
 ## Best Practices
 
 1. **Keep It Simple**:

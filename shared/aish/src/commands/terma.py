@@ -18,6 +18,11 @@ import time
 import urllib.request
 import urllib.error
 from datetime import datetime
+from pathlib import Path
+
+# Add parent to path for shared imports
+sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
+from shared.urls import tekton_url
 
 # Try to import landmarks if available
 try:
@@ -44,8 +49,8 @@ except ImportError:
             return func
         return decorator
 
-# Get endpoints from environment
-TERMA_ENDPOINT = os.environ.get('TERMA_ENDPOINT', 'http://localhost:8004')
+# Build endpoint using tekton_url
+TERMA_ENDPOINT = tekton_url('terma', '')
 
 def handle_terma_command(args):
     """Handle terma inter-terminal communication commands."""
@@ -215,7 +220,7 @@ def terma_list_terminals():
         
     except Exception as e:
         print(f"Error listing terminals: {e}")
-        print("Is Terma running on port 8004?")
+        print("Is Terma running?")
         return 1
 
 def terma_whoami():

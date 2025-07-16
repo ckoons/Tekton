@@ -6,6 +6,7 @@ import json
 from typing import Dict, Optional
 import sys
 from pathlib import Path
+import os
 
 # Try to import landmarks if available
 try:
@@ -35,12 +36,9 @@ except ImportError:
 # Add Tekton root to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
 
-try:
-    from shared.utils.env_config import get_tekton_config, get_component_config
-    from shared.utils.ai_port_utils import get_ai_port
-    HAS_CONFIG = True
-except ImportError:
-    HAS_CONFIG = False
+# Always use TektonEnviron - it's required
+from shared.env import TektonEnviron
+from shared.utils.ai_port_utils import get_ai_port, COMPONENT_PORTS
 
 # Import forwarding registry
 try:
@@ -56,48 +54,16 @@ class MessageHandler:
         self.timeout = timeout
         self.forwarding = ForwardingRegistry()
         
-        if HAS_CONFIG:
-            # Get port bases from config
-            tekton_config = get_tekton_config()
-            component_config = get_component_config()
-            
-            self.port_base = tekton_config.port_base
-            self.ai_port_base = tekton_config.ai_port_base
-            
-            # Build ports dynamically from config
-            self.ports = {}
-            for component in ['engram', 'hermes', 'ergon', 'rhetor', 'terma', 'athena',
-                            'prometheus', 'harmonia', 'telos', 'synthesis', 'tekton_core',
-                            'metis', 'apollo', 'penia', 'sophia', 'noesis', 'numa', 'hephaestus']:
-                component_port = component_config.get_port(component)
-                if component_port:
-                    # Use standard formula from ai_port_utils
-                    ai_port = get_ai_port(component_port)
-                    self.ports[component] = ai_port
-        else:
-            # Fallback to hardcoded if config not available
-            self.port_base = 8000
-            self.ai_port_base = 45000
-            self.ports = {
-                'engram': 45000,
-                'hermes': 45001,
-                'ergon': 45002,
-                'rhetor': 45003,
-                'terma': 45004,
-                'athena': 45005,
-                'prometheus': 45006,
-                'harmonia': 45007,
-                'telos': 45008,
-                'synthesis': 45009,
-                'tekton_core': 45010,
-                'metis': 45011,
-                'apollo': 45012,
-                'penia': 45013,
-                'sophia': 45014,
-                'noesis': 45015,
-                'numa': 45016,
-                'hephaestus': 45080
-            }
+        # Get port bases from environment
+        self.port_base = int(TektonEnviron.get('TEKTON_PORT_BASE', '8000'))
+        self.ai_port_base = int(TektonEnviron.get('TEKTON_AI_PORT_BASE', '45000'))
+        
+        # Build ports dynamically using ai_port_utils
+        self.ports = {}
+        for component_name, component_port in COMPONENT_PORTS.items():
+            # Calculate AI port using the standard formula
+            ai_port = get_ai_port(component_port)
+            self.ports[component_name] = ai_port
     
     # Landmark: AI Message Routing Decision - Critical branch for forwarding
     def send(self, ai_name: str, message: str) -> str:

@@ -8,6 +8,7 @@
 <input type="radio" name="tekton-tab" id="tekton-tab-new-project" style="display: none;">
 <input type="radio" name="tekton-tab" id="tekton-tab-merges" style="display: none;">
 <input type="radio" name="tekton-tab" id="tekton-tab-conflicts" style="display: none;">
+<input type="radio" name="tekton-tab" id="tekton-tab-projectschat" style="display: none;">
 <input type="radio" name="tekton-tab" id="tekton-tab-projectchat" style="display: none;">
 <input type="radio" name="tekton-tab" id="tekton-tab-teamchat" style="display: none;">
 
@@ -57,6 +58,12 @@
                    data-tekton-menu-panel="conflicts-panel">
                 <span class="tekton__tab-label">Conflicts</span>
             </label>
+            <label for="tekton-tab-projectschat" class="tekton__tab" data-tab="projectschat"
+                   data-tekton-menu-item="Projects Chat"
+                   data-tekton-menu-component="tekton"
+                   data-tekton-menu-panel="projectschat-panel">
+                <span class="tekton__tab-label">Projects Chat</span>
+            </label>
             <label for="tekton-tab-projectchat" class="tekton__tab" data-tab="projectchat"
                    data-tekton-menu-item="Builder Chat"
                    data-tekton-menu-component="tekton"
@@ -77,6 +84,16 @@
                     onclick="tekton_clearChat(); return false;">
                 <span class="tekton__button-label">Clear</span>
             </button>
+        </div>
+    </div>
+    
+    <!-- Submenu Bar (hidden by default, shown when Projects Chat is active) -->
+    <div class="tekton__submenu-bar" data-tekton-zone="submenu" data-tekton-section="submenu">
+        <div class="tekton__project-selector">
+            <label for="project-ci-selector" class="tekton__selector-label">Tekton Project:</label>
+            <select id="project-ci-selector" class="tekton__project-select">
+                <option value="tekton">Tekton</option>
+            </select>
         </div>
     </div>
     
@@ -203,10 +220,30 @@
         </div>
         
         
-        <!-- Project Chat Tab -->
+        <!-- Projects Chat Tab -->
+        <div id="projectschat-panel" class="tekton__panel"
+             data-tekton-panel="projectschat"
+             data-tekton-panel-for="Projects Chat"
+             data-tekton-panel-component="tekton"
+             data-tekton-tab-content="projectschat">
+            <div id="projectschat-messages" class="tekton__chat-messages"
+                 data-tekton-element="chat-messages"
+                 data-tekton-chat="projects-chat">
+                <div class="tekton__message tekton__message--system">
+                    <div class="tekton__message-content">
+                        <div class="tekton__message-text">
+                            <h3 class="tekton__message-title">Project CI Assistant</h3>
+                            <p id="projects-chat-instructions">Select a project to chat with its Companion Intelligence.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Builder Chat Tab -->
         <div id="projectchat-panel" class="tekton__panel"
              data-tekton-panel="projectchat"
-             data-tekton-panel-for="Project Chat"
+             data-tekton-panel-for="Builder Chat"
              data-tekton-panel-component="tekton"
              data-tekton-tab-content="projectchat">
             <div id="projectchat-messages" class="tekton__chat-messages"
@@ -903,6 +940,51 @@
         overflow: hidden; /* Prevent double scrollbars */
     }
     
+    /* Submenu Bar Styles */
+    .tekton__submenu-bar {
+        display: none;
+        flex-direction: row;
+        align-items: center;
+        padding: 8px 16px;
+        background-color: var(--bg-tertiary, #2a2a3a);
+        border-bottom: 1px solid var(--border-color, #444444);
+        height: 40px;
+        gap: 12px;
+    }
+    
+    .tekton__project-selector {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+    
+    .tekton__selector-label {
+        font-size: 14px;
+        font-weight: 500;
+        color: var(--text-primary, #f0f0f0);
+    }
+    
+    .tekton__project-select {
+        padding: 6px 12px;
+        background-color: var(--bg-primary, #1e1e2e);
+        border: 1px solid var(--border-color, #444444);
+        border-radius: 4px;
+        color: var(--text-primary, #f0f0f0);
+        font-size: 14px;
+        min-width: 180px;
+    }
+    
+    .tekton__project-select:focus {
+        outline: none;
+        border-color: #FFA500;
+        box-shadow: 0 0 0 2px rgba(255, 165, 0, 0.2);
+    }
+    
+    /* Show submenu when Projects Chat tab is active */
+    #tekton-tab-projectschat:checked ~ .tekton .tekton__submenu-bar {
+        display: flex !important;
+    }
+    
     /* Footer */
     .tekton__footer {
         background-color: var(--bg-secondary, #252535);
@@ -1087,6 +1169,7 @@
     #tekton-tab-new-project:checked ~ .tekton .tekton__panel--new-project,
     #tekton-tab-merges:checked ~ .tekton .tekton__panel--merges,
     #tekton-tab-conflicts:checked ~ .tekton .tekton__panel--conflicts,
+    #tekton-tab-projectschat:checked ~ .tekton #projectschat-panel,
     #tekton-tab-projectchat:checked ~ .tekton #projectchat-panel,
     #tekton-tab-teamchat:checked ~ .tekton #teamchat-panel {
         display: flex;
@@ -1098,6 +1181,7 @@
     #tekton-tab-new-project:checked ~ .tekton .tekton__tab[data-tab="new-project"],
     #tekton-tab-merges:checked ~ .tekton .tekton__tab[data-tab="merges"],
     #tekton-tab-conflicts:checked ~ .tekton .tekton__tab[data-tab="conflicts"],
+    #tekton-tab-projectschat:checked ~ .tekton .tekton__tab[data-tab="projectschat"],
     #tekton-tab-projectchat:checked ~ .tekton .tekton__tab[data-tab="projectchat"],
     #tekton-tab-teamchat:checked ~ .tekton .tekton__tab[data-tab="teamchat"] {
         background-color: var(--bg-tertiary, #2a2a3a);
@@ -1105,6 +1189,7 @@
     }
     
     /* Clear button visibility for chat tabs */
+    #tekton-tab-projectschat:checked ~ .tekton #clear-chat-btn,
     #tekton-tab-projectchat:checked ~ .tekton #clear-chat-btn,
     #tekton-tab-teamchat:checked ~ .tekton #clear-chat-btn {
         display: block !important;
@@ -1406,6 +1491,146 @@ function tekton_sendChat() {
     return false; // Stop event propagation
 };
 
+// PROJECTS CHAT FUNCTIONS
+async function loadProjectCIs() {
+    console.log('[TEKTON] Loading project CIs');
+    
+    try {
+        const response = await fetch(tektonCoreUrl('/api/projects'));
+        const data = await response.json();
+        
+        // Reset with Tekton first
+        projectCIs = [
+            {
+                project_name: "Tekton",
+                ci_socket: "numa-ai",
+                socket_port: 42016
+            }
+        ];
+        
+        // Add other projects alphabetically
+        data.projects
+            .filter(p => !p.is_tekton_self)
+            .sort((a, b) => a.name.localeCompare(b.name))
+            .forEach((project, index) => {
+                projectCIs.push({
+                    project_name: project.name,
+                    ci_socket: `project-${project.name.toLowerCase().replace(/[^a-z0-9]/g, '-')}-ai`,
+                    socket_port: 42100 + index
+                });
+            });
+        
+        // Update dropdown
+        const selector = document.getElementById('project-ci-selector');
+        if (selector) {
+            selector.innerHTML = '';
+            projectCIs.forEach(ci => {
+                const option = document.createElement('option');
+                option.value = ci.project_name;
+                option.textContent = ci.project_name;
+                selector.appendChild(option);
+            });
+        }
+        
+    } catch (error) {
+        console.error('[TEKTON] Failed to load project CIs:', error);
+    }
+}
+
+function sendProjectsChat() {
+    console.log('[TEKTON] Sending projects chat message');
+    
+    const chatInput = document.getElementById('tekton-chat-input');
+    const projectSelector = document.getElementById('project-ci-selector');
+    
+    if (!chatInput || !projectSelector) {
+        console.error('[TEKTON] Missing required elements');
+        return;
+    }
+    
+    const message = chatInput.value.trim();
+    const selectedProject = projectSelector.value;
+    
+    if (!message || !selectedProject) {
+        console.log('[TEKTON] Empty message or no project selected');
+        return;
+    }
+    
+    // Find project CI info
+    const projectCI = projectCIs.find(ci => ci.project_name === selectedProject);
+    if (!projectCI) {
+        console.error('[TEKTON] Project CI not found:', selectedProject);
+        return;
+    }
+    
+    // Add user message to chat
+    const chatContainer = document.getElementById('projectschat-messages');
+    const userMessage = document.createElement('div');
+    userMessage.className = 'tekton__message tekton__message--user';
+    userMessage.innerHTML = `
+        <div class="tekton__message-content">
+            <div class="tekton__message-text">${message}</div>
+        </div>
+    `;
+    chatContainer.appendChild(userMessage);
+    
+    // Clear input and scroll
+    chatInput.value = '';
+    chatContainer.scrollTop = chatContainer.scrollHeight;
+    
+    // Send to backend
+    sendToProjectCI(selectedProject, message, projectCI);
+}
+
+async function sendToProjectCI(projectName, message, projectCI) {
+    try {
+        const response = await fetch(tektonCoreUrl('/api/projects/chat'), {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                project_name: projectName,
+                message: message,
+                ci_socket: projectCI.ci_socket
+            })
+        });
+        
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}`);
+        }
+        
+        const data = await response.json();
+        
+        // Add AI response to chat
+        const chatContainer = document.getElementById('projectschat-messages');
+        const aiMessage = document.createElement('div');
+        aiMessage.className = 'tekton__message tekton__message--ai';
+        aiMessage.innerHTML = `
+            <div class="tekton__message-content">
+                <div class="tekton__message-text"><strong>${projectName} CI:</strong> ${data.response}</div>
+            </div>
+        `;
+        chatContainer.appendChild(aiMessage);
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+        
+    } catch (error) {
+        console.error('[TEKTON] Projects chat error:', error);
+        
+        // Add error message
+        const chatContainer = document.getElementById('projectschat-messages');
+        const errorMessage = document.createElement('div');
+        errorMessage.className = 'tekton__message tekton__message--system';
+        errorMessage.innerHTML = `
+            <div class="tekton__message-content">
+                <div class="tekton__message-text">Error: ${error.message}</div>
+            </div>
+        `;
+        chatContainer.appendChild(errorMessage);
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
+}
+
 // CHAT CLEARING FUNCTION
 function tekton_clearChat() {
     console.log('[TEKTON] Clearing chat messages');
@@ -1427,7 +1652,9 @@ function tekton_clearChat() {
         const chatType = activeTab.getAttribute('data-tab');
         let chatContainer;
         
-        if (chatType === 'projectchat') {
+        if (chatType === 'projectschat') {
+            chatContainer = tektonContainer.querySelector('#projectschat-messages');
+        } else if (chatType === 'projectchat') {
             chatContainer = tektonContainer.querySelector('#projectchat-messages');
         } else if (chatType === 'teamchat') {
             chatContainer = tektonContainer.querySelector('#teamchat-messages');
@@ -1963,6 +2190,8 @@ window.addEventListener('DOMContentLoaded', function() {
     console.log('[TEKTON] DOM loaded, setting up Tekton component');
     // Load dashboard projects since dashboard tab is checked by default
     loadProjectsDashboard();
+    // Load project CIs for Projects Chat
+    loadProjectCIs();
 });
 
 // IMMEDIATE PROTECTION
@@ -1971,6 +2200,8 @@ if (document.readyState === 'complete' || document.readyState === 'interactive')
     console.log('[TEKTON] Document already loaded, setting up Tekton component immediately');
     // Load dashboard projects since dashboard tab is checked by default
     loadProjectsDashboard();
+    // Load project CIs for Projects Chat
+    loadProjectCIs();
 }
 </script>
 

@@ -5,6 +5,9 @@ API endpoints for project management with GitHub integration.
 """
 
 import os
+import socket
+import json
+import asyncio
 from typing import Dict, List, Optional, Any
 from datetime import datetime
 
@@ -424,3 +427,107 @@ async def git_push(project_id: str):
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+# Projects Chat Models
+class ProjectsChatRequest(BaseModel):
+    """Request model for projects chat"""
+    project_name: str = Field(..., description="Name of the project")
+    message: str = Field(..., description="Message to send to project CI")
+    ci_socket: Optional[str] = Field(None, description="CI socket identifier")
+
+
+class ProjectsChatResponse(BaseModel):
+    """Response model for projects chat"""
+    response: str = Field(..., description="Response from project CI")
+    project_name: str = Field(..., description="Name of the project")
+    ci_socket: str = Field(..., description="CI socket identifier")
+
+
+# Socket Communication Helper
+async def send_to_project_ci_socket(port: int, message: str) -> str:
+    """Send message to project CI via socket"""
+    try:
+        # Use same pattern as aish MessageHandler
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sock.settimeout(20)  # 20 second timeout
+        
+        # Connect to CI socket
+        await asyncio.get_event_loop().run_in_executor(
+            None, sock.connect, ('localhost', port)
+        )
+        
+        # Send message
+        message_data = json.dumps({'content': message}) + '\n'
+        await asyncio.get_event_loop().run_in_executor(
+            None, sock.send, message_data.encode()
+        )
+        
+        # Receive response
+        response_data = await asyncio.get_event_loop().run_in_executor(
+            None, sock.recv, 4096
+        )
+        
+        sock.close()
+        
+        # Parse response
+        response = json.loads(response_data.decode())
+        return response.get('content', '')
+        
+    except Exception as e:
+        logger.error(f"Socket communication failed: {e}")
+        return f"Error: Unable to reach CI on port {port}"
+
+
+def get_project_ci_port(project_name: str) -> int:
+    """Get socket port for project CI"""
+    if project_name.lower() == "tekton":
+        return 42016  # numa-ai port
+    
+    # For other projects, use base port + hash
+    # This is simplified - real implementation would use project registry
+    project_hash = abs(hash(project_name)) % 1000
+    return 42100 + project_hash
+
+
+@api_contract(
+    title="Projects Chat API",
+    endpoint="/api/projects/chat",
+    method="POST",
+    request_schema={"project_name": "str", "message": "str", "ci_socket": "Optional[str]"},
+    response_schema={"response": "str", "project_name": "str", "ci_socket": "str"},
+    description="Send message to project CI via socket communication"
+)
+@router.post("/chat", response_model=ProjectsChatResponse)
+async def projects_chat(request: ProjectsChatRequest):
+    """Send message to project CI"""
+    project_name = request.project_name
+    message = request.message
+    ci_socket = request.ci_socket
+    
+    if not all([project_name, message]):
+        raise HTTPException(400, "Missing required fields: project_name, message")
+    
+    logger.info(f"Projects chat: {project_name} -> {message[:50]}...")
+    
+    # Get project CI port
+    project_ci_port = get_project_ci_port(project_name)
+    
+    # Send to CI using socket pattern
+    try:
+        response = await send_to_project_ci_socket(
+            project_ci_port, 
+            f"[Project: {project_name}] {message}"
+        )
+        
+        logger.info(f"Projects chat response: {response[:100]}...")
+        
+        return ProjectsChatResponse(
+            response=response,
+            project_name=project_name,
+            ci_socket=ci_socket or f"project-{project_name.lower()}-ai"
+        )
+        
+    except Exception as e:
+        logger.error(f"Projects chat failed: {e}")
+        raise HTTPException(500, f"CI communication failed: {str(e)}")

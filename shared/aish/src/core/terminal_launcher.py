@@ -20,6 +20,10 @@ from typing import Optional, List, Tuple, Dict, Any
 from dataclasses import dataclass, field
 from datetime import datetime
 
+# Add parent to path for shared imports
+sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
+from shared.env import TektonEnviron
+
 
 @dataclass
 class TerminalConfig:
@@ -385,7 +389,7 @@ class TerminalTemplates:
         
         "development": TerminalConfig(
             name="Development Terminal",
-            working_dir=os.path.expandvars("$TEKTON_ROOT"),
+            working_dir=TektonEnviron.get('TEKTON_ROOT'),
             env={
                 "TEKTON_MODE": "development",
                 "NODE_ENV": "development"

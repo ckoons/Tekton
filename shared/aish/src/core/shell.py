@@ -38,6 +38,11 @@ from parser.pipeline import PipelineParser
 from message_handler import MessageHandler
 from core.history import AIHistory
 
+# Add parent to path for shared imports
+sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
+from shared.env import TektonEnviron
+from shared.urls import tekton_url
+
 class AIShell:
     """The AI Shell - orchestrates AI pipelines"""
     
@@ -45,14 +50,13 @@ class AIShell:
         if rhetor_endpoint:
             self.rhetor_endpoint = rhetor_endpoint
         else:
-            # Check environment variable, then use default
-            port = os.environ.get('TEKTON_RHETOR_PORT', '8003')
-            self.rhetor_endpoint = f"http://localhost:{port}"
+            # Use tekton_url to build the endpoint properly
+            self.rhetor_endpoint = tekton_url('rhetor', '')
         
         self.debug = debug
         self.parser = PipelineParser()
         self.handler = MessageHandler(self.rhetor_endpoint, debug=debug)
-        tekton_root = os.environ.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
+        tekton_root = TektonEnviron.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
         self.history_file = Path(tekton_root) / '.tekton' / 'aish' / '.aish_history'
         self.active_sockets = {}  # Track active socket IDs by AI name
         self.ai_history = AIHistory()  # Conversation history tracker
