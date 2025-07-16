@@ -355,16 +355,6 @@ async def delayed_initialization():
         )
         logger.info("Component initialization completed")
         
-        logger.info("All engines should now be running")
-        return  # Exit before MCP bridge initialization
-        
-        logger.info("Starting component initialization...")
-        await component.initialize(
-            capabilities=component.get_capabilities(),
-            metadata=component.get_metadata()
-        )
-        logger.info("Component initialization completed")
-        
         # Initialize MCP bridge after component startup
         logger.info("Initializing MCP bridge...")
         await component.initialize_mcp_bridge()
@@ -412,8 +402,8 @@ async def shutdown_event():
             print("Cleaning up component resources...")
             if logger:
                 logger.info("Cleaning up component resources...")
-            # Cleanup component resources
-            await component.cleanup()
+            # Call shutdown method instead of cleanup
+            await component.shutdown()
             print("Sophia component cleaned up successfully")
             if logger:
                 logger.info("Sophia component cleaned up successfully")
