@@ -289,7 +289,8 @@ async def startup_event():
     print("=== SOPHIA STARTUP EVENT CALLED ===", flush=True)
     with open("/tmp/sophia_startup.txt", "w") as f:
         f.write("SOPHIA STARTUP EVENT WAS CALLED!\n")
-    print("Sophia startup event completed - no initialization for now")
+    # Re-enable background initialization
+    asyncio.create_task(delayed_initialization())
 
 async def delayed_initialization():
     """Perform delayed initialization after uvicorn startup completes."""
@@ -344,6 +345,18 @@ async def delayed_initialization():
             logger.info("FastMCP router registered successfully")
         except ImportError:
             logger.warning("FastMCP endpoints not available")
+        
+        # Use the proper full initialization
+        logger.info("Starting full component initialization...")
+        
+        await component.initialize(
+            capabilities=component.get_capabilities(),
+            metadata=component.get_metadata()
+        )
+        logger.info("Component initialization completed")
+        
+        logger.info("All engines should now be running")
+        return  # Exit before MCP bridge initialization
         
         logger.info("Starting component initialization...")
         await component.initialize(
