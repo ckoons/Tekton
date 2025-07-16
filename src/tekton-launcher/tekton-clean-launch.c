@@ -411,6 +411,26 @@ static void write_javascript_env(const char *tekton_root, env_list_t *env) {
     fprintf(fp, "window.NOESIS_PORT = %s;      // Noesis port\n", get_env_value(env, "NOESIS_PORT") ?: "8015");
     fprintf(fp, "window.NUMA_PORT = %s;        // Numa port\n\n", get_env_value(env, "NUMA_PORT") ?: "8016");
     
+    /* Write port base configuration */
+    fprintf(fp, "// Port base configuration for AI port calculation\n");
+    fprintf(fp, "window.TEKTON_PORT_BASE = %s;      // Component port base\n", get_env_value(env, "TEKTON_PORT_BASE") ?: "8000");
+    fprintf(fp, "window.TEKTON_AI_PORT_BASE = %s;   // AI port base\n\n", get_env_value(env, "TEKTON_AI_PORT_BASE") ?: "45000");
+    
+    /* Write AI port calculation function */
+    fprintf(fp, "// Function to calculate AI port from component port\n");
+    fprintf(fp, "function getAIPort(componentPort) {\n");
+    fprintf(fp, "    // AI port = AI_BASE + (component_port - COMPONENT_BASE)\n");
+    fprintf(fp, "    return window.TEKTON_AI_PORT_BASE + (componentPort - window.TEKTON_PORT_BASE);\n");
+    fprintf(fp, "}\n\n");
+    
+    /* Write convenience AI port variables */
+    fprintf(fp, "// AI specialist ports (calculated)\n");
+    fprintf(fp, "window.NUMA_AI_PORT = getAIPort(window.NUMA_PORT);           // numa-ai port\n");
+    fprintf(fp, "window.ENGRAM_AI_PORT = getAIPort(window.ENGRAM_PORT);       // engram-ai port\n");
+    fprintf(fp, "window.HERMES_AI_PORT = getAIPort(window.HERMES_PORT);       // hermes-ai port\n");
+    fprintf(fp, "window.RHETOR_AI_PORT = getAIPort(window.RHETOR_PORT);       // rhetor-ai port\n");
+    fprintf(fp, "window.TEKTON_CORE_AI_PORT = getAIPort(window.TEKTON_CORE_PORT); // tekton-core-ai port\n\n");
+    
     /* Write debug settings */
     fprintf(fp, "// Debug settings\n");
     fprintf(fp, "window.TEKTON_DEBUG = '%s';        // Master switch for debug instrumentation\n", 
