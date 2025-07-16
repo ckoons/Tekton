@@ -1504,7 +1504,7 @@ async function loadProjectCIs() {
             {
                 project_name: "Tekton",
                 ci_socket: "numa-ai",
-                socket_port: 42016
+                socket_port: window.NUMA_AI_PORT || getAIPort(window.NUMA_PORT)
             }
         ];
         
@@ -1516,7 +1516,7 @@ async function loadProjectCIs() {
                 projectCIs.push({
                     project_name: project.name,
                     ci_socket: `project-${project.name.toLowerCase().replace(/[^a-z0-9]/g, '-')}-ai`,
-                    socket_port: 42100 + index
+                    socket_port: (window.TEKTON_AI_PORT_BASE || 45000) + 100 + index
                 });
             });
         
