@@ -37,6 +37,7 @@ static void execute_python_script(const char *script_name, char **args);
 static env_list_t* create_env_list(void);
 static void free_env_list(env_list_t *env);
 static void add_env_var(env_list_t *env, const char *key, const char *value);
+static void write_javascript_env(const char *tekton_root, env_list_t *env);
 
 int main(int argc, char *argv[]) {
     char *tekton_root;
@@ -341,6 +342,19 @@ static void free_env_list(env_list_t *env) {
     }
     free(env->vars);
     free(env);
+}
+
+static char* get_env_value(env_list_t *env, const char *key) {
+    for (int i = 0; i < env->count; i++) {
+        char *eq = strchr(env->vars[i], '=');
+        if (eq) {
+            size_t key_len = eq - env->vars[i];
+            if (strncmp(env->vars[i], key, key_len) == 0 && key[key_len] == '\0') {
+                return eq + 1;
+            }
+        }
+    }
+    return NULL;
 }
 
 static void write_javascript_env(const char *tekton_root, env_list_t *env) {
