@@ -15,6 +15,17 @@ script_path = os.path.realpath(__file__)
 tekton_root = os.path.dirname(os.path.dirname(script_path))
 sys.path.insert(0, tekton_root)
 
+# Check if environment is loaded
+from shared.env import TektonEnviron
+if not TektonEnviron.is_loaded():
+    # We're running as a subprocess with environment passed via env=
+    # The environment is already correct, just not "loaded" in Python's memory
+    # Don't exit - just continue
+    pass
+else:
+    # Use frozen environment if loaded
+    os.environ = TektonEnviron.all()
+
 # Registry client removed - using process scanning
 from shared.utils.logging_setup import setup_component_logging
 
@@ -29,6 +40,14 @@ class AIKiller:
         # Setup logging
         log_level = 'DEBUG' if verbose else 'INFO'
         self.logger = setup_component_logging('ai_killer', log_level)
+        
+        # Get environment-specific AI port range using TektonEnviron
+        if TektonEnviron.is_loaded():
+            self.ai_port_base = int(TektonEnviron.get('TEKTON_AI_PORT_BASE', 45000))
+        else:
+            # Fallback to os.environ when running as subprocess
+            self.ai_port_base = int(os.environ.get('TEKTON_AI_PORT_BASE', 45000))
+        self.logger.info(f"AI killer initialized for port base: {self.ai_port_base}")
         
     def kill_ai_by_id(self, ai_id: str) -> bool:
         """
@@ -45,12 +64,19 @@ class AIKiller:
         for proc in psutil.process_iter(['pid', 'name', 'cmdline']):
             try:
                 cmdline = proc.info.get('cmdline', [])
+                cmdline_str = ' '.join(cmdline) if cmdline else ''
+                
                 # Look for generic_specialist with this specific AI id
-                if cmdline and 'generic_specialist' in ' '.join(cmdline) and f'--ai-id {ai_id}' in ' '.join(cmdline):
-                    proc.terminate()
-                    proc.wait(timeout=5)
-                    self.logger.info(f"Terminated AI {ai_id} (PID: {proc.pid})")
-                    killed = True
+                if 'generic_specialist' in cmdline_str and f'--ai-id {ai_id}' in cmdline_str:
+                    # Extract port from command line to check environment
+                    port = self._extract_port_from_cmdline(cmdline)
+                    if port and self._is_port_in_environment(port):
+                        proc.terminate()
+                        proc.wait(timeout=5)
+                        self.logger.info(f"Terminated AI {ai_id} on port {port} (PID: {proc.pid})")
+                        killed = True
+                    else:
+                        self.logger.debug(f"Skipping AI {ai_id} on port {port} - not in this environment (base: {self.ai_port_base})")
             except psutil.NoSuchProcess:
                 pass  # Process already gone
             except psutil.TimeoutExpired:
@@ -64,6 +90,22 @@ class AIKiller:
                 self.logger.error(f"Error checking process: {e}")
         
         return killed
+    
+    def _extract_port_from_cmdline(self, cmdline: List[str]) -> Optional[int]:
+        """Extract port number from command line arguments."""
+        try:
+            for i, arg in enumerate(cmdline):
+                if arg == '--port' and i + 1 < len(cmdline):
+                    return int(cmdline[i + 1])
+        except (ValueError, IndexError):
+            pass
+        return None
+    
+    def _is_port_in_environment(self, port: int) -> bool:
+        """Check if port belongs to this environment's AI port range."""
+        # AI ports are typically TEKTON_AI_PORT_BASE + offset (0-99 range)
+        # Main Tekton: 45000-45099, Coder-C: 42000-42099
+        return self.ai_port_base <= port < self.ai_port_base + 100
     
     def kill_ai_by_component(self, component: str) -> bool:
         """
@@ -80,17 +122,39 @@ class AIKiller:
     
     def kill_all_ais(self) -> int:
         """
-        Kill all registered AI specialists.
+        Kill all AI specialists in this environment.
         
         Returns:
             Number of AIs killed
         """
-        registry = self.registry_client.list_platform_ais()
         killed_count = 0
         
-        for ai_id in list(registry.keys()):
-            if self.kill_ai_by_id(ai_id):
-                killed_count += 1
+        # Find all generic_specialist processes and check if they're in our environment
+        for proc in psutil.process_iter(['pid', 'name', 'cmdline']):
+            try:
+                cmdline = proc.info.get('cmdline', [])
+                cmdline_str = ' '.join(cmdline) if cmdline else ''
+                
+                if 'generic_specialist' in cmdline_str and '--ai-id' in cmdline_str:
+                    # Extract port and check environment
+                    port = self._extract_port_from_cmdline(cmdline)
+                    if port and self._is_port_in_environment(port):
+                        proc.terminate()
+                        proc.wait(timeout=5)
+                        self.logger.info(f"Terminated AI on port {port} (PID: {proc.pid})")
+                        killed_count += 1
+                        
+            except psutil.NoSuchProcess:
+                pass
+            except psutil.TimeoutExpired:
+                try:
+                    proc.kill()
+                    self.logger.info(f"Force killed AI (PID: {proc.pid})")
+                    killed_count += 1
+                except Exception as e:
+                    self.logger.error(f"Failed to kill process {proc.pid}: {e}")
+            except Exception as e:
+                self.logger.error(f"Error checking process: {e}")
         
         return killed_count
     
@@ -149,24 +213,13 @@ def main():
     
     # Show what will be killed
     if not args.force and 'all' not in [t.lower() for t in args.targets]:
-        registry = killer.registry_client.list_platform_ais()
-        to_kill = []
+        print(f"Will attempt to terminate AIs for: {', '.join(args.targets)}")
+        print(f"Environment AI port base: {killer.ai_port_base}")
         
-        for target in args.targets:
-            ai_id = target if target in registry else f"{target.lower()}-ai"
-            if ai_id in registry:
-                to_kill.append(ai_id)
-        
-        if to_kill:
-            print("Will terminate the following AIs:")
-            for ai_id in to_kill:
-                ai_info = registry[ai_id]
-                print(f"  - {ai_id} ({ai_info.get('component', 'unknown')})")
-            
-            response = input("\nContinue? [y/N]: ")
-            if response.lower() != 'y':
-                print("Aborted.")
-                sys.exit(0)
+        response = input("\nContinue? [y/N]: ")
+        if response.lower() != 'y':
+            print("Aborted.")
+            sys.exit(0)
     
     # Kill AIs
     killed = killer.kill_multiple(args.targets)
