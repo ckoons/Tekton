@@ -54,6 +54,9 @@ htmlcov/
 .dmypy.json
 dmypy.json
 
+# Hephaestus generated file
+Hephaestus/ui/scripts/env.js
+
 # Logs
 *.log
 logs/
