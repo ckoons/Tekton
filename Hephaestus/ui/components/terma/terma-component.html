@@ -1409,7 +1409,7 @@ window.terma_launchTerminal = function() {
         return response.json();
     })
     .then(result => {
-        statusDiv.textContent = `✓ Terminal launched (PID: ${result.pid})`;
+        statusDiv.textContent = `✓ Terminal launched successfully`;
         statusDiv.className = 'terma__launch-status success';
         // Clear form
         nameInput.value = '';
@@ -1601,132 +1601,7 @@ function initializeTermaLauncher() {
     const statusDiv = document.getElementById('terma-launch-status');
     
     if (launchBtn) {
-        console.log('[Terma] Launch button found, attaching click handler');
-        let launching = false;  // Prevent double clicks
-        
-        launchBtn.addEventListener('click', async function() {
-            if (launching) {
-                console.log('[Terma] Already launching, ignoring click');
-                return;
-            }
-            launching = true;
-            
-            const name = nameInput.value.trim() || 'aish Terminal';
-            const template = templateSelect.value;
-            const purpose = purposeInput.value.trim();
-            const workingDir = workingDirInput ? workingDirInput.value.trim() : null;
-            const startupCmd = startupCmdInput ? startupCmdInput.value.trim() : null;
-            
-            console.log('[Terma] Launch button clicked', { name, template, purpose, workingDir, startupCmd });
-            console.log('[Terma] Timestamp:', new Date().toISOString());
-            
-            // Debug: Check termaUrl function
-            console.log('[Terma] DEBUG: termaUrl function exists?', typeof termaUrl);
-            console.log('[Terma] DEBUG: window.TERMA_PORT =', window.TERMA_PORT);
-            const testUrl = termaUrl('/test');
-            console.log('[Terma] DEBUG: termaUrl("/test") =', testUrl);
-            
-            // Clear previous status
-            statusDiv.textContent = 'Checking terminal name availability...';
-            statusDiv.className = 'terma__launch-status';
-            
-            try {
-                // First, check if terminal name is already in use
-                const listUrl = termaUrl('/api/mcp/v2/terminals/list');
-                console.log('[Terma] DEBUG: Fetching terminal list from:', listUrl);
-                
-                const listResponse = await fetch(listUrl);
-                console.log('[Terma] DEBUG: List response status:', listResponse.status, listResponse.statusText);
-                
-                if (listResponse.ok) {
-                    const listData = await listResponse.json();
-                    const existingNames = listData.terminals ? listData.terminals.map(t => t.name) : [];
-                    
-                    if (existingNames.includes(name)) {
-                        alert(`Please choose a unique Terminal Name: [${name}] already active.`);
-                        statusDiv.textContent = 'Terminal name already in use';
-                        statusDiv.className = 'terma__launch-status error';
-                        launching = false;
-                        return;
-                    }
-                }
-                
-                // Name is unique, proceed with launch
-                statusDiv.textContent = 'Launching aish-enabled terminal...';
-                statusDiv.className = 'terma__launch-status';
-                // Call Terma MCP endpoint to launch terminal
-                const requestBody = {
-                    name: name
-                };
-                
-                // Only add optional fields if they have values
-                if (template) {
-                    requestBody.template = template;
-                }
-                if (purpose) {
-                    requestBody.purpose = purpose;
-                }
-                if (workingDir) {
-                    requestBody.working_dir = workingDir;
-                }
-                if (startupCmd) {
-                    requestBody.startup_command = startupCmd;
-                }
-                
-                const launchUrl = termaUrl('/api/mcp/v2/tools/launch_terminal');
-                console.log('[Terma] DEBUG: Launching terminal with URL:', launchUrl);
-                console.log('[Terma] DEBUG: Request body:', JSON.stringify(requestBody, null, 2));
-                
-                const response = await fetch(launchUrl, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(requestBody)
-                });
-                
-                console.log('[Terma] DEBUG: Launch response status:', response.status, response.statusText);
-                
-                if (response.ok) {
-                    const result = await response.json();
-                    statusDiv.textContent = `✓ Terminal launched successfully (PID: ${result.pid})`;
-                    statusDiv.className = 'terma__launch-status success';
-                    
-                    // Clear form for next launch
-                    nameInput.value = '';
-                    purposeInput.value = '';
-                    templateSelect.value = '';
-                    if (workingDirInput) workingDirInput.value = '';
-                    if (startupCmdInput) startupCmdInput.value = '';
-                    
-                    // Hide template details
-                    const details = document.getElementById('terma-template-details');
-                    const icon = document.getElementById('template-toggle-icon');
-                    if (details) {
-                        details.style.display = 'none';
-                        icon.textContent = '▶';
-                    }
-                    
-                    // Refresh the dashboard to show the new terminal
-                    updateTerminalsList();
-                } else {
-                    const error = await response.text();
-                    console.error('[Terma] DEBUG: Launch failed:', response.status, error);
-                    console.error('[Terma] DEBUG: Response headers:', [...response.headers.entries()]);
-                    statusDiv.textContent = `✗ Launch failed: ${error}`;
-                    statusDiv.className = 'terma__launch-status error';
-                }
-            } catch (error) {
-                console.error('[Terma] DEBUG: Launch error:', error);
-                console.error('[Terma] DEBUG: Error type:', error.constructor.name);
-                console.error('[Terma] DEBUG: Error stack:', error.stack);
-                statusDiv.textContent = `✗ Error: Cannot connect to Terma service`;
-                statusDiv.className = 'terma__launch-status error';
-            } finally {
-                // Reset launching flag
-                launching = false;
-            }
-        });
+        console.log('[Terma] Launch button found, using onclick handler');
     } else {
         console.log('[Terma] Launch button not found');
     }

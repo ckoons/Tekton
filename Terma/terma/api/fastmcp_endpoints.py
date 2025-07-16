@@ -361,7 +361,11 @@ async def mcp_launch_terminal(request: Dict[str, Any]) -> Dict[str, Any]:
     try:
         import logging
         logger = logging.getLogger("terma.mcp")
-        logger.info(f"Launch terminal request received: {request}")
+        logger.info("="*60)
+        logger.info(f"MCP LAUNCH TERMINAL REQUEST RECEIVED")
+        logger.info(f"Request details: {request}")
+        logger.info(f"Request ID: {id(request)}")
+        logger.info("="*60)
         
         from terma.core.terminal_launcher_impl import TerminalLauncher, TerminalConfig
         
@@ -400,7 +404,10 @@ async def mcp_launch_terminal(request: Dict[str, Any]) -> Dict[str, Any]:
                 config.template = template_name
         
         # Launch the terminal
+        logger.info(f"Calling launcher.launch_terminal with config: name={config.name}")
         pid = launcher.launch_terminal(config)
+        logger.info(f"Terminal launched successfully with PID: {pid}")
+        logger.info("="*60)
         
         return {
             "success": True,
@@ -408,7 +415,7 @@ async def mcp_launch_terminal(request: Dict[str, Any]) -> Dict[str, Any]:
             "terminal_app": config.app or launcher.get_default_terminal(),
             "working_directory": config.working_dir or os.path.expanduser("~"),
             "aish_enabled": True,
-            "message": f"Successfully launched aish-enabled terminal (PID: {pid})"
+            "message": "Successfully launched aish-enabled terminal"
         }
         
     except Exception as e:

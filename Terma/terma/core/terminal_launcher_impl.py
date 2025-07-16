@@ -425,39 +425,64 @@ class TerminalLauncher:
         
         Returns the PID of the launched terminal process.
         """
+        self.logger.info("=" * 60)
+        self.logger.info("TERMINAL LAUNCH INITIATED")
+        self.logger.info("=" * 60)
+        
         if config is None:
             config = TerminalConfig()
+            self.logger.info("Using default TerminalConfig")
         
         # Generate unique Terma session ID
         terma_id = str(uuid.uuid4())[:8]
+        self.logger.info(f"Generated Terma session ID: {terma_id}")
         
         # Add Terma environment variables
         config.env["TERMA_SESSION_ID"] = terma_id
         config.env["TERMA_ENDPOINT"] = "http://localhost:8004"
         config.env["TERMA_TERMINAL_NAME"] = config.name
+        # Debug: Log the session ID we're using
+        self.logger.info(f"DEBUG: Setting TERMA_SESSION_ID={terma_id}")
+        self.logger.info(f"DEBUG: Setting TERMA_TERMINAL_NAME={config.name}")
+        self.logger.info(f"Terminal name: {config.name}")
+        self.logger.info(f"Terminal endpoint: {config.env['TERMA_ENDPOINT']}")
         
         # Always include TEKTON_ROOT and TEKTON_AI_TRAINING
         config.env["TEKTON_ROOT"] = os.environ.get("TEKTON_ROOT", "/Users/cskoons/projects/github/Tekton")
         config.env["TEKTON_AI_TRAINING"] = os.path.join(config.env["TEKTON_ROOT"], "MetaData/TektonDocumentation/AITraining")
+        self.logger.info(f"TEKTON_ROOT: {config.env['TEKTON_ROOT']}")
         
         # Auto-detect terminal if not specified
         if not config.app:
             config.app = self.get_default_terminal()
+            self.logger.info(f"Auto-detected terminal app: {config.app}")
+        else:
+            self.logger.info(f"Using specified terminal app: {config.app}")
         
         # Expand and set working directory
         if config.working_dir:
             # Expand environment variables and ~ in the path
             config.working_dir = os.path.expandvars(os.path.expanduser(config.working_dir))
+            self.logger.info(f"Working directory expanded to: {config.working_dir}")
         else:
             config.working_dir = os.path.expanduser("~")
+            self.logger.info(f"Using default working directory: {config.working_dir}")
+        
+        # Log all environment variables
+        self.logger.info("Environment variables for terminal:")
+        for key, value in config.env.items():
+            self.logger.info(f"  {key}={value}")
         
         # Launch based on platform
+        self.logger.info(f"Launching terminal on platform: {self.platform}")
         if self.platform == "darwin":
             pid = self._launch_macos_terminal(config)
         elif self.platform == "linux":
             pid = self._launch_linux_terminal(config)
         else:
             raise NotImplementedError(f"Platform {self.platform} not supported")
+        
+        self.logger.info(f"Terminal launched with PID: {pid}")
         
         # Track the terminal locally
         self.terminals[pid] = TerminalInfo(
@@ -468,18 +493,30 @@ class TerminalLauncher:
             terminal_app=config.app,
             terma_id=terma_id
         )
+        self.logger.info(f"Terminal tracked locally with PID {pid}")
         
         # Pre-register in the active roster
         self.roster.pre_register(terma_id, pid, config)
+        self.logger.info(f"Terminal pre-registered in roster with ID {terma_id}")
+        
+        self.logger.info("=" * 60)
+        self.logger.info("TERMINAL LAUNCH COMPLETED")
+        self.logger.info(f"Session ID: {terma_id}, PID: {pid}, App: {config.app}")
+        self.logger.info("=" * 60)
         
         return pid
     
     def _launch_macos_terminal(self, config: TerminalConfig) -> int:
         """Launch terminal on macOS."""
-        self.logger.info(f"Launching terminal: {config.app}")
+        self.logger.info("-" * 40)
+        self.logger.info("macOS TERMINAL LAUNCH")
+        self.logger.info("-" * 40)
+        self.logger.info(f"Terminal app: {config.app}")
         self.logger.info(f"Terminal name: {config.name}")
         self.logger.info(f"Working dir: {config.working_dir}")
         self.logger.info(f"Session ID: {config.env.get('TERMA_SESSION_ID', 'unknown')}")
+        self.logger.info(f"Purpose: {config.purpose or 'Not specified'}")
+        self.logger.info(f"Template: {getattr(config, 'template', 'None')}")
         
         env_exports = " ".join([f"export {k}='{v}';" for k, v in config.env.items()])
         
@@ -503,17 +540,24 @@ class TerminalLauncher:
             shell_cmd += " " + " ".join(config.shell_args)
         
         if config.app == "Terminal.app":
-            # Use AppleScript for Terminal.app
+            # Use AppleScript for Terminal.app - simple version
+            self.logger.info("Using Terminal.app - simple AppleScript approach")
             script = f'''
             tell application "Terminal"
-                set newWindow to do script "{shell_cmd}"
+                do script "{shell_cmd}"
+                activate
                 set windowID to id of window 1
                 return windowID
             end tell
             '''
             
             self.logger.info("Executing AppleScript...")
-            self.logger.debug(f"Shell command: {shell_cmd[:100]}...")  # First 100 chars
+            self.logger.info(f"Full shell command: {shell_cmd}")
+            self.logger.debug(f"Shell command length: {len(shell_cmd)} chars")
+            
+            # Log AppleScript (abbreviated)
+            script_lines = script.strip().split('\n')
+            self.logger.debug(f"AppleScript has {len(script_lines)} lines")
             
             result = subprocess.run(
                 ["osascript", "-e", script],
@@ -521,12 +565,17 @@ class TerminalLauncher:
                 text=True
             )
             
+            self.logger.info(f"AppleScript execution completed")
+            self.logger.info(f"Return code: {result.returncode}")
             self.logger.info(f"AppleScript stdout: {result.stdout}")
             if result.stderr:
                 self.logger.warning(f"AppleScript stderr: {result.stderr}")
             
             if result.returncode != 0:
                 self.logger.error(f"AppleScript failed with code: {result.returncode}")
+                self.logger.error("Failed AppleScript:")
+                for i, line in enumerate(script_lines[:10]):  # First 10 lines
+                    self.logger.error(f"  {i+1}: {line}")
             
             # For now, return a synthetic PID based on the roster pre-registration
             # The real PID will be updated when the first heartbeat arrives
@@ -698,7 +747,10 @@ class TerminalLauncher:
     def terminate_terminal(self, pid: int) -> bool:
         """Terminate a terminal process and close the window."""
         try:
-            self.logger.info(f"Terminating terminal with PID {pid}")
+            self.logger.info("=" * 60)
+            self.logger.info("TERMINAL TERMINATION INITIATED")
+            self.logger.info("=" * 60)
+            self.logger.info(f"Target PID: {pid}")
             
             # First find the terminal and get the real PID
             session_id = None
@@ -790,9 +842,19 @@ class TerminalLauncher:
             
             if pid in self.terminals:
                 self.terminals[pid].status = "terminated"
+                self.logger.info(f"Updated local terminal status to terminated")
+            
+            self.logger.info("=" * 60)
+            self.logger.info("TERMINAL TERMINATION COMPLETED")
+            self.logger.info(f"Successfully terminated session {session_id}")
+            self.logger.info("=" * 60)
             return True
         except Exception as e:
-            self.logger.error(f"Error terminating terminal: {e}")
+            self.logger.error("=" * 60)
+            self.logger.error("TERMINAL TERMINATION FAILED")
+            self.logger.error(f"Error: {e}")
+            self.logger.error(f"Stack trace:", exc_info=True)
+            self.logger.error("=" * 60)
             return False
     
     def list_terminals(self) -> List[TerminalInfo]:
