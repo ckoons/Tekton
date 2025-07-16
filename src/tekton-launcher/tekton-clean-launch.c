@@ -344,6 +344,21 @@ static void free_env_list(env_list_t *env) {
     free(env);
 }
 
+static char* get_env_value(env_list_t *env, const char *key) {
+    for (int i = 0; i < env->count; i++) {
+        char *eq = strchr(env->vars[i], '=');
+        if (eq) {
+            *eq = '\0';
+            int match = strcmp(env->vars[i], key) == 0;
+            *eq = '=';
+            if (match) {
+                return eq + 1;
+            }
+        }
+    }
+    return NULL;
+}
+
 static void write_javascript_env(const char *tekton_root, env_list_t *env) {
     char filepath[MAX_PATH];
     FILE *fp;
