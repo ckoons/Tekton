@@ -802,14 +802,9 @@ app.include_router(mcp_router)
 
 # Main entry point
 if __name__ == "__main__":
-    from shared.utils.socket_server import run_component_server
+    import uvicorn
     
     global_config = GlobalConfig.get_instance()
     port = global_config.config.synthesis.port
     
-    run_component_server(
-        component_name="synthesis",
-        app_module="synthesis.api.app",
-        default_port=port,
-        reload=False
-    )
+    uvicorn.run(app, host="0.0.0.0", port=port)

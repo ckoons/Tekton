@@ -203,14 +203,9 @@ app = create_app()
 
 # Run the application if this module is executed directly
 if __name__ == "__main__":
-    from shared.utils.socket_server import run_component_server
+    import uvicorn
     
     global_config = GlobalConfig.get_instance()
     port = global_config.config.prometheus.port
     
-    run_component_server(
-        component_name="prometheus",
-        app_module="prometheus.api.app",
-        default_port=port,
-        reload=False
-    )
+    uvicorn.run(app, host="0.0.0.0", port=port)

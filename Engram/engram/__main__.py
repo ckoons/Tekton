@@ -8,7 +8,6 @@ tekton_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'
 if tekton_root not in sys.path:
     sys.path.insert(0, tekton_root)
 
-from shared.utils.socket_server import run_component_server
 from shared.utils.global_config import GlobalConfig
 
 if __name__ == "__main__":

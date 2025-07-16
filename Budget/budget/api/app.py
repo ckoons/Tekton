@@ -250,15 +250,10 @@ app.include_router(mcp_router)
 app.state.component = budget_component
 
 if __name__ == "__main__":
-    from shared.utils.socket_server import run_component_server
+    import uvicorn
     from shared.utils.global_config import GlobalConfig
     
     global_config = GlobalConfig.get_instance()
     default_port = global_config.config.budget.port
     
-    run_component_server(
-        component_name="budget",
-        app_module="budget.api.app",
-        default_port=default_port,
-        reload=False
-    )
+    uvicorn.run(app, host="0.0.0.0", port=default_port)

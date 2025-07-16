@@ -1726,14 +1726,9 @@ app.state.component = harmonia_component
 
 # Main entry point
 if __name__ == "__main__":
-    from shared.utils.socket_server import run_component_server
+    import uvicorn
     
     config = get_component_config()
     port = config.harmonia.port if hasattr(config, 'harmonia') else int(os.environ.get("HARMONIA_PORT"))
     
-    run_component_server(
-        component_name="harmonia",
-        app_module="harmonia.api.app",
-        default_port=port,
-        reload=False
-    )
+    uvicorn.run(app, host="0.0.0.0", port=port)

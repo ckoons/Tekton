@@ -756,15 +756,10 @@ async def websocket_endpoint(websocket):
 app.state.component = ergon_component
 
 if __name__ == "__main__":
-    from shared.utils.socket_server import run_component_server
+    import uvicorn
     from shared.utils.global_config import GlobalConfig
     
     global_config = GlobalConfig.get_instance()
     default_port = global_config.config.ergon.port
     
-    run_component_server(
-        component_name="ergon",
-        app_module="ergon.api.app",
-        default_port=default_port,
-        reload=False
-    )
+    uvicorn.run(app, host="0.0.0.0", port=default_port)

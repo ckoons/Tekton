@@ -140,38 +140,3 @@ class ReuseAddressServer(Server):
                     sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEPORT, 1)
 
 
-def run_component_server(
-    component_name: str,
-    app_module,
-    default_port: int,
-    reload: bool = False
-):
-    """
-    Run a Tekton component server with proper socket reuse.
-    
-    Args:
-        component_name: Name of the component (e.g., "budget", "telos")
-        app_module: Module path to the app (e.g., "budget.api.app") or app instance
-        default_port: Default port if not in environment
-        reload: Whether to enable auto-reload
-    """
-    # Get port from environment
-    port_env = f"{component_name.upper()}_PORT"
-    port = int(os.environ.get(port_env, str(default_port)))
-    
-    print(f"Starting {component_name.capitalize()} on port {port}...")
-    
-    # Run with socket reuse
-    # If app_module is a string, append :app, otherwise use it directly
-    app = f"{app_module}:app" if isinstance(app_module, str) else app_module
-    run_with_socket_reuse(
-        app,
-        host="0.0.0.0",
-        port=port,
-        reload=reload,
-        reload_dirs=[component_name] if reload else None,
-        timeout_graceful_shutdown=5,
-        server_header=False,
-        access_log=False,
-        use_colors=True
-    )
