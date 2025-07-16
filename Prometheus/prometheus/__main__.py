@@ -7,7 +7,6 @@ tekton_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'
 if tekton_root not in sys.path:
     sys.path.insert(0, tekton_root)
 
-from shared.utils.socket_server import run_component_server
 from shared.utils.global_config import GlobalConfig
 
 if __name__ == "__main__":
@@ -15,9 +14,9 @@ if __name__ == "__main__":
     global_config = GlobalConfig.get_instance()
     default_port = global_config.config.prometheus.port
     
-    run_component_server(
-        component_name="prometheus",
-        app_module="prometheus.api.app",
-        default_port=default_port,
-        reload=False
-    )
+    # Use direct uvicorn.run() to ensure startup events work
+    import uvicorn
+    from prometheus.api.app import app
+    
+    print(f"Starting Prometheus on port {default_port}...")
+    uvicorn.run(app, host="0.0.0.0", port=default_port)

@@ -16,7 +16,6 @@ except ImportError as e:
     print(f"[RHETOR] Could not load Tekton environment manager: {e}")
     print(f"[RHETOR] Continuing with system environment variables")
 
-from shared.utils.socket_server import run_component_server
 from shared.utils.global_config import GlobalConfig
 
 if __name__ == "__main__":
@@ -24,9 +23,9 @@ if __name__ == "__main__":
     global_config = GlobalConfig.get_instance()
     default_port = global_config.config.rhetor.port
     
-    run_component_server(
-        component_name="rhetor",
-        app_module="rhetor.api.app",
-        default_port=default_port,
-        reload=False
-    )
+    # Use direct uvicorn.run() to ensure startup events work
+    import uvicorn
+    from rhetor.api.app import app
+    
+    print(f"Starting Rhetor on port {default_port}...")
+    uvicorn.run(app, host="0.0.0.0", port=default_port)

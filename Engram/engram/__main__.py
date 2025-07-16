@@ -37,9 +37,9 @@ if __name__ == "__main__":
         global_config = GlobalConfig.get_instance()
         default_port = global_config.config.engram.port
         
-        run_component_server(
-            component_name="engram",
-            app_module="engram.api.server",
-            default_port=default_port,
-            reload=False
-        )
+        # Use direct uvicorn.run() to ensure startup events work
+        import uvicorn
+        from engram.api.server import app
+        
+        print(f"Starting Engram on port {default_port}...")
+        uvicorn.run(app, host="0.0.0.0", port=default_port)
