@@ -24,38 +24,20 @@ if tekton_root not in sys.path:
 
 # Import shared utilities
 from shared.utils.global_config import GlobalConfig
-from shared.utils.logging_setup import setup_component_logging
 
 # Import shared API utilities
 from shared.api.documentation import get_openapi_configuration
 from shared.api.endpoints import create_ready_endpoint, create_discovery_endpoint, EndpointInfo
 from shared.api.routers import create_standard_routers, mount_standard_routers
 
-# Import Sophia core modules
-from sophia.core.sophia_component import SophiaComponent
-from sophia.core.intelligence_measurement import IntelligenceDimension
-
-# Import models
-from sophia.models.metrics import MetricSubmission, MetricQuery, MetricResponse, MetricAggregationQuery, MetricDefinition
-from sophia.models.experiment import ExperimentCreate, ExperimentUpdate, ExperimentQuery, ExperimentResponse, ExperimentResult
-from sophia.models.recommendation import RecommendationCreate, RecommendationUpdate, RecommendationQuery, RecommendationResponse
-from sophia.models.intelligence import IntelligenceMeasurementCreate, IntelligenceMeasurementQuery, IntelligenceMeasurementResponse, ComponentIntelligenceProfile
-from sophia.models.component import ComponentRegister, ComponentUpdate, ComponentQuery, ComponentResponse
-from sophia.models.research import ResearchProjectCreate, ResearchProjectUpdate, ResearchProjectQuery, ResearchProjectResponse
-
-# Import Sophia version
-from sophia import __version__
-
-# Set up logging
-logger = setup_component_logging("sophia")
-
 # Component configuration
 COMPONENT_NAME = "sophia"
 COMPONENT_VERSION = "0.1.0"
 COMPONENT_DESCRIPTION = "Machine learning and continuous improvement system for Tekton ecosystem"
 
-# Create component instance (singleton)
-component = SophiaComponent()
+# Global variables for delayed initialization
+logger = None
+component = None
 
 
 # Create FastAPI app with OpenAPI configuration
@@ -148,13 +130,13 @@ async def health():
     }
 
 
-# Import WebSocket manager
-from sophia.core.realtime_manager import get_websocket_manager
+# WebSocket manager will be imported when needed
 
 # WebSocket endpoint
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
     """WebSocket endpoint for real-time communication using tekton_url standards."""
+    from sophia.core.realtime_manager import get_websocket_manager
     websocket_manager = get_websocket_manager()
     client_id = None
     
@@ -294,32 +276,7 @@ async def websocket_endpoint(websocket: WebSocket):
             component.active_connections.remove(websocket)
 
 
-# Import endpoint modules
-from sophia.api.endpoints import (
-    metrics,
-    experiments,
-    recommendations,
-    intelligence,
-    research,
-    components,
-    analytics
-)
-
-# Include endpoint routers
-routers.v1.include_router(metrics.router, prefix="/metrics", tags=["Metrics"])
-routers.v1.include_router(experiments.router, prefix="/experiments", tags=["Experiments"])
-routers.v1.include_router(recommendations.router, prefix="/recommendations", tags=["Recommendations"])
-routers.v1.include_router(intelligence.router, prefix="/intelligence", tags=["Intelligence"])
-routers.v1.include_router(research.router, prefix="/research", tags=["Research"])
-routers.v1.include_router(components.router, prefix="/components", tags=["Components"])
-routers.v1.include_router(analytics.router, prefix="/analytics", tags=["Analytics"])
-
-# Import and include MCP router
-try:
-    from sophia.api.fastmcp_endpoints import mcp_router
-    app.include_router(mcp_router)
-except ImportError:
-    logger.warning("FastMCP endpoints not available")
+# Endpoint routers will be loaded during startup
 
 # Mount standard routers
 mount_standard_routers(app, routers)
@@ -327,54 +284,138 @@ mount_standard_routers(app, routers)
 @app.on_event("startup")
 async def startup_event():
     """Component startup callback."""
-    global component
+    import sys
+    print("=== SOPHIA STARTUP EVENT CALLED ===", file=sys.stderr)
+    print("=== SOPHIA STARTUP EVENT CALLED ===", flush=True)
+    with open("/tmp/sophia_startup.txt", "w") as f:
+        f.write("SOPHIA STARTUP EVENT WAS CALLED!\n")
+    print("Sophia startup event completed - no initialization for now")
+
+async def delayed_initialization():
+    """Perform delayed initialization after uvicorn startup completes."""
+    global component, logger
     try:
         # Wait 10 seconds to allow uvicorn to complete its startup sequence
-        logger.info("Waiting for uvicorn startup to complete...")
+        print("Waiting for uvicorn startup to complete...")
         await asyncio.sleep(10)
         
+        # Now do delayed initialization
+        print("Initializing logging and component...")
+        
+        # Set up logging
+        from shared.utils.logging_setup import setup_component_logging
+        logger = setup_component_logging("sophia")
+        logger.info("Sophia delayed initialization started")
+        
+        # Import and create component
+        logger.info("Creating Sophia component...")
+        from sophia.core.sophia_component import SophiaComponent
+        component = SophiaComponent()
+        logger.info("Sophia component created successfully")
+        
+        # Load endpoint routers now that component is available
+        logger.info("Loading endpoint routers...")
+        from sophia.api.endpoints import (
+            metrics,
+            experiments,
+            recommendations,
+            intelligence,
+            research,
+            components,
+            analytics
+        )
+        logger.info("Endpoint modules imported successfully")
+        
+        # Include endpoint routers
+        logger.info("Registering endpoint routers...")
+        routers.v1.include_router(metrics.router, prefix="/metrics", tags=["Metrics"])
+        routers.v1.include_router(experiments.router, prefix="/experiments", tags=["Experiments"])
+        routers.v1.include_router(recommendations.router, prefix="/recommendations", tags=["Recommendations"])
+        routers.v1.include_router(intelligence.router, prefix="/intelligence", tags=["Intelligence"])
+        routers.v1.include_router(research.router, prefix="/research", tags=["Research"])
+        routers.v1.include_router(components.router, prefix="/components", tags=["Components"])
+        routers.v1.include_router(analytics.router, prefix="/analytics", tags=["Analytics"])
+        logger.info("All endpoint routers registered successfully")
+        
+        # Import and include MCP router
+        try:
+            from sophia.api.fastmcp_endpoints import mcp_router
+            app.include_router(mcp_router)
+            logger.info("FastMCP router registered successfully")
+        except ImportError:
+            logger.warning("FastMCP endpoints not available")
+        
+        logger.info("Starting component initialization...")
         await component.initialize(
             capabilities=component.get_capabilities(),
             metadata=component.get_metadata()
         )
+        logger.info("Component initialization completed")
         
         # Initialize MCP bridge after component startup
+        logger.info("Initializing MCP bridge...")
         await component.initialize_mcp_bridge()
+        logger.info("MCP bridge initialization completed")
+        
+        # Include custom MCP routes
+        try:
+            from sophia.core.mcp.hermes_bridge import get_mcp_routes
+            mcp_routes = get_mcp_routes()
+            if mcp_routes:
+                app.include_router(mcp_routes, prefix="/mcp", tags=["MCP"])
+                logger.info("Custom MCP routes registered successfully")
+        except Exception as e:
+            logger.debug(f"MCP routes not available: {e}")
         
         logger.info(f"Sophia API server started successfully")
     except Exception as e:
-        logger.error(f"Failed to start Sophia: {e}")
+        error_msg = f"Failed to start Sophia: {e}"
+        if logger:
+            logger.error(error_msg)
+            logger.exception("Full traceback:")
+        else:
+            print(error_msg)
+            import traceback
+            traceback.print_exc()
+        # Re-raise to ensure the task failure is visible
         raise
 
-# Include custom MCP routes
-try:
-    from sophia.core.mcp.hermes_bridge import get_mcp_routes
-    mcp_routes = get_mcp_routes()
-    if mcp_routes:
-        app.include_router(mcp_routes, prefix="/mcp", tags=["MCP"])
-except Exception as e:
-    logger.debug(f"MCP routes not available: {e}")
+# Custom MCP routes will be loaded during startup
 
 
 @app.on_event("shutdown")
 async def shutdown_event():
     """Cleanup on shutdown"""
-    global component
-    logger.info("=== SOPHIA SHUTDOWN INITIATED ===")
-    logger.info("Sophia shutting down...")
+    global component, logger
+    print("=== SOPHIA SHUTDOWN INITIATED ===", file=sys.stderr)
+    print("=== SOPHIA SHUTDOWN INITIATED ===", flush=True)
+    
+    if logger:
+        logger.info("=== SOPHIA SHUTDOWN INITIATED ===")
+        logger.info("Sophia shutting down...")
     
     try:
         if component:
-            logger.info("Cleaning up component resources...")
+            print("Cleaning up component resources...")
+            if logger:
+                logger.info("Cleaning up component resources...")
             # Cleanup component resources
             await component.cleanup()
-            logger.info("Sophia component cleaned up successfully")
+            print("Sophia component cleaned up successfully")
+            if logger:
+                logger.info("Sophia component cleaned up successfully")
         else:
-            logger.warning("No component instance to cleanup")
+            print("No component instance to cleanup")
+            if logger:
+                logger.warning("No component instance to cleanup")
     except Exception as e:
-        logger.error(f"Error during Sophia shutdown: {e}")
+        print(f"Error during Sophia shutdown: {e}")
+        if logger:
+            logger.error(f"Error during Sophia shutdown: {e}")
     finally:
-        logger.info("=== SOPHIA SHUTDOWN COMPLETE ===")
+        print("=== SOPHIA SHUTDOWN COMPLETE ===")
+        if logger:
+            logger.info("=== SOPHIA SHUTDOWN COMPLETE ===")
 
 
 if __name__ == "__main__":
