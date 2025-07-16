@@ -284,12 +284,7 @@ mount_standard_routers(app, routers)
 @app.on_event("startup")
 async def startup_event():
     """Component startup callback."""
-    import sys
-    print("=== SOPHIA STARTUP EVENT CALLED ===", file=sys.stderr)
-    print("=== SOPHIA STARTUP EVENT CALLED ===", flush=True)
-    with open("/tmp/sophia_startup.txt", "w") as f:
-        f.write("SOPHIA STARTUP EVENT WAS CALLED!\n")
-    # Re-enable background initialization
+    # Start background initialization
     asyncio.create_task(delayed_initialization())
 
 async def delayed_initialization():
@@ -297,11 +292,7 @@ async def delayed_initialization():
     global component, logger
     try:
         # Wait 10 seconds to allow uvicorn to complete its startup sequence
-        print("Waiting for uvicorn startup to complete...")
         await asyncio.sleep(10)
-        
-        # Now do delayed initialization
-        print("Initializing logging and component...")
         
         # Set up logging
         from shared.utils.logging_setup import setup_component_logging
@@ -390,8 +381,6 @@ async def delayed_initialization():
 async def shutdown_event():
     """Cleanup on shutdown"""
     global component, logger
-    print("=== SOPHIA SHUTDOWN INITIATED ===", file=sys.stderr)
-    print("=== SOPHIA SHUTDOWN INITIATED ===", flush=True)
     
     if logger:
         logger.info("=== SOPHIA SHUTDOWN INITIATED ===")
@@ -399,24 +388,19 @@ async def shutdown_event():
     
     try:
         if component:
-            print("Cleaning up component resources...")
             if logger:
                 logger.info("Cleaning up component resources...")
-            # Call shutdown method instead of cleanup
+            # Call shutdown method
             await component.shutdown()
-            print("Sophia component cleaned up successfully")
             if logger:
                 logger.info("Sophia component cleaned up successfully")
         else:
-            print("No component instance to cleanup")
             if logger:
                 logger.warning("No component instance to cleanup")
     except Exception as e:
-        print(f"Error during Sophia shutdown: {e}")
         if logger:
             logger.error(f"Error during Sophia shutdown: {e}")
     finally:
-        print("=== SOPHIA SHUTDOWN COMPLETE ===")
         if logger:
             logger.info("=== SOPHIA SHUTDOWN COMPLETE ===")
 
