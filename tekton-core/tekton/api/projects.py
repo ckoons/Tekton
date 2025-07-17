@@ -98,6 +98,7 @@ class ProjectResponse(BaseModel):
     companion_intelligence: Optional[str]
     added_date: str
     is_tekton_self: bool
+    is_active: bool = True  # Whether the working directory exists
     metadata: Dict[str, Any]
 
 
@@ -128,8 +129,16 @@ async def list_projects(state: Optional[str] = Query(None, description="Filter b
         filter_state = ProjectState(state) if state else None
         projects = project_manager.registry.list_projects(filter_state)
         
-        return ProjectListResponse(
-            projects=[
+        project_responses = []
+        for p in projects:
+            # Check if working directory exists
+            is_active = True
+            if p.local_directory:
+                is_active = os.path.exists(p.local_directory)
+                if not is_active:
+                    logger.warning(f"Project {p.name} directory not found: {p.local_directory}")
+            
+            project_responses.append(
                 ProjectResponse(
                     id=p.id,
                     name=p.name,
@@ -142,10 +151,13 @@ async def list_projects(state: Optional[str] = Query(None, description="Filter b
                     companion_intelligence=p.companion_intelligence,
                     added_date=p.added_date,
                     is_tekton_self=p.is_tekton_self,
+                    is_active=is_active,
                     metadata=p.metadata
                 )
-                for p in projects
-            ],
+            )
+        
+        return ProjectListResponse(
+            projects=project_responses,
             total=len(projects)
         )
     except Exception as e:

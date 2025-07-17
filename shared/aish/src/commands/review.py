@@ -20,7 +20,10 @@ from shared.env import TektonEnviron
 
 def get_session_tracking_file() -> Path:
     """Get the path to the session tracking file."""
-    tekton_root = TektonEnviron.get('TEKTON_ROOT', os.path.expanduser('~/projects/github/Tekton'))
+    tekton_root = TektonEnviron.get('TEKTON_ROOT')
+    if not tekton_root:
+        print("Error: TEKTON_ROOT not set")
+        sys.exit(1)
     tracking_dir = Path(tekton_root) / '.tekton' / 'terma'
     tracking_dir.mkdir(parents=True, exist_ok=True)
     return tracking_dir / '.review_session'
@@ -153,7 +156,10 @@ def stop_review() -> int:
     duration = (end_time - start_time).total_seconds()
     
     # Get sessions directory
-    main_root = TektonEnviron.get('TEKTON_MAIN_ROOT', TektonEnviron.get('TEKTON_ROOT', os.path.expanduser('~/projects/github/Tekton')))
+    main_root = TektonEnviron.get('TEKTON_MAIN_ROOT', TektonEnviron.get('TEKTON_ROOT'))
+    if not main_root:
+        print("Error: TEKTON_ROOT not set")
+        return False
     sessions_dir = Path(main_root) / '.tekton' / 'terminal-sessions'
     sessions_dir.mkdir(parents=True, exist_ok=True)
     
@@ -204,7 +210,10 @@ def stop_review() -> int:
 def list_reviews(args: List[str]) -> int:
     """List recent review sessions."""
     # Get sessions directory
-    main_root = TektonEnviron.get('TEKTON_MAIN_ROOT', TektonEnviron.get('TEKTON_ROOT', os.path.expanduser('~/projects/github/Tekton')))
+    main_root = TektonEnviron.get('TEKTON_MAIN_ROOT', TektonEnviron.get('TEKTON_ROOT'))
+    if not main_root:
+        print("Error: TEKTON_ROOT not set")
+        return False
     sessions_dir = Path(main_root) / '.tekton' / 'terminal-sessions'
     
     if not sessions_dir.exists():

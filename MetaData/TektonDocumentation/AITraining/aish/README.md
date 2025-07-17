@@ -65,7 +65,24 @@ aish terma broadcast "Found solution to memory issue"
 aish terma @planning "Let's sync on the roadmap"
 ```
 
-### 4. Message Inbox System (Like Unix Mail, But Nicer!)
+### 4. Project CI Management (New!)
+
+Manage Tekton project CIs (Computational Instances) and their message routing:
+
+```bash
+# List all projects and their CIs
+aish project list
+
+# Forward project CI messages to your terminal
+aish project forward MyWebApp
+
+# Stop forwarding
+aish project unforward MyWebApp
+```
+
+This allows teams to monitor and interact with project-specific CIs during development.
+
+### 5. Message Inbox System (Like Unix Mail, But Nicer!)
 
 You have two inboxes - just like email:
 - **NEW**: Messages from others arrive here

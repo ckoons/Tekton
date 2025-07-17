@@ -25,6 +25,11 @@ from datetime import datetime, timedelta
 # Import simple mailbox cleanup function
 from simple_mailbox import remove_terminal as remove_terminal_mailbox
 
+# Add parent to path for shared imports
+sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
+from shared.env import TektonEnviron
+from shared.urls import tekton_url
+
 # Add landmarks to Python path if needed
 try:
     from landmarks import (
@@ -219,7 +224,7 @@ class ActiveTerminalRoster:
     def _cleanup_terminal_inbox(self, terma_id: str):
         """Clean up inbox data for a terminated terminal."""
         try:
-            tekton_root = os.environ.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
+            tekton_root = TektonEnviron.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
             
             # Clean up shared inbox snapshot if it belongs to this terminal
             snapshot_file = os.path.join(tekton_root, ".tekton", "terma", ".inbox_snapshot")
@@ -439,7 +444,8 @@ class TerminalLauncher:
         
         # Add Terma environment variables
         config.env["TERMA_SESSION_ID"] = terma_id
-        config.env["TERMA_ENDPOINT"] = "http://localhost:8004"
+        # Use tekton_url to get the correct endpoint for this environment
+        config.env["TERMA_ENDPOINT"] = tekton_url('terma', '')
         config.env["TERMA_TERMINAL_NAME"] = config.name
         # Debug: Log the session ID we're using
         self.logger.info(f"DEBUG: Setting TERMA_SESSION_ID={terma_id}")
@@ -448,7 +454,7 @@ class TerminalLauncher:
         self.logger.info(f"Terminal endpoint: {config.env['TERMA_ENDPOINT']}")
         
         # Always include TEKTON_ROOT and TEKTON_AI_TRAINING
-        config.env["TEKTON_ROOT"] = os.environ.get("TEKTON_ROOT", "/Users/cskoons/projects/github/Tekton")
+        config.env["TEKTON_ROOT"] = TektonEnviron.get("TEKTON_ROOT", "/Users/cskoons/projects/github/Tekton")
         config.env["TEKTON_AI_TRAINING"] = os.path.join(config.env["TEKTON_ROOT"], "MetaData/TektonDocumentation/AITraining")
         self.logger.info(f"TEKTON_ROOT: {config.env['TEKTON_ROOT']}")
         
@@ -533,7 +539,7 @@ class TerminalLauncher:
             shell_cmd = f"{env_exports} '{self.aish_path}'"
         else:
             # Fall back to user's shell when aish-proxy not available
-            shell_to_use = os.environ.get('SHELL', '/bin/bash')
+            shell_to_use = TektonEnviron.get('SHELL', '/bin/bash')
             shell_cmd = f"cd '{config.working_dir}'; {env_exports} {shell_to_use}"
         
         if config.shell_args:

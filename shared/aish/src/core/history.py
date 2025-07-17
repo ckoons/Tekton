@@ -34,15 +34,19 @@ class AIHistory:
         Initialize history manager.
         
         Args:
-            history_file: Path to history file (defaults to ~/.aish_history)
+            history_file: Path to history file (defaults to $TEKTON_ROOT/.tekton/aish/.aish_history)
         """
         if history_file:
             self.history_file = Path(history_file)
         else:
-            tekton_root = TektonEnviron.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
+            tekton_root = TektonEnviron.get('TEKTON_ROOT')
+            if not tekton_root:
+                raise ValueError("TEKTON_ROOT not set")
             self.history_file = Path(tekton_root) / '.tekton' / 'aish' / '.aish_history'
         
-        tekton_root = TektonEnviron.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
+        tekton_root = TektonEnviron.get('TEKTON_ROOT')
+        if not tekton_root:
+            raise ValueError("TEKTON_ROOT not set")
         self.session_file = Path(tekton_root) / '.tekton' / 'aish' / 'sessions' / f"{datetime.now().strftime('%Y-%m-%d')}.json"
         self.command_number = self._get_last_command_number() + 1
         
@@ -234,7 +238,9 @@ class AIHistory:
         entries = []
         
         # Read from session files
-        tekton_root = TektonEnviron.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
+        tekton_root = TektonEnviron.get('TEKTON_ROOT')
+        if not tekton_root:
+            return json.dumps({"history": []}, indent=2)
         session_dir = Path(tekton_root) / '.tekton' / 'aish' / 'sessions'
         if session_dir.exists():
             for session_file in sorted(session_dir.glob('*.json')):

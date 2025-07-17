@@ -24,7 +24,12 @@ from shared.urls import tekton_url
 
 def load_project_registry() -> Dict:
     """Load the Tekton project registry"""
-    registry_path = Path.home() / ".tekton" / "projects" / "registry.json"
+    tekton_root = TektonEnviron.get('TEKTON_ROOT')
+    if not tekton_root:
+        print("Error: TEKTON_ROOT not set")
+        return {"projects": []}
+    
+    registry_path = Path(tekton_root) / ".tekton" / "projects" / "registry.json"
     
     if not registry_path.exists():
         return {"projects": []}
@@ -39,7 +44,12 @@ def load_project_registry() -> Dict:
 
 def load_forwarding_registry() -> Dict:
     """Load the forwarding registry"""
-    registry_path = Path.home() / ".tekton" / "aish" / "forwarding.json"
+    tekton_root = TektonEnviron.get('TEKTON_ROOT')
+    if not tekton_root:
+        print("Error: TEKTON_ROOT not set")
+        return {"version": "1.0", "forwards": {}, "last_updated": datetime.now().isoformat()}
+    
+    registry_path = Path(tekton_root) / ".tekton" / "aish" / "forwarding.json"
     
     if not registry_path.exists():
         return {"version": "1.0", "forwards": {}, "last_updated": datetime.now().isoformat()}
@@ -54,7 +64,12 @@ def load_forwarding_registry() -> Dict:
 
 def save_forwarding_registry(registry: Dict):
     """Save the forwarding registry"""
-    registry_path = Path.home() / ".tekton" / "aish" / "forwarding.json"
+    tekton_root = TektonEnviron.get('TEKTON_ROOT')
+    if not tekton_root:
+        print("Error: TEKTON_ROOT not set")
+        return
+    
+    registry_path = Path(tekton_root) / ".tekton" / "aish" / "forwarding.json"
     registry_path.parent.mkdir(parents=True, exist_ok=True)
     
     registry["last_updated"] = datetime.now().isoformat()

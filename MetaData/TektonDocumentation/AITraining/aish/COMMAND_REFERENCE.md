@@ -91,6 +91,33 @@ aish unforward apollo          # Stop forwarding apollo
 aish forward remove apollo     # Alternative syntax
 ```
 
+### Project Commands
+
+#### `aish project list`
+List all Tekton managed projects with their CI (Computational Instance) and forwarding status.
+```bash
+aish project list              # Show all projects
+```
+
+Output shows:
+- Project name
+- Associated CI (Computational Instance)
+- Forwarding status (which terminal, if any)
+
+#### `aish project forward <project-name>`
+Forward a project's CI messages to the current terminal.
+```bash
+aish project forward MyWebApp  # Forward MyWebApp CI to this terminal
+```
+
+Note: Requires running in a named Terma terminal session.
+
+#### `aish project unforward <project-name>`
+Remove project CI forwarding.
+```bash
+aish project unforward MyWebApp # Stop forwarding MyWebApp CI
+```
+
 ### Terminal Commands (Terma)
 
 #### `aish terma inbox`
