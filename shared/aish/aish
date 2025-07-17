@@ -52,23 +52,25 @@ if tekton_root_for_import.exists() and (tekton_root_for_import / 'shared').exist
 from shared.env import TektonEnvironLock, TektonEnviron
 TektonEnvironLock.load() 
 
-# Also add Tekton root if available (we're inside $TEKTON_ROOT/shared/aish)
-tekton_root = aish_root.parent.parent  # Go up to $TEKTON_ROOT
-
-# tekton root must match $TEKTON_ROOT or we have an error
+# Trust TEKTON_ROOT from environment
 env_tekton_root = TektonEnviron.get('TEKTON_ROOT')
-if env_tekton_root:
-    env_path = Path(env_tekton_root).resolve()
-    computed_path = tekton_root.resolve()
-    
-    if env_path != computed_path:
-        print(f"Error: Path mismatch detected!")
-        print(f"  TEKTON_ROOT env var: {env_path}")
-        print(f"  Computed from script location: {computed_path}")
-        print(f"  aish must be run from $TEKTON_ROOT/shared/aish/")
-        print(f"  Expected: /Users/cskoons/projects/github/Coder-C")
-        sys.exit(1)
+if not env_tekton_root:
+    print(f"Error: TEKTON_ROOT environment variable not set")
+    print(f"Please set TEKTON_ROOT to your Tekton installation directory")
+    sys.exit(1)
 
+tekton_root = Path(env_tekton_root)
+
+# Verify that aish exists at the expected location
+expected_aish = tekton_root / 'shared' / 'aish' / 'aish'
+if not expected_aish.exists():
+    print(f"Error: aish not found at expected location")
+    print(f"  TEKTON_ROOT: {tekton_root}")
+    print(f"  Expected aish at: {expected_aish}")
+    print(f"  Please ensure TEKTON_ROOT points to a valid Tekton installation")
+    sys.exit(1)
+
+# Add tekton_root to path for imports
 if tekton_root.exists() and (tekton_root / 'shared').exists():
     sys.path.insert(0, str(tekton_root))
 
