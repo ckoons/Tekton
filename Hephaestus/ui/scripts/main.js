@@ -7,8 +7,8 @@
 console.log('[FILE_TRACE] Loading: main.js');
 // Global tektonUI object for public API
 window.tektonUI = {
-    activeComponent: 'tekton',
-    activePanel: 'terminal',
+    activeComponent: 'numa',
+    activePanel: 'html',
     debug: true, // Enable debug logging
     
     // Debug logging

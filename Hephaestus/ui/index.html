@@ -693,12 +693,34 @@
         
         // Add global click handler to focus input
         document.body.addEventListener('click', function() {
-          // Check if we're on the terminal panel
-          const terminalPanel = document.getElementById('terminal-panel');
-          if (terminalPanel && terminalPanel.classList.contains('active')) {
-            focusInput();
-          }
+          // Terminal panel removed - skip focus handling
+          // const terminalPanel = document.getElementById('terminal-panel');
+          // if (terminalPanel && terminalPanel.classList.contains('active')) {
+          //   focusInput();
+          // }
         });
+        
+        // Ensure Numa loads on startup
+        setTimeout(() => {
+          console.log('[Startup] Activating Numa component');
+          // Check if UIManager is available
+          if (window.UIManager && window.UIManager.activateComponent) {
+            window.UIManager.activateComponent('numa');
+          } else if (window.uiManager && window.uiManager.activateComponent) {
+            window.uiManager.activateComponent('numa');
+          } else if (window.minimalLoader && window.minimalLoader.loadComponent) {
+            // Activate HTML panel first
+            const htmlPanel = document.getElementById('html-panel');
+            const terminalPanel = document.getElementById('terminal-panel');
+            if (htmlPanel && terminalPanel) {
+              terminalPanel.classList.remove('active');
+              htmlPanel.classList.add('active');
+            }
+            window.minimalLoader.loadComponent('numa');
+          } else {
+            console.warn('[Startup] No component loader available to activate Numa');
+          }
+        }, 500); // Small delay to ensure everything is initialized
       });
     </script>
 </body>
