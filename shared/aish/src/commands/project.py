@@ -29,7 +29,7 @@ def load_project_registry() -> Dict:
         print("Error: TEKTON_ROOT not set")
         return {"projects": []}
     
-    registry_path = Path(tekton_root) / ".tekton" / "projects" / "registry.json"
+    registry_path = Path(tekton_root) / ".tekton" / "projects" / "projects.json"
     
     if not registry_path.exists():
         return {"projects": []}
