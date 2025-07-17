@@ -1591,6 +1591,26 @@ function sendProjectsChat() {
 
 async function sendToProjectCI(projectName, message, projectCI) {
     try {
+        // For Tekton project, use window.AIChat to talk to numa-ai directly
+        if (projectName === 'Tekton' && window.AIChat && window.AIChat.sendMessage) {
+            console.log('[TEKTON] Using window.AIChat for Tekton project');
+            const response = await window.AIChat.sendMessage('numa-ai', `[Project: ${projectName}] ${message}`);
+            
+            // Add AI response to chat
+            const chatContainer = document.getElementById('projectschat-messages');
+            const aiMessage = document.createElement('div');
+            aiMessage.className = 'tekton__message tekton__message--ai';
+            aiMessage.innerHTML = `
+                <div class="tekton__message-content">
+                    <div class="tekton__message-text"><strong>Numa:</strong> ${response.content || response}</div>
+                </div>
+            `;
+            chatContainer.appendChild(aiMessage);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+            return;
+        }
+        
+        // For other projects, use the backend API
         const response = await fetch(tektonCoreUrl('/api/projects/chat'), {
             method: 'POST',
             headers: {
