@@ -90,7 +90,7 @@
     <!-- Submenu Bar (hidden by default, shown when Projects Chat is active) -->
     <div class="tekton__submenu-bar" data-tekton-zone="submenu" data-tekton-section="submenu">
         <div class="tekton__project-selector">
-            <label for="project-ci-selector" class="tekton__selector-label">Tekton Project:</label>
+            <label for="project-ci-selector" class="tekton__selector-label">Tekton Managed Project:</label>
             <select id="project-ci-selector" class="tekton__project-select">
                 <option value="tekton">Tekton</option>
             </select>
@@ -1317,17 +1317,17 @@ function tekton_sendChat() {
             return false;
         }
         
-        // Determine which chat panel is active
-        const activeTab = tektonContainer.querySelector('.tekton__tab--active');
-        if (!activeTab) {
+        // Determine which chat panel is active by checking radio button state
+        const checkedRadio = document.querySelector('input[name="tekton-tab"]:checked');
+        if (!checkedRadio) {
             console.error('[TEKTON] Send Chat: Cannot determine active tab');
             return false;
         }
         
-        const chatType = activeTab.getAttribute('data-tab');
+        const chatType = checkedRadio.id.replace('tekton-tab-', '');
         console.log('[TEKTON] Active tab chatType:', chatType);
-        console.log('[TEKTON] Active tab element:', activeTab);
-        console.log('[TEKTON] Active tab data-tab attribute:', activeTab.getAttribute('data-tab'));
+        console.log('[TEKTON] Checked radio:', checkedRadio);
+        console.log('[TEKTON] Radio id:', checkedRadio.id);
         let chatContainer;
         
         // Handle projectschat specially - it has its own complete implementation
@@ -1386,9 +1386,9 @@ function tekton_sendChat() {
                         return window.AIChat.sendMessage(aiName, message);
                     };
                     
-                    tryAI('tekton_core-ai')
+                    tryAI('tekton-ai')
                         .catch(error => {
-                            console.warn('[TEKTON] tekton_core-ai failed, trying apollo-ai as fallback:', error);
+                            console.warn('[TEKTON] tekton-ai failed, trying apollo-ai as fallback:', error);
                             // If tekton-ai fails, try apollo-ai as fallback
                             return tryAI('apollo-ai');
                         })
