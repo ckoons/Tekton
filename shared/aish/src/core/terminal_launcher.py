@@ -200,6 +200,11 @@ class TerminalLauncher:
         if config.purpose:
             env_exports += f" export TEKTON_TERMINAL_PURPOSE='{config.purpose}';"
         
+        # Add TEKTON_ROOT/shared/aish to PATH to use the correct aish
+        tekton_root = TektonEnviron.get('TEKTON_ROOT')
+        if tekton_root:
+            env_exports += f" export PATH='{tekton_root}/shared/aish:$PATH';"
+        
         # Build shell command
         shell_cmd = f"cd '{config.working_dir}'; {env_exports} '{self.aish_path}'"
         if config.shell_args:
@@ -280,6 +285,11 @@ class TerminalLauncher:
         
         if config.purpose:
             env_exports += f" export TEKTON_TERMINAL_PURPOSE='{config.purpose}';"
+        
+        # Add TEKTON_ROOT/shared/aish to PATH to use the correct aish
+        tekton_root = TektonEnviron.get('TEKTON_ROOT')
+        if tekton_root:
+            env_exports += f" export PATH='{tekton_root}/shared/aish:$PATH';"
         
         shell_cmd = f"cd '{config.working_dir}'; {env_exports} '{self.aish_path}'"
         if config.shell_args:

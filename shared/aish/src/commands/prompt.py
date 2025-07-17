@@ -10,6 +10,11 @@ from pathlib import Path
 from datetime import datetime
 from typing import List, Optional
 
+# Add parent directories to path for imports
+sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
+from shared.env import TektonEnviron
+from shared.urls import tekton_url
+
 def handle_prompt_command(args: List[str]) -> int:
     """
     Handle prompt command: aish prompt <target> "message"
@@ -61,7 +66,7 @@ def handle_prompt_command(args: List[str]) -> int:
             import urllib.request
             import urllib.error
             
-            endpoint = os.environ.get('TERMA_ENDPOINT', 'http://localhost:8004')
+            endpoint = tekton_url('terma', '')
             req = urllib.request.Request(f"{endpoint}/api/mcp/v2/terminals/list")
             
             with urllib.request.urlopen(req, timeout=2) as response:

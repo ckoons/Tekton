@@ -99,6 +99,9 @@ def _dispatch_command(command_type, args, shell):
     elif command_type == 'review':
         from commands.review import handle_command as handle_review_command
         return handle_review_command(args.message or [])
+    elif command_type == 'project':
+        from commands.project import handle_project_command
+        return handle_project_command(args.message or [])
     return False
 
 
@@ -300,10 +303,15 @@ Environment variables:
             print("  aish forward remove <ai>       Remove forwarding")
             print("  aish unforward <ai>            Remove forwarding (alternative)")
             print()
-            print("Purpose :")
-            print("  aish purpose                   Get terminal purpose: context for currentteminal session")
+            print("PURPOSE:")
+            print("  aish purpose                   Get terminal purpose: context for current terminal session")
             print("  aish purpose <name>            Get short form terminal purpose of <name>")
             print("  aish purpose <name> \"roles\"    Set terminal purpose/roles")
+            print()
+            print("PROJECTS:")
+            print("  aish project list              List Tekton managed projects with CI info")
+            print("  aish project forward <name>    Forward project CI to current terminal")
+            print("  aish project unforward <name>  Remove project CI forwarding")
             print()
             print("TERMINAL:")
             print("  aish terma inbox               Show terminal inbox")
@@ -376,6 +384,9 @@ Environment variables:
     
     if args.ai_or_script == 'review':
         return _dispatch_command('review', args, shell)
+    
+    if args.ai_or_script == 'project':
+        return _dispatch_command('project', args, shell)
     
     # Check if first argument is an AI name (case-insensitive)
     if args.ai_or_script and args.ai_or_script.lower() in ai_names:

@@ -53,11 +53,11 @@ logger = logging.getLogger('aish-proxy')
 def configure_terminal_logging():
     """Configure logging for terminal instance to append to terma.log with proper format."""
     # Get terminal info
-    terminal_name = os.environ.get('TERMA_TERMINAL_NAME', 'unknown')
+    terminal_name = TektonEnviron.get('TERMA_TERMINAL_NAME', 'unknown')
     pid = os.getpid()
     
     # Set up terma.log path
-    tekton_root = os.environ.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
+    tekton_root = TektonEnviron.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
     log_file = os.path.join(tekton_root, '.tekton', 'logs', 'terma.log')
     
     # Create custom formatter with [terminal-name:pid] prefix
@@ -76,6 +76,19 @@ src_path = script_dir / 'src'
 
 # Add src to Python path
 sys.path.insert(0, str(src_path))
+
+# Add parent paths to find shared module (we're in $TEKTON_ROOT/shared/aish)
+tekton_root_for_import = script_dir.parent.parent  # Go up to $TEKTON_ROOT
+if tekton_root_for_import.exists() and (tekton_root_for_import / 'shared').exists():
+    sys.path.insert(0, str(tekton_root_for_import))
+
+# Import TektonEnviron and tekton_url
+from shared.env import TektonEnvironLock, TektonEnviron
+from shared.urls import tekton_url
+
+# Load environment if not already loaded
+if not TektonEnviron.is_loaded():
+    TektonEnvironLock.load()
 
 import subprocess
 import tempfile
@@ -98,7 +111,7 @@ def write_inbox_snapshot():
     """Write inbox state to file for inbox command access."""
     try:
         # Create snapshot directory
-        tekton_root = os.environ.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
+        tekton_root = TektonEnviron.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
         snapshot_dir = os.path.join(tekton_root, ".tekton", "terma")
         os.makedirs(snapshot_dir, exist_ok=True)
         
@@ -108,7 +121,7 @@ def write_inbox_snapshot():
             'prompt': list(message_inbox['prompt']),
             'new': list(message_inbox['new']),
             'keep': list(message_inbox['keep']),
-            'session_id': os.environ.get('TERMA_SESSION_ID', 'unknown'),
+            'session_id': TektonEnviron.get('TERMA_SESSION_ID', 'unknown'),
             'timestamp': datetime.now().isoformat()
         }
         
@@ -125,7 +138,7 @@ def write_inbox_snapshot():
 def load_inbox_snapshot():
     """Load existing inbox snapshot into memory."""
     try:
-        tekton_root = os.environ.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
+        tekton_root = TektonEnviron.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
         snapshot_file = os.path.join(tekton_root, ".tekton", "terma", ".inbox_snapshot")
         
         if os.path.exists(snapshot_file):
@@ -142,11 +155,11 @@ def load_inbox_snapshot():
 def cleanup_terminal_inbox():
     """Remove this terminal's inbox data when terminating."""
     try:
-        session_id = os.environ.get('TERMA_SESSION_ID')
+        session_id = TektonEnviron.get('TERMA_SESSION_ID')
         if not session_id:
             return
             
-        tekton_root = os.environ.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
+        tekton_root = TektonEnviron.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
         
         logger.info(f"Starting inbox cleanup for session {session_id}")
         
@@ -192,7 +205,7 @@ def cleanup_terminal_inbox():
 def process_inbox_commands():
     """Process any pending inbox commands from terma."""
     try:
-        tekton_root = os.environ.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
+        tekton_root = TektonEnviron.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
         cmd_dir = os.path.join(tekton_root, ".tekton", "terma", "commands")
         if not os.path.exists(cmd_dir):
             return
@@ -258,8 +271,9 @@ def process_inbox_commands():
 
 def start_heartbeat_daemon():
     """Start background thread to send heartbeats to Terma."""
-    terma_session_id = os.environ.get('TERMA_SESSION_ID')
-    terma_endpoint = os.environ.get('TERMA_ENDPOINT', 'http://localhost:8004')
+    terma_session_id = TektonEnviron.get('TERMA_SESSION_ID')
+    # Use tekton_url to get the correct Terma endpoint
+    terma_endpoint = tekton_url('terma', '')
     
     if not terma_session_id:
         # Not launched by Terma, no heartbeats needed
@@ -284,9 +298,9 @@ def start_heartbeat_daemon():
             heartbeat_data = {
                 "terma_id": terma_session_id,
                 "pid": os.getpid(),
-                "name": os.environ.get('TERMA_TERMINAL_NAME', 'aish Terminal'),
+                "name": TektonEnviron.get('TERMA_TERMINAL_NAME', 'aish Terminal'),
                 "working_dir": os.getcwd(),
-                "terminal_app": os.environ.get('TERM_PROGRAM', 'unknown'),
+                "terminal_app": TektonEnviron.get('TERM_PROGRAM', 'unknown'),
                 "aish_version": "3.0.0",
                 "timestamp": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
                 "status": status
@@ -485,7 +499,7 @@ export PATH="{aish_dir}:$PATH"
     init_content = common_functions
     
     # Handle working directory change after shell init
-    working_dir = os.environ.get('TERMA_WORKING_DIR')
+    working_dir = TektonEnviron.get('TERMA_WORKING_DIR')
     if working_dir:
         init_content += f'''
 # Change to requested working directory
@@ -493,7 +507,7 @@ cd "{working_dir}"
 '''
     
     # Handle startup command if provided
-    startup_cmd = os.environ.get('TERMA_STARTUP_CMD')
+    startup_cmd = TektonEnviron.get('TERMA_STARTUP_CMD')
     if startup_cmd:
         init_content += f'''
 # Execute startup command
@@ -559,7 +573,7 @@ def main():
         return 1
     
     # Determine shell
-    shell = args.shell or os.environ.get('SHELL', '/bin/bash')
+    shell = args.shell or TektonEnviron.get('SHELL', '/bin/bash')
     shell_name = os.path.basename(shell)
     
     # Get aish directory
@@ -578,8 +592,8 @@ def main():
         configure_terminal_logging()
         
         # Log terminal startup
-        terminal_name = os.environ.get('TERMA_TERMINAL_NAME', 'unknown')
-        session_id = os.environ.get('TERMA_SESSION_ID', 'unknown')
+        terminal_name = TektonEnviron.get('TERMA_TERMINAL_NAME', 'unknown')
+        session_id = TektonEnviron.get('TERMA_SESSION_ID', 'unknown')
         logger.info(f"Terminal starting - name: {terminal_name}, session: {session_id}, shell: {shell}")
         
         # Start heartbeat daemon if launched by Terma
