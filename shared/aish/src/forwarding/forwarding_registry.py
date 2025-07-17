@@ -10,13 +10,14 @@ import fcntl
 from pathlib import Path
 from datetime import datetime
 from typing import Dict, Optional
+from shared.env import TektonEnviron
 
 
 class ForwardingRegistry:
     """Manages AI message forwarding configuration."""
     
     def __init__(self):
-        tekton_root = os.environ.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
+        tekton_root = TektonEnviron.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
         self.config_dir = Path(tekton_root) / '.tekton' / 'aish'
         self.config_file = self.config_dir / 'forwarding.json'
         self.forwards = self.load()

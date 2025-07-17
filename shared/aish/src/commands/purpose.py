@@ -11,6 +11,7 @@ from pathlib import Path
 from typing import List, Optional, Dict
 import httpx
 import logging
+from shared.env import TektonEnviron
 
 # Try to import landmarks if available
 try:
@@ -46,9 +47,9 @@ class PurposeCommand:
     """Manages terminal purposes and playbook content."""
     
     def __init__(self):
-        self.tekton_root = os.environ.get('TEKTON_MAIN_ROOT', os.environ.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton'))
+        self.tekton_root = TektonEnviron.get('TEKTON_MAIN_ROOT', TektonEnviron.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton'))
         self.playbook_dir = Path(self.tekton_root) / ".tekton" / "playbook"
-        self.terma_url = os.environ.get('TERMA_ENDPOINT', 'http://localhost:8004')
+        self.terma_url = TektonEnviron.get('TERMA_ENDPOINT', 'http://localhost:8004')
         
     # Landmark: Terminal Context Setup - Sets purpose and shows playbook
     def execute(self, terminal_name: str, purpose_string: str) -> None:
@@ -80,9 +81,9 @@ class PurposeCommand:
         print(f"\nFull playbook: {self.playbook_dir}")
         
         # If running in the target terminal, export TEKTON_PURPOSE
-        current_terminal = os.environ.get('TERMA_TERMINAL_NAME', '')
+        current_terminal = TektonEnviron.get('TERMA_TERMINAL_NAME', '')
         if current_terminal.lower() == terminal_name.lower():
-            os.environ['TEKTON_TERMINAL_PURPOSE'] = purpose_string
+            TektonEnviron.set('TEKTON_TERMINAL_PURPOSE', purpose_string)
             print(f"\nExported TEKTON_TERMINAL_PURPOSE='{purpose_string}'")
     
     def _update_terminal_purpose(self, terminal_name: str, purpose: str) -> None:
@@ -179,7 +180,7 @@ class PurposeCommand:
     
     def show_current_purpose(self) -> None:
         """Show the current terminal's purpose and playbook content."""
-        terminal_name = os.environ.get('TERMA_TERMINAL_NAME', '')
+        terminal_name = TektonEnviron.get('TERMA_TERMINAL_NAME', '')
         if not terminal_name:
             print("Not in a Terma-launched terminal")
             return

@@ -14,6 +14,7 @@ import time
 from datetime import datetime
 from pathlib import Path
 from typing import List, Dict, Optional, Tuple
+from shared.env import TektonEnviron
 
 
 class AIHistory:
@@ -38,10 +39,10 @@ class AIHistory:
         if history_file:
             self.history_file = Path(history_file)
         else:
-            tekton_root = os.environ.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
+            tekton_root = TektonEnviron.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
             self.history_file = Path(tekton_root) / '.tekton' / 'aish' / '.aish_history'
         
-        tekton_root = os.environ.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
+        tekton_root = TektonEnviron.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
         self.session_file = Path(tekton_root) / '.tekton' / 'aish' / 'sessions' / f"{datetime.now().strftime('%Y-%m-%d')}.json"
         self.command_number = self._get_last_command_number() + 1
         
@@ -233,7 +234,7 @@ class AIHistory:
         entries = []
         
         # Read from session files
-        tekton_root = os.environ.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
+        tekton_root = TektonEnviron.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
         session_dir = Path(tekton_root) / '.tekton' / 'aish' / 'sessions'
         if session_dir.exists():
             for session_file in sorted(session_dir.glob('*.json')):

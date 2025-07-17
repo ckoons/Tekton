@@ -16,10 +16,11 @@ import subprocess
 from datetime import datetime
 from pathlib import Path
 from typing import Optional, Dict, List, Tuple
+from shared.env import TektonEnviron
 
 def get_session_tracking_file() -> Path:
     """Get the path to the session tracking file."""
-    tekton_root = os.environ.get('TEKTON_ROOT', os.path.expanduser('~/projects/github/Tekton'))
+    tekton_root = TektonEnviron.get('TEKTON_ROOT', os.path.expanduser('~/projects/github/Tekton'))
     tracking_dir = Path(tekton_root) / '.tekton' / 'terma'
     tracking_dir.mkdir(parents=True, exist_ok=True)
     return tracking_dir / '.review_session'
@@ -72,7 +73,7 @@ def format_size(size_bytes: int) -> str:
 def check_script_running() -> Optional[int]:
     """Check if script command is already running in this shell."""
     # Check for SCRIPT environment variable that script command sets
-    if os.environ.get('SCRIPT'):
+    if TektonEnviron.get('SCRIPT'):
         return os.getppid()  # Return parent PID
     return None
 
@@ -98,9 +99,9 @@ def start_review() -> int:
     os.close(temp_fd)  # Close the file descriptor, script will handle the file
     
     # Get terminal metadata
-    terminal_name = os.environ.get('TERMA_TERMINAL_NAME', 'unknown')
-    terminal_purpose = os.environ.get('TEKTON_TERMINAL_PURPOSE', '')
-    terminal_role = os.environ.get('TEKTON_TERMINAL_ROLE', 'coding')
+    terminal_name = TektonEnviron.get('TERMA_TERMINAL_NAME', 'unknown')
+    terminal_purpose = TektonEnviron.get('TEKTON_TERMINAL_PURPOSE', '')
+    terminal_role = TektonEnviron.get('TEKTON_TERMINAL_ROLE', 'coding')
     
     # Save session info
     session_info = {
@@ -152,7 +153,7 @@ def stop_review() -> int:
     duration = (end_time - start_time).total_seconds()
     
     # Get sessions directory
-    main_root = os.environ.get('TEKTON_MAIN_ROOT', os.environ.get('TEKTON_ROOT', os.path.expanduser('~/projects/github/Tekton')))
+    main_root = TektonEnviron.get('TEKTON_MAIN_ROOT', TektonEnviron.get('TEKTON_ROOT', os.path.expanduser('~/projects/github/Tekton')))
     sessions_dir = Path(main_root) / '.tekton' / 'terminal-sessions'
     sessions_dir.mkdir(parents=True, exist_ok=True)
     
@@ -203,7 +204,7 @@ def stop_review() -> int:
 def list_reviews(args: List[str]) -> int:
     """List recent review sessions."""
     # Get sessions directory
-    main_root = os.environ.get('TEKTON_MAIN_ROOT', os.environ.get('TEKTON_ROOT', os.path.expanduser('~/projects/github/Tekton')))
+    main_root = TektonEnviron.get('TEKTON_MAIN_ROOT', TektonEnviron.get('TEKTON_ROOT', os.path.expanduser('~/projects/github/Tekton')))
     sessions_dir = Path(main_root) / '.tekton' / 'terminal-sessions'
     
     if not sessions_dir.exists():

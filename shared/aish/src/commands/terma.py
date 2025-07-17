@@ -23,6 +23,7 @@ from pathlib import Path
 # Add parent to path for shared imports
 sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
 from shared.urls import tekton_url
+from shared.env import TektonEnviron
 
 # Try to import landmarks if available
 try:
@@ -77,7 +78,7 @@ def handle_terma_command(args):
         print("  inbox keep push 'text' - Save to keep")
         print("  inbox keep read [remove] - Read from keep")
         print("\nDocumentation:")
-        tekton_root = os.environ.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
+        tekton_root = TektonEnviron.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
         print(f"  AI Training: {tekton_root}/MetaData/TektonDocumentation/AITraining/terma/")
         print(f"  User Guides: {tekton_root}/MetaData/TektonDocumentation/UserGuides/terma/")
         return 0
@@ -201,7 +202,7 @@ def terma_list_terminals():
             return 0
         
         # Get current terminal info
-        my_id = os.environ.get('TERMA_SESSION_ID', '')
+        my_id = TektonEnviron.get('TERMA_SESSION_ID', '')
         
         print("Active Terminals:")
         print("-" * 60)
@@ -226,8 +227,8 @@ def terma_list_terminals():
 def terma_whoami():
     """Show current terminal information."""
     try:
-        name = os.environ.get('TERMA_TERMINAL_NAME', 'unnamed')
-        session_id = os.environ.get('TERMA_SESSION_ID', 'unknown')
+        name = TektonEnviron.get('TERMA_TERMINAL_NAME', 'unnamed')
+        session_id = TektonEnviron.get('TERMA_SESSION_ID', 'unknown')
         pid = os.getpid()
         
         # Try to get purpose from terminal info
@@ -257,7 +258,7 @@ def terma_whoami():
 
 def terma_training_info():
     """Show AI training documentation location."""
-    training_dir = os.environ.get('TEKTON_AI_TRAINING')
+    training_dir = TektonEnviron.get('TEKTON_AI_TRAINING')
     
     if not training_dir:
         print("TEKTON_AI_TRAINING environment variable not set")
@@ -288,7 +289,7 @@ def terma_error_report(message):
         print("Thank you for the feedback!")
         
         # Log to local file for now
-        tekton_root = os.environ.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
+        tekton_root = TektonEnviron.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
         log_dir = os.path.join(tekton_root, ".tekton", "terma", "error_reports")
         os.makedirs(log_dir, exist_ok=True)
         
@@ -296,8 +297,8 @@ def terma_error_report(message):
         log_file = os.path.join(log_dir, f"error_{timestamp}.json")
         
         error_data = {
-            "terma_id": os.environ.get('TERMA_SESSION_ID', 'unknown'),
-            "terminal_name": os.environ.get('TERMA_TERMINAL_NAME', 'unnamed'),
+            "terma_id": TektonEnviron.get('TERMA_SESSION_ID', 'unknown'),
+            "terminal_name": TektonEnviron.get('TERMA_TERMINAL_NAME', 'unnamed'),
             "timestamp": datetime.now().isoformat(),
             "error_message": message,
             "type": "user_report"
@@ -316,8 +317,8 @@ def terma_send_message(target, message):
     """Send a message to terminal(s)."""
     try:
         # Get sender info
-        sender_id = os.environ.get('TERMA_SESSION_ID', 'unknown')
-        sender_name = os.environ.get('TERMA_TERMINAL_NAME', 'unnamed')
+        sender_id = TektonEnviron.get('TERMA_SESSION_ID', 'unknown')
+        sender_name = TektonEnviron.get('TERMA_TERMINAL_NAME', 'unnamed')
         
         if sender_id == 'unknown':
             print("This terminal was not launched through Terma")
@@ -406,7 +407,7 @@ def terma_send_message_to_terminal(terminal_name, message):
 def terma_inbox_both():
     """Show both new and keep inboxes to stdout."""
     try:
-        tekton_root = os.environ.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
+        tekton_root = TektonEnviron.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
         inbox_file = os.path.join(tekton_root, ".tekton", "terma", ".inbox_snapshot")
         
         if os.path.exists(inbox_file):
@@ -463,7 +464,7 @@ def terma_inbox_both():
 def terma_inbox_keep():
     """Show kept messages."""
     try:
-        tekton_root = os.environ.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
+        tekton_root = TektonEnviron.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
         inbox_file = os.path.join(tekton_root, ".tekton", "terma", ".inbox_snapshot")
         
         if os.path.exists(inbox_file):
@@ -491,7 +492,7 @@ def terma_inbox_keep():
 def terma_inbox_new_pop():
     """Pop first message from new inbox (FIFO)."""
     try:
-        tekton_root = os.environ.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
+        tekton_root = TektonEnviron.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
         inbox_file = os.path.join(tekton_root, ".tekton", "terma", ".inbox_snapshot")
         
         if os.path.exists(inbox_file):
@@ -510,7 +511,7 @@ def terma_inbox_new_pop():
                 print(f"[{time_str}] {from_name}: {message}")
                 
                 # Write command for proxy to remove it
-                tekton_root = os.environ.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
+                tekton_root = TektonEnviron.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
                 cmd_dir = os.path.join(tekton_root, ".tekton", "terma", "commands")
                 os.makedirs(cmd_dir, exist_ok=True)
                 cmd_file = os.path.join(cmd_dir, f"inbox_pop_{int(time.time()*1000)}.json")
@@ -532,7 +533,7 @@ def terma_inbox_new_pop():
 def terma_inbox_prompt():
     """Show only prompt messages."""
     try:
-        tekton_root = os.environ.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
+        tekton_root = TektonEnviron.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
         inbox_file = os.path.join(tekton_root, ".tekton", "terma", ".inbox_snapshot")
         
         if os.path.exists(inbox_file):
@@ -561,7 +562,7 @@ def terma_inbox_prompt():
 def terma_inbox_prompt_pop():
     """Pop first message from prompt inbox (FIFO)."""
     try:
-        tekton_root = os.environ.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
+        tekton_root = TektonEnviron.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
         inbox_file = os.path.join(tekton_root, ".tekton", "terma", ".inbox_snapshot")
         
         if os.path.exists(inbox_file):
@@ -580,7 +581,7 @@ def terma_inbox_prompt_pop():
                 print(f"[{time_str}] {from_name}: {message}")
                 
                 # Write command for proxy to remove it
-                tekton_root = os.environ.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
+                tekton_root = TektonEnviron.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
                 cmd_dir = os.path.join(tekton_root, ".tekton", "terma", "commands")
                 os.makedirs(cmd_dir, exist_ok=True)
                 cmd_file = os.path.join(cmd_dir, f"prompt_pop_{int(time.time()*1000)}.json")
@@ -603,7 +604,7 @@ def terma_inbox_keep_push(message):
     """Push message to front of keep inbox."""
     try:
         # Write command for proxy to process
-        tekton_root = os.environ.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
+        tekton_root = TektonEnviron.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
         cmd_dir = os.path.join(tekton_root, ".tekton", "terma", "commands")
         os.makedirs(cmd_dir, exist_ok=True)
         
@@ -628,7 +629,7 @@ def terma_inbox_keep_write(message):
     """Write message to end of keep inbox."""
     try:
         # Write command for proxy to process
-        tekton_root = os.environ.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
+        tekton_root = TektonEnviron.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
         cmd_dir = os.path.join(tekton_root, ".tekton", "terma", "commands")
         os.makedirs(cmd_dir, exist_ok=True)
         
@@ -652,7 +653,7 @@ def terma_inbox_keep_write(message):
 def terma_inbox_keep_read(remove=False):
     """Read last message from keep inbox (LIFO)."""
     try:
-        tekton_root = os.environ.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
+        tekton_root = TektonEnviron.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
         inbox_file = os.path.join(tekton_root, ".tekton", "terma", ".inbox_snapshot")
         
         if os.path.exists(inbox_file):
@@ -675,7 +676,7 @@ def terma_inbox_keep_read(remove=False):
                 
                 if remove:
                     # Write command for proxy to remove it
-                    tekton_root = os.environ.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
+                    tekton_root = TektonEnviron.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
                     cmd_dir = os.path.join(tekton_root, ".tekton", "terma", "commands")
                     os.makedirs(cmd_dir, exist_ok=True)
                     cmd_file = os.path.join(cmd_dir, f"keep_remove_{int(time.time()*1000)}.json")

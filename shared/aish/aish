@@ -43,8 +43,32 @@ src_path = aish_root / 'src'
 # Add src to path
 sys.path.insert(0, str(src_path))
 
-# Also add Tekton root if available (we're inside Tekton/shared/aish)
-tekton_root = aish_root.parent.parent  # Go up to Tekton root
+# Add parent paths to find shared module (we're in $TEKTON_ROOT/shared/aish)
+tekton_root_for_import = aish_root.parent.parent  # Go up to $TEKTON_ROOT
+if tekton_root_for_import.exists() and (tekton_root_for_import / 'shared').exists():
+    sys.path.insert(0, str(tekton_root_for_import))
+
+# Perform TektonEnvironLock.load() to ensure TektonEnviron is available
+from shared.env import TektonEnvironLock, TektonEnviron
+TektonEnvironLock.load() 
+
+# Also add Tekton root if available (we're inside $TEKTON_ROOT/shared/aish)
+tekton_root = aish_root.parent.parent  # Go up to $TEKTON_ROOT
+
+# tekton root must match $TEKTON_ROOT or we have an error
+env_tekton_root = TektonEnviron.get('TEKTON_ROOT')
+if env_tekton_root:
+    env_path = Path(env_tekton_root).resolve()
+    computed_path = tekton_root.resolve()
+    
+    if env_path != computed_path:
+        print(f"Error: Path mismatch detected!")
+        print(f"  TEKTON_ROOT env var: {env_path}")
+        print(f"  Computed from script location: {computed_path}")
+        print(f"  aish must be run from $TEKTON_ROOT/shared/aish/")
+        print(f"  Expected: /Users/cskoons/projects/github/Coder-C")
+        sys.exit(1)
+
 if tekton_root.exists() and (tekton_root / 'shared').exists():
     sys.path.insert(0, str(tekton_root))
 
@@ -121,7 +145,7 @@ def _handle_ai_command(args, shell, ai_names):
     # Check for help command
     if args.message and args.message[0] == "help":
         print(f"Usage: aish {component} [message]")
-        tekton_root = os.environ.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
+        tekton_root = TektonEnviron.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
         print(f"AI Training: {tekton_root}/MetaData/TektonDocumentation/AITraining/{component}/")
         print(f"User Guides: {tekton_root}/MetaData/TektonDocumentation/UserGuides/{component}/")
         return
@@ -216,7 +240,7 @@ Environment variables:
     # Handle general help command
     if args.ai_or_script == "help":
         print("Usage: aish [options] [component] [command/message]")
-        tekton_root = os.environ.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
+        tekton_root = TektonEnviron.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
         print(f"AI Training: {tekton_root}/MetaData/TektonDocumentation/AITraining/aish/")
         print(f"User Guides: {tekton_root}/MetaData/TektonDocumentation/UserGuides/aish/")
         return
@@ -250,7 +274,7 @@ Environment variables:
     # Handle special commands first
     if args.ai_or_script == 'whoami':
         # Show terminal name from environment
-        terminal_name = os.environ.get('TERMA_TERMINAL_NAME', 'Not in terma')
+        terminal_name = TektonEnviron.get('TERMA_TERMINAL_NAME', 'Not in terma')
         print(terminal_name)
         return
     
@@ -300,7 +324,7 @@ Environment variables:
             print("  aish <ai1> | aish <ai2>        Chain AI responses")
             print("  aish team-chat \"message\"       Broadcast to all AIs")
             print()
-            tekton_root = os.environ.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
+            tekton_root = TektonEnviron.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
             print(f"Full documentation: {tekton_root}/MetaData/TektonDocumentation/AITraining/aish/COMMAND_REFERENCE.md")
             return
         else:
@@ -383,7 +407,7 @@ Environment variables:
         print("  aish purpose               Your true purpose: context for this terminal session")
         print("  autoprompt start           Keep Claude active (CI essential!)")
         print()
-        tekton_root = os.environ.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
+        tekton_root = TektonEnviron.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
         print(f"Documentation: {tekton_root}/MetaData/TektonDocumentation/AITraining/aish/COMMAND_REFERENCE.md")
         print()
         print("AI Documentation:")
