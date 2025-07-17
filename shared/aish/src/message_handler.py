@@ -69,6 +69,19 @@ class MessageHandler:
     def send(self, ai_name: str, message: str) -> str:
         """Send message, check forwarding first."""
         
+        # Check for project forwarding first (from Projects Chat)
+        if message.startswith('[Project: ') and '] ' in message:
+            # Extract project name from [Project: ProjectName] prefix
+            project_prefix = message.split('] ', 1)[0] + ']'
+            project_name = project_prefix[10:-1]  # Remove '[Project: ' and ']'
+            actual_message = message.split('] ', 1)[1]
+            
+            # Check if this project is forwarded
+            project_key = f"project:{project_name}"
+            forward_target = self.forwarding.get_forward(project_key)
+            if forward_target:
+                return self._send_forwarded(project_key, actual_message, forward_target)
+        
         # Check if AI is forwarded
         forward_target = self.forwarding.get_forward(ai_name)
         if forward_target:

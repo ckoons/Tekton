@@ -155,19 +155,37 @@ def list_projects(args: List[str]) -> bool:
 
 
 def forward_project(args: List[str]) -> bool:
-    """Forward project CI to current terminal"""
+    """Forward project CI to terminal"""
     if not args:
-        print("Usage: aish project forward <project-name>")
+        print("Usage: aish project forward <project-name> [terminal-name]")
+        print("  If terminal-name is omitted, forwards to current terminal")
         return False
     
     project_name = args[0]
     
-    # Get current terminal name
-    terminal_name = TektonEnviron.get('TERMA_TERMINAL_NAME')
-    if not terminal_name:
-        print("Error: Not running in a Terma terminal")
-        print("Project forwarding requires a named Terma terminal session")
-        return False
+    # Check if target terminal was specified
+    if len(args) > 1:
+        target_terminal = args[1]
+        # Verify the target terminal exists via Terma
+        active_terminals = get_active_terminals()
+        if not active_terminals:
+            print("Warning: Cannot verify terminal names - Terma may not be running")
+            print("Proceeding with specified terminal name")
+        elif target_terminal not in active_terminals:
+            print(f"Error: Terminal '{target_terminal}' not found")
+            print(f"\nActive terminals:")
+            for term_name, (pid, status) in active_terminals.items():
+                print(f"  - {term_name} [{pid}] ({status})")
+            return False
+        terminal_name = target_terminal
+    else:
+        # Get current terminal name
+        terminal_name = TektonEnviron.get('TERMA_TERMINAL_NAME')
+        if not terminal_name:
+            print("Error: Not running in a Terma terminal")
+            print("Project forwarding requires a named Terma terminal session")
+            print("Use: aish project forward <project-name> <terminal-name>")
+            return False
     
     # Load project registry to verify project exists
     project_registry = load_project_registry()

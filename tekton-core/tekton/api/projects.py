@@ -14,7 +14,7 @@ from datetime import datetime
 from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel, Field
 
-from tekton.core.project_manager_v2 import ProjectManager, ProjectState
+from tekton.core.project_manager import ProjectManager, ProjectState
 from shared.utils.logging_setup import setup_component_logging
 from shared.urls import tekton_url
 

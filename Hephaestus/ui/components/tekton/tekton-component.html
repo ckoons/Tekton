@@ -1591,10 +1591,9 @@ function sendProjectsChat() {
 
 async function sendToProjectCI(projectName, message, projectCI) {
     try {
-        // For Tekton project, use window.AIChat to talk to numa-ai directly
-        if (projectName === 'Tekton' && window.AIChat && window.AIChat.sendMessage) {
-            console.log('[TEKTON] Using window.AIChat for Tekton project');
-            const response = await window.AIChat.sendMessage('numa-ai', `[Project: ${projectName}] ${message}`);
+        // Use normal message system like Builder/Team chats
+        if (window.AIChat && window.AIChat.sendMessage) {
+            const response = await window.AIChat.sendMessage(projectCI.ci_socket, `[Project: ${projectName}] ${message}`);
             
             // Add AI response to chat
             const chatContainer = document.getElementById('projectschat-messages');
@@ -1602,44 +1601,13 @@ async function sendToProjectCI(projectName, message, projectCI) {
             aiMessage.className = 'tekton__message tekton__message--ai';
             aiMessage.innerHTML = `
                 <div class="tekton__message-content">
-                    <div class="tekton__message-text"><strong>Numa:</strong> ${response.content || response}</div>
+                    <div class="tekton__message-text"><strong>${projectName} CI:</strong> ${response.content || response}</div>
                 </div>
             `;
             chatContainer.appendChild(aiMessage);
             chatContainer.scrollTop = chatContainer.scrollHeight;
             return;
         }
-        
-        // For other projects, use the backend API
-        const response = await fetch(tektonCoreUrl('/api/projects/chat'), {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                project_name: projectName,
-                message: message,
-                ci_socket: projectCI.ci_socket
-            })
-        });
-        
-        if (!response.ok) {
-            throw new Error(`HTTP ${response.status}`);
-        }
-        
-        const data = await response.json();
-        
-        // Add AI response to chat
-        const chatContainer = document.getElementById('projectschat-messages');
-        const aiMessage = document.createElement('div');
-        aiMessage.className = 'tekton__message tekton__message--ai';
-        aiMessage.innerHTML = `
-            <div class="tekton__message-content">
-                <div class="tekton__message-text"><strong>${projectName} CI:</strong> ${data.response}</div>
-            </div>
-        `;
-        chatContainer.appendChild(aiMessage);
-        chatContainer.scrollTop = chatContainer.scrollHeight;
         
     } catch (error) {
         console.error('[TEKTON] Projects chat error:', error);

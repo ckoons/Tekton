@@ -70,7 +70,7 @@ logger = setup_component_logging("tekton_core")
 from tekton.core.tekton_core_component import TektonCoreComponent
 
 # Import project management and merge coordination
-from tekton.core.project_manager_v2 import ProjectManager
+from tekton.core.project_manager import ProjectManager
 from tekton.core.merge_coordinator import MergeCoordinator, MergeState
 
 # Import our new projects API

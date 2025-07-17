@@ -1,5 +1,5 @@
 """
-TektonCore Project Management System V2
+TektonCore Project Management System
 
 Enhanced project management with:
 - Correct path handling ($TEKTON_ROOT/.tekton/projects/)
@@ -53,7 +53,7 @@ except ImportError:
             return func_or_class
         return decorator
 
-logger = setup_component_logging("tekton_core.project_manager_v2")
+logger = setup_component_logging("tekton_core.project_manager")
 
 
 class ProjectState(str, Enum):
