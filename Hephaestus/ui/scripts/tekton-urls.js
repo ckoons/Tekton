@@ -66,6 +66,10 @@ function numaUrl(path = "", ...args) {
     return tektonUrl("numa", path, ...args);
 }
 
+function aishUrl(path = "", ...args) {
+    return tektonUrl("aish", path, ...args);
+}
+
 // Make functions globally available
 if (typeof window !== 'undefined') {
     window.tektonUrl = tektonUrl;
@@ -76,6 +80,7 @@ if (typeof window !== 'undefined') {
     window.tektonCoreUrl = tektonCoreUrl;
     window.noesisUrl = noesisUrl;
     window.numaUrl = numaUrl;
+    window.aishUrl = aishUrl;
 }
 
 // Export for module systems
@@ -88,7 +93,8 @@ if (typeof module !== 'undefined' && module.exports) {
         termaUrl,
         tektonCoreUrl,
         noesisUrl,
-        numaUrl
+        numaUrl,
+        aishUrl
     };
 }
 

@@ -14,7 +14,7 @@ console.log('[FILE_TRACE] Loading: ai-chat.js');
  */
 
 window.AIChat = {
-    // Rhetor endpoints
+    // Legacy endpoints (to be removed)
     teamChatUrl: 'http://localhost:8003/api/team-chat',
     specialistUrl: 'http://localhost:8003/api/v1/ai/specialists',
     
@@ -26,13 +26,16 @@ window.AIChat = {
      */
     async sendMessage(aiName, message) {
         try {
-            const response = await fetch(`${this.specialistUrl}/${aiName}/message`, {
+            // Use aish MCP endpoint via dynamic URL building
+            const response = await fetch(aishUrl('/api/mcp/v2/tools/send-message'), {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    message: message
+                    ai_name: aiName,
+                    message: message,
+                    stream: false  // Can be made configurable later
                 })
             });
             
@@ -42,10 +45,10 @@ window.AIChat = {
             
             const data = await response.json();
             
-            if (data.success && data.response) {
+            if (data.response) {
                 return {
                     content: data.response,
-                    ai_id: data.ai_id,
+                    ai_id: aiName,
                     success: true
                 };
             } else {
@@ -65,16 +68,14 @@ window.AIChat = {
      * @returns {Promise<Object>} Team chat response
      */
     async teamChat(message, fromComponent = 'ui', targetAIs = []) {
-        const response = await fetch(this.teamChatUrl, {
+        // Use aish MCP endpoint via dynamic URL building
+        const response = await fetch(aishUrl('/api/mcp/v2/tools/team-chat'), {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                message: message,
-                from_component: fromComponent,
-                target_sockets: targetAIs.length > 0 ? targetAIs : null,
-                timeout: 10.0
+                message: message
             })
         });
         
@@ -85,6 +86,150 @@ window.AIChat = {
         return await response.json();
     },
     
+    /**
+     * Send message with streaming response support
+     * @param {string} aiName - The AI name
+     * @param {string} message - The message to send
+     * @param {function} onChunk - Callback for each chunk
+     * @param {function} onComplete - Callback when streaming completes
+     * @param {function} onError - Callback for errors
+     * @returns {function} Abort function to cancel the stream
+     */
+    streamMessage(aiName, message, onChunk, onComplete, onError) {
+        const url = aishUrl('/api/mcp/v2/tools/send-message');
+        
+        // Create fetch request with streaming
+        const controller = new AbortController();
+        
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                ai_name: aiName,
+                message: message,
+                stream: true
+            }),
+            signal: controller.signal
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`Stream failed: ${response.statusText}`);
+            }
+            
+            const reader = response.body.getReader();
+            const decoder = new TextDecoder();
+            let buffer = '';
+            
+            const processStream = async () => {
+                try {
+                    while (true) {
+                        const { done, value } = await reader.read();
+                        
+                        if (done) {
+                            if (onComplete) onComplete();
+                            break;
+                        }
+                        
+                        buffer += decoder.decode(value, { stream: true });
+                        
+                        // Process complete SSE messages
+                        const lines = buffer.split('\n');
+                        buffer = lines.pop() || ''; // Keep incomplete line in buffer
+                        
+                        for (const line of lines) {
+                            if (line.startsWith('data: ')) {
+                                try {
+                                    const data = JSON.parse(line.slice(6));
+                                    
+                                    if (data.error) {
+                                        if (onError) onError(data.error);
+                                    } else if (!data.done && data.chunk) {
+                                        if (onChunk) onChunk(data.chunk);
+                                    } else if (data.done) {
+                                        if (onComplete) onComplete();
+                                    }
+                                } catch (e) {
+                                    console.error('Failed to parse SSE data:', e);
+                                }
+                            }
+                        }
+                    }
+                } catch (error) {
+                    if (error.name !== 'AbortError') {
+                        if (onError) onError(error);
+                    }
+                }
+            };
+            
+            processStream();
+        })
+        .catch(error => {
+            if (error.name !== 'AbortError') {
+                if (onError) onError(error);
+            }
+        });
+        
+        // Return abort function
+        return () => controller.abort();
+    },
+    
+    /**
+     * List available AI specialists
+     * @returns {Promise<Array>} List of available AIs
+     */
+    async listAIs() {
+        try {
+            const response = await fetch(aishUrl('/api/mcp/v2/tools/list-ais'), {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({})
+            });
+            
+            if (!response.ok) {
+                throw new Error(`Failed to list AIs: ${response.statusText}`);
+            }
+            
+            const data = await response.json();
+            return data.ais || [];
+        } catch (error) {
+            console.error('Failed to list AIs:', error);
+            throw error;
+        }
+    },
+    
+    /**
+     * Send message to terminal via aish MCP
+     * @param {string} terminal - Terminal name or 'broadcast'
+     * @param {string} message - Message to send
+     * @returns {Promise<Object>} Response
+     */
+    async termaSend(terminal, message) {
+        try {
+            const response = await fetch(aishUrl('/api/mcp/v2/tools/terma-send'), {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    terminal: terminal,
+                    message: message
+                })
+            });
+            
+            if (!response.ok) {
+                throw new Error(`Terminal send failed: ${response.statusText}`);
+            }
+            
+            return await response.json();
+        } catch (error) {
+            console.error(`Failed to send to terminal ${terminal}:`, error);
+            throw error;
+        }
+    },
     
     /**
      * Parse AI response for special formatting
