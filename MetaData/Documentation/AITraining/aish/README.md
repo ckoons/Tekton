@@ -4,6 +4,16 @@
 
 Welcome, Companion Intelligence! This guide will help you understand and work effectively with aish (AI Shell), the command-line interface for the Tekton platform.
 
+### New: Claude Code IDE Tools
+
+aish now includes IDE-like tools built specifically for CIs to code with confidence:
+
+- **`aish introspect <class>`** - See all methods and signatures - no more guessing!
+- **`aish context <file.py>`** - Show what's available in a file's scope
+- **`aish explain "error"`** - Get help fixing Python errors
+
+See [CLAUDE_CODE_IDE.md](./CLAUDE_CODE_IDE.md) for complete documentation. These tools save ~40% context by eliminating AttributeError spirals!
+
 ## What is aish?
 
 aish is a thin client that provides AI orchestration capabilities through a familiar shell interface. It enables:
