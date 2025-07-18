@@ -2,55 +2,64 @@
 
 This directory contains documentation and artifacts for Tekton Development Sprints.
 
-## Recent Updates
-
-### Debug Instrumentation Requirements
-
-**All Tekton Development Sprints must now follow the [Debug Instrumentation Guidelines](/MetaData/TektonDocumentation/DeveloperGuides/Debugging/DebuggingInstrumentation.md).**
-
-This comprehensive instrumentation approach:
-- Provides zero-overhead debugging capabilities when disabled
-- Enables rich diagnostics when enabled
-- Supports both frontend (JavaScript) and backend (Python) components
-- Integrates with existing logging systems
-
-All new code and significant modifications to existing code must include appropriate debug instrumentation as specified in the guidelines.
-
 ## What is a Development Sprint?
 
-A Development Sprint is a structured approach to implementing new features, addressing technical debt, and improving the Tekton ecosystem. Each sprint follows a defined process with clear roles, phases, and deliverables.
+A Development Sprint is a focused effort to implement new features, standardize components, or improve the Tekton ecosystem. Each sprint uses actionable checklists and clear handoff documentation to ensure continuity across Claude Code sessions.
 
-Tekton is an intelligent orchestration system that coordinates multiple AI models and resources to efficiently solve complex software engineering problems. This Development Sprint process is designed to facilitate the continuous improvement of Tekton in a systematic and documented way.
+## Simplified Sprint Structure
 
-## Sprint Directory Structure
-
-Each Development Sprint has its own directory under `MetaData/DevelopmentSprints/`:
+We've streamlined our sprint documentation to focus on **execution over documentation**:
 
 ```
 MetaData/DevelopmentSprints/
-├── README.md                         # This file explaining the overall process
-├── Templates/                        # Templates for standard sprint documents
-│   ├── SprintPlan.md
-│   ├── ArchitecturalDecisions.md
-│   ├── ImplementationPlan.md
-│   ├── StatusReport.md
-│   ├── Retrospective.md
-│   └── PromptTemplate.md
-└── [SprintName]/                     # One directory per sprint
-    ├── README.md                     # Sprint-specific guidance
-    ├── SprintPlan.md                 # High-level sprint plan
-    ├── ArchitecturalDecisions.md     # Key architectural decisions
-    ├── ImplementationPlan.md         # Detailed implementation plan
-    ├── ClaudeCodePrompt.md           # Initial prompt for Working Claude
-    ├── StatusReports/                # Directory for status reports
-    │   ├── Phase1Status.md
-    │   └── FinalStatus.md
-    ├── Instructions/                 # Instructions for subsequent phases
-    │   └── Phase2Instructions.md
-    └── Retrospective.md              # Sprint retrospective
+├── README.md                    # This file
+├── Templates/                   # Reusable templates
+│   ├── SPRINT_PLAN.md          # Sprint overview and checklist
+│   ├── DAILY_LOG.md            # Progress tracking template
+│   ├── HANDOFF.md              # Session handoff template
+│   └── COMPONENT_CHECKLIST.md  # For standardization sprints
+└── [SprintName]/               # One directory per sprint
+    ├── SPRINT_PLAN.md          # What we're doing and why
+    ├── DAILY_LOG.md            # Running progress/decisions
+    └── HANDOFF.md              # Next session instructions
 ```
 
-Each sprint directory may also contain additional documents specific to that sprint.
+## Types of Sprints
+
+### 1. Feature Sprints
+Implement new capabilities or architectural changes.
+Example: MCP_Distributed_Tekton_Sprint
+
+### 2. Renovation Sprints  
+Standardize components to follow current patterns.
+Example: Component renovations using COMPONENT_CHECKLIST.md
+
+### 3. Documentation Sprints
+Keep documentation synchronized with code changes.
+Run automatically after major changes.
+
+## Sprint Execution Process
+
+1. **Start**: Copy appropriate template to new sprint directory
+2. **Daily**: Update DAILY_LOG.md with progress and decisions
+3. **Handoff**: Update HANDOFF.md before ending session
+4. **Complete**: Archive to Completed/ directory
+
+## Key Principles
+
+- **Actionable Checklists** - Every item is a specific task
+- **Visible Progress** - Percentage complete for each phase
+- **Easy Handoffs** - Next session knows exactly what to do
+- **Minimal Documentation** - Only what helps execution
+
+## Code Quality Requirements
+
+All sprints must follow:
+- No hardcoded ports/URLs
+- TektonEnviron for all configuration
+- Proper error handling and logging
+- Real data in UIs (no mocks)
+- Tests for all new functionality
 
 ## Current Active Sprints
 
