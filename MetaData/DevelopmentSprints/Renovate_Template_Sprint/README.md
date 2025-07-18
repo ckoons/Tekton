@@ -41,6 +41,7 @@ This is a **template sprint** that should be copied and applied to each Tekton c
 - [ ] Ergon - Agents
 - [ ] Penia - Budget
 - [ ] Terma - Terminals
+- [ ] Tekton-Core - Projects
 
 ## Standard Patterns to Apply
 
