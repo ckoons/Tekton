@@ -77,6 +77,56 @@ if tekton_root.exists() and (tekton_root / 'shared').exists():
 from core.shell import AIShell
 from core.version import __version__
 
+# Start MCP server if not disabled
+if not os.environ.get('AISH_NO_MCP'):
+    try:
+        # Check if MCP server is already running
+        import socket
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        mcp_port = int(TektonEnviron.get("AISH_MCP_PORT", "3100"))
+        result = sock.connect_ex(('localhost', mcp_port))
+        sock.close()
+        
+        if result != 0:  # Port not in use, start MCP server
+            # Use subprocess to start MCP server
+            import subprocess
+            import atexit
+            
+            mcp_script = aish_root / 'aish-mcp'
+            if mcp_script.exists():
+                # Start MCP server as a separate process
+                env = os.environ.copy()
+                env['TEKTON_ROOT'] = str(tekton_root)
+                
+                mcp_process = subprocess.Popen(
+                    [sys.executable, str(mcp_script)],
+                    env=env,
+                    stdout=subprocess.DEVNULL if not os.environ.get('AISH_DEBUG_MCP') else None,
+                    stderr=subprocess.DEVNULL if not os.environ.get('AISH_DEBUG_MCP') else None,
+                    start_new_session=True  # Detach from parent
+                )
+                
+                # Don't register cleanup - let it run independently
+                # atexit.register(lambda: mcp_process.terminate() if mcp_process.poll() is None else None)
+                
+                if os.environ.get('AISH_DEBUG_MCP'):
+                    print(f"[DEBUG] Started MCP server process PID: {mcp_process.pid}", file=sys.stderr)
+                
+                # Give it time to start
+                import time
+                time.sleep(1)
+            else:
+                print(f"Warning: MCP script not found at {mcp_script}", file=sys.stderr)
+        else:
+            if os.environ.get('AISH_DEBUG_MCP'):
+                print(f"[DEBUG] MCP server already running on port {mcp_port}", file=sys.stderr)
+    except Exception as e:
+        # Don't fail if MCP can't start - aish should still work
+        print(f"Warning: Could not start MCP server: {e}", file=sys.stderr)
+        if os.environ.get('AISH_DEBUG_MCP'):
+            import traceback
+            traceback.print_exc(file=sys.stderr)
+
 
 # Landmark: Command Type Dispatch Router - Routes to appropriate handlers
 def _dispatch_command(command_type, args, shell):

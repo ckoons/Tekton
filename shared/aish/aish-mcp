@@ -1,0 +1,38 @@
+#!/usr/bin/env python3
+"""
+aish-mcp - Run the aish MCP server
+
+This script runs the MCP server as a standalone process.
+"""
+
+import os
+import sys
+from pathlib import Path
+
+# Get the real path of the script (follows symlinks)
+script_path = Path(__file__).resolve()
+aish_root = script_path.parent
+src_path = aish_root / 'src'
+
+# Add paths
+sys.path.insert(0, str(src_path))
+sys.path.insert(0, os.environ.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Coder-A'))
+
+# Load environment
+from shared.env import TektonEnvironLock
+TektonEnvironLock.load()
+
+# Import and run
+from mcp.app import start_mcp_server
+
+if __name__ == '__main__':
+    print("Starting aish MCP server...")
+    try:
+        start_mcp_server()
+    except KeyboardInterrupt:
+        print("\nShutting down MCP server...")
+    except Exception as e:
+        print(f"Error: {e}")
+        import traceback
+        traceback.print_exc()
+        sys.exit(1)
