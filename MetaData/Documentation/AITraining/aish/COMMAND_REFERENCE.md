@@ -347,8 +347,56 @@ $ aish terma send wrong-name "Test"
 Error: Terminal 'wrong-name' not found
 ```
 
+### Debug Commands
+
+#### `aish status`
+Check if the MCP server is running and healthy.
+```bash
+aish status                    # Check MCP server status
+```
+
+#### `aish restart`
+Restart the MCP server.
+```bash
+aish restart                   # Stop and restart MCP server
+```
+
+#### `aish logs`
+View recent MCP server logs.
+```bash
+aish logs                      # Display MCP server logs
+```
+
+#### `aish debug-mcp`
+Enable verbose MCP debugging.
+```bash
+aish debug-mcp                 # Turn on MCP debug logging
+```
+
+## MCP Server
+
+aish now runs an MCP (Model Context Protocol) server on port 8118. This server handles all AI message routing for the UI and external tools.
+
+### Key Points:
+- MCP server starts automatically with aish
+- Runs on port 8118 (AISH_MCP_PORT)
+- All UI chat interfaces route through MCP
+- Supports streaming responses
+- Can be managed with debug commands
+
+### Testing MCP:
+```bash
+# Run test suite
+cd $TEKTON_ROOT/shared/aish/tests
+./test_mcp.sh
+
+# Quick health check
+curl http://localhost:8118/api/mcp/v2/health
+```
+
 ## See Also
 
-- Individual AI documentation in `$TEKTON_ROOT/MetaData/TektonDocumentation/AITraining/<ai-name>/`
-- Terminal system docs in `$TEKTON_ROOT/MetaData/TektonDocumentation/UserGuides/terma/`
-- Architecture docs in `$TEKTON_ROOT/MetaData/TektonDocumentation/Architecture/`
+- MCP Server documentation in `$TEKTON_ROOT/MetaData/Documentation/MCP/aish_MCP_Server.md`
+- Individual AI documentation in `$TEKTON_ROOT/MetaData/Documentation/AITraining/<ai-name>/`
+- Terminal system docs in `$TEKTON_ROOT/MetaData/Documentation/UserGuides/terma/`
+- Architecture docs in `$TEKTON_ROOT/MetaData/Documentation/Architecture/`

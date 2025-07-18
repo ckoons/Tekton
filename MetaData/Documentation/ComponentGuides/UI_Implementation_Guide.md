@@ -295,11 +295,12 @@ const MyComponentUI = {
 
     // Initialize chat interface
     initializeChat() {
-        // Chat is handled by tekton-llm-client.js
+        // Chat is handled by window.AIChat through aish MCP
         // Just ensure the container is ready
         const chatContainer = document.getElementById('mycomponent-chat-container');
-        if (chatContainer && window.TektonLLMClient) {
-            window.TektonLLMClient.initializeChat('mycomponent', chatContainer);
+        if (chatContainer && window.AIChat) {
+            // Chat interface uses aish MCP for all AI communication
+            // Messages are routed through port 8118 (AISH_MCP_PORT)
         }
     },
 
@@ -409,10 +410,8 @@ function mycomponent_switchChat(chatType) {
     
     event.target.classList.add('mycomponent__chat-option--active');
     
-    // Notify chat system of context switch
-    if (window.TektonLLMClient) {
-        window.TektonLLMClient.switchContext('mycomponent', chatType);
-    }
+    // Context switching handled by UI state
+    // All AI messages route through aish MCP
     
     MyComponentUI.state.currentChat = chatType;
 }
@@ -736,13 +735,13 @@ A navigation tab is automatically added to the LEFT PANEL when the component is 
 
 ### 3. Chat Integration
 
-The chat interface is provided by `tekton-llm-client.js` and automatically integrates with your component when initialized.
+The chat interface is provided by `window.AIChat` and routes all messages through the aish MCP server on port 8118.
 
 ## AI Interface Implementation Details
 
 ### Chat Interface Setup
 
-The Tekton LLM Client provides a sophisticated chat interface that can be customized for each component:
+All AI communication goes through the aish MCP server. The window.AIChat interface provides access to all AI capabilities:
 
 ```javascript
 // Advanced chat initialization with options
@@ -768,8 +767,10 @@ initializeChat() {
         onToolCall: this.handleToolCall.bind(this)
     };
     
-    if (window.TektonLLMClient) {
-        this.chatInterface = window.TektonLLMClient.createChat(chatConfig);
+    if (window.AIChat) {
+        // All chat messages route through aish MCP server
+        // Use window.AIChat.sendMessage(aiName, message) for AI communication
+        this.chatInterface = window.AIChat;
     }
 }
 
@@ -786,15 +787,15 @@ handleChatMessage(message) {
 async handleToolCall(toolName, parameters) {
     console.log('Tool call:', toolName, parameters);
     
-    // Execute the tool via MCP
-    const response = await fetch(`${this.config.apiUrl}/api/mcp/v2/tools/call`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-            name: toolName,
-            arguments: parameters
-        })
-    });
+    // All AI tool calls go through aish MCP
+    // Example: Send message to specific AI
+    const response = await window.AIChat.sendMessage(aiName, message);
+    
+    // Example: Team chat broadcast
+    const responses = await window.AIChat.teamChat(message);
+    
+    // Example: Stream response
+    const stream = await window.AIChat.streamMessage(aiName, message);
     
     return await response.json();
 }
