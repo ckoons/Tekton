@@ -409,7 +409,9 @@ static void write_javascript_env(const char *tekton_root, env_list_t *env) {
     fprintf(fp, "window.PENIA_PORT = %s;       // Penia port (same as budget)\n", get_env_value(env, "PENIA_PORT") ?: "8013");
     fprintf(fp, "window.SOPHIA_PORT = %s;      // Sophia port\n", get_env_value(env, "SOPHIA_PORT") ?: "8014");
     fprintf(fp, "window.NOESIS_PORT = %s;      // Noesis port\n", get_env_value(env, "NOESIS_PORT") ?: "8015");
-    fprintf(fp, "window.NUMA_PORT = %s;        // Numa port\n\n", get_env_value(env, "NUMA_PORT") ?: "8016");
+    fprintf(fp, "window.NUMA_PORT = %s;        // Numa port\n", get_env_value(env, "NUMA_PORT") ?: "8016");
+    fprintf(fp, "window.AISH_PORT = %s;        // aish port\n", get_env_value(env, "AISH_PORT") ?: "8017");
+    fprintf(fp, "window.AISH_MCP_PORT = %s;    // aish MCP port\n\n", get_env_value(env, "AISH_MCP_PORT") ?: "8018");
     
     /* Write port base configuration */
     fprintf(fp, "// Port base configuration for AI port calculation\n");

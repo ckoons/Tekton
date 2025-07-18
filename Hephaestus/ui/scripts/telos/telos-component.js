@@ -407,23 +407,21 @@ class TelosComponent {
             // Add user message to chat
             this.addUserMessageToChatUI(messagesContainer, message);
 
-            // Simulate a response based on the active tab
-            setTimeout(() => {
-                let response;
-
-                if (this.state.activeTab === 'teamchat') {
-                    response = `${responsePrefix}I received your team message: "${message}". This would be shared with all Tekton components.`;
-                } else if (this.state.activeTab === 'reqchat') {
-                    response = `${responsePrefix}I received your requirements query: "${message}". I can help with requirements management.`;
-                } else {
-                    response = `${responsePrefix}I received your message: "${message}". This is a response from Telos Requirements Management system.`;
-                }
-
-                this.addAIMessageToChatUI(messagesContainer, response);
-            }, 1000);
-
-            // Clear input
+            // Clear input immediately for better UX
             input.value = '';
+
+            // Send message via aish MCP
+            this.sendChatMessage(message, this.state.activeTab)
+                .then(response => {
+                    // Add AI response to chat
+                    this.addAIMessageToChatUI(messagesContainer, response);
+                })
+                .catch(error => {
+                    console.error('[TELOS] Chat error:', error);
+                    // Show error message
+                    this.addAIMessageToChatUI(messagesContainer, 
+                        `Error: ${error.message || 'Failed to send message. Please try again.'}`);
+                });
         });
 
         // Send message on Enter key (but allow Shift+Enter for new lines)
