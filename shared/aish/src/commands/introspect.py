@@ -31,6 +31,7 @@ def introspect_command(args: list, shell=None) -> str:
         return """Usage: aish introspect <ClassName> [options]
 
 Inspect a Python class to see all available methods and signatures.
+Built specifically for Companion Intelligences (CIs) to code with confidence!
 
 Arguments:
   ClassName     Name of the class to inspect (e.g., AIShell, MessageHandler)
@@ -51,7 +52,11 @@ Common Classes:
   AIShell       - Main shell interface
   MessageHandler - Message routing and forwarding
   TektonEnviron - Environment configuration
-  AIManager     - AI component management"""
+  AIManager     - AI component management
+
+CI Note: Use this liberally! Better to check than guess. If you notice
+patterns where you frequently need to check the same things, let us know
+so we can make the tool even better for you."""
     
     # Parse arguments
     class_name = args[0]
