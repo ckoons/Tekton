@@ -232,13 +232,30 @@ def unforward_project(args: List[str]) -> bool:
     
     project_name = args[0]
     
+    # Load project registry to find actual project name (case-insensitive)
+    project_registry = load_project_registry()
+    projects = project_registry.get("projects", [])
+    
+    project = None
+    for p in projects:
+        if p.get('name', '').lower() == project_name.lower():
+            project = p
+            break
+    
+    if not project:
+        print(f"Error: Project '{project_name}' not found")
+        print("\nAvailable projects:")
+        for p in projects:
+            print(f"  - {p.get('name', 'Unknown')}")
+        return False
+    
     # Load forwarding registry
     forwarding_registry = load_forwarding_registry()
     
-    # Check if forward exists
-    forward_key = f"project:{project_name}"
+    # Use actual project name for key
+    forward_key = f"project:{project['name']}"
     if forward_key not in forwarding_registry.get("forwards", {}):
-        print(f"Project '{project_name}' is not currently forwarded")
+        print(f"Project '{project['name']}' is not currently forwarded")
         return True
     
     # Remove the forward

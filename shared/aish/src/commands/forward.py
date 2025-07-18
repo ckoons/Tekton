@@ -100,13 +100,35 @@ def list_forwards(registry):
     forwards = registry.list_forwards()
     
     if not forwards:
-        print("No AI forwarding active")
+        print("No forwarding active")
         return 0
     
-    print("Active AI Forwards:")
-    print("-" * 30)
-    for ai_name, terminal_name in forwards.items():
-        print(f"  {ai_name:<12} → {terminal_name}")
+    # Separate AI forwards and project forwards
+    ai_forwards = {}
+    project_forwards = {}
+    
+    for key, terminal_name in forwards.items():
+        if key.startswith("project:"):
+            project_name = key[8:]  # Remove "project:" prefix
+            project_forwards[project_name] = terminal_name
+        else:
+            ai_forwards[key] = terminal_name
+    
+    # Show AI forwards
+    if ai_forwards:
+        print("Active AI Forwards:")
+        print("-" * 30)
+        for ai_name, terminal_name in ai_forwards.items():
+            print(f"  {ai_name:<12} → {terminal_name}")
+    
+    # Show project forwards
+    if project_forwards:
+        if ai_forwards:
+            print()  # Add spacing if both types exist
+        print("Active Project Forwards:")
+        print("-" * 30)
+        for project_name, terminal_name in project_forwards.items():
+            print(f"  {project_name:<12} → {terminal_name}")
     
     return 0
 
