@@ -1376,21 +1376,21 @@ function tekton_sendChat() {
             
             if (chatType === 'projectchat') {
                 console.log('[TEKTON] Sending project chat message');
-                // Direct message to tekton-ai
+                // Direct message to tekton_core
                 if (typeof window.AIChat.sendMessage === 'function') {
-                    console.log('[TEKTON] Calling window.AIChat.sendMessage with:', 'tekton-ai', message);
+                    console.log('[TEKTON] Calling window.AIChat.sendMessage with:', 'tekton_core', message);
                     
-                    // Try tekton-ai first, then fall back to apollo-ai if it fails
+                    // Try tekton_core first, then fall back to apollo if it fails
                     const tryAI = (aiName) => {
                         console.log(`[TEKTON] Trying to send message to ${aiName}`);
                         return window.AIChat.sendMessage(aiName, message);
                     };
                     
-                    tryAI('tekton-ai')
+                    tryAI('tekton_core')
                         .catch(error => {
-                            console.warn('[TEKTON] tekton-ai failed, trying apollo-ai as fallback:', error);
-                            // If tekton-ai fails, try apollo-ai as fallback
-                            return tryAI('apollo-ai');
+                            console.warn('[TEKTON] tekton_core failed, trying apollo as fallback:', error);
+                            // If tekton_core fails, try apollo as fallback
+                            return tryAI('apollo');
                         })
                         .then(response => {
                             console.log('[TEKTON] Project chat response received:', response);
@@ -1510,7 +1510,7 @@ async function loadProjectCIs() {
         projectCIs = [
             {
                 project_name: "Tekton",
-                ci_socket: "numa-ai",
+                ci_socket: "numa",
                 socket_port: window.NUMA_AI_PORT || getAIPort(window.NUMA_PORT)
             }
         ];

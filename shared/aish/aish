@@ -379,6 +379,12 @@ Environment variables:
             print("  autoprompt stop                Stop autoprompt")
             print("  autoprompt status              Check autoprompt status")
             print()
+            print("DEBUG:")
+            print("  aish status                    Check MCP server status")
+            print("  aish restart                   Restart MCP server")
+            print("  aish logs                      Show MCP server logs")
+            print("  aish debug-mcp                 Toggle MCP debug mode")
+            print()
             print("ADVANCED:")
             print("  echo \"msg\" | aish <ai>         Pipe input to AI")
             print("  aish <ai1> | aish <ai2>        Chain AI responses")
@@ -437,6 +443,23 @@ Environment variables:
     
     if args.ai_or_script == 'project':
         return _dispatch_command('project', args, shell)
+    
+    # MCP Debug commands
+    if args.ai_or_script == 'status':
+        shell._check_mcp_status()
+        return
+    
+    if args.ai_or_script == 'restart':
+        shell._restart_mcp_server()
+        return
+    
+    if args.ai_or_script == 'logs':
+        shell._show_mcp_logs()
+        return
+    
+    if args.ai_or_script == 'debug-mcp':
+        shell._toggle_mcp_debug()
+        return
     
     # Check if first argument is an AI name (case-insensitive)
     if args.ai_or_script and args.ai_or_script.lower() in ai_names:

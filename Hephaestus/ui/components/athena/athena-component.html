@@ -1020,9 +1020,9 @@ function athena_sendChat() {
     
     // Send to backend
     if (chatType === 'chat') {
-        // Direct message to athena-ai
+        // Direct message to athena
         if (window.AIChat) {
-            window.AIChat.sendMessage('athena-ai', message)
+            window.AIChat.sendMessage('athena', message)
                 .then(response => {
                     const aiMessageDiv = document.createElement('div');
                     aiMessageDiv.className = 'athena__message athena__message--ai';

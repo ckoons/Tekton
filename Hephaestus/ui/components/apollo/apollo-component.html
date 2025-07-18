@@ -4307,9 +4307,9 @@ function apollo_sendChat() {
     
     // Send to backend
     if (chatType === 'attention') {
-        // Direct message to apollo-ai
+        // Direct message to apollo
         if (window.AIChat) {
-            window.AIChat.sendMessage('apollo-ai', message)
+            window.AIChat.sendMessage('apollo', message)
                 .then(response => {
                     const aiMessageDiv = document.createElement('div');
                     aiMessageDiv.className = 'apollo__message apollo__message--ai';

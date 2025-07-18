@@ -1450,9 +1450,9 @@ window.terma_sendChat = function() {
     
     // Send to backend
     if (chatType === 'companion') {
-        // Direct message to terma-ai
+        // Direct message to terma
         if (window.AIChat) {
-            window.AIChat.sendMessage('terma-ai', message)
+            window.AIChat.sendMessage('terma', message)
                 .then(response => {
                     const aiMessageDiv = document.createElement('div');
                     aiMessageDiv.className = 'chat-message ai-message';

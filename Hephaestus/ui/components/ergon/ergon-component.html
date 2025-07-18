@@ -903,9 +903,9 @@ function ergon_sendChat() {
     
     // Send to backend
     if (chatType === 'ergon') {
-        // Direct message to ergon-ai
+        // Direct message to ergon
         if (window.AIChat) {
-            window.AIChat.sendMessage('ergon-ai', message)
+            window.AIChat.sendMessage('ergon', message)
                 .then(response => {
                     const aiMessageDiv = document.createElement('div');
                     aiMessageDiv.className = 'ergon__message ergon__message--ai';

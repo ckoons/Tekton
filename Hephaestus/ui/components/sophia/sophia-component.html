@@ -1493,10 +1493,9 @@ window.sophia_sendChat = function() {
             messagesContainer.scrollTop = messagesContainer.scrollHeight;
             
             // Determine which AI to contact based on tab
-            const aiName = tabId === 'researchchat' ? 'sophia-ai' : 'team-ai';
-            
-            // Send message to AI
-            window.AIChat.sendMessage(aiName, message)
+            if (tabId === 'researchchat') {
+                // Direct message to sophia
+                window.AIChat.sendMessage('sophia', message)
                 .then(response => {
                     // Remove loading message
                     messagesContainer.removeChild(loadingMessage);
@@ -1531,6 +1530,59 @@ window.sophia_sendChat = function() {
                     
                     console.error('[SOPHIA] AI Chat error:', error);
                 });
+            } else if (tabId === 'teamchat') {
+                // Team chat - broadcast to all AIs
+                window.AIChat.teamChat(message, 'sophia')
+                .then(data => {
+                    // Remove loading message
+                    messagesContainer.removeChild(loadingMessage);
+                    
+                    // Display team responses
+                    if (data.responses && data.responses.length > 0) {
+                        data.responses.forEach(resp => {
+                            const aiMessage = document.createElement('div');
+                            aiMessage.className = 'sophia__message sophia__message--ai';
+                            const sender = resp.socket_id.charAt(0).toUpperCase() + resp.socket_id.slice(1);
+                            aiMessage.innerHTML = `
+                                <div class="sophia__message-content">
+                                    <div class="sophia__message-text"><strong>${sender}:</strong> ${resp.content}</div>
+                                </div>
+                            `;
+                            messagesContainer.appendChild(aiMessage);
+                        });
+                    } else {
+                        // No responses
+                        const noResponseMessage = document.createElement('div');
+                        noResponseMessage.className = 'sophia__message sophia__message--ai';
+                        noResponseMessage.innerHTML = `
+                            <div class="sophia__message-content">
+                                <div class="sophia__message-text">No responses from team members.</div>
+                            </div>
+                        `;
+                        messagesContainer.appendChild(noResponseMessage);
+                    }
+                    
+                    // Scroll to bottom
+                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                })
+                .catch(error => {
+                    // Remove loading message
+                    messagesContainer.removeChild(loadingMessage);
+                    
+                    // Show error message
+                    const errorMessage = document.createElement('div');
+                    errorMessage.className = 'sophia__message sophia__message--ai sophia__message--error';
+                    errorMessage.innerHTML = `
+                        <div class="sophia__message-content">
+                            <div class="sophia__message-text">Team Chat: Failed to send message. Please try again.</div>
+                        </div>
+                    `;
+                    messagesContainer.appendChild(errorMessage);
+                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                    
+                    console.error('[SOPHIA] Team Chat error:', error);
+                });
+            }
         } else {
             // Fallback if AIChat is not available
             console.warn('[SOPHIA] window.AIChat not available');

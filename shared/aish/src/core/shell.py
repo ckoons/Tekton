@@ -152,8 +152,18 @@ class AIShell:
                     self._show_help()
                 elif command == 'list-ais' or command == 'ais':
                     self._list_ais()
+                elif command == 'list' or command == 'commands':
+                    self._show_help()
                 elif command == 'history':
                     self._show_history()
+                elif command == '/restart' or command == 'restart':
+                    self._restart_mcp_server()
+                elif command == '/status' or command == 'status':
+                    self._check_mcp_status()
+                elif command == '/logs' or command == 'logs':
+                    self._show_mcp_logs()
+                elif command == '/debug-mcp' or command == 'debug-mcp':
+                    self._toggle_mcp_debug()
                 elif command.startswith('!'):
                     # Handle history expansion (!number)
                     if command[1:].isdigit():
@@ -343,6 +353,7 @@ AI Shell Commands:
   ai1 | ai2 | ai3         - Pipeline AIs together  
   team-chat "message"     - Broadcast to all AIs
   list-ais, ais           - List available AI specialists
+  list, commands          - Show this help (all commands)
   history                 - Show recent conversation history
   !number                 - Replay command from history (e.g., !1716)
   !command                - Execute shell command
@@ -360,6 +371,12 @@ History Management:
   aish-history            - View history (outside of shell)
   aish-history --json     - Export as JSON for processing
   aish-history --search   - Search history
+
+MCP Server Management:
+  /restart                - Restart the MCP server
+  /status                 - Check MCP server status
+  /logs                   - Show MCP server logs
+  /debug-mcp              - Toggle MCP debug mode
         """)
     
     def _list_ais(self):
@@ -543,6 +560,119 @@ History Management:
             return '\n'.join(response_lines)
         else:
             return "No responses received"
+    
+    def _restart_mcp_server(self):
+        """Restart the aish MCP server"""
+        import subprocess
+        import time
+        
+        print("Restarting aish MCP server...")
+        
+        try:
+            # First, try to kill existing MCP server
+            subprocess.run(['pkill', '-f', 'aish-mcp'], capture_output=True)
+            time.sleep(0.5)  # Brief pause
+            
+            # Start new MCP server
+            from pathlib import Path
+            tekton_root = os.environ.get('TEKTON_ROOT', Path.home() / 'projects/github/Coder-A')
+            mcp_script = Path(tekton_root) / 'shared' / 'aish' / 'aish-mcp'
+            
+            if mcp_script.exists():
+                env = os.environ.copy()
+                env['TEKTON_ROOT'] = str(tekton_root)
+                
+                # Start MCP server
+                process = subprocess.Popen(
+                    [sys.executable, str(mcp_script)],
+                    env=env,
+                    stdout=subprocess.PIPE if os.environ.get('AISH_DEBUG_MCP') else subprocess.DEVNULL,
+                    stderr=subprocess.PIPE if os.environ.get('AISH_DEBUG_MCP') else subprocess.DEVNULL,
+                    start_new_session=True
+                )
+                
+                # Give it a moment to start
+                time.sleep(1)
+                
+                # Check if it's running
+                if process.poll() is None:
+                    print("✓ MCP server restarted successfully")
+                    # Check health
+                    self._check_mcp_status()
+                else:
+                    print("✗ MCP server failed to start")
+                    if os.environ.get('AISH_DEBUG_MCP'):
+                        stdout, stderr = process.communicate()
+                        if stderr:
+                            print(f"Error: {stderr.decode()}")
+            else:
+                print(f"✗ MCP script not found: {mcp_script}")
+                
+        except Exception as e:
+            print(f"✗ Error restarting MCP server: {e}")
+    
+    def _check_mcp_status(self):
+        """Check MCP server status"""
+        import requests
+        
+        try:
+            port = int(TektonEnviron.get('AISH_MCP_PORT', '8118'))
+            response = requests.get(f'http://localhost:{port}/api/mcp/v2/health', timeout=2)
+            
+            if response.status_code == 200:
+                data = response.json()
+                print(f"✓ MCP server is {data.get('status', 'unknown')}")
+                print(f"  Service: {data.get('service', 'unknown')}")
+                print(f"  Version: {data.get('version', 'unknown')}")
+                print(f"  Port: {port}")
+                if data.get('capabilities'):
+                    print(f"  Capabilities: {', '.join(data['capabilities'])}")
+            else:
+                print(f"✗ MCP server returned status {response.status_code}")
+                
+        except requests.exceptions.ConnectionError:
+            print(f"✗ MCP server is not running (port {TektonEnviron.get('AISH_MCP_PORT', '8118')})")
+        except Exception as e:
+            print(f"✗ Error checking MCP status: {e}")
+    
+    def _show_mcp_logs(self, lines=20):
+        """Show recent MCP server logs"""
+        import subprocess
+        
+        # Look for the MCP process and its output
+        try:
+            # Try to find the process
+            result = subprocess.run(['pgrep', '-f', 'aish-mcp'], capture_output=True, text=True)
+            if result.stdout.strip():
+                pid = result.stdout.strip().split('\n')[0]
+                print(f"MCP server process: PID {pid}")
+            else:
+                print("MCP server is not running")
+                return
+                
+            # For now, suggest using debug mode
+            if not os.environ.get('AISH_DEBUG_MCP'):
+                print("\nTo see MCP logs, restart aish with debug mode:")
+                print("  AISH_DEBUG_MCP=1 aish")
+            else:
+                print("\nMCP debug mode is enabled - check terminal output")
+                
+        except Exception as e:
+            print(f"Error checking MCP logs: {e}")
+    
+    def _toggle_mcp_debug(self):
+        """Toggle MCP debug mode"""
+        current = os.environ.get('AISH_DEBUG_MCP', '0')
+        new_value = '0' if current == '1' else '1'
+        
+        os.environ['AISH_DEBUG_MCP'] = new_value
+        
+        if new_value == '1':
+            print("✓ MCP debug mode enabled")
+            print("  Restart MCP server with /restart to see debug output")
+        else:
+            print("✓ MCP debug mode disabled")
+            print("  Restart MCP server with /restart to hide debug output")
 
 
 if __name__ == '__main__':

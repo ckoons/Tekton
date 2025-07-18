@@ -1043,9 +1043,9 @@ window.telos_sendChat = function() {
                 
                 // Send to backend
                 if (tabId === 'reqchat') {
-                    // Requirements chat - direct message to telos-ai
+                    // Requirements chat - direct message to telos
                     if (window.AIChat) {
-                        window.AIChat.sendMessage('telos-ai', message)
+                        window.AIChat.sendMessage('telos', message)
                             .then(response => {
                                 const aiMsg = document.createElement('div');
                                 aiMsg.className = 'telos__message telos__message--ai';

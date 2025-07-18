@@ -4412,7 +4412,7 @@ async function rhetor_sendLLMChatMessage(message) {
     
     try {
         // Use direct specialist endpoint for single AI chat
-        const response = await fetch(rhetorUrl('/api/v1/ai/specialists/rhetor-ai/message'), {
+        const response = await fetch(rhetorUrl('/api/v1/ai/specialists/rhetor/message'), {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -4492,7 +4492,7 @@ async function rhetor_sendTeamChatMessage(message) {
         if (data.responses && data.responses.length > 0) {
             // Show individual responses
             for (const resp of data.responses) {
-                // Extract AI name from socket_id (e.g., "apollo-ai" -> "Apollo")
+                // Extract AI name from socket_id (e.g., "apollo" -> "Apollo")
                 const aiName = resp.socket_id.replace('-ai', '').split('-')
                     .map(word => word.charAt(0).toUpperCase() + word.slice(1))
                     .join(' ');

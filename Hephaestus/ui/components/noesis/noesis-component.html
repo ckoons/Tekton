@@ -1051,13 +1051,13 @@ function noesis_sendDiscoveryChatMessage() {
     const typingId = 'noesis-typing-' + Date.now();
     noesis_addChatMessage('discovery', '...', 'typing', typingId);
     
-    // Use shared AI chat module to talk to noesis-ai
+    // Use shared AI chat module to talk to noesis
     if (window.AIChat) {
         // Debug logging (controlled by global debug flag)
         if (window.HephaestusDebug?.isEnabled?.('noesis')) {
-            console.log('Sending message to noesis-ai:', fullMessage);
+            console.log('Sending message to noesis:', fullMessage);
         }
-        window.AIChat.sendMessage('noesis-ai', fullMessage)
+        window.AIChat.sendMessage('noesis', fullMessage)
             .then(response => {
                 if (window.HephaestusDebug?.isEnabled?.('noesis')) {
                     console.log('Received response:', response);

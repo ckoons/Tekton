@@ -1013,9 +1013,9 @@ function harmonia_sendChat() {
     
     // Send to backend
     if (chatType === 'workflowchat') {
-        // Direct message to harmonia-ai
+        // Direct message to harmonia
         if (window.AIChat) {
-            window.AIChat.sendMessage('harmonia-ai', message)
+            window.AIChat.sendMessage('harmonia', message)
                 .then(response => {
                     const aiMessageDiv = document.createElement('div');
                     aiMessageDiv.className = 'harmonia__message harmonia__message--ai';

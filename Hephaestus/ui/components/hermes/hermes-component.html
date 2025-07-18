@@ -1147,9 +1147,9 @@ function hermes_sendChat() {
     
     // Send to backend
     if (chatType === 'chat') {
-        // Direct message to hermes-ai
+        // Direct message to hermes
         if (window.AIChat) {
-            window.AIChat.sendMessage('hermes-ai', message)
+            window.AIChat.sendMessage('hermes', message)
                 .then(response => {
                     const aiMessageDiv = document.createElement('div');
                     aiMessageDiv.className = 'hermes__message hermes__message--ai';

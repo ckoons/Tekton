@@ -67,7 +67,11 @@ function numaUrl(path = "", ...args) {
 }
 
 function aishUrl(path = "", ...args) {
-    return tektonUrl("aish", path, ...args);
+    // aish MCP server runs on AISH_MCP_PORT, not AISH_PORT
+    const host = args[0] || "localhost";
+    const scheme = args[1] || "http";
+    const port = window.AISH_MCP_PORT || 8118;
+    return `${scheme}://${host}:${port}${path}`;
 }
 
 // Make functions globally available

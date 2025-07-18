@@ -212,9 +212,20 @@ async def team_chat(request: Request):
         raise HTTPException(status_code=400, detail="Missing message")
     
     try:
-        # Use AIShell to broadcast
-        responses = ai_shell.broadcast_message(message)
-        return {"responses": responses}
+        # Use MessageHandler to broadcast and get responses
+        responses = message_handler.broadcast(message)
+        
+        # Format responses for the UI
+        formatted_responses = []
+        for ai_name, response in responses.items():
+            if not response.startswith('ERROR:'):
+                formatted_responses.append({
+                    "specialist_id": ai_name,
+                    "content": response,
+                    "socket_id": ai_name
+                })
+        
+        return {"responses": formatted_responses}
     except Exception as e:
         logger.error(f"Error broadcasting message: {e}")
         raise HTTPException(status_code=500, detail=str(e))

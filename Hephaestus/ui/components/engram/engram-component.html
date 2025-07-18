@@ -1971,9 +1971,9 @@ function engram_sendChat() {
     
     // Send to backend
     if (chatType === 'chat') {
-        // Direct message to engram-ai
+        // Direct message to engram
         if (window.AIChat) {
-            window.AIChat.sendMessage('engram-ai', message)
+            window.AIChat.sendMessage('engram', message)
                 .then(response => {
                     const aiMessageDiv = document.createElement('div');
                     aiMessageDiv.className = 'engram__message engram__message--ai';

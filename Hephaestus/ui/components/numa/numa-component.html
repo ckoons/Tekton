@@ -496,13 +496,13 @@ function numa_sendChat() {
     
     // Send to backend
     if (chatType === 'companion') {
-        // Direct message to numa-ai
+        // Direct message to numa
         if (window.AIChat) {
             // Set AI status to active
             const aiStatus = document.querySelector('.numa__ai-status');
             if (aiStatus) aiStatus.setAttribute('data-ai-status', 'active');
             
-            window.AIChat.sendMessage('numa-ai', message)
+            window.AIChat.sendMessage('numa', message)
                 .then(response => {
                     const aiMessageDiv = document.createElement('div');
                     aiMessageDiv.className = 'chat-message ai-message';

@@ -334,7 +334,7 @@ class EnhancedTerminalChat {
         switch(contextId) {
             case 'ergon':
                 // Direct to Ergon only
-                return ['ergon-ai'];
+                return ['ergon'];
             case 'awt-team':
                 // Team chat goes to multiple specialists
                 return ['agent-specialist', 'workflow-specialist', 'tool-specialist'];
