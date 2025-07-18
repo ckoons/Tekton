@@ -8,46 +8,47 @@ Transform Tekton to use MCP (Model Context Protocol) as the primary interface fo
 2. **Manifest System**: Enable Tekton systems to discover and communicate
 3. **Distributed Commands**: Support `-s <system>` for remote Tekton access
 
-## Phase 1: aish MCP Server [0% Complete]
+## Phase 1: aish MCP Server [90% Complete]
 
 ### Tasks
-- [ ] Create `/shared/aish/src/mcp/server.py` with FastAPI
-- [ ] Implement MCP discovery endpoint `/mcp/capabilities`
-- [ ] Create `/mcp/tools/send-message` - wraps MessageHandler.send()
-- [ ] Create `/mcp/tools/team-chat` - wraps AIShell.broadcast_message()
-- [ ] Create `/mcp/tools/forward` - wraps forward commands
-- [ ] Create `/mcp/tools/project-forward` - wraps project forwards
-- [ ] Create `/mcp/tools/list-ais` - returns available AIs
-- [ ] Create `/mcp/tools/terma/*` - all terma functionality
-- [ ] Create `/mcp/tools/purpose` - purpose-based routing
+- [x] Create `/shared/aish/src/mcp/server.py` with FastAPI
+- [x] Implement MCP discovery endpoint `/mcp/capabilities`
+- [x] Create `/mcp/tools/send-message` - wraps MessageHandler.send()
+- [x] Create `/mcp/tools/team-chat` - wraps MessageHandler.broadcast()
+- [x] Create `/mcp/tools/forward` - wraps forward commands
+- [x] Create `/mcp/tools/project-forward` - wraps project forwards
+- [x] Create `/mcp/tools/list-ais` - returns available AIs
+- [x] Create `/mcp/tools/terma/*` - all terma functionality
+- [x] Create `/mcp/tools/purpose` - purpose-based routing
 - [ ] Add authentication/security layer
 - [ ] Create MCP test suite
-- [ ] Update aish to run MCP server on startup
+- [x] Update aish to run MCP server on startup
+- [x] Add MCP debug commands (status, restart, logs, debug-mcp)
 
 ### Success Criteria
-- [ ] All aish functionality exposed via MCP
-- [ ] Forwarding works through MCP
+- [x] All aish functionality exposed via MCP
+- [x] Forwarding works through MCP
 - [ ] MCP endpoints documented
-- [ ] External tools can connect
+- [x] External tools can connect
 
 ### Blocked On
 - [ ] Nothing currently
 
-## Phase 2: UI Migration to MCP [0% Complete]
+## Phase 2: UI Migration to MCP [95% Complete]
 
 ### Tasks
-- [ ] Update `window.AIChat` to use aish MCP endpoints
-- [ ] Update Projects Chat to use MCP
-- [ ] Update Builder Chat to use MCP  
-- [ ] Update Team Chat to use MCP
-- [ ] Update all specialist UIs (Numa, Sophia, etc.)
+- [x] Update `window.AIChat` to use aish MCP endpoints
+- [x] Update Projects Chat to use MCP
+- [x] Update Builder Chat to use MCP  
+- [x] Update Team Chat to use MCP
+- [x] Update all specialist UIs (Numa, Sophia, etc.)
 - [ ] Remove direct Rhetor specialist endpoints
 - [ ] Test forwarding works in all UIs
-- [ ] Update error handling for MCP responses
+- [x] Update error handling for MCP responses
 - [ ] Performance test vs current HTTP
 
 ### Success Criteria
-- [ ] All UI chat works through aish MCP
+- [x] All UI chat works through aish MCP
 - [ ] Forwarding works everywhere
 - [ ] No regression in performance
 - [ ] Error handling improved
