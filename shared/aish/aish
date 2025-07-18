@@ -152,6 +152,21 @@ def _dispatch_command(command_type, args, shell):
     elif command_type == 'project':
         from commands.project import handle_project_command
         return handle_project_command(args.message or [])
+    elif command_type == 'introspect':
+        from commands.introspect import introspect_command
+        result = introspect_command(args.message or [], shell)
+        print(result)
+        return True
+    elif command_type == 'context':
+        from commands.context import context_command
+        result = context_command(args.message or [], shell)
+        print(result)
+        return True
+    elif command_type == 'explain':
+        from commands.explain import explain_command
+        result = explain_command(args.message or [], shell)
+        print(result)
+        return True
     return False
 
 
@@ -379,6 +394,11 @@ Environment variables:
             print("  autoprompt stop                Stop autoprompt")
             print("  autoprompt status              Check autoprompt status")
             print()
+            print("CLAUDE CODE IDE:")
+            print("  aish introspect <class>        See all methods of a class")
+            print("  aish context <file.py>         Show available classes in file scope")
+            print("  aish explain \"error msg\"       Get help fixing Python errors")
+            print()
             print("DEBUG:")
             print("  aish status                    Check MCP server status")
             print("  aish restart                   Restart MCP server")
@@ -443,6 +463,16 @@ Environment variables:
     
     if args.ai_or_script == 'project':
         return _dispatch_command('project', args, shell)
+    
+    # Claude Code IDE commands
+    if args.ai_or_script == 'introspect':
+        return _dispatch_command('introspect', args, shell)
+    
+    if args.ai_or_script == 'context':
+        return _dispatch_command('context', args, shell)
+    
+    if args.ai_or_script == 'explain':
+        return _dispatch_command('explain', args, shell)
     
     # MCP Debug commands
     if args.ai_or_script == 'status':
