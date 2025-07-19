@@ -8,6 +8,7 @@ import subprocess
 import readline
 import atexit
 from pathlib import Path
+from datetime import datetime
 
 # Try to import landmarks if available
 try:
@@ -46,7 +47,8 @@ from shared.urls import tekton_url
 class AIShell:
     """The AI Shell - orchestrates AI pipelines"""
     
-    def __init__(self, rhetor_endpoint=None, debug=False):
+    def __init__(self, rhetor_endpoint=None, debug=False, capture=False):
+        self.capture = capture
         if rhetor_endpoint:
             self.rhetor_endpoint = rhetor_endpoint
         else:
@@ -468,6 +470,10 @@ MCP Server Management:
                     
                     # Display response
                     print(response)
+                    
+                    # Capture if requested
+                    if self.capture:
+                        self._capture_output(ai_name, message, response)
                 else:
                     print(f"No response from {ai_name}")
             else:
@@ -673,6 +679,43 @@ MCP Server Management:
         else:
             print("✓ MCP debug mode disabled")
             print("  Restart MCP server with /restart to hide debug output")
+    
+    def _capture_output(self, ai_name, message, response):
+        """Capture command output to .tekton/aish/captures/"""
+        try:
+            # Create captures directory if it doesn't exist
+            # Use TEKTON_ROOT to ensure captures go to the right environment
+            tekton_root = TektonEnviron.get('TEKTON_ROOT')
+            if not tekton_root:
+                print("[DEBUG] Warning: TEKTON_ROOT not set, cannot capture output")
+                return
+            captures_dir = Path(tekton_root) / '.tekton' / 'aish' / 'captures'
+            captures_dir.mkdir(parents=True, exist_ok=True)
+            
+            # Generate timestamp and filename
+            timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+            filename = f"{timestamp}_{ai_name}.txt"
+            filepath = captures_dir / filename
+            
+            # Write capture file
+            with open(filepath, 'w') as f:
+                f.write(f"Timestamp: {datetime.now().isoformat()}\n")
+                f.write(f"AI: {ai_name}\n")
+                f.write(f"Message: {message}\n")
+                f.write(f"{'='*60}\n")
+                f.write(f"Response:\n{response}\n")
+            
+            # Create/update symlink to latest
+            latest_link = captures_dir / 'last_output.txt'
+            if latest_link.exists() or latest_link.is_symlink():
+                latest_link.unlink()
+            latest_link.symlink_to(filename)
+            
+            if self.debug:
+                print(f"[DEBUG] Output captured to: {filepath}")
+        except Exception as e:
+            if self.debug:
+                print(f"[DEBUG] Failed to capture output: {e}")
 
 
 if __name__ == '__main__':

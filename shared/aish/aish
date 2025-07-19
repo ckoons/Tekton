@@ -278,6 +278,9 @@ def main():
   echo "data" | aish athena # Pipe data to Athena AI
   aish team-chat "hello"    # Broadcast to all AIs
   aish -l                   # List available AIs
+  aish --capture numa "hi"  # Capture output to .tekton/aish/captures/
+  aish status               # Show system status
+  aish status json          # JSON formatted status
   aish script.ai            # Run AI script file
 
 Available AIs: numa, tekton, prometheus, telos, metis, harmonia,
@@ -287,7 +290,8 @@ Available AIs: numa, tekton, prometheus, telos, metis, harmonia,
 Environment variables:
   RHETOR_ENDPOINT    # Override default Rhetor endpoint
   AISH_ACTIVE        # Set by aish-proxy when active
-  AISH_DEBUG         # Enable debug output''',
+  AISH_DEBUG         # Enable debug output
+  AISH_NO_MCP        # Disable MCP server startup''',
         formatter_class=argparse.RawDescriptionHelpFormatter
     )
     
@@ -332,12 +336,19 @@ Environment variables:
         help='List available AI specialists and exit'
     )
     
+    parser.add_argument(
+        '--capture',
+        action='store_true',
+        help='Capture command output to .tekton/aish/captures/'
+    )
+    
     args = parser.parse_args()
     
     # Create shell instance
     shell = AIShell(
         rhetor_endpoint=args.rhetor,
-        debug=args.debug
+        debug=args.debug,
+        capture=args.capture
     )
     
     # Handle general help command
@@ -409,6 +420,7 @@ Environment variables:
             print("PROJECTS:")
             print("  aish project list              List Tekton managed projects with CI info")
             print("  aish project forward <name>    Forward project CI to current terminal")
+            print("  aish project forward <name> <terminal>  Forward project CI to specific terminal")
             print("  aish project unforward <name>  Remove project CI forwarding")
             print()
             print("TERMINAL:")
@@ -435,8 +447,10 @@ Environment variables:
             print("  CIs: You're encouraged to use these tools liberally. If you find patterns")
             print("  that could be improved or new commands that would help, please suggest them!")
             print()
-            print("DEBUG:")
-            print("  aish status                    Check MCP server status")
+            print("STATUS & DEBUG:")
+            print("  aish status                    Show forwarding, AIs, and terminal status")
+            print("  aish status --json             Machine-readable status output")
+            print("  aish status mcp                Check MCP server status")
             print("  aish restart                   Restart MCP server")
             print("  aish logs                      Show MCP server logs")
             print("  aish debug-mcp                 Toggle MCP debug mode")
@@ -510,9 +524,16 @@ Environment variables:
     if args.ai_or_script == 'explain':
         return _dispatch_command('explain', args, shell)
     
-    # MCP Debug commands
+    # Status commands
     if args.ai_or_script == 'status':
-        shell._check_mcp_status()
+        if args.message and len(args.message) > 0 and args.message[0] == 'mcp':
+            # MCP status
+            shell._check_mcp_status()
+        else:
+            # General aish status
+            from commands.status import handle_status_command
+            # Pass remaining args which might include --json
+            handle_status_command(args.message if args.message else [])
         return
     
     if args.ai_or_script == 'restart':
