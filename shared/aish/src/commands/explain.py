@@ -7,7 +7,38 @@ Analyzes error messages and provides helpful suggestions.
 
 from src.introspect import TektonInspector
 
+# Import landmarks with fallback
+try:
+    from landmarks import api_contract, integration_point
+except ImportError:
+    def api_contract(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+    
+    def integration_point(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
 
+
+@api_contract(
+    title="aish explain command",
+    description="Analyzes Python errors and suggests fixes",
+    endpoint="aish explain <error>",
+    method="CLI",
+    request_schema={"error_message": "string"},
+    response_schema={"error_type": "string", "explanation": "string", "suggestions": ["string"], "examples": ["string"]},
+    performance_requirements="<100ms analysis time"
+)
+@integration_point(
+    title="Error Analysis Integration",
+    description="Connects error messages to introspection data for intelligent suggestions",
+    target_component="TektonInspector",
+    protocol="function_call",
+    data_flow="error message → pattern matching → class introspection → suggestions",
+    integration_date="2025-01-18"
+)
 def explain_command(args: list, shell=None) -> str:
     """
     Execute explain command.

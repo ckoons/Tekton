@@ -13,6 +13,9 @@ System design, patterns, and architectural decisions. Critical for understanding
 ### Standards  
 Coding standards, API design principles, UI conventions. Must be kept current with code.
 
+**🎯 Essential Standard**: 
+- **Landmarks_and_Semantic_Tags_Standard.md** - THE authoritative guide for marking code architecture with landmarks and UI elements with semantic tags. All sprints must follow this standard to maintain consistency and build our knowledge graph.
+
 ### ComponentGuides
 Step-by-step guides for building new Tekton components. Essential for development.
 
@@ -40,10 +43,12 @@ Release notes and test suite documentation (to be created).
 
 ## Maintenance Priority
 
-1. **Always Current**: Philosophy, Architecture, Standards
+1. **Always Current**: Philosophy, Architecture, Standards (especially Landmarks_and_Semantic_Tags_Standard.md)
 2. **Update with Changes**: ComponentGuides, AITraining (for affected components)
 3. **Update with Features**: QuickStart, MCP, DeveloperGuides
 4. **Update as Needed**: UserGuides, Releases
+
+**Sprint Completion Requirement**: Always verify compliance with Standards/Landmarks_and_Semantic_Tags_Standard.md before closing any sprint.
 
 ## Documentation Philosophy
 

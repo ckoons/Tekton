@@ -66,6 +66,9 @@ function numaUrl(path = "", ...args) {
     return tektonUrl("numa", path, ...args);
 }
 
+// Landmark: aish MCP URL Builder - Routes UI to port 8118
+// Critical distinction: aish shell runs on 8117, MCP server on 8118.
+// This function ensures all UI components connect to the MCP server.
 function aishUrl(path = "", ...args) {
     // aish MCP server runs on AISH_MCP_PORT, not AISH_PORT
     const host = args[0] || "localhost";

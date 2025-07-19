@@ -13,6 +13,9 @@ console.log('[FILE_TRACE] Loading: ai-chat.js');
  *     .then(responses => console.log(responses))
  */
 
+// Landmark: Unified AI Chat Interface - All UI routes through aish MCP
+// This consolidation ensures all AI communication goes through a single
+// source of truth (aish MCP server) rather than scattered endpoints.
 window.AIChat = {
     // Legacy endpoints (to be removed)
     teamChatUrl: 'http://localhost:8003/api/team-chat',
@@ -20,7 +23,8 @@ window.AIChat = {
     
     /**
      * Send a message to a single AI specialist (like aish apollo "message")
-     * @param {string} aiName - The AI name (e.g., 'noesis-ai', 'apollo-ai')
+     * @param {string} aiName - The AI name (e.g., 'noesis', 'apollo') 
+     * Note: Use base names without '-ai' suffix as per MCP migration
      * @param {string} message - The message to send
      * @returns {Promise<Object>} The AI's response
      */

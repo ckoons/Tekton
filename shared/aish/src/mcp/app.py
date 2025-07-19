@@ -13,6 +13,30 @@ import threading
 from contextlib import asynccontextmanager
 from pathlib import Path
 
+# Import landmarks with fallback
+try:
+    from landmarks import (
+        architecture_decision,
+        api_contract,
+        integration_point
+    )
+except ImportError:
+    # Define no-op decorators when landmarks not available
+    def architecture_decision(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+    
+    def api_contract(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+    
+    def integration_point(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+
 # Add TEKTON_ROOT to path if needed
 tekton_root = os.environ.get('TEKTON_ROOT')
 if tekton_root and tekton_root not in sys.path:
@@ -37,6 +61,14 @@ logger = logging.getLogger(__name__)
 
 
 @asynccontextmanager
+@integration_point(
+    title="MCP Server Lifecycle Manager",
+    description="Manages startup and graceful shutdown of MCP server",
+    target_component="FastAPI",
+    protocol="ASGI",
+    data_flow="startup → yield app → shutdown",
+    integration_date="2025-01-18"
+)
 async def lifespan(app: FastAPI):
     """
     Manage application lifecycle - startup and shutdown events
@@ -75,6 +107,15 @@ app.include_router(mcp_router)
 
 # Root endpoint
 @app.get("/")
+@api_contract(
+    title="MCP Server Root",
+    description="Service discovery endpoint",
+    endpoint="/",
+    method="GET",
+    request_schema={},
+    response_schema={"service": "string", "version": "string", "description": "string", "mcp_endpoint": "string"},
+    performance_requirements="<10ms response time"
+)
 async def root():
     """Root endpoint - provides basic service information"""
     return {
@@ -85,6 +126,15 @@ async def root():
     }
 
 
+@architecture_decision(
+    title="Threaded MCP Server",
+    description="Run MCP server in separate thread from main aish process",
+    rationale="Allows aish shell to remain responsive while MCP server handles HTTP requests",
+    alternatives_considered=["Subprocess", "Single process with async", "Separate daemon"],
+    impacts=["process_management", "resource_sharing", "debugging"],
+    decided_by="Casey",
+    decision_date="2025-01-18"
+)
 def start_mcp_server():
     """
     Start the MCP server - designed to be run in a thread

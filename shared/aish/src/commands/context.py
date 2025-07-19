@@ -8,7 +8,25 @@ Analyzes a Python file to show what classes and methods are available in scope.
 import os
 from src.introspect import TektonInspector
 
+# Import landmarks with fallback
+try:
+    from landmarks import api_contract
+except ImportError:
+    def api_contract(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
 
+
+@api_contract(
+    title="aish context command",
+    description="Shows available classes/methods in a Python file's scope",
+    endpoint="aish context <file>",
+    method="CLI",
+    request_schema={"file_path": "string (optional)"},
+    response_schema={"imports": "dict", "local_classes": "dict", "local_functions": "dict"},
+    performance_requirements="<300ms for average file"
+)
 def context_command(args: list, shell=None) -> str:
     """
     Execute context command.

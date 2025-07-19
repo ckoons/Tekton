@@ -14,22 +14,22 @@ try:
     from landmarks import architecture_decision, integration_point, api_contract, state_checkpoint
 except ImportError:
     # Landmarks not available, create no-op decorators
-    def architecture_decision(name, description, rationale=""):
+    def architecture_decision(**kwargs):
         def decorator(func):
             return func
         return decorator
     
-    def integration_point(name, description, rationale=""):
+    def integration_point(**kwargs):
         def decorator(func):
             return func
         return decorator
     
-    def api_contract(name, description, rationale=""):
+    def api_contract(**kwargs):
         def decorator(func):
             return func
         return decorator
     
-    def state_checkpoint(name, description, rationale=""):
+    def state_checkpoint(**kwargs):
         def decorator(func):
             return func
         return decorator
@@ -128,7 +128,14 @@ if not os.environ.get('AISH_NO_MCP'):
             traceback.print_exc(file=sys.stderr)
 
 
-# Landmark: Command Type Dispatch Router - Routes to appropriate handlers
+@integration_point(
+    title="Command Type Dispatch Router",
+    description="Routes commands to appropriate handlers based on type",
+    target_component="command_handlers",
+    protocol="function_call",
+    data_flow="command_type → import handler → execute command",
+    integration_date="2025-01-18"
+)
 def _dispatch_command(command_type, args, shell):
     """Dispatch command to appropriate handler based on type."""
     if command_type == 'forward':
@@ -152,6 +159,9 @@ def _dispatch_command(command_type, args, shell):
     elif command_type == 'project':
         from commands.project import handle_project_command
         return handle_project_command(args.message or [])
+    # Claude Code IDE Command Integration - CI tooling
+    # These commands provide Companion Intelligences with IDE-like capabilities
+    # to eliminate guessing and save ~40% context during development.
     elif command_type == 'introspect':
         from commands.introspect import introspect_command
         result = introspect_command(args.message or [], shell)
@@ -170,7 +180,15 @@ def _dispatch_command(command_type, args, shell):
     return False
 
 
-# Landmark: AI Message Input Collection - Priority: args > piped stdin > interactive
+@api_contract(
+    title="AI Message Input Collection",
+    description="Collects input with priority: args > piped stdin > interactive",
+    endpoint="internal",
+    method="function",
+    request_schema={"args": "argparse.Namespace", "component": "string"},
+    response_schema={"input_data": "string"},
+    performance_requirements="<10ms for args, <100ms for stdin"
+)
 def _collect_ai_input(args, component):
     """Collect input for AI from various sources."""
     # Get input from message args first, then stdin, then interactive
@@ -202,7 +220,14 @@ def _collect_ai_input(args, component):
     return input_data
 
 
-# Landmark: AI Communication Handler - Routes to team-chat or individual AIs
+@integration_point(
+    title="AI Communication Handler",
+    description="Routes messages to team-chat or individual AIs",
+    target_component="ai_shell",
+    protocol="internal_api",
+    data_flow="command → shell.send_to_ai or shell.broadcast_message",
+    integration_date="2025-01-18"
+)
 def _handle_ai_command(args, shell, ai_names):
     """Handle command directed at a specific AI."""
     component = args.ai_or_script.lower()
@@ -235,7 +260,15 @@ def _handle_ai_command(args, shell, ai_names):
         shell.send_to_ai(component, input_data)
 
 
-# Landmark: aish Command Entry Point - Main orchestration for all commands
+@architecture_decision(
+    title="aish Command Entry Point",
+    description="Main orchestration point for all aish commands",
+    rationale="Provides unified entry for AI shell, scripts, and individual AI commands",
+    alternatives_considered=["Separate binaries per AI", "Menu-driven interface"],
+    impacts=["usability", "consistency", "extensibility"],
+    decided_by="Casey",
+    decision_date="2025-01-18"
+)
 def main():
     parser = argparse.ArgumentParser(
         description='aish - The AI Shell\n\nProvides AI capabilities in your terminal through the Tekton platform.',

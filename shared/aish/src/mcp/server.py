@@ -23,6 +23,36 @@ import uvicorn
 import json
 import yaml
 
+# Import landmarks with fallback
+try:
+    from landmarks import (
+        architecture_decision,
+        api_contract,
+        integration_point,
+        performance_boundary
+    )
+except ImportError:
+    # Define no-op decorators when landmarks not available
+    def architecture_decision(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+    
+    def api_contract(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+    
+    def integration_point(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+    
+    def performance_boundary(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+
 # Add TEKTON_ROOT to path if needed
 tekton_root = os.environ.get('TEKTON_ROOT')
 if tekton_root and tekton_root not in sys.path:
@@ -57,6 +87,23 @@ logger = logging.getLogger(__name__)
 message_handler = MessageHandler()
 ai_shell = AIShell()
 forwarding_registry = ForwardingRegistry()
+
+# Module-level architecture decision
+@architecture_decision(
+    title="MCP Server Architecture",
+    description="Single source of truth for AI routing through standard protocol",
+    rationale="Consolidates all AI message routing, eliminating duplicate HTTP endpoints across components",
+    alternatives_considered=["Direct HTTP endpoints per component", "WebSocket-only communication", "gRPC"],
+    impacts=["ui_integration", "distributed_tekton", "ai_communication"],
+    decided_by="Casey",
+    decision_date="2025-01-18"
+)
+class _MCPServerArchitecture:
+    """
+    This marker class documents the architectural decision to use MCP
+    as the unified communication protocol for all AI interactions.
+    """
+    pass
 
 
 # Create FastAPI router using Tekton pattern
@@ -161,6 +208,23 @@ async def get_capabilities():
 
 
 @mcp_router.post("/tools/send-message")
+@api_contract(
+    title="AI Message Routing",
+    description="Send message to specific AI specialist",
+    endpoint="/api/mcp/v2/tools/send-message",
+    method="POST",
+    request_schema={"ai_name": "string", "message": "string", "stream": "boolean?"},
+    response_schema={"response": "string", "ai_name": "string", "timestamp": "string?"},
+    performance_requirements="<500ms routing time"
+)
+@integration_point(
+    title="AI Shell Message Integration",
+    description="Routes messages through AIShell to appropriate AI specialist",
+    target_component="AIShell",
+    protocol="internal_api",
+    data_flow="MCP request → AIShell.send_to_ai → AI specialist → response",
+    integration_date="2025-01-18"
+)
 async def send_message(request: Request):
     """
     Send a message to a specific AI with streaming response support
@@ -201,6 +265,22 @@ async def send_message(request: Request):
 
 
 @mcp_router.post("/tools/team-chat")
+@api_contract(
+    title="Team Chat Broadcast",
+    description="Broadcasts messages to all AI specialists",
+    endpoint="/api/mcp/v2/tools/team-chat",
+    method="POST",
+    request_schema={"message": "string"},
+    response_schema={"responses": [{"specialist_id": "string", "content": "string", "socket_id": "string"}]},
+    performance_requirements="<2s for all AI responses"
+)
+@performance_boundary(
+    title="Team Chat Performance",
+    description="Critical path for multi-AI coordination",
+    sla="<2s total response time",
+    optimization_notes="Parallel AI queries, formatted response caching",
+    measured_impact="Enables real-time team collaboration"
+)
 async def team_chat(request: Request):
     """
     Broadcast message to all AIs
@@ -433,8 +513,16 @@ async def manage_project_forward(request: Request):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-# Health check endpoint
 @mcp_router.get("/health")
+@api_contract(
+    title="MCP Health Check",
+    description="Service discovery and monitoring endpoint",
+    endpoint="/api/mcp/v2/health",
+    method="GET",
+    request_schema={},
+    response_schema={"status": "string", "service": "string", "version": "string", "capabilities": ["string"], "message": "string"},
+    performance_requirements="<10ms response time"
+)
 async def health_check():
     """
     Health check endpoint for aish MCP server

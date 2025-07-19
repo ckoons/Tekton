@@ -9,7 +9,25 @@ import sys
 from typing import Optional
 from src.introspect import TektonInspector, IntrospectionCache
 
+# Import landmarks with fallback
+try:
+    from landmarks import api_contract
+except ImportError:
+    def api_contract(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
 
+
+@api_contract(
+    title="aish introspect command",
+    description="Primary CI interface for class/method discovery",
+    endpoint="aish introspect <class>",
+    method="CLI",
+    request_schema={"class_name": "string", "options": ["--json", "--no-cache"]},
+    response_schema={"class_info": "formatted string or JSON"},
+    performance_requirements="<200ms first call, <5ms cached"
+)
 def introspect_command(args: list, shell=None) -> str:
     """
     Execute introspect command.
