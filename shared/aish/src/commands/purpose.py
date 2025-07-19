@@ -112,71 +112,71 @@ class PurposeCommand:
         
         # Search for matching files in playbook directory
         found = False
+        purpose_lower = purpose.lower()
         
-        # Check roles directory
-        role_file = self.playbook_dir / "roles" / purpose.lower() / "general_description.md"
-        if role_file.exists():
-            print(f"(from {role_file.relative_to(self.playbook_dir)})")
-            with open(role_file) as f:
-                print(f.read())
-            found = True
+        # Get all top-level directories under playbook
+        if not self.playbook_dir.exists():
+            print(f"Playbook directory not found: {self.playbook_dir}")
+            return
             
-        # Check projects directory
-        project_files = glob.glob(
-            str(self.playbook_dir / "projects" / f"*{purpose.lower()}*.md"),
-            recursive=False
-        )
-        for pf in project_files:
-            print(f"\n(from {Path(pf).relative_to(self.playbook_dir)})")
-            with open(pf) as f:
-                print(f.read())
-            found = True
-            
-        # Check tasks directory  
-        task_files = glob.glob(
-            str(self.playbook_dir / "tasks" / f"*{purpose.lower()}*.md"),
-            recursive=False
-        )
-        for tf in task_files:
-            print(f"\n(from {Path(tf).relative_to(self.playbook_dir)})")
-            with open(tf) as f:
-                print(f.read())
-            found = True
-            
-        # Check for exact match files in root directories
-        for subdir in ["roles", "projects", "tasks"]:
-            exact_file = self.playbook_dir / subdir / f"{purpose.lower()}.md"
-            if exact_file.exists() and str(exact_file) not in project_files + task_files:
-                print(f"\n(from {exact_file.relative_to(self.playbook_dir)})")
-                with open(exact_file) as f:
-                    print(f.read())
-                found = True
-        
-        # Check lessons directory
-        lessons_dir = self.playbook_dir / "lessons"
-        if lessons_dir.exists():
-            lesson_files = glob.glob(
-                str(lessons_dir / f"*{purpose.lower()}*.md"),
-                recursive=False
-            )
-            for lf in lesson_files:
-                print(f"\n(from {Path(lf).relative_to(self.playbook_dir)})")
-                with open(lf) as f:
-                    print(f.read())
-                found = True
+        # Process each top-level directory
+        for top_dir in self.playbook_dir.iterdir():
+            if not top_dir.is_dir():
+                continue
                 
-            # Also check for exact match in lessons
-            exact_lesson = lessons_dir / f"{purpose.lower()}.md"
-            if exact_lesson.exists() and str(exact_lesson) not in lesson_files:
-                print(f"\n(from {exact_lesson.relative_to(self.playbook_dir)})")
-                with open(exact_lesson) as f:
-                    print(f.read())
-                found = True
+            # Look for matches at the "targets" level (files and directories in top_dir)
+            for item in top_dir.iterdir():
+                item_name = item.stem.lower()  # Remove extension for comparison
+                
+                # Check if this item matches our purpose (case-insensitive)
+                if item_name == purpose_lower:
+                    if item.is_file():
+                        # File match - print its contents
+                        print(f"\n(from {item.relative_to(self.playbook_dir)})")
+                        try:
+                            with open(item, 'r', encoding='utf-8') as f:
+                                print(f.read())
+                            found = True
+                        except Exception as e:
+                            print(f"Error reading file: {e}")
+                            
+                    elif item.is_dir():
+                        # Directory match - print all files recursively
+                        found_files = self._print_all_files_in_directory(item)
+                        if found_files:
+                            found = True
         
         if not found:
             print(f"No playbook content found for '{purpose}'")
         
         print()  # Blank line between sections
+    
+    def _print_all_files_in_directory(self, directory: Path) -> bool:
+        """Recursively print all files in a directory."""
+        found_any = False
+        
+        # Walk through directory recursively
+        for root, dirs, files in os.walk(directory):
+            root_path = Path(root)
+            
+            # Sort files for consistent output
+            for filename in sorted(files):
+                file_path = root_path / filename
+                
+                # Skip hidden files and non-text files
+                if filename.startswith('.'):
+                    continue
+                    
+                # Print file contents
+                print(f"\n(from {file_path.relative_to(self.playbook_dir)})")
+                try:
+                    with open(file_path, 'r', encoding='utf-8') as f:
+                        print(f.read())
+                    found_any = True
+                except Exception as e:
+                    print(f"Error reading file: {e}")
+                    
+        return found_any
     
     def show_current_purpose(self) -> None:
         """Show the current terminal's purpose and playbook content."""
