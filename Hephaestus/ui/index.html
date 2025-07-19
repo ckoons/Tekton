@@ -138,10 +138,79 @@
             50% { box-shadow: 0 0 7px 3px rgba(255, 255, 255, 0.4); }
             100% { box-shadow: 0 0 5px 2px rgba(255, 255, 255, 0.3); }
         }
+        
+        /* CSS-First Navigation Styles */
+        .nav-label-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            cursor: pointer;
+            padding: 0;
+            margin: 0;
+            background: none;
+            border: none;
+            color: inherit;
+            font: inherit;
+            text-align: left;
+        }
+        
+        /* Hide all components by default */
+        .component {
+            display: none;
+        }
+        
+        /* Show component when its radio is checked */
+        #nav-numa:checked ~ .app-container .component[data-component="numa"],
+        #nav-tekton:checked ~ .app-container .component[data-component="tekton"],
+        #nav-prometheus:checked ~ .app-container .component[data-component="prometheus"],
+        #nav-telos:checked ~ .app-container .component[data-component="telos"],
+        #nav-metis:checked ~ .app-container .component[data-component="metis"],
+        #nav-harmonia:checked ~ .app-container .component[data-component="harmonia"],
+        #nav-synthesis:checked ~ .app-container .component[data-component="synthesis"],
+        #nav-athena:checked ~ .app-container .component[data-component="athena"],
+        #nav-sophia:checked ~ .app-container .component[data-component="sophia"],
+        #nav-noesis:checked ~ .app-container .component[data-component="noesis"],
+        #nav-engram:checked ~ .app-container .component[data-component="engram"],
+        #nav-apollo:checked ~ .app-container .component[data-component="apollo"],
+        #nav-rhetor:checked ~ .app-container .component[data-component="rhetor"],
+        #nav-budget:checked ~ .app-container .component[data-component="budget"],
+        #nav-hermes:checked ~ .app-container .component[data-component="hermes"],
+        #nav-ergon:checked ~ .app-container .component[data-component="ergon"],
+        #nav-terma:checked ~ .app-container .component[data-component="terma"],
+        #nav-profile:checked ~ .app-container .component[data-component="profile"],
+        #nav-settings:checked ~ .app-container .component[data-component="settings"] {
+            display: block;
+        }
+        
+        /* Style active nav items based on checked radio */
+        #nav-numa:checked ~ .app-container .nav-item[data-component="numa"],
+        #nav-tekton:checked ~ .app-container .nav-item[data-component="tekton"],
+        #nav-prometheus:checked ~ .app-container .nav-item[data-component="prometheus"],
+        #nav-telos:checked ~ .app-container .nav-item[data-component="telos"],
+        #nav-metis:checked ~ .app-container .nav-item[data-component="metis"],
+        #nav-harmonia:checked ~ .app-container .nav-item[data-component="harmonia"],
+        #nav-synthesis:checked ~ .app-container .nav-item[data-component="synthesis"],
+        #nav-athena:checked ~ .app-container .nav-item[data-component="athena"],
+        #nav-sophia:checked ~ .app-container .nav-item[data-component="sophia"],
+        #nav-noesis:checked ~ .app-container .nav-item[data-component="noesis"],
+        #nav-engram:checked ~ .app-container .nav-item[data-component="engram"],
+        #nav-apollo:checked ~ .app-container .nav-item[data-component="apollo"],
+        #nav-rhetor:checked ~ .app-container .nav-item[data-component="rhetor"],
+        #nav-budget:checked ~ .app-container .nav-item[data-component="budget"],
+        #nav-hermes:checked ~ .app-container .nav-item[data-component="hermes"],
+        #nav-ergon:checked ~ .app-container .nav-item[data-component="ergon"],
+        #nav-terma:checked ~ .app-container .nav-item[data-component="terma"],
+        #nav-profile:checked ~ .app-container .nav-item[data-component="profile"],
+        #nav-settings:checked ~ .app-container .nav-item[data-component="settings"] {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
     </style>
     <!-- Environment variables and configuration -->
     <script src="scripts/env.js"></script>
     <script src="scripts/debug-config.js"></script>
+    <!-- Simple health monitoring for nav dots -->
+    <script src="scripts/health-monitor.js"></script>
     <style>
         /* Streamlined header styles */
         .left-panel-header {
@@ -202,6 +271,27 @@
     </style>
 </head>
 <body data-theme-base="pure-black">
+    <!-- Hidden radio inputs for CSS-first navigation (must be outside app-container) -->
+    <input type="radio" name="component-nav" id="nav-numa" checked style="display: none;">
+    <input type="radio" name="component-nav" id="nav-tekton" style="display: none;">
+    <input type="radio" name="component-nav" id="nav-prometheus" style="display: none;">
+    <input type="radio" name="component-nav" id="nav-telos" style="display: none;">
+    <input type="radio" name="component-nav" id="nav-metis" style="display: none;">
+    <input type="radio" name="component-nav" id="nav-harmonia" style="display: none;">
+    <input type="radio" name="component-nav" id="nav-synthesis" style="display: none;">
+    <input type="radio" name="component-nav" id="nav-athena" style="display: none;">
+    <input type="radio" name="component-nav" id="nav-sophia" style="display: none;">
+    <input type="radio" name="component-nav" id="nav-noesis" style="display: none;">
+    <input type="radio" name="component-nav" id="nav-engram" style="display: none;">
+    <input type="radio" name="component-nav" id="nav-apollo" style="display: none;">
+    <input type="radio" name="component-nav" id="nav-rhetor" style="display: none;">
+    <input type="radio" name="component-nav" id="nav-budget" style="display: none;">
+    <input type="radio" name="component-nav" id="nav-hermes" style="display: none;">
+    <input type="radio" name="component-nav" id="nav-ergon" style="display: none;">
+    <input type="radio" name="component-nav" id="nav-terma" style="display: none;">
+    <input type="radio" name="component-nav" id="nav-profile" style="display: none;">
+    <input type="radio" name="component-nav" id="nav-settings" style="display: none;">
+    
     <div class="app-container">
         <!-- Left Panel -->
         <div class="left-panel" data-tekton-nav="main" data-tekton-area="navigation">
@@ -217,73 +307,107 @@
             
             <div class="left-panel-nav" data-tekton-section="nav-main">
                 <ul class="component-nav" data-tekton-list="components">
-                    <li class="nav-item active" data-component="numa" data-tekton-nav-item="numa" data-tekton-nav-target="numa" data-tekton-state="active">
-                        <span class="nav-label">Numa - Companion</span>
-                        <span class="status-indicator"></span>
+                    <li class="nav-item" data-component="numa">
+                        <label for="nav-numa" class="nav-label-wrapper" data-tekton-nav-item="numa" data-tekton-nav-target="numa">
+                            <span class="nav-label">Numa - Companion</span>
+                            <span class="status-indicator" data-component="numa"></span>
+                        </label>
                     </li>
-                    <li class="nav-item" data-component="tekton" data-tekton-nav-item="tekton" data-tekton-nav-target="tekton" data-tekton-state="inactive">
-                        <span class="nav-label">Tekton - Projects</span>
-                        <span class="status-indicator"></span>
+                    <li class="nav-item" data-component="tekton">
+                        <label for="nav-tekton" class="nav-label-wrapper" data-tekton-nav-item="tekton" data-tekton-nav-target="tekton">
+                            <span class="nav-label">Tekton - Projects</span>
+                            <span class="status-indicator" data-component="tekton_core"></span>
+                        </label>
                     </li>
-                    <li class="nav-item" data-component="prometheus" data-tekton-nav-item="prometheus" data-tekton-nav-target="prometheus" data-tekton-state="inactive">
-                        <span class="nav-label">Prometheus - Planning</span>
-                        <span class="status-indicator"></span>
+                    <li class="nav-item" data-component="prometheus">
+                        <label for="nav-prometheus" class="nav-label-wrapper" data-tekton-nav-item="prometheus" data-tekton-nav-target="prometheus">
+                            <span class="nav-label">Prometheus - Planning</span>
+                            <span class="status-indicator" data-component="prometheus"></span>
+                        </label>
                     </li>
-                    <li class="nav-item" data-component="telos" data-tekton-nav-item="telos" data-tekton-nav-target="telos" data-tekton-state="inactive">
-                        <span class="nav-label">Telos - Requirements</span>
-                        <span class="status-indicator"></span>
+                    <li class="nav-item" data-component="telos">
+                        <label for="nav-telos" class="nav-label-wrapper" data-tekton-nav-item="telos" data-tekton-nav-target="telos">
+                            <span class="nav-label">Telos - Requirements</span>
+                            <span class="status-indicator" data-component="telos"></span>
+                        </label>
                     </li>
-                    <li class="nav-item" data-component="metis" data-tekton-nav-item="metis" data-tekton-nav-target="metis" data-tekton-state="inactive">
-                        <span class="nav-label" data-greek-name="Metis - Workflows" data-functional-name="Workflows">Metis - Workflows</span>
-                        <span class="status-indicator"></span>
+                    <li class="nav-item" data-component="metis">
+                        <label for="nav-metis" class="nav-label-wrapper" data-tekton-nav-item="metis" data-tekton-nav-target="metis">
+                            <span class="nav-label" data-greek-name="Metis - Workflows" data-functional-name="Workflows">Metis - Workflows</span>
+                            <span class="status-indicator" data-component="metis"></span>
+                        </label>
                     </li>
-                    <li class="nav-item" data-component="harmonia" data-tekton-nav-item="harmonia" data-tekton-nav-target="harmonia" data-tekton-state="inactive">
-                        <span class="nav-label">Harmonia - Orchestration</span>
-                        <span class="status-indicator"></span>
+                    <li class="nav-item" data-component="harmonia">
+                        <label for="nav-harmonia" class="nav-label-wrapper" data-tekton-nav-item="harmonia" data-tekton-nav-target="harmonia">
+                            <span class="nav-label">Harmonia - Orchestration</span>
+                            <span class="status-indicator" data-component="harmonia"></span>
+                        </label>
                     </li>
-                    <li class="nav-item" data-component="synthesis" data-tekton-nav-item="synthesis" data-tekton-nav-target="synthesis" data-tekton-state="inactive">
-                        <span class="nav-label">Synthesis - Integration</span>
-                        <span class="status-indicator"></span>
+                    <li class="nav-item" data-component="synthesis">
+                        <label for="nav-synthesis" class="nav-label-wrapper" data-tekton-nav-item="synthesis" data-tekton-nav-target="synthesis">
+                            <span class="nav-label">Synthesis - Integration</span>
+                            <span class="status-indicator" data-component="synthesis"></span>
+                        </label>
                     </li>
-                    <li class="nav-item" data-component="athena" data-tekton-nav-item="athena" data-tekton-nav-target="athena" data-tekton-state="inactive">
-                        <span class="nav-label">Athena - Knowledge</span>
-                        <span class="status-indicator" style="background-color: #7B1FA2;"></span>
+                    <li class="nav-item" data-component="athena">
+                        <label for="nav-athena" class="nav-label-wrapper" data-tekton-nav-item="athena" data-tekton-nav-target="athena">
+                            <span class="nav-label">Athena - Knowledge</span>
+                            <span class="status-indicator" data-component="athena" style="background-color: #7B1FA2;"></span>
+                        </label>
                     </li>
-                    <li class="nav-item" data-component="sophia" data-tekton-nav-item="sophia" data-tekton-nav-target="sophia" data-tekton-state="inactive">
-                        <span class="nav-label">Sophia - Learning</span>
-                        <span class="status-indicator"></span>
+                    <li class="nav-item" data-component="sophia">
+                        <label for="nav-sophia" class="nav-label-wrapper" data-tekton-nav-item="sophia" data-tekton-nav-target="sophia">
+                            <span class="nav-label">Sophia - Learning</span>
+                            <span class="status-indicator" data-component="sophia"></span>
+                        </label>
                     </li>
-                    <li class="nav-item" data-component="noesis" data-tekton-nav-item="noesis" data-tekton-nav-target="noesis" data-tekton-state="inactive">
-                        <span class="nav-label">Noesis - Discovery</span>
-                        <span class="status-indicator"></span>
+                    <li class="nav-item" data-component="noesis">
+                        <label for="nav-noesis" class="nav-label-wrapper" data-tekton-nav-item="noesis" data-tekton-nav-target="noesis">
+                            <span class="nav-label">Noesis - Discovery</span>
+                            <span class="status-indicator" data-component="noesis"></span>
+                        </label>
                     </li>
-                    <li class="nav-item" data-component="engram" data-tekton-nav-item="engram" data-tekton-nav-target="engram" data-tekton-state="inactive">
-                        <span class="nav-label">Engram - Memory</span>
-                        <span class="status-indicator"></span>
+                    <li class="nav-item" data-component="engram">
+                        <label for="nav-engram" class="nav-label-wrapper" data-tekton-nav-item="engram" data-tekton-nav-target="engram">
+                            <span class="nav-label">Engram - Memory</span>
+                            <span class="status-indicator" data-component="engram"></span>
+                        </label>
                     </li>
-                    <li class="nav-item" data-component="apollo" data-tekton-nav-item="apollo" data-tekton-nav-target="apollo" data-tekton-state="inactive">
-                        <span class="nav-label" data-greek-name="Apollo - Attention/Prediction" data-functional-name="Attention/Prediction">Apollo - Attention/Prediction</span>
-                        <span class="status-indicator"></span>
+                    <li class="nav-item" data-component="apollo">
+                        <label for="nav-apollo" class="nav-label-wrapper" data-tekton-nav-item="apollo" data-tekton-nav-target="apollo">
+                            <span class="nav-label" data-greek-name="Apollo - Attention/Prediction" data-functional-name="Attention/Prediction">Apollo - Attention/Prediction</span>
+                            <span class="status-indicator" data-component="apollo"></span>
+                        </label>
                     </li>
-                    <li class="nav-item" data-component="rhetor" data-tekton-nav-item="rhetor" data-tekton-nav-target="rhetor" data-tekton-state="inactive">
-                        <span class="nav-label" data-greek-name="Rhetor - LLM/Prompt/Context" data-functional-name="LLM/Prompt/Context">Rhetor - LLM/Prompt/Context</span>
-                        <span class="status-indicator"></span>
+                    <li class="nav-item" data-component="rhetor">
+                        <label for="nav-rhetor" class="nav-label-wrapper" data-tekton-nav-item="rhetor" data-tekton-nav-target="rhetor">
+                            <span class="nav-label" data-greek-name="Rhetor - LLM/Prompt/Context" data-functional-name="LLM/Prompt/Context">Rhetor - LLM/Prompt/Context</span>
+                            <span class="status-indicator" data-component="rhetor"></span>
+                        </label>
                     </li>
-                    <li class="nav-item" data-component="budget" data-tekton-nav-item="budget" data-tekton-nav-target="budget" data-tekton-state="inactive">
-                        <span class="nav-label" data-greek-name="Penia - LLM Cost" data-functional-name="LLM Cost">Penia - LLM Cost</span>
-                        <span class="status-indicator" style="background-color: #34A853;"></span>
+                    <li class="nav-item" data-component="budget">
+                        <label for="nav-budget" class="nav-label-wrapper" data-tekton-nav-item="budget" data-tekton-nav-target="budget">
+                            <span class="nav-label" data-greek-name="Penia - LLM Cost" data-functional-name="LLM Cost">Penia - LLM Cost</span>
+                            <span class="status-indicator" data-component="penia" style="background-color: #34A853;"></span>
+                        </label>
                     </li>
-                    <li class="nav-item" data-component="hermes" data-tekton-nav-item="hermes" data-tekton-nav-target="hermes" data-tekton-state="inactive">
-                        <span class="nav-label">Hermes - Messages/Data</span>
-                        <span class="status-indicator"></span>
+                    <li class="nav-item" data-component="hermes">
+                        <label for="nav-hermes" class="nav-label-wrapper" data-tekton-nav-item="hermes" data-tekton-nav-target="hermes">
+                            <span class="nav-label">Hermes - Messages/Data</span>
+                            <span class="status-indicator" data-component="hermes"></span>
+                        </label>
                     </li>
-                    <li class="nav-item" data-component="ergon" data-tekton-nav-item="ergon" data-tekton-nav-target="ergon" data-tekton-state="inactive">
-                        <span class="nav-label">Ergon - Agents/Tools/MCP</span>
-                        <span class="status-indicator"></span>
+                    <li class="nav-item" data-component="ergon">
+                        <label for="nav-ergon" class="nav-label-wrapper" data-tekton-nav-item="ergon" data-tekton-nav-target="ergon">
+                            <span class="nav-label">Ergon - Agents/Tools/MCP</span>
+                            <span class="status-indicator" data-component="ergon"></span>
+                        </label>
                     </li>
-                    <li class="nav-item" data-component="terma" data-tekton-nav-item="terma" data-tekton-nav-target="terma" data-tekton-state="inactive">
-                        <span class="nav-label" data-greek-name="Terma - Terminal" data-functional-name="Terminal">Terma - Terminal</span>
-                        <span class="status-indicator"></span>
+                    <li class="nav-item" data-component="terma">
+                        <label for="nav-terma" class="nav-label-wrapper" data-tekton-nav-item="terma" data-tekton-nav-target="terma">
+                            <span class="nav-label" data-greek-name="Terma - Terminal" data-functional-name="Terminal">Terma - Terminal</span>
+                            <span class="status-indicator" data-component="terma"></span>
+                        </label>
                     </li>
                 </ul>
             </div>
@@ -291,15 +415,19 @@
             <div class="left-panel-footer" data-tekton-section="nav-footer">
                 <div class="footer-separator"></div>
                 <ul class="component-nav" data-tekton-list="utilities">
-                    <li class="nav-item" data-component="profile" data-tekton-nav-item="profile" data-tekton-nav-target="profile" data-tekton-state="inactive">
-                        <span class="button-icon">👤</span>
-                        <span class="nav-label" data-greek-name="Profile" data-functional-name="Profile">Profile</span>
-                        <span class="status-indicator"></span>
+                    <li class="nav-item" data-component="profile">
+                        <label for="nav-profile" class="nav-label-wrapper" data-tekton-nav-item="profile" data-tekton-nav-target="profile">
+                            <span class="button-icon">👤</span>
+                            <span class="nav-label" data-greek-name="Profile" data-functional-name="Profile">Profile</span>
+                            <span class="status-indicator" data-component="profile"></span>
+                        </label>
                     </li>
-                    <li class="nav-item" data-component="settings" data-tekton-nav-item="settings" data-tekton-nav-target="settings" data-tekton-state="inactive">
-                        <span class="button-icon">⚙️</span>
-                        <span class="nav-label" data-greek-name="Settings" data-functional-name="Settings">Settings</span>
-                        <span class="status-indicator"></span>
+                    <li class="nav-item" data-component="settings">
+                        <label for="nav-settings" class="nav-label-wrapper" data-tekton-nav-item="settings" data-tekton-nav-target="settings">
+                            <span class="button-icon">⚙️</span>
+                            <span class="nav-label" data-greek-name="Settings" data-functional-name="Settings">Settings</span>
+                            <span class="status-indicator" data-component="settings"></span>
+                        </label>
                     </li>
                 </ul>
             </div>
@@ -406,54 +534,55 @@
       });
     </script>
 
-    <!-- Setup minimal component loader with navigation -->
+    <!-- CSS-First Navigation Handler -->
     <script>
       document.addEventListener('DOMContentLoaded', function() {
-        // Handle navigation item clicks - this includes ALL components now, including profile and settings
-        const navItems = document.querySelectorAll('.nav-item');
-        navItems.forEach(item => {
-          item.addEventListener('click', function() {
-            const componentId = this.getAttribute('data-component');
-            if (!componentId) return;
+        console.log('[CSS-First Nav] Navigation system initialized');
+        
+        // Handle radio button changes for component loading
+        const navRadios = document.querySelectorAll('input[name="component-nav"]');
+        navRadios.forEach(radio => {
+          radio.addEventListener('change', function() {
+            if (this.checked) {
+              const componentId = this.id.replace('nav-', '');
+              console.log(`[CSS-First Nav] Loading component: ${componentId}`);
+              
+              // Update component title
+              const navItem = document.querySelector(`.nav-item[data-component="${componentId}"]`);
+              if (navItem) {
+                const componentTitle = document.querySelector('.component-title');
+                if (componentTitle) {
+                  componentTitle.textContent = navItem.querySelector('.nav-label').textContent;
+                }
+              }
+              
+              // Make the HTML panel visible and active
+              const panels = document.querySelectorAll('.panel');
+              panels.forEach(panel => {
+                panel.classList.remove('active');
+                panel.style.display = 'none';
+              });
 
-            console.log(`Navigation item clicked: ${componentId}`);
+              const htmlPanel = document.getElementById('html-panel');
+              if (htmlPanel) {
+                htmlPanel.classList.add('active');
+                htmlPanel.style.display = 'block';
 
-            // Update active nav item
-            navItems.forEach(navItem => {
-              navItem.classList.remove('active');
-            });
-            this.classList.add('active');
-
-            // Update component title
-            const componentTitle = document.querySelector('.component-title');
-            if (componentTitle) {
-              componentTitle.textContent = this.querySelector('.nav-label').textContent;
-            }
-
-
-            // Make the HTML panel visible and active
-            const panels = document.querySelectorAll('.panel');
-            panels.forEach(panel => {
-              panel.classList.remove('active');
-              panel.style.display = 'none';
-            });
-
-            const htmlPanel = document.getElementById('html-panel');
-            if (htmlPanel) {
-              htmlPanel.classList.add('active');
-              htmlPanel.style.display = 'block';
-
-              // Use minimalLoader for all components - simple, standard, no special cases
-              if (window.minimalLoader) {
-                console.log(`index.html nav handler: Using minimalLoader for ${componentId}`);
-                minimalLoader.loadComponent(componentId);
+                // Use minimalLoader for all components
+                if (window.minimalLoader) {
+                  console.log(`[CSS-First Nav] Using minimalLoader for ${componentId}`);
+                  minimalLoader.loadComponent(componentId);
+                }
               }
             }
           });
         });
-
-        // Don't load any component by default - wait for user navigation
-        // This avoids the error state from trying to load non-existent 'test' component
+        
+        // Load initial component (numa is checked by default)
+        const checkedRadio = document.querySelector('input[name="component-nav"]:checked');
+        if (checkedRadio) {
+          checkedRadio.dispatchEvent(new Event('change'));
+        }
       });
     </script>
 
