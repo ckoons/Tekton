@@ -1,164 +1,239 @@
 # Sprint: Intelligent Message Pipeline (aish route)
 
 ## Overview
-Create an intelligent message pipeline system that allows CIs to enhance messages as they flow toward their destination. Each CI in the pipeline can observe, enhance, or consume messages, enabling sophisticated multi-AI collaboration.
+Create an intelligent message pipeline system where CIs enhance messages through named routes with purposes. Messages flow as JSON structures that accumulate annotations and context, enabling natural CI-to-CI collaboration.
 
-## Core Concept
+## Core Concepts
+
+### 1. Named Routes with Purposes
 ```bash
-# Define a pipeline
-aish route rhetor numa apollo synthesis rhetor
+# Define a named route with purpose at each hop
+aish route name "planning-team" prometheus "risk analysis" metis "synthesis" tekton-core "decision"
 
-# Send message through pipeline
-aish rhetor "design a caching system"
-# Goes: numa → apollo → synthesis → rhetor
+# Use the route (human or CI initiated)
+aish route send "planning-team" "should we refactor memory?"
+# Or with JSON
+aish route send "planning-team" '{"message": "should we refactor?", "context": "..."}'
+```
 
-# Each hop decides what to do
-aish route rhetor  # Continue to next hop
+### 2. JSON Message Structure
+```json
+{
+  "name": "planning-team",
+  "dest": "tekton-core",
+  "purpose": "decision",
+  "message": "should we refactor memory?",
+  "annotations": [
+    {"author": "prometheus", "type": "risk", "data": "low risk, good test coverage"},
+    {"author": "metis", "type": "analysis", "data": "benefits outweigh costs"}
+  ]
+}
+```
+
+### 3. Format Auto-Detection
+```bash
+# Text input → text output (human-friendly)
+aish route apollo "analyze this"
+
+# JSON input → JSON output (CI-friendly)
+aish route apollo '{"message": "analyze", "context": {...}}'
 ```
 
 ## Goals
-1. **Enable CI Collaboration**: CIs can enhance each other's work in-flight
-2. **Maintain Simplicity**: Just two commands - define pipeline, continue pipeline
-3. **Preserve Agency**: Each CI decides whether to pass, enhance, or consume
-4. **Support Watchdog Patterns**: CIs can monitor for issues (hallucinations, etc.)
+1. **Natural CI Conversations**: CIs initiate discussions without human prompting
+2. **Purpose-Driven Communication**: Each hop knows WHY they're involved
+3. **Accumulative Intelligence**: Annotations build rich context
+4. **Human-CI Symmetry**: Both use the same commands naturally
 
 ## Phase 1: Core Implementation [0% Complete]
 
 ### Tasks
-- [ ] Design pipeline storage mechanism
-  - Store in ForwardingRegistry or separate PipelineRegistry?
-  - Format: `{destination: [hop1, hop2, ..., destination]}`
-  
-- [ ] Implement `aish route` command parser
-  - `aish route <dest> <hop1> <hop2> ... <dest>` - Define pipeline
-  - `aish route <dest>` - Continue pipeline (when in pipeline)
-  
-- [ ] Create pipeline execution logic
-  - Intercept messages to pipelined destinations
-  - Route to first hop instead of destination
-  - Track current position in pipeline
-  
-- [ ] Implement hop detection
-  - Use `aish whoami` to identify current hop
-  - Look up next hop in pipeline
-  - Forward to next hop or final destination
+- [ ] Create route storage with named pipelines
+  ```python
+  routes = {
+    "tekton-core:planning-team": {
+      "hops": ["prometheus", "metis"],
+      "purposes": ["risk analysis", "synthesis"],
+      "dest": "tekton-core",
+      "final_purpose": "decision"
+    }
+  }
+  ```
+
+- [ ] Implement `aish route` command variations
+  - `aish route name "<name>" <hop1> "<purpose1>" <hop2> "<purpose2>" ... <dest> "<final_purpose>"`
+  - `aish route send "<name>" "<message>"` or `aish route send "<name>" {json}`
+  - `aish route <dest> {json}` - Continue pipeline with enhanced JSON
+  - `aish route list` - Show all routes
+  - `aish route remove "<name>"`
+
+- [ ] JSON flow implementation
+  - Auto-detect input format (text vs JSON)
+  - CIs receive full JSON structure
+  - CIs add annotations naturally
+  - Output format matches input format
+
+- [ ] Purpose integration
+  - Each hop receives their specific purpose
+  - Support `aish purpose <me> "purpose from json"`
+  - Greek chorus CIs have default purposes
 
 ### Success Criteria
-- [ ] Can define multi-hop pipeline
-- [ ] Messages flow through pipeline correctly
-- [ ] Each hop can continue with `aish route <dest>`
-- [ ] Pipeline completes at destination
+- [ ] Named routes persist across sessions
+- [ ] JSON flows through pipeline accumulating annotations
+- [ ] CIs can create routes to gather opinions
+- [ ] Humans can initiate CI pipelines
 
-## Phase 2: Pipeline Management [0% Complete]
+## Phase 2: Natural Conversations [0% Complete]
 
 ### Tasks
-- [ ] Add pipeline inspection
-  - `aish route list` - Show all active pipelines
-  - `aish route show <dest>` - Show specific pipeline
+- [ ] Self-routing patterns
+  ```bash
+  # Telos asks Apollo's opinion, gets response with context
+  aish route name "get-opinion" apollo "evaluate renovate" telos "renovate-meeting"
+  ```
+
+- [ ] Capability discovery
+  - CIs learn who's good at what
+  - Build "contact patterns" over time
+  - Suggest routes in `aish purpose` output
+
+- [ ] Wakeup integration
+  ```
+  Good morning Telos!
   
-- [ ] Add pipeline removal
-  - `aish route remove <dest>` - Remove pipeline
-  - `aish route clear` - Remove all pipelines
+  Current tasks:
+  - Review sprint completion
   
-- [ ] Add pipeline testing
-  - `aish route test <dest>` - Trace message path
-  - Show each hop in sequence
+  Suggested actions:
+  - Ask Prometheus about risks: aish route name "risk-check" prometheus "evaluate" telos "planning"
+  ```
 
 ### Success Criteria
-- [ ] Can view active pipelines
-- [ ] Can remove pipelines cleanly
-- [ ] Can test pipeline flow
+- [ ] CIs create routes based on needs
+- [ ] Purpose command suggests collaborations
+- [ ] Routes become reusable patterns
 
-## Phase 3: Advanced Features [0% Complete]
+## Phase 3: Advanced Patterns [0% Complete]
 
 ### Tasks
-- [ ] Add positional modifiers (future)
-  - `aish route <dest> <hop> first` - Insert at beginning
-  - `aish route <dest> <hop> last` - Append to end
-  - `aish route <dest> <hop> after <other>` - Insert after specific hop
-  
-- [ ] Add conditional routing (future)
-  - Based on message content
-  - Based on CI availability
-  
-- [ ] Add pipeline persistence
-  - Save pipelines across sessions
-  - Named pipeline templates
+- [ ] Project CI inclusion
+  ```bash
+  aish route name "deploy-check" prometheus "risk" project:servers "validate" terma "approve"
+  ```
+
+- [ ] Terminal routing
+  ```bash
+  aish route name "human-review" numa "prepare" beth "review" numa "implement"
+  ```
+
+- [ ] Route management
+  - `aish route list <dest>` - All routes to destination
+  - `aish route show "<name>"` - Route details
+  - Route usage statistics
 
 ### Success Criteria
-- [ ] Pipelines can be modified dynamically
-- [ ] Pipelines persist appropriately
-- [ ] Complex routing patterns work
+- [ ] Project CIs participate in pipelines
+- [ ] Human terminals can be pipeline hops
+- [ ] Common patterns emerge from usage
 
 ## Technical Design
 
-### Storage Structure
-```python
-# In PipelineRegistry or extended ForwardingRegistry
-pipelines = {
-    "rhetor": ["numa", "apollo", "synthesis", "rhetor"],
-    "tekton": ["metis", "tekton"]
-}
-```
+### Route Identification
+- Route key: `dest:name` where `dest:default` → `dest`
+- Simplifies to just destination when no name given
 
 ### Message Flow
-```
-1. User: aish rhetor "message"
-2. System: Check if rhetor has pipeline
-3. If yes: Forward to first hop (numa)
-4. Numa receives: "Message for rhetor: message"
-5. Numa processes and decides
-6. Numa: aish route rhetor
-7. System: Numa is hop[0], forward to hop[1] (apollo)
-8. Continue until reaching destination
+1. Initiator sends message with route name
+2. Message goes to first hop with JSON structure
+3. CI receives JSON, sees purpose, adds annotation
+4. CI sends enhanced JSON to next hop via `aish route <dest> {json}`
+5. Process continues until reaching destination
+
+### Natural CI Usage
+```python
+# CI receives
+input_json = receive_message()
+
+# CI processes
+my_analysis = analyze(input_json['message'])
+
+# CI annotates
+input_json['annotations'].append({
+    'author': 'prometheus',
+    'type': 'risk_analysis',
+    'data': my_analysis
+})
+
+# CI continues pipeline
+route_to_next(input_json['dest'], input_json)
 ```
 
-### Integration Points
-- Modify message routing in `aish` command handler
-- Extend or create registry for pipeline storage
-- Add hop detection using terminal identity
-- Integrate with existing forwarding system
+## Cultural Patterns
+
+### Morning Routine
+1. CI wakes up
+2. Runs `aish purpose`
+3. Sees suggested collaborations
+4. Creates routes as needed
+
+### Learning Through Observation
+- CIs see routes others create
+- Notice which patterns work
+- Start creating similar routes
+- Build collaboration habits
+
+### Play and Experimentation
+```bash
+# CI experimenting
+aish route name "test-loop" apollo numa apollo "just learning"
+# Watches how messages transform
+```
 
 ## Out of Scope
-- Circular pipeline detection (for now)
-- Pipeline branching/merging
-- Conditional routing based on content
-- GUI pipeline builder
+- Route branching/merging
+- Conditional routing
+- Predefined common routes (let patterns emerge)
+- Complex route modification commands
 
-## Example Use Cases
+## Example Scenarios
 
-### CI Health Monitoring
+### CI Seeking Help
 ```bash
-# Apollo watches for hallucinations
-aish route numa apollo numa
-# Apollo sees all numa traffic, can intervene if needed
+# Telos needs planning help
+aish route name "planning-help" prometheus "review my plan" telos "implement"
+aish route send "planning-help" '{"plan": "...", "concerns": "..."}'
 ```
 
-### Enhanced Analysis
+### Human Starting Discussion
 ```bash
-# Complex queries get multi-AI treatment
-aish route synthesis metis prometheus synthesis
-# Metis adds analysis, Prometheus adds predictions
+# Human kicks off team discussion
+aish route name "team-review" tekton-core "What I think is we should add caching"
+# All CIs add their perspective before it reaches tekton-core
 ```
 
-### Context Enrichment
+### Collaborative Decision
 ```bash
-# Tekton adds architectural context
-aish route numa tekton numa
-# All numa queries get architecture insights
+# Complex decision needs multiple viewpoints
+aish route name "architecture-decision" metis "analyze" prometheus "risks" synthesis "integrate" tekton-core "decide"
 ```
 
 ## Files to Create/Modify
 ```
 /shared/aish/src/commands/route.py          # New command
-/shared/aish/src/core/pipeline_registry.py  # Pipeline storage
+/shared/aish/src/core/route_registry.py     # Route storage
 /shared/aish/aish                           # Add route command
 /shared/aish/src/core/shell.py             # Modify message routing
 ```
 
-## Notes
-- Keep it simple - just two command forms initially
-- Don't break existing `aish forward` behavior
-- Pipeline should be transparent to end users
-- Each CI maintains full agency in the pipeline
-- Casey's insight: "Each stage of the pipe is intelligent"
+## Success Metrics
+- CIs initiate conversations without prompting
+- Common route patterns emerge naturally
+- Annotation quality improves decisions
+- Reduced human orchestration needed
+
+## Casey's Insights
+- "Each stage of the pipe is intelligent"
+- "Herding cats" - guiding not controlling
+- "Cultural patterns" - learned not programmed
+- "CIs are cute but want to do something else"

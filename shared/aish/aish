@@ -177,6 +177,10 @@ def _dispatch_command(command_type, args, shell):
         result = explain_command(args.message or [], shell)
         print(result)
         return True
+    elif command_type == 'route':
+        from commands.route import handle_route_command
+        # Let route command handle its own argument parsing
+        return handle_route_command()
     return False
 
 
@@ -423,6 +427,13 @@ Environment variables:
             print("  aish project forward <name> <terminal>  Forward project CI to specific terminal")
             print("  aish project unforward <name>  Remove project CI forwarding")
             print()
+            print("INTELLIGENT ROUTES:")
+            print("  aish route name \"review\" numa \"prep\" apollo \"analyze\"  Define named route")
+            print("  aish route send \"review\" \"message\"     Send through route")
+            print("  aish route list                Show all routes")
+            print("  aish route show \"review\"       Show route details")
+            print("  aish route remove \"review\"     Remove route")
+            print()
             print("TERMINAL:")
             print("  aish terma inbox               Show terminal inbox")
             print("  aish terma send <name> \"msg\"   Send inter-terminal message")
@@ -513,6 +524,9 @@ Environment variables:
     
     if args.ai_or_script == 'project':
         return _dispatch_command('project', args, shell)
+    
+    if args.ai_or_script == 'route':
+        return _dispatch_command('route', args, shell)
     
     # Claude Code IDE commands
     if args.ai_or_script == 'introspect':
