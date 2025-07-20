@@ -200,10 +200,10 @@ async def discovery():
 # Mount standard routers
 mount_standard_routers(app, routers)
 
-# Include existing routers - these should be updated to use v1 prefix
+# Include existing routers
 app.include_router(api_router, prefix="/api/v1")
 app.include_router(ws_router)
-app.include_router(metrics_router, prefix="/api/v1")
+app.include_router(metrics_router, prefix="/api/v1/metrics")
 app.include_router(mcp_router)
 
 # Main entry point

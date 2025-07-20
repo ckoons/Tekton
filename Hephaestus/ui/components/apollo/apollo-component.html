@@ -1,4 +1,15 @@
 <!-- Apollo Component - Attention and Prediction System -->
+
+<!-- Hidden radio inputs for CSS-first tab functionality -->
+<input type="radio" name="apollo-tab" id="apollo-tab-dashboard" checked style="display: none;">
+<input type="radio" name="apollo-tab" id="apollo-tab-sessions" style="display: none;">
+<input type="radio" name="apollo-tab" id="apollo-tab-tokens" style="display: none;">
+<input type="radio" name="apollo-tab" id="apollo-tab-protocols" style="display: none;">
+<input type="radio" name="apollo-tab" id="apollo-tab-forecasting" style="display: none;">
+<input type="radio" name="apollo-tab" id="apollo-tab-actions" style="display: none;">
+<input type="radio" name="apollo-tab" id="apollo-tab-attention" style="display: none;">
+<input type="radio" name="apollo-tab" id="apollo-tab-teamchat" style="display: none;">
+
 <div class="apollo" data-tekton-area="apollo" data-tekton-component="apollo" data-tekton-type="component-workspace" data-tekton-ai="apollo-assistant" data-tekton-ai-ready="false">
     <!-- Component Header with Title -->
     <div class="apollo__header" data-tekton-zone="header" data-tekton-section="header">
@@ -14,33 +25,33 @@
     <!-- Apollo Menu Bar with Tab Navigation -->
     <div class="apollo__menu-bar" data-tekton-zone="menu" data-tekton-zone="menu" data-tekton-nav="component-menu">
         <div class="apollo__tabs" data-tekton-zone="menu">
-            <div class="apollo__tab apollo__tab--active" data-tab="dashboard" onclick="apollo_switchTab('dashboard'); return false;" data-tekton-menu-item="Dashboard" data-tekton-menu-component="apollo" data-tekton-menu-active="true" data-tekton-menu-panel="dashboard-panel" data-tekton-nav-target="dashboard-panel">
+            <label for="apollo-tab-dashboard" class="apollo__tab" data-tab="dashboard" data-tekton-menu-item="Dashboard" data-tekton-menu-component="apollo" data-tekton-menu-panel="dashboard-panel" data-tekton-nav-target="dashboard-panel">
                 <span class="apollo__tab-label">Dashboard</span>
-            </div>
-            <div class="apollo__tab" data-tab="sessions" onclick="apollo_switchTab('sessions'); return false;" data-tekton-menu-item="Sessions" data-tekton-menu-component="apollo" data-tekton-menu-active="false" data-tekton-menu-panel="sessions-panel" data-tekton-nav-target="sessions-panel">
+            </label>
+            <label for="apollo-tab-sessions" class="apollo__tab" data-tab="sessions" data-tekton-menu-item="Sessions" data-tekton-menu-component="apollo" data-tekton-menu-panel="sessions-panel" data-tekton-nav-target="sessions-panel">
                 <span class="apollo__tab-label">Sessions</span>
-            </div>
-            <div class="apollo__tab" data-tab="tokens" onclick="apollo_switchTab('tokens'); return false;" data-tekton-menu-item="Token Budgets" data-tekton-menu-component="apollo" data-tekton-menu-active="false" data-tekton-menu-panel="tokens-panel" data-tekton-nav-target="tokens-panel">
+            </label>
+            <label for="apollo-tab-tokens" class="apollo__tab" data-tab="tokens" data-tekton-menu-item="Token Budgets" data-tekton-menu-component="apollo" data-tekton-menu-panel="tokens-panel" data-tekton-nav-target="tokens-panel">
                 <span class="apollo__tab-label">Token Budgets</span>
-            </div>
-            <div class="apollo__tab" data-tab="protocols" onclick="apollo_switchTab('protocols'); return false;" data-tekton-menu-item="Protocols" data-tekton-menu-component="apollo" data-tekton-menu-active="false" data-tekton-menu-panel="protocols-panel" data-tekton-nav-target="protocols-panel">
+            </label>
+            <label for="apollo-tab-protocols" class="apollo__tab" data-tab="protocols" data-tekton-menu-item="Protocols" data-tekton-menu-component="apollo" data-tekton-menu-panel="protocols-panel" data-tekton-nav-target="protocols-panel">
                 <span class="apollo__tab-label">Protocols</span>
-            </div>
-            <div class="apollo__tab" data-tab="forecasting" onclick="apollo_switchTab('forecasting'); return false;" data-tekton-menu-item="Forecasting" data-tekton-menu-component="apollo" data-tekton-menu-active="false" data-tekton-menu-panel="forecasting-panel" data-tekton-nav-target="forecasting-panel">
+            </label>
+            <label for="apollo-tab-forecasting" class="apollo__tab" data-tab="forecasting" data-tekton-menu-item="Forecasting" data-tekton-menu-component="apollo" data-tekton-menu-panel="forecasting-panel" data-tekton-nav-target="forecasting-panel">
                 <span class="apollo__tab-label">Forecasting</span>
-            </div>
-            <div class="apollo__tab" data-tab="actions" onclick="apollo_switchTab('actions'); return false;" data-tekton-menu-item="Actions" data-tekton-menu-component="apollo" data-tekton-menu-active="false" data-tekton-menu-panel="actions-panel" data-tekton-nav-target="actions-panel">
+            </label>
+            <label for="apollo-tab-actions" class="apollo__tab" data-tab="actions" data-tekton-menu-item="Actions" data-tekton-menu-component="apollo" data-tekton-menu-panel="actions-panel" data-tekton-nav-target="actions-panel">
                 <span class="apollo__tab-label">Actions</span>
-            </div>
-            <div class="apollo__tab" data-tab="attention" onclick="apollo_switchTab('attention'); return false;" data-tekton-menu-item="Attention Chat" data-tekton-menu-component="apollo" data-tekton-menu-active="false" data-tekton-menu-panel="attention-panel" data-tekton-nav-target="attention-panel">
+            </label>
+            <label for="apollo-tab-attention" class="apollo__tab" data-tab="attention" data-tekton-menu-item="Attention Chat" data-tekton-menu-component="apollo" data-tekton-menu-panel="attention-panel" data-tekton-nav-target="attention-panel">
                 <span class="apollo__tab-label">Attention Chat</span>
-            </div>
-            <div class="apollo__tab" data-tab="teamchat" onclick="apollo_switchTab('teamchat'); return false;" data-tekton-menu-item="Team Chat" data-tekton-menu-component="apollo" data-tekton-menu-active="false" data-tekton-menu-panel="teamchat-panel" data-tekton-nav-target="teamchat-panel">
+            </label>
+            <label for="apollo-tab-teamchat" class="apollo__tab" data-tab="teamchat" data-tekton-menu-item="Team Chat" data-tekton-menu-component="apollo" data-tekton-menu-panel="teamchat-panel" data-tekton-nav-target="teamchat-panel">
                 <span class="apollo__tab-label">Team Chat</span>
-            </div>
+            </label>
         </div>
         <div class="apollo__actions">
-            <button id="clear-chat-btn" class="apollo__action-button" style="display: none;" onclick="apollo_clearChat(); return false;" data-tekton-action="clear-chat" data-tekton-action-type="secondary">
+            <button id="clear-chat-btn" class="apollo__action-button" style="display: none;" data-tekton-action="clear-chat" data-tekton-action-type="secondary">
                 <span class="apollo__button-label">Clear</span>
             </button>
         </div>
@@ -49,7 +60,7 @@
     <!-- Apollo Content Area -->
     <div class="apollo__content" data-tekton-zone="content" data-tekton-scrollable="true">
         <!-- Dashboard Tab (Default Active Tab) -->
-        <div id="dashboard-panel" class="apollo__panel apollo__panel--active" data-tekton-panel="dashboard" data-tekton-panel-for="Dashboard" data-tekton-panel-component="apollo" data-tekton-panel-active="true">
+        <div id="dashboard-panel" class="apollo__panel" data-tekton-panel="dashboard" data-tekton-panel-for="Dashboard" data-tekton-panel-component="apollo">
             <div class="apollo__dashboard">
                 <div class="apollo__control-bar">
                     <div class="apollo__stats-container">
@@ -85,15 +96,15 @@
                         <div class="apollo__card-header">
                             <h3 class="apollo__card-title">Token Usage</h3>
                         </div>
-                        <div class="apollo__card-body">
-                            <p>Total allocation: 100,000 tokens</p>
-                            <p>Used: 38,420 tokens (38.4%)</p>
+                        <div class="apollo__card-body" id="token-usage-body">
+                            <p>Total tokens: <span id="total-token-count">0</span></p>
+                            <p>Active contexts: <span id="active-context-count">0</span></p>
                             <div class="apollo__token-budget">
-                                <div class="apollo__token-budget-used" style="width: 38.4%"></div>
+                                <div class="apollo__token-budget-used" id="token-budget-bar" style="width: 0%"></div>
                             </div>
                         </div>
                         <div class="apollo__card-footer">
-                            Current compression level: None
+                            <span id="token-compression">No compression active</span>
                         </div>
                     </div>
 
@@ -420,25 +431,8 @@
                                     <div class="apollo__component-header">Actions</div>
                                 </div>
                                 
-                                <div class="apollo__component-budget-rows">
-                                    <!-- Codex Row -->
-                                    <div class="apollo__component-budget-row">
-                                        <div class="apollo__component-name">Codex</div>
-                                        <div class="apollo__component-allocation">
-                                            <input type="number" class="apollo__budget-input" value="30000">
-                                        </div>
-                                        <div class="apollo__component-usage">
-                                            <div class="apollo__usage-track">
-                                                <div class="apollo__usage-fill" style="width: 41.4%"></div>
-                                            </div>
-                                            <div class="apollo__usage-text">12,420 (41.4%)</div>
-                                        </div>
-                                        <div class="apollo__component-status apollo__component-status--healthy">Healthy</div>
-                                        <div class="apollo__component-actions">
-                                            <button class="apollo__component-action-btn" data-tekton-action="reset-component" data-tekton-action-type="secondary">Reset</button>
-                                            <button class="apollo__component-action-btn" data-tekton-action="compress-component" data-tekton-action-type="secondary">Compress</button>
-                                        </div>
-                                    </div>
+                                <div class="apollo__component-budget-rows" id="component-budget-rows">
+                                    <!-- Rows will be populated dynamically -->
                                     
                                     <!-- Athena Row -->
                                     <div class="apollo__component-budget-row">
@@ -2125,6 +2119,42 @@
         border-radius: 4px;
         color: var(--text-primary, #f0f0f0);
         cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    
+    .apollo__session-action-btn:hover {
+        background-color: var(--bg-hover, #3a3a4a);
+    }
+    
+    /* Button color scheme: View=Magenta, Predict=Teal, Actions=Green */
+    .apollo__session-action-btn--view {
+        background-color: rgba(156, 39, 176, 0.15);
+        border-color: #9C27B0;
+        color: #CE93D8;
+    }
+    
+    .apollo__session-action-btn--view:hover {
+        background-color: rgba(156, 39, 176, 0.25);
+    }
+    
+    .apollo__session-action-btn--predict {
+        background-color: rgba(0, 188, 212, 0.15);
+        border-color: #00BCD4;
+        color: #80DEEA;
+    }
+    
+    .apollo__session-action-btn--predict:hover {
+        background-color: rgba(0, 188, 212, 0.25);
+    }
+    
+    .apollo__session-action-btn--actions {
+        background-color: rgba(76, 175, 80, 0.15);
+        border-color: #4CAF50;
+        color: #A5D6A7;
+    }
+    
+    .apollo__session-action-btn--actions:hover {
+        background-color: rgba(76, 175, 80, 0.25);
     }
     
     .apollo__session-action-btn--warning {
@@ -4073,6 +4103,151 @@
         color: var(--text-secondary, #aaaaaa);
         line-height: 1.4;
     }
+    
+    /* CSS-First Tab Navigation */
+    /* Hide all panels by default */
+    .apollo__panel {
+        display: none;
+    }
+    
+    /* Show active tab styling */
+    #apollo-tab-dashboard:checked ~ .apollo .apollo__tabs label[for="apollo-tab-dashboard"],
+    #apollo-tab-sessions:checked ~ .apollo .apollo__tabs label[for="apollo-tab-sessions"],
+    #apollo-tab-tokens:checked ~ .apollo .apollo__tabs label[for="apollo-tab-tokens"],
+    #apollo-tab-protocols:checked ~ .apollo .apollo__tabs label[for="apollo-tab-protocols"],
+    #apollo-tab-forecasting:checked ~ .apollo .apollo__tabs label[for="apollo-tab-forecasting"],
+    #apollo-tab-actions:checked ~ .apollo .apollo__tabs label[for="apollo-tab-actions"],
+    #apollo-tab-attention:checked ~ .apollo .apollo__tabs label[for="apollo-tab-attention"],
+    #apollo-tab-teamchat:checked ~ .apollo .apollo__tabs label[for="apollo-tab-teamchat"] {
+        border-bottom-color: var(--color-primary, #7B1FA2);
+        font-weight: 500;
+    }
+    
+    /* Show corresponding panel when tab is checked */
+    #apollo-tab-dashboard:checked ~ .apollo .apollo__content #dashboard-panel,
+    #apollo-tab-sessions:checked ~ .apollo .apollo__content #sessions-panel,
+    #apollo-tab-tokens:checked ~ .apollo .apollo__content #tokens-panel,
+    #apollo-tab-protocols:checked ~ .apollo .apollo__content #protocols-panel,
+    #apollo-tab-forecasting:checked ~ .apollo .apollo__content #forecasting-panel,
+    #apollo-tab-actions:checked ~ .apollo .apollo__content #actions-panel,
+    #apollo-tab-attention:checked ~ .apollo .apollo__content #attention-panel,
+    #apollo-tab-teamchat:checked ~ .apollo .apollo__content #teamchat-panel {
+        display: block;
+    }
+    
+    /* Show/hide clear button for chat tabs */
+    #apollo-tab-attention:checked ~ .apollo #clear-chat-btn,
+    #apollo-tab-teamchat:checked ~ .apollo #clear-chat-btn {
+        display: block !important;
+    }
+    
+    /* Component-specific colors for session cards - matching nav panel */
+    .apollo__session-card[data-component="tekton-core"] { border-left: 4px solid #FBBC05; } /* Yellow/Gold */
+    .apollo__session-card[data-component="prometheus"] { border-left: 4px solid #C2185B; } /* Pink */
+    .apollo__session-card[data-component="telos"] { border-left: 4px solid #00796B; } /* Dark Teal */
+    .apollo__session-card[data-component="ergon"] { border-left: 4px solid #0097A7; } /* Teal */
+    .apollo__session-card[data-component="metis"] { border-left: 4px solid #00BFA5; } /* Mint/Turquoise */
+    .apollo__session-card[data-component="harmonia"] { border-left: 4px solid #F57C00; } /* Orange */
+    .apollo__session-card[data-component="synthesis"] { border-left: 4px solid #3949AB; } /* Indigo */
+    .apollo__session-card[data-component="athena"] { border-left: 4px solid #7B1FA2; } /* Purple */
+    .apollo__session-card[data-component="sophia"] { border-left: 4px solid #7CB342; } /* Light Green */
+    .apollo__session-card[data-component="engram"] { border-left: 4px solid #34A853; } /* Green */
+    .apollo__session-card[data-component="apollo"] { border-left: 4px solid #FFD600; } /* Amber/Golden Yellow */
+    .apollo__session-card[data-component="rhetor"] { border-left: 4px solid #D32F2F; } /* Red */
+    .apollo__session-card[data-component="hermes"] { border-left: 4px solid #4285F4; } /* Blue */
+    .apollo__session-card[data-component="terma"] { border-left: 4px solid #5D4037; } /* Brown */
+    .apollo__session-card[data-component="budget"] { border-left: 4px solid #34A853; } /* Green */
+    .apollo__session-card[data-component="numa"] { border-left: 4px solid #9C27B0; } /* Deep Purple */
+    .apollo__session-card[data-component="noesis"] { border-left: 4px solid #FF6F00; } /* Deep Orange */
+    .apollo__session-card[data-component="penia"] { border-left: 4px solid #00B894; } /* Emerald Green */
+    .apollo__session-card[data-component="hephaestus"] { border-left: 4px solid #1976D2; } /* Blue */
+    
+    /* Colored action buttons */
+    .apollo__session-action-btn[data-tekton-action="view-context"] {
+        background-color: #9B59B6; /* Magenta/Purple */
+        color: white;
+        border: none;
+    }
+    .apollo__session-action-btn[data-tekton-action="view-context"]:hover {
+        background-color: #8E44AD;
+    }
+    
+    .apollo__session-action-btn[data-tekton-action="predict-context"] {
+        background-color: #17A2B8; /* Teal Blue */
+        color: white;
+        border: none;
+    }
+    .apollo__session-action-btn[data-tekton-action="predict-context"]:hover {
+        background-color: #138496;
+    }
+    
+    .apollo__session-action-btn[data-tekton-action="actions-context"] {
+        background-color: #28A745; /* Green */
+        color: white;
+        border: none;
+    }
+    .apollo__session-action-btn[data-tekton-action="actions-context"]:hover {
+        background-color: #218838;
+    }
+    
+    /* Protocol button colors */
+    .apollo__protocol-action-btn {
+        border: none;
+        color: white;
+        padding: 6px 16px;
+        margin: 0 4px;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+    
+    .apollo__protocol-action-btn[data-tekton-action="view-protocol"] {
+        background-color: #9B59B6;
+    }
+    .apollo__protocol-action-btn[data-tekton-action="view-protocol"]:hover {
+        background-color: #8E44AD;
+    }
+    
+    .apollo__protocol-action-btn[data-tekton-action="edit-protocol"] {
+        background-color: #17A2B8;
+    }
+    .apollo__protocol-action-btn[data-tekton-action="edit-protocol"]:hover {
+        background-color: #138496;
+    }
+    
+    .apollo__protocol-action-btn[data-tekton-action="test-protocol"] {
+        background-color: #28A745;
+    }
+    .apollo__protocol-action-btn[data-tekton-action="test-protocol"]:hover {
+        background-color: #218838;
+    }
+    
+    /* Fix protocol warning text */
+    .apollo__protocol-description {
+        font-size: 0.9rem;
+        line-height: 1.4;
+        margin-bottom: 12px;
+    }
+    
+    .apollo__protocol-description p {
+        margin: 0;
+        color: var(--text-secondary, #aaaaaa);
+    }
+    
+    /* Colorful severity indicators */
+    .apollo__severity--warning {
+        color: #FFA502;
+        font-weight: 500;
+    }
+    
+    .apollo__severity--critical {
+        color: #FF6B6B;
+        font-weight: 600;
+    }
+    
+    .apollo__severity--info {
+        color: #54A0FF;
+    }
 </style>
 
 <script type="text/javascript">
@@ -4196,6 +4371,932 @@ window.apollo_clearChat = function() {
     
     return false; // Stop event propagation
 };
+
+// DASHBOARD DATA LOADING
+window.apollo_loadDashboard = async function() {
+    console.log('[APOLLO] Loading dashboard data');
+    
+    try {
+        // Get Apollo API base URL using window.APOLLO_PORT
+        const apolloPort = window.APOLLO_PORT || '8112';
+        const apolloBase = `http://localhost:${apolloPort}`;
+        
+        // Fetch system status
+        const statusResponse = await fetch(`${apolloBase}/api/v1/status`);
+        const statusData = await statusResponse.json();
+        
+        if (statusData.status === 'success') {
+            const data = statusData.data;
+            
+            // Update active sessions count
+            const sessionsCount = document.getElementById('active-sessions-count');
+            if (sessionsCount) {
+                sessionsCount.textContent = data.active_contexts || '0';
+            }
+            
+            // Update system status
+            const statusContainer = document.querySelector('.apollo__card-body');
+            if (statusContainer) {
+                const healthStatus = data.critical_contexts > 0 ? 'warning' : 'healthy';
+                const healthIndicator = document.querySelector('.apollo__health-indicator');
+                if (healthIndicator) {
+                    healthIndicator.className = `apollo__health-indicator apollo__health-indicator--${healthStatus}`;
+                }
+                
+                // Update status text
+                const statusText = data.critical_contexts > 0 
+                    ? `${data.critical_contexts} contexts need attention`
+                    : 'All systems operational';
+                statusContainer.innerHTML = `
+                    <p>${statusText}</p>
+                    <p>${data.active_contexts} active contexts monitored</p>
+                `;
+            }
+        }
+        
+        // Fetch contexts for session list
+        const contextsResponse = await fetch(`${apolloBase}/api/v1/contexts`);
+        const contextsData = await contextsResponse.json();
+        
+        if (contextsData.status === 'success' && contextsData.data) {
+            const sessionList = document.querySelector('.apollo__session-list');
+            if (sessionList) {
+                sessionList.innerHTML = '';
+                
+                // Show first 4 contexts
+                contextsData.data.slice(0, 4).forEach(context => {
+                    const healthClass = context.health === 'excellent' ? 'healthy' : 
+                                      context.health === 'good' ? 'healthy' :
+                                      context.health === 'fair' ? 'warning' : 'critical';
+                    
+                    const contextName = context.context_id.replace('-ai', '').replace('_', ' ')
+                        .split(' ')
+                        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                        .join(' ');
+                    
+                    const li = document.createElement('li');
+                    li.className = 'apollo__session-item';
+                    li.innerHTML = `
+                        <span class="apollo__session-name">${contextName}</span>
+                        <span class="apollo__session-status">
+                            <div class="apollo__health-indicator apollo__health-indicator--${healthClass}"></div>
+                            ${context.health.charAt(0).toUpperCase() + context.health.slice(1)}
+                        </span>
+                    `;
+                    sessionList.appendChild(li);
+                });
+            }
+        }
+        
+        // Calculate total tokens (sum from all contexts)
+        let totalTokens = 0;
+        if (contextsData.data) {
+            contextsData.data.forEach(context => {
+                totalTokens += context.metrics.total_tokens || 0;
+            });
+        }
+        
+        const totalTokensElement = document.getElementById('total-tokens');
+        if (totalTokensElement) {
+            totalTokensElement.textContent = totalTokens.toLocaleString();
+        }
+        
+        // Update token usage card
+        const totalTokenCount = document.getElementById('total-token-count');
+        if (totalTokenCount) {
+            totalTokenCount.textContent = totalTokens.toLocaleString();
+        }
+        
+        const activeContextCount = document.getElementById('active-context-count');
+        if (activeContextCount) {
+            activeContextCount.textContent = statusData.data.active_contexts || '0';
+        }
+        
+        // Update token budget bar (assuming max budget per context * number of contexts)
+        const maxTokensPerContext = 4000; // From the context data
+        const maxTotalTokens = maxTokensPerContext * (statusData.data.active_contexts || 1);
+        const tokenPercent = Math.min((totalTokens / maxTotalTokens) * 100, 100);
+        
+        const tokenBar = document.getElementById('token-budget-bar');
+        if (tokenBar) {
+            tokenBar.style.width = tokenPercent.toFixed(1) + '%';
+        }
+        
+        // Update last updated time
+        const footers = document.querySelectorAll('.apollo__card-footer');
+        footers.forEach(footer => {
+            if (footer.textContent.includes('Last updated')) {
+                footer.textContent = `Last updated: ${new Date().toLocaleTimeString()}`;
+            }
+        });
+        
+    } catch (error) {
+        console.error('[APOLLO] Error loading dashboard data:', error);
+    }
+};
+
+// Add event listener for refresh button
+document.addEventListener('DOMContentLoaded', function() {
+    const refreshBtn = document.getElementById('refresh-dashboard-btn');
+    if (refreshBtn) {
+        refreshBtn.addEventListener('click', function() {
+            window.apollo_loadDashboard();
+        });
+    }
+    
+    // Load dashboard on initial load if it's the active tab
+    const dashboardRadio = document.getElementById('apollo-tab-dashboard');
+    if (dashboardRadio && dashboardRadio.checked) {
+        window.apollo_loadDashboard();
+    }
+    
+    // Sessions tab event handlers
+    const sessionSearchBtn = document.getElementById('session-search-btn');
+    if (sessionSearchBtn) {
+        sessionSearchBtn.addEventListener('click', window.apollo_filterSessions);
+    }
+    
+    const sessionSearch = document.getElementById('session-search');
+    if (sessionSearch) {
+        sessionSearch.addEventListener('keyup', window.apollo_filterSessions);
+    }
+    
+    const sessionFilter = document.getElementById('session-status-filter');
+    if (sessionFilter) {
+        sessionFilter.addEventListener('change', window.apollo_filterSessions);
+    }
+    
+    const applyFilterBtn = document.getElementById('apply-filter-btn');
+    if (applyFilterBtn) {
+        applyFilterBtn.addEventListener('click', window.apollo_filterSessions);
+    }
+});
+
+// Listen for tab changes to load dashboard when selected
+document.addEventListener('change', function(e) {
+    if (e.target.name === 'apollo-tab' && e.target.id === 'apollo-tab-dashboard') {
+        window.apollo_loadDashboard();
+    }
+});
+
+// SESSIONS DATA LOADING
+window.apollo_loadSessions = async function() {
+    console.log('[APOLLO] Loading sessions data');
+    
+    try {
+        const apolloPort = window.APOLLO_PORT || '8112';
+        const apolloBase = `http://localhost:${apolloPort}`;
+        
+        // Fetch all contexts
+        const response = await fetch(`${apolloBase}/api/v1/contexts`);
+        const data = await response.json();
+        
+        if (data.status === 'success' && data.data) {
+            const sessionsGrid = document.querySelector('.apollo__sessions-grid');
+            if (sessionsGrid) {
+                sessionsGrid.innerHTML = '';
+                
+                // Create session cards for all contexts
+                data.data.forEach(context => {
+                    const card = apollo_createSessionCard(context);
+                    sessionsGrid.appendChild(card);
+                });
+            }
+        }
+    } catch (error) {
+        console.error('[APOLLO] Error loading sessions:', error);
+    }
+};
+
+// Helper function to create session card
+window.apollo_createSessionCard = function(context) {
+    const healthClass = context.health === 'excellent' ? 'healthy' : 
+                       context.health === 'good' ? 'healthy' :
+                       context.health === 'fair' ? 'warning' : 'critical';
+    
+    const contextName = context.context_id.replace('-ai', '').replace('_', ' ')
+        .split(' ')
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ');
+    
+    const tokenPercent = context.metrics.max_tokens > 0 
+        ? (context.metrics.total_tokens / context.metrics.max_tokens) * 100 
+        : 0;
+    
+    const lastActive = new Date(context.last_updated);
+    const now = new Date();
+    const diffMs = now - lastActive;
+    const diffMins = Math.floor(diffMs / 60000);
+    
+    let timeAgo = 'Just now';
+    if (diffMins > 60) {
+        timeAgo = `${Math.floor(diffMins / 60)} hours ago`;
+    } else if (diffMins > 1) {
+        timeAgo = `${diffMins} minutes ago`;
+    }
+    
+    const card = document.createElement('div');
+    card.className = 'apollo__session-card';
+    // Extract component name for color coding
+    const componentName = context.context_id.replace('-ai', '').replace('_', '-').toLowerCase();
+    card.setAttribute('data-component', componentName);
+    card.innerHTML = `
+        <div class="apollo__session-card-header">
+            <h3 class="apollo__session-card-title">${contextName}</h3>
+            <div class="apollo__health-indicator apollo__health-indicator--${healthClass}"></div>
+        </div>
+        <div class="apollo__session-details">
+            <div class="apollo__detail-item">
+                <span class="apollo__detail-label">Context ID:</span>
+                <span class="apollo__detail-value">${context.context_id}</span>
+            </div>
+            <div class="apollo__detail-item">
+                <span class="apollo__detail-label">Tokens Used:</span>
+                <span class="apollo__detail-value">${context.metrics.total_tokens.toLocaleString()} / ${context.metrics.max_tokens.toLocaleString()}</span>
+            </div>
+            <div class="apollo__detail-item">
+                <span class="apollo__detail-label">Health Score:</span>
+                <span class="apollo__detail-value">${Math.round(context.health_score * 100)}%</span>
+            </div>
+            <div class="apollo__detail-item">
+                <span class="apollo__detail-label">Last Active:</span>
+                <span class="apollo__detail-value">${timeAgo}</span>
+            </div>
+        </div>
+        <div class="apollo__token-budget">
+            <div class="apollo__token-budget-used" style="width: ${tokenPercent.toFixed(1)}%"></div>
+        </div>
+        <div class="apollo__session-actions">
+            <button class="apollo__session-action-btn apollo__session-action-btn--view" data-context-id="${context.context_id}" data-tekton-action="view-context" data-tekton-action-type="secondary">View</button>
+            <button class="apollo__session-action-btn apollo__session-action-btn--predict" data-context-id="${context.context_id}" data-tekton-action="predict-context" data-tekton-action-type="secondary">Predict</button>
+            <button class="apollo__session-action-btn apollo__session-action-btn--actions" data-context-id="${context.context_id}" data-tekton-action="actions-context" data-tekton-action-type="secondary">Actions</button>
+        </div>
+    `;
+    
+    return card;
+};
+
+// Add session filtering
+window.apollo_filterSessions = function() {
+    const filter = document.getElementById('session-status-filter').value;
+    const searchTerm = document.getElementById('session-search').value.toLowerCase();
+    
+    const cards = document.querySelectorAll('.apollo__session-card');
+    cards.forEach(card => {
+        const title = card.querySelector('.apollo__session-card-title').textContent.toLowerCase();
+        const healthIndicator = card.querySelector('.apollo__health-indicator');
+        
+        let matchesFilter = true;
+        if (filter !== 'all') {
+            const isHealthy = healthIndicator.classList.contains('apollo__health-indicator--healthy');
+            const isWarning = healthIndicator.classList.contains('apollo__health-indicator--warning');
+            const isCritical = healthIndicator.classList.contains('apollo__health-indicator--critical');
+            
+            matchesFilter = (filter === 'healthy' && isHealthy) ||
+                           (filter === 'warning' && isWarning) ||
+                           (filter === 'critical' && isCritical);
+        }
+        
+        const matchesSearch = !searchTerm || title.includes(searchTerm);
+        
+        card.style.display = matchesFilter && matchesSearch ? 'block' : 'none';
+    });
+};
+
+// Listen for tab changes to load sessions
+document.addEventListener('change', function(e) {
+    if (e.target.name === 'apollo-tab' && e.target.id === 'apollo-tab-sessions') {
+        window.apollo_loadSessions();
+    }
+});
+
+// TOKEN BUDGETS DATA LOADING
+window.apollo_loadTokenBudgets = async function() {
+    console.log('[APOLLO] Loading token budgets data');
+    
+    try {
+        const apolloPort = window.APOLLO_PORT || '8112';
+        const apolloBase = `http://localhost:${apolloPort}`;
+        
+        // Fetch contexts for token usage
+        const response = await fetch(`${apolloBase}/api/v1/contexts`);
+        const data = await response.json();
+        
+        if (data.status === 'success' && data.data) {
+            // Calculate total token usage
+            let totalUsed = 0;
+            let totalMax = 0;
+            const contextUsage = [];
+            
+            data.data.forEach(context => {
+                totalUsed += context.metrics.total_tokens;
+                totalMax += context.metrics.max_tokens;
+                
+                contextUsage.push({
+                    name: context.context_id,
+                    used: context.metrics.total_tokens,
+                    max: context.metrics.max_tokens,
+                    rate: context.metrics.output_token_rate || 0,
+                    health: context.health
+                });
+            });
+            
+            // Update overall stats
+            const totalAllocation = document.querySelector('.apollo__stat-value');
+            if (totalAllocation) {
+                totalAllocation.textContent = totalMax.toLocaleString();
+            }
+            
+            const elements = document.querySelectorAll('.apollo__stat-value');
+            if (elements[1]) {
+                elements[1].textContent = totalUsed.toLocaleString();
+            }
+            
+            // Update usage percentage
+            const usagePercent = totalMax > 0 ? (totalUsed / totalMax) * 100 : 0;
+            const percentElement = document.querySelector('.apollo__usage-percentage');
+            if (percentElement) {
+                percentElement.textContent = usagePercent.toFixed(1) + '%';
+            }
+            
+            // Update usage stats
+            const usedStat = document.querySelector('.apollo__usage-stat-value');
+            if (usedStat) {
+                usedStat.textContent = totalUsed.toLocaleString();
+            }
+            
+            const remainingStats = document.querySelectorAll('.apollo__usage-stat-value');
+            if (remainingStats[1]) {
+                remainingStats[1].textContent = (totalMax - totalUsed).toLocaleString();
+            }
+            
+            // Calculate average rate
+            const totalRate = contextUsage.reduce((sum, ctx) => sum + ctx.rate, 0);
+            if (remainingStats[2]) {
+                remainingStats[2].textContent = totalRate.toFixed(0) + '/hr';
+            }
+            
+            // Update timeline projection
+            const projectionBar = document.querySelector('.apollo__timeline-projection');
+            if (projectionBar) {
+                // Project future usage based on current rate
+                const hoursToFull = totalRate > 0 ? (totalMax - totalUsed) / totalRate : 999;
+                const projectedPercent = Math.min(usagePercent + (24 / hoursToFull) * (100 - usagePercent), 100);
+                projectionBar.style.width = projectedPercent.toFixed(1) + '%';
+            }
+            
+            // Update depletion estimate
+            const estimate = document.querySelector('.apollo__estimate-value');
+            if (estimate && totalRate > 0) {
+                const hoursLeft = (totalMax - totalUsed) / totalRate;
+                estimate.textContent = `~${hoursLeft.toFixed(1)} hours`;
+            }
+            
+            // Clear and populate session budgets
+            const budgetList = document.querySelector('.apollo__budget-list');
+            if (budgetList) {
+                budgetList.innerHTML = '';
+                
+                // Sort by usage percentage
+                contextUsage.sort((a, b) => (b.used / b.max) - (a.used / a.max));
+                
+                contextUsage.forEach(ctx => {
+                    const percent = ctx.max > 0 ? (ctx.used / ctx.max) * 100 : 0;
+                    const healthClass = percent > 85 ? 'critical' : percent > 70 ? 'warning' : 'healthy';
+                    
+                    const item = document.createElement('div');
+                    item.className = 'apollo__budget-item';
+                    item.innerHTML = `
+                        <div class="apollo__budget-item-header">
+                            <span class="apollo__budget-item-name">${ctx.name}</span>
+                            <span class="apollo__budget-item-usage">${ctx.used.toLocaleString()} / ${ctx.max.toLocaleString()}</span>
+                        </div>
+                        <div class="apollo__budget-progress">
+                            <div class="apollo__budget-progress-bar apollo__budget-progress-bar--${healthClass}" 
+                                 style="width: ${percent.toFixed(1)}%"></div>
+                        </div>
+                        <div class="apollo__budget-item-footer">
+                            <span class="apollo__budget-item-percent">${percent.toFixed(1)}%</span>
+                            <span class="apollo__budget-item-rate">${ctx.rate.toFixed(0)} tokens/hr</span>
+                        </div>
+                    `;
+                    budgetList.appendChild(item);
+                });
+            }
+            
+            // Clear and populate component budget rows
+            const budgetRows = document.getElementById('component-budget-rows');
+            if (budgetRows) {
+                budgetRows.innerHTML = '';
+                
+                // Sort by usage percentage
+                contextUsage.sort((a, b) => (b.used / b.max) - (a.used / a.max));
+                
+                contextUsage.forEach(ctx => {
+                    const percent = ctx.max > 0 ? (ctx.used / ctx.max) * 100 : 0;
+                    const healthClass = ctx.health === 'excellent' || ctx.health === 'good' ? 'healthy' :
+                                       ctx.health === 'fair' ? 'warning' : 'critical';
+                    const fillClass = percent > 85 ? 'warning' : '';
+                    
+                    // Format component name
+                    const componentName = ctx.name.replace('-ai', '').replace('_', ' ')
+                        .split(' ')
+                        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                        .join(' ');
+                    
+                    // Map health status to display text
+                    const statusText = ctx.health === 'excellent' || ctx.health === 'good' ? 'Healthy' :
+                                      ctx.health === 'fair' ? 'Warning' :
+                                      ctx.health === 'poor' ? 'Warning' : 'Critical';
+                    
+                    const row = document.createElement('div');
+                    row.className = 'apollo__component-budget-row';
+                    row.innerHTML = `
+                        <div class="apollo__component-name">${componentName}</div>
+                        <div class="apollo__component-allocation">
+                            <input type="number" class="apollo__budget-input" value="${ctx.max}">
+                        </div>
+                        <div class="apollo__component-usage">
+                            <div class="apollo__usage-track">
+                                <div class="apollo__usage-fill${fillClass ? ' apollo__usage-fill--' + fillClass : ''}" style="width: ${percent.toFixed(1)}%"></div>
+                            </div>
+                            <div class="apollo__usage-text">${ctx.used.toLocaleString()} (${percent.toFixed(1)}%)</div>
+                        </div>
+                        <div class="apollo__component-status apollo__component-status--${healthClass}">${statusText}</div>
+                        <div class="apollo__component-actions">
+                            <button class="apollo__component-action-btn" data-context-id="${ctx.name}" data-tekton-action="reset-component" data-tekton-action-type="secondary">Reset</button>
+                            <button class="apollo__component-action-btn${fillClass ? ' apollo__component-action-btn--' + fillClass : ''}" data-context-id="${ctx.name}" data-tekton-action="compress-component" data-tekton-action-type="secondary">Compress</button>
+                        </div>
+                    `;
+                    budgetRows.appendChild(row);
+                });
+            }
+        }
+    } catch (error) {
+        console.error('[APOLLO] Error loading token budgets:', error);
+    }
+};
+
+// Add refresh button handler for tokens
+document.addEventListener('DOMContentLoaded', function() {
+    const refreshTokensBtn = document.getElementById('refresh-tokens-btn');
+    if (refreshTokensBtn) {
+        refreshTokensBtn.addEventListener('click', window.apollo_loadTokenBudgets);
+    }
+});
+
+// Listen for tab changes to load token budgets
+document.addEventListener('change', function(e) {
+    if (e.target.name === 'apollo-tab' && e.target.id === 'apollo-tab-tokens') {
+        window.apollo_loadTokenBudgets();
+    }
+});
+
+// PROTOCOLS DATA LOADING
+window.apollo_loadProtocols = async function() {
+    console.log('[APOLLO] Loading protocols data');
+    
+    try {
+        const apolloPort = window.APOLLO_PORT || '8112';
+        const apolloBase = `http://localhost:${apolloPort}`;
+        
+        // Fetch protocols
+        const response = await fetch(`${apolloBase}/api/v1/protocols`);
+        const data = await response.json();
+        
+        if (data.status === 'success' && data.data) {
+            const protocolsGrid = document.querySelector('.apollo__protocols-grid');
+            if (protocolsGrid) {
+                protocolsGrid.innerHTML = '';
+                
+                // Create protocol cards
+                data.data.forEach(protocol => {
+                    const card = apollo_createProtocolCard(protocol);
+                    protocolsGrid.appendChild(card);
+                });
+            }
+        }
+    } catch (error) {
+        console.error('[APOLLO] Error loading protocols:', error);
+    }
+};
+
+// Helper function to create protocol card
+window.apollo_createProtocolCard = function(protocol) {
+    const createdDate = new Date(protocol.created_at);
+    const now = new Date();
+    const diffMs = now - createdDate;
+    const diffMins = Math.floor(diffMs / 60000);
+    
+    let timeAgo = 'Just now';
+    if (diffMins > 60 * 24) {
+        timeAgo = `${Math.floor(diffMins / (60 * 24))} days ago`;
+    } else if (diffMins > 60) {
+        timeAgo = `${Math.floor(diffMins / 60)} hours ago`;
+    } else if (diffMins > 1) {
+        timeAgo = `${diffMins} minutes ago`;
+    }
+    
+    const card = document.createElement('div');
+    card.className = 'apollo__protocol-card';
+    card.innerHTML = `
+        <div class="apollo__protocol-card-header">
+            <div class="apollo__protocol-info">
+                <h3 class="apollo__protocol-title">${protocol.name}</h3>
+                <span class="apollo__protocol-type">${protocol.type}</span>
+            </div>
+            <div class="apollo__protocol-status apollo__protocol-status--active">
+                <span class="apollo__status-dot"></span>
+                <span class="apollo__status-text">Active</span>
+            </div>
+        </div>
+        <div class="apollo__protocol-card-body">
+            <div class="apollo__protocol-description">
+                <p>${protocol.description}</p>
+            </div>
+            <div class="apollo__protocol-metrics">
+                <div class="apollo__metric-item">
+                    <div class="apollo__metric-label">Scope:</div>
+                    <div class="apollo__metric-value">${protocol.scope}</div>
+                </div>
+                <div class="apollo__metric-item">
+                    <div class="apollo__metric-label">Mode:</div>
+                    <div class="apollo__metric-value">${protocol.enforcement_mode}</div>
+                </div>
+                <div class="apollo__metric-item">
+                    <div class="apollo__metric-label">Created:</div>
+                    <div class="apollo__metric-value">${timeAgo}</div>
+                </div>
+            </div>
+            <div class="apollo__protocol-details">
+                <div class="apollo__detail-item">
+                    <span class="apollo__detail-label">Protocol ID:</span>
+                    <span class="apollo__detail-value">${protocol.protocol_id}</span>
+                </div>
+                <div class="apollo__detail-item">
+                    <span class="apollo__detail-label">Version:</span>
+                    <span class="apollo__detail-value">${protocol.version}</span>
+                </div>
+                <div class="apollo__detail-item">
+                    <span class="apollo__detail-label">Severity:</span>
+                    <span class="apollo__detail-value apollo__severity--${protocol.severity}">${protocol.severity}</span>
+                </div>
+            </div>
+        </div>
+        <div class="apollo__protocol-card-footer">
+            <button class="apollo__protocol-action-btn" data-protocol-id="${protocol.protocol_id}" data-tekton-action="view-protocol">View</button>
+            <button class="apollo__protocol-action-btn" data-protocol-id="${protocol.protocol_id}" data-tekton-action="edit-protocol">Edit</button>
+            <button class="apollo__protocol-action-btn" data-protocol-id="${protocol.protocol_id}" data-tekton-action="test-protocol">Test</button>
+        </div>
+    `;
+    
+    return card;
+};
+
+// Protocol filtering
+window.apollo_filterProtocols = function() {
+    const filter = document.getElementById('protocol-filter').value;
+    const cards = document.querySelectorAll('.apollo__protocol-card');
+    
+    cards.forEach(card => {
+        const type = card.querySelector('.apollo__protocol-type').textContent.toLowerCase();
+        const title = card.querySelector('.apollo__protocol-title').textContent.toLowerCase();
+        
+        let show = true;
+        if (filter === 'memory') {
+            show = title.includes('memory') || type.includes('memory');
+        } else if (filter === 'context') {
+            show = title.includes('context') || type.includes('context');
+        } else if (filter === 'safety') {
+            show = title.includes('safety') || type.includes('safety');
+        } else if (filter === 'active') {
+            show = card.querySelector('.apollo__protocol-status--active') !== null;
+        }
+        
+        card.style.display = show ? 'block' : 'none';
+    });
+};
+
+// Add event handlers for protocols
+document.addEventListener('DOMContentLoaded', function() {
+    const protocolFilterBtn = document.getElementById('apply-protocol-filter-btn');
+    if (protocolFilterBtn) {
+        protocolFilterBtn.addEventListener('click', window.apollo_filterProtocols);
+    }
+    
+    const protocolFilter = document.getElementById('protocol-filter');
+    if (protocolFilter) {
+        protocolFilter.addEventListener('change', window.apollo_filterProtocols);
+    }
+});
+
+// Listen for tab changes to load protocols
+document.addEventListener('change', function(e) {
+    if (e.target.name === 'apollo-tab' && e.target.id === 'apollo-tab-protocols') {
+        window.apollo_loadProtocols();
+    }
+});
+
+// FORECASTING DATA LOADING
+window.apollo_loadForecasting = async function() {
+    console.log('[APOLLO] Loading forecasting data');
+    
+    try {
+        const apolloPort = window.APOLLO_PORT || '8112';
+        const apolloBase = `http://localhost:${apolloPort}`;
+        
+        // Fetch predictions
+        const response = await fetch(`${apolloBase}/api/v1/predictions`);
+        const data = await response.json();
+        
+        if (data.status === 'success' && data.data) {
+            const forecastGrid = document.querySelector('.apollo__forecasting-grid');
+            if (forecastGrid) {
+                forecastGrid.innerHTML = '';
+                
+                // Create forecast cards for predictions
+                data.data.slice(0, 6).forEach(prediction => {
+                    const card = apollo_createForecastCard(prediction);
+                    forecastGrid.appendChild(card);
+                });
+            }
+            
+            // Update summary stats
+            const totalPredictions = data.data.length;
+            const criticalCount = data.data.filter(p => p.predicted_health === 'critical').length;
+            const warningCount = data.data.filter(p => p.predicted_health === 'poor' || p.predicted_health === 'fair').length;
+            
+            const summaryStats = document.querySelectorAll('.apollo__stat-value');
+            if (summaryStats[0]) summaryStats[0].textContent = totalPredictions;
+            if (summaryStats[1]) summaryStats[1].textContent = criticalCount;
+            if (summaryStats[2]) summaryStats[2].textContent = warningCount;
+        }
+    } catch (error) {
+        console.error('[APOLLO] Error loading forecasting:', error);
+    }
+};
+
+// Helper function to create forecast card
+window.apollo_createForecastCard = function(prediction) {
+    const contextName = prediction.context_id.replace('-ai', '').replace('_', ' ')
+        .split(' ')
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ');
+    
+    const confidence = prediction.confidence || 0.95;
+    const trend = prediction.trend || 'stable';
+    const trendIcon = trend === 'improving' ? '↑' : trend === 'declining' ? '↓' : '→';
+    const trendClass = trend === 'improving' ? 'improving' : trend === 'declining' ? 'declining' : 'stable';
+    
+    const card = document.createElement('div');
+    card.className = 'apollo__forecast-card';
+    card.innerHTML = `
+        <div class="apollo__forecast-card-header">
+            <h3 class="apollo__forecast-title">${contextName}</h3>
+            <div class="apollo__forecast-confidence">
+                <span class="apollo__confidence-label">Confidence:</span>
+                <span class="apollo__confidence-value">${(confidence * 100).toFixed(0)}%</span>
+            </div>
+        </div>
+        <div class="apollo__forecast-card-body">
+            <div class="apollo__forecast-prediction">
+                <div class="apollo__prediction-item">
+                    <span class="apollo__prediction-label">Health Forecast:</span>
+                    <span class="apollo__prediction-value apollo__health--${prediction.predicted_health}">
+                        ${prediction.predicted_health.charAt(0).toUpperCase() + prediction.predicted_health.slice(1)}
+                    </span>
+                </div>
+                <div class="apollo__prediction-item">
+                    <span class="apollo__prediction-label">Token Usage (1hr):</span>
+                    <span class="apollo__prediction-value">
+                        +${Math.round(prediction.predicted_metrics.output_token_rate || 0)} tokens
+                    </span>
+                </div>
+                <div class="apollo__prediction-item">
+                    <span class="apollo__prediction-label">Trend:</span>
+                    <span class="apollo__prediction-value apollo__trend--${trendClass}">
+                        ${trendIcon} ${trend.charAt(0).toUpperCase() + trend.slice(1)}
+                    </span>
+                </div>
+            </div>
+            <div class="apollo__forecast-actions">
+                <button class="apollo__forecast-action-btn" data-context-id="${prediction.context_id}">
+                    View Details
+                </button>
+            </div>
+        </div>
+    `;
+    
+    return card;
+};
+
+// ACTIONS DATA LOADING
+window.apollo_loadActions = async function() {
+    console.log('[APOLLO] Loading actions data');
+    
+    try {
+        const apolloPort = window.APOLLO_PORT || '8112';
+        const apolloBase = `http://localhost:${apolloPort}`;
+        
+        // Fetch actions
+        const response = await fetch(`${apolloBase}/api/v1/actions`);
+        const data = await response.json();
+        
+        const actionsList = document.querySelector('.apollo__actions-list');
+        if (actionsList) {
+            actionsList.innerHTML = '';
+            
+            if (data.status === 'success' && data.data && data.data.length > 0) {
+                // Group actions by priority
+                const critical = data.data.filter(a => a.priority === 'critical');
+                const high = data.data.filter(a => a.priority === 'high');
+                const medium = data.data.filter(a => a.priority === 'medium');
+                const low = data.data.filter(a => a.priority === 'low');
+                
+                // Create sections for each priority
+                if (critical.length > 0) {
+                    actionsList.appendChild(apollo_createActionSection('Critical', critical, 'critical'));
+                }
+                if (high.length > 0) {
+                    actionsList.appendChild(apollo_createActionSection('High Priority', high, 'high'));
+                }
+                if (medium.length > 0) {
+                    actionsList.appendChild(apollo_createActionSection('Medium Priority', medium, 'medium'));
+                }
+                if (low.length > 0) {
+                    actionsList.appendChild(apollo_createActionSection('Low Priority', low, 'low'));
+                }
+            } else {
+                // No actions available
+                actionsList.innerHTML = `
+                    <div class="apollo__no-actions">
+                        <div class="apollo__no-actions-icon">✓</div>
+                        <h3 class="apollo__no-actions-title">All Systems Optimal</h3>
+                        <p class="apollo__no-actions-text">No actions required at this time. All contexts are operating within normal parameters.</p>
+                    </div>
+                `;
+            }
+        }
+    } catch (error) {
+        console.error('[APOLLO] Error loading actions:', error);
+    }
+};
+
+// Helper function to create action section
+window.apollo_createActionSection = function(title, actions, priority) {
+    const section = document.createElement('div');
+    section.className = `apollo__action-section apollo__action-section--${priority}`;
+    
+    const header = document.createElement('div');
+    header.className = 'apollo__action-section-header';
+    header.innerHTML = `<h3 class="apollo__action-section-title">${title}</h3>`;
+    section.appendChild(header);
+    
+    const list = document.createElement('div');
+    list.className = 'apollo__action-items';
+    
+    actions.forEach(action => {
+        const item = document.createElement('div');
+        item.className = 'apollo__action-item';
+        item.innerHTML = `
+            <div class="apollo__action-content">
+                <h4 class="apollo__action-title">${action.action_type}</h4>
+                <p class="apollo__action-description">${action.description || 'Action required'}</p>
+                <div class="apollo__action-meta">
+                    <span class="apollo__action-context">Context: ${action.context_id}</span>
+                    <span class="apollo__action-time">Created: ${new Date(action.created_at).toLocaleTimeString()}</span>
+                </div>
+            </div>
+            <div class="apollo__action-buttons">
+                <button class="apollo__action-btn apollo__action-btn--primary" data-action-id="${action.action_id}">
+                    Execute
+                </button>
+                <button class="apollo__action-btn apollo__action-btn--secondary" data-action-id="${action.action_id}">
+                    Dismiss
+                </button>
+            </div>
+        `;
+        list.appendChild(item);
+    });
+    
+    section.appendChild(list);
+    return section;
+};
+
+// Listen for tab changes
+document.addEventListener('change', function(e) {
+    if (e.target.name === 'apollo-tab') {
+        if (e.target.id === 'apollo-tab-forecasting') {
+            window.apollo_loadForecasting();
+        } else if (e.target.id === 'apollo-tab-actions') {
+            window.apollo_loadActions();
+        }
+    }
+});
+
+// CHAT FUNCTIONALITY
+window.apollo_sendChat = async function() {
+    const activeTab = document.querySelector('input[name="apollo-tab"]:checked');
+    if (!activeTab) return;
+    
+    const tabId = activeTab.id.replace('apollo-tab-', '');
+    const chatInput = document.getElementById(tabId + '-input');
+    if (!chatInput || !chatInput.value.trim()) return;
+    
+    const message = chatInput.value.trim();
+    chatInput.value = '';
+    
+    if (tabId === 'teamchat') {
+        // Send to aish MCP for team chat
+        try {
+            const aishPort = '8118'; // aish MCP port
+            const response = await fetch(`http://localhost:${aishPort}/api/mcp/v2/tools/team-chat`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    message: message,
+                    sender: 'Apollo'
+                })
+            });
+            
+            if (response.ok) {
+                apollo_addChatMessage('teamchat', message, 'user');
+                const result = await response.json();
+                apollo_addChatMessage('teamchat', 'Message broadcast to all AIs', 'system');
+            }
+        } catch (error) {
+            console.error('[APOLLO] Error sending team chat:', error);
+            apollo_addChatMessage('teamchat', 'Error: Could not send message', 'error');
+        }
+    } else if (tabId === 'attention') {
+        // For attention chat, just display locally for now
+        apollo_addChatMessage('attention', message, 'user');
+        // TODO: Connect to Apollo's attention system
+        apollo_addChatMessage('attention', 'Attention system is being configured', 'system');
+    }
+};
+
+// Helper to add chat messages
+window.apollo_addChatMessage = function(chatType, message, sender) {
+    const messagesContainer = document.getElementById(chatType + '-messages');
+    if (!messagesContainer) return;
+    
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `apollo__message apollo__message--${sender}`;
+    
+    const timestamp = new Date().toLocaleTimeString();
+    messageDiv.innerHTML = `
+        <div class="apollo__message-header">
+            <span class="apollo__message-sender">${sender === 'user' ? 'You' : sender === 'system' ? 'System' : 'Error'}</span>
+            <span class="apollo__message-timestamp">${timestamp}</span>
+        </div>
+        <div class="apollo__message-content">${message}</div>
+    `;
+    
+    messagesContainer.appendChild(messageDiv);
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+};
+
+// Clear chat functionality
+window.apollo_clearChat = function() {
+    const activeTab = document.querySelector('input[name="apollo-tab"]:checked');
+    if (!activeTab) return;
+    
+    const tabId = activeTab.id.replace('apollo-tab-', '');
+    const messagesContainer = document.getElementById(tabId + '-messages');
+    if (messagesContainer) {
+        // Keep the welcome message if it exists
+        const welcomeMsg = messagesContainer.querySelector('.apollo__message--system');
+        messagesContainer.innerHTML = '';
+        if (welcomeMsg && welcomeMsg.textContent.includes('Welcome')) {
+            messagesContainer.appendChild(welcomeMsg);
+        }
+    }
+};
+
+// Add event handlers for chat
+document.addEventListener('DOMContentLoaded', function() {
+    // Send button handlers
+    const sendButtons = document.querySelectorAll('[id$="-send-button"]');
+    sendButtons.forEach(btn => {
+        btn.addEventListener('click', window.apollo_sendChat);
+    });
+    
+    // Enter key handler for chat inputs
+    const chatInputs = document.querySelectorAll('[id$="-input"]');
+    chatInputs.forEach(input => {
+        input.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                window.apollo_sendChat();
+            }
+        });
+    });
+    
+    // Clear button is already handled by CSS visibility
+});
 
 // HTML PANEL PROTECTION
 // Setup explicit protection for the HTML panel to prevent it being hidden

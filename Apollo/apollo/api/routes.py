@@ -52,13 +52,13 @@ from apollo.models.message import (
 logger = logging.getLogger("apollo.api.routes")
 
 # Create API router
-api_router = APIRouter(prefix="/api")
+api_router = APIRouter()  # Remove prefix here - it's added when mounting
 
 # Create WebSocket router
 ws_router = APIRouter()
 
 # Create metrics router
-metrics_router = APIRouter(prefix="/metrics")
+metrics_router = APIRouter()  # Remove prefix here too - it's added when mounting
 
 
 # Import the Apollo manager dependency
