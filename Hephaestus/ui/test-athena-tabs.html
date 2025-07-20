@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Athena Tabs</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background: #1a1a1a;
+            color: #fff;
+            font-family: Arial, sans-serif;
+        }
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #2a2a2a;
+            border-radius: 8px;
+        }
+        h1 {
+            margin-bottom: 20px;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            background: #333;
+            border-radius: 4px;
+        }
+        .test-result {
+            margin-top: 10px;
+            padding: 10px;
+            background: #444;
+            border-radius: 4px;
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+        .success {
+            color: #4caf50;
+        }
+        .error {
+            color: #f44336;
+        }
+        .warning {
+            color: #ff9800;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>Athena Component Tab Test</h1>
+        
+        <div class="test-section">
+            <h2>1. Radio Button States</h2>
+            <div id="radio-test" class="test-result">Checking...</div>
+        </div>
+        
+        <div class="test-section">
+            <h2>2. Panel Visibility</h2>
+            <div id="panel-test" class="test-result">Checking...</div>
+        </div>
+        
+        <div class="test-section">
+            <h2>3. CSS Rules Applied</h2>
+            <div id="css-test" class="test-result">Checking...</div>
+        </div>
+        
+        <div class="test-section">
+            <h2>4. Team Chat Panel Specific</h2>
+            <div id="teamchat-test" class="test-result">Checking...</div>
+        </div>
+        
+        <div class="test-section">
+            <h2>5. Console Errors</h2>
+            <div id="console-test" class="test-result">Checking...</div>
+        </div>
+    </div>
+    
+    <script>
+        // Wait for the parent window to load
+        window.addEventListener('load', function() {
+            setTimeout(runTests, 1000);
+        });
+        
+        function runTests() {
+            // Test 1: Radio Button States
+            const radioTest = document.getElementById('radio-test');
+            try {
+                const radios = window.parent.document.querySelectorAll('input[name="athena-tab"]');
+                let radioResults = `Found ${radios.length} radio buttons:\n`;
+                radios.forEach(radio => {
+                    radioResults += `- ${radio.id}: ${radio.checked ? 'CHECKED' : 'unchecked'}\n`;
+                });
+                radioTest.textContent = radioResults;
+                radioTest.className = 'test-result success';
+            } catch (e) {
+                radioTest.textContent = 'Error: ' + e.message;
+                radioTest.className = 'test-result error';
+            }
+            
+            // Test 2: Panel Visibility
+            const panelTest = document.getElementById('panel-test');
+            try {
+                const panels = window.parent.document.querySelectorAll('.athena__panel');
+                let panelResults = `Found ${panels.length} panels:\n`;
+                panels.forEach(panel => {
+                    const computedStyle = window.parent.getComputedStyle(panel);
+                    const isVisible = computedStyle.display !== 'none';
+                    panelResults += `- ${panel.id}: ${isVisible ? 'VISIBLE' : 'hidden'} (display: ${computedStyle.display})\n`;
+                });
+                panelTest.textContent = panelResults;
+                panelTest.className = 'test-result success';
+            } catch (e) {
+                panelTest.textContent = 'Error: ' + e.message;
+                panelTest.className = 'test-result error';
+            }
+            
+            // Test 3: CSS Rules
+            const cssTest = document.getElementById('css-test');
+            try {
+                const teamchatRadio = window.parent.document.getElementById('athena-tab-teamchat');
+                const teamchatPanel = window.parent.document.getElementById('teamchat-panel');
+                let cssResults = 'CSS Selector Test:\n';
+                
+                // Check if CSS rule would apply
+                if (teamchatRadio && teamchatPanel) {
+                    const athenaContainer = window.parent.document.querySelector('.athena');
+                    cssResults += `- Radio button found: ${teamchatRadio ? 'YES' : 'NO'}\n`;
+                    cssResults += `- Panel found: ${teamchatPanel ? 'YES' : 'NO'}\n`;
+                    cssResults += `- Athena container found: ${athenaContainer ? 'YES' : 'NO'}\n`;
+                    
+                    // Check relationship
+                    if (athenaContainer) {
+                        const radioIsBeforeContainer = teamchatRadio.compareDocumentPosition(athenaContainer) & Node.DOCUMENT_POSITION_FOLLOWING;
+                        cssResults += `- Radio is before container: ${radioIsBeforeContainer ? 'YES' : 'NO'}\n`;
+                        
+                        const panelIsInsideContainer = athenaContainer.contains(teamchatPanel);
+                        cssResults += `- Panel is inside container: ${panelIsInsideContainer ? 'YES' : 'NO'}\n`;
+                    }
+                }
+                
+                cssTest.textContent = cssResults;
+                cssTest.className = 'test-result success';
+            } catch (e) {
+                cssTest.textContent = 'Error: ' + e.message;
+                cssTest.className = 'test-result error';
+            }
+            
+            // Test 4: Team Chat Panel Specific
+            const teamchatTest = document.getElementById('teamchat-test');
+            try {
+                const teamchatPanel = window.parent.document.getElementById('teamchat-panel');
+                const teamchatRadio = window.parent.document.getElementById('athena-tab-teamchat');
+                let teamchatResults = 'Team Chat Panel Analysis:\n';
+                
+                if (teamchatPanel) {
+                    const computedStyle = window.parent.getComputedStyle(teamchatPanel);
+                    teamchatResults += `- Display: ${computedStyle.display}\n`;
+                    teamchatResults += `- Visibility: ${computedStyle.visibility}\n`;
+                    teamchatResults += `- Opacity: ${computedStyle.opacity}\n`;
+                    teamchatResults += `- Position: ${computedStyle.position}\n`;
+                    teamchatResults += `- Z-index: ${computedStyle.zIndex}\n`;
+                    teamchatResults += `- Width: ${computedStyle.width}\n`;
+                    teamchatResults += `- Height: ${computedStyle.height}\n`;
+                    
+                    // Check parent styles
+                    const parent = teamchatPanel.parentElement;
+                    if (parent) {
+                        const parentStyle = window.parent.getComputedStyle(parent);
+                        teamchatResults += `\nParent element (${parent.className}):\n`;
+                        teamchatResults += `- Display: ${parentStyle.display}\n`;
+                        teamchatResults += `- Overflow: ${parentStyle.overflow}\n`;
+                    }
+                    
+                    // Try to activate the tab
+                    if (teamchatRadio) {
+                        teamchatResults += `\nTrying to activate Team Chat tab...\n`;
+                        teamchatRadio.checked = true;
+                        // Force a reflow
+                        teamchatRadio.offsetHeight;
+                        
+                        // Check again
+                        const newStyle = window.parent.getComputedStyle(teamchatPanel);
+                        teamchatResults += `After activation:\n`;
+                        teamchatResults += `- Display: ${newStyle.display}\n`;
+                        teamchatResults += `- Is visible: ${newStyle.display !== 'none' ? 'YES' : 'NO'}\n`;
+                    }
+                } else {
+                    teamchatResults += 'Team Chat panel not found!';
+                }
+                
+                teamchatTest.textContent = teamchatResults;
+                teamchatTest.className = 'test-result success';
+            } catch (e) {
+                teamchatTest.textContent = 'Error: ' + e.message;
+                teamchatTest.className = 'test-result error';
+            }
+            
+            // Test 5: Console Errors
+            const consoleTest = document.getElementById('console-test');
+            consoleTest.textContent = 'Check browser console for any errors related to Athena component';
+            consoleTest.className = 'test-result warning';
+        }
+    </script>
+</body>
+</html>
