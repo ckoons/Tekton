@@ -2235,14 +2235,14 @@
     
     /* AI messages */
     .ai-message {
-        background-color: rgba(123, 31, 162, 0.05);
-        border-left: 3px solid #7B1FA2;
+        background-color: rgba(255, 152, 0, 0.05);
+        border-left: 3px solid #FF9800;
         margin-right: 32px;
         align-self: flex-start;
     }
     
     .ai-message strong {
-        color: #7B1FA2;
+        color: #FF9800;
     }
     
     /* Error messages */
@@ -2267,10 +2267,19 @@
     
     .chat-message ul li:before {
         content: "•";
-        color: #FFD600;
+        color: #FF9800;
         font-weight: bold;
         position: absolute;
         left: 0;
+    }
+    
+    /* Apollo-specific message styling */
+    .chat-message {
+        line-height: 1.5;
+    }
+    
+    .user-message {
+        font-style: italic;
     }
     
     /* Chat Input */
@@ -5234,57 +5243,24 @@ document.addEventListener('change', function(e) {
 
 // CHAT FUNCTIONALITY - Following Terma's pattern
 window.apollo_sendChat = async function() {
-    console.log('[APOLLO CHAT] apollo_sendChat called');
-    
     const input = document.getElementById('apollo-chat-input');
-    console.log('[APOLLO CHAT] Input element:', input);
-    
-    if (!input) {
-        console.error('[APOLLO CHAT] ERROR: Could not find apollo-chat-input element!');
-        return;
-    }
-    
     const message = input.value.trim();
-    console.log('[APOLLO CHAT] Message value:', message);
     
-    if (!message) {
-        console.log('[APOLLO CHAT] No message entered, returning');
-        return;
-    }
+    if (!message) return;
     
     // Determine which tab is active
-    const attentionRadio = document.getElementById('apollo-tab-attention');
-    const teamchatRadio = document.getElementById('apollo-tab-teamchat');
+    const attentionActive = document.getElementById('apollo-tab-attention').checked;
+    const teamchatActive = document.getElementById('apollo-tab-teamchat').checked;
     
-    console.log('[APOLLO CHAT] Attention radio:', attentionRadio);
-    console.log('[APOLLO CHAT] Team chat radio:', teamchatRadio);
-    
-    const attentionActive = attentionRadio ? attentionRadio.checked : false;
-    const teamchatActive = teamchatRadio ? teamchatRadio.checked : false;
-    
-    console.log('[APOLLO CHAT] Attention active:', attentionActive);
-    console.log('[APOLLO CHAT] Team chat active:', teamchatActive);
-    
-    if (!attentionActive && !teamchatActive) {
-        console.error('[APOLLO CHAT] ERROR: Neither attention nor team chat tab is active!');
-        return;
-    }
+    if (!attentionActive && !teamchatActive) return;
     
     const chatType = attentionActive ? 'attention' : 'teamchat';
-    console.log('[APOLLO CHAT] Chat type:', chatType);
-    
     const messagesContainer = document.getElementById(`${chatType}-messages`);
-    console.log('[APOLLO CHAT] Messages container:', messagesContainer);
-    
-    if (!messagesContainer) {
-        console.error(`[APOLLO CHAT] ERROR: Could not find ${chatType}-messages container!`);
-        return;
-    }
     
     // Add user message
     const userMessageDiv = document.createElement('div');
     userMessageDiv.className = 'chat-message user-message';
-    userMessageDiv.innerHTML = `<strong>You:</strong> ${message}`;
+    userMessageDiv.innerHTML = `${message}`;
     messagesContainer.appendChild(userMessageDiv);
     
     // Clear input
@@ -5293,16 +5269,10 @@ window.apollo_sendChat = async function() {
     // Scroll to bottom
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
     
-    console.log('[APOLLO CHAT] User message added to DOM');
-    
     // Send to appropriate backend
     if (chatType === 'attention') {
-        console.log('[APOLLO CHAT] Sending attention message');
-        console.log('[APOLLO CHAT] window.AIChat available?', !!window.AIChat);
-        
         // Direct message to Apollo attention system
         if (window.AIChat) {
-            console.log('[APOLLO CHAT] Using window.AIChat.sendMessage');
             window.AIChat.sendMessage('apollo', message)
                 .then(response => {
                     const aiMessageDiv = document.createElement('div');
@@ -5409,39 +5379,24 @@ window.apollo_clearChat = function() {
 
 // Add event handlers for chat - Run immediately since we're injected HTML
 (function() {
-    console.log('[APOLLO CHAT] Setting up chat event handlers (immediate execution)');
-    
     // Send button handler
     const sendButton = document.getElementById('apollo-send-button');
-    console.log('[APOLLO CHAT] Send button element:', sendButton);
-    
     if (sendButton) {
         sendButton.addEventListener('click', function(e) {
-            console.log('[APOLLO CHAT] Send button clicked');
             e.preventDefault();
             window.apollo_sendChat();
         });
-        console.log('[APOLLO CHAT] Send button click handler attached');
-    } else {
-        console.error('[APOLLO CHAT] ERROR: Could not find apollo-send-button!');
     }
     
     // Enter key handler for chat input
     const chatInput = document.getElementById('apollo-chat-input');
-    console.log('[APOLLO CHAT] Chat input element:', chatInput);
-    
     if (chatInput) {
         chatInput.addEventListener('keydown', function(e) {
-            console.log('[APOLLO CHAT] Key pressed:', e.key);
             if (e.key === 'Enter' && !e.shiftKey) {
-                console.log('[APOLLO CHAT] Enter key pressed without shift');
                 e.preventDefault();
                 window.apollo_sendChat();
             }
         });
-        console.log('[APOLLO CHAT] Chat input keydown handler attached');
-    } else {
-        console.error('[APOLLO CHAT] ERROR: Could not find apollo-chat-input!');
     }
     
     // Clear button handler
