@@ -96,15 +96,15 @@
                         <div class="apollo__card-header">
                             <h3 class="apollo__card-title">Token Usage</h3>
                         </div>
-                        <div class="apollo__card-body">
-                            <p>Total allocation: 100,000 tokens</p>
-                            <p>Used: 38,420 tokens (38.4%)</p>
+                        <div class="apollo__card-body" id="token-usage-body">
+                            <p>Total tokens: <span id="total-token-count">0</span></p>
+                            <p>Active contexts: <span id="active-context-count">0</span></p>
                             <div class="apollo__token-budget">
-                                <div class="apollo__token-budget-used" style="width: 38.4%"></div>
+                                <div class="apollo__token-budget-used" id="token-budget-bar" style="width: 0%"></div>
                             </div>
                         </div>
                         <div class="apollo__card-footer">
-                            Current compression level: None
+                            <span id="token-compression">No compression active</span>
                         </div>
                     </div>
 
@@ -4244,6 +4244,152 @@ window.apollo_clearChat = function() {
     
     return false; // Stop event propagation
 };
+
+// DASHBOARD DATA LOADING
+window.apollo_loadDashboard = async function() {
+    console.log('[APOLLO] Loading dashboard data');
+    
+    try {
+        // Get Apollo API base URL using window.APOLLO_PORT
+        const apolloPort = window.APOLLO_PORT || '8112';
+        const apolloBase = `http://localhost:${apolloPort}`;
+        
+        // Fetch system status
+        const statusResponse = await fetch(`${apolloBase}/api/v1/status`);
+        const statusData = await statusResponse.json();
+        
+        if (statusData.status === 'success') {
+            const data = statusData.data;
+            
+            // Update active sessions count
+            const sessionsCount = document.getElementById('active-sessions-count');
+            if (sessionsCount) {
+                sessionsCount.textContent = data.active_contexts || '0';
+            }
+            
+            // Update system status
+            const statusContainer = document.querySelector('.apollo__card-body');
+            if (statusContainer) {
+                const healthStatus = data.critical_contexts > 0 ? 'warning' : 'healthy';
+                const healthIndicator = document.querySelector('.apollo__health-indicator');
+                if (healthIndicator) {
+                    healthIndicator.className = `apollo__health-indicator apollo__health-indicator--${healthStatus}`;
+                }
+                
+                // Update status text
+                const statusText = data.critical_contexts > 0 
+                    ? `${data.critical_contexts} contexts need attention`
+                    : 'All systems operational';
+                statusContainer.innerHTML = `
+                    <p>${statusText}</p>
+                    <p>${data.active_contexts} active contexts monitored</p>
+                `;
+            }
+        }
+        
+        // Fetch contexts for session list
+        const contextsResponse = await fetch(`${apolloBase}/api/v1/contexts`);
+        const contextsData = await contextsResponse.json();
+        
+        if (contextsData.status === 'success' && contextsData.data) {
+            const sessionList = document.querySelector('.apollo__session-list');
+            if (sessionList) {
+                sessionList.innerHTML = '';
+                
+                // Show first 4 contexts
+                contextsData.data.slice(0, 4).forEach(context => {
+                    const healthClass = context.health === 'excellent' ? 'healthy' : 
+                                      context.health === 'good' ? 'healthy' :
+                                      context.health === 'fair' ? 'warning' : 'critical';
+                    
+                    const contextName = context.context_id.replace('-ai', '').replace('_', ' ')
+                        .split(' ')
+                        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                        .join(' ');
+                    
+                    const li = document.createElement('li');
+                    li.className = 'apollo__session-item';
+                    li.innerHTML = `
+                        <span class="apollo__session-name">${contextName}</span>
+                        <span class="apollo__session-status">
+                            <div class="apollo__health-indicator apollo__health-indicator--${healthClass}"></div>
+                            ${context.health.charAt(0).toUpperCase() + context.health.slice(1)}
+                        </span>
+                    `;
+                    sessionList.appendChild(li);
+                });
+            }
+        }
+        
+        // Calculate total tokens (sum from all contexts)
+        let totalTokens = 0;
+        if (contextsData.data) {
+            contextsData.data.forEach(context => {
+                totalTokens += context.metrics.total_tokens || 0;
+            });
+        }
+        
+        const totalTokensElement = document.getElementById('total-tokens');
+        if (totalTokensElement) {
+            totalTokensElement.textContent = totalTokens.toLocaleString();
+        }
+        
+        // Update token usage card
+        const totalTokenCount = document.getElementById('total-token-count');
+        if (totalTokenCount) {
+            totalTokenCount.textContent = totalTokens.toLocaleString();
+        }
+        
+        const activeContextCount = document.getElementById('active-context-count');
+        if (activeContextCount) {
+            activeContextCount.textContent = statusData.data.active_contexts || '0';
+        }
+        
+        // Update token budget bar (assuming max budget per context * number of contexts)
+        const maxTokensPerContext = 4000; // From the context data
+        const maxTotalTokens = maxTokensPerContext * (statusData.data.active_contexts || 1);
+        const tokenPercent = Math.min((totalTokens / maxTotalTokens) * 100, 100);
+        
+        const tokenBar = document.getElementById('token-budget-bar');
+        if (tokenBar) {
+            tokenBar.style.width = tokenPercent.toFixed(1) + '%';
+        }
+        
+        // Update last updated time
+        const footers = document.querySelectorAll('.apollo__card-footer');
+        footers.forEach(footer => {
+            if (footer.textContent.includes('Last updated')) {
+                footer.textContent = `Last updated: ${new Date().toLocaleTimeString()}`;
+            }
+        });
+        
+    } catch (error) {
+        console.error('[APOLLO] Error loading dashboard data:', error);
+    }
+};
+
+// Add event listener for refresh button
+document.addEventListener('DOMContentLoaded', function() {
+    const refreshBtn = document.getElementById('refresh-dashboard-btn');
+    if (refreshBtn) {
+        refreshBtn.addEventListener('click', function() {
+            window.apollo_loadDashboard();
+        });
+    }
+    
+    // Load dashboard on initial load if it's the active tab
+    const dashboardRadio = document.getElementById('apollo-tab-dashboard');
+    if (dashboardRadio && dashboardRadio.checked) {
+        window.apollo_loadDashboard();
+    }
+});
+
+// Listen for tab changes to load dashboard when selected
+document.addEventListener('change', function(e) {
+    if (e.target.name === 'apollo-tab' && e.target.id === 'apollo-tab-dashboard') {
+        window.apollo_loadDashboard();
+    }
+});
 
 // HTML PANEL PROTECTION
 // Setup explicit protection for the HTML panel to prevent it being hidden
