@@ -19,7 +19,6 @@ KNOWN_AI_NAMES = [
     'team-chat', 'tekton-core', 'tekton_core'
 ]
 
-
 class RouteRegistry:
     """Registry for named routes with purposes"""
     
@@ -184,16 +183,11 @@ def format_route_display(route: Dict[str, Any]) -> str:
     return f"{route['name']}: " + " → ".join(hops_with_purpose)
 
 
-def handle_route_command(raw_args: str = None) -> bool:
+def handle_route_command() -> bool:
     """Handle the aish route command - reads full command line itself"""
     
     # Get arguments directly from sys.argv (which preserves quoted strings)
-    if raw_args is None:
-        # sys.argv already has quotes parsed properly by the shell
-        args = sys.argv[2:] if len(sys.argv) > 2 else []
-    else:
-        # Legacy path if called with raw_args
-        args = parse_raw_route_command(raw_args)
+    args = sys.argv[2:] if len(sys.argv) > 2 else []
     
     if not args:
         print("Usage: aish route <subcommand> [args...]")
@@ -346,7 +340,7 @@ def send_through_route(registry, route, route_name: str, dest: str, message: str
         try:
             msg_data = json.loads(message)
         except json.JSONDecodeError:
-            print("Error: Invalid JSON format")
+            print("Error: Invalid JSON format", file=sys.stderr)
             return False
     else:
         # Create initial JSON for text message
@@ -387,24 +381,18 @@ def send_through_route(registry, route, route_name: str, dest: str, message: str
         
         # Update message with route metadata
         msg_data.update({
-            "name": route_name,
+            "route_name": route_name,
             "dest": dest,
+            "next_hop": next_hop,
             "purpose": next_purpose
         })
-        
-        # Send to next hop
-        from core.shell import AIShell
-        shell = AIShell()
-        shell.send_to_ai(next_hop, json.dumps(msg_data))
-        
     else:
-        # No route - direct send
-        from core.shell import AIShell
-        shell = AIShell()
-        
-        if is_json:
-            shell.send_to_ai(dest, message)
-        else:
-            shell.send_to_ai(dest, message)
+        # No route - just add destination
+        msg_data.update({
+            "dest": dest
+        })
+    
+    # Output the JSON
+    print(json.dumps(msg_data, indent=2))
     
     return True

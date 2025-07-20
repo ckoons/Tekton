@@ -77,6 +77,20 @@ if tekton_root.exists() and (tekton_root / 'shared').exists():
 from core.shell import AIShell
 from core.version import __version__
 
+# Clean up routes from previous session only if this is the first aish command
+# (to avoid deleting routes mid-session)
+tekton_root_path = Path(tekton_root)
+routes_file = tekton_root_path / '.tekton' / 'aish' / 'routes.json'
+session_marker = tekton_root_path / '.tekton' / 'aish' / '.session_active'
+
+# If no session marker exists, this is a new session - clean up old routes
+if not session_marker.exists():
+    if routes_file.exists():
+        routes_file.unlink()
+    # Create session marker
+    session_marker.parent.mkdir(parents=True, exist_ok=True)
+    session_marker.touch()
+
 # Start MCP server if not disabled
 if not os.environ.get('AISH_NO_MCP'):
     try:
