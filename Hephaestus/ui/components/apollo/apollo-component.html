@@ -1,4 +1,15 @@
 <!-- Apollo Component - Attention and Prediction System -->
+
+<!-- Hidden radio inputs for CSS-first tab functionality -->
+<input type="radio" name="apollo-tab" id="apollo-tab-dashboard" checked style="display: none;">
+<input type="radio" name="apollo-tab" id="apollo-tab-sessions" style="display: none;">
+<input type="radio" name="apollo-tab" id="apollo-tab-tokens" style="display: none;">
+<input type="radio" name="apollo-tab" id="apollo-tab-protocols" style="display: none;">
+<input type="radio" name="apollo-tab" id="apollo-tab-forecasting" style="display: none;">
+<input type="radio" name="apollo-tab" id="apollo-tab-actions" style="display: none;">
+<input type="radio" name="apollo-tab" id="apollo-tab-attention" style="display: none;">
+<input type="radio" name="apollo-tab" id="apollo-tab-teamchat" style="display: none;">
+
 <div class="apollo" data-tekton-area="apollo" data-tekton-component="apollo" data-tekton-type="component-workspace" data-tekton-ai="apollo-assistant" data-tekton-ai-ready="false">
     <!-- Component Header with Title -->
     <div class="apollo__header" data-tekton-zone="header" data-tekton-section="header">
@@ -14,33 +25,33 @@
     <!-- Apollo Menu Bar with Tab Navigation -->
     <div class="apollo__menu-bar" data-tekton-zone="menu" data-tekton-zone="menu" data-tekton-nav="component-menu">
         <div class="apollo__tabs" data-tekton-zone="menu">
-            <div class="apollo__tab apollo__tab--active" data-tab="dashboard" onclick="apollo_switchTab('dashboard'); return false;" data-tekton-menu-item="Dashboard" data-tekton-menu-component="apollo" data-tekton-menu-active="true" data-tekton-menu-panel="dashboard-panel" data-tekton-nav-target="dashboard-panel">
+            <label for="apollo-tab-dashboard" class="apollo__tab" data-tab="dashboard" data-tekton-menu-item="Dashboard" data-tekton-menu-component="apollo" data-tekton-menu-panel="dashboard-panel" data-tekton-nav-target="dashboard-panel">
                 <span class="apollo__tab-label">Dashboard</span>
-            </div>
-            <div class="apollo__tab" data-tab="sessions" onclick="apollo_switchTab('sessions'); return false;" data-tekton-menu-item="Sessions" data-tekton-menu-component="apollo" data-tekton-menu-active="false" data-tekton-menu-panel="sessions-panel" data-tekton-nav-target="sessions-panel">
+            </label>
+            <label for="apollo-tab-sessions" class="apollo__tab" data-tab="sessions" data-tekton-menu-item="Sessions" data-tekton-menu-component="apollo" data-tekton-menu-panel="sessions-panel" data-tekton-nav-target="sessions-panel">
                 <span class="apollo__tab-label">Sessions</span>
-            </div>
-            <div class="apollo__tab" data-tab="tokens" onclick="apollo_switchTab('tokens'); return false;" data-tekton-menu-item="Token Budgets" data-tekton-menu-component="apollo" data-tekton-menu-active="false" data-tekton-menu-panel="tokens-panel" data-tekton-nav-target="tokens-panel">
+            </label>
+            <label for="apollo-tab-tokens" class="apollo__tab" data-tab="tokens" data-tekton-menu-item="Token Budgets" data-tekton-menu-component="apollo" data-tekton-menu-panel="tokens-panel" data-tekton-nav-target="tokens-panel">
                 <span class="apollo__tab-label">Token Budgets</span>
-            </div>
-            <div class="apollo__tab" data-tab="protocols" onclick="apollo_switchTab('protocols'); return false;" data-tekton-menu-item="Protocols" data-tekton-menu-component="apollo" data-tekton-menu-active="false" data-tekton-menu-panel="protocols-panel" data-tekton-nav-target="protocols-panel">
+            </label>
+            <label for="apollo-tab-protocols" class="apollo__tab" data-tab="protocols" data-tekton-menu-item="Protocols" data-tekton-menu-component="apollo" data-tekton-menu-panel="protocols-panel" data-tekton-nav-target="protocols-panel">
                 <span class="apollo__tab-label">Protocols</span>
-            </div>
-            <div class="apollo__tab" data-tab="forecasting" onclick="apollo_switchTab('forecasting'); return false;" data-tekton-menu-item="Forecasting" data-tekton-menu-component="apollo" data-tekton-menu-active="false" data-tekton-menu-panel="forecasting-panel" data-tekton-nav-target="forecasting-panel">
+            </label>
+            <label for="apollo-tab-forecasting" class="apollo__tab" data-tab="forecasting" data-tekton-menu-item="Forecasting" data-tekton-menu-component="apollo" data-tekton-menu-panel="forecasting-panel" data-tekton-nav-target="forecasting-panel">
                 <span class="apollo__tab-label">Forecasting</span>
-            </div>
-            <div class="apollo__tab" data-tab="actions" onclick="apollo_switchTab('actions'); return false;" data-tekton-menu-item="Actions" data-tekton-menu-component="apollo" data-tekton-menu-active="false" data-tekton-menu-panel="actions-panel" data-tekton-nav-target="actions-panel">
+            </label>
+            <label for="apollo-tab-actions" class="apollo__tab" data-tab="actions" data-tekton-menu-item="Actions" data-tekton-menu-component="apollo" data-tekton-menu-panel="actions-panel" data-tekton-nav-target="actions-panel">
                 <span class="apollo__tab-label">Actions</span>
-            </div>
-            <div class="apollo__tab" data-tab="attention" onclick="apollo_switchTab('attention'); return false;" data-tekton-menu-item="Attention Chat" data-tekton-menu-component="apollo" data-tekton-menu-active="false" data-tekton-menu-panel="attention-panel" data-tekton-nav-target="attention-panel">
+            </label>
+            <label for="apollo-tab-attention" class="apollo__tab" data-tab="attention" data-tekton-menu-item="Attention Chat" data-tekton-menu-component="apollo" data-tekton-menu-panel="attention-panel" data-tekton-nav-target="attention-panel">
                 <span class="apollo__tab-label">Attention Chat</span>
-            </div>
-            <div class="apollo__tab" data-tab="teamchat" onclick="apollo_switchTab('teamchat'); return false;" data-tekton-menu-item="Team Chat" data-tekton-menu-component="apollo" data-tekton-menu-active="false" data-tekton-menu-panel="teamchat-panel" data-tekton-nav-target="teamchat-panel">
+            </label>
+            <label for="apollo-tab-teamchat" class="apollo__tab" data-tab="teamchat" data-tekton-menu-item="Team Chat" data-tekton-menu-component="apollo" data-tekton-menu-panel="teamchat-panel" data-tekton-nav-target="teamchat-panel">
                 <span class="apollo__tab-label">Team Chat</span>
-            </div>
+            </label>
         </div>
         <div class="apollo__actions">
-            <button id="clear-chat-btn" class="apollo__action-button" style="display: none;" onclick="apollo_clearChat(); return false;" data-tekton-action="clear-chat" data-tekton-action-type="secondary">
+            <button id="clear-chat-btn" class="apollo__action-button" style="display: none;" data-tekton-action="clear-chat" data-tekton-action-type="secondary">
                 <span class="apollo__button-label">Clear</span>
             </button>
         </div>
@@ -49,7 +60,7 @@
     <!-- Apollo Content Area -->
     <div class="apollo__content" data-tekton-zone="content" data-tekton-scrollable="true">
         <!-- Dashboard Tab (Default Active Tab) -->
-        <div id="dashboard-panel" class="apollo__panel apollo__panel--active" data-tekton-panel="dashboard" data-tekton-panel-for="Dashboard" data-tekton-panel-component="apollo" data-tekton-panel-active="true">
+        <div id="dashboard-panel" class="apollo__panel" data-tekton-panel="dashboard" data-tekton-panel-for="Dashboard" data-tekton-panel-component="apollo">
             <div class="apollo__dashboard">
                 <div class="apollo__control-bar">
                     <div class="apollo__stats-container">
@@ -4072,6 +4083,43 @@
         margin: 0;
         color: var(--text-secondary, #aaaaaa);
         line-height: 1.4;
+    }
+    
+    /* CSS-First Tab Navigation */
+    /* Hide all panels by default */
+    .apollo__panel {
+        display: none;
+    }
+    
+    /* Show active tab styling */
+    #apollo-tab-dashboard:checked ~ .apollo .apollo__tabs label[for="apollo-tab-dashboard"],
+    #apollo-tab-sessions:checked ~ .apollo .apollo__tabs label[for="apollo-tab-sessions"],
+    #apollo-tab-tokens:checked ~ .apollo .apollo__tabs label[for="apollo-tab-tokens"],
+    #apollo-tab-protocols:checked ~ .apollo .apollo__tabs label[for="apollo-tab-protocols"],
+    #apollo-tab-forecasting:checked ~ .apollo .apollo__tabs label[for="apollo-tab-forecasting"],
+    #apollo-tab-actions:checked ~ .apollo .apollo__tabs label[for="apollo-tab-actions"],
+    #apollo-tab-attention:checked ~ .apollo .apollo__tabs label[for="apollo-tab-attention"],
+    #apollo-tab-teamchat:checked ~ .apollo .apollo__tabs label[for="apollo-tab-teamchat"] {
+        border-bottom-color: var(--color-primary, #7B1FA2);
+        font-weight: 500;
+    }
+    
+    /* Show corresponding panel when tab is checked */
+    #apollo-tab-dashboard:checked ~ .apollo .apollo__content #dashboard-panel,
+    #apollo-tab-sessions:checked ~ .apollo .apollo__content #sessions-panel,
+    #apollo-tab-tokens:checked ~ .apollo .apollo__content #tokens-panel,
+    #apollo-tab-protocols:checked ~ .apollo .apollo__content #protocols-panel,
+    #apollo-tab-forecasting:checked ~ .apollo .apollo__content #forecasting-panel,
+    #apollo-tab-actions:checked ~ .apollo .apollo__content #actions-panel,
+    #apollo-tab-attention:checked ~ .apollo .apollo__content #attention-panel,
+    #apollo-tab-teamchat:checked ~ .apollo .apollo__content #teamchat-panel {
+        display: block;
+    }
+    
+    /* Show/hide clear button for chat tabs */
+    #apollo-tab-attention:checked ~ .apollo #clear-chat-btn,
+    #apollo-tab-teamchat:checked ~ .apollo #clear-chat-btn {
+        display: block !important;
     }
 </style>
 
