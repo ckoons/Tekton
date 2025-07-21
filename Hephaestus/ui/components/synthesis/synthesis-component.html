@@ -1201,35 +1201,16 @@ window.synthesis_sendChat = function() {
             return false;
         }
         
-        // Determine which chat to send to based on active tab
-        const activeTab = synthesisContainer.querySelector('.synthesis__tab--active');
-        if (!activeTab) {
-            console.error('[SYNTHESIS] Send Chat: Cannot determine active tab');
-            return false;
-        }
+        // Determine which chat to send to using Terma-style binary fallback
+        const execChatTab = synthesisContainer.querySelector('[data-tab="execchat"]');
+        const execChatActive = execChatTab && execChatTab.classList.contains('synthesis__tab--active');
+        const chatType = execChatActive ? 'execchat' : 'teamchat';
         
-        const chatType = activeTab.getAttribute('data-tab');
-        let chatContainer;
-        
-        if (chatType === 'execchat') {
-            chatContainer = synthesisContainer.querySelector('#execchat-messages');
-        } else if (chatType === 'teamchat') {
-            chatContainer = synthesisContainer.querySelector('#teamchat-messages');
-        } else {
-            // For non-chat tabs, determine appropriate chat based on message content
-            if (message.toLowerCase().includes('exec') || message.toLowerCase().includes('workflow')) {
-                chatContainer = synthesisContainer.querySelector('#execchat-messages');
-                // Switch to execution chat tab
-                synthesis_switchTab('execchat');
-            } else {
-                chatContainer = synthesisContainer.querySelector('#teamchat-messages');
-                // Switch to team chat tab
-                synthesis_switchTab('teamchat');
-            }
-        }
+        // Get the appropriate chat container
+        const chatContainer = synthesisContainer.querySelector(chatType === 'execchat' ? '#execchat-messages' : '#teamchat-messages');
         
         if (!chatContainer) {
-            console.error('[SYNTHESIS] Send Chat: Cannot find chat container');
+            console.error('[SYNTHESIS] Send Chat: Cannot find chat container for', chatType);
             return false;
         }
         
@@ -1253,45 +1234,90 @@ window.synthesis_sendChat = function() {
         console.log('[SYNTHESIS] Message sent to', chatType || 'determined chat');
         
         // Send message to backend via window.AIChat
-        if (window.AIChat && typeof window.AIChat.sendMessage === 'function') {
-            const context = {
-                component: 'synthesis',
-                chatType: chatType,
-                context: 'execution-engine'
-            };
-            
-            window.AIChat.sendMessage(message, context).then(response => {
-                console.log('[SYNTHESIS] AI response received:', response);
-                
-                // Create AI response message element
-                const responseDiv = document.createElement('div');
-                responseDiv.className = 'synthesis__message synthesis__message--ai';
-                responseDiv.innerHTML = `
-                    <div class="synthesis__message-content">
-                        <div class="synthesis__message-text">Synthesis: ${response}</div>
-                    </div>
-                `;
-                
-                chatContainer.appendChild(responseDiv);
-                
-                // Scroll to bottom
-                chatContainer.scrollTop = chatContainer.scrollHeight;
-                
-            }).catch(error => {
-                console.error('[SYNTHESIS] Error sending message to AI:', error);
-                
-                // Show error message in chat
-                const errorDiv = document.createElement('div');
-                errorDiv.className = 'synthesis__message synthesis__message--system';
-                errorDiv.innerHTML = `
-                    <div class="synthesis__message-content">
-                        <div class="synthesis__message-text">Error: Unable to send message. Please try again.</div>
-                    </div>
-                `;
-                
-                chatContainer.appendChild(errorDiv);
-                chatContainer.scrollTop = chatContainer.scrollHeight;
-            });
+        if (window.AIChat) {
+            // Determine which AIChat method to use based on chat type
+            if (chatType === 'execchat') {
+                // For execution chat, use sendMessage with component name
+                if (typeof window.AIChat.sendMessage === 'function') {
+                    window.AIChat.sendMessage('synthesis', message).then(response => {
+                        console.log('[SYNTHESIS] AI response received:', response);
+                        
+                        // Create AI response message element
+                        const responseDiv = document.createElement('div');
+                        responseDiv.className = 'synthesis__message synthesis__message--ai';
+                        responseDiv.innerHTML = `
+                            <div class="synthesis__message-content">
+                                <div class="synthesis__message-text">Synthesis: ${response.content}</div>
+                            </div>
+                        `;
+                        
+                        chatContainer.appendChild(responseDiv);
+                        
+                        // Scroll to bottom
+                        chatContainer.scrollTop = chatContainer.scrollHeight;
+                        
+                    }).catch(error => {
+                        console.error('[SYNTHESIS] Error sending message to AI:', error);
+                        
+                        // Show error message in chat
+                        const errorDiv = document.createElement('div');
+                        errorDiv.className = 'synthesis__message synthesis__message--system';
+                        errorDiv.innerHTML = `
+                            <div class="synthesis__message-content">
+                                <div class="synthesis__message-text">Error: Unable to send message. Please try again.</div>
+                            </div>
+                        `;
+                        
+                        chatContainer.appendChild(errorDiv);
+                        chatContainer.scrollTop = chatContainer.scrollHeight;
+                    });
+                }
+            } else if (chatType === 'teamchat') {
+                // For team chat, use teamChat method
+                if (typeof window.AIChat.teamChat === 'function') {
+                    window.AIChat.teamChat(message, 'synthesis').then(data => {
+                        console.log('[SYNTHESIS] Team chat response received:', data);
+                        
+                        // Handle multiple responses from team chat
+                        if (data.responses && data.responses.length > 0) {
+                            data.responses.forEach(resp => {
+                                // Extract sender name from socket_id (e.g., "apollo-ai" -> "Apollo")
+                                const sender = resp.socket_id.replace('-ai', '').charAt(0).toUpperCase() + 
+                                             resp.socket_id.replace('-ai', '').slice(1);
+                                
+                                // Create AI response message element
+                                const responseDiv = document.createElement('div');
+                                responseDiv.className = 'synthesis__message synthesis__message--ai';
+                                responseDiv.innerHTML = `
+                                    <div class="synthesis__message-content">
+                                        <div class="synthesis__message-text"><strong>${sender}:</strong> ${resp.content}</div>
+                                    </div>
+                                `;
+                                
+                                chatContainer.appendChild(responseDiv);
+                            });
+                            
+                            // Scroll to bottom after all messages added
+                            chatContainer.scrollTop = chatContainer.scrollHeight;
+                        }
+                        
+                    }).catch(error => {
+                        console.error('[SYNTHESIS] Error sending team message:', error);
+                        
+                        // Show error message in chat
+                        const errorDiv = document.createElement('div');
+                        errorDiv.className = 'synthesis__message synthesis__message--system';
+                        errorDiv.innerHTML = `
+                            <div class="synthesis__message-content">
+                                <div class="synthesis__message-text">Error: Unable to send team message. Please try again.</div>
+                            </div>
+                        `;
+                        
+                        chatContainer.appendChild(errorDiv);
+                        chatContainer.scrollTop = chatContainer.scrollHeight;
+                    });
+                }
+            }
         } else {
             console.warn('[SYNTHESIS] window.AIChat not available');
             
