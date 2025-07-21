@@ -1,149 +1,1319 @@
-<!-- Synthesis Component for Hephaestus UI -->
-<div id="synthesis-component" class="tekton-component">
-    <div class="component-header">
-        <h2>Synthesis: Execution Engine</h2>
-        <div class="component-actions">
-            <button id="synthesis-new-execution" class="btn btn-primary">New Execution</button>
-            <button id="synthesis-refresh" class="btn btn-secondary">Refresh</button>
+<!-- Synthesis Component - Execution Engine -->
+
+<!-- Hidden radio controls for CSS-only tab functionality -->
+<input type="radio" name="synthesis-tab" id="synthesis-tab-executions" checked style="display: none;">
+<input type="radio" name="synthesis-tab" id="synthesis-tab-monitoring" style="display: none;">
+<input type="radio" name="synthesis-tab" id="synthesis-tab-history" style="display: none;">
+<input type="radio" name="synthesis-tab" id="synthesis-tab-companion" style="display: none;">
+<input type="radio" name="synthesis-tab" id="synthesis-tab-team" style="display: none;">
+
+<div class="synthesis" id="synthesis-container" 
+     data-tekton-component="synthesis"
+     data-tekton-area="synthesis"
+     data-tekton-type="component-workspace"
+     data-tekton-ai="synthesis-orchestrator"
+     data-tekton-ai-ready="false">
+    <!-- Component Header with Title -->
+    <div class="synthesis__header" data-tekton-zone="header" data-tekton-section="header">
+        <div class="synthesis__title-container">
+            <img src="/images/hexagon.jpg" alt="Tekton" class="synthesis__icon">
+            <h2 class="synthesis__title">
+                <span class="synthesis__title-main">Synthesis</span>
+                <span class="synthesis__title-sub">Execution Engine</span>
+            </h2>
         </div>
     </div>
-
-    <div class="component-tabs">
-        <ul class="nav nav-tabs" role="tablist">
-            <li class="nav-item" role="presentation">
-                <button class="nav-link active" id="executions-tab" data-bs-toggle="tab" data-bs-target="#executions-content" type="button" role="tab" aria-selected="true">Executions</button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link" id="monitoring-tab" data-bs-toggle="tab" data-bs-target="#monitoring-content" type="button" role="tab" aria-selected="false">Monitoring</button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link" id="history-tab" data-bs-toggle="tab" data-bs-target="#history-content" type="button" role="tab" aria-selected="false">History</button>
-            </li>
-        </ul>
+    
+    <!-- Menu Bar -->
+    <div class="synthesis__menu-bar" data-tekton-zone="menu" data-tekton-nav="component-menu">
+        <div class="synthesis__tabs">
+            <label for="synthesis-tab-executions" class="synthesis__tab" data-tab="executions"
+                   data-tekton-menu-item="Executions"
+                   data-tekton-menu-component="synthesis"
+                   data-tekton-menu-panel="synthesis-executions">
+                <span class="synthesis__tab-label">Executions</span>
+            </label>
+            <label for="synthesis-tab-monitoring" class="synthesis__tab" data-tab="monitoring"
+                   data-tekton-menu-item="Monitoring"
+                   data-tekton-menu-component="synthesis"
+                   data-tekton-menu-panel="synthesis-monitoring">
+                <span class="synthesis__tab-label">Monitoring</span>
+            </label>
+            <label for="synthesis-tab-history" class="synthesis__tab" data-tab="history"
+                   data-tekton-menu-item="History"
+                   data-tekton-menu-component="synthesis"
+                   data-tekton-menu-panel="synthesis-history">
+                <span class="synthesis__tab-label">History</span>
+            </label>
+            <label for="synthesis-tab-companion" class="synthesis__tab" data-tab="companion-chat"
+                   data-tekton-menu-item="Companion Chat"
+                   data-tekton-menu-component="synthesis"
+                   data-tekton-menu-panel="synthesis-companion">
+                <span class="synthesis__tab-label">Companion Chat</span>
+            </label>
+            <label for="synthesis-tab-team" class="synthesis__tab" data-tab="team-chat"
+                   data-tekton-menu-item="Team Chat"
+                   data-tekton-menu-component="synthesis"
+                   data-tekton-menu-panel="synthesis-team">
+                <span class="synthesis__tab-label">Team Chat</span>
+            </label>
+        </div>
+        <div class="synthesis__actions">
+            <button id="synthesis-new-execution-btn" class="synthesis__action-button" 
+                    onclick="showNewExecutionDialog()"
+                    data-tekton-action="new-execution"
+                    data-tekton-action-type="primary">
+                <span class="synthesis__button-icon">+</span>
+                <span class="synthesis__button-label">New Execution</span>
+            </button>
+        </div>
     </div>
-
-    <div class="tab-content component-content">
+    
+    <!-- Content Area -->
+    <div class="synthesis__content" data-tekton-zone="content" data-tekton-scrollable="true">
         <!-- Executions Tab -->
-        <div class="tab-pane fade show active" id="executions-content" role="tabpanel" aria-labelledby="executions-tab">
-            <div class="executions-list-container">
-                <h3>Active Executions</h3>
-                <div id="synthesis-active-executions" class="executions-list">
-                    <div class="loading-indicator">Loading executions...</div>
+        <div class="synthesis__panel synthesis__panel--executions" data-tab-content="executions" 
+             data-tekton-tab-content="executions"
+             data-tekton-panel="executions"
+             data-tekton-panel-for="Executions"
+             data-tekton-panel-component="synthesis">
+            <div class="synthesis__executions" data-tekton-element="executions-container">
+                <div class="synthesis__control-bar">
+                    <div class="synthesis__filter-container">
+                        <select id="synthesis-status-filter" class="synthesis__select"
+                                data-tekton-input="status-filter"
+                                data-tekton-input-type="select">
+                            <option value="all">All Statuses</option>
+                            <option value="running">Running</option>
+                            <option value="completed">Completed</option>
+                            <option value="failed">Failed</option>
+                            <option value="paused">Paused</option>
+                        </select>
+                        <button id="apply-execution-filter-btn" class="synthesis__filter-button" 
+                                data-tekton-action="apply-execution-filter" 
+                                data-tekton-action-type="primary">Apply</button>
+                    </div>
                 </div>
-            </div>
-
-            <div class="execution-details-container" id="synthesis-execution-details">
-                <div class="empty-state">
-                    <p>Select an execution to view details</p>
+                <div class="synthesis__executions-grid" id="synthesis-executions-list"
+                     data-tekton-element="executions-grid"
+                     data-tekton-grid="executions">
+                    <div class="synthesis__empty-state">
+                        <p>No active executions</p>
+                        <p class="synthesis__empty-hint">Use "New Execution" to start a new execution plan</p>
+                    </div>
                 </div>
             </div>
         </div>
-
+        
         <!-- Monitoring Tab -->
-        <div class="tab-pane fade" id="monitoring-content" role="tabpanel" aria-labelledby="monitoring-tab">
-            <div class="monitoring-dashboard">
-                <div class="metrics-container">
-                    <div class="metric-card" id="synthesis-active-count">
-                        <div class="metric-value">0</div>
-                        <div class="metric-label">Active Executions</div>
+        <div class="synthesis__panel synthesis__panel--monitoring" data-tab-content="monitoring" 
+             data-tekton-tab-content="monitoring"
+             data-tekton-panel="monitoring"
+             data-tekton-panel-for="Monitoring"
+             data-tekton-panel-component="synthesis">
+            <div class="synthesis__monitoring" data-tekton-element="monitoring-container">
+                <div class="synthesis__metrics-grid">
+                    <div class="synthesis__metric-card" data-tekton-element="metric-card">
+                        <div class="synthesis__metric-value" id="active-executions-count">0</div>
+                        <div class="synthesis__metric-label">Active Executions</div>
                     </div>
-                    <div class="metric-card" id="synthesis-capacity">
-                        <div class="metric-value">10</div>
-                        <div class="metric-label">Execution Capacity</div>
+                    <div class="synthesis__metric-card" data-tekton-element="metric-card">
+                        <div class="synthesis__metric-value" id="total-executions-count">0</div>
+                        <div class="synthesis__metric-label">Total Executions</div>
                     </div>
-                    <div class="metric-card" id="synthesis-load">
-                        <div class="metric-value">0%</div>
-                        <div class="metric-label">System Load</div>
+                    <div class="synthesis__metric-card" data-tekton-element="metric-card">
+                        <div class="synthesis__metric-value" id="success-rate">0%</div>
+                        <div class="synthesis__metric-label">Success Rate</div>
                     </div>
-                    <div class="metric-card" id="synthesis-total-executions">
-                        <div class="metric-value">0</div>
-                        <div class="metric-label">Total Executions</div>
+                    <div class="synthesis__metric-card" data-tekton-element="metric-card">
+                        <div class="synthesis__metric-value" id="avg-duration">0s</div>
+                        <div class="synthesis__metric-label">Avg Duration</div>
                     </div>
                 </div>
-                
-                <div class="chart-container">
-                    <canvas id="synthesis-execution-chart"></canvas>
+                <div class="synthesis__chart-container">
+                    <h3 class="synthesis__section-title">Execution Timeline</h3>
+                    <div class="synthesis__chart-placeholder" id="synthesis-chart">
+                        <p>Execution metrics will be displayed here</p>
+                    </div>
                 </div>
             </div>
         </div>
-
+        
         <!-- History Tab -->
-        <div class="tab-pane fade" id="history-content" role="tabpanel" aria-labelledby="history-tab">
-            <div class="history-filters">
-                <div class="filter-group">
-                    <label for="synthesis-history-status">Status:</label>
-                    <select id="synthesis-history-status" class="form-select">
-                        <option value="">All</option>
-                        <option value="completed">Completed</option>
-                        <option value="failed">Failed</option>
-                        <option value="cancelled">Cancelled</option>
-                    </select>
+        <div class="synthesis__panel synthesis__panel--history" data-tab-content="history" 
+             data-tekton-tab-content="history"
+             data-tekton-panel="history"
+             data-tekton-panel-for="History"
+             data-tekton-panel-component="synthesis">
+            <div class="synthesis__history" data-tekton-element="history-container">
+                <div class="synthesis__control-bar">
+                    <div class="synthesis__filter-container">
+                        <select id="synthesis-history-status" class="synthesis__select"
+                                data-tekton-input="history-status-filter">
+                            <option value="all">All Statuses</option>
+                            <option value="completed">Completed</option>
+                            <option value="failed">Failed</option>
+                            <option value="cancelled">Cancelled</option>
+                        </select>
+                        <select id="synthesis-history-limit" class="synthesis__select"
+                                data-tekton-input="history-limit">
+                            <option value="10">10 items</option>
+                            <option value="25" selected>25 items</option>
+                            <option value="50">50 items</option>
+                            <option value="100">100 items</option>
+                        </select>
+                        <button id="apply-history-filter-btn" class="synthesis__filter-button" 
+                                data-tekton-action="apply-history-filter" 
+                                data-tekton-action-type="primary">Apply</button>
+                    </div>
                 </div>
-                <div class="filter-group">
-                    <label for="synthesis-history-limit">Limit:</label>
-                    <select id="synthesis-history-limit" class="form-select">
-                        <option value="10">10</option>
-                        <option value="25" selected>25</option>
-                        <option value="50">50</option>
-                        <option value="100">100</option>
-                    </select>
+                <div class="synthesis__history-table-container">
+                    <table class="synthesis__history-table" id="synthesis-history-table">
+                        <thead>
+                            <tr>
+                                <th>Execution ID</th>
+                                <th>Name</th>
+                                <th>Status</th>
+                                <th>Started</th>
+                                <th>Duration</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="synthesis-history-rows">
+                            <tr>
+                                <td colspan="6" class="synthesis__loading-cell">Loading execution history...</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
-                <button id="synthesis-apply-filters" class="btn btn-secondary">Apply Filters</button>
             </div>
-
-            <div class="history-table-container">
-                <table id="synthesis-history-table" class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>Execution ID</th>
-                            <th>Name</th>
-                            <th>Status</th>
-                            <th>Started</th>
-                            <th>Duration</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="synthesis-history-rows">
-                        <tr>
-                            <td colspan="6" class="text-center">Loading execution history...</td>
-                        </tr>
-                    </tbody>
-                </table>
+        </div>
+        
+        <!-- Companion Chat Tab -->
+        <div class="synthesis__panel synthesis__panel--companion" data-tab-content="companion-chat" 
+             data-tekton-tab-content="companion-chat"
+             data-tekton-panel="companion"
+             data-tekton-panel-for="Companion Chat"
+             data-tekton-panel-component="synthesis">
+            <div class="chat-interface" data-tekton-chat="companion"
+                 data-tekton-ai="synthesis-companion"
+                 data-tekton-ai-ready="false">
+                <div class="chat-messages" id="synthesis-companion-messages" 
+                     data-tekton-messages="companion"
+                     data-tekton-element="chat-messages">
+                    <div class="chat-message system-message">
+                        <strong>Synthesis:</strong> Hello! I'm Synthesis, the Execution Engine. I can help you create, manage, and monitor execution plans. How can I assist you with workflow execution today?
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Team Chat Tab -->
+        <div class="synthesis__panel synthesis__panel--team" data-tab-content="team-chat" 
+             data-tekton-tab-content="team-chat"
+             data-tekton-panel="team"
+             data-tekton-panel-for="Team Chat"
+             data-tekton-panel-component="synthesis"
+             data-tekton-chat="team"
+             data-tekton-ai="synthesis-orchestrator"
+             data-tekton-ai-ready="false">
+            <div class="chat-interface" data-tekton-chat="team">
+                <div class="chat-messages" id="synthesis-team-messages" 
+                     data-tekton-messages="team"
+                     data-tekton-element="chat-messages">
+                    <div class="chat-message system-message">
+                        <strong>System:</strong> Team Chat allows Synthesis to coordinate with other AI specialists for complex execution planning.
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-
-    <!-- Execution Modal -->
-    <div class="modal fade" id="synthesis-execution-modal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">New Execution</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label for="synthesis-plan-name" class="form-label">Plan Name</label>
-                        <input type="text" class="form-control" id="synthesis-plan-name" placeholder="Enter plan name">
-                    </div>
-                    <div class="mb-3">
-                        <label for="synthesis-plan-description" class="form-label">Description</label>
-                        <textarea class="form-control" id="synthesis-plan-description" rows="2" placeholder="Enter plan description"></textarea>
-                    </div>
-                    <div class="mb-3">
-                        <label for="synthesis-plan-steps" class="form-label">Steps (JSON)</label>
-                        <textarea class="form-control code-editor" id="synthesis-plan-steps" rows="10" placeholder="Enter plan steps as JSON array"></textarea>
-                    </div>
-                    <div class="form-check mb-3">
-                        <input class="form-check-input" type="checkbox" id="synthesis-wait-completion">
-                        <label class="form-check-label" for="synthesis-wait-completion">Wait for completion</label>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary" id="synthesis-execute-plan">Execute</button>
-                </div>
-            </div>
+    
+    <!-- Footer with Chat Input -->
+    <div class="synthesis__footer" data-tekton-zone="footer" data-tekton-section="footer">
+        <div class="synthesis__chat-input-container" 
+             data-tekton-chat="synthesis-companion" 
+             data-tekton-chat-component="synthesis"
+             data-tekton-element="chat-input-container">
+            <div class="synthesis__chat-prompt" data-tekton-element="chat-prompt">></div>
+            <input type="text" class="synthesis__chat-input" id="synthesis-chat-input"
+                   data-tekton-input="chat-input"
+                   data-tekton-input-type="chat"
+                   data-tekton-input-component="synthesis"
+                   placeholder="Chat with Synthesis - your execution engine and workflow orchestrator"
+                   onkeydown="if(event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); synthesis_sendChat(); }">
+            <button class="synthesis__send-button" id="synthesis-send-button" onclick="synthesis_sendChat(); return false;"
+                    data-tekton-action="send-message"
+                    data-tekton-action-type="primary"
+                    data-tekton-action-component="synthesis">Send</button>
         </div>
     </div>
 </div>
+
+<!-- New Execution Dialog (hidden by default) -->
+<div class="synthesis__execution-dialog-overlay" id="synthesis-execution-dialog-overlay" style="display: none;"
+     data-tekton-element="execution-dialog-overlay">
+    <div class="synthesis__execution-dialog" data-tekton-element="execution-dialog">
+        <div class="synthesis__execution-dialog-header" data-tekton-element="dialog-header">
+            <h3 id="synthesis-execution-dialog-title">New Execution Plan</h3>
+            <button class="synthesis__dialog-close" onclick="closeExecutionDialog()"
+                    data-tekton-action="close-dialog">×</button>
+        </div>
+        
+        <div class="synthesis__execution-dialog-body" data-tekton-element="dialog-body">
+            <div class="synthesis__execution-form" data-tekton-element="execution-form">
+                <div class="synthesis__form-field">
+                    <label for="synthesis-plan-name">Plan Name:</label>
+                    <input type="text" 
+                           id="synthesis-plan-name" 
+                           class="synthesis__form-input"
+                           placeholder="Enter execution plan name"
+                           data-tekton-input="plan-name">
+                </div>
+                
+                <div class="synthesis__form-field">
+                    <label for="synthesis-plan-description">Description:</label>
+                    <textarea id="synthesis-plan-description" 
+                              class="synthesis__form-textarea" 
+                              rows="3"
+                              placeholder="Describe what this execution plan does"
+                              data-tekton-input="plan-description"></textarea>
+                </div>
+                
+                <div class="synthesis__form-field">
+                    <label for="synthesis-plan-steps">Execution Steps (JSON):</label>
+                    <textarea id="synthesis-plan-steps" 
+                              class="synthesis__form-textarea synthesis__code-editor" 
+                              rows="12"
+                              placeholder='[{"type": "command", "command": "echo Hello World", "name": "hello"}]'
+                              data-tekton-input="plan-steps"></textarea>
+                </div>
+                
+                <div class="synthesis__form-options">
+                    <div class="synthesis__form-check">
+                        <input type="checkbox" id="synthesis-wait-completion" 
+                               class="synthesis__form-checkbox"
+                               data-tekton-input="wait-completion">
+                        <label for="synthesis-wait-completion">Wait for completion</label>
+                    </div>
+                    <div class="synthesis__form-check">
+                        <input type="checkbox" id="synthesis-enable-monitoring" 
+                               class="synthesis__form-checkbox"
+                               data-tekton-input="enable-monitoring" checked>
+                        <label for="synthesis-enable-monitoring">Enable real-time monitoring</label>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="synthesis__execution-buttons" data-tekton-element="execution-buttons">
+                <button class="synthesis__button synthesis__button--cancel" 
+                        onclick="closeExecutionDialog()"
+                        data-tekton-action="cancel-execution">
+                    Cancel
+                </button>
+                <button class="synthesis__button synthesis__button--execute" 
+                        onclick="executeNewPlan()"
+                        data-tekton-action="execute-plan">
+                    Execute Plan
+                </button>
+            </div>
+            
+            <div class="synthesis__execution-status" id="synthesis-execution-status"
+                 data-tekton-element="execution-status"></div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Synthesis Component Styles - Following Terma's Pattern */
+
+/* Container */
+.synthesis {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  background-color: var(--bg-primary, #1e1e2e);
+  color: var(--text-primary, #f0f0f0);
+  /* No absolute positioning - proper component containment */
+}
+
+/* Header */
+.synthesis__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 16px;
+  background-color: var(--bg-secondary, #252535);
+  border-bottom: 1px solid var(--border-color, #444444);
+}
+
+.synthesis__title-container {
+  display: flex;
+  align-items: center;
+}
+
+.synthesis__icon {
+  height: 30px;
+  width: auto;
+  margin-right: 12px;
+}
+
+.synthesis__title {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 500;
+}
+
+.synthesis__title-main {
+  font-weight: 600;
+}
+
+.synthesis__title-sub {
+  margin-left: 8px;
+  opacity: 0.8;
+  font-weight: normal;
+}
+
+/* Menu Bar */
+.synthesis__menu-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: var(--bg-secondary, #252535);
+  border-bottom: 1px solid var(--border-color, #444444);
+  padding: 0 16px;
+}
+
+.synthesis__tabs {
+  display: flex;
+  gap: 8px;
+}
+
+.synthesis__tab {
+  padding: 16px;
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  color: var(--text-secondary, #aaaaaa);
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.synthesis__tab:hover {
+  color: var(--text-primary, #f0f0f0);
+  background-color: rgba(156, 39, 176, 0.05); /* Purple tint for Synthesis */
+}
+
+.synthesis__actions {
+  display: flex;
+  gap: 8px;
+}
+
+.synthesis__action-button {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background-color: var(--button-bg, #444455);
+  border: none;
+  border-radius: 4px;
+  color: var(--text-primary, #f0f0f0);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.synthesis__action-button:hover {
+  background-color: var(--button-hover, #555566);
+}
+
+.synthesis__button-icon {
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.synthesis__button-label {
+  font-size: 14px;
+}
+
+/* Content Area */
+.synthesis__content {
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+  padding-bottom: 70px; /* Account for footer height */
+}
+
+/* Panel styling - hidden by default */
+.synthesis__panel {
+  display: none;
+  height: 100%;
+  overflow: auto;
+  padding: 24px;
+}
+
+/* Radio button logic for tab switching */
+#synthesis-tab-executions:checked ~ .synthesis .synthesis__panel--executions,
+#synthesis-tab-monitoring:checked ~ .synthesis .synthesis__panel--monitoring,
+#synthesis-tab-history:checked ~ .synthesis .synthesis__panel--history,
+#synthesis-tab-companion:checked ~ .synthesis .synthesis__panel--companion,
+#synthesis-tab-team:checked ~ .synthesis .synthesis__panel--team {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Active tab styling */
+#synthesis-tab-executions:checked ~ .synthesis .synthesis__tab[data-tab="executions"],
+#synthesis-tab-monitoring:checked ~ .synthesis .synthesis__tab[data-tab="monitoring"],
+#synthesis-tab-history:checked ~ .synthesis .synthesis__tab[data-tab="history"],
+#synthesis-tab-companion:checked ~ .synthesis .synthesis__tab[data-tab="companion-chat"],
+#synthesis-tab-team:checked ~ .synthesis .synthesis__tab[data-tab="team-chat"] {
+  color: var(--text-primary, #f0f0f0);
+  border-bottom-color: #9C27B0; /* Purple for Synthesis */
+  background-color: rgba(156, 39, 176, 0.05);
+}
+
+/* Control Bar */
+.synthesis__control-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 16px;
+  background-color: var(--bg-secondary, #252535);
+  border-bottom: 1px solid var(--border-color, #444444);
+  margin-bottom: 16px;
+}
+
+.synthesis__filter-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.synthesis__select {
+  padding: 6px 12px;
+  background-color: var(--bg-tertiary, #333345);
+  color: var(--text-primary, #f0f0f0);
+  border: 1px solid var(--border-color, #444);
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+
+.synthesis__filter-button {
+  padding: 6px 16px;
+  background-color: #9C27B0; /* Purple for Synthesis */
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.2s ease;
+}
+
+.synthesis__filter-button:hover {
+  background-color: #7B1FA2; /* Darker purple */
+}
+
+/* Executions Grid */
+.synthesis__executions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 16px;
+}
+
+.synthesis__empty-state {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 40px;
+  color: var(--text-secondary, #888);
+}
+
+.synthesis__empty-hint {
+  margin-top: 8px;
+  font-size: 0.9rem;
+  opacity: 0.7;
+}
+
+.synthesis__section-title {
+  color: var(--text-primary, #f0f0f0);
+  margin-bottom: 16px;
+  font-size: 1.2rem;
+  font-weight: 500;
+}
+
+/* Monitoring Styles */
+.synthesis__metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.synthesis__metric-card {
+  background-color: var(--bg-secondary, #252535);
+  border: 1px solid var(--border-color, #444);
+  border-radius: 8px;
+  padding: 20px;
+  text-align: center;
+}
+
+.synthesis__metric-value {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #9C27B0; /* Purple for Synthesis */
+  margin-bottom: 8px;
+}
+
+.synthesis__metric-label {
+  font-size: 0.9rem;
+  color: var(--text-secondary, #aaa);
+}
+
+.synthesis__chart-container {
+  background-color: var(--bg-secondary, #252535);
+  border: 1px solid var(--border-color, #444);
+  border-radius: 8px;
+  padding: 20px;
+  min-height: 300px;
+}
+
+.synthesis__chart-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 250px;
+  border: 2px dashed var(--border-color, #444);
+  border-radius: 4px;
+  color: var(--text-secondary, #888);
+}
+
+/* History Table */
+.synthesis__history-table-container {
+  background-color: var(--bg-secondary, #252535);
+  border: 1px solid var(--border-color, #444);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.synthesis__history-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.synthesis__history-table th,
+.synthesis__history-table td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid var(--border-color, #444);
+}
+
+.synthesis__history-table th {
+  background-color: var(--bg-tertiary, #333345);
+  font-weight: 500;
+  color: var(--text-primary, #f0f0f0);
+}
+
+.synthesis__loading-cell {
+  text-align: center;
+  color: var(--text-secondary, #888);
+  font-style: italic;
+}
+
+/* Chat Interface */
+.chat-interface {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.chat-messages {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow-y: auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.chat-message {
+  margin-bottom: 12px;
+  padding: 8px 12px;
+  border-radius: 4px;
+  background-color: transparent;
+  position: relative;
+}
+
+.chat-message strong {
+  display: inline-block;
+  margin-right: 8px;
+  font-weight: 600;
+}
+
+/* System messages */
+.chat-message.system-message {
+  background-color: rgba(156, 39, 176, 0.05);
+  border-left: 3px solid #9C27B0;
+  font-style: italic;
+}
+
+.chat-message.system-message strong {
+  color: #9C27B0;
+}
+
+/* User messages */
+.chat-message.user-message {
+  background-color: rgba(76, 175, 80, 0.05);
+  border-left: 3px solid #4CAF50;
+  margin-left: 0;
+}
+
+.chat-message.user-message strong {
+  color: #4CAF50;
+}
+
+/* AI messages */
+.chat-message.ai-message {
+  background-color: rgba(156, 39, 176, 0.05);
+  border-left: 3px solid #9C27B0;
+  margin-right: 0;
+}
+
+.chat-message.ai-message strong {
+  color: #9C27B0;
+}
+
+/* Footer with Chat Input */
+.synthesis__footer {
+  background-color: var(--bg-secondary, #252535);
+  border-top: 1px solid var(--border-color, #444444);
+  padding: 12px 16px;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 70px; /* Fixed height to match chat area */
+}
+
+.synthesis__chat-input-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+}
+
+.synthesis__chat-prompt {
+  font-size: 18px;
+  font-weight: bold;
+  color: #9C27B0; /* Purple for Synthesis */
+}
+
+.synthesis__chat-input {
+  flex: 1;
+  height: 44px;
+  padding: 8px 16px;
+  background-color: var(--bg-tertiary, #333345);
+  border: 1px solid var(--border-color, #444444);
+  border-radius: 8px;
+  color: var(--text-primary, #f0f0f0);
+  font-size: 14px;
+  transition: border-color 0.2s ease;
+}
+
+.synthesis__chat-input:focus {
+  outline: none;
+  border-color: #9C27B0;
+}
+
+.synthesis__chat-input::placeholder {
+  color: var(--text-secondary, #888888);
+}
+
+.synthesis__send-button {
+  height: 44px;
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #9C27B0; /* Purple for Synthesis */
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.synthesis__send-button:hover {
+  background-color: #7B1FA2; /* Darker purple for hover */
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(156, 39, 176, 0.3);
+}
+
+.synthesis__send-button:active {
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+/* New Execution Dialog Styles */
+.synthesis__execution-dialog-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.synthesis__execution-dialog {
+  background-color: var(--bg-primary, #1e1e2e);
+  border: 1px solid var(--border-color, #444);
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  width: 90%;
+  max-width: 800px;
+  height: 80vh;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.synthesis__execution-dialog-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  border-bottom: 2px solid #9C27B0; /* Purple border */
+  background-color: var(--bg-secondary, #252535);
+  border-radius: 8px 8px 0 0;
+}
+
+.synthesis__execution-dialog-header h3 {
+  margin: 0;
+  color: var(--text-primary, #f0f0f0);
+  font-size: 1.2rem;
+}
+
+.synthesis__dialog-close {
+  background: none;
+  border: none;
+  color: var(--text-secondary, #aaa);
+  font-size: 24px;
+  cursor: pointer;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.synthesis__dialog-close:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: var(--text-primary, #f0f0f0);
+}
+
+.synthesis__execution-dialog-body {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  flex: 1;
+  overflow: hidden;
+}
+
+.synthesis__execution-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.synthesis__form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.synthesis__form-field label {
+  color: var(--text-primary, #f0f0f0);
+  font-weight: 500;
+  font-size: 0.95rem;
+}
+
+.synthesis__form-input {
+  padding: 10px 14px;
+  background-color: var(--bg-secondary, #252535);
+  color: var(--text-primary, #f0f0f0);
+  border: 1px solid var(--border-color, #444);
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.synthesis__form-input:focus {
+  outline: none;
+  border-color: #9C27B0;
+  background-color: var(--bg-tertiary, #333345);
+}
+
+.synthesis__form-textarea {
+  padding: 10px 14px;
+  background-color: var(--bg-secondary, #252535);
+  color: var(--text-primary, #f0f0f0);
+  border: 1px solid var(--border-color, #444);
+  border-radius: 4px;
+  font-size: 14px;
+  font-family: inherit;
+  resize: vertical;
+  min-height: 80px;
+}
+
+.synthesis__form-textarea:focus {
+  outline: none;
+  border-color: #9C27B0;
+  background-color: var(--bg-tertiary, #333345);
+}
+
+.synthesis__code-editor {
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-size: 13px;
+}
+
+.synthesis__form-options {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.synthesis__form-check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.synthesis__form-checkbox {
+  width: 16px;
+  height: 16px;
+}
+
+.synthesis__form-check label {
+  margin: 0;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.synthesis__execution-buttons {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  padding-top: 16px;
+  border-top: 1px solid var(--border-color, #444);
+}
+
+.synthesis__button {
+  padding: 10px 24px;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.synthesis__button--cancel {
+  background-color: #757575;
+  color: white;
+}
+
+.synthesis__button--cancel:hover {
+  background-color: #616161;
+}
+
+.synthesis__button--execute {
+  background-color: #9C27B0; /* Purple for Synthesis */
+  color: white;
+}
+
+.synthesis__button--execute:hover {
+  background-color: #7B1FA2; /* Darker purple */
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(156, 39, 176, 0.3);
+}
+
+.synthesis__execution-status {
+  margin-top: 12px;
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  min-height: 20px;
+}
+
+.synthesis__execution-status.success {
+  background-color: rgba(76, 175, 80, 0.1);
+  color: #4CAF50;
+  border: 1px solid #4CAF50;
+}
+
+.synthesis__execution-status.error {
+  background-color: rgba(244, 67, 54, 0.1);
+  color: #f44336;
+  border: 1px solid #f44336;
+}
+
+.synthesis__execution-status.info {
+  background-color: rgba(156, 39, 176, 0.1);
+  color: #9C27B0;
+  border: 1px solid #9C27B0;
+}
+</style>
+
+<script>
+// Synthesis component JavaScript - Following Terma's pattern
+console.log('[Synthesis] Component loaded');
+
+// URL helper function for Synthesis API calls
+function synthesisUrl(path) {
+    if (window.SYNTHESIS_PORT) {
+        return `http://localhost:${window.SYNTHESIS_PORT}${path}`;
+    }
+    // Fallback to default port
+    return `http://localhost:8011${path}`;
+}
+
+// Chat functionality
+window.synthesis_sendChat = function() {
+    const input = document.getElementById('synthesis-chat-input');
+    const message = input.value.trim();
+    
+    if (!message) return;
+    
+    // Determine which tab is active
+    const companionActive = document.getElementById('synthesis-tab-companion').checked;
+    const chatType = companionActive ? 'companion' : 'team';
+    const messagesContainer = document.getElementById(`synthesis-${chatType}-messages`);
+    
+    // Add user message
+    const userMessageDiv = document.createElement('div');
+    userMessageDiv.className = 'chat-message user-message';
+    userMessageDiv.innerHTML = `<strong>You:</strong> ${message}`;
+    messagesContainer.appendChild(userMessageDiv);
+    
+    // Clear input
+    input.value = '';
+    
+    // Scroll to bottom
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    
+    // Send to backend
+    if (chatType === 'companion') {
+        // Direct message to synthesis
+        if (window.AIChat) {
+            window.AIChat.sendMessage('synthesis', message)
+                .then(response => {
+                    const aiMessageDiv = document.createElement('div');
+                    aiMessageDiv.className = 'chat-message ai-message';
+                    aiMessageDiv.innerHTML = `<strong>Synthesis:</strong> ${response.content}`;
+                    messagesContainer.appendChild(aiMessageDiv);
+                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                })
+                .catch(err => {
+                    console.error('Failed to send message:', err);
+                    const errorDiv = document.createElement('div');
+                    errorDiv.className = 'chat-message system-message';
+                    errorDiv.innerHTML = `<strong>System:</strong> Failed to connect to Synthesis AI`;
+                    messagesContainer.appendChild(errorDiv);
+                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                });
+        }
+    } else {
+        // Team chat through Rhetor
+        if (window.AIChat) {
+            window.AIChat.teamChat(message, 'synthesis')
+                .then(data => {
+                    // Display team responses
+                    if (data.responses && data.responses.length > 0) {
+                        data.responses.forEach(resp => {
+                            const aiMessageDiv = document.createElement('div');
+                            aiMessageDiv.className = 'chat-message ai-message';
+                            const sender = resp.socket_id.replace('-ai', '').charAt(0).toUpperCase() + 
+                                         resp.socket_id.replace('-ai', '').slice(1);
+                            aiMessageDiv.innerHTML = `<strong>${sender}:</strong> ${resp.content}`;
+                            messagesContainer.appendChild(aiMessageDiv);
+                        });
+                        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                    }
+                })
+                .catch(err => {
+                    console.error('Failed to send team message:', err);
+                });
+        }
+    }
+}
+
+// New Execution Dialog Functions
+function showNewExecutionDialog() {
+    console.log('[Synthesis] Opening new execution dialog');
+    const overlay = document.getElementById('synthesis-execution-dialog-overlay');
+    const nameInput = document.getElementById('synthesis-plan-name');
+    const descriptionInput = document.getElementById('synthesis-plan-description');
+    const stepsInput = document.getElementById('synthesis-plan-steps');
+    const waitCheckbox = document.getElementById('synthesis-wait-completion');
+    const monitoringCheckbox = document.getElementById('synthesis-enable-monitoring');
+    const statusDiv = document.getElementById('synthesis-execution-status');
+    
+    // Clear form
+    nameInput.value = '';
+    descriptionInput.value = '';
+    stepsInput.value = '';
+    waitCheckbox.checked = false;
+    monitoringCheckbox.checked = true;
+    statusDiv.textContent = '';
+    statusDiv.className = 'synthesis__execution-status';
+    
+    // Show dialog
+    overlay.style.display = 'flex';
+    
+    // Focus on name input
+    setTimeout(() => nameInput.focus(), 100);
+}
+
+function closeExecutionDialog() {
+    console.log('[Synthesis] Closing execution dialog');
+    const overlay = document.getElementById('synthesis-execution-dialog-overlay');
+    overlay.style.display = 'none';
+}
+
+async function executeNewPlan() {
+    console.log('[Synthesis] Execute new plan clicked');
+    
+    const nameInput = document.getElementById('synthesis-plan-name');
+    const descriptionInput = document.getElementById('synthesis-plan-description');
+    const stepsInput = document.getElementById('synthesis-plan-steps');
+    const waitCheckbox = document.getElementById('synthesis-wait-completion');
+    const monitoringCheckbox = document.getElementById('synthesis-enable-monitoring');
+    const statusDiv = document.getElementById('synthesis-execution-status');
+    
+    const planName = nameInput.value.trim();
+    const planDescription = descriptionInput.value.trim();
+    const planSteps = stepsInput.value.trim();
+    const waitForCompletion = waitCheckbox.checked;
+    const enableMonitoring = monitoringCheckbox.checked;
+    
+    // Validation
+    if (!planName) {
+        statusDiv.textContent = 'Plan name is required';
+        statusDiv.className = 'synthesis__execution-status error';
+        return;
+    }
+    
+    if (!planSteps) {
+        statusDiv.textContent = 'Execution steps are required';
+        statusDiv.className = 'synthesis__execution-status error';
+        return;
+    }
+    
+    // Try to parse steps as JSON
+    let steps;
+    try {
+        steps = JSON.parse(planSteps);
+        if (!Array.isArray(steps)) {
+            throw new Error('Steps must be a JSON array');
+        }
+    } catch (error) {
+        statusDiv.textContent = `Invalid JSON format: ${error.message}`;
+        statusDiv.className = 'synthesis__execution-status error';
+        return;
+    }
+    
+    // Update status
+    statusDiv.textContent = 'Creating execution plan...';
+    statusDiv.className = 'synthesis__execution-status info';
+    
+    try {
+        // Create execution plan
+        const response = await fetch(synthesisUrl('/api/mcp/v2/tools/execute_plan'), {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                name: planName,
+                description: planDescription,
+                steps: steps,
+                wait_for_completion: waitForCompletion,
+                enable_monitoring: enableMonitoring
+            })
+        });
+        
+        if (response.ok) {
+            const result = await response.json();
+            console.log('[Synthesis] Execution result:', result);
+            
+            statusDiv.textContent = `✓ Execution plan started successfully (ID: ${result.execution_id || 'N/A'})`;
+            statusDiv.className = 'synthesis__execution-status success';
+            
+            // Close dialog after 2 seconds
+            setTimeout(() => {
+                closeExecutionDialog();
+                // Refresh executions list
+                updateExecutionsList();
+            }, 2000);
+            
+        } else {
+            const errorText = await response.text();
+            console.error('[Synthesis] Execution failed:', response.status, errorText);
+            statusDiv.textContent = `✗ Execution failed: ${response.status} - ${errorText}`;
+            statusDiv.className = 'synthesis__execution-status error';
+        }
+        
+    } catch (error) {
+        console.error('[Synthesis] Error executing plan:', error);
+        statusDiv.textContent = `✗ Error: Cannot connect to Synthesis service`;
+        statusDiv.className = 'synthesis__execution-status error';
+    }
+}
+
+// Update executions list
+async function updateExecutionsList() {
+    console.log('[Synthesis] Updating executions list');
+    const listContainer = document.getElementById('synthesis-executions-list');
+    
+    try {
+        const response = await fetch(synthesisUrl('/api/executions'));
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}`);
+        }
+        
+        const data = await response.json();
+        const executions = data.executions || [];
+        
+        if (executions.length === 0) {
+            listContainer.innerHTML = `
+                <div class="synthesis__empty-state">
+                    <p>No active executions</p>
+                    <p class="synthesis__empty-hint">Use "New Execution" to start a new execution plan</p>
+                </div>
+            `;
+        } else {
+            // Build execution cards
+            let html = '';
+            executions.forEach(execution => {
+                const statusClass = (execution.status || 'unknown').toLowerCase();
+                const startTime = execution.start_time ? new Date(execution.start_time).toLocaleString() : 'N/A';
+                const duration = execution.duration || 'Running...';
+                
+                html += `
+                    <div class="synthesis__execution-card" data-execution-id="${execution.execution_id}">
+                        <div class="synthesis__execution-header">
+                            <h4>${execution.name || 'Unnamed Execution'}</h4>
+                            <span class="synthesis__execution-status synthesis__execution-status--${statusClass}">
+                                ${execution.status || 'Unknown'}
+                            </span>
+                        </div>
+                        <div class="synthesis__execution-details">
+                            <p><strong>ID:</strong> ${execution.execution_id}</p>
+                            <p><strong>Started:</strong> ${startTime}</p>
+                            <p><strong>Duration:</strong> ${duration}</p>
+                            ${execution.description ? `<p><strong>Description:</strong> ${execution.description}</p>` : ''}
+                        </div>
+                        <div class="synthesis__execution-actions">
+                            <button class="synthesis__button synthesis__button--secondary" 
+                                    onclick="viewExecution('${execution.execution_id}')">
+                                View
+                            </button>
+                            ${execution.status === 'running' ? `
+                                <button class="synthesis__button synthesis__button--cancel" 
+                                        onclick="stopExecution('${execution.execution_id}')">
+                                    Stop
+                                </button>
+                            ` : ''}
+                        </div>
+                    </div>
+                `;
+            });
+            
+            listContainer.innerHTML = html;
+        }
+        
+    } catch (error) {
+        console.error('[Synthesis] Failed to update executions list:', error);
+        listContainer.innerHTML = `
+            <div class="synthesis__empty-state">
+                <p>Error loading executions</p>
+                <p class="synthesis__empty-hint">${error.message}</p>
+            </div>
+        `;
+    }
+}
+
+// Handle ESC key to close dialog
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape' && document.getElementById('synthesis-execution-dialog-overlay').style.display === 'flex') {
+        closeExecutionDialog();
+    }
+});
+
+// Initialize component
+console.log('[Synthesis] Initializing component');
+
+// Auto-refresh executions list
+let synthesisRefreshInterval = null;
+
+function startExecutionsRefresh() {
+    // Stop any existing interval
+    if (synthesisRefreshInterval) {
+        clearInterval(synthesisRefreshInterval);
+    }
+    
+    // Update immediately
+    updateExecutionsList();
+    
+    // Then update every 10 seconds
+    synthesisRefreshInterval = setInterval(() => {
+        const executionsTab = document.getElementById('synthesis-tab-executions');
+        if (executionsTab && executionsTab.checked) {
+            updateExecutionsList();
+        }
+    }, 10000);
+}
+
+// Update executions when switching to executions tab
+document.addEventListener('change', function(e) {
+    if (e.target.id === 'synthesis-tab-executions' && e.target.checked) {
+        startExecutionsRefresh();
+    } else if (e.target.name === 'synthesis-tab' && !document.getElementById('synthesis-tab-executions').checked) {
+        // Stop refresh when switching away from executions
+        if (synthesisRefreshInterval) {
+            clearInterval(synthesisRefreshInterval);
+            synthesisRefreshInterval = null;
+        }
+    }
+});
+
+// Start executions refresh on page load (since executions is the default tab)
+setTimeout(() => {
+    startExecutionsRefresh();
+}, 500);
+
+// Focus chat input when component loads
+document.addEventListener('DOMContentLoaded', function() {
+    const chatInput = document.getElementById('synthesis-chat-input');
+    if (chatInput) {
+        chatInput.focus();
+    }
+});
+
+console.log('[Synthesis] Component initialization complete');
+</script>
