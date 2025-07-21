@@ -9,10 +9,18 @@ across the Synthesis execution engine.
 import asyncio
 import json
 import logging
+import os
+import sys
 import time
 import uuid
 from typing import Dict, List, Any, Optional, Callable, Set, Union
 from datetime import datetime
+
+# Add Tekton root to path if not already present
+tekton_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..'))
+if tekton_root not in sys.path:
+    sys.path.insert(0, tekton_root)
+
 from landmarks import architecture_decision, performance_boundary
 
 # Configure logging

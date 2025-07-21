@@ -10,7 +10,13 @@ import json
 import logging
 import os
 import subprocess
+import sys
 from typing import Dict, List, Any, Optional, Callable
+
+# Add Tekton root to path if not already present
+tekton_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..'))
+if tekton_root not in sys.path:
+    sys.path.insert(0, tekton_root)
 
 from synthesis.core.execution_models import ExecutionContext, ExecutionResult
 from synthesis.core.condition_evaluator import evaluate_condition
@@ -61,8 +67,8 @@ async def handle_command_step(parameters: Dict[str, Any], context: ExecutionCont
     
     # Process environment variables with variable substitution
     if env_vars:
-        from tekton.utils.tekton_environ import TektonEnviron
-        processed_env = TektonEnviron.copy()
+        from shared.env import TektonEnviron
+        processed_env = TektonEnviron.all()
         for key, value in env_vars.items():
             # Handle variable substitution from context
             if isinstance(value, str) and "$" in value:

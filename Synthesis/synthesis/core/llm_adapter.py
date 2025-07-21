@@ -6,9 +6,15 @@ It enables Synthesis to use LLM capabilities for dynamic execution, plan enhance
 """
 
 import os
+import sys
 import logging
 import asyncio
 from typing import Dict, List, Any, Optional, Union, Callable, AsyncIterator
+
+# Add Tekton root to path if not already present
+tekton_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..'))
+if tekton_root not in sys.path:
+    sys.path.insert(0, tekton_root)
 
 from tekton_llm_client import TektonLLMClient
 from tekton_llm_client.models import Message, CompletionOptions, MessageRole
@@ -49,8 +55,8 @@ class LLMAdapter:
         self.fallback_enabled = True
         
         # LLM-related configuration
-        from tekton.utils.tekton_environ import TektonEnviron
-        from tekton.utils.tekton_url import tekton_url
+        from shared.env import TektonEnviron
+        from shared.urls import tekton_url
         self.base_url = TektonEnviron.get("TEKTON_LLM_URL", tekton_url("rhetor"))
         self.default_model = TektonEnviron.get("TEKTON_LLM_MODEL", "default")
         self.timeout = int(TektonEnviron.get("TEKTON_LLM_TIMEOUT", "60"))
