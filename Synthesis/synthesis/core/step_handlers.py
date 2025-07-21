@@ -22,18 +22,6 @@ from synthesis.core.execution_models import ExecutionContext, ExecutionResult
 from synthesis.core.condition_evaluator import evaluate_condition
 from synthesis.core.loop_handlers import handle_loop_step
 from synthesis.core.llm_adapter import get_llm_adapter
-<<<<<<< HEAD
-=======
-# Try to import landmarks if available
-try:
-    from landmarks import performance_boundary
-except ImportError:
-    # Landmarks not available, create no-op decorator
-    def performance_boundary(title, sla="", metrics=None, optimization_notes=""):
-        def decorator(func):
-            return func
-        return decorator
->>>>>>> parent of efc7d53 (synthesis)
 
 # Configure logging
 logger = logging.getLogger("synthesis.core.step_handlers")
@@ -72,12 +60,7 @@ async def handle_command_step(parameters: Dict[str, Any], context: ExecutionCont
     
     # Process environment variables with variable substitution
     if env_vars:
-<<<<<<< HEAD
         processed_env = os.environ.copy()
-=======
-        from shared.env import TektonEnviron
-        processed_env = TektonEnviron.copy()
->>>>>>> parent of efc7d53 (synthesis)
         for key, value in env_vars.items():
             # Handle variable substitution from context
             if isinstance(value, str) and "$" in value:

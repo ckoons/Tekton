@@ -11,29 +11,6 @@ import logging
 import os
 import sys
 from typing import Dict, List, Any, Optional, Union, Callable
-<<<<<<< HEAD
-=======
-
-# Add Tekton root to path if not already present
-tekton_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..'))
-if tekton_root not in sys.path:
-    sys.path.insert(0, tekton_root)
-
-# Try to import landmarks if available
-try:
-    from landmarks import architecture_decision, performance_boundary
-except ImportError:
-    # Landmarks not available, create no-op decorators
-    def architecture_decision(title, rationale="", alternatives_considered=None):
-        def decorator(func):
-            return func
-        return decorator
-    
-    def performance_boundary(title, sla="", metrics=None, optimization_notes=""):
-        def decorator(func):
-            return func
-        return decorator
->>>>>>> parent of efc7d53 (synthesis)
 
 # Configure logging
 logger = logging.getLogger("synthesis.core.integration_base")
@@ -159,14 +136,8 @@ class HermesAdapter(ComponentAdapter):
             hermes_url: URL of the Hermes API
         """
         super().__init__("hermes")
-<<<<<<< HEAD
         import os
         self.hermes_url = hermes_url or os.environ.get("HERMES_URL", "http://localhost:5000/api")
-=======
-        from shared.env import TektonEnviron
-        from shared.urls import tekton_url
-        self.hermes_url = hermes_url or TektonEnviron.get("HERMES_URL", f"{tekton_url('hermes')}/api")
->>>>>>> parent of efc7d53 (synthesis)
         self.service_registry = {}
         self.session = None
         

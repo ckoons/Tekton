@@ -20,23 +20,6 @@ from tekton_llm_client import TektonLLMClient
 from tekton_llm_client.models import Message, CompletionOptions, MessageRole
 from tekton_llm_client.adapters import LocalFallbackAdapter
 from tekton_llm_client.exceptions import TektonLLMError
-<<<<<<< HEAD
-=======
-# Try to import landmarks if available
-try:
-    from landmarks import architecture_decision, performance_boundary
-except ImportError:
-    # Landmarks not available, create no-op decorators
-    def architecture_decision(title, rationale="", alternatives_considered=None):
-        def decorator(func):
-            return func
-        return decorator
-    
-    def performance_boundary(title, sla="", metrics=None, optimization_notes=""):
-        def decorator(func):
-            return func
-        return decorator
->>>>>>> parent of efc7d53 (synthesis)
 
 logger = logging.getLogger(__name__)
 
@@ -60,17 +43,9 @@ class LLMAdapter:
         self.fallback_enabled = True
         
         # LLM-related configuration
-<<<<<<< HEAD
         self.base_url = os.getenv("TEKTON_LLM_URL", "http://localhost:8001")
         self.default_model = os.getenv("TEKTON_LLM_MODEL", "default")
         self.timeout = int(os.getenv("TEKTON_LLM_TIMEOUT", "60"))
-=======
-        from shared.env import TektonEnviron
-        from shared.urls import tekton_url
-        self.base_url = TektonEnviron.get("TEKTON_LLM_URL", tekton_url("rhetor"))
-        self.default_model = TektonEnviron.get("TEKTON_LLM_MODEL", "default")
-        self.timeout = int(TektonEnviron.get("TEKTON_LLM_TIMEOUT", "60"))
->>>>>>> parent of efc7d53 (synthesis)
         
         # Fallback settings
         self.fallback_models = [
