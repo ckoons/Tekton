@@ -10,27 +10,13 @@ import json
 import logging
 import os
 import subprocess
-import sys
 from typing import Dict, List, Any, Optional, Callable
-
-# Add Tekton root to path if not already present
-tekton_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..'))
-if tekton_root not in sys.path:
-    sys.path.insert(0, tekton_root)
 
 from synthesis.core.execution_models import ExecutionContext, ExecutionResult
 from synthesis.core.condition_evaluator import evaluate_condition
 from synthesis.core.loop_handlers import handle_loop_step
 from synthesis.core.llm_adapter import get_llm_adapter
-# Try to import landmarks if available
-try:
-    from landmarks import performance_boundary
-except ImportError:
-    # Landmarks not available, create no-op decorator
-    def performance_boundary(title, sla="", metrics=None, optimization_notes=""):
-        def decorator(func):
-            return func
-        return decorator
+from landmarks import performance_boundary
 
 # Configure logging
 logger = logging.getLogger("synthesis.core.step_handlers")
@@ -75,7 +61,7 @@ async def handle_command_step(parameters: Dict[str, Any], context: ExecutionCont
     
     # Process environment variables with variable substitution
     if env_vars:
-        from shared.env import TektonEnviron
+        from tekton.utils.tekton_environ import TektonEnviron
         processed_env = TektonEnviron.copy()
         for key, value in env_vars.items():
             # Handle variable substitution from context
