@@ -32,9 +32,10 @@ class HermesHelper:
             api_url: Optional URL for the Hermes API
         """
         # Get configuration
-        config = get_component_config()
-        hermes_port = config.hermes.port if hasattr(config, 'hermes') else int(os.environ.get("HERMES_PORT"))
-        self.api_url = api_url or os.environ.get("HERMES_API_URL", f"http://localhost:{hermes_port}/api")
+        from shared.utils.env_config import GlobalConfig
+        config = GlobalConfig()
+        hermes_port = config.get_port('hermes')
+        self.api_url = api_url or f"http://localhost:{hermes_port}/api"
         self.is_registered = False
         self.services = {}
         
@@ -300,8 +301,9 @@ async def register_with_hermes(
     """
     # Use environment variable for endpoint if not provided
     if not endpoint:
-        config = get_component_config()
-        telos_port = config.telos.port if hasattr(config, 'telos') else int(os.environ.get("TELOS_PORT"))
+        from shared.utils.env_config import GlobalConfig
+        config = GlobalConfig()
+        telos_port = config.get_port('telos')
         endpoint = f"http://localhost:{telos_port}/api"
     
     # Create a helper and use it to register

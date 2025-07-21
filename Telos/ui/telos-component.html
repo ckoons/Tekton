@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Telos Requirements Manager</title>
     <link rel="stylesheet" href="../styles/telos.css">
-    <link rel="stylesheet" href="../styles/shared/chat-interface.css">
+    <link rel="stylesheet" href="../../../Hephaestus/ui/styles/shared/chat-interface.css">
 </head>
 <body>
     <!-- Telos Requirements Manager Component -->
@@ -217,7 +217,17 @@
                     
                     <!-- Chat view (shown when the chat tab is selected) -->
                     <div class="telos__chat-view hidden" id="chat-view">
-                        <telos-chat></telos-chat>
+                        <div class="chat-interface">
+                            <div class="chat-messages" id="telos-chat-messages">
+                                <div class="chat-message system-message">
+                                    <strong>Telos:</strong> Welcome to the Requirements Assistant! I can help you with:
+                                    <br>• Requirements drafting and refinement
+                                    <br>• Requirements validation and analysis
+                                    <br>• Traceability and relationships
+                                    <br>• Best practices for requirements management
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

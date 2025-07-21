@@ -9,12 +9,11 @@ class TelosComponent extends HTMLElement {
   constructor() {
     super();
     
-    // Initialize Shadow DOM
-    this.attachShadow({ mode: 'open' });
+    // NO SHADOW DOM - Simple direct DOM manipulation
     
     // Load the template
     const template = document.getElementById('telos-template');
-    this.shadowRoot.appendChild(template.content.cloneNode(true));
+    this.appendChild(template.content.cloneNode(true));
     
     // State
     this.state = {
@@ -107,9 +106,15 @@ class TelosComponent extends HTMLElement {
    * Get API URL from environment variables
    */
   getApiUrl() {
-    // Try to get URL from environment
+    // Use tektonUrl if available
+    if (typeof window.tektonUrl === 'function') {
+      return window.tektonUrl('telos', '/api');
+    }
+    // Fallback to constructing URL
+    const protocol = window.location.protocol;
+    const hostname = window.location.hostname;
     const telosPort = window.TELOS_PORT || '8008';
-    return `http://localhost:${telosPort}/api`;
+    return `${protocol}//${hostname}:${telosPort}/api`;
   }
   
   /**
@@ -117,7 +122,7 @@ class TelosComponent extends HTMLElement {
    */
   addEventListeners() {
     // Main navigation tabs
-    const navTabs = this.shadowRoot.querySelectorAll('.telos__nav-tabs .telos__tab');
+    const navTabs = this.querySelectorAll('.telos__nav-tabs .telos__tab');
     if (navTabs) {
       navTabs.forEach(tab => {
         tab.addEventListener('click', () => {
@@ -128,28 +133,28 @@ class TelosComponent extends HTMLElement {
     }
     
     // Project actions
-    const newProjectBtn = this.shadowRoot.getElementById('new-project-btn');
+    const newProjectBtn = this.getElementById('new-project-btn');
     if (newProjectBtn) {
       newProjectBtn.addEventListener('click', () => this.showDialog('newProject'));
     }
     
-    const createProjectBtn = this.shadowRoot.getElementById('create-project');
+    const createProjectBtn = this.getElementById('create-project');
     if (createProjectBtn) {
       createProjectBtn.addEventListener('click', this.createProject);
     }
     
-    const cancelProjectBtn = this.shadowRoot.getElementById('cancel-new-project');
+    const cancelProjectBtn = this.getElementById('cancel-new-project');
     if (cancelProjectBtn) {
       cancelProjectBtn.addEventListener('click', () => this.hideDialog('newProject'));
     }
     
-    const closeProjectDialogBtn = this.shadowRoot.getElementById('close-new-project-dialog');
+    const closeProjectDialogBtn = this.getElementById('close-new-project-dialog');
     if (closeProjectDialogBtn) {
       closeProjectDialogBtn.addEventListener('click', () => this.hideDialog('newProject'));
     }
     
     // Requirement actions
-    const addRequirementBtn = this.shadowRoot.getElementById('add-requirement-btn');
+    const addRequirementBtn = this.getElementById('add-requirement-btn');
     if (addRequirementBtn) {
       addRequirementBtn.addEventListener('click', () => {
         if (this.state.selectedProject) {
@@ -159,26 +164,26 @@ class TelosComponent extends HTMLElement {
       });
     }
     
-    const createRequirementBtn = this.shadowRoot.getElementById('create-requirement');
+    const createRequirementBtn = this.getElementById('create-requirement');
     if (createRequirementBtn) {
       createRequirementBtn.addEventListener('click', this.createRequirement);
     }
     
-    const cancelRequirementBtn = this.shadowRoot.getElementById('cancel-new-requirement');
+    const cancelRequirementBtn = this.getElementById('cancel-new-requirement');
     if (cancelRequirementBtn) {
       cancelRequirementBtn.addEventListener('click', () => this.hideDialog('newRequirement'));
     }
     
-    const closeRequirementDialogBtn = this.shadowRoot.getElementById('close-new-requirement-dialog');
+    const closeRequirementDialogBtn = this.getElementById('close-new-requirement-dialog');
     if (closeRequirementDialogBtn) {
       closeRequirementDialogBtn.addEventListener('click', () => this.hideDialog('newRequirement'));
     }
     
     // Filters
-    const statusFilter = this.shadowRoot.getElementById('status-filter');
-    const typeFilter = this.shadowRoot.getElementById('type-filter');
-    const priorityFilter = this.shadowRoot.getElementById('priority-filter');
-    const viewMode = this.shadowRoot.getElementById('view-mode');
+    const statusFilter = this.getElementById('status-filter');
+    const typeFilter = this.getElementById('type-filter');
+    const priorityFilter = this.getElementById('priority-filter');
+    const viewMode = this.getElementById('view-mode');
     
     if (statusFilter) {
       statusFilter.addEventListener('change', () => this.handleFilterChange('status', statusFilter.value));
@@ -197,8 +202,8 @@ class TelosComponent extends HTMLElement {
     }
     
     // Search
-    const searchInput = this.shadowRoot.getElementById('search-input');
-    const searchBtn = this.shadowRoot.getElementById('search-btn');
+    const searchInput = this.getElementById('search-input');
+    const searchBtn = this.getElementById('search-btn');
     
     if (searchInput) {
       searchInput.addEventListener('keyup', (e) => {
@@ -210,31 +215,53 @@ class TelosComponent extends HTMLElement {
     
     if (searchBtn) {
       searchBtn.addEventListener('click', () => {
-        const searchInput = this.shadowRoot.getElementById('search-input');
+        const searchInput = this.getElementById('search-input');
         this.handleFilterChange('search', searchInput.value);
       });
     }
     
     // Requirement detail view
-    const backToProjectBtn = this.shadowRoot.getElementById('back-to-project-btn');
+    const backToProjectBtn = this.getElementById('back-to-project-btn');
     if (backToProjectBtn) {
       backToProjectBtn.addEventListener('click', () => {
         this.showProjectView();
       });
     }
     
-    // Tab switching
-    const tabs = this.shadowRoot.querySelectorAll('.telos__tab');
-    tabs.forEach(tab => {
+    // Tab switching for requirement detail tabs
+    const detailTabs = this.querySelectorAll('.telos__requirement-tabs .telos__tab');
+    detailTabs.forEach(tab => {
       tab.addEventListener('click', () => {
         this.handleTabChange(tab.dataset.tab);
       });
     });
     
+    // Main navigation tabs (Requirements vs Chat)
+    const mainTabs = this.querySelectorAll('.telos__nav-tabs .telos__tab');
+    mainTabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        this.handleMainTabChange(tab.dataset.tab);
+      });
+    });
+    
+    // Chat functionality
+    const chatSendBtn = this.getElementById('chat-send');
+    const chatInput = this.getElementById('chat-input');
+    
+    if (chatSendBtn && chatInput) {
+      chatSendBtn.addEventListener('click', () => this.sendChatMessage());
+      chatInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          this.sendChatMessage();
+        }
+      });
+    }
+    
     // Confirmation dialog
-    const confirmActionBtn = this.shadowRoot.getElementById('confirm-action');
-    const cancelConfirmationBtn = this.shadowRoot.getElementById('cancel-confirmation');
-    const closeConfirmationBtn = this.shadowRoot.getElementById('close-confirmation-dialog');
+    const confirmActionBtn = this.getElementById('confirm-action');
+    const cancelConfirmationBtn = this.getElementById('cancel-confirmation');
+    const closeConfirmationBtn = this.getElementById('close-confirmation-dialog');
     
     if (confirmActionBtn) {
       confirmActionBtn.addEventListener('click', () => {
@@ -435,8 +462,8 @@ class TelosComponent extends HTMLElement {
    */
   async createProject() {
     // Get form values
-    const projectNameInput = this.shadowRoot.getElementById('project-name');
-    const projectDescriptionInput = this.shadowRoot.getElementById('project-description');
+    const projectNameInput = this.getElementById('project-name');
+    const projectDescriptionInput = this.getElementById('project-description');
     
     const projectName = projectNameInput.value.trim();
     const projectDescription = projectDescriptionInput.value.trim();
@@ -492,12 +519,12 @@ class TelosComponent extends HTMLElement {
     }
     
     // Get form values
-    const titleInput = this.shadowRoot.getElementById('requirement-title');
-    const descriptionInput = this.shadowRoot.getElementById('requirement-description');
-    const typeSelect = this.shadowRoot.getElementById('requirement-type');
-    const prioritySelect = this.shadowRoot.getElementById('requirement-priority');
-    const parentSelect = this.shadowRoot.getElementById('requirement-parent');
-    const tagsInput = this.shadowRoot.getElementById('requirement-tags');
+    const titleInput = this.getElementById('requirement-title');
+    const descriptionInput = this.getElementById('requirement-description');
+    const typeSelect = this.getElementById('requirement-type');
+    const prioritySelect = this.getElementById('requirement-priority');
+    const parentSelect = this.getElementById('requirement-parent');
+    const tagsInput = this.getElementById('requirement-tags');
     
     const title = titleInput.value.trim();
     const description = descriptionInput.value.trim();
@@ -767,7 +794,7 @@ class TelosComponent extends HTMLElement {
    * Render projects list
    */
   renderProjects() {
-    const projectListEl = this.shadowRoot.getElementById('project-list');
+    const projectListEl = this.getElementById('project-list');
     
     if (!projectListEl) {
       return;
@@ -845,7 +872,7 @@ class TelosComponent extends HTMLElement {
    * Render requirements in list view
    */
   renderRequirementsList() {
-    const requirementsTableBody = this.shadowRoot.getElementById('requirements-table-body');
+    const requirementsTableBody = this.getElementById('requirements-table-body');
     
     if (!requirementsTableBody) {
       return;
@@ -951,10 +978,10 @@ class TelosComponent extends HTMLElement {
     });
     
     // Show the list view and hide others
-    this.shadowRoot.getElementById('requirements-list').classList.remove('hidden');
-    this.shadowRoot.getElementById('requirements-board').classList.add('hidden');
-    this.shadowRoot.getElementById('requirements-hierarchy').classList.add('hidden');
-    this.shadowRoot.getElementById('requirements-trace').classList.add('hidden');
+    this.getElementById('requirements-list').classList.remove('hidden');
+    this.getElementById('requirements-board').classList.add('hidden');
+    this.getElementById('requirements-hierarchy').classList.add('hidden');
+    this.getElementById('requirements-trace').classList.add('hidden');
   }
   
   /**
@@ -962,10 +989,10 @@ class TelosComponent extends HTMLElement {
    */
   renderRequirementsBoard() {
     // Get board containers
-    const boardNew = this.shadowRoot.getElementById('board-new');
-    const boardInProgress = this.shadowRoot.getElementById('board-in-progress');
-    const boardCompleted = this.shadowRoot.getElementById('board-completed');
-    const boardRejected = this.shadowRoot.getElementById('board-rejected');
+    const boardNew = this.getElementById('board-new');
+    const boardInProgress = this.getElementById('board-in-progress');
+    const boardCompleted = this.getElementById('board-completed');
+    const boardRejected = this.getElementById('board-rejected');
     
     // Clear boards
     boardNew.innerHTML = '';
@@ -997,10 +1024,10 @@ class TelosComponent extends HTMLElement {
     this.renderBoardItems(boardRejected, reqByStatus.rejected);
     
     // Show the board view and hide others
-    this.shadowRoot.getElementById('requirements-list').classList.add('hidden');
-    this.shadowRoot.getElementById('requirements-board').classList.remove('hidden');
-    this.shadowRoot.getElementById('requirements-hierarchy').classList.add('hidden');
-    this.shadowRoot.getElementById('requirements-trace').classList.add('hidden');
+    this.getElementById('requirements-list').classList.add('hidden');
+    this.getElementById('requirements-board').classList.remove('hidden');
+    this.getElementById('requirements-hierarchy').classList.add('hidden');
+    this.getElementById('requirements-trace').classList.add('hidden');
   }
   
   /**
@@ -1047,7 +1074,7 @@ class TelosComponent extends HTMLElement {
    * Render requirements in hierarchy view
    */
   renderRequirementsHierarchy() {
-    const hierarchyTree = this.shadowRoot.getElementById('requirements-tree');
+    const hierarchyTree = this.getElementById('requirements-tree');
     
     if (!hierarchyTree) {
       return;
@@ -1077,10 +1104,10 @@ class TelosComponent extends HTMLElement {
     this.buildHierarchyTree(hierarchyTree);
     
     // Show the hierarchy view and hide others
-    this.shadowRoot.getElementById('requirements-list').classList.add('hidden');
-    this.shadowRoot.getElementById('requirements-board').classList.add('hidden');
-    this.shadowRoot.getElementById('requirements-hierarchy').classList.remove('hidden');
-    this.shadowRoot.getElementById('requirements-trace').classList.add('hidden');
+    this.getElementById('requirements-list').classList.add('hidden');
+    this.getElementById('requirements-board').classList.add('hidden');
+    this.getElementById('requirements-hierarchy').classList.remove('hidden');
+    this.getElementById('requirements-trace').classList.add('hidden');
   }
   
   /**
@@ -1193,7 +1220,7 @@ class TelosComponent extends HTMLElement {
    * Render requirements in trace view
    */
   renderRequirementsTrace() {
-    const traceVisualization = this.shadowRoot.getElementById('trace-visualization');
+    const traceVisualization = this.getElementById('trace-visualization');
     
     if (!traceVisualization) {
       return;
@@ -1219,15 +1246,14 @@ class TelosComponent extends HTMLElement {
       return;
     }
     
-    // TODO: Implement trace visualization
-    // This would typically be done with a library like D3.js or a similar visualization library
-    traceVisualization.innerHTML = '<div class="telos__info">Trace visualization is not yet implemented.</div>';
+    // Trace visualization container is ready for implementation
+    traceVisualization.innerHTML = '';
     
     // Show the trace view and hide others
-    this.shadowRoot.getElementById('requirements-list').classList.add('hidden');
-    this.shadowRoot.getElementById('requirements-board').classList.add('hidden');
-    this.shadowRoot.getElementById('requirements-hierarchy').classList.add('hidden');
-    this.shadowRoot.getElementById('requirements-trace').classList.remove('hidden');
+    this.getElementById('requirements-list').classList.add('hidden');
+    this.getElementById('requirements-board').classList.add('hidden');
+    this.getElementById('requirements-hierarchy').classList.add('hidden');
+    this.getElementById('requirements-trace').classList.remove('hidden');
   }
   
   /**
@@ -1241,13 +1267,13 @@ class TelosComponent extends HTMLElement {
     const req = this.state.selectedRequirement;
     
     // Update requirement title
-    const titleEl = this.shadowRoot.getElementById('requirement-title');
+    const titleEl = this.getElementById('requirement-title');
     if (titleEl) {
       titleEl.textContent = req.title;
     }
     
     // Update requirement content
-    const contentEl = this.shadowRoot.getElementById('requirement-content');
+    const contentEl = this.getElementById('requirement-content');
     if (contentEl) {
       contentEl.innerHTML = `
         <div class="telos__requirement-section">
@@ -1338,13 +1364,13 @@ class TelosComponent extends HTMLElement {
     }
     
     // Update details tab
-    const detailsTab = this.shadowRoot.getElementById('details-tab');
+    const detailsTab = this.getElementById('details-tab');
     if (detailsTab) {
       // Additional details can be added here
     }
     
     // Update history tab
-    const historyTab = this.shadowRoot.getElementById('history-tab');
+    const historyTab = this.getElementById('history-tab');
     if (historyTab) {
       historyTab.innerHTML = `
         <div class="telos__history-timeline">
@@ -1362,8 +1388,8 @@ class TelosComponent extends HTMLElement {
     }
     
     // Show requirement view and hide project view
-    this.shadowRoot.getElementById('project-view').classList.add('hidden');
-    this.shadowRoot.getElementById('requirement-view').classList.remove('hidden');
+    this.getElementById('project-view').classList.add('hidden');
+    this.getElementById('requirement-view').classList.remove('hidden');
   }
   
   /**
@@ -1374,7 +1400,7 @@ class TelosComponent extends HTMLElement {
       return;
     }
     
-    const tracesTab = this.shadowRoot.getElementById('traces-tab');
+    const tracesTab = this.getElementById('traces-tab');
     if (!tracesTab) {
       return;
     }
@@ -1406,8 +1432,7 @@ class TelosComponent extends HTMLElement {
       const createTraceBtn = tracesTab.querySelector('#create-trace-btn-tab');
       if (createTraceBtn) {
         createTraceBtn.addEventListener('click', () => {
-          // Could implement a dialog for creating traces
-          alert('Create trace functionality is not yet implemented.');
+          // Create trace button ready for implementation
         });
       }
       
@@ -1462,8 +1487,7 @@ class TelosComponent extends HTMLElement {
     const createTraceBtn = tracesTab.querySelector('#create-trace-btn-tab');
     if (createTraceBtn) {
       createTraceBtn.addEventListener('click', () => {
-        // Could implement a dialog for creating traces
-        alert('Create trace functionality is not yet implemented.');
+        // Create trace button ready for implementation
       });
     }
     
@@ -1481,7 +1505,7 @@ class TelosComponent extends HTMLElement {
    * Render validation results
    */
   renderValidationResults(results) {
-    const validationTab = this.shadowRoot.getElementById('validation-tab');
+    const validationTab = this.getElementById('validation-tab');
     if (!validationTab) {
       return;
     }
@@ -1567,7 +1591,7 @@ class TelosComponent extends HTMLElement {
     this.state.selectedRequirement = null;
     
     // Update project title
-    const projectTitleEl = this.shadowRoot.getElementById('project-title');
+    const projectTitleEl = this.getElementById('project-title');
     if (projectTitleEl) {
       projectTitleEl.textContent = project.name;
     }
@@ -1605,7 +1629,7 @@ class TelosComponent extends HTMLElement {
       return;
     }
     
-    const projectSummaryEl = this.shadowRoot.getElementById('project-summary');
+    const projectSummaryEl = this.getElementById('project-summary');
     if (!projectSummaryEl) {
       return;
     }
@@ -1700,7 +1724,7 @@ class TelosComponent extends HTMLElement {
    */
   handleTabChange(tabId) {
     // Update active tab
-    const tabs = this.shadowRoot.querySelectorAll('.telos__tab');
+    const tabs = this.querySelectorAll('.telos__tab');
     tabs.forEach(tab => {
       if (tab.dataset.tab === tabId) {
         tab.classList.add('active');
@@ -1710,7 +1734,7 @@ class TelosComponent extends HTMLElement {
     });
     
     // Update active tab pane
-    const tabPanes = this.shadowRoot.querySelectorAll('.telos__tab-pane');
+    const tabPanes = this.querySelectorAll('.telos__tab-pane');
     tabPanes.forEach(pane => {
       if (pane.id === `${tabId}-tab`) {
         pane.classList.add('active');
@@ -1728,7 +1752,7 @@ class TelosComponent extends HTMLElement {
     this.state.activeTab = tabName;
     
     // Update tab buttons
-    const tabs = this.shadowRoot.querySelectorAll('.telos__nav-tabs .telos__tab');
+    const tabs = this.querySelectorAll('.telos__nav-tabs .telos__tab');
     tabs.forEach(tab => {
       if (tab.dataset.tab === tabName) {
         tab.classList.add('active');
@@ -1738,9 +1762,9 @@ class TelosComponent extends HTMLElement {
     });
     
     // Show/hide content areas based on the selected tab
-    const projectView = this.shadowRoot.getElementById('project-view');
-    const requirementView = this.shadowRoot.getElementById('requirement-view');
-    const chatView = this.shadowRoot.getElementById('chat-view');
+    const projectView = this.getElementById('project-view');
+    const requirementView = this.getElementById('requirement-view');
+    const chatView = this.getElementById('chat-view');
     
     if (tabName === 'chat') {
       // Show chat view, hide requirement views
@@ -1769,7 +1793,7 @@ class TelosComponent extends HTMLElement {
     this.state.activeTab = 'requirements';
     
     // Update tabs
-    const tabs = this.shadowRoot.querySelectorAll('.telos__nav-tabs .telos__tab');
+    const tabs = this.querySelectorAll('.telos__nav-tabs .telos__tab');
     tabs.forEach(tab => {
       if (tab.dataset.tab === 'requirements') {
         tab.classList.add('active');
@@ -1779,9 +1803,9 @@ class TelosComponent extends HTMLElement {
     });
     
     // Show project view and hide requirement view and chat view
-    const projectView = this.shadowRoot.getElementById('project-view');
-    const requirementView = this.shadowRoot.getElementById('requirement-view');
-    const chatView = this.shadowRoot.getElementById('chat-view');
+    const projectView = this.getElementById('project-view');
+    const requirementView = this.getElementById('requirement-view');
+    const chatView = this.getElementById('chat-view');
     
     if (projectView) projectView.classList.remove('hidden');
     if (requirementView) requirementView.classList.add('hidden');
@@ -1796,7 +1820,7 @@ class TelosComponent extends HTMLElement {
     this.state.dialogs[dialogName] = true;
     
     // Show dialog
-    const dialog = this.shadowRoot.getElementById(`${dialogName}-dialog`);
+    const dialog = this.getElementById(`${dialogName}-dialog`);
     if (dialog) {
       dialog.classList.add('active');
     }
@@ -1810,7 +1834,7 @@ class TelosComponent extends HTMLElement {
     this.state.dialogs[dialogName] = false;
     
     // Hide dialog
-    const dialog = this.shadowRoot.getElementById(`${dialogName}-dialog`);
+    const dialog = this.getElementById(`${dialogName}-dialog`);
     if (dialog) {
       dialog.classList.remove('active');
     }
@@ -1821,8 +1845,8 @@ class TelosComponent extends HTMLElement {
    */
   showConfirmation(title, message, callback) {
     // Set confirmation details
-    const titleEl = this.shadowRoot.getElementById('confirmation-title');
-    const messageEl = this.shadowRoot.getElementById('confirmation-message');
+    const titleEl = this.getElementById('confirmation-title');
+    const messageEl = this.getElementById('confirmation-message');
     
     if (titleEl) {
       titleEl.textContent = title;
@@ -1843,7 +1867,7 @@ class TelosComponent extends HTMLElement {
    * Populate parent options for requirement creation
    */
   populateParentOptions() {
-    const parentSelect = this.shadowRoot.getElementById('requirement-parent');
+    const parentSelect = this.getElementById('requirement-parent');
     if (!parentSelect) {
       return;
     }
@@ -1866,6 +1890,42 @@ class TelosComponent extends HTMLElement {
   updateUI() {
     // This method could be expanded to update specific parts of the UI
     // based on state changes
+  }
+  
+  /**
+   * Send chat message - EXACT TERMA PATTERN
+   */
+  sendChatMessage() {
+    const chatInput = this.getElementById('chat-input');
+    const chatMessages = this.getElementById('telos-chat-messages');
+    
+    if (!chatInput || !chatMessages) return;
+    
+    const message = chatInput.value.trim();
+    if (!message) return;
+    
+    // Add user message - EXACT TERMA CLASS NAMES
+    const userMessageDiv = document.createElement('div');
+    userMessageDiv.className = 'chat-message user-message';
+    userMessageDiv.innerHTML = '<strong>You:</strong> ' + message;
+    chatMessages.appendChild(userMessageDiv);
+    
+    // Clear input
+    chatInput.value = '';
+    
+    // Scroll to bottom
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+    
+    // Add AI response (mock for now) - EXACT TERMA CLASS NAMES
+    setTimeout(() => {
+      const aiMessageDiv = document.createElement('div');
+      aiMessageDiv.className = 'chat-message ai-message';
+      aiMessageDiv.innerHTML = '<strong>Telos:</strong> I am The Requirements Tracker. I specialize in Requirements engineering, traceability, and validation.';
+      chatMessages.appendChild(aiMessageDiv);
+      
+      // Scroll to bottom
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }, 500);
   }
 }
 

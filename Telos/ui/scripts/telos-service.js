@@ -78,9 +78,15 @@ class TelosService {
    * Get API URL from environment variables
    */
   getApiUrl() {
-    // Try to get URL from environment
+    // Use tektonUrl if available
+    if (typeof window.tektonUrl === 'function') {
+      return window.tektonUrl('telos', '/api');
+    }
+    // Fallback to constructing URL
+    const protocol = window.location.protocol;
+    const hostname = window.location.hostname;
     const telosPort = window.TELOS_PORT || '8008';
-    return `http://localhost:${telosPort}/api`;
+    return `${protocol}//${hostname}:${telosPort}/api`;
   }
   
   /**
@@ -88,8 +94,19 @@ class TelosService {
    */
   setupWebSocket() {
     try {
-      const telosPort = window.TELOS_PORT || '8008';
-      const wsUrl = `ws://localhost:${telosPort}/ws`;
+      let wsUrl;
+      
+      // Use tektonUrl if available to get base URL, then convert to WebSocket
+      if (typeof window.tektonUrl === 'function') {
+        const baseUrl = window.tektonUrl('telos', '/ws');
+        wsUrl = baseUrl.replace(/^http/, 'ws');
+      } else {
+        // Fallback to constructing URL
+        const hostname = window.location.hostname;
+        const telosPort = window.TELOS_PORT || '8008';
+        const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+        wsUrl = `${wsProtocol}//${hostname}:${telosPort}/ws`;
+      }
       
       // Close existing connection if any
       if (this.websocket) {
