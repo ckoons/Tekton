@@ -22,11 +22,23 @@ console.log('[FILE_TRACE] Loading: tekton-urls.js');
  */
 function tektonUrl(component, path = "", host = null, scheme = "http") {
     // Normalize component name for window variable lookup
-    const normalizedComponent = component.replace("-", "_").toUpperCase();
+    const normalizedComponent = component.replace(/-/g, "_").toUpperCase();
     
-    // Host resolution
+    // Host resolution order (matching Python shared.urls)
     if (!host) {
-        host = "localhost";
+        // 1. Check for component-specific host
+        const componentHostVar = `${normalizedComponent}_HOST`;
+        host = window[componentHostVar];
+        
+        // 2. Check for global TEKTON_HOST
+        if (!host) {
+            host = window.TEKTON_HOST;
+        }
+        
+        // 3. Default to localhost
+        if (!host) {
+            host = "localhost";
+        }
     }
     
     // Get port from window environment variable
@@ -81,9 +93,73 @@ function ergonUrl(path = "", ...args) {
     return tektonUrl("ergon", path, ...args);
 }
 
+// Additional convenience functions for missing components
+function engramUrl(path = "", ...args) {
+    return tektonUrl("engram", path, ...args);
+}
+
+function prometheusUrl(path = "", ...args) {
+    return tektonUrl("prometheus", path, ...args);
+}
+
+function harmoniaUrl(path = "", ...args) {
+    return tektonUrl("harmonia", path, ...args);
+}
+
+function telosUrl(path = "", ...args) {
+    return tektonUrl("telos", path, ...args);
+}
+
+function synthesisUrl(path = "", ...args) {
+    return tektonUrl("synthesis", path, ...args);
+}
+
+function metisUrl(path = "", ...args) {
+    return tektonUrl("metis", path, ...args);
+}
+
+function apolloUrl(path = "", ...args) {
+    return tektonUrl("apollo", path, ...args);
+}
+
+function budgetUrl(path = "", ...args) {
+    return tektonUrl("budget", path, ...args);
+}
+
+function peniaUrl(path = "", ...args) {
+    return tektonUrl("penia", path, ...args);
+}
+
+function sophiaUrl(path = "", ...args) {
+    return tektonUrl("sophia", path, ...args);
+}
+
+function hephaestusUrl(path = "", ...args) {
+    return tektonUrl("hephaestus", path, ...args);
+}
+
+// Special case for Hephaestus MCP
+function hephaestusMcpUrl(path = "", ...args) {
+    const host = args[0] || window.HEPHAESTUS_HOST || window.TEKTON_HOST || "localhost";
+    const scheme = args[1] || "http";
+    const port = window.HEPHAESTUS_MCP_PORT || 8388;
+    return `${scheme}://${host}:${port}${path}`;
+}
+
+// Special case for DB MCP
+function dbMcpUrl(path = "", ...args) {
+    const host = args[0] || window.DB_HOST || window.TEKTON_HOST || "localhost";
+    const scheme = args[1] || "http";
+    const port = window.DB_MCP_PORT || 8503;
+    return `${scheme}://${host}:${port}${path}`;
+}
+
 // Make functions globally available
 if (typeof window !== 'undefined') {
+    // Core function
     window.tektonUrl = tektonUrl;
+    
+    // Existing component URLs
     window.hermesUrl = hermesUrl;
     window.athenaUrl = athenaUrl;
     window.rhetorUrl = rhetorUrl;
@@ -93,12 +169,30 @@ if (typeof window !== 'undefined') {
     window.numaUrl = numaUrl;
     window.aishUrl = aishUrl;
     window.ergonUrl = ergonUrl;
+    
+    // New component URLs
+    window.engramUrl = engramUrl;
+    window.prometheusUrl = prometheusUrl;
+    window.harmoniaUrl = harmoniaUrl;
+    window.telosUrl = telosUrl;
+    window.synthesisUrl = synthesisUrl;
+    window.metisUrl = metisUrl;
+    window.apolloUrl = apolloUrl;
+    window.budgetUrl = budgetUrl;
+    window.peniaUrl = peniaUrl;
+    window.sophiaUrl = sophiaUrl;
+    window.hephaestusUrl = hephaestusUrl;
+    window.hephaestusMcpUrl = hephaestusMcpUrl;
+    window.dbMcpUrl = dbMcpUrl;
 }
 
 // Export for module systems
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = {
+        // Core function
         tektonUrl,
+        
+        // Component URLs
         hermesUrl,
         athenaUrl,
         rhetorUrl,
@@ -107,7 +201,20 @@ if (typeof module !== 'undefined' && module.exports) {
         noesisUrl,
         numaUrl,
         aishUrl,
-        ergonUrl
+        ergonUrl,
+        engramUrl,
+        prometheusUrl,
+        harmoniaUrl,
+        telosUrl,
+        synthesisUrl,
+        metisUrl,
+        apolloUrl,
+        budgetUrl,
+        peniaUrl,
+        sophiaUrl,
+        hephaestusUrl,
+        hephaestusMcpUrl,
+        dbMcpUrl
     };
 }
 

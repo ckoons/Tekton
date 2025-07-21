@@ -21,6 +21,10 @@ from tekton_llm_client.models import Message, CompletionOptions, MessageRole
 from tekton_llm_client.adapters import LocalFallbackAdapter
 from tekton_llm_client.exceptions import TektonLLMError
 
+# Import shared modules for environment and URLs
+from shared.env import TektonEnviron
+from shared.urls import tekton_url
+
 logger = logging.getLogger(__name__)
 
 class LLMAdapter:
@@ -43,9 +47,9 @@ class LLMAdapter:
         self.fallback_enabled = True
         
         # LLM-related configuration
-        self.base_url = os.getenv("TEKTON_LLM_URL", "http://localhost:8001")
-        self.default_model = os.getenv("TEKTON_LLM_MODEL", "default")
-        self.timeout = int(os.getenv("TEKTON_LLM_TIMEOUT", "60"))
+        self.base_url = TektonEnviron.get("TEKTON_LLM_URL", tekton_url("rhetor"))
+        self.default_model = TektonEnviron.get("TEKTON_LLM_MODEL", "default")
+        self.timeout = int(TektonEnviron.get("TEKTON_LLM_TIMEOUT", "60"))
         
         # Fallback settings
         self.fallback_models = [

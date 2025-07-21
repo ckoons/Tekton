@@ -24,6 +24,10 @@ logger = logging.getLogger("synthesis.core.execution_engine")
 from tekton.core.latent_reasoning import LatentReasoningMixin
 from landmarks import architecture_decision, performance_boundary, danger_zone
 
+# Import shared modules for environment and URLs
+from shared.env import TektonEnviron
+from shared.urls import tekton_url
+
 # Import execution models and executors
 from synthesis.core.execution_models import (
     ExecutionStage, ExecutionStatus, ExecutionPriority,
@@ -72,15 +76,15 @@ class ExecutionEngine(LatentReasoningMixin):
         else:
             # Use $TEKTON_DATA_DIR/synthesis by default
             default_data_dir = os.path.join(
-                os.environ.get('TEKTON_DATA_DIR', 
-                              os.path.join(os.environ.get('TEKTON_ROOT', os.path.expanduser('~')), '.tekton', 'data')),
+                TektonEnviron.get('TEKTON_DATA_DIR', 
+                              os.path.join(TektonEnviron.get('TEKTON_ROOT', os.path.expanduser('~')), '.tekton', 'data')),
                 'synthesis'
             )
             self.data_dir = default_data_dir
         os.makedirs(self.data_dir, exist_ok=True)
         
         # Set up Hermes URL
-        self.hermes_url = hermes_url or os.environ.get("HERMES_URL", "http://localhost:5000/api")
+        self.hermes_url = hermes_url or TektonEnviron.get("HERMES_URL", f"{tekton_url('hermes')}/api")
         
         # Set up concurrency control
         self.max_concurrent_executions = max_concurrent_executions

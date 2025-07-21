@@ -93,10 +93,8 @@ class BudgetWebSocketHandler {
             return this.connections[topic];
         }
         
-        // Get WebSocket URL
-        const hostname = window.location.hostname || 'localhost';
-        const port = window.BUDGET_PORT || 8013;
-        const wsUrl = `ws://${hostname}:${port}${endpoint}`;
+        // Get WebSocket URL using tektonUrl
+        const wsUrl = budgetUrl(endpoint).replace(/^http/, 'ws');
         
         console.log(`[BUDGET WS] Connecting to ${wsUrl} for topic ${topic}`);
         

@@ -53,18 +53,11 @@ class BudgetApiClient {
     }
     
     /**
-     * Get base URL for API calls by checking environment configuration
+     * Get base URL for API calls using tektonUrl
      * @returns {string} Base URL for Budget API
      */
     _getBaseUrl() {
-        // Get hostname (default to localhost)
-        const hostname = window.location.hostname || 'localhost';
-        
-        // Get port from environment variables (default to 8013)
-        const port = window.BUDGET_PORT || 8013;
-        
-        // Construct base URL
-        return `http://${hostname}:${port}`;
+        return budgetUrl();
     }
     
     /**
@@ -437,9 +430,7 @@ class BudgetApiClient {
      * @returns {WebSocket} WebSocket connection
      */
     connectWebSocket(endpoint) {
-        const hostname = window.location.hostname || 'localhost';
-        const port = window.BUDGET_PORT || 8013;
-        const wsUrl = `ws://${hostname}:${port}${endpoint}`;
+        const wsUrl = budgetUrl(endpoint).replace(/^http/, 'ws');
         
         return new WebSocket(wsUrl);
     }

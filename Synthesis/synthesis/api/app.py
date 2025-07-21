@@ -47,6 +47,9 @@ from tekton.utils.tekton_errors import (
     AuthenticationError
 )
 
+# Import shared modules for URLs
+from shared.urls import tekton_url
+
 # Import Synthesis components
 from synthesis.core.synthesis_component import SynthesisComponent
 from synthesis.core.execution_models import (
@@ -216,8 +219,8 @@ routers.v1.add_api_route(
             "metric_tracking"
         ],
         dependencies={
-            "hermes": "http://localhost:8001",
-            "rhetor": "http://localhost:8003"
+            "hermes": tekton_url("hermes"),
+            "rhetor": tekton_url("rhetor")
         },
         metadata={
             "websocket_endpoint": "/ws",

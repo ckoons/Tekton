@@ -12,6 +12,15 @@ import os
 import sys
 from typing import Dict, List, Any, Optional, Union, Callable
 
+# Add Tekton root to path if not already present
+tekton_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..'))
+if tekton_root not in sys.path:
+    sys.path.insert(0, tekton_root)
+
+# Import shared modules for environment and URLs
+from shared.env import TektonEnviron
+from shared.urls import tekton_url
+
 # Configure logging
 logger = logging.getLogger("synthesis.core.integration_base")
 
@@ -136,8 +145,7 @@ class HermesAdapter(ComponentAdapter):
             hermes_url: URL of the Hermes API
         """
         super().__init__("hermes")
-        import os
-        self.hermes_url = hermes_url or os.environ.get("HERMES_URL", "http://localhost:5000/api")
+        self.hermes_url = hermes_url or TektonEnviron.get("HERMES_URL", f"{tekton_url('hermes')}/api")
         self.service_registry = {}
         self.session = None
         
