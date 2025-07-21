@@ -39,7 +39,7 @@ from athena.core.relationship import Relationship
 logger = logging.getLogger("athena.api.llm_integration")
 
 # Set up router
-router = APIRouter(prefix="/llm", tags=["llm"])
+router = APIRouter(tags=["llm"])
 
 # Initialize prompt registry
 template_registry = PromptTemplateRegistry()

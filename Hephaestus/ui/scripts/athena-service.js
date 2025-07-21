@@ -120,14 +120,23 @@
         // Query Builder
         async executeQuery(query) {
             try {
-                const response = await fetch(window.athenaUrl('/api/v1/query/execute'), {
+                const response = await fetch(window.athenaUrl('/api/v1/query'), {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({ query })
+                    body: JSON.stringify({ 
+                        question: query,
+                        mode: 'hybrid',  // Use hybrid mode for best results
+                        max_results: 10
+                    })
                 });
-                return await response.json();
+                const result = await response.json();
+                if (response.ok) {
+                    return { status: 'success', data: result };
+                } else {
+                    return { status: 'error', message: result.detail || 'Query failed' };
+                }
             } catch (error) {
                 console.error('[ATHENA] Error executing query:', error);
                 return { status: 'error', data: [] };

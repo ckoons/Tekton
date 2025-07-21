@@ -19,9 +19,9 @@ from athena.core.engine import get_knowledge_engine
 
 logger = logging.getLogger("athena.api.visualization")
 
-router = APIRouter(prefix="/visualization", tags=["visualization"])
+router = APIRouter(tags=["visualization"])
 
-@router.get("/graph", response_model=GraphVisualizationResponse)
+@router.get("/graph")
 async def get_visualization_data(
     limit: int = Query(100, description="Maximum number of entities to include"),
     entity_type: Optional[str] = Query(None, description="Filter by entity type"),
@@ -90,11 +90,15 @@ async def get_visualization_data(
                 "relationships": relationships
             }
         
-        return GraphVisualizationResponse(
-            entities=graph_data["entities"],
-            relationships=graph_data["relationships"],
-            layout=layout
-        )
+        # Convert entities and relationships to dictionaries
+        entity_dicts = [entity.to_dict() for entity in graph_data["entities"]]
+        relationship_dicts = [rel.to_dict() for rel in graph_data["relationships"]]
+        
+        return {
+            "entities": entity_dicts,
+            "relationships": relationship_dicts,
+            "layout": layout.value
+        }
     
     except Exception as e:
         logger.error(f"Error getting visualization data: {e}")

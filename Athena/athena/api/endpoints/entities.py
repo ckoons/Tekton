@@ -19,7 +19,7 @@ from athena.api.models.entity import (
 from athena.core.engine import get_knowledge_engine
 from athena.core.entity_manager import EntityManager
 
-router = APIRouter(prefix="/entities", tags=["entities"])
+router = APIRouter(tags=["entities"])
 
 @router.post("/", response_model=EntityResponse)
 async def create_entity(entity: EntityCreate):

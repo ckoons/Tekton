@@ -16,7 +16,7 @@ from athena.api.models.query import (
 from athena.core.engine import get_knowledge_engine
 from athena.core.query_engine import QueryEngine
 
-router = APIRouter(prefix="/query", tags=["query"])
+router = APIRouter(tags=["query"])
 
 @router.post("/", response_model=QueryResponse)
 async def execute_query(request: QueryRequest):
