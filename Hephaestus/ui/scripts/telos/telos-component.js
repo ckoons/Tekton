@@ -898,3 +898,58 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+
+// Global tab switching function
+window.telos_switchTab = function(tabName) {
+    console.log(`[TELOS] Switching to tab: ${tabName}`);
+    
+    // Update tab states
+    const tabs = document.querySelectorAll('.telos__tab');
+    tabs.forEach(tab => {
+        if (tab.getAttribute('data-tab') === tabName) {
+            tab.classList.add('telos__tab--active');
+        } else {
+            tab.classList.remove('telos__tab--active');
+        }
+    });
+    
+    // Update panel visibility
+    const panels = document.querySelectorAll('.telos__panel');
+    panels.forEach(panel => {
+        const panelId = panel.id;
+        if (panelId === `${tabName}-panel`) {
+            panel.classList.add('telos__panel--active');
+        } else {
+            panel.classList.remove('telos__panel--active');
+        }
+    });
+    
+    // Handle clear button visibility for chat tabs
+    const clearButton = document.getElementById('clear-chat-btn');
+    if (clearButton) {
+        if (tabName === 'reqchat' || tabName === 'teamchat') {
+            clearButton.style.display = 'block';
+        } else {
+            clearButton.style.display = 'none';
+        }
+    }
+};
+
+// Global clear chat function
+window.telos_clearChat = function() {
+    console.log('[TELOS] Clearing chat');
+    
+    // Find active chat panel
+    const activePanel = document.querySelector('.telos__panel--active');
+    if (activePanel) {
+        const chatMessages = activePanel.querySelector('.chat-messages');
+        if (chatMessages) {
+            // Keep the system message, remove others
+            const systemMessage = chatMessages.querySelector('.system-message');
+            chatMessages.innerHTML = '';
+            if (systemMessage) {
+                chatMessages.appendChild(systemMessage);
+            }
+        }
+    }
+};

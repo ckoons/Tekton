@@ -8,8 +8,8 @@
 console.log('[FILE_TRACE] Loading: telos-service.js');
 class TelosClient {
     constructor() {
-        // Base URL for the API
-        this.baseUrl = '/api/telos';
+        // Base URL for the API - use tektonUrl if available
+        this.baseUrl = this.getApiUrl();
         
         // Default headers for API requests
         this.headers = {
@@ -17,8 +17,24 @@ class TelosClient {
             'Accept': 'application/json'
         };
         
-        console.log('[TELOS] TelosClient initialized');
+        console.log('[TELOS] TelosClient initialized with base URL:', this.baseUrl);
         if (window.TektonDebug) TektonDebug.info('telosService', 'TelosClient initialized');
+    }
+    
+    /**
+     * Get the API URL for Telos
+     * @returns {string} The base API URL
+     */
+    getApiUrl() {
+        // Use tektonUrl if available
+        if (typeof window.tektonUrl === 'function') {
+            return window.tektonUrl('telos', '/api');
+        }
+        // Fallback to constructing URL
+        const protocol = window.location.protocol;
+        const hostname = window.location.hostname;
+        const telosPort = window.TELOS_PORT || '8008';
+        return `${protocol}//${hostname}:${telosPort}/api`;
     }
     
     /**
@@ -30,43 +46,26 @@ class TelosClient {
         if (window.TektonDebug) TektonDebug.debug('telosService', 'Fetching projects');
         
         try {
-            // Simulate API call with mocked data for prototype
-            return new Promise((resolve) => {
-                setTimeout(() => {
-                    const projects = [
-                        {
-                            id: 'tekton-ui',
-                            name: 'Tekton UI Refactoring',
-                            requirementCount: 24,
-                            status: 'Active',
-                            description: 'Refactoring of Tekton UI components for better isolation and maintainability'
-                        },
-                        {
-                            id: 'engram',
-                            name: 'Engram Memory System',
-                            requirementCount: 18,
-                            status: 'Active',
-                            description: 'Development of the Engram memory subsystem for context retention'
-                        },
-                        {
-                            id: 'hermes',
-                            name: 'Hermes Communication Layer',
-                            requirementCount: 15,
-                            status: 'Completed',
-                            description: 'Service communication and message routing infrastructure'
-                        }
-                    ];
-                    
-                    console.log(`[TELOS] Fetched ${projects.length} projects`);
-                    if (window.TektonDebug) TektonDebug.info('telosService', `Fetched ${projects.length} projects`);
-                    
-                    resolve(projects);
-                }, 1000);
+            const response = await fetch(`${this.baseUrl}/projects`, {
+                method: 'GET',
+                headers: this.headers
             });
+            
+            if (!response.ok) {
+                throw new Error(`Failed to fetch projects: ${response.statusText}`);
+            }
+            
+            const data = await response.json();
+            console.log(`[TELOS] Fetched ${data.projects?.length || 0} projects`);
+            if (window.TektonDebug) TektonDebug.info('telosService', `Fetched ${data.projects?.length || 0} projects`);
+            
+            return data.projects || [];
         } catch (error) {
             console.error('[TELOS] Error fetching projects:', error);
             if (window.TektonDebug) TektonDebug.error('telosService', 'Error fetching projects', error);
-            throw error;
+            
+            // Return empty array on error to prevent UI breaking
+            return [];
         }
     }
     

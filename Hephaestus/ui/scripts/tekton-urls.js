@@ -81,6 +81,10 @@ function ergonUrl(path = "", ...args) {
     return tektonUrl("ergon", path, ...args);
 }
 
+function telosUrl(path = "", ...args) {
+    return tektonUrl("telos", path, ...args);
+}
+
 // Make functions globally available
 if (typeof window !== 'undefined') {
     window.tektonUrl = tektonUrl;
@@ -93,6 +97,7 @@ if (typeof window !== 'undefined') {
     window.numaUrl = numaUrl;
     window.aishUrl = aishUrl;
     window.ergonUrl = ergonUrl;
+    window.telosUrl = telosUrl;
 }
 
 // Export for module systems
@@ -107,7 +112,8 @@ if (typeof module !== 'undefined' && module.exports) {
         noesisUrl,
         numaUrl,
         aishUrl,
-        ergonUrl
+        ergonUrl,
+        telosUrl
     };
 }
 
