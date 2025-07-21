@@ -10,7 +10,7 @@ console.log('[FILE_TRACE] Loading: ergon-service.js');
 class ErgonService {
     constructor() {
         this.initialized = false;
-        this.apiBase = '/api/ergon';
+        this.apiBase = window.ergonUrl ? window.ergonUrl('/api/v1') : 'http://localhost:8102/api/v1';
         this.pendingRequests = new Map();
         this.requestTimeouts = {};
         this.cache = {
@@ -257,8 +257,8 @@ class ErgonService {
             // Set loading state
             this.ergonStateManager.setAgentState({ isLoading: true });
             
-            // Create agent via API
-            const response = await fetch(`${this.apiBase}/agents/create`, {
+            // Create agent via API - RESTful endpoint
+            const response = await fetch(`${this.apiBase}/agents`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -298,8 +298,8 @@ class ErgonService {
             // Set loading state
             this.ergonStateManager.setAgentState({ isLoading: true });
             
-            // Delete agent via API
-            const response = await fetch(`${this.apiBase}/agents/delete/${agentId}`, {
+            // Delete agent via API - RESTful endpoint
+            const response = await fetch(`${this.apiBase}/agents/${agentId}`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
@@ -360,8 +360,8 @@ class ErgonService {
             // Track execution in state
             this.ergonStateManager.trackExecution(execution);
             
-            // Run agent via API (but don't wait for it to complete here)
-            const runPromise = fetch(`${this.apiBase}/agents/run/${agentId}`, {
+            // Run agent via API (but don't wait for it to complete here) - RESTful endpoint
+            const runPromise = fetch(`${this.apiBase}/agents/${agentId}/run`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -447,8 +447,8 @@ class ErgonService {
             // Track execution in state
             this.ergonStateManager.trackExecution(execution);
             
-            // Run agent via API with streaming
-            const response = await fetch(`${this.apiBase}/agents/run/${agentId}`, {
+            // Run agent via API with streaming - RESTful endpoint
+            const response = await fetch(`${this.apiBase}/agents/${agentId}/run`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

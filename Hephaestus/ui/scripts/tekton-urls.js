@@ -77,6 +77,10 @@ function aishUrl(path = "", ...args) {
     return `${scheme}://${host}:${port}${path}`;
 }
 
+function ergonUrl(path = "", ...args) {
+    return tektonUrl("ergon", path, ...args);
+}
+
 // Make functions globally available
 if (typeof window !== 'undefined') {
     window.tektonUrl = tektonUrl;
@@ -88,6 +92,7 @@ if (typeof window !== 'undefined') {
     window.noesisUrl = noesisUrl;
     window.numaUrl = numaUrl;
     window.aishUrl = aishUrl;
+    window.ergonUrl = ergonUrl;
 }
 
 // Export for module systems
@@ -101,7 +106,8 @@ if (typeof module !== 'undefined' && module.exports) {
         tektonCoreUrl,
         noesisUrl,
         numaUrl,
-        aishUrl
+        aishUrl,
+        ergonUrl
     };
 }
 
