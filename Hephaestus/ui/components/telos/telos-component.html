@@ -1,37 +1,81 @@
 <!-- Telos Component - Requirements Management -->
-<div class="telos" data-tekton-area="telos" data-tekton-component="telos" data-tekton-type="component-workspace" data-tekton-ai="telos-assistant" data-tekton-ai-ready="false">
+
+<!-- Hidden radio controls for CSS-only tab functionality -->
+<input type="radio" name="telos-tab" id="telos-tab-projects" checked style="display: none;">
+<input type="radio" name="telos-tab" id="telos-tab-requirements" style="display: none;">
+<input type="radio" name="telos-tab" id="telos-tab-traceability" style="display: none;">
+<input type="radio" name="telos-tab" id="telos-tab-validation" style="display: none;">
+<input type="radio" name="telos-tab" id="telos-tab-reqchat" style="display: none;">
+<input type="radio" name="telos-tab" id="telos-tab-teamchat" style="display: none;">
+
+<div class="telos" id="telos-container" 
+     data-tekton-component="telos"
+     data-tekton-area="telos"
+     data-tekton-type="component-workspace"
+     data-tekton-ai="telos-assistant"
+     data-tekton-ai-ready="false">
     <!-- Component Header with Title -->
-    <div class="telos__header" data-tekton-zone="header" data-tekton-section="header">
-        <div class="telos__title-container">
-            <img src="/images/hexagon.jpg" alt="Tekton" class="telos__icon">
-            <h2 class="telos__title">
-                <span class="telos__title-main">Telos</span>
-                <span class="telos__title-sub">Requirements Manager</span>
+    <header class="telos__header" data-tekton-zone="header" data-tekton-section="header" data-semantic-zone="component-header">
+        <div class="telos__title-container" data-semantic-element="title-container">
+            <img src="/images/hexagon.jpg" alt="Tekton" class="telos__icon" data-semantic-element="component-icon">
+            <h2 class="telos__title" data-semantic-label="component-title">
+                <span class="telos__title-main" data-semantic-label="component-name">Telos</span>
+                <span class="telos__title-sub" data-semantic-label="component-description">Requirements Manager</span>
             </h2>
         </div>
-    </div>
+    </header>
     
-    <!-- Telos Menu Bar with Tab Navigation -->
-    <div class="telos__menu-bar" data-tekton-zone="menu" data-tekton-zone="menu" data-tekton-nav="component-menu">
-        <div class="telos__tabs" data-tekton-zone="menu">
-            <div class="telos__tab telos__tab--active" data-tab="projects" onclick="telos_switchTab('projects'); return false;" data-tekton-menu-item="Projects" data-tekton-menu-component="telos" data-tekton-menu-active="true" data-tekton-menu-panel="projects-panel" data-tekton-nav-target="projects-panel">
-                <span class="telos__tab-label">Projects</span>
-            </div>
-            <div class="telos__tab" data-tab="requirements" onclick="telos_switchTab('requirements'); return false;" data-tekton-menu-item="Requirements" data-tekton-menu-component="telos" data-tekton-menu-active="false" data-tekton-menu-panel="requirements-panel" data-tekton-nav-target="requirements-panel">
-                <span class="telos__tab-label">Requirements</span>
-            </div>
-            <div class="telos__tab" data-tab="traceability" onclick="telos_switchTab('traceability'); return false;" data-tekton-menu-item="Traceability" data-tekton-menu-component="telos" data-tekton-menu-active="false" data-tekton-menu-panel="traceability-panel" data-tekton-nav-target="traceability-panel">
-                <span class="telos__tab-label">Traceability</span>
-            </div>
-            <div class="telos__tab" data-tab="validation" onclick="telos_switchTab('validation'); return false;" data-tekton-menu-item="Validation" data-tekton-menu-component="telos" data-tekton-menu-active="false" data-tekton-menu-panel="validation-panel" data-tekton-nav-target="validation-panel">
-                <span class="telos__tab-label">Validation</span>
-            </div>
-            <div class="telos__tab" data-tab="reqchat" onclick="telos_switchTab('reqchat'); return false;" data-tekton-menu-item="Requirements Chat" data-tekton-menu-component="telos" data-tekton-menu-active="false" data-tekton-menu-panel="reqchat-panel" data-tekton-nav-target="reqchat-panel">
-                <span class="telos__tab-label">Requirements Chat</span>
-            </div>
-            <div class="telos__tab" data-tab="teamchat" onclick="telos_switchTab('teamchat'); return false;" data-tekton-menu-item="Team Chat" data-tekton-menu-component="telos" data-tekton-menu-active="false" data-tekton-menu-panel="teamchat-panel" data-tekton-nav-target="teamchat-panel">
-                <span class="telos__tab-label">Team Chat</span>
-            </div>
+    <!-- Menu Bar -->
+    <nav class="telos__menu-bar" data-tekton-zone="menu" data-tekton-nav="component-menu" data-semantic-zone="navigation" role="navigation" aria-label="Telos navigation menu">
+        <div class="telos__tabs" data-semantic-container="tab-navigation">
+            <label for="telos-tab-projects" class="telos__tab" data-tab="projects"
+                   data-tekton-menu-item="Projects"
+                   data-tekton-menu-component="telos"
+                   data-tekton-menu-panel="telos-projects"
+                   data-semantic-action="navigate-projects"
+                   aria-label="Navigate to Projects tab">
+                <span class="telos__tab-label" data-semantic-label="tab-projects">Projects</span>
+            </label>
+            <label for="telos-tab-requirements" class="telos__tab" data-tab="requirements"
+                   data-tekton-menu-item="Requirements"
+                   data-tekton-menu-component="telos"
+                   data-tekton-menu-panel="telos-requirements"
+                   data-semantic-action="navigate-requirements"
+                   aria-label="Navigate to Requirements tab">
+                <span class="telos__tab-label" data-semantic-label="tab-requirements">Requirements</span>
+            </label>
+            <label for="telos-tab-traceability" class="telos__tab" data-tab="traceability"
+                   data-tekton-menu-item="Traceability"
+                   data-tekton-menu-component="telos"
+                   data-tekton-menu-panel="telos-traceability"
+                   data-semantic-action="navigate-traceability"
+                   aria-label="Navigate to Traceability tab">
+                <span class="telos__tab-label" data-semantic-label="tab-traceability">Traceability</span>
+            </label>
+            <label for="telos-tab-validation" class="telos__tab" data-tab="validation"
+                   data-tekton-menu-item="Validation"
+                   data-tekton-menu-component="telos"
+                   data-tekton-menu-panel="telos-validation"
+                   data-semantic-action="navigate-validation"
+                   aria-label="Navigate to Validation tab">
+                <span class="telos__tab-label" data-semantic-label="tab-validation">Validation</span>
+            </label>
+            <label for="telos-tab-reqchat" class="telos__tab" data-tab="requirements-chat"
+                   data-tekton-menu-item="Requirements Chat"
+                   data-tekton-menu-component="telos"
+                   data-tekton-menu-panel="telos-reqchat"
+                   data-semantic-action="navigate-requirements-chat"
+                   aria-label="Navigate to Requirements Chat tab">
+                <span class="telos__tab-label" data-semantic-label="tab-requirements-chat">Requirements Chat</span>
+            </label>
+            <label for="telos-tab-teamchat" class="telos__tab" data-tab="team-chat"
+                   data-tekton-menu-item="Team Chat"
+                   data-tekton-menu-component="telos"
+                   data-tekton-menu-panel="telos-teamchat"
+                   data-semantic-action="navigate-team-chat"
+                   aria-label="Navigate to Team Chat tab">
+                <span class="telos__tab-label" data-semantic-label="tab-team-chat">Team Chat</span>
+            </label>
         </div>
         <div class="telos__actions">
             <button id="clear-chat-btn" class="telos__action-button" style="display: none;" onclick="telos_clearChat(); return false;" data-tekton-action="clear-chat" data-tekton-action-type="secondary">
@@ -41,18 +85,36 @@
     </div>
     
     <!-- Telos Content Area -->
-    <div class="telos__content" data-tekton-zone="content" data-tekton-scrollable="true">
+    <main class="telos__content" data-tekton-zone="content" data-tekton-scrollable="true" data-semantic-zone="main-content" role="main" aria-label="Telos requirements management workspace">
         <!-- Projects Tab (Default Active Tab) -->
-        <div id="projects-panel" class="telos__panel telos__panel--active" data-tekton-panel="projects" data-tekton-panel-for="Projects" data-tekton-panel-component="telos" data-tekton-panel-active="true">
+        <section class="telos__panel telos__panel--projects" data-tab-content="projects" 
+                 data-tekton-tab-content="projects"
+                 data-tekton-panel="projects"
+                 data-tekton-panel-for="Projects"
+                 data-tekton-panel-component="telos"
+                 data-semantic-zone="projects-workspace"
+                 role="tabpanel"
+                 aria-labelledby="telos-tab-projects">
             <div class="telos__projects">
-                <div class="telos__control-bar">
-                    <div class="telos__search-container">
-                        <input type="text" id="project-search" class="telos__search-input" placeholder="Search projects...">
-                        <button id="project-search-btn" class="telos__search-button" data-tekton-action="search-projects" data-tekton-action-type="primary">Search</button>
+                <div class="telos__control-bar" data-semantic-container="project-controls">
+                    <div class="telos__search-container" data-semantic-element="search-container">
+                        <input type="text" id="project-search" class="telos__search-input" 
+                               placeholder="Search projects..." 
+                               data-semantic-input="project-search"
+                               aria-label="Search projects by name or description">
+                        <button id="project-search-btn" class="telos__search-button" 
+                                data-tekton-action="search-projects" 
+                                data-tekton-action-type="primary"
+                                data-semantic-action="search-projects"
+                                aria-label="Execute project search">Search</button>
                     </div>
-                    <div class="telos__actions">
-                        <button id="add-project-btn" class="telos__action-button" data-tekton-action="add-project" data-tekton-action-type="primary">
-                            <span class="telos__button-icon">+</span>
+                    <div class="telos__actions" data-semantic-container="project-actions">
+                        <button id="add-project-btn" class="telos__action-button" 
+                                data-tekton-action="add-project" 
+                                data-tekton-action-type="primary"
+                                data-semantic-action="create-project"
+                                aria-label="Create new project">
+                            <span class="telos__button-icon" aria-hidden="true">+</span>
                             <span class="telos__button-label">New Project</span>
                         </button>
                     </div>
@@ -96,7 +158,7 @@
         </div>
         
         <!-- Requirements Tab -->
-        <div id="requirements-panel" class="telos__panel" data-tekton-panel="requirements" data-tekton-panel-for="Requirements" data-tekton-panel-component="telos" data-tekton-panel-active="false">
+        <div id="requirements-panel" class="telos__panel" data-tab-content="requirements" data-tekton-panel="requirements" data-tekton-panel-for="Requirements" data-tekton-panel-component="telos" data-tekton-panel-active="false">
             <div class="telos__requirements">
                 <div class="telos__control-bar">
                     <div class="telos__search-container">
@@ -183,7 +245,7 @@
         </div>
         
         <!-- Traceability Tab -->
-        <div id="traceability-panel" class="telos__panel" data-tekton-panel="traceability" data-tekton-panel-for="Traceability" data-tekton-panel-component="telos" data-tekton-panel-active="false">
+        <div id="traceability-panel" class="telos__panel" data-tab-content="traceability" data-tekton-panel="traceability" data-tekton-panel-for="Traceability" data-tekton-panel-component="telos" data-tekton-panel-active="false">
             <div class="telos__traceability">
                 <div class="telos__control-bar">
                     <div class="telos__filter-container">
@@ -213,7 +275,7 @@
         </div>
         
         <!-- Validation Tab -->
-        <div id="validation-panel" class="telos__panel" data-tekton-panel="validation" data-tekton-panel-for="Validation" data-tekton-panel-component="telos" data-tekton-panel-active="false">
+        <div id="validation-panel" class="telos__panel" data-tab-content="validation" data-tekton-panel="validation" data-tekton-panel-for="Validation" data-tekton-panel-component="telos" data-tekton-panel-active="false">
             <div class="telos__validation">
                 <h3 class="telos__section-title">Requirements Validation</h3>
                 <p class="telos__text">Validate requirements against quality criteria and standards.</p>
@@ -275,30 +337,78 @@
         </div>
         
         <!-- Requirements Chat Tab -->
-        <div id="reqchat-panel" class="telos__panel" data-tekton-panel="reqchat" data-tekton-panel-for="Requirements Chat" data-tekton-panel-component="telos" data-tekton-panel-active="false">
-            <div id="reqchat-messages" class="telos__chat-messages">
-                <!-- Welcome message -->
-                <div class="telos__message telos__message--system">
-                    <strong>Telos:</strong> Welcome to the Requirements Assistant! I can help you with:
-                    <ul style="margin-top: 8px; margin-bottom: 0;">
-                        <li>Requirements drafting and refinement</li>
-                        <li>Requirements validation and analysis</li>
-                        <li>Traceability and relationships</li>
-                        <li>Best practices for requirements management</li>
-                    </ul>
+        <section class="telos__panel" data-tab-content="reqchat" 
+                 data-tekton-tab-content="reqchat"
+                 data-tekton-panel="reqchat"
+                 data-tekton-panel-for="Requirements Chat"
+                 data-tekton-panel-component="telos"
+                 data-semantic-zone="requirements-chat"
+                 role="tabpanel"
+                 aria-labelledby="telos-tab-reqchat">
+            <div class="telos__chat-container" data-semantic-container="chat-workspace">
+                <div id="reqchat-messages" class="telos__chat-messages" 
+                     data-semantic-container="chat-messages"
+                     role="log"
+                     aria-label="Requirements chat conversation">
+                    <!-- Welcome message -->
+                    <div class="telos__message telos__message--system" data-semantic-element="welcome-message">
+                        <strong>Telos:</strong> Welcome to the Requirements Assistant! I can help you with:
+                        <ul style="margin-top: 8px; margin-bottom: 0;">
+                            <li>Requirements drafting and refinement</li>
+                            <li>Requirements validation and analysis</li>
+                            <li>Traceability and relationships</li>
+                            <li>Best practices for requirements management</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="telos__chat-input-container" data-semantic-container="chat-input">
+                    <div class="telos__chat-prompt" data-semantic-element="chat-prompt" aria-hidden="true">></div>
+                    <input type="text" id="telos-reqchat-input" class="telos__chat-input" 
+                           placeholder="Ask about requirements, validation, or best practices..."
+                           onkeypress="if(event.key === 'Enter') { telos_sendReqChat(); }"
+                           data-semantic-input="requirements-chat-input"
+                           aria-label="Requirements chat message input">
+                    <button id="telos-reqchat-send" class="telos__chat-send" 
+                            onclick="telos_sendReqChat(); return false;"
+                            data-semantic-action="send-requirements-chat"
+                            aria-label="Send requirements chat message">Send</button>
                 </div>
             </div>
-        </div>
+        </section>
         
         <!-- Team Chat Tab -->
-        <div id="teamchat-panel" class="telos__panel" data-tekton-panel="teamchat" data-tekton-panel-for="Team Chat" data-tekton-panel-component="telos" data-tekton-panel-active="false">
-            <div id="teamchat-messages" class="telos__chat-messages">
-                <!-- Welcome message -->
-                <div class="telos__message telos__message--system">
-                    <strong>System:</strong> This chat is shared across all Tekton components. Use this for team communication and coordination.
+        <section class="telos__panel" data-tab-content="teamchat"
+                 data-tekton-tab-content="teamchat"
+                 data-tekton-panel="teamchat"
+                 data-tekton-panel-for="Team Chat"
+                 data-tekton-panel-component="telos"
+                 data-semantic-zone="team-chat"
+                 role="tabpanel"
+                 aria-labelledby="telos-tab-teamchat">
+            <div class="telos__chat-container" data-semantic-container="team-chat-workspace">
+                <div id="teamchat-messages" class="telos__chat-messages" 
+                     data-semantic-container="team-chat-messages"
+                     role="log"
+                     aria-label="Team chat conversation">
+                    <!-- Welcome message -->
+                    <div class="telos__message telos__message--system" data-semantic-element="team-welcome-message">
+                        <strong>System:</strong> This chat is shared across all Tekton components. Use this for team communication and coordination.
+                    </div>
+                </div>
+                <div class="telos__chat-input-container" data-semantic-container="team-chat-input">
+                    <div class="telos__chat-prompt" data-semantic-element="team-chat-prompt" aria-hidden="true">></div>
+                    <input type="text" id="telos-teamchat-input" class="telos__chat-input" 
+                           placeholder="Team chat message..."
+                           onkeypress="if(event.key === 'Enter') { telos_sendTeamChat(); }"
+                           data-semantic-input="team-chat-input"
+                           aria-label="Team chat message input">
+                    <button id="telos-teamchat-send" class="telos__chat-send" 
+                            onclick="telos_sendTeamChat(); return false;"
+                            data-semantic-action="send-team-chat"
+                            aria-label="Send team chat message">Send</button>
                 </div>
             </div>
-        </div>
+        </section>
     </div>
     
     <!-- Footer with Chat Input -->

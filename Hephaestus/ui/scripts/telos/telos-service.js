@@ -8,8 +8,8 @@
 console.log('[FILE_TRACE] Loading: telos-service.js');
 class TelosClient {
     constructor() {
-        // Base URL for the API
-        this.baseUrl = '/api/telos';
+        // Base URL for the API using tekton_url helper
+        this.baseUrl = window.tekton_url ? window.tekton_url('telos', '/api') : '/api/telos';
         
         // Default headers for API requests
         this.headers = {
@@ -17,8 +17,32 @@ class TelosClient {
             'Accept': 'application/json'
         };
         
-        console.log('[TELOS] TelosClient initialized');
+        console.log('[TELOS] TelosClient initialized with baseUrl:', this.baseUrl);
         if (window.TektonDebug) TektonDebug.info('telosService', 'TelosClient initialized');
+    }
+    
+    /**
+     * Health check for the Telos service
+     * @returns {Promise<Object>} Health status
+     */
+    async health() {
+        try {
+            const response = await fetch(`${this.baseUrl}/health`, {
+                method: 'GET',
+                headers: this.headers
+            });
+            
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+            
+            const data = await response.json();
+            console.log('[TELOS] Health check:', data);
+            return data;
+        } catch (error) {
+            console.error('[TELOS] Health check failed:', error);
+            return { status: 'error', message: error.message };
+        }
     }
     
     /**
@@ -30,39 +54,20 @@ class TelosClient {
         if (window.TektonDebug) TektonDebug.debug('telosService', 'Fetching projects');
         
         try {
-            // Simulate API call with mocked data for prototype
-            return new Promise((resolve) => {
-                setTimeout(() => {
-                    const projects = [
-                        {
-                            id: 'tekton-ui',
-                            name: 'Tekton UI Refactoring',
-                            requirementCount: 24,
-                            status: 'Active',
-                            description: 'Refactoring of Tekton UI components for better isolation and maintainability'
-                        },
-                        {
-                            id: 'engram',
-                            name: 'Engram Memory System',
-                            requirementCount: 18,
-                            status: 'Active',
-                            description: 'Development of the Engram memory subsystem for context retention'
-                        },
-                        {
-                            id: 'hermes',
-                            name: 'Hermes Communication Layer',
-                            requirementCount: 15,
-                            status: 'Completed',
-                            description: 'Service communication and message routing infrastructure'
-                        }
-                    ];
-                    
-                    console.log(`[TELOS] Fetched ${projects.length} projects`);
-                    if (window.TektonDebug) TektonDebug.info('telosService', `Fetched ${projects.length} projects`);
-                    
-                    resolve(projects);
-                }, 1000);
+            const response = await fetch(`${this.baseUrl}/projects`, {
+                method: 'GET',
+                headers: this.headers
             });
+            
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+            
+            const data = await response.json();
+            console.log(`[TELOS] Fetched projects data:`, data);
+            if (window.TektonDebug) TektonDebug.info('telosService', `Fetched projects data`, data);
+            
+            return data.projects || data;
         } catch (error) {
             console.error('[TELOS] Error fetching projects:', error);
             if (window.TektonDebug) TektonDebug.error('telosService', 'Error fetching projects', error);
@@ -80,58 +85,20 @@ class TelosClient {
         if (window.TektonDebug) TektonDebug.debug('telosService', `Fetching project: ${projectId}`);
         
         try {
-            // Simulate API call with mocked data
-            return new Promise((resolve, reject) => {
-                setTimeout(() => {
-                    // Mocked project data
-                    const projectsData = {
-                        'tekton-ui': {
-                            id: 'tekton-ui',
-                            name: 'Tekton UI Refactoring',
-                            requirementCount: 24,
-                            status: 'Active',
-                            description: 'Refactoring of Tekton UI components for better isolation and maintainability',
-                            startDate: '2025-03-01',
-                            endDate: '2025-06-30',
-                            owner: 'Casey Koons',
-                            stakeholders: ['UI Team', 'UX Team', 'Dev Team']
-                        },
-                        'engram': {
-                            id: 'engram',
-                            name: 'Engram Memory System',
-                            requirementCount: 18,
-                            status: 'Active',
-                            description: 'Development of the Engram memory subsystem for context retention',
-                            startDate: '2025-02-15',
-                            endDate: '2025-05-30',
-                            owner: 'Memory Team',
-                            stakeholders: ['AI Team', 'Dev Team']
-                        },
-                        'hermes': {
-                            id: 'hermes',
-                            name: 'Hermes Communication Layer',
-                            requirementCount: 15,
-                            status: 'Completed',
-                            description: 'Service communication and message routing infrastructure',
-                            startDate: '2025-01-10',
-                            endDate: '2025-04-15',
-                            owner: 'Integration Team',
-                            stakeholders: ['DevOps', 'Backend Team']
-                        }
-                    };
-                    
-                    if (projectsData[projectId]) {
-                        console.log(`[TELOS] Fetched project: ${projectId}`);
-                        if (window.TektonDebug) TektonDebug.info('telosService', `Fetched project: ${projectId}`);
-                        resolve(projectsData[projectId]);
-                    } else {
-                        const error = new Error(`Project not found: ${projectId}`);
-                        console.error(`[TELOS] ${error.message}`);
-                        if (window.TektonDebug) TektonDebug.error('telosService', error.message);
-                        reject(error);
-                    }
-                }, 800);
+            const response = await fetch(`${this.baseUrl}/projects/${projectId}`, {
+                method: 'GET',
+                headers: this.headers
             });
+            
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+            
+            const data = await response.json();
+            console.log(`[TELOS] Fetched project ${projectId}:`, data);
+            if (window.TektonDebug) TektonDebug.info('telosService', `Fetched project ${projectId}`, data);
+            
+            return data.project || data;
         } catch (error) {
             console.error(`[TELOS] Error fetching project ${projectId}:`, error);
             if (window.TektonDebug) TektonDebug.error('telosService', `Error fetching project ${projectId}`, error);
@@ -187,11 +154,25 @@ class TelosClient {
         if (window.TektonDebug) TektonDebug.debug('telosService', 'Fetching requirements', filters);
         
         try {
-            // Simulate API call with mocked data
-            return new Promise((resolve) => {
-                setTimeout(() => {
-                    // Mock requirements data
-                    const allRequirements = [
+            const queryParams = new URLSearchParams();
+            Object.keys(filters).forEach(key => {
+                if (filters[key]) queryParams.append(key, filters[key]);
+            });
+            
+            const response = await fetch(`${this.baseUrl}/requirements?${queryParams}`, {
+                method: 'GET',
+                headers: this.headers
+            });
+            
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+            
+            const data = await response.json();
+            console.log(`[TELOS] Fetched requirements:`, data);
+            if (window.TektonDebug) TektonDebug.info('telosService', 'Fetched requirements', data);
+            
+            return data.requirements || data;
                         {
                             id: 'REQ-001',
                             title: 'Component Isolation',
