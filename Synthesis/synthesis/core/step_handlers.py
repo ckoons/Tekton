@@ -22,7 +22,15 @@ from synthesis.core.execution_models import ExecutionContext, ExecutionResult
 from synthesis.core.condition_evaluator import evaluate_condition
 from synthesis.core.loop_handlers import handle_loop_step
 from synthesis.core.llm_adapter import get_llm_adapter
-from landmarks import performance_boundary
+# Try to import landmarks if available
+try:
+    from landmarks import performance_boundary
+except ImportError:
+    # Landmarks not available, create no-op decorator
+    def performance_boundary(title, sla="", metrics=None, optimization_notes=""):
+        def decorator(func):
+            return func
+        return decorator
 
 # Configure logging
 logger = logging.getLogger("synthesis.core.step_handlers")

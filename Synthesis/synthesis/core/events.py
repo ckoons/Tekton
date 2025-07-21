@@ -21,7 +21,20 @@ tekton_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'
 if tekton_root not in sys.path:
     sys.path.insert(0, tekton_root)
 
-from landmarks import architecture_decision, performance_boundary
+# Try to import landmarks if available
+try:
+    from landmarks import architecture_decision, performance_boundary
+except ImportError:
+    # Landmarks not available, create no-op decorators
+    def architecture_decision(title, rationale="", alternatives_considered=None):
+        def decorator(func):
+            return func
+        return decorator
+    
+    def performance_boundary(title, sla="", metrics=None, optimization_notes=""):
+        def decorator(func):
+            return func
+        return decorator
 
 # Configure logging
 logger = logging.getLogger("synthesis.core.events")

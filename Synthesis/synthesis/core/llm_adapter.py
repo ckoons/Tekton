@@ -20,7 +20,20 @@ from tekton_llm_client import TektonLLMClient
 from tekton_llm_client.models import Message, CompletionOptions, MessageRole
 from tekton_llm_client.adapters import LocalFallbackAdapter
 from tekton_llm_client.exceptions import TektonLLMError
-from landmarks import architecture_decision, performance_boundary
+# Try to import landmarks if available
+try:
+    from landmarks import architecture_decision, performance_boundary
+except ImportError:
+    # Landmarks not available, create no-op decorators
+    def architecture_decision(title, rationale="", alternatives_considered=None):
+        def decorator(func):
+            return func
+        return decorator
+    
+    def performance_boundary(title, sla="", metrics=None, optimization_notes=""):
+        def decorator(func):
+            return func
+        return decorator
 
 logger = logging.getLogger(__name__)
 
