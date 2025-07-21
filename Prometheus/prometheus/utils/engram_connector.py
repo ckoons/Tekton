@@ -16,7 +16,7 @@ tekton_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../.."
 if tekton_root not in sys.path:
     sys.path.append(tekton_root)
 
-from shared.utils.env_config import get_component_config
+from shared.utils.global_config import GlobalConfig
 
 # Configure logging
 logger = logging.getLogger("prometheus.utils.engram_connector")
@@ -34,9 +34,9 @@ class EngramConnector:
         Args:
             engram_url: URL of the Engram API (defaults to environment variable)
         """
-        config = get_component_config()
-        engram_port = config.engram.port if hasattr(config, 'engram') else int(os.environ.get('ENGRAM_PORT'))
-        self.engram_url = engram_url or os.environ.get("ENGRAM_URL", f"http://localhost:{engram_port}/api")
+        config = GlobalConfig()
+        engram_port = config.get_port('engram')
+        self.engram_url = engram_url or f"http://localhost:{engram_port}/api"
         self.initialized = False
         self.engram_client = None
     
@@ -56,9 +56,10 @@ class EngramConnector:
                 from tekton.utils.component_client import ComponentClient
                 
                 # Create client
+                hermes_port = GlobalConfig().get_port('hermes')
                 self.engram_client = ComponentClient(
                     component_id="engram.memory",
-                    hermes_url=os.environ.get("HERMES_URL")
+                    hermes_url=f"http://localhost:{hermes_port}/api"
                 )
                 await self.engram_client.initialize()
                 self.initialized = True

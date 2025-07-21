@@ -8,11 +8,8 @@ engine, starting the API server and initializing all required components.
 
 import os
 import sys
-import logging
 import asyncio
 import argparse
-from typing import Optional
-import uvicorn
 
 # Add Tekton root to path for shared imports
 tekton_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -21,12 +18,11 @@ if tekton_root not in sys.path:
 
 from harmonia.core.startup_instructions import StartUpInstructions
 from harmonia.core.workflow_startup import WorkflowEngineStartup
-from harmonia.api.app import app
 
 # Use shared logging setup
 from shared.utils.logging_setup import setup_component_logging
-from shared.utils.env_config import get_component_config
 from shared.utils.global_config import GlobalConfig
+from shared.env import TektonEnviron
 logger = setup_component_logging("harmonia")
 
 
@@ -39,23 +35,23 @@ def parse_args():
     default_port = global_config.config.harmonia.port
     parser.add_argument("--port", type=int, default=default_port,
                         help="Port to run the API server on")
-    parser.add_argument("--host", default=os.environ.get("HARMONIA_HOST", "0.0.0.0"),
+    parser.add_argument("--host", default=TektonEnviron.get("HARMONIA_HOST", "0.0.0.0"),
                         help="Host to bind the API server to")
-    parser.add_argument("--data-dir", default=os.environ.get("HARMONIA_DATA_DIR", os.path.expanduser("~/.harmonia")),
+    parser.add_argument("--data-dir", default=TektonEnviron.get("HARMONIA_DATA_DIR", os.path.expanduser("~/.harmonia")),
                         help="Directory for storing Harmonia data")
     hermes_port = global_config.config.hermes.port if hasattr(global_config.config, "hermes") else 8001
-    hermes_host = os.environ.get("HERMES_HOST", "localhost")
+    hermes_host = TektonEnviron.get("HERMES_HOST", "localhost")
     default_hermes_url = f"http://{hermes_host}:{hermes_port}"
-    parser.add_argument("--hermes-url", default=os.environ.get("HERMES_URL", default_hermes_url),
+    parser.add_argument("--hermes-url", default=TektonEnviron.get("HERMES_URL", default_hermes_url),
                         help="URL of the Hermes service")
-    parser.add_argument("--log-level", default=os.environ.get("LOG_LEVEL", "INFO"),
+    parser.add_argument("--log-level", default=TektonEnviron.get("LOG_LEVEL", "INFO"),
                         choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
                         help="Logging level")
     parser.add_argument("--init-only", action="store_true",
                         help="Initialize components and exit (don't start API server)")
     parser.add_argument("--auto-register", action="store_true",
                         help="Automatically register with Hermes on startup")
-    parser.add_argument("--instructions-file", default=os.environ.get("STARTUP_INSTRUCTIONS_FILE"),
+    parser.add_argument("--instructions-file", default=TektonEnviron.get("STARTUP_INSTRUCTIONS_FILE"),
                         help="Path to startup instructions JSON file")
     
     return parser.parse_args()
@@ -108,11 +104,8 @@ def run_api_server(args):
     """
     try:
         # Initialize workflow engine (happens in the app's startup event)
-        # But we set environment variables first so the app can use them
-        os.environ["HARMONIA_DATA_DIR"] = args.data_dir
-        os.environ["HERMES_URL"] = args.hermes_url
-        os.environ["LOG_LEVEL"] = args.log_level
-        os.environ["HARMONIA_PORT"] = str(args.port)
+        # Note: TektonEnviron is read-only, so we don't set environment variables here
+        # The app will use the args passed through the command line or defaults from TektonEnviron
         
         # Run the API server with socket reuse
         from shared.utils.socket_server import run_with_socket_reuse

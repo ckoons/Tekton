@@ -37,12 +37,14 @@ harmonia template create --from-workflow <workflow-id>
 
 ## Configuration
 
+Harmonia uses the standard Tekton configuration system with TektonEnviron.
+
 ### Environment Variables
 
 ```bash
-# Harmonia-specific settings
-HARMONIA_PORT=8008                    # API port
-HARMONIA_AI_PORT=45008                # AI specialist port
+# Harmonia-specific settings (managed by TektonEnviron)
+HARMONIA_PORT=8002                    # API port (default)
+HARMONIA_AI_PORT=45002                # AI specialist port
 HARMONIA_DATA_DIR=~/.harmonia         # Data directory
 HARMONIA_MAX_CONCURRENT_WORKFLOWS=10  # Concurrent limit
 
@@ -51,6 +53,13 @@ HARMONIA_DEFAULT_TIMEOUT=3600         # Default task timeout (seconds)
 HARMONIA_RETRY_MAX_ATTEMPTS=3         # Max retry attempts
 HARMONIA_CHECKPOINT_INTERVAL=300      # Auto-checkpoint interval
 ```
+
+### Database Configuration
+
+Harmonia uses Hermes database services for state persistence:
+- Document database for workflow state storage
+- Key-value store for metadata and quick lookups
+- Automatic fallback to file-based storage if Hermes is unavailable
 
 ### Configuration File
 
@@ -455,3 +464,44 @@ python -m harmonia.api.app --debug
 - [State Management](/MetaData/ComponentDocumentation/Harmonia/STATE_MANAGEMENT.md)
 - [Component Integration](/MetaData/ComponentDocumentation/Harmonia/INTEGRATION_GUIDE.md)
 - [API Reference](/Harmonia/docs/api_reference.md)
+## UI Integration
+
+Harmonia includes a comprehensive web interface integrated with Hephaestus:
+
+### Features
+- **Workflows Tab**: View, create, and manage workflow definitions
+- **Templates Tab**: Browse and use workflow templates
+- **Executions Tab**: Monitor running and completed executions
+- **Monitor Tab**: Real-time workflow monitoring and metrics
+- **Workflow Chat**: AI-assisted workflow creation and debugging
+
+### Accessing the UI
+1. Start Hephaestus UI server
+2. Navigate to the Harmonia component
+3. All workflow operations are available through the interface
+
+### API Integration
+The UI connects to the following endpoints:
+- `GET/POST /api/workflows` - Workflow management
+- `GET/POST /api/templates` - Template operations
+- `GET /api/executions` - Execution monitoring
+- `WebSocket /ws/executions/{id}` - Real-time updates
+
+## Recent Updates (Renovation Sprint)
+
+### Configuration
+- Migrated from direct os.environ to TektonEnviron
+- Standardized port configuration (default: 8002)
+- Removed hardcoded values
+
+### Database Integration
+- Integrated with Hermes database services via MCP
+- Document database for workflow persistence
+- Key-value store for metadata
+- Automatic fallback to file storage
+
+### UI Improvements
+- Removed all mock data
+- Connected to real backend endpoints
+- Added proper loading and error states
+- Semantic HTML structure with accessibility features

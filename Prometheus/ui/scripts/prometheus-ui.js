@@ -7,7 +7,7 @@
 
 class PrometheusUI {
     constructor(options = {}) {
-        this.apiBaseUrl = options.apiBaseUrl || 'http://localhost:8006/api';
+        this.apiBaseUrl = options.apiBaseUrl || window.tekton_url('prometheus', '/api');
         this.container = options.container || document.getElementById('prometheus-container');
         this.token = options.token || null;
         this.plans = [];
@@ -20,6 +20,7 @@ class PrometheusUI {
     }
     
     async initialize() {
+        // Landmark: Component Initialization - Health check and UI bootstrap
         if (!this.container) {
             console.error('Prometheus UI container not found');
             return;
@@ -36,10 +37,35 @@ class PrometheusUI {
             // Load initial UI
             this.renderUI();
             
-            // Load plans
-            await this.loadPlans();
+            // Load initial content for Planning tab
+            await this.loadPlanningContent();
         } catch (error) {
             this.showError('Failed to initialize Prometheus UI', error);
+        }
+    }
+    
+    async loadPlanningContent() {
+        const panel = document.getElementById('prometheus-panel-planning');
+        if (!panel) return;
+        
+        try {
+            const plansResponse = await this.client.listPlans();
+            this.plans = plansResponse.data?.items || [];
+            panel.innerHTML = `
+                <div class="prometheus-panel-header" data-semantic-element="panel-header">
+                    <h3 data-semantic-label="panel-title">Planning</h3>
+                    <button class="prometheus__button prometheus__button--primary" id="prometheus-new-plan" data-semantic-action="create-plan">
+                        <i class="fas fa-plus"></i> New Plan
+                    </button>
+                </div>
+                <div class="prometheus-plans" id="prometheus-plans" data-semantic-container="plans-list"></div>
+            `;
+            this.renderPlans();
+            
+            // Add event listener for new plan button
+            document.getElementById('prometheus-new-plan').addEventListener('click', () => this.showNewPlanModal());
+        } catch (error) {
+            panel.innerHTML = `<div class="prometheus-error">Failed to load plans: ${error.message}</div>`;
         }
     }
     
@@ -54,47 +80,85 @@ class PrometheusUI {
     }
     
     renderUI() {
+        // Landmark: Prometheus Main UI Render - Tab-based planning interface
         this.container.innerHTML = `
-            <div class="prometheus-container">
-                <div class="prometheus-header">
+            <div class="prometheus-container" data-semantic-container="prometheus-workspace">
+                <div class="prometheus-header" data-semantic-element="workspace-header">
                     <div>
-                        <h2 class="prometheus-title">Prometheus</h2>
-                        <p class="prometheus-subtitle">Planning and Retrospective System</p>
-                    </div>
-                    <div>
-                        <button id="prometheus-new-plan" class="prometheus-btn prometheus-btn-primary">
-                            <i class="fas fa-plus"></i> New Plan
-                        </button>
+                        <h2 class="prometheus-title" data-semantic-label="component-name">Prometheus</h2>
+                        <p class="prometheus-subtitle" data-semantic-label="component-description">Planning and Retrospective System</p>
                     </div>
                 </div>
                 
-                <div class="prometheus-tabs">
-                    <div class="prometheus-tab active" data-tab="plans">Plans</div>
-                    <div class="prometheus-tab" data-tab="tasks">Tasks</div>
-                    <div class="prometheus-tab" data-tab="timeline">Timeline</div>
-                    <div class="prometheus-tab" data-tab="retrospectives">Retrospectives</div>
-                    <div class="prometheus-tab" data-tab="metrics">Metrics</div>
+                <!-- Landmark: CSS Navigation Controls - Radio-based tab switching -->
+                <!-- Radio buttons for CSS-based navigation -->
+                <input type="radio" name="prometheus-tabs" id="prometheus-tab-planning" class="prometheus-tab-radio" checked data-semantic-control="tab-planning">
+                <input type="radio" name="prometheus-tabs" id="prometheus-tab-timeline" class="prometheus-tab-radio" data-semantic-control="tab-timeline">
+                <input type="radio" name="prometheus-tabs" id="prometheus-tab-resources" class="prometheus-tab-radio" data-semantic-control="tab-resources">
+                <input type="radio" name="prometheus-tabs" id="prometheus-tab-analysis" class="prometheus-tab-radio" data-semantic-control="tab-analysis">
+                <input type="radio" name="prometheus-tabs" id="prometheus-tab-planning-chat" class="prometheus-tab-radio" data-semantic-control="tab-planning-chat">
+                <input type="radio" name="prometheus-tabs" id="prometheus-tab-team-chat" class="prometheus-tab-radio" data-semantic-control="tab-team-chat">
+                
+                <div class="prometheus-tabs" data-semantic-element="tab-navigation">
+                    <label for="prometheus-tab-planning" class="prometheus-tab" data-semantic-action="switch-tab" data-tab="planning">Planning</label>
+                    <label for="prometheus-tab-timeline" class="prometheus-tab" data-semantic-action="switch-tab" data-tab="timeline">Timeline</label>
+                    <label for="prometheus-tab-resources" class="prometheus-tab" data-semantic-action="switch-tab" data-tab="resources">Resources</label>
+                    <label for="prometheus-tab-analysis" class="prometheus-tab" data-semantic-action="switch-tab" data-tab="analysis">Analysis</label>
+                    <label for="prometheus-tab-planning-chat" class="prometheus-tab" data-semantic-action="switch-tab" data-tab="planning-chat">Planning Chat</label>
+                    <label for="prometheus-tab-team-chat" class="prometheus-tab" data-semantic-action="switch-tab" data-tab="team-chat">Team Chat</label>
                 </div>
                 
-                <div id="prometheus-content" class="prometheus-content">
-                    <!-- Tab content will be rendered here -->
-                    <div id="prometheus-plans" class="prometheus-plans">
-                        <div class="prometheus-loading">Loading plans...</div>
+                <!-- Landmark: Tab Content Area - Dynamic content panels -->
+                <div id="prometheus-content" class="prometheus-content" data-semantic-container="tab-content">
+                    <!-- Tab panels -->
+                    <div id="prometheus-panel-planning" class="prometheus-panel" data-semantic-panel="planning" data-semantic-zone="plans-management">
+                        <div class="prometheus-loading" data-semantic-state="loading">Loading planning...</div>
                     </div>
+                    
+                    <div id="prometheus-panel-timeline" class="prometheus-panel" data-semantic-panel="timeline" data-semantic-zone="timeline-visualization">
+                        <div class="prometheus-loading" data-semantic-state="loading">Loading timeline...</div>
+                    </div>
+                    
+                    <div id="prometheus-panel-resources" class="prometheus-panel" data-semantic-panel="resources" data-semantic-zone="resource-allocation">
+                        <div class="prometheus-loading" data-semantic-state="loading">Loading resources...</div>
+                    </div>
+                    
+                    <div id="prometheus-panel-analysis" class="prometheus-panel" data-semantic-panel="analysis" data-semantic-zone="plan-analysis">
+                        <div class="prometheus-loading" data-semantic-state="loading">Loading analysis...</div>
+                    </div>
+                    
+                    <div id="prometheus-panel-planning-chat" class="prometheus-panel" data-semantic-panel="planning-chat" data-semantic-zone="ai-planning-chat">
+                        <div class="prometheus-chat-container" data-semantic-container="chat-interface">
+                            <div class="prometheus-chat-messages" id="prometheus-planning-chat-messages" data-semantic-element="chat-history"></div>
+                            <div class="prometheus-chat-input" data-semantic-element="chat-input-group">
+                                <input type="text" id="prometheus-planning-chat-input" placeholder="Chat about planning..." data-semantic-input="chat-message">
+                                <button id="prometheus-planning-chat-send" data-semantic-action="send-chat">Send</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="prometheus-panel-team-chat" class="prometheus-panel" data-semantic-panel="team-chat" data-semantic-zone="team-collaboration-chat">
+                        <div class="prometheus-chat-container" data-semantic-container="chat-interface">
+                            <div class="prometheus-chat-messages" id="prometheus-team-chat-messages" data-semantic-element="chat-history"></div>
+                            <div class="prometheus-chat-input" data-semantic-element="chat-input-group">
+                                <input type="text" id="prometheus-team-chat-input" placeholder="Team chat..." data-semantic-input="chat-message">
+                                <button id="prometheus-team-chat-send" data-semantic-action="send-chat">Send</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="prometheus-footer" data-semantic-element="component-footer">
+                    Prometheus Planning System - © 2024 Tekton
                 </div>
             </div>
         `;
         
-        // Add event listeners
-        document.getElementById('prometheus-new-plan').addEventListener('click', () => this.showNewPlanModal());
+        // Set up chat handlers
+        this.setupChatHandlers();
         
-        const tabs = document.querySelectorAll('.prometheus-tab');
-        tabs.forEach(tab => {
-            tab.addEventListener('click', (e) => {
-                const tabName = e.target.dataset.tab;
-                this.switchTab(tabName);
-            });
-        });
+        // Set up tab change listeners
+        this.setupTabListeners();
     }
     
     renderPlans() {
@@ -759,6 +823,208 @@ class PrometheusUI {
         console.log('Show add feedback modal', retroId);
     }
     
+    // Tab handling
+    setupTabListeners() {
+        // Listen for radio button changes
+        const radioButtons = document.querySelectorAll('.prometheus-tab-radio');
+        radioButtons.forEach(radio => {
+            radio.addEventListener('change', (e) => {
+                if (e.target.checked) {
+                    const tabId = e.target.id.replace('prometheus-tab-', '');
+                    this.loadTabContent(tabId);
+                }
+            });
+        });
+    }
+    
+    async loadTabContent(tabId) {
+        switch(tabId) {
+            case 'planning':
+                await this.loadPlanningContent();
+                break;
+            case 'timeline':
+                await this.loadTimelineContent();
+                break;
+            case 'resources':
+                await this.loadResourcesContent();
+                break;
+            case 'analysis':
+                await this.loadAnalysisContent();
+                break;
+            case 'planning-chat':
+                // Chat is already set up in HTML
+                break;
+            case 'team-chat':
+                // Chat is already set up in HTML
+                break;
+        }
+    }
+    
+    async loadTimelineContent() {
+        const panel = document.getElementById('prometheus-panel-timeline');
+        if (!panel) return;
+        
+        try {
+            panel.innerHTML = `
+                <div class="prometheus-panel-header">
+                    <h3>Timeline</h3>
+                </div>
+                <div class="prometheus-timeline-container">
+                    <p>Select a plan from the Planning tab to view its timeline.</p>
+                </div>
+            `;
+        } catch (error) {
+            panel.innerHTML = `<div class="prometheus-error">Failed to load timeline: ${error.message}</div>`;
+        }
+    }
+    
+    async loadResourcesContent() {
+        const panel = document.getElementById('prometheus-panel-resources');
+        if (!panel) return;
+        
+        try {
+            const resourcesResponse = await this.client.listResources();
+            const resources = resourcesResponse.data?.items || [];
+            
+            panel.innerHTML = `
+                <div class="prometheus-panel-header">
+                    <h3>Resources</h3>
+                    <button class="prometheus-btn prometheus-btn-primary" id="prometheus-new-resource">
+                        <i class="fas fa-plus"></i> New Resource
+                    </button>
+                </div>
+                <div class="prometheus-resources" id="prometheus-resources">
+                    ${resources.length === 0 ? '<p>No resources defined yet.</p>' : ''}
+                </div>
+            `;
+            
+            if (resources.length > 0) {
+                this.renderResources(resources);
+            }
+        } catch (error) {
+            panel.innerHTML = `<div class="prometheus-error">Failed to load resources: ${error.message}</div>`;
+        }
+    }
+    
+    async loadAnalysisContent() {
+        const panel = document.getElementById('prometheus-panel-analysis');
+        if (!panel) return;
+        
+        try {
+            panel.innerHTML = `
+                <div class="prometheus-panel-header">
+                    <h3>Analysis</h3>
+                </div>
+                <div class="prometheus-analysis-container">
+                    <p>Select a plan from the Planning tab to view analysis.</p>
+                </div>
+            `;
+        } catch (error) {
+            panel.innerHTML = `<div class="prometheus-error">Failed to load analysis: ${error.message}</div>`;
+        }
+    }
+    
+    renderResources(resources) {
+        const container = document.getElementById('prometheus-resources');
+        if (!container) return;
+        
+        const resourceCards = resources.map(resource => `
+            <div class="prometheus-resource-card">
+                <h4>${resource.name}</h4>
+                <p>Type: ${resource.type}</p>
+                <p>Capacity: ${resource.capacity}</p>
+            </div>
+        `).join('');
+        
+        container.innerHTML = resourceCards;
+    }
+    
+    // Chat handling
+    setupChatHandlers() {
+        console.log('Setting up chat handlers...');
+        
+        // Set up a click listener on the document to handle dynamically loaded content
+        document.addEventListener('click', (e) => {
+            if (e.target.id === 'prometheus-planning-chat-send') {
+                console.log('Planning chat send clicked via delegation');
+                const input = document.getElementById('prometheus-planning-chat-input');
+                const message = input ? input.value.trim() : '';
+                
+                if (message) {
+                    if (window.AIChat) {
+                        window.AIChat.sendMessage('prometheus', message)
+                            .then(response => {
+                                this.addChatMessage('prometheus-planning-chat-messages', message, 'user');
+                                this.addChatMessage('prometheus-planning-chat-messages', response.message || response, 'ai');
+                            })
+                            .catch(error => {
+                                console.error('Chat error:', error);
+                                this.addChatMessage('prometheus-planning-chat-messages', 'Error: ' + error.message, 'error');
+                            });
+                    } else {
+                        this.addChatMessage('prometheus-planning-chat-messages', 'AI Chat integration is not available. This chat works when Prometheus is loaded within the main Tekton UI system.', 'error');
+                    }
+                    if (input) input.value = '';
+                }
+            } else if (e.target.id === 'prometheus-team-chat-send') {
+                console.log('Team chat send clicked via delegation');
+                const input = document.getElementById('prometheus-team-chat-input');
+                const message = input ? input.value.trim() : '';
+                
+                if (message) {
+                    if (window.AIChat) {
+                        window.AIChat.teamChat(message, 'prometheus')
+                            .then(response => {
+                                this.addChatMessage('prometheus-team-chat-messages', message, 'user');
+                                this.addChatMessage('prometheus-team-chat-messages', response.message || response, 'ai');
+                            })
+                            .catch(error => {
+                                console.error('Team chat error:', error);
+                                this.addChatMessage('prometheus-team-chat-messages', 'Error: ' + error.message, 'error');
+                            });
+                    } else {
+                        this.addChatMessage('prometheus-team-chat-messages', 'AI Chat integration is not available. This chat works when Prometheus is loaded within the main Tekton UI system.', 'error');
+                    }
+                    if (input) input.value = '';
+                }
+            }
+        });
+        
+        // Also set up Enter key handlers
+        document.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                if (e.target.id === 'prometheus-planning-chat-input') {
+                    e.preventDefault();
+                    document.getElementById('prometheus-planning-chat-send')?.click();
+                } else if (e.target.id === 'prometheus-team-chat-input') {
+                    e.preventDefault();
+                    document.getElementById('prometheus-team-chat-send')?.click();
+                }
+            }
+        });
+    }
+    
+    // Chat message handling
+    addChatMessage(containerId, message, type = 'user') {
+        const container = document.getElementById(containerId);
+        if (!container) return;
+        
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `prometheus-chat-message prometheus-chat-message-${type}`;
+        
+        const timestamp = new Date().toLocaleTimeString();
+        messageDiv.innerHTML = `
+            <div class="prometheus-chat-message-header">
+                <span class="prometheus-chat-message-sender">${type === 'user' ? 'You' : type === 'ai' ? 'Prometheus AI' : 'System'}</span>
+                <span class="prometheus-chat-message-time">${timestamp}</span>
+            </div>
+            <div class="prometheus-chat-message-content">${message}</div>
+        `;
+        
+        container.appendChild(messageDiv);
+        container.scrollTop = container.scrollHeight;
+    }
+    
     // Utility methods
     exportTimeline() {
         // Implementation would export the timeline as PDF or image
@@ -768,6 +1034,12 @@ class PrometheusUI {
     exportMetricsReport() {
         // Implementation would export metrics as PDF or CSV
         console.log('Export metrics report');
+    }
+    
+    showNewPlanModal() {
+        // TODO: Implement plan creation modal
+        console.log('Show new plan modal');
+        alert('Plan creation modal - to be implemented');
     }
     
     showError(message, error = null) {
@@ -870,7 +1142,11 @@ class PrometheusClient {
     }
     
     // Resource methods
-    async listResources(planId) {
+    async listResources() {
+        return this.request('resources');
+    }
+    
+    async listPlanResources(planId) {
         return this.request(`plans/${planId}/resources`);
     }
     

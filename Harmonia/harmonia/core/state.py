@@ -11,7 +11,16 @@ import os
 from typing import Dict, List, Any, Optional, Set, Union
 from datetime import datetime
 import pickle
-from landmarks import architecture_decision, performance_boundary, state_checkpoint
+from landmarks import architecture_decision, performance_boundary, state_checkpoint, integration_point
+
+# Import Hermes database client
+try:
+    from hermes.utils.database_helper import DatabaseClient
+    from hermes.core.database_manager import DatabaseBackend
+    HAS_HERMES = True
+except ImportError:
+    HAS_HERMES = False
+    DatabaseClient = None
 
 # Configure logger
 logger = logging.getLogger(__name__)
@@ -38,7 +47,7 @@ class StateManager:
     
     def __init__(self, 
                 storage_dir: Optional[str] = None,
-                use_database: bool = False,
+                use_database: bool = True,
                 max_history: int = 100):
         """
         Initialize the state manager.
@@ -49,17 +58,74 @@ class StateManager:
             max_history: Maximum number of historical states to keep
         """
         self.storage_dir = storage_dir or os.path.join(os.path.expanduser("~"), ".harmonia", "state")
-        self.use_database = use_database
+        self.use_database = use_database and HAS_HERMES
         self.max_history = max_history
         
-        # Create storage directory if it doesn't exist
-        os.makedirs(self.storage_dir, exist_ok=True)
+        # Initialize database client if available
+        if self.use_database:
+            self.db_client = DatabaseClient(
+                component_id="harmonia",
+                data_path=self.storage_dir
+            )
+            logger.info("Using Hermes database services for state persistence")
+        else:
+            self.db_client = None
+            os.makedirs(self.storage_dir, exist_ok=True)
+            logger.info("Using file-based storage for state persistence")
         
         # In-memory cache of recent states
         self.state_cache: Dict[str, Dict[str, Any]] = {}
         
-        logger.info(f"State manager initialized with storage directory: {self.storage_dir}")
+        # Database connections (initialized on first use)
+        self._doc_db = None
+        self._kv_db = None
     
+    @integration_point(
+        title="Hermes document database connection",
+        target_component="Hermes",
+        protocol="MCP",
+        data_flow="Connect to Hermes document database for workflow state persistence"
+    )
+    async def _get_doc_db(self):
+        """Get document database connection."""
+        if self._doc_db is None and self.db_client:
+            self._doc_db = await self.db_client.get_document_db(
+                namespace="workflow_states"
+            )
+        return self._doc_db
+    
+    async def _get_kv_db(self):
+        """Get key-value database connection."""
+        if self._kv_db is None and self.db_client:
+            self._kv_db = await self.db_client.get_key_value_db(
+                namespace="workflow_metadata"
+            )
+        return self._kv_db
+    
+    async def _save_to_file(self, execution_id: str, state: Dict[str, Any]) -> bool:
+        """Save state to file (fallback method)."""
+        try:
+            state_file = os.path.join(self.storage_dir, f"{execution_id}.pickle")
+            
+            # Create a copy with serializable workflow
+            state_copy = state.copy()
+            state_copy["workflow"] = state_copy["workflow"].to_dict()
+            
+            with open(state_file, "wb") as f:
+                pickle.dump(state_copy, f)
+            
+            logger.debug(f"Saved workflow state for execution {execution_id} to file")
+            return True
+            
+        except Exception as e:
+            logger.error(f"Error saving workflow state for execution {execution_id}: {e}")
+            return False
+    
+    @performance_boundary(
+        title="Workflow state persistence",
+        sla="<200ms storage latency",
+        optimization_notes="Uses caching and async I/O"
+    )
     async def save_workflow_state(self, 
                                execution_id: str, 
                                state: Dict[str, Any]) -> bool:
@@ -76,28 +142,73 @@ class StateManager:
         # Update cache
         self.state_cache[execution_id] = state.copy()
         
-        # Save to disk
-        if not self.use_database:
+        if self.use_database:
             try:
-                state_file = os.path.join(self.storage_dir, f"{execution_id}.pickle")
+                doc_db = await self._get_doc_db()
                 
-                # Create a copy with serializable workflow
-                state_copy = state.copy()
-                state_copy["workflow"] = state_copy["workflow"].to_dict()
+                # Prepare state document
+                state_doc = {
+                    "execution_id": execution_id,
+                    "workflow": state["workflow"].to_dict(),
+                    "status": state.get("status"),
+                    "current_task": state.get("current_task"),
+                    "completed_tasks": state.get("completed_tasks", []),
+                    "context": state.get("context", {}),
+                    "timestamp": datetime.now().isoformat(),
+                    "version": state.get("version", 1)
+                }
                 
-                with open(state_file, "wb") as f:
-                    pickle.dump(state_copy, f)
+                # Store in document database
+                await doc_db.upsert(
+                    {"execution_id": execution_id},
+                    state_doc
+                )
                 
-                logger.debug(f"Saved workflow state for execution {execution_id}")
+                # Store metadata in key-value store for fast lookup
+                kv_db = await self._get_kv_db()
+                await kv_db.set(
+                    f"workflow:{execution_id}:metadata",
+                    {
+                        "status": state.get("status"),
+                        "created_at": state.get("created_at"),
+                        "updated_at": datetime.now().isoformat()
+                    }
+                )
+                
+                logger.debug(f"Saved workflow state for {execution_id} to Hermes")
                 return True
                 
             except Exception as e:
-                logger.error(f"Error saving workflow state for execution {execution_id}: {e}")
-                return False
+                logger.error(f"Error saving to Hermes: {e}")
+                # Fall back to file storage
+                return await self._save_to_file(execution_id, state)
         else:
-            # Database storage would be implemented here
-            logger.warning("Database storage not yet implemented")
-            return True
+            # Use file storage
+            return await self._save_to_file(execution_id, state)
+    
+    async def _load_from_file(self, execution_id: str) -> Optional[Dict[str, Any]]:
+        """Load state from file (fallback method)."""
+        try:
+            state_file = os.path.join(self.storage_dir, f"{execution_id}.pickle")
+            
+            if not os.path.exists(state_file):
+                logger.warning(f"Workflow state file not found: {state_file}")
+                return None
+            
+            with open(state_file, "rb") as f:
+                state = pickle.load(f)
+            
+            # Reconstruct Workflow object
+            from harmonia.core.workflow import Workflow
+            workflow_dict = state["workflow"]
+            state["workflow"] = Workflow.from_dict(workflow_dict)
+            
+            logger.debug(f"Loaded workflow state for execution {execution_id} from file")
+            return state
+            
+        except Exception as e:
+            logger.error(f"Error loading workflow state for execution {execution_id}: {e}")
+            return None
     
     async def load_workflow_state(self, execution_id: str) -> Optional[Dict[str, Any]]:
         """
@@ -114,36 +225,42 @@ class StateManager:
             logger.debug(f"Loaded workflow state for execution {execution_id} from cache")
             return self.state_cache[execution_id]
         
-        # Load from disk
-        if not self.use_database:
+        if self.use_database:
             try:
-                state_file = os.path.join(self.storage_dir, f"{execution_id}.pickle")
+                doc_db = await self._get_doc_db()
                 
-                if not os.path.exists(state_file):
-                    logger.warning(f"Workflow state file not found: {state_file}")
-                    return None
+                # Load from document database
+                state_doc = await doc_db.find_one(
+                    {"execution_id": execution_id}
+                )
                 
-                with open(state_file, "rb") as f:
-                    state = pickle.load(f)
-                
-                # Reconstruct Workflow object
-                from harmonia.core.workflow import Workflow
-                workflow_dict = state["workflow"]
-                state["workflow"] = Workflow.from_dict(workflow_dict)
-                
-                # Update cache
-                self.state_cache[execution_id] = state
-                
-                logger.debug(f"Loaded workflow state for execution {execution_id} from disk")
-                return state
-                
+                if state_doc:
+                    # Reconstruct workflow object
+                    from harmonia.core.workflow import Workflow
+                    workflow = Workflow.from_dict(state_doc["workflow"])
+                    
+                    # Reconstruct state
+                    state = {
+                        "id": execution_id,
+                        "workflow": workflow,
+                        "status": state_doc.get("status"),
+                        "current_task": state_doc.get("current_task"),
+                        "completed_tasks": state_doc.get("completed_tasks", []),
+                        "context": state_doc.get("context", {})
+                    }
+                    
+                    # Update cache
+                    self.state_cache[execution_id] = state
+                    
+                    logger.debug(f"Loaded workflow state for {execution_id} from Hermes")
+                    return state
+                    
             except Exception as e:
-                logger.error(f"Error loading workflow state for execution {execution_id}: {e}")
-                return None
-        else:
-            # Database loading would be implemented here
-            logger.warning("Database loading not yet implemented")
-            return None
+                logger.error(f"Error loading from Hermes: {e}")
+                # Fall back to file storage
+                
+        # Fallback to file storage
+        return await self._load_from_file(execution_id)
     
     async def delete_workflow_state(self, execution_id: str) -> bool:
         """

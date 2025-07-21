@@ -300,13 +300,29 @@ Prometheus is included in the Tekton launch script:
 
 ## UI Integration
 
-Prometheus includes a web UI component for integration with Hephaestus:
+Prometheus includes a modern web UI component following Tekton's UI standards:
 
 ```
 Prometheus/ui/
-├── prometheus-component.html  # Web component template
+├── prometheus-component.html  # Web component template with semantic tags
 ├── scripts/                   # JavaScript for the component
-│   └── prometheus-ui.js       # UI logic
+│   └── prometheus-ui.js       # UI logic with CSS-first navigation
 └── styles/                    # CSS styles
-    └── prometheus.css         # Component styling
+    └── prometheus.css         # Component styling with theme variables
 ```
+
+### UI Architecture
+
+1. **CSS-First Navigation**: Uses radio buttons and CSS for tab switching, minimizing JavaScript dependencies
+2. **Semantic Tags**: All UI elements include data-semantic-* attributes for accessibility and automation
+3. **Landmarks**: Key UI sections are marked with landmark comments for navigation
+4. **GlobalConfig Integration**: Uses window.tekton_url() for dynamic URL construction
+5. **AI Chat Integration**: Connects to Tekton's unified AIChat module via aish MCP
+
+### UI Features
+
+- **6 Main Tabs**: Planning, Timeline, Resources, Analysis, Planning Chat, Team Chat
+- **Real-time Data**: Fetches data from backend APIs without mock data
+- **Responsive Design**: Works on desktop and mobile devices
+- **Error Handling**: Graceful error states with user-friendly messages
+- **Chat Integration**: Both planning-specific and team-wide AI chat capabilities

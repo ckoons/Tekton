@@ -29,7 +29,7 @@ Prometheus is the project planning and management system for the Tekton ecosyste
    python -m prometheus.api.app
    ```
 
-By default, Prometheus runs on port 8003. You can change this by setting the `PROMETHEUS_PORT` environment variable.
+By default, Prometheus runs on port 8006. The port is configured through Tekton's GlobalConfig system.
 
 ### Basic Configuration
 
@@ -58,6 +58,42 @@ Create a configuration file named `prometheus_config.json`:
   }
 }
 ```
+
+## Web UI Interface
+
+Prometheus includes a modern web interface with six main tabs:
+
+### Navigation
+
+The UI uses CSS-first navigation with radio buttons for optimal performance:
+
+1. **Planning** - Create and manage project plans
+2. **Timeline** - Visualize project timelines and milestones
+3. **Resources** - Manage team resources and allocations
+4. **Analysis** - View critical path analysis and metrics
+5. **Planning Chat** - AI-assisted planning conversations
+6. **Team Chat** - Collaborative team discussions
+
+### Key Features
+
+- **Real-time Updates**: All data is fetched from the backend API in real-time
+- **Responsive Design**: Works seamlessly on desktop and mobile devices
+- **AI Integration**: Chat tabs integrate with Tekton's AI system via aish MCP
+- **Semantic Navigation**: UI elements include semantic tags for accessibility
+
+### Using the Chat Features
+
+The Planning Chat and Team Chat tabs provide AI-powered assistance:
+
+```javascript
+// Planning Chat - For project-specific AI assistance
+window.AIChat.sendMessage('prometheus', 'Help me plan a sprint')
+
+// Team Chat - For collaborative discussions
+window.AIChat.teamChat('Team update on project status', 'prometheus')
+```
+
+Note: AI Chat features require the main Tekton UI environment to be running.
 
 ## Using the Client Library
 
