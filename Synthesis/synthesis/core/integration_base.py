@@ -12,25 +12,11 @@ import os
 import sys
 from typing import Dict, List, Any, Optional, Union, Callable
 
-# Add Tekton root to path if not already present
-tekton_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..'))
-if tekton_root not in sys.path:
-    sys.path.insert(0, tekton_root)
+# Add TEKTON_ROOT to path
+if os.environ.get('TEKTON_ROOT'):
+    sys.path.insert(0, os.environ['TEKTON_ROOT'])
 
-# Try to import landmarks if available
-try:
-    from landmarks import architecture_decision, performance_boundary
-except ImportError:
-    # Landmarks not available, create no-op decorators
-    def architecture_decision(title, rationale="", alternatives_considered=None):
-        def decorator(func):
-            return func
-        return decorator
-    
-    def performance_boundary(title, sla="", metrics=None, optimization_notes=""):
-        def decorator(func):
-            return func
-        return decorator
+from landmarks import architecture_decision, performance_boundary
 
 # Configure logging
 logger = logging.getLogger("synthesis.core.integration_base")
