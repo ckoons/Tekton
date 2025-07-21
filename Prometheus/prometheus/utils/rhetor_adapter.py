@@ -16,7 +16,7 @@ tekton_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../.."
 if tekton_root not in sys.path:
     sys.path.append(tekton_root)
 
-from shared.utils.env_config import get_component_config
+from shared.utils.global_config import GlobalConfig
 
 # Configure logging
 logger = logging.getLogger("prometheus.utils.rhetor_adapter")
@@ -34,9 +34,9 @@ class RhetorLLMAdapter:
         Args:
             rhetor_url: URL of the Rhetor API (defaults to environment variable)
         """
-        config = get_component_config()
-        rhetor_port = config.rhetor.port if hasattr(config, 'rhetor') else int(os.environ.get('RHETOR_PORT'))
-        self.rhetor_url = rhetor_url or os.environ.get("RHETOR_URL", f"http://localhost:{rhetor_port}/api")
+        config = GlobalConfig()
+        rhetor_port = config.get_port('rhetor')
+        self.rhetor_url = rhetor_url or f"http://localhost:{rhetor_port}/api"
         self.initialized = False
         self.rhetor_client = None
     
@@ -56,7 +56,8 @@ class RhetorLLMAdapter:
                 from rhetor.client import get_rhetor_prompt_client
                 
                 # Create client
-                self.rhetor_client = await get_rhetor_prompt_client(hermes_url=os.environ.get("HERMES_URL"))
+                hermes_port = GlobalConfig().get_port('hermes')
+                self.rhetor_client = await get_rhetor_prompt_client(hermes_url=f"http://localhost:{hermes_port}/api")
                 self.initialized = True
                 logger.info(f"Rhetor adapter initialized with direct client")
                 return True
@@ -69,9 +70,10 @@ class RhetorLLMAdapter:
                     from tekton.utils.component_client import ComponentClient
                     
                     # Create client
+                    hermes_port = GlobalConfig().get_port('hermes')
                     self.rhetor_client = ComponentClient(
                         component_id="rhetor-prompt",
-                        hermes_url=os.environ.get("HERMES_URL")
+                        hermes_url=f"http://localhost:{hermes_port}/api"
                     )
                     await self.rhetor_client.initialize()
                     self.initialized = True

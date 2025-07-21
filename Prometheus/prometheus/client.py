@@ -1013,7 +1013,9 @@ async def get_prometheus_client(
                 return PrometheusClient()
         
         # Try to get the endpoint from Hermes
-        hermes_url = os.environ.get("HERMES_URL", "http://localhost:8000/api")
+        from shared.utils.global_config import GlobalConfig
+        hermes_port = GlobalConfig().get_port('hermes')
+        hermes_url = f"http://localhost:{hermes_port}/api"
         
         if "get_component_endpoint" in locals():
             # Use Tekton utility

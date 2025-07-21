@@ -5,8 +5,16 @@ This module provides helper functions for integrating with the Hermes service re
 """
 
 import os
+import sys
 import logging
 from typing import Dict, List, Any, Optional
+
+# Add Tekton root to path for shared imports
+tekton_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../.."))
+if tekton_root not in sys.path:
+    sys.path.append(tekton_root)
+
+from shared.utils.global_config import GlobalConfig
 
 # Configure logging
 logger = logging.getLogger("prometheus.utils.hermes_helper")
@@ -71,8 +79,8 @@ async def register_with_hermes(
             # Try to import from Hermes directly
             try:
                 # Try to find Hermes
-                hermes_dir = os.environ.get("HERMES_DIR")
-                if not hermes_dir or not os.path.exists(hermes_dir):
+                hermes_dir = None
+                if True:  # Always use path resolution instead of env var
                     import sys
                     from pathlib import Path
                     

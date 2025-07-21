@@ -5,7 +5,8 @@
  */
 
 :root {
-    --prometheus-primary: #e63946;
+    --prometheus-primary: #C2185B; /* Match navigation dot color */
+    --prometheus-primary-hover: #ad1457; /* Darker shade for hover */
     --prometheus-secondary: #457b9d;
     --prometheus-background: #f1faee;
     --prometheus-text: #1d3557;
@@ -50,6 +51,11 @@
     margin: 0.25rem 0 0 0;
 }
 
+/* Radio button navigation - CSS-first approach */
+.prometheus-tab-radio {
+    display: none;
+}
+
 /* Tabs */
 .prometheus-tabs {
     display: flex;
@@ -62,16 +68,37 @@
     cursor: pointer;
     border-bottom: 2px solid transparent;
     transition: all 0.2s ease;
+    display: block;
 }
 
 .prometheus-tab:hover {
     color: var(--prometheus-primary);
 }
 
-.prometheus-tab.active {
+/* Active tab styling based on radio button state */
+#prometheus-tab-planning:checked ~ .prometheus-tabs label[for="prometheus-tab-planning"],
+#prometheus-tab-timeline:checked ~ .prometheus-tabs label[for="prometheus-tab-timeline"],
+#prometheus-tab-resources:checked ~ .prometheus-tabs label[for="prometheus-tab-resources"],
+#prometheus-tab-analysis:checked ~ .prometheus-tabs label[for="prometheus-tab-analysis"],
+#prometheus-tab-planning-chat:checked ~ .prometheus-tabs label[for="prometheus-tab-planning-chat"],
+#prometheus-tab-team-chat:checked ~ .prometheus-tabs label[for="prometheus-tab-team-chat"] {
     color: var(--prometheus-primary);
     border-bottom: 2px solid var(--prometheus-primary);
     font-weight: 500;
+}
+
+/* Panel visibility */
+.prometheus-panel {
+    display: none;
+}
+
+#prometheus-tab-planning:checked ~ #prometheus-content #prometheus-panel-planning,
+#prometheus-tab-timeline:checked ~ #prometheus-content #prometheus-panel-timeline,
+#prometheus-tab-resources:checked ~ #prometheus-content #prometheus-panel-resources,
+#prometheus-tab-analysis:checked ~ #prometheus-content #prometheus-panel-analysis,
+#prometheus-tab-planning-chat:checked ~ #prometheus-content #prometheus-panel-planning-chat,
+#prometheus-tab-team-chat:checked ~ #prometheus-content #prometheus-panel-team-chat {
+    display: block;
 }
 
 /* Plan Cards */
@@ -279,45 +306,44 @@
     resize: vertical;
 }
 
-/* Buttons */
-.prometheus-btn {
-    padding: 0.5rem 1rem;
-    border-radius: 0.25rem;
-    font-weight: 500;
+/* Buttons - Following Terma's exact pattern */
+.prometheus__button {
+    padding: 8px 16px;
+    border-radius: 4px;
     cursor: pointer;
-    transition: all 0.2s ease;
     border: none;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
+    font-weight: bold;
 }
 
-.prometheus-btn-primary {
-    background-color: var(--prometheus-primary);
-    color: white;
+button.prometheus__button--primary,
+input.prometheus__button--primary,
+.prometheus__button--primary {
+    padding: 8px 16px !important;
+    background-color: #C2185B !important;
+    background: #C2185B !important;
+    color: white !important;
+    border: none !important;
+    border-radius: 4px !important;
+    cursor: pointer !important;
+    font-weight: bold !important;
 }
 
-.prometheus-btn-primary:hover {
-    background-color: #d93240;
-}
-
-.prometheus-btn-secondary {
+.prometheus__button--secondary {
     background-color: var(--prometheus-secondary);
     color: white;
 }
 
-.prometheus-btn-secondary:hover {
+.prometheus__button--secondary:hover {
     background-color: #3a6a8a;
 }
 
-.prometheus-btn-outline {
+.prometheus__button--outline {
     background-color: transparent;
     border: 1px solid var(--prometheus-border);
     color: var(--prometheus-text);
 }
 
-.prometheus-btn-outline:hover {
+.prometheus__button--outline:hover {
     border-color: var(--prometheus-primary);
     color: var(--prometheus-primary);
 }
@@ -496,4 +522,185 @@
         overflow-x: auto;
         width: 100%;
     }
+}
+
+/* Chat Container Styles */
+.prometheus-chat-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 400px;
+}
+
+.prometheus-chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1rem;
+    background: white;
+    border: 1px solid var(--prometheus-border);
+    border-radius: 0.375rem;
+    margin-bottom: 1rem;
+}
+
+.prometheus-chat-input {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.prometheus-chat-input input {
+    flex: 1;
+    padding: 0.5rem;
+    border: 1px solid var(--prometheus-border);
+    border-radius: 0.25rem;
+    font-size: 0.875rem;
+}
+
+/* Target the button outside the main container */
+.prometheus__send-button,
+button.prometheus__send-button,
+#prometheus-send-button {
+    padding: 8px 16px !important;
+    background-color: #C2185B !important;
+    background: #C2185B !important;
+    color: white !important;
+    border: none !important;
+    border-radius: 4px !important;
+    cursor: pointer !important;
+    font-weight: bold !important;
+}
+
+/* Additional button IDs following Terma pattern */
+#prometheus-new-resource {
+    padding: 8px 16px !important;
+    background-color: #C2185B !important;
+    color: white !important;
+    border: none !important;
+    border-radius: 4px !important;
+    cursor: pointer !important;
+    font-weight: bold !important;
+}
+
+/* Footer */
+.prometheus-footer {
+    position: sticky;
+    bottom: 0;
+    background-color: var(--prometheus-background);
+    border-top: 1px solid var(--prometheus-border);
+    padding: 0.5rem 1rem;
+    margin-top: 1rem;
+    text-align: center;
+    font-size: 0.75rem;
+    color: #666;
+}
+
+/* Panel Headers */
+.prometheus-panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--prometheus-border);
+}
+
+.prometheus-panel-header h3 {
+    margin: 0;
+    color: var(--prometheus-primary);
+    font-size: 1.25rem;
+}
+
+
+/* Resource Cards */
+.prometheus-resources {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1rem;
+}
+
+.prometheus-resource-card {
+    background: white;
+    border: 1px solid var(--prometheus-border);
+    border-radius: 0.375rem;
+    padding: 1rem;
+    box-shadow: 0 2px 4px var(--prometheus-shadow);
+}
+
+.prometheus-resource-card h4 {
+    margin: 0 0 0.5rem 0;
+    color: var(--prometheus-text);
+}
+
+.prometheus-resource-card p {
+    margin: 0.25rem 0;
+    font-size: 0.875rem;
+    color: #666;
+}
+
+/* Chat prompt styling */
+.prometheus-chat-input {
+    position: relative;
+}
+
+.prometheus-chat-input::before {
+    content: '>';
+    position: absolute;
+    left: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--prometheus-primary);
+    font-weight: bold;
+    font-size: 1rem;
+    z-index: 10;
+    pointer-events: none;
+}
+
+.prometheus-chat-input input {
+    padding-left: 2rem;
+}
+
+/* Send Button - Same location as > prompt color definition */
+#prometheus-send-button,
+.prometheus__send-button {
+    background-color: var(--prometheus-primary) !important;
+    color: white !important;
+    border: none !important;
+    padding: 8px 16px !important;
+    border-radius: 4px !important;
+    cursor: pointer !important;
+    font-weight: bold !important;
+}
+
+/* Chat Messages */
+.prometheus-chat-message {
+    padding: 0.75rem;
+    margin-bottom: 0.5rem;
+    border-radius: 0.375rem;
+}
+
+.prometheus-chat-message-user {
+    background-color: #f0f0f0;
+    margin-left: 2rem;
+}
+
+.prometheus-chat-message-ai {
+    background-color: #e8f5e9;
+    margin-right: 2rem;
+}
+
+.prometheus-chat-message-error {
+    background-color: #ffebee;
+    border-left: 3px solid var(--prometheus-danger);
+}
+
+.prometheus-chat-message-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.25rem;
+    font-size: 0.75rem;
+    color: #666;
+}
+
+.prometheus-chat-message-content {
+    font-size: 0.875rem;
+    line-height: 1.4;
 }

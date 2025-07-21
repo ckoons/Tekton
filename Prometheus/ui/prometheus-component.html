@@ -171,13 +171,15 @@
     </style>
 </head>
 <body>
-    <div class="component-container">
-        <div class="component-header">
-            <h2 class="component-title">Prometheus/Epimethius Planning System</h2>
+    <!-- Landmark: Prometheus Component Container -->
+    <div class="component-container" data-component="prometheus" data-semantic-zone="planning">
+        <div class="component-header" data-semantic-element="header">
+            <h2 class="component-title" data-semantic-label="Prometheus Planning System">Prometheus/Epimethius Planning System</h2>
         </div>
         
-        <div id="prometheus-container">
-            <div class="prometheus-loading">
+        <!-- Landmark: Prometheus UI Container - Dynamic planning interface -->
+        <div id="prometheus-container" data-semantic-container="prometheus-main">
+            <div class="prometheus-loading" data-semantic-state="loading">
                 <i class="fas fa-spinner fa-spin"></i>
                 Loading Prometheus/Epimethius...
             </div>

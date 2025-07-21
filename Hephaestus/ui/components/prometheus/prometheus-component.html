@@ -263,16 +263,16 @@
                 </div>
             </div>
         </div>
-    </div>
-    
-    <!-- Footer with Chat Input -->
-    <div class="prometheus__footer" data-tekton-zone="footer">
-        <div class="prometheus__chat-input-container">
-            <div class="prometheus__chat-prompt">></div>
-            <input type="text" id="prometheus-chat-input" class="prometheus__chat-input" 
-                   placeholder="Enter chat message, project instructions, or planning queries"
-                   onkeypress="if(event.key === 'Enter') { prometheus_sendChat(); }">
-            <button id="prometheus-send-button" class="prometheus__send-button" onclick="prometheus_sendChat(); return false;" data-tekton-action="send-message" data-tekton-action-type="primary">Send</button>
+        
+        <!-- Footer with Chat Input MOVED INSIDE MAIN CONTAINER -->
+        <div class="prometheus__footer" data-tekton-zone="footer">
+            <div class="prometheus__chat-input-container">
+                <div class="prometheus__chat-prompt">></div>
+                <input type="text" id="prometheus-chat-input" class="prometheus__chat-input" 
+                       placeholder="Enter chat message, project instructions, or planning queries"
+                       onkeypress="if(event.key === 'Enter') { prometheus_sendChat(); }">
+                <button id="prometheus-send-button" class="prometheus__send-button" onclick="prometheus_sendChat(); return false;" data-tekton-action="send-message" data-tekton-action-type="primary">Send</button>
+            </div>
         </div>
     </div>
 </div>

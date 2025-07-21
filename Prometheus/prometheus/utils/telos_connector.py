@@ -16,7 +16,7 @@ tekton_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../.."
 if tekton_root not in sys.path:
     sys.path.append(tekton_root)
 
-from shared.utils.env_config import get_component_config
+from shared.utils.global_config import GlobalConfig
 
 # Configure logging
 logger = logging.getLogger("prometheus.utils.telos_connector")
@@ -34,9 +34,9 @@ class TelosConnector:
         Args:
             telos_url: URL of the Telos API (defaults to environment variable)
         """
-        config = get_component_config()
-        telos_port = config.telos.port if hasattr(config, 'telos') else int(os.environ.get('TELOS_PORT'))
-        self.telos_url = telos_url or os.environ.get("TELOS_URL", f"http://localhost:{telos_port}/api")
+        config = GlobalConfig()
+        telos_port = config.get_port('telos')
+        self.telos_url = telos_url or f"http://localhost:{telos_port}/api"
         self.initialized = False
         self.telos_client = None
     
@@ -56,7 +56,8 @@ class TelosConnector:
                 from telos.client import get_telos_client
                 
                 # Create client
-                self.telos_client = await get_telos_client(hermes_url=os.environ.get("HERMES_URL"))
+                hermes_port = GlobalConfig().get_port('hermes')
+                self.telos_client = await get_telos_client(hermes_url=f"http://localhost:{hermes_port}/api")
                 self.initialized = True
                 logger.info(f"Telos connector initialized with direct client")
                 return True
@@ -69,9 +70,10 @@ class TelosConnector:
                     from tekton.utils.component_client import ComponentClient
                     
                     # Create client
+                    hermes_port = GlobalConfig().get_port('hermes')
                     self.telos_client = ComponentClient(
                         component_id="telos.requirements",
-                        hermes_url=os.environ.get("HERMES_URL")
+                        hermes_url=f"http://localhost:{hermes_port}/api"
                     )
                     await self.telos_client.initialize()
                     self.initialized = True
