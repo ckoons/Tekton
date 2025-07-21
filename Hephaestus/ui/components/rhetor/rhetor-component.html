@@ -3898,37 +3898,7 @@ window.rhetor_sendLLMChat = function() {
 */
 
 // CHAT SENDING FUNCTION - Working implementation
-window.rhetor_sendChat = function() {
-    console.log('[RHETOR] Send chat clicked');
-    
-    const chatInput = document.getElementById('chat-input');
-    if (!chatInput) return false;
-    
-    const message = chatInput.value.trim();
-    if (!message) return false;
-    
-    // Check which radio button is checked to determine active tab
-    const checkedRadio = document.querySelector('input[name="rhetor-tab"]:checked');
-    if (!checkedRadio) return false;
-    
-    const tabId = checkedRadio.id.replace('tab-', '');
-    
-    // Only process for chat tabs
-    if (tabId === 'llmchat' || tabId === 'teamchat') {
-        // If rhetorComponent is available, use it
-        if (window.rhetorComponent) {
-            if (tabId === 'llmchat') {
-                window.rhetorComponent.processLLMChatMessage(message);
-            } else {
-                window.rhetorComponent.processTeamChatMessage(message);
-            }
-        }
-        // Clear input
-        chatInput.value = '';
-    }
-    
-    return false;
-};
+// Removed old rhetor_sendChat - using the updated version below
 
 // CHAT CLEARING FUNCTION
 window.rhetor_clearChat = function() {
@@ -4239,18 +4209,24 @@ if (probContext) {
         chatInput.addEventListener('keydown', function(event) {
             if (event.key === 'Enter' && !event.shiftKey) {
                 event.preventDefault();
+                console.log('[RHETOR] Enter key pressed, calling rhetor_sendChat()');
                 rhetor_sendChat();
             }
         });
-        console.log('[RHETOR] Chat input event listener attached');
+        console.log('[RHETOR] Chat input event listener attached to element:', chatInput);
+    } else {
+        console.error('[RHETOR] Chat input element not found - chat will not work');
     }
     
     if (sendButton) {
         sendButton.addEventListener('click', function(event) {
             event.preventDefault();
+            console.log('[RHETOR] Send button clicked, calling rhetor_sendChat()');
             rhetor_sendChat();
         });
-        console.log('[RHETOR] Send button event listener attached');
+        console.log('[RHETOR] Send button event listener attached to element:', sendButton);
+    } else {
+        console.error('[RHETOR] Send button element not found - chat button will not work');
     }
     
     if (clearChatBtn) {
@@ -4582,18 +4558,35 @@ function rhetor_updateContextMetrics() {
 
 // Send chat message (works for both LLM Chat and Team Chat)
 function rhetor_sendChat() {
+    console.log('[RHETOR] rhetor_sendChat() called');
+    
     const input = document.getElementById('chat-input');
     const message = input.value.trim();
-    if (!message) return;
+    
+    console.log('[RHETOR] Input element:', input);
+    console.log('[RHETOR] Message:', message);
+    
+    if (!message) {
+        console.log('[RHETOR] No message to send');
+        return;
+    }
     
     // Check which chat is active
     const llmChatActive = document.getElementById('tab-llmchat').checked;
     const teamChatActive = document.getElementById('tab-teamchat').checked;
     
+    console.log('[RHETOR] LLM Chat active:', llmChatActive);
+    console.log('[RHETOR] Team Chat active:', teamChatActive);
+    console.log('[RHETOR] rhetorUrl function available:', typeof window.rhetorUrl);
+    
     if (llmChatActive) {
+        console.log('[RHETOR] Sending to LLM chat');
         rhetor_sendLLMChatMessage(message);
     } else if (teamChatActive) {
+        console.log('[RHETOR] Sending to team chat');
         rhetor_sendTeamChatMessage(message);
+    } else {
+        console.warn('[RHETOR] No chat tab is active');
     }
     
     // Clear input
@@ -4613,7 +4606,7 @@ async function rhetor_sendLLMChatMessage(message) {
     
     try {
         // Use direct specialist endpoint for single AI chat
-        const response = await fetch(rhetorUrl('/api/v1/ai/specialists/rhetor/message'), {
+        const response = await fetch(window.rhetorUrl('/api/v1/ai/specialists/rhetor/message'), {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -4668,7 +4661,7 @@ async function rhetor_sendTeamChatMessage(message) {
     
     try {
         // Call the team chat endpoint
-        const response = await fetch(rhetorUrl('/api/team-chat'), {
+        const response = await fetch(window.rhetorUrl('/api/team-chat'), {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
