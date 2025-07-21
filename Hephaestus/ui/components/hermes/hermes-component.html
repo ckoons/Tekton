@@ -1,10 +1,21 @@
 <!-- Hermes Component - Message and Data Handling -->
+<!-- @landmark Component: Hermes - Inter-component messaging and service registry hub -->
+
+<!-- Hidden radio inputs for CSS-first tab functionality -->
+<!-- @landmark Navigation: CSS-first radio buttons for tab switching -->
+<input type="radio" name="hermes-tab" id="hermes-tab-registry" checked style="display: none;">
+<input type="radio" name="hermes-tab" id="hermes-tab-messaging" style="display: none;">
+<input type="radio" name="hermes-tab" id="hermes-tab-connections" style="display: none;">
+<input type="radio" name="hermes-tab" id="hermes-tab-history" style="display: none;">
+<input type="radio" name="hermes-tab" id="hermes-tab-chat" style="display: none;">
+<input type="radio" name="hermes-tab" id="hermes-tab-teamchat" style="display: none;">
 <div class="hermes"
      data-tekton-area="hermes"
      data-tekton-component="hermes"
      data-tekton-type="component-workspace"
      data-tekton-description="Inter-component messaging and data routing">
     <!-- Component Header with Title -->
+    <!-- @landmark Header: Component title and branding -->
     <div class="hermes__header" data-tekton-zone="header" data-tekton-section="header">
         <div class="hermes__title-container">
             <img src="/images/hexagon.jpg" alt="Tekton" class="hermes__icon">
@@ -16,81 +27,70 @@
     </div>
     
     <!-- Hermes Menu Bar with Tab Navigation -->
+    <!-- @landmark Menu: Tab navigation for 6 component views -->
     <div class="hermes__menu-bar" data-tekton-zone="menu" data-tekton-nav="component-menu">
         <div class="hermes__tabs">
-            <div class="hermes__tab hermes__tab--active" data-tab="registry"
+            <label for="hermes-tab-registry" class="hermes__tab" data-tab="registry"
                  data-tekton-menu-item="Service Registry"
                  data-tekton-menu-component="hermes"
-                 data-tekton-menu-active="true"
                  data-tekton-menu-panel="registry-panel"
-                 data-tekton-nav-target="registry"
-                 onclick="hermes_switchTab('registry'); return false;">
+                 data-tekton-nav-target="registry">
                 <span class="hermes__tab-label">Service Registry</span>
-            </div>
-            <div class="hermes__tab" data-tab="messaging"
+            </label>
+            <label for="hermes-tab-messaging" class="hermes__tab" data-tab="messaging"
                  data-tekton-menu-item="Message Monitor"
                  data-tekton-menu-component="hermes"
-                 data-tekton-menu-active="false"
                  data-tekton-menu-panel="messaging-panel"
-                 data-tekton-nav-target="messaging"
-                 onclick="hermes_switchTab('messaging'); return false;">
+                 data-tekton-nav-target="messaging">
                 <span class="hermes__tab-label">Message Monitor</span>
-            </div>
-            <div class="hermes__tab" data-tab="connections"
+            </label>
+            <label for="hermes-tab-connections" class="hermes__tab" data-tab="connections"
                  data-tekton-menu-item="Connections"
                  data-tekton-menu-component="hermes"
-                 data-tekton-menu-active="false"
                  data-tekton-menu-panel="connections-panel"
-                 data-tekton-nav-target="connections"
-                 onclick="hermes_switchTab('connections'); return false;">
+                 data-tekton-nav-target="connections">
                 <span class="hermes__tab-label">Connections</span>
-            </div>
-            <div class="hermes__tab" data-tab="history"
+            </label>
+            <label for="hermes-tab-history" class="hermes__tab" data-tab="history"
                  data-tekton-menu-item="Message History"
                  data-tekton-menu-component="hermes"
-                 data-tekton-menu-active="false"
                  data-tekton-menu-panel="history-panel"
-                 data-tekton-nav-target="history"
-                 onclick="hermes_switchTab('history'); return false;">
+                 data-tekton-nav-target="history">
                 <span class="hermes__tab-label">Message History</span>
-            </div>
-            <div class="hermes__tab" data-tab="chat"
+            </label>
+            <label for="hermes-tab-chat" class="hermes__tab" data-tab="chat"
                  data-tekton-menu-item="Message/Data Chat"
                  data-tekton-menu-component="hermes"
-                 data-tekton-menu-active="false"
                  data-tekton-menu-panel="chat-panel"
-                 data-tekton-nav-target="chat"
-                 onclick="hermes_switchTab('chat'); return false;">
+                 data-tekton-nav-target="chat">
                 <span class="hermes__tab-label">Message/Data Chat</span>
-            </div>
-            <div class="hermes__tab" data-tab="teamchat"
+            </label>
+            <label for="hermes-tab-teamchat" class="hermes__tab" data-tab="teamchat"
                  data-tekton-menu-item="Team Chat"
                  data-tekton-menu-component="hermes"
-                 data-tekton-menu-active="false"
                  data-tekton-menu-panel="teamchat-panel"
-                 data-tekton-nav-target="teamchat"
-                 onclick="hermes_switchTab('teamchat'); return false;">
+                 data-tekton-nav-target="teamchat">
                 <span class="hermes__tab-label">Team Chat</span>
-            </div>
+            </label>
         </div>
         <div class="hermes__actions">
             <button id="clear-chat-btn" class="hermes__action-button" style="display: none;"
                     data-tekton-action="clear-chat"
-                    data-tekton-action-type="secondary"
-                    onclick="hermes_clearChat(); return false;">
+                    data-tekton-action-type="secondary">
                 <span class="hermes__button-label">Clear</span>
             </button>
         </div>
     </div>
     
     <!-- Hermes Content Area -->
+    <!-- @landmark Content: Main content area with 6 tab panels -->
     <div class="hermes__content" data-tekton-zone="content" data-tekton-scrollable="true">
         <!-- Registry Tab (Default Active Tab) -->
-        <div id="registry-panel" class="hermes__panel hermes__panel--active"
+        <!-- @landmark Panel: Service Registry - View and manage registered Tekton services -->
+        <div id="registry-panel" class="hermes__panel"
              data-tekton-panel="registry"
              data-tekton-panel-for="Service Registry"
-             data-tekton-panel-component="hermes"
-             data-tekton-panel-active="true">
+             data-tekton-panel-component="hermes">
             <div class="hermes__control-bar">
                 <div class="hermes__search-container">
                     <input type="text" id="registry-search" class="hermes__search-input" placeholder="Search components..."
@@ -156,6 +156,7 @@
         </div>
         
         <!-- Messaging Tab -->
+        <!-- @landmark Panel: Message Monitor - Real-time message bus monitoring -->
         <div id="messaging-panel" class="hermes__panel"
              data-tekton-panel="messaging"
              data-tekton-panel-for="Message Monitor"
@@ -392,15 +393,15 @@
     </div>
     
     <!-- Footer with Chat Input -->
-    <div class="hermes__footer" data-tekton-zone="footer">
+    <!-- @landmark Footer: Chat input area - always visible at bottom of component -->
+    <div class="hermes__footer" data-tekton-zone="footer" data-tekton-section="footer">
         <div class="hermes__chat-input-container">
             <div class="hermes__chat-prompt">></div>
             <input type="text" id="hermes-chat-input" class="hermes__chat-input" 
                    placeholder="Enter chat message for Hermes service registry, message monitoring or LLM chat"
                    data-tekton-input="chat-input"
-                   data-tekton-input-type="chat"
-                   onkeydown="if(event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); hermes_sendChat(); }">
-            <button id="hermes-send-button" class="hermes__send-button" onclick="hermes_sendChat(); return false;"
+                   data-tekton-input-type="chat">
+            <button id="hermes-send-button" class="hermes__send-button"
                     data-tekton-action="send-message"
                     data-tekton-action-type="primary">Send</button>
         </div>
@@ -437,6 +438,10 @@
     <div class="hermes__notifications" id="notifications-container"></div>
 </div>
 
+<!-- Include necessary scripts -->
+<script src="/scripts/tekton-urls.js"></script>
+<script src="/scripts/shared/ai-chat.js"></script>
+
 <!-- Add component-specific styles -->
 <style>
     /* Hermes component styles using BEM naming convention */
@@ -449,7 +454,7 @@
         width: 100%;
         background-color: var(--bg-primary, #1e1e2e);
         color: var(--text-primary, #f0f0f0);
-        /* No absolute positioning - proper component containment */
+        position: relative; /* For footer absolute positioning */
     }
     
     /* Header */
@@ -523,6 +528,37 @@
         font-weight: 500;
     }
     
+    /* CSS-first tab switching using radio buttons */
+    #hermes-tab-registry:checked ~ .hermes .hermes__tab[for="hermes-tab-registry"] {
+        border-bottom-color: var(--color-primary, #4285F4);
+        font-weight: 500;
+    }
+    
+    #hermes-tab-messaging:checked ~ .hermes .hermes__tab[for="hermes-tab-messaging"] {
+        border-bottom-color: var(--color-primary, #4285F4);
+        font-weight: 500;
+    }
+    
+    #hermes-tab-connections:checked ~ .hermes .hermes__tab[for="hermes-tab-connections"] {
+        border-bottom-color: var(--color-primary, #4285F4);
+        font-weight: 500;
+    }
+    
+    #hermes-tab-history:checked ~ .hermes .hermes__tab[for="hermes-tab-history"] {
+        border-bottom-color: var(--color-primary, #4285F4);
+        font-weight: 500;
+    }
+    
+    #hermes-tab-chat:checked ~ .hermes .hermes__tab[for="hermes-tab-chat"] {
+        border-bottom-color: var(--color-primary, #4285F4);
+        font-weight: 500;
+    }
+    
+    #hermes-tab-teamchat:checked ~ .hermes .hermes__tab[for="hermes-tab-teamchat"] {
+        border-bottom-color: var(--color-primary, #4285F4);
+        font-weight: 500;
+    }
+    
     .hermes__actions {
         display: flex;
         gap: 8px;
@@ -550,6 +586,7 @@
         flex: 1;
         overflow: hidden;
         position: relative;
+        margin-bottom: 70px; /* Account for footer height */
     }
     
     .hermes__panel {
@@ -562,6 +599,37 @@
     
     .hermes__panel--active {
         display: block;
+    }
+    
+    /* Panel visibility based on radio buttons */
+    #hermes-tab-registry:checked ~ .hermes #registry-panel {
+        display: block;
+    }
+    
+    #hermes-tab-messaging:checked ~ .hermes #messaging-panel {
+        display: block;
+    }
+    
+    #hermes-tab-connections:checked ~ .hermes #connections-panel {
+        display: block;
+    }
+    
+    #hermes-tab-history:checked ~ .hermes #history-panel {
+        display: block;
+    }
+    
+    #hermes-tab-chat:checked ~ .hermes #chat-panel {
+        display: block;
+    }
+    
+    #hermes-tab-teamchat:checked ~ .hermes #teamchat-panel {
+        display: block;
+    }
+    
+    /* Show/hide clear button for chat tabs */
+    #hermes-tab-chat:checked ~ .hermes #clear-chat-btn,
+    #hermes-tab-teamchat:checked ~ .hermes #clear-chat-btn {
+        display: flex !important;
     }
     
     /* Control Bar */
@@ -1089,37 +1157,46 @@
 </style>
 
 <script type="text/javascript">
-// Tab switching functionality
-function hermes_switchTab(tabName) {
-    const allTabs = document.querySelectorAll('.hermes__tab');
-    const allPanels = document.querySelectorAll('.hermes__panel');
-    
-    allTabs.forEach(tab => {
-        if (tab.dataset.tab === tabName) {
-            tab.classList.add('hermes__tab--active');
-        } else {
-            tab.classList.remove('hermes__tab--active');
-        }
+// @landmark Script: CSS-first navigation and chat functionality
+// CSS-first navigation - radio buttons handle tab switching
+// Listen for tab changes to update component state
+document.addEventListener('DOMContentLoaded', function() {
+    const radioButtons = document.querySelectorAll('input[name="hermes-tab"]');
+    radioButtons.forEach(radio => {
+        radio.addEventListener('change', function() {
+            if (this.checked) {
+                const tabName = this.id.replace('hermes-tab-', '');
+                console.log('[HERMES] Tab changed to:', tabName);
+                
+                // Trigger any necessary data loading for the tab
+                if (typeof loadTabData === 'function') {
+                    loadTabData(tabName);
+                }
+            }
+        });
     });
     
-    allPanels.forEach(panel => {
-        if (panel.id === `${tabName}-panel`) {
-            panel.classList.add('hermes__panel--active');
-        } else {
-            panel.classList.remove('hermes__panel--active');
-        }
-    });
-    
-    // Show/hide clear button for chat tabs
+    // Add event listeners for buttons
     const clearButton = document.getElementById('clear-chat-btn');
     if (clearButton) {
-        if (tabName === 'chat' || tabName === 'teamchat') {
-            clearButton.style.display = 'block';
-        } else {
-            clearButton.style.display = 'none';
-        }
+        clearButton.addEventListener('click', hermes_clearChat);
     }
-}
+    
+    const sendButton = document.getElementById('hermes-send-button');
+    if (sendButton) {
+        sendButton.addEventListener('click', hermes_sendChat);
+    }
+    
+    const chatInput = document.getElementById('hermes-chat-input');
+    if (chatInput) {
+        chatInput.addEventListener('keydown', function(event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                hermes_sendChat();
+            }
+        });
+    }
+});
 
 // Chat functionality - Following Numa's pattern
 function hermes_sendChat() {
@@ -1128,9 +1205,15 @@ function hermes_sendChat() {
     
     if (!message) return;
     
-    // Determine which tab is active
-    const messageChatActive = document.querySelector('.hermes__tab[data-tab="chat"]').classList.contains('hermes__tab--active');
-    const chatType = messageChatActive ? 'chat' : 'teamchat';
+    // Determine which tab is active using radio buttons
+    const chatRadio = document.getElementById('hermes-tab-chat');
+    const teamchatRadio = document.getElementById('hermes-tab-teamchat');
+    const chatType = chatRadio.checked ? 'chat' : (teamchatRadio.checked ? 'teamchat' : null);
+    
+    if (!chatType) {
+        console.error('[HERMES] No chat tab is active');
+        return;
+    }
     const messagesContainer = document.getElementById(`${chatType}-messages`);
     
     // Add user message
@@ -1149,6 +1232,7 @@ function hermes_sendChat() {
     if (chatType === 'chat') {
         // Direct message to hermes
         if (window.AIChat) {
+            console.log('[HERMES] Sending message to Hermes AI');
             window.AIChat.sendMessage('hermes', message)
                 .then(response => {
                     const aiMessageDiv = document.createElement('div');
@@ -1165,10 +1249,17 @@ function hermes_sendChat() {
                     messagesContainer.appendChild(errorDiv);
                     messagesContainer.scrollTop = messagesContainer.scrollHeight;
                 });
+        } else {
+            console.error('[HERMES] AIChat not available');
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'hermes__message hermes__message--system';
+            errorDiv.innerHTML = `<div class="hermes__message-content"><div class="hermes__message-text"><strong>System:</strong> AI Chat service not available</div></div>`;
+            messagesContainer.appendChild(errorDiv);
         }
     } else {
         // Team chat
         if (window.AIChat) {
+            console.log('[HERMES] Sending team chat message');
             window.AIChat.teamChat(message, 'hermes')
                 .then(data => {
                     // Display team responses
@@ -1186,22 +1277,32 @@ function hermes_sendChat() {
                 })
                 .catch(err => {
                     console.error('Failed to send team message:', err);
+                    const errorDiv = document.createElement('div');
+                    errorDiv.className = 'hermes__message hermes__message--system';
+                    errorDiv.innerHTML = `<div class="hermes__message-content"><div class="hermes__message-text"><strong>System:</strong> Failed to send team message</div></div>`;
+                    messagesContainer.appendChild(errorDiv);
                 });
+        } else {
+            console.error('[HERMES] AIChat not available for team chat');
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'hermes__message hermes__message--system';
+            errorDiv.innerHTML = `<div class="hermes__message-content"><div class="hermes__message-text"><strong>System:</strong> AI Chat service not available</div></div>`;
+            messagesContainer.appendChild(errorDiv);
         }
     }
 }
 
 // Clear chat functionality
 function hermes_clearChat() {
-    const messageChatActive = document.querySelector('.hermes__tab[data-tab="chat"]').classList.contains('hermes__tab--active');
-    const teamChatActive = document.querySelector('.hermes__tab[data-tab="teamchat"]').classList.contains('hermes__tab--active');
+    const chatRadio = document.getElementById('hermes-tab-chat');
+    const teamchatRadio = document.getElementById('hermes-tab-teamchat');
     
-    if (messageChatActive) {
+    if (chatRadio.checked) {
         const messagesContainer = document.getElementById('chat-messages');
         // Keep the welcome message, remove all others
         const messages = messagesContainer.querySelectorAll('.hermes__message:not(.hermes__message--system)');
         messages.forEach(msg => msg.remove());
-    } else if (teamChatActive) {
+    } else if (teamchatRadio.checked) {
         const messagesContainer = document.getElementById('teamchat-messages');
         // Keep the welcome message, remove all others
         const messages = messagesContainer.querySelectorAll('.hermes__message:not(.hermes__message--system)');
