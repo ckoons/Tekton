@@ -1,10 +1,15 @@
 # Synthesis: Execution and Integration Engine for Tekton
 
-Synthesis is the execution and integration engine for the Tekton ecosystem, responsible for executing processes, integrating with external systems, and orchestrating workflows across components.
+Synthesis is the execution and integration engine for the Tekton Multi-AI Engineering Platform, responsible for executing processes, integrating with external systems, and orchestrating workflows across components. It provides comprehensive execution capabilities with landmarks-based architecture tracking and TektonEnviron standardization.
 
 ## Status
 
-✅ **COMPLETED** - May 28, 2025  
+✅ **COMPLETED** - July 21, 2025  
+- ✅ Complete UI implementation following Terma pattern
+- ✅ TektonEnviron standardization across all files
+- ✅ tekton_url helper integration for all URLs
+- ✅ Comprehensive landmarks architecture tracking
+- ✅ Semantic HTML with data-tekton attributes
 See [IMPLEMENTATION_STATUS.md](./IMPLEMENTATION_STATUS.md) for detailed implementation status.
 
 ## Overview
@@ -27,8 +32,11 @@ Synthesis provides a robust execution system that can:
 - **Component Integration**: Work with other Tekton components like Prometheus, Engram, and Rhetor
 - **Error Recovery**: Built-in mechanisms for handling errors and retrying failed operations
 - **Real-time Monitoring**: WebSocket-based real-time updates on execution progress
-- **Event System**: Comprehensive event generation and subscription capabilities
+- **Event System**: Comprehensive event generation and subscription capabilities with landmarks tracking
 - **FastMCP Integration**: 16 MCP tools across 3 capabilities for data synthesis, integration orchestration, and workflow composition
+- **Architecture Landmarks**: Comprehensive architecture decision tracking and performance boundaries
+- **Standardized Environment**: Uses TektonEnviron for consistent environment variable handling
+- **Component URL Management**: Uses tekton_url helper for dynamic component URL resolution
 
 ## Architecture
 
@@ -150,13 +158,13 @@ curl -X POST http://localhost:8011/api/executions \
 #### Get Execution Status
 
 ```bash
-curl http://localhost:8009/api/executions/{execution_id}
+curl http://localhost:8011/api/executions/{execution_id}
 ```
 
 #### Cancel an Execution
 
 ```bash
-curl -X POST http://localhost:8009/api/executions/{execution_id}/cancel
+curl -X POST http://localhost:8011/api/executions/{execution_id}/cancel
 ```
 
 ### WebSocket Usage
@@ -164,7 +172,7 @@ curl -X POST http://localhost:8009/api/executions/{execution_id}/cancel
 Connect to the WebSocket endpoint for real-time updates:
 
 ```javascript
-const ws = new WebSocket('ws://localhost:8009/ws');
+const ws = new WebSocket('ws://localhost:8011/ws');
 
 ws.onmessage = function(event) {
   const data = JSON.parse(event.data);
