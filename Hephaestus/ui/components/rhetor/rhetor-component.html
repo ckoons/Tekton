@@ -81,13 +81,12 @@
       <label for="tab-teamchat" class="rhetor__tab" data-tab="teamchat" 
              data-tekton-menu-item="Team Chat"
              data-tekton-menu-component="rhetor"
-             data-tekton-menu-panel="teamchat-panel"
-             onclick="console.log('[RHETOR] Team Chat label clicked')">
+             data-tekton-menu-panel="teamchat-panel">
         <span class="rhetor__tab-label">Team Chat</span>
       </label>
     </div>
     <div class="rhetor__actions">
-      <button id="clear-chat-btn" class="rhetor__action-button" style="display: none;" onclick="rhetor_clearChat(); return false;"
+      <button id="clear-chat-btn" class="rhetor__action-button" style="display: none;"
               data-tekton-action="clear-chat"
               data-tekton-action-type="secondary">
         <span class="rhetor__button-label">Clear</span>
@@ -340,10 +339,10 @@
       <div class="rhetor__section-header" data-tekton-element="section-header">
         <h2 data-tekton-element="section-title">AI Specialists</h2>
         <div class="rhetor__controls" data-tekton-element="controls">
-          <button class="rhetor__button rhetor__button--primary" onclick="rhetor_createSpecialist()"
+          <button class="rhetor__button rhetor__button--primary" id="create-specialist-btn"
                   data-tekton-action="create-specialist"
                   data-tekton-action-type="primary">Create Specialist</button>
-          <button class="rhetor__button" onclick="rhetor_refreshSpecialists()"
+          <button class="rhetor__button" id="refresh-specialists-btn"
                   data-tekton-action="refresh-specialists"
                   data-tekton-action-type="secondary">Refresh</button>
         </div>
@@ -1877,9 +1876,8 @@ SUCCESS CRITERIA:
       <input type="text" class="rhetor__chat-input" id="chat-input"
              data-tekton-input="chat-input"
              data-tekton-input-type="chat"
-             placeholder="Enter message (Team Chat when Team Chat tab is active, LLM Chat when LLM tab is active)"
-             onkeydown="if(event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); rhetor_sendChat(); }">
-      <button class="rhetor__send-button" id="send-button" onclick="rhetor_sendChat(); return false;"
+             placeholder="Enter message (Team Chat when Team Chat tab is active, LLM Chat when LLM tab is active)">
+      <button class="rhetor__send-button" id="send-button"
               data-tekton-action="send-message"
               data-tekton-action-type="primary">Send</button>
     </div>
@@ -3777,6 +3775,9 @@ SUCCESS CRITERIA:
 </style>
 
 <!-- Self-contained component script with no shared dependencies -->
+<script src="/scripts/tekton-urls.js"></script>
+<script src="/scripts/shared/ai-chat.js"></script>
+<script src="/scripts/rhetor-service.js"></script>
 <script type="text/javascript">
 // SIMPLIFIED COMPONENT SCRIPT - FULLY SELF-CONTAINED
 // This prevents interference with other components
@@ -3937,145 +3938,94 @@ window.rhetor_clearChat = function() {
     return false; // Stop event propagation
 };
 
-// AI ORCHESTRATION FUNCTIONS
+// AI ORCHESTRATION FUNCTIONS - Using RhetorService
 window.rhetor_refreshSpecialists = function() {
     console.log('[RHETOR] Refreshing AI specialists');
-    if (window.rhetorComponent && window.rhetorComponent.refreshSpecialists) {
-        window.rhetorComponent.refreshSpecialists();
+    if (window.RhetorService) {
+        window.RhetorService.refreshSpecialists()
+            .then(result => {
+                console.log('[RHETOR] Specialists refreshed:', result);
+            })
+            .catch(error => {
+                console.error('[RHETOR] Error refreshing specialists:', error);
+            });
     }
     return false;
 };
 
 window.rhetor_createSpecialist = function() {
     console.log('[RHETOR] Creating new AI specialist');
-    if (window.rhetorComponent && window.rhetorComponent.createSpecialist) {
-        window.rhetorComponent.createSpecialist();
-    }
-    return false;
-};
-
-window.rhetor_saveOrchestration = function() {
-    console.log('[RHETOR] Saving orchestration settings');
-    if (window.rhetorComponent && window.rhetorComponent.saveOrchestration) {
-        window.rhetorComponent.saveOrchestration();
-    }
-    return false;
-};
-
-window.rhetor_refreshSessions = function() {
-    console.log('[RHETOR] Refreshing active sessions');
-    if (window.rhetorComponent && window.rhetorComponent.refreshSessions) {
-        window.rhetorComponent.refreshSessions();
-    }
-    return false;
-};
-
-window.rhetor_createSession = function() {
-    console.log('[RHETOR] Creating new AI session');
-    if (window.rhetorComponent && window.rhetorComponent.createSession) {
-        window.rhetorComponent.createSession();
-    }
-    return false;
-};
-
-window.rhetor_toggleAnthropicMax = function() {
-    console.log('[RHETOR] Toggling Anthropic Max');
-    if (window.rhetorComponent && window.rhetorComponent.toggleAnthropicMax) {
-        window.rhetorComponent.toggleAnthropicMax();
-    }
-    return false;
-};
-
-window.rhetor_saveConfiguration = function() {
-    console.log('[RHETOR] Saving AI configuration');
-    if (window.rhetorComponent && window.rhetorComponent.saveConfiguration) {
-        window.rhetorComponent.saveConfiguration();
-    }
-    return false;
-};
-
-// Model configuration functions
-window.rhetor_saveModelConfig = function() {
-    console.log('[RHETOR] Saving model configuration');
-    
-    // Collect all model selections
-    const config = {};
-    const selects = document.querySelectorAll('.rhetor__model-select');
-    
-    selects.forEach(select => {
-        const component = select.getAttribute('data-component');
-        const task = select.getAttribute('data-task');
-        const value = select.value;
+    if (window.RhetorService) {
+        const specialistData = {
+            name: 'New Specialist',
+            type: 'assistant',
+            capabilities: []
+        };
         
-        if (!config[component]) config[component] = {};
-        config[component][task] = value;
-    });
-    
-    console.log('[RHETOR] Model config:', config);
-    
-    // TODO: Send to backend API
-    // For now just show success
-    alert('Model configuration saved successfully');
-    
+        window.RhetorService.createSpecialist(specialistData)
+            .then(result => {
+                console.log('[RHETOR] Specialist created:', result);
+                rhetor_refreshSpecialists();
+            })
+            .catch(error => {
+                console.error('[RHETOR] Error creating specialist:', error);
+            });
+    }
     return false;
 };
 
-window.rhetor_resetModelConfig = function() {
-    console.log('[RHETOR] Resetting model configuration');
-    
-    if (confirm('Reset all model assignments to defaults?')) {
-        // Reset all non-default rows to "Use Default"
-        const selects = document.querySelectorAll('.rhetor__model-select[data-component]:not([data-component="default"])');
-        selects.forEach(select => {
-            select.value = 'default';
-        });
+// Load dashboard data on initialization
+function rhetor_loadDashboardData() {
+    if (window.RhetorService) {
+        // Load component status
+        window.RhetorService.getComponentStatus()
+            .then(components => {
+                console.log('[RHETOR] Dashboard components loaded:', components);
+                // Update component status cards in UI
+            })
+            .catch(error => {
+                console.error('[RHETOR] Error loading component status:', error);
+            });
         
-        console.log('[RHETOR] Model config reset to defaults');
+        // Load model configuration
+        window.RhetorService.getModelConfig()
+            .then(config => {
+                console.log('[RHETOR] Model configuration loaded:', config);
+                // Update model config in UI
+            })
+            .catch(error => {
+                console.error('[RHETOR] Error loading model config:', error);
+            });
     }
-    
-    return false;
-};
+}
 
-window.rhetor_testModel = function() {
-    console.log('[RHETOR] Testing model');
-    
-    const modelSelect = document.getElementById('test-model-select');
-    const testInput = document.getElementById('test-input');
-    const resultsDiv = document.getElementById('test-results');
-    const outputDiv = document.getElementById('test-output');
-    
-    const model = modelSelect.value;
-    const prompt = testInput.value.trim();
-    
-    if (!model) {
-        alert('Please select a model to test');
-        return false;
+// Load models data
+function rhetor_loadModelsData() {
+    if (window.RhetorService) {
+        window.RhetorService.getModels()
+            .then(models => {
+                console.log('[RHETOR] Models loaded:', models);
+                // Populate model dropdowns
+            })
+            .catch(error => {
+                console.error('[RHETOR] Error loading models:', error);
+            });
     }
-    
-    if (!prompt) {
-        alert('Please enter a test prompt');
-        return false;
+}
+
+// Load specialists data
+function rhetor_loadSpecialistsData() {
+    if (window.RhetorService) {
+        window.RhetorService.getSpecialists()
+            .then(specialists => {
+                console.log('[RHETOR] Specialists loaded:', specialists);
+                // Update specialists display
+            })
+            .catch(error => {
+                console.error('[RHETOR] Error loading specialists:', error);
+            });
     }
-    
-    // Show results area
-    resultsDiv.style.display = 'block';
-    outputDiv.textContent = 'Testing model...';
-    
-    // Simulate API call
-    const startTime = Date.now();
-    
-    // TODO: Replace with actual API call
-    setTimeout(() => {
-        const responseTime = Date.now() - startTime;
-        document.getElementById('test-response-time').textContent = `${responseTime}ms`;
-        document.getElementById('test-tokens').textContent = '127';
-        document.getElementById('test-cost').textContent = '$0.0024';
-        
-        outputDiv.textContent = `Response from ${model}:\n\nThis is a simulated response. In production, this would call the Rhetor backend API to test the selected model with your prompt.`;
-    }, 1000);
-    
-    return false;
-};
+}
 
 // Anthropic Max toggle handler - use event delegation for immediate response
 document.addEventListener('change', function(e) {
@@ -4209,6 +4159,18 @@ rhetor_ensurePanelVisibility();  // Fix navigation issue first
 rhetor_protectHtmlPanel();
 rhetor_loadComponent();
 
+// Initialize data loading after a short delay to ensure RhetorService is loaded
+setTimeout(() => {
+    if (window.RhetorService) {
+        console.log('[RHETOR] Loading initial data...');
+        rhetor_loadDashboardData();
+        rhetor_loadModelsData();
+        rhetor_loadSpecialistsData();
+    } else {
+        console.warn('[RHETOR] RhetorService not available for data loading');
+    }
+}, 100);
+
 // Add event listeners immediately - no DOMContentLoaded
 // This runs when the script is evaluated, which is after the HTML is injected
 
@@ -4232,6 +4194,165 @@ if (detContext) {
 if (probContext) {
     probContext.addEventListener('input', rhetor_updateContextMetrics);
 }
+
+// Set up all event listeners to replace inline handlers
+(function() {
+    'use strict';
+    console.log('[RHETOR] Setting up event listeners');
+    
+    // Chat functionality
+    const chatInput = document.getElementById('chat-input');
+    const sendButton = document.getElementById('send-button');
+    const clearChatBtn = document.getElementById('clear-chat-btn');
+    
+    if (chatInput) {
+        chatInput.addEventListener('keydown', function(event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                rhetor_sendChat();
+            }
+        });
+        console.log('[RHETOR] Chat input event listener attached');
+    }
+    
+    if (sendButton) {
+        sendButton.addEventListener('click', function(event) {
+            event.preventDefault();
+            rhetor_sendChat();
+        });
+        console.log('[RHETOR] Send button event listener attached');
+    }
+    
+    if (clearChatBtn) {
+        clearChatBtn.addEventListener('click', function(event) {
+            event.preventDefault();
+            rhetor_clearChat();
+        });
+        console.log('[RHETOR] Clear chat button event listener attached');
+    }
+    
+    // Specialist management buttons
+    const createSpecialistBtn = document.getElementById('create-specialist-btn');
+    const refreshSpecialistsBtn = document.getElementById('refresh-specialists-btn');
+    
+    if (createSpecialistBtn) {
+        createSpecialistBtn.addEventListener('click', function(event) {
+            event.preventDefault();
+            rhetor_createSpecialist();
+        });
+    }
+    
+    if (refreshSpecialistsBtn) {
+        refreshSpecialistsBtn.addEventListener('click', function(event) {
+            event.preventDefault();
+            rhetor_refreshSpecialists();
+        });
+    }
+    
+    // Configuration buttons - find by onclick content
+    document.querySelectorAll('button').forEach(button => {
+        const onclickAttr = button.getAttribute('onclick');
+        if (onclickAttr) {
+            // Remove onclick and add proper event listener
+            button.removeAttribute('onclick');
+            
+            if (onclickAttr.includes('rhetor_saveOrchestration')) {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    rhetor_saveOrchestration();
+                });
+            } else if (onclickAttr.includes('rhetor_createSession')) {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    rhetor_createSession();
+                });
+            } else if (onclickAttr.includes('rhetor_refreshSessions')) {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    rhetor_refreshSessions();
+                });
+            } else if (onclickAttr.includes('rhetor_saveConfiguration')) {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    rhetor_saveConfiguration();
+                });
+            } else if (onclickAttr.includes('rhetor_saveModelConfig')) {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    rhetor_saveModelConfig();
+                });
+            } else if (onclickAttr.includes('rhetor_resetModelConfig')) {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    rhetor_resetModelConfig();
+                });
+            } else if (onclickAttr.includes('rhetor_testModel')) {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    rhetor_testModel();
+                });
+            } else if (onclickAttr.includes('rhetor_hideComponentPrompts')) {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    rhetor_hideComponentPrompts();
+                });
+            } else if (onclickAttr.includes('rhetor_hideContextEditor')) {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    rhetor_hideContextEditor();
+                });
+            } else if (onclickAttr.includes('rhetor_saveContext')) {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    rhetor_saveContext();
+                });
+            }
+        }
+    });
+    
+    // Component prompt cards - find by onclick content
+    document.querySelectorAll('[onclick*="rhetor_showComponentPrompts"]').forEach(card => {
+        const onclickAttr = card.getAttribute('onclick');
+        if (onclickAttr) {
+            const match = onclickAttr.match(/rhetor_showComponentPrompts\('([^']+)'\)/);
+            if (match) {
+                const componentName = match[1];
+                card.removeAttribute('onclick');
+                card.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    rhetor_showComponentPrompts(componentName);
+                });
+            }
+        }
+    });
+    
+    // Context editor cards - find by onclick content
+    document.querySelectorAll('[onclick*="rhetor_editContext"]').forEach(card => {
+        const onclickAttr = card.getAttribute('onclick');
+        if (onclickAttr) {
+            const match = onclickAttr.match(/rhetor_editContext\('([^']+)'\)/);
+            if (match) {
+                const componentName = match[1];
+                card.removeAttribute('onclick');
+                card.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    rhetor_editContext(componentName);
+                });
+            }
+        }
+    });
+    
+    // Checkbox handlers
+    const anthropicMaxCheckbox = document.getElementById('anthropic-max');
+    if (anthropicMaxCheckbox) {
+        anthropicMaxCheckbox.removeAttribute('onchange');
+        anthropicMaxCheckbox.addEventListener('change', function() {
+            rhetor_toggleAnthropicMax();
+        });
+    }
+    
+    console.log('[RHETOR] All event listeners set up');
+})();
 
 // Team Chat is now built-in like LLM Chat, no dynamic loading needed
 
@@ -4319,23 +4440,55 @@ function rhetor_hideContextEditor() {
 }
 
 function rhetor_loadContext(componentName) {
-    // TODO: Load context from backend
     console.log(`[RHETOR] Loading context for ${componentName}`);
     
-    // For now, set some example content
     const detContext = document.querySelector('[data-tekton-input="deterministic-context"]');
     const probContext = document.querySelector('[data-tekton-input="probabilistic-context"]');
     
-    if (detContext) {
-        detContext.value = `Component: ${componentName}\nVersion: 1.0.0\nState: Active\nMemory Limit: 4GB`;
+    if (window.RhetorService) {
+        window.RhetorService.getContext(componentName)
+            .then(context => {
+                console.log('[RHETOR] Context loaded:', context);
+                
+                if (detContext) {
+                    detContext.value = context.detailed_context || `Component: ${componentName}\nVersion: 1.0.0\nState: Active\nMemory Limit: 4GB`;
+                }
+                
+                if (probContext) {
+                    probContext.value = context.problem_context || `Behavioral tendencies for ${componentName}:\n- Collaborative with other components\n- Performance-optimized responses\n- Error recovery strategies`;
+                }
+                
+                // Update metrics
+                rhetor_updateContextMetrics();
+            })
+            .catch(error => {
+                console.error('[RHETOR] Error loading context:', error);
+                
+                // Fall back to default content
+                if (detContext) {
+                    detContext.value = `Component: ${componentName}\nVersion: 1.0.0\nState: Active\nMemory Limit: 4GB`;
+                }
+                
+                if (probContext) {
+                    probContext.value = `Behavioral tendencies for ${componentName}:\n- Collaborative with other components\n- Performance-optimized responses\n- Error recovery strategies`;
+                }
+                
+                rhetor_updateContextMetrics();
+            });
+    } else {
+        console.error('[RHETOR] RhetorService not available');
+        
+        // Fall back to default content
+        if (detContext) {
+            detContext.value = `Component: ${componentName}\nVersion: 1.0.0\nState: Active\nMemory Limit: 4GB`;
+        }
+        
+        if (probContext) {
+            probContext.value = `Behavioral tendencies for ${componentName}:\n- Collaborative with other components\n- Performance-optimized responses\n- Error recovery strategies`;
+        }
+        
+        rhetor_updateContextMetrics();
     }
-    
-    if (probContext) {
-        probContext.value = `Behavioral tendencies for ${componentName}:\n- Collaborative with other components\n- Performance-optimized responses\n- Error recovery strategies`;
-    }
-    
-    // Update metrics
-    rhetor_updateContextMetrics();
 }
 
 function rhetor_saveContext() {
@@ -4344,13 +4497,31 @@ function rhetor_saveContext() {
     const probContext = document.querySelector('[data-tekton-input="probabilistic-context"]').value;
     
     console.log(`[RHETOR] Saving context for ${componentName}`);
-    console.log('Deterministic:', detContext);
-    console.log('Probabilistic:', probContext);
     
-    // TODO: Send to backend
-    
-    // Show confirmation
-    alert(`Context saved for ${componentName}`);
+    if (window.RhetorService) {
+        const contextData = {
+            detailed_context: detContext,
+            problem_context: probContext
+        };
+        
+        window.RhetorService.saveContext(componentName, contextData)
+            .then(result => {
+                console.log('[RHETOR] Context saved:', result);
+                if (result.status === 'error') {
+                    alert(`Failed to save context: ${result.message}`);
+                } else {
+                    alert(`Context saved for ${componentName}`);
+                    rhetor_hideContextEditor();
+                }
+            })
+            .catch(error => {
+                console.error('[RHETOR] Error saving context:', error);
+                alert('Error saving context. Please try again.');
+            });
+    } else {
+        console.error('[RHETOR] RhetorService not available');
+        alert('Rhetor service not available.');
+    }
 }
 
 function rhetor_updateContextMetrics() {
@@ -5037,5 +5208,170 @@ SUCCESS CRITERIA:
 - Maintain command history and context`
     }
 };
+
+// Missing functions for inline handlers
+function rhetor_saveOrchestration() {
+    if (window.RhetorService) {
+        const orchestrationData = {
+            // Collect orchestration settings from form
+            settings: {}
+        };
+        
+        window.RhetorService.saveOrchestration(orchestrationData)
+            .then(result => {
+                console.log('[RHETOR] Orchestration saved:', result);
+            })
+            .catch(error => {
+                console.error('[RHETOR] Error saving orchestration:', error);
+            });
+    }
+}
+
+function rhetor_createSession() {
+    if (window.RhetorService) {
+        const sessionData = {
+            name: 'New Session',
+            timestamp: Date.now()
+        };
+        
+        window.RhetorService.createSession(sessionData)
+            .then(result => {
+                console.log('[RHETOR] Session created:', result);
+                rhetor_refreshSessions();
+            })
+            .catch(error => {
+                console.error('[RHETOR] Error creating session:', error);
+            });
+    }
+}
+
+function rhetor_refreshSessions() {
+    if (window.RhetorService) {
+        window.RhetorService.refreshSessions()
+            .then(result => {
+                console.log('[RHETOR] Sessions refreshed:', result);
+            })
+            .catch(error => {
+                console.error('[RHETOR] Error refreshing sessions:', error);
+            });
+    }
+}
+
+function rhetor_toggleAnthropicMax() {
+    const checkbox = document.getElementById('anthropic-max');
+    if (checkbox && window.RhetorService) {
+        const config = {
+            anthropic_max: checkbox.checked
+        };
+        
+        window.RhetorService.saveConfiguration(config)
+            .then(result => {
+                console.log('[RHETOR] Configuration saved:', result);
+            })
+            .catch(error => {
+                console.error('[RHETOR] Error saving configuration:', error);
+            });
+    }
+}
+
+function rhetor_saveConfiguration() {
+    if (window.RhetorService) {
+        const config = {
+            anthropic_max: document.getElementById('anthropic-max')?.checked || false
+        };
+        
+        window.RhetorService.saveConfiguration(config)
+            .then(result => {
+                console.log('[RHETOR] Configuration saved:', result);
+            })
+            .catch(error => {
+                console.error('[RHETOR] Error saving configuration:', error);
+            });
+    }
+}
+
+function rhetor_saveModelConfig() {
+    if (window.RhetorService) {
+        const config = {
+            orchestrator: document.querySelector('[name="orchestrator"]')?.value || 'claude-3-opus-20240229',
+            memory: document.querySelector('[name="memory"]')?.value || 'claude-3-haiku-20240307',
+            coordinator: document.querySelector('[name="coordinator"]')?.value || 'claude-3-sonnet-20240229'
+        };
+        
+        window.RhetorService.saveModelConfig(config)
+            .then(result => {
+                console.log('[RHETOR] Model configuration saved:', result);
+            })
+            .catch(error => {
+                console.error('[RHETOR] Error saving model configuration:', error);
+            });
+    }
+}
+
+function rhetor_resetModelConfig() {
+    const defaults = {
+        orchestrator: 'claude-3-opus-20240229',
+        memory: 'claude-3-haiku-20240307',
+        coordinator: 'claude-3-sonnet-20240229'
+    };
+    
+    // Reset form fields
+    Object.keys(defaults).forEach(key => {
+        const element = document.querySelector(`[name="${key}"]`);
+        if (element) {
+            element.value = defaults[key];
+        }
+    });
+}
+
+function rhetor_testModel() {
+    const modelSelect = document.querySelector('[name="test-model"]');
+    if (modelSelect && window.RhetorService) {
+        const modelId = modelSelect.value;
+        
+        window.RhetorService.testModel(modelId)
+            .then(result => {
+                console.log('[RHETOR] Model test result:', result);
+                // Show test results in UI
+            })
+            .catch(error => {
+                console.error('[RHETOR] Error testing model:', error);
+            });
+    }
+}
+
+function rhetor_showComponentPrompts(componentName) {
+    if (window.RhetorService) {
+        window.RhetorService.getComponentPrompts(componentName)
+            .then(prompts => {
+                console.log('[RHETOR] Component prompts loaded:', prompts);
+                // Show prompts in UI
+            })
+            .catch(error => {
+                console.error('[RHETOR] Error loading component prompts:', error);
+            });
+    }
+}
+
+function rhetor_hideComponentPrompts() {
+    // Hide the component prompts panel
+    const panel = document.querySelector('.rhetor__prompts-editor');
+    if (panel) {
+        panel.style.display = 'none';
+    }
+}
+
+function rhetor_editContext(componentName) {
+    if (window.RhetorService) {
+        window.RhetorService.getContext(componentName)
+            .then(context => {
+                console.log('[RHETOR] Context loaded for editing:', context);
+                rhetor_loadContext(componentName);
+            })
+            .catch(error => {
+                console.error('[RHETOR] Error loading context:', error);
+            });
+    }
+}
 
 </script>

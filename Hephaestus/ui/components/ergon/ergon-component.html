@@ -245,8 +245,7 @@
             <input type="text" id="ergon-chat-input" class="ergon__chat-input" 
                    data-tekton-input="chat-input"
                    data-tekton-input-type="chat"
-                   placeholder="Enter chat message for Ergon agent management, tools configuration, or MCP"
-                   onkeydown="if(event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); ergon_sendChat(); }">
+                   placeholder="Enter chat message for Ergon agent management, tools configuration, or MCP">
             <button id="ergon-send-button" class="ergon__send-button"
                     data-tekton-action="send-message" 
                     data-tekton-action-type="primary">Send</button>
@@ -842,6 +841,7 @@
 
 <script src="/scripts/tekton-urls.js"></script>
 <script src="/scripts/shared/ai-chat.js"></script>
+<script src="/scripts/ergon-service.js"></script>
 <script type="text/javascript">
 // Update clear button visibility based on active tab
 function ergon_updateClearButton() {
@@ -986,6 +986,16 @@ document.addEventListener('DOMContentLoaded', function() {
         sendButton.addEventListener('click', ergon_sendChat);
     }
     
+    const chatInput = document.getElementById('ergon-chat-input');
+    if (chatInput) {
+        chatInput.addEventListener('keydown', function(event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                ergon_sendChat();
+            }
+        });
+    }
+    
     const clearButton = document.getElementById('clear-chat-btn');
     if (clearButton) {
         clearButton.addEventListener('click', ergon_clearChat);
@@ -1007,155 +1017,182 @@ function ergon_loadData() {
     ergon_loadMemoryStats();
 }
 
-// Load agents from backend
+// Load agents from backend using ErgonService
 function ergon_loadAgents() {
+    console.log('[ERGON] Loading agents');
     const grid = document.getElementById('agent-grid');
-    const apiUrl = window.ergonUrl ? window.ergonUrl('/api/v1/agents') : '/api/v1/agents';
     
-    fetch(apiUrl)
-        .then(response => {
-            if (!response.ok) throw new Error('Failed to load agents');
-            return response.json();
-        })
-        .then(data => {
-            grid.innerHTML = ''; // Clear loading message
-            const agents = data.agents || data || [];
-            
-            if (agents.length === 0) {
-                grid.innerHTML = '<div class="ergon__empty-message">No agents configured. Click "Create Agent" to add one.</div>';
-                return;
-            }
-            
-            agents.forEach(agent => {
-                const card = document.createElement('div');
-                card.className = 'ergon__agent-card';
-                card.innerHTML = `
-                    <div class="ergon__agent-header">
-                        <div class="ergon__agent-name">${agent.name || 'Unnamed Agent'}</div>
-                        <div class="ergon__agent-status ${agent.status === 'active' ? 'ergon__agent-status--active' : ''}"></div>
-                    </div>
-                    <div class="ergon__agent-description">
-                        ${agent.description || 'No description available'}
-                    </div>
-                    <div class="ergon__agent-actions">
-                        <button class="ergon__agent-action-button" data-action="run" data-agent-id="${agent.id}" data-tekton-action="run-agent" data-tekton-action-type="primary">Run</button>
-                        <button class="ergon__agent-action-button" data-action="delete" data-agent-id="${agent.id}" data-tekton-action="delete-agent" data-tekton-action-type="secondary">Delete</button>
-                    </div>
-                `;
-                grid.appendChild(card);
+    // Show loading
+    grid.innerHTML = '<div class="ergon__loading-message"><div class="ergon__message-text">Loading agents...</div></div>';
+    
+    if (window.ErgonService) {
+        window.ErgonService.getAgents()
+            .then(agents => {
+                console.log('[ERGON] Agents loaded:', agents);
+                grid.innerHTML = ''; // Clear loading message
+                
+                if (agents.length === 0) {
+                    grid.innerHTML = '<div class="ergon__empty-message">No agents configured. Click "Create Agent" to add one.</div>';
+                    return;
+                }
+                
+                agents.forEach(agent => {
+                    const card = document.createElement('div');
+                    card.className = 'ergon__agent-card';
+                    card.innerHTML = `
+                        <div class="ergon__agent-header">
+                            <div class="ergon__agent-name">${agent.name || 'Unnamed Agent'}</div>
+                            <div class="ergon__agent-status ${agent.status === 'active' ? 'ergon__agent-status--active' : ''}"></div>
+                        </div>
+                        <div class="ergon__agent-description">
+                            ${agent.description || 'No description available'}
+                        </div>
+                        <div class="ergon__agent-actions">
+                            <button class="ergon__agent-action-button" data-action="run" data-agent-id="${agent.id}" data-tekton-action="run-agent" data-tekton-action-type="primary">Run</button>
+                            <button class="ergon__agent-action-button" data-action="delete" data-agent-id="${agent.id}" data-tekton-action="delete-agent" data-tekton-action-type="secondary">Delete</button>
+                        </div>
+                    `;
+                    grid.appendChild(card);
+                });
+            })
+            .catch(err => {
+                console.error('[ERGON] Failed to load agents:', err);
+                grid.innerHTML = '<div class="ergon__error-message">Failed to load agents. Please check connection.</div>';
             });
-        })
-        .catch(err => {
-            console.error('Failed to load agents:', err);
-            grid.innerHTML = '<div class="ergon__error-message">Failed to load agents. Please check connection.</div>';
-        });
+    } else {
+        console.error('[ERGON] ErgonService not available');
+        grid.innerHTML = '<div class="ergon__error-message">Ergon service not available.</div>';
+    }
 }
 
-// Load tools from backend
+// Load tools from backend using ErgonService
 function ergon_loadTools() {
+    console.log('[ERGON] Loading tools');
     const list = document.getElementById('tools-list');
-    const apiUrl = window.ergonUrl ? window.ergonUrl('/api/v1/tools') : '/api/v1/tools';
     
-    fetch(apiUrl)
-        .then(response => {
-            if (!response.ok) throw new Error('Failed to load tools');
-            return response.json();
-        })
-        .then(data => {
-            list.innerHTML = ''; // Clear loading message
-            const tools = data.tools || data || [];
-            
-            if (tools.length === 0) {
-                list.innerHTML = '<div class="ergon__empty-message">No tools available.</div>';
-                return;
-            }
-            
-            tools.forEach(tool => {
-                const item = document.createElement('div');
-                item.className = 'ergon__tool-item';
-                item.innerHTML = `
-                    <div class="ergon__tool-name">${tool.name}</div>
-                    <div class="ergon__tool-status ${tool.enabled ? 'ergon__tool-status--active' : ''}"></div>
-                    <div class="ergon__tool-description">${tool.description || ''}</div>
-                `;
-                list.appendChild(item);
+    // Show loading
+    list.innerHTML = '<div class="ergon__loading-message"><div class="ergon__message-text">Loading tools...</div></div>';
+    
+    if (window.ErgonService) {
+        window.ErgonService.getTools()
+            .then(tools => {
+                console.log('[ERGON] Tools loaded:', tools);
+                list.innerHTML = ''; // Clear loading message
+                
+                if (tools.length === 0) {
+                    list.innerHTML = '<div class="ergon__empty-message">No tools available.</div>';
+                    return;
+                }
+                
+                tools.forEach(tool => {
+                    const item = document.createElement('div');
+                    item.className = 'ergon__tool-item';
+                    item.innerHTML = `
+                        <div class="ergon__tool-name">${tool.name}</div>
+                        <div class="ergon__tool-status ${tool.enabled ? 'ergon__tool-status--active' : ''}"></div>
+                        <div class="ergon__tool-description">${tool.description || ''}</div>
+                    `;
+                    list.appendChild(item);
+                });
+            })
+            .catch(err => {
+                console.error('[ERGON] Failed to load tools:', err);
+                list.innerHTML = '<div class="ergon__error-message">Failed to load tools.</div>';
             });
-        })
-        .catch(err => {
-            console.error('Failed to load tools:', err);
-            list.innerHTML = '<div class="ergon__error-message">Failed to load tools.</div>';
-        });
+    } else {
+        console.error('[ERGON] ErgonService not available');
+        list.innerHTML = '<div class="ergon__error-message">Ergon service not available.</div>';
+    }
 }
 
-// Load MCP connections from backend
+// Load MCP connections from backend using ErgonService
 function ergon_loadMCPConnections() {
+    console.log('[ERGON] Loading MCP connections');
     const container = document.getElementById('mcp-connections');
-    const stats = document.getElementById('mcp-stats');
-    const apiUrl = window.ergonUrl ? window.ergonUrl('/api/v1/mcp/connections') : '/api/v1/mcp/connections';
     
-    fetch(apiUrl)
-        .then(response => {
-            if (!response.ok) throw new Error('Failed to load MCP connections');
-            return response.json();
-        })
-        .then(data => {
-            container.innerHTML = ''; // Clear loading message
-            const connections = data.connections || data || [];
-            
-            // Update stats
-            const activeCount = connections.filter(c => c.status === 'connected').length;
-            const modelCount = connections.reduce((sum, c) => sum + (c.models ? c.models.length : 0), 0);
-            document.getElementById('mcp-active-count').textContent = activeCount;
-            document.getElementById('mcp-models-count').textContent = modelCount;
-            document.getElementById('mcp-token-usage').textContent = data.token_usage || '--';
-            
-            if (connections.length === 0) {
-                container.innerHTML = '<div class="ergon__empty-message">No MCP connections configured.</div>';
-                return;
-            }
-            
-            connections.forEach(conn => {
-                const item = document.createElement('div');
-                item.className = 'ergon__mcp-connection';
-                item.innerHTML = `
-                    <div class="ergon__connection-name">${conn.name}</div>
-                    <div class="ergon__connection-status ${conn.status === 'connected' ? 'ergon__connection-status--active' : ''}">
-                        ${conn.status === 'connected' ? 'Connected' : 'Disconnected'}
-                    </div>
-                    <div class="ergon__connection-models">Models: ${conn.models ? conn.models.join(', ') : 'None'}</div>
-                `;
-                container.appendChild(item);
+    // Show loading
+    container.innerHTML = '<div class="ergon__loading-message"><div class="ergon__message-text">Loading MCP connections...</div></div>';
+    
+    if (window.ErgonService) {
+        // Load connections
+        window.ErgonService.getMcpConnections()
+            .then(connections => {
+                console.log('[ERGON] MCP connections loaded:', connections);
+                container.innerHTML = ''; // Clear loading message
+                
+                // Update stats
+                const activeCount = connections.filter(c => c.status === 'connected').length;
+                const modelCount = connections.reduce((sum, c) => sum + (c.models ? c.models.length : 0), 0);
+                document.getElementById('mcp-active-count').textContent = activeCount;
+                document.getElementById('mcp-models-count').textContent = modelCount;
+                
+                if (connections.length === 0) {
+                    container.innerHTML = '<div class="ergon__empty-message">No MCP connections configured.</div>';
+                    return;
+                }
+                
+                connections.forEach(conn => {
+                    const item = document.createElement('div');
+                    item.className = 'ergon__mcp-connection';
+                    item.innerHTML = `
+                        <div class="ergon__connection-name">${conn.name}</div>
+                        <div class="ergon__connection-status ${conn.status === 'connected' ? 'ergon__connection-status--active' : ''}">
+                            ${conn.status === 'connected' ? 'Connected' : 'Disconnected'}
+                        </div>
+                        <div class="ergon__connection-models">Models: ${conn.models ? conn.models.join(', ') : 'None'}</div>
+                    `;
+                    container.appendChild(item);
+                });
+            })
+            .catch(err => {
+                console.error('[ERGON] Failed to load MCP connections:', err);
+                container.innerHTML = '<div class="ergon__error-message">Failed to load MCP connections.</div>';
+                document.getElementById('mcp-active-count').textContent = '0';
+                document.getElementById('mcp-models-count').textContent = '0';
             });
-        })
-        .catch(err => {
-            console.error('Failed to load MCP connections:', err);
-            container.innerHTML = '<div class="ergon__error-message">Failed to load MCP connections.</div>';
-            document.getElementById('mcp-active-count').textContent = '0';
-            document.getElementById('mcp-models-count').textContent = '0';
-            document.getElementById('mcp-token-usage').textContent = '--';
-        });
+        
+        // Load MCP stats separately
+        window.ErgonService.getMcpStats()
+            .then(stats => {
+                document.getElementById('mcp-token-usage').textContent = stats.token_usage || '--';
+            })
+            .catch(err => {
+                console.error('[ERGON] Failed to load MCP stats:', err);
+                document.getElementById('mcp-token-usage').textContent = '--';
+            });
+    } else {
+        console.error('[ERGON] ErgonService not available');
+        container.innerHTML = '<div class="ergon__error-message">Ergon service not available.</div>';
+        document.getElementById('mcp-active-count').textContent = '0';
+        document.getElementById('mcp-models-count').textContent = '0';
+        document.getElementById('mcp-token-usage').textContent = '--';
+    }
 }
 
-// Load memory stats from Engram
+// Load memory stats using ErgonService
 function ergon_loadMemoryStats() {
-    const apiUrl = window.engramUrl ? window.engramUrl('/api/v1/memory/stats') : 'http://localhost:8100/api/v1/memory/stats';
+    console.log('[ERGON] Loading memory stats');
     
-    fetch(apiUrl)
-        .then(response => {
-            if (!response.ok) throw new Error('Failed to load memory stats');
-            return response.json();
-        })
-        .then(data => {
-            document.getElementById('memory-active-count').textContent = data.active_memories || '0';
-            document.getElementById('memory-storage-size').textContent = data.storage_size || '0 MB';
-            document.getElementById('memory-retention').textContent = data.retention_period || '30 days';
-        })
-        .catch(err => {
-            console.error('Failed to load memory stats:', err);
-            document.getElementById('memory-active-count').textContent = '--';
-            document.getElementById('memory-storage-size').textContent = '--';
-            document.getElementById('memory-retention').textContent = '--';
-        });
+    if (window.ErgonService) {
+        window.ErgonService.getMemoryStats()
+            .then(stats => {
+                console.log('[ERGON] Memory stats loaded:', stats);
+                document.getElementById('memory-active-count').textContent = stats.active_memories || '0';
+                document.getElementById('memory-storage-size').textContent = stats.total_storage || '0 MB';
+                document.getElementById('memory-retention').textContent = stats.retention_period || '30 days';
+            })
+            .catch(err => {
+                console.error('[ERGON] Failed to load memory stats:', err);
+                document.getElementById('memory-active-count').textContent = '--';
+                document.getElementById('memory-storage-size').textContent = '--';
+                document.getElementById('memory-retention').textContent = '--';
+            });
+    } else {
+        console.error('[ERGON] ErgonService not available');
+        document.getElementById('memory-active-count').textContent = '--';
+        document.getElementById('memory-storage-size').textContent = '--';
+        document.getElementById('memory-retention').textContent = '--';
+    }
 }
 
 // Initialize data loading
@@ -1226,7 +1263,7 @@ function ergon_hideCreateForm() {
     }
 }
 
-// Create agent
+// Create agent using ErgonService
 function ergon_createAgent() {
     const name = document.getElementById('agent-name').value.trim();
     const type = document.getElementById('agent-type').value;
@@ -1244,28 +1281,27 @@ function ergon_createAgent() {
         status: 'active'
     };
     
-    const apiUrl = window.ergonUrl ? window.ergonUrl('/api/v1/agents') : '/api/v1/agents';
+    console.log('[ERGON] Creating agent:', agentData);
     
-    fetch(apiUrl, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(agentData)
-    })
-    .then(response => {
-        if (!response.ok) throw new Error('Failed to create agent');
-        return response.json();
-    })
-    .then(data => {
-        console.log('Agent created successfully:', data);
-        ergon_hideCreateForm();
-        ergon_loadAgents(); // Reload agents
-    })
-    .catch(err => {
-        console.error('Failed to create agent:', err);
-        alert('Failed to create agent. Please try again.');
-    });
+    if (window.ErgonService) {
+        window.ErgonService.createAgent(agentData)
+            .then(result => {
+                console.log('[ERGON] Agent created successfully:', result);
+                if (result.status === 'error') {
+                    alert(`Failed to create agent: ${result.message}`);
+                } else {
+                    ergon_hideCreateForm();
+                    ergon_loadAgents(); // Reload agents
+                }
+            })
+            .catch(err => {
+                console.error('[ERGON] Failed to create agent:', err);
+                alert('Failed to create agent. Please try again.');
+            });
+    } else {
+        console.error('[ERGON] ErgonService not available');
+        alert('Ergon service not available.');
+    }
 }
 
 // Run agent
@@ -1293,28 +1329,31 @@ function ergon_runAgent(agentId) {
     });
 }
 
-// Delete agent
+// Delete agent using ErgonService
 function ergon_deleteAgent(agentId) {
     if (!confirm('Are you sure you want to delete this agent?')) {
         return;
     }
     
-    const apiUrl = window.ergonUrl ? window.ergonUrl(`/api/v1/agents/${agentId}`) : `/api/v1/agents/${agentId}`;
+    console.log('[ERGON] Deleting agent:', agentId);
     
-    fetch(apiUrl, {
-        method: 'DELETE'
-    })
-    .then(response => {
-        if (!response.ok) throw new Error('Failed to delete agent');
-        return response.json();
-    })
-    .then(data => {
-        console.log('Agent deleted successfully:', data);
-        ergon_loadAgents(); // Reload agents
-    })
-    .catch(err => {
-        console.error('Failed to delete agent:', err);
-        alert('Failed to delete agent. Please try again.');
-    });
+    if (window.ErgonService) {
+        window.ErgonService.deleteAgent(agentId)
+            .then(result => {
+                console.log('[ERGON] Agent deleted successfully:', result);
+                if (result.status === 'error') {
+                    alert(`Failed to delete agent: ${result.message}`);
+                } else {
+                    ergon_loadAgents(); // Reload agents
+                }
+            })
+            .catch(err => {
+                console.error('[ERGON] Failed to delete agent:', err);
+                alert('Failed to delete agent. Please try again.');
+            });
+    } else {
+        console.error('[ERGON] ErgonService not available');
+        alert('Ergon service not available.');
+    }
 }
 </script>
