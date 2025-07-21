@@ -12,17 +12,13 @@ import os
 import sys
 import json
 import asyncio
-import time
-from typing import Dict, List, Any, Optional, Set, Union
+from typing import Dict, List, Any, Optional, Set
 from uuid import UUID, uuid4
-from datetime import datetime, timedelta
-from contextlib import asynccontextmanager
-
+from datetime import datetime
 import uvicorn
-from fastapi import FastAPI, APIRouter, Depends, HTTPException, WebSocket, BackgroundTasks, Query, Path, Request
+from fastapi import APIRouter, Depends, HTTPException, WebSocket, Query, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse, StreamingResponse
-from fastapi.staticfiles import StaticFiles
+from fastapi.responses import StreamingResponse
 from pydantic import Field
 from tekton.models import TektonBaseModel
 
@@ -32,12 +28,9 @@ if tekton_root not in sys.path:
     sys.path.insert(0, tekton_root)
 
 # Import shared utilities
-from shared.utils.hermes_registration import HermesRegistration, heartbeat_loop
 from shared.utils.logging_setup import setup_component_logging
 from shared.utils.env_config import get_component_config
-from shared.utils.errors import StartupError
-from shared.utils.startup import component_startup, StartupMetrics
-from shared.utils.shutdown import GracefulShutdown
+from shared.env import TektonEnviron
 
 # Import shared API utilities
 from shared.api.documentation import get_openapi_configuration
@@ -1665,7 +1658,7 @@ async def health_check():
         Health status information
     """
     config = get_component_config()
-    port = config.harmonia.port if hasattr(config, 'harmonia') else int(os.environ.get("HARMONIA_PORT"))
+    port = config.harmonia.port if hasattr(config, 'harmonia') else int(TektonEnviron.get("HARMONIA_PORT", "8002"))
     
     # Check if workflow engine is initialized
     workflow_engine = harmonia_component.workflow_engine
@@ -1729,6 +1722,6 @@ if __name__ == "__main__":
     import uvicorn
     
     config = get_component_config()
-    port = config.harmonia.port if hasattr(config, 'harmonia') else int(os.environ.get("HARMONIA_PORT"))
+    port = config.harmonia.port if hasattr(config, 'harmonia') else int(TektonEnviron.get("HARMONIA_PORT", "8002"))
     
     uvicorn.run(app, host="0.0.0.0", port=port)
