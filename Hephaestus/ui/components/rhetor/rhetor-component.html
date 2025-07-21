@@ -1,13 +1,33 @@
 <!-- 
-  Rhetor LLM/Prompt/Context Management Component
-  This component provides a web interface for LLM management, prompt templates, context management,
-  agency/alignment controls, and chat interfaces.
+  Rhetor Component - LLM/Prompt/Context Management 
   
-  IMPORTANT: Follows Component Implementation Standard in /MetaData/UI/ComponentImplementationStandard.md
-  UPDATE: Converted to radio button pattern for reliable tab switching (like Settings component)
+  This component provides a web interface for:
+  - Multi-provider LLM orchestration and management
+  - Intelligent routing of requests to appropriate models  
+  - Context management and prompt engineering
+  - AI specialist configuration and management
+  - Model configuration and testing
+  - LLM and team chat interfaces
+  
+  IMPLEMENTATION:
+  - Follows Component Implementation Standard with CSS-first radio button navigation
+  - Uses RhetorService for all API interactions
+  - Comprehensive error handling and logging
+  - Real-time data loading from backend APIs
+  
+  NAVIGATION:
+  - Dashboard: Component status and system overview
+  - Models: LLM model configuration and testing
+  - Prompts: Template management and prompt engineering  
+  - Contexts: Context management for components
+  - Specialists: AI specialist configuration and management
+  - LLM Chat: Direct LLM interaction interface
+  - Team Chat: Multi-agent team communication
 -->
+<!-- @landmark Component: Rhetor - LLM orchestration, prompt engineering, and context management hub -->
 
-<!-- Hidden radio controls for CSS-only tab functionality -->
+<!-- Hidden radio inputs for CSS-first tab functionality -->
+<!-- @landmark Navigation: CSS-first radio buttons for tab switching -->
 <input type="radio" name="rhetor-tab" id="tab-dashboard" checked style="display: none;">
 <input type="radio" name="rhetor-tab" id="tab-models" style="display: none;">
 <input type="radio" name="rhetor-tab" id="tab-prompts" style="display: none;">
@@ -22,6 +42,7 @@
      data-tekton-ai="rhetor-orchestrator"
      data-tekton-ai-ready="false">
   <!-- Component Header with Title -->
+  <!-- @landmark Header: Component title and branding -->
   <div class="rhetor__header" data-tekton-zone="header" data-tekton-section="header">
     <div class="rhetor__title-container">
       <img src="/images/hexagon.jpg" alt="Tekton" class="rhetor__icon">
@@ -32,7 +53,8 @@
     </div>
   </div>
   
-  <!-- Tab Navigation - DIRECT ONCLICK HANDLERS -->
+  <!-- Tab Navigation -->
+  <!-- @landmark Menu: Tab navigation for 7 component views -->
   <div class="rhetor__menu-bar" data-tekton-zone="menu" data-tekton-nav="component-menu">
     <div class="rhetor__tabs">
       <!-- Dashboard (new default) -->
@@ -95,8 +117,10 @@
   </div>
   
   <!-- Content Area with Panels -->
+  <!-- @landmark Content: Main content area with 7 tab panels -->
   <div class="rhetor__content" data-tekton-zone="content" data-tekton-scrollable="true">
     <!-- Dashboard Tab (New Default) -->
+    <!-- @landmark Panel: Dashboard - Component status and system overview -->
     <div id="dashboard-panel" class="rhetor__panel" 
          data-tekton-panel="dashboard"
          data-tekton-panel-for="Dashboard"
@@ -331,7 +355,8 @@
       </div>
     </div>
     
-    <!-- AI Specialists Tab (No longer default) -->
+    <!-- AI Specialists Tab -->
+    <!-- @landmark Panel: Specialists - AI specialist configuration and management -->
     <div id="specialists-panel" class="rhetor__panel" 
          data-tekton-panel="specialists"
          data-tekton-panel-for="Specialists"
@@ -645,6 +670,7 @@
     </div>
     
     <!-- LLM Chat Tab -->
+    <!-- @landmark Panel: LLM Chat - Direct LLM interaction interface -->
     <div id="llmchat-panel" class="rhetor__panel" data-tekton-chat="rhetor-llm" data-tekton-ai="rhetor-orchestrator" data-tekton-ai-ready="false">
       <div id="llmchat-messages" class="rhetor__chat-messages" data-tekton-element="chat-messages">
         <div class="rhetor__message rhetor__message--system">
@@ -665,6 +691,7 @@
     </div>
     
     <!-- Team Chat Tab -->
+    <!-- @landmark Panel: Team Chat - Multi-agent team communication -->
     <div id="teamchat-panel" class="rhetor__panel" 
          data-tekton-panel="teamchat"
          data-tekton-panel-for="Team Chat"
@@ -691,6 +718,7 @@
     </div>
     
     <!-- Models Tab -->
+    <!-- @landmark Panel: Models - LLM model configuration and testing -->
     <div id="models-panel" class="rhetor__panel"
          data-tekton-panel="models"
          data-tekton-panel-for="Models"
@@ -1301,6 +1329,7 @@
     </div>
     
     <!-- Prompts Tab -->
+    <!-- @landmark Panel: Prompts - Template management and prompt engineering -->
     <div id="prompts-panel" class="rhetor__panel"
          data-tekton-panel="prompts"
          data-tekton-panel-for="Prompts"
@@ -1683,6 +1712,7 @@ SUCCESS CRITERIA:
     </div>
     
     <!-- Contexts Tab -->
+    <!-- @landmark Panel: Contexts - Context management for components -->
     <div id="contexts-panel" class="rhetor__panel"
          data-tekton-panel="contexts"
          data-tekton-panel-for="Contexts"
