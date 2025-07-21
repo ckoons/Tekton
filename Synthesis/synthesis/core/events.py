@@ -13,23 +13,11 @@ import time
 import uuid
 from typing import Dict, List, Any, Optional, Callable, Set, Union
 from datetime import datetime
-from landmarks import architecture_decision, performance_boundary
 
 # Configure logging
 logger = logging.getLogger("synthesis.core.events")
 
 
-@architecture_decision(
-    title="Event system with singleton pattern",
-    rationale="Centralized event management for execution coordination and monitoring",
-    alternatives_considered=["Distributed events", "Message broker", "Direct callbacks"]
-)
-@performance_boundary(
-    title="Event emission and subscription",
-    sla="<10ms for event emission, <5ms for subscriber notification",
-    metrics={"emission_time": "3ms avg", "subscriber_time": "2ms avg"},
-    optimization_notes="In-memory event handling with async callbacks"
-)
 class EventManager:
     """
     Event manager for Synthesis.
