@@ -93,73 +93,10 @@ function ergonUrl(path = "", ...args) {
     return tektonUrl("ergon", path, ...args);
 }
 
-<<<<<<< HEAD
-// Additional convenience functions for missing components
-function engramUrl(path = "", ...args) {
-    return tektonUrl("engram", path, ...args);
-}
-
-function prometheusUrl(path = "", ...args) {
-    return tektonUrl("prometheus", path, ...args);
-}
-
-function harmoniaUrl(path = "", ...args) {
-    return tektonUrl("harmonia", path, ...args);
-}
-
-=======
->>>>>>> a4c91167004194c4a593e7f3d300e63b0ca04dc6
 function telosUrl(path = "", ...args) {
     return tektonUrl("telos", path, ...args);
 }
 
-<<<<<<< HEAD
-function synthesisUrl(path = "", ...args) {
-    return tektonUrl("synthesis", path, ...args);
-}
-
-function metisUrl(path = "", ...args) {
-    return tektonUrl("metis", path, ...args);
-}
-
-function apolloUrl(path = "", ...args) {
-    return tektonUrl("apollo", path, ...args);
-}
-
-function budgetUrl(path = "", ...args) {
-    return tektonUrl("budget", path, ...args);
-}
-
-function peniaUrl(path = "", ...args) {
-    return tektonUrl("penia", path, ...args);
-}
-
-function sophiaUrl(path = "", ...args) {
-    return tektonUrl("sophia", path, ...args);
-}
-
-function hephaestusUrl(path = "", ...args) {
-    return tektonUrl("hephaestus", path, ...args);
-}
-
-// Special case for Hephaestus MCP
-function hephaestusMcpUrl(path = "", ...args) {
-    const host = args[0] || window.HEPHAESTUS_HOST || window.TEKTON_HOST || "localhost";
-    const scheme = args[1] || "http";
-    const port = window.HEPHAESTUS_MCP_PORT || 8388;
-    return `${scheme}://${host}:${port}${path}`;
-}
-
-// Special case for DB MCP
-function dbMcpUrl(path = "", ...args) {
-    const host = args[0] || window.DB_HOST || window.TEKTON_HOST || "localhost";
-    const scheme = args[1] || "http";
-    const port = window.DB_MCP_PORT || 8503;
-    return `${scheme}://${host}:${port}${path}`;
-}
-
-=======
->>>>>>> a4c91167004194c4a593e7f3d300e63b0ca04dc6
 // Make functions globally available
 if (typeof window !== 'undefined') {
     // Core function
@@ -175,25 +112,7 @@ if (typeof window !== 'undefined') {
     window.numaUrl = numaUrl;
     window.aishUrl = aishUrl;
     window.ergonUrl = ergonUrl;
-<<<<<<< HEAD
-    
-    // New component URLs
-    window.engramUrl = engramUrl;
-    window.prometheusUrl = prometheusUrl;
-    window.harmoniaUrl = harmoniaUrl;
     window.telosUrl = telosUrl;
-    window.synthesisUrl = synthesisUrl;
-    window.metisUrl = metisUrl;
-    window.apolloUrl = apolloUrl;
-    window.budgetUrl = budgetUrl;
-    window.peniaUrl = peniaUrl;
-    window.sophiaUrl = sophiaUrl;
-    window.hephaestusUrl = hephaestusUrl;
-    window.hephaestusMcpUrl = hephaestusMcpUrl;
-    window.dbMcpUrl = dbMcpUrl;
-=======
-    window.telosUrl = telosUrl;
->>>>>>> a4c91167004194c4a593e7f3d300e63b0ca04dc6
 }
 
 // Export for module systems
@@ -212,23 +131,7 @@ if (typeof module !== 'undefined' && module.exports) {
         numaUrl,
         aishUrl,
         ergonUrl,
-<<<<<<< HEAD
-        engramUrl,
-        prometheusUrl,
-        harmoniaUrl,
-        telosUrl,
-        synthesisUrl,
-        metisUrl,
-        apolloUrl,
-        budgetUrl,
-        peniaUrl,
-        sophiaUrl,
-        hephaestusUrl,
-        hephaestusMcpUrl,
-        dbMcpUrl
-=======
         telosUrl
->>>>>>> a4c91167004194c4a593e7f3d300e63b0ca04dc6
     };
 }
 
