@@ -6,34 +6,15 @@ It enables Synthesis to use LLM capabilities for dynamic execution, plan enhance
 """
 
 import os
-import sys
 import logging
 import asyncio
 from typing import Dict, List, Any, Optional, Union, Callable, AsyncIterator
-
-# Add Tekton root to path if not already present
-tekton_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..'))
-if tekton_root not in sys.path:
-    sys.path.insert(0, tekton_root)
 
 from tekton_llm_client import TektonLLMClient
 from tekton_llm_client.models import Message, CompletionOptions, MessageRole
 from tekton_llm_client.adapters import LocalFallbackAdapter
 from tekton_llm_client.exceptions import TektonLLMError
-# Try to import landmarks if available
-try:
-    from landmarks import architecture_decision, performance_boundary
-except ImportError:
-    # Landmarks not available, create no-op decorators
-    def architecture_decision(title, rationale="", alternatives_considered=None):
-        def decorator(func):
-            return func
-        return decorator
-    
-    def performance_boundary(title, sla="", metrics=None, optimization_notes=""):
-        def decorator(func):
-            return func
-        return decorator
+from landmarks import architecture_decision, performance_boundary
 
 logger = logging.getLogger(__name__)
 
@@ -68,8 +49,8 @@ class LLMAdapter:
         self.fallback_enabled = True
         
         # LLM-related configuration
-        from shared.env import TektonEnviron
-        from shared.urls import tekton_url
+        from tekton.utils.tekton_environ import TektonEnviron
+        from tekton.utils.tekton_url import tekton_url
         self.base_url = TektonEnviron.get("TEKTON_LLM_URL", tekton_url("rhetor"))
         self.default_model = TektonEnviron.get("TEKTON_LLM_MODEL", "default")
         self.timeout = int(TektonEnviron.get("TEKTON_LLM_TIMEOUT", "60"))

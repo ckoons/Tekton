@@ -46,7 +46,7 @@ from tekton.utils.tekton_errors import (
     ConnectionError,
     AuthenticationError
 )
-from shared.urls import tekton_url
+from tekton.utils.tekton_url import tekton_url
 
 # Import Synthesis components
 from synthesis.core.synthesis_component import SynthesisComponent
