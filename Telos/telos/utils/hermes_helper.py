@@ -18,6 +18,7 @@ if tekton_root not in sys.path:
     sys.path.append(tekton_root)
 
 from shared.utils.env_config import get_component_config
+from shared.urls import hermes_url, telos_url
 
 logger = logging.getLogger(__name__)
 
@@ -31,10 +32,8 @@ class HermesHelper:
         Args:
             api_url: Optional URL for the Hermes API
         """
-        # Get configuration
-        config = get_component_config()
-        hermes_port = config.hermes.port if hasattr(config, 'hermes') else int(os.environ.get("HERMES_PORT"))
-        self.api_url = api_url or os.environ.get("HERMES_API_URL", f"http://localhost:{hermes_port}/api")
+        # Use tekton_url for proper URL building
+        self.api_url = api_url or hermes_url("/api")
         self.is_registered = False
         self.services = {}
         
@@ -298,11 +297,9 @@ async def register_with_hermes(
     Returns:
         Success status
     """
-    # Use environment variable for endpoint if not provided
+    # Use tekton_url for endpoint if not provided
     if not endpoint:
-        config = get_component_config()
-        telos_port = config.telos.port if hasattr(config, 'telos') else int(os.environ.get("TELOS_PORT"))
-        endpoint = f"http://localhost:{telos_port}/api"
+        endpoint = telos_url("/api")
     
     # Create a helper and use it to register
     helper = HermesHelper()

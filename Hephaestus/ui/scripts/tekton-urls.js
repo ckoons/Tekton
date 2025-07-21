@@ -93,6 +93,7 @@ function ergonUrl(path = "", ...args) {
     return tektonUrl("ergon", path, ...args);
 }
 
+<<<<<<< HEAD
 // Additional convenience functions for missing components
 function engramUrl(path = "", ...args) {
     return tektonUrl("engram", path, ...args);
@@ -106,10 +107,13 @@ function harmoniaUrl(path = "", ...args) {
     return tektonUrl("harmonia", path, ...args);
 }
 
+=======
+>>>>>>> a4c91167004194c4a593e7f3d300e63b0ca04dc6
 function telosUrl(path = "", ...args) {
     return tektonUrl("telos", path, ...args);
 }
 
+<<<<<<< HEAD
 function synthesisUrl(path = "", ...args) {
     return tektonUrl("synthesis", path, ...args);
 }
@@ -154,6 +158,8 @@ function dbMcpUrl(path = "", ...args) {
     return `${scheme}://${host}:${port}${path}`;
 }
 
+=======
+>>>>>>> a4c91167004194c4a593e7f3d300e63b0ca04dc6
 // Make functions globally available
 if (typeof window !== 'undefined') {
     // Core function
@@ -169,6 +175,7 @@ if (typeof window !== 'undefined') {
     window.numaUrl = numaUrl;
     window.aishUrl = aishUrl;
     window.ergonUrl = ergonUrl;
+<<<<<<< HEAD
     
     // New component URLs
     window.engramUrl = engramUrl;
@@ -184,6 +191,9 @@ if (typeof window !== 'undefined') {
     window.hephaestusUrl = hephaestusUrl;
     window.hephaestusMcpUrl = hephaestusMcpUrl;
     window.dbMcpUrl = dbMcpUrl;
+=======
+    window.telosUrl = telosUrl;
+>>>>>>> a4c91167004194c4a593e7f3d300e63b0ca04dc6
 }
 
 // Export for module systems
@@ -202,6 +212,7 @@ if (typeof module !== 'undefined' && module.exports) {
         numaUrl,
         aishUrl,
         ergonUrl,
+<<<<<<< HEAD
         engramUrl,
         prometheusUrl,
         harmoniaUrl,
@@ -215,6 +226,9 @@ if (typeof module !== 'undefined' && module.exports) {
         hephaestusUrl,
         hephaestusMcpUrl,
         dbMcpUrl
+=======
+        telosUrl
+>>>>>>> a4c91167004194c4a593e7f3d300e63b0ca04dc6
     };
 }
 

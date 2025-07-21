@@ -32,11 +32,17 @@ class TelosPrometheusConnector:
         
         # Try to import Prometheus planning engine (optional dependency)
         try:
+            # Add parent paths for imports
+            import sys
+            tekton_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
+            if tekton_root not in sys.path:
+                sys.path.insert(0, tekton_root)
+                
             from prometheus.core.planning_engine import PlanningEngine
-            from tekton.utils.port_config import get_prometheus_url
+            from shared.urls import tekton_url
             
-            # Initialize with standardized port config
-            prometheus_url = get_prometheus_url()
+            # Initialize with proper URL
+            prometheus_url = tekton_url("prometheus", "")
             self.planning_engine = PlanningEngine(prometheus_url=prometheus_url)
             self.prometheus_available = True
             logger.info(f"Initialized Prometheus connection with URL: {prometheus_url}")

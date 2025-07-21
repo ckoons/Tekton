@@ -88,8 +88,10 @@ async def lifespan(app: FastAPI):
         from ..core.requirements_manager import RequirementsManager
         from ..prometheus_connector import TelosPrometheusConnector
         
-        # Load environment variables for configuration
-        storage_dir = os.environ.get("TELOS_STORAGE_DIR", os.path.join(os.getcwd(), "data", "requirements"))
+        # Load configuration
+        from shared.utils.env_config import GlobalConfig
+        config = GlobalConfig()
+        storage_dir = config.get('telos.storage_dir', os.path.join(os.getcwd(), "data", "requirements"))
         os.makedirs(storage_dir, exist_ok=True)
         
         # Initialize requirements manager

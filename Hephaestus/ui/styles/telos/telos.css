@@ -1,0 +1,549 @@
+/* Telos Requirements Manager Component Styles
+ * Following Tekton UI Styling Guide and BEM methodology
+ */
+
+/* Root variables matching Tekton theme */
+:root {
+  /* Telos-specific colors */
+  --telos-primary: #3b80f7;
+  --telos-primary-light: rgba(59, 128, 247, 0.1);
+  --telos-primary-lighter: rgba(59, 128, 247, 0.05);
+  --telos-secondary: #6c757d;
+  --telos-success: #28a745;
+  --telos-danger: #dc3545;
+  --telos-warning: #ffc107;
+  --telos-info: #17a2b8;
+}
+
+/* Telos component container - Full viewport height */
+.telos {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100%;
+  background-color: var(--color-bg-base);
+  color: var(--color-text-primary);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+/* Header */
+.telos__header {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--color-border);
+  background-color: var(--color-bg-panel);
+  flex-shrink: 0;
+}
+
+.telos__title-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.telos__icon {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+}
+
+.telos__title {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+}
+
+.telos__title-main {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--telos-primary);
+  line-height: 1.2;
+}
+
+.telos__title-sub {
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+  font-weight: 400;
+}
+
+/* Menu Bar */
+.telos__menu-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 16px;
+  background-color: var(--color-bg-panel);
+  border-bottom: 1px solid var(--color-border);
+  min-height: 40px;
+  flex-shrink: 0;
+}
+
+.telos__tabs {
+  display: flex;
+  gap: 8px;
+  height: 100%;
+}
+
+.telos__tab {
+  display: flex;
+  align-items: center;
+  padding: 8px 16px;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  color: var(--color-text-secondary);
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.telos__tab:hover {
+  color: var(--color-text-primary);
+  background-color: var(--color-bg-hover);
+}
+
+.telos__tab--active {
+  color: var(--telos-primary);
+  border-bottom-color: var(--telos-primary);
+}
+
+.telos__tab-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.telos__actions {
+  display: flex;
+  gap: 8px;
+}
+
+/* Content Area */
+.telos__content {
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Panels - Full viewport usage */
+.telos__panel {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: none;
+  overflow-y: auto;
+  padding: 0; /* Remove padding to use full space */
+}
+
+.telos__panel--active {
+  display: block;
+}
+
+/* Projects Panel - Full width */
+.telos__projects {
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+}
+
+.telos__control-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  gap: 16px;
+  background-color: var(--color-bg-panel);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.telos__search-container {
+  display: flex;
+  gap: 8px;
+  flex: 1;
+  max-width: 400px;
+}
+
+.telos__search-input {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  background-color: var(--color-bg-input);
+  color: var(--color-text-primary);
+  font-size: 0.875rem;
+}
+
+.telos__search-input:focus {
+  outline: none;
+  border-color: var(--telos-primary);
+}
+
+.telos__search-button {
+  padding: 8px 16px;
+  background-color: var(--color-bg-card);
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.telos__search-button:hover {
+  background-color: var(--color-bg-hover);
+}
+
+/* Buttons */
+.telos__action-button,
+.telos__button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background-color: var(--telos-primary);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.telos__action-button:hover,
+.telos__button:hover {
+  background-color: #2a69d4;
+}
+
+.telos__button-icon {
+  font-size: 1.1rem;
+}
+
+.telos__button-label {
+  font-size: 0.875rem;
+}
+
+/* Project List - Use remaining height */
+.telos__project-list-container {
+  background-color: var(--color-bg-base);
+  border: none;
+  border-radius: 0;
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.telos__loading-indicator {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  gap: 16px;
+}
+
+.telos__spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--color-border);
+  border-radius: 50%;
+  border-top-color: var(--telos-primary);
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.telos__loading-text {
+  color: var(--color-text-secondary);
+  font-size: 0.875rem;
+}
+
+.telos__project-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+}
+
+.telos__project-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+  cursor: pointer;
+}
+
+.telos__project-item:hover {
+  background-color: var(--color-bg-hover);
+}
+
+.telos__project-info {
+  flex: 1;
+}
+
+.telos__project-name {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--color-text-primary);
+  margin-bottom: 4px;
+}
+
+.telos__project-meta {
+  display: flex;
+  gap: 16px;
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+}
+
+.telos__project-count {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.telos__project-status {
+  color: var(--telos-success);
+}
+
+.telos__project-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.telos__project-action-btn {
+  padding: 6px 12px;
+  background-color: transparent;
+  color: var(--color-text-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.telos__project-action-btn:hover {
+  background-color: var(--color-bg-hover);
+  color: var(--color-text-primary);
+}
+
+/* Requirements Panel - Full width */
+.telos__requirements {
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+}
+
+.telos__filters {
+  display: flex;
+  gap: 16px;
+  padding: 16px;
+  flex-wrap: wrap;
+  background-color: var(--color-bg-panel);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.telos__filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 150px;
+}
+
+.telos__filter-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+
+.telos__filter-select {
+  padding: 8px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  background-color: var(--color-bg-input);
+  color: var(--color-text-primary);
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+
+.telos__filter-select:focus {
+  outline: none;
+  border-color: var(--telos-primary);
+}
+
+/* Requirements List - Use remaining height */
+.telos__requirements-container {
+  background-color: var(--color-bg-card);
+  border: none;
+  border-radius: 0;
+  overflow: hidden;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.telos__requirements-table {
+  width: 100%;
+  border-collapse: collapse;
+  height: 100%;
+}
+
+.telos__requirements-table th {
+  background-color: var(--color-bg-panel);
+  padding: 12px 16px;
+  text-align: left;
+  font-weight: 500;
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.telos__requirements-table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.telos__requirements-table tr:hover {
+  background-color: var(--color-bg-hover);
+}
+
+/* Chat View Styles */
+.telos__chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Base message styling */
+.telos__message {
+  max-width: 70%;
+  padding: 12px 16px;
+  border-radius: 8px;
+  word-wrap: break-word;
+  position: relative;
+}
+
+/* System messages */
+.telos__message--system {
+  background-color: var(--telos-primary-lighter);
+  border-left: 3px solid var(--telos-primary);
+  align-self: center;
+  max-width: 90%;
+  font-style: italic;
+}
+
+.telos__message--system strong {
+  color: var(--telos-primary);
+}
+
+/* User messages - RIGHT ALIGNED without "You:" */
+.telos__message--user {
+  background-color: var(--telos-primary-lighter);
+  border-left: 3px solid var(--telos-primary);
+  margin-left: auto !important;
+  margin-right: 0;
+  align-self: flex-end;
+}
+
+/* Hide any "You:" prefix in user messages */
+.telos__message--user strong {
+  display: none !important;
+}
+
+/* AI messages - Telos blue theme */
+.telos__message--ai {
+  background-color: var(--telos-primary-lighter);
+  border-left: 3px solid var(--telos-primary);
+  margin-right: auto;
+  margin-left: 0;
+  align-self: flex-start;
+}
+
+.telos__message--ai strong {
+  color: var(--telos-primary);
+}
+
+/* Chat input styling */
+.telos__panel .chat-input-container {
+  background-color: var(--color-bg-panel);
+  border-top: 1px solid var(--color-border);
+  padding: 16px;
+}
+
+.telos__panel .chat-input {
+  background-color: var(--color-bg-input);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-primary);
+}
+
+.telos__panel .chat-input:focus {
+  border-color: var(--telos-primary);
+}
+
+.telos__panel .chat-send-button {
+  background-color: var(--telos-primary);
+}
+
+.telos__panel .chat-send-button:hover {
+  background-color: #2a69d4;
+}
+
+/* Utility classes */
+.telos__hidden {
+  display: none !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .telos__menu-bar {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 12px;
+  }
+
+  .telos__tabs {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .telos__control-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .telos__search-container {
+    max-width: 100%;
+  }
+
+  .telos__filters {
+    flex-direction: column;
+  }
+
+  .telos__filter-group {
+    width: 100%;
+  }
+}
