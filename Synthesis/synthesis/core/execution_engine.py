@@ -71,6 +71,10 @@ class ExecutionEngine(LatentReasoningMixin):
             self.data_dir = data_dir
         else:
             # Use $TEKTON_DATA_DIR/synthesis by default
+<<<<<<< HEAD
+=======
+            from shared.env import TektonEnviron
+>>>>>>> parent of efc7d53 (synthesis)
             default_data_dir = os.path.join(
                 os.environ.get('TEKTON_DATA_DIR', 
                               os.path.join(os.environ.get('TEKTON_ROOT', os.path.expanduser('~')), '.tekton', 'data')),
@@ -80,7 +84,13 @@ class ExecutionEngine(LatentReasoningMixin):
         os.makedirs(self.data_dir, exist_ok=True)
         
         # Set up Hermes URL
+<<<<<<< HEAD
         self.hermes_url = hermes_url or os.environ.get("HERMES_URL", "http://localhost:5000/api")
+=======
+        from shared.env import TektonEnviron
+        from shared.urls import tekton_url
+        self.hermes_url = hermes_url or TektonEnviron.get("HERMES_URL", f"{tekton_url('hermes')}/api")
+>>>>>>> parent of efc7d53 (synthesis)
         
         # Set up concurrency control
         self.max_concurrent_executions = max_concurrent_executions

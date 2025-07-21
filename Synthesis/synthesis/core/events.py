@@ -9,10 +9,35 @@ across the Synthesis execution engine.
 import asyncio
 import json
 import logging
+import os
+import sys
 import time
 import uuid
 from typing import Dict, List, Any, Optional, Callable, Set, Union
 from datetime import datetime
+<<<<<<< HEAD
+=======
+
+# Add Tekton root to path if not already present
+tekton_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..'))
+if tekton_root not in sys.path:
+    sys.path.insert(0, tekton_root)
+
+# Try to import landmarks if available
+try:
+    from landmarks import architecture_decision, performance_boundary
+except ImportError:
+    # Landmarks not available, create no-op decorators
+    def architecture_decision(title, rationale="", alternatives_considered=None):
+        def decorator(func):
+            return func
+        return decorator
+    
+    def performance_boundary(title, sla="", metrics=None, optimization_notes=""):
+        def decorator(func):
+            return func
+        return decorator
+>>>>>>> parent of efc7d53 (synthesis)
 
 # Configure logging
 logger = logging.getLogger("synthesis.core.events")

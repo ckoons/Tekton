@@ -46,6 +46,10 @@ from tekton.utils.tekton_errors import (
     ConnectionError,
     AuthenticationError
 )
+<<<<<<< HEAD
+=======
+from shared.urls import tekton_url
+>>>>>>> parent of efc7d53 (synthesis)
 
 # Import Synthesis components
 from synthesis.core.synthesis_component import SynthesisComponent
