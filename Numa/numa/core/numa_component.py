@@ -1,8 +1,10 @@
 """Numa component implementation using StandardComponentBase."""
 import logging
 from typing import List, Dict, Any
+from datetime import datetime
 
 from shared.utils.standard_component import StandardComponentBase
+from shared.env import TektonEnviron
 from landmarks import (
     architecture_decision,
     state_checkpoint,
@@ -83,4 +85,14 @@ class NumaComponent(StandardComponentBase):
                 "Offers platform-wide insights and recommendations"
             ],
             "access_level": "platform-wide read access"
+        }
+    
+    def get_health_status(self) -> Dict[str, Any]:
+        """Get the health status of the component."""
+        return {
+            "status": "healthy",
+            "component": self.component_name,
+            "version": self.version,
+            "timestamp": datetime.now().isoformat(),
+            "capabilities": self.get_capabilities()
         }
