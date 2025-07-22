@@ -203,7 +203,8 @@ class TektonConfig:
         loaded = False
         
         # Load all environment variables with the specified prefix
-        for key, value in os.environ.items():
+        from shared.env import TektonEnviron
+        for key, value in TektonEnviron.all().items():
             if key.startswith(prefix):
                 # Convert env var name to config key (e.g., MYCOMPONENT_PORT -> port)
                 config_key = key[len(prefix):].lower()
@@ -704,7 +705,7 @@ def config_from_env(
         ConfigValidationError: If required and not found, or conversion fails
     """
     # Check if environment variable exists
-    value = os.environ.get(env_var)
+    value = TektonEnviron.get(env_var)
     
     if value is None:
         if required:
@@ -791,7 +792,7 @@ def get_component_port(component_id: str, default: Optional[int] = None) -> int:
     """
     # First check environment variable
     env_var = f"{component_id.upper()}_PORT"
-    port_str = os.environ.get(env_var)
+    port_str = TektonEnviron.get(env_var)
     
     if port_str:
         try:

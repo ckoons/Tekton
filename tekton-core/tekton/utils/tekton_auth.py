@@ -31,7 +31,6 @@ Usage:
         return {"message": "This is protected", "user": token_payload["sub"]}
 """
 
-import os
 import json
 import time
 import secrets
@@ -41,6 +40,7 @@ from enum import Enum
 from typing import Dict, Any, Optional, List, Set, Union, Callable, TypeVar, cast
 
 from functools import wraps
+from shared.env import TektonEnviron
 
 # Import for JWT support
 try:
@@ -165,7 +165,7 @@ def create_token(
     
     # Get secret key from environment if not provided
     if secret_key is None:
-        secret_key = os.environ.get(DEFAULT_SECRET_ENV_VAR)
+        secret_key = TektonEnviron.get(DEFAULT_SECRET_ENV_VAR)
         if not secret_key:
             raise ConfigurationError(f"Secret key not provided and {DEFAULT_SECRET_ENV_VAR} not set")
     
@@ -230,7 +230,7 @@ def validate_token(
     
     # Get secret key from environment if not provided
     if secret_key is None:
-        secret_key = os.environ.get(DEFAULT_SECRET_ENV_VAR)
+        secret_key = TektonEnviron.get(DEFAULT_SECRET_ENV_VAR)
         if not secret_key:
             raise ConfigurationError(f"Secret key not provided and {DEFAULT_SECRET_ENV_VAR} not set")
     
@@ -297,6 +297,7 @@ def hash_api_key(api_key: str) -> str:
         Hashed API key
     """
     import hashlib
+    import os
     
     # Create salted hash
     salt = os.urandom(16)
@@ -379,7 +380,7 @@ class AuthManager:
         
         # Get secret key from environment if not provided
         if secret_key is None and auth_type != AuthType.NONE:
-            secret_key = os.environ.get(DEFAULT_SECRET_ENV_VAR)
+            secret_key = TektonEnviron.get(DEFAULT_SECRET_ENV_VAR)
             if not secret_key:
                 secret_key = secrets.token_hex(32)
                 logger.warning(
@@ -783,7 +784,7 @@ def get_secret_key() -> str:
     Raises:
         ConfigurationError: If secret key is not available
     """
-    secret_key = os.environ.get(DEFAULT_SECRET_ENV_VAR)
+    secret_key = TektonEnviron.get(DEFAULT_SECRET_ENV_VAR)
     if not secret_key:
         raise ConfigurationError(f"{DEFAULT_SECRET_ENV_VAR} environment variable not set")
     

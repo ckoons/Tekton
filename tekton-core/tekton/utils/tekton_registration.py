@@ -490,7 +490,8 @@ class TektonComponent:
         self.endpoint = endpoint
         
         # Process Hermes URL
-        self.hermes_url = hermes_url or os.environ.get("HERMES_URL")
+        from shared.env import TektonEnviron
+        self.hermes_url = hermes_url or TektonEnviron.get("HERMES_URL")
         if self.hermes_url is None:
             # Try standard port
             try:

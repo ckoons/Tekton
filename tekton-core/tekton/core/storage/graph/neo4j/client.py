@@ -61,9 +61,10 @@ class Neo4jClient:
         self.namespace = namespace
         
         # Connection parameters
-        self.uri = uri or os.environ.get("NEO4J_URI", "neo4j://localhost:7687")
-        self.username = username or os.environ.get("NEO4J_USERNAME", "neo4j")
-        self.password = password or os.environ.get("NEO4J_PASSWORD", "password")
+        from shared.env import TektonEnviron
+        self.uri = uri or TektonEnviron.get("NEO4J_URI", "neo4j://localhost:7687")
+        self.username = username or TektonEnviron.get("NEO4J_USERNAME", "neo4j")
+        self.password = password or TektonEnviron.get("NEO4J_PASSWORD", "password")
         self.database = database
         self.max_connection_lifetime = max_connection_lifetime
         self.max_connection_pool_size = max_connection_pool_size

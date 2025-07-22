@@ -4,7 +4,6 @@ Component Client
 This module provides the base client for Tekton components.
 """
 
-import os
 import json
 import asyncio
 import logging
@@ -19,6 +18,7 @@ from .exceptions import (
     AuthenticationError,
     AuthorizationError
 )
+from shared.urls import hermes_url as get_hermes_url
 
 # Configure logger
 logger = logging.getLogger(__name__)
@@ -44,7 +44,7 @@ class ComponentClient:
             retry_policy: Policy for retrying capability invocations
         """
         self.component_id = component_id
-        self.hermes_url = hermes_url or os.environ.get("HERMES_URL", "http://localhost:8000/api")
+        self.hermes_url = hermes_url or get_hermes_url("/api")
         self.security_context = security_context or SecurityContext()
         self.retry_policy = retry_policy or RetryPolicy()
         

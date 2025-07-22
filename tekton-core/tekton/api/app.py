@@ -15,14 +15,21 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 
-# Add Tekton root to path if not already present
-tekton_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..'))
-if tekton_root not in sys.path:
+# Add Tekton root to path if not already present using TektonEnviron
+from shared.env import TektonEnviron
+tekton_root = TektonEnviron.get('TEKTON_ROOT')
+if tekton_root and tekton_root not in sys.path:
     sys.path.insert(0, tekton_root)
+elif not tekton_root:
+    # Fallback for development
+    tekton_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..'))
+    if tekton_root not in sys.path:
+        sys.path.insert(0, tekton_root)
 
 # Import shared utils
 from shared.utils.global_config import GlobalConfig
 from shared.utils.logging_setup import setup_component_logging as setup_component_logger
+from shared.urls import hermes_url
 
 # Import landmarks for code annotation
 try:
@@ -198,7 +205,7 @@ async def discovery():
         ],
         capabilities=capabilities,
         dependencies={
-            "hermes": "http://localhost:8001"
+            "hermes": hermes_url()
         },
         metadata={
             **metadata,
@@ -211,76 +218,137 @@ async def discovery():
 @routers.v1.get("/components")
 async def list_components():
     """List all registered components"""
-    if not component.component_registry:
-        raise HTTPException(status_code=503, detail="Component registry not initialized")
-    
-    # Mock implementation - would connect to actual registry
-    return {
-        "components": [],
-        "total": 0
-    }
+    try:
+        import httpx
+        # Call Hermes for real component registry data
+        async with httpx.AsyncClient() as client:
+            response = await client.get(f"{hermes_url()}/api/v1/registry/components")
+            if response.status_code == 200:
+                data = response.json()
+                return {
+                    "components": data.get("components", []),
+                    "total": data.get("total", 0)
+                }
+            else:
+                logger.warning(f"Hermes registry returned {response.status_code}")
+                return {"components": [], "total": 0, "error": "Registry unavailable"}
+    except Exception as e:
+        logger.error(f"Failed to fetch components from Hermes: {e}")
+        # Fallback to component registry if available
+        if component.component_registry:
+            # Use local registry as fallback
+            return {"components": [], "total": 0, "source": "local_fallback"}
+        raise HTTPException(status_code=503, detail="Component registry not available")
 
 
 @routers.v1.get("/components/{component_name}")
 async def get_component(component_name: str):
     """Get details for a specific component"""
-    if not component.component_registry:
-        raise HTTPException(status_code=503, detail="Component registry not initialized")
-    
-    # Mock implementation
-    raise HTTPException(status_code=404, detail=f"Component {component_name} not found")
+    try:
+        import httpx
+        # Call Hermes for specific component data
+        async with httpx.AsyncClient() as client:
+            response = await client.get(f"{hermes_url()}/api/v1/registry/components/{component_name}")
+            if response.status_code == 200:
+                return response.json()
+            elif response.status_code == 404:
+                raise HTTPException(status_code=404, detail=f"Component {component_name} not found")
+            else:
+                logger.warning(f"Hermes registry returned {response.status_code} for {component_name}")
+                raise HTTPException(status_code=502, detail="Registry service error")
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Failed to fetch component {component_name} from Hermes: {e}")
+        raise HTTPException(status_code=503, detail="Component registry not available")
 
 
 # Heartbeat monitoring endpoints
 @routers.v1.get("/heartbeats")
 async def get_heartbeats():
     """Get heartbeat status for all components"""
-    if not component.heartbeat_monitor:
-        raise HTTPException(status_code=503, detail="Heartbeat monitor not initialized")
-    
-    # Mock implementation
-    return {
-        "heartbeats": {},
-        "healthy_count": 0,
-        "unhealthy_count": 0
-    }
+    try:
+        import httpx
+        # Call Hermes for real heartbeat data
+        async with httpx.AsyncClient() as client:
+            response = await client.get(f"{hermes_url()}/api/v1/heartbeats")
+            if response.status_code == 200:
+                data = response.json()
+                return {
+                    "heartbeats": data.get("heartbeats", {}),
+                    "healthy_count": data.get("healthy_count", 0),
+                    "unhealthy_count": data.get("unhealthy_count", 0)
+                }
+            else:
+                logger.warning(f"Hermes heartbeats returned {response.status_code}")
+                return {"heartbeats": {}, "healthy_count": 0, "unhealthy_count": 0, "error": "Heartbeat service unavailable"}
+    except Exception as e:
+        logger.error(f"Failed to fetch heartbeats from Hermes: {e}")
+        # Fallback to local heartbeat monitor if available
+        if component.heartbeat_monitor:
+            return {"heartbeats": {}, "healthy_count": 0, "unhealthy_count": 0, "source": "local_fallback"}
+        raise HTTPException(status_code=503, detail="Heartbeat monitor not available")
 
 
 # Resource monitoring endpoints
 @routers.v1.get("/resources")
 async def get_resources():
     """Get resource usage for all components"""
-    if not component.resource_monitor:
-        raise HTTPException(status_code=503, detail="Resource monitor not initialized")
-    
-    # Mock implementation
-    return {
-        "total_cpu": 0.0,
-        "total_memory": 0.0,
-        "components": {}
-    }
+    try:
+        import httpx
+        # Call Hermes for real resource monitoring data
+        async with httpx.AsyncClient() as client:
+            response = await client.get(f"{hermes_url()}/api/v1/resources")
+            if response.status_code == 200:
+                data = response.json()
+                return {
+                    "total_cpu": data.get("total_cpu", 0.0),
+                    "total_memory": data.get("total_memory", 0.0),
+                    "components": data.get("components", {})
+                }
+            else:
+                logger.warning(f"Hermes resources returned {response.status_code}")
+                return {"total_cpu": 0.0, "total_memory": 0.0, "components": {}, "error": "Resource monitor unavailable"}
+    except Exception as e:
+        logger.error(f"Failed to fetch resources from Hermes: {e}")
+        # Fallback to local resource monitor if available
+        if component.resource_monitor:
+            return {"total_cpu": 0.0, "total_memory": 0.0, "components": {}, "source": "local_fallback"}
+        raise HTTPException(status_code=503, detail="Resource monitor not available")
 
 
 # Dashboard endpoint
 @routers.v1.get("/dashboard")
 async def get_dashboard():
     """Get monitoring dashboard data"""
-    if not component.monitoring_dashboard:
-        raise HTTPException(status_code=503, detail="Monitoring dashboard not initialized")
-    
-    # Mock implementation
-    return {
-        "status": "operational",
-        "components": [],
-        "alerts": [],
-        "metrics": {}
-    }
+    try:
+        import httpx
+        # Call Hermes for real dashboard data
+        async with httpx.AsyncClient() as client:
+            response = await client.get(f"{hermes_url()}/api/v1/dashboard")
+            if response.status_code == 200:
+                data = response.json()
+                return {
+                    "status": data.get("status", "operational"),
+                    "components": data.get("components", []),
+                    "alerts": data.get("alerts", []),
+                    "metrics": data.get("metrics", {})
+                }
+            else:
+                logger.warning(f"Hermes dashboard returned {response.status_code}")
+                return {"status": "degraded", "components": [], "alerts": [], "metrics": {}, "error": "Dashboard service unavailable"}
+    except Exception as e:
+        logger.error(f"Failed to fetch dashboard from Hermes: {e}")
+        # Fallback to local monitoring dashboard if available
+        if component.monitoring_dashboard:
+            return {"status": "local", "components": [], "alerts": [], "metrics": {}, "source": "local_fallback"}
+        raise HTTPException(status_code=503, detail="Monitoring dashboard not available")
 
 # Configuration endpoints
 @routers.v1.get("/config/tekton-root")
 async def get_tekton_root():
     """Get the TEKTON_ROOT environment variable"""
-    tekton_root = os.environ.get("TEKTON_ROOT", os.getcwd())
+    tekton_root = TektonEnviron.get("TEKTON_ROOT") or os.getcwd()
     return {
         "tekton_root": tekton_root
     }
@@ -432,9 +500,9 @@ async def resolve_merge_conflict(merge_id: str, request: ResolveMergeRequest):
 async def execute_merge(merge_id: str):
     """Execute approved merge"""
     try:
-        # For MVP, we'll use current working directory as repo path
+        # For MVP, we'll use TEKTON_ROOT as repo path
         # In production, this would be derived from the project configuration
-        repo_path = os.getcwd()
+        repo_path = TektonEnviron.get("TEKTON_ROOT") or os.getcwd()
         
         success = await merge_coordinator.execute_merge(merge_id, repo_path)
         

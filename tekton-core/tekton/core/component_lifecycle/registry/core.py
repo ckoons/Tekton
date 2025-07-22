@@ -61,9 +61,10 @@ class ComponentRegistry:
             self.data_dir = data_dir
         else:
             # Use $TEKTON_DATA_DIR/registry by default
+            from shared.env import TektonEnviron
             default_data_dir = os.path.join(
-                os.environ.get('TEKTON_DATA_DIR', 
-                              os.path.join(os.environ.get('TEKTON_ROOT', os.path.expanduser('~')), '.tekton', 'data')),
+                TektonEnviron.get('TEKTON_DATA_DIR') or 
+                              os.path.join(TektonEnviron.get('TEKTON_ROOT') or os.path.expanduser('~'), '.tekton', 'data'),
                 'registry'
             )
             self.data_dir = default_data_dir

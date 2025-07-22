@@ -63,8 +63,9 @@ class FAISSVectorStore(BaseVectorStorage):
         self.use_gpu = use_gpu
         
         # Define data path
-        tekton_root = os.environ.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
-        self.data_path = data_path or os.environ.get(
+        from shared.env import TektonEnviron
+        tekton_root = TektonEnviron.get('TEKTON_ROOT') or '/Users/cskoons/projects/github/Tekton'
+        self.data_path = data_path or TektonEnviron.get(
             "TEKTON_VECTOR_DB_PATH", 
             os.path.join(tekton_root, ".tekton", "vector_stores", namespace)
         )

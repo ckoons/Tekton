@@ -61,7 +61,8 @@ class HermesRegistrationClient:
         self.heartbeat_interval = heartbeat_interval
         
         # Process Hermes URL from environment if not provided
-        self.hermes_url = hermes_url or os.environ.get("HERMES_URL", "http://localhost:8000/api")
+        from shared.urls import hermes_url as get_hermes_url
+        self.hermes_url = hermes_url or get_hermes_url("/api")
         
         # Prepare metadata
         self.metadata = {

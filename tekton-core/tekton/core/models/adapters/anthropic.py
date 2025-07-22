@@ -28,7 +28,8 @@ class AnthropicAdapter(ModelAdapter):
             config: Configuration dictionary with at least 'api_key'
         """
         super().__init__(config)
-        self.api_key = config.get("api_key") or os.environ.get("ANTHROPIC_API_KEY")
+        from shared.env import TektonEnviron
+        self.api_key = config.get("api_key") or TektonEnviron.get("ANTHROPIC_API_KEY")
         self.model = config.get("model", "claude-3-opus-20240229")
         self.client = None
         

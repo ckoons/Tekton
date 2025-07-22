@@ -348,7 +348,8 @@ class ProjectRegistry:
         """Initialize project registry"""
         if storage_path is None:
             # Use $TEKTON_ROOT/.tekton/projects/
-            tekton_root = os.environ.get("TEKTON_ROOT", os.getcwd())
+            from shared.env import TektonEnviron
+            tekton_root = TektonEnviron.get("TEKTON_ROOT") or os.getcwd()
             storage_path = os.path.join(tekton_root, ".tekton", "projects")
         
         self.storage_path = Path(storage_path)
@@ -583,7 +584,7 @@ class ProjectManager:
                 return
             
             # Get Tekton root directory
-            tekton_root = os.environ.get("TEKTON_ROOT")
+            tekton_root = TektonEnviron.get("TEKTON_ROOT")
             if not tekton_root or not os.path.exists(tekton_root):
                 return
             
@@ -662,7 +663,7 @@ class ProjectManager:
             raise ValueError(f"Project '{project_name}' already exists in dashboard")
         
         # Fix local directory path: full resolved path to $TEKTON_ROOT/../project-name
-        tekton_root = os.environ.get("TEKTON_ROOT", os.getcwd())
+        tekton_root = TektonEnviron.get("TEKTON_ROOT") or os.getcwd()
         tekton_parent = os.path.dirname(tekton_root)
         corrected_local_directory = os.path.abspath(os.path.join(tekton_parent, project_name))
         

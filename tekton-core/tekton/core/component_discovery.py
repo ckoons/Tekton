@@ -31,7 +31,8 @@ class ComponentDiscovery:
             hermes_url: URL of the Hermes API
         """
         import os
-        self.hermes_url = hermes_url or os.environ.get("HERMES_URL", "http://localhost:5000/api")
+        from shared.urls import hermes_url as get_hermes_url
+        self.hermes_url = hermes_url or get_hermes_url("/api")
         self._discovered_services: Dict[str, Dict[str, Any]] = {}
         self._capability_map: Dict[str, Set[str]] = {}
         

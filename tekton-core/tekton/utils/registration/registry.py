@@ -27,7 +27,8 @@ class HermesRegistrationClient:
             hermes_url: URL of the Hermes API (defaults to http://localhost:8001/api)
         """
         self.component_id = component_id
-        self.hermes_url = hermes_url or os.environ.get("HERMES_URL", "http://localhost:8001/api")
+        from shared.urls import hermes_url as get_hermes_url
+        self.hermes_url = hermes_url or get_hermes_url("/api")
         self.session = None
         self.heartbeat_task = None
         self.running = False

@@ -47,7 +47,8 @@ class HeartbeatMonitor:
             collect_metrics: Whether to collect health metrics
             stagger_heartbeats: Whether to stagger heartbeats to prevent thundering herd
         """
-        self.hermes_url = hermes_url or os.environ.get("HERMES_URL", "http://localhost:5000/api")
+        from shared.urls import hermes_url as get_hermes_url
+        self.hermes_url = hermes_url or get_hermes_url("/api")
         self.default_interval = default_interval
         self.retry_interval = retry_interval
         self.max_retries = max_retries
