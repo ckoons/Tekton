@@ -12,6 +12,7 @@ import asyncio
 import logging
 from typing import Dict, List, Any, Optional, Union, Type
 from datetime import datetime, timedelta
+from shared.env import TektonEnviron
 
 # Try to import debug_utils from shared if available
 try:
@@ -193,7 +194,7 @@ class PriceManager:
         try:
             # Create adapter based on source type
             if source.name == "LiteLLM":
-                api_key = os.environ.get("LITELLM_API_KEY")
+                api_key = TektonEnviron.get("LITELLM_API_KEY")
                 adapter = LiteLLMAdapter(
                     source_id=source.source_id,
                     api_key=api_key,

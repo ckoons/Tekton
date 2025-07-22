@@ -11,6 +11,7 @@ import json
 import logging
 import asyncio
 from typing import Dict, List, Any, Optional, Union
+from shared.env import TektonEnviron
 
 # Add the parent directory to sys.path to ensure package imports work correctly
 parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
@@ -117,7 +118,7 @@ class LLMAdapter:
             from tekton_llm_client import Client as TektonClient
             
             # Use environment variable for the server URL
-            server_url = os.environ.get("TEKTON_LLM_SERVER", "http://localhost:8000")
+            server_url = TektonEnviron.get("TEKTON_LLM_SERVER", "http://localhost:8000")
             
             # Initialize the client
             self.client = TektonClient(server_url)
@@ -146,7 +147,7 @@ class LLMAdapter:
             import openai
             
             # Check if API key is set
-            api_key = os.environ.get("OPENAI_API_KEY")
+            api_key = TektonEnviron.get("OPENAI_API_KEY")
             if not api_key:
                 debug_log.info("llm_adapter", "OpenAI API key not set")
                 return False

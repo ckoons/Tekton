@@ -13,6 +13,8 @@ import uuid
 from typing import Dict, List, Any, Optional, Union, Tuple
 from datetime import datetime, timedelta
 import requests
+from shared.env import TektonEnviron
+from shared.urls import apollo_url
 
 # Try to import debug_utils from shared if available
 try:
@@ -59,7 +61,7 @@ class ApolloAdapter:
         Args:
             api_base_url: Base URL for Apollo API (for migration purposes)
         """
-        self.api_base_url = api_base_url or os.environ.get("APOLLO_API_URL", "http://localhost:8001")
+        self.api_base_url = api_base_url or TektonEnviron.get("APOLLO_API_URL", apollo_url())
         
         # Apollo uses these tier names, which we map to our enum values
         self.tier_mapping = {

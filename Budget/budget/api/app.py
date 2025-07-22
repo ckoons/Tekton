@@ -35,6 +35,8 @@ from shared.utils.shutdown import GracefulShutdown
 from shared.utils.env_config import get_component_config
 from shared.utils.startup import component_startup, StartupMetrics
 from shared.utils.errors import StartupError
+from shared.urls import hermes_url
+from shared.env import TektonEnviron
 from shared.api import (
     create_standard_routers,
     mount_standard_routers,
@@ -174,9 +176,12 @@ async def health_check():
     debug_log.info("budget_api", "Health check endpoint called")
     
     # Use standardized health response
+    config = get_component_config()
+    port = config.budget.port if hasattr(config, 'budget') else int(TektonEnviron.get("BUDGET_PORT", "8213"))
+    
     return create_health_response(
         component_name="budget",
-        port=8013,
+        port=port,
         version="0.1.0",
         status="healthy",
         registered=budget_component.global_config.is_registered_with_hermes,
@@ -229,7 +234,7 @@ routers.v1.add_api_route(
         ],
         capabilities=budget_component.get_capabilities(),
         dependencies={
-            "hermes": "http://localhost:8001"
+            "hermes": hermes_url()
         },
         metadata=budget_component.get_metadata()
     ),

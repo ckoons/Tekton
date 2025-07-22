@@ -11,6 +11,7 @@ import asyncio
 import aiohttp
 from typing import Dict, List, Any, Optional, Union
 from datetime import datetime, timedelta
+from shared.env import TektonEnviron
 
 # Try to import debug_utils from shared if available
 try:
@@ -75,8 +76,8 @@ class LiteLLMAdapter(PriceSourceAdapter, FileCacheAdapter, RateLimitedAdapter):
         )
         
         # Configure API settings
-        self.api_base = os.environ.get("LITELLM_API_BASE", "https://api.litellm.ai")
-        self.api_key = api_key or os.environ.get("LITELLM_API_KEY")
+        self.api_base = TektonEnviron.get("LITELLM_API_BASE", "https://api.litellm.ai")
+        self.api_key = api_key or TektonEnviron.get("LITELLM_API_KEY")
         self.pricing_endpoint = "/pricing"
         
         # Optional: Use local fallback data if API is unavailable

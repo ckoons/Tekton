@@ -11,6 +11,8 @@ import json
 import logging
 import asyncio
 from typing import Dict, List, Any, Optional, Union, Tuple
+from shared.env import TektonEnviron
+from shared.urls import hermes_url
 
 # Try to import debug_utils from shared if available
 try:
@@ -70,7 +72,7 @@ class HermesRegistrationClient:
         self.heartbeat_interval = heartbeat_interval
         
         # Process Hermes URL from environment or use default
-        self.hermes_url = hermes_url or os.environ.get("HERMES_URL", "http://localhost:8001/api")
+        self.hermes_url = hermes_url or TektonEnviron.get("HERMES_URL", hermes_url("/api"))
         
         # Define component capabilities
         self.capabilities = [
@@ -520,7 +522,7 @@ async def register_budget_component(endpoint: Optional[str] = None) -> Optional[
         Registration client if successful, None otherwise
     """
     # Get component version from package or environment
-    version = os.environ.get("BUDGET_VERSION", "0.1.0")
+    version = TektonEnviron.get("BUDGET_VERSION", "0.1.0")
     
     # Create client
     client = HermesRegistrationClient(

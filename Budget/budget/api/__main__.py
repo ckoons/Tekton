@@ -2,6 +2,7 @@
 import uvicorn
 import os
 import sys
+from shared.env import TektonEnviron
 
 # Add Tekton root to path for shared imports
 tekton_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../.."))
@@ -13,7 +14,7 @@ from budget.api.app import app
 
 if __name__ == "__main__":
     config = get_component_config()
-    port = config.budget.port if hasattr(config, 'budget') else int(os.environ.get("BUDGET_PORT"))
+    port = config.budget.port if hasattr(config, 'budget') else int(TektonEnviron.get("BUDGET_PORT"))
     uvicorn.run(
         app,
         host="0.0.0.0",

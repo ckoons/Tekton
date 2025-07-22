@@ -14,6 +14,8 @@ import sqlite3
 from datetime import datetime, timedelta
 from typing import Dict, List, Any, Optional, Union, Tuple
 import requests
+from shared.env import TektonEnviron
+from shared.urls import rhetor_url
 
 # Try to import debug_utils from shared if available
 try:
@@ -62,7 +64,7 @@ class RhetorAdapter:
             api_base_url: Base URL for Rhetor API (for migration purposes)
             db_path: Path to Rhetor's SQLite database (for migration)
         """
-        self.api_base_url = api_base_url or os.environ.get("RHETOR_API_URL", "http://localhost:8003")
+        self.api_base_url = api_base_url or TektonEnviron.get("RHETOR_API_URL", rhetor_url())
         self.db_path = db_path or os.path.expanduser("~/.tekton/data/rhetor/budget.db")
         
         # Map Rhetor periods to our enum values

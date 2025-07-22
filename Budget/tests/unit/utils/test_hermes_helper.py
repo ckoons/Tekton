@@ -9,6 +9,13 @@ import pytest
 import asyncio
 from unittest.mock import patch, MagicMock, mock_open
 
+# Add Tekton root to path for shared imports
+tekton_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../.."))
+if tekton_root not in sys.path:
+    sys.path.append(tekton_root)
+
+from shared.env import TektonEnviron
+
 # Add the parent directory to sys.path to ensure package imports work correctly
 parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../.."))
 if parent_dir not in sys.path:
@@ -129,7 +136,7 @@ class TestHermesHelper:
                 # Assert client was created and register was called
                 assert result is mock_client
                 MockClient.assert_called_with(
-                    component_version=os.environ.get("BUDGET_VERSION", "0.1.0"),
+                    component_version=TektonEnviron.get("BUDGET_VERSION", "0.1.0"),
                     endpoint=endpoint
                 )
                 mock_register.assert_called_once()

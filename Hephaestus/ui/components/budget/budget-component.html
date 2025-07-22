@@ -1730,13 +1730,13 @@ function budget_sendChat() {
     
     // Send to backend
     if (chatType === 'budgetchat') {
-        // Direct message to budget-ai
+        // Send message to Penia AI via AIChat
         if (window.AIChat) {
-            window.AIChat.sendMessage('budget-ai', message)
+            window.AIChat.sendMessage('penia', message)
                 .then(response => {
                     const aiMessageDiv = document.createElement('div');
                     aiMessageDiv.className = 'budget__message budget__message--ai';
-                    aiMessageDiv.innerHTML = `<div class="budget__message-content"><div class="budget__message-text"><strong>Budget:</strong> ${response.content}</div></div>`;
+                    aiMessageDiv.innerHTML = `<div class="budget__message-content"><div class="budget__message-text"><strong>Penia:</strong> ${response.content}</div></div>`;
                     messagesContainer.appendChild(aiMessageDiv);
                     messagesContainer.scrollTop = messagesContainer.scrollHeight;
                 })

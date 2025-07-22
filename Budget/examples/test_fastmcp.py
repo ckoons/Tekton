@@ -12,6 +12,14 @@ import json
 from datetime import datetime
 from typing import Dict, Any, List, Optional
 
+# Add Tekton root to path for shared imports
+tekton_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
+if tekton_root not in sys.path:
+    sys.path.append(tekton_root)
+
+from shared.env import TektonEnviron
+from shared.urls import budget_url
+
 # Add parent directory to path
 parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 if parent_dir not in sys.path:
@@ -294,13 +302,13 @@ async def run_all_tests():
     print(BANNER)
     
     # Get Budget URL from environment or use default
-    budget_url = os.environ.get("BUDGET_URL", "http://localhost:8013/mcp")
-    print(f"Connecting to Budget MCP at: {budget_url}")
+    budget_mcp_url = TektonEnviron.get("BUDGET_URL", budget_url("/mcp"))
+    print(f"Connecting to Budget MCP at: {budget_mcp_url}")
     
     # Create MCP client
     client = MCPClient(
         component_id="test-client",
-        mcp_url=budget_url,
+        mcp_url=budget_mcp_url,
         timeout=10.0
     )
     

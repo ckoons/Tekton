@@ -12,6 +12,8 @@ import requests
 from datetime import datetime, timedelta
 from typing import Optional, Dict, Any, List
 from tabulate import tabulate
+from shared.env import TektonEnviron
+from shared.urls import budget_url
 
 # Add the parent directory to sys.path to ensure package imports work correctly
 parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
@@ -42,7 +44,7 @@ from budget.data.models import (
 )
 
 # Default API URL
-DEFAULT_API_URL = "http://localhost:8002"
+DEFAULT_API_URL = budget_url()
 
 @click.group()
 @click.option('--debug/--no-debug', default=False, help='Enable debug output')
@@ -232,7 +234,7 @@ def set_limit(ctx, period, limit, budget_id, provider, tier, component, policy_t
                 budget_data = {
                     'name': 'Default Budget',
                     'description': 'Default budget created by CLI',
-                    'owner': os.environ.get('USER', 'cli_user')
+                    'owner': TektonEnviron.get('USER', 'cli_user')
                 }
                 response = requests.post(f"{api_url}/api/budgets", json=budget_data)
                 response.raise_for_status()

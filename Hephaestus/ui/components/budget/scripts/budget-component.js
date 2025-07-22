@@ -789,10 +789,16 @@ window.budgetComponent = (function() {
                 stateManager.updateProviderDistribution(providersResponse.providers);
             }
             
-            // Load spend trend
-            // This would typically come from a dedicated API endpoint, but for now we'll simulate it
-            const trendData = generateMockTrendData();
-            stateManager.updateSpendTrend(trendData);
+            // Load spend trend from real API
+            try {
+                const trendResponse = await apiClient.getUsageSummary('daily', { days: 30 });
+                const trendData = trendResponse.daily_usage || [];
+                stateManager.updateSpendTrend(trendData);
+            } catch (error) {
+                console.warn('Failed to load trend data:', error);
+                // Fallback to empty data or show error message
+                stateManager.updateSpendTrend([]);
+            }
             
             // Load top usage
             const topUsageData = providersResponse.models || [];
@@ -1288,21 +1294,14 @@ window.budgetComponent = (function() {
             stateManager.setLoading('chat', true);
             
             try {
-                // Send message to LLM assistant
-                const response = await apiClient.getBudgetAnalysis({
-                    period: 'monthly',
-                    days: 30,
-                    question: message
-                });
-                
-                // Add response to chat
-                if (response.success && response.analysis) {
-                    stateManager.addAiChatMessage(response.analysis, chatType);
+                // Send message to Penia AI via AIChat
+                if (window.AIChat) {
+                    const response = await window.AIChat.sendMessage('penia', message);
+                    // Add AI response to chat
+                    stateManager.addAiChatMessage(response.content || 'No response received', chatType);
                 } else {
-                    stateManager.addAiChatMessage(
-                        response.error || 'Sorry, I was unable to process that request.',
-                        chatType
-                    );
+                    // AIChat not available
+                    stateManager.addAiChatMessage('AI Chat service not available', chatType);
                 }
                 
                 // Clear loading state
@@ -1310,10 +1309,8 @@ window.budgetComponent = (function() {
                 
             } catch (error) {
                 console.error('[BUDGET] Chat error:', error);
-                stateManager.addAiChatMessage(
-                    `Sorry, I encountered an error: ${error.message}`,
-                    chatType
-                );
+                // Simple error message like Terma
+                stateManager.addAiChatMessage('Failed to connect to Budget AI', chatType);
                 stateManager.setLoading('chat', false);
             }
             
@@ -1406,30 +1403,6 @@ window.budgetComponent = (function() {
         }
     }
     
-    /**
-     * Generate mock trend data for development
-     * @returns {Array} Mock trend data
-     */
-    function generateMockTrendData() {
-        const data = [];
-        const now = new Date();
-        
-        for (let i = 30; i >= 0; i--) {
-            const date = new Date(now);
-            date.setDate(date.getDate() - i);
-            
-            // Generate some realistic-looking data
-            const amount = Math.random() * 3 + 0.5; // Between $0.50 and $3.50
-            
-            data.push({
-                date,
-                amount,
-                limit: 5.0
-            });
-        }
-        
-        return data;
-    }
     
     // Return public API
     return {
