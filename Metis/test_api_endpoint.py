@@ -7,6 +7,14 @@ import os
 import json
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
+# Add Tekton root to path for shared imports
+tekton_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+if tekton_root not in sys.path:
+    sys.path.insert(0, tekton_root)
+
+from shared.env import TektonEnviron
+from shared.urls import tekton_url
+
 import requests
 from metis.core.task_manager import TaskManager
 from metis.models.task import Task
@@ -14,8 +22,8 @@ from metis.models.enums import TaskStatus, Priority
 from metis.core.mcp.tools import get_task_manager
 
 # Configuration
-METIS_PORT = os.environ.get("METIS_PORT")
-BASE_URL = f"http://localhost:{METIS_PORT}/api/v1"
+METIS_PORT = TektonEnviron.get("METIS_PORT", "8311")
+BASE_URL = f"{tekton_url('metis')}/api/v1"
 
 def test_api_endpoint():
     """Test the decompose API endpoint"""

@@ -97,6 +97,46 @@ function telosUrl(path = "", ...args) {
     return tektonUrl("telos", path, ...args);
 }
 
+function metisUrl(path = "", ...args) {
+    return tektonUrl("metis", path, ...args);
+}
+
+function synthesisUrl(path = "", ...args) {
+    return tektonUrl("synthesis", path, ...args);
+}
+
+function apolloUrl(path = "", ...args) {
+    return tektonUrl("apollo", path, ...args);
+}
+
+function budgetUrl(path = "", ...args) {
+    return tektonUrl("budget", path, ...args);
+}
+
+function sophiaUrl(path = "", ...args) {
+    return tektonUrl("sophia", path, ...args);
+}
+
+function prometheusUrl(path = "", ...args) {
+    return tektonUrl("prometheus", path, ...args);
+}
+
+function harmoniaUrl(path = "", ...args) {
+    return tektonUrl("harmonia", path, ...args);
+}
+
+function engramUrl(path = "", ...args) {
+    return tektonUrl("engram", path, ...args);
+}
+
+function peniaUrl(path = "", ...args) {
+    return tektonUrl("penia", path, ...args);
+}
+
+function hephaestusUrl(path = "", ...args) {
+    return tektonUrl("hephaestus", path, ...args);
+}
+
 // Make functions globally available
 if (typeof window !== 'undefined') {
     // Core function
@@ -113,6 +153,16 @@ if (typeof window !== 'undefined') {
     window.aishUrl = aishUrl;
     window.ergonUrl = ergonUrl;
     window.telosUrl = telosUrl;
+    window.metisUrl = metisUrl;
+    window.synthesisUrl = synthesisUrl;
+    window.apolloUrl = apolloUrl;
+    window.budgetUrl = budgetUrl;
+    window.sophiaUrl = sophiaUrl;
+    window.prometheusUrl = prometheusUrl;
+    window.harmoniaUrl = harmoniaUrl;
+    window.engramUrl = engramUrl;
+    window.peniaUrl = peniaUrl;
+    window.hephaestusUrl = hephaestusUrl;
 }
 
 // Export for module systems
@@ -131,7 +181,17 @@ if (typeof module !== 'undefined' && module.exports) {
         numaUrl,
         aishUrl,
         ergonUrl,
-        telosUrl
+        telosUrl,
+        metisUrl,
+        synthesisUrl,
+        apolloUrl,
+        budgetUrl,
+        sophiaUrl,
+        prometheusUrl,
+        harmoniaUrl,
+        engramUrl,
+        peniaUrl,
+        hephaestusUrl
     };
 }
 

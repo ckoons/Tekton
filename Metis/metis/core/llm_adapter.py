@@ -7,11 +7,21 @@ providing AI-powered task decomposition and analysis capabilities.
 """
 
 import os
+import sys
 import json
 import logging
 import asyncio
 from typing import Dict, List, Any, Optional, Union
 from datetime import datetime
+
+# Add Tekton root to path for imports
+tekton_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../"))
+if tekton_root not in sys.path:
+    sys.path.insert(0, tekton_root)
+
+# Import shared modules for environment and URLs
+from shared.env import TektonEnviron
+from shared.urls import tekton_url
 
 # Import enhanced tekton-llm-client features
 from tekton_llm_client import (
@@ -45,13 +55,10 @@ class MetisLLMAdapter:
         Args:
             adapter_url: URL for the LLM adapter service (defaults to Rhetor port)
         """
-        # Load client settings from environment
-        rhetor_port = get_env("RHETOR_PORT")
-        default_adapter_url = f"http://localhost:{rhetor_port}"
-        
-        self.adapter_url = adapter_url or get_env("LLM_ADAPTER_URL", default_adapter_url)
-        self.default_provider = get_env("LLM_PROVIDER", "anthropic")
-        self.default_model = get_env("LLM_MODEL", "claude-3-haiku-20240307")
+        # Load client settings using TektonEnviron and tekton_url
+        self.adapter_url = adapter_url or TektonEnviron.get("LLM_ADAPTER_URL", tekton_url("rhetor"))
+        self.default_provider = TektonEnviron.get("LLM_PROVIDER", "anthropic")
+        self.default_model = TektonEnviron.get("LLM_MODEL", "claude-3-haiku-20240307")
         
         # Initialize client settings
         self.client_settings = ClientSettings(
