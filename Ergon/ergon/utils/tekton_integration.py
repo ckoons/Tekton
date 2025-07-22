@@ -17,6 +17,7 @@ if tekton_root not in sys.path:
 
 from shared.utils.env_config import get_component_config
 from shared.urls import tekton_url
+from shared.env import TektonEnviron
 
 logger = logging.getLogger(__name__)
 
@@ -65,7 +66,7 @@ def get_component_port(component_name: str) -> int:
         logger.warning(f"Unknown component: {component_name}.")
         raise ValueError(f"Unknown component: {component_name}")
     
-    port_str = os.environ.get(env_var)
+    port_str = TektonEnviron.get(env_var)
     if not port_str:
         raise ValueError(f"{env_var} not found in environment")
     
@@ -90,7 +91,7 @@ def get_component_url(
         Component URL
     """
     port = get_component_port(component_name)
-    host = host or os.environ.get("TEKTON_HOST", "localhost")
+    host = host or TektonEnviron.get("TEKTON_HOST", "localhost")
     
     # Ensure path starts with /
     if path and not path.startswith("/"):
@@ -173,7 +174,7 @@ def get_environment_config() -> Dict[str, Any]:
     ]
     
     config = {
-        "host": os.environ.get("TEKTON_HOST", "localhost"),
+        "host": TektonEnviron.get("TEKTON_HOST", "localhost"),
         "components": {}
     }
     
@@ -203,7 +204,7 @@ def configure_for_single_port() -> Dict[str, Any]:
     # Build configuration dictionary
     config = {
         "port": ergon_port,
-        "host": os.environ.get("TEKTON_HOST", "localhost"),
+        "host": TektonEnviron.get("TEKTON_HOST", "localhost"),
         "api_path": "/api",
         "ws_path": "/ws",
         "health_path": "/health",

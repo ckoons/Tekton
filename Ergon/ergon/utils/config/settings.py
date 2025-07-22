@@ -6,6 +6,7 @@ from pydantic import Field, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 import os
 from enum import Enum
+from shared.env import TektonEnviron
 
 
 class LogLevel(str, Enum):
@@ -42,19 +43,19 @@ class Settings(BaseSettings):
     
     # Tekton shared settings
     tekton_home: Path = Field(default_factory=lambda: Path(
-        os.environ.get('TEKTON_DATA_DIR', 
-                      os.path.join(os.environ.get('TEKTON_ROOT', Path.home()), '.tekton', 'data'))
+        TektonEnviron.get('TEKTON_DATA_DIR', 
+                      os.path.join(TektonEnviron.get('TEKTON_ROOT', str(Path.home())), '.tekton', 'data'))
     ))
     
     # Database settings
     database_url: str = Field(default_factory=lambda: f"sqlite:///{Path(__file__).parent.parent.parent.parent.absolute()}/ergon.db")
     vector_db_path: str = Field(default_factory=lambda: str(Path(
-        os.environ.get('TEKTON_DATA_DIR', 
-                      os.path.join(os.environ.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton'), '.tekton', 'data'))
+        TektonEnviron.get('TEKTON_DATA_DIR', 
+                      os.path.join(TektonEnviron.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton'), '.tekton', 'data'))
     ) / "vector_store"))
     data_dir: str = Field(default_factory=lambda: str(Path(
-        os.environ.get('TEKTON_DATA_DIR', 
-                      os.path.join(os.environ.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton'), '.tekton', 'data'))
+        TektonEnviron.get('TEKTON_DATA_DIR', 
+                      os.path.join(TektonEnviron.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton'), '.tekton', 'data'))
     )))
     
     # Authentication settings
@@ -68,7 +69,7 @@ class Settings(BaseSettings):
     app_root: Path = Field(default_factory=lambda: Path(__file__).parent.parent.parent.absolute())
     
     # Config path for persistent settings
-    config_path: Path = Field(default_factory=lambda: Path(os.environ.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')) / ".tekton" / "ergon")
+    config_path: Path = Field(default_factory=lambda: Path(TektonEnviron.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')) / ".tekton" / "ergon")
     
     # Config for environment variables
     model_config = SettingsConfigDict(

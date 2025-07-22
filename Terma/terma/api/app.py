@@ -148,8 +148,8 @@ async def lifespan(app: FastAPI):
     logger.info("Terminal launcher initialized")
     
     # Register with Hermes
-    hermes_url = os.environ.get("HERMES_URL", "http://localhost:8001")
-    hermes_registration = HermesRegistration(hermes_url)
+    from shared.urls import hermes_url
+    hermes_registration = HermesRegistration(hermes_url())
     
     from tekton.utils.port_config import get_terma_port
     port = get_terma_port()

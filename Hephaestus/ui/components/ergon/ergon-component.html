@@ -245,10 +245,12 @@
             <input type="text" id="ergon-chat-input" class="ergon__chat-input" 
                    data-tekton-input="chat-input"
                    data-tekton-input-type="chat"
-                   placeholder="Enter chat message for Ergon agent management, tools configuration, or MCP">
+                   placeholder="Enter chat message for Ergon agent management, tools configuration, or MCP"
+                   onkeydown="if(event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); ergon_sendChat(); }">
             <button id="ergon-send-button" class="ergon__send-button"
                     data-tekton-action="send-message" 
-                    data-tekton-action-type="primary">Send</button>
+                    data-tekton-action-type="primary"
+                    onclick="ergon_sendChat(); return false;">Send</button>
         </div>
     </div>
 </div>
@@ -869,7 +871,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // Chat functionality - CSS-first navigation aware
-function ergon_sendChat() {
+window.ergon_sendChat = function() {
     const input = document.getElementById('ergon-chat-input');
     const message = input.value.trim();
     
@@ -981,20 +983,7 @@ function ergon_clearChat() {
 
 // Add event listeners for buttons
 document.addEventListener('DOMContentLoaded', function() {
-    const sendButton = document.getElementById('ergon-send-button');
-    if (sendButton) {
-        sendButton.addEventListener('click', ergon_sendChat);
-    }
-    
-    const chatInput = document.getElementById('ergon-chat-input');
-    if (chatInput) {
-        chatInput.addEventListener('keydown', function(event) {
-            if (event.key === 'Enter' && !event.shiftKey) {
-                event.preventDefault();
-                ergon_sendChat();
-            }
-        });
-    }
+    // Send button click and chat input keydown are handled inline in the HTML
     
     const clearButton = document.getElementById('clear-chat-btn');
     if (clearButton) {

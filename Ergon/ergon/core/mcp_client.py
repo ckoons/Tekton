@@ -21,7 +21,7 @@ tekton_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../.."
 if tekton_root not in sys.path:
     sys.path.append(tekton_root)
 
-from shared.utils.env_config import get_component_config
+from shared.utils.env_config import get_component_config, get_env
 
 logger = logging.getLogger(__name__)
 
@@ -65,9 +65,9 @@ class MCPClient:
         Returns:
             Hermes API URL
         """
-        hermes_host = os.environ.get("HERMES_HOST", "localhost")
+        hermes_host = get_env("HERMES_HOST", "localhost")
         config = get_component_config()
-        hermes_port = config.hermes.port if hasattr(config, 'hermes') else int(os.environ.get("HERMES_PORT"))
+        hermes_port = config.hermes.port if hasattr(config, 'hermes') else int(get_env("HERMES_PORT", "8001"))
         return f"http://{hermes_host}:{hermes_port}/api"
     
     async def initialize(self) -> bool:

@@ -11,6 +11,7 @@ import asyncio
 from typing import Dict, Any, List, Optional, Union, Callable, AsyncGenerator
 import uuid
 from shared.urls import tekton_url
+from shared.env import TektonEnviron
 
 logger = logging.getLogger(__name__)
 
@@ -38,10 +39,10 @@ class RhetorLLMAdapter:
             max_tokens: Maximum tokens to generate
             rhetor_url: URL for the Rhetor API (default: environment variable or localhost)
         """
-        self.model_name = model_name or os.environ.get("RHETOR_DEFAULT_MODEL", "claude-3-sonnet-20240229")
+        self.model_name = model_name or TektonEnviron.get("RHETOR_DEFAULT_MODEL", "claude-3-sonnet-20240229")
         self.temperature = temperature
         self.max_tokens = max_tokens
-        self.rhetor_url = rhetor_url or os.environ.get("RHETOR_API_URL", tekton_url("rhetor", "/api"))
+        self.rhetor_url = rhetor_url or TektonEnviron.get("RHETOR_API_URL", tekton_url("rhetor", "/api"))
         self.client = None
         self.rhetor_client = None
     
