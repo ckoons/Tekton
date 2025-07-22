@@ -307,7 +307,7 @@
             <div class="telos__chat-prompt">></div>
             <input type="text" id="telos-chat-input" class="telos__chat-input" 
                    placeholder="Enter chat message, requirements query, or validation request"
-                   onkeypress="if(event.key === 'Enter') { telos_sendChat(); return false; }">
+                   onkeydown="if(event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); telos_sendChat(); return false; }">
             <button id="telos-send-button" class="telos__send-button" 
                     onclick="telos_sendChat(); return false;" 
                     data-tekton-action="send-message" data-tekton-action-type="primary">Send</button>

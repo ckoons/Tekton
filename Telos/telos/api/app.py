@@ -28,6 +28,7 @@ if tekton_root not in sys.path:
 # Import shared utils
 from shared.utils.global_config import GlobalConfig
 from shared.utils.logging_setup import setup_component_logging as setup_component_logger
+from shared.urls import hermes_url, prometheus_url
 from shared.api import (
     create_standard_routers,
     mount_standard_routers,
@@ -279,8 +280,8 @@ async def discovery():
         ],
         capabilities=capabilities,
         dependencies={
-            "hermes": "http://localhost:8001",
-            "prometheus": "http://localhost:8006"
+            "hermes": hermes_url(),
+            "prometheus": prometheus_url()
         },
         metadata={
             **metadata,
