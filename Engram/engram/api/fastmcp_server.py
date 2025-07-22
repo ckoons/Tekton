@@ -32,6 +32,7 @@ if tekton_root not in sys.path:
 
 # Use shared logging setup
 from shared.utils.logging_setup import setup_component_logging
+from shared.env import TektonEnviron
 logger = setup_component_logging("engram")
 
 # Import FastMCP utilities if available
@@ -125,8 +126,8 @@ async def startup_event():
     global memory_manager, mcp_adapter, default_client_id
     
     # Get default client ID from environment
-    default_client_id = os.environ.get("ENGRAM_CLIENT_ID", "claude")
-    data_dir = os.environ.get("ENGRAM_DATA_DIR", None)
+    default_client_id = TektonEnviron.get("ENGRAM_CLIENT_ID", "claude")
+    data_dir = TektonEnviron.get("ENGRAM_DATA_DIR", None)
     
     # Initialize memory manager
     try:

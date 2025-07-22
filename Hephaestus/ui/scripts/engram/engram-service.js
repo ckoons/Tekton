@@ -9,17 +9,15 @@ class EngramService extends window.tektonUI.componentUtils.BaseService {
      * Initialize the Engram Service
      */
     constructor() {
-        // Get the Engram API URL from configuration or use default
-        const engramPort = window.tektonUI.config.get('engramPort', '8901');
-        const engramHost = window.tektonUI.config.get('engramHost', 'localhost');
-        const baseUrl = `http://${engramHost}:${engramPort}`;
+        // Use engramUrl function from tekton-urls.js
+        const baseUrl = window.engramUrl ? window.engramUrl('') : 'http://localhost:8901';
         
         // Configure Single Port Architecture using BaseService
         super('engramService', baseUrl);
         
         // Configure different endpoint paths on the same port
-        this.apiUrl = `${baseUrl}/api/v1`;
-        this.wsUrl = `${baseUrl.replace('http', 'ws')}/stream`;
+        this.apiUrl = window.engramUrl ? window.engramUrl('/api/v1') : `${baseUrl}/api/v1`;
+        this.wsUrl = window.engramUrl ? window.engramUrl('/stream').replace('http', 'ws') : `${baseUrl.replace('http', 'ws')}/stream`;
         
         // State tracking
         this.connected = false;

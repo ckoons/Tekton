@@ -23,9 +23,9 @@ DEFAULT_CONFIG = {
     "data_dir": os.path.expanduser("~/.engram"),
     
     # Server settings
-    "host": "127.0.0.1",
+    "host": TektonEnviron.get("ENGRAM_HOST", TektonEnviron.get("TEKTON_HOST", "localhost")),
     "port": int(TektonEnviron.get("ENGRAM_PORT", "8000")),
-    "mcp_host": "127.0.0.1",
+    "mcp_host": TektonEnviron.get("ENGRAM_HOST", TektonEnviron.get("TEKTON_HOST", "localhost")),
     "mcp_port": int(TektonEnviron.get("ENGRAM_MCP_PORT", "8001")),
     "enable_mcp": True,
     

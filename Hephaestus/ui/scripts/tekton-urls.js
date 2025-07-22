@@ -97,6 +97,10 @@ function telosUrl(path = "", ...args) {
     return tektonUrl("telos", path, ...args);
 }
 
+function engramUrl(path = "", ...args) {
+    return tektonUrl("engram", path, ...args);
+}
+
 // Make functions globally available
 if (typeof window !== 'undefined') {
     // Core function
@@ -113,6 +117,7 @@ if (typeof window !== 'undefined') {
     window.aishUrl = aishUrl;
     window.ergonUrl = ergonUrl;
     window.telosUrl = telosUrl;
+    window.engramUrl = engramUrl;
 }
 
 // Export for module systems
@@ -131,7 +136,8 @@ if (typeof module !== 'undefined' && module.exports) {
         numaUrl,
         aishUrl,
         ergonUrl,
-        telosUrl
+        telosUrl,
+        engramUrl
     };
 }
 

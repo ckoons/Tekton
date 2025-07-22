@@ -1,6 +1,16 @@
 <!-- Engram Component - Memory and Knowledge Management -->
+<!-- @landmark Component: Engram - Advanced memory and knowledge management system -->
+
+<!-- Hidden radio inputs for CSS-first tab functionality -->
+<!-- @landmark Navigation: CSS-first radio buttons for tab switching -->
+<input type="radio" name="engram-tab" id="engram-tab-explorer" checked style="display: none;">
+<input type="radio" name="engram-tab" id="engram-tab-search" style="display: none;">
+<input type="radio" name="engram-tab" id="engram-tab-stats" style="display: none;">
+<input type="radio" name="engram-tab" id="engram-tab-chat" style="display: none;">
+<input type="radio" name="engram-tab" id="engram-tab-teamchat" style="display: none;">
 <div class="engram" data-tekton-area="engram" data-tekton-component="engram" data-tekton-type="component-workspace" data-tekton-ai="engram-assistant" data-tekton-ai-ready="false">
     <!-- Component Header with Title -->
+    <!-- @landmark Header: Component title and branding -->
     <div class="engram__header" data-tekton-zone="header" data-tekton-section="header">
         <div class="engram__title-container">
             <img src="/images/hexagon.jpg" alt="Tekton" class="engram__icon">
@@ -12,40 +22,63 @@
     </div>
     
     <!-- Engram Menu Bar with Tab Navigation -->
-    <div class="engram__menu-bar" data-tekton-zone="menu" data-tekton-zone="menu" data-tekton-nav="component-menu">
+    <!-- @landmark Menu: Tab navigation for 5 memory management views -->
+    <div class="engram__menu-bar" data-tekton-zone="menu" data-tekton-nav="component-menu">
         <div class="engram__tabs" data-tekton-zone="menu">
             <!-- Memory Explorer Tab -->
-            <div class="engram__tab engram__tab--active" data-tab="explorer" onclick="engram_switchTab('explorer'); return false;" data-tekton-menu-item="Memory Explorer" data-tekton-menu-component="engram" data-tekton-menu-active="true" data-tekton-menu-panel="explorer-panel" data-tekton-nav-target="explorer-panel">
+            <label for="engram-tab-explorer" class="engram__tab" data-tab="explorer" 
+                 data-tekton-menu-item="Memory Explorer" 
+                 data-tekton-menu-component="engram" 
+                 data-tekton-menu-panel="explorer-panel" 
+                 data-tekton-nav-target="explorer">
                 <span class="engram__tab-label">Memory Explorer</span>
-            </div>
+            </label>
             <!-- Memory Search Tab -->
-            <div class="engram__tab" data-tab="search" onclick="engram_switchTab('search'); return false;" data-tekton-menu-item="Memory Search" data-tekton-menu-component="engram" data-tekton-menu-active="false" data-tekton-menu-panel="search-panel" data-tekton-nav-target="search-panel">
+            <label for="engram-tab-search" class="engram__tab" data-tab="search" 
+                 data-tekton-menu-item="Memory Search" 
+                 data-tekton-menu-component="engram" 
+                 data-tekton-menu-panel="search-panel" 
+                 data-tekton-nav-target="search">
                 <span class="engram__tab-label">Memory Search</span>
-            </div>
+            </label>
             <!-- Memory Stats Tab -->
-            <div class="engram__tab" data-tab="stats" onclick="engram_switchTab('stats'); return false;" data-tekton-menu-item="Memory Stats" data-tekton-menu-component="engram" data-tekton-menu-active="false" data-tekton-menu-panel="stats-panel" data-tekton-nav-target="stats-panel">
+            <label for="engram-tab-stats" class="engram__tab" data-tab="stats" 
+                 data-tekton-menu-item="Memory Stats" 
+                 data-tekton-menu-component="engram" 
+                 data-tekton-menu-panel="stats-panel" 
+                 data-tekton-nav-target="stats">
                 <span class="engram__tab-label">Memory Stats</span>
-            </div>
+            </label>
             <!-- Memory Chat Tab -->
-            <div class="engram__tab" data-tab="chat" onclick="engram_switchTab('chat'); return false;" data-tekton-menu-item="Memory Chat" data-tekton-menu-component="engram" data-tekton-menu-active="false" data-tekton-menu-panel="chat-panel" data-tekton-nav-target="chat-panel">
+            <label for="engram-tab-chat" class="engram__tab" data-tab="chat" 
+                 data-tekton-menu-item="Memory Chat" 
+                 data-tekton-menu-component="engram" 
+                 data-tekton-menu-panel="chat-panel" 
+                 data-tekton-nav-target="chat">
                 <span class="engram__tab-label">Memory Chat</span>
-            </div>
+            </label>
             <!-- Team Chat Tab -->
-            <div class="engram__tab" data-tab="teamchat" onclick="engram_switchTab('teamchat'); return false;" data-tekton-menu-item="Team Chat" data-tekton-menu-component="engram" data-tekton-menu-active="false" data-tekton-menu-panel="teamchat-panel" data-tekton-nav-target="teamchat-panel">
+            <label for="engram-tab-teamchat" class="engram__tab" data-tab="teamchat" 
+                 data-tekton-menu-item="Team Chat" 
+                 data-tekton-menu-component="engram" 
+                 data-tekton-menu-panel="teamchat-panel" 
+                 data-tekton-nav-target="teamchat">
                 <span class="engram__tab-label">Team Chat</span>
-            </div>
+            </label>
         </div>
         <div class="engram__actions">
-            <button id="clear-chat-btn" class="engram__action-button" style="display: none;" onclick="engram_clearChat(); return false;" data-tekton-action="clear-chat" data-tekton-action-type="secondary">
+            <button id="clear-chat-btn" class="engram__action-button" style="display: none;" data-tekton-action="clear-chat" data-tekton-action-type="secondary">
                 <span class="engram__button-label">Clear</span>
             </button>
         </div>
     </div>
     
     <!-- Engram Content Area -->
+    <!-- @landmark Content: Main content area with 5 tab panels -->
     <div class="engram__content" data-tekton-zone="content" data-tekton-scrollable="true">
         <!-- Explorer Tab (Default Active Tab) -->
-        <div id="explorer-panel" class="engram__panel engram__panel--active" data-tekton-panel="explorer" data-tekton-panel-for="Memory Explorer" data-tekton-panel-component="engram" data-tekton-panel-active="true">
+        <!-- @landmark Panel: Memory Explorer - Three-panel file browser interface -->
+        <div id="explorer-panel" class="engram__panel" data-tekton-panel="explorer" data-tekton-panel-for="Memory Explorer" data-tekton-panel-component="engram">
             <div class="engram__explorer">
                 <div class="engram__control-bar">
                     <div class="engram__search-container">
@@ -66,6 +99,7 @@
                 </div>
                 
                 <div class="engram__explorer-layout">
+                    <!-- @landmark SubPanel: Collections - Memory collection browser -->
                     <div class="engram__collections-panel">
                         <h3 class="engram__panel-title">Memory Collections</h3>
                         <div class="engram__collections-list">
@@ -92,6 +126,7 @@
                         </div>
                     </div>
                     
+                    <!-- @landmark SubPanel: Memories List - Individual memory items -->
                     <div class="engram__memories-panel">
                         <div class="engram__memories-header">
                             <h3 class="engram__panel-title">Memories</h3>
@@ -152,6 +187,7 @@
                         </div>
                     </div>
                     
+                    <!-- @landmark SubPanel: Memory Details - Selected memory preview -->
                     <div class="engram__memory-detail-panel">
                         <div class="engram__detail-header">
                             <h3 class="engram__panel-title">Memory Details</h3>
@@ -212,7 +248,8 @@
         </div>
         
         <!-- Search Tab -->
-        <div id="search-panel" class="engram__panel" data-tekton-panel="search" data-tekton-panel-for="Memory Search" data-tekton-panel-component="engram" data-tekton-panel-active="false">
+        <!-- @landmark Panel: Memory Search - Advanced search interface with filters -->
+        <div id="search-panel" class="engram__panel" data-tekton-panel="search" data-tekton-panel-for="Memory Search" data-tekton-panel-component="engram">
             <div class="engram__search-interface">
                 <div class="engram__search-controls">
                     <div class="engram__search-bar">
@@ -321,7 +358,8 @@
         </div>
         
         <!-- Stats Tab -->
-        <div id="stats-panel" class="engram__panel" data-tekton-panel="stats" data-tekton-panel-for="Memory Stats" data-tekton-panel-component="engram" data-tekton-panel-active="false">
+        <!-- @landmark Panel: Memory Statistics - Analytics and usage metrics -->
+        <div id="stats-panel" class="engram__panel" data-tekton-panel="stats" data-tekton-panel-for="Memory Stats" data-tekton-panel-component="engram">
             <div class="engram__stats-dashboard">
                 <div class="engram__stats-header">
                     <h3 class="engram__section-title">Memory System Statistics</h3>
@@ -444,7 +482,8 @@
         </div>
         
         <!-- Chat Tab -->
-        <div id="chat-panel" class="engram__panel" data-tekton-panel="chat" data-tekton-panel-for="Memory Chat" data-tekton-panel-component="engram" data-tekton-panel-active="false">
+        <!-- @landmark Panel: Memory Chat - Direct chat with memory-aware AI -->
+        <div id="chat-panel" class="engram__panel" data-tekton-panel="chat" data-tekton-panel-for="Memory Chat" data-tekton-panel-component="engram">
             <div id="chat-messages" class="engram__chat-messages">
                 <!-- Welcome message -->
                 <div class="engram__message engram__message--system">
@@ -465,7 +504,8 @@
         </div>
         
         <!-- Team Chat Tab -->
-        <div id="teamchat-panel" class="engram__panel" data-tekton-panel="teamchat" data-tekton-panel-for="Team Chat" data-tekton-panel-component="engram" data-tekton-panel-active="false">
+        <!-- @landmark Panel: Team Chat - Collaborate with all Tekton AI assistants -->
+        <div id="teamchat-panel" class="engram__panel" data-tekton-panel="teamchat" data-tekton-panel-for="Team Chat" data-tekton-panel-component="engram">
             <div id="teamchat-messages" class="engram__chat-messages">
                 <!-- Welcome message -->
                 <div class="engram__message engram__message--system">
@@ -481,6 +521,7 @@
     </div>
     
     <!-- Footer with Chat Input -->
+    <!-- @landmark Footer: Chat input area -->
     <div class="engram__footer" data-tekton-zone="footer">
         <div class="engram__chat-input-container">
             <div class="engram__chat-prompt">></div>
@@ -489,7 +530,7 @@
                    data-tekton-input-type="chat"
                    placeholder="Enter chat message for Engram memory chat, searching, or memory operations"
                    onkeydown="if(event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); engram_sendChat(); }">
-            <button id="engram-send-button" class="engram__send-button" onclick="engram_sendChat(); return false;"
+            <button id="engram-send-button" class="engram__send-button"
                     data-tekton-action="send-message" 
                     data-tekton-action-type="primary">Send</button>
         </div>
@@ -508,7 +549,7 @@
         width: 100%;
         background-color: var(--bg-primary, #1e1e2e);
         color: var(--text-primary, #f0f0f0);
-        /* No absolute positioning - proper component containment */
+        position: relative; /* Needed for footer positioning */
     }
     
     /* Header */
@@ -577,10 +618,17 @@
         background-color: var(--bg-hover, #3a3a4a);
     }
     
-    .engram__tab--active {
+    /* CSS-first navigation - radio button controls active state */
+    #engram-tab-explorer:checked ~ .engram .engram__tab[data-tab="explorer"],
+    #engram-tab-search:checked ~ .engram .engram__tab[data-tab="search"],
+    #engram-tab-stats:checked ~ .engram .engram__tab[data-tab="stats"],
+    #engram-tab-chat:checked ~ .engram .engram__tab[data-tab="chat"],
+    #engram-tab-teamchat:checked ~ .engram .engram__tab[data-tab="teamchat"] {
         border-bottom-color: var(--color-primary, #9C27B0); /* Purple for Engram */
         font-weight: 500;
     }
+    
+    /* Active tab styling now handled by CSS-first selectors above */
     
     .engram__actions {
         display: flex;
@@ -609,6 +657,7 @@
         flex: 1;
         overflow: hidden;
         position: relative;
+        margin-bottom: 70px; /* Space for footer */
     }
     
     .engram__panel {
@@ -619,7 +668,12 @@
         position: relative;
     }
     
-    .engram__panel--active {
+    /* CSS-first panel visibility */
+    #engram-tab-explorer:checked ~ .engram #explorer-panel,
+    #engram-tab-search:checked ~ .engram #search-panel,
+    #engram-tab-stats:checked ~ .engram #stats-panel,
+    #engram-tab-chat:checked ~ .engram #chat-panel,
+    #engram-tab-teamchat:checked ~ .engram #teamchat-panel {
         display: block;
     }
     
@@ -1359,7 +1413,7 @@
         margin-bottom: 0.5rem;
     }
     
-    /* Chat Input */
+    /* Chat Input - Fixed at bottom, always visible */
     .engram__footer {
         background-color: var(--bg-secondary, #252535);
         border-top: 1px solid var(--border-color, #444444);
@@ -1368,7 +1422,9 @@
         bottom: 0;
         left: 0;
         right: 0;
-        height: 70px; /* Fixed height to match bottom value in chat messages */
+        height: 70px;
+        z-index: 10; /* Ensure it stays above content */
+        display: block !important; /* Always visible */
     }
     
     .engram__chat-input-container {
@@ -1422,21 +1478,157 @@
     }
 </style>
 
+<script src="/scripts/tekton-urls.js"></script>
+<script src="/scripts/shared/ai-chat.js"></script>
 <script type="text/javascript">
-// SIMPLIFIED COMPONENT SCRIPT - FULLY SELF-CONTAINED
-// This version minimizes interference with other components
-
-// IMMEDIATELY SET UP UI MANAGER PROTECTION
-// Tell UI Manager to ignore this component - must be done IMMEDIATELY to avoid races
-if (window.uiManager) {
-    window.uiManager._ignoreComponent = 'engram';
-    console.log('[ENGRAM] Set UI Manager to ignore engram component');
+// Update clear button visibility based on active tab
+function engram_updateClearButton() {
+    const chatRadio = document.getElementById('engram-tab-chat');
+    const teamchatRadio = document.getElementById('engram-tab-teamchat');
+    const clearButton = document.getElementById('clear-chat-btn');
+    
+    if (clearButton) {
+        if (chatRadio.checked || teamchatRadio.checked) {
+            clearButton.style.display = 'block';
+        } else {
+            clearButton.style.display = 'none';
+        }
+    }
 }
 
-// DEFINE TAB SWITCHING FUNCTION
-// CRITICAL: This uses no shared code/utilities to avoid conflicts
-window.engram_switchTab = function(tabId) {
-    console.log('[ENGRAM] Switching to tab:', tabId);
+// Listen for tab changes
+document.addEventListener('DOMContentLoaded', function() {
+    const radioButtons = document.querySelectorAll('input[name="engram-tab"]');
+    radioButtons.forEach(radio => {
+        radio.addEventListener('change', engram_updateClearButton);
+    });
+    // Initial update
+    engram_updateClearButton();
+});
+
+// Chat functionality - CSS-first navigation aware
+function engram_sendChat() {
+    const input = document.getElementById('engram-chat-input');
+    const message = input.value.trim();
+    
+    if (!message) return;
+    
+    // Determine which tab is active using radio buttons
+    const chatRadio = document.getElementById('engram-tab-chat');
+    const teamchatRadio = document.getElementById('engram-tab-teamchat');
+    const chatType = chatRadio.checked ? 'chat' : (teamchatRadio.checked ? 'teamchat' : null);
+    
+    if (!chatType) {
+        console.error('No chat tab is active');
+        return;
+    }
+    
+    const messagesContainerId = chatType === 'chat' ? 'chat-messages' : 'teamchat-messages';
+    const messagesContainer = document.getElementById(messagesContainerId);
+    
+    // Add user message
+    const userMessageDiv = document.createElement('div');
+    userMessageDiv.className = 'engram__message engram__message--user';
+    userMessageDiv.innerHTML = `<div class="engram__message-content"><div class="engram__message-text">${message}</div></div>`;
+    messagesContainer.appendChild(userMessageDiv);
+    
+    // Clear input
+    input.value = '';
+    
+    // Scroll to bottom
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    
+    // Send to backend
+    if (chatType === 'chat') {
+        // Memory chat - use engram specialist
+        if (window.AIChat) {
+            window.AIChat.sendMessage('engram', message)
+                .then(response => {
+                    const aiMessageDiv = document.createElement('div');
+                    aiMessageDiv.className = 'engram__message engram__message--ai';
+                    aiMessageDiv.innerHTML = `<div class="engram__message-content"><div class="engram__message-text"><strong>Engram:</strong> ${response.content}</div></div>`;
+                    messagesContainer.appendChild(aiMessageDiv);
+                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                })
+                .catch(err => {
+                    console.error('Failed to send message:', err);
+                    const errorDiv = document.createElement('div');
+                    errorDiv.className = 'engram__message engram__message--system';
+                    errorDiv.innerHTML = `<div class="engram__message-content"><div class="engram__message-text"><strong>System:</strong> Failed to connect to Engram AI. Make sure aish MCP is running.</div></div>`;
+                    messagesContainer.appendChild(errorDiv);
+                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                });
+        } else {
+            console.error('AIChat not available');
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'engram__message engram__message--system';
+            errorDiv.innerHTML = `<div class="engram__message-content"><div class="engram__message-text"><strong>System:</strong> AI Chat service not available</div></div>`;
+            messagesContainer.appendChild(errorDiv);
+        }
+    } else {
+        // Team chat
+        if (window.AIChat) {
+            window.AIChat.teamChat(message, 'engram')
+                .then(data => {
+                    // Display team responses
+                    if (data.responses && data.responses.length > 0) {
+                        data.responses.forEach(resp => {
+                            const aiMessageDiv = document.createElement('div');
+                            aiMessageDiv.className = 'engram__message engram__message--ai';
+                            const sender = resp.socket_id.replace('-ai', '').charAt(0).toUpperCase() + 
+                                         resp.socket_id.replace('-ai', '').slice(1);
+                            aiMessageDiv.innerHTML = `<div class="engram__message-content"><div class="engram__message-text"><strong>${sender}:</strong> ${resp.content}</div></div>`;
+                            messagesContainer.appendChild(aiMessageDiv);
+                        });
+                        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                    }
+                })
+                .catch(err => {
+                    console.error('Failed to send team message:', err);
+                    const errorDiv = document.createElement('div');
+                    errorDiv.className = 'engram__message engram__message--system';
+                    errorDiv.innerHTML = `<div class="engram__message-content"><div class="engram__message-text"><strong>System:</strong> Failed to send team message</div></div>`;
+                    messagesContainer.appendChild(errorDiv);
+                });
+        }
+    }
+}
+
+// Clear chat functionality - CSS-first aware
+function engram_clearChat() {
+    const chatRadio = document.getElementById('engram-tab-chat');
+    const teamchatRadio = document.getElementById('engram-tab-teamchat');
+    
+    if (chatRadio.checked) {
+        const messagesContainer = document.getElementById('chat-messages');
+        // Keep the welcome message, remove all others
+        const allMessages = messagesContainer.querySelectorAll('.engram__message');
+        allMessages.forEach((msg, index) => {
+            if (index > 0) msg.remove(); // Keep first system message
+        });
+    } else if (teamchatRadio.checked) {
+        const messagesContainer = document.getElementById('teamchat-messages');
+        // Keep the welcome message, remove all others  
+        const allMessages = messagesContainer.querySelectorAll('.engram__message');
+        allMessages.forEach((msg, index) => {
+            if (index > 0) msg.remove(); // Keep first system message
+        });
+    }
+}
+
+// Add event listeners for buttons
+document.addEventListener('DOMContentLoaded', function() {
+    const sendButton = document.getElementById('engram-send-button');
+    if (sendButton) {
+        sendButton.addEventListener('click', engram_sendChat);
+    }
+    
+    const clearButton = document.getElementById('clear-chat-btn');
+    if (clearButton) {
+        clearButton.addEventListener('click', engram_clearChat);
+    }
+});
+</script>
     
     // Force HTML panel visibility
     const htmlPanelElements = document.querySelectorAll('#html-panel');
