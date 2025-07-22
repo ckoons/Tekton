@@ -96,9 +96,29 @@ def clear_url_cache():
 
 
 # Convenience functions for common patterns
+def engram_url(path: str = "", **kwargs) -> str:
+    """Shortcut for Engram URLs."""
+    return tekton_url("engram", path, **kwargs)
+
+
 def hermes_url(path: str = "", **kwargs) -> str:
     """Shortcut for Hermes URLs."""
     return tekton_url("hermes", path, **kwargs)
+
+
+def ergon_url(path: str = "", **kwargs) -> str:
+    """Shortcut for Ergon URLs."""
+    return tekton_url("ergon", path, **kwargs)
+
+
+def rhetor_url(path: str = "", **kwargs) -> str:
+    """Shortcut for Rhetor URLs."""
+    return tekton_url("rhetor", path, **kwargs)
+
+
+def terma_url(path: str = "", **kwargs) -> str:
+    """Shortcut for Terma URLs."""
+    return tekton_url("terma", path, **kwargs)
 
 
 def athena_url(path: str = "", **kwargs) -> str:
@@ -106,6 +126,86 @@ def athena_url(path: str = "", **kwargs) -> str:
     return tekton_url("athena", path, **kwargs)
 
 
+def prometheus_url(path: str = "", **kwargs) -> str:
+    """Shortcut for Prometheus URLs."""
+    return tekton_url("prometheus", path, **kwargs)
+
+
+def harmonia_url(path: str = "", **kwargs) -> str:
+    """Shortcut for Harmonia URLs."""
+    return tekton_url("harmonia", path, **kwargs)
+
+
+def telos_url(path: str = "", **kwargs) -> str:
+    """Shortcut for Telos URLs."""
+    return tekton_url("telos", path, **kwargs)
+
+
+def synthesis_url(path: str = "", **kwargs) -> str:
+    """Shortcut for Synthesis URLs."""
+    return tekton_url("synthesis", path, **kwargs)
+
+
+def tekton_core_url(path: str = "", **kwargs) -> str:
+    """Shortcut for Tekton Core URLs."""
+    return tekton_url("tekton-core", path, **kwargs)
+
+
+def metis_url(path: str = "", **kwargs) -> str:
+    """Shortcut for Metis URLs."""
+    return tekton_url("metis", path, **kwargs)
+
+
 def apollo_url(path: str = "", **kwargs) -> str:
     """Shortcut for Apollo URLs."""
     return tekton_url("apollo", path, **kwargs)
+
+
+def budget_url(path: str = "", **kwargs) -> str:
+    """Shortcut for Budget URLs."""
+    return tekton_url("budget", path, **kwargs)
+
+
+def penia_url(path: str = "", **kwargs) -> str:
+    """Shortcut for Penia URLs."""
+    return tekton_url("penia", path, **kwargs)
+
+
+def sophia_url(path: str = "", **kwargs) -> str:
+    """Shortcut for Sophia URLs."""
+    return tekton_url("sophia", path, **kwargs)
+
+
+def noesis_url(path: str = "", **kwargs) -> str:
+    """Shortcut for Noesis URLs."""
+    return tekton_url("noesis", path, **kwargs)
+
+
+def numa_url(path: str = "", **kwargs) -> str:
+    """Shortcut for Numa URLs."""
+    return tekton_url("numa", path, **kwargs)
+
+
+def aish_url(path: str = "", **kwargs) -> str:
+    """Shortcut for Aish URLs."""
+    return tekton_url("aish", path, **kwargs)
+
+
+def aish_mcp_url(path: str = "", **kwargs) -> str:
+    """Shortcut for Aish MCP URLs."""
+    return tekton_url("aish-mcp", path, **kwargs)
+
+
+def hephaestus_url(path: str = "", **kwargs) -> str:
+    """Shortcut for Hephaestus URLs."""
+    return tekton_url("hephaestus", path, **kwargs)
+
+
+def hephaestus_mcp_url(path: str = "", **kwargs) -> str:
+    """Shortcut for Hephaestus MCP URLs."""
+    return tekton_url("hephaestus-mcp", path, **kwargs)
+
+
+def db_mcp_url(path: str = "", **kwargs) -> str:
+    """Shortcut for Database MCP URLs."""
+    return tekton_url("db-mcp", path, **kwargs)

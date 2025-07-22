@@ -17,10 +17,17 @@ from .components import COMPONENTS, running_components, running_lock
 
 logger = logging.getLogger("tekton.startup")
 
+# Add Tekton root for shared imports if needed
+tekton_root_path = str(Path(__file__).parent.parent.parent.parent.parent)
+if tekton_root_path not in sys.path:
+    sys.path.insert(0, tekton_root_path)
+
+from shared.env import TektonEnviron
+
 # Initialize imports for startup
 try:
     # Add Ergon to the Python path if not already there
-    TEKTON_ROOT = Path(os.environ.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton'))
+    TEKTON_ROOT = Path(TektonEnviron.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton'))
     ERGON_ROOT = Path(__file__).parent.parent.parent.absolute()
     if str(ERGON_ROOT) not in sys.path:
         sys.path.insert(0, str(ERGON_ROOT))

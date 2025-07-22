@@ -20,8 +20,11 @@ from sse_starlette.sse import EventSourceResponse
 from pydantic import Field
 from tekton.models.base import TektonBaseModel
 
-# Add Tekton root to path if not already present
-tekton_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..'))
+# Add parent directory to path for shared utilities
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+
+# Add Tekton root to path for shared imports
+tekton_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 if tekton_root not in sys.path:
     sys.path.insert(0, tekton_root)
 

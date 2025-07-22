@@ -20,6 +20,13 @@ ergon_dir = str(Path(__file__).parent.parent)
 if ergon_dir not in sys.path:
     sys.path.append(ergon_dir)
 
+# Add Tekton root for shared imports
+tekton_root = str(Path(__file__).parent.parent.parent.parent)
+if tekton_root not in sys.path:
+    sys.path.insert(0, tekton_root)
+
+from shared.urls import hermes_url
+
 from ergon.core.mcp_client import MCPClient
 from ergon.utils.mcp_adapter import (
     prepare_text_content,
@@ -254,7 +261,7 @@ async def main():
     # Initialize the client
     client = MCPClient(
         client_name="Ergon MCP Example",
-        hermes_url=os.environ.get("HERMES_URL")
+        hermes_url=hermes_url()
     )
     
     try:
