@@ -31,106 +31,202 @@
     <link rel="stylesheet" href="styles/insights-panel.css">
 </head>
 <body>
-    <div id="app">
+    <div id="app" 
+         data-tekton-area="noesis" 
+         data-tekton-component="noesis"
+         data-tekton-type="component-workspace"
+         data-tekton-ai="noesis-ai"
+         data-tekton-ai-ready="false">
         <!-- Header -->
-        <header class="header">
+        <header class="header" 
+                data-tekton-section="header"
+                data-tekton-area="header">
             <div class="header-content">
-                <div class="logo-section">
+                <div class="logo-section" data-tekton-section="logo">
                     <h1>🧠 Noesis</h1>
                     <span class="subtitle">Theoretical Analysis & Discovery System</span>
                 </div>
                 
-                <div class="status-section">
-                    <div class="connection-status" id="connection-status">
-                        <span class="status-indicator" id="status-indicator"></span>
-                        <span class="status-text" id="status-text">Connecting...</span>
+                <div class="status-section" data-tekton-section="status">
+                    <div class="connection-status" 
+                         id="connection-status"
+                         data-tekton-status="connection"
+                         data-tekton-state="connecting">
+                        <span class="status-indicator" 
+                              id="status-indicator"
+                              data-tekton-status="indicator"></span>
+                        <span class="status-text" 
+                              id="status-text"
+                              data-tekton-status="text">Connecting...</span>
                     </div>
                     
-                    <div class="streaming-controls">
-                        <button id="start-streaming" class="btn btn-primary">Start Streaming</button>
-                        <button id="stop-streaming" class="btn btn-secondary" disabled>Stop Streaming</button>
-                        <button id="force-poll" class="btn btn-outline">Force Poll</button>
+                    <div class="streaming-controls" data-tekton-section="controls">
+                        <button id="start-streaming" 
+                                class="btn btn-primary"
+                                data-tekton-action="start-streaming"
+                                data-tekton-trigger="engram-stream">Start Streaming</button>
+                        <button id="stop-streaming" 
+                                class="btn btn-secondary" 
+                                disabled
+                                data-tekton-action="stop-streaming"
+                                data-tekton-trigger="engram-stream">Stop Streaming</button>
+                        <button id="force-poll" 
+                                class="btn btn-outline"
+                                data-tekton-action="force-poll"
+                                data-tekton-trigger="memory-update">Force Poll</button>
                     </div>
                 </div>
             </div>
         </header>
 
         <!-- Main Content -->
-        <main class="main-content">
+        <main class="main-content" 
+              data-tekton-area="main"
+              data-tekton-section="content">
             <!-- Navigation Tabs -->
-            <nav class="tab-navigation">
-                <button class="tab-button active" data-tab="overview">Overview</button>
-                <button class="tab-button" data-tab="memory-analysis">Memory Analysis</button>
-                <button class="tab-button" data-tab="manifold-space">Manifold Space</button>
-                <button class="tab-button" data-tab="dynamics">Dynamics</button>
-                <button class="tab-button" data-tab="catastrophe">Catastrophe Theory</button>
-                <button class="tab-button" data-tab="insights">Insights</button>
-                <button class="tab-button" data-tab="streaming">Live Stream</button>
+            <nav class="tab-navigation" 
+                 data-tekton-nav="component"
+                 data-tekton-section="tabs">
+                <button class="tab-button active" 
+                        data-tab="overview"
+                        data-tekton-nav-item="overview"
+                        data-tekton-tab="overview"
+                        data-tekton-state="active">Overview</button>
+                <button class="tab-button" 
+                        data-tab="memory-analysis"
+                        data-tekton-nav-item="memory-analysis"
+                        data-tekton-tab="memory-analysis">Memory Analysis</button>
+                <button class="tab-button" 
+                        data-tab="manifold-space"
+                        data-tekton-nav-item="manifold-space"
+                        data-tekton-tab="manifold-space">Manifold Space</button>
+                <button class="tab-button" 
+                        data-tab="dynamics"
+                        data-tekton-nav-item="dynamics"
+                        data-tekton-tab="dynamics">Dynamics</button>
+                <button class="tab-button" 
+                        data-tab="catastrophe"
+                        data-tekton-nav-item="catastrophe"
+                        data-tekton-tab="catastrophe">Catastrophe Theory</button>
+                <button class="tab-button" 
+                        data-tab="insights"
+                        data-tekton-nav-item="insights"
+                        data-tekton-tab="insights">Insights</button>
+                <button class="tab-button" 
+                        data-tab="streaming"
+                        data-tekton-nav-item="streaming"
+                        data-tekton-tab="streaming">Live Stream</button>
             </nav>
 
             <!-- Tab Content Panels -->
-            <div class="tab-content">
+            <div class="tab-content" data-tekton-section="tab-content">
                 <!-- Overview Tab -->
-                <div id="overview-tab" class="tab-panel active">
-                    <div class="overview-grid">
+                <div id="overview-tab" 
+                     class="tab-panel active"
+                     data-tekton-panel="overview"
+                     data-tekton-state="active"
+                     data-tekton-visibility="visible">
+                    <div class="overview-grid" data-tekton-grid="overview-dashboard">
                         <!-- System Status -->
-                        <div class="status-card">
+                        <div class="status-card" data-tekton-section="system-status">
                             <h3>🔧 System Status</h3>
-                            <div id="system-status-content">
-                                <div class="status-item">
+                            <div id="system-status-content" data-tekton-list="status-items">
+                                <div class="status-item" 
+                                     data-tekton-item="status"
+                                     data-tekton-id="framework-status-item">
                                     <label>Theoretical Framework:</label>
-                                    <span id="framework-status" class="status-value">Loading...</span>
+                                    <span id="framework-status" 
+                                          class="status-value"
+                                          data-tekton-status="framework"
+                                          data-tekton-state="loading">Loading...</span>
                                 </div>
-                                <div class="status-item">
+                                <div class="status-item" 
+                                     data-tekton-item="status"
+                                     data-tekton-id="stream-status-item">
                                     <label>Stream Manager:</label>
-                                    <span id="stream-status" class="status-value">Loading...</span>
+                                    <span id="stream-status" 
+                                          class="status-value"
+                                          data-tekton-status="stream"
+                                          data-tekton-state="loading">Loading...</span>
                                 </div>
-                                <div class="status-item">
+                                <div class="status-item" 
+                                     data-tekton-item="status"
+                                     data-tekton-id="engram-status-item">
                                     <label>Engram Connection:</label>
-                                    <span id="engram-status" class="status-value">Loading...</span>
+                                    <span id="engram-status" 
+                                          class="status-value"
+                                          data-tekton-status="engram"
+                                          data-tekton-state="loading">Loading...</span>
                                 </div>
-                                <div class="status-item">
+                                <div class="status-item" 
+                                     data-tekton-item="status"
+                                     data-tekton-id="analyzer-status-item">
                                     <label>Memory Analyzer:</label>
-                                    <span id="analyzer-status" class="status-value">Loading...</span>
+                                    <span id="analyzer-status" 
+                                          class="status-value"
+                                          data-tekton-status="analyzer"
+                                          data-tekton-state="loading">Loading...</span>
                                 </div>
                             </div>
                         </div>
 
                         <!-- Quick Stats -->
-                        <div class="stats-card">
+                        <div class="stats-card" data-tekton-section="quick-stats">
                             <h3>📊 Quick Statistics</h3>
-                            <div id="quick-stats">
-                                <div class="stat-item">
-                                    <div class="stat-value" id="total-observations">0</div>
+                            <div id="quick-stats" data-tekton-grid="stats-grid">
+                                <div class="stat-item" 
+                                     data-tekton-item="stat"
+                                     data-tekton-id="observations-stat">
+                                    <div class="stat-value" 
+                                         id="total-observations"
+                                         data-tekton-status="metric"
+                                         data-tekton-field="observations">0</div>
                                     <div class="stat-label">Memory Observations</div>
                                 </div>
-                                <div class="stat-item">
-                                    <div class="stat-value" id="total-events">0</div>
+                                <div class="stat-item" 
+                                     data-tekton-item="stat"
+                                     data-tekton-id="events-stat">
+                                    <div class="stat-value" 
+                                         id="total-events"
+                                         data-tekton-status="metric"
+                                         data-tekton-field="events">0</div>
                                     <div class="stat-label">Memory Events</div>
                                 </div>
-                                <div class="stat-item">
-                                    <div class="stat-value" id="insights-count">0</div>
+                                <div class="stat-item" 
+                                     data-tekton-item="stat"
+                                     data-tekton-id="insights-stat">
+                                    <div class="stat-value" 
+                                         id="insights-count"
+                                         data-tekton-status="metric"
+                                         data-tekton-field="insights">0</div>
                                     <div class="stat-label">Theoretical Insights</div>
                                 </div>
-                                <div class="stat-item">
-                                    <div class="stat-value" id="uptime-minutes">0</div>
+                                <div class="stat-item" 
+                                     data-tekton-item="stat"
+                                     data-tekton-id="uptime-stat">
+                                    <div class="stat-value" 
+                                         id="uptime-minutes"
+                                         data-tekton-status="metric"
+                                         data-tekton-field="uptime">0</div>
                                     <div class="stat-label">Uptime (min)</div>
                                 </div>
                             </div>
                         </div>
 
                         <!-- Recent Activity -->
-                        <div class="activity-card">
+                        <div class="activity-card" data-tekton-section="recent-activity">
                             <h3>🔄 Recent Activity</h3>
-                            <div id="recent-activity" class="activity-feed">
+                            <div id="recent-activity" 
+                                 class="activity-feed"
+                                 data-tekton-list="activity-feed">
                                 <!-- Activity items will be populated by JavaScript -->
                             </div>
                         </div>
 
                         <!-- Component Health -->
-                        <div class="health-card">
+                        <div class="health-card" data-tekton-section="component-health">
                             <h3>💚 Component Health</h3>
-                            <div id="component-health">
+                            <div id="component-health" data-tekton-list="health-indicators">
                                 <!-- Health indicators will be populated by JavaScript -->
                             </div>
                         </div>
@@ -138,30 +234,50 @@
                 </div>
 
                 <!-- Memory Analysis Tab -->
-                <div id="memory-analysis-tab" class="tab-panel">
-                    <div class="memory-analysis-grid">
+                <div id="memory-analysis-tab" 
+                     class="tab-panel"
+                     data-tekton-panel="memory-analysis"
+                     data-tekton-state="inactive"
+                     data-tekton-visibility="hidden">
+                    <div class="memory-analysis-grid" data-tekton-grid="memory-dashboard">
                         <!-- Memory State Timeline -->
-                        <div class="chart-container">
+                        <div class="chart-container" 
+                             data-tekton-section="memory-timeline"
+                             data-tekton-item="chart">
                             <h3>🧠 Memory State Evolution</h3>
-                            <canvas id="memory-timeline-chart"></canvas>
+                            <canvas id="memory-timeline-chart" 
+                                    data-tekton-chart="timeline"
+                                    data-tekton-id="memory-timeline"></canvas>
                         </div>
 
                         <!-- Thought State Distribution -->
-                        <div class="chart-container">
+                        <div class="chart-container" 
+                             data-tekton-section="thought-states"
+                             data-tekton-item="chart">
                             <h3>💭 Thought State Distribution</h3>
-                            <canvas id="thought-states-chart"></canvas>
+                            <canvas id="thought-states-chart" 
+                                    data-tekton-chart="distribution"
+                                    data-tekton-id="thought-states"></canvas>
                         </div>
 
                         <!-- Memory Metrics -->
-                        <div class="chart-container">
+                        <div class="chart-container" 
+                             data-tekton-section="memory-metrics"
+                             data-tekton-item="chart">
                             <h3>📈 Memory Metrics</h3>
-                            <canvas id="memory-metrics-chart"></canvas>
+                            <canvas id="memory-metrics-chart" 
+                                    data-tekton-chart="metrics"
+                                    data-tekton-id="memory-metrics"></canvas>
                         </div>
 
                         <!-- Attention Visualization -->
-                        <div class="chart-container">
+                        <div class="chart-container" 
+                             data-tekton-section="attention-viz"
+                             data-tekton-item="chart">
                             <h3>👁️ Attention Distribution</h3>
-                            <canvas id="attention-chart"></canvas>
+                            <canvas id="attention-chart" 
+                                    data-tekton-chart="attention"
+                                    data-tekton-id="attention-distribution"></canvas>
                         </div>
                     </div>
                 </div>
@@ -307,89 +423,152 @@
                 </div>
 
                 <!-- Insights Tab -->
-                <div id="insights-tab" class="tab-panel">
-                    <div class="insights-layout">
+                <div id="insights-tab" 
+                     class="tab-panel"
+                     data-tekton-panel="insights"
+                     data-tekton-state="inactive"
+                     data-tekton-visibility="hidden">
+                    <div class="insights-layout" data-tekton-grid="insights-dashboard">
                         <!-- Insight Feed -->
-                        <div class="insights-feed">
+                        <div class="insights-feed" data-tekton-section="insights-feed">
                             <h3>💡 Theoretical Insights</h3>
-                            <div class="insights-controls">
-                                <select id="insight-filter">
+                            <div class="insights-controls" 
+                                 data-tekton-section="controls"
+                                 data-tekton-form="insight-filters">
+                                <select id="insight-filter"
+                                        data-tekton-field="insight-filter"
+                                        data-tekton-action="filter">
                                     <option value="all">All Insights</option>
                                     <option value="manifold">Manifold</option>
                                     <option value="dynamics">Dynamics</option>
                                     <option value="catastrophe">Catastrophe</option>
                                     <option value="pattern">Patterns</option>
                                 </select>
-                                <select id="confidence-filter">
+                                <select id="confidence-filter"
+                                        data-tekton-field="confidence-filter"
+                                        data-tekton-action="filter">
                                     <option value="all">All Confidence</option>
                                     <option value="high">High (>0.8)</option>
                                     <option value="medium">Medium (0.5-0.8)</option>
                                     <option value="low">Low (<0.5)</option>
                                 </select>
-                                <button id="refresh-insights" class="btn btn-outline">Refresh</button>
+                                <button id="refresh-insights" 
+                                        class="btn btn-outline"
+                                        data-tekton-action="refresh"
+                                        data-tekton-trigger="insights-update">Refresh</button>
                             </div>
-                            <div id="insights-container" class="insights-list">
+                            <div id="insights-container" 
+                                 class="insights-list"
+                                 data-tekton-list="insights"
+                                 data-tekton-section="insights-display">
                                 <!-- Insights will be populated here -->
                             </div>
                         </div>
 
                         <!-- Insight Trends -->
-                        <div class="insight-trends">
+                        <div class="insight-trends" 
+                             data-tekton-section="insight-trends"
+                             data-tekton-item="chart">
                             <h3>📈 Insight Trends</h3>
-                            <canvas id="insight-trends-chart"></canvas>
+                            <canvas id="insight-trends-chart"
+                                    data-tekton-chart="trends"
+                                    data-tekton-id="insight-trends"></canvas>
                         </div>
 
                         <!-- Confidence Distribution -->
-                        <div class="confidence-analysis">
+                        <div class="confidence-analysis" 
+                             data-tekton-section="confidence-analysis"
+                             data-tekton-item="chart">
                             <h3>🎯 Confidence Analysis</h3>
-                            <canvas id="confidence-distribution-chart"></canvas>
+                            <canvas id="confidence-distribution-chart"
+                                    data-tekton-chart="confidence"
+                                    data-tekton-id="confidence-distribution"></canvas>
                         </div>
                     </div>
                 </div>
 
                 <!-- Live Stream Tab -->
-                <div id="streaming-tab" class="tab-panel">
-                    <div class="streaming-layout">
+                <div id="streaming-tab" 
+                     class="tab-panel"
+                     data-tekton-panel="streaming"
+                     data-tekton-state="inactive"
+                     data-tekton-visibility="hidden">
+                    <div class="streaming-layout" data-tekton-grid="streaming-dashboard">
                         <!-- Real-time Event Feed -->
-                        <div class="event-feed">
+                        <div class="event-feed" data-tekton-section="event-feed">
                             <h3>🔴 Live Memory Events</h3>
-                            <div class="event-controls">
-                                <button id="pause-events" class="btn btn-secondary">Pause</button>
-                                <button id="clear-events" class="btn btn-outline">Clear</button>
-                                <label>
-                                    <input type="checkbox" id="auto-scroll" checked> Auto-scroll
+                            <div class="event-controls" 
+                                 data-tekton-section="controls"
+                                 data-tekton-form="event-controls">
+                                <button id="pause-events" 
+                                        class="btn btn-secondary"
+                                        data-tekton-action="pause"
+                                        data-tekton-trigger="event-stream">Pause</button>
+                                <button id="clear-events" 
+                                        class="btn btn-outline"
+                                        data-tekton-action="clear"
+                                        data-tekton-trigger="event-list">Clear</button>
+                                <label data-tekton-field="auto-scroll">
+                                    <input type="checkbox" 
+                                           id="auto-scroll" 
+                                           checked
+                                           data-tekton-action="toggle"
+                                           data-tekton-trigger="auto-scroll"> Auto-scroll
                                 </label>
                             </div>
-                            <div id="live-events" class="events-container">
+                            <div id="live-events" 
+                                 class="events-container"
+                                 data-tekton-list="live-events"
+                                 data-tekton-section="event-stream">
                                 <!-- Live events will be streamed here -->
                             </div>
                         </div>
 
                         <!-- Real-time Metrics -->
-                        <div class="live-metrics">
+                        <div class="live-metrics" 
+                             data-tekton-section="live-metrics"
+                             data-tekton-item="chart">
                             <h3>📊 Live Metrics</h3>
-                            <canvas id="live-metrics-chart"></canvas>
+                            <canvas id="live-metrics-chart"
+                                    data-tekton-chart="live-metrics"
+                                    data-tekton-id="live-metrics"></canvas>
                         </div>
 
                         <!-- Stream Statistics -->
-                        <div class="stream-stats">
+                        <div class="stream-stats" data-tekton-section="stream-stats">
                             <h3>📈 Stream Statistics</h3>
-                            <div id="stream-statistics">
-                                <div class="stat-group">
+                            <div id="stream-statistics" data-tekton-grid="stats-grid">
+                                <div class="stat-group" 
+                                     data-tekton-item="stat"
+                                     data-tekton-id="event-rate-stat">
                                     <label>Event Rate:</label>
-                                    <span id="event-rate">0 events/min</span>
+                                    <span id="event-rate" 
+                                          data-tekton-status="metric"
+                                          data-tekton-field="event-rate">0 events/min</span>
                                 </div>
-                                <div class="stat-group">
+                                <div class="stat-group" 
+                                     data-tekton-item="stat"
+                                     data-tekton-id="data-rate-stat">
                                     <label>Data Rate:</label>
-                                    <span id="data-rate">0 KB/s</span>
+                                    <span id="data-rate" 
+                                          data-tekton-status="metric"
+                                          data-tekton-field="data-rate">0 KB/s</span>
                                 </div>
-                                <div class="stat-group">
+                                <div class="stat-group" 
+                                     data-tekton-item="stat"
+                                     data-tekton-id="latency-stat">
                                     <label>Analysis Latency:</label>
-                                    <span id="analysis-latency">0 ms</span>
+                                    <span id="analysis-latency" 
+                                          data-tekton-status="metric"
+                                          data-tekton-field="latency">0 ms</span>
                                 </div>
-                                <div class="stat-group">
+                                <div class="stat-group" 
+                                     data-tekton-item="stat"
+                                     data-tekton-id="memory-usage-stat">
                                     <label>Memory Usage:</label>
-                                    <span id="memory-usage">0 MB</span>
+                                    <span id="memory-usage" 
+                                          data-tekton-status="metric"
+                                          data-tekton-field="memory-usage">0 MB</span>
                                 </div>
                             </div>
                         </div>

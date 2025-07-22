@@ -7,8 +7,16 @@ import asyncio
 import pytest
 import pytest_asyncio
 import numpy as np
+import sys
+import os
 from unittest.mock import AsyncMock, Mock, patch
 from typing import Dict, Any, List
+
+# Add Tekton root to path for URL functions
+tekton_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+if tekton_root not in sys.path:
+    sys.path.append(tekton_root)
+from shared.urls import sophia_url
 
 from noesis.core.integration.sophia_bridge import SophiaBridge, TheoryExperimentProtocol, CollaborationProtocol
 from noesis.core.theoretical.manifold import ManifoldAnalyzer
@@ -27,7 +35,7 @@ class TestNoesisSophiaIntegration:
     @pytest_asyncio.fixture(scope="function")
     async def sophia_bridge(self):
         """Create a Sophia bridge with mocked HTTP client"""
-        bridge = SophiaBridge("http://test-sophia:8000")
+        bridge = SophiaBridge(sophia_url())
         bridge.client = AsyncMock()
         # Clear any existing protocols from previous tests
         bridge.active_protocols.clear()
@@ -545,7 +553,7 @@ class TestNoesisAnalysisToSophiaIntegration:
     @pytest_asyncio.fixture(scope="function")
     async def sophia_bridge(self):
         """Create Sophia bridge for testing"""
-        bridge = SophiaBridge("http://test-sophia:8000")
+        bridge = SophiaBridge(sophia_url())
         bridge.client = AsyncMock()
         # Clear any existing protocols from previous tests
         bridge.active_protocols.clear()
@@ -757,7 +765,7 @@ class TestExperimentResultValidation:
     
     async def test_successful_theory_validation(self):
         """Test case where experiment strongly validates theory"""
-        bridge = SophiaBridge("http://test")
+        bridge = SophiaBridge()  # Use default Tekton URL
         
         theoretical_predictions = {
             "intrinsic_dimension": 5,
@@ -795,7 +803,7 @@ class TestExperimentResultValidation:
     
     async def test_partial_theory_validation(self):
         """Test case where experiment partially validates theory"""
-        bridge = SophiaBridge("http://test")
+        bridge = SophiaBridge()  # Use default Tekton URL
         
         theoretical_predictions = {
             "intrinsic_dimension": 5,
@@ -838,7 +846,7 @@ class TestExperimentResultValidation:
     
     async def test_theory_refinement_suggestions(self):
         """Test generation of theory refinement suggestions"""
-        bridge = SophiaBridge("http://test")
+        bridge = SophiaBridge()  # Use default Tekton URL
         
         # Create comparison with significant mismatches
         comparison = {
