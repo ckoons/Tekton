@@ -5,6 +5,7 @@ from typing import List, Dict, Any, Optional
 from pathlib import Path
 
 from shared.utils.standard_component import StandardComponentBase
+from shared.env import TektonEnviron
 
 logger = logging.getLogger(__name__)
 
@@ -30,11 +31,11 @@ class EngramComponent(StandardComponentBase):
         
         # Configure modes from config or environment
         self.debug_mode = getattr(engram_config, "debug", 
-            os.environ.get('ENGRAM_DEBUG', '').lower() in ('1', 'true', 'yes'))
+            TektonEnviron.get('ENGRAM_DEBUG', '').lower() in ('1', 'true', 'yes'))
         self.use_fallback = getattr(engram_config, "use_fallback", 
-            os.environ.get('ENGRAM_USE_FALLBACK', '').lower() in ('1', 'true', 'yes'))
+            TektonEnviron.get('ENGRAM_USE_FALLBACK', '').lower() in ('1', 'true', 'yes'))
         self.use_hermes = getattr(engram_config, "hermes_mode", 
-            os.environ.get('ENGRAM_MODE', '').lower() == 'hermes')
+            TektonEnviron.get('ENGRAM_MODE', '').lower() == 'hermes')
         
         # Set up logging level
         if self.debug_mode:
@@ -71,7 +72,7 @@ class EngramComponent(StandardComponentBase):
         
         # Get client ID from config or environment
         self.default_client_id = getattr(engram_config, "default_client_id",
-            os.environ.get("ENGRAM_CLIENT_ID", "default"))
+            TektonEnviron.get("ENGRAM_CLIENT_ID", "default"))
         
         # Initialize memory manager based on storage mode
         try:

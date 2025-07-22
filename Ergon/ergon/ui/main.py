@@ -2,10 +2,17 @@
 Main entry point for the Ergon UI
 """
 
-import streamlit as st
-import os
 import sys
+import os
+
+# Add Tekton root to sys.path before other imports
+tekton_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../../'))
+if tekton_root not in sys.path:
+    sys.path.insert(0, tekton_root)
+
+import streamlit as st
 import traceback
+from shared.env import TektonEnviron
 
 # Import utility modules and styling
 from .utils.session import debug, check_authentication
@@ -48,7 +55,7 @@ def main():
         st.rerun()
     
     # Check authentication if enabled
-    if os.environ.get("ERGON_AUTHENTICATION", "true").lower() == "true":
+    if TektonEnviron.get("ERGON_AUTHENTICATION", "true").lower() == "true":
         if not check_authentication():
             from .pages.auth import login_page
             login_page()

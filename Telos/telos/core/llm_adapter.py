@@ -8,10 +8,19 @@ the enhanced tekton-llm-client features.
 """
 
 import os
+import sys
 import json
 import logging
 import asyncio
 from typing import Dict, List, Any, Optional, Union, AsyncGenerator, Callable, Awaitable
+
+# Add Tekton root to path for shared imports
+tekton_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../..'))
+if tekton_root not in sys.path:
+    sys.path.insert(0, tekton_root)
+
+# Import shared utilities
+from shared.urls import rhetor_url
 
 # Import enhanced tekton-llm-client features
 from tekton_llm_client import (
@@ -47,8 +56,7 @@ class LLMAdapter:
             adapter_url: URL for the LLM adapter service
         """
         # Load client settings from environment or config
-        rhetor_port = get_env("RHETOR_PORT", "8003")
-        default_adapter_url = f"http://localhost:{rhetor_port}"
+        default_adapter_url = rhetor_url()
         
         self.adapter_url = adapter_url or get_env("LLM_ADAPTER_URL", default_adapter_url)
         self.default_provider = get_env("LLM_PROVIDER", "anthropic")

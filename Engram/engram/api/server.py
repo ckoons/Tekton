@@ -25,6 +25,7 @@ if tekton_root not in sys.path:
     sys.path.insert(0, tekton_root)
 
 # Import shared utils
+from shared.env import TektonEnviron
 from shared.utils.health_check import create_health_response
 from shared.utils.hermes_registration import HermesRegistration, heartbeat_loop
 from shared.utils.logging_setup import setup_component_logging
@@ -500,7 +501,7 @@ def main():
     global_config = GlobalConfig.get_instance()
     
     # Get host and port from GlobalConfig or arguments
-    host = args.host or os.environ.get("ENGRAM_HOST", "127.0.0.1")
+    host = args.host or TektonEnviron.get("ENGRAM_HOST", TektonEnviron.get("TEKTON_HOST", "localhost"))
     port = args.port or global_config.config.engram.port
     
     # Start the server with socket reuse

@@ -136,7 +136,6 @@ function peniaUrl(path = "", ...args) {
 function hephaestusUrl(path = "", ...args) {
     return tektonUrl("hephaestus", path, ...args);
 }
-
 // Make functions globally available
 if (typeof window !== 'undefined') {
     // Core function

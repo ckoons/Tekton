@@ -9,6 +9,7 @@ if tekton_root not in sys.path:
     sys.path.insert(0, tekton_root)
 
 from shared.utils.global_config import GlobalConfig
+from shared.env import TektonEnviron
 
 if __name__ == "__main__":
     # Parse arguments to check for standalone mode
@@ -21,7 +22,7 @@ if __name__ == "__main__":
                         help="Data directory for standalone mode")
     args, remaining_args = parser.parse_known_args()
     
-    if args.standalone or os.environ.get("ENGRAM_STANDALONE_MODE", "").lower() == "true":
+    if args.standalone or TektonEnviron.get("ENGRAM_STANDALONE_MODE", "").lower() == "true":
         # Run in standalone FastMCP mode
         from engram.api.fastmcp_server import main as fastmcp_main
         # Restore sys.argv for fastmcp_server to parse

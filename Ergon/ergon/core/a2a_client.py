@@ -22,7 +22,7 @@ tekton_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../.."
 if tekton_root not in sys.path:
     sys.path.append(tekton_root)
 
-from shared.utils.env_config import get_component_config
+from shared.utils.env_config import get_component_config, get_env
 from ergon.utils.hermes_helper import register_with_hermes
 
 logger = logging.getLogger(__name__)
@@ -74,9 +74,9 @@ class A2AClient:
     
     def _get_hermes_url(self) -> str:
         """Get the Hermes URL from environment variables or use the default."""
-        hermes_host = os.environ.get("HERMES_HOST", "localhost")
+        hermes_host = get_env("HERMES_HOST", "localhost")
         config = get_component_config()
-        hermes_port = config.hermes.port if hasattr(config, 'hermes') else int(os.environ.get("HERMES_PORT"))
+        hermes_port = config.hermes.port if hasattr(config, 'hermes') else int(get_env("HERMES_PORT", "8001"))
         return f"http://{hermes_host}:{hermes_port}/api"
     
     async def initialize(self) -> bool:
@@ -105,7 +105,7 @@ class A2AClient:
         try:
             return config.ergon.port
         except (AttributeError, TypeError):
-            return int(os.environ.get('ERGON_PORT'))
+            return int(get_env('ERGON_PORT', '8002'))
     
     async def _send_jsonrpc(
         self,
