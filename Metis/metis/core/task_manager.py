@@ -5,11 +5,20 @@ This module defines the TaskManager class, which provides the core business
 logic for managing tasks in the Metis system.
 """
 
+import os
+import sys
 from datetime import datetime
 from typing import Dict, List, Optional, Any, Tuple, Set, Union
 from uuid import uuid4
+
+# Add Tekton root to path for imports
+tekton_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../"))
+if tekton_root not in sys.path:
+    sys.path.insert(0, tekton_root)
+
+# Import shared modules for environment
+from shared.env import TektonEnviron
 import asyncio
-import os
 
 from metis.models.task import Task
 from metis.models.enums import TaskStatus, Priority
@@ -54,7 +63,7 @@ class TaskManager:
         self._event_handlers = {}
         
         # Load from backup file if exists
-        backup_path = os.environ.get("METIS_BACKUP_PATH", "metis_data.json")
+        backup_path = TektonEnviron.get("METIS_BACKUP_PATH", "metis_data.json")
         if os.path.exists(backup_path):
             self.storage.load_from_file(backup_path)
     
@@ -701,7 +710,7 @@ class TaskManager:
     
     async def _auto_save(self) -> None:
         """Auto-save if backup path is set."""
-        backup_path = os.environ.get("METIS_BACKUP_PATH")
+        backup_path = TektonEnviron.get("METIS_BACKUP_PATH")
         if backup_path:
             self.storage.save_to_file(backup_path)
     

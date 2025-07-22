@@ -14,6 +14,9 @@ tekton_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
 if tekton_root not in sys.path:
     sys.path.append(tekton_root)
 
+# Import shared modules for proper environment and URL handling
+from shared.env import TektonEnviron
+from shared.urls import tekton_url
 from tekton.utils.port_config import get_metis_port, get_hermes_port, get_telos_port, get_prometheus_port
 
 # Default configuration
@@ -58,21 +61,23 @@ def get_config() -> Dict[str, Any]:
     config["TELOS_PORT"] = get_telos_port()
     config["PROMETHEUS_PORT"] = get_prometheus_port()
     
-    # Override with environment variables (except ports which are centrally managed)
+    # Override with environment variables using TektonEnviron (except ports which are centrally managed)
     for key in config.keys():
-        if key in os.environ and not key.endswith("_PORT"):
-            # Convert to appropriate type
-            if isinstance(config[key], int):
-                config[key] = int(os.environ[key])
-            elif isinstance(config[key], bool):
-                config[key] = os.environ[key].lower() in ("true", "1", "yes")
-            else:
-                config[key] = os.environ[key]
+        if not key.endswith("_PORT"):
+            env_value = TektonEnviron.get(key)
+            if env_value is not None:
+                # Convert to appropriate type
+                if isinstance(config[key], int):
+                    config[key] = TektonEnviron.getInt(key, config[key])
+                elif isinstance(config[key], bool):
+                    config[key] = TektonEnviron.getBoolean(key, config[key])
+                else:
+                    config[key] = env_value
     
-    # Construct component URLs
-    config["HERMES_URL"] = f"http://localhost:{config['HERMES_PORT']}"
-    config["TELOS_URL"] = f"http://localhost:{config['TELOS_PORT']}"
-    config["PROMETHEUS_URL"] = f"http://localhost:{config['PROMETHEUS_PORT']}"
+    # Construct component URLs using tekton_url
+    config["HERMES_URL"] = tekton_url("hermes")
+    config["TELOS_URL"] = tekton_url("telos")
+    config["PROMETHEUS_URL"] = tekton_url("prometheus")
     
     return config
 

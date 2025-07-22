@@ -1516,8 +1516,8 @@ window.metis_switchTab = function(tabId) {
         // Update UI based on active tab
         const chatInput = metisContainer.querySelector('.metis__footer');
         if (chatInput) {
-            // Show chat input for chat tabs, otherwise hide it
-            chatInput.style.display = (tabId === 'workflow' || tabId === 'teamchat') ? 'block' : 'none';
+            // Footer is always visible per Tekton rules - never hide it
+            chatInput.style.display = 'block';
         }
         
         // Update clear button visibility for chat tabs
@@ -1637,33 +1637,68 @@ window.metis_sendChat = function() {
                 // Clear input
                 input.value = '';
                 
-                // Use window.AIChat if available
-                if (window.AIChat && typeof window.AIChat.sendMessage === 'function') {
-                    window.AIChat.sendMessage(message, tabId).then(response => {
-                        const aiMsg = document.createElement('div');
-                        aiMsg.className = 'metis__message metis__message--ai';
-                        aiMsg.innerHTML = `
-                            <div class="metis__message-content">
-                                <div class="metis__message-text">Metis: ${response}</div>
-                            </div>
-                        `;
-                        messagesContainer.appendChild(aiMsg);
-                        
-                        // Scroll to bottom
-                        messagesContainer.scrollTop = messagesContainer.scrollHeight;
-                    }).catch(error => {
-                        console.error('[METIS] Error from AIChat:', error);
-                        // Fallback error message
-                        const aiMsg = document.createElement('div');
-                        aiMsg.className = 'metis__message metis__message--ai';
-                        aiMsg.innerHTML = `
-                            <div class="metis__message-content">
-                                <div class="metis__message-text">Metis: Sorry, I'm having trouble processing your request right now.</div>
-                            </div>
-                        `;
-                        messagesContainer.appendChild(aiMsg);
-                        messagesContainer.scrollTop = messagesContainer.scrollHeight;
-                    });
+                // Use window.AIChat if available - matching Terma's exact pattern
+                if (window.AIChat) {
+                    if (tabId === 'workflow') {
+                        // Direct message to metis
+                        window.AIChat.sendMessage('metis', message)
+                            .then(response => {
+                                const aiMsg = document.createElement('div');
+                                aiMsg.className = 'metis__message metis__message--ai';
+                                aiMsg.innerHTML = `
+                                    <div class="metis__message-content">
+                                        <div class="metis__message-text"><strong>Metis:</strong> ${response.content}</div>
+                                    </div>
+                                `;
+                                messagesContainer.appendChild(aiMsg);
+                                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                            })
+                            .catch(err => {
+                                console.error('Failed to send message:', err);
+                                const errorMsg = document.createElement('div');
+                                errorMsg.className = 'metis__message metis__message--system';
+                                errorMsg.innerHTML = `
+                                    <div class="metis__message-content">
+                                        <div class="metis__message-text"><strong>System:</strong> Failed to connect to Metis AI</div>
+                                    </div>
+                                `;
+                                messagesContainer.appendChild(errorMsg);
+                                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                            });
+                    } else if (tabId === 'teamchat') {
+                        // Team chat through Rhetor
+                        window.AIChat.teamChat(message, 'metis')
+                            .then(data => {
+                                // Display team responses
+                                if (data.responses && data.responses.length > 0) {
+                                    data.responses.forEach(resp => {
+                                        const aiMsg = document.createElement('div');
+                                        aiMsg.className = 'metis__message metis__message--ai';
+                                        const sender = resp.socket_id.replace('-ai', '').charAt(0).toUpperCase() + 
+                                                     resp.socket_id.replace('-ai', '').slice(1);
+                                        aiMsg.innerHTML = `
+                                            <div class="metis__message-content">
+                                                <div class="metis__message-text"><strong>${sender}:</strong> ${resp.content}</div>
+                                            </div>
+                                        `;
+                                        messagesContainer.appendChild(aiMsg);
+                                    });
+                                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                                }
+                            })
+                            .catch(err => {
+                                console.error('Failed to send team message:', err);
+                                const errorMsg = document.createElement('div');
+                                errorMsg.className = 'metis__message metis__message--system';
+                                errorMsg.innerHTML = `
+                                    <div class="metis__message-content">
+                                        <div class="metis__message-text"><strong>System:</strong> Failed to send team message</div>
+                                    </div>
+                                `;
+                                messagesContainer.appendChild(errorMsg);
+                                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                            });
+                    }
                 } else {
                     console.warn('[METIS] window.AIChat not available');
                     // Fallback message when AIChat is not available

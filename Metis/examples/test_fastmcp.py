@@ -10,13 +10,20 @@ import asyncio
 import aiohttp
 import json
 import sys
+import os
 from typing import Dict, Any, List
 
+# Add Tekton root to path for shared imports
+tekton_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
+if tekton_root not in sys.path:
+    sys.path.insert(0, tekton_root)
+
+from shared.env import TektonEnviron
+from shared.urls import tekton_url
 
 # Configuration
-import os
-METIS_PORT = os.environ.get("METIS_PORT")
-METIS_BASE_URL = f"http://localhost:{METIS_PORT}"
+METIS_PORT = TektonEnviron.get("METIS_PORT", "8311")
+METIS_BASE_URL = tekton_url("metis")
 MCP_BASE_URL = f"{METIS_BASE_URL}/api/mcp/v2"
 
 
