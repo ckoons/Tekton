@@ -267,7 +267,8 @@ async def main() -> int:
     
     # Set Hermes URL from environment or default
     if hasattr(args, "hermes_url") and args.hermes_url is None:
-        args.hermes_url = os.environ.get("HERMES_URL", "http://localhost:8001/api")
+        from shared.urls import hermes_url
+        args.hermes_url = hermes_url("/api")
     
     # Execute command
     if args.command == "register":

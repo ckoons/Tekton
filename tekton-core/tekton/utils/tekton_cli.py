@@ -34,7 +34,6 @@ Usage:
     cli.run()
 """
 
-import os
 import sys
 import json
 import logging
@@ -44,6 +43,8 @@ import asyncio
 from enum import Enum
 from functools import wraps
 from typing import Dict, Any, Optional, List, Union, Callable, Tuple, Set, Type, TypeVar, cast
+from shared.env import TektonEnviron
+import os
 
 # Set up logger
 logger = logging.getLogger(__name__)
@@ -110,7 +111,7 @@ def create_cli_parser(
         parser.add_argument(
             "--log-level",
             choices=[level.name for level in LogLevel],
-            default=os.environ.get("TEKTON_LOG_LEVEL", "INFO"),
+            default=TektonEnviron.get("TEKTON_LOG_LEVEL", "INFO"),
             help="Logging level"
         )
         
@@ -392,7 +393,7 @@ class TektonCLI:
             subparser.add_argument(
                 "--log-level",
                 choices=[level.name for level in LogLevel],
-                default=os.environ.get("TEKTON_LOG_LEVEL", "INFO"),
+                default=TektonEnviron.get("TEKTON_LOG_LEVEL", "INFO"),
                 help="Logging level"
             )
             

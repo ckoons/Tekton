@@ -248,7 +248,8 @@ def setup_logging(
     
     # Determine log level from args, env, or default to INFO
     if log_level is None:
-        log_level = os.environ.get(LOG_LEVEL_ENV_VAR, 'INFO')
+        from shared.env import TektonEnviron
+        log_level = TektonEnviron.get(LOG_LEVEL_ENV_VAR, 'INFO')
         
     numeric_level = getattr(logging, log_level.upper(), logging.INFO)
     logger.setLevel(numeric_level)
@@ -281,10 +282,10 @@ def setup_logging(
         logger.addHandler(console_handler)
     
     # File handler
-    if log_to_file and (log_file or os.environ.get(LOG_DIR_ENV_VAR)):
+    if log_to_file and (log_file or TektonEnviron.get(LOG_DIR_ENV_VAR)):
         # Determine log file path
         if log_file is None:
-            log_dir = os.environ.get(LOG_DIR_ENV_VAR, '/var/log/tekton')
+            log_dir = TektonEnviron.get(LOG_DIR_ENV_VAR, '/var/log/tekton')
             log_file = os.path.join(log_dir, f"{component_id}.log")
         
         # Create directory if needed

@@ -32,7 +32,8 @@ async def discover_component(
         ComponentNotFoundError: If the component is not found
         ComponentUnavailableError: If the Hermes API is unavailable
     """
-    hermes_url = hermes_url or os.environ.get("HERMES_URL", "http://localhost:8000/api")
+    from shared.urls import hermes_url as get_hermes_url
+    hermes_url = hermes_url or get_hermes_url("/api")
     
     try:
         import aiohttp
@@ -72,7 +73,8 @@ async def discover_components_by_type(
     Raises:
         ComponentUnavailableError: If the Hermes API is unavailable
     """
-    hermes_url = hermes_url or os.environ.get("HERMES_URL", "http://localhost:8000/api")
+    from shared.urls import hermes_url as get_hermes_url
+    hermes_url = hermes_url or get_hermes_url("/api")
     
     try:
         import aiohttp
@@ -111,7 +113,8 @@ async def discover_components_by_capability(
     Raises:
         ComponentUnavailableError: If the Hermes API is unavailable
     """
-    hermes_url = hermes_url or os.environ.get("HERMES_URL", "http://localhost:8000/api")
+    from shared.urls import hermes_url as get_hermes_url
+    hermes_url = hermes_url or get_hermes_url("/api")
     
     try:
         import aiohttp

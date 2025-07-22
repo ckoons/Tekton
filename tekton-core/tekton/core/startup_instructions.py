@@ -65,7 +65,8 @@ class StartUpInstructions:
         self.activation_mode = activation_mode
         self.activation_trigger = activation_trigger
         self.timeout = timeout
-        self.hermes_url = hermes_url or os.environ.get("HERMES_URL", "http://localhost:5000/api")
+        from shared.urls import hermes_url as get_hermes_url
+        self.hermes_url = hermes_url or get_hermes_url("/api")
         self.priority = max(1, min(10, priority))  # Clamp between 1 and 10
         
     def to_dict(self) -> Dict[str, Any]:

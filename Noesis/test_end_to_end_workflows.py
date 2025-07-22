@@ -6,10 +6,18 @@ Tests realistic scenarios from theoretical analysis to experimental validation
 import asyncio
 import pytest
 import numpy as np
+import sys
+import os
 from unittest.mock import AsyncMock, Mock, patch
 from typing import Dict, Any, List
 import json
 from datetime import datetime, timedelta
+
+# Add Tekton root to path for URL functions
+tekton_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+if tekton_root not in sys.path:
+    sys.path.append(tekton_root)
+from shared.urls import sophia_url
 
 from noesis.core.noesis_component import NoesisComponent
 from noesis.core.theoretical.manifold import ManifoldAnalyzer
@@ -46,7 +54,7 @@ class TestCompleteWorkflows:
     @pytest.fixture
     async def sophia_bridge(self):
         """Create Sophia bridge with mocked HTTP client"""
-        bridge = SophiaBridge("http://test-sophia:8000")
+        bridge = SophiaBridge(sophia_url())
         bridge.client = AsyncMock()
         return bridge
     
@@ -779,7 +787,7 @@ class TestWorkflowIntegration:
     
     async def test_workflow_data_persistence(self):
         """Test that workflow data persists correctly across components"""
-        bridge = SophiaBridge("http://test")
+        bridge = SophiaBridge()  # Use default Tekton URL
         bridge.client = AsyncMock()
         
         # Create multiple related protocols
@@ -809,7 +817,7 @@ class TestWorkflowIntegration:
     
     async def test_concurrent_workflow_execution(self):
         """Test handling of multiple concurrent workflows"""
-        bridge = SophiaBridge("http://test")
+        bridge = SophiaBridge()  # Use default Tekton URL
         bridge.client = AsyncMock()
         bridge.client.post.return_value = AsyncMock()
         bridge.client.post.return_value.status_code = 200
@@ -846,7 +854,7 @@ class TestWorkflowIntegration:
     
     async def test_workflow_error_recovery(self):
         """Test recovery from errors during workflow execution"""
-        bridge = SophiaBridge("http://test")
+        bridge = SophiaBridge()  # Use default Tekton URL
         bridge.client = AsyncMock()
         
         # Simulate network error during protocol creation

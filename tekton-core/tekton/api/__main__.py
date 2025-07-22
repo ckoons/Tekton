@@ -6,10 +6,16 @@ Main entry point for Tekton Core API server.
 import os
 import sys
 
-# Add Tekton root to path if not already present
-tekton_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..'))
-if tekton_root not in sys.path:
+# Add Tekton root to path if not already present using TektonEnviron
+from shared.env import TektonEnviron
+tekton_root = TektonEnviron.get('TEKTON_ROOT')
+if tekton_root and tekton_root not in sys.path:
     sys.path.insert(0, tekton_root)
+elif not tekton_root:
+    # Fallback for development
+    tekton_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..'))
+    if tekton_root not in sys.path:
+        sys.path.insert(0, tekton_root)
 
 from shared.utils.global_config import GlobalConfig
 

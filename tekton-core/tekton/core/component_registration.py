@@ -45,7 +45,8 @@ class ComponentRegistration:
         """
         self.component_id = component_id
         self.component_name = component_name
-        self.hermes_url = hermes_url or os.environ.get("HERMES_URL", "http://localhost:5000/api")
+        from shared.urls import hermes_url as get_hermes_url
+        self.hermes_url = hermes_url or get_hermes_url("/api")
         self.version = version
         self.capabilities = capabilities or []
         self.metadata = metadata or {}

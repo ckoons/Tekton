@@ -68,7 +68,8 @@ class QdrantVectorStore(BaseVectorStorage):
         self.use_disk = use_disk
         
         # Define data path
-        self.data_path = path or os.environ.get(
+        from shared.env import TektonEnviron
+        self.data_path = path or TektonEnviron.get(
             "TEKTON_VECTOR_DB_PATH", 
             os.path.expanduser(f"~/.tekton/qdrant/{namespace}")
         )

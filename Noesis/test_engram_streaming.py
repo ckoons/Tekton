@@ -38,11 +38,19 @@ async def test_streaming_integration():
         
         # Test stream manager
         print("\n⚙️ Testing Stream Manager...")
+        # Import Tekton URL utilities for proper URL construction
+        import sys
+        import os
+        tekton_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+        if tekton_root not in sys.path:
+            sys.path.append(tekton_root)
+        from shared.urls import engram_url
+        
         stream_manager = TheoreticalStreamManager()
         await stream_manager.initialize({
             "engram": {
                 "poll_interval": 2.0,
-                "url": "http://localhost:8003"  # Default Engram URL
+                "url": engram_url()  # Use Tekton URL builder for Engram
             }
         })
         print("✅ Stream manager initialized")

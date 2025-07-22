@@ -6,10 +6,18 @@ Validates the API endpoints and protocol management
 import asyncio
 import pytest
 import json
+import sys
+import os
 from unittest.mock import AsyncMock, Mock, patch
 from fastapi.testclient import TestClient
 from fastapi import BackgroundTasks
 from typing import Dict, Any
+
+# Add Tekton root to path for URL functions
+tekton_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+if tekton_root not in sys.path:
+    sys.path.append(tekton_root)
+from shared.urls import sophia_url
 
 from noesis.api.sophia_endpoints import router, sophia_bridge
 from noesis.api.sophia_endpoints import (
@@ -397,7 +405,7 @@ class TestSophiaAPIEndpoints:
     
     async def test_integration_status_endpoint(self, client):
         """Test integration status endpoint"""
-        sophia_bridge.sophia_url = "http://test-sophia:8000"
+        sophia_bridge.sophia_url = sophia_url()  # Use Tekton URL builder
         
         # Mock some active protocols
         mock_protocol1 = Mock()
@@ -417,7 +425,7 @@ class TestSophiaAPIEndpoints:
         
         # Verify status information
         assert status["status"] == "active"
-        assert status["sophia_url"] == "http://test-sophia:8000"
+        assert status["sophia_url"] == sophia_url()  # Verify Tekton URL is used
         assert status["active_protocols"] == 2
         assert len(status["protocol_types"]) == 2
         assert CollaborationProtocol.THEORY_VALIDATION in status["protocol_types"]
@@ -439,7 +447,7 @@ class TestProtocolLifecycle:
     
     async def test_theory_validation_protocol_lifecycle(self):
         """Test complete theory validation protocol lifecycle"""
-        bridge = SophiaBridge("http://test-sophia:8000")
+        bridge = SophiaBridge(sophia_url())
         bridge.client = AsyncMock()
         
         # Step 1: Create protocol
@@ -506,7 +514,7 @@ class TestProtocolLifecycle:
     
     async def test_hypothesis_generation_to_experiment_lifecycle(self):
         """Test hypothesis generation leading to new experiments"""
-        bridge = SophiaBridge("http://test-sophia:8000") 
+        bridge = SophiaBridge(sophia_url()) 
         bridge.client = AsyncMock()
         
         # Step 1: Generate hypothesis from analysis
@@ -562,7 +570,7 @@ class TestProtocolLifecycle:
     
     async def test_iterative_refinement_cycle(self):
         """Test iterative theory-experiment refinement"""
-        bridge = SophiaBridge("http://test-sophia:8000")
+        bridge = SophiaBridge(sophia_url())
         bridge.client = AsyncMock()
         
         # Initial theory
@@ -639,7 +647,7 @@ class TestErrorHandlingAndEdgeCases:
     
     async def test_sophia_api_timeout_handling(self):
         """Test handling of Sophia API timeouts"""
-        bridge = SophiaBridge("http://test-sophia:8000")
+        bridge = SophiaBridge(sophia_url())
         bridge.client = AsyncMock()
         
         # Mock timeout exception
@@ -659,7 +667,7 @@ class TestErrorHandlingAndEdgeCases:
     
     async def test_invalid_experiment_id_handling(self):
         """Test handling of invalid experiment IDs"""
-        bridge = SophiaBridge("http://test-sophia:8000")
+        bridge = SophiaBridge(sophia_url())
         bridge.client = AsyncMock()
         
         # Mock 404 response for invalid experiment ID
@@ -677,7 +685,7 @@ class TestErrorHandlingAndEdgeCases:
     
     async def test_malformed_analysis_results_handling(self):
         """Test handling of malformed analysis results"""
-        bridge = SophiaBridge("http://test-sophia:8000")
+        bridge = SophiaBridge(sophia_url())
         
         # Test with missing required fields
         malformed_results = {
@@ -698,7 +706,7 @@ class TestErrorHandlingAndEdgeCases:
     
     async def test_concurrent_protocol_conflicts(self):
         """Test handling of concurrent protocols for the same theory"""
-        bridge = SophiaBridge("http://test-sophia:8000")
+        bridge = SophiaBridge(sophia_url())
         bridge.client = AsyncMock()
         
         # Mock successful responses
@@ -734,7 +742,7 @@ class TestErrorHandlingAndEdgeCases:
     
     async def test_memory_management_with_many_protocols(self):
         """Test memory management with large numbers of protocols"""
-        bridge = SophiaBridge("http://test-sophia:8000")
+        bridge = SophiaBridge(sophia_url())
         bridge.client = AsyncMock()
         bridge.client.post.return_value = AsyncMock()
         bridge.client.post.return_value.status_code = 200

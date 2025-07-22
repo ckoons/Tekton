@@ -82,10 +82,11 @@ def get_vector_store(
     """
     # Auto-select best store type based on hardware if not specified
     if store_type is None:
+        from shared.env import TektonEnviron
         if platform.processor() == "arm" and platform.system() == "Darwin":
             # Use Qdrant for Apple Silicon
             store_type = "qdrant"
-        elif os.environ.get("CUDA_VISIBLE_DEVICES") or os.environ.get("GPU_DEVICE_ORDINAL"):
+        elif TektonEnviron.get("CUDA_VISIBLE_DEVICES") or TektonEnviron.get("GPU_DEVICE_ORDINAL"):
             # NVIDIA GPU available
             store_type = "faiss"
         else:
@@ -143,7 +144,7 @@ def get_graph_store(
     """
     # Use Neo4j by default if available, otherwise memory store
     if store_type is None:
-        if os.environ.get("NEO4J_URI"):
+        if TektonEnviron.get("NEO4J_URI"):
             store_type = "neo4j"
         else:
             store_type = "memory"

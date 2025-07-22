@@ -205,42 +205,39 @@
         </div>
         
         <!-- Discovery Chat Tab -->
-        <div id="discovery-chat-panel" class="noesis__panel noesis__panel--discovery" 
-             data-tab-content="discovery-chat" 
-             data-tekton-panel="discovery-chat"
+        <div class="noesis__panel noesis__panel--discovery" data-tab-content="discovery-chat" 
+             data-tekton-tab-content="discovery-chat"
+             data-tekton-panel="discovery"
              data-tekton-panel-for="Discovery Chat"
-             data-tekton-panel-component="noesis"
-             data-tekton-panel-active="false">
-            <div class="chat-interface" data-tekton-chat="discovery" data-tekton-chat-type="discovery">
-                <div class="discovery-controls">
-                    <label for="noesis-search-scope">Search Scope:</label>
-                    <select id="noesis-search-scope" class="discovery-select" data-tekton-input="search-scope" data-tekton-input-type="select">
-                        <option value="all">All Patterns</option>
-                        <option value="components">Component Patterns</option>
-                        <option value="patterns">Behavioral Patterns</option>
-                        <option value="insights">System Insights</option>
-                    </select>
-                </div>
-                <div class="chat-messages" id="noesis-discovery-messages" data-tekton-chat-messages="discovery">
-                    <!-- Initial message will be added by first AI response -->
+             data-tekton-panel-component="noesis">
+            <div class="chat-interface" data-tekton-chat="discovery"
+                 data-tekton-ai="noesis-discovery"
+                 data-tekton-ai-ready="false">
+                <div class="chat-messages" id="noesis-discovery-messages" 
+                     data-tekton-messages="discovery"
+                     data-tekton-element="chat-messages">
+                    <div class="chat-message system-message">
+                        <strong>Noesis:</strong> Hello! I'm Noesis, the Discovery System. I can help you discover patterns and insights across the Tekton system. What would you like to explore?
+                    </div>
                 </div>
             </div>
         </div>
         
         <!-- Team Chat Tab -->
-        <div id="team-chat-panel" class="noesis__panel noesis__panel--team" 
-             data-tab-content="team-chat" 
-             data-tekton-panel="team-chat"
+        <div class="noesis__panel noesis__panel--team" data-tab-content="team-chat" 
+             data-tekton-tab-content="team-chat"
+             data-tekton-panel="team"
              data-tekton-panel-for="Team Chat"
              data-tekton-panel-component="noesis"
-             data-tekton-panel-active="false">
-            <div class="chat-interface" data-tekton-chat="team" data-tekton-chat-type="team">
-                <div class="team-chat-header">
-                    <p>Share discoveries with other AI specialists</p>
-                </div>
-                <div class="chat-messages" id="noesis-team-messages" data-tekton-chat-messages="team">
+             data-tekton-chat="team"
+             data-tekton-ai="noesis-discovery"
+             data-tekton-ai-ready="false">
+            <div class="chat-interface" data-tekton-chat="team">
+                <div class="chat-messages" id="noesis-team-messages" 
+                     data-tekton-messages="team"
+                     data-tekton-element="chat-messages">
                     <div class="chat-message system-message">
-                        <strong>System:</strong> Team Chat allows Noesis to share discoveries with other specialists.
+                        <strong>System:</strong> Team Chat allows Noesis to coordinate with other AI specialists.
                     </div>
                 </div>
             </div>
@@ -437,154 +434,60 @@
   background-color: rgba(255, 111, 0, 0.05);
 }
 
-/* Chat Interface */
+/* Chat Styles - Identical to Terma */
 .chat-interface {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  height: 100%;
   display: flex;
   flex-direction: column;
-}
-
-.discovery-controls {
-  margin-bottom: 16px;
-  padding: 16px;
-  background-color: var(--bg-tertiary, #333345);
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
-.discovery-controls label {
-  color: var(--text-secondary, #aaaaaa);
-}
-
-.discovery-select {
-  padding: 8px;
-  border: 1px solid var(--border-color, #444444);
-  border-radius: 4px;
-  font-size: 14px;
-  background-color: var(--bg-tertiary, #333345);
-  color: var(--text-primary, #f0f0f0);
 }
 
 .chat-messages {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0; /* No footer inside tabs anymore */
+  flex-grow: 1;
   overflow-y: auto;
   padding: 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
 }
 
 .chat-message {
   margin-bottom: 12px;
-  padding: 12px;
-  border-radius: 8px;
-  background-color: var(--bg-secondary, #252535);
+  padding: 8px 12px;
+  border-radius: 4px;
+  background-color: transparent;
+  position: relative;
 }
 
+.chat-message strong {
+  display: inline-block;
+  margin-right: 8px;
+}
+
+/* System messages */
 .chat-message.system-message {
-  background-color: rgba(255, 111, 0, 0.1);
+  background-color: rgba(255, 111, 0, 0.05);
   border-left: 3px solid #FF6F00;
-}
-
-.chat-message.user-message {
-  background-color: rgba(76, 175, 80, 0.1);
-  border-left: 3px solid #4CAF50;
-  margin-left: 32px;
-}
-
-.chat-message.ai-message {
-  background-color: rgba(33, 150, 243, 0.1);
-  border-left: 3px solid #2196F3;
-}
-
-.chat-message.discovery-message {
-  background-color: rgba(255, 193, 7, 0.1);
-  border: 1px solid #ffb300;
-  margin: 8px 0;
-}
-
-.chat-message.insight-message {
-  background-color: rgba(156, 39, 176, 0.1);
-  border-left: 3px solid #9C27B0;
-}
-
-.chat-message.typing-message {
-  background-color: var(--bg-secondary, #252535);
-  opacity: 0.7;
+  color: var(--text-secondary, #aaa);
   font-style: italic;
 }
 
-.chat-input-container {
-  display: flex;
-  gap: 8px;
+/* User messages */
+.chat-message.user-message {
+  background-color: rgba(76, 175, 80, 0.05);
+  border-left: 3px solid #4CAF50;
+  margin-left: 0;
 }
 
-.chat-input {
-  flex: 1;
-  padding: 12px;
-  border: 1px solid var(--border-color, #444444);
-  border-radius: 8px;
-  font-size: 14px;
-  background-color: var(--bg-tertiary, #333345);
-  color: var(--text-primary, #f0f0f0);
+.chat-message.user-message strong {
+  color: #4CAF50;
 }
 
-.chat-input:focus {
-  outline: none;
-  border-color: #FF6F00;
+/* AI messages */
+.chat-message.ai-message {
+  background-color: rgba(255, 111, 0, 0.05);
+  border-left: 3px solid #FF6F00;
+  margin-right: 0;
 }
 
-.chat-send-button {
-  padding: 12px 24px;
-  background-color: #FF6F00;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: 500;
-  transition: background-color 0.3s ease;
-}
-
-.chat-send-button:hover {
-  background-color: #E65100;
-}
-
-/* Team Chat Specific */
-.noesis__panel--team .chat-interface {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  display: flex;
-  flex-direction: column;
-  padding: 24px;
-}
-
-.team-chat-header {
-  padding: 16px;
-  background-color: var(--bg-tertiary, #333345);
-  border-radius: 8px;
-  margin-bottom: 16px;
-}
-
-.team-chat-controls {
-  margin-top: 8px;
-}
-
-.team-chat-controls label {
-  display: flex;
-  align-items: center;
+.chat-message.ai-message strong {
+  color: #FF6F00;
   gap: 8px;
   color: var(--text-secondary, #aaaaaa);
 }
@@ -972,11 +875,8 @@
 <script src="../../../shared/ui/visualization/tekton-viz.js"></script>
 
 <script>
-// Store chat messages in memory (persists across tab switches but not page refresh)
-window.noesisChats = window.noesisChats || {
-    discovery: [],
-    team: []
-};
+// Noesis component - following Terma pattern
+console.log('[Noesis] Component loaded');
 
 // Initialize Noesis component when loaded
 setTimeout(() => {
@@ -1000,8 +900,7 @@ setTimeout(() => {
         // The functions below will check for AIChat when called
     }
     
-    // Restore chat messages from memory
-    noesis_restoreChats();
+    // No memory restoration - simple like Terma
     
     if (window.NoesisComponent && typeof window.NoesisComponent.init === 'function') {
         window.NoesisComponent.init();
@@ -1018,237 +917,75 @@ setTimeout(() => {
     }
 }, 100);
 
-// Chat functionality - Following Rhetor's pattern
-function noesis_sendChat() {
-    const isDiscoveryTab = document.getElementById('noesis-tab-discovery').checked;
-    
-    if (isDiscoveryTab) {
-        noesis_sendDiscoveryChatMessage();
-    } else {
-        noesis_sendTeamChatMessage();
-    }
-}
-
-function noesis_sendDiscoveryChatMessage() {
+// Chat functionality - EXACT COPY from Terma
+window.noesis_sendChat = function() {
     const input = document.getElementById('noesis-chat-input');
     const message = input.value.trim();
-    const scopeSelect = document.getElementById('noesis-search-scope');
     
     if (!message) return;
     
-    // Add scope to message if not "all"
-    const fullMessage = scopeSelect.value !== 'all' 
-        ? `[Scope: ${scopeSelect.value}] ${message}`
-        : message;
+    // Determine which tab is active
+    const discoveryActive = document.getElementById('noesis-tab-discovery').checked;
+    const chatType = discoveryActive ? 'discovery' : 'team';
+    const messagesContainer = document.getElementById(`noesis-${chatType}-messages`);
     
     // Add user message
-    noesis_addChatMessage('discovery', message, 'user');
+    const userMessageDiv = document.createElement('div');
+    userMessageDiv.className = 'chat-message user-message';
+    userMessageDiv.innerHTML = message;
+    messagesContainer.appendChild(userMessageDiv);
     
     // Clear input
     input.value = '';
     
-    // Add typing indicator
-    const typingId = 'noesis-typing-' + Date.now();
-    noesis_addChatMessage('discovery', '...', 'typing', typingId);
-    
-    // Use shared AI chat module to talk to noesis
-    if (window.AIChat) {
-        // Debug logging (controlled by global debug flag)
-        if (window.HephaestusDebug?.isEnabled?.('noesis')) {
-            console.log('Sending message to noesis:', fullMessage);
-        }
-        window.AIChat.sendMessage('noesis', fullMessage)
-            .then(response => {
-                if (window.HephaestusDebug?.isEnabled?.('noesis')) {
-                    console.log('Received response:', response);
-                }
-                // Remove typing indicator
-                noesis_removeTypingIndicator(typingId);
-                
-                // Parse response for special formatting
-                const parts = window.AIChat.parseResponse(response);
-                
-                parts.forEach(part => {
-                    if (part.type === 'text' && part.content.trim()) {
-                        // Clean up response text if needed
-                        let content = part.content;
-                        if (content.startsWith('Received message message.')) {
-                            content = content.replace('Received message message.', '');
-                        }
-                        noesis_addChatMessage('discovery', content, 'ai');
-                    } else if (part.type === 'block') {
-                        // Special block formatting
-                        noesis_addChatMessage('discovery', part.content, 'insight');
-                    }
-                });
-            })
-            .catch(error => {
-                // Remove typing indicator
-                noesis_removeTypingIndicator(typingId);
-                
-                console.error('Noesis discovery chat error:', error);
-                console.error('Error details:', error.message, error.stack);
-                noesis_addChatMessage('discovery', 
-                    `Failed to connect to Noesis AI. Error: ${error.message}`, 
-                    'system');
-            });
-    } else {
-        // Fallback if AIChat module not loaded
-        noesis_removeTypingIndicator(typingId);
-        noesis_addChatMessage('discovery', 
-            'AI Chat module not loaded. Please refresh the page.', 
-            'system');
-    }
-}
-
-function noesis_sendTeamChatMessage() {
-    const input = document.getElementById('noesis-chat-input');
-    const message = input.value.trim();
-    const broadcast = true; // Always broadcast to team
-    
-    if (!message) return;
-    
-    // Add user message with context
-    const fullMessage = `[From Noesis UI] ${message}`;
-    noesis_addChatMessage('team', message, 'user');
-    
-    // Clear input
-    input.value = '';
-    
-    // Use standard team chat
-    if (window.AIChat) {
-        // Fallback to standard team chat
-        // Add typing indicator
-        const typingId = 'noesis-team-typing-' + Date.now();
-        noesis_addChatMessage('team', 'Broadcasting to team...', 'system', typingId);
-        
-        // Use standard team chat
-        window.AIChat.teamChat(fullMessage, 'noesis')
-            .then(data => {
-                // Remove typing indicator
-                noesis_removeTypingIndicator(typingId);
-                
-                // Display team responses
-                if (data.responses && data.responses.length > 0) {
-                    data.responses.forEach(resp => {
-                        const sender = resp.socket_id.replace('-ai', '').charAt(0).toUpperCase() + 
-                                     resp.socket_id.replace('-ai', '').slice(1);
-                        noesis_addChatMessage('team', resp.content, 'ai', null, sender);
-                    });
-                } else {
-                    noesis_addChatMessage('team', 'No responses received from team', 'system');
-                }
-            })
-            .catch(error => {
-                // Remove typing indicator
-                noesis_removeTypingIndicator(typingId);
-                
-                // Show error message
-                console.error('Team chat failed:', error);
-                noesis_addChatMessage('team', `Team chat failed: ${error.message}`, 'system');
-            });
-    } else {
-        // No chat module available
-        noesis_addChatMessage('team', 
-            'Chat modules not loaded. Please refresh the page.', 
-            'system');
-    }
-}
-
-function noesis_addChatMessage(chatType, message, messageClass, id = null, sender = null) {
-    const messagesContainer = document.getElementById(`noesis-${chatType}-messages`);
-    if (!messagesContainer) return;
-    
-    const messageDiv = document.createElement('div');
-    messageDiv.className = `chat-message ${messageClass}-message`;
-    if (id) messageDiv.id = id;
-    
-    // Determine the label
-    let label = '';
-    if (messageClass === 'user') {
-        // Try to get name from profile manager
-        if (window.profileManager && window.profileManager.profile) {
-            const name = window.profileManager.profile.givenName || 'User';
-            label = name;
-        } else {
-            label = 'User';
-        }
-    } else if (messageClass === 'ai') {
-        label = sender || 'Noesis';
-    } else if (messageClass === 'discovery') {
-        label = 'Discovery';
-    } else if (messageClass === 'insight') {
-        label = 'Insight';
-    } else if (messageClass === 'system') {
-        label = 'System';
-    } else if (messageClass === 'typing') {
-        label = 'Noesis';
-    }
-    
-    messageDiv.innerHTML = `<strong>${label}:</strong> ${message}`;
-    messagesContainer.appendChild(messageDiv);
+    // Scroll to bottom
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
     
-    // Store message in memory (except typing indicators)
-    if (messageClass !== 'typing' && !id) {
-        window.noesisChats[chatType].push({
-            message: message,
-            messageClass: messageClass,
-            label: label,
-            timestamp: Date.now()
-        });
+    // Send to backend
+    if (chatType === 'discovery') {
+        // Direct message to noesis
+        if (window.AIChat) {
+            window.AIChat.sendMessage('noesis', message)
+                .then(response => {
+                    const aiMessageDiv = document.createElement('div');
+                    aiMessageDiv.className = 'chat-message ai-message';
+                    aiMessageDiv.innerHTML = `<strong>Noesis:</strong> ${response.content}`;
+                    messagesContainer.appendChild(aiMessageDiv);
+                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                })
+                .catch(err => {
+                    console.error('[Noesis] Chat error:', err);
+                    const errorDiv = document.createElement('div');
+                    errorDiv.className = 'chat-message system-message';
+                    errorDiv.innerHTML = '<strong>System:</strong> Failed to connect to Noesis';
+                    messagesContainer.appendChild(errorDiv);
+                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                });
+        }
+    } else {
+        // Team chat
+        if (window.AIChat) {
+            window.AIChat.teamChat(message, 'noesis')
+                .then(responses => {
+                    if (responses && responses.length > 0) {
+                        responses.forEach(resp => {
+                            const aiMessageDiv = document.createElement('div');
+                            aiMessageDiv.className = 'chat-message ai-message';
+                            aiMessageDiv.innerHTML = `<strong>${resp.from}:</strong> ${resp.message}`;
+                            messagesContainer.appendChild(aiMessageDiv);
+                        });
+                        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                    }
+                })
+                .catch(err => {
+                    console.error('[Noesis] Team chat error:', err);
+                    const errorDiv = document.createElement('div');
+                    errorDiv.className = 'chat-message system-message';
+                    errorDiv.innerHTML = '<strong>System:</strong> Failed to send team message';
+                    messagesContainer.appendChild(errorDiv);
+                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                });
+        }
     }
 }
-
-function noesis_removeTypingIndicator(id) {
-    const indicator = document.getElementById(id);
-    if (indicator) {
-        indicator.remove();
-    }
-}
-
-function noesis_restoreChats() {
-    // Clear existing messages first to prevent duplicates
-    const discoveryContainer = document.getElementById('noesis-discovery-messages');
-    const teamContainer = document.getElementById('noesis-team-messages');
-    
-    if (discoveryContainer) {
-        discoveryContainer.innerHTML = '';
-    }
-    if (teamContainer) {
-        teamContainer.innerHTML = '';
-    }
-    
-    // Restore discovery chat messages
-    const discoveryMessages = window.noesisChats.discovery;
-    if (discoveryContainer && discoveryMessages.length > 0) {
-        discoveryMessages.forEach(msg => {
-            const messageDiv = document.createElement('div');
-            messageDiv.className = `chat-message ${msg.messageClass}-message`;
-            messageDiv.innerHTML = `<strong>${msg.label}:</strong> ${msg.message}`;
-            discoveryContainer.appendChild(messageDiv);
-        });
-        discoveryContainer.scrollTop = discoveryContainer.scrollHeight;
-    }
-    
-    // Restore team chat messages
-    const teamMessages = window.noesisChats.team;
-    if (teamContainer && teamMessages.length > 0) {
-        teamMessages.forEach(msg => {
-            const messageDiv = document.createElement('div');
-            messageDiv.className = `chat-message ${msg.messageClass}-message`;
-            messageDiv.innerHTML = `<strong>${msg.label}:</strong> ${msg.message}`;
-            teamContainer.appendChild(messageDiv);
-        });
-        teamContainer.scrollTop = teamContainer.scrollHeight;
-    }
-}
-
-// Add enter key handler for chat input when component loads
-document.addEventListener('DOMContentLoaded', function() {
-    const chatInput = document.getElementById('noesis-chat-input');
-    if (chatInput) {
-        chatInput.focus();
-    }
-});
 </script>

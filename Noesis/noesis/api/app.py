@@ -32,8 +32,9 @@ config = get_component_config()
 NOESIS_PORT = config.noesis.port
 # Use tekton_url for proper URL construction
 from shared.urls import tekton_url
-HERMES_URL = os.environ.get("HERMES_URL", tekton_url("hermes"))
-RHETOR_URL = os.environ.get("RHETOR_URL", tekton_url("rhetor"))
+from shared.env import TektonEnviron
+HERMES_URL = TektonEnviron.get("HERMES_URL", tekton_url("hermes"))
+RHETOR_URL = TektonEnviron.get("RHETOR_URL", tekton_url("rhetor"))
 
 # Component version
 COMPONENT_VERSION = "0.1.0"
@@ -151,6 +152,11 @@ async def health_check():
 async def discovery_chat(request: DiscoveryChatRequest):
     """Handle discovery chat queries - pattern and insight discovery"""
     try:
+        # Get Noesis component instance for analysis
+        noesis_component = await get_component_instance()
+        if not noesis_component:
+            raise HTTPException(status_code=503, detail="Noesis component not available")
+        
         # Check if AI is available
         from shared.ai.simple_ai import ai_send
         
@@ -160,20 +166,32 @@ async def discovery_chat(request: DiscoveryChatRequest):
         # Send to noesis-ai on port 45015
         ai_response = await ai_send("noesis-ai", prompt, "localhost", 45015)
         
+        discoveries = []
+        insights = []
+        
         if ai_response and ai_response != "AI_NOT_RUNNING":
             # Parse AI response for discoveries and insights
-            # For now, treat the whole response as a discovery
             discoveries = [ai_response]
-            insights = []
-            mode = "ai"
+            
+            # Use theoretical framework for additional insights
+            if hasattr(noesis_component, 'theoretical_framework'):
+                try:
+                    # Generate theoretical insights based on the query
+                    theoretical_insights = await noesis_component.generate_theoretical_insights(
+                        request.query, request.search_scope, request.context
+                    )
+                    if theoretical_insights:
+                        insights.extend(theoretical_insights)
+                except Exception as e:
+                    logger.warning(f"Failed to generate theoretical insights: {e}")
+                    
+            mode = "ai_with_analysis"
         else:
-            # Fallback to placeholder if AI not available
-            discoveries = [
-                f"Searching for patterns related to: '{request.query}'",
-                "Discovery system is in placeholder mode"
-            ]
-            insights = ["Noesis will provide deep insights once fully integrated"]
-            mode = "placeholder"
+            # No fallback - require AI to be running
+            raise HTTPException(
+                status_code=503, 
+                detail="Noesis AI is not available. Please ensure the AI specialist is running on port 45015."
+            )
             
         response = DiscoveryChatResponse(
             discoveries=discoveries,
@@ -181,10 +199,13 @@ async def discovery_chat(request: DiscoveryChatRequest):
             timestamp=datetime.now(),
             metadata={
                 "search_scope": request.search_scope,
-                "mode": mode
+                "mode": mode,
+                "ai_port": 45015
             }
         )
         return response
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -198,40 +219,147 @@ async def discovery_chat(request: DiscoveryChatRequest):
 async def team_chat(request: TeamChatRequest):
     """Handle team chat messages - communication with other AIs"""
     try:
-        # For now, return a placeholder response
-        # TODO: Route through Rhetor's team chat system
+        import httpx
+        
+        responses = []
+        
+        # Route through Rhetor's team chat system
+        try:
+            async with httpx.AsyncClient() as client:
+                rhetor_response = await client.post(
+                    f"{RHETOR_URL}/api/team-chat",
+                    json={
+                        "message": request.message,
+                        "from_component": request.from_component,
+                        "to_components": request.to_components,
+                        "broadcast": request.broadcast
+                    },
+                    timeout=10.0
+                )
+                
+                if rhetor_response.status_code == 200:
+                    rhetor_data = rhetor_response.json()
+                    if "responses" in rhetor_data:
+                        responses.extend(rhetor_data["responses"])
+                else:
+                    logger.warning(f"Rhetor team chat failed: {rhetor_response.status_code}")
+                    
+        except Exception as e:
+            logger.error(f"Failed to connect to Rhetor team chat: {e}")
+            
+        # Add Noesis's own response
+        noesis_component = await get_component_instance()
+        if noesis_component:
+            try:
+                # Generate a discovery-oriented response using Noesis AI
+                from shared.ai.simple_ai import ai_send
+                ai_response = await ai_send(
+                    "noesis-ai", 
+                    f"Team chat message: {request.message}. Respond from Noesis discovery perspective.", 
+                    "localhost", 
+                    45015
+                )
+                
+                if ai_response and ai_response != "AI_NOT_RUNNING":
+                    noesis_response = ai_response
+                else:
+                    noesis_response = f"Noesis discovery system analyzing: '{request.message}'"
+                    
+            except Exception as e:
+                logger.warning(f"Noesis AI response failed: {e}")
+                noesis_response = f"Noesis acknowledging team message: '{request.message}'"
+        else:
+            noesis_response = f"Noesis system acknowledging: '{request.message}'"
+            
+        responses.append({
+            "from": "noesis",
+            "message": noesis_response,
+            "timestamp": datetime.now().isoformat(),
+            "component_type": "discovery_system"
+        })
+        
         response = TeamChatResponse(
-            responses=[{
-                "from": "noesis",
-                "message": f"Noesis acknowledges: '{request.message}'",
-                "timestamp": datetime.now().isoformat()
-            }],
+            responses=responses,
             timestamp=datetime.now()
         )
         return response
+        
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/api/status")
 async def get_status():
     """Get detailed status of Noesis"""
-    return {
-        "component": "noesis",
-        "status": "active",
-        "ai_enabled": True,  # AI is always enabled with fixed ports
-        "discovery_mode": "placeholder",
-        "last_activity": datetime.now().isoformat(),
-        "capabilities": {
-            "discovery_chat": True,
-            "team_chat": True,
-            "pattern_recognition": False,  # Not yet implemented
-            "insight_generation": False,    # Not yet implemented
-            "theoretical_analysis": True,
-            "manifold_analysis": True,
-            "dynamics_modeling": True,
-            "catastrophe_detection": True
+    try:
+        # Check AI availability
+        from shared.ai.simple_ai import ai_send
+        ai_response = await ai_send("noesis-ai", "health check", "localhost", 45015)
+        ai_available = ai_response and ai_response != "AI_NOT_RUNNING"
+        
+        # Check component availability
+        noesis_component = await get_component_instance()
+        component_available = noesis_component is not None
+        
+        # Determine discovery mode based on availability
+        if ai_available and component_available:
+            discovery_mode = "full_analysis"
+        elif ai_available:
+            discovery_mode = "ai_only"
+        elif component_available:
+            discovery_mode = "component_only"
+        else:
+            discovery_mode = "limited"
+            
+        # Check theoretical framework capabilities
+        theoretical_capabilities = {}
+        if component_available and hasattr(noesis_component, 'theoretical_framework'):
+            framework = noesis_component.theoretical_framework
+            theoretical_capabilities = {
+                "manifold_analysis": hasattr(framework, 'manifold_analyzer'),
+                "dynamics_modeling": hasattr(framework, 'dynamics_analyzer'),
+                "catastrophe_detection": hasattr(framework, 'catastrophe_analyzer'),
+                "synthesis_analysis": hasattr(framework, 'synthesis_analyzer')
+            }
+        else:
+            theoretical_capabilities = {
+                "manifold_analysis": False,
+                "dynamics_modeling": False,
+                "catastrophe_detection": False,
+                "synthesis_analysis": False
+            }
+        
+        return {
+            "component": "noesis",
+            "status": "active",
+            "ai_enabled": ai_available,
+            "ai_port": 45015,
+            "component_available": component_available,
+            "discovery_mode": discovery_mode,
+            "last_activity": datetime.now().isoformat(),
+            "capabilities": {
+                "discovery_chat": ai_available,
+                "team_chat": True,  # Always available (with fallback)
+                "pattern_recognition": ai_available and component_available,
+                "insight_generation": ai_available and component_available,
+                **theoretical_capabilities
+            },
+            "integrations": {
+                "rhetor_team_chat": True,
+                "engram_streaming": component_available,
+                "sophia_bridge": component_available
+            }
         }
-    }
+        
+    except Exception as e:
+        logger.error(f"Status check failed: {e}")
+        return {
+            "component": "noesis",
+            "status": "error",
+            "error": str(e),
+            "ai_enabled": False,
+            "discovery_mode": "error",
+            "last_activity": datetime.now().isoformat()
+        }
 
 @app.on_event("startup")
 @integration_point(

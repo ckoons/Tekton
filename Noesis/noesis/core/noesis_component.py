@@ -306,3 +306,97 @@ class NoesisComponent(StandardComponentBase):
                 logger.error(f"Failed to stop streaming: {e}")
                 return False
         return False
+    
+    @performance_boundary(
+        title="Theoretical Insight Generation",
+        sla="<3s for query analysis",
+        optimization_notes="Combines multiple analysis methods for comprehensive insights",
+        metrics={"target_latency": "3s", "insight_quality": "high"}
+    )
+    async def generate_theoretical_insights(self, query: str, scope: str = "all", context: Optional[Dict] = None) -> List[str]:
+        """Generate theoretical insights based on query and current system state"""
+        insights = []
+        
+        try:
+            # Get current theoretical insights from streaming
+            if self.stream_manager:
+                stream_insights = await self.get_theoretical_insights()
+                if "insights" in stream_insights:
+                    insights.extend([f"Stream: {insight}" for insight in stream_insights["insights"][:2]])
+            
+            # Generate scope-specific insights
+            if scope in ["all", "manifold"] and self.manifold_analyzer:
+                try:
+                    # Use current memory state if available
+                    current_state = await self._get_current_system_state()
+                    if current_state:
+                        manifold_result = await self.perform_manifold_analysis(current_state)
+                        if "intrinsic_dimension" in manifold_result:
+                            dim = manifold_result["intrinsic_dimension"]
+                            insights.append(f"System manifold dimension: {dim} (complexity indicator)")
+                except Exception as e:
+                    logger.debug(f"Manifold insight generation failed: {e}")
+            
+            if scope in ["all", "dynamics"] and self.dynamics_analyzer:
+                try:
+                    # Analyze recent system behavior
+                    recent_data = await self._get_recent_system_behavior()
+                    if recent_data:
+                        dynamics_result = await self.perform_dynamics_analysis(recent_data)
+                        if "regimes" in dynamics_result:
+                            regimes = len(dynamics_result["regimes"])
+                            insights.append(f"Detected {regimes} operational regimes in recent behavior")
+                except Exception as e:
+                    logger.debug(f"Dynamics insight generation failed: {e}")
+            
+            # Add query-specific insights
+            query_lower = query.lower()
+            if "pattern" in query_lower or "discover" in query_lower:
+                insights.append(f"Query focus: Pattern discovery in {scope} domain")
+            if "performance" in query_lower or "optimize" in query_lower:
+                insights.append("Performance analysis: Check manifold curvature for optimization opportunities")
+            if "stability" in query_lower or "robust" in query_lower:
+                insights.append("Stability analysis: Monitor phase space attractors and bifurcation points")
+            
+            # Add context-aware insights
+            if context:
+                if "component" in context:
+                    insights.append(f"Component focus: {context['component']} behavioral analysis")
+                if "timeframe" in context:
+                    insights.append(f"Temporal scope: {context['timeframe']} analysis window")
+            
+            # Ensure we always return some insights
+            if not insights:
+                insights = [
+                    f"Theoretical analysis scope: {scope}",
+                    "System: Ready for discovery analysis",
+                    "Framework: Manifold, dynamics, and catastrophe theory available"
+                ]
+                
+        except Exception as e:
+            logger.error(f"Insight generation failed: {e}")
+            insights = [f"Insight generation error: {str(e)}"]
+        
+        return insights[:5]  # Limit to 5 insights for performance
+    
+    async def _get_current_system_state(self) -> Optional[Any]:
+        """Get current system state for analysis"""
+        if self.stream_manager:
+            try:
+                memory_state = await self.get_memory_analysis()
+                if "current_state" in memory_state:
+                    return memory_state["current_state"]
+            except Exception as e:
+                logger.debug(f"Failed to get current system state: {e}")
+        return None
+    
+    async def _get_recent_system_behavior(self) -> Optional[Any]:
+        """Get recent system behavior for dynamics analysis"""
+        if self.stream_manager:
+            try:
+                memory_state = await self.get_memory_analysis()
+                if "recent_history" in memory_state:
+                    return memory_state["recent_history"]
+            except Exception as e:
+                logger.debug(f"Failed to get recent behavior: {e}")
+        return None

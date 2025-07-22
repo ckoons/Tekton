@@ -10,6 +10,7 @@ import os
 import time
 import logging
 from typing import Dict, List, Any, Optional, Union
+from shared.env import TektonEnviron
 
 from .adapters.base import ModelAdapter
 from .adapters.anthropic import AnthropicAdapter
@@ -337,38 +338,38 @@ async def initialize_from_env() -> ModelManager:
     manager = get_model_manager()
     
     # Check for Anthropic API key
-    anthropic_api_key = os.environ.get("ANTHROPIC_API_KEY")
+    anthropic_api_key = TektonEnviron.get("ANTHROPIC_API_KEY")
     if anthropic_api_key:
         await manager.register_adapter(
             "anthropic_claude",
             AnthropicAdapter,
             {
                 "api_key": anthropic_api_key,
-                "model": os.environ.get("ANTHROPIC_MODEL", "claude-3-opus-20240229")
+                "model": TektonEnviron.get("ANTHROPIC_MODEL", "claude-3-opus-20240229")
             }
         )
     
     # Check for OpenAI API key
-    openai_api_key = os.environ.get("OPENAI_API_KEY")
+    openai_api_key = TektonEnviron.get("OPENAI_API_KEY")
     if openai_api_key:
         await manager.register_adapter(
             "openai_gpt4",
             OpenAIAdapter,
             {
                 "api_key": openai_api_key,
-                "model": os.environ.get("OPENAI_MODEL", "gpt-4o")
+                "model": TektonEnviron.get("OPENAI_MODEL", "gpt-4o")
             }
         )
     
     # Check for local model endpoint
-    local_endpoint = os.environ.get("LOCAL_MODEL_ENDPOINT")
+    local_endpoint = TektonEnviron.get("LOCAL_MODEL_ENDPOINT")
     if local_endpoint:
         await manager.register_adapter(
             "local_model",
             LocalModelAdapter,
             {
                 "endpoint": local_endpoint,
-                "model": os.environ.get("LOCAL_MODEL", "llama3")
+                "model": TektonEnviron.get("LOCAL_MODEL", "llama3")
             }
         )
     

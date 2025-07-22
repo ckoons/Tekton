@@ -75,9 +75,16 @@ window.NoesisComponent = {
         
         if (!query) return;
         
-        // Add user query to chat
-        this.addMessage('discovery', query, 'user');
+        const messagesDiv = document.getElementById('noesis-discovery-messages');
+        
+        // Add user message - just the text, no prefix
+        const userMessageDiv = document.createElement('div');
+        userMessageDiv.className = 'chat-message user-message';
+        userMessageDiv.innerHTML = query;
+        messagesDiv.appendChild(userMessageDiv);
+        
         input.value = '';
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
         
         try {
             const response = await fetch(`${this.apiUrl}/api/discovery-chat`, {
@@ -95,18 +102,28 @@ window.NoesisComponent = {
             
             // Display discoveries
             if (data.discoveries && data.discoveries.length > 0) {
-                const discoveryMsg = data.discoveries.join('\n');
-                this.addMessage('discovery', discoveryMsg, 'discovery');
+                const aiMessageDiv = document.createElement('div');
+                aiMessageDiv.className = 'chat-message ai-message';
+                aiMessageDiv.innerHTML = `<strong>Noesis:</strong> ${data.discoveries.join('\n')}`;
+                messagesDiv.appendChild(aiMessageDiv);
+                messagesDiv.scrollTop = messagesDiv.scrollHeight;
             }
             
             // Display insights if available
             if (data.insights && data.insights.length > 0) {
-                const insightMsg = 'Insights:\n' + data.insights.join('\n');
-                this.addMessage('discovery', insightMsg, 'insight');
+                const insightDiv = document.createElement('div');
+                insightDiv.className = 'chat-message ai-message';
+                insightDiv.innerHTML = `<strong>Insights:</strong> ${data.insights.join('\n')}`;
+                messagesDiv.appendChild(insightDiv);
+                messagesDiv.scrollTop = messagesDiv.scrollHeight;
             }
         } catch (error) {
             console.error('Failed to send discovery query:', error);
-            this.addMessage('discovery', 'Failed to connect to Noesis', 'system');
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'chat-message system-message';
+            errorDiv.innerHTML = '<strong>System:</strong> Failed to connect to Noesis';
+            messagesDiv.appendChild(errorDiv);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
         }
     },
     
@@ -116,9 +133,16 @@ window.NoesisComponent = {
         
         if (!message) return;
         
-        // Add user message to chat
-        this.addMessage('team', message, 'user');
+        const messagesDiv = document.getElementById('noesis-team-messages');
+        
+        // Add user message - just the text, no prefix
+        const userMessageDiv = document.createElement('div');
+        userMessageDiv.className = 'chat-message user-message';
+        userMessageDiv.innerHTML = message;
+        messagesDiv.appendChild(userMessageDiv);
+        
         input.value = '';
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
         
         try {
             // Use Rhetor's team chat endpoint
@@ -139,34 +163,20 @@ window.NoesisComponent = {
             // Display responses
             if (data.responses && data.responses.length > 0) {
                 data.responses.forEach(resp => {
-                    this.addMessage('team', `${resp.from}: ${resp.message}`, 'ai');
+                    const aiMessageDiv = document.createElement('div');
+                    aiMessageDiv.className = 'chat-message ai-message';
+                    aiMessageDiv.innerHTML = `<strong>${resp.from}:</strong> ${resp.message}`;
+                    messagesDiv.appendChild(aiMessageDiv);
                 });
+                messagesDiv.scrollTop = messagesDiv.scrollHeight;
             }
         } catch (error) {
             console.error('Failed to send team message:', error);
-            this.addMessage('team', 'Failed to send team message', 'system');
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'chat-message system-message';
+            errorDiv.innerHTML = '<strong>System:</strong> Failed to send team message';
+            messagesDiv.appendChild(errorDiv);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
         }
     },
-    
-    addMessage: function(chatType, message, messageType) {
-        const messagesDiv = chatType === 'discovery' 
-            ? document.getElementById('noesis-discovery-messages')
-            : document.getElementById('noesis-team-messages');
-            
-        if (!messagesDiv) return;
-        
-        const messageDiv = document.createElement('div');
-        messageDiv.className = `chat-message ${messageType}-message`;
-        
-        const prefix = messageType === 'user' ? 'You' : 
-                      messageType === 'discovery' ? 'Discovery' :
-                      messageType === 'insight' ? 'Insight' :
-                      messageType === 'ai' ? 'Noesis' : 
-                      'System';
-                      
-        messageDiv.innerHTML = `<strong>${prefix}:</strong> ${message}`;
-        
-        messagesDiv.appendChild(messageDiv);
-        messagesDiv.scrollTop = messagesDiv.scrollHeight;
-    }
 };

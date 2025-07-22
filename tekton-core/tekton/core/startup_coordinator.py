@@ -58,7 +58,8 @@ class EnhancedStartUpCoordinator:
             message_bus_provider: Optional message bus provider
         """
         self.registry = registry
-        tekton_root = os.environ.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
+        from shared.env import TektonEnviron
+        tekton_root = TektonEnviron.get('TEKTON_ROOT') or '/Users/cskoons/projects/github/Tekton'
         self.data_dir = data_dir or os.path.join(tekton_root, ".tekton", "startup")
         self.message_bus_provider = message_bus_provider
         self.message_bus = None
