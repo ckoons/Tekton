@@ -225,3 +225,95 @@ async def get_ecosystem_intelligence_profile(
             status_code=500,
             detail=f"Failed to get ecosystem intelligence profile: {str(e)}"
         )
+
+# ------------------------
+# Theory Validation Routes
+# ------------------------
+
+@router.get("/theory-validation/protocols", response_model=List[Dict[str, Any]])
+async def get_theory_validation_protocols():
+    """Get active theory-experiment protocols."""
+    try:
+        # For now, return mock data - this would eventually integrate with Noesis
+        protocols = [
+            {
+                "protocol_id": "sophia-intelligence-001",
+                "protocol_type": "intelligence_measurement",
+                "status": "active",
+                "iteration": 1,
+                "created_at": datetime.now().isoformat(),
+                "theory": "Component intelligence can be measured through performance metrics",
+                "experiment_type": "metric_correlation",
+                "hypothesis": "Response time and error rate correlate with intelligence scores"
+            },
+            {
+                "protocol_id": "sophia-learning-002", 
+                "protocol_type": "adaptive_learning",
+                "status": "completed",
+                "iteration": 3,
+                "created_at": datetime.now().isoformat(),
+                "theory": "AI systems improve through feedback loops",
+                "experiment_type": "longitudinal_analysis",
+                "hypothesis": "Performance improves over time with consistent feedback"
+            }
+        ]
+        return protocols
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to get theory validation protocols: {str(e)}"
+        )
+
+# ------------------------
+# Collective Intelligence Routes
+# ------------------------
+
+@router.get("/collective-intelligence/analysis", response_model=Dict[str, Any])
+async def get_collective_intelligence_analysis():
+    """Get collective intelligence analysis for the Tekton ecosystem."""
+    try:
+        # For now, return mock data - this would eventually analyze real system performance
+        analysis = {
+            "performance_metrics": {
+                "overall_success_rate": 0.87,
+                "component_coordination": 0.92,
+                "task_completion_rate": 0.84,
+                "error_recovery_rate": 0.78
+            },
+            "emergence_patterns": {
+                "emergence_strength": 0.73,
+                "novel_solutions_detected": 12,
+                "cross_component_innovations": 8,
+                "system_level_behaviors": 5
+            },
+            "team_dynamics": {
+                "best_teams": [
+                    (["hermes", "athena", "rhetor"], 0.95),
+                    (["sophia", "engram", "prometheus"], 0.89),
+                    (["ergon", "synthesis", "harmonia"], 0.86)
+                ],
+                "collaboration_patterns": {
+                    "most_frequent": ["hermes-athena", "sophia-engram", "rhetor-telos"],
+                    "most_effective": ["athena-prometheus", "hermes-synthesis", "sophia-metis"]
+                }
+            },
+            "cognitive_evolution": {
+                "collective_learning_rate": 0.15,
+                "knowledge_transfer_efficiency": 0.68,
+                "adaptive_response_time": 2.3,
+                "system_intelligence_growth": 0.12
+            },
+            "recommendations": [
+                "Increase communication frequency between Hermes and Athena",
+                "Implement cross-training between Sophia and Prometheus",
+                "Optimize task distribution for better load balancing"
+            ],
+            "analysis_timestamp": datetime.now().isoformat(),
+            "data_window": "last_30_days"
+        }
+        return analysis
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to get collective intelligence analysis: {str(e)}"
+        )

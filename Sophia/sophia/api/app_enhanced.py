@@ -19,6 +19,9 @@ tekton_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'
 if tekton_root not in sys.path:
     sys.path.insert(0, tekton_root)
 
+from shared.env import TektonEnviron
+from shared.urls import tekton_url
+
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("sophia.api.enhanced")
@@ -84,11 +87,11 @@ def get_component_ports():
             else:
                 # Fallback to environment variable
                 env_var = f"{name.upper()}_PORT"
-                ports[name] = int(os.environ.get(env_var))
+                ports[name] = int(TektonEnviron.get(env_var, "8000"))
         else:
             # Fallback to environment variable
             env_var = f"{name.upper()}_PORT"
-            ports[name] = int(os.environ.get(env_var))
+            ports[name] = int(TektonEnviron.get(env_var, "8000"))
     
     return ports
 
@@ -231,7 +234,7 @@ async def check_component_health(component: str, port: int) -> Dict[str, Any]:
     sess = await get_session()
     
     try:
-        url = f"http://localhost:{port}/health"
+        url = tekton_url(component, "/health")
         async with sess.get(url, timeout=2) as resp:
             if resp.status == 200:
                 data = await resp.json()
@@ -410,7 +413,7 @@ def _get_sophia_port() -> int:
     try:
         return config.sophia.port
     except (AttributeError, TypeError):
-        return int(os.environ.get("SOPHIA_PORT"))
+        return int(TektonEnviron.get("SOPHIA_PORT", "8014"))
 
 @app.get("/health")
 async def health():
@@ -644,7 +647,7 @@ async def startup_event():
     # Initialize graceful shutdown if available
     if GracefulShutdown:
         config = get_component_config() if get_component_config else None
-        port = config.sophia.port if config and hasattr(config, 'sophia') else int(os.environ.get("SOPHIA_PORT"))
+        port = config.sophia.port if config and hasattr(config, 'sophia') else int(TektonEnviron.get("SOPHIA_PORT", "8014"))
         shutdown_handler = GracefulShutdown("sophia", port)
         shutdown_handler.add_handler(cancel_background_task)
         shutdown_handler.add_handler(save_health_data)
@@ -660,7 +663,7 @@ async def startup_event():
     if HermesRegistration:
         hermes_registration = HermesRegistration()
         config = get_component_config() if get_component_config else None
-        port = config.sophia.port if config and hasattr(config, 'sophia') else int(os.environ.get("SOPHIA_PORT"))
+        port = config.sophia.port if config and hasattr(config, 'sophia') else int(TektonEnviron.get("SOPHIA_PORT", "8014"))
         is_registered_with_hermes = await hermes_registration.register_component(
             component_name="sophia",
             port=port,
@@ -698,6 +701,6 @@ async def periodic_health_update():
 if __name__ == "__main__":
     import uvicorn
     config = get_component_config() if get_component_config else None
-    port = config.sophia.port if config and hasattr(config, 'sophia') else int(os.environ.get("SOPHIA_PORT"))
+    port = config.sophia.port if config and hasattr(config, 'sophia') else int(TektonEnviron.get("SOPHIA_PORT", "8014"))
     logger.info(f"Starting enhanced Sophia on port {port}")
     uvicorn.run(app, host="0.0.0.0", port=port)

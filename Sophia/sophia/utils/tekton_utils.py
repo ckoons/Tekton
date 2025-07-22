@@ -22,6 +22,8 @@ if tekton_root not in sys.path:
     sys.path.append(tekton_root)
 
 from shared.utils.env_config import get_component_config
+from shared.env import TektonEnviron
+from shared.urls import sophia_url, hermes_url as get_hermes_url
 
 # Type variables for function signatures
 T = TypeVar('T')
@@ -129,7 +131,7 @@ def get_config(key: str, default: Any = None) -> Any:
     else:
         # Fallback to environment variables
         env_key = key.upper().replace(".", "_")
-        return os.environ.get(env_key, default)
+        return TektonEnviron.get(env_key, default)
         
 def get_sophia_port() -> int:
     """
@@ -142,7 +144,7 @@ def get_sophia_port() -> int:
     try:
         return config.sophia.port
     except (AttributeError, TypeError):
-        return int(os.environ.get("SOPHIA_PORT"))
+        return int(TektonEnviron.get("SOPHIA_PORT", "8014"))
     
 def get_sophia_base_url() -> str:
     """
@@ -353,9 +355,9 @@ def register_with_hermes(
     """
     if has_util("tekton_registration"):
         # Get values with defaults
-        host = host or os.environ.get("SOPHIA_HOST", "localhost")
+        host = host or TektonEnviron.get("SOPHIA_HOST", "localhost")
         port = port or get_sophia_port()
-        hermes_url = hermes_url or os.environ.get("HERMES_URL", "http://localhost:8001")
+        hermes_url = hermes_url or get_hermes_url()
         
         capabilities = capabilities or [
             "metrics", "analysis", "experiments", "recommendations", 
@@ -404,9 +406,9 @@ def register_with_hermes(
         # Try to use custom registration script
         try:
             from sophia.scripts.register_with_hermes import register_component
-            host = host or os.environ.get("SOPHIA_HOST", "localhost")
+            host = host or TektonEnviron.get("SOPHIA_HOST", "localhost")
             port = port or get_sophia_port()
-            hermes_url = hermes_url or os.environ.get("HERMES_URL", "http://localhost:8001")
+            hermes_url = hermes_url or get_hermes_url()
             
             return register_component(
                 component_id=component_id,

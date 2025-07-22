@@ -24,6 +24,7 @@ if tekton_root not in sys.path:
 
 # Import shared utilities
 from shared.utils.global_config import GlobalConfig
+from shared.urls import hermes_url
 
 # Import shared API utilities
 from shared.api.documentation import get_openapi_configuration
@@ -99,7 +100,7 @@ async def discovery():
         ],
         capabilities=component.get_capabilities() if component else [],
         dependencies={
-            "hermes": "http://localhost:8001"
+            "hermes": hermes_url()
         },
         metadata=component.get_metadata() if component else {}
     )
@@ -276,9 +277,33 @@ async def websocket_endpoint(websocket: WebSocket):
             component.active_connections.remove(websocket)
 
 
-# Endpoint routers will be loaded during startup
+# Import and register endpoint routers immediately
+try:
+    from sophia.api.endpoints import (
+        metrics,
+        experiments,
+        recommendations,
+        intelligence,
+        research,
+        components,
+        analytics
+    )
+    
+    # Include endpoint routers
+    routers.v1.include_router(metrics.router, prefix="/metrics", tags=["Metrics"])
+    routers.v1.include_router(experiments.router, prefix="/experiments", tags=["Experiments"])
+    routers.v1.include_router(recommendations.router, prefix="/recommendations", tags=["Recommendations"])
+    routers.v1.include_router(intelligence.router, prefix="/intelligence", tags=["Intelligence"])
+    routers.v1.include_router(research.router, prefix="/research", tags=["Research"])
+    routers.v1.include_router(components.router, prefix="/components", tags=["Components"])
+    routers.v1.include_router(analytics.router, prefix="/analytics", tags=["Analytics"])
+    
+    print("✅ Sophia endpoint routers loaded successfully")
+    
+except ImportError as e:
+    print(f"⚠️ Warning: Could not load some Sophia endpoint routers: {e}")
 
-# Mount standard routers
+# Mount standard routers (now with endpoints included)
 mount_standard_routers(app, routers)
 
 @app.on_event("startup")
@@ -305,29 +330,8 @@ async def delayed_initialization():
         component = SophiaComponent()
         logger.info("Sophia component created successfully")
         
-        # Load endpoint routers now that component is available
-        logger.info("Loading endpoint routers...")
-        from sophia.api.endpoints import (
-            metrics,
-            experiments,
-            recommendations,
-            intelligence,
-            research,
-            components,
-            analytics
-        )
-        logger.info("Endpoint modules imported successfully")
-        
-        # Include endpoint routers
-        logger.info("Registering endpoint routers...")
-        routers.v1.include_router(metrics.router, prefix="/metrics", tags=["Metrics"])
-        routers.v1.include_router(experiments.router, prefix="/experiments", tags=["Experiments"])
-        routers.v1.include_router(recommendations.router, prefix="/recommendations", tags=["Recommendations"])
-        routers.v1.include_router(intelligence.router, prefix="/intelligence", tags=["Intelligence"])
-        routers.v1.include_router(research.router, prefix="/research", tags=["Research"])
-        routers.v1.include_router(components.router, prefix="/components", tags=["Components"])
-        routers.v1.include_router(analytics.router, prefix="/analytics", tags=["Analytics"])
-        logger.info("All endpoint routers registered successfully")
+        # Endpoint routers are now loaded at app initialization
+        logger.info("Endpoint routers were loaded during app initialization")
         
         # Import and include MCP router
         try:

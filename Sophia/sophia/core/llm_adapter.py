@@ -7,10 +7,19 @@ analytics, recommendations, experiment design, and natural language interactions
 """
 
 import os
+import sys
 import json
 import logging
 import asyncio
 from typing import Dict, Any, List, Optional, Union, Callable, AsyncIterator, Tuple
+
+# Add Tekton root to path if not already present
+tekton_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..'))
+if tekton_root not in sys.path:
+    sys.path.insert(0, tekton_root)
+
+from shared.env import TektonEnviron
+from shared.urls import tekton_url
 
 from tekton_llm_client import Client
 from tekton_llm_client.models import ChatMessage, ChatCompletionOptions
@@ -97,8 +106,8 @@ class LlmAdapter:
     
     def __init__(self):
         """Initialize the LLM adapter."""
-        self.base_url = os.getenv("TEKTON_LLM_URL", "http://localhost:8001")
-        self.default_model = os.getenv("TEKTON_LLM_MODEL", "default")
+        self.base_url = TektonEnviron.get("TEKTON_LLM_URL", tekton_url("hermes", "/api/llm"))
+        self.default_model = TektonEnviron.get("TEKTON_LLM_MODEL", "default")
         self.clients = {}  # Task-specific clients
         self.default_client = None
         self.is_initialized = False

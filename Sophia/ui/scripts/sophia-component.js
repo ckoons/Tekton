@@ -9,8 +9,8 @@ document.addEventListener('DOMContentLoaded', initSophia);
 
 // Global variables
 let sophiaConfig = {
-  apiUrl: window.env?.SOPHIA_API_URL || 'http://localhost:8006/api',
-  wsUrl: window.env?.SOPHIA_WS_URL || 'ws://localhost:8006/ws',
+  apiUrl: window.env?.SOPHIA_API_URL || window.sophiaUrl('/api/v1'),
+  wsUrl: window.env?.SOPHIA_WS_URL || window.sophiaUrl('/ws', null, 'ws'),
   refreshInterval: 30000, // 30 seconds
   chartColors: [
     '#4285F4', '#EA4335', '#FBBC05', '#34A853', 

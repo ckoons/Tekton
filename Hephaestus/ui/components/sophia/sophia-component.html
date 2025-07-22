@@ -607,7 +607,7 @@
             <div class="sophia__chat-prompt">></div>
             <input type="text" id="sophia-chat-input" class="sophia__chat-input" 
                    placeholder="Enter chat message, research questions, or experiment ideas"
-                   onkeypress="if(event.key === 'Enter') sophia_sendChat()">
+                   onkeydown="if(event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); sophia_sendChat(); }">
             <button id="sophia-send-button" class="sophia__send-button" onclick="sophia_sendChat()" data-tekton-action="send-message" data-tekton-action-type="primary">Send</button>
         </div>
     </div>
