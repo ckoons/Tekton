@@ -2,9 +2,16 @@
 Session state management utilities for Ergon UI
 """
 
-import streamlit as st
 import sys
 import os
+
+# Add Tekton root to sys.path before other imports
+tekton_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../../'))
+if tekton_root not in sys.path:
+    sys.path.insert(0, tekton_root)
+
+import streamlit as st
+from shared.env import TektonEnviron
 
 # Add debug mode for easier troubleshooting
 DEBUG = True
@@ -21,7 +28,7 @@ def navigate_to(page):
 def check_authentication():
     """Check if the user is authenticated"""
     # If authentication is disabled, auto-authenticate
-    if os.environ.get("ERGON_AUTHENTICATION", "true").lower() == "false":
+    if TektonEnviron.get("ERGON_AUTHENTICATION", "true").lower() == "false":
         if "authenticated" not in st.session_state:
             st.session_state.authenticated = True
             st.session_state.username = "DevUser"

@@ -5,6 +5,8 @@ import json
 import logging
 from pathlib import Path
 from typing import Dict, Any, Optional, List
+from shared.env import TektonEnviron
+from shared.urls import rhetor_url
 
 logger = logging.getLogger(__name__)
 
@@ -47,7 +49,7 @@ class Config:
         Args:
             config_path: Path to the configuration file
         """
-        tekton_root = os.environ.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
+        tekton_root = TektonEnviron.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
         self.config_path = config_path or os.path.join(tekton_root, ".tekton", "terma", "config.json")
         self.config = {}
         self._load()
@@ -69,19 +71,19 @@ class Config:
         """Create a default configuration"""
         self.config = {
             "terminal": {
-                "default_shell": os.environ.get("SHELL", "/bin/bash"),
+                "default_shell": TektonEnviron.get("SHELL", "/bin/bash"),
                 "font_size": 14,
                 "theme": "dark"
             },
             "server": {
                 "host": "0.0.0.0",
-                "port": int(os.environ.get("TERMA_PORT", 8015))
+                "port": int(TektonEnviron.get("TERMA_PORT", "8004"))
             },
             "llm": {
                 "provider": "claude",
                 "model": "claude-3-sonnet-20240229",
-                "adapter_url": os.environ.get("RHETOR_URL", "http://localhost:8003"),
-                "adapter_ws_url": os.environ.get("RHETOR_WS_URL", "ws://localhost:8003/ws"),
+                "adapter_url": rhetor_url(),
+                "adapter_ws_url": rhetor_url(scheme="ws") + "/ws",
                 "system_prompt": "You are a terminal assistant that helps users with command-line tasks. Provide concise explanations and suggestions for terminal commands. Focus on being helpful, accurate, and security-conscious."
             }
         }
@@ -106,7 +108,7 @@ class Config:
         """
         # Check environment variable first (with TERMA_ prefix)
         env_key = "TERMA_" + key.upper().replace(".", "_")
-        env_value = os.environ.get(env_key)
+        env_value = TektonEnviron.get(env_key)
         if env_value is not None:
             return env_value
             

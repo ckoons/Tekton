@@ -2,9 +2,17 @@
 Authentication pages for Ergon UI
 """
 
+import sys
+import os
+
+# Add Tekton root to sys.path before other imports
+tekton_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../../../'))
+if tekton_root not in sys.path:
+    sys.path.insert(0, tekton_root)
+
 import streamlit as st
 import hashlib
-import os
+from shared.env import TektonEnviron
 from ..utils.session import debug, navigate_to
 
 def login_page():
@@ -37,7 +45,7 @@ def login_page():
     # Option for demo mode
     st.markdown("---")
     if st.button("Continue without login"):
-        if os.environ.get("ERGON_AUTHENTICATION", "true").lower() == "false":
+        if TektonEnviron.get("ERGON_AUTHENTICATION", "true").lower() == "false":
             st.session_state.authenticated = True
             st.session_state.username = "Guest"
             navigate_to("Home")
@@ -76,7 +84,7 @@ def register_page():
 def check_credentials(username, password):
     """Check if the credentials are valid"""
     # Demo authentication - in production, use a secure database
-    if os.environ.get("ERGON_AUTHENTICATION", "true").lower() == "false":
+    if TektonEnviron.get("ERGON_AUTHENTICATION", "true").lower() == "false":
         return True
         
     # Simple credential check (replace with secure authentication in production)
