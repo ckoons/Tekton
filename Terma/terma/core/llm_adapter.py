@@ -6,6 +6,26 @@ import logging
 import os
 from typing import Dict, Any, Optional, List, Callable, Awaitable, Tuple
 
+# Try to import landmarks
+try:
+    from landmarks import architecture_decision, integration_point, state_checkpoint
+except ImportError:
+    # Define no-op decorators if landmarks not available
+    def architecture_decision(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+    
+    def integration_point(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+    
+    def state_checkpoint(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+
 # Import enhanced tekton-llm-client features
 from tekton_llm_client import (
     TektonLLMClient,
@@ -21,6 +41,19 @@ from ..utils.config import Config
 
 logger = setup_logging()
 
+@architecture_decision(
+    title="Terma LLM Integration Architecture",
+    rationale="Use tekton-llm-client for standardized LLM communication with template support and structured output parsing",
+    alternatives_considered=["Direct API calls", "Custom LLM wrapper", "Terminal-specific LLM service"],
+    decided_by="Casey"
+)
+@state_checkpoint(
+    title="LLM Session Context State",
+    state_type="ephemeral",
+    persistence=False,
+    consistency_requirements="Session contexts maintained in-memory per terminal session",
+    recovery_strategy="Contexts lost on restart, terminals continue without history"
+)
 class LLMAdapter:
     """LLM adapter for terminal assistance
     
@@ -28,6 +61,12 @@ class LLMAdapter:
     It provides command analysis and terminal assistance functionality.
     """
     
+    @integration_point(
+        title="LLM Adapter Service Connection",
+        target_component="llm_adapter (port 8003)",
+        protocol="HTTP REST API via tekton-llm-client",
+        data_flow="Terma -> tekton-llm-client -> LLM Adapter -> Provider APIs"
+    )
     def __init__(self, config_path: Optional[str] = None):
         """Initialize the LLM adapter
         

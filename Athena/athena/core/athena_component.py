@@ -7,7 +7,7 @@ from shared.utils.standard_component import StandardComponentBase
 from athena.core.engine import get_knowledge_engine
 # Try to import landmarks decorators, but make them optional
 try:
-    from landmarks import architecture_decision, state_checkpoint
+    from landmarks import architecture_decision, state_checkpoint, integration_point, danger_zone
 except ImportError:
     # Create no-op decorators if landmarks module is not available
     def architecture_decision(*args, **kwargs):
@@ -16,6 +16,16 @@ except ImportError:
         return decorator
     
     def state_checkpoint(*args, **kwargs):
+        def decorator(func):
+            return func
+        return decorator
+    
+    def integration_point(*args, **kwargs):
+        def decorator(func):
+            return func
+        return decorator
+    
+    def danger_zone(*args, **kwargs):
         def decorator(func):
             return func
         return decorator
@@ -43,6 +53,12 @@ class AthenaComponent(StandardComponentBase):
         super().__init__(component_name="athena", version="0.1.0")
         self.knowledge_engine = None
         
+    @integration_point(
+        title="Knowledge Engine Integration",
+        target_component="Neo4j/Memory Adapter, Engram (vector store)",
+        protocol="Graph Database API, Vector Search API",
+        data_flow="Athena <-> Knowledge Engine <-> Graph Store/Vector Store"
+    )
     async def _component_specific_init(self):
         """Initialize Athena-specific services."""
         # Initialize knowledge engine

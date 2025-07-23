@@ -91,7 +91,7 @@ class LandmarkIngesterV2:
         # Sync to disk
         print("\n📁 Syncing to disk...")
         try:
-            response = await self.client.post(f"{ATHENA_API}/knowledge/sync")
+            response = await self.client.post(f"{ATHENA_API}/knowledge/sync/")
             if response.status_code == 200:
                 print("  ✓ Successfully synced knowledge graph to disk")
             else:
@@ -137,7 +137,7 @@ class LandmarkIngesterV2:
         
         try:
             response = await self.client.post(
-                f"{ATHENA_API}/entities/entities",
+                f"{ATHENA_API}/entities/",
                 json=entity
             )
             if response.status_code == 200:
@@ -176,7 +176,7 @@ class LandmarkIngesterV2:
         
         try:
             response = await self.client.post(
-                f"{ATHENA_API}/entities/entities",
+                f"{ATHENA_API}/entities/",
                 json=entity
             )
             if response.status_code == 200:
@@ -213,7 +213,7 @@ class LandmarkIngesterV2:
         
         try:
             response = await self.client.post(
-                f"{ATHENA_API}/knowledge/relationships",
+                f"{ATHENA_API}/relationships/",
                 json=relationship
             )
             if response.status_code == 200:

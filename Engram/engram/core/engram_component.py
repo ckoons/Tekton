@@ -6,9 +6,29 @@ from pathlib import Path
 
 from shared.utils.standard_component import StandardComponentBase
 from shared.env import TektonEnviron
+from landmarks import architecture_decision, state_checkpoint, integration_point, danger_zone
 
 logger = logging.getLogger(__name__)
 
+@architecture_decision(
+    title="Engram Memory Storage Architecture",
+    rationale="Flexible memory system supporting both vector (semantic) and fallback (file-based) storage with seamless failover for reliability",
+    alternatives_considered=["Vector-only storage", "File-only storage", "External database", "Cloud storage"],
+    decided_by="Casey"
+)
+@state_checkpoint(
+    title="Memory storage state",
+    state_type="persistent",
+    persistence=True,
+    consistency_requirements="Memory data must persist across restarts with vector/fallback consistency",
+    recovery_strategy="Reload from selected storage backend, automatic fallback on vector failure"
+)
+@integration_point(
+    title="Hermes and MCP Integration",
+    target_component="Hermes (service registry), MCP Bridge (tool access)",
+    protocol="Internal Python API, MCP Protocol",
+    data_flow="Memory operations <-> Storage backends, MCP tools <-> Memory access"
+)
 class EngramComponent(StandardComponentBase):
     """Engram memory management component with flexible storage backends."""
     
@@ -24,6 +44,13 @@ class EngramComponent(StandardComponentBase):
         self.use_hermes = False
         self.debug_mode = False
         
+    @danger_zone(
+        title="Storage Backend Initialization",
+        risk_level="high",
+        risks=["Vector DB connection failures", "Data corruption", "Storage inconsistency", "Memory exhaustion"],
+        mitigations=["Automatic fallback mode", "Data validation", "Storage health checks", "Resource limits"],
+        review_required=True
+    )
     async def _component_specific_init(self):
         """Initialize Engram-specific services with flexible storage backends."""
         # Get component configuration

@@ -12,10 +12,42 @@ from shared.env import TektonEnviron
 from shared.utils.standard_component import StandardComponentBase
 from shared.utils.env_manager import TektonEnvManager
 from shared.urls import tekton_url
+from landmarks import (
+    architecture_decision,
+    state_checkpoint,
+    integration_point,
+    danger_zone
+)
 
 logger = logging.getLogger(__name__)
 
 
+@architecture_decision(
+    title="Hermes Service Registry Architecture",
+    rationale="Centralized service discovery and registration to enable dynamic component discovery, health monitoring, and capability management across the Tekton ecosystem",
+    alternatives_considered=["Distributed registry (Consul/etcd)", "Static configuration files", "DNS-based discovery"],
+    decided_by="Casey"
+)
+@state_checkpoint(
+    title="Service Registry State",
+    state_type="service_registry",
+    persistence=True,
+    consistency_requirements="All service registrations must persist across restarts, maintain consistency for health status",
+    recovery_strategy="Restore from persisted registration files, re-register active components on startup"
+)
+@integration_point(
+    title="Universal Component Registration Hub",
+    target_component="All Tekton components",
+    protocol="HTTP REST API + WebSocket",
+    data_flow="Components -> Registration API -> Service Registry -> Health Monitor -> Status Updates"
+)
+@danger_zone(
+    title="Single Point of Failure for Service Discovery",
+    risk_level="critical",
+    risks=["All components depend on Hermes for discovery", "Registry corruption affects entire ecosystem", "Performance bottleneck"],
+    mitigations=["Persistent registry state", "Health check monitoring", "Graceful degradation", "Local caching in components"],
+    review_required=True
+)
 class HermesComponent(StandardComponentBase):
     """Hermes central registration and messaging component."""
     

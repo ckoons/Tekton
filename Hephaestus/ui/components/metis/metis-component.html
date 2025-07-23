@@ -29,7 +29,7 @@
             <div class="metis__tab" data-tab="workflow" onclick="metis_switchTab('workflow'); return false;" data-tekton-menu-item="Workflow Chat" data-tekton-menu-component="metis" data-tekton-menu-active="false" data-tekton-menu-panel="workflow-panel" data-tekton-nav-target="workflow-panel">
                 <span class="metis__tab-label">Workflow Chat</span>
             </div>
-            <div class="metis__tab" data-tab="teamchat" onclick="metis_switchTab('teamchat'); return false;" data-tekton-menu-item="Team Chat" data-tekton-menu-component="metis" data-tekton-menu-active="false" data-tekton-menu-panel="teamchat-panel" data-tekton-nav-target="teamchat-panel">
+            <div class="metis__tab" data-tekton-chat="tab" data-tab="teamchat" onclick="metis_switchTab('teamchat'); return false;" data-tekton-menu-item="Team Chat" data-tekton-menu-component="metis" data-tekton-menu-active="false" data-tekton-menu-panel="teamchat-panel" data-tekton-nav-target="teamchat-panel">
                 <span class="metis__tab-label">Team Chat</span>
             </div>
         </div>
@@ -62,19 +62,19 @@
                 </div>
                 
                 <div class="metis__search-container">
-                    <input type="text" id="task-search" class="metis__search-input" placeholder="Search tasks...">
+                    <input type="text" id="task-search" class="metis__search-input" placeholder="Search tasks..." data-tekton-input="search">
                     <button id="task-search-btn" class="metis__search-button" data-tekton-action="search-tasks" data-tekton-action-type="primary">Search</button>
                 </div>
                 
                 <div class="metis__filter-container">
-                    <select id="task-status-filter" class="metis__filter-select">
+                    <select id="task-status-filter" class="metis__filter-select" data-tekton-select="filter">
                         <option value="all">All Status</option>
                         <option value="pending">Pending</option>
                         <option value="in_progress">In Progress</option>
                         <option value="completed">Completed</option>
                         <option value="blocked">Blocked</option>
                     </select>
-                    <select id="task-priority-filter" class="metis__filter-select">
+                    <select id="task-priority-filter" class="metis__filter-select" data-tekton-select="filter">
                         <option value="all">All Priorities</option>
                         <option value="high">High</option>
                         <option value="medium">Medium</option>
@@ -236,7 +236,7 @@
                     <div class="metis__dependency-form">
                         <div class="metis__form-group">
                             <label class="metis__form-label">Task</label>
-                            <select id="dependency-task-select" class="metis__form-select">
+                            <select id="dependency-task-select" class="metis__form-select" data-tekton-select="option">
                                 <option value="">Select a task</option>
                                 <option value="T-001">T-001: Implement Metis UI Component</option>
                                 <option value="T-002">T-002: Test Metis Component</option>
@@ -245,7 +245,7 @@
                         
                         <div class="metis__form-group">
                             <label class="metis__form-label">Depends On</label>
-                            <select id="dependency-depends-on-select" class="metis__form-select">
+                            <select id="dependency-depends-on-select" class="metis__form-select" data-tekton-select="option">
                                 <option value="">Select a task</option>
                                 <option value="T-001">T-001: Implement Metis UI Component</option>
                                 <option value="T-002">T-002: Test Metis Component</option>
@@ -254,7 +254,7 @@
                         
                         <div class="metis__form-group">
                             <label class="metis__form-label">Dependency Type</label>
-                            <select id="dependency-type-select" class="metis__form-select">
+                            <select id="dependency-type-select" class="metis__form-select" data-tekton-select="option">
                                 <option value="blocks">Blocks</option>
                                 <option value="required_by">Required By</option>
                                 <option value="related_to">Related To</option>
@@ -312,7 +312,7 @@
                 <div class="metis__complexity-controls">
                     <div class="metis__form-group">
                         <label class="metis__form-label">Task</label>
-                        <select id="complexity-task-select" class="metis__form-select">
+                        <select id="complexity-task-select" class="metis__form-select" data-tekton-select="option">
                             <option value="">Select a task</option>
                             <option value="T-001">T-001: Implement Metis UI Component</option>
                             <option value="T-002">T-002: Test Metis Component</option>
@@ -435,7 +435,7 @@
         
         <!-- Workflow Chat Tab -->
         <div id="workflow-panel" class="metis__panel" data-tekton-panel="workflow" data-tekton-panel-for="Workflow Chat" data-tekton-panel-component="metis" data-tekton-panel-active="false">
-            <div id="workflow-messages" class="metis__chat-messages">
+            <div id="workflow-messages" class="metis__chat-messages" data-tekton-chat="messages">
                 <!-- Welcome message -->
                 <div class="metis__message metis__message--system">
                     <div class="metis__message-content">
@@ -455,8 +455,8 @@
         </div>
         
         <!-- Team Chat Tab -->
-        <div id="teamchat-panel" class="metis__panel" data-tekton-panel="teamchat" data-tekton-panel-for="Team Chat" data-tekton-panel-component="metis" data-tekton-panel-active="false">
-            <div id="teamchat-messages" class="metis__chat-messages">
+        <div id="teamchat-panel" class="metis__panel" data-tekton-chat="panel" data-tekton-panel="teamchat" data-tekton-panel-for="Team Chat" data-tekton-panel-component="metis" data-tekton-panel-active="false">
+            <div id="teamchat-messages" class="metis__chat-messages" data-tekton-chat="messages">
                 <!-- Welcome message -->
                 <div class="metis__message metis__message--system">
                     <div class="metis__message-content">
@@ -481,7 +481,7 @@
                 <!-- Task form fields will be displayed here -->
                 <div class="metis__form-group">
                     <label class="metis__form-label">Task Name</label>
-                    <input type="text" id="task-name-input" class="metis__form-input">
+                    <input type="text" id="task-name-input" class="metis__form-input" data-tekton-input="text">
                 </div>
                 <div class="metis__form-group">
                     <label class="metis__form-label">Description</label>
@@ -490,7 +490,7 @@
                 <div class="metis__form-row">
                     <div class="metis__form-group metis__form-group--half">
                         <label class="metis__form-label">Status</label>
-                        <select id="task-status-input" class="metis__form-select">
+                        <select id="task-status-input" class="metis__form-select" data-tekton-select="option">
                             <option value="pending">Pending</option>
                             <option value="in_progress">In Progress</option>
                             <option value="completed">Completed</option>
@@ -499,7 +499,7 @@
                     </div>
                     <div class="metis__form-group metis__form-group--half">
                         <label class="metis__form-label">Priority</label>
-                        <select id="task-priority-input" class="metis__form-select">
+                        <select id="task-priority-input" class="metis__form-select" data-tekton-select="option">
                             <option value="high">High</option>
                             <option value="medium">Medium</option>
                             <option value="low">Low</option>
@@ -513,7 +513,7 @@
                     </div>
                     <div class="metis__form-group metis__form-group--half">
                         <label class="metis__form-label">Assigned To</label>
-                        <input type="text" id="task-assigned-to-input" class="metis__form-input">
+                        <input type="text" id="task-assigned-to-input" class="metis__form-input" data-tekton-input="text">
                     </div>
                 </div>
             </div>
@@ -526,9 +526,9 @@
     
     <!-- Footer with Chat Input -->
     <div class="metis__footer" data-tekton-zone="footer">
-        <div class="metis__chat-input-container">
-            <div class="metis__chat-prompt">></div>
-            <input type="text" id="metis-chat-input" class="metis__chat-input" 
+        <div class="metis__chat-input-container" data-tekton-chat="input">
+            <div class="metis__chat-prompt" data-tekton-chat="container">></div>
+            <input type="text" id="metis-chat-input" class="metis__chat-input" data-tekton-chat="input" 
                    data-tekton-input="chat-input"
                    data-tekton-input-type="chat"
                    placeholder="Enter message for team or workflow chat"

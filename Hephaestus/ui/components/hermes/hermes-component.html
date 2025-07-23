@@ -58,14 +58,14 @@
                  data-tekton-nav-target="history">
                 <span class="hermes__tab-label">Message History</span>
             </label>
-            <label for="hermes-tab-chat" class="hermes__tab" data-tab="chat"
+            <label for="hermes-tab-chat" class="hermes__tab" data-tekton-chat="tab" data-tab="chat"
                  data-tekton-menu-item="Message/Data Chat"
                  data-tekton-menu-component="hermes"
                  data-tekton-menu-panel="chat-panel"
                  data-tekton-nav-target="chat">
                 <span class="hermes__tab-label">Message/Data Chat</span>
             </label>
-            <label for="hermes-tab-teamchat" class="hermes__tab" data-tab="teamchat"
+            <label for="hermes-tab-teamchat" class="hermes__tab" data-tekton-chat="tab" data-tab="teamchat"
                  data-tekton-menu-item="Team Chat"
                  data-tekton-menu-component="hermes"
                  data-tekton-menu-panel="teamchat-panel"
@@ -98,7 +98,7 @@
                            data-tekton-input-type="search">
                     <select id="filter-type" class="hermes__select"
                             data-tekton-input="filter-type"
-                            data-tekton-input-type="select">
+                            data-tekton-input-type="select" data-tekton-select="filter">
                         <option value="all">All Types</option>
                         <option value="hermes">Hermes</option>
                         <option value="rhetor">Rhetor</option>
@@ -284,7 +284,7 @@
                            data-tekton-input-type="search">
                     <select id="history-filter" class="hermes__select"
                             data-tekton-input="history-filter"
-                            data-tekton-input-type="select">
+                            data-tekton-input-type="select" data-tekton-select="filter">
                         <option value="all">All Types</option>
                         <option value="registration">Registration</option>
                         <option value="heartbeat">Heartbeat</option>
@@ -321,7 +321,7 @@
                         <label class="hermes__filter-label">Components</label>
                         <select id="history-component-filter" class="hermes__select" multiple
                                 data-tekton-input="history-component-filter"
-                                data-tekton-input-type="multiselect">
+                                data-tekton-input-type="multiselect" data-tekton-select="filter">
                             <!-- Component options will be added dynamically -->
                         </select>
                     </div>
@@ -348,13 +348,13 @@
         </div>
         
         <!-- Chat Tab -->
-        <div id="chat-panel" class="hermes__panel"
+        <div id="chat-panel" class="hermes__panel" data-tekton-chat="panel"
              data-tekton-panel="chat"
              data-tekton-panel-for="Message/Data Chat"
              data-tekton-panel-component="hermes"
              data-tekton-panel-active="false">
-            <div class="hermes__chat">
-                <div class="hermes__chat-messages" id="chat-messages" style="width: 100%; height: calc(100% - 0px);">
+            <div class="hermes__chat" data-tekton-chat="container">
+                <div class="hermes__chat-messages" data-tekton-chat="messages" id="chat-messages" style="width: 100%; height: calc(100% - 0px);">
                     <!-- Chat messages will be added dynamically -->
                     <div class="hermes__message hermes__message--system">
                         <div class="hermes__message-content">
@@ -373,12 +373,12 @@
         </div>
         
         <!-- Team Chat Tab -->
-        <div id="teamchat-panel" class="hermes__panel"
+        <div id="teamchat-panel" class="hermes__panel" data-tekton-chat="panel"
              data-tekton-panel="teamchat"
              data-tekton-panel-for="Team Chat"
              data-tekton-panel-component="hermes"
              data-tekton-panel-active="false">
-            <div id="teamchat-messages" class="hermes__chat-messages">
+            <div id="teamchat-messages" class="hermes__chat-messages" data-tekton-chat="messages">
                 <!-- Welcome message -->
                 <div class="hermes__message hermes__message--system">
                     <div class="hermes__message-content">
@@ -395,9 +395,9 @@
     <!-- Footer with Chat Input -->
     <!-- @landmark Footer: Chat input area - always visible at bottom of component -->
     <div class="hermes__footer" data-tekton-zone="footer" data-tekton-section="footer">
-        <div class="hermes__chat-input-container">
-            <div class="hermes__chat-prompt">></div>
-            <input type="text" id="hermes-chat-input" class="hermes__chat-input" 
+        <div class="hermes__chat-input-container" data-tekton-chat="input">
+            <div class="hermes__chat-prompt" data-tekton-chat="container">></div>
+            <input type="text" id="hermes-chat-input" class="hermes__chat-input" data-tekton-chat="input" 
                    placeholder="Enter chat message for Hermes service registry, message monitoring or LLM chat"
                    data-tekton-input="chat-input"
                    data-tekton-input-type="chat">
@@ -1476,20 +1476,20 @@ function hermes_setupBasicChat() {
             // Clear input
             chatInput.value = '';
             
-            // Get active tab
-            const activeTab = document.querySelector('.hermes__tab--active');
-            const tabId = activeTab ? activeTab.getAttribute('data-tab') : '';
+            // Get active tab by checking which radio is checked
+            const chatActive = document.getElementById('hermes-tab-chat').checked;
+            const teamchatActive = document.getElementById('hermes-tab-teamchat').checked;
             
             // Find the right message container based on active tab
             let messagesContainer;
-            if (tabId === 'chat') {
+            if (chatActive) {
                 messagesContainer = document.getElementById('chat-messages');
-            } else if (tabId === 'teamchat') {
+            } else if (teamchatActive) {
                 messagesContainer = document.getElementById('teamchat-messages');
             }
             
             if (!messagesContainer) {
-                console.error('[HERMES] Cannot find messages container for tab:', tabId);
+                console.error('[HERMES] Cannot find messages container');
                 return;
             }
             
@@ -1506,24 +1506,64 @@ function hermes_setupBasicChat() {
             // Scroll to bottom
             messagesContainer.scrollTop = messagesContainer.scrollHeight;
             
-            // TODO: Here would be code to send the message to the server
-            // and handle the response. For now we'll just add a placeholder response
-            setTimeout(() => {
-                const aiMessageElement = document.createElement('div');
-                aiMessageElement.className = 'hermes__message hermes__message--ai';
-                aiMessageElement.innerHTML = `
-                    <div class="hermes__message-content">
-                        <div class="hermes__message-text">
-                            I've received your message: "${messageText}"<br>
-                            This is a placeholder response. Chat functionality requires the Hermes component script to be properly loaded.
-                        </div>
-                    </div>
-                `;
-                messagesContainer.appendChild(aiMessageElement);
-                
-                // Scroll to bottom again
-                messagesContainer.scrollTop = messagesContainer.scrollHeight;
-            }, 500);
+            // Send to backend based on chat type
+            if (chatActive && window.AIChat) {
+                // Direct message to Hermes AI
+                window.AIChat.sendMessage('hermes', messageText)
+                    .then(response => {
+                        const aiMessageElement = document.createElement('div');
+                        aiMessageElement.className = 'hermes__message hermes__message--ai';
+                        aiMessageElement.innerHTML = `
+                            <div class="hermes__message-content">
+                                <div class="hermes__message-text">
+                                    <strong>Hermes:</strong> ${response.content}
+                                </div>
+                            </div>
+                        `;
+                        messagesContainer.appendChild(aiMessageElement);
+                        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                    })
+                    .catch(err => {
+                        console.error('Failed to send message:', err);
+                        const errorElement = document.createElement('div');
+                        errorElement.className = 'hermes__message hermes__message--system';
+                        errorElement.innerHTML = `
+                            <div class="hermes__message-content">
+                                <div class="hermes__message-text">
+                                    <strong>System:</strong> Failed to connect to Hermes AI
+                                </div>
+                            </div>
+                        `;
+                        messagesContainer.appendChild(errorElement);
+                        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                    });
+            } else if (teamchatActive && window.AIChat) {
+                // Team chat
+                window.AIChat.teamChat(messageText, 'hermes')
+                    .then(data => {
+                        // Display team responses
+                        if (data.responses && data.responses.length > 0) {
+                            data.responses.forEach(resp => {
+                                const aiMessageElement = document.createElement('div');
+                                aiMessageElement.className = 'hermes__message hermes__message--ai';
+                                const sender = resp.socket_id.replace('-ai', '').charAt(0).toUpperCase() + 
+                                             resp.socket_id.replace('-ai', '').slice(1);
+                                aiMessageElement.innerHTML = `
+                                    <div class="hermes__message-content">
+                                        <div class="hermes__message-text">
+                                            <strong>${sender}:</strong> ${resp.content}
+                                        </div>
+                                    </div>
+                                `;
+                                messagesContainer.appendChild(aiMessageElement);
+                            });
+                            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                        }
+                    })
+                    .catch(err => {
+                        console.error('Failed to send team message:', err);
+                    });
+            }
         }
         
         // Add event listeners

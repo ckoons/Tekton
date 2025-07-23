@@ -26,10 +26,10 @@
             <div class="synthesis__tab" data-tab="history" onclick="synthesis_switchTab('history'); return false;" data-tekton-menu-item="History" data-tekton-menu-component="synthesis" data-tekton-menu-active="false" data-tekton-menu-panel="history-panel" data-tekton-nav-target="history-panel">
                 <span class="synthesis__tab-label">History</span>
             </div>
-            <div class="synthesis__tab" data-tab="execchat" onclick="synthesis_switchTab('execchat'); return false;" data-tekton-menu-item="Execution Chat" data-tekton-menu-component="synthesis" data-tekton-menu-active="false" data-tekton-menu-panel="execchat-panel" data-tekton-nav-target="execchat-panel">
+            <div class="synthesis__tab" data-tekton-chat="tab" data-tab="execchat" onclick="synthesis_switchTab('execchat'); return false;" data-tekton-menu-item="Execution Chat" data-tekton-menu-component="synthesis" data-tekton-menu-active="false" data-tekton-menu-panel="execchat-panel" data-tekton-nav-target="execchat-panel">
                 <span class="synthesis__tab-label">Execution Chat</span>
             </div>
-            <div class="synthesis__tab" data-tab="teamchat" onclick="synthesis_switchTab('teamchat'); return false;" data-tekton-menu-item="Team Chat" data-tekton-menu-component="synthesis" data-tekton-menu-active="false" data-tekton-menu-panel="teamchat-panel" data-tekton-nav-target="teamchat-panel">
+            <div class="synthesis__tab" data-tekton-chat="tab" data-tab="teamchat" onclick="synthesis_switchTab('teamchat'); return false;" data-tekton-menu-item="Team Chat" data-tekton-menu-component="synthesis" data-tekton-menu-active="false" data-tekton-menu-panel="teamchat-panel" data-tekton-nav-target="teamchat-panel">
                 <span class="synthesis__tab-label">Team Chat</span>
             </div>
         </div>
@@ -47,7 +47,7 @@
             <div class="synthesis__executions">
                 <div class="synthesis__control-bar">
                     <div class="synthesis__search-container">
-                        <input type="text" id="execution-search" class="synthesis__search-input" placeholder="Search executions...">
+                        <input type="text" id="execution-search" class="synthesis__search-input" placeholder="Search executions..." data-tekton-input="search">
                         <button id="execution-search-btn" class="synthesis__search-button" data-tekton-action="search-executions" data-tekton-action-type="primary">Search</button>
                     </div>
                     <div class="synthesis__actions">
@@ -128,7 +128,7 @@
                     <div class="synthesis__filter-container">
                         <div class="synthesis__input-group">
                             <span class="synthesis__input-label">Category</span>
-                            <select id="workflow-category-filter" class="synthesis__select">
+                            <select id="workflow-category-filter" class="synthesis__select" data-tekton-select="filter">
                                 <option value="">All Categories</option>
                                 <option value="data-processing">Data Processing</option>
                                 <option value="system">System</option>
@@ -139,7 +139,7 @@
                         </div>
                         <div class="synthesis__input-group">
                             <span class="synthesis__input-label">Show</span>
-                            <select id="workflow-status-filter" class="synthesis__select">
+                            <select id="workflow-status-filter" class="synthesis__select" data-tekton-select="filter">
                                 <option value="">All Workflows</option>
                                 <option value="active">Active Only</option>
                                 <option value="archived">Archived Only</option>
@@ -227,7 +227,7 @@
                     <div class="synthesis__filter-container">
                         <div class="synthesis__input-group">
                             <span class="synthesis__input-label">Time Range</span>
-                            <select id="monitoring-timerange" class="synthesis__select">
+                            <select id="monitoring-timerange" class="synthesis__select" data-tekton-select="option">
                                 <option value="1h">Last Hour</option>
                                 <option value="6h">Last 6 Hours</option>
                                 <option value="24h" selected>Last 24 Hours</option>
@@ -237,7 +237,7 @@
                         </div>
                         <div class="synthesis__input-group">
                             <span class="synthesis__input-label">Interval</span>
-                            <select id="monitoring-interval" class="synthesis__select">
+                            <select id="monitoring-interval" class="synthesis__select" data-tekton-select="option">
                                 <option value="1m">1 Minute</option>
                                 <option value="5m" selected>5 Minutes</option>
                                 <option value="15m">15 Minutes</option>
@@ -304,7 +304,7 @@
                     <div class="synthesis__filter-container">
                         <div class="synthesis__input-group">
                             <span class="synthesis__input-label">Status</span>
-                            <select id="history-status-filter" class="synthesis__select">
+                            <select id="history-status-filter" class="synthesis__select" data-tekton-select="filter">
                                 <option value="">All Statuses</option>
                                 <option value="completed">Completed</option>
                                 <option value="failed">Failed</option>
@@ -313,14 +313,14 @@
                         </div>
                         <div class="synthesis__input-group">
                             <span class="synthesis__input-label">Workflow</span>
-                            <select id="history-workflow-filter" class="synthesis__select">
+                            <select id="history-workflow-filter" class="synthesis__select" data-tekton-select="filter">
                                 <option value="">All Workflows</option>
                                 <!-- Dynamically populated -->
                             </select>
                         </div>
                         <div class="synthesis__input-group">
                             <span class="synthesis__input-label">Date Range</span>
-                            <select id="history-date-filter" class="synthesis__select">
+                            <select id="history-date-filter" class="synthesis__select" data-tekton-select="filter">
                                 <option value="today">Today</option>
                                 <option value="yesterday">Yesterday</option>
                                 <option value="7days" selected>Last 7 Days</option>
@@ -404,8 +404,8 @@
         </div>
         
         <!-- Execution Chat Tab -->
-        <div id="execchat-panel" class="synthesis__panel" style="position: relative; overflow: hidden;" data-tekton-panel="execchat" data-tekton-panel-for="Execution Chat" data-tekton-panel-component="synthesis" data-tekton-panel-active="false">
-            <div id="execchat-messages" class="synthesis__chat-messages">
+        <div id="execchat-panel" class="synthesis__panel" data-tekton-chat="panel" style="position: relative; overflow: hidden;" data-tekton-panel="execchat" data-tekton-panel-for="Execution Chat" data-tekton-panel-component="synthesis" data-tekton-panel-active="false">
+            <div id="execchat-messages" class="synthesis__chat-messages" data-tekton-chat="messages">
                 <!-- Welcome message -->
                 <div class="synthesis__message synthesis__message--system">
                     <div class="synthesis__message-content">
@@ -425,8 +425,8 @@
         </div>
         
         <!-- Team Chat Tab -->
-        <div id="teamchat-panel" class="synthesis__panel" style="position: relative; overflow: hidden;" data-tekton-panel="teamchat" data-tekton-panel-for="Team Chat" data-tekton-panel-component="synthesis" data-tekton-panel-active="false">
-            <div id="teamchat-messages" class="synthesis__chat-messages">
+        <div id="teamchat-panel" class="synthesis__panel" data-tekton-chat="panel" style="position: relative; overflow: hidden;" data-tekton-panel="teamchat" data-tekton-panel-for="Team Chat" data-tekton-panel-component="synthesis" data-tekton-panel-active="false">
+            <div id="teamchat-messages" class="synthesis__chat-messages" data-tekton-chat="messages">
                 <!-- Welcome message -->
                 <div class="synthesis__message synthesis__message--system">
                     <div class="synthesis__message-content">
@@ -442,9 +442,9 @@
     
     <!-- Footer with Chat Input -->
     <div class="synthesis__footer" data-tekton-zone="footer">
-        <div class="synthesis__chat-input-container">
-            <div class="synthesis__chat-prompt">></div>
-            <input type="text" id="synthesis-chat-input" class="synthesis__chat-input" 
+        <div class="synthesis__chat-input-container" data-tekton-chat="input">
+            <div class="synthesis__chat-prompt" data-tekton-chat="container">></div>
+            <input type="text" id="synthesis-chat-input" class="synthesis__chat-input" data-tekton-chat="input" 
                    placeholder="Enter chat message, execution questions, or workflow commands"
                    onkeypress="if(event.key==='Enter'){synthesis_sendChat(); return false;}">
             <button id="synthesis-send-button" class="synthesis__send-button" onclick="synthesis_sendChat(); return false;" data-tekton-action="send-message" data-tekton-action-type="primary">Send</button>

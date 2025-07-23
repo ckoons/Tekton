@@ -154,11 +154,11 @@
             <div class="apollo__sessions">
                 <div class="apollo__control-bar">
                     <div class="apollo__search-container">
-                        <input type="text" id="session-search" class="apollo__search-input" placeholder="Search sessions...">
+                        <input type="text" id="session-search" class="apollo__search-input" placeholder="Search sessions..." data-tekton-input="search">
                         <button id="session-search-btn" class="apollo__search-button" data-tekton-action="search-sessions" data-tekton-action-type="primary">Search</button>
                     </div>
                     <div class="apollo__filter-container">
-                        <select id="session-status-filter" class="apollo__filter-select">
+                        <select id="session-status-filter" class="apollo__filter-select" data-tekton-select="filter">
                             <option value="all">All Status</option>
                             <option value="healthy">Healthy</option>
                             <option value="warning">Warning</option>
@@ -386,7 +386,7 @@
                             <div class="apollo__budget-form">
                                 <div class="apollo__form-group">
                                     <label class="apollo__form-label">Budget Strategy</label>
-                                    <select class="apollo__form-select" id="budget-strategy-select">
+                                    <select class="apollo__form-select" id="budget-strategy-select" data-tekton-select="option">
                                         <option value="fixed">Fixed Allocation</option>
                                         <option value="dynamic" selected>Dynamic Allocation</option>
                                         <option value="priority">Priority-Based</option>
@@ -507,7 +507,7 @@
             <div class="apollo__protocols">
                 <div class="apollo__control-bar">
                     <div class="apollo__filter-container">
-                        <select id="protocol-filter" class="apollo__filter-select">
+                        <select id="protocol-filter" class="apollo__filter-select" data-tekton-select="filter">
                             <option value="all" selected>All Protocols</option>
                             <option value="active">Active Only</option>
                             <option value="memory">Memory Related</option>
@@ -841,14 +841,14 @@
             <div class="apollo__forecasting">
                 <div class="apollo__control-bar">
                     <div class="apollo__filter-container">
-                        <select id="forecast-session-filter" class="apollo__filter-select">
+                        <select id="forecast-session-filter" class="apollo__filter-select" data-tekton-select="filter">
                             <option value="all">All Sessions</option>
                             <option value="codex">Codex</option>
                             <option value="athena">Athena</option>
                             <option value="rhetor">Rhetor</option>
                             <option value="engram">Engram</option>
                         </select>
-                        <select id="forecast-time-scale" class="apollo__filter-select">
+                        <select id="forecast-time-scale" class="apollo__filter-select" data-tekton-select="option">
                             <option value="1h">1 Hour</option>
                             <option value="6h">6 Hours</option>
                             <option value="12h" selected>12 Hours</option>
@@ -1280,7 +1280,7 @@
             <div class="apollo__actions-panel">
                 <div class="apollo__control-bar">
                     <div class="apollo__filter-container">
-                        <select id="action-session-filter" class="apollo__filter-select">
+                        <select id="action-session-filter" class="apollo__filter-select" data-tekton-select="filter">
                             <option value="all">All Sessions</option>
                             <option value="codex">Codex</option>
                             <option value="athena">Athena</option>
@@ -1316,7 +1316,7 @@
                                 <div class="apollo__action-form">
                                     <div class="apollo__form-group">
                                         <label class="apollo__form-label">Target Session</label>
-                                        <select class="apollo__form-select" id="reset-session-select">
+                                        <select class="apollo__form-select" id="reset-session-select" data-tekton-select="option">
                                             <option value="">Select a session</option>
                                             <option value="codex">Codex</option>
                                             <option value="athena">Athena</option>
@@ -1368,7 +1368,7 @@
                                 <div class="apollo__action-form">
                                     <div class="apollo__form-group">
                                         <label class="apollo__form-label">Target Session</label>
-                                        <select class="apollo__form-select" id="compress-session-select">
+                                        <select class="apollo__form-select" id="compress-session-select" data-tekton-select="option">
                                             <option value="">Select a session</option>
                                             <option value="codex">Codex</option>
                                             <option value="athena">Athena</option>
@@ -1430,7 +1430,7 @@
                                 <div class="apollo__action-form">
                                     <div class="apollo__form-group">
                                         <label class="apollo__form-label">Target Session</label>
-                                        <select class="apollo__form-select" id="rebuild-session-select">
+                                        <select class="apollo__form-select" id="rebuild-session-select" data-tekton-select="option">
                                             <option value="">Select a session</option>
                                             <option value="codex">Codex</option>
                                             <option value="athena">Athena</option>
@@ -5110,7 +5110,7 @@ window.apollo_createForecastCard = function(prediction) {
                 </div>
             </div>
             <div class="apollo__forecast-actions">
-                <button class="apollo__forecast-action-btn" data-context-id="${prediction.context_id}">
+                <button class="apollo__forecast-action-btn" data-context-id="${prediction.context_id}" data-tekton-action="action">
                     View Details
                 </button>
             </div>
@@ -5198,10 +5198,10 @@ window.apollo_createActionSection = function(title, actions, priority) {
                 </div>
             </div>
             <div class="apollo__action-buttons">
-                <button class="apollo__action-btn apollo__action-btn--primary" data-action-id="${action.action_id}">
+                <button class="apollo__action-btn apollo__action-btn--primary" data-action-id="${action.action_id}" data-tekton-action="action">
                     Execute
                 </button>
-                <button class="apollo__action-btn apollo__action-btn--secondary" data-action-id="${action.action_id}">
+                <button class="apollo__action-btn apollo__action-btn--secondary" data-action-id="${action.action_id}" data-tekton-action="action">
                     Dismiss
                 </button>
             </div>

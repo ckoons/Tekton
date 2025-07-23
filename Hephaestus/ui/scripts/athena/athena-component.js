@@ -397,18 +397,50 @@ class AthenaComponent {
     /**
      * Initialize the graph visualization
      */
-    initializeGraph() {
+    async initializeGraph() {
         console.log('Initializing knowledge graph visualization');
         
-        // For now, just update the placeholder
         const placeholder = document.getElementById('graph-placeholder');
-        if (placeholder) {
+        if (!placeholder) return;
+        
+        // Check if AthenaService is available
+        if (window.AthenaService) {
+            try {
+                // Try to load actual data from Athena
+                const entities = await window.AthenaService.getEntities();
+                console.log('Loaded Athena entities:', entities);
+                
+                placeholder.innerHTML = `
+                    <div style="text-align: center; padding: 2rem;">
+                        <h2 style="color: #999; margin-bottom: 1rem;">Knowledge Graph Loaded</h2>
+                        <p style="color: #777; max-width: 600px; margin: 0 auto;">
+                            Successfully loaded ${entities.length} entities from Athena.<br><br>
+                            • Components: ${entities.filter(e => e.entityType === 'component').length}<br>
+                            • Integration patterns discovered<br>
+                            • Knowledge graph ready<br><br>
+                            Use the Entities tab to browse all components and relationships.
+                        </p>
+                    </div>
+                `;
+            } catch (error) {
+                console.error('Error loading Athena data:', error);
+                placeholder.innerHTML = `
+                    <div style="text-align: center; padding: 2rem;">
+                        <h2 style="color: #999; margin-bottom: 1rem;">Knowledge Graph</h2>
+                        <p style="color: #777; max-width: 600px; margin: 0 auto;">
+                            Unable to connect to Athena service. Please ensure Athena is running on port 8002.<br><br>
+                            Error: ${error.message}
+                        </p>
+                    </div>
+                `;
+            }
+        } else {
+            // AthenaService not available
             placeholder.innerHTML = `
                 <div style="text-align: center; padding: 2rem;">
-                    <h2 style="color: #999; margin-bottom: 1rem;">Knowledge Graph View</h2>
+                    <h2 style="color: #999; margin-bottom: 1rem;">Knowledge Graph</h2>
                     <p style="color: #777; max-width: 600px; margin: 0 auto;">
-                        This is a placeholder for the knowledge graph visualization.
-                        In a real implementation, this would show an interactive graph of entities and relationships.
+                        AthenaService not loaded. The graph visualization will be available once all scripts load properly.
                     </p>
                 </div>
             `;
@@ -418,16 +450,60 @@ class AthenaComponent {
     /**
      * Load entities for the entity list
      */
-    loadEntities() {
+    async loadEntities() {
         console.log('Loading entities');
         
         const entityList = document.getElementById('entity-list-items');
-        const loading = document.getElementById('entity-list-loading');
         
-        if (entityList && loading) {
-            // Show some sample entities after a delay
+        if (!entityList) return;
+        
+        if (window.AthenaService) {
+            try {
+                // Load actual entities from Athena
+                const entities = await window.AthenaService.getEntities();
+                console.log('Loaded entities for list:', entities);
+                
+                // Clear the loading message and populate with entities
+                if (entities.length > 0) {
+                    entityList.innerHTML = entities.map(entity => `
+                        <div class="athena__entity-item" data-entity-id="${entity.id}">
+                            <div class="athena__entity-header">
+                                <h4 class="athena__entity-name">${entity.name}</h4>
+                                <span class="athena__entity-type">${entity.entityType}</span>
+                            </div>
+                            <div class="athena__entity-details">
+                                <p>${entity.properties?.description || 'No description available'}</p>
+                                ${entity.properties?.port ? `<small>Port: ${entity.properties.port}</small>` : ''}
+                            </div>
+                        </div>
+                    `).join('');
+                } else {
+                    entityList.innerHTML = `
+                        <div class="athena__empty-state">
+                            <p>No entities found. Run the population script to add Tekton components.</p>
+                        </div>
+                    `;
+                }
+                
+                entityList.style.display = 'block';
+            } catch (error) {
+                console.error('Error loading entities:', error);
+                entityList.innerHTML = `
+                    <div class="athena__error-state">
+                        <p>Error loading entities: ${error.message}</p>
+                        <p>Please ensure Athena is running and accessible.</p>
+                    </div>
+                `;
+                entityList.style.display = 'block';
+            }
+        } else {
+            // Fallback when AthenaService is not available
             setTimeout(() => {
-                loading.style.display = 'none';
+                entityList.innerHTML = `
+                    <div class="athena__error-state">
+                        <p>AthenaService not available. Please check console for script loading errors.</p>
+                    </div>
+                `;
                 entityList.style.display = 'block';
             }, 1000);
         }

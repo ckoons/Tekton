@@ -19,7 +19,7 @@ from tekton.mcp.fastmcp.exceptions import FastMCPError
 
 # Add landmarks if available
 try:
-    from landmarks import api_contract, integration_point
+    from landmarks import api_contract, integration_point, architecture_decision, danger_zone
 except ImportError:
     # Define no-op decorators if landmarks not available
     def api_contract(**kwargs):
@@ -28,6 +28,16 @@ except ImportError:
         return decorator
     
     def integration_point(**kwargs):
+        def decorator(func):
+            return func
+        return decorator
+    
+    def architecture_decision(**kwargs):
+        def decorator(func):
+            return func
+        return decorator
+    
+    def danger_zone(**kwargs):
         def decorator(func):
             return func
         return decorator
@@ -83,6 +93,12 @@ add_mcp_endpoints(mcp_router, fastmcp_server)
 
 # Additional Terma-specific MCP endpoints
 @mcp_router.get("/terminal-status")
+@api_contract(
+    title="Terminal Status API",
+    endpoint="/api/mcp/v2/terminal-status",
+    method="GET",
+    response_schema={"status": "str", "capabilities": "list", "active_sessions": "int"}
+)
 async def get_terminal_status() -> Dict[str, Any]:
     """
     Get overall Terma terminal system status.
@@ -113,6 +129,19 @@ async def get_terminal_status() -> Dict[str, Any]:
 
 
 @mcp_router.post("/execute-terminal-workflow")
+@api_contract(
+    title="Terminal Workflow Execution API",
+    endpoint="/api/mcp/v2/execute-terminal-workflow",
+    method="POST",
+    request_schema={"workflow_name": "str", "parameters": "dict"}
+)
+@danger_zone(
+    title="Automated Workflow Execution",
+    risk_level="medium",
+    risks=["Unintended terminal operations", "Resource consumption", "Workflow errors"],
+    mitigations=["Predefined workflows only", "Parameter validation", "Error handling"],
+    review_required=False
+)
 async def execute_terminal_workflow(
     workflow_name: str,
     parameters: Dict[str, Any]

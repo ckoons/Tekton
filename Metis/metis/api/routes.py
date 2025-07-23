@@ -17,6 +17,7 @@ from metis.api.schemas import (
     ApiResponse, WebSocketMessage, WebSocketRegistration
 )
 from metis.core.mcp.tools import decompose_task as mcp_decompose_task
+from landmarks import api_contract, integration_point, danger_zone
 
 
 # Create router
@@ -45,6 +46,18 @@ def get_task_controller(request: Request) -> TaskController:
     summary="Create a new task",
     description="Create a new task with the given data",
     tags=["Tasks"]
+)
+@api_contract(
+    title="Task Creation API",
+    endpoint="/api/v1/tasks",
+    method="POST",
+    request_schema={"title": "string", "description": "string", "status": "string", "priority": "string", "tags": "list"}
+)
+@integration_point(
+    title="Task Manager Integration",
+    target_component="Task Manager, Storage Backend",
+    protocol="Internal Python API",
+    data_flow="API Request -> Task Manager -> Storage -> Event Broadcasting"
 )
 async def create_task(
     task_create: TaskCreate,
@@ -397,6 +410,25 @@ async def import_requirement_as_task(
     summary="Decompose task using AI",
     description="Break down a task into subtasks using AI-powered decomposition",
     tags=["AI Features"]
+)
+@api_contract(
+    title="AI Task Decomposition API",
+    endpoint="/api/v1/tasks/{task_id}/decompose",
+    method="POST",
+    request_schema={"depth": "int", "max_subtasks": "int", "auto_create": "bool"}
+)
+@integration_point(
+    title="AI Decomposition Integration",
+    target_component="MCP Tools, LLM Service (Rhetor)",
+    protocol="MCP Protocol, Internal API",
+    data_flow="Task -> AI Analysis -> Subtask Generation -> Task Manager"
+)
+@danger_zone(
+    title="Automated Task Decomposition",
+    risk_level="medium",
+    risks=["Incorrect task breakdown", "Resource exhaustion from deep decomposition", "Loss of context"],
+    mitigations=["Depth limits", "Subtask count limits", "Human review option"],
+    review_required=False
 )
 async def decompose_task(
     task_id: str = Path(..., title="The ID of the task to decompose"),

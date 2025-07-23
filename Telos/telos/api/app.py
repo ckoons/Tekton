@@ -40,6 +40,7 @@ from shared.api import (
     get_openapi_configuration,
     EndpointInfo
 )
+from landmarks import api_contract, integration_point, danger_zone
 
 # Use shared logger
 logger = setup_component_logger("telos")
@@ -336,6 +337,18 @@ async def list_projects():
     return {"projects": result, "count": len(result)}
 
 @routers.v1.post("/projects", status_code=201)
+@api_contract(
+    title="Project Creation API",
+    endpoint="/api/v1/projects",
+    method="POST",
+    request_schema={"name": "string", "description": "string", "metadata": "object"}
+)
+@integration_point(
+    title="Requirements Manager Integration",
+    target_component="Requirements Manager, File Storage",
+    protocol="Internal Python API",
+    data_flow="API Request -> Requirements Manager -> Project Storage -> Persistence"
+)
 async def create_project(request: ProjectCreateRequest):
     """Create a new project"""
     if not component.requirements_manager:
@@ -431,6 +444,18 @@ async def delete_project(project_id: str = Path(..., title="The ID of the projec
 
 # Requirement management endpoints
 @routers.v1.post("/projects/{project_id}/requirements", status_code=201)
+@api_contract(
+    title="Requirement Creation API",
+    endpoint="/api/v1/projects/{project_id}/requirements",
+    method="POST",
+    request_schema={"title": "string", "description": "string", "requirement_type": "string", "priority": "string", "status": "string"}
+)
+@integration_point(
+    title="Requirement Tracking Integration",
+    target_component="Requirements Manager, Prometheus Connector",
+    protocol="Internal API",
+    data_flow="Requirement -> Project -> Prometheus Planning Integration"
+)
 async def create_requirement(
     project_id: str = Path(..., title="The ID of the project"),
     request: RequirementCreateRequest = Body(...)
@@ -623,6 +648,25 @@ async def delete_requirement(
 
 # Requirement refinement endpoints
 @routers.v1.post("/projects/{project_id}/requirements/{requirement_id}/refine")
+@api_contract(
+    title="Requirement Refinement API",
+    endpoint="/api/v1/projects/{project_id}/requirements/{requirement_id}/refine",
+    method="POST",
+    request_schema={"feedback": "string", "auto_update": "bool"}
+)
+@integration_point(
+    title="LLM Refinement Integration",
+    target_component="Rhetor (LLM Service), Interactive Refinement Module",
+    protocol="Internal API",
+    data_flow="Feedback -> LLM Analysis -> Refined Requirement -> Approval/Update"
+)
+@danger_zone(
+    title="Automated Requirement Modification",
+    risk_level="medium",
+    risks=["Unintended requirement changes", "Loss of original intent", "Scope creep"],
+    mitigations=["Human approval required", "Change tracking", "Rollback capability"],
+    review_required=True
+)
 async def refine_requirement(
     project_id: str = Path(..., title="The ID of the project"),
     requirement_id: str = Path(..., title="The ID of the requirement"),

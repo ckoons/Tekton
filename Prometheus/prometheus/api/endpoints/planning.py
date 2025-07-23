@@ -13,6 +13,7 @@ from ..models.planning import (
     MilestoneCreate, MilestoneUpdate
 )
 from ..models.shared import StandardResponse, PaginatedResponse
+from landmarks import api_contract, integration_point, danger_zone
 
 
 # Configure logging
@@ -75,6 +76,18 @@ async def list_plans(
 
 
 @router.post("/", response_model=StandardResponse)
+@api_contract(
+    title="Strategic Plan Creation API",
+    endpoint="/api/v1/plans",
+    method="POST",
+    request_schema={"name": "string", "description": "string", "start_date": "date", "end_date": "date", "methodology": "string"}
+)
+@integration_point(
+    title="Planning Engine Integration",
+    target_component="Planning Engine, LLM Client",
+    protocol="Internal Python API",
+    data_flow="API Request -> Planning Engine -> Plan Generation -> Storage"
+)
 async def create_plan(plan: PlanCreate):
     """
     Create a new plan.
@@ -220,6 +233,25 @@ async def delete_plan(plan_id: str = Path(..., description="ID of the plan")):
 
 
 @router.post("/from-requirements", response_model=StandardResponse)
+@api_contract(
+    title="Requirements-Based Plan Generation API",
+    endpoint="/api/v1/plans/from-requirements",
+    method="POST",
+    request_schema={"name": "string", "requirements": "list", "methodology": "string", "duration_days": "int"}
+)
+@integration_point(
+    title="Requirements Integration",
+    target_component="Telos (requirements), Planning Engine",
+    protocol="Internal API",
+    data_flow="Requirements -> Planning Engine -> Automated Plan Generation"
+)
+@danger_zone(
+    title="Automated Plan Generation",
+    risk_level="medium",
+    risks=["Incorrect plan generation", "Resource overallocation", "Unrealistic timelines"],
+    mitigations=["Validation rules", "Human review required", "Constraint checking"],
+    review_required=True
+)
 async def create_plan_from_requirements(plan_req: PlanFromRequirements):
     """
     Create a plan from requirements.

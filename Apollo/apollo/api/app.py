@@ -22,6 +22,31 @@ from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
+# Try to import landmarks
+try:
+    from landmarks import architecture_decision, integration_point, api_contract, state_checkpoint
+except ImportError:
+    # Define no-op decorators if landmarks not available
+    def architecture_decision(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+    
+    def integration_point(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+    
+    def api_contract(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+    
+    def state_checkpoint(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+
 # Add Tekton root to path if not already present
 tekton_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..'))
 if tekton_root not in sys.path:
@@ -62,6 +87,12 @@ logger = setup_component_logging("apollo")
 component = ApolloComponent()
 
 
+@integration_point(
+    title="Apollo Startup Initialization",
+    target_component="Hermes, MCP Bridge",
+    protocol="Component registration, MCP initialization",
+    data_flow="Apollo → Hermes (registration) → MCP Bridge (tools)"
+)
 async def startup_callback():
     """Initialize Apollo-specific components during startup."""
     # Initialize the component (registers with Hermes, etc.)

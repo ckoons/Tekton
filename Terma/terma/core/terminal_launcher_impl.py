@@ -36,7 +36,9 @@ try:
         architecture_decision,
         integration_point,
         api_contract,
-        state_checkpoint
+        state_checkpoint,
+        danger_zone,
+        performance_boundary
     )
 except ImportError:
     # Landmarks not available, define no-op decorators
@@ -56,6 +58,16 @@ except ImportError:
         return decorator
     
     def state_checkpoint(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+    
+    def danger_zone(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+    
+    def performance_boundary(**kwargs):
         def decorator(func_or_class):
             return func_or_class
         return decorator
@@ -89,8 +101,9 @@ class TerminalInfo:
 @state_checkpoint(
     title="Active Terminal Roster",
     state_type="runtime",
-    description="Thread-safe roster tracking terminal health via heartbeats",
-    rationale="Central state management for all active terminals with degraded/dead detection"
+    persistence=False,
+    consistency_requirements="Thread-safe roster tracking terminal health via heartbeats",
+    recovery_strategy="Rebuild from aish heartbeats after restart"
 )
 class ActiveTerminalRoster:
     """Thread-safe roster of active terminals with heartbeat tracking."""
@@ -181,6 +194,12 @@ class ActiveTerminalRoster:
                 # Clean up inbox snapshot
                 self._cleanup_terminal_inbox(terma_id)
     
+    @performance_boundary(
+        title="Terminal Health Check Loop",
+        sla="<100ms per check cycle",
+        optimization_notes="Check every 10 seconds, process all terminals in single pass",
+        metrics={"check_interval": "10s", "max_terminals": "1000"}
+    )
     def _health_check_loop(self):
         """Periodically check terminal health."""
         while self._running:
@@ -421,8 +440,14 @@ class TerminalLauncher:
         endpoint="launch_terminal",
         method="CALL",
         request_schema={"config": "TerminalConfig"},
-        response_schema={"pid": "int"},
-        description="Launches aish-enabled terminal in user's home directory with their shell"
+        response_schema={"pid": "int"}
+    )
+    @danger_zone(
+        title="Native Terminal Launch",
+        risk_level="low",
+        risks=["Resource consumption", "Process tracking issues", "Terminal app compatibility"],
+        mitigations=["PID tracking", "Heartbeat monitoring", "Platform-specific handling"],
+        review_required=False
     )
     def launch_terminal(self, config: Optional[TerminalConfig] = None) -> int:
         """
@@ -512,6 +537,12 @@ class TerminalLauncher:
         
         return pid
     
+    @integration_point(
+        title="macOS Terminal Application Launch",
+        target_component="Terminal.app, iTerm2, Warp via AppleScript/open",
+        protocol="AppleScript for Terminal.app, open command for others",
+        data_flow="Terma -> AppleScript/open -> Terminal App -> aish-proxy shell"
+    )
     def _launch_macos_terminal(self, config: TerminalConfig) -> int:
         """Launch terminal on macOS."""
         self.logger.info("-" * 40)
@@ -750,6 +781,13 @@ class TerminalLauncher:
         except subprocess.CalledProcessError:
             return False
     
+    @danger_zone(
+        title="Terminal Process Termination",
+        risk_level="medium",
+        risks=["Data loss if terminal has unsaved work", "Process cleanup issues", "Window close failures"],
+        mitigations=["Graceful SIGTERM first", "3s timeout before SIGKILL", "AppleScript window cleanup"],
+        review_required=False
+    )
     def terminate_terminal(self, pid: int) -> bool:
         """Terminate a terminal process and close the window."""
         try:

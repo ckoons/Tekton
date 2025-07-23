@@ -19,9 +19,41 @@ from athena.api.models.entity import (
 from athena.core.engine import get_knowledge_engine
 from athena.core.entity_manager import EntityManager
 
+# Try to import landmarks - handle gracefully if not available
+try:
+    from landmarks import api_contract, integration_point, danger_zone
+except ImportError:
+    # Create no-op decorators
+    def api_contract(*args, **kwargs):
+        def decorator(func):
+            return func
+        return decorator
+    
+    def integration_point(*args, **kwargs):
+        def decorator(func):
+            return func
+        return decorator
+    
+    def danger_zone(*args, **kwargs):
+        def decorator(func):
+            return func
+        return decorator
+
 router = APIRouter(tags=["entities"])
 
 @router.post("/", response_model=EntityResponse)
+@api_contract(
+    title="Entity Creation API",
+    endpoint="/api/v1/entities",
+    method="POST",
+    request_schema={"name": "string", "type": "string", "properties": "object", "relationships": "list"}
+)
+@integration_point(
+    title="Knowledge Engine Integration",
+    target_component="Knowledge Engine, Graph Store",
+    protocol="Internal Python API",
+    data_flow="API Request -> Entity Manager -> Knowledge Engine -> Graph Storage"
+)
 async def create_entity(entity: EntityCreate):
     """
     Create a new entity in the knowledge graph.
@@ -113,6 +145,19 @@ async def search_entities(
     return [EntityResponse.from_domain_entity(entity) for entity in entities]
 
 @router.post("/merge", response_model=EntityResponse)
+@api_contract(
+    title="Entity Merge API",
+    endpoint="/api/v1/entities/merge",
+    method="POST",
+    request_schema={"source_entities": "list", "target_entity_name": "string", "merge_strategies": "object"}
+)
+@danger_zone(
+    title="Entity Merging Operation",
+    risk_level="medium",
+    risks=["Data loss from merged entities", "Relationship conflicts", "Property conflicts"],
+    mitigations=["Merge strategies", "Backup before merge", "Conflict resolution rules"],
+    review_required=False
+)
 async def merge_entities(request: EntityMergeRequest):
     """
     Merge multiple entities into a single entity.

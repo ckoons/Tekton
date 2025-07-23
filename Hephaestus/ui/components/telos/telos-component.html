@@ -26,10 +26,10 @@
             <div class="telos__tab" data-tab="validation" onclick="telos_switchTab('validation'); return false;" data-tekton-menu-item="Validation" data-tekton-menu-component="telos" data-tekton-menu-active="false" data-tekton-menu-panel="validation-panel" data-tekton-nav-target="validation-panel">
                 <span class="telos__tab-label">Validation</span>
             </div>
-            <div class="telos__tab" data-tab="reqchat" onclick="telos_switchTab('reqchat'); return false;" data-tekton-menu-item="Requirements Chat" data-tekton-menu-component="telos" data-tekton-menu-active="false" data-tekton-menu-panel="reqchat-panel" data-tekton-nav-target="reqchat-panel">
+            <div class="telos__tab" data-tekton-chat="tab" data-tab="reqchat" onclick="telos_switchTab('reqchat'); return false;" data-tekton-menu-item="Requirements Chat" data-tekton-menu-component="telos" data-tekton-menu-active="false" data-tekton-menu-panel="reqchat-panel" data-tekton-nav-target="reqchat-panel">
                 <span class="telos__tab-label">Requirements Chat</span>
             </div>
-            <div class="telos__tab" data-tab="teamchat" onclick="telos_switchTab('teamchat'); return false;" data-tekton-menu-item="Team Chat" data-tekton-menu-component="telos" data-tekton-menu-active="false" data-tekton-menu-panel="teamchat-panel" data-tekton-nav-target="teamchat-panel">
+            <div class="telos__tab" data-tekton-chat="tab" data-tab="teamchat" onclick="telos_switchTab('teamchat'); return false;" data-tekton-menu-item="Team Chat" data-tekton-menu-component="telos" data-tekton-menu-active="false" data-tekton-menu-panel="teamchat-panel" data-tekton-nav-target="teamchat-panel">
                 <span class="telos__tab-label">Team Chat</span>
             </div>
         </div>
@@ -47,7 +47,7 @@
             <div class="telos__projects">
                 <div class="telos__control-bar">
                     <div class="telos__search-container">
-                        <input type="text" id="project-search" class="telos__search-input" placeholder="Search projects...">
+                        <input type="text" id="project-search" class="telos__search-input" placeholder="Search projects..." data-tekton-input="search">
                         <button id="project-search-btn" class="telos__search-button" data-tekton-action="search-projects" data-tekton-action-type="primary">Search</button>
                     </div>
                     <div class="telos__actions">
@@ -100,23 +100,23 @@
             <div class="telos__requirements">
                 <div class="telos__control-bar">
                     <div class="telos__search-container">
-                        <input type="text" id="requirement-search" class="telos__search-input" placeholder="Search requirements...">
+                        <input type="text" id="requirement-search" class="telos__search-input" placeholder="Search requirements..." data-tekton-input="search">
                         <button id="requirement-search-btn" class="telos__search-button" data-tekton-action="search-requirements" data-tekton-action-type="primary">Search</button>
                     </div>
                     <div class="telos__filter-container">
-                        <select id="project-filter" class="telos__filter-select">
+                        <select id="project-filter" class="telos__filter-select" data-tekton-select="filter">
                             <option value="all">All Projects</option>
                             <option value="tekton-ui">Tekton UI Refactoring</option>
                             <option value="engram">Engram Memory System</option>
                         </select>
-                        <select id="status-filter" class="telos__filter-select">
+                        <select id="status-filter" class="telos__filter-select" data-tekton-select="filter">
                             <option value="all">All Statuses</option>
                             <option value="new">New</option>
                             <option value="in-progress">In Progress</option>
                             <option value="completed">Completed</option>
                             <option value="rejected">Rejected</option>
                         </select>
-                        <select id="type-filter" class="telos__filter-select">
+                        <select id="type-filter" class="telos__filter-select" data-tekton-select="filter">
                             <option value="all">All Types</option>
                             <option value="functional">Functional</option>
                             <option value="non-functional">Non-Functional</option>
@@ -187,7 +187,7 @@
             <div class="telos__traceability">
                 <div class="telos__control-bar">
                     <div class="telos__filter-container">
-                        <select id="trace-project-filter" class="telos__filter-select">
+                        <select id="trace-project-filter" class="telos__filter-select" data-tekton-select="filter">
                             <option value="all">All Projects</option>
                             <option value="tekton-ui">Tekton UI Refactoring</option>
                             <option value="engram">Engram Memory System</option>
@@ -221,7 +221,7 @@
                 <div class="telos__validation-form">
                     <div class="telos__form-group">
                         <label class="telos__form-label">Project</label>
-                        <select class="telos__form-select" id="validation-project-select">
+                        <select class="telos__form-select" id="validation-project-select" data-tekton-select="option">
                             <option value="">Select a project...</option>
                             <option value="tekton-ui">Tekton UI Refactoring</option>
                             <option value="engram">Engram Memory System</option>
@@ -230,7 +230,7 @@
 
                     <div class="telos__form-group">
                         <label class="telos__form-label">Validation Type</label>
-                        <select class="telos__form-select" id="validation-type-select">
+                        <select class="telos__form-select" id="validation-type-select" data-tekton-select="option">
                             <option value="all">All Requirements</option>
                             <option value="selected">Selected Requirements</option>
                             <option value="new">New Requirements</option>
@@ -275,8 +275,8 @@
         </div>
         
         <!-- Requirements Chat Tab -->
-        <div id="reqchat-panel" class="telos__panel" data-tekton-panel="reqchat" data-tekton-panel-for="Requirements Chat" data-tekton-panel-component="telos" data-tekton-panel-active="false">
-            <div id="reqchat-messages" class="telos__chat-messages">
+        <div id="reqchat-panel" class="telos__panel" data-tekton-chat="panel" data-tekton-panel="reqchat" data-tekton-panel-for="Requirements Chat" data-tekton-panel-component="telos" data-tekton-panel-active="false">
+            <div id="reqchat-messages" class="telos__chat-messages" data-tekton-chat="messages">
                 <!-- Welcome message -->
                 <div class="telos__message telos__message--system">
                     <strong>Telos:</strong> Welcome to the Requirements Assistant! I can help you with:
@@ -291,8 +291,8 @@
         </div>
         
         <!-- Team Chat Tab -->
-        <div id="teamchat-panel" class="telos__panel" data-tekton-panel="teamchat" data-tekton-panel-for="Team Chat" data-tekton-panel-component="telos" data-tekton-panel-active="false">
-            <div id="teamchat-messages" class="telos__chat-messages">
+        <div id="teamchat-panel" class="telos__panel" data-tekton-chat="panel" data-tekton-panel="teamchat" data-tekton-panel-for="Team Chat" data-tekton-panel-component="telos" data-tekton-panel-active="false">
+            <div id="teamchat-messages" class="telos__chat-messages" data-tekton-chat="messages">
                 <!-- Welcome message -->
                 <div class="telos__message telos__message--system">
                     <strong>System:</strong> This chat is shared across all Tekton components. Use this for team communication and coordination.
@@ -303,9 +303,9 @@
     
     <!-- Footer with Chat Input -->
     <div class="telos__footer" data-tekton-zone="footer">
-        <div class="telos__chat-input-container">
-            <div class="telos__chat-prompt">></div>
-            <input type="text" id="telos-chat-input" class="telos__chat-input" 
+        <div class="telos__chat-input-container" data-tekton-chat="input">
+            <div class="telos__chat-prompt" data-tekton-chat="container">></div>
+            <input type="text" id="telos-chat-input" class="telos__chat-input" data-tekton-chat="input" 
                    placeholder="Enter chat message, requirements query, or validation request"
                    onkeydown="if(event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); telos_sendChat(); return false; }">
             <button id="telos-send-button" class="telos__send-button" 

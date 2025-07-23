@@ -10,11 +10,37 @@ import time
 from typing import Dict, List, Any, Optional, Set, Callable
 import threading
 import asyncio
+from landmarks import (
+    architecture_decision,
+    state_checkpoint,
+    integration_point,
+    danger_zone
+)
 
 # Configure logger
 logger = logging.getLogger(__name__)
 
 
+@architecture_decision(
+    title="In-Memory Service Registry with Health Monitoring",
+    rationale="Fast, real-time service discovery with active health checking to ensure only healthy services are returned",
+    alternatives_considered=["External service mesh", "Database-backed registry", "Static configuration"],
+    decided_by="Casey"
+)
+@state_checkpoint(
+    title="Service Registry Runtime State",
+    state_type="service_catalog",
+    persistence=False,
+    consistency_requirements="Real-time accuracy more important than persistence, services re-register on startup",
+    recovery_strategy="Components re-register automatically on Hermes restart"
+)
+@danger_zone(
+    title="Health Check Thread Management",
+    risk_level="medium",
+    risks=["Thread deadlocks", "Resource leaks", "False health reports", "Check interval performance impact"],
+    mitigations=["Daemon threads", "Timeout controls", "Exception handling", "Configurable intervals"],
+    review_required=False
+)
 class ServiceRegistry:
     """
     Registry for Tekton components and their capabilities.

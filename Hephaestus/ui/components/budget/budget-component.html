@@ -29,10 +29,10 @@
             <div class="budget__tab" data-tab="alerts" onclick="budget_switchTab('alerts'); return false;" data-tekton-menu-item="Alerts" data-tekton-menu-component="budget" data-tekton-menu-active="false" data-tekton-menu-panel="alerts-panel" data-tekton-nav-target="alerts-panel">
                 <span class="budget__tab-label">Alerts</span>
             </div>
-            <div class="budget__tab" data-tab="budgetchat" onclick="budget_switchTab('budgetchat'); return false;" data-tekton-menu-item="Budget Chat" data-tekton-menu-component="budget" data-tekton-menu-active="false" data-tekton-menu-panel="budgetchat-panel" data-tekton-nav-target="budgetchat-panel">
+            <div class="budget__tab" data-tekton-chat="tab" data-tab="budgetchat" onclick="budget_switchTab('budgetchat'); return false;" data-tekton-menu-item="Budget Chat" data-tekton-menu-component="budget" data-tekton-menu-active="false" data-tekton-menu-panel="budgetchat-panel" data-tekton-nav-target="budgetchat-panel">
                 <span class="budget__tab-label">Budget Chat</span>
             </div>
-            <div class="budget__tab" data-tab="teamchat" onclick="budget_switchTab('teamchat'); return false;" data-tekton-menu-item="Team Chat" data-tekton-menu-component="budget" data-tekton-menu-active="false" data-tekton-menu-panel="teamchat-panel" data-tekton-nav-target="teamchat-panel">
+            <div class="budget__tab" data-tekton-chat="tab" data-tab="teamchat" onclick="budget_switchTab('teamchat'); return false;" data-tekton-menu-item="Team Chat" data-tekton-menu-component="budget" data-tekton-menu-active="false" data-tekton-menu-panel="teamchat-panel" data-tekton-nav-target="teamchat-panel">
                 <span class="budget__tab-label">Team Chat</span>
             </div>
         </div>
@@ -53,7 +53,7 @@
             <div class="budget__dashboard">
                 <div class="budget__control-bar">
                     <div class="budget__filter-container">
-                        <select id="period-select" class="budget__filter-select">
+                        <select id="period-select" class="budget__filter-select" data-tekton-select="option">
                             <option value="daily">Daily View</option>
                             <option value="weekly">Weekly View</option>
                             <option value="monthly" selected>Monthly View</option>
@@ -372,7 +372,7 @@
                             <label class="budget__form-label" for="daily-limit">Daily Budget Limit</label>
                             <div class="budget__form-input-container">
                                 <span class="budget__form-input-prefix">$</span>
-                                <input type="number" id="daily-limit" class="budget__input" value="5.00" min="0" step="0.01">
+                                <input type="number" id="daily-limit" class="budget__input" value="5.00" min="0" step="0.01" data-tekton-input="number">
                             </div>
                         </div>
                         
@@ -380,7 +380,7 @@
                             <label class="budget__form-label" for="weekly-limit">Weekly Budget Limit</label>
                             <div class="budget__form-input-container">
                                 <span class="budget__form-input-prefix">$</span>
-                                <input type="number" id="weekly-limit" class="budget__input" value="25.00" min="0" step="0.01">
+                                <input type="number" id="weekly-limit" class="budget__input" value="25.00" min="0" step="0.01" data-tekton-input="number">
                             </div>
                         </div>
                         
@@ -388,13 +388,13 @@
                             <label class="budget__form-label" for="monthly-limit">Monthly Budget Limit</label>
                             <div class="budget__form-input-container">
                                 <span class="budget__form-input-prefix">$</span>
-                                <input type="number" id="monthly-limit" class="budget__input" value="100.00" min="0" step="0.01">
+                                <input type="number" id="monthly-limit" class="budget__input" value="100.00" min="0" step="0.01" data-tekton-input="number">
                             </div>
                         </div>
                         
                         <div class="budget__form-group">
                             <label class="budget__form-label" for="enforce-policy">Enforcement Policy</label>
-                            <select id="enforce-policy" class="budget__select">
+                            <select id="enforce-policy" class="budget__select" data-tekton-select="option">
                                 <option value="ignore">Track Only (No Enforcement)</option>
                                 <option value="warn">Show Warnings</option>
                                 <option value="enforce" selected>Enforce Limits (Auto Downgrade)</option>
@@ -413,7 +413,7 @@
                             <label class="budget__form-label" for="anthropic-limit">Anthropic Monthly Budget</label>
                             <div class="budget__form-input-container">
                                 <span class="budget__form-input-prefix">$</span>
-                                <input type="number" id="anthropic-limit" class="budget__input" value="80.00" min="0" step="0.01">
+                                <input type="number" id="anthropic-limit" class="budget__input" value="80.00" min="0" step="0.01" data-tekton-input="number">
                             </div>
                         </div>
                         
@@ -421,7 +421,7 @@
                             <label class="budget__form-label" for="openai-limit">OpenAI Monthly Budget</label>
                             <div class="budget__form-input-container">
                                 <span class="budget__form-input-prefix">$</span>
-                                <input type="number" id="openai-limit" class="budget__input" value="20.00" min="0" step="0.01">
+                                <input type="number" id="openai-limit" class="budget__input" value="20.00" min="0" step="0.01" data-tekton-input="number">
                             </div>
                         </div>
                         
@@ -444,7 +444,7 @@
                         <div class="budget__form-group">
                             <label class="budget__form-label" for="warning-threshold">Warning Threshold</label>
                             <div class="budget__form-input-container">
-                                <input type="number" id="warning-threshold" class="budget__input" value="80" min="1" max="100">
+                                <input type="number" id="warning-threshold" class="budget__input" value="80" min="1" max="100" data-tekton-input="number">
                                 <span class="budget__form-input-suffix">%</span>
                             </div>
                             <span class="budget__form-help-text">Show warnings when usage reaches this percentage of the limit</span>
@@ -460,7 +460,7 @@
                         
                         <div class="budget__form-group">
                             <label class="budget__form-label" for="reset-day">Budget Reset Day (Monthly)</label>
-                            <select id="reset-day" class="budget__select">
+                            <select id="reset-day" class="budget__select" data-tekton-select="option">
                                 <option value="1" selected>1st of month</option>
                                 <option value="15">15th of month</option>
                                 <option value="last">Last day of month</option>
@@ -530,12 +530,12 @@
                         
                         <div class="budget__form-group">
                             <label class="budget__form-label" for="alert-email">Alert Email Address</label>
-                            <input type="email" id="alert-email" class="budget__input" value="admin@example.com">
+                            <input type="email" id="alert-email" class="budget__input" value="admin@example.com" data-tekton-input="email">
                         </div>
                         
                         <div class="budget__form-group">
                             <label class="budget__form-label" for="alert-frequency">Alert Frequency</label>
-                            <select id="alert-frequency" class="budget__select">
+                            <select id="alert-frequency" class="budget__select" data-tekton-select="option">
                                 <option value="immediate">Immediate</option>
                                 <option value="daily" selected>Daily Summary</option>
                                 <option value="weekly">Weekly Summary</option>
@@ -551,8 +551,8 @@
         </div>
 
         <!-- Budget Chat Tab -->
-        <div id="budgetchat-panel" class="budget__panel" data-tekton-panel="budgetchat" data-tekton-panel-for="Budget Chat" data-tekton-panel-component="budget" data-tekton-panel-active="false">
-            <div id="budgetchat-messages" class="budget__chat-messages">
+        <div id="budgetchat-panel" class="budget__panel" data-tekton-chat="panel" data-tekton-panel="budgetchat" data-tekton-panel-for="Budget Chat" data-tekton-panel-component="budget" data-tekton-panel-active="false">
+            <div id="budgetchat-messages" class="budget__chat-messages" data-tekton-chat="messages">
                 <!-- Welcome message -->
                 <div class="budget__message budget__message--system">
                     <div class="budget__message-content">
@@ -566,8 +566,8 @@
         </div>
         
         <!-- Team Chat Tab -->
-        <div id="teamchat-panel" class="budget__panel" data-tekton-panel="teamchat" data-tekton-panel-for="Team Chat" data-tekton-panel-component="budget" data-tekton-panel-active="false">
-            <div id="teamchat-messages" class="budget__chat-messages">
+        <div id="teamchat-panel" class="budget__panel" data-tekton-chat="panel" data-tekton-panel="teamchat" data-tekton-panel-for="Team Chat" data-tekton-panel-component="budget" data-tekton-panel-active="false">
+            <div id="teamchat-messages" class="budget__chat-messages" data-tekton-chat="messages">
                 <!-- Welcome message -->
                 <div class="budget__message budget__message--system">
                     <div class="budget__message-content">
@@ -583,9 +583,9 @@
     
     <!-- Footer with Chat Input -->
     <div class="budget__footer" data-tekton-zone="footer">
-        <div class="budget__chat-input-container">
-            <div class="budget__chat-prompt">></div>
-            <input type="text" id="budget-chat-input" class="budget__chat-input" 
+        <div class="budget__chat-input-container" data-tekton-chat="input">
+            <div class="budget__chat-prompt" data-tekton-chat="container">></div>
+            <input type="text" id="budget-chat-input" class="budget__chat-input" data-tekton-chat="input" 
                    data-tekton-input="chat-input"
                    data-tekton-input-type="chat"
                    placeholder="Ask about usage, costs, or budget settings"

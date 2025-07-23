@@ -48,6 +48,39 @@ from athena.core.athena_component import AthenaComponent
 # Create component instance (singleton)
 component = AthenaComponent()
 
+async def populate_athena_delayed():
+    """Populate Athena with component relationships after a delay to ensure all components are started."""
+    try:
+        # Wait for other components to start up
+        await asyncio.sleep(10)
+        
+        logger.info("Auto-populating Athena with Tekton component relationships...")
+        
+        # Check if the populate script exists
+        populate_script = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__)))), 
+                                     "populate_athena_relationships.py")
+        
+        if os.path.exists(populate_script):
+            # Run the population script
+            process = await asyncio.create_subprocess_exec(
+                sys.executable,
+                populate_script,
+                stdout=asyncio.subprocess.PIPE,
+                stderr=asyncio.subprocess.PIPE
+            )
+            stdout, stderr = await process.communicate()
+            
+            if process.returncode == 0:
+                logger.info("✅ Successfully populated Athena with component relationships")
+            else:
+                error_msg = stderr.decode() if stderr else "Unknown error"
+                logger.error(f"Failed to populate Athena: {error_msg}")
+        else:
+            logger.warning(f"Athena population script not found at: {populate_script}")
+            
+    except Exception as e:
+        logger.error(f"Error during Athena auto-population: {e}")
+
 async def startup_callback():
     """Initialize component during startup."""
     # Initialize the component (registers with Hermes, etc.)
@@ -65,6 +98,10 @@ async def startup_callback():
         logger.info("Initialized Hermes MCP Bridge for FastMCP tools")
     except Exception as e:
         logger.warning(f"Failed to initialize MCP Bridge: {e}")
+    
+    # Auto-populate Athena if enabled
+    if os.environ.get('ATHENA_AUTO_POPULATE', 'true').lower() == 'true':
+        asyncio.create_task(populate_athena_delayed())
 
 # Create FastAPI application using component's create_app
 app = component.create_app(

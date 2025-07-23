@@ -15,6 +15,26 @@ from datetime import datetime, timedelta
 from tekton.mcp.fastmcp.schema import MCPTool
 import inspect
 
+# Try to import landmarks
+try:
+    from landmarks import api_contract, danger_zone, integration_point
+except ImportError:
+    # Define no-op decorators if landmarks not available
+    def api_contract(**kwargs):
+        def decorator(func):
+            return func
+        return decorator
+    
+    def danger_zone(**kwargs):
+        def decorator(func):
+            return func
+        return decorator
+    
+    def integration_point(**kwargs):
+        def decorator(func):
+            return func
+        return decorator
+
 
 def _generate_schema(func):
     """Generate a schema from function signature."""
@@ -58,6 +78,19 @@ def _generate_schema(func):
 # Terminal Management Tools
 # ============================================================================
 
+@api_contract(
+    title="MCP Terminal Session Creation",
+    endpoint="create_terminal_session",
+    method="MCP_TOOL",
+    request_schema={"shell_command": "str", "environment": "dict", "working_directory": "str", "session_name": "str"}
+)
+@danger_zone(
+    title="Terminal Session Creation",
+    risk_level="medium",
+    risks=["Resource consumption", "Shell injection", "Process spawning"],
+    mitigations=["Input validation", "Resource limits", "Safe shell execution"],
+    review_required=False
+)
 async def create_terminal_session(
     shell_command: Optional[str] = None,
     environment: Optional[Dict[str, str]] = None,
@@ -130,6 +163,19 @@ async def create_terminal_session(
         }
 
 
+@api_contract(
+    title="MCP Session Lifecycle Management",
+    endpoint="manage_session_lifecycle",
+    method="MCP_TOOL",
+    request_schema={"session_id": "str", "action": "str", "parameters": "dict"}
+)
+@danger_zone(
+    title="Terminal Process Control",
+    risk_level="medium",
+    risks=["Process termination", "State corruption", "Resource leaks"],
+    mitigations=["Action validation", "Graceful shutdown", "State checks"],
+    review_required=False
+)
 async def manage_session_lifecycle(
     session_id: str,
     action: str,

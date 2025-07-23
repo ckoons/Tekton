@@ -1205,6 +1205,11 @@ async def main():
         nargs='*',
         help="Launch only AI specialists for components (optionally specify which)"
     )
+    parser.add_argument(
+        "--no-populate-athena",
+        action="store_true",
+        help="Skip automatic Athena population after startup"
+    )
     
     args = parser.parse_args()
     
@@ -1294,6 +1299,32 @@ async def main():
         print(f"✅ Successful: {successful}")
         if failed > 0:
             print(f"❌ Failed: {failed}")
+            
+        # Check if Athena was successfully launched and populate it (unless disabled)
+        if not args.no_populate_athena and 'athena' in launcher.launched_components and launcher.launched_components['athena'].success:
+            launcher.log("Athena launched successfully, populating with component relationships...", "info")
+            try:
+                # Run the populate script
+                populate_script = os.path.join(tekton_root, "populate_athena_relationships.py")
+                if os.path.exists(populate_script):
+                    launcher.log("Running Athena population script...", "info")
+                    process = await asyncio.create_subprocess_exec(
+                        sys.executable,
+                        populate_script,
+                        stdout=asyncio.subprocess.PIPE,
+                        stderr=asyncio.subprocess.PIPE
+                    )
+                    stdout, stderr = await process.communicate()
+                    
+                    if process.returncode == 0:
+                        launcher.log("✅ Athena populated with component relationships", "success")
+                    else:
+                        error_msg = stderr.decode() if stderr else "Unknown error"
+                        launcher.log(f"⚠️ Failed to populate Athena: {error_msg}", "warning")
+                else:
+                    launcher.log("⚠️ Athena population script not found", "warning")
+            except Exception as e:
+                launcher.log(f"⚠️ Error populating Athena: {str(e)}", "warning")
             
         # Keep monitoring if requested
         if args.monitor and launcher.health_monitor_task:

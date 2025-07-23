@@ -17,6 +17,26 @@ import requests
 from shared.env import TektonEnviron
 from shared.urls import rhetor_url
 
+# Try to import landmarks
+try:
+    from landmarks import integration_point, architecture_decision, state_checkpoint
+except ImportError:
+    # Define no-op decorators if landmarks not available
+    def integration_point(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+    
+    def architecture_decision(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+    
+    def state_checkpoint(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+
 # Try to import debug_utils from shared if available
 try:
     from shared.debug.debug_utils import debug_log, log_function
@@ -48,6 +68,25 @@ from budget.core.engine import budget_engine
 from budget.core.allocation import allocation_manager
 
 
+@architecture_decision(
+    title="Rhetor-to-Budget Migration Adapter",
+    rationale="Provide seamless migration path from Rhetor's budget system to consolidated Budget component",
+    alternatives_considered=["Direct API translation", "Full data migration script", "Dual system operation"],
+    decided_by="Casey"
+)
+@integration_point(
+    title="Rhetor Budget System Bridge",
+    target_component="Rhetor (legacy budget) and Budget (new consolidated)",
+    protocol="SQLite database migration and API translation",
+    data_flow="Rhetor budget data → Budget component (one-way migration)"
+)
+@state_checkpoint(
+    title="Migration State",
+    state_type="transitional",
+    persistence=True,
+    consistency_requirements="Budget policies and allocations must be preserved during migration",
+    recovery_strategy="Re-read from Rhetor's SQLite database"
+)
 class RhetorAdapter:
     """
     Adapter for integrating with Rhetor's cost budget system.

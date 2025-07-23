@@ -26,10 +26,10 @@
             <div class="harmonia__tab" data-tab="monitor" onclick="harmonia_switchTab('monitor'); return false;" data-tekton-menu-item="Monitor" data-tekton-menu-component="harmonia" data-tekton-menu-active="false" data-tekton-menu-panel="monitor-panel" data-tekton-nav-target="monitor-panel">
                 <span class="harmonia__tab-label">Monitor</span>
             </div>
-            <div class="harmonia__tab" data-tab="workflowchat" onclick="harmonia_switchTab('workflowchat'); return false;" data-tekton-menu-item="Workflow Chat" data-tekton-menu-component="harmonia" data-tekton-menu-active="false" data-tekton-menu-panel="workflowchat-panel" data-tekton-nav-target="workflowchat-panel">
+            <div class="harmonia__tab" data-tekton-chat="tab" data-tab="workflowchat" onclick="harmonia_switchTab('workflowchat'); return false;" data-tekton-menu-item="Workflow Chat" data-tekton-menu-component="harmonia" data-tekton-menu-active="false" data-tekton-menu-panel="workflowchat-panel" data-tekton-nav-target="workflowchat-panel">
                 <span class="harmonia__tab-label">Workflow Chat</span>
             </div>
-            <div class="harmonia__tab" data-tab="teamchat" onclick="harmonia_switchTab('teamchat'); return false;" data-tekton-menu-item="Team Chat" data-tekton-menu-component="harmonia" data-tekton-menu-active="false" data-tekton-menu-panel="teamchat-panel" data-tekton-nav-target="teamchat-panel">
+            <div class="harmonia__tab" data-tekton-chat="tab" data-tab="teamchat" onclick="harmonia_switchTab('teamchat'); return false;" data-tekton-menu-item="Team Chat" data-tekton-menu-component="harmonia" data-tekton-menu-active="false" data-tekton-menu-panel="teamchat-panel" data-tekton-nav-target="teamchat-panel">
                 <span class="harmonia__tab-label">Team Chat</span>
             </div>
         </div>
@@ -47,7 +47,7 @@
             <div class="harmonia__workflows">
                 <div class="harmonia__control-bar">
                     <div class="harmonia__search-container">
-                        <input type="text" id="workflow-search" class="harmonia__search-input" placeholder="Search workflows...">
+                        <input type="text" id="workflow-search" class="harmonia__search-input" placeholder="Search workflows..." data-tekton-input="search">
                         <button id="workflow-search-btn" class="harmonia__search-button" data-tekton-action="search-workflows" data-tekton-action-type="primary">Search</button>
                     </div>
                     <div class="harmonia__actions">
@@ -104,11 +104,11 @@
             <div class="harmonia__templates">
                 <div class="harmonia__control-bar">
                     <div class="harmonia__search-container">
-                        <input type="text" id="template-search" class="harmonia__search-input" placeholder="Search templates...">
+                        <input type="text" id="template-search" class="harmonia__search-input" placeholder="Search templates..." data-tekton-input="search">
                         <button id="template-search-btn" class="harmonia__search-button" data-tekton-action="search-templates" data-tekton-action-type="primary">Search</button>
                     </div>
                     <div class="harmonia__filter-container">
-                        <select id="template-category-filter" class="harmonia__filter-select">
+                        <select id="template-category-filter" class="harmonia__filter-select" data-tekton-select="filter">
                             <option value="all">All Categories</option>
                             <option value="data-processing">Data Processing</option>
                             <option value="content-generation">Content Generation</option>
@@ -171,12 +171,12 @@
             <div class="harmonia__executions">
                 <div class="harmonia__control-bar">
                     <div class="harmonia__filter-container">
-                        <select id="execution-workflow-filter" class="harmonia__filter-select">
+                        <select id="execution-workflow-filter" class="harmonia__filter-select" data-tekton-select="filter">
                             <option value="all">All Workflows</option>
                             <option value="data-processing">Data Processing Pipeline</option>
                             <option value="content-generation">Content Generation</option>
                         </select>
-                        <select id="execution-status-filter" class="harmonia__filter-select">
+                        <select id="execution-status-filter" class="harmonia__filter-select" data-tekton-select="filter">
                             <option value="all">All Statuses</option>
                             <option value="running">Running</option>
                             <option value="completed">Completed</option>
@@ -249,7 +249,7 @@
             <div class="harmonia__monitor">
                 <div class="harmonia__control-bar">
                     <div class="harmonia__filter-container">
-                        <select id="monitor-view" class="harmonia__filter-select">
+                        <select id="monitor-view" class="harmonia__filter-select" data-tekton-select="option">
                             <option value="live">Live View</option>
                             <option value="dashboard">Dashboard</option>
                             <option value="metrics">Metrics</option>
@@ -259,7 +259,7 @@
                     </div>
                     <div class="harmonia__refresh-controls">
                         <label for="auto-refresh">Auto-refresh:</label>
-                        <select id="auto-refresh" class="harmonia__filter-select">
+                        <select id="auto-refresh" class="harmonia__filter-select" data-tekton-select="option">
                             <option value="0">Off</option>
                             <option value="5" selected>5s</option>
                             <option value="15">15s</option>
@@ -286,8 +286,8 @@
         </div>
         
         <!-- Workflow Chat Tab -->
-        <div id="workflowchat-panel" class="harmonia__panel" data-tekton-panel="workflowchat" data-tekton-panel-for="Workflow Chat" data-tekton-panel-component="harmonia" data-tekton-panel-active="false">
-            <div id="workflowchat-messages" class="harmonia__chat-messages">
+        <div id="workflowchat-panel" class="harmonia__panel" data-tekton-chat="panel" data-tekton-panel="workflowchat" data-tekton-panel-for="Workflow Chat" data-tekton-panel-component="harmonia" data-tekton-panel-active="false">
+            <div id="workflowchat-messages" class="harmonia__chat-messages" data-tekton-chat="messages">
                 <!-- Welcome message -->
                 <div class="harmonia__message harmonia__message--system">
                     <div class="harmonia__message-content">
@@ -307,8 +307,8 @@
         </div>
         
         <!-- Team Chat Tab -->
-        <div id="teamchat-panel" class="harmonia__panel" data-tekton-panel="teamchat" data-tekton-panel-for="Team Chat" data-tekton-panel-component="harmonia" data-tekton-panel-active="false">
-            <div id="teamchat-messages" class="harmonia__chat-messages">
+        <div id="teamchat-panel" class="harmonia__panel" data-tekton-chat="panel" data-tekton-panel="teamchat" data-tekton-panel-for="Team Chat" data-tekton-panel-component="harmonia" data-tekton-panel-active="false">
+            <div id="teamchat-messages" class="harmonia__chat-messages" data-tekton-chat="messages">
                 <!-- Welcome message -->
                 <div class="harmonia__message harmonia__message--system">
                     <div class="harmonia__message-content">
@@ -324,9 +324,9 @@
     
     <!-- Footer with Chat Input -->
     <div class="harmonia__footer" data-tekton-zone="footer">
-        <div class="harmonia__chat-input-container">
-            <div class="harmonia__chat-prompt">></div>
-            <input type="text" id="harmonia-chat-input" class="harmonia__chat-input" 
+        <div class="harmonia__chat-input-container" data-tekton-chat="input">
+            <div class="harmonia__chat-prompt" data-tekton-chat="container">></div>
+            <input type="text" id="harmonia-chat-input" class="harmonia__chat-input" data-tekton-chat="input" 
                    data-tekton-input="chat-input"
                    data-tekton-input-type="chat"
                    placeholder="Enter chat message, workflow questions, or execution queries"

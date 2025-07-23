@@ -43,6 +43,7 @@ from shared.api import (
     get_openapi_configuration,
     EndpointInfo
 )
+from landmarks import api_contract, integration_point
 
 # Use shared logger
 logger = setup_component_logging("engram")
@@ -152,6 +153,18 @@ async def health():
     )
 
 @routers.v1.post("/memory")
+@api_contract(
+    title="Memory Storage API",
+    endpoint="/api/v1/memory",
+    method="POST",
+    request_schema={"content": "string", "namespace": "string", "metadata": "object"}
+)
+@integration_point(
+    title="Memory Service Integration",
+    target_component="Memory Manager, Vector/Fallback Storage",
+    protocol="Internal Python API",
+    data_flow="API Request -> Memory Service -> Storage Backend -> Persistence"
+)
 async def add_memory(
     request: Request,
     memory_service: MemoryService = Depends(get_memory_service)
@@ -211,6 +224,18 @@ async def get_memory(
         )
 
 @routers.v1.post("/search")
+@api_contract(
+    title="Memory Search API",
+    endpoint="/api/v1/search",
+    method="POST",
+    request_schema={"query": "string", "namespace": "string", "limit": "int"}
+)
+@integration_point(
+    title="Vector Search Integration",
+    target_component="Vector Store (FAISS/Fallback)",
+    protocol="Embeddings and Similarity Search",
+    data_flow="Query -> Embeddings -> Vector Search -> Ranked Results"
+)
 async def search_memory(
     request: Request,
     memory_service: MemoryService = Depends(get_memory_service)
@@ -251,6 +276,12 @@ async def search_memory(
         )
 
 @routers.v1.post("/context")
+@api_contract(
+    title="Context Retrieval API",
+    endpoint="/api/v1/context",
+    method="POST",
+    request_schema={"query": "string", "namespaces": "list", "limit": "int"}
+)
 async def get_context(
     request: Request,
     memory_service: MemoryService = Depends(get_memory_service)

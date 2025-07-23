@@ -4,6 +4,31 @@ import os
 from typing import List, Dict, Any
 from pathlib import Path
 
+# Try to import landmarks
+try:
+    from landmarks import architecture_decision, state_checkpoint, integration_point, danger_zone
+except ImportError:
+    # Define no-op decorators if landmarks not available
+    def architecture_decision(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+    
+    def state_checkpoint(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+    
+    def integration_point(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+    
+    def danger_zone(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+
 from shared.utils.standard_component import StandardComponentBase
 from apollo.core.apollo_manager import ApolloManager
 from apollo.core.context_observer import ContextObserver
@@ -17,6 +42,19 @@ from apollo.core.interfaces.rhetor import RhetorInterface
 logger = logging.getLogger(__name__)
 
 
+@architecture_decision(
+    title="Apollo Component Architecture",
+    rationale="Modular conversational AI system with attention management, token budgeting, predictive capabilities, and protocol enforcement",
+    alternatives_considered=["Monolithic chat manager", "Simple message router", "Stateless request handler"],
+    decided_by="Casey"
+)
+@state_checkpoint(
+    title="Apollo Component State",
+    state_type="component",
+    persistence=True,
+    consistency_requirements="Context, budget, predictions, and message history must be consistent",
+    recovery_strategy="Load from data directories on startup"
+)
 class ApolloComponent(StandardComponentBase):
     """Apollo local attention and prediction component."""
     
@@ -43,6 +81,12 @@ class ApolloComponent(StandardComponentBase):
         self.protocol_data_dir = None
         self.message_data_dir = None
         
+    @integration_point(
+        title="Apollo Sub-component Initialization",
+        target_component="Rhetor, Hermes, Internal Modules",
+        protocol="Direct instantiation and configuration",
+        data_flow="Apollo → Sub-components (context, budget, prediction, action, protocol, message)"
+    )
     async def _component_specific_init(self):
         """Initialize Apollo-specific services."""
         # Create data directories

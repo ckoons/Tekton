@@ -50,7 +50,7 @@
                 <span class="engram__tab-label">Memory Stats</span>
             </label>
             <!-- Memory Chat Tab -->
-            <label for="engram-tab-chat" class="engram__tab" data-tab="chat" 
+            <label for="engram-tab-chat" class="engram__tab" data-tekton-chat="tab" data-tab="chat" 
                  data-tekton-menu-item="Memory Chat" 
                  data-tekton-menu-component="engram" 
                  data-tekton-menu-panel="chat-panel" 
@@ -58,7 +58,7 @@
                 <span class="engram__tab-label">Memory Chat</span>
             </label>
             <!-- Team Chat Tab -->
-            <label for="engram-tab-teamchat" class="engram__tab" data-tab="teamchat" 
+            <label for="engram-tab-teamchat" class="engram__tab" data-tekton-chat="tab" data-tab="teamchat" 
                  data-tekton-menu-item="Team Chat" 
                  data-tekton-menu-component="engram" 
                  data-tekton-menu-panel="teamchat-panel" 
@@ -82,11 +82,11 @@
             <div class="engram__explorer">
                 <div class="engram__control-bar">
                     <div class="engram__search-container">
-                        <input type="text" id="explorer-search" class="engram__search-input" placeholder="Search memories...">
+                        <input type="text" id="explorer-search" class="engram__search-input" placeholder="Search memories..." data-tekton-input="search">
                         <button id="explorer-search-btn" class="engram__search-button" data-tekton-action="search-explorer" data-tekton-action-type="primary">Search</button>
                     </div>
                     <div class="engram__filter-container">
-                        <select id="memory-type-filter" class="engram__filter-select">
+                        <select id="memory-type-filter" class="engram__filter-select" data-tekton-select="filter">
                             <option value="all">All Types</option>
                             <option value="conversation">Conversation</option>
                             <option value="document">Document</option>
@@ -254,8 +254,8 @@
                 <div class="engram__search-controls">
                     <div class="engram__search-bar">
                         <input type="text" id="memory-search" class="engram__search-input engram__search-input--large" 
-                               placeholder="Search across all memories (natural language or keywords)">
-                        <select id="search-type" class="engram__search-select">
+                               placeholder="Search across all memories (natural language or keywords)" data-tekton-input="search">
+                        <select id="search-type" class="engram__search-select" data-tekton-select="option">
                             <option value="semantic">Semantic</option>
                             <option value="keyword">Keyword</option>
                             <option value="combined">Combined</option>
@@ -483,8 +483,8 @@
         
         <!-- Chat Tab -->
         <!-- @landmark Panel: Memory Chat - Direct chat with memory-aware AI -->
-        <div id="chat-panel" class="engram__panel" data-tekton-panel="chat" data-tekton-panel-for="Memory Chat" data-tekton-panel-component="engram">
-            <div id="chat-messages" class="engram__chat-messages">
+        <div id="chat-panel" class="engram__panel" data-tekton-chat="panel" data-tekton-panel="chat" data-tekton-panel-for="Memory Chat" data-tekton-panel-component="engram">
+            <div id="chat-messages" class="engram__chat-messages" data-tekton-chat="messages">
                 <!-- Welcome message -->
                 <div class="engram__message engram__message--system">
                     <div class="engram__message-content">
@@ -505,8 +505,8 @@
         
         <!-- Team Chat Tab -->
         <!-- @landmark Panel: Team Chat - Collaborate with all Tekton AI assistants -->
-        <div id="teamchat-panel" class="engram__panel" data-tekton-panel="teamchat" data-tekton-panel-for="Team Chat" data-tekton-panel-component="engram">
-            <div id="teamchat-messages" class="engram__chat-messages">
+        <div id="teamchat-panel" class="engram__panel" data-tekton-chat="panel" data-tekton-panel="teamchat" data-tekton-panel-for="Team Chat" data-tekton-panel-component="engram">
+            <div id="teamchat-messages" class="engram__chat-messages" data-tekton-chat="messages">
                 <!-- Welcome message -->
                 <div class="engram__message engram__message--system">
                     <div class="engram__message-content">
@@ -523,9 +523,9 @@
     <!-- Footer with Chat Input -->
     <!-- @landmark Footer: Chat input area -->
     <div class="engram__footer" data-tekton-zone="footer">
-        <div class="engram__chat-input-container">
-            <div class="engram__chat-prompt">></div>
-            <input type="text" id="engram-chat-input" class="engram__chat-input" 
+        <div class="engram__chat-input-container" data-tekton-chat="input">
+            <div class="engram__chat-prompt" data-tekton-chat="container">></div>
+            <input type="text" id="engram-chat-input" class="engram__chat-input" data-tekton-chat="input" 
                    data-tekton-input="chat-input"
                    data-tekton-input-type="chat"
                    placeholder="Enter chat message for Engram memory chat, searching, or memory operations"

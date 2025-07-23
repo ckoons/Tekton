@@ -91,7 +91,7 @@
     <div class="tekton__submenu-bar" data-tekton-zone="submenu" data-tekton-section="submenu">
         <div class="tekton__project-selector">
             <label for="project-ci-selector" class="tekton__selector-label">Tekton Managed Project:</label>
-            <select id="project-ci-selector" class="tekton__project-select">
+            <select id="project-ci-selector" class="tekton__project-select" data-tekton-select="option">
                 <option value="tekton">Tekton</option>
             </select>
         </div>
@@ -163,7 +163,7 @@
                         <label for="companion-intelligence" class="tekton__form-label">Companion Intelligence - CI:</label>
                         <select id="companion-intelligence" class="tekton__form-select"
                                 data-tekton-input="companion-intelligence"
-                                data-tekton-input-type="select">
+                                data-tekton-input-type="select" data-tekton-select="option">
                             <option value="llama3.3:70b">llama3.3:70b (Default)</option>
                             <option value="llama3.2:3b">llama3.2:3b</option>
                             <option value="llama3.1:8b">llama3.1:8b</option>
@@ -2219,7 +2219,7 @@ if (document.readyState === 'complete' || document.readyState === 'interactive')
         
         <div class="tekton__error-modal-footer">
             <button class="tekton__button tekton__button--secondary" onclick="closeErrorModal()">Cancel</button>
-            <button class="tekton__button tekton__button--primary" id="tekton-error-retry-btn" onclick="retryLastGitAction()">Retry</button>
+            <button class="tekton__button tekton__button--primary" id="tekton-error-retry-btn" onclick="retryLastGitAction()" data-tekton-action="action">Retry</button>
         </div>
     </div>
 </div>

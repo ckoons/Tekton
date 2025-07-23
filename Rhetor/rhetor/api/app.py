@@ -21,6 +21,7 @@ from fastapi.responses import JSONResponse
 from sse_starlette.sse import EventSourceResponse
 from pydantic import Field
 from tekton.models import TektonBaseModel
+from landmarks import api_contract, integration_point
 
 # Add Tekton root to path if not already present
 tekton_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..'))
@@ -299,6 +300,18 @@ async def discovery():
 
 # Chat endpoints
 @routers.v1.post("/chat", response_model=ChatResponse)
+@api_contract(
+    title="LLM Chat API",
+    endpoint="/api/v1/chat",
+    method="POST",
+    request_schema={"messages": "list", "model": "string", "temperature": "float", "max_tokens": "int", "tools": "list"}
+)
+@integration_point(
+    title="LLM Provider Integration",
+    target_component="Multiple LLM providers (OpenAI, Anthropic, etc)",
+    protocol="HTTP REST API",
+    data_flow="Request -> Model Router -> Provider -> Response"
+)
 async def chat(request: ChatRequest):
     """Send a chat message to the LLM."""
     if not component or not component.initialized:
@@ -345,6 +358,12 @@ async def chat(request: ChatRequest):
 
 
 @routers.v1.post("/chat/stream")
+@api_contract(
+    title="LLM Streaming Chat API",
+    endpoint="/api/v1/chat/stream",
+    method="POST",
+    request_schema={"messages": "list", "model": "string", "stream": "bool"}
+)
 async def chat_stream(request: ChatRequest):
     """Stream a chat response from the LLM."""
     if not component or not component.initialized:
@@ -373,6 +392,12 @@ async def chat_stream(request: ChatRequest):
 
 # Template management endpoints
 @routers.v1.get("/templates")
+@api_contract(
+    title="Template List API",
+    endpoint="/api/v1/templates",
+    method="GET",
+    request_schema={"category": "string (optional)"}
+)
 async def list_templates(category: Optional[str] = None):
     """List all available templates."""
     if not component or not component.initialized:

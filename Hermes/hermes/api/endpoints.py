@@ -14,6 +14,7 @@ from shared.env import TektonEnviron
 from fastapi import FastAPI, HTTPException, Depends, Header, Request
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import Field, ConfigDict
+from landmarks import api_contract, state_checkpoint
 
 # Import from shared models
 from tekton.models import (
@@ -117,6 +118,19 @@ class ServiceResponse(TektonBaseModel):
 # API endpoints
 
 @app.post("/register", response_model=ComponentRegistrationResponse)
+@api_contract(
+    title="Component Registration API",
+    endpoint="/register",
+    method="POST",
+    request_schema={"component_id": "string", "name": "string", "version": "string", "type": "string", "endpoint": "string", "capabilities": "list", "metadata": "object"}
+)
+@state_checkpoint(
+    title="Component Registration State",
+    state_type="registration",
+    persistence=True,
+    consistency_requirements="Component registrations must persist across restarts and maintain token associations",
+    recovery_strategy="Restore from registration files on startup"
+)
 async def register_component(
     registration: ComponentRegistrationRequest,
     manager: RegistrationManager = Depends(get_registration_manager)
@@ -157,6 +171,19 @@ async def register_component(
     )
 
 @app.post("/heartbeat", response_model=HeartbeatResponse)
+@api_contract(
+    title="Component Heartbeat API",
+    endpoint="/heartbeat",
+    method="POST",
+    request_schema={"component_id": "string", "status": "object"}
+)
+@state_checkpoint(
+    title="Component Health Monitoring",
+    state_type="health_status",
+    persistence=False,
+    consistency_requirements="Real-time health status, no persistence required",
+    recovery_strategy="Components re-register on startup"
+)
 async def send_heartbeat(
     heartbeat: HeartbeatRequest,
     x_authentication_token: str = Header(...),

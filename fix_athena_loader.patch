@@ -1,0 +1,103 @@
+--- Fix for Athena Component Loading Issue ---
+
+The fix involves three parts:
+
+1. **Add Component Script Mapping to minimal-loader.js**
+
+After line 30 (componentPaths), add:
+
+```javascript
+    // Component scripts that need to be loaded
+    this.componentScripts = {
+      'athena': '/scripts/athena/athena-component.js',
+      'ergon': '/scripts/ergon/ergon-component.js',
+      'rhetor': '/scripts/rhetor/rhetor-component.js',
+      'apollo': '/scripts/apollo/apollo-component.js',
+      'metis': '/scripts/metis/metis-component.js',
+      'numa': '/scripts/numa/numa-component.js'
+    };
+    
+    // Component instances
+    this.componentInstances = {};
+```
+
+2. **Modify loadComponent method to load and initialize scripts**
+
+In the loadComponent method (around line 145), after loading the HTML and scripts, add:
+
+```javascript
+      // Load component-specific JavaScript if available
+      if (this.componentScripts[componentId]) {
+        try {
+          // Check if script already loaded
+          const scriptId = `${componentId}-component-script`;
+          if (!document.getElementById(scriptId)) {
+            const componentScript = document.createElement('script');
+            componentScript.id = scriptId;
+            componentScript.src = this.componentScripts[componentId];
+            
+            await new Promise((resolve, reject) => {
+              componentScript.onload = resolve;
+              componentScript.onerror = reject;
+              document.head.appendChild(componentScript);
+            });
+            
+            console.log(`MinimalLoader: Loaded component script for ${componentId}`);
+          }
+          
+          // Initialize the component if it has a class
+          const componentClassName = componentId.charAt(0).toUpperCase() + componentId.slice(1) + 'Component';
+          if (window[componentClassName]) {
+            console.log(`MinimalLoader: Initializing ${componentClassName}`);
+            this.componentInstances[componentId] = new window[componentClassName]();
+            
+            // Call init if available
+            if (this.componentInstances[componentId].init) {
+              this.componentInstances[componentId].init();
+            }
+          }
+        } catch (error) {
+          console.error(`MinimalLoader: Error loading component script for ${componentId}:`, error);
+        }
+      }
+```
+
+3. **Alternative Quick Fix - Add to Athena HTML component**
+
+At the end of athena-component.html, in the script section, add:
+
+```javascript
+// Auto-initialize Athena when component loads
+(function() {
+    // Wait for DOM and dependencies
+    function initializeAthena() {
+        // Load the Athena component script if not already loaded
+        if (!window.AthenaComponent) {
+            const script = document.createElement('script');
+            script.src = '/scripts/athena/athena-component.js';
+            script.onload = function() {
+                // Initialize after script loads
+                if (window.AthenaComponent) {
+                    const athena = new AthenaComponent();
+                    athena.init();
+                    console.log('Athena component initialized via HTML');
+                }
+            };
+            document.head.appendChild(script);
+        } else {
+            // Script already loaded, just initialize
+            const athena = new AthenaComponent();
+            athena.init();
+            console.log('Athena component initialized');
+        }
+    }
+    
+    // Initialize when DOM is ready
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initializeAthena);
+    } else {
+        // DOM already loaded
+        setTimeout(initializeAthena, 100);
+    }
+})();
+```

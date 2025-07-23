@@ -21,6 +21,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import Field
 from tekton.models.base import TektonBaseModel
 from contextlib import asynccontextmanager
+from landmarks import api_contract, integration_point, danger_zone
 
 # Add Tekton root to path if not already present
 tekton_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..'))
@@ -309,6 +310,25 @@ async def list_agents(
         return [agent.__dict__ for agent in agents]
 
 @routers.v1.post("/agents", response_model=AgentResponse)
+@api_contract(
+    title="Agent Creation API",
+    endpoint="/api/v1/agents",
+    method="POST",
+    request_schema={"name": "string", "description": "string", "model_name": "string", "tools": "list"}
+)
+@integration_point(
+    title="Agent Generator Integration",
+    target_component="Agent Generator, LLM Client",
+    protocol="Internal Python API",
+    data_flow="Request -> Agent Generator -> LLM -> Agent Definition -> Database"
+)
+@danger_zone(
+    title="Agent Code Generation",
+    risk_level="high",
+    risks=["Code injection", "Resource exhaustion", "Malicious agent creation"],
+    mitigations=["Code validation", "Resource limits", "Sandboxing", "User authorization"],
+    review_required=True
+)
 async def create_agent(agent_data: AgentCreate):
     """Create a new agent."""
     try:

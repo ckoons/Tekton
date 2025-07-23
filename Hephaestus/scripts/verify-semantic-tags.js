@@ -6,7 +6,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const cheerio = require('cheerio'); // If not available, we'll parse manually
+// const cheerio = require('cheerio'); // If not available, we'll parse manually
 
 // Expected components and their configurations
 const EXPECTED_COMPONENTS = {
@@ -179,7 +179,7 @@ function generateReport(results) {
     // Navigation verification
     console.log('\n\nNAVIGATION VERIFICATION:');
     console.log('----------------------');
-    const indexPath = path.join(__dirname, '..', 'index.html');
+    const indexPath = path.join(__dirname, '..', 'ui', 'index.html');
     if (fs.existsSync(indexPath)) {
         const indexContent = fs.readFileSync(indexPath, 'utf8');
         const navTagged = indexContent.includes('data-tekton-nav="main"');
@@ -201,7 +201,7 @@ function generateReport(results) {
 function main() {
     console.log('🔍 Verifying Semantic Tags...');
     
-    const componentsDir = path.join(__dirname, '..', 'components');
+    const componentsDir = path.join(__dirname, '..', 'ui', 'components');
     const results = [];
     
     Object.keys(EXPECTED_COMPONENTS).forEach(componentName => {

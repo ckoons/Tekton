@@ -38,6 +38,7 @@ from shared.api import (
     get_openapi_configuration,
     EndpointInfo
 )
+from landmarks import api_contract, integration_point, danger_zone
 
 # Import Tekton utilities
 from tekton.utils.tekton_errors import (
@@ -366,6 +367,25 @@ async def websocket_endpoint(websocket: WebSocket):
 
 # Execution endpoints
 @routers.v1.post("/executions", response_model=ExecutionResponse)
+@api_contract(
+    title="Execution Creation API",
+    endpoint="/api/v1/executions",
+    method="POST",
+    request_schema={"plan": "object", "context": "object", "wait_for_completion": "bool", "timeout": "int"}
+)
+@integration_point(
+    title="Cross-Component Execution",
+    target_component="Execution Engine, Target Components",
+    protocol="Internal API, WebSocket Events",
+    data_flow="Execution Plan -> Engine -> Component Actions -> Event Streams"
+)
+@danger_zone(
+    title="Code Execution",
+    risk_level="high",
+    risks=["Arbitrary code execution", "Resource exhaustion", "Component failures", "Data corruption"],
+    mitigations=["Sandboxing", "Resource limits", "Timeout controls", "Rollback capability"],
+    review_required=True
+)
 async def create_execution(request: ExecutionRequest, execution_engine = Depends(get_execution_engine)):
     """
     Create a new execution.

@@ -10,30 +10,35 @@ from contextlib import asynccontextmanager
 
 # Try to import landmarks if available
 try:
-    from landmarks import architecture_decision, integration_point, api_contract, state_checkpoint, performance_boundary
+    from landmarks import architecture_decision, integration_point, api_contract, state_checkpoint, performance_boundary, danger_zone
 except ImportError:
     # Landmarks not available, create no-op decorators
-    def architecture_decision(name, description, rationale=""):
+    def architecture_decision(**kwargs):
         def decorator(func):
             return func
         return decorator
     
-    def integration_point(name, description, rationale=""):
+    def integration_point(**kwargs):
         def decorator(func):
             return func
         return decorator
     
-    def api_contract(name, description, rationale=""):
+    def api_contract(**kwargs):
         def decorator(func):
             return func
         return decorator
     
-    def state_checkpoint(name, description, rationale=""):
+    def state_checkpoint(**kwargs):
         def decorator(func):
             return func
         return decorator
     
-    def performance_boundary(name, description, sla, rationale=""):
+    def performance_boundary(**kwargs):
+        def decorator(func):
+            return func
+        return decorator
+    
+    def danger_zone(**kwargs):
         def decorator(func):
             return func
         return decorator
@@ -133,10 +138,9 @@ class HermesEvent(BaseModel):
 # Lifespan handler for startup and shutdown
 @architecture_decision(
     title="Terma Lifespan Management",
-    decision="Use FastAPI lifespan for service registration and cleanup",
-    rationale="Ensures proper service registration and cleanup, maintains health status with Hermes",
-    alternatives_considered=["Manual startup/shutdown", "Separate service manager"],
-    decision_date="2025-07-09"
+    rationale="Use FastAPI lifespan for service registration and cleanup, ensures proper service registration and cleanup, maintains health status with Hermes",
+    alternatives_considered=["Manual startup/shutdown", "Separate service manager", "Systemd service"],
+    decided_by="Casey"
 )
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -226,6 +230,12 @@ async def root():
     return {"message": "Terma Terminal API", "version": VERSION}
 
 @app.get("/health", response_model=HealthResponse)
+@api_contract(
+    title="Health Check API",
+    endpoint="/health",
+    method="GET",
+    response_schema={"status": "str", "uptime": "float", "version": "str", "active_sessions": "int"}
+)
 async def health_check():
     """Health check endpoint"""
     uptime = time.time() - START_TIME
@@ -240,6 +250,12 @@ async def health_check():
 # Native Terminal Management Endpoints
 
 @app.get("/api/terminals/types", response_model=List[TerminalTypeInfo])
+@api_contract(
+    title="Terminal Types Discovery API",
+    endpoint="/api/terminals/types",
+    method="GET",
+    response_schema=[{"id": "str", "name": "str", "available": "bool", "path": "str|null"}]
+)
 async def list_terminal_types():
     """List available terminal types on this platform."""
     if not launcher:
@@ -409,6 +425,18 @@ class LLMSetRequest(BaseModel):
     model: str
 
 @app.get("/api/llm/providers", response_model=LLMProvidersResponse)
+@integration_point(
+    title="LLM Adapter Service Integration",
+    target_component="llm_adapter (port 8006)",
+    protocol="HTTP GET /health, /providers",
+    data_flow="Terma → LLM Adapter for provider discovery and model selection"
+)
+@performance_boundary(
+    title="LLM Provider Discovery",
+    sla="<2s including network latency",
+    optimization_notes="Cached provider list, 2s timeout on health check",
+    metrics={"timeout": "2s", "cache_ttl": "300s"}
+)
 async def get_llm_providers():
     """Get available LLM providers and models"""
     from ..core.llm_adapter import LLMAdapter

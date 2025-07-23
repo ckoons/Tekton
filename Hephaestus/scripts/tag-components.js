@@ -118,7 +118,7 @@ function main() {
     console.log('Starting systematic component tagging...');
     console.log('=====================================\n');
     
-    const componentsDir = path.join(__dirname, '..', 'components');
+    const componentsDir = path.join(__dirname, '..', 'ui', 'components');
     const components = fs.readdirSync(componentsDir)
         .filter(dir => fs.statSync(path.join(componentsDir, dir)).isDirectory())
         .filter(dir => !['shared', 'test', 'tekton-dashboard'].includes(dir));

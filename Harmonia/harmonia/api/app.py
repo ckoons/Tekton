@@ -70,6 +70,7 @@ from harmonia.models.webhook import (
     WebhookEvent
 )
 from tekton.utils.tekton_errors import TektonNotFoundError as NotFoundError, DataValidationError as ValidationError, AuthorizationError
+from landmarks import api_contract, integration_point, danger_zone
 
 # Import FastMCP endpoints - will be used in lifespan
 from .fastmcp_endpoints import fastmcp_router, fastmcp_startup, fastmcp_shutdown, set_workflow_engine
@@ -485,6 +486,18 @@ async def discovery():
 # Workflow Definition Endpoints
 
 @routers.v1.post("/workflows", response_model=APIResponse, status_code=201)
+@api_contract(
+    title="Workflow Definition API",
+    endpoint="/api/v1/workflows",
+    method="POST",
+    request_schema={"name": "string", "description": "string", "tasks": "object", "input": "object", "output": "object"}
+)
+@integration_point(
+    title="Workflow Engine Integration",
+    target_component="Workflow Engine, State Manager",
+    protocol="Internal Python API",
+    data_flow="API Request -> Workflow Engine -> State Manager -> Persistent Storage"
+)
 async def create_workflow(
     definition: WorkflowDefinitionCreate,
     engine: WorkflowEngine = Depends(get_workflow_engine)
@@ -694,6 +707,25 @@ async def delete_workflow(
 # Workflow Execution Endpoints
 
 @routers.v1.post("/executions", response_model=APIResponse, status_code=201)
+@api_contract(
+    title="Workflow Execution API",
+    endpoint="/api/v1/executions",
+    method="POST",
+    request_schema={"workflow_id": "uuid", "input": "object", "metadata": "object"}
+)
+@integration_point(
+    title="Cross-Component Orchestration",
+    target_component="Workflow Engine, Component Registry, Task Executors",
+    protocol="Internal API, WebSocket Events",
+    data_flow="Execution Request -> Workflow Engine -> Component Actions -> Event Broadcasting"
+)
+@danger_zone(
+    title="Workflow Execution",
+    risk_level="high",
+    risks=["Resource exhaustion", "Cascading failures", "Deadlocks", "Uncontrolled component interactions"],
+    mitigations=["Resource limits", "Timeout controls", "Circuit breakers", "Rollback capability"],
+    review_required=True
+)
 async def create_execution(
     execution: WorkflowExecutionCreate,
     engine: WorkflowEngine = Depends(get_workflow_engine)

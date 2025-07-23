@@ -73,6 +73,42 @@ class MinimalLoader {
   }
   
   /**
+   * Load a utility script with full path
+   * @param {string} scriptPath The full path to the script
+   * @returns {Promise} A promise that resolves when the script is loaded
+   */
+  async loadUtilityScript(scriptPath) {
+    const scriptName = scriptPath.split('/').pop().replace('.js', '');
+    
+    if (this.utilityLoaded[scriptName]) {
+      console.log(`MinimalLoader: Script ${scriptName} already loaded, reusing`);
+      return Promise.resolve();
+    }
+    
+    console.log(`MinimalLoader: Loading script ${scriptPath}...`);
+    
+    return new Promise((resolve, reject) => {
+      // Add cache-busting timestamp to ensure we get the latest version
+      const timestamp = new Date().getTime();
+      const script = document.createElement('script');
+      script.src = `${scriptPath}?t=${timestamp}`;
+      script.async = false; // Use synchronous loading to ensure utilities load in order
+      script.onload = () => {
+        console.log(`MinimalLoader: Successfully loaded script ${scriptPath}`);
+        this.utilityLoaded[scriptName] = true;
+        
+        // Add a small delay to ensure script execution completes
+        setTimeout(() => resolve(), 20);
+      };
+      script.onerror = (err) => {
+        console.error(`MinimalLoader: Failed to load script ${scriptPath}`, err);
+        reject(err);
+      };
+      document.head.appendChild(script);
+    });
+  }
+  
+  /**
    * Load a component into the specified container
    */
   async loadComponent(componentId) {
@@ -155,31 +191,13 @@ class MinimalLoader {
       try {
         console.log(`MinimalLoader: Ensuring utilities are loaded before component scripts`);
         
-        // Load TabNavigation
-        const tabNavScript = document.createElement('script');
-        tabNavScript.src = `/scripts/shared/tab-navigation.js?t=${new Date().getTime()}`;
-        document.head.appendChild(tabNavScript);
+        // Load utilities in sequence to avoid race conditions
+        await this.loadUtilityScript('/scripts/shared/tab-navigation.js');
+        await this.loadUtilityScript('/scripts/shared/tab-navigation-debug.js');
+        await this.loadUtilityScript('/scripts/shared/component-loading-guard.js');
+        await this.loadUtilityScript('/scripts/shared/tab-switcher.js');
         
-        // Load our debugging helpers
-        console.log(`MinimalLoader: Loading debugging helpers for TabNavigation`);
-        const debugScript = document.createElement('script');
-        debugScript.src = `/scripts/shared/tab-navigation-debug.js?t=${new Date().getTime()}`;
-        document.head.appendChild(debugScript);
-        
-        // Load component loading guard
-        console.log(`MinimalLoader: Loading component loading guard`);
-        const guardScript = document.createElement('script');
-        guardScript.src = `/scripts/shared/component-loading-guard.js?t=${new Date().getTime()}`;
-        document.head.appendChild(guardScript);
-        
-        // Load tab switcher utility
-        console.log(`MinimalLoader: Loading tab switcher utility`);
-        const tabSwitcherScript = document.createElement('script');
-        tabSwitcherScript.src = `/scripts/shared/tab-switcher.js?t=${new Date().getTime()}`;
-        document.head.appendChild(tabSwitcherScript);
-        
-        // Small delay to ensure utilities are loaded before running component scripts
-        await new Promise(resolve => setTimeout(resolve, 100));
+        console.log(`MinimalLoader: All utilities loaded successfully`);
       } catch (error) {
         console.error('MinimalLoader: Error loading utilities:', error);
       }

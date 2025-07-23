@@ -33,6 +33,26 @@ from apollo.models.message import (
     MessageDeliveryStatus,
     MessageDeliveryRecord
 )
+# Try to import landmarks
+try:
+    from landmarks import integration_point, state_checkpoint, performance_boundary
+except ImportError:
+    # Define no-op decorators if landmarks not available
+    def integration_point(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+    
+    def state_checkpoint(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+    
+    def performance_boundary(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+
 from apollo.core.protocol_enforcer import ProtocolEnforcer
 # from tekton.utils.port_config import get_hermes_url
 def get_hermes_url() -> str:
@@ -200,6 +220,13 @@ class MessageFilter:
         return True
 
 
+@integration_point(
+    title="Apollo-Hermes Message Bus Client",
+    target_component="Hermes Message Bus",
+    protocol="HTTP/JSON REST API",
+    data_flow="Apollo → Hermes (messages, subscriptions) → Other components",
+    critical_notes="Central integration point for all Apollo messaging"
+)
 class HermesClient:
     """Client for interacting with Hermes message bus."""
     
@@ -334,6 +361,19 @@ class HermesClient:
         await self.client.aclose()
 
 
+@state_checkpoint(
+    title="Apollo Message Handler State",
+    state_type="operational",
+    persistence=True,
+    consistency_requirements="Message queues, subscriptions, and delivery records must be consistent",
+    recovery_strategy="Reload from disk, requeue failed messages"
+)
+@performance_boundary(
+    title="Message Processing Performance",
+    sla="<100ms message processing, batch send every 1s",
+    metrics={"batch_size": "10 messages", "queue_limit": "1000 messages"},
+    optimization_notes="Async processing, message batching, retry logic"
+)
 class MessageHandler:
     """
     Message handler for Apollo that manages communication with other components.
@@ -755,6 +795,12 @@ class MessageHandler:
         except Exception as e:
             logger.error(f"Error saving delivery records: {e}")
     
+    @integration_point(
+        title="Apollo Outbound Message Flow",
+        target_component="All Tekton Components via Hermes",
+        protocol="Async message queue → batch send → Hermes HTTP API",
+        data_flow="Apollo → Queue → Batch → Hermes → Target components"
+    )
     async def send_message(self, message: TektonMessage) -> bool:
         """
         Send a message to other components via Hermes.
@@ -872,6 +918,13 @@ class MessageHandler:
         
         return True
     
+    @integration_point(
+        title="Apollo Event Subscription",
+        target_component="Hermes Message Bus",
+        protocol="HTTP subscription registration",
+        data_flow="Apollo → Hermes (subscription) ← Other components (events)",
+        critical_notes="Enables Apollo to receive async events from any component"
+    )
     async def subscribe_remote(
         self,
         message_types: List[MessageType],

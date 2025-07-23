@@ -547,7 +547,7 @@
         <h3>Message Routing</h3>
         <div class="rhetor__form-group">
           <label class="rhetor__form-label">Orchestration Mode</label>
-          <select class="rhetor__form-select" id="orchestration-mode">
+          <select class="rhetor__form-select" id="orchestration-mode" data-tekton-select="option">
             <option value="passive">Passive Monitor</option>
             <option value="active" selected>Active Coordinator</option>
             <option value="translator">Universal Translator</option>
@@ -637,7 +637,7 @@
         <div class="rhetor__model-config">
           <div class="rhetor__form-group">
             <label class="rhetor__form-label">Orchestrator (Meta-AI)</label>
-            <select class="rhetor__form-select" id="model-orchestrator">
+            <select class="rhetor__form-select" id="model-orchestrator" data-tekton-select="option">
               <option value="claude-3-opus-20240229" selected>Claude 3 Opus</option>
               <option value="claude-3-sonnet-20240229">Claude 3 Sonnet</option>
               <option value="claude-3-haiku-20240307">Claude 3 Haiku</option>
@@ -646,7 +646,7 @@
           
           <div class="rhetor__form-group">
             <label class="rhetor__form-label">Memory Specialist</label>
-            <select class="rhetor__form-select" id="model-memory">
+            <select class="rhetor__form-select" id="model-memory" data-tekton-select="option">
               <option value="claude-3-haiku-20240307" selected>Claude 3 Haiku</option>
               <option value="claude-3-sonnet-20240229">Claude 3 Sonnet</option>
             </select>
@@ -654,7 +654,7 @@
           
           <div class="rhetor__form-group">
             <label class="rhetor__form-label">Executive Coordinator</label>
-            <select class="rhetor__form-select" id="model-coordinator">
+            <select class="rhetor__form-select" id="model-coordinator" data-tekton-select="option">
               <option value="claude-3-sonnet-20240229" selected>Claude 3 Sonnet</option>
               <option value="claude-3-opus-20240229">Claude 3 Opus</option>
             </select>
@@ -1273,7 +1273,7 @@
           <h3 class="rhetor__models-section-title">Model Testing</h3>
           <div class="rhetor__test-container">
             <div class="rhetor__test-controls">
-              <select class="rhetor__test-model-select" id="test-model-select">
+              <select class="rhetor__test-model-select" id="test-model-select" data-tekton-select="option">
                 <option value="">Select a model to test...</option>
                 <optgroup label="Anthropic">
                   <option value="claude-3-opus">Claude 3 Opus</option>

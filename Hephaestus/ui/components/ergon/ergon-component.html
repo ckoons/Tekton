@@ -54,14 +54,14 @@
                  data-tekton-nav-target="memory">
                 <span class="ergon__tab-label">Memory</span>
             </label>
-            <label for="ergon-tab-chat" class="ergon__tab" data-tab="chat" 
+            <label for="ergon-tab-chat" class="ergon__tab" data-tekton-chat="tab" data-tab="chat" 
                  data-tekton-menu-item="Tool Chat" 
                  data-tekton-menu-component="ergon" 
                  data-tekton-menu-panel="ergon-panel" 
                  data-tekton-nav-target="chat">
                 <span class="ergon__tab-label">Tool Chat</span>
             </label>
-            <label for="ergon-tab-teamchat" class="ergon__tab" data-tab="teamchat" 
+            <label for="ergon-tab-teamchat" class="ergon__tab" data-tekton-chat="tab" data-tab="teamchat" 
                  data-tekton-menu-item="Team Chat" 
                  data-tekton-menu-component="ergon" 
                  data-tekton-menu-panel="awt-team-panel" 
@@ -98,11 +98,11 @@
                     <h3 class="ergon__modal-title">Create New Agent</h3>
                     <div class="ergon__form-group">
                         <label for="agent-name" class="ergon__form-label">Agent Name:</label>
-                        <input type="text" id="agent-name" class="ergon__form-input" placeholder="Enter agent name">
+                        <input type="text" id="agent-name" class="ergon__form-input" placeholder="Enter agent name" data-tekton-input="text">
                     </div>
                     <div class="ergon__form-group">
                         <label for="agent-type" class="ergon__form-label">Agent Type:</label>
-                        <select id="agent-type" class="ergon__form-select">
+                        <select id="agent-type" class="ergon__form-select" data-tekton-select="option">
                             <option value="general">General Purpose</option>
                             <option value="code">Code Assistant</option>
                             <option value="data">Data Analyst</option>
@@ -124,7 +124,7 @@
         <!-- Tool Chat Tab -->
         <!-- @landmark Panel: Tool Chat - Direct chat with Ergon AI assistant -->
         <div id="ergon-panel" class="ergon__panel" data-tekton-panel="ergon" data-tekton-panel-for="Tool Chat" data-tekton-panel-component="ergon">
-            <div id="ergon-messages" class="ergon__chat-messages">
+            <div id="ergon-messages" class="ergon__chat-messages" data-tekton-chat="messages">
                 <!-- Welcome message -->
                 <div class="ergon__message ergon__message--system">
                     <div class="ergon__message-content">
@@ -140,7 +140,7 @@
         <!-- Team Chat Tab -->
         <!-- @landmark Panel: Team Chat - Collaborate with all Tekton AI assistants -->
         <div id="awt-team-panel" class="ergon__panel" data-tekton-panel="awt-team" data-tekton-panel-for="Team Chat" data-tekton-panel-component="ergon">
-            <div id="awt-team-messages" class="ergon__chat-messages">
+            <div id="awt-team-messages" class="ergon__chat-messages" data-tekton-chat="messages">
                 <!-- Welcome message -->
                 <div class="ergon__message ergon__message--system">
                     <div class="ergon__message-content">
@@ -240,9 +240,9 @@
     <!-- Footer with Chat Input -->
     <!-- @landmark Footer: Chat input area -->
     <div class="ergon__footer" data-tekton-zone="footer">
-        <div class="ergon__chat-input-container">
-            <div class="ergon__chat-prompt">></div>
-            <input type="text" id="ergon-chat-input" class="ergon__chat-input" 
+        <div class="ergon__chat-input-container" data-tekton-chat="input">
+            <div class="ergon__chat-prompt" data-tekton-chat="container">></div>
+            <input type="text" id="ergon-chat-input" class="ergon__chat-input" data-tekton-chat="input" 
                    data-tekton-input="chat-input"
                    data-tekton-input-type="chat"
                    placeholder="Enter chat message for Ergon agent management, tools configuration, or MCP"

@@ -29,10 +29,10 @@
             <div class="sophia__tab" data-tab="theory-validation" onclick="sophia_switchTab('theory-validation'); return false;" data-tekton-menu-item="Theory Validation" data-tekton-menu-component="sophia" data-tekton-menu-active="false" data-tekton-menu-panel="theory-validation-panel" data-tekton-nav-target="theory-validation-panel">
                 <span class="sophia__tab-label">Theory Validation</span>
             </div>
-            <div class="sophia__tab" data-tab="researchchat" onclick="sophia_switchTab('researchchat'); return false;" data-tekton-menu-item="Research Chat" data-tekton-menu-component="sophia" data-tekton-menu-active="false" data-tekton-menu-panel="researchchat-panel" data-tekton-nav-target="researchchat-panel">
+            <div class="sophia__tab" data-tekton-chat="tab" data-tab="researchchat" onclick="sophia_switchTab('researchchat'); return false;" data-tekton-menu-item="Research Chat" data-tekton-menu-component="sophia" data-tekton-menu-active="false" data-tekton-menu-panel="researchchat-panel" data-tekton-nav-target="researchchat-panel">
                 <span class="sophia__tab-label">Research Chat</span>
             </div>
-            <div class="sophia__tab" data-tab="teamchat" onclick="sophia_switchTab('teamchat'); return false;" data-tekton-menu-item="Team Chat" data-tekton-menu-component="sophia" data-tekton-menu-active="false" data-tekton-menu-panel="teamchat-panel" data-tekton-nav-target="teamchat-panel">
+            <div class="sophia__tab" data-tekton-chat="tab" data-tab="teamchat" onclick="sophia_switchTab('teamchat'); return false;" data-tekton-menu-item="Team Chat" data-tekton-menu-component="sophia" data-tekton-menu-active="false" data-tekton-menu-panel="teamchat-panel" data-tekton-nav-target="teamchat-panel">
                 <span class="sophia__tab-label">Team Chat</span>
             </div>
         </div>
@@ -52,14 +52,14 @@
                     <div class="sophia__filter-container">
                         <div class="sophia__input-group">
                             <span class="sophia__input-label">Component</span>
-                            <select id="sophia-metrics-component-filter" class="sophia__select">
+                            <select id="sophia-metrics-component-filter" class="sophia__select" data-tekton-select="filter">
                                 <option value="">All Components</option>
                                 <!-- Dynamically populated -->
                             </select>
                         </div>
                         <div class="sophia__input-group">
                             <span class="sophia__input-label">Metric Type</span>
-                            <select id="sophia-metrics-type-filter" class="sophia__select">
+                            <select id="sophia-metrics-type-filter" class="sophia__select" data-tekton-select="filter">
                                 <option value="">All Metrics</option>
                                 <option value="performance">Performance</option>
                                 <option value="resource">Resource</option>
@@ -69,7 +69,7 @@
                         </div>
                         <div class="sophia__input-group">
                             <span class="sophia__input-label">Time Range</span>
-                            <select id="sophia-metrics-timerange" class="sophia__select">
+                            <select id="sophia-metrics-timerange" class="sophia__select" data-tekton-select="option">
                                 <option value="1h">Last Hour</option>
                                 <option value="6h">Last 6 Hours</option>
                                 <option value="24h" selected>Last 24 Hours</option>
@@ -114,14 +114,14 @@
                     <div class="sophia__filter-container">
                         <div class="sophia__input-group">
                             <span class="sophia__input-label">Component</span>
-                            <select id="sophia-intelligence-component-filter" class="sophia__select">
+                            <select id="sophia-intelligence-component-filter" class="sophia__select" data-tekton-select="filter">
                                 <option value="">All Components</option>
                                 <!-- Dynamically populated -->
                             </select>
                         </div>
                         <div class="sophia__input-group">
                             <span class="sophia__input-label">Dimension</span>
-                            <select id="sophia-intelligence-dimension-filter" class="sophia__select">
+                            <select id="sophia-intelligence-dimension-filter" class="sophia__select" data-tekton-select="filter">
                                 <option value="">All Dimensions</option>
                                 <option value="language_processing">Language Processing</option>
                                 <option value="reasoning">Reasoning</option>
@@ -162,11 +162,11 @@
                     <div class="sophia__comparison-controls">
                         <div class="sophia__input-group sophia__input-group--inline">
                             <span class="sophia__input-label">Compare</span>
-                            <select id="sophia-comparison-component1" class="sophia__select">
+                            <select id="sophia-comparison-component1" class="sophia__select" data-tekton-select="option">
                                 <!-- Dynamically populated -->
                             </select>
                             <span class="sophia__input-label">with</span>
-                            <select id="sophia-comparison-component2" class="sophia__select">
+                            <select id="sophia-comparison-component2" class="sophia__select" data-tekton-select="option">
                                 <!-- Dynamically populated -->
                             </select>
                             <button id="sophia-compare-btn" class="sophia__button sophia__button--primary" data-tekton-action="compare-intelligence" data-tekton-action-type="primary">Compare</button>
@@ -184,7 +184,7 @@
                     <div class="sophia__filter-container">
                         <div class="sophia__input-group">
                             <span class="sophia__input-label">Status</span>
-                            <select id="sophia-experiments-status-filter" class="sophia__select">
+                            <select id="sophia-experiments-status-filter" class="sophia__select" data-tekton-select="filter">
                                 <option value="">All Statuses</option>
                                 <option value="draft">Draft</option>
                                 <option value="scheduled">Scheduled</option>
@@ -196,7 +196,7 @@
                         </div>
                         <div class="sophia__input-group">
                             <span class="sophia__input-label">Type</span>
-                            <select id="sophia-experiments-type-filter" class="sophia__select">
+                            <select id="sophia-experiments-type-filter" class="sophia__select" data-tekton-select="filter">
                                 <option value="">All Types</option>
                                 <option value="a_b_test">A/B Test</option>
                                 <option value="multivariate">Multivariate</option>
@@ -267,7 +267,7 @@
                     <div class="sophia__filter-container">
                         <div class="sophia__input-group">
                             <span class="sophia__input-label">Status</span>
-                            <select id="sophia-recommendations-status-filter" class="sophia__select">
+                            <select id="sophia-recommendations-status-filter" class="sophia__select" data-tekton-select="filter">
                                 <option value="">All Statuses</option>
                                 <option value="pending">Pending</option>
                                 <option value="approved">Approved</option>
@@ -279,7 +279,7 @@
                         </div>
                         <div class="sophia__input-group">
                             <span class="sophia__input-label">Priority</span>
-                            <select id="sophia-recommendations-priority-filter" class="sophia__select">
+                            <select id="sophia-recommendations-priority-filter" class="sophia__select" data-tekton-select="filter">
                                 <option value="">All Priorities</option>
                                 <option value="critical">Critical</option>
                                 <option value="high">High</option>
@@ -289,7 +289,7 @@
                         </div>
                         <div class="sophia__input-group">
                             <span class="sophia__input-label">Component</span>
-                            <select id="sophia-recommendations-component-filter" class="sophia__select">
+                            <select id="sophia-recommendations-component-filter" class="sophia__select" data-tekton-select="filter">
                                 <option value="">All Components</option>
                                 <!-- Dynamically populated -->
                             </select>
@@ -351,8 +351,8 @@
         </div>
         
         <!-- Research Chat Tab -->
-        <div id="researchchat-panel" class="sophia__panel" data-tekton-panel="researchchat" data-tekton-panel-for="Research Chat" data-tekton-panel-component="sophia" data-tekton-panel-active="false">
-            <div id="researchchat-messages" class="sophia__chat-messages">
+        <div id="researchchat-panel" class="sophia__panel" data-tekton-chat="panel" data-tekton-panel="researchchat" data-tekton-panel-for="Research Chat" data-tekton-panel-component="sophia" data-tekton-panel-active="false">
+            <div id="researchchat-messages" class="sophia__chat-messages" data-tekton-chat="messages">
                 <!-- Welcome message -->
                 <div class="sophia__message sophia__message--system">
                     <div class="sophia__message-content">
@@ -387,7 +387,7 @@
                                 <span class="sophia__input-label">Protocol Type</span>
                                 <select id="sophia-protocol-type-filter" class="sophia__select" 
                                         data-tekton-input="protocol-type-filter" 
-                                        data-tekton-input-type="select">
+                                        data-tekton-input-type="select" data-tekton-select="filter">
                                     <option value="">All Types</option>
                                     <option value="theory_validation">Theory Validation</option>
                                     <option value="hypothesis_generation">Hypothesis Generation</option>
@@ -399,7 +399,7 @@
                                 <span class="sophia__input-label">Status</span>
                                 <select id="sophia-protocol-status-filter" class="sophia__select" 
                                         data-tekton-input="protocol-status-filter" 
-                                        data-tekton-input-type="select">
+                                        data-tekton-input-type="select" data-tekton-select="filter">
                                     <option value="">All Statuses</option>
                                     <option value="active">Active</option>
                                     <option value="completed">Completed</option>
@@ -586,8 +586,8 @@
         </div>
         
         <!-- Team Chat Tab -->
-        <div id="teamchat-panel" class="sophia__panel" data-tekton-panel="teamchat" data-tekton-panel-for="Team Chat" data-tekton-panel-component="sophia" data-tekton-panel-active="false">
-            <div id="teamchat-messages" class="sophia__chat-messages">
+        <div id="teamchat-panel" class="sophia__panel" data-tekton-chat="panel" data-tekton-panel="teamchat" data-tekton-panel-for="Team Chat" data-tekton-panel-component="sophia" data-tekton-panel-active="false">
+            <div id="teamchat-messages" class="sophia__chat-messages" data-tekton-chat="messages">
                 <!-- Welcome message -->
                 <div class="sophia__message sophia__message--system">
                     <div class="sophia__message-content">
@@ -603,9 +603,9 @@
     
     <!-- Footer with Chat Input -->
     <div class="sophia__footer" data-tekton-zone="footer">
-        <div class="sophia__chat-input-container">
-            <div class="sophia__chat-prompt">></div>
-            <input type="text" id="sophia-chat-input" class="sophia__chat-input" 
+        <div class="sophia__chat-input-container" data-tekton-chat="input">
+            <div class="sophia__chat-prompt" data-tekton-chat="container">></div>
+            <input type="text" id="sophia-chat-input" class="sophia__chat-input" data-tekton-chat="input" 
                    placeholder="Enter chat message, research questions, or experiment ideas"
                    onkeydown="if(event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); sophia_sendChat(); }">
             <button id="sophia-send-button" class="sophia__send-button" onclick="sophia_sendChat()" data-tekton-action="send-message" data-tekton-action-type="primary">Send</button>

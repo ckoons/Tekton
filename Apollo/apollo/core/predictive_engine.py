@@ -23,6 +23,21 @@ from apollo.models.context import (
     ContextPrediction,
     ContextHealth
 )
+# Try to import landmarks
+try:
+    from landmarks import architecture_decision, performance_boundary
+except ImportError:
+    # Define no-op decorators if landmarks not available
+    def architecture_decision(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+    
+    def performance_boundary(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+
 from apollo.core.context_observer import ContextObserver
 
 # Configure logging
@@ -606,6 +621,18 @@ class HeuristicRule(PredictionRule):
             return ContextHealth.CRITICAL
 
 
+@architecture_decision(
+    title="Apollo Predictive Analytics Engine",
+    rationale="Proactive context management through statistical prediction of future states",
+    alternatives_considered=["Reactive-only monitoring", "ML-based prediction", "Fixed threshold alerts"],
+    decided_by="Casey"
+)
+@performance_boundary(
+    title="Prediction Engine Performance",
+    sla="<500ms prediction generation, 15s update interval",
+    metrics={"prediction_rules": "4 concurrent", "history_window": "100 points"},
+    optimization_notes="Lightweight statistical methods, async rule evaluation"
+)
 class PredictiveEngine:
     """
     Predictive engine for Apollo that forecasts future context states.

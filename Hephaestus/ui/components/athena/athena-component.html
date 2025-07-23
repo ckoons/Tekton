@@ -1,5 +1,4 @@
-<!-- @landmark Athena Component - Knowledge Graph and Entity Management -->
-<!-- @landmark-section CSS-first tab controls for navigation -->
+<!-- Athena Component - Knowledge Graph -->
 
 <!-- Hidden radio inputs for CSS-first tab functionality -->
 <input type="radio" name="athena-tab" id="athena-tab-graph" checked style="display: none;">
@@ -8,1231 +7,484 @@
 <input type="radio" name="athena-tab" id="athena-tab-chat" style="display: none;">
 <input type="radio" name="athena-tab" id="athena-tab-teamchat" style="display: none;">
 
-<div class="athena" data-tekton-area="athena" data-tekton-component="athena" data-tekton-type="component-workspace" data-tekton-ai="athena-assistant" data-tekton-ai-ready="false">
-    <!-- @landmark Component Header - Main title and branding -->
-    <div class="athena__header" data-tekton-zone="header" data-tekton-section="header" data-tekton-header="athena">
+<div class="athena">
+    <!-- Component Header with Title -->
+    <div class="athena__header">
         <div class="athena__title-container">
             <img src="/images/hexagon.jpg" alt="Tekton" class="athena__icon">
             <h2 class="athena__title">
                 <span class="athena__title-main">Athena</span>
-                <span class="athena__title-sub">Knowledge Graph</span>
+                <span class="athena__title-sub">Knowledge</span>
             </h2>
         </div>
     </div>
     
-    <!-- @landmark Menu Bar - Primary navigation tabs -->
-    <div class="athena__menu-bar" data-tekton-zone="menu" data-tekton-nav="component-menu" data-tekton-menubar="athena">
-        <div class="athena__tabs" data-tekton-zone="menu">
-            <label for="athena-tab-graph" class="athena__tab" data-tab="graph" data-tekton-menu-item="Knowledge Graph" data-tekton-menu-component="athena" data-tekton-menu-panel="graph-panel" data-tekton-nav-target="graph-panel">
+    <!-- Menu Bar -->
+    <div class="athena__menu-bar">
+        <div class="athena__tabs">
+            <label for="athena-tab-graph" class="athena__tab">
                 <span class="athena__tab-label">Knowledge Graph</span>
             </label>
-            <label for="athena-tab-entities" class="athena__tab" data-tab="entities" data-tekton-menu-item="Entities" data-tekton-menu-component="athena" data-tekton-menu-panel="entities-panel" data-tekton-nav-target="entities-panel">
+            <label for="athena-tab-entities" class="athena__tab">
                 <span class="athena__tab-label">Entities</span>
             </label>
-            <label for="athena-tab-query" class="athena__tab" data-tab="query" data-tekton-menu-item="Query Builder" data-tekton-menu-component="athena" data-tekton-menu-panel="query-panel" data-tekton-nav-target="query-panel">
+            <label for="athena-tab-query" class="athena__tab">
                 <span class="athena__tab-label">Query Builder</span>
             </label>
-            <label for="athena-tab-chat" class="athena__tab" data-tab="chat" data-tekton-menu-item="Knowledge Chat" data-tekton-menu-component="athena" data-tekton-menu-panel="chat-panel" data-tekton-nav-target="chat-panel">
+            <label for="athena-tab-chat" class="athena__tab">
                 <span class="athena__tab-label">Knowledge Chat</span>
             </label>
-            <label for="athena-tab-teamchat" class="athena__tab" data-tab="teamchat" data-tekton-menu-item="Team Chat" data-tekton-menu-component="athena" data-tekton-menu-panel="teamchat-panel" data-tekton-nav-target="teamchat-panel">
+            <label for="athena-tab-teamchat" class="athena__tab">
                 <span class="athena__tab-label">Team Chat</span>
             </label>
         </div>
-        <div class="athena__actions">
-            <button id="clear-chat-btn" class="athena__action-button" style="display: none;" data-tekton-action="clear-chat" data-tekton-action-type="secondary">
-                <span class="athena__button-label">Clear</span>
-            </button>
-        </div>
     </div>
     
-    <!-- @landmark Content Area - Main content panels -->
-    <div class="athena__content" data-tekton-zone="content" data-tekton-scrollable="true" data-tekton-content="athena">
-        <!-- @landmark Graph Panel - Knowledge graph visualization -->
-        <div id="graph-panel" class="athena__panel" data-tekton-panel="graph" data-tekton-panel-for="Knowledge Graph" data-tekton-panel-component="athena" data-tekton-graph="visualization">
+    <!-- Content Area -->
+    <div class="athena__content">
+        <!-- Knowledge Graph Panel -->
+        <div id="graph-panel" class="athena__panel">
             <div class="athena__graph">
                 <div class="athena__control-bar">
-                    <div class="athena__search-container" data-tekton-search="graph-search">
-                        <input type="text" id="graph-search" class="athena__search-input" placeholder="Search entities..." data-tekton-input="graph-search" data-tekton-input-type="search">
-                        <button id="graph-search-btn" class="athena__search-button" data-tekton-action="search-graph" data-tekton-action-type="primary" data-tekton-button="graph-search">Search</button>
-                    </div>
-                    <div class="athena__filter-container" data-tekton-filter="entity-type">
-                        <select id="entity-type-filter" class="athena__filter-select" data-tekton-select="entity-type-filter" data-tekton-filter-type="entity">
-                            <option value="all">All Types</option>
-                            <option value="person">Person</option>
-                            <option value="project">Project</option>
-                            <option value="document">Document</option>
-                            <option value="concept">Concept</option>
-                            <option value="organization">Organization</option>
-                        </select>
-                        <button id="apply-filter-btn" class="athena__filter-button" data-tekton-action="apply-filter" data-tekton-action-type="primary" data-tekton-button="apply-filter">Apply</button>
+                    <div class="athena__search-container">
+                        <input type="text" placeholder="Search entities..." class="athena__search-input">
+                        <button class="athena__search-button">Search</button>
                     </div>
                 </div>
-                <div id="graph-container" class="athena__graph-container" data-tekton-visualization="knowledge-graph" data-tekton-viz-type="force-directed">
-                    <div id="graph-placeholder" class="athena__graph-placeholder" data-tekton-placeholder="graph">
-                        <div class="athena__placeholder-content">
-                            <h3 class="athena__placeholder-title">Loading Knowledge Graph...</h3>
-                            <div class="athena__loading-indicator">
-                                <div class="athena__spinner"></div>
-                            </div>
+                <div id="graph-container" class="athena__graph-container">
+                    <div id="graph-placeholder" class="athena__graph-placeholder">
+                        <div style="text-align: center; padding: 2rem;">
+                            <h2 style="color: #999;">Knowledge Graph</h2>
+                            <p style="color: #777;">Connect to Athena service to view graph</p>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
         
-        <!-- @landmark Entities Panel - Entity CRUD operations -->
-        <div id="entities-panel" class="athena__panel" data-tekton-panel="entities" data-tekton-panel-for="Entities" data-tekton-panel-component="athena" data-tekton-panel-active="false" data-tekton-entities="management">
+        <!-- Entities Panel -->
+        <div id="entities-panel" class="athena__panel">
             <div class="athena__entities">
                 <div class="athena__control-bar">
                     <div class="athena__search-container">
-                        <input type="text" id="entity-search" class="athena__search-input" placeholder="Search entities...">
-                        <button id="entity-search-btn" class="athena__search-button" data-tekton-action="search-entities" data-tekton-action-type="primary">Search</button>
-                    </div>
-                    <div class="athena__actions">
-                        <button id="add-entity-btn" class="athena__action-button" data-tekton-action="add-entity" data-tekton-action-type="primary">
-                            <span class="athena__button-icon">+</span>
-                            <span class="athena__button-label">Add Entity</span>
-                        </button>
+                        <input type="text" placeholder="Search entities..." class="athena__search-input">
+                        <button class="athena__search-button">Search</button>
                     </div>
                 </div>
-                <div class="athena__entity-list-container" data-tekton-list="entities">
-                    <div id="entity-list-loading" class="athena__loading-indicator" data-tekton-loading="entities">
-                        <div class="athena__spinner" data-tekton-spinner="entities"></div>
-                        <div class="athena__loading-text">Loading entities...</div>
-                    </div>
-                    <div id="entity-list-items" class="athena__entity-list" style="display: none;" data-tekton-entity-list="main">
-                        <!-- Entities will be loaded dynamically from API -->
+                <div class="athena__entity-list-container">
+                    <div id="entity-list-items" class="athena__entity-list">
+                        <div class="athena__empty-state">
+                            <p>No entities loaded. Connect to Athena service.</p>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
         
-        <!-- @landmark Query Builder Panel - Advanced entity search -->
-        <div id="query-panel" class="athena__panel" data-tekton-panel="query" data-tekton-panel-for="Query Builder" data-tekton-panel-component="athena" data-tekton-panel-active="false" data-tekton-query="builder">
+        <!-- Query Builder Panel -->
+        <div id="query-panel" class="athena__panel">
             <div class="athena__query-builder">
-                <h3 class="athena__section-title">Query Builder</h3>
-                <p class="athena__text">Construct queries to find entities and relationships in the knowledge graph.</p>
-
-                <div class="athena__query-form" data-tekton-form="query-builder">
-                    <div class="athena__form-group" data-tekton-form-group="entity-type">
-                        <label class="athena__form-label" data-tekton-label="entity-type">Entity Type</label>
-                        <select class="athena__form-select" id="entity-type-select" data-tekton-select="query-entity-type">
-                            <option value="any">Any Type</option>
-                            <option value="person">Person</option>
-                            <option value="project">Project</option>
-                            <option value="organization">Organization</option>
-                            <option value="document">Document</option>
-                            <option value="concept">Concept</option>
-                        </select>
-                    </div>
-
-                    <div class="athena__form-group" data-tekton-form-group="relationship-type">
-                        <label class="athena__form-label" data-tekton-label="relationship-type">Relationship Type</label>
-                        <select class="athena__form-select" id="relationship-type-select" data-tekton-select="query-relationship-type">
-                            <option value="any">Any Relationship</option>
-                            <option value="works_on">Works On</option>
-                            <option value="manages">Manages</option>
-                            <option value="member_of">Member Of</option>
-                            <option value="created">Created</option>
-                            <option value="related_to">Related To</option>
-                        </select>
-                    </div>
-
-                    <div class="athena__form-group" data-tekton-form-group="search-terms">
-                        <label class="athena__form-label" data-tekton-label="search-terms">Search Terms</label>
-                        <input type="text" class="athena__form-input" id="search-terms-input" placeholder="Enter search terms..." data-tekton-input="query-search-terms" data-tekton-input-type="text">
-                    </div>
-
-                    <div class="athena__form-group">
-                        <label class="athena__form-label">Additional Filters</label>
-                        <div class="athena__checkbox-group">
-                            <label class="athena__checkbox-label">
-                                <input type="checkbox" class="athena__checkbox" id="include-archived"> Include archived entities
-                            </label>
-                            <label class="athena__checkbox-label">
-                                <input type="checkbox" class="athena__checkbox" id="exact-match"> Exact match only
-                            </label>
-                        </div>
-                    </div>
-
-                    <div class="athena__form-actions">
-                        <button class="athena__button athena__button--secondary" id="clear-query-btn" data-tekton-action="clear-query" data-tekton-action-type="secondary">Clear</button>
-                        <button class="athena__button athena__button--primary" id="build-query-btn" data-tekton-action="build-query" data-tekton-action-type="primary">Build Query</button>
-                    </div>
-                </div>
-
-                <div class="athena__query-result" style="margin-top: 20px; display: none;" id="query-result-container" data-tekton-result="query">
-                    <h4 class="athena__result-title">Generated Query</h4>
-                    <div class="athena__code-block" id="generated-query" style="background: #333; padding: 15px; border-radius: 6px; font-family: monospace; white-space: pre-wrap;" data-tekton-code="query-display" data-tekton-language="json">
-                        <!-- Generated query will appear here -->
-                    </div>
-
-                    <div class="athena__form-actions" style="margin-top: 15px;">
-                        <button class="athena__button athena__button--secondary" id="copy-query-btn" data-tekton-action="copy-query" data-tekton-action-type="secondary">Copy Query</button>
-                        <button class="athena__button athena__button--primary" id="execute-query-btn" data-tekton-action="execute-query" data-tekton-action-type="primary">Execute Query</button>
+                <h3>Query Builder</h3>
+                <p>Build complex knowledge graph queries</p>
+            </div>
+        </div>
+        
+        <!-- Knowledge Chat Panel -->
+        <div id="chat-panel" class="athena__panel athena__panel--chat">
+            <div class="chat-interface">
+                <div class="chat-messages" id="athena-chat-messages">
+                    <div class="chat-message system-message">
+                        <strong>Athena:</strong> Hello! I'm Athena, your knowledge graph AI assistant. I specialize in understanding relationships, patterns, and connections across the Tekton system. How can I help you explore our knowledge today?
                     </div>
                 </div>
             </div>
         </div>
         
-        <!-- @landmark Knowledge Chat Panel - AI-powered knowledge queries -->
-        <div id="chat-panel" class="athena__panel" data-tekton-panel="chat" data-tekton-panel-for="Knowledge Chat" data-tekton-panel-component="athena" data-tekton-panel-active="false" data-tekton-chat-type="knowledge">
-            <div id="chat-messages" class="athena__chat-messages" data-tekton-messages="knowledge-chat" data-tekton-scrollable="true">
-                <!-- Welcome message -->
-                <div class="athena__message athena__message--system">
-                    <div class="athena__message-content">
-                        <div class="athena__message-text">
-                            <h3 class="athena__message-title">Welcome to Athena Knowledge Chat</h3>
-                            <p>You can ask questions about any entities in the knowledge graph. Try questions like:</p>
-                            <ul>
-                                <li>What do you know about [entity name]?</li>
-                                <li>How are [entity1] and [entity2] related?</li>
-                                <li>What projects is [person/team] working on?</li>
-                                <li>Summarize what we know about [topic]</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- @landmark Team Chat Panel - Cross-component communication -->
-        <div id="teamchat-panel" class="athena__panel" data-tekton-panel="teamchat" data-tekton-panel-for="Team Chat" data-tekton-panel-component="athena" data-tekton-panel-active="false" data-tekton-chat-type="team">
-            <div id="teamchat-messages" class="athena__chat-messages" data-tekton-messages="team-chat" data-tekton-scrollable="true">
-                <!-- Welcome message -->
-                <div class="athena__message athena__message--system">
-                    <div class="athena__message-content">
-                        <div class="athena__message-text">
-                            <h3 class="athena__message-title">Tekton Team Chat</h3>
-                            <p>This chat is shared across all Tekton components. Use this for team communication and coordination.</p>
-                        </div>
+        <!-- Team Chat Panel -->
+        <div id="teamchat-panel" class="athena__panel athena__panel--team">
+            <div class="chat-interface">
+                <div class="chat-messages" id="athena-teamchat-messages">
+                    <div class="chat-message system-message">
+                        <strong>System:</strong> Team Chat allows Athena to coordinate with other AI specialists about knowledge graph insights.
                     </div>
                 </div>
             </div>
         </div>
     </div>
     
-    <!-- @landmark Footer - Chat input interface -->
-    <div class="athena__footer" data-tekton-zone="footer" data-tekton-section="footer" data-tekton-footer="athena">
-        <div class="athena__chat-input-container" 
-             data-tekton-chat="athena-knowledge" 
-             data-tekton-chat-component="athena"
-             data-tekton-element="chat-input-container">
-            <div class="athena__chat-prompt" data-tekton-element="chat-prompt">></div>
+    <!-- Footer with Chat Input -->
+    <div class="athena__footer">
+        <div class="athena__chat-input-container">
+            <div class="athena__chat-prompt">></div>
             <input type="text" class="athena__chat-input" id="athena-chat-input"
-                   data-tekton-input="chat-input"
-                   data-tekton-input-type="chat"
-                   data-tekton-input-component="athena"
-                   placeholder="Enter chat message for Athena knowledge graph queries, entities or information"
-                   style="background-color: #1a1a2e !important;"
+                   placeholder="Chat with Athena - your knowledge graph AI assistant"
                    onkeydown="if(event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); athena_sendChat(); }">
-            <button class="athena__send-button" id="athena-send-button" onclick="athena_sendChat(); return false;"
-                    data-tekton-action="send-message"
-                    data-tekton-action-type="primary"
-                    data-tekton-action-component="athena">Send</button>
+            <button class="athena__send-button" id="athena-send-button" onclick="athena_sendChat(); return false;">Send</button>
         </div>
     </div>
 </div>
 
-<!-- @landmark Entity Form Modal - Create/Edit entity dialog -->
-<div id="entity-form-modal" class="athena__modal" style="display: none;" data-tekton-modal="entity-form" data-tekton-modal-component="athena">
-    <div class="athena__modal-content">
-        <div class="athena__modal-header">
-            <h3 class="athena__modal-title" id="entity-form-title">Add New Entity</h3>
-            <button class="athena__modal-close" onclick="closeEntityForm()">&times;</button>
-        </div>
-        <form id="entity-form" class="athena__form" data-tekton-form="entity-crud">
-            <div class="athena__form-group" data-tekton-form-group="entity-name">
-                <label for="entity-name" class="athena__form-label" data-tekton-label="entity-name">Name *</label>
-                <input type="text" id="entity-name" class="athena__form-input" required data-tekton-input="entity-name" data-tekton-input-type="text" data-tekton-required="true">
-            </div>
-            <div class="athena__form-group" data-tekton-form-group="entity-type">
-                <label for="entity-type" class="athena__form-label" data-tekton-label="entity-type">Type *</label>
-                <select id="entity-type" class="athena__form-select" required data-tekton-select="entity-type" data-tekton-required="true">
-                    <option value="">Select type...</option>
-                    <option value="person">Person</option>
-                    <option value="project">Project</option>
-                    <option value="document">Document</option>
-                    <option value="concept">Concept</option>
-                    <option value="organization">Organization</option>
-                </select>
-            </div>
-            <div class="athena__form-group" data-tekton-form-group="entity-description">
-                <label for="entity-description" class="athena__form-label" data-tekton-label="entity-description">Description</label>
-                <textarea id="entity-description" class="athena__form-textarea" rows="3" data-tekton-textarea="entity-description"></textarea>
-            </div>
-            <div class="athena__form-group" data-tekton-form-group="entity-properties">
-                <label for="entity-properties" class="athena__form-label" data-tekton-label="entity-properties">Additional Properties (JSON)</label>
-                <textarea id="entity-properties" class="athena__form-textarea" rows="3" placeholder='{"key": "value"}' data-tekton-textarea="entity-properties" data-tekton-format="json"></textarea>
-            </div>
-            <div class="athena__form-actions">
-                <button type="button" class="athena__form-button athena__form-button--secondary" onclick="closeEntityForm()">Cancel</button>
-                <button type="submit" class="athena__form-button athena__form-button--primary">Save Entity</button>
-            </div>
-        </form>
-    </div>
-</div>
-
-<!-- Add component-specific styles -->
 <style>
-    /* Athena component styles using BEM naming convention */
-    
-    /* Container - Full height with footer always visible */
-    .athena {
-        display: flex;
-        flex-direction: column;
-        height: 100%;
-        width: 100%;
-        background-color: var(--bg-primary, #1e1e2e);
-        color: var(--text-primary, #f0f0f0);
-        position: relative; /* Needed for absolute positioned footer */
-        min-height: 100%;
-    }
-    
-    /* Header */
-    .athena__header {
-        display: flex;
-        align-items: center;
-        padding: 10px 16px;
-        background-color: var(--bg-secondary, #252535);
-        border-bottom: 1px solid var(--border-color, #444444);
-        height: 46px; /* Standardized header height */
-    }
-    
-    .athena__title-container {
-        display: flex;
-        align-items: center;
-    }
-    
-    .athena__icon {
-        height: 30px;
-        width: auto;
-        margin-right: 12px;
-    }
-    
-    .athena__title {
-        margin: 0;
-        font-size: 1.2rem;
-        font-weight: 500;
-    }
-    
-    .athena__title-sub {
-        margin-left: 8px;
-        opacity: 0.8;
-        font-weight: normal;
-    }
-    
-    /* Menu Bar */
-    .athena__menu-bar {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 6px 16px;
-        background-color: var(--bg-secondary, #252535);
-        border-bottom: 1px solid var(--border-color, #444444);
-        height: 46px; /* Standardized menu bar height */
-    }
-    
-    .athena__tabs {
-        display: flex;
-        gap: 8px;
-    }
-    
-    .athena__tab {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        padding: 8px 16px;
-        background-color: transparent;
-        border: none;
-        border-bottom: 2px solid transparent;
-        color: var(--text-primary, #f0f0f0);
-        cursor: pointer;
-        transition: all 0.2s ease;
-    }
-    
-    .athena__tab:hover {
-        background-color: var(--bg-hover, #3a3a4a);
-    }
-    
-    .athena__tab--active {
-        border-bottom-color: var(--color-primary, #7B1FA2);
-        font-weight: 500;
-    }
-    
-    /* CSS-first tab switching */
-    #athena-tab-graph:checked ~ .athena .athena__tab[for="athena-tab-graph"],
-    #athena-tab-entities:checked ~ .athena .athena__tab[for="athena-tab-entities"],
-    #athena-tab-query:checked ~ .athena .athena__tab[for="athena-tab-query"],
-    #athena-tab-chat:checked ~ .athena .athena__tab[for="athena-tab-chat"],
-    #athena-tab-teamchat:checked ~ .athena .athena__tab[for="athena-tab-teamchat"] {
-        border-bottom-color: var(--color-primary, #7B1FA2);
-        font-weight: 500;
-    }
-    
-    /* Panel visibility based on radio buttons */
-    #athena-tab-graph:checked ~ .athena #graph-panel,
-    #athena-tab-entities:checked ~ .athena #entities-panel,
-    #athena-tab-query:checked ~ .athena #query-panel,
-    #athena-tab-chat:checked ~ .athena #chat-panel,
-    #athena-tab-teamchat:checked ~ .athena #teamchat-panel {
-        display: block;
-    }
-    
-    /* Clear button visibility for chat tabs */
-    #athena-tab-chat:checked ~ .athena #clear-chat-btn,
-    #athena-tab-teamchat:checked ~ .athena #clear-chat-btn {
-        display: block !important;
-    }
-    
-    .athena__actions {
-        display: flex;
-        gap: 8px;
-    }
-    
-    .athena__action-button {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        padding: 6px 12px;
-        background-color: var(--bg-tertiary, #333345);
-        border: 1px solid var(--border-color, #444444);
-        border-radius: 4px;
-        color: var(--text-primary, #f0f0f0);
-        cursor: pointer;
-        transition: all 0.2s ease;
-    }
-    
-    .athena__action-button:hover {
-        background-color: var(--bg-hover, #3a3a4a);
-    }
-    
-    /* Content Area - Scrollable between menu and footer */
-    .athena__content {
-        flex: 1;
-        overflow: hidden;
-        position: relative;
-        margin-bottom: 70px; /* Account for footer height */
-    }
-    
-    .athena__panel {
-        display: none;
-        height: 100%;
-        width: 100%;
-        overflow-y: auto; /* Scroll content when needed */
-        overflow-x: hidden;
-    }
-    
-    
-    /* Control Bar */
-    .athena__control-bar {
-        display: flex;
-        justify-content: space-between;
-        padding: 16px;
-        background-color: var(--bg-secondary, #252535);
-        border-bottom: 1px solid var(--border-color, #444444);
-        height: 46px; /* Standard control bar height */
-    }
-    
-    .athena__search-container {
-        display: flex;
-        gap: 8px;
-    }
-    
-    .athena__search-input {
-        padding: 8px 12px;
-        min-width: 260px;
-        background-color: var(--bg-tertiary, #333345);
-        border: 1px solid var(--border-color, #444444);
-        border-radius: 4px;
-        color: var(--text-primary, #f0f0f0);
-    }
-    
-    .athena__filter-container {
-        display: flex;
-        gap: 8px;
-    }
-    
-    .athena__filter-select {
-        padding: 8px 12px;
-        background-color: var(--bg-tertiary, #333345);
-        border: 1px solid var(--border-color, #444444);
-        border-radius: 4px;
-        color: var(--text-primary, #f0f0f0);
-    }
-    
-    .athena__filter-button,
-    .athena__search-button {
-        padding: 8px 12px;
-        background-color: var(--bg-tertiary, #333345);
-        border: 1px solid var(--border-color, #444444);
-        border-radius: 4px;
-        color: var(--text-primary, #f0f0f0);
-        cursor: pointer;
-    }
-    
-    /* Graph Container */
-    .athena__graph-container {
-        height: calc(100% - 68px);
-        overflow: hidden;
-        position: relative;
-    }
-    
-    .athena__graph-placeholder {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100%;
-        width: 100%;
-        padding: 20px;
-        text-align: center;
-    }
-    
-    /* Entity List */
-    .athena__entity-list-container {
-        padding: 16px;
-    }
-    
-    .athena__entity-list {
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
-    }
-    
-    .athena__entity-item {
-        display: flex;
-        align-items: center;
-        padding: 12px;
-        background-color: var(--bg-secondary, #252535);
-        border: 1px solid var(--border-color, #444444);
-        border-radius: 8px;
-        transition: all 0.2s ease;
-    }
-    
-    .athena__entity-item:hover {
-        background-color: var(--bg-hover, #3a3a4a);
-    }
-    
-    .athena__entity-type-icon {
-        font-size: 24px;
-        margin-right: 16px;
-        padding: 8px;
-        border-radius: 8px;
-        background-color: var(--bg-tertiary, #333345);
-    }
-    
-    .athena__entity-details {
-        flex: 1;
-    }
-    
-    .athena__entity-name {
-        font-weight: 500;
-        margin-bottom: 4px;
-    }
-    
-    .athena__entity-type {
-        color: var(--text-secondary, #aaaaaa);
-        margin-bottom: 4px;
-        font-size: 0.9em;
-    }
-    
-    .athena__entity-properties {
-        color: var(--text-secondary, #aaaaaa);
-        font-size: 0.9em;
-    }
-    
-    .athena__entity-actions {
-        display: flex;
-        gap: 8px;
-    }
-    
-    .athena__entity-action-btn {
-        padding: 6px 12px;
-        background-color: var(--bg-tertiary, #333345);
-        border: 1px solid var(--border-color, #444444);
-        border-radius: 4px;
-        color: var(--text-primary, #f0f0f0);
-        cursor: pointer;
-        font-size: 0.85em;
-        transition: all 0.2s ease;
-    }
-    
-    .athena__entity-action-btn:hover {
-        background-color: var(--bg-hover, #3a3a4a);
-        transform: translateY(-1px);
-    }
-    
-    /* Primary action button (View) */
-    .athena__entity-action-btn[data-action="view"] {
-        background-color: #7B1FA2;
-        border-color: #7B1FA2;
-        color: white;
-    }
-    
-    .athena__entity-action-btn[data-action="view"]:hover {
-        background-color: #6A1B9A;
-        border-color: #6A1B9A;
-    }
-    
-    /* Secondary action button (Edit) */
-    .athena__entity-action-btn[data-action="edit"] {
-        background-color: #1976D2;
-        border-color: #1976D2;
-        color: white;
-    }
-    
-    .athena__entity-action-btn[data-action="edit"]:hover {
-        background-color: #1565C0;
-        border-color: #1565C0;
-    }
-    
-    /* Chat Panel */
-    #chat-panel, #teamchat-panel {
-        position: relative; /* Needed for footer positioning */
-        overflow: hidden; /* Prevent double scrollbars */
-        height: 100%; /* Ensure full height */
-    }
+/* Athena Component Styles - Following Terma's BEM Pattern */
 
-    /* Chat Messages */
-    .athena__chat-messages {
-        height: calc(100% - 70px); /* Full height minus footer */
-        overflow-y: auto;
-        padding: 16px;
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
-    }
-    
-    /* Messages - Following Apollo's improved styling pattern */
-    .athena__message {
-        margin-bottom: 16px;
-        display: flex;
-        align-items: flex-start;
-    }
-    
-    .athena__message--user {
-        justify-content: flex-end;
-    }
-    
-    .athena__message--ai {
-        justify-content: flex-start;
-    }
-    
-    .athena__message--system {
-        justify-content: center;
-    }
-    
-    .athena__message-content {
-        max-width: 70%;
-        padding: 12px 16px;
-        border-radius: 8px;
-        background-color: var(--bg-secondary, #252535);
-        color: var(--text-primary, #f0f0f0);
-    }
-    
-    /* System messages */
-    .athena__message--system .athena__message-content {
-        background-color: transparent;
-        color: var(--text-secondary, #a0a0a0);
-        font-style: italic;
-        text-align: center;
-    }
-    
-    /* User messages */
-    .athena__message--user .athena__message-content {
-        background-color: rgba(123, 31, 162, 0.1);
-        border: 1px solid #7B1FA2;
-        color: var(--text-primary, #f0f0f0);
-    }
-    
-    /* AI messages - Athena's purple theme */
-    .athena__message--ai .athena__message-content {
-        background-color: rgba(123, 31, 162, 0.05);
-        border-left: 3px solid #7B1FA2;
-    }
-    
-    .athena__message-content strong {
-        display: inline-block;
-        margin-right: 8px;
-        font-weight: 600;
-        color: #7B1FA2;
-    }
-    
-    /* Message content styling */
-    .athena__message-text ul {
-        list-style: none;
-        padding-left: 0;
-        margin: 10px 0 0 0;
-    }
-    
-    .athena__message-text ul li {
-        padding: 4px 0;
-        padding-left: 20px;
-        position: relative;
-    }
-    
-    .athena__message-text ul li:before {
-        content: "•";
-        color: #7B1FA2;
-        font-weight: bold;
-        position: absolute;
-        left: 0;
-    }
-    
-    /* Chat Input - ALWAYS VISIBLE AT BOTTOM */
-    .athena__footer {
-        background-color: var(--bg-secondary, #252535);
-        border-top: 1px solid var(--border-color, #444444);
-        padding: 12px 16px;
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        height: 70px; /* Fixed height to match chat area */
-        z-index: 10; /* Ensure it's above content */
-        display: block !important; /* ALWAYS VISIBLE */
-    }
-    
-    .athena__chat-input-container {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        width: 100%;
-    }
-    
-    .athena__chat-prompt {
-        font-size: 18px;
-        font-weight: bold;
-        color: #7B1FA2; /* Athena purple */
-    }
-    
-    .athena__chat-input {
-        flex: 1;
-        height: 44px;
-        padding: 8px 16px;
-        background-color: #1a1a2e !important;
-        border: 1px solid #444444;
-        border-radius: 4px;
-        color: #f0f0f0;
-        font-size: 14px;
-        outline: none;
-    }
-    
-    .athena__chat-input::placeholder {
-        color: #666666;
-        opacity: 1;
-    }
-    
-    .athena__chat-input:focus {
-        border-color: #7B1FA2;
-        box-shadow: 0 0 0 1px rgba(123, 31, 162, 0.2);
-    }
-    
-    .athena__send-button {
-        height: 44px;
-        padding: 0 20px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background-color: #7B1FA2; /* Athena purple */
-        border: none;
-        border-radius: 8px;
-        color: white;
-        font-weight: 500;
-        cursor: pointer;
-        transition: all 0.2s ease;
-    }
-    
-    .athena__send-button:hover {
-        background-color: #6A1B9A; /* Darker purple on hover */
-        transform: translateY(-1px);
-        box-shadow: 0 2px 8px rgba(123, 31, 162, 0.3);
-    }
-    
-    .athena__send-button:active {
-        transform: translateY(0);
-        box-shadow: none;
-    }
-    
-    /* Loading Indicator */
-    .athena__loading-indicator {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        height: 200px;
-    }
+/* Container */
+.athena {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+    background-color: var(--bg-primary, #1e1e2e);
+    color: var(--text-primary, #f0f0f0);
+    /* No absolute positioning - proper component containment */
+}
 
-    .athena__spinner {
-        width: 40px;
-        height: 40px;
-        border: 4px solid rgba(255, 255, 255, 0.1);
-        border-radius: 50%;
-        border-top: 4px solid var(--color-primary, #7B1FA2);
-        animation: athena-spin 1s linear infinite;
-        margin-bottom: 16px;
-    }
+/* Header */
+.athena__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 16px;
+    background-color: var(--bg-secondary, #252535);
+    border-bottom: 1px solid var(--border-color, #444444);
+}
 
-    /* Query Builder Form Styles */
-    .athena__query-builder {
-        padding: 20px;
-    }
+.athena__title-container {
+    display: flex;
+    align-items: center;
+}
 
-    .athena__section-title {
-        margin-bottom: 16px;
-        font-size: 24px;
-        color: var(--text-primary, #f0f0f0);
-    }
+.athena__icon {
+    height: 30px;
+    width: auto;
+    margin-right: 12px;
+}
 
-    .athena__text {
-        margin-bottom: 24px;
-        color: var(--text-secondary, #aaaaaa);
-    }
+.athena__title {
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: 500;
+}
 
-    .athena__query-form {
-        display: flex;
-        flex-direction: column;
-        gap: 16px;
-        margin-bottom: 24px;
-    }
+.athena__title-main {
+    font-weight: 600;
+}
 
-    .athena__form-group {
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-    }
+.athena__title-sub {
+    margin-left: 8px;
+    opacity: 0.8;
+    font-weight: normal;
+}
 
-    .athena__form-label {
-        font-weight: 500;
-        color: var(--text-primary, #f0f0f0);
-    }
+/* Menu Bar */
+.athena__menu-bar {
+    display: flex;
+    background-color: var(--bg-secondary, #252535);
+    border-bottom: 1px solid var(--border-color, #444444);
+    padding: 0 16px;
+}
 
-    .athena__form-select,
-    .athena__form-input {
-        padding: 10px;
-        background-color: var(--bg-tertiary, #333345);
-        border: 1px solid var(--border-color, #444444);
-        border-radius: 6px;
-        color: var(--text-primary, #f0f0f0);
-        font-size: 14px;
-    }
+.athena__tabs {
+    display: flex;
+    gap: 8px;
+}
 
-    .athena__checkbox-group {
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-    }
+.athena__tab {
+    padding: 16px;
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    color: var(--text-secondary, #aaaaaa);
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
 
-    .athena__checkbox-label {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        color: var(--text-primary, #f0f0f0);
-    }
+.athena__tab:hover {
+    color: var(--text-primary, #f0f0f0);
+    background-color: rgba(123, 31, 162, 0.05);
+}
 
-    .athena__form-actions {
-        display: flex;
-        gap: 12px;
-        justify-content: flex-end;
-        margin-top: 8px;
-    }
+/* Active state handled by radio button logic */
 
-    .athena__button {
-        padding: 10px 16px;
-        border: none;
-        border-radius: 6px;
-        font-weight: 500;
-        cursor: pointer;
-        transition: all 0.2s ease;
-    }
+/* Content Area */
+.athena__content {
+    flex: 1;
+    overflow: hidden;
+    position: relative;
+    padding-bottom: 70px; /* Account for footer height */
+}
 
-    .athena__button--primary {
-        background-color: var(--color-primary, #7B1FA2);
-        color: white;
-    }
+/* Panel styling - hidden by default */
+.athena__panel {
+    display: none;
+    height: 100%;
+    overflow: auto;
+    padding: 0;
+    position: relative;
+}
 
-    .athena__button--primary:hover {
-        background-color: var(--color-primary-hover, #6A1B9A);
-    }
+/* Radio button logic for tab switching */
+#athena-tab-graph:checked ~ .athena #graph-panel,
+#athena-tab-entities:checked ~ .athena #entities-panel,
+#athena-tab-query:checked ~ .athena #query-panel {
+    display: block;
+}
 
-    .athena__button--secondary {
-        background-color: var(--bg-tertiary, #333345);
-        border: 1px solid var(--border-color, #444444);
-        color: var(--text-primary, #f0f0f0);
-    }
+#athena-tab-chat:checked ~ .athena .athena__panel--chat,
+#athena-tab-teamchat:checked ~ .athena .athena__panel--team {
+    display: flex;
+    flex-direction: column;
+}
 
-    .athena__button--secondary:hover {
-        background-color: var(--bg-hover, #3a3a4a);
-    }
+/* Active tab styling */
+#athena-tab-graph:checked ~ .athena .athena__tab[for="athena-tab-graph"],
+#athena-tab-entities:checked ~ .athena .athena__tab[for="athena-tab-entities"],
+#athena-tab-query:checked ~ .athena .athena__tab[for="athena-tab-query"],
+#athena-tab-chat:checked ~ .athena .athena__tab[for="athena-tab-chat"],
+#athena-tab-teamchat:checked ~ .athena .athena__tab[for="athena-tab-teamchat"] {
+    color: var(--text-primary, #f0f0f0);
+    border-bottom-color: #7B1FA2;
+    background-color: rgba(123, 31, 162, 0.05);
+}
 
-    .athena__result-title {
-        margin-bottom: 12px;
-        font-size: 18px;
-        color: var(--text-primary, #f0f0f0);
-    }
+/* Control Bar */
+.athena__control-bar {
+    display: flex;
+    gap: 12px;
+    padding: 12px 16px;
+    background: var(--bg-secondary, #252535);
+    border-bottom: 1px solid var(--border-color, #444444);
+    align-items: center;
+    margin: 0;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
 
-    @keyframes athena-spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
-    }
-    
-    /* Modal Styles */
-    .athena__modal {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.7);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 1000;
-    }
-    
-    .athena__modal-content {
-        background-color: var(--bg-secondary, #252535);
-        border-radius: 8px;
-        max-width: 500px;
-        width: 90%;
-        max-height: 80vh;
-        overflow-y: auto;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-    }
-    
-    .athena__modal-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 20px;
-        border-bottom: 1px solid var(--border-color, #444444);
-    }
-    
-    .athena__modal-title {
-        margin: 0;
-        font-size: 20px;
-        color: var(--text-primary, #f0f0f0);
-    }
-    
-    .athena__modal-close {
-        background: none;
-        border: none;
-        color: var(--text-secondary, #aaaaaa);
-        font-size: 24px;
-        cursor: pointer;
-        padding: 0;
-        width: 30px;
-        height: 30px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-    
-    .athena__modal-close:hover {
-        color: var(--text-primary, #f0f0f0);
-    }
-    
-    /* Form Styles */
-    .athena__form {
-        padding: 20px;
-    }
-    
-    .athena__form-group {
-        margin-bottom: 20px;
-    }
-    
-    .athena__form-label {
-        display: block;
-        margin-bottom: 8px;
-        color: var(--text-primary, #f0f0f0);
-        font-weight: 500;
-    }
-    
-    .athena__form-input,
-    .athena__form-select,
-    .athena__form-textarea {
-        width: 100%;
-        padding: 10px 12px;
-        background-color: var(--bg-tertiary, #1a1a2e);
-        border: 1px solid var(--border-color, #444444);
-        border-radius: 4px;
-        color: var(--text-primary, #f0f0f0);
-        font-family: inherit;
-        font-size: 14px;
-    }
-    
-    .athena__form-input:focus,
-    .athena__form-select:focus,
-    .athena__form-textarea:focus {
-        outline: none;
-        border-color: var(--primary-color, #7B1FA2);
-    }
-    
-    .athena__form-textarea {
-        resize: vertical;
-    }
-    
-    .athena__form-actions {
-        display: flex;
-        justify-content: flex-end;
-        gap: 12px;
-        margin-top: 24px;
-        padding-top: 20px;
-        border-top: 1px solid var(--border-color, #444444);
-    }
-    
-    .athena__form-button {
-        padding: 10px 20px;
-        border: none;
-        border-radius: 4px;
-        font-weight: 500;
-        cursor: pointer;
-        transition: all 0.2s ease;
-    }
-    
-    .athena__form-button--primary {
-        background-color: var(--primary-color, #7B1FA2);
-        color: white;
-    }
-    
-    .athena__form-button--primary:hover {
-        background-color: #6A1B9A;
-    }
-    
-    .athena__form-button--secondary {
-        background-color: transparent;
-        color: var(--text-secondary, #aaaaaa);
-        border: 1px solid var(--border-color, #444444);
-    }
-    
-    .athena__form-button--secondary:hover {
-        background-color: var(--bg-hover, #3a3a4a);
-        color: var(--text-primary, #f0f0f0);
-    }
-    
-    /* Empty and error states */
-    .athena__empty-state,
-    .athena__error-state {
-        text-align: center;
-        padding: 40px 20px;
-        color: var(--text-secondary, #a0a0a0);
-        font-size: 0.9rem;
-    }
-    
-    .athena__error-state {
-        color: #ff6b6b;
-    }
-    
-    /* Danger button style */
-    .athena__entity-action-btn--danger {
-        color: #ff6b6b;
-        border-color: #ff6b6b;
-    }
-    
-    .athena__entity-action-btn--danger:hover {
-        background-color: #ff6b6b;
-        color: white;
-    }
+/* Graph Panel */
+.athena__graph {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.athena__graph-container {
+    flex: 1;
+    background: #000000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 16px;
+    border-radius: 8px;
+}
+
+/* Entities Panel */
+.athena__entities {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.athena__entity-list-container {
+    flex: 1;
+    background: #000000;
+    border-radius: 8px;
+    padding: 16px;
+    margin: 16px;
+    overflow-y: auto;
+}
+
+/* Query Builder */
+.athena__query-builder {
+    padding: 24px;
+    margin: 16px;
+    background: #000000;
+    border-radius: 8px;
+    text-align: center;
+}
+
+/* Search */
+.athena__search-container {
+    display: flex;
+    gap: 8px;
+    flex: 1;
+}
+
+.athena__search-input {
+    flex: 1;
+    padding: 4px 12px;
+    background: var(--bg-tertiary, #1a1a2a);
+    border: 1px solid var(--border-color, #444444);
+    border-radius: 4px;
+    color: var(--text-primary, #f0f0f0);
+    height: 28px;
+}
+
+.athena__search-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px 12px;
+    background-color: #7B1FA2;
+    border: 1px solid #8E24AA;
+    border-radius: 4px;
+    color: #ffffff;
+    cursor: pointer;
+    height: 26px;
+    font-size: 13px;
+}
+
+/* Chat Interface */
+.chat-interface {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.chat-messages {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    overflow-y: auto;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.chat-message {
+    margin-bottom: 12px;
+    padding: 8px 12px;
+    border-radius: 4px;
+    background-color: transparent;
+    position: relative;
+}
+
+.chat-message strong {
+    display: inline-block;
+    margin-right: 8px;
+    font-weight: 600;
+}
+
+/* System messages */
+.chat-message.system-message {
+    background-color: rgba(123, 31, 162, 0.05);
+    border-left: 3px solid #7B1FA2;
+    font-style: italic;
+}
+
+.chat-message.system-message strong {
+    color: #7B1FA2;
+}
+
+/* User messages */
+.chat-message.user-message {
+    background-color: rgba(76, 175, 80, 0.05);
+    border-left: 3px solid #4CAF50;
+    margin-left: 0;
+}
+
+.chat-message.user-message strong {
+    color: #4CAF50;
+}
+
+/* AI messages */
+.chat-message.ai-message {
+    background-color: rgba(123, 31, 162, 0.05);
+    border-left: 3px solid #7B1FA2;
+    margin-right: 0;
+}
+
+.chat-message.ai-message strong {
+    color: #7B1FA2;
+}
+
+/* Footer with Chat Input */
+.athena__footer {
+    background-color: var(--bg-secondary, #252535);
+    border-top: 1px solid var(--border-color, #444444);
+    padding: 12px 16px;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 70px; /* Fixed height to match chat area */
+}
+
+.athena__chat-input-container {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+}
+
+.athena__chat-prompt {
+    font-size: 18px;
+    font-weight: bold;
+    color: #7B1FA2; /* Purple for Athena */
+}
+
+.athena__chat-input {
+    flex: 1;
+    height: 44px;
+    padding: 8px 16px;
+    background-color: var(--bg-tertiary, #1a1a2a);
+    border: 1px solid var(--border-color, #444444);
+    border-radius: 8px;
+    color: var(--text-primary, #f0f0f0);
+    font-size: 14px;
+    transition: border-color 0.2s ease;
+}
+
+.athena__chat-input:focus {
+    outline: none;
+    border-color: #7B1FA2;
+}
+
+.athena__chat-input::placeholder {
+    color: var(--text-secondary, #888888);
+}
+
+.athena__send-button {
+    padding: 12px 24px;
+    background-color: #7B1FA2;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background-color 0.3s ease;
+}
+
+.athena__send-button:hover {
+    background-color: #8E24AA;
+}
 </style>
 
-<!-- Include Tekton URL utilities and Athena Service -->
-<script src="/scripts/tekton-urls.js"></script>
-<script src="/scripts/athena-service.js"></script>
-<!-- Athena service loaded from athena-service.js -->
-
-<!-- D3.js for graph visualization -->
-<script src="https://d3js.org/d3.v7.min.js"></script>
-
-<!-- @landmark Component Scripts - JavaScript functionality -->
-<script type="text/javascript">
-// @landmark-section Component initialization and protection
-// SIMPLIFIED COMPONENT SCRIPT - FULLY SELF-CONTAINED
-// This version minimizes interference with other components
-
-// IMMEDIATELY SET UP UI MANAGER PROTECTION
-// Tell UI Manager to ignore this component - must be done IMMEDIATELY to avoid races
-if (window.uiManager) {
-    window.uiManager._ignoreComponent = 'athena';
-    console.log('[ATHENA] Set UI Manager to ignore athena component');
-}
-
-// CSS-first navigation - no JavaScript tab switching needed
-// The radio buttons and CSS handle all tab switching automatically
-
-// CHAT CLEARING FUNCTION
-window.athena_clearChat = function() {
-    console.log('[ATHENA] Clear chat clicked');
+<script>
+// SIMPLE ATHENA CHAT
+window.athena_sendChat = function() {
+    var input = document.getElementById('athena-chat-input');
+    var message = input.value.trim();
     
-    try {
-        // Get active tab ID within athena container
-        const athenaContainer = document.querySelector('.athena');
-        if (!athenaContainer) {
-            console.error('[ATHENA] Clear Chat: Cannot find athena container');
-            return false;
-        }
-        
-        const activeTab = athenaContainer.querySelector('.athena__tab--active');
-        const tabId = activeTab ? activeTab.getAttribute('data-tab') : '';
-        
-        if (tabId === 'chat' || tabId === 'teamchat') {
-            // Get message container within athena container only
-            const panel = athenaContainer.querySelector('#' + tabId + '-messages');
-            if (panel) {
-                // Keep welcome message
-                const welcomeMsg = panel.querySelector('.athena__message--system');
-                if (welcomeMsg) {
-                    panel.innerHTML = '';
-                    panel.appendChild(welcomeMsg);
-                    console.log('[ATHENA] Cleared chat, kept welcome message');
-                } else {
-                    panel.innerHTML = '';
-                    console.log('[ATHENA] Cleared chat completely');
-                }
-            }
-        }
-    } catch (err) {
-        console.error('[ATHENA] Error clearing chat:', err);
-    }
+    if (!message) return;
     
-    return false; // Stop event propagation
-};
-
-// LOAD COMPONENT
-// Load after defining tab switching to ensure it's available
-function athena_loadComponent() {
-    console.log('[ATHENA] Loading component script...');
+    // Determine which tab is active
+    var knowledgeChatActive = document.getElementById('athena-tab-chat').checked;
+    var teamChatActive = document.getElementById('athena-tab-teamchat').checked;
     
-    const timestamp = new Date().getTime();
-    const scriptPath = `/scripts/athena/athena-component.js?t=${timestamp}`;
-    
-    const script = document.createElement('script');
-    script.src = scriptPath;
-    script.async = false;
-    script.onload = function() {
-        console.log('[ATHENA] Component script loaded successfully');
-        
-        if (window.athenaComponent && typeof window.athenaComponent.init === 'function') {
-            try {
-                window.athenaComponent.init();
-                console.log('[ATHENA] Component initialized');
-            } catch (err) {
-                console.error('[ATHENA] Component initialization error:', err);
-            }
-        } else {
-            console.warn('[ATHENA] Component init function not found');
-        }
-    };
-    script.onerror = function() {
-        console.error('[ATHENA] Failed to load component script');
-    };
-    
-    document.body.appendChild(script);
-}
-
-// HTML PANEL PROTECTION
-// Setup explicit protection for the HTML panel to prevent it being hidden
-function athena_protectHtmlPanel() {
-    const htmlPanel = document.getElementById('html-panel');
-    if (!htmlPanel) {
-        console.error('[ATHENA] Cannot find HTML panel to protect');
-        return;
-    }
-    
-    console.log('[ATHENA] Protecting HTML panel from being hidden');
-    htmlPanel.style.display = 'block'; // Force it to be visible
-    
-    // Store the original display value
-    if (!htmlPanel.hasOwnProperty('_athenaOriginalDisplay')) {
-        Object.defineProperty(htmlPanel, '_athenaOriginalDisplay', {
-            value: 'block',
-            writable: true,
-            configurable: true
-        });
-    }
-    
-    // Only define the getter/setter if it hasn't already been defined by this component
-    if (!htmlPanel.style._athenaProtected) {
-        // Mark the display property as protected by this component
-        Object.defineProperty(htmlPanel.style, '_athenaProtected', {
-            value: true,
-            writable: false,
-            configurable: true
-        });
-        
-        // Protect the display property
-        Object.defineProperty(htmlPanel.style, 'display', {
-            get: function() { 
-                return htmlPanel._athenaOriginalDisplay; 
-            },
-            set: function(value) {
-                console.log(`[ATHENA] Intercepted attempt to set HTML panel display to: ${value}`);
-                if (value === 'none') {
-                    console.log('[ATHENA] Blocked attempt to hide HTML panel');
-                    htmlPanel._athenaOriginalDisplay = 'block';
-                } else {
-                    htmlPanel._athenaOriginalDisplay = value;
-                }
-            },
-            configurable: true
-        });
-    }
-}
-
-// SETUP DONE AFTER PAGE LOAD
-// This ensures the functions are available before the tab events need them
-window.addEventListener('DOMContentLoaded', function() {
-    console.log('[ATHENA] DOM loaded, setting up Athena component');
-    athena_protectHtmlPanel();
-    athena_loadComponent();
-});
-
-// IMMEDIATE PROTECTION
-// In case the DOM is already loaded
-if (document.readyState === 'complete' || document.readyState === 'interactive') {
-    console.log('[ATHENA] Document already loaded, setting up Athena component immediately');
-    athena_protectHtmlPanel();
-    athena_loadComponent();
-}
-
-// @landmark-section Chat functionality - Knowledge and team messaging
-// Chat functionality - Using immediate execution pattern
-(function() {
-    'use strict';
-    console.log('[ATHENA] Setting up chat functionality');
-    
-    // Make chat function globally available
-    window.athena_sendChat = function() {
-        console.log('[ATHENA] Send chat triggered');
-        const input = document.getElementById('athena-chat-input');
-        const message = input.value.trim();
-        
-        if (!message) {
-            console.log('[ATHENA] Empty message, ignoring');
-            return;
-        }
-        
-        // Determine which tab is active - check the radio inputs
-        const knowledgeChatRadio = document.getElementById('athena-tab-chat');
-        const teamChatRadio = document.getElementById('athena-tab-teamchat');
-        const knowledgeChatActive = knowledgeChatRadio && knowledgeChatRadio.checked;
-        const teamChatActive = teamChatRadio && teamChatRadio.checked;
-        
-        // Only proceed if we're on a chat tab
-        if (!knowledgeChatActive && !teamChatActive) {
-            console.log('[ATHENA] Not on a chat tab, ignoring');
-            return;
-        }
-        
-        const chatType = knowledgeChatActive ? 'chat' : 'teamchat';
-        const messagesContainer = document.getElementById(`${chatType}-messages`);
-        
-        console.log('[ATHENA] Chat type:', chatType, 'Active:', knowledgeChatActive);
+    if (knowledgeChatActive) {
+        // Knowledge Chat
+        var messagesContainer = document.getElementById('athena-chat-messages');
         
         // Add user message
-        const userMessageDiv = document.createElement('div');
-        userMessageDiv.className = 'athena__message athena__message--user';
-        userMessageDiv.innerHTML = `<div class="athena__message-content"><div class="athena__message-text">${message}</div></div>`;
+        var userMessageDiv = document.createElement('div');
+        userMessageDiv.className = 'chat-message user-message';
+        userMessageDiv.innerHTML = message;
         messagesContainer.appendChild(userMessageDiv);
         
         // Clear input
@@ -1242,1062 +494,65 @@ if (document.readyState === 'complete' || document.readyState === 'interactive')
         messagesContainer.scrollTop = messagesContainer.scrollHeight;
         
         // Send to backend
-        if (chatType === 'chat') {
-            // Direct message to athena
-            if (window.AIChat) {
-                console.log('[ATHENA] Sending message to Athena AI');
-                window.AIChat.sendMessage('athena', message)
-                    .then(response => {
-                        console.log('[ATHENA] Received response:', response);
-                        const aiMessageDiv = document.createElement('div');
-                        aiMessageDiv.className = 'athena__message athena__message--ai';
-                        aiMessageDiv.innerHTML = `<div class="athena__message-content"><div class="athena__message-text"><strong>Athena:</strong> ${response.content}</div></div>`;
-                        messagesContainer.appendChild(aiMessageDiv);
-                        messagesContainer.scrollTop = messagesContainer.scrollHeight;
-                    })
-                    .catch(err => {
-                        console.error('[ATHENA] Failed to send message:', err);
-                        const errorDiv = document.createElement('div');
-                        errorDiv.className = 'athena__message athena__message--system';
-                        errorDiv.innerHTML = `<div class="athena__message-content"><div class="athena__message-text"><strong>System:</strong> Failed to connect to Athena AI</div></div>`;
-                        messagesContainer.appendChild(errorDiv);
-                        messagesContainer.scrollTop = messagesContainer.scrollHeight;
-                    });
-            } else {
-                console.warn('[ATHENA] AIChat not available');
-                const errorDiv = document.createElement('div');
-                errorDiv.className = 'athena__message athena__message--system';
-                errorDiv.innerHTML = `<div class="athena__message-content"><div class="athena__message-text"><strong>System:</strong> AI Chat service not available</div></div>`;
-                messagesContainer.appendChild(errorDiv);
-                messagesContainer.scrollTop = messagesContainer.scrollHeight;
-            }
-        } else {
-            // Team chat
-            if (window.AIChat) {
-                console.log('[ATHENA] Sending team chat message');
-                window.AIChat.teamChat(message, 'athena')
-                    .then(data => {
-                        console.log('[ATHENA] Team chat response:', data);
-                        // Display team responses
-                        if (data && data.responses && data.responses.length > 0) {
-                            data.responses.forEach(resp => {
-                                const aiMessageDiv = document.createElement('div');
-                                aiMessageDiv.className = 'athena__message athena__message--ai';
-                                const sender = resp.socket_id ? 
-                                    resp.socket_id.replace('-ai', '').charAt(0).toUpperCase() + 
-                                    resp.socket_id.replace('-ai', '').slice(1) : 'AI';
-                                aiMessageDiv.innerHTML = `<div class="athena__message-content"><div class="athena__message-text"><strong>${sender}:</strong> ${resp.content || resp.message || 'No response'}</div></div>`;
-                                messagesContainer.appendChild(aiMessageDiv);
-                            });
-                            messagesContainer.scrollTop = messagesContainer.scrollHeight;
-                        } else if (data) {
-                            // Fallback for different response format
-                            console.log('[ATHENA] Alternative response format:', data);
-                            const aiMessageDiv = document.createElement('div');
-                            aiMessageDiv.className = 'athena__message athena__message--system';
-                            aiMessageDiv.innerHTML = `<div class="athena__message-content"><div class="athena__message-text"><strong>System:</strong> Team chat response received but format unexpected</div></div>`;
+        if (window.AIChat) {
+            window.AIChat.sendMessage('athena', message)
+                .then(function(response) {
+                    var aiMessageDiv = document.createElement('div');
+                    aiMessageDiv.className = 'chat-message ai-message';
+                    aiMessageDiv.innerHTML = '<strong>Athena:</strong> ' + response.content;
+                    messagesContainer.appendChild(aiMessageDiv);
+                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                })
+                .catch(function(err) {
+                    console.error('Failed to send message:', err);
+                    var errorDiv = document.createElement('div');
+                    errorDiv.className = 'chat-message system-message';
+                    errorDiv.innerHTML = '<strong>System:</strong> Failed to connect to Athena AI';
+                    messagesContainer.appendChild(errorDiv);
+                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                });
+        }
+    } else if (teamChatActive) {
+        // Team Chat
+        var messagesContainer = document.getElementById('athena-teamchat-messages');
+        
+        // Add broadcast message
+        var userMessageDiv = document.createElement('div');
+        userMessageDiv.className = 'chat-message user-message';
+        userMessageDiv.innerHTML = message;
+        messagesContainer.appendChild(userMessageDiv);
+        
+        // Clear input
+        input.value = '';
+        
+        // Scroll to bottom
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        
+        // Team chat through Rhetor
+        if (window.AIChat) {
+            window.AIChat.teamChat(message, 'athena')
+                .then(function(data) {
+                    // Display team responses
+                    if (data.responses && data.responses.length > 0) {
+                        data.responses.forEach(function(resp) {
+                            var aiMessageDiv = document.createElement('div');
+                            aiMessageDiv.className = 'chat-message ai-message';
+                            var sender = resp.socket_id.replace('-ai', '').charAt(0).toUpperCase() + 
+                                         resp.socket_id.replace('-ai', '').slice(1);
+                            aiMessageDiv.innerHTML = '<strong>' + sender + ':</strong> ' + resp.content;
                             messagesContainer.appendChild(aiMessageDiv);
-                            messagesContainer.scrollTop = messagesContainer.scrollHeight;
-                        }
-                    })
-                    .catch(err => {
-                        console.error('[ATHENA] Failed to send team message:', err);
-                        const errorDiv = document.createElement('div');
-                        errorDiv.className = 'athena__message athena__message--system';
-                        errorDiv.innerHTML = `<div class="athena__message-content"><div class="athena__message-text"><strong>System:</strong> Failed to send team message</div></div>`;
-                        messagesContainer.appendChild(errorDiv);
+                        });
                         messagesContainer.scrollTop = messagesContainer.scrollHeight;
-                    });
-            }
-        }
-    };
-    
-    // Set up event handlers immediately
-    const chatInput = document.getElementById('athena-chat-input');
-    const sendButton = document.getElementById('athena-send-button');
-    
-    if (chatInput) {
-        // Remove any existing inline handlers
-        chatInput.onkeydown = null;
-        
-        // Add event listener
-        chatInput.addEventListener('keydown', function(event) {
-            if (event.key === 'Enter' && !event.shiftKey) {
-                event.preventDefault();
-                window.athena_sendChat();
-            }
-        });
-        console.log('[ATHENA] Chat input event handler attached');
-    }
-    
-    if (sendButton) {
-        // Remove any existing inline handlers
-        sendButton.onclick = null;
-        
-        // Add event listener
-        sendButton.addEventListener('click', function(event) {
-            event.preventDefault();
-            window.athena_sendChat();
-        });
-        console.log('[ATHENA] Send button event handler attached');
-    }
-})();
-
-// Clear chat functionality - Also set up immediately
-(function() {
-    'use strict';
-    
-    window.athena_clearChat = function() {
-        console.log('[ATHENA] Clear chat triggered');
-        const knowledgeChatRadio = document.getElementById('athena-tab-chat');
-        const teamchatRadio = document.getElementById('athena-tab-teamchat');
-        
-        const knowledgeChatActive = knowledgeChatRadio && knowledgeChatRadio.checked;
-        const teamchatActive = teamchatRadio && teamchatRadio.checked;
-        
-        if (knowledgeChatActive) {
-            const messagesContainer = document.getElementById('chat-messages');
-            if (messagesContainer) {
-                // Keep the welcome message, remove all others
-                const messages = messagesContainer.querySelectorAll('.athena__message:not(.athena__message--system)');
-                messages.forEach(msg => msg.remove());
-                console.log('[ATHENA] Cleared knowledge chat messages');
-            }
-        } else if (teamchatActive) {
-            const messagesContainer = document.getElementById('teamchat-messages');
-            if (messagesContainer) {
-                // Keep the welcome message, remove all others
-                const messages = messagesContainer.querySelectorAll('.athena__message:not(.athena__message--system)');
-                messages.forEach(msg => msg.remove());
-                console.log('[ATHENA] Cleared team chat messages');
-            }
-        }
-    };
-    
-    // Set up clear button handler
-    const clearButton = document.getElementById('clear-chat-btn');
-    if (clearButton) {
-        clearButton.addEventListener('click', function(event) {
-            event.preventDefault();
-            window.athena_clearChat();
-        });
-        console.log('[ATHENA] Clear button event handler attached');
-    }
-})();
-
-// @landmark-section Entity management - CRUD operations
-// Entity management functions
-(function() {
-    'use strict';
-    console.log('[ATHENA] Setting up entity management');
-    
-    // Load entities when entities tab is shown
-    function loadEntities() {
-        console.log('[ATHENA] Loading entities from API');
-        
-        const loadingIndicator = document.getElementById('entity-list-loading');
-        const entityList = document.getElementById('entity-list-items');
-        
-        // Show loading
-        if (loadingIndicator) loadingIndicator.style.display = 'flex';
-        if (entityList) entityList.style.display = 'none';
-        
-        // Fetch entities from API
-        if (window.AthenaService) {
-            window.AthenaService.getEntities()
-                .then(result => {
-                    console.log('[ATHENA] Entities loaded:', result);
-                    
-                    // Hide loading
-                    if (loadingIndicator) loadingIndicator.style.display = 'none';
-                    if (entityList) {
-                        entityList.style.display = 'block';
-                        entityList.innerHTML = '';
-                    }
-                    
-                    // The API returns an array directly, not wrapped in status/data
-                    const entities = Array.isArray(result) ? result : 
-                                   (result.data && Array.isArray(result.data)) ? result.data : 
-                                   (result.status === 'success' && result.data) ? result.data : [];
-                    
-                    if (entities.length === 0) {
-                        entityList.innerHTML = '<div class="athena__empty-state">No entities found. Click "Add Entity" to create your first entity.</div>';
-                    } else {
-                        entities.forEach(entity => {
-                            const entityItem = createEntityElement(entity);
-                            entityList.appendChild(entityItem);
-                        });
                     }
                 })
-                .catch(error => {
-                    console.error('[ATHENA] Error loading entities:', error);
-                    if (loadingIndicator) loadingIndicator.style.display = 'none';
-                    if (entityList) {
-                        entityList.style.display = 'block';
-                        entityList.innerHTML = '<div class="athena__error-state">Error loading entities. Please check your connection.</div>';
-                    }
-                });
-        } else {
-            console.error('[ATHENA] AthenaService not available');
-            if (loadingIndicator) loadingIndicator.style.display = 'none';
-            if (entityList) {
-                entityList.style.display = 'block';
-                entityList.innerHTML = '<div class="athena__error-state">Entity service not available.</div>';
-            }
-        }
-    }
-    
-    // Create entity element
-    function createEntityElement(entity) {
-        const div = document.createElement('div');
-        div.className = 'athena__entity-item';
-        
-        // Handle both API formats (entityId/entityType and id/type)
-        const entityId = entity.entityId || entity.id;
-        const entityType = entity.entityType || entity.type;
-        
-        div.dataset.entityId = entityId;
-        
-        // Determine icon based on entity type
-        const typeIcons = {
-            person: '👤',
-            project: '📂',
-            document: '📄',
-            concept: '💡',
-            organization: '🏢'
-        };
-        const icon = typeIcons[entityType] || '📌';
-        
-        div.innerHTML = `
-            <div class="athena__entity-type-icon athena__entity-type-icon--${entityType}">${icon}</div>
-            <div class="athena__entity-details">
-                <div class="athena__entity-name">${entity.name || 'Unnamed Entity'}</div>
-                <div class="athena__entity-type">${entityType || 'Unknown'}</div>
-                <div class="athena__entity-properties">${entity.description || entity.properties?.description || 'No description'}</div>
-            </div>
-            <div class="athena__entity-actions">
-                <button class="athena__entity-action-btn" data-action="view" data-entity-id="${entityId}">View</button>
-                <button class="athena__entity-action-btn" data-action="edit" data-entity-id="${entityId}">Edit</button>
-                <button class="athena__entity-action-btn athena__entity-action-btn--danger" data-action="delete" data-entity-id="${entityId}">Delete</button>
-            </div>
-        `;
-        
-        return div;
-    }
-    
-    // Handle entity actions
-    document.addEventListener('click', function(e) {
-        if (e.target.classList.contains('athena__entity-action-btn')) {
-            const action = e.target.dataset.action;
-            const entityId = e.target.dataset.entityId;
-            
-            console.log('[ATHENA] Entity action:', action, entityId);
-            
-            switch (action) {
-                case 'view':
-                    viewEntity(entityId);
-                    break;
-                case 'edit':
-                    editEntity(entityId);
-                    break;
-                case 'delete':
-                    deleteEntity(entityId);
-                    break;
-            }
-        }
-    });
-    
-    // View entity
-    function viewEntity(entityId) {
-        console.log('[ATHENA] Viewing entity:', entityId);
-        // View entity details
-        if (window.AthenaService) {
-            window.AthenaService.getEntity(entityId)
-                .then(result => {
-                    console.log('[ATHENA] Entity details:', result);
-                    // Display entity details in a modal
-                    showEntityDetails(result);
-                })
-                .catch(error => {
-                    console.error('[ATHENA] Error viewing entity:', error);
+                .catch(function(err) {
+                    console.error('Failed to send team message:', err);
+                    var errorDiv = document.createElement('div');
+                    errorDiv.className = 'chat-message system-message';
+                    errorDiv.innerHTML = '<strong>System:</strong> Failed to send team message';
+                    messagesContainer.appendChild(errorDiv);
                 });
         }
     }
-    
-    // Edit entity
-    function editEntity(entityId) {
-        console.log('[ATHENA] Editing entity:', entityId);
-        // Load entity data and populate form
-        if (window.AthenaService) {
-            window.AthenaService.getEntity(entityId)
-                .then(result => {
-                    console.log('[ATHENA] Loading entity for edit:', result);
-                    showEntityForm(entityId, result);
-                })
-                .catch(error => {
-                    console.error('[ATHENA] Error loading entity:', error);
-                    alert('Failed to load entity data');
-                });
-        }
-    }
-    
-    // Delete entity
-    function deleteEntity(entityId) {
-        if (confirm('Are you sure you want to delete this entity?')) {
-            console.log('[ATHENA] Deleting entity:', entityId);
-            
-            if (window.AthenaService) {
-                window.AthenaService.deleteEntity(entityId)
-                    .then(result => {
-                        if (result.status === 'success') {
-                            // Reload entities
-                            loadEntities();
-                        } else {
-                            alert('Failed to delete entity. Please try again.');
-                        }
-                    })
-                    .catch(error => {
-                        console.error('[ATHENA] Error deleting entity:', error);
-                        alert('Error deleting entity. Please try again.');
-                    });
-            }
-        }
-    }
-    
-    // Add entity button handler
-    const addEntityBtn = document.getElementById('add-entity-btn');
-    if (addEntityBtn) {
-        addEntityBtn.addEventListener('click', function() {
-            console.log('[ATHENA] Add entity clicked');
-            showEntityForm();
-        });
-    }
-    
-    // Search entities
-    const entitySearchBtn = document.getElementById('entity-search-btn');
-    if (entitySearchBtn) {
-        entitySearchBtn.addEventListener('click', function() {
-            const searchInput = document.getElementById('entity-search');
-            const query = searchInput ? searchInput.value.trim() : '';
-            
-            if (query) {
-                console.log('[ATHENA] Searching entities:', query);
-                
-                if (window.AthenaService) {
-                    window.AthenaService.searchEntities(query)
-                        .then(result => {
-                            console.log('[ATHENA] Search results:', result);
-                            // Update entity list with search results
-                            // Display search results
-                            const entityList = document.getElementById('entity-list-items');
-                            if (entityList) {
-                                entityList.innerHTML = '';
-                                const entities = Array.isArray(result) ? result : result.data || [];
-                                entities.forEach(entity => {
-                                    const entityItem = createEntityElement(entity);
-                                    entityList.appendChild(entityItem);
-                                });
-                            }
-                        })
-                        .catch(error => {
-                            console.error('[ATHENA] Search error:', error);
-                        });
-                }
-            }
-        });
-    }
-    
-    // Listen for tab changes via radio buttons
-    document.addEventListener('change', function(e) {
-        if (e.target.name === 'athena-tab' && e.target.id === 'athena-tab-entities') {
-            console.log('[ATHENA] Entities tab selected, loading entities');
-            loadEntities();
-        }
-    });
-    
-    // Check if entities tab is initially selected
-    const entitiesRadio = document.getElementById('athena-tab-entities');
-    if (entitiesRadio && entitiesRadio.checked) {
-        console.log('[ATHENA] Entities tab initially selected, loading entities');
-        loadEntities();
-    }
-})();
-
-// @landmark-section Knowledge Graph - Visualization and filtering
-// Knowledge Graph functionality
-(function() {
-    'use strict';
-    console.log('[ATHENA] Setting up knowledge graph functionality');
-    
-    // Load graph data
-    function loadGraphData(filters = {}) {
-        console.log('[ATHENA] Loading graph data with filters:', filters);
-        
-        const graphContainer = document.getElementById('graph-container');
-        const placeholder = document.getElementById('graph-placeholder');
-        
-        if (!graphContainer) {
-            console.error('[ATHENA] Graph container not found');
-            return;
-        }
-        
-        // Show loading state
-        if (placeholder) {
-            placeholder.innerHTML = `
-                <div class="athena__placeholder-content">
-                    <div class="athena__loading-indicator">
-                        <div class="athena__spinner"></div>
-                        <div class="athena__loading-text">Loading knowledge graph...</div>
-                    </div>
-                </div>
-            `;
-        }
-        
-        // Fetch graph data from API
-        if (window.AthenaService) {
-            window.AthenaService.getGraphData(filters)
-                .then(result => {
-                    console.log('[ATHENA] Graph data loaded:', result);
-                    
-                    // API returns the data directly, not wrapped
-                    if (result && (result.entities || result.nodes)) {
-                        displayGraphData(result);
-                    } else {
-                        if (placeholder) {
-                            placeholder.innerHTML = `
-                                <div class="athena__placeholder-content">
-                                    <div class="athena__error-state">Failed to load graph data. Please try again.</div>
-                                </div>
-                            `;
-                        }
-                    }
-                })
-                .catch(error => {
-                    console.error('[ATHENA] Error loading graph data:', error);
-                    if (placeholder) {
-                        placeholder.innerHTML = `
-                            <div class="athena__placeholder-content">
-                                <div class="athena__error-state">Error loading graph. Please check your connection.</div>
-                            </div>
-                        `;
-                    }
-                });
-        } else {
-            console.error('[ATHENA] AthenaService not available');
-            if (placeholder) {
-                placeholder.innerHTML = `
-                    <div class="athena__placeholder-content">
-                        <div class="athena__error-state">Graph service not available.</div>
-                    </div>
-                `;
-            }
-        }
-    }
-    
-    // Display graph data using D3.js
-    function displayGraphData(data) {
-        const container = document.getElementById('graph-container');
-        if (!container) return;
-        
-        // Clear existing content
-        container.innerHTML = '';
-        
-        // API returns entities and relationships
-        const nodes = data.entities || data.nodes || [];
-        const edges = data.relationships || data.edges || [];
-        
-        console.log('[ATHENA] Rendering graph:', nodes.length, 'entities,', edges.length, 'relationships');
-        
-        // If no data, show empty state
-        if (nodes.length === 0) {
-            container.innerHTML = `
-                <div id="graph-placeholder" class="athena__graph-placeholder">
-                    <div class="athena__placeholder-content">
-                        <h3 class="athena__placeholder-title">No Data in Knowledge Graph</h3>
-                        <p class="athena__placeholder-text">Add entities to see the graph visualization.</p>
-                    </div>
-                </div>
-            `;
-            return;
-        }
-        
-        // Set up D3.js force-directed graph
-        const width = container.clientWidth;
-        const height = container.clientHeight || 600;
-        
-        // Create SVG
-        const svg = d3.select(container)
-            .append('svg')
-            .attr('width', width)
-            .attr('height', height);
-            
-        // Create zoom behavior
-        const g = svg.append('g');
-        const zoom = d3.zoom()
-            .scaleExtent([0.1, 10])
-            .on('zoom', (event) => {
-                g.attr('transform', event.transform);
-            });
-        svg.call(zoom);
-        
-        // Prepare data for D3
-        const nodeData = nodes.map(node => ({
-            id: node.entityId || node.id,
-            name: node.name || node.label || 'Unknown',
-            type: node.entityType || node.type || 'unknown'
-        }));
-        
-        const linkData = edges.map(edge => ({
-            source: edge.sourceId || edge.source,
-            target: edge.targetId || edge.target,
-            type: edge.relationshipType || edge.type || 'related'
-        }));
-        
-        // Color scale for node types
-        const colorScale = d3.scaleOrdinal()
-            .domain(['person', 'project', 'document', 'concept', 'organization'])
-            .range(['#7B1FA2', '#1976D2', '#388E3C', '#FFA726', '#D32F2F']);
-        
-        // Create force simulation
-        const simulation = d3.forceSimulation(nodeData)
-            .force('link', d3.forceLink(linkData).id(d => d.id).distance(100))
-            .force('charge', d3.forceManyBody().strength(-300))
-            .force('center', d3.forceCenter(width / 2, height / 2))
-            .force('collision', d3.forceCollide().radius(30));
-        
-        // Create links
-        const link = g.append('g')
-            .attr('class', 'links')
-            .selectAll('line')
-            .data(linkData)
-            .enter().append('line')
-            .attr('stroke', '#666')
-            .attr('stroke-opacity', 0.6)
-            .attr('stroke-width', 2);
-        
-        // Create nodes
-        const node = g.append('g')
-            .attr('class', 'nodes')
-            .selectAll('g')
-            .data(nodeData)
-            .enter().append('g')
-            .call(d3.drag()
-                .on('start', dragstarted)
-                .on('drag', dragged)
-                .on('end', dragended));
-        
-        // Add circles to nodes
-        node.append('circle')
-            .attr('r', 20)
-            .attr('fill', d => colorScale(d.type))
-            .attr('stroke', '#fff')
-            .attr('stroke-width', 2);
-        
-        // Add labels
-        node.append('text')
-            .text(d => d.name)
-            .attr('x', 0)
-            .attr('y', 35)
-            .attr('text-anchor', 'middle')
-            .attr('fill', '#f0f0f0')
-            .style('font-size', '12px')
-            .style('font-family', 'var(--font-family)');
-        
-        // Add tooltip
-        node.append('title')
-            .text(d => `${d.name}\nType: ${d.type}`);
-        
-        // Update positions on tick
-        simulation.on('tick', () => {
-            link
-                .attr('x1', d => d.source.x)
-                .attr('y1', d => d.source.y)
-                .attr('x2', d => d.target.x)
-                .attr('y2', d => d.target.y);
-            
-            node.attr('transform', d => `translate(${d.x},${d.y})`);
-        });
-        
-        // Drag functions
-        function dragstarted(event, d) {
-            if (!event.active) simulation.alphaTarget(0.3).restart();
-            d.fx = d.x;
-            d.fy = d.y;
-        }
-        
-        function dragged(event, d) {
-            d.fx = event.x;
-            d.fy = event.y;
-        }
-        
-        function dragended(event, d) {
-            if (!event.active) simulation.alphaTarget(0);
-            d.fx = null;
-            d.fy = null;
-        }
-    }
-    
-    // Graph search functionality
-    const graphSearchBtn = document.getElementById('graph-search-btn');
-    if (graphSearchBtn) {
-        graphSearchBtn.addEventListener('click', function() {
-            const searchInput = document.getElementById('graph-search');
-            const query = searchInput ? searchInput.value.trim() : '';
-            
-            if (query) {
-                console.log('[ATHENA] Searching graph for:', query);
-                loadGraphData({ search: query });
-            }
-        });
-    }
-    
-    // Entity type filter
-    const applyFilterBtn = document.getElementById('apply-filter-btn');
-    if (applyFilterBtn) {
-        applyFilterBtn.addEventListener('click', function() {
-            const typeFilter = document.getElementById('entity-type-filter');
-            const entityType = typeFilter ? typeFilter.value : 'all';
-            
-            console.log('[ATHENA] Applying filter:', entityType);
-            const filters = entityType !== 'all' ? { type: entityType } : {};
-            loadGraphData(filters);
-        });
-    }
-    
-    // Listen for tab changes via radio buttons
-    document.addEventListener('change', function(e) {
-        if (e.target.name === 'athena-tab' && e.target.id === 'athena-tab-graph') {
-            console.log('[ATHENA] Graph tab selected, loading graph data');
-            loadGraphData();
-        }
-    });
-    
-    // Check if graph tab is initially selected (it's the default)
-    const graphRadio = document.getElementById('athena-tab-graph');
-    if (graphRadio && graphRadio.checked) {
-        console.log('[ATHENA] Graph tab initially selected, loading graph data');
-        // Delay initial load slightly to ensure service is ready
-        setTimeout(() => loadGraphData(), 100);
-    }
-})();
-
-// @landmark-section Query Builder - Advanced search interface
-// Query Builder functionality
-(function() {
-    'use strict';
-    console.log('[ATHENA] Setting up query builder functionality');
-    
-    // Build query from form inputs
-    function buildQuery() {
-        const entityType = document.getElementById('entity-type-select')?.value || 'any';
-        const relationshipType = document.getElementById('relationship-type-select')?.value || 'any';
-        const searchTerms = document.getElementById('search-terms-input')?.value || '';
-        const includeArchived = document.getElementById('include-archived')?.checked || false;
-        const exactMatch = document.getElementById('exact-match')?.checked || false;
-        
-        console.log('[ATHENA] Building query with:', {
-            entityType,
-            relationshipType,
-            searchTerms,
-            includeArchived,
-            exactMatch
-        });
-        
-        // Build query object
-        const query = {
-            type: entityType !== 'any' ? entityType : undefined,
-            relationship: relationshipType !== 'any' ? relationshipType : undefined,
-            search: searchTerms || undefined,
-            includeArchived: includeArchived,
-            exactMatch: exactMatch
-        };
-        
-        // Remove undefined values
-        Object.keys(query).forEach(key => {
-            if (query[key] === undefined) {
-                delete query[key];
-            }
-        });
-        
-        // Generate query string representation
-        const queryString = JSON.stringify(query, null, 2);
-        
-        // Show the query
-        const resultContainer = document.getElementById('query-result-container');
-        const queryDisplay = document.getElementById('generated-query');
-        
-        if (resultContainer && queryDisplay) {
-            queryDisplay.textContent = queryString;
-            resultContainer.style.display = 'block';
-        }
-        
-        return query;
-    }
-    
-    // Execute query
-    function executeQuery() {
-        const query = buildQuery();
-        console.log('[ATHENA] Executing query:', query);
-        
-        if (window.AthenaService) {
-            // Show loading state
-            const queryDisplay = document.getElementById('generated-query');
-            if (queryDisplay) {
-                queryDisplay.innerHTML = `
-                    <div style="text-align: center; padding: 20px;">
-                        <div class="athena__spinner" style="margin: 0 auto;"></div>
-                        <div style="margin-top: 10px; color: #a0a0a0;">Executing query...</div>
-                    </div>
-                `;
-            }
-            
-            window.AthenaService.executeQuery(query)
-                .then(result => {
-                    console.log('[ATHENA] Query results:', result);
-                    
-                    if (result.status === 'success' && result.data) {
-                        displayQueryResults(result.data);
-                    } else {
-                        if (queryDisplay) {
-                            queryDisplay.innerHTML = `
-                                <div style="color: #ff6b6b; padding: 20px; text-align: center;">
-                                    Failed to execute query. Please try again.
-                                </div>
-                            `;
-                        }
-                    }
-                })
-                .catch(error => {
-                    console.error('[ATHENA] Query execution error:', error);
-                    if (queryDisplay) {
-                        queryDisplay.innerHTML = `
-                            <div style="color: #ff6b6b; padding: 20px; text-align: center;">
-                                Error executing query: ${error.message || 'Unknown error'}
-                            </div>
-                        `;
-                    }
-                });
-        }
-    }
-    
-    // Display query results
-    function displayQueryResults(data) {
-        const queryDisplay = document.getElementById('generated-query');
-        if (!queryDisplay) return;
-        
-        // The API returns answer, context, and results_count
-        const answer = data.answer || '';
-        const context = data.context || '';
-        const resultsCount = data.results_count || 0;
-        
-        if (!answer && resultsCount === 0) {
-            queryDisplay.innerHTML = `
-                <div style="text-align: center; padding: 20px; color: #a0a0a0;">
-                    No results found for this query.
-                </div>
-            `;
-            return;
-        }
-        
-        // Display results
-        queryDisplay.innerHTML = `
-            <div style="padding: 20px;">
-                <div class="athena__result-title">Query Results</div>
-                ${resultsCount > 0 ? `
-                    <div style="margin-bottom: 10px; color: #7B1FA2;">
-                        Found ${resultsCount} result${resultsCount !== 1 ? 's' : ''}
-                    </div>
-                ` : ''}
-                ${answer ? `
-                    <div style="padding: 15px; margin-bottom: 20px; background: rgba(123, 31, 162, 0.1); border-radius: 8px; border-left: 4px solid #7B1FA2;">
-                        <div style="font-weight: 500; margin-bottom: 8px; color: #7B1FA2;">Answer:</div>
-                        <div style="line-height: 1.6;">${answer}</div>
-                    </div>
-                ` : ''}
-                ${context ? `
-                    <div style="padding: 15px; background: rgba(255, 255, 255, 0.05); border-radius: 8px;">
-                        <div style="font-weight: 500; margin-bottom: 8px; color: #888;">Context:</div>
-                        <div style="font-size: 0.9em; color: #aaa; max-height: 200px; overflow-y: auto; white-space: pre-wrap;">${context}</div>
-                    </div>
-                ` : ''}
-            </div>
-        `;
-    }
-    
-    // Clear query form
-    function clearQuery() {
-        console.log('[ATHENA] Clearing query form');
-        
-        // Reset form inputs
-        const entityType = document.getElementById('entity-type-select');
-        const relationshipType = document.getElementById('relationship-type-select');
-        const searchTerms = document.getElementById('search-terms-input');
-        const includeArchived = document.getElementById('include-archived');
-        const exactMatch = document.getElementById('exact-match');
-        
-        if (entityType) entityType.value = 'any';
-        if (relationshipType) relationshipType.value = 'any';
-        if (searchTerms) searchTerms.value = '';
-        if (includeArchived) includeArchived.checked = false;
-        if (exactMatch) exactMatch.checked = false;
-        
-        // Hide result container
-        const resultContainer = document.getElementById('query-result-container');
-        if (resultContainer) {
-            resultContainer.style.display = 'none';
-        }
-    }
-    
-    // Copy query to clipboard
-    function copyQuery() {
-        const queryDisplay = document.getElementById('generated-query');
-        if (queryDisplay) {
-            const queryText = queryDisplay.textContent;
-            navigator.clipboard.writeText(queryText)
-                .then(() => {
-                    console.log('[ATHENA] Query copied to clipboard');
-                    // Show feedback
-                    const copyBtn = document.getElementById('copy-query-btn');
-                    if (copyBtn) {
-                        const originalText = copyBtn.textContent;
-                        copyBtn.textContent = 'Copied!';
-                        setTimeout(() => {
-                            copyBtn.textContent = originalText;
-                        }, 2000);
-                    }
-                })
-                .catch(err => {
-                    console.error('[ATHENA] Failed to copy query:', err);
-                });
-        }
-    }
-    
-    // Set up event handlers
-    const buildQueryBtn = document.getElementById('build-query-btn');
-    if (buildQueryBtn) {
-        buildQueryBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            buildQuery();
-        });
-    }
-    
-    const executeQueryBtn = document.getElementById('execute-query-btn');
-    if (executeQueryBtn) {
-        executeQueryBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            executeQuery();
-        });
-    }
-    
-    const clearQueryBtn = document.getElementById('clear-query-btn');
-    if (clearQueryBtn) {
-        clearQueryBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            clearQuery();
-        });
-    }
-    
-    const copyQueryBtn = document.getElementById('copy-query-btn');
-    if (copyQueryBtn) {
-        copyQueryBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            copyQuery();
-        });
-    }
-    
-    // Enter key support for search terms
-    const searchTermsInput = document.getElementById('search-terms-input');
-    if (searchTermsInput) {
-        searchTermsInput.addEventListener('keydown', function(e) {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                buildQuery();
-            }
-        });
-    }
-    
-    // Show entity details in a modal
-    window.showEntityDetails = function(entity) {
-        // Create a simple modal to display entity details
-        const modal = document.createElement('div');
-        modal.className = 'athena__modal';
-        modal.style.display = 'flex';
-        
-        const content = `
-            <div class="athena__modal-content">
-                <div class="athena__modal-header">
-                    <h3 class="athena__modal-title">Entity Details</h3>
-                    <button class="athena__modal-close" onclick="this.closest('.athena__modal').remove()">&times;</button>
-                </div>
-                <div style="padding: 20px;">
-                    <div class="athena__form-group">
-                        <label class="athena__form-label">Name</label>
-                        <div style="padding: 10px; background: var(--bg-tertiary); border-radius: 4px;">${entity.name || 'Unknown'}</div>
-                    </div>
-                    <div class="athena__form-group">
-                        <label class="athena__form-label">Type</label>
-                        <div style="padding: 10px; background: var(--bg-tertiary); border-radius: 4px;">${entity.entityType || entity.type || 'Unknown'}</div>
-                    </div>
-                    <div class="athena__form-group">
-                        <label class="athena__form-label">ID</label>
-                        <div style="padding: 10px; background: var(--bg-tertiary); border-radius: 4px; font-family: monospace; font-size: 0.9em;">${entity.entityId || entity.id || 'Unknown'}</div>
-                    </div>
-                    ${entity.description || entity.properties?.description ? `
-                        <div class="athena__form-group">
-                            <label class="athena__form-label">Description</label>
-                            <div style="padding: 10px; background: var(--bg-tertiary); border-radius: 4px;">${entity.description || entity.properties?.description}</div>
-                        </div>
-                    ` : ''}
-                    ${entity.properties && Object.keys(entity.properties).length > 0 ? `
-                        <div class="athena__form-group">
-                            <label class="athena__form-label">Properties</label>
-                            <pre style="padding: 10px; background: var(--bg-tertiary); border-radius: 4px; overflow-x: auto;">${JSON.stringify(entity.properties, null, 2)}</pre>
-                        </div>
-                    ` : ''}
-                </div>
-            </div>
-        `;
-        
-        modal.innerHTML = content;
-        document.body.appendChild(modal);
-        
-        // Close on outside click
-        modal.addEventListener('click', function(e) {
-            if (e.target === modal) {
-                modal.remove();
-            }
-        });
-    };
-
-    // Entity Form Functions
-    window.showEntityForm = function(entityId = null) {
-        const modal = document.getElementById('entity-form-modal');
-        const form = document.getElementById('entity-form');
-        const title = document.getElementById('entity-form-title');
-        
-        if (entityId) {
-            title.textContent = 'Edit Entity';
-            // Entity data should be passed as second parameter
-            if (arguments.length > 1 && arguments[1]) {
-                const entity = arguments[1];
-                document.getElementById('entity-name').value = entity.name || '';
-                document.getElementById('entity-type').value = entity.entityType || entity.type || '';
-                document.getElementById('entity-description').value = entity.description || entity.properties?.description || '';
-                if (entity.properties) {
-                    const { description, ...otherProps } = entity.properties;
-                    if (Object.keys(otherProps).length > 0) {
-                        document.getElementById('entity-properties').value = JSON.stringify(otherProps, null, 2);
-                    }
-                }
-                // Store entity ID for update
-                form.dataset.entityId = entityId;
-            }
-        } else {
-            title.textContent = 'Add New Entity';
-            form.reset();
-        }
-        
-        modal.style.display = 'flex';
-    };
-    
-    window.closeEntityForm = function() {
-        const modal = document.getElementById('entity-form-modal');
-        const form = document.getElementById('entity-form');
-        modal.style.display = 'none';
-        // Clear entity ID
-        if (form) {
-            delete form.dataset.entityId;
-        }
-    };
-    
-    // Handle entity form submission
-    const entityForm = document.getElementById('entity-form');
-    if (entityForm) {
-        entityForm.addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const name = document.getElementById('entity-name').value;
-            const entityType = document.getElementById('entity-type').value;
-            const description = document.getElementById('entity-description').value;
-            const propertiesText = document.getElementById('entity-properties').value;
-            
-            let properties = {};
-            if (description) {
-                properties.description = description;
-            }
-            
-            // Parse additional properties
-            if (propertiesText) {
-                try {
-                    const additionalProps = JSON.parse(propertiesText);
-                    properties = { ...properties, ...additionalProps };
-                } catch (err) {
-                    alert('Invalid JSON in properties field');
-                    return;
-                }
-            }
-            
-            const entityData = {
-                name: name,
-                entity_type: entityType,
-                properties: properties
-            };
-            
-            const entityId = form.dataset.entityId;
-            
-            if (entityId) {
-                // Update existing entity
-                console.log('[ATHENA] Updating entity:', entityId, entityData);
-                
-                try {
-                    const result = await window.AthenaService.updateEntity(entityId, entityData);
-                    if (result.status === 'success') {
-                        console.log('[ATHENA] Entity updated:', result);
-                        closeEntityForm();
-                        // Reload entities list - trigger tab change event
-                        const entitiesRadio = document.getElementById('athena-tab-entities');
-                        if (entitiesRadio && entitiesRadio.checked) {
-                            entitiesRadio.dispatchEvent(new Event('change', { bubbles: true }));
-                        }
-                    } else {
-                        alert('Failed to update entity');
-                    }
-                } catch (error) {
-                    console.error('[ATHENA] Error updating entity:', error);
-                    alert('Error updating entity: ' + error.message);
-                }
-            } else {
-                // Create new entity
-                console.log('[ATHENA] Creating entity:', entityData);
-                
-                try {
-                    const result = await window.AthenaService.createEntity(entityData);
-                    if (result.entityId) {
-                        console.log('[ATHENA] Entity created:', result);
-                        closeEntityForm();
-                        // Reload entities list - trigger tab change event
-                        const entitiesRadio = document.getElementById('athena-tab-entities');
-                        if (entitiesRadio && entitiesRadio.checked) {
-                            entitiesRadio.dispatchEvent(new Event('change', { bubbles: true }));
-                        }
-                    } else {
-                        alert('Failed to create entity');
-                    }
-            } catch (error) {
-                console.error('[ATHENA] Error creating entity:', error);
-                alert('Error creating entity: ' + error.message);
-            }
-        });
-    }
-    
-    // Handle modal click outside
-    const modal = document.getElementById('entity-form-modal');
-    if (modal) {
-        modal.addEventListener('click', function(e) {
-            if (e.target === modal) {
-                closeEntityForm();
-            }
-        });
-    }
-})();
+};
 </script>

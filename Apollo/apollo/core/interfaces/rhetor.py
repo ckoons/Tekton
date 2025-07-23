@@ -19,6 +19,21 @@ tekton_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../
 if tekton_root not in sys.path:
     sys.path.insert(0, tekton_root)
 
+# Try to import landmarks
+try:
+    from landmarks import integration_point, api_contract
+except ImportError:
+    # Define no-op decorators if landmarks not available
+    def integration_point(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+    
+    def api_contract(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+
 from shared.utils.env_config import get_component_config
 
 def get_component_port(component_name: str) -> int:
@@ -35,6 +50,13 @@ def get_component_url(component_name: str, protocol: str = "http") -> str:
 logger = logging.getLogger(__name__)
 
 
+@integration_point(
+    title="Apollo-Rhetor LLM Interface",
+    target_component="Rhetor LLM Service",
+    protocol="HTTP REST API and WebSocket",
+    data_flow="Apollo ↔ Rhetor (context monitoring, metrics, directives)",
+    critical_notes="Primary interface for Apollo to monitor and control LLM contexts"
+)
 class RhetorInterface:
     """
     Interface for communicating with the Rhetor component.
@@ -128,6 +150,13 @@ class RhetorInterface:
             # Wait before retrying
             await asyncio.sleep(self.retry_delay)
     
+    @api_contract(
+        title="Get Active LLM Sessions",
+        endpoint="/api/v1/ai/specialists",
+        method="GET",
+        response_schema={"specialists": "array"},
+        auth_required=False
+    )
     async def get_active_sessions(self) -> List[Dict[str, Any]]:
         """
         Get information about all active AI specialists as sessions from Rhetor.
@@ -163,6 +192,13 @@ class RhetorInterface:
             logger.error(f"Error getting active sessions from Rhetor: {e}")
             return []
     
+    @api_contract(
+        title="Get Session Metrics",
+        endpoint="/api/v1/specialists/{context_id}",
+        method="GET",
+        response_schema={"metrics": "object"},
+        auth_required=False
+    )
     async def get_session_metrics(self, context_id: str) -> Dict[str, Any]:
         """
         Get detailed metrics for a specific AI specialist session.
@@ -242,6 +278,15 @@ class RhetorInterface:
             logger.error(f"Error requesting context reset for {context_id}: {e}")
             return False
     
+    @api_contract(
+        title="Inject System Message",
+        endpoint="/api/v1/chat",
+        method="POST",
+        request_schema={"message": "string", "context_id": "string", "options": "object"},
+        response_schema={"success": "boolean"},
+        auth_required=False,
+        critical_notes="Used by Apollo to inject attention management directives"
+    )
     async def inject_system_message(
         self, 
         context_id: str,

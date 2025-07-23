@@ -11,11 +11,44 @@ import logging
 import asyncio
 from typing import Dict, List, Any, Optional, Tuple
 
+# Try to import landmarks
+try:
+    from landmarks import integration_point, api_contract, state_checkpoint
+except ImportError:
+    # Define no-op decorators if landmarks not available
+    def integration_point(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+    
+    def api_contract(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+    
+    def state_checkpoint(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+
 from telos.core.requirements import RequirementsManager, Requirement, Project
 
 logger = logging.getLogger(__name__)
 
 
+@integration_point(
+    title="Telos-Prometheus Requirements-to-Planning Bridge",
+    target_component="Prometheus Planning Engine",
+    protocol="Direct Python import or HTTP API",
+    data_flow="Telos requirements → Prometheus (for plan creation) → Plans stored in Telos project metadata"
+)
+@state_checkpoint(
+    title="Planning Query State",
+    state_type="ephemeral",
+    persistence=False,
+    consistency_requirements="Queries from Prometheus stored temporarily for user clarification",
+    recovery_strategy="Queries lost on restart"
+)
 class TelosPrometheusConnector:
     """Bridge between Telos requirements and Prometheus planning."""
     

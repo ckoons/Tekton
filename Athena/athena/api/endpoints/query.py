@@ -16,9 +16,36 @@ from athena.api.models.query import (
 from athena.core.engine import get_knowledge_engine
 from athena.core.query_engine import QueryEngine
 
+# Try to import landmarks - handle gracefully if not available
+try:
+    from landmarks import api_contract, integration_point
+except ImportError:
+    # Create no-op decorators
+    def api_contract(*args, **kwargs):
+        def decorator(func):
+            return func
+        return decorator
+    
+    def integration_point(*args, **kwargs):
+        def decorator(func):
+            return func
+        return decorator
+
 router = APIRouter(tags=["query"])
 
 @router.post("/", response_model=QueryResponse)
+@api_contract(
+    title="Knowledge Graph Query API",
+    endpoint="/api/v1/query",
+    method="POST",
+    request_schema={"question": "string", "mode": "string", "response_type": "string", "max_results": "int"}
+)
+@integration_point(
+    title="Query Engine Integration",
+    target_component="Query Engine, Knowledge Engine, Vector Store",
+    protocol="Internal Python API",
+    data_flow="Query Request -> Query Engine -> Knowledge Graph/Vector Search -> Ranked Results"
+)
 async def execute_query(request: QueryRequest):
     """
     Execute a query using the specified retrieval mode.
