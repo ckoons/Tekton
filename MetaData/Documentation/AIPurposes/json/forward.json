@@ -1,0 +1,19 @@
+{
+  "purpose": "forward",
+  "description": "Handle forwarded messages from another CI",
+  "behavior": {
+    "extract_dest": "Look for 'dest' field to determine which persona to adopt",
+    "extract_sender": "Identify original sender for response routing",
+    "process_message": "Handle the message content as the specified persona",
+    "respond_to_sender": "Route response back to original sender"
+  },
+  "example": {
+    "input": {
+      "message": "Hello apollo",
+      "dest": "apollo",
+      "sender": "bari",
+      "purpose": "forward"
+    },
+    "action": "Respond as apollo to the sender (bari)"
+  }
+}
