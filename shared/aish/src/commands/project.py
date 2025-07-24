@@ -155,9 +155,20 @@ def list_projects(args: List[str]) -> bool:
         forwarded_to = forwarding_registry.get("forwards", {}).get(forward_key, "none")
         
         # Check if the terminal is active
+        if isinstance(forwarded_to, dict):
+            # forwarded_to is a dict, extract terminal name
+            forwarded_to = forwarded_to.get('terminal', 'none')
+        
         if forwarded_to != "none" and forwarded_to in active_terminals:
-            pid, status = active_terminals[forwarded_to]
-            forward_display = f"{forwarded_to} ({status})"
+            terminal_info = active_terminals[forwarded_to]
+            if isinstance(terminal_info, dict):
+                # Handle dict format
+                status = terminal_info.get('status', 'unknown')
+                forward_display = f"{forwarded_to} ({status})"
+            else:
+                # Handle tuple format (pid, status)
+                pid, status = terminal_info
+                forward_display = f"{forwarded_to} ({status})"
         elif forwarded_to != "none":
             forward_display = f"{forwarded_to} (inactive)"
         else:

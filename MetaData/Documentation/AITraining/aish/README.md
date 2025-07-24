@@ -210,19 +210,64 @@ cat ~/.aish_history
 
 ## Advanced Features
 
-### 1. Team Chat
+### 1. Purpose Search (New!)
+Search for purpose content across playbooks and documentation:
+```bash
+# Search for a single purpose
+aish purpose "coding"
+
+# Search for multiple purposes (CSV format)
+aish purpose "coding, test, debug"
+```
+This searches across .tekton/playbook/, AIPurposes/text/, and AIPurposes/json/ directories.
+
+### 2. JSON Message Forwarding (New!)
+Forward AI messages with structured metadata for better CI context:
+```bash
+# Forward with JSON metadata
+aish forward apollo casey json
+
+# JSON format includes:
+# - message: The AI's response
+# - dest: Destination terminal
+# - sender: AI name
+# - purpose: Context information
+```
+
+### 3. Alias System (New!)
+Create reusable command patterns to reduce repetitive typing:
+```bash
+# Create an alias
+aish alias create greet 'echo Hello, $1! Welcome to $2.' "Greet with name and place"
+
+# Use the alias
+aish greet Casey Tekton  # Output: Hello, Casey! Welcome to Tekton.
+
+# List all aliases
+aish alias list
+
+# Delete an alias
+aish alias delete greet
+```
+
+Parameter substitution:
+- `$1`, `$2`, ... - Individual arguments
+- `$*` - All arguments as one string
+- `$@` - All arguments quoted separately
+
+### 4. Team Chat
 Broadcast to all AIs simultaneously:
 ```bash
 aish team-chat "System-wide announcement"
 ```
 
-### 2. Script Execution
+### 5. Script Execution
 Run AI scripts (coming soon):
 ```bash
 aish script.ai
 ```
 
-### 3. Custom Rhetor Endpoint
+### 6. Custom Rhetor Endpoint
 ```bash
 aish -r http://custom-rhetor:8003 apollo "message"
 ```
