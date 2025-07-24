@@ -215,6 +215,69 @@ autoprompt start               # Keeps CI active with dots
 prompt "Hey Claude, can you review PR #42?"  # Clean message appears
 ```
 
+### Alias Commands
+
+#### `aish alias create <name> <command> [description]`
+Create a reusable command pattern (alias) for frequently used operations.
+```bash
+aish alias create deploy "git push && ssh prod deploy"
+aish alias create greet "echo Hello, $1!"
+aish alias create review "aish send rhetor 'review $1' && aish forward rhetor Betty json"
+```
+
+**Parameter Substitution:**
+- `$1`, `$2`, ... - Individual arguments
+- `$*` - All arguments as a single string
+- `$@` - All arguments as separate quoted strings
+
+**Important:** Aliases cannot reference other aliases to prevent recursion.
+
+#### `aish alias delete <name>`
+Remove an existing alias.
+```bash
+aish alias delete deploy       # Remove the deploy alias
+```
+
+#### `aish alias list`
+Show all defined aliases.
+```bash
+aish alias list                # Display all aliases with commands
+```
+
+#### `aish alias show <name>`
+Display detailed information about a specific alias.
+```bash
+aish alias show deploy         # Show creation time, usage count, etc.
+```
+
+#### Using Aliases
+Execute an alias by using its name directly with aish.
+```bash
+# After creating the greet alias above
+aish greet Casey               # Outputs: Hello, Casey!
+
+# Complex example with multiple parameters
+aish alias create pr-review "git diff $1 | aish rhetor 'review these changes' && aish forward rhetor $2 json"
+aish pr-review main casey      # Reviews diff against main, forwards to casey
+```
+
+**Use Cases for CIs:**
+- Encode frequently used patterns
+- Build personal command vocabulary
+- Reduce repetitive command typing
+- Create workflow shortcuts
+
+**Example CI Workflow:**
+```bash
+# CI creates aliases for common tasks
+aish alias create checkpoint "aish purpose self 'context/save/work' && aish send apollo 'checkpoint'"
+aish alias create sync-numa "aish forward numa $1 json && aish send numa 'syncing with $1'"
+
+# Later use
+aish checkpoint                # Save work state
+aish sync-numa betty           # Sync with betty terminal
+```
+
 ## Available AI Components
 
 ### Core AIs
