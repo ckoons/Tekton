@@ -6,13 +6,33 @@ import os
 import json
 import shlex
 import subprocess
+import sys
 from pathlib import Path
 from datetime import datetime
 from typing import Dict, List, Optional, Tuple
 
-from ..utils.env import TektonEnviron
-from ..utils.io import print_error, print_success, print_info
-from ..utils.debug import debug_log, log_function
+# Add parent paths for imports
+sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
+from shared.env import TektonEnviron
+
+# Simple print functions
+def print_error(msg):
+    print(f"Error: {msg}")
+
+def print_success(msg):
+    print(msg)
+
+def print_info(msg):
+    print(msg)
+
+# Simple debug function
+def debug_log(component, msg, level="INFO"):
+    if os.environ.get('AISH_DEBUG'):
+        print(f"[DEBUG:{component}] {msg}", file=sys.stderr)
+
+def log_function(func):
+    """Simple decorator for function logging"""
+    return func
 
 # Landmark: aish-alias-implementation-2025-01-24
 # The alias system allows CIs to build their own command vocabulary,
@@ -22,7 +42,9 @@ from ..utils.debug import debug_log, log_function
 @log_function
 def get_alias_dir() -> Path:
     """Get the alias storage directory"""
-    tekton_root = TektonEnviron.get_tekton_root()
+    tekton_root = TektonEnviron.get('TEKTON_ROOT')
+    if not tekton_root:
+        tekton_root = os.environ.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
     alias_dir = Path(tekton_root) / ".tekton" / "aliases"
     return alias_dir
 
@@ -112,7 +134,7 @@ def substitute_parameters(command: str, args: List[str]) -> str:
     """
     # Replace numbered parameters
     for i, arg in enumerate(args):
-        command = command.replace(f"${i+1}", shlex.quote(arg))
+        command = command.replace(f"${i+1}", arg)
     
     # Replace $* (all args as single string)
     command = command.replace("$*", " ".join(args))
