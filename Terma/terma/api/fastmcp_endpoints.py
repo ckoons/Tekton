@@ -107,7 +107,17 @@ async def get_terminal_status() -> Dict[str, Any]:
         Dictionary containing Terma system status and capabilities
     """
     try:
-        # Mock terminal status - real implementation would check actual terminal sessions
+        from shared.env import TektonEnviron
+        from terma.core.terminal_launcher_impl import get_terminal_roster
+        
+        # Get actual terminal count
+        roster = get_terminal_roster()
+        terminals = roster.get_terminals()
+        active_count = len(terminals)
+        
+        # Get environment info
+        tekton_root = TektonEnviron.get('TEKTON_ROOT', 'NOT_SET')
+        
         return {
             "success": True,
             "status": "operational",
@@ -117,12 +127,17 @@ async def get_terminal_status() -> Dict[str, Any]:
                 "llm_integration", 
                 "system_integration"
             ],
-            "active_sessions": 3,  # Would query actual session manager
+            "active_sessions": active_count,
             "mcp_tools": len(terminal_management_tools + llm_integration_tools + system_integration_tools),
             "terminal_engine_status": "ready",
             "websocket_status": "active",
             "llm_adapter_connected": True,
-            "message": "Terma terminal management and integration engine is operational"
+            "environment": {
+                "TEKTON_ROOT": tekton_root,
+                "pid": os.getpid(),
+                "port": int(TektonEnviron.get("TERMA_PORT", "8304"))
+            },
+            "message": f"Terma terminal management and integration engine is operational (TEKTON_ROOT: {tekton_root})"
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to get terminal status: {str(e)}")

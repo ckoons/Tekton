@@ -212,11 +212,11 @@ Get and remove one new message from inbox.
 aish terma inbox new pop       # Pop one message
 ```
 
-#### `aish terma send <name> "message"`
+#### `aish terma <name> "message"`
 Send a message to another terminal.
 ```bash
-aish terma send alice "Ready to review"
-aish terma send bob "Need help with auth module"
+aish terma alice "Ready to review"
+aish terma bob "Need help with auth module"
 ```
 
 #### `aish terma broadcast "message"`
@@ -279,7 +279,7 @@ prompt "Your message here"     # Send a clear message
 **Integration with Terma:**
 ```bash
 # From another terminal
-aish terma send teri 'prompt "Please check the test results"'
+aish terma teri 'prompt "Please check the test results"'
 
 # Via Terma UI
 # Send command: prompt "Meeting starting in 5 minutes"
@@ -361,7 +361,7 @@ aish forward synthesis casey
 aish forward numa alice json
 
 # Send messages between terminals
-aish terma send alice "PR ready for review"
+aish terma alice "PR ready for review"
 ```
 
 ### Purpose-Driven Development (New!)
@@ -452,7 +452,7 @@ $ aish forward list
 ### Message Not Delivered
 ```bash
 # Verify terminal name
-$ aish terma send wrong-name "Test"
+$ aish terma wrong-name "Test"
 Error: Terminal 'wrong-name' not found
 ```
 
