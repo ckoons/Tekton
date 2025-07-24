@@ -63,9 +63,22 @@ def handle_forward_command(args):
         ai_name = args[1]
         return handle_unforward_command([ai_name])
     
-    elif len(args) == 2:
-        ai_name, terminal_name = args
-        return set_forward(registry, ai_name, terminal_name)
+    elif len(args) >= 2:
+        # Check for json flag at any position
+        json_mode = False
+        clean_args = []
+        for arg in args:
+            if arg in ["--json", "-j", "json"]:
+                json_mode = True
+            else:
+                clean_args.append(arg)
+        
+        if len(clean_args) == 2:
+            ai_name, terminal_name = clean_args
+            return set_forward(registry, ai_name, terminal_name, json_mode)
+        else:
+            print_forward_usage()
+            return 1
     
     else:
         print_forward_usage()
@@ -74,15 +87,19 @@ def handle_forward_command(args):
 
 def print_forward_usage():
     """Print usage information"""
-    print("Usage: aish forward <ai-name> <terminal-name>")
+    print("Usage: aish forward <ai-name> <terminal-name> [json]")
     print("       aish forward list")
     print("       aish forward remove <ai-name>")
     print("")
+    print("Options:")
+    print("  json      Forward messages as structured JSON instead of plain text")
+    print("")
     print("Examples:")
-    print("  aish forward apollo jill      # Forward apollo messages to jill")
-    print("  aish forward rhetor alice     # Forward rhetor messages to alice")
-    print("  aish forward list             # Show active forwards")
-    print("  aish forward remove apollo    # Remove forwarding")
+    print("  aish forward apollo jill          # Forward apollo messages to jill")
+    print("  aish forward apollo jill json     # Forward as JSON with metadata")
+    print("  aish forward rhetor alice         # Forward rhetor messages to alice")
+    print("  aish forward list                 # Show active forwards")
+    print("  aish forward remove apollo        # Remove forwarding")
 
 
 @state_checkpoint(
@@ -91,7 +108,7 @@ def print_forward_usage():
     state_type="forwarding_rule",
     validation="AI name validated, forwarding registered"
 )
-def set_forward(registry, ai_name, terminal_name):
+def set_forward(registry, ai_name, terminal_name, json_mode=False):
     """Set up forwarding"""
     # Validate AI name
     valid_ais = ['apollo', 'athena', 'rhetor', 'prometheus', 'synthesis', 
@@ -104,8 +121,11 @@ def set_forward(registry, ai_name, terminal_name):
         return 1
     
     # Set forwarding
-    registry.set_forward(ai_name, terminal_name)
-    print(f"✓ Forwarding {ai_name} messages to {terminal_name}")
+    registry.set_forward(ai_name, terminal_name, json_mode)
+    if json_mode:
+        print(f"✓ Forwarding {ai_name} messages to {terminal_name} (JSON mode)")
+    else:
+        print(f"✓ Forwarding {ai_name} messages to {terminal_name}")
     return 0
 
 
@@ -121,28 +141,40 @@ def list_forwards(registry):
     ai_forwards = {}
     project_forwards = {}
     
-    for key, terminal_name in forwards.items():
+    for key, config in forwards.items():
+        # Handle both old string format and new dict format
+        if isinstance(config, str):
+            terminal_name = config
+            json_mode = False
+        else:
+            terminal_name = config.get("terminal", "")
+            json_mode = config.get("json_mode", False)
+        
         if key.startswith("project:"):
             project_name = key[8:]  # Remove "project:" prefix
-            project_forwards[project_name] = terminal_name
+            project_forwards[project_name] = {"terminal": terminal_name, "json_mode": json_mode}
         else:
-            ai_forwards[key] = terminal_name
+            ai_forwards[key] = {"terminal": terminal_name, "json_mode": json_mode}
     
     # Show AI forwards
     if ai_forwards:
         print("Active AI Forwards:")
-        print("-" * 30)
-        for ai_name, terminal_name in ai_forwards.items():
-            print(f"  {ai_name:<12} → {terminal_name}")
+        print("-" * 40)
+        for ai_name, config in ai_forwards.items():
+            terminal = config["terminal"]
+            json_flag = " [JSON]" if config["json_mode"] else ""
+            print(f"  {ai_name:<12} → {terminal}{json_flag}")
     
     # Show project forwards
     if project_forwards:
         if ai_forwards:
             print()  # Add spacing if both types exist
         print("Active Project Forwards:")
-        print("-" * 30)
-        for project_name, terminal_name in project_forwards.items():
-            print(f"  {project_name:<12} → {terminal_name}")
+        print("-" * 40)
+        for project_name, config in project_forwards.items():
+            terminal = config["terminal"]
+            json_flag = " [JSON]" if config["json_mode"] else ""
+            print(f"  {project_name:<12} → {terminal}{json_flag}")
     
     return 0
 

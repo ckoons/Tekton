@@ -195,6 +195,9 @@ def _dispatch_command(command_type, args, shell):
         from commands.route import handle_route_command
         # Let route command handle its own argument parsing
         return handle_route_command()
+    elif command_type == 'test':
+        from commands.test import handle_test_command
+        return handle_test_command(args.message or [])
     return False
 
 
@@ -426,6 +429,7 @@ Environment variables:
             print()
             print("FORWARDING:")
             print("  aish forward <ai> <terminal>   Forward AI messages to terminal")
+            print("  aish forward <ai> <terminal> json  Forward as JSON with metadata")
             print("  aish forward list              Show active forwards")
             print("  aish forward remove <ai>       Remove forwarding")
             print("  aish unforward <ai>            Remove forwarding (alternative)")
@@ -480,6 +484,11 @@ Environment variables:
             print("  aish restart                   Restart MCP server")
             print("  aish logs                      Show MCP server logs")
             print("  aish debug-mcp                 Toggle MCP debug mode")
+            print()
+            print("TESTING:")
+            print("  aish test                      Run all functional tests")
+            print("  aish test <suite>              Run specific test suite")
+            print("  aish test help                 Show detailed test information")
             print()
             print("ADVANCED:")
             print("  echo \"msg\" | aish <ai>         Pipe input to AI")
@@ -576,6 +585,9 @@ Environment variables:
     if args.ai_or_script == 'debug-mcp':
         shell._toggle_mcp_debug()
         return
+    
+    if args.ai_or_script == 'test':
+        return _dispatch_command('test', args, shell)
     
     # Check if first argument is an AI name (case-insensitive)
     if args.ai_or_script and args.ai_or_script.lower() in ai_names:

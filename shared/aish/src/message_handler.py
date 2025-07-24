@@ -65,7 +65,13 @@ class MessageHandler:
             ai_port = get_ai_port(component_port)
             self.ports[component_name] = ai_port
     
-    # Landmark: AI Message Routing Decision - Critical branch for forwarding
+    @integration_point(
+        title="AI Message Routing Decision",
+        description="Routes messages to terminals or AIs based on forwarding rules",
+        target_component="ForwardingRegistry",
+        protocol="internal_api",
+        data_flow="message → check forwards → terminal inbox OR AI socket"
+    )
     def send(self, ai_name: str, message: str) -> str:
         """Send message, check forwarding first."""
         
@@ -90,11 +96,40 @@ class MessageHandler:
         # Normal AI routing
         return self._send_to_ai_direct(ai_name, message)
     
+    @architecture_decision(
+        title="JSON Message Transformation",
+        description="Wraps forwarded messages in JSON structure for CI consumption",
+        rationale="JSON format provides metadata CIs need to understand context and adopt personas",
+        alternatives_considered=["Custom headers", "Message prefixes", "Separate metadata channel"],
+        impacts=["CI processing", "message clarity", "purpose integration"],
+        decided_by="Casey",
+        decision_date="2025-01-24"
+    )
     def _send_forwarded(self, ai_name: str, message: str, terminal_name: str) -> str:
         """Send message to terminal inbox instead of AI."""
         try:
-            # Format message for human inbox
-            formatted_msg = f"[{ai_name}] {message}"
+            # Get full forward config to check JSON mode
+            forward_config = self.forwarding.get_forward_config(ai_name)
+            json_mode = False
+            if forward_config and isinstance(forward_config, dict):
+                json_mode = forward_config.get("json_mode", False)
+            
+            # Format message based on mode
+            if json_mode:
+                # Get current terminal name from environment
+                sender = TektonEnviron.get('TERMA_TERMINAL_NAME', 'unknown')
+                
+                # Create JSON structure
+                json_message = {
+                    "message": message,
+                    "dest": ai_name.replace("project:", ""),  # Remove project: prefix if present
+                    "sender": sender,
+                    "purpose": "forward"
+                }
+                formatted_msg = json.dumps(json_message, indent=2)
+            else:
+                # Plain text format for backward compatibility
+                formatted_msg = f"[{ai_name}] {message}"
             
             # Send to terminal inbox
             success = self._send_to_terminal_inbox(terminal_name, formatted_msg)
@@ -109,7 +144,13 @@ class MessageHandler:
             print(f"Forwarding failed: {e}, falling back to AI")
             return self._send_to_ai_direct(ai_name, message)
     
-    # Landmark: AI Socket Communication - Direct connection to AI specialist
+    @integration_point(
+        title="AI Socket Communication",
+        description="Direct socket connection to AI specialist services",
+        target_component="AI Services",
+        protocol="TCP Socket",
+        data_flow="JSON message → AI port → JSON response"
+    )
     def _send_to_ai_direct(self, ai_name: str, message: str) -> str:
         """Direct AI communication (original logic)."""
         port = self.ports.get(ai_name)

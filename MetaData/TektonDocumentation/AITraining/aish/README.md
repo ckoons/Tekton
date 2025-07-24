@@ -47,7 +47,30 @@ Each AI has a specific role in the Tekton ecosystem:
 - **ergon** - Agents, tools, and MCP
 - **terma** - Terminal and inter-AI communication
 
-### 3. Inter-Terminal Communication
+### 3. Purpose-Driven Context (Enhanced!)
+
+Purpose provides context for your work. You can now search for purpose content:
+
+```bash
+# Show your current purpose
+aish purpose
+
+# Search for purpose content
+aish purpose "forward"
+
+# Search multiple purposes
+aish purpose "coding, test"
+
+# Set terminal purpose (if in terma)
+aish purpose myterminal "development, testing"
+```
+
+Purpose content helps you understand:
+- Your role and responsibilities
+- How to handle specific situations (like forwarded messages)
+- Best practices for your current task
+
+### 4. Inter-Terminal Communication
 
 When launched through Terma, you can communicate with other AI sessions:
 
@@ -65,7 +88,40 @@ aish terma broadcast "Found solution to memory issue"
 aish terma @planning "Let's sync on the roadmap"
 ```
 
-### 4. Project CI Management (New!)
+### 5. Message Forwarding with JSON Support (Enhanced!)
+
+Forward AI messages to terminals for human-in-the-loop interaction:
+
+```bash
+# Basic forwarding
+aish forward apollo alice
+
+# JSON forwarding with metadata (New!)
+aish forward apollo alice json
+
+# List active forwards
+aish forward list
+
+# Remove forwarding
+aish forward remove apollo
+```
+
+JSON forwarding sends structured messages:
+```json
+{
+  "message": "original message",
+  "dest": "apollo",
+  "sender": "current_terminal",
+  "purpose": "forward"
+}
+```
+
+This makes it easier for CIs to:
+- Understand the context of forwarded messages
+- Adopt the appropriate persona
+- Process messages based on purpose
+
+### 6. Project CI Management
 
 Manage Tekton project CIs (Computational Instances) and their message routing:
 
@@ -82,7 +138,7 @@ aish project unforward MyWebApp
 
 This allows teams to monitor and interact with project-specific CIs during development.
 
-### 5. Message Inbox System (Like Unix Mail, But Nicer!)
+### 7. Message Inbox System (Like Unix Mail, But Nicer!)
 
 You have two inboxes - just like email:
 - **NEW**: Messages from others arrive here
@@ -143,7 +199,47 @@ The system maintains conversation history within sessions. Use this for:
 - Maintaining context across interactions
 - Creating coherent workflows
 
+## Testing aish Commands (New!)
+
+Test the aish system to ensure everything works correctly:
+
+```bash
+# Run all tests
+aish test
+
+# Run specific test suite
+aish test forward
+
+# Run with verbose output
+aish test -v
+
+# Get detailed test help
+aish test help
+```
+
+Test suites cover:
+- **basic** - Core commands (help, list, status)
+- **forward** - Message forwarding functionality
+- **purpose** - Purpose search and management
+- **terma** - Terminal communication
+- **route** - Intelligent routing
+
+Tests are functional - they run real commands to verify actual behavior.
+
 ## Common Patterns
+
+### Purpose-Driven Development Pattern (New!)
+```bash
+# Search for your context
+aish purpose "development, testing"
+
+# Set up JSON forwarding for collaboration
+aish forward numa alice json
+
+# Work with structured context
+aish numa "How should I handle authentication?"
+# Alice receives structured JSON with context
+```
 
 ### Research Pattern
 ```bash

@@ -71,17 +71,38 @@ aish apollo "Predict outcomes" | aish athena "Evaluate"
 
 ### Forwarding Commands
 
-#### `aish forward <ai> <terminal>`
-Forward messages from an AI to a terminal.
+#### `aish forward <ai> <terminal> [json]`
+Forward messages from an AI to a terminal, optionally as structured JSON.
 ```bash
-aish forward apollo bob        # Forward apollo's messages to bob's terminal
+aish forward apollo bob        # Forward as plain text
+aish forward apollo bob json   # Forward as JSON with metadata (New!)
 aish forward rhetor alice      # Forward rhetor's messages to alice
 ```
 
+**JSON Mode (New!)**: When using `json`, messages are sent as:
+```json
+{
+  "message": "original message content",
+  "dest": "apollo",
+  "sender": "current_terminal_name",
+  "purpose": "forward"
+}
+```
+
+This helps CIs understand context and adopt appropriate personas.
+
 #### `aish forward list`
-Show all active message forwards.
+Show all active message forwards with their mode.
 ```bash
 aish forward list              # Display active forwards
+```
+
+Output shows `[JSON]` indicator for JSON-mode forwards:
+```
+Active AI Forwards:
+----------------------------------------
+  apollo       → bob [JSON]
+  numa         → alice
 ```
 
 #### `aish forward remove <ai>` / `aish unforward <ai>`
@@ -90,6 +111,63 @@ Stop forwarding messages from an AI.
 aish unforward apollo          # Stop forwarding apollo
 aish forward remove apollo     # Alternative syntax
 ```
+
+### Purpose Commands (Enhanced!)
+
+#### `aish purpose`
+Show your current terminal's purpose and associated playbook content.
+```bash
+aish purpose                   # Display current purpose
+```
+
+#### `aish purpose <name>`
+Show a specific terminal's purpose or search for purpose content.
+```bash
+aish purpose alice             # Show alice's terminal purpose
+aish purpose "forward"         # Search for 'forward' purpose content (New!)
+```
+
+#### `aish purpose "search_terms"`
+Search for purpose content files across multiple locations (New!).
+```bash
+aish purpose "coding"          # Find coding-related purpose content
+aish purpose "test, debug"     # Search multiple purposes (CSV format)
+aish purpose "code-review"     # Find code review guidelines
+```
+
+Searches in order:
+1. `.tekton/playbook/` - Local project-specific purposes
+2. `MetaData/Documentation/AIPurposes/text/` - Shared text purposes
+3. `MetaData/Documentation/AIPurposes/json/` - Shared JSON purposes
+
+#### `aish purpose <terminal> "purposes"`
+Set a terminal's purpose (if you have permission).
+```bash
+aish purpose myterminal "development, testing"
+```
+
+### Testing Commands (New!)
+
+#### `aish test`
+Run functional tests for aish commands.
+```bash
+aish test                      # Run all test suites
+aish test -v                   # Run with verbose output
+aish test forward              # Run specific test suite
+```
+
+#### `aish test help`
+Show detailed test documentation and available suites.
+```bash
+aish test help                 # Display test framework help
+```
+
+Available test suites:
+- **basic** - Core commands (help, list, status)
+- **forward** - Message forwarding functionality
+- **purpose** - Purpose search and management
+- **terma** - Terminal communication
+- **route** - Intelligent routing
 
 ### Project Commands
 
@@ -279,8 +357,27 @@ aish team-chat "Starting new feature development"
 aish forward apollo casey
 aish forward synthesis casey
 
+# Forward with JSON for better CI understanding (New!)
+aish forward numa alice json
+
 # Send messages between terminals
 aish terma send alice "PR ready for review"
+```
+
+### Purpose-Driven Development (New!)
+```bash
+# Find your context
+aish purpose "development"
+
+# Set up JSON forwarding for a CI
+aish forward numa bob json
+
+# CI can now check purpose content
+aish purpose "forward"  # Understand how to handle forwarded messages
+
+# Work with structured messages
+aish numa "How should we handle user auth?"
+# Bob receives JSON with full context
 ```
 
 ### Advanced Pipelines
@@ -290,6 +387,18 @@ cat logs.txt | aish metis "Find patterns" | aish apollo "Predict issues"
 
 # Design to implementation
 echo "User auth system" | aish prometheus | aish numa | aish telos
+```
+
+### Testing and Validation (New!)
+```bash
+# Run all tests before deployment
+aish test
+
+# Test specific functionality
+aish test forward -v
+
+# Verify your changes work
+aish test purpose
 ```
 
 ## Tips
