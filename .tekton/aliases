@@ -1,5 +1,0 @@
-# Tekton command aliases
-# Format: alias=command
-
-d=--debug
-mc=merge-coordinator

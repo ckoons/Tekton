@@ -198,6 +198,9 @@ def _dispatch_command(command_type, args, shell):
     elif command_type == 'test':
         from commands.test import handle_test_command
         return handle_test_command(args.message or [])
+    elif command_type == 'alias':
+        from commands.alias import handle_alias_command
+        return handle_alias_command(args.message or [])
     return False
 
 
@@ -469,6 +472,13 @@ Environment variables:
             print("  autoprompt stop                Stop autoprompt")
             print("  autoprompt status              Check autoprompt status")
             print()
+            print("ALIASES:")
+            print("  aish alias create tag \"cmd\"    Create reusable command pattern")
+            print("  aish alias delete tag          Remove alias")
+            print("  aish alias list                Show all aliases")
+            print("  aish alias show tag            Show alias details")
+            print("  aish tag [args]                Execute alias with optional args")
+            print()
             print("CLAUDE CODE IDE (yes Claude, this really is for you!):")
             print("  aish introspect <class>        See all methods of a class - no more guessing!")
             print("  aish context <file.py>         Show available classes in file scope")
@@ -589,6 +599,9 @@ Environment variables:
     if args.ai_or_script == 'test':
         return _dispatch_command('test', args, shell)
     
+    if args.ai_or_script == 'alias':
+        return _dispatch_command('alias', args, shell)
+    
     # Check if first argument is an AI name (case-insensitive)
     if args.ai_or_script and args.ai_or_script.lower() in ai_names:
         return _handle_ai_command(args, shell, ai_names)
@@ -601,13 +614,20 @@ Environment variables:
         # Script execution mode
         shell.execute_script(args.ai_or_script)
     elif args.ai_or_script:
-        # Unknown AI or command
-        print(f"Error: Unknown AI or command: {args.ai_or_script}", file=sys.stderr)
-        print("", file=sys.stderr)
-        print("Available AIs: " + ", ".join(ai_names), file=sys.stderr)
-        print("", file=sys.stderr)
-        print("For all commands: aish list commands", file=sys.stderr)
-        sys.exit(1)
+        # Check if it's an alias before declaring it unknown
+        from commands.alias import load_alias, execute_alias
+        if load_alias(args.ai_or_script):
+            # Execute the alias with remaining arguments
+            exit_code = execute_alias(args.ai_or_script, args.message or [])
+            sys.exit(exit_code)
+        else:
+            # Unknown AI or command
+            print(f"Error: Unknown AI or command: {args.ai_or_script}", file=sys.stderr)
+            print("", file=sys.stderr)
+            print("Available AIs: " + ", ".join(ai_names), file=sys.stderr)
+            print("", file=sys.stderr)
+            print("For all commands: aish list commands", file=sys.stderr)
+            sys.exit(1)
     else:
         # No arguments - show help
         print("aish - AI Shell for Tekton")
