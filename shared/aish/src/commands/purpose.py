@@ -12,6 +12,7 @@ from typing import List, Optional, Dict
 import httpx
 import logging
 from shared.env import TektonEnviron
+from shared.urls import terma_url
 
 # Try to import landmarks if available
 try:
@@ -47,11 +48,19 @@ class PurposeCommand:
     """Manages terminal purposes and playbook content."""
     
     def __init__(self):
-        self.tekton_root = TektonEnviron.get('TEKTON_MAIN_ROOT', TektonEnviron.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton'))
+        self.tekton_root = TektonEnviron.get('TEKTON_MAIN_ROOT', TektonEnviron.get('TEKTON_ROOT'))
+        if not self.tekton_root:
+            raise RuntimeError("TEKTON_ROOT not set in environment")
         self.playbook_dir = Path(self.tekton_root) / ".tekton" / "playbook"
-        self.terma_url = TektonEnviron.get('TERMA_ENDPOINT', 'http://localhost:8004')
+        # Use terma_url() instead of hardcoded URL
+        self.terma_base_url = terma_url()
         
-    # Landmark: Terminal Context Setup - Sets purpose and shows playbook
+    @state_checkpoint(
+        title="Terminal Context Setup",
+        description="Sets terminal purpose and displays relevant playbook content",
+        state_type="terminal_purpose",
+        validation="Purpose string parsed and terminal updated"
+    )
     def execute(self, terminal_name: str, purpose_string: str) -> None:
         """
         Set purpose for a terminal and display relevant playbook content.
@@ -86,13 +95,20 @@ class PurposeCommand:
             TektonEnviron.set('TEKTON_TERMINAL_PURPOSE', purpose_string)
             print(f"\nExported TEKTON_TERMINAL_PURPOSE='{purpose_string}'")
     
+    @integration_point(
+        title="Terma Purpose Update",
+        description="Updates terminal purpose via Terma API",
+        target_component="terma",
+        protocol="HTTP POST",
+        data_flow="purpose → Terma → terminal state"
+    )
     def _update_terminal_purpose(self, terminal_name: str, purpose: str) -> None:
         """Update terminal's purpose via Terma API."""
         try:
             # Update purpose through Terma
             # Note: This endpoint may need to be implemented in Terma
             response = httpx.post(
-                f"{self.terma_url}/api/mcp/v2/purpose",
+                f"{self.terma_base_url}/api/mcp/v2/purpose",
                 json={
                     "terminal": terminal_name,
                     "purpose": purpose
@@ -106,6 +122,14 @@ class PurposeCommand:
             logger.warning(f"Could not update purpose via Terma: {e}")
             # Continue anyway - display will still work
     
+    @api_contract(
+        title="Playbook Content Display",
+        description="Renders purpose-specific playbook content from filesystem",
+        endpoint="internal",
+        method="function",
+        request_schema={"purpose": "string"},
+        response_schema={"content": "stdout"}
+    )
     def _display_playbook_content(self, purpose: str) -> None:
         """Display playbook content for a given purpose."""
         print(f"=== {purpose.upper()} ===")
@@ -178,6 +202,14 @@ class PurposeCommand:
                     
         return found_any
     
+    @api_contract(
+        title="Current Purpose Display",
+        description="Shows current terminal's purpose and associated playbook content",
+        endpoint="internal",
+        method="function",
+        request_schema={},
+        response_schema={"purpose": "string", "content": "stdout"}
+    )
     def show_current_purpose(self) -> None:
         """Show the current terminal's purpose and playbook content."""
         terminal_name = TektonEnviron.get('TERMA_TERMINAL_NAME', '')
@@ -188,7 +220,7 @@ class PurposeCommand:
         # Get terminal's purpose from Terma
         try:
             response = httpx.get(
-                f"{self.terma_url}/api/mcp/v2/terminals/list",
+                f"{self.terma_base_url}/api/mcp/v2/terminals/list",
                 timeout=5.0
             )
             
@@ -221,12 +253,19 @@ class PurposeCommand:
         except Exception as e:
             print(f"Error getting terminal purpose: {e}")
     
+    @integration_point(
+        title="Terminal Purpose Query",
+        description="Retrieves specific terminal's purpose from Terma",
+        target_component="terma",
+        protocol="HTTP GET",
+        data_flow="terminal_name → Terma → purpose"
+    )
     def show_terminal_purpose(self, terminal_name: str) -> None:
         """Show a specific terminal's purpose."""
         try:
             # Query Terma for terminal list
             response = httpx.get(
-                f"{self.terma_url}/api/mcp/v2/terminals/list",
+                f"{self.terma_base_url}/api/mcp/v2/terminals/list",
                 timeout=5.0
             )
             
@@ -248,8 +287,136 @@ class PurposeCommand:
             
         except Exception as e:
             print(f"Error getting terminal purpose: {e}")
+    
+    @integration_point(
+        title="Terminal Name Validation",
+        description="Validates if name is a known terminal via Terma API",
+        target_component="terma",
+        protocol="HTTP GET",
+        data_flow="name → Terma → boolean"
+    )
+    def is_terminal_name(self, name: str) -> bool:
+        """Check if a name is a known terminal name."""
+        try:
+            response = httpx.get(
+                f"{self.terma_base_url}/api/mcp/v2/terminals/list",
+                timeout=5.0
+            )
+            
+            if response.status_code != 200:
+                return False
+            
+            data = response.json()
+            terminals = data.get("terminals", [])
+            
+            # Check if name matches any terminal
+            for term in terminals:
+                if term.get("name", "").lower() == name.lower():
+                    return True
+            
+            return False
+            
+        except Exception:
+            # If we can't check, assume it's not a terminal name
+            return False
+    
+    @architecture_decision(
+        title="CSV Purpose Search",
+        description="Parses comma-separated purposes for individual content search",
+        rationale="Enables flexible multi-purpose queries matching terminal purpose format",
+        alternatives_considered=["Single purpose only", "Regex patterns"],
+        impacts=["usability", "consistency"],
+        decided_by="Casey",
+        decision_date="2025-01-24"
+    )
+    def search_purpose_content(self, search_term: str) -> None:
+        """Search for and display purpose content files."""
+        # Parse the search term as a purpose list (handles CSV)
+        purposes = parse_purpose_list(search_term)
+        
+        if not purposes:
+            print(f"No valid purposes provided in '{search_term}'")
+            return
+        
+        print(f"Searching for purpose content: {', '.join(purposes)}")
+        print()
+        
+        # Search for each purpose individually
+        for purpose in purposes:
+            self._search_single_purpose(purpose)
+    
+    @api_contract(
+        title="Purpose Content Search",
+        description="Searches filesystem for purpose-specific content files",
+        endpoint="internal",
+        method="function",
+        request_schema={"purpose": "string"},
+        response_schema={"found_files": "list", "content": "stdout"}
+    )
+    def _search_single_purpose(self, purpose: str) -> None:
+        """Search for and display content for a single purpose."""
+        found_any = False
+        purpose_lower = purpose.lower()
+        
+        # Search locations in order
+        search_locations = [
+            (self.playbook_dir, "Local playbook"),
+            (Path(self.tekton_root) / "MetaData" / "Documentation" / "AIPurposes" / "text", "Shared text purposes"),
+            (Path(self.tekton_root) / "MetaData" / "Documentation" / "AIPurposes" / "json", "Shared JSON purposes")
+        ]
+        
+        print(f"=== {purpose.upper()} ===")
+        
+        for location, description in search_locations:
+            if not location.exists():
+                continue
+                
+            # Search for files matching the search term
+            matching_files = []
+            
+            # Look for exact matches first
+            for ext in ['', '.txt', '.md', '.json']:
+                file_path = location / f"{purpose_lower}{ext}"
+                if file_path.exists() and file_path.is_file():
+                    matching_files.append(file_path)
+            
+            # Also search subdirectories in playbook
+            if location == self.playbook_dir:
+                for subdir in location.iterdir():
+                    if subdir.is_dir():
+                        for ext in ['', '.txt', '.md', '.json']:
+                            file_path = subdir / f"{purpose_lower}{ext}"
+                            if file_path.exists() and file_path.is_file():
+                                matching_files.append(file_path)
+            
+            # Display found files
+            for file_path in matching_files:
+                found_any = True
+                print(f"\n(from {file_path.relative_to(self.playbook_dir.parent.parent if location != self.playbook_dir else self.playbook_dir)})")
+                try:
+                    with open(file_path, 'r', encoding='utf-8') as f:
+                        content = f.read()
+                        print(content)
+                        if not content.endswith('\n'):
+                            print()  # Add newline if file doesn't end with one
+                except Exception as e:
+                    print(f"Error reading file: {e}")
+        
+        if not found_any:
+            print(f"No playbook content found for '{purpose}'")
+        
+        print()  # Blank line between purposes
 
 
+@architecture_decision(
+    title="Purpose Command Router",
+    description="Enables context-aware AI through simple purpose commands",
+    rationale="Simple commands provide powerful context - terminals get roles, AIs get purpose content",
+    alternatives_considered=["Separate commands for terminals vs content", "Complex query syntax"],
+    impacts=["usability", "AI effectiveness", "knowledge management"],
+    decided_by="Casey",
+    decision_date="2025-01-24"
+)
 def handle_purpose_command(args: List[str]) -> None:
     """
     Handle the aish purpose command.
@@ -258,6 +425,7 @@ def handle_purpose_command(args: List[str]) -> None:
         aish purpose                                    # Show current terminal's purpose
         aish purpose <terminal_name>                    # Show specific terminal's purpose
         aish purpose <terminal_name> "<purposes>"       # Update terminal's purpose
+        aish purpose "<search_term>"                    # Search for purpose content
     """
     cmd = PurposeCommand()
     
@@ -265,9 +433,14 @@ def handle_purpose_command(args: List[str]) -> None:
         # Show current terminal's purpose
         cmd.show_current_purpose()
     elif len(args) == 1:
-        # Show specific terminal's purpose
+        # First check if it's a terminal name
         terminal_name = args[0]
-        cmd.show_terminal_purpose(terminal_name)
+        if cmd.is_terminal_name(terminal_name):
+            # Show specific terminal's purpose
+            cmd.show_terminal_purpose(terminal_name)
+        else:
+            # Not a terminal name - search for purpose content
+            cmd.search_purpose_content(terminal_name)
     else:
         # Update terminal's purpose
         terminal_name = args[0]

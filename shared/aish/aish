@@ -434,6 +434,7 @@ Environment variables:
             print("  aish purpose                   Get terminal purpose: context for current terminal session")
             print("  aish purpose <name>            Get short form terminal purpose of <name>")
             print("  aish purpose <name> \"roles\"    Set terminal purpose/roles")
+            print("  aish purpose \"keyword\"         Search for purpose content (supports CSV: \"coding, test\")")
             print()
             print("PROJECTS:")
             print("  aish project list              List Tekton managed projects with CI info")

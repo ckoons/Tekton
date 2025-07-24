@@ -53,6 +53,15 @@ except ImportError:
 # Build endpoint using tekton_url
 TERMA_ENDPOINT = tekton_url('terma', '')
 
+@architecture_decision(
+    title="Inter-Terminal Messaging",
+    description="Enables human-to-human and AI-to-human communication via terminal inboxes",
+    rationale="Terminal inboxes provide asynchronous communication between distributed team members",
+    alternatives_considered=["Slack integration", "Email", "Direct terminal interrupts"],
+    impacts=["collaboration", "workflow", "attention management"],
+    decided_by="Casey",
+    decision_date="2025-01-17"
+)
 def handle_terma_command(args):
     """Handle terma inter-terminal communication commands."""
     if len(args) < 1:

@@ -11,6 +11,31 @@ from typing import Dict, List, Optional, Union, Any
 sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
 from shared.env import TektonEnviron
 
+# Try to import landmarks if available
+try:
+    from landmarks import architecture_decision, integration_point, api_contract, state_checkpoint
+except ImportError:
+    # Landmarks not available, create no-op decorators
+    def architecture_decision(**kwargs):
+        def decorator(func):
+            return func
+        return decorator
+    
+    def integration_point(**kwargs):
+        def decorator(func):
+            return func
+        return decorator
+    
+    def api_contract(**kwargs):
+        def decorator(func):
+            return func
+        return decorator
+    
+    def state_checkpoint(**kwargs):
+        def decorator(func):
+            return func
+        return decorator
+
 # Known AI names (should match main aish file)
 KNOWN_AI_NAMES = [
     'numa', 'tekton', 'prometheus', 'telos', 'metis', 'harmonia',
@@ -183,6 +208,15 @@ def format_route_display(route: Dict[str, Any]) -> str:
     return f"{route['name']}: " + " → ".join(hops_with_purpose)
 
 
+@architecture_decision(
+    title="Intelligent Message Routing",
+    description="Named routes with purposes for multi-hop AI message pipelines",
+    rationale="Enables complex AI workflows with purpose-driven message transformation at each hop",
+    alternatives_considered=["Direct messaging only", "Fixed pipelines", "Centralized router"],
+    impacts=["AI composability", "workflow flexibility", "message traceability"],
+    decided_by="Casey",
+    decision_date="2025-01-20"
+)
 def handle_route_command() -> bool:
     """Handle the aish route command - reads full command line itself"""
     

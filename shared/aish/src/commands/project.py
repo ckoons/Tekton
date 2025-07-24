@@ -21,6 +21,31 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
 from shared.env import TektonEnviron
 from shared.urls import tekton_url
 
+# Try to import landmarks if available
+try:
+    from landmarks import architecture_decision, integration_point, api_contract, state_checkpoint
+except ImportError:
+    # Landmarks not available, create no-op decorators
+    def architecture_decision(**kwargs):
+        def decorator(func):
+            return func
+        return decorator
+    
+    def integration_point(**kwargs):
+        def decorator(func):
+            return func
+        return decorator
+    
+    def api_contract(**kwargs):
+        def decorator(func):
+            return func
+        return decorator
+    
+    def state_checkpoint(**kwargs):
+        def decorator(func):
+            return func
+        return decorator
+
 
 def load_project_registry() -> Dict:
     """Load the Tekton project registry"""
@@ -269,6 +294,15 @@ def unforward_project(args: List[str]) -> bool:
     return True
 
 
+@architecture_decision(
+    title="Project CI Management",
+    description="Manages Companion Intelligence forwarding for Tekton projects",
+    rationale="Each project can have its own CI that forwards messages to specific terminals",
+    alternatives_considered=["Single global CI", "Direct project notifications"],
+    impacts=["project autonomy", "CI scalability", "workflow flexibility"],
+    decided_by="Casey",
+    decision_date="2025-01-17"
+)
 def handle_project_command(args: List[str]) -> bool:
     """Handle aish project commands"""
     if not args or args[0] == 'help':

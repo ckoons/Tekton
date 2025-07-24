@@ -8,6 +8,31 @@ from pathlib import Path
 from shared.env import TektonEnviron
 from forwarding.forwarding_registry import ForwardingRegistry
 
+# Try to import landmarks if available
+try:
+    from landmarks import architecture_decision, integration_point, api_contract, state_checkpoint
+except ImportError:
+    # Landmarks not available, create no-op decorators
+    def architecture_decision(**kwargs):
+        def decorator(func):
+            return func
+        return decorator
+    
+    def integration_point(**kwargs):
+        def decorator(func):
+            return func
+        return decorator
+    
+    def api_contract(**kwargs):
+        def decorator(func):
+            return func
+        return decorator
+    
+    def state_checkpoint(**kwargs):
+        def decorator(func):
+            return func
+        return decorator
+
 def check_ai_status(ai_name, port):
     """Check if an AI is running by checking its port."""
     try:
@@ -57,6 +82,14 @@ def get_active_terminals():
         pass
     return []
 
+@api_contract(
+    title="System Status Report",
+    description="Provides comprehensive status of AI components, forwards, and terminals",
+    endpoint="internal",
+    method="function",
+    request_schema={"args": "list[str]"},
+    response_schema={"status": "dict", "format": "json|text"}
+)
 def handle_status_command(args=None):
     """Handle the aish status command."""
     

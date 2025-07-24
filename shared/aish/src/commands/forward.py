@@ -36,6 +36,15 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 from forwarding.forwarding_registry import ForwardingRegistry
 
 
+@architecture_decision(
+    title="AI Message Forwarding",
+    description="Routes AI messages to human terminals for attention",
+    rationale="Enables human-in-the-loop AI interactions by forwarding messages to terminal inboxes",
+    alternatives_considered=["Direct AI-to-AI only", "Central message queue"],
+    impacts=["collaboration", "AI transparency", "human oversight"],
+    decided_by="Casey",
+    decision_date="2025-01-17"
+)
 def handle_forward_command(args):
     """Handle 'aish forward' commands"""
     
@@ -76,7 +85,12 @@ def print_forward_usage():
     print("  aish forward remove apollo    # Remove forwarding")
 
 
-# Landmark: AI-to-Human Routing - Forwards AI messages to terminal inboxes
+@state_checkpoint(
+    title="Forward Registration",
+    description="Establishes AI-to-terminal message routing",
+    state_type="forwarding_rule",
+    validation="AI name validated, forwarding registered"
+)
 def set_forward(registry, ai_name, terminal_name):
     """Set up forwarding"""
     # Validate AI name
@@ -133,6 +147,12 @@ def list_forwards(registry):
     return 0
 
 
+@state_checkpoint(
+    title="Forward Removal",
+    description="Removes AI-to-terminal message routing",
+    state_type="forwarding_rule",
+    validation="Forwarding rule removed from registry"
+)
 def handle_unforward_command(args):
     """Handle 'aish unforward' commands"""
     
