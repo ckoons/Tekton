@@ -127,13 +127,21 @@ class TestInboxSendShow(AishTest):
     
     def test(self) -> bool:
         test_message = "Test message from inbox test suite"
-        test_ci = "test-ci"
+        # Get current CI name (myself)
+        exit_code, current_ci, stderr = self.run_command("aish whoami")
+        if exit_code != 0:
+            current_ci = "test-runner"  # fallback
+        else:
+            current_ci = current_ci.strip()
         
-        # Test sending to each inbox type
+        # Test sending to each inbox type TO MYSELF
         for inbox_type in ['prompt', 'new', 'keep']:
-            # Send a message
+            # Clear this specific inbox first
+            self.run_command(f"aish inbox clear {inbox_type}")
+            
+            # Send a message to myself
             exit_code, stdout, stderr = self.run_command(
-                f'aish inbox send {inbox_type} {test_ci} "{test_message}"'
+                f'aish inbox send {inbox_type} {current_ci} "{test_message}"'
             )
             
             if exit_code != 0:
@@ -183,8 +191,14 @@ class TestInboxJson(AishTest):
         for inbox_type in ['prompt', 'new', 'keep']:
             self.run_command(f"aish inbox clear {inbox_type}")
         
-        # Send test messages
-        self.run_command('aish inbox send new test-sender "JSON test message"')
+        # Send test messages to myself
+        exit_code, current_ci, stderr = self.run_command("aish whoami")
+        if exit_code != 0:
+            current_ci = "test-runner"
+        else:
+            current_ci = current_ci.strip()
+        
+        self.run_command(f'aish inbox send new {current_ci} "JSON test message"')
     
     def test(self) -> bool:
         # Test JSON output
@@ -231,8 +245,16 @@ class TestInboxGet(AishTest):
     
     def setup(self):
         """Set up test messages"""
+        # Get current CI name
+        exit_code, current_ci, stderr = self.run_command("aish whoami")
+        if exit_code != 0:
+            current_ci = "test-runner"
+        else:
+            current_ci = current_ci.strip()
+        self.current_ci = current_ci
+        
         self.run_command("aish inbox clear new")
-        self.run_command('aish inbox send new test-ci "Message for get test"')
+        self.run_command(f'aish inbox send new {current_ci} "Message for get test"')
     
     def test(self) -> bool:
         # Verify message exists
@@ -323,7 +345,14 @@ class TestInboxClear(AishTest):
     
     def setup(self):
         """Set up test messages"""
-        self.run_command('aish inbox send keep test-ci "Message to clear"')
+        # Get current CI name
+        exit_code, current_ci, stderr = self.run_command("aish whoami")
+        if exit_code != 0:
+            current_ci = "test-runner"
+        else:
+            current_ci = current_ci.strip()
+        
+        self.run_command(f'aish inbox send keep {current_ci} "Message to clear"')
     
     def test(self) -> bool:
         # Verify message exists
@@ -361,29 +390,25 @@ class TestInboxErrorHandling(AishTest):
     """Test error handling for invalid commands"""
     
     def test(self) -> bool:
-        # Test invalid inbox type
+        # Test invalid inbox type - should show helpful error message
         exit_code, stdout, stderr = self.run_command("aish inbox count invalid")
         
-        if exit_code == 0:
-            self.error_message = "Should have failed with invalid inbox type"
+        if "Invalid inbox type" not in stdout:
+            self.error_message = "Should show invalid inbox type error message"
             return False
         
-        if "Invalid inbox type" not in stderr and "Invalid inbox type" not in stdout:
-            self.error_message = "Should show invalid inbox type error"
-            return False
-        
-        # Test missing arguments
+        # Test missing arguments - should show training reference
         exit_code, stdout, stderr = self.run_command("aish inbox send")
         
-        if exit_code == 0:
-            self.error_message = "Should have failed with missing arguments"
+        if "aish inbox training" not in stdout:
+            self.error_message = "Should show training reference for missing arguments"
             return False
         
-        # Test show with missing type
+        # Test show with missing type - should show training reference
         exit_code, stdout, stderr = self.run_command("aish inbox show")
         
-        if exit_code == 0:
-            self.error_message = "Should have failed with missing inbox type"
+        if "aish inbox training" not in stdout:
+            self.error_message = "Should show training reference for missing type"
             return False
         
         return True

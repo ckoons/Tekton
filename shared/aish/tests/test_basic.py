@@ -58,7 +58,7 @@ class TestList(AishTest):
             return False
         
         # Check for AI components
-        if "Available AI Components:" not in stdout:
+        if "Greek Chorus AIs:" not in stdout:
             self.error_message = "Missing AI components header"
             return False
         
