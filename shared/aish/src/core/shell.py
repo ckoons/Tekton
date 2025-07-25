@@ -1,5 +1,5 @@
 """
-AIShell - Main shell implementation
+AIShell - Simplified shell implementation using unified sender
 """
 
 import os
@@ -36,7 +36,6 @@ except ImportError:
         return decorator
 
 from parser.pipeline import PipelineParser
-from message_handler import MessageHandler
 from core.history import AIHistory
 
 # Add parent to path for shared imports
@@ -57,10 +56,8 @@ class AIShell:
         
         self.debug = debug
         self.parser = PipelineParser()
-        self.handler = MessageHandler(self.rhetor_endpoint, debug=debug)
         tekton_root = TektonEnviron.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
         self.history_file = Path(tekton_root) / '.tekton' / 'aish' / '.aish_history'
-        self.active_sockets = {}  # Track active socket IDs by AI name
         self.ai_history = AIHistory()  # Conversation history tracker
         
         # Setup readline for interactive mode
@@ -80,10 +77,6 @@ class AIShell:
             except:
                 pass  # Ignore errors on exit
         atexit.register(save_history)
-        
-        # Tab completion would go here
-        # readline.set_completer(self._completer)
-        # readline.parse_and_bind("tab: complete")
     
     def execute_command(self, command):
         """Execute a single AI pipeline command"""
@@ -189,20 +182,6 @@ class AIShell:
                 print()  # New line after ^D
                 break
     
-    def _execute_pipeline(self, pipeline):
-        """Execute a parsed pipeline"""
-        pipeline_type = pipeline.get('type')
-        
-        if pipeline_type == 'team-chat':
-            return self._execute_team_chat(pipeline['message'])
-        elif pipeline_type == 'pipeline':
-            return self._execute_pipe_stages(pipeline['stages'])
-        elif pipeline_type == 'simple':
-            return self._execute_simple_command(pipeline['command'])
-        else:
-            return f"Unsupported pipeline type: {pipeline_type}"
-    
-    # Landmark: Pipeline Execution Strategy - team-chat vs pipeline vs simple
     def _execute_pipeline_with_tracking(self, pipeline):
         """Execute a pipeline and track responses for history.
         
@@ -213,14 +192,18 @@ class AIShell:
         responses = {}
         
         if pipeline_type == 'team-chat':
-            result = self._execute_team_chat(pipeline['message'])
-            # Parse team chat responses
-            for line in result.split('\n'):
-                if line.startswith('[team-chat-from-') and ']' in line:
-                    ai_name = line[len('[team-chat-from-'):line.index(']')]
-                    message = line[line.index(']')+1:].strip()
-                    responses[ai_name] = message
-            return result, responses
+            # Use the rhetor client for team chat
+            from core.rhetor_client import broadcast_to_rhetor
+            team_responses = broadcast_to_rhetor(pipeline['message'])
+            
+            # Format output
+            result_lines = ["Team responses:", "-" * 40]
+            for ai_name, content in team_responses.items():
+                result_lines.append(f"[{ai_name}]: {content}")
+                responses[ai_name] = content
+            result_lines.append("-" * 40)
+            
+            return '\n'.join(result_lines), responses
             
         elif pipeline_type == 'pipeline':
             result, responses = self._execute_pipe_stages_with_tracking(pipeline['stages'])
@@ -233,66 +216,16 @@ class AIShell:
         else:
             return f"Unsupported pipeline type: {pipeline_type}", {}
     
-    def _execute_team_chat(self, message):
-        """Execute team-chat broadcast using new orchestration pattern"""
-        import asyncio
-        
-        # Run the async team chat in sync context
-        try:
-            return self._run_async_team_chat(message)
-        except Exception as e:
-            if self.debug:
-                print(f"[DEBUG] Team chat error: {e}")
-            # Fallback to old method
-            self.handler.write("team-chat-all", message)
-            responses = self.handler.read("team-chat-all")
-            return '\n'.join(responses) if responses else "No responses yet"
-    
-    def _execute_pipe_stages(self, stages):
-        """Execute pipeline stages"""
-        current_data = None
-        
-        for i, stage in enumerate(stages):
-            if stage['type'] == 'echo':
-                # Start of pipeline with echo
-                current_data = stage['content']
-            elif stage['type'] == 'ai':
-                # Process through AI
-                ai_name = stage['name']
-                
-                # Get or create socket for this AI
-                socket_id = self._get_or_create_socket(ai_name)
-                
-                if current_data is not None:
-                    # Write input to AI
-                    success = self.handler.write(socket_id, current_data)
-                    if not success:
-                        return f"Failed to write to {ai_name}"
-                    
-                    # Read response
-                    responses = self.handler.read(socket_id)
-                    if responses:
-                        # Extract message content (remove header)
-                        current_data = responses[0]
-                        # Remove header if present
-                        if current_data.startswith(f"[team-chat-from-{ai_name}]"):
-                            current_data = current_data[len(f"[team-chat-from-{ai_name}]"):].strip()
-                    else:
-                        current_data = f"No response from {ai_name}"
-                else:
-                    return f"No input data for {ai_name}"
-            else:
-                # Other command types
-                current_data = f"Unsupported stage type: {stage['type']}"
-        
-        return current_data if current_data else "Pipeline completed"
-    
     def _execute_pipe_stages_with_tracking(self, stages):
         """Execute pipeline stages and track AI responses."""
         current_data = None
         responses = {}
         
-        for i, stage in enumerate(stages):
+        from core.unified_sender import send_to_ci
+        import io
+        from contextlib import redirect_stdout
+        
+        for stage in stages:
             if stage['type'] == 'echo':
                 # Start of pipeline with echo
                 current_data = stage['content']
@@ -300,31 +233,18 @@ class AIShell:
                 # Process through AI
                 ai_name = stage['name']
                 
-                # Get or create socket for this AI
-                socket_id = self._get_or_create_socket(ai_name)
-                
                 if current_data is not None:
-                    # Write input to AI
-                    success = self.handler.write(socket_id, current_data)
-                    if not success:
-                        return f"Failed to write to {ai_name}", responses
+                    # Capture the output from send_to_ci
+                    output_buffer = io.StringIO()
+                    with redirect_stdout(output_buffer):
+                        success = send_to_ci(ai_name, current_data)
                     
-                    # Read response
-                    ai_responses = self.handler.read(socket_id)
-                    if ai_responses:
-                        # Extract message content (remove header)
-                        current_data = ai_responses[0]
-                        # Remove header if present
-                        if current_data.startswith(f"[team-chat-from-{ai_name}"):
-                            current_data = current_data[len(f"[team-chat-from-{ai_name}"):].strip()
-                            # Find the closing bracket
-                            if current_data.startswith(']'):
-                                current_data = current_data[1:].strip()
-                        
-                        # Track response
-                        responses[ai_name] = current_data
+                    if success:
+                        response = output_buffer.getvalue().strip()
+                        current_data = response
+                        responses[ai_name] = response
                     else:
-                        current_data = f"No response from {ai_name}"
+                        current_data = f"Failed to get response from {ai_name}"
                 else:
                     return f"No input data for {ai_name}", responses
             else:
@@ -337,15 +257,6 @@ class AIShell:
     def _execute_simple_command(self, command):
         """Execute a simple command"""
         return f"Simple command: {command}"
-    
-    def _get_or_create_socket(self, ai_name):
-        """Get existing socket or create new one for AI"""
-        if ai_name not in self.active_sockets:
-            socket_id = self.handler.create(ai_name)
-            self.active_sockets[ai_name] = socket_id
-            if self.debug:
-                print(f"[DEBUG] Created socket {socket_id} for {ai_name}")
-        return self.active_sockets[ai_name]
     
     def _show_help(self):
         """Display help information"""
@@ -382,129 +293,45 @@ MCP Server Management:
         """)
     
     def _list_ais(self):
-        """List available AI specialists"""
-        print("Discovering available AI specialists...")
-        # Discover AIs is not supported in MessageHandler, using hardcoded list
-        ais = self._get_hardcoded_ais()
+        """List available AI specialists using unified registry"""
+        from registry.ci_registry import get_registry
         
-        if not ais:
-            print("No AI specialists found. Is Rhetor running?")
-            return
-        
-        # Deduplicate first
-        unique_ais = {}
-        for ai_info in ais.values():
-            if ai_info['id'] not in unique_ais:
-                unique_ais[ai_info['id']] = ai_info
-        
-        print(f"\nAvailable AI Specialists ({len(unique_ais)}):")
+        print("Available CIs (Companion Intelligences):")
         print("-" * 60)
         
-        # Group by status
-        active = []
-        inactive = []
+        registry = get_registry()
         
-        for ai_info in unique_ais.values():
-            if ai_info.get('status') in ['active', 'healthy']:
-                active.append(ai_info)
-            else:
-                inactive.append(ai_info)
+        # Group by type
+        by_type = {
+            'greek': [],
+            'terminal': [],
+            'project': []
+        }
         
-        # Show active first (deduplicated)
-        if active:
-            print("\nActive:")
-            seen = set()
-            for ai in sorted(active, key=lambda x: x['id']):
-                if ai['id'] not in seen:
-                    seen.add(ai['id'])
-                    caps = ', '.join(ai.get('capabilities', [])[:3])
-                    if caps:
-                        print(f"  {ai['id']:<20} - {caps}")
-                    else:
-                        print(f"  {ai['id']}")
+        for ci in registry.list_all():
+            ci_type = ci.get('type', 'unknown')
+            if ci_type in by_type:
+                by_type[ci_type].append(ci)
         
-        # Show inactive
-        if inactive:
-            print("\nInactive:")
-            for ai in sorted(inactive, key=lambda x: x['id']):
-                print(f"  {ai['id']:<20} - {ai.get('status', 'unknown')}")
+        # Show Greek Chorus
+        if by_type['greek']:
+            print("\nGreek Chorus AIs:")
+            for ci in sorted(by_type['greek'], key=lambda x: x['name']):
+                print(f"  {ci['name']:<15} - {ci.get('description', 'AI specialist')}")
         
-        print("\nUse any AI name in a pipeline: echo \"hello\" | apollo")
-    
-    def _get_hardcoded_ais(self):
-        """Return hardcoded list of AIs since MessageHandler doesn't support discovery."""
-        ai_names = ['engram', 'hermes', 'ergon', 'rhetor', 'terma', 'athena',
-                    'prometheus', 'harmonia', 'telos', 'synthesis', 'tekton_core',
-                    'metis', 'apollo', 'penia', 'sophia', 'noesis', 'numa', 'hephaestus']
+        # Show Terminals
+        if by_type['terminal']:
+            print("\nActive Terminals:")
+            for ci in sorted(by_type['terminal'], key=lambda x: x['name']):
+                print(f"  {ci['name']:<15} - Terminal session")
         
-        # Return in format expected by list_ais
-        return {name: {'id': name, 'status': 'unknown', 'capabilities': []} for name in ai_names}
-    
-    def send_to_ai(self, ai_name, message):
-        """Send message directly to AI via Rhetor."""
-        try:
-            # Get or create socket for this AI
-            socket_id = self._get_or_create_socket(ai_name)
-            
-            
-            if message:
-                # Write message to AI
-                success = self.handler.write(socket_id, message)
-                if not success:
-                    print(f"Failed to send message to {ai_name}")
-                    return
-                
-                # Read response
-                responses = self.handler.read(socket_id)
-                if responses:
-                    # Extract message content
-                    response = responses[0]
-                    # Remove header if present
-                    if response.startswith(f"[team-chat-from-{ai_name}"):
-                        response = response[len(f"[team-chat-from-{ai_name}"):].strip()
-                        if response.startswith(']'):
-                            response = response[1:].strip()
-                    
-                    # Track in history
-                    self.ai_history.add_exchange(ai_name, message, response)
-                    
-                    # Display response
-                    print(response)
-                    
-                    # Capture if requested
-                    if self.capture:
-                        self._capture_output(ai_name, message, response)
-                else:
-                    print(f"No response from {ai_name}")
-            else:
-                print(f"No message to send to {ai_name}")
-                
-        except Exception as e:
-            print(f"Error communicating with {ai_name}: {e}")
-            if self.debug:
-                import traceback
-                traceback.print_exc()
-    
-    def broadcast_message(self, message):
-        """Broadcast message to all AIs (team-chat)."""
-        try:
-            if message:
-                # Use the new orchestration pattern
-                result = self._execute_team_chat(message)
-                # Result already includes formatting
-                if "No AIs responded" not in result and "No responses" not in result:
-                    # Don't print again since _execute_team_chat already prints
-                    pass
-                else:
-                    print(result)
-            else:
-                print("No message to broadcast")
-                
-        except Exception as e:
-            print(f"Error broadcasting message: {e}")
-            if self.debug:
-                import traceback
-                traceback.print_exc()
+        # Show Projects
+        if by_type['project']:
+            print("\nProject CIs:")
+            for ci in sorted(by_type['project'], key=lambda x: x['name']):
+                print(f"  {ci['name']:<15} - {ci.get('description', 'Project CI')}")
+        
+        print("\nUse any CI name in a command: aish <name> \"message\"")
     
     def _show_history(self):
         """Show recent conversation history."""
@@ -518,54 +345,6 @@ MCP Server Management:
             print("Use !<number> to replay a command (e.g., !1716)")
         else:
             print("No conversation history yet. Start chatting with AIs!")
-    
-    def _run_async_team_chat(self, message):
-        """Run async team chat in sync context"""
-        import asyncio
-        
-        # Create new event loop for this operation
-        loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(loop)
-        
-        try:
-            return loop.run_until_complete(self._async_team_chat(message))
-        finally:
-            loop.close()
-    
-    async def _async_team_chat(self, message):
-        """Async team chat implementation using MessageHandler"""
-        print("Broadcasting to team...")
-        
-        # Use broadcast method
-        results = self.handler.broadcast(message)
-        
-        # Count successful sends
-        success_count = sum(1 for resp in results.values() if not resp.startswith('ERROR:'))
-        print(f"Sent to {success_count} AIs")
-        
-        if success_count == 0:
-            return "No AIs responded to broadcast"
-        
-        # Collect responses
-        print("\nTeam responses:")
-        print("-" * 40)
-        
-        response_lines = []
-        
-        # Process responses from broadcast
-        for ai_name, content in results.items():
-            if not content.startswith('ERROR:'):
-                # Format and display
-                formatted = f"[{ai_name}]: {content}"
-                print(formatted)
-                response_lines.append(formatted)
-        
-        print("-" * 40)
-        
-        if response_lines:
-            return '\n'.join(response_lines)
-        else:
-            return "No responses received"
     
     def _restart_mcp_server(self):
         """Restart the aish MCP server"""
@@ -684,7 +463,6 @@ MCP Server Management:
         """Capture command output to .tekton/aish/captures/"""
         try:
             # Create captures directory if it doesn't exist
-            # Use TEKTON_ROOT to ensure captures go to the right environment
             tekton_root = TektonEnviron.get('TEKTON_ROOT')
             if not tekton_root:
                 print("[DEBUG] Warning: TEKTON_ROOT not set, cannot capture output")

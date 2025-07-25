@@ -278,12 +278,23 @@ def _handle_ai_command(args, shell, ai_names):
         sys.exit(1)
     
     # Use unified sender for all CI types
+    sys.path.insert(0, str(src_path))
+    
     if component == 'team-chat':
-        # Keep team-chat using broadcast for now
-        shell.broadcast_message(input_data)
+        # Team chat needs special handling - broadcast to all Greek Chorus AIs
+        from core.rhetor_client import broadcast_to_rhetor
+        responses = broadcast_to_rhetor(input_data)
+        
+        if responses:
+            print("Team responses:")
+            print("-" * 40)
+            for ai_name, content in responses.items():
+                print(f"[{ai_name}]: {content}")
+            print("-" * 40)
+        else:
+            print("No responses from team")
     else:
         # Use unified sender for everything else
-        sys.path.insert(0, str(src_path))
         from core.unified_sender import send_to_ci
         send_to_ci(component, input_data)
 

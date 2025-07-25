@@ -940,7 +940,7 @@ window.prometheus_sendChat = function() {
         messagesContainer.scrollTop = messagesContainer.scrollHeight;
         
         // Use window.AIChat for AI response
-        if (window.AIChat && typeof window.AIChat === 'function') {
+        if (window.AIChat && typeof window.AIChat.sendMessage === 'function') {
             // Create AI message element with loading state
             const aiMessage = document.createElement('div');
             aiMessage.className = 'prometheus__message prometheus__message--ai';
@@ -952,18 +952,34 @@ window.prometheus_sendChat = function() {
             messagesContainer.appendChild(aiMessage);
             messagesContainer.scrollTop = messagesContainer.scrollHeight;
             
-            // Determine the context based on the active tab
-            const context = tabId === 'planningchat' ? 'planning' : 'team';
-            const systemPrompt = tabId === 'planningchat' 
-                ? 'You are Prometheus, a planning and resource management assistant. Help with project scheduling, resource allocation, timeline analysis, and risk assessment.'
-                : 'You are responding in the Tekton team chat. Keep responses concise and collaborative.';
+            // Determine which method to call based on the active tab
+            let aiPromise;
+            if (tabId === 'planningchat') {
+                // Direct message to prometheus for planning chat
+                aiPromise = window.AIChat.sendMessage('prometheus', message);
+            } else {
+                // Team chat
+                aiPromise = window.AIChat.teamChat(message, 'prometheus');
+            }
             
-            // Call window.AIChat
-            window.AIChat(message, systemPrompt, context).then(response => {
+            // Handle the response
+            aiPromise.then(response => {
                 // Update the AI message with the response
                 const messageText = aiMessage.querySelector('.prometheus__message-text');
                 if (messageText) {
-                    messageText.textContent = 'Prometheus: ' + response;
+                    if (tabId === 'planningchat') {
+                        messageText.textContent = 'Prometheus: ' + (response.content || response.response || response);
+                    } else {
+                        // For team chat, format the responses
+                        if (response.responses && response.responses.length > 0) {
+                            const teamResponses = response.responses.map(r => 
+                                `${r.specialist_id}: ${r.content}`
+                            ).join('\n\n');
+                            messageText.textContent = teamResponses;
+                        } else {
+                            messageText.textContent = 'No team responses received.';
+                        }
+                    }
                 }
                 messagesContainer.scrollTop = messagesContainer.scrollHeight;
             }).catch(error => {

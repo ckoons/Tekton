@@ -69,12 +69,13 @@ def send_to_ci(ci_name: str, message: str) -> bool:
             data = json.dumps(msg_data).encode('utf-8')
             
         elif message_format == 'rhetor_socket':
-            # Use existing Rhetor socket method
-            sys.path.insert(0, str(Path(__file__).parent.parent))
-            from core.shell import AIShell
-            shell = AIShell()
-            shell.send_to_ai(ci_name, message)
-            return True
+            # Use Rhetor client for Greek Chorus AIs
+            from core.rhetor_client import send_to_rhetor
+            response = send_to_rhetor(ci_name, message)
+            if response:
+                print(response)
+                return True
+            return False
             
         else:
             print(f"Unknown message format: {message_format}")

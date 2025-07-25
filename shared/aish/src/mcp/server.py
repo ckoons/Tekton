@@ -76,16 +76,15 @@ except ImportError:
 
 # Import aish components
 sys.path.insert(0, str(Path(__file__).parent.parent))
-from message_handler import MessageHandler
-from core.shell import AIShell
+from core.unified_sender import send_to_ci
+from core.rhetor_client import broadcast_to_rhetor
+from registry.ci_registry import get_registry
 from forwarding.forwarding_registry import ForwardingRegistry
 
 # Setup logging
 logger = logging.getLogger(__name__)
 
 # Initialize components
-message_handler = MessageHandler()
-ai_shell = AIShell()
 forwarding_registry = ForwardingRegistry()
 
 # Module-level architecture decision
@@ -241,13 +240,21 @@ async def send_message(request: Request):
         # Return streaming response
         async def generate():
             try:
-                # For now, we'll send the full response as a single chunk
-                # In future, we can integrate with actual streaming AI responses
-                response = message_handler.send(ai_name, message)
+                # Use unified sender with output capture
+                import io
+                from contextlib import redirect_stdout
                 
-                # Send as Server-Sent Events format
-                yield f"data: {json.dumps({'chunk': response, 'done': False})}\n\n"
-                yield f"data: {json.dumps({'done': True})}\n\n"
+                output_buffer = io.StringIO()
+                with redirect_stdout(output_buffer):
+                    success = send_to_ci(ai_name, message)
+                
+                if success:
+                    response = output_buffer.getvalue().strip()
+                    # Send as Server-Sent Events format
+                    yield f"data: {json.dumps({'chunk': response, 'done': False})}\n\n"
+                    yield f"data: {json.dumps({'done': True})}\n\n"
+                else:
+                    yield f"data: {json.dumps({'error': f'Failed to send to {ai_name}', 'done': True})}\n\n"
                 
             except Exception as e:
                 logger.error(f"Error in streaming response to {ai_name}: {e}")
@@ -257,8 +264,19 @@ async def send_message(request: Request):
     else:
         # Regular non-streaming response
         try:
-            response = message_handler.send(ai_name, message)
-            return {"response": response}
+            # Use unified sender with output capture
+            import io
+            from contextlib import redirect_stdout
+            
+            output_buffer = io.StringIO()
+            with redirect_stdout(output_buffer):
+                success = send_to_ci(ai_name, message)
+            
+            if success:
+                response = output_buffer.getvalue().strip()
+                return {"response": response}
+            else:
+                raise HTTPException(status_code=500, detail=f"Failed to send to {ai_name}")
         except Exception as e:
             logger.error(f"Error sending message to {ai_name}: {e}")
             raise HTTPException(status_code=500, detail=str(e))
@@ -292,8 +310,8 @@ async def team_chat(request: Request):
         raise HTTPException(status_code=400, detail="Missing message")
     
     try:
-        # Use MessageHandler to broadcast and get responses
-        responses = message_handler.broadcast(message)
+        # Use rhetor client to broadcast
+        responses = broadcast_to_rhetor(message)
         
         # Format responses for the UI
         formatted_responses = []
@@ -352,13 +370,22 @@ async def list_ais():
     List available AI specialists
     """
     try:
-        # Use the hardcoded list from AIShell._get_hardcoded_ais()
-        ai_names = ['engram', 'hermes', 'ergon', 'rhetor', 'terma', 'athena',
-                    'prometheus', 'harmonia', 'telos', 'synthesis', 'tekton_core',
-                    'metis', 'apollo', 'penia', 'sophia', 'noesis', 'numa', 'hephaestus']
+        # Get the list from unified registry
+        registry = get_registry()
+        all_cis = registry.list_all()
         
-        # Return in a structured format
-        ais = [{"name": name, "status": "available"} for name in ai_names]
+        # Format for MCP response
+        ais = []
+        for ci in all_cis:
+            ais.append({
+                "name": ci['name'],
+                "type": ci['type'],
+                "port": ci.get('port'),
+                "status": "active",
+                "purpose": ci.get('description', ''),
+                "message_format": ci.get('message_format', '')
+            })
+        
         return {"ais": ais}
     except Exception as e:
         logger.error(f"Error listing AIs: {e}")
