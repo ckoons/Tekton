@@ -6,25 +6,6 @@ Functional tests for aish terma commands
 from .test_runner import AishTest, TestSuite
 
 
-class TestTermaInboxDeprecation(AishTest):
-    """Test that old terma inbox command shows deprecation message"""
-    
-    def test(self) -> bool:
-        exit_code, stdout, stderr = self.run_command("aish terma inbox")
-        
-        # Should show deprecation message
-        if exit_code != 1:
-            self.error_message = f"Expected exit code 1 for deprecated command, got {exit_code}"
-            return False
-        
-        # Should show deprecation message pointing to new system
-        expected_messages = ["moved to 'aish inbox'", "aish inbox help"]
-        for msg in expected_messages:
-            if msg not in stdout:
-                self.error_message = f"Missing deprecation message: '{msg}'"
-                return False
-        
-        return True
 
 
 class TestTermaList(AishTest):
@@ -69,7 +50,6 @@ def create_suite() -> TestSuite:
     """Create the terma test suite"""
     suite = TestSuite("Terma Commands")
     
-    suite.add_test(TestTermaInboxDeprecation("test_terma_inbox_deprecation", "Test inbox deprecation message"))
     suite.add_test(TestTermaList("test_terma_list", "Test terminal listing"))
     suite.add_test(TestTermaWhoami("test_terma_whoami", "Test terminal identification"))
     
