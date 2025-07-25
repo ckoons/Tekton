@@ -9,9 +9,12 @@ from .test_runner import AishTest, TestSuite
 class UnifiedListTest(AishTest):
     """Test basic aish list command"""
     
-    def run(self) -> bool:
+    def test(self) -> bool:
         """Run the test"""
-        code, stdout, stderr = self.run_command("aish list")
+        # Get the aish path - we're in the tests directory when running
+        import os
+        aish_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'aish')
+        code, stdout, stderr = self.run_command(f"{aish_path} list")
         
         if code != 0:
             self.error_message = f"Command failed with code {code}: {stderr}"
@@ -25,17 +28,18 @@ class UnifiedListTest(AishTest):
             self.error_message = "Output missing Active Terminals section"
             return False
         
-        self.passed = True
         return True
 
 
 class UnifiedListTypeTest(AishTest):
     """Test aish list with type filter"""
     
-    def run(self) -> bool:
+    def test(self) -> bool:
         """Run the test"""
         # Test greek filter
-        code, stdout, stderr = self.run_command("aish list type greek")
+        import os
+        aish_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'aish')
+        code, stdout, stderr = self.run_command(f"{aish_path} list type greek")
         
         if code != 0:
             self.error_message = f"Command failed with code {code}: {stderr}"
@@ -48,25 +52,26 @@ class UnifiedListTypeTest(AishTest):
             return False
         
         # Test terminal filter
-        code, stdout, stderr = self.run_command("aish list type terminal")
+        code, stdout, stderr = self.run_command(f"{aish_path} list type terminal")
         
         if code != 0:
             self.error_message = f"Terminal filter failed with code {code}: {stderr}"
             return False
         
-        self.passed = True
         return True
 
 
 class UnifiedListJsonTest(AishTest):
     """Test JSON output"""
     
-    def run(self) -> bool:
+    def test(self) -> bool:
         """Run the test"""
         import json
         
         # Test basic JSON
-        code, stdout, stderr = self.run_command("aish list json")
+        import os
+        aish_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'aish')
+        code, stdout, stderr = self.run_command(f"{aish_path} list json")
         
         if code != 0:
             self.error_message = f"Command failed with code {code}: {stderr}"
@@ -96,18 +101,19 @@ class UnifiedListJsonTest(AishTest):
             self.error_message = f"Invalid JSON output: {e}"
             return False
         
-        self.passed = True
         return True
 
 
 class UnifiedListJsonFilterTest(AishTest):
     """Test JSON output with filter"""
     
-    def run(self) -> bool:
+    def test(self) -> bool:
         """Run the test"""
         import json
         
-        code, stdout, stderr = self.run_command("aish list json terminal")
+        import os
+        aish_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'aish')
+        code, stdout, stderr = self.run_command(f"{aish_path} list json terminal")
         
         if code != 0:
             self.error_message = f"Command failed with code {code}: {stderr}"
@@ -130,17 +136,18 @@ class UnifiedListJsonFilterTest(AishTest):
             self.error_message = f"Invalid JSON output: {e}"
             return False
         
-        self.passed = True
         return True
 
 
 class UnifiedMessagingTest(AishTest):
     """Test unified messaging to different CI types"""
     
-    def run(self) -> bool:
+    def test(self) -> bool:
         """Run the test"""
         # Test Greek Chorus messaging
-        code, stdout, stderr = self.run_command('aish numa "test unified message"')
+        import os
+        aish_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'aish')
+        code, stdout, stderr = self.run_command(f'{aish_path} numa "test unified message"')
         
         if code != 0:
             self.error_message = f"Failed to send to numa: {stderr}"
@@ -151,13 +158,12 @@ class UnifiedMessagingTest(AishTest):
             self.error_message = "No response from numa"
             return False
         
-        self.passed = True
         return True
 
 
 def create_suite() -> TestSuite:
     """Create the unified test suite"""
-    suite = TestSuite("unified", "Unified CI registry and messaging tests")
+    suite = TestSuite("unified")
     
     # Add tests
     suite.add_test(UnifiedListTest(

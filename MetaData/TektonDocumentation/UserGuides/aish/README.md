@@ -4,20 +4,28 @@ User guide for humans working with aish (AI Shell) in the Tekton platform.
 
 ## Overview
 
-aish is your command-line interface to the Tekton Multi-AI Engineering Platform. It allows you to:
-- Communicate with AI specialists
-- Manage project CI (Computational Instance) routing
-- Send messages between terminals
-- Forward AI messages to human terminals
+aish is your command-line interface to the Tekton Multi-AI Engineering Platform. With the new unified CI system, it provides a single interface to communicate with:
+- **Greek Chorus AIs**: numa, apollo, athena, and other AI specialists
+- **Terminals**: Other human terminals like alice, bob, sandi
+- **Project CIs**: Project-specific computational instances
+- All through the same simple command syntax!
 
 ## Quick Start
 
 ```bash
-# Send a message to an AI
+# Send a message to any CI (Greek Chorus, Terminal, or Project)
 aish numa "Hello, how can you help me today?"
 
-# List available AIs
+# List all available CIs with unified view
 aish list
+
+# List specific CI types
+aish list type terminal
+aish list type greek
+aish list type project
+
+# Get detailed JSON output
+aish list json
 
 # Check your identity and environment
 aish whoami
@@ -65,25 +73,28 @@ aish project forward MyWebApp
 aish project unforward MyWebApp
 ```
 
-## AI Communication
+## Unified CI Communication (New!)
+
+With the unified CI system, you can communicate with any type of CI using the same syntax:
 
 ### Direct Messaging
 
-Send messages directly to any AI specialist:
-
 ```bash
-# Knowledge and research
+# Greek Chorus AIs (AI specialists)
 aish athena "Explain the observer pattern"
-aish noesis "What are the latest ML optimization techniques?"
-
-# Planning and architecture
-aish prometheus "Plan a microservices migration"
-aish telos "Define success criteria for our API redesign"
-
-# Development support
 aish numa "Review this code for potential issues"
 aish apollo "What patterns do you see in these logs?"
+
+# Terminal Communication (other humans)
+aish alice "Ready for code review?"
+aish bob "Can you help with the database issue?"
+
+# Project CIs (project-specific instances)
+aish mywebapp "What's the deployment status?"
+aish datapipeline "Show me the latest metrics"
 ```
+
+All use the same simple syntax - the system automatically routes messages based on the CI's configuration!
 
 ### Team Chat
 

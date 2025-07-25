@@ -124,7 +124,7 @@ Broadcast message to all team members.
 ### AI Management
 
 #### POST /api/mcp/v2/tools/list-ais
-List all available AIs.
+List all available AIs from the unified CI registry.
 
 **Response:**
 ```json
@@ -132,19 +132,41 @@ List all available AIs.
   "ais": [
     {
       "name": "numa",
-      "port": 8201,
+      "type": "greek",
+      "port": 8316,
       "status": "active",
-      "purpose": "NUMA - Intelligent Systems Integration"
+      "purpose": "NUMA - Intelligent Systems Integration",
+      "message_format": "rhetor_socket"
     },
     {
       "name": "apollo",
-      "port": 8202,
+      "type": "greek",
+      "port": 8317,
       "status": "active", 
-      "purpose": "Code Development"
+      "purpose": "Code Development",
+      "message_format": "rhetor_socket"
+    },
+    {
+      "name": "alice",
+      "type": "terminal",
+      "port": null,
+      "status": "active",
+      "purpose": "Development terminal",
+      "message_format": "terma_route"
+    },
+    {
+      "name": "myproject",
+      "type": "project",
+      "port": 8500,
+      "status": "active",
+      "purpose": "Project CI",
+      "message_format": "json_simple"
     }
   ]
 }
 ```
+
+The MCP server integrates with the unified CI registry to provide access to all CI types (Greek Chorus, Terminals, Projects) through a single interface.
 
 ### Forwarding
 
@@ -251,6 +273,36 @@ Or run Python tests directly:
 python3 -m pytest test_mcp_server.py -v
 ```
 
+## Unified CI Integration
+
+The MCP server leverages the unified CI registry to route messages to any type of CI:
+
+### Message Routing
+```python
+# MCP server uses unified sender internally
+from tekton.shared.aish.src.core.unified_sender import send_to_ci
+
+# Routes based on CI's message_format configuration:
+# - rhetor_socket: Greek Chorus AIs via Rhetor
+# - terma_route: Terminal-to-terminal messaging  
+# - json_simple: Direct JSON API calls
+```
+
+### CI Type Support
+- **Greek Chorus AIs**: numa, apollo, athena, etc. (via rhetor_socket)
+- **Terminals**: alice, bob, sandi, etc. (via terma_route)
+- **Project CIs**: myproject, webapp, etc. (via json_simple)
+- **Future Federation**: remote CIs (via custom formats)
+
+### Transparent Routing
+The MCP server automatically determines how to route messages based on the CI's configuration:
+```javascript
+// Same API for all CI types
+await window.AIChat.sendMessage("numa", "Hello");    // Greek Chorus
+await window.AIChat.sendMessage("alice", "Hello");   // Terminal
+await window.AIChat.sendMessage("myproject", "Hello"); // Project CI
+```
+
 ## Important Notes
 
 1. **AI Names**: Use the base AI name without suffix (e.g., `numa` not `numa-ai`)
@@ -258,6 +310,7 @@ python3 -m pytest test_mcp_server.py -v
 3. **Single Source**: All message routing goes through aish MCP
 4. **Error Handling**: Unknown AI names return 500 with "Unknown AI: [name]"
 5. **Streaming**: Set `stream: true` for SSE responses
+6. **Unified Registry**: MCP uses the unified CI registry for all CI lookups
 
 ## Migration from Direct HTTP
 

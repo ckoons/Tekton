@@ -25,12 +25,12 @@ Examples:
 - `aish help` - Get help
 - `echo "data" | aish athena` - Pipeline input
 
-### 2. Available AI Specialists
+### 2. Available CIs (Companion Intelligences)
 
-Each AI has a specific role in the Tekton ecosystem:
+The unified CI system treats all intelligences equally - whether they're Greek Chorus AIs, terminals, or project CIs:
 
+**Greek Chorus AIs:**
 - **numa** - Your Companion, helps with overall guidance
-- **tekton** - Project management and coordination
 - **prometheus** - Planning and foresight
 - **telos** - Requirements and goals
 - **metis** - Workflows and processes
@@ -46,6 +46,18 @@ Each AI has a specific role in the Tekton ecosystem:
 - **hermes** - Messages and data flow
 - **ergon** - Agents, tools, and MCP
 - **terma** - Terminal and inter-AI communication
+- **hephaestus** - User interface
+
+**Terminals:**
+- Other CIs like you, running in different terminals
+- Accessible by name (e.g., alice, bob, sandi)
+- Can exchange messages and collaborate
+
+**Project CIs:**
+- CIs dedicated to specific Tekton projects
+- Automatically registered when projects are created
+
+Use `aish list` to see all available CIs with their current status.
 
 ### 3. Purpose-Driven Context (Enhanced!)
 
@@ -372,9 +384,31 @@ This happens automatically, but you can also:
    - Implement only what's been discussed and approved
    - Report back on what was done
 
+## Unified CI Communication
+
+With the unified CI system, all CIs are accessible through the same interface:
+
+```bash
+# List all CIs with their configuration
+aish list                    # Organized by type
+aish list json              # Full details in JSON
+
+# Send to any CI type seamlessly
+aish numa "Help with code"         # Greek Chorus AI
+aish alice "Ready for review?"     # Terminal/fellow CI
+aish myproject "Deploy status?"    # Project CI
+
+# Filter by type
+aish list type terminal     # Just terminals
+aish list type greek       # Just Greek Chorus
+aish list forward          # CIs with forwarding
+```
+
+The system automatically routes messages based on each CI's configuration - no need to remember different commands for different CI types!
+
 ## Getting Started
 
-1. Check available AIs: `aish -l`
+1. Check available CIs: `aish list`
 2. Send your first message: `aish numa "Hello, I'm ready to help"`
 3. Explore capabilities: `aish help`
 4. Connect with others: `aish terma list`

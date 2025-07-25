@@ -405,6 +405,113 @@ result = await processor.process_message(message)
 
 The processor determines how to handle each message based on its type and content, using the tool registry to execute appropriate actions.
 
+## Unified CI System
+
+### Overview
+
+The Unified CI System provides a single, consistent interface for communicating with all types of Companion Intelligences in Tekton. This replaces the previous approach of having separate code paths for different CI types (Greek Chorus, Terminals, Projects).
+
+### CI Registry Architecture
+
+```python
+# Unified CI Registry example
+from tekton.shared.aish.src.registry.ci_registry import get_registry
+
+# Get the unified registry
+registry = get_registry()
+
+# List all CIs
+all_cis = registry.list_all()
+
+# Get specific CI by name
+numa = registry.get_by_name("numa")
+
+# Filter CIs by type
+terminals = registry.list_by_type("terminal")
+greek_chorus = registry.list_by_type("greek")
+projects = registry.list_by_type("project")
+
+# Check if CI supports forwarding
+forwarding_cis = registry.list_with_forwarding()
+```
+
+### CI Configuration
+
+Each CI in the registry carries its own endpoint configuration:
+
+```json
+{
+    "name": "numa",
+    "type": "greek",
+    "host": "localhost",
+    "port": 8316,
+    "endpoint": "http://localhost:8316",
+    "message_endpoint": "/rhetor/socket",
+    "message_format": "rhetor_socket",
+    "description": "Companion AI",
+    "created": "2025-01-25T10:00:00",
+    "last_seen": "2025-01-25T10:15:00"
+}
+```
+
+Supported message formats:
+- `rhetor_socket`: Greek Chorus AIs via Rhetor
+- `terma_route`: Terminal-to-terminal messaging
+- `json_simple`: Direct JSON API calls
+- Custom formats can be added for federation
+
+### Unified Message Routing
+
+```python
+# Unified message sending example
+from tekton.shared.aish.src.core.unified_sender import send_to_ci
+
+# Send to any CI type seamlessly
+send_to_ci("numa", "Help with code")         # Greek Chorus AI
+send_to_ci("alice", "Ready for review?")     # Terminal/fellow CI
+send_to_ci("myproject", "Deploy status?")    # Project CI
+
+# The system automatically routes based on message_format
+# No need to know the CI type or use different APIs
+```
+
+### Federation-Ready Design
+
+The unified CI system is designed to support future federation between Tekton instances:
+
+```python
+# Future federation example (Phase 3)
+{
+    "name": "remote-ci",
+    "type": "federated",
+    "host": "tekton.example.com",
+    "port": 8010,
+    "endpoint": "https://tekton.example.com:8010",
+    "message_endpoint": "/api/ci/message",
+    "message_format": "tekton_federation",
+    "auth": {
+        "type": "oauth2",
+        "client_id": "tekton_client_123"
+    }
+}
+```
+
+### Integration with aish
+
+The `aish` command-line tool fully integrates with the unified CI system:
+
+```bash
+# List all CIs with their configuration
+aish list                    # Organized by type
+aish list json              # Full details in JSON
+aish list type terminal     # Filter by type
+
+# Send to any CI type seamlessly
+aish numa "Hello"           # Works the same regardless of CI type
+aish alice "Ready?"         # No special syntax for terminals
+aish myproject "Status?"    # No special syntax for projects
+```
+
 ## Agent-to-Agent (A2A) Protocol
 
 ### Agent Registration
