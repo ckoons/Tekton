@@ -466,6 +466,60 @@
 </style>
 
 <script>
+// Initialize Athena data when component loads - minimal JS, just HTML injection
+(function() {
+    console.log('[ATHENA] Loading data from Athena service...');
+    
+    // Simple function to load entities and update HTML
+    function loadAthenaData() {
+        // Check if athenaUrl is available
+        if (typeof window.athenaUrl !== 'function') {
+            console.log('[ATHENA] Waiting for athenaUrl function...');
+            setTimeout(loadAthenaData, 500);
+            return;
+        }
+        
+        // Load entities
+        fetch(window.athenaUrl('/api/v1/entities/?limit=1000'))
+            .then(response => response.json())
+            .then(entities => {
+                console.log('[ATHENA] Loaded ' + entities.length + ' entities');
+                
+                // Update graph placeholder with entity count
+                var graphPlaceholder = document.getElementById('graph-placeholder');
+                if (graphPlaceholder && entities.length > 0) {
+                    var componentCount = entities.filter(e => e.entityType === 'tekton_component').length;
+                    graphPlaceholder.innerHTML = 
+                        '<div style="text-align: center; padding: 2rem;">' +
+                        '<h2 style="color: #999;">Knowledge Graph</h2>' +
+                        '<p style="color: #777;">' + entities.length + ' entities loaded<br>' +
+                        componentCount + ' Tekton components</p>' +
+                        '</div>';
+                }
+                
+                // Update entity list
+                var entityList = document.getElementById('entity-list-items');
+                if (entityList && entities.length > 0) {
+                    var html = '';
+                    entities.forEach(function(entity) {
+                        html += '<div class="athena__entity-item">' +
+                                '<h4>' + entity.name + '</h4>' +
+                                '<p>Type: ' + entity.entityType + '</p>' +
+                                (entity.properties && entity.properties.port ? '<p>Port: ' + entity.properties.port + '</p>' : '') +
+                                '</div>';
+                    });
+                    entityList.innerHTML = html;
+                }
+            })
+            .catch(error => {
+                console.error('[ATHENA] Error loading entities:', error);
+            });
+    }
+    
+    // Start loading after a short delay
+    setTimeout(loadAthenaData, 100);
+})();
+
 // SIMPLE ATHENA CHAT
 window.athena_sendChat = function() {
     var input = document.getElementById('athena-chat-input');

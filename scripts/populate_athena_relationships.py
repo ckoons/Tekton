@@ -12,6 +12,7 @@ import os
 import sys
 import asyncio
 import httpx
+import logging
 from typing import Dict, List, Any, Optional
 
 # Add parent directory to path for imports
@@ -22,6 +23,21 @@ from shared.urls import athena_url
 
 # Load environment first
 TektonEnvironLock.load()
+
+# Set up logging to athena.log
+log_dir = os.path.join(TektonEnviron.get('TEKTON_ROOT', '.'), '.tekton', 'logs')
+os.makedirs(log_dir, exist_ok=True)
+log_file = os.path.join(log_dir, 'athena.log')
+
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.FileHandler(log_file, mode='a'),
+        logging.StreamHandler()  # Also print to console
+    ]
+)
+logger = logging.getLogger(__name__)
 
 # Component definitions - ports will be loaded dynamically
 COMPONENTS = {
@@ -278,17 +294,17 @@ class AthenaPopulator:
         
     async def populate_all(self):
         """Main population pipeline"""
-        # Print environment info
+        # Log environment info
         tekton_root = TektonEnviron.get('TEKTON_ROOT')
         athena_port = TektonEnviron.get('ATHENA_PORT', '8305')
-        print(f"🚀 Populating Athena Knowledge Graph")
-        print(f"   TEKTON_ROOT: {tekton_root}")
-        print(f"   ATHENA_PORT: {athena_port}")
-        print(f"   ATHENA_URL: {athena_url('')}")
-        print()
+        logger.info("🚀 Populating Athena Knowledge Graph")
+        logger.info(f"   TEKTON_ROOT: {tekton_root}")
+        logger.info(f"   ATHENA_PORT: {athena_port}")
+        logger.info(f"   ATHENA_URL: {athena_url('')}")
+        logger.info("")
         
         # Create component entities
-        print("1️⃣ Creating component entities...")
+        logger.info("1️⃣ Creating component entities...")
         for name, props in COMPONENTS.items():
             # Get dynamic port for each component
             port_var = f"{name.upper().replace('_', '')}_PORT"
@@ -300,19 +316,19 @@ class AthenaPopulator:
             if entity_id:
                 self.component_entities[name] = entity_id
                 
-        print(f"   ✅ Created {len(self.component_entities)} components")
+        logger.info(f"   ✅ Created {len(self.component_entities)} components")
         
         # Create pattern entities
-        print("\n2️⃣ Creating integration pattern entities...")
+        logger.info("\n2️⃣ Creating integration pattern entities...")
         for pattern in PATTERNS:
             entity_id = await self.create_pattern(pattern)
             if entity_id:
                 self.pattern_entities[pattern['name']] = entity_id
                 
-        print(f"   ✅ Created {len(self.pattern_entities)} patterns")
+        logger.info(f"   ✅ Created {len(self.pattern_entities)} patterns")
         
         # Create relationships
-        print("\n3️⃣ Creating component relationships...")
+        logger.info("\n3️⃣ Creating component relationships...")
         relationships_created = 0
         
         for rel in RELATIONSHIPS:
@@ -328,13 +344,13 @@ class AthenaPopulator:
                 if await self.create_relationship(rel['source'], rel['target'], rel['type'], rel['properties']):
                     relationships_created += 1
                     
-        print(f"   ✅ Created {relationships_created} relationships")
+        logger.info(f"   ✅ Created {relationships_created} relationships")
         
         # Sync to disk
-        print("\n4️⃣ Syncing to disk...")
+        logger.info("\n4️⃣ Syncing to disk...")
         await self.sync_to_disk()
         
-        print("\n✨ Population complete!")
+        logger.info("\n✨ Population complete!")
         
     async def create_component(self, name: str, properties: Dict) -> Optional[str]:
         """Create a component entity"""
@@ -356,12 +372,12 @@ class AthenaPopulator:
                 result = response.json()
                 entity_id = result.get("entityId")
                 port_info = f" (port {properties.get('port')})" if 'port' in properties else ""
-                print(f"   ✓ {name} ({properties['type']}){port_info}")
+                logger.info(f"   ✓ {name} ({properties['type']}){port_info}")
                 return entity_id
             else:
-                print(f"   ✗ Failed to create {name}: {response.text}")
+                logger.info(f"   ✗ Failed to create {name}: {response.text}")
         except Exception as e:
-            print(f"   ✗ Error creating {name}: {e}")
+            logger.info(f"   ✗ Error creating {name}: {e}")
             
         return None
         
@@ -380,10 +396,10 @@ class AthenaPopulator:
             
             if response.status_code == 200:
                 result = response.json()
-                print(f"   ✓ {pattern['name']}")
+                logger.info(f"   ✓ {pattern['name']}")
                 return result.get("entityId")
         except Exception as e:
-            print(f"   ✗ Error creating pattern {pattern['name']}: {e}")
+            logger.info(f"   ✗ Error creating pattern {pattern['name']}: {e}")
             
         return None
         
@@ -431,11 +447,15 @@ class AthenaPopulator:
         }
         
         try:
-            url = athena_url('/api/v1/relationships/')
+            url = athena_url('/api/v1/knowledge/relationships/')
             response = await self.client.post(url, json=relationship)
-            return response.status_code == 200
+            if response.status_code == 200:
+                return True
+            else:
+                logger.info(f"   ✗ Error creating relationship {source}→{target}: {response.status_code} {response.text}")
+                return False
         except Exception as e:
-            print(f"   ✗ Error creating relationship {source}→{target}: {e}")
+            logger.info(f"   ✗ Error creating relationship {source}→{target}: {e}")
             return False
             
     async def sync_to_disk(self):
@@ -444,11 +464,11 @@ class AthenaPopulator:
             url = athena_url('/api/v1/knowledge/sync/')
             response = await self.client.post(url)
             if response.status_code == 200:
-                print("   ✓ Successfully synced to disk")
+                logger.info("   ✓ Successfully synced to disk")
             else:
-                print(f"   ✗ Sync failed: {response.text}")
+                logger.info(f"   ✗ Sync failed: {response.status_code} {response.text}")
         except Exception as e:
-            print(f"   ✗ Error syncing: {e}")
+            logger.info(f"   ✗ Error syncing: {e}")
 
 
 async def main():

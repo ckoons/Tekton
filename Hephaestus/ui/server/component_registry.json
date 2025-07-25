@@ -237,6 +237,7 @@
       "componentPath": "components/athena/athena-component.html",
       "scripts": [
         "scripts/shared/tab-navigation.js",
+        "scripts/athena-service.js",
         "scripts/athena/athena-component.js"
       ],
       "styles": [

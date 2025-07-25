@@ -122,8 +122,12 @@ class AthenaComponent {
         // Set initial state to default tab
         this.state.activeTab = 'graph';
         
-        // Trigger content loading for default tab
-        this.loadTabContent('graph');
+        // Trigger content loading for default tab AND entities
+        // This ensures data is loaded when component first displays
+        setTimeout(() => {
+            this.loadTabContent('graph');
+            this.loadTabContent('entities');
+        }, 100);
         
         // No DOM manipulation here - it's all handled by the HTML script
     }
@@ -406,18 +410,22 @@ class AthenaComponent {
         // Check if AthenaService is available
         if (window.AthenaService) {
             try {
-                // Try to load actual data from Athena
-                const entities = await window.AthenaService.getEntities();
-                console.log('Loaded Athena entities:', entities);
+                // Load graph visualization data
+                const graphData = await window.AthenaService.getGraphData();
+                console.log('Loaded Athena graph data:', graphData);
+                
+                const componentCount = graphData.entities.filter(e => e.entityType === 'tekton_component').length;
+                const patternCount = graphData.entities.filter(e => e.entityType === 'integration_pattern').length;
                 
                 placeholder.innerHTML = `
                     <div style="text-align: center; padding: 2rem;">
                         <h2 style="color: #999; margin-bottom: 1rem;">Knowledge Graph Loaded</h2>
                         <p style="color: #777; max-width: 600px; margin: 0 auto;">
-                            Successfully loaded ${entities.length} entities from Athena.<br><br>
-                            • Components: ${entities.filter(e => e.entityType === 'component').length}<br>
-                            • Integration patterns discovered<br>
-                            • Knowledge graph ready<br><br>
+                            Successfully loaded knowledge graph from Athena.<br><br>
+                            • ${graphData.entities.length} entities total<br>
+                            • ${componentCount} Tekton components<br>
+                            • ${patternCount} integration patterns<br>
+                            • ${graphData.relationships.length} relationships mapped<br><br>
                             Use the Entities tab to browse all components and relationships.
                         </p>
                     </div>

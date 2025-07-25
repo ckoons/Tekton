@@ -11,9 +11,9 @@
     // Athena API Service
     window.AthenaService = {
         // Entity Management
-        async getEntities() {
+        async getEntities(limit = 1000) {
             try {
-                const response = await fetch(window.athenaUrl('/api/v1/entities'));
+                const response = await fetch(window.athenaUrl(`/api/v1/entities/?limit=${limit}`));
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
