@@ -1,0 +1,188 @@
+#!/usr/bin/env python3
+"""
+Functional tests for unified CI registry and messaging
+"""
+
+from .test_runner import AishTest, TestSuite
+
+
+class UnifiedListTest(AishTest):
+    """Test basic aish list command"""
+    
+    def run(self) -> bool:
+        """Run the test"""
+        code, stdout, stderr = self.run_command("aish list")
+        
+        if code != 0:
+            self.error_message = f"Command failed with code {code}: {stderr}"
+            return False
+        
+        if "Greek Chorus AIs:" not in stdout:
+            self.error_message = "Output missing Greek Chorus section"
+            return False
+        
+        if "Active Terminals:" not in stdout:
+            self.error_message = "Output missing Active Terminals section"
+            return False
+        
+        self.passed = True
+        return True
+
+
+class UnifiedListTypeTest(AishTest):
+    """Test aish list with type filter"""
+    
+    def run(self) -> bool:
+        """Run the test"""
+        # Test greek filter
+        code, stdout, stderr = self.run_command("aish list type greek")
+        
+        if code != 0:
+            self.error_message = f"Command failed with code {code}: {stderr}"
+            return False
+        
+        # Count Greek Chorus entries
+        greek_count = stdout.count("(port")
+        if greek_count < 10:
+            self.error_message = f"Expected at least 10 Greek Chorus AIs, found {greek_count}"
+            return False
+        
+        # Test terminal filter
+        code, stdout, stderr = self.run_command("aish list type terminal")
+        
+        if code != 0:
+            self.error_message = f"Terminal filter failed with code {code}: {stderr}"
+            return False
+        
+        self.passed = True
+        return True
+
+
+class UnifiedListJsonTest(AishTest):
+    """Test JSON output"""
+    
+    def run(self) -> bool:
+        """Run the test"""
+        import json
+        
+        # Test basic JSON
+        code, stdout, stderr = self.run_command("aish list json")
+        
+        if code != 0:
+            self.error_message = f"Command failed with code {code}: {stderr}"
+            return False
+        
+        try:
+            data = json.loads(stdout)
+            if not isinstance(data, list):
+                self.error_message = "JSON output is not a list"
+                return False
+            
+            # Check for message configuration
+            numa = next((ci for ci in data if ci.get('name') == 'numa'), None)
+            if not numa:
+                self.error_message = "numa not found in JSON output"
+                return False
+            
+            if 'message_format' not in numa:
+                self.error_message = "message_format field missing from numa"
+                return False
+            
+            if numa['message_format'] != 'rhetor_socket':
+                self.error_message = f"Expected rhetor_socket format, got {numa['message_format']}"
+                return False
+            
+        except json.JSONDecodeError as e:
+            self.error_message = f"Invalid JSON output: {e}"
+            return False
+        
+        self.passed = True
+        return True
+
+
+class UnifiedListJsonFilterTest(AishTest):
+    """Test JSON output with filter"""
+    
+    def run(self) -> bool:
+        """Run the test"""
+        import json
+        
+        code, stdout, stderr = self.run_command("aish list json terminal")
+        
+        if code != 0:
+            self.error_message = f"Command failed with code {code}: {stderr}"
+            return False
+        
+        try:
+            data = json.loads(stdout)
+            
+            # Check all entries are terminals
+            for ci in data:
+                if ci.get('type') != 'terminal':
+                    self.error_message = f"Non-terminal CI in filtered output: {ci.get('name')}"
+                    return False
+                
+                if ci.get('message_format') != 'terma_route':
+                    self.error_message = f"Terminal {ci.get('name')} missing terma_route format"
+                    return False
+            
+        except json.JSONDecodeError as e:
+            self.error_message = f"Invalid JSON output: {e}"
+            return False
+        
+        self.passed = True
+        return True
+
+
+class UnifiedMessagingTest(AishTest):
+    """Test unified messaging to different CI types"""
+    
+    def run(self) -> bool:
+        """Run the test"""
+        # Test Greek Chorus messaging
+        code, stdout, stderr = self.run_command('aish numa "test unified message"')
+        
+        if code != 0:
+            self.error_message = f"Failed to send to numa: {stderr}"
+            return False
+        
+        # Should get some response
+        if not stdout.strip():
+            self.error_message = "No response from numa"
+            return False
+        
+        self.passed = True
+        return True
+
+
+def create_suite() -> TestSuite:
+    """Create the unified test suite"""
+    suite = TestSuite("unified", "Unified CI registry and messaging tests")
+    
+    # Add tests
+    suite.add_test(UnifiedListTest(
+        "list_all",
+        "Test basic aish list command"
+    ))
+    
+    suite.add_test(UnifiedListTypeTest(
+        "list_type",
+        "Test aish list with type filters"
+    ))
+    
+    suite.add_test(UnifiedListJsonTest(
+        "list_json",
+        "Test JSON output with message configuration"
+    ))
+    
+    suite.add_test(UnifiedListJsonFilterTest(
+        "list_json_filter",
+        "Test JSON output with type filter"
+    ))
+    
+    suite.add_test(UnifiedMessagingTest(
+        "unified_messaging",
+        "Test sending messages through unified system"
+    ))
+    
+    return suite

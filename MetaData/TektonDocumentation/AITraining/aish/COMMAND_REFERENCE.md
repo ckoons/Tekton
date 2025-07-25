@@ -33,10 +33,22 @@ Output includes:
 - Working directory and TEKTON_ROOT
 
 #### `aish list`
-List all available AI components.
+List all available CIs (Companion Intelligences) with unified registry.
 ```bash
-aish list                      # Show all AIs with descriptions
+aish list                      # Show all CIs organized by type
+aish list type terminal        # Show only terminals  
+aish list type greek          # Show only Greek Chorus AIs
+aish list type project        # Show only Project CIs
+aish list forward             # Show CIs with forwarding enabled
+aish list json               # Output in JSON format
+aish list json terminal      # JSON output with type filter
 ```
+
+The unified list shows:
+- Greek Chorus AIs with ports and descriptions
+- Active terminals with PIDs
+- Project CIs with associated projects
+- Forwarding information (e.g., `apollo → cari [JSON]`)
 
 #### `aish list commands`
 Show all available commands with brief descriptions.
@@ -44,13 +56,25 @@ Show all available commands with brief descriptions.
 aish list commands             # Display command reference
 ```
 
-#### `aish <ai-name> "message"`
-Send a message to a specific AI component.
+#### `aish <ci-name> "message"`
+Send a message to any CI using the unified messaging system.
 ```bash
+# Greek Chorus AIs
 aish apollo "What patterns do you see?"
 aish numa "Help me implement this feature"
+
+# Terminals
+aish sandi "Can you review this code?"
+aish cali "Meeting in 5 minutes"
+
+# Project CIs  
+aish myproject-ci "Deploy status?"
+
+# Special
 aish team-chat "Status update for all AIs"
 ```
+
+The unified system automatically routes messages based on each CI's configuration.
 
 ### Pipeline Commands
 

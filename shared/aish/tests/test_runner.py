@@ -158,12 +158,14 @@ def load_all_tests() -> List[TestSuite]:
     from . import test_purpose
     from . import test_terma
     from . import test_route
+    from . import test_unified
     
     suites.append(test_basic.create_suite())
     suites.append(test_forward.create_suite())
     suites.append(test_purpose.create_suite())
     suites.append(test_terma.create_suite())
     suites.append(test_route.create_suite())
+    suites.append(test_unified.create_suite())
     
     return suites
 

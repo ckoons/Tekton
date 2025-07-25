@@ -102,6 +102,7 @@ def print_test_help():
     print("  purpose   - Purpose command tests")
     print("  terma     - Terminal communication tests")
     print("  route     - Route command tests")
+    print("  unified   - Unified CI registry and messaging tests")
     print()
     print("Examples:")
     print("  aish test                    # Run all tests")

@@ -256,7 +256,7 @@ def _handle_ai_command(args, shell, ai_names):
     """Handle command directed at a specific AI."""
     component = args.ai_or_script.lower()
     
-    # Special handling for terma commands
+    # Special handling for terma commands (keeps existing terma subcommands working)
     if component == 'terma':
         _dispatch_command('terma', args, shell)
         return
@@ -277,11 +277,15 @@ def _handle_ai_command(args, shell, ai_names):
         print(f"aish: No message provided for {component}", file=sys.stderr)
         sys.exit(1)
     
-    # Send directly to AI (no synthetic pipeline)
+    # Use unified sender for all CI types
     if component == 'team-chat':
+        # Keep team-chat using broadcast for now
         shell.broadcast_message(input_data)
     else:
-        shell.send_to_ai(component, input_data)
+        # Use unified sender for everything else
+        sys.path.insert(0, str(src_path))
+        from core.unified_sender import send_to_ci
+        send_to_ci(component, input_data)
 
 
 @architecture_decision(
@@ -509,36 +513,10 @@ Environment variables:
             print(f"Full documentation: {tekton_root}/MetaData/TektonDocumentation/AITraining/aish/COMMAND_REFERENCE.md")
             return
         else:
-            # Show available AIs
-            print("Available AI Components:")
-            print()
-            print("Core AIs:")
-            print("  numa         - Companion AIi for Tekton Project")
-            print("  tekton       - Tekton Multi-AI Engineering Platform")
-            print("  prometheus   - Forward planning and foresight")
-            print("  telos        - Purpose and completion")
-            print("  metis        - Analysis and insight")
-            print("  harmonia     - Balance and system harmony")
-            print("  synthesis    - Integration and coordination")
-            print("  athena       - Strategic wisdom and decision making")
-            print("  sophia       - Wisdom and knowledge")
-            print("  noesis       - Understanding and comprehension")
-            print("  engram       - Memory and persistence")
-            print("  apollo       - Predictive intelligence and attention")
-            print("  rhetor       - Communication and prompt optimization")
-            print("  penia        - Resource management")
-            print("  hermes       - Messaging and communication")
-            print("  ergon        - Work execution and tools")
-            print()
-            print("Infrastructure:")
-            print("  terma        - Terminal management")
-            print("  hephaestus   - User interface")
-            print()
-            print("Special:")
-            print("  team-chat    - Broadcast to all AIs")
-            print("  project      - Managed Project CIs")
-            print()
-            print("For all commands: aish list commands")
+            # Use new unified list handler
+            sys.path.insert(0, str(src_path))  # Ensure src is in path
+            from commands.list import handle_list_command
+            handle_list_command(args.message if args.message else [])
             return
     
     if args.ai_or_script == 'forward':
@@ -602,9 +580,19 @@ Environment variables:
     if args.ai_or_script == 'alias':
         return _dispatch_command('alias', args, shell)
     
-    # Check if first argument is an AI name (case-insensitive)
-    if args.ai_or_script and args.ai_or_script.lower() in ai_names:
-        return _handle_ai_command(args, shell, ai_names)
+    # Check if first argument is a CI name using unified registry
+    if args.ai_or_script:
+        # Special handling for team-chat
+        if args.ai_or_script.lower() == 'team-chat':
+            return _handle_ai_command(args, shell, ai_names)
+        
+        # Check unified registry
+        sys.path.insert(0, str(src_path))  # Ensure src is in path
+        from registry.ci_registry import get_registry
+        registry = get_registry()
+        ci = registry.get_by_name(args.ai_or_script)
+        if ci:
+            return _handle_ai_command(args, shell, ai_names)
     
     # Original behavior for other cases
     elif args.command:
