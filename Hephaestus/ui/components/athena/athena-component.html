@@ -463,6 +463,109 @@
 .athena__send-button:hover {
     background-color: #8E24AA;
 }
+
+/* Entity Item Styling */
+.athena__entity-item {
+    background-color: var(--bg-secondary, #252535);
+    border: 1px solid var(--border-color, #444444);
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 12px;
+    transition: all 0.3s ease;
+}
+
+.athena__entity-item:hover {
+    background-color: rgba(123, 31, 162, 0.1);
+    border-color: #7B1FA2;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(123, 31, 162, 0.2);
+}
+
+.athena__entity-item h4 {
+    margin: 0 0 8px 0;
+    color: #7B1FA2;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.athena__entity-item p {
+    margin: 4px 0;
+    color: var(--text-secondary, #aaaaaa);
+    font-size: 0.9rem;
+}
+
+.athena__entity-item p:last-child {
+    margin-bottom: 0;
+}
+
+/* Entity type badge */
+.athena__entity-type {
+    display: inline-block;
+    background-color: rgba(123, 31, 162, 0.2);
+    color: #7B1FA2;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    margin-top: 4px;
+}
+
+/* Graph visualization styling */
+.athena__graph-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+}
+
+.athena__graph-stats {
+    background-color: var(--bg-secondary, #252535);
+    border: 1px solid var(--border-color, #444444);
+    border-radius: 12px;
+    padding: 32px;
+    text-align: center;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.athena__graph-stats h2 {
+    color: #7B1FA2;
+    margin-bottom: 24px;
+    font-size: 1.8rem;
+}
+
+.athena__graph-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    margin-top: 24px;
+}
+
+.athena__stat-card {
+    background-color: rgba(123, 31, 162, 0.05);
+    border: 1px solid rgba(123, 31, 162, 0.2);
+    border-radius: 8px;
+    padding: 16px;
+    transition: all 0.3s ease;
+}
+
+.athena__stat-card:hover {
+    background-color: rgba(123, 31, 162, 0.1);
+    transform: scale(1.02);
+}
+
+.athena__stat-number {
+    font-size: 2rem;
+    font-weight: 600;
+    color: #7B1FA2;
+    display: block;
+}
+
+.athena__stat-label {
+    font-size: 0.9rem;
+    color: var(--text-secondary, #aaaaaa);
+    margin-top: 4px;
+}
 </style>
 
 <script>
@@ -485,27 +588,68 @@
             .then(entities => {
                 console.log('[ATHENA] Loaded ' + entities.length + ' entities');
                 
-                // Update graph placeholder with entity count
+                // Update graph placeholder with styled entity count
                 var graphPlaceholder = document.getElementById('graph-placeholder');
                 if (graphPlaceholder && entities.length > 0) {
                     var componentCount = entities.filter(e => e.entityType === 'tekton_component').length;
+                    var patternCount = entities.filter(e => e.entityType === 'integration_pattern').length;
+                    var otherCount = entities.length - componentCount - patternCount;
+                    
                     graphPlaceholder.innerHTML = 
-                        '<div style="text-align: center; padding: 2rem;">' +
-                        '<h2 style="color: #999;">Knowledge Graph</h2>' +
-                        '<p style="color: #777;">' + entities.length + ' entities loaded<br>' +
-                        componentCount + ' Tekton components</p>' +
+                        '<div class="athena__graph-stats">' +
+                        '<h2>Knowledge Graph Overview</h2>' +
+                        '<p style="color: var(--text-secondary, #aaa); margin-bottom: 24px;">Athena has successfully indexed the Tekton ecosystem</p>' +
+                        '<div class="athena__graph-stats-grid">' +
+                        '<div class="athena__stat-card">' +
+                        '<span class="athena__stat-number">' + entities.length + '</span>' +
+                        '<span class="athena__stat-label">Total Entities</span>' +
+                        '</div>' +
+                        '<div class="athena__stat-card">' +
+                        '<span class="athena__stat-number">' + componentCount + '</span>' +
+                        '<span class="athena__stat-label">Tekton Components</span>' +
+                        '</div>' +
+                        '<div class="athena__stat-card">' +
+                        '<span class="athena__stat-number">' + patternCount + '</span>' +
+                        '<span class="athena__stat-label">Integration Patterns</span>' +
+                        '</div>' +
+                        '<div class="athena__stat-card">' +
+                        '<span class="athena__stat-number">' + otherCount + '</span>' +
+                        '<span class="athena__stat-label">Other Entities</span>' +
+                        '</div>' +
+                        '</div>' +
                         '</div>';
                 }
                 
-                // Update entity list
+                // Update entity list with styled cards
                 var entityList = document.getElementById('entity-list-items');
                 if (entityList && entities.length > 0) {
                     var html = '';
+                    // Create a map to track unique entities by name
+                    var uniqueEntities = {};
                     entities.forEach(function(entity) {
+                        if (!uniqueEntities[entity.name]) {
+                            uniqueEntities[entity.name] = entity;
+                        }
+                    });
+                    
+                    // Sort entities: components first, then patterns, then others
+                    var sortedEntities = Object.values(uniqueEntities).sort(function(a, b) {
+                        if (a.entityType === 'tekton_component' && b.entityType !== 'tekton_component') return -1;
+                        if (a.entityType !== 'tekton_component' && b.entityType === 'tekton_component') return 1;
+                        if (a.entityType === 'integration_pattern' && b.entityType !== 'integration_pattern') return -1;
+                        if (a.entityType !== 'integration_pattern' && b.entityType === 'integration_pattern') return 1;
+                        return a.name.localeCompare(b.name);
+                    });
+                    
+                    sortedEntities.forEach(function(entity) {
+                        var typeLabel = entity.entityType.replace(/_/g, ' ').replace(/\b\w/g, function(l){ return l.toUpperCase() });
                         html += '<div class="athena__entity-item">' +
                                 '<h4>' + entity.name + '</h4>' +
-                                '<p>Type: ' + entity.entityType + '</p>' +
-                                (entity.properties && entity.properties.port ? '<p>Port: ' + entity.properties.port + '</p>' : '') +
+                                '<span class="athena__entity-type">' + typeLabel + '</span>' +
+                                (entity.properties && entity.properties.description ? 
+                                    '<p style="margin-top: 8px;">' + entity.properties.description + '</p>' : '') +
+                                (entity.properties && entity.properties.port ? 
+                                    '<p><strong>Port:</strong> ' + entity.properties.port + '</p>' : '') +
                                 '</div>';
                     });
                     entityList.innerHTML = html;
