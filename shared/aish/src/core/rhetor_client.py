@@ -8,7 +8,54 @@ import urllib.request
 import urllib.error
 from typing import Optional, Dict, Any
 
+# Import landmarks with fallback
+try:
+    from landmarks import (
+        architecture_decision,
+        api_contract,
+        integration_point,
+        performance_boundary
+    )
+except ImportError:
+    # Define no-op decorators when landmarks not available
+    def architecture_decision(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+    
+    def api_contract(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+    
+    def integration_point(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+    
+    def performance_boundary(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
 
+
+@integration_point(
+    title="Rhetor Direct Message Integration",
+    description="Send messages to Greek Chorus AIs through Rhetor's socket endpoint",
+    target_component="Rhetor",
+    protocol="HTTP POST",
+    data_flow="rhetor_client → Rhetor /rhetor/socket → Greek Chorus AI → response",
+    integration_date="2025-01-25"
+)
+@api_contract(
+    title="Rhetor Socket Message API",
+    description="Direct message to specific Greek Chorus AI",
+    endpoint="/rhetor/socket",
+    method="POST",
+    request_schema={"ai_name": "string", "message": "string"},
+    response_schema={"response": "string", "message": "string", "content": "string"},
+    performance_requirements="<500ms for AI response"
+)
 def send_to_rhetor(ai_name: str, message: str, rhetor_endpoint: str = None) -> Optional[str]:
     """
     Send a message to a Greek Chorus AI via Rhetor.
@@ -78,6 +125,30 @@ def send_to_rhetor(ai_name: str, message: str, rhetor_endpoint: str = None) -> O
         return None
 
 
+@integration_point(
+    title="Rhetor Team Chat Integration",
+    description="Broadcast messages to all Greek Chorus AIs",
+    target_component="Rhetor",
+    protocol="HTTP POST",
+    data_flow="rhetor_client → Rhetor /rhetor/team-chat → All Greek Chorus AIs → aggregated responses",
+    integration_date="2025-01-25"
+)
+@api_contract(
+    title="Rhetor Team Chat API",
+    description="Broadcast message to entire Greek Chorus team",
+    endpoint="/rhetor/team-chat",
+    method="POST",
+    request_schema={"message": "string"},
+    response_schema={"responses": [{"specialist_id": "string", "content": "string"}]},
+    performance_requirements="<2s for all AI responses"
+)
+@performance_boundary(
+    title="Team Chat Response Aggregation",
+    description="Collects and formats responses from all Greek Chorus AIs",
+    sla="<2s total response time",
+    optimization_notes="Rhetor handles parallel AI queries internally",
+    measured_impact="Enables real-time team collaboration"
+)
 def broadcast_to_rhetor(message: str, rhetor_endpoint: str = None) -> Dict[str, str]:
     """
     Broadcast a message to all Greek Chorus AIs via Rhetor.

@@ -11,7 +11,61 @@ from typing import Optional
 
 from registry.ci_registry import get_registry
 
+# Import landmarks with fallback
+try:
+    from landmarks import (
+        architecture_decision,
+        api_contract,
+        integration_point,
+        performance_boundary
+    )
+except ImportError:
+    # Define no-op decorators when landmarks not available
+    def architecture_decision(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+    
+    def api_contract(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+    
+    def integration_point(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+    
+    def performance_boundary(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
 
+
+@architecture_decision(
+    title="Unified CI Message Routing",
+    description="Single function routes messages to any CI type based on configuration",
+    rationale="Eliminates duplicate send code, enables federation, simplifies debugging",
+    alternatives_considered=["Type-specific send methods", "Hard-coded routing logic"],
+    impacts=["simplicity", "maintainability", "federation_readiness"],
+    decided_by="Casey",
+    decision_date="2025-01-25"
+)
+@integration_point(
+    title="Universal CI Message Gateway",
+    description="Routes messages to CIs based on their configured message_format",
+    target_component="Multiple (Rhetor, Terma, Project CIs)",
+    protocol="Configuration-driven",
+    data_flow="send_to_ci → registry lookup → format-specific routing → target CI",
+    integration_date="2025-01-25"
+)
+@performance_boundary(
+    title="CI Message Routing",
+    description="Routes messages with minimal overhead",
+    sla="<10ms routing decision",
+    optimization_notes="Registry cached in memory, format check is O(1)",
+    measured_impact="Adds negligible latency to message delivery"
+)
 def send_to_ci(ci_name: str, message: str) -> bool:
     """
     Send a message to any CI using the unified registry.

@@ -15,7 +15,54 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
 from shared.env import TektonEnviron
 from shared.urls import tekton_url
 
+# Import landmarks with fallback
+try:
+    from landmarks import (
+        architecture_decision,
+        state_checkpoint,
+        integration_point,
+        performance_boundary
+    )
+except ImportError:
+    # Define no-op decorators when landmarks not available
+    def architecture_decision(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+    
+    def state_checkpoint(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+    
+    def integration_point(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+    
+    def performance_boundary(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
 
+
+@architecture_decision(
+    title="Unified CI Registry Architecture",
+    description="Single registry manages all CI types (Greek Chorus, Terma, Projects)",
+    rationale="Eliminates three separate lists, enables federation, simplifies discovery",
+    alternatives_considered=["Separate registries per type", "Hard-coded CI lists", "Service mesh discovery"],
+    impacts=["ci_discovery", "federation_readiness", "dynamic_routing"],
+    decided_by="Casey",
+    decision_date="2025-01-25"
+)
+@state_checkpoint(
+    title="CI Registry State",
+    description="In-memory registry of all available CIs with their configuration",
+    state_type="registry",
+    persistence=False,
+    consistency_requirements="Refresh on demand, tolerates stale data",
+    recovery_strategy="Rebuild from sources on restart"
+)
 class CIRegistry:
     """Unified registry for all CI types in Tekton."""
     
@@ -133,6 +180,14 @@ class CIRegistry:
         self._load_projects()
         self._load_forwards()
     
+    @integration_point(
+        title="Greek Chorus CI Loading",
+        description="Loads all Greek Chorus AIs from static configuration",
+        target_component="Greek Chorus AIs",
+        protocol="Static Configuration",
+        data_flow="GREEK_CHORUS dict → registry entries with ports and endpoints",
+        integration_date="2025-01-25"
+    )
     def _load_greek_chorus(self):
         """Load Greek Chorus CIs into registry."""
         for name, info in self.GREEK_CHORUS.items():
@@ -149,6 +204,14 @@ class CIRegistry:
                 'last_seen': datetime.now().isoformat()
             }
     
+    @integration_point(
+        title="Terma Terminal Discovery",
+        description="Dynamically discovers active terminals from Terma registry",
+        target_component="Terma",
+        protocol="HTTP GET /api/terminals",
+        data_flow="Terma API → terminal list → registry entries with routing info",
+        integration_date="2025-01-25"
+    )
     def _load_terminals(self):
         """Load active Terma terminals from the terminal registry."""
         try:
@@ -181,6 +244,14 @@ class CIRegistry:
             # If Terma isn't available, that's OK
             pass
     
+    @integration_point(
+        title="Project CI Discovery",
+        description="Loads project-specific CIs from Tekton project registry",
+        target_component="Project Registry",
+        protocol="File-based JSON",
+        data_flow="registry.json → project CIs → registry entries",
+        integration_date="2025-01-25"
+    )
     def _load_projects(self):
         """Load project CIs from the project registry."""
         try:
@@ -262,6 +333,13 @@ class CIRegistry:
         # For now, return empty list as this is a future enhancement
         return []
     
+    @performance_boundary(
+        title="Registry Refresh",
+        description="Rebuilds entire CI registry from all sources",
+        sla="<100ms total refresh time",
+        optimization_notes="Parallel loading could improve performance",
+        measured_impact="Enables dynamic CI discovery without restart"
+    )
     def refresh(self):
         """Refresh the registry with latest information."""
         self._registry.clear()
