@@ -1,99 +1,119 @@
 #!/usr/bin/env python3
 """
 Populate Athena with discovered Tekton component relationships
+
+This script uses proper Tekton patterns:
+- TektonEnviron for environment variables
+- tekton_url/athena_url for URL construction
+- Dynamic port discovery
 """
 
+import os
+import sys
 import asyncio
 import httpx
 from typing import Dict, List, Any, Optional
 
-ATHENA_API = "http://localhost:8005/api/v1"
+# Add parent directory to path for imports
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-# Component definitions based on our analysis
+from shared.env import TektonEnviron, TektonEnvironLock
+from shared.urls import athena_url
+
+# Load environment first
+TektonEnvironLock.load()
+
+# Component definitions - ports will be loaded dynamically
 COMPONENTS = {
     "Hermes": {
         "description": "Central message bus and service discovery",
-        "port": 8001,
         "capabilities": ["messaging", "service_discovery", "health_monitoring"],
         "type": "infrastructure"
     },
     "Apollo": {
         "description": "Local attention and prediction for LLM orchestration", 
-        "port": 8012,
         "capabilities": ["llm_orchestration", "context_observation", "token_budget_management"],
         "type": "ai"
     },
     "Rhetor": {
         "description": "LLM service and communication hub",
-        "port": 8003,
         "capabilities": ["llm_access", "ai_specialists", "chat"],
         "type": "ai"
     },
     "Noesis": {
         "description": "Theoretical analysis and mathematical frameworks",
-        "port": 8007,
         "capabilities": ["theoretical_analysis", "manifold_analysis", "catastrophe_theory"],
         "type": "research"
     },
     "Engram": {
         "description": "Memory and knowledge storage system",
-        "port": 8002,
         "capabilities": ["memory_storage", "vector_search", "event_streaming"],
         "type": "storage"
     },
     "Telos": {
         "description": "Requirements management system",
-        "port": 8010,
         "capabilities": ["requirements_tracking", "project_management", "refinement"],
         "type": "planning"
     },
     "Prometheus": {
         "description": "Planning and monitoring engine",
-        "port": 8004,
         "capabilities": ["plan_generation", "monitoring", "alerting"],
         "type": "planning"
     },
-    "Budget": {
+    "Penia": {
         "description": "Token budget and resource management",
-        "port": 8013,
         "capabilities": ["budget_tracking", "resource_allocation", "cost_analysis"],
         "type": "infrastructure"
     },
     "Synthesis": {
         "description": "Plan execution and component orchestration",
-        "port": 8011,
         "capabilities": ["plan_execution", "task_orchestration", "integration"],
         "type": "execution"
     },
     "Athena": {
         "description": "Knowledge graph and reasoning engine",
-        "port": 8005,
         "capabilities": ["knowledge_graph", "reasoning", "semantic_search"],
         "type": "knowledge"
     },
     "Sophia": {
         "description": "Experimental research and collective intelligence",
-        "port": 8008,
         "capabilities": ["experimental_research", "team_coordination", "hypothesis_testing"],
         "type": "research"
     },
     "Metis": {
         "description": "Workflow and task management",
-        "port": 8006,
         "capabilities": ["workflow_management", "task_tracking", "scheduling"],
         "type": "execution"
     },
     "Terma": {
         "description": "Terminal interface and boundaries",
-        "port": 8014,
         "capabilities": ["terminal_interface", "boundary_management", "mcp_tools"],
         "type": "interface"
     },
     "Hephaestus": {
         "description": "Web UI and frontend layer",
-        "port": 3000,
         "capabilities": ["web_ui", "visualization", "user_interaction"],
         "type": "interface"
+    },
+    "Numa": {
+        "description": "Platform AI mentor providing guidance and oversight",
+        "capabilities": ["companion_chat", "team_chat", "platform_guidance"],
+        "type": "ai"
+    },
+    "Harmonia": {
+        "description": "Workflow orchestration and state management",
+        "capabilities": ["workflow_orchestration", "state_management", "balance"],
+        "type": "workflow"
+    },
+    "Ergon": {
+        "description": "Agent system for specialized task execution",
+        "capabilities": ["agent_creation", "agent_execution", "tool_integration"],
+        "type": "execution"
+    },
+    "Tekton_Core": {
+        "description": "Core orchestration and startup management",
+        "capabilities": ["startup_management", "component_orchestration", "lifecycle"],
+        "type": "infrastructure"
     }
 }
 
@@ -157,15 +177,15 @@ RELATIONSHIPS = [
         }
     },
     
-    # Budget integrations
+    # Penia integrations
     {
-        "source": "Budget",
+        "source": "Penia",
         "target": "Rhetor",
-        "type": "migrates_from",
+        "type": "monitors_usage",
         "properties": {
-            "protocol": "SQLite/HTTP",
-            "purpose": "Legacy budget system migration",
-            "migration_type": "one-way"
+            "protocol": "HTTP/WebSocket",
+            "purpose": "Token usage tracking and budget enforcement",
+            "data_flow": "usage_metrics"
         }
     },
     
@@ -191,6 +211,18 @@ RELATIONSHIPS = [
         }
     },
     
+    # Harmonia integrations
+    {
+        "source": "Harmonia",
+        "target": "Synthesis",
+        "type": "orchestrates",
+        "properties": {
+            "protocol": "HTTP REST",
+            "purpose": "Workflow orchestration and coordination",
+            "data_flow": "workflow_definitions → execution_plans"
+        }
+    },
+    
     # Shared configuration
     {
         "source": "All Components",
@@ -199,7 +231,7 @@ RELATIONSHIPS = [
         "properties": {
             "config_type": "environment",
             "key_vars": ["TEKTON_ROOT", "component_ports"],
-            "shared_utils": ["urls.py", "StandardComponentBase"]
+            "shared_utils": ["urls.py", "TektonEnviron", "StandardComponentBase"]
         }
     }
 ]
@@ -246,11 +278,24 @@ class AthenaPopulator:
         
     async def populate_all(self):
         """Main population pipeline"""
-        print("🚀 Populating Athena with Tekton component relationships...")
+        # Print environment info
+        tekton_root = TektonEnviron.get('TEKTON_ROOT')
+        athena_port = TektonEnviron.get('ATHENA_PORT', '8305')
+        print(f"🚀 Populating Athena Knowledge Graph")
+        print(f"   TEKTON_ROOT: {tekton_root}")
+        print(f"   ATHENA_PORT: {athena_port}")
+        print(f"   ATHENA_URL: {athena_url('')}")
+        print()
         
         # Create component entities
-        print("\n1️⃣ Creating component entities...")
+        print("1️⃣ Creating component entities...")
         for name, props in COMPONENTS.items():
+            # Get dynamic port for each component
+            port_var = f"{name.upper().replace('_', '')}_PORT"
+            port = TektonEnviron.get(port_var)
+            if port:
+                props['port'] = int(port)
+            
             entity_id = await self.create_component(name, props)
             if entity_id:
                 self.component_entities[name] = entity_id
@@ -298,20 +343,20 @@ class AthenaPopulator:
             "entity_type": "tekton_component",
             "properties": {
                 **properties,
-                "component_name": name.lower()
+                "component_name": name.lower().replace('_', '-')
             },
             "aliases": [name.lower(), f"tekton-{name.lower()}"]
         }
         
         try:
-            response = await self.client.post(
-                f"{ATHENA_API}/entities/",
-                json=entity
-            )
+            url = athena_url('/api/v1/entities/')
+            response = await self.client.post(url, json=entity)
+            
             if response.status_code == 200:
                 result = response.json()
                 entity_id = result.get("entityId")
-                print(f"   ✓ {name} ({properties['type']})")
+                port_info = f" (port {properties.get('port')})" if 'port' in properties else ""
+                print(f"   ✓ {name} ({properties['type']}){port_info}")
                 return entity_id
             else:
                 print(f"   ✗ Failed to create {name}: {response.text}")
@@ -330,10 +375,9 @@ class AthenaPopulator:
         }
         
         try:
-            response = await self.client.post(
-                f"{ATHENA_API}/entities/",
-                json=entity
-            )
+            url = athena_url('/api/v1/entities/')
+            response = await self.client.post(url, json=entity)
+            
             if response.status_code == 200:
                 result = response.json()
                 print(f"   ✓ {pattern['name']}")
@@ -387,10 +431,8 @@ class AthenaPopulator:
         }
         
         try:
-            response = await self.client.post(
-                f"{ATHENA_API}/relationships/",
-                json=relationship
-            )
+            url = athena_url('/api/v1/relationships/')
+            response = await self.client.post(url, json=relationship)
             return response.status_code == 200
         except Exception as e:
             print(f"   ✗ Error creating relationship {source}→{target}: {e}")
@@ -399,7 +441,8 @@ class AthenaPopulator:
     async def sync_to_disk(self):
         """Sync knowledge graph to disk"""
         try:
-            response = await self.client.post(f"{ATHENA_API}/knowledge/sync/")
+            url = athena_url('/api/v1/knowledge/sync/')
+            response = await self.client.post(url)
             if response.status_code == 200:
                 print("   ✓ Successfully synced to disk")
             else:

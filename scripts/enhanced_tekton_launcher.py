@@ -1305,7 +1305,7 @@ async def main():
             launcher.log("Athena launched successfully, populating with component relationships...", "info")
             try:
                 # Run the populate script
-                populate_script = os.path.join(tekton_root, "populate_athena_relationships.py")
+                populate_script = os.path.join(tekton_root, "scripts", "populate_athena_relationships.py")
                 if os.path.exists(populate_script):
                     launcher.log("Running Athena population script...", "info")
                     process = await asyncio.create_subprocess_exec(
