@@ -201,6 +201,9 @@ def _dispatch_command(command_type, args, shell):
     elif command_type == 'alias':
         from commands.alias import handle_alias_command
         return handle_alias_command(args.message or [])
+    elif command_type == 'inbox':
+        from commands.inbox import handle_inbox_command
+        return handle_inbox_command(args.message or [])
     return False
 
 
@@ -496,6 +499,20 @@ Environment variables:
             print("  aish alias show tag            Show alias details")
             print("  aish tag [args]                Execute alias with optional args")
             print()
+            print("INBOX SYSTEM:")
+            print("  aish inbox                     Show message counts (prompt:1 new:3 keep:0)")
+            print("  aish inbox send <type> <ci> \"msg\"  Send message to CI's inbox")
+            print("  aish inbox show <type>         Display messages in text format")
+            print("  aish inbox json <type>         Display messages in JSON format")
+            print("  aish inbox get <type>          Get and remove all messages (JSON)")
+            print("  aish inbox count <type>        Count messages (returns number only)")
+            print("  aish inbox clear <type>        Remove all messages (silent)")
+            print("  aish inbox help                Show inbox command help")
+            print("  aish inbox training            Show CI training for inbox processing")
+            print()
+            print("  Inbox types: prompt (urgent), new (regular), keep (saved)")
+            print("  Add 'from <ci>' to filter by sender: aish inbox get new from apollo")
+            print()
             print("CLAUDE CODE IDE (yes Claude, this really is for you!):")
             print("  aish introspect <class>        See all methods of a class - no more guessing!")
             print("  aish context <file.py>         Show available classes in file scope")
@@ -592,6 +609,9 @@ Environment variables:
     
     if args.ai_or_script == 'alias':
         return _dispatch_command('alias', args, shell)
+    
+    if args.ai_or_script == 'inbox':
+        return _dispatch_command('inbox', args, shell)
     
     # Check if first argument is a CI name using unified registry
     if args.ai_or_script:

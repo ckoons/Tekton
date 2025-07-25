@@ -159,6 +159,7 @@ def load_all_tests() -> List[TestSuite]:
     from . import test_terma
     from . import test_route
     from . import test_unified
+    from . import test_inbox
     
     suites.append(test_basic.create_suite())
     suites.append(test_forward.create_suite())
@@ -166,6 +167,7 @@ def load_all_tests() -> List[TestSuite]:
     suites.append(test_terma.create_suite())
     suites.append(test_route.create_suite())
     suites.append(test_unified.create_suite())
+    suites.append(test_inbox.create_suite())
     
     return suites
 

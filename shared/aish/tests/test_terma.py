@@ -6,26 +6,22 @@ Functional tests for aish terma commands
 from .test_runner import AishTest, TestSuite
 
 
-class TestTermaInbox(AishTest):
-    """Test terma inbox command"""
+class TestTermaInboxDeprecation(AishTest):
+    """Test that old terma inbox command shows deprecation message"""
     
     def test(self) -> bool:
         exit_code, stdout, stderr = self.run_command("aish terma inbox")
         
-        # If terma isn't running, we'll get an error
-        if exit_code != 0:
-            if "Connection refused" in stderr or "Failed to connect" in stdout:
-                # Expected when terma isn't running
-                print("(Terma not running)")
-                return True
-            self.error_message = f"Unexpected error: {stderr}"
+        # Should show deprecation message
+        if exit_code != 1:
+            self.error_message = f"Expected exit code 1 for deprecated command, got {exit_code}"
             return False
         
-        # If terma is running, check output
-        expected_patterns = ["PROMPT:", "NEW:", "KEEP:"]
-        for pattern in expected_patterns:
-            if pattern not in stdout:
-                self.error_message = f"Missing inbox section: {pattern}"
+        # Should show deprecation message pointing to new system
+        expected_messages = ["moved to 'aish inbox'", "aish inbox help"]
+        for msg in expected_messages:
+            if msg not in stdout:
+                self.error_message = f"Missing deprecation message: '{msg}'"
                 return False
         
         return True
@@ -73,7 +69,7 @@ def create_suite() -> TestSuite:
     """Create the terma test suite"""
     suite = TestSuite("Terma Commands")
     
-    suite.add_test(TestTermaInbox("test_terma_inbox", "Test inbox display"))
+    suite.add_test(TestTermaInboxDeprecation("test_terma_inbox_deprecation", "Test inbox deprecation message"))
     suite.add_test(TestTermaList("test_terma_list", "Test terminal listing"))
     suite.add_test(TestTermaWhoami("test_terma_whoami", "Test terminal identification"))
     
