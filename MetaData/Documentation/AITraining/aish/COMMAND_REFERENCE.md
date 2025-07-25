@@ -118,21 +118,89 @@ Remove project CI forwarding.
 aish project unforward MyWebApp # Stop forwarding MyWebApp CI
 ```
 
+### Unified Inbox System
+
+The unified inbox system provides structured message management for all CIs (Computational Intelligences) with three priority levels.
+
+#### `aish inbox`
+Show message counts across all inbox types.
+```bash
+aish inbox                     # Display: prompt:2  new:5  keep:1
+```
+
+#### `aish inbox send <type> <ci> "message"`
+Send a message to a CI's inbox with priority level.
+```bash
+aish inbox send prompt numa "Urgent: build failed"
+aish inbox send new alice "Please review the PR"  
+aish inbox send keep self "Completed: auth module"
+```
+
+**Inbox Types:**
+- **prompt** - Urgent messages requiring immediate attention
+- **new** - Regular incoming messages
+- **keep** - Saved/archived messages
+
+#### `aish inbox show <type> [from <ci>]`
+Display messages in human-readable format.
+```bash
+aish inbox show prompt         # Show all urgent messages
+aish inbox show new from apollo # Show new messages from apollo only
+```
+
+#### `aish inbox json <type> [from <ci>]`
+Display messages in JSON format (ideal for CI processing).
+```bash
+aish inbox json new            # All new messages as JSON
+aish inbox json prompt from numa # Prompt messages from numa as JSON
+```
+
+#### `aish inbox get <type> [from <ci>]`
+Retrieve and remove messages in JSON format (batch processing).
+```bash
+aish inbox get prompt          # Get and remove all prompt messages
+aish inbox get new from rhetor # Get and remove new messages from rhetor
+```
+
+**CI Batch Processing Pattern:**
+```bash
+# Process all urgent messages
+messages=$(aish inbox get prompt)
+echo "$messages" | jq -r '.[] | "From: \(.from) - \(.message)"'
+
+# Count-based loops
+while [ $(aish inbox count new) -gt 0 ]; do
+    aish inbox get new | process_messages
+done
+```
+
+#### `aish inbox count <type> [from <ci>]`
+Count messages (returns number only for CI scripts).
+```bash
+aish inbox count prompt        # Returns: 3
+aish inbox count new from apollo # Count new messages from apollo
+```
+
+#### `aish inbox clear <type> [from <ci>]`
+Remove all messages (silent operation).
+```bash
+aish inbox clear keep          # Clear all saved messages
+aish inbox clear new from numa # Clear new messages from numa only
+```
+
+#### `aish inbox help`
+Show detailed inbox command help.
+```bash
+aish inbox help                # Display comprehensive usage guide
+```
+
+#### `aish inbox training`
+Show CI training for inbox automation.
+```bash
+aish inbox training            # Display batch processing patterns
+```
+
 ### Terminal Commands (Terma)
-
-#### `aish terma inbox`
-Show messages in your terminal's inbox.
-```bash
-aish terma inbox               # Show all inbox messages
-aish terma inbox new           # Show only new messages
-aish terma inbox keep          # Show kept messages
-```
-
-#### `aish terma inbox new pop`
-Get and remove one new message from inbox.
-```bash
-aish terma inbox new pop       # Pop one message
-```
 
 #### `aish terma send <name> "message"`
 Send a message to another terminal.
@@ -145,18 +213,6 @@ aish terma send bob "Need help with auth module"
 Send a message to all active terminals.
 ```bash
 aish terma broadcast "System update in 5 minutes"
-```
-
-#### `aish terma mv-to-keep <indices>`
-Move messages from new to keep inbox.
-```bash
-aish terma mv-to-keep 1,3,5    # Move messages 1, 3, and 5 to keep
-```
-
-#### `aish terma del-from-keep <indices>`
-Delete messages from keep inbox.
-```bash
-aish terma del-from-keep 2,4   # Delete messages 2 and 4
 ```
 
 ### Productivity Commands
@@ -344,6 +400,11 @@ aish forward synthesis casey
 
 # Send messages between terminals
 aish terma send alice "PR ready for review"
+
+# Inbox-based CI coordination
+aish inbox send prompt numa "Urgent: review needed"
+aish inbox send new all-devs "Standup in 10 minutes"
+aish inbox get prompt | process_urgent_messages
 ```
 
 ### Advanced Pipelines
@@ -377,10 +438,11 @@ echo "User auth system" | aish prometheus | aish numa | aish telos
    - Let Claude act as an AI proxy
    - Debug AI interactions
 
-4. **Terminal Communication**:
-   - Use meaningful terminal names
-   - Check inbox regularly with `aish terma inbox`
-   - Keep important messages with mv-to-keep
+4. **Inbox Management**:
+   - Check inbox regularly with `aish inbox`
+   - Use priority levels: prompt (urgent), new (regular), keep (archive)
+   - Process in batches with `aish inbox get <type>`
+   - Filter by sender with `from <ci>` syntax
 
 ## Troubleshooting
 

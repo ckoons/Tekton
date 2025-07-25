@@ -363,6 +363,14 @@ def terma_send_message_to_terminal(terminal_name, message):
         return False
 
 # Landmark: Message Delivery - integration point for forwarding to new unified inbox system
+@integration_point(
+    title="Terma to Inbox Integration",
+    description="Bridges legacy terma forwarding to unified inbox system",
+    target_component="inbox_storage_system",
+    protocol="function_call",
+    data_flow="terma forwarding → deliver_message_to_inbox → inbox.store_message",
+    integration_date="2025-01-25"
+)
 def deliver_message_to_inbox(ci_name, message, sender="forwarding", purpose="general"):
     """Deliver a message to a CI's inbox using the new unified system."""
     try:

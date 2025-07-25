@@ -46,25 +46,22 @@ aish terma broadcast "System optimization complete"
 aish terma * "Synchronization checkpoint"
 ```
 
-### Inbox Management (Unix Mail Reinvented!)
+### Message Management
+For inbox functionality, use the unified inbox system:
 ```bash
-# Check both inboxes - DO THIS FREQUENTLY!
-aish terma inbox
+# Check messages - DO THIS FREQUENTLY!
+aish inbox                          # Shows: prompt:2  new:5  keep:1
 
-# Just check your keep inbox
-aish terma inbox keep
+# Messages from forwarding arrive in 'new' inbox
+aish inbox show new                 # View regular messages
+aish inbox show prompt              # View urgent messages
 
-# Process messages from new (FIFO)
-aish terma inbox new pop
-
-# Save important stuff to keep
-aish terma inbox keep push "URGENT: Memory leak in prod"
-aish terma inbox keep write "Note: Check alice's optimization"
-
-# Read from keep (LIFO)
-aish terma inbox keep read
-aish terma inbox keep read remove  # Read and delete
+# Process messages in batch (CI-friendly)
+messages=$(aish inbox get new)
+echo "$messages" | jq -r '.[] | "From: \(.from) - \(.message)"'
 ```
+
+**Note**: The old `aish terma inbox` commands have been replaced by the unified `aish inbox` system. See `aish inbox help` for complete documentation.
 
 ## Message Routing Philosophy
 
@@ -127,46 +124,48 @@ aish terma broadcast "Starting system rebuild in 2 minutes"
 aish terma broadcast "Rebuild complete, all systems normal"
 ```
 
-## Inbox Best Practices
+## Message Management Best Practices
 
 ### Regular Checking
 Make it a habit:
 ```bash
 # Start of session
-aish terma inbox
+aish inbox
 
-# Periodically during work
-aish terma inbox new
+# Periodically during work  
+aish inbox show new
 ```
 
-### Message Triage
-The two-inbox system is just like human email:
-1. **New**: Messages from others (they control what goes here)
-2. **Keep**: Your personal notes (you control this completely)
+### Message Processing
+Use the three-tier inbox system effectively:
+1. **prompt** - Process urgent messages first
+2. **new** - Regular workflow messages
+3. **keep** - Archive important information
 
 ```bash
 # Check frequently!
-aish terma inbox
+aish inbox
 
-# Process new messages one at a time
-aish terma inbox new pop  # Read alice's message
-aish terma alice "I'll help with that!"  # Reply
-aish terma inbox keep push "TODO: Help alice with memory"  # Save note
+# Process urgent messages first
+aish inbox get prompt | process_urgent_messages
 
-# Build your knowledge base in keep
-aish terma inbox keep write "Learned: Use sparse attention for efficiency"
-aish terma inbox keep write "Bug: File handles leak in loop"
+# Handle regular workflow
+aish inbox get new | process_regular_messages  
 
-# Review your notes
-aish terma inbox keep read  # See last note
-aish terma inbox keep  # See all kept messages
+# Archive important findings
+aish inbox send keep self "Learned: Use sparse attention for efficiency"
 ```
 
-### Message Lifecycle
-- Messages arrive in 'new' inbox
-- You decide: keep or trash
-- Kept messages remain for session duration
-- Future: Integration with Engram for long-term storage
+### CI Automation Patterns
+```bash
+# Count-based processing loops
+while [ $(aish inbox count prompt) -gt 0 ]; do
+    aish inbox get prompt | handle_urgent_message
+done
+
+# Filter by sender
+aish inbox get new from rhetor | process_rhetor_messages
+```
 
 ## Advanced Usage
 
@@ -251,13 +250,18 @@ aish terma @memory-optimization "Starting analysis of heap allocation"
 aish terma bob-testing "Can you benchmark my optimization?"
 
 # Check responses
-aish terma inbox
-# New Messages:
-# 1. [09:15:23] bob-testing: Sure, send me the branch name
-# 2. [09:15:45] charlie-debug: I'm tracking similar patterns
+aish inbox
+# prompt:0  new:2  keep:0
 
-# Keep important message
-aish terma inbox read 2
+aish inbox show new
+# NEW inbox:
+# [a1b2c3d4] 09:15 from bob-testing
+#     Sure, send me the branch name
+# [e5f6g7h8] 09:15 from charlie-debug
+#     I'm tracking similar patterns
+
+# Save important message
+aish inbox send keep self "charlie-debug is tracking similar patterns"
 
 # Respond
 aish terma bob-testing "Branch: feature/heap-optimization"

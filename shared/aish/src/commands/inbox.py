@@ -14,6 +14,42 @@ from typing import Dict, List, Optional, Tuple
 sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
 from shared.env import TektonEnviron
 
+# Landmark imports with fallback
+try:
+    from landmarks import (
+        architecture_decision,
+        api_contract,
+        integration_point,
+        state_checkpoint,
+        performance_boundary
+    )
+except ImportError:
+    # Define no-op decorators when landmarks not available
+    def architecture_decision(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+    
+    def api_contract(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+    
+    def integration_point(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+    
+    def state_checkpoint(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+    
+    def performance_boundary(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+
 # Simple print functions
 def print_error(msg):
     print(f"Error: {msg}")
@@ -38,8 +74,29 @@ def log_function(func):
 # replacing the confusing terma-specific inbox commands with a clean,
 # CI-friendly interface that supports batch JSON processing.
 
+@architecture_decision(
+    title="Unified Inbox System Architecture",
+    description="Three-tier message management replacing confusing terma inbox commands",
+    rationale="Eliminates CI confusion with unified interface, enables batch JSON processing for automation, provides clear priority system (prompt/new/keep)",
+    alternatives_considered=["Keep terma-specific commands", "Single inbox type", "Database storage"],
+    impacts=["ci_productivity", "message_automation", "terminal_integration"],
+    decided_by="Casey",
+    decision_date="2025-01-25"
+)
+class _InboxSystemArchitecture:
+    """Architecture decision marker for the unified inbox system"""
+    pass
+
 INBOX_TYPES = ['prompt', 'new', 'keep']
 
+@state_checkpoint(
+    title="Inbox File Storage System",
+    description="File-based message storage in .tekton/inboxes/<ci-name>/{prompt,new,keep}/",
+    state_type="persistent_storage",
+    persistence=True,
+    consistency_requirements="Atomic file writes with timestamp ordering",
+    recovery_strategy="Auto-create directories, graceful handling of missing files"
+)
 @log_function
 def get_inbox_root() -> Path:
     """Get the root inbox directory"""
@@ -104,6 +161,13 @@ def store_message(ci_name: str, inbox_type: str, message_data: Dict) -> str:
         debug_log("inbox", f"Error storing message: {e}", level="ERROR")
         raise
 
+@performance_boundary(
+    title="Message Loading and Filtering",
+    description="File system scan with optional sender filtering for CI batch processing",
+    sla="<100ms for typical inbox sizes (<1000 messages)",
+    optimization_notes="Sorted glob() with early filter check avoids loading filtered messages",
+    measured_impact="Enables efficient CI automation with 'from <ci>' filtering"
+)
 @log_function
 def load_messages(ci_name: str, inbox_type: str, from_filter: Optional[str] = None) -> List[Dict]:
     """Load all messages from an inbox, optionally filtered by sender"""
@@ -189,6 +253,15 @@ def parse_from_filter(args: List[str]) -> Tuple[List[str], Optional[str]]:
         return args[:-2], args[-1]
     return args, None
 
+@api_contract(
+    title="Inbox Send Command API",
+    description="Send message to CI's inbox with type priority",
+    endpoint="aish inbox send <type> <ci> \"message\"",
+    method="CLI",
+    request_schema={"type": "prompt|new|keep", "ci": "string", "message": "string"},
+    response_schema={"message_id": "string (8-char UUID)"},
+    performance_requirements="<50ms message storage"
+)
 @log_function
 def handle_inbox_send(args: List[str]):
     """Handle 'aish inbox send <type> <ci> "message"' command"""
@@ -266,6 +339,15 @@ def handle_inbox_json(args: List[str]):
     
     print(json.dumps(messages, indent=2))
 
+@api_contract(
+    title="Inbox Get Command API",
+    description="Retrieve and remove messages in JSON format for CI batch processing",
+    endpoint="aish inbox get <type> [from <ci>]",
+    method="CLI",
+    request_schema={"type": "prompt|new|keep", "from": "optional string"},
+    response_schema={"messages": "array of message objects with full metadata"},
+    performance_requirements="<200ms for typical inbox processing"
+)
 @log_function
 def handle_inbox_get(args: List[str]):
     """Handle 'aish inbox get <type> [from <ci>]' command"""
@@ -431,6 +513,14 @@ When AIs are forwarded to your terminal, messages appear in your 'new' inbox
 with full JSON structure including purpose context.
 """)
 
+@integration_point(
+    title="Inbox Command Dispatcher",
+    description="Main entry point routing inbox subcommands to appropriate handlers",
+    target_component="aish_main_dispatcher",
+    protocol="function_call",
+    data_flow="aish inbox <subcommand> → handle_inbox_command → subcommand handlers",
+    integration_date="2025-01-25"
+)
 @log_function
 def handle_inbox_command(args: List[str]):
     """Main entry point for inbox command"""

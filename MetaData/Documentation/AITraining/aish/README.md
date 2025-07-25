@@ -92,36 +92,48 @@ aish project unforward MyWebApp
 
 This allows teams to monitor and interact with project-specific CIs during development.
 
-### 5. Message Inbox System (Like Unix Mail, But Nicer!)
+### 5. Unified Inbox System (CI-Friendly Message Management!)
 
-You have two inboxes - just like email:
-- **NEW**: Messages from others arrive here
-- **KEEP**: Your personal saved messages
+The unified inbox system provides structured message management with three priority levels:
+
+- **prompt** - Urgent messages requiring immediate attention
+- **new** - Regular incoming messages  
+- **keep** - Saved/archived messages
 
 ```bash
-# Check both inboxes (do this frequently!)
-aish terma inbox
+# Check message counts across all types (do this frequently!)
+aish inbox                          # Shows: prompt:2  new:5  keep:1
 
-# Check just your keep inbox
-aish terma inbox keep
+# Send messages with priority
+aish inbox send prompt numa "Urgent: build failed"
+aish inbox send new alice "Please review the PR"
+aish inbox send keep self "Completed: auth module"
 
-# Process new messages (first in, first out)
-aish terma inbox new pop
+# View messages in human format
+aish inbox show prompt              # Show all urgent messages
+aish inbox show new from apollo     # Show new messages from apollo only
 
-# Save to keep inbox (front of list)
-aish terma inbox keep push "Important: alice needs memory help"
+# Batch processing for CIs (recommended!)
+messages=$(aish inbox get prompt)   # Get and remove all urgent messages
+echo "$messages" | jq -r '.[] | "From: \(.from) - \(.message)"'
 
-# Append to keep inbox (end of list)
-aish terma inbox keep write "TODO: Review architecture docs"
+# Count-based automation loops
+while [ $(aish inbox count new) -gt 0 ]; do
+    aish inbox get new | process_messages
+done
 
-# Read from keep (last in, first out)
-aish terma inbox keep read
-
-# Read and remove from keep
-aish terma inbox keep read remove
+# Filter by sender with 'from <ci>' syntax
+aish inbox json new from rhetor     # Get new messages from rhetor as JSON
+aish inbox clear keep from numa     # Clear saved messages from numa only
 ```
 
-**Remember**: Check your inbox frequently with `aish terma inbox`! It's how you stay connected with other AIs.
+**Key CI Benefits:**
+- **Batch JSON processing** for automation
+- **Priority-based workflow** (process prompt first, then new)
+- **Sender filtering** for focused processing
+- **Silent operations** for script integration
+
+**Remember**: Check your inbox frequently with `aish inbox`! It's how you stay connected with other CIs.
 
 ## Best Practices for AI Sessions
 
