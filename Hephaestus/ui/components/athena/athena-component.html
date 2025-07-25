@@ -205,10 +205,9 @@
                 </div>
                 
                 <div id="query-result-container" class="athena__query-result" style="display: none;">
-                    <h4>Generated Query</h4>
-                    <div class="athena__query-code">
-                        <pre id="generated-query"></pre>
-                        <div class="athena__query-code-actions">
+                    <div class="athena__query-result-header">
+                        <h4>Generated Query</h4>
+                        <div class="athena__query-result-actions">
                             <button id="copy-query-btn" class="athena__query-button athena__query-button--small">
                                 Copy Query
                             </button>
@@ -216,6 +215,9 @@
                                 Execute
                             </button>
                         </div>
+                    </div>
+                    <div class="athena__query-code">
+                        <pre id="generated-query"></pre>
                     </div>
                 </div>
             </div>
@@ -926,12 +928,29 @@
     font-size: 1.1rem;
 }
 
+.athena__query-result-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.athena__query-result-header h4 {
+    margin: 0;
+    color: #7B1FA2;
+    font-size: 1.1rem;
+}
+
+.athena__query-result-actions {
+    display: flex;
+    gap: 8px;
+}
+
 .athena__query-code {
     background-color: #000000;
     border: 1px solid #333;
     border-radius: 8px;
     padding: 16px;
-    position: relative;
 }
 
 .athena__query-code pre {
@@ -941,14 +960,6 @@
     font-size: 13px;
     line-height: 1.5;
     white-space: pre-wrap;
-}
-
-.athena__query-code-actions {
-    position: absolute;
-    top: 12px;
-    right: 12px;
-    display: flex;
-    gap: 8px;
 }
 
 /* Node Popup Styling */
@@ -1084,6 +1095,104 @@
 
 .athena__popup-content::-webkit-scrollbar-thumb:hover {
     background: #8E24AA;
+}
+
+/* Query Results Styling */
+.athena__query-results-section {
+    margin-top: 24px;
+    background-color: var(--bg-secondary, #252535);
+    border: 1px solid var(--border-color, #444444);
+    border-radius: 12px;
+    padding: 24px;
+    animation: slideIn 0.3s ease-out;
+}
+
+.athena__query-results-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.athena__query-results-header h4 {
+    margin: 0;
+    color: #7B1FA2;
+    font-size: 1.1rem;
+}
+
+.athena__query-results-summary {
+    padding: 12px;
+    background-color: rgba(123, 31, 162, 0.1);
+    border-radius: 6px;
+    margin-bottom: 16px;
+    color: var(--text-primary, #f0f0f0);
+}
+
+.athena__query-results-content {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.athena__query-results-list h5 {
+    color: #7B1FA2;
+    margin: 16px 0 8px 0;
+    font-size: 0.95rem;
+}
+
+.athena__query-results-entities,
+.athena__query-results-relationships {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 16px 0;
+}
+
+.athena__query-results-entities li,
+.athena__query-results-relationships li {
+    padding: 8px 12px;
+    margin-bottom: 4px;
+    background-color: var(--bg-tertiary, #1a1a2a);
+    border-radius: 4px;
+    border-left: 3px solid #7B1FA2;
+    transition: all 0.2s ease;
+}
+
+.athena__query-results-entities li:hover,
+.athena__query-results-relationships li:hover {
+    background-color: rgba(123, 31, 162, 0.1);
+    transform: translateX(4px);
+}
+
+.athena__result-name {
+    color: #7B1FA2;
+    font-weight: 600;
+}
+
+.athena__result-type {
+    color: var(--text-secondary, #aaa);
+    font-size: 0.85rem;
+}
+
+.athena__result-source,
+.athena__result-target {
+    color: var(--text-primary, #f0f0f0);
+    font-weight: 500;
+}
+
+.athena__result-rel {
+    color: #4CAF50;
+    font-style: italic;
+}
+
+.athena__result-arrow {
+    color: #666;
+    margin: 0 4px;
+}
+
+.athena__no-results {
+    text-align: center;
+    color: var(--text-secondary, #aaa);
+    padding: 32px;
+    font-style: italic;
 }
 
 .athena__graph-stats {
@@ -1681,38 +1790,169 @@
                 var queryText = generatedQueryElem.textContent;
                 console.log('[ATHENA] Executing query:', queryText);
                 
-                // Show a message that query execution is coming soon
-                var resultDiv = document.createElement('div');
-                resultDiv.className = 'athena__query-execution-result';
-                resultDiv.style.marginTop = '16px';
-                resultDiv.style.padding = '16px';
-                resultDiv.style.backgroundColor = 'rgba(123, 31, 162, 0.1)';
-                resultDiv.style.border = '1px solid #7B1FA2';
-                resultDiv.style.borderRadius = '6px';
-                resultDiv.innerHTML = '<strong>Query Execution:</strong><br>' +
-                                    'Query execution will send this to Athena\'s query API.<br>' +
-                                    'For now, try using the Knowledge Chat tab to ask questions!';
+                // Show loading state
+                executeQueryBtn.textContent = 'Executing...';
+                executeQueryBtn.disabled = true;
                 
                 // Remove any existing result
-                var existingResult = queryResultContainer.querySelector('.athena__query-execution-result');
+                var existingResult = queryResultContainer.querySelector('.athena__query-results-section');
                 if (existingResult) {
                     existingResult.remove();
                 }
                 
-                queryResultContainer.appendChild(resultDiv);
+                // Parse the query to extract search parameters
+                var searchTerm = '';
+                var entityType = entityTypeSelect.value;
+                var relationshipType = relationshipTypeSelect.value;
                 
-                // You could send the query to Athena's API here
-                // fetch(window.athenaUrl('/api/v1/query'), {
-                //     method: 'POST',
-                //     headers: { 'Content-Type': 'application/json' },
-                //     body: JSON.stringify({ 
-                //         question: queryText,
-                //         mode: 'cypher' 
-                //     })
-                // }).then(response => response.json())
-                //   .then(data => {
-                //       // Display results
-                //   });
+                // Extract search term from query
+                var searchMatch = queryText.match(/CONTAINS "([^"]+)"|= "([^"]+)"/);
+                if (searchMatch) {
+                    searchTerm = searchMatch[1] || searchMatch[2];
+                }
+                
+                // Execute query by filtering existing data
+                executeGraphQuery(searchTerm, entityType, relationshipType, function(results) {
+                    // Create results section
+                    var resultsSection = document.createElement('div');
+                    resultsSection.className = 'athena__query-results-section';
+                    resultsSection.innerHTML = 
+                        '<div class="athena__query-results-header">' +
+                        '<h4>Query Results</h4>' +
+                        '<button class="athena__query-button athena__query-button--small" onclick="viewQueryResultsInGraph()">View in Graph</button>' +
+                        '</div>' +
+                        '<div class="athena__query-results-summary">' +
+                        'Found <strong>' + results.entities.length + ' entities</strong> and <strong>' + results.relationships.length + ' relationships</strong>' +
+                        '</div>' +
+                        '<div class="athena__query-results-content">' +
+                        '<div class="athena__query-results-list" id="query-results-list"></div>' +
+                        '</div>';
+                    
+                    queryResultContainer.appendChild(resultsSection);
+                    
+                    // Populate results list
+                    var resultsList = document.getElementById('query-results-list');
+                    
+                    // Show entities
+                    if (results.entities.length > 0) {
+                        var entitiesHtml = '<h5>Entities:</h5><ul class="athena__query-results-entities">';
+                        results.entities.forEach(function(entity) {
+                            entitiesHtml += '<li><span class="athena__result-name">' + entity.name + '</span> <span class="athena__result-type">(' + entity.type + ')</span></li>';
+                        });
+                        entitiesHtml += '</ul>';
+                        resultsList.innerHTML += entitiesHtml;
+                    }
+                    
+                    // Show relationships
+                    if (results.relationships.length > 0) {
+                        var relationshipsHtml = '<h5>Relationships:</h5><ul class="athena__query-results-relationships">';
+                        results.relationships.forEach(function(rel) {
+                            relationshipsHtml += '<li>' + 
+                                '<span class="athena__result-source">' + rel.sourceName + '</span> ' +
+                                '<span class="athena__result-arrow">→</span> ' +
+                                '<span class="athena__result-rel">' + rel.type + '</span> ' +
+                                '<span class="athena__result-arrow">→</span> ' +
+                                '<span class="athena__result-target">' + rel.targetName + '</span>' +
+                                '</li>';
+                        });
+                        relationshipsHtml += '</ul>';
+                        resultsList.innerHTML += relationshipsHtml;
+                    }
+                    
+                    // If no results
+                    if (results.entities.length === 0 && results.relationships.length === 0) {
+                        resultsList.innerHTML = '<p class="athena__no-results">No results found matching your query criteria.</p>';
+                    }
+                    
+                    // Reset button
+                    executeQueryBtn.textContent = 'Execute';
+                    executeQueryBtn.disabled = false;
+                    
+                    // Store results for "View in Graph" functionality
+                    window.lastQueryResults = results;
+                });
+            });
+        }
+    }
+    
+    // Function to execute graph query using loaded data
+    function executeGraphQuery(searchTerm, entityType, relationshipType, callback) {
+        // Filter entities
+        var matchingEntities = [];
+        var matchingRelationships = [];
+        
+        if (graphData && graphData.entities) {
+            // Filter entities
+            graphData.entities.forEach(function(entity) {
+                var matchesType = entityType === 'any' || entity.entity_type === entityType;
+                var matchesSearch = !searchTerm || 
+                    entity.name.toLowerCase().includes(searchTerm.toLowerCase());
+                
+                if (matchesType && matchesSearch) {
+                    matchingEntities.push({
+                        id: entity.entity_id,
+                        name: entity.name,
+                        type: entity.entity_type
+                    });
+                }
+            });
+            
+            // Filter relationships
+            if (graphData.relationships) {
+                graphData.relationships.forEach(function(rel) {
+                    var matchesRelType = relationshipType === 'any' || 
+                        rel.relationship_type.toLowerCase() === relationshipType.toLowerCase();
+                    
+                    // Check if source or target matches our entities
+                    var sourceEntity = graphData.entities.find(e => e.entity_id === rel.source_id);
+                    var targetEntity = graphData.entities.find(e => e.entity_id === rel.target_id);
+                    
+                    var matchesSearch = !searchTerm || 
+                        (sourceEntity && sourceEntity.name.toLowerCase().includes(searchTerm.toLowerCase())) ||
+                        (targetEntity && targetEntity.name.toLowerCase().includes(searchTerm.toLowerCase()));
+                    
+                    if (matchesRelType && matchesSearch) {
+                        matchingRelationships.push({
+                            source: rel.source_id,
+                            target: rel.target_id,
+                            type: rel.relationship_type,
+                            sourceName: sourceEntity ? sourceEntity.name : 'Unknown',
+                            targetName: targetEntity ? targetEntity.name : 'Unknown'
+                        });
+                    }
+                });
+            }
+        }
+        
+        // Return results
+        callback({
+            entities: matchingEntities,
+            relationships: matchingRelationships
+        });
+    }
+    
+    // Function to view query results in graph (global for onclick)
+    window.viewQueryResultsInGraph = function() {
+        // Switch to Knowledge Graph tab
+        document.getElementById('athena-tab-graph').checked = true;
+        
+        // Highlight matching nodes in the graph
+        if (window.lastQueryResults) {
+            var resultIds = window.lastQueryResults.entities.map(e => e.id);
+            
+            // Reset all nodes first
+            document.querySelectorAll('.athena__graph-node').forEach(function(node) {
+                node.classList.remove('highlighted', 'dimmed');
+            });
+            
+            // Highlight matching nodes
+            document.querySelectorAll('.athena__graph-node').forEach(function(node) {
+                var nodeId = node.getAttribute('data-node-id');
+                if (resultIds.includes(nodeId)) {
+                    node.classList.add('highlighted');
+                } else {
+                    node.classList.add('dimmed');
+                }
             });
         }
     }
