@@ -391,7 +391,7 @@ class TestInboxErrorHandling(AishTest):
 
 def create_suite() -> TestSuite:
     """Create the inbox test suite"""
-    suite = TestSuite("Inbox System")
+    suite = TestSuite("inbox")
     
     suite.add_test(TestInboxHelp("test_inbox_help", "Test inbox help command"))
     suite.add_test(TestInboxTraining("test_inbox_training", "Test inbox training command"))

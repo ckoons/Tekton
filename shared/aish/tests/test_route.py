@@ -156,7 +156,7 @@ class TestRouteSend(AishTest):
 
 def create_suite() -> TestSuite:
     """Create the route test suite"""
-    suite = TestSuite("Route Commands")
+    suite = TestSuite("route")
     
     suite.add_test(TestRouteCreate())
     suite.add_test(TestRouteList())

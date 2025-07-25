@@ -48,7 +48,7 @@ class TestTermaWhoami(AishTest):
 
 def create_suite() -> TestSuite:
     """Create the terma test suite"""
-    suite = TestSuite("Terma Commands")
+    suite = TestSuite("terma")
     
     suite.add_test(TestTermaList("test_terma_list", "Test terminal listing"))
     suite.add_test(TestTermaWhoami("test_terma_whoami", "Test terminal identification"))

@@ -142,7 +142,7 @@ class TestStatusJson(AishTest):
 
 def create_suite() -> TestSuite:
     """Create the basic test suite"""
-    suite = TestSuite("Basic Commands")
+    suite = TestSuite("basic")
     
     suite.add_test(TestHelp("test_help", "Test aish help display"))
     suite.add_test(TestListCommands("test_list_commands", "Test command listing"))

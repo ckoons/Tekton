@@ -190,7 +190,7 @@ class TestForwardMessage(AishTest):
 
 def create_suite() -> TestSuite:
     """Create the forward test suite"""
-    suite = TestSuite("Forward Commands")
+    suite = TestSuite("forward")
     
     suite.add_test(TestForwardSetup())
     suite.add_test(TestForwardJson())

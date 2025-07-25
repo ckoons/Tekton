@@ -136,7 +136,7 @@ class TestPurposeSet(AishTest):
 
 def create_suite() -> TestSuite:
     """Create the purpose test suite"""
-    suite = TestSuite("Purpose Commands")
+    suite = TestSuite("purpose")
     
     suite.add_test(TestPurposeCurrent("test_purpose_current", "Test showing current purpose"))
     suite.add_test(TestPurposeSearch("test_purpose_search", "Test purpose content search"))
