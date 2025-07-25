@@ -79,13 +79,7 @@ def handle_terma_command(args):
         print("  <name> 'msg' - Send to terminal")
         print("  @<purpose> 'msg' - Send by purpose")
         print("  broadcast 'msg' - Send to all others")
-        print("\nInbox Commands:")
-        print("  inbox - Show all inboxes (prompt, new, keep)")
-        print("  inbox prompt - Show urgent prompt messages")
-        print("  inbox prompt pop - Pop from prompt inbox")
-        print("  inbox new pop - Pop from new inbox")
-        print("  inbox keep push 'text' - Save to keep")
-        print("  inbox keep read [remove] - Read from keep")
+        print("\nNote: Inbox commands moved to 'aish inbox' - see 'aish inbox help'")
         print("\nDocumentation:")
         tekton_root = TektonEnviron.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
         print(f"  AI Training: {tekton_root}/MetaData/TektonDocumentation/AITraining/terma/")
@@ -100,44 +94,9 @@ def handle_terma_command(args):
     elif command == "training-for-ais":
         return terma_training_info()
     elif command == "inbox":
-        # Handle inbox subcommands
-        if len(args) == 1:
-            # Default: show both inboxes
-            return terma_inbox_both()
-        
-        subcommand = args[1]
-        if subcommand == "keep":
-            # Check for keep subcommands
-            if len(args) == 2:
-                return terma_inbox_keep()
-            
-            keep_cmd = args[2]
-            if keep_cmd == "push" and len(args) > 3:
-                return terma_inbox_keep_push(' '.join(args[3:]))
-            elif keep_cmd == "write" and len(args) > 3:
-                return terma_inbox_keep_write(' '.join(args[3:]))
-            elif keep_cmd == "read":
-                remove = len(args) > 3 and args[3] == "remove"
-                return terma_inbox_keep_read(remove)
-            else:
-                print("Usage: aish terma inbox keep [push|write|read [remove]]")
-                return 1
-                
-        elif subcommand == "new":
-            if len(args) > 2 and args[2] == "pop":
-                return terma_inbox_new_pop()
-            else:
-                print("Usage: aish terma inbox new pop")
-                return 1
-        elif subcommand == "prompt":
-            if len(args) > 2 and args[2] == "pop":
-                return terma_inbox_prompt_pop()
-            else:
-                # Just show prompt messages
-                return terma_inbox_prompt()
-        else:
-            print("Usage: aish terma inbox [prompt|keep|new] [pop]")
-            return 1
+        print("Inbox commands have moved to 'aish inbox'")
+        print("See 'aish inbox help' for complete documentation")
+        return 1
     elif command == "error-report":
         if len(args) < 2:
             print("Usage: aish terma error-report 'error message'")
@@ -174,14 +133,6 @@ def print_usage():
     print("Usage: aish terma <command> [args]")
     print("\nCommands:")
     print("  list                 - List active terminals")
-    print("  inbox                - Show all inboxes (prompt, new, keep)")
-    print("  inbox prompt         - Show urgent messages")
-    print("  inbox prompt pop     - Pop from prompt inbox")
-    print("  inbox keep           - Show keep inbox")
-    print("  inbox new pop        - Pop message from new")
-    print("  inbox keep push 'text' - Push to keep (front)")
-    print("  inbox keep write 'text' - Write to keep (end)")
-    print("  inbox keep read [remove] - Read from keep")
     print("  whoami               - Show current terminal info")
     print("  <name> 'message'     - Send to specific terminal")
     print("  @<purpose> 'message' - Send to terminals by purpose")
@@ -189,10 +140,9 @@ def print_usage():
     print("  * 'message'          - Send to all including self")
     print("  training-for-ais     - Get AI training docs location")
     print("  error-report 'msg'   - Report an error or issue")
+    print("\nNote: Inbox commands moved to 'aish inbox' - see 'aish inbox help'")
     print("\nExamples:")
     print("  aish terma list")
-    print("  aish terma inbox")
-    print("  aish terma inbox new pop")
     print("  aish terma bob 'need help with auth'")
     print("  aish terma @planning 'team sync at 3pm'")
     print("  aish terma broadcast 'anyone know WebSockets?'")
@@ -412,295 +362,23 @@ def terma_send_message_to_terminal(terminal_name, message):
         print(f"Failed to send to terminal {terminal_name}: {e}")
         return False
 
-# Landmark: Inbox State Machine - prompt/new/keep queues with file sync
-def terma_inbox_both():
-    """Show both new and keep inboxes to stdout."""
+# Landmark: Message Delivery - integration point for forwarding to new unified inbox system
+def deliver_message_to_inbox(ci_name, message, sender="forwarding", purpose="general"):
+    """Deliver a message to a CI's inbox using the new unified system."""
     try:
-        tekton_root = TektonEnviron.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
-        inbox_file = os.path.join(tekton_root, ".tekton", "terma", ".inbox_snapshot")
+        # Import the inbox system
+        import sys
+        from pathlib import Path
+        sys.path.insert(0, str(Path(__file__).parent))
+        from inbox import store_message, create_message
         
-        if os.path.exists(inbox_file):
-            with open(inbox_file, 'r') as f:
-                data = json.load(f)
-            
-            prompt_messages = data.get('prompt', [])
-            new_messages = data.get('new', [])
-            keep_messages = data.get('keep', [])
-            
-            # Show prompt messages first (high priority)
-            if prompt_messages:
-                print(f"[PROMPT: {len(prompt_messages)} urgent messages]")
-                for i, msg in enumerate(prompt_messages[:10], 1):  # Show first 10
-                    time_str = msg['timestamp'][11:19] if 'timestamp' in msg else "??:??:??"
-                    from_name = msg.get('from', 'unknown')
-                    message = msg.get('message', '')
-                    if len(message) > 50:
-                        message = message[:47] + "..."
-                    print(f"{i}. [{time_str}] {from_name}: {message}")
-                print()  # Extra line for clarity
-            
-            # Show new messages
-            print(f"[NEW: {len(new_messages)} messages]")
-            if new_messages:
-                for i, msg in enumerate(new_messages[:20], 1):  # Show first 20
-                    time_str = msg['timestamp'][11:19] if 'timestamp' in msg else "??:??:??"
-                    from_name = msg.get('from', 'unknown')
-                    message = msg.get('message', '')
-                    if len(message) > 50:
-                        message = message[:47] + "..."
-                    print(f"{i}. [{time_str}] {from_name}: {message}")
-            
-            # Show keep messages
-            print(f"\n[KEEP: {len(keep_messages)} messages]")
-            if keep_messages:
-                for i, msg in enumerate(keep_messages[:10], 1):  # Show first 10
-                    time_str = msg['timestamp'][11:19] if 'timestamp' in msg else "??:??:??"
-                    content = msg.get('message', msg) if isinstance(msg, dict) else msg
-                    if len(content) > 60:
-                        content = content[:57] + "..."
-                    print(f"{i}. [{time_str}] {content}")
-        else:
-            print("[PROMPT: 0 urgent messages]")
-            print("[NEW: 0 messages]")
-            print("[KEEP: 0 messages]")
-            print("\n(Check your inbox frequently with 'aish terma inbox')")
+        # Create message with proper metadata
+        message_data = create_message(sender, ci_name, message, purpose)
         
-        return 0
-    except Exception as e:
-        print(f"Error accessing inbox: {e}")
-        return 1
-
-def terma_inbox_keep():
-    """Show kept messages."""
-    try:
-        tekton_root = TektonEnviron.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
-        inbox_file = os.path.join(tekton_root, ".tekton", "terma", ".inbox_snapshot")
-        
-        if os.path.exists(inbox_file):
-            with open(inbox_file, 'r') as f:
-                messages = json.load(f).get('keep', [])
-            
-            if messages:
-                print("\nKept Messages:")
-                print("-" * 60)
-                for msg in messages:
-                    time_str = msg['timestamp'][11:19] if 'timestamp' in msg else "??:??:??"
-                    from_name = msg.get('from', 'unknown')
-                    message = msg.get('message', '')
-                    print(f"[{time_str}] {from_name}: {message}")
-            else:
-                print("No kept messages")
-        else:
-            print("No kept messages yet")
-        
-        return 0
-    except Exception as e:
-        print(f"Error accessing kept messages: {e}")
-        return 1
-
-def terma_inbox_new_pop():
-    """Pop first message from new inbox (FIFO)."""
-    try:
-        tekton_root = TektonEnviron.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
-        inbox_file = os.path.join(tekton_root, ".tekton", "terma", ".inbox_snapshot")
-        
-        if os.path.exists(inbox_file):
-            with open(inbox_file, 'r') as f:
-                data = json.load(f)
-            
-            new_messages = data.get('new', [])
-            if new_messages:
-                # Pop first message (FIFO)
-                msg = new_messages[0]
-                time_str = msg['timestamp'][11:19] if 'timestamp' in msg else "??:??:??"
-                from_name = msg.get('from', 'unknown')
-                message = msg.get('message', '')
-                
-                # Output the message to stdout
-                print(f"[{time_str}] {from_name}: {message}")
-                
-                # Write command for proxy to remove it
-                tekton_root = TektonEnviron.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
-                cmd_dir = os.path.join(tekton_root, ".tekton", "terma", "commands")
-                os.makedirs(cmd_dir, exist_ok=True)
-                cmd_file = os.path.join(cmd_dir, f"inbox_pop_{int(time.time()*1000)}.json")
-                with open(cmd_file, 'w') as f:
-                    json.dump({'action': 'pop', 'timestamp': datetime.now().isoformat()}, f)
-                
-                return 0
-            else:
-                print("No new messages")
-                return 0
-        else:
-            print("No messages in inbox")
-            return 0
-            
-    except Exception as e:
-        print(f"Error popping message: {e}")
-        return 1
-
-def terma_inbox_prompt():
-    """Show only prompt messages."""
-    try:
-        tekton_root = TektonEnviron.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
-        inbox_file = os.path.join(tekton_root, ".tekton", "terma", ".inbox_snapshot")
-        
-        if os.path.exists(inbox_file):
-            with open(inbox_file, 'r') as f:
-                data = json.load(f)
-            
-            prompt_messages = data.get('prompt', [])
-            
-            print(f"[PROMPT: {len(prompt_messages)} urgent messages]")
-            if prompt_messages:
-                for i, msg in enumerate(prompt_messages[:20], 1):  # Show first 20
-                    time_str = msg['timestamp'][11:19] if 'timestamp' in msg else "??:??:??"
-                    from_name = msg.get('from', 'unknown')
-                    message = msg.get('message', '')
-                    if len(message) > 60:
-                        message = message[:57] + "..."
-                    print(f"{i}. [{time_str}] {from_name}: {message}")
-        else:
-            print("[PROMPT: 0 urgent messages]")
-        
-        return 0
-    except Exception as e:
-        print(f"Error accessing prompt inbox: {e}")
-        return 1
-
-def terma_inbox_prompt_pop():
-    """Pop first message from prompt inbox (FIFO)."""
-    try:
-        tekton_root = TektonEnviron.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
-        inbox_file = os.path.join(tekton_root, ".tekton", "terma", ".inbox_snapshot")
-        
-        if os.path.exists(inbox_file):
-            with open(inbox_file, 'r') as f:
-                data = json.load(f)
-            
-            prompt_messages = data.get('prompt', [])
-            if prompt_messages:
-                # Pop first message (FIFO)
-                msg = prompt_messages[0]
-                time_str = msg['timestamp'][11:19] if 'timestamp' in msg else "??:??:??"
-                from_name = msg.get('from', 'unknown')
-                message = msg.get('message', '')
-                
-                # Output the message to stdout
-                print(f"[{time_str}] {from_name}: {message}")
-                
-                # Write command for proxy to remove it
-                tekton_root = TektonEnviron.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
-                cmd_dir = os.path.join(tekton_root, ".tekton", "terma", "commands")
-                os.makedirs(cmd_dir, exist_ok=True)
-                cmd_file = os.path.join(cmd_dir, f"prompt_pop_{int(time.time()*1000)}.json")
-                with open(cmd_file, 'w') as f:
-                    json.dump({'action': 'prompt_pop', 'timestamp': datetime.now().isoformat()}, f)
-                
-                return 0
-            else:
-                print("No prompt messages")
-                return 0
-        else:
-            print("No messages in prompt inbox")
-            return 0
-            
-    except Exception as e:
-        print(f"Error popping prompt message: {e}")
-        return 1
-
-def terma_inbox_keep_push(message):
-    """Push message to front of keep inbox."""
-    try:
-        # Write command for proxy to process
-        tekton_root = TektonEnviron.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
-        cmd_dir = os.path.join(tekton_root, ".tekton", "terma", "commands")
-        os.makedirs(cmd_dir, exist_ok=True)
-        
-        cmd_file = os.path.join(cmd_dir, f"keep_push_{int(time.time()*1000)}.json")
-        command = {
-            'action': 'keep_push',
-            'message': message,
-            'timestamp': datetime.now().isoformat()
-        }
-        
-        with open(cmd_file, 'w') as f:
-            json.dump(command, f)
-        
-        print("[TERMA: Added to keep inbox]")
-        return 0
+        # Store in 'new' inbox by default
+        message_id = store_message(ci_name, 'new', message_data)
+        return True
         
     except Exception as e:
-        print(f"Error pushing to keep: {e}")
-        return 1
-
-def terma_inbox_keep_write(message):
-    """Write message to end of keep inbox."""
-    try:
-        # Write command for proxy to process
-        tekton_root = TektonEnviron.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
-        cmd_dir = os.path.join(tekton_root, ".tekton", "terma", "commands")
-        os.makedirs(cmd_dir, exist_ok=True)
-        
-        cmd_file = os.path.join(cmd_dir, f"keep_write_{int(time.time()*1000)}.json")
-        command = {
-            'action': 'keep_write',
-            'message': message,
-            'timestamp': datetime.now().isoformat()
-        }
-        
-        with open(cmd_file, 'w') as f:
-            json.dump(command, f)
-        
-        print("[TERMA: Added to keep inbox]")
-        return 0
-        
-    except Exception as e:
-        print(f"Error writing to keep: {e}")
-        return 1
-
-def terma_inbox_keep_read(remove=False):
-    """Read last message from keep inbox (LIFO)."""
-    try:
-        tekton_root = TektonEnviron.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
-        inbox_file = os.path.join(tekton_root, ".tekton", "terma", ".inbox_snapshot")
-        
-        if os.path.exists(inbox_file):
-            with open(inbox_file, 'r') as f:
-                data = json.load(f)
-            
-            keep_messages = data.get('keep', [])
-            if keep_messages:
-                # Read last message (LIFO)
-                msg = keep_messages[-1]
-                if isinstance(msg, dict):
-                    time_str = msg['timestamp'][11:19] if 'timestamp' in msg else "??:??:??"
-                    content = msg.get('message', '')
-                else:
-                    time_str = datetime.now().strftime("%H:%M:%S")
-                    content = msg
-                
-                # Output the message to stdout
-                print(content)
-                
-                if remove:
-                    # Write command for proxy to remove it
-                    tekton_root = TektonEnviron.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
-                    cmd_dir = os.path.join(tekton_root, ".tekton", "terma", "commands")
-                    os.makedirs(cmd_dir, exist_ok=True)
-                    cmd_file = os.path.join(cmd_dir, f"keep_remove_{int(time.time()*1000)}.json")
-                    with open(cmd_file, 'w') as f:
-                        json.dump({'action': 'keep_remove_last', 'timestamp': datetime.now().isoformat()}, f)
-                    print("[TERMA: Removed from keep inbox]")
-                
-                return 0
-            else:
-                print("No kept messages")
-                return 0
-        else:
-            print("No messages in keep inbox")
-            return 0
-            
-    except Exception as e:
-        print(f"Error reading from keep: {e}")
-        return 1
+        print(f"Failed to deliver message to {ci_name}: {e}")
+        return False
