@@ -98,6 +98,32 @@
                             <p style="color: #777;">Loading graph visualization...</p>
                         </div>
                     </div>
+                    
+                    <!-- Code/Landmark Popup (hidden by default) -->
+                    <input type="radio" name="popup-view" id="popup-landmarks" checked style="display: none;">
+                    <input type="radio" name="popup-view" id="popup-code" style="display: none;">
+                    
+                    <div id="node-popup" class="athena__node-popup" style="display: none;">
+                        <div class="athena__popup-header">
+                            <h4 class="athena__popup-title">Component</h4>
+                            <button class="athena__popup-close" onclick="document.getElementById('node-popup').style.display='none'">×</button>
+                        </div>
+                        
+                        <div class="athena__popup-toggle">
+                            <label for="popup-landmarks" class="athena__popup-toggle-btn">Landmarks</label>
+                            <label for="popup-code" class="athena__popup-toggle-btn">Code</label>
+                        </div>
+                        
+                        <div class="athena__popup-content athena__popup-content--landmarks">
+                            <div class="athena__popup-location">📁 Location: <span id="popup-location">/Component</span></div>
+                            <pre id="popup-landmarks-content">Loading landmarks...</pre>
+                        </div>
+                        
+                        <div class="athena__popup-content athena__popup-content--code">
+                            <div class="athena__popup-location">📄 File: <span id="popup-file">/Component/__main__.py</span></div>
+                            <pre id="popup-code-content">Loading code...</pre>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -925,6 +951,141 @@
     gap: 8px;
 }
 
+/* Node Popup Styling */
+.athena__node-popup {
+    position: absolute;
+    background-color: rgba(37, 37, 53, 0.98);
+    border: 1px solid #7B1FA2;
+    border-radius: 12px;
+    padding: 0;
+    width: 450px;
+    max-height: 500px;
+    z-index: 1000;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 8px 32px rgba(123, 31, 162, 0.3);
+    overflow: hidden;
+}
+
+.athena__popup-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px;
+    background-color: rgba(123, 31, 162, 0.1);
+    border-bottom: 1px solid rgba(123, 31, 162, 0.3);
+}
+
+.athena__popup-title {
+    margin: 0;
+    color: #7B1FA2;
+    font-size: 1.1rem;
+}
+
+.athena__popup-close {
+    background: none;
+    border: none;
+    color: #999;
+    font-size: 24px;
+    cursor: pointer;
+    padding: 0;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+.athena__popup-close:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: #fff;
+}
+
+/* Toggle Buttons */
+.athena__popup-toggle {
+    display: flex;
+    gap: 0;
+    margin: 16px;
+    background-color: var(--bg-tertiary, #1a1a2a);
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.athena__popup-toggle-btn {
+    flex: 1;
+    padding: 8px 16px;
+    text-align: center;
+    cursor: pointer;
+    background-color: transparent;
+    color: #999;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.athena__popup-toggle-btn:hover {
+    background-color: rgba(123, 31, 162, 0.1);
+}
+
+/* Active toggle state */
+#popup-landmarks:checked ~ .athena__node-popup .athena__popup-toggle-btn[for="popup-landmarks"],
+#popup-code:checked ~ .athena__node-popup .athena__popup-toggle-btn[for="popup-code"] {
+    background-color: #7B1FA2;
+    color: white;
+}
+
+/* Content Areas */
+.athena__popup-content {
+    display: none;
+    padding: 16px;
+    max-height: 350px;
+    overflow-y: auto;
+}
+
+/* Show content based on radio selection */
+#popup-landmarks:checked ~ .athena__node-popup .athena__popup-content--landmarks,
+#popup-code:checked ~ .athena__node-popup .athena__popup-content--code {
+    display: block;
+}
+
+.athena__popup-location {
+    margin-bottom: 12px;
+    color: var(--text-secondary, #aaa);
+    font-size: 0.9rem;
+}
+
+.athena__popup-content pre {
+    margin: 0;
+    padding: 12px;
+    background-color: #000;
+    border: 1px solid #333;
+    border-radius: 6px;
+    color: #4CAF50;
+    font-family: 'Consolas', 'Monaco', monospace;
+    font-size: 12px;
+    line-height: 1.5;
+    overflow-x: auto;
+}
+
+/* Scrollbar styling for popup */
+.athena__popup-content::-webkit-scrollbar {
+    width: 8px;
+}
+
+.athena__popup-content::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.athena__popup-content::-webkit-scrollbar-thumb {
+    background: #7B1FA2;
+    border-radius: 4px;
+}
+
+.athena__popup-content::-webkit-scrollbar-thumb:hover {
+    background: #8E24AA;
+}
+
 .athena__graph-stats {
     background-color: var(--bg-secondary, #252535);
     border: 1px solid var(--border-color, #444444);
@@ -1060,6 +1221,116 @@
             });
     }
     
+    // Function to show node popup with landmarks and code
+    function showNodePopup(node) {
+        var popup = document.getElementById('node-popup');
+        var title = document.querySelector('.athena__popup-title');
+        var location = document.getElementById('popup-location');
+        var file = document.getElementById('popup-file');
+        var landmarksContent = document.getElementById('popup-landmarks-content');
+        var codeContent = document.getElementById('popup-code-content');
+        
+        // Update popup content
+        title.textContent = node.name;
+        location.textContent = '/' + node.name;
+        file.textContent = '/' + node.name + '/__main__.py';
+        
+        // Generate sample landmarks based on component type
+        var landmarks = generateLandmarks(node);
+        landmarksContent.textContent = landmarks;
+        
+        // Generate sample code snippet
+        var code = generateCodeSnippet(node);
+        codeContent.textContent = code;
+        
+        // Position popup near the center of the graph
+        var container = document.getElementById('graph-container');
+        var rect = container.getBoundingClientRect();
+        popup.style.left = (rect.width / 2 - 225) + 'px'; // Center horizontally
+        popup.style.top = '100px'; // Fixed distance from top
+        
+        // Show popup
+        popup.style.display = 'block';
+        
+        // Reset to landmarks view
+        document.getElementById('popup-landmarks').checked = true;
+    }
+    
+    // Generate sample landmarks for a component
+    function generateLandmarks(node) {
+        var landmarks = '';
+        
+        if (node.type === 'tekton_component') {
+            landmarks = '# Landmark: ' + node.name + ' Component - Main entry point\n';
+            landmarks += '# Located at: /' + node.name + '/__main__.py:1\n\n';
+            
+            // Add component-specific landmarks
+            switch(node.name.toLowerCase()) {
+                case 'hermes':
+                    landmarks += '# Landmark: MCP Server - Message bus and service registry\n';
+                    landmarks += '# Located at: /Hermes/mcp_server.py:45\n\n';
+                    landmarks += '# Landmark: WebSocket Handler - Real-time messaging\n';
+                    landmarks += '# Located at: /Hermes/websocket_handler.py:120\n';
+                    break;
+                case 'athena':
+                    landmarks += '# Landmark: Knowledge Graph Engine - Entity management\n';
+                    landmarks += '# Located at: /Athena/engine.py:32\n\n';
+                    landmarks += '# Landmark: Query Processor - Graph queries\n';
+                    landmarks += '# Located at: /Athena/query_processor.py:78\n';
+                    break;
+                case 'rhetor':
+                    landmarks += '# Landmark: LLM Router - Model selection and routing\n';
+                    landmarks += '# Located at: /Rhetor/llm_router.py:25\n\n';
+                    landmarks += '# Landmark: Context Manager - Prompt context\n';
+                    landmarks += '# Located at: /Rhetor/context_manager.py:90\n';
+                    break;
+                default:
+                    landmarks += '# Landmark: API Endpoints - Service interface\n';
+                    landmarks += '# Located at: /' + node.name + '/api/endpoints.py:15\n\n';
+                    landmarks += '# Landmark: Core Logic - Main functionality\n';
+                    landmarks += '# Located at: /' + node.name + '/core.py:50\n';
+            }
+        } else if (node.type === 'integration_pattern') {
+            landmarks = '# Landmark: ' + node.name + ' - Integration pattern\n';
+            landmarks += '# Implemented across multiple components\n\n';
+            landmarks += '# See: /shared/patterns/' + node.name.toLowerCase().replace(/ /g, '_') + '.py\n';
+        }
+        
+        return landmarks || '# No landmarks found for this node';
+    }
+    
+    // Generate sample code snippet for a component
+    function generateCodeSnippet(node) {
+        var code = '';
+        
+        if (node.type === 'tekton_component') {
+            code = '# /' + node.name + '/__main__.py\n\n';
+            code += 'import asyncio\n';
+            code += 'from ' + node.name.toLowerCase() + '.server import ' + node.name + 'Server\n\n';
+            code += 'async def main():\n';
+            code += '    """Initialize ' + node.name + ' component"""\n';
+            code += '    server = ' + node.name + 'Server()\n';
+            code += '    \n';
+            code += '    # Register with Hermes\n';
+            code += '    await server.register_with_hermes()\n';
+            code += '    \n';
+            code += '    # Start server\n';
+            code += '    await server.start()\n\n';
+            code += 'if __name__ == "__main__":\n';
+            code += '    asyncio.run(main())\n';
+        } else {
+            code = '# Pattern: ' + node.name + '\n\n';
+            code += 'class ' + node.name.replace(/ /g, '') + ':\n';
+            code += '    """Implementation of ' + node.name + '"""\n';
+            code += '    \n';
+            code += '    def apply(self, component):\n';
+            code += '        # Pattern implementation\n';
+            code += '        pass\n';
+        }
+        
+        return code;
+    }
+    
     // Function to render the graph
     function renderGraph(data) {
         if (!data.entities || data.entities.length === 0) return;
@@ -1147,10 +1418,10 @@
             g.appendChild(circle);
             g.appendChild(text);
             
-            // Click handler
-            g.addEventListener('click', function() {
-                console.log('Clicked node:', node.name);
-                // Could show details in a popup or sidebar
+            // Click handler to show popup
+            g.addEventListener('click', function(e) {
+                e.stopPropagation();
+                showNodePopup(node);
             });
             
             nodeGroup.appendChild(g);
