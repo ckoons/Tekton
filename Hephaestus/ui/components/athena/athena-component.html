@@ -46,29 +46,29 @@
         <div id="graph-panel" class="athena__panel">
             <div class="athena__graph">
                 <div class="athena__control-bar">
+                    <div class="athena__graph-stats-inline">
+                        <span class="athena__stats-title">Knowledge Graph</span>
+                        <span class="athena__stats-count"><span id="total-entities">0</span> entities</span>
+                        <span class="athena__stats-count"><span id="total-components">0</span> components</span>
+                    </div>
                     <div class="athena__search-container">
                         <input type="text" placeholder="Search entities..." class="athena__search-input">
                         <button class="athena__search-button">Search</button>
                     </div>
+                    <div class="athena__layout-selector">
+                        <label for="graph-layout-select" class="athena__layout-label">Layout:</label>
+                        <select id="graph-layout-select" class="athena__layout-select">
+                            <option value="force">Force-Directed</option>
+                            <option value="hierarchical">Hierarchical</option>
+                            <option value="circular">Circular</option>
+                            <option value="grouped">Grouped by Type</option>
+                            <option value="spring">Spring Layout</option>
+                        </select>
+                    </div>
                 </div>
                 <div id="graph-container" class="athena__graph-container">
-                    <!-- Overview widget in corner -->
-                    <div id="graph-overview" class="athena__graph-overview">
-                        <h3>Overview</h3>
-                        <div class="athena__overview-stats">
-                            <div class="athena__overview-stat">
-                                <span class="athena__overview-number">0</span>
-                                <span class="athena__overview-label">Total</span>
-                            </div>
-                            <div class="athena__overview-stat">
-                                <span class="athena__overview-number">0</span>
-                                <span class="athena__overview-label">Components</span>
-                            </div>
-                        </div>
-                    </div>
-                    
                     <!-- Main graph visualization -->
-                    <svg id="graph-svg" class="athena__graph-svg" width="100%" height="100%">
+                    <svg id="graph-svg" class="athena__graph-svg" width="100%" height="100%" viewBox="0 0 2000 1400" preserveAspectRatio="xMidYMid meet">
                         <defs>
                             <!-- Arrowhead marker for directed edges -->
                             <marker id="arrowhead" markerWidth="10" markerHeight="7" 
@@ -408,6 +408,8 @@
     justify-content: center;
     margin: 16px;
     border-radius: 8px;
+    position: relative;
+    overflow: auto;
 }
 
 /* Entities Panel */
@@ -435,11 +437,46 @@
     text-align: center;
 }
 
+/* Control Bar */
+.athena__control-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px;
+    background-color: var(--bg-secondary, #252535);
+    border-bottom: 1px solid var(--border-color, #444444);
+}
+
+/* Inline Graph Stats */
+.athena__graph-stats-inline {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex: 0 0 auto;
+}
+
+.athena__stats-title {
+    font-weight: 600;
+    color: #7B1FA2;
+    font-size: 20px;
+}
+
+.athena__stats-count {
+    color: var(--text-secondary, #aaaaaa);
+    font-size: 18px;
+}
+
+.athena__stats-count span {
+    color: #7B1FA2;
+    font-weight: 600;
+}
+
 /* Search */
 .athena__search-container {
     display: flex;
     gap: 8px;
     flex: 1;
+    max-width: 400px;
 }
 
 .athena__search-input {
@@ -464,6 +501,46 @@
     cursor: pointer;
     height: 26px;
     font-size: 13px;
+}
+
+/* Layout Selector */
+.athena__layout-selector {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.athena__layout-label {
+    color: var(--text-secondary, #aaaaaa);
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.athena__layout-select {
+    padding: 4px 8px;
+    background-color: var(--bg-tertiary, #1a1a2a);
+    border: 1px solid var(--border-color, #444444);
+    border-radius: 4px;
+    color: var(--text-primary, #f0f0f0);
+    font-size: 13px;
+    height: 28px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.athena__layout-select:hover {
+    border-color: #7B1FA2;
+}
+
+.athena__layout-select:focus {
+    outline: none;
+    border-color: #7B1FA2;
+    box-shadow: 0 0 0 2px rgba(123, 31, 162, 0.2);
+}
+
+.athena__layout-select option {
+    background-color: var(--bg-tertiary, #1a1a2a);
+    color: var(--text-primary, #f0f0f0);
 }
 
 /* Chat Interface */
@@ -659,58 +736,13 @@
 }
 
 /* Graph container positioning */
-.athena__graph-container {
-    position: relative;
-}
-
-/* Overview widget styling */
-.athena__graph-overview {
-    position: absolute;
-    top: 16px;
-    left: 16px;
-    background-color: rgba(37, 37, 53, 0.95);
-    border: 1px solid var(--border-color, #444444);
-    border-radius: 8px;
-    padding: 16px;
-    z-index: 10;
-    min-width: 150px;
-    backdrop-filter: blur(10px);
-}
-
-.athena__graph-overview h3 {
-    margin: 0 0 12px 0;
-    font-size: 0.9rem;
-    color: #7B1FA2;
-    font-weight: 600;
-}
-
-.athena__overview-stats {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-}
-
-.athena__overview-stat {
-    text-align: center;
-}
-
-.athena__overview-number {
-    display: block;
-    font-size: 1.5rem;
-    font-weight: 600;
-    color: #7B1FA2;
-}
-
-.athena__overview-label {
-    display: block;
-    font-size: 0.7rem;
-    color: var(--text-secondary, #aaaaaa);
-    margin-top: 2px;
-}
+/* Graph container is already styled above */
 
 /* SVG Graph Styling */
 .athena__graph-svg {
     display: none; /* Hidden until data loads */
+    width: 100%;
+    height: 100%;
 }
 
 /* Node styling */
@@ -1269,12 +1301,14 @@
                 console.log('[ATHENA] Loaded graph data:', data);
                 graphData = data;
                 
-                // Update overview widget
+                // Update inline stats
                 var totalEntities = data.entities ? data.entities.length : 0;
                 var componentCount = data.entities ? data.entities.filter(e => e.entity_type === 'tekton_component').length : 0;
                 
-                document.querySelector('#graph-overview .athena__overview-number').textContent = totalEntities;
-                document.querySelectorAll('#graph-overview .athena__overview-number')[1].textContent = componentCount;
+                var totalElement = document.getElementById('total-entities');
+                var componentsElement = document.getElementById('total-components');
+                if (totalElement) totalElement.textContent = totalEntities;
+                if (componentsElement) componentsElement.textContent = componentCount;
                 
                 // Render the graph
                 renderGraph(data);
@@ -1440,8 +1474,13 @@
         return code;
     }
     
+    // Store current layout type
+    var currentLayout = 'force';
+    var currentNodes = [];
+    var currentEdges = [];
+    
     // Function to render the graph
-    function renderGraph(data) {
+    function renderGraph(data, layoutType) {
         if (!data.entities || data.entities.length === 0) return;
         
         var svg = document.getElementById('graph-svg');
@@ -1452,18 +1491,23 @@
         placeholder.style.display = 'none';
         svg.style.display = 'block';
         
-        // Get container dimensions
-        var width = container.offsetWidth;
-        var height = container.offsetHeight;
+        // Use standard canvas dimensions
+        var width = 2000;
+        var height = 1400;
         
-        // Create a simple force-directed layout
+        // Use provided layout or current
+        layoutType = layoutType || currentLayout;
+        currentLayout = layoutType;
+        
+        // Create nodes with initial positions based on layout
         var nodes = data.entities.map(function(entity, i) {
             return {
                 id: entity.entity_id,
                 name: entity.name,
                 type: entity.entity_type,
-                x: width/2 + (Math.random() - 0.5) * 400,
-                y: height/2 + (Math.random() - 0.5) * 300
+                x: width/2,
+                y: height/2,
+                index: i
             };
         });
         
@@ -1479,11 +1523,404 @@
             });
         }
         
+        // Store for re-layout
+        currentNodes = nodes;
+        currentEdges = edges;
+        
+        // Apply layout algorithm
+        applyLayout(nodes, edges, layoutType, width, height);
+        
         // Clear existing content
         document.getElementById('graph-edges').innerHTML = '';
         document.getElementById('graph-nodes').innerHTML = '';
         
         // Draw edges
+        drawEdges(edges, nodes);
+        
+        // Draw nodes
+        drawNodes(nodes);
+        
+        // Center the scroll view
+        centerScrollView();
+    }
+    
+    // Function to center the scroll view on the graph
+    function centerScrollView() {
+        // With percentage-based SVG and preserveAspectRatio, scrolling is handled automatically
+        // The SVG will fit within its container and scale appropriately
+    }
+    
+    // Function to apply different layout algorithms
+    function applyLayout(nodes, edges, layoutType, width, height) {
+        switch(layoutType) {
+            case 'force':
+                applyForceDirectedLayout(nodes, edges, width, height);
+                break;
+            case 'hierarchical':
+                applyHierarchicalLayout(nodes, edges, width, height);
+                break;
+            case 'circular':
+                applyCircularLayout(nodes, width, height);
+                break;
+            case 'grouped':
+                applyGroupedLayout(nodes, width, height);
+                break;
+            case 'spring':
+                applySpringLayout(nodes, edges, width, height);
+                break;
+            default:
+                applyForceDirectedLayout(nodes, edges, width, height);
+        }
+    }
+    
+    // Force-directed layout
+    function applyForceDirectedLayout(nodes, edges, width, height) {
+        // Initialize random positions across more of the canvas
+        nodes.forEach(function(node) {
+            node.x = width/2 + (Math.random() - 0.5) * (width * 0.6);
+            node.y = height/2 + (Math.random() - 0.5) * (height * 0.6);
+        });
+        
+        // Run force simulation with stronger repulsion
+        var iterations = 200;
+        var minDistance = 80; // Minimum distance between nodes
+        
+        for (var i = 0; i < iterations; i++) {
+            // Repulsion between all nodes
+            nodes.forEach(function(node1, i) {
+                nodes.forEach(function(node2, j) {
+                    if (i !== j) {
+                        var dx = node2.x - node1.x;
+                        var dy = node2.y - node1.y;
+                        var dist = Math.sqrt(dx * dx + dy * dy);
+                        
+                        // Strong repulsion to prevent overlap
+                        if (dist < minDistance * 2) {
+                            var force = dist > 0 ? (minDistance * 2 - dist) / (minDistance * 2) : 1;
+                            var pushX = dist > 0 ? (dx / dist) * force * 20 : (Math.random() - 0.5) * 20;
+                            var pushY = dist > 0 ? (dy / dist) * force * 20 : (Math.random() - 0.5) * 20;
+                            node1.x -= pushX;
+                            node1.y -= pushY;
+                            node2.x += pushX;
+                            node2.y += pushY;
+                        }
+                    }
+                });
+            });
+            
+            // Attraction along edges
+            edges.forEach(function(edge) {
+                var source = nodes.find(n => n.id === edge.source);
+                var target = nodes.find(n => n.id === edge.target);
+                if (source && target) {
+                    var dx = target.x - source.x;
+                    var dy = target.y - source.y;
+                    var dist = Math.sqrt(dx * dx + dy * dy);
+                    if (dist > 100) {
+                        var force = (dist - 100) / dist * 0.1;
+                        source.x += dx * force;
+                        source.y += dy * force;
+                        target.x -= dx * force;
+                        target.y -= dy * force;
+                    }
+                }
+            });
+            
+            // Keep nodes in bounds with padding
+            nodes.forEach(function(node) {
+                node.x = Math.max(50, Math.min(width - 50, node.x));
+                node.y = Math.max(50, Math.min(height - 50, node.y));
+            });
+        }
+    }
+    
+    // Hierarchical layout
+    function applyHierarchicalLayout(nodes, edges, width, height) {
+        // Calculate node levels based on connections
+        var levels = {};
+        var maxLevel = 0;
+        
+        // First, identify infrastructure/shared nodes
+        var infrastructureTypes = ['infrastructure', 'shared_infrastructure'];
+        nodes.forEach(function(node) {
+            if (infrastructureTypes.includes(node.type)) {
+                levels[node.id] = 0;
+            }
+        });
+        
+        // Find nodes with no incoming edges (roots)
+        nodes.forEach(function(node) {
+            if (levels[node.id] === undefined) {
+                var hasIncoming = edges.some(e => e.target === node.id);
+                if (!hasIncoming) {
+                    levels[node.id] = 1;
+                }
+            }
+        });
+        
+        // Assign levels based on connections
+        var maxIterations = 10;
+        for (var iter = 0; iter < maxIterations; iter++) {
+            var changed = false;
+            edges.forEach(function(edge) {
+                if (levels[edge.source] !== undefined) {
+                    var newLevel = levels[edge.source] + 1;
+                    if (levels[edge.target] === undefined || levels[edge.target] > newLevel) {
+                        levels[edge.target] = newLevel;
+                        maxLevel = Math.max(maxLevel, newLevel);
+                        changed = true;
+                    }
+                }
+            });
+            if (!changed) break;
+        }
+        
+        // Assign middle level to unconnected nodes
+        var middleLevel = Math.floor(maxLevel / 2) || 1;
+        nodes.forEach(function(node) {
+            if (levels[node.id] === undefined) {
+                levels[node.id] = middleLevel;
+            }
+        });
+        
+        // Group nodes by level and type for better distribution
+        var nodesPerLevel = {};
+        nodes.forEach(function(node) {
+            var level = levels[node.id];
+            if (!nodesPerLevel[level]) nodesPerLevel[level] = [];
+            nodesPerLevel[level].push(node);
+        });
+        
+        // Position nodes with taller levels and guaranteed spacing
+        var verticalPadding = 100;
+        var bottomPadding = 100;
+        var levelHeight = (height - verticalPadding - bottomPadding) / (maxLevel + 1);
+        var horizontalPadding = 100;
+        var nodeMinSpacing = 150; // More space between nodes
+        
+        for (var level in nodesPerLevel) {
+            var levelNodes = nodesPerLevel[level];
+            var levelInt = parseInt(level);
+            
+            // Check if we need to split this level into multiple rows
+            var usableWidth = width - (2 * horizontalPadding);
+            var nodesPerRow = Math.floor(usableWidth / nodeMinSpacing);
+            var numRows = Math.ceil(levelNodes.length / nodesPerRow);
+            
+            if (numRows > 1) {
+                // Split into multiple staggered rows
+                levelNodes.forEach(function(node, i) {
+                    var row = i % numRows;
+                    var col = Math.floor(i / numRows);
+                    var nodesInThisRow = Math.ceil(levelNodes.length / numRows);
+                    
+                    var rowOffset = (row - (numRows - 1) / 2) * 60; // More vertical stagger
+                    var xSpacing = Math.max(nodeMinSpacing, usableWidth / (nodesInThisRow + 1));
+                    
+                    node.x = horizontalPadding + xSpacing * (col + 1);
+                    node.y = verticalPadding + levelHeight * levelInt + rowOffset;
+                });
+            } else {
+                // Single row - distribute evenly with minimum spacing
+                var xSpacing = Math.max(nodeMinSpacing, usableWidth / (levelNodes.length + 1));
+                levelNodes.forEach(function(node, i) {
+                    node.x = horizontalPadding + xSpacing * (i + 1);
+                    node.y = verticalPadding + levelHeight * levelInt;
+                });
+            }
+        }
+    }
+    
+    // Circular layout
+    function applyCircularLayout(nodes, width, height) {
+        // Calculate radius that prevents overlap
+        // Node diameter is about 40px (radius 20) + label space ~40px = 80px total
+        var nodeSize = 80; // Total space needed per node including labels
+        var minSpacing = nodeSize * 1.5; // 1.5x for comfortable spacing
+        
+        // Calculate minimum radius based on node count and spacing
+        var angleStep = (2 * Math.PI) / nodes.length;
+        var minRadius = minSpacing / (2 * Math.sin(angleStep / 2));
+        
+        // Ensure it fits in the viewBox
+        var maxRadius = Math.min(width - 400, height - 400) / 2;
+        var radius = Math.min(minRadius, maxRadius);
+        
+        // If radius is too small, we need to adjust
+        if (radius < minRadius * 0.8) {
+            console.warn('[ATHENA] Too many nodes for circular layout, some overlap may occur');
+        }
+        
+        var centerX = width / 2;
+        var centerY = height / 2;
+        
+        nodes.forEach(function(node, i) {
+            var angle = i * angleStep - Math.PI / 2; // Start from top
+            node.x = centerX + radius * Math.cos(angle);
+            node.y = centerY + radius * Math.sin(angle);
+        });
+    }
+    
+    // Grouped layout by type
+    function applyGroupedLayout(nodes, width, height) {
+        // Group nodes by type
+        var groups = {};
+        nodes.forEach(function(node) {
+            if (!groups[node.type]) groups[node.type] = [];
+            groups[node.type].push(node);
+        });
+        
+        // Sort groups by size (largest first)
+        var groupKeys = Object.keys(groups).sort(function(a, b) {
+            return groups[b].length - groups[a].length;
+        });
+        
+        // Calculate optimal grid layout with padding
+        var padding = 100;
+        var totalGroups = groupKeys.length;
+        var cols = Math.ceil(Math.sqrt(totalGroups));
+        var rows = Math.ceil(totalGroups / cols);
+        var cellWidth = (width - 2 * padding) / cols;
+        var cellHeight = (height - 2 * padding) / rows;
+        var baseCellSize = Math.min(cellWidth, cellHeight);
+        
+        groupKeys.forEach(function(type, groupIndex) {
+            var col = groupIndex % cols;
+            var row = Math.floor(groupIndex / cols);
+            var groupCenterX = padding + cellWidth * col + cellWidth / 2;
+            var groupCenterY = padding + cellHeight * row + cellHeight / 2;
+            
+            var groupNodes = groups[type];
+            var nodeCount = groupNodes.length;
+            
+            // Adjusted scaling for better proportions
+            var groupRadius;
+            var minArcLength;
+            
+            if (nodeCount <= 3) {
+                // Small groups - much smaller, tight spacing
+                groupRadius = 30; // Fixed small radius
+                minArcLength = 25; // Closer spacing for small groups
+            } else if (nodeCount <= 10) {
+                // Medium groups
+                groupRadius = baseCellSize * 0.25;
+                minArcLength = 40; // Medium spacing
+            } else {
+                // Large groups - pretend nodes are 2x bigger
+                var scaleFactor = Math.sqrt(nodeCount / 5);
+                groupRadius = Math.min(baseCellSize * 0.35 * scaleFactor, baseCellSize * 0.48);
+                minArcLength = 60; // Large spacing (2x node size)
+            }
+            
+            // Arrange nodes in a circle within the group
+            if (nodeCount === 1) {
+                groupNodes[0].x = groupCenterX;
+                groupNodes[0].y = groupCenterY;
+            } else {
+                // Check if we need to increase radius for spacing
+                var circumference = 2 * Math.PI * groupRadius;
+                var arcLength = circumference / nodeCount;
+                if (arcLength < minArcLength && nodeCount > 3) {
+                    groupRadius = (minArcLength * nodeCount) / (2 * Math.PI);
+                }
+                
+                var angleStep = (2 * Math.PI) / nodeCount;
+                groupNodes.forEach(function(node, i) {
+                    var angle = i * angleStep - Math.PI / 2;
+                    node.x = groupCenterX + groupRadius * Math.cos(angle);
+                    node.y = groupCenterY + groupRadius * Math.sin(angle);
+                });
+            }
+        });
+    }
+    
+    // Spring layout (improved force-directed)
+    function applySpringLayout(nodes, edges, width, height) {
+        // Initialize positions in a grid with padding
+        var cols = Math.ceil(Math.sqrt(nodes.length));
+        var rows = Math.ceil(nodes.length / cols);
+        var topPadding = 100;
+        var sidePadding = 100;
+        var bottomPadding = 150;
+        var cellWidth = (width - 2 * sidePadding) / cols;
+        var cellHeight = (height - topPadding - bottomPadding) / rows;
+        
+        nodes.forEach(function(node, i) {
+            var col = i % cols;
+            var row = Math.floor(i / cols);
+            node.x = sidePadding + cellWidth * (col + 0.5);
+            node.y = topPadding + cellHeight * (row + 0.5);
+        });
+        
+        // Spring physics simulation
+        var iterations = 150;
+        var springLength = 120;
+        var springStrength = 0.1;
+        var repulsionStrength = 1000;
+        
+        for (var iter = 0; iter < iterations; iter++) {
+            var forces = {};
+            
+            // Initialize forces
+            nodes.forEach(function(node) {
+                forces[node.id] = { x: 0, y: 0 };
+            });
+            
+            // Repulsion between all nodes
+            nodes.forEach(function(node1, i) {
+                nodes.forEach(function(node2, j) {
+                    if (i < j) {
+                        var dx = node2.x - node1.x;
+                        var dy = node2.y - node1.y;
+                        var dist = Math.sqrt(dx * dx + dy * dy);
+                        if (dist > 0) {
+                            var force = repulsionStrength / (dist * dist);
+                            var fx = (dx / dist) * force;
+                            var fy = (dy / dist) * force;
+                            forces[node1.id].x -= fx;
+                            forces[node1.id].y -= fy;
+                            forces[node2.id].x += fx;
+                            forces[node2.id].y += fy;
+                        }
+                    }
+                });
+            });
+            
+            // Spring forces along edges
+            edges.forEach(function(edge) {
+                var source = nodes.find(n => n.id === edge.source);
+                var target = nodes.find(n => n.id === edge.target);
+                if (source && target) {
+                    var dx = target.x - source.x;
+                    var dy = target.y - source.y;
+                    var dist = Math.sqrt(dx * dx + dy * dy);
+                    if (dist > 0) {
+                        var force = (dist - springLength) * springStrength;
+                        var fx = (dx / dist) * force;
+                        var fy = (dy / dist) * force;
+                        forces[source.id].x += fx;
+                        forces[source.id].y += fy;
+                        forces[target.id].x -= fx;
+                        forces[target.id].y -= fy;
+                    }
+                }
+            });
+            
+            // Apply forces with damping
+            var damping = 0.8;
+            nodes.forEach(function(node) {
+                node.x += forces[node.id].x * damping;
+                node.y += forces[node.id].y * damping;
+                
+                // Keep in bounds with proper padding
+                node.x = Math.max(100, Math.min(width - 100, node.x));
+                node.y = Math.max(100, Math.min(height - 100, node.y));
+            });
+        }
+    }
+    
+    // Function to draw edges
+    function drawEdges(edges, nodes) {
         var edgeGroup = document.getElementById('graph-edges');
         edges.forEach(function(edge) {
             var sourceNode = nodes.find(n => n.id === edge.source);
@@ -1498,11 +1935,14 @@
                 line.setAttribute('y2', targetNode.y);
                 line.setAttribute('data-source', edge.source);
                 line.setAttribute('data-target', edge.target);
+                line.setAttribute('data-type', edge.type);
                 edgeGroup.appendChild(line);
             }
         });
-        
-        // Draw nodes
+    }
+    
+    // Function to draw nodes
+    function drawNodes(nodes) {
         var nodeGroup = document.getElementById('graph-nodes');
         nodes.forEach(function(node) {
             var g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
@@ -1510,6 +1950,7 @@
             g.setAttribute('transform', 'translate(' + node.x + ',' + node.y + ')');
             g.setAttribute('data-node-id', node.id);
             g.setAttribute('data-node-name', node.name.toLowerCase());
+            g.setAttribute('data-node-type', node.type);
             
             // Circle
             var circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
@@ -1534,56 +1975,6 @@
             });
             
             nodeGroup.appendChild(g);
-        });
-        
-        // Simple force simulation
-        var iterations = 50;
-        for (var i = 0; i < iterations; i++) {
-            // Repulsion between nodes
-            nodes.forEach(function(node1, i) {
-                nodes.forEach(function(node2, j) {
-                    if (i !== j) {
-                        var dx = node2.x - node1.x;
-                        var dy = node2.y - node1.y;
-                        var dist = Math.sqrt(dx * dx + dy * dy);
-                        if (dist < 100) {
-                            var force = (100 - dist) / 100;
-                            node1.x -= dx * force * 0.1;
-                            node1.y -= dy * force * 0.1;
-                            node2.x += dx * force * 0.1;
-                            node2.y += dy * force * 0.1;
-                        }
-                    }
-                });
-            });
-            
-            // Keep nodes in bounds
-            nodes.forEach(function(node) {
-                node.x = Math.max(50, Math.min(width - 50, node.x));
-                node.y = Math.max(50, Math.min(height - 50, node.y));
-            });
-        }
-        
-        // Update positions after simulation
-        nodes.forEach(function(node) {
-            var g = nodeGroup.querySelector('[data-node-id="' + node.id + '"]');
-            if (g) {
-                g.setAttribute('transform', 'translate(' + node.x + ',' + node.y + ')');
-            }
-        });
-        
-        // Update edge positions
-        edges.forEach(function(edge) {
-            var sourceNode = nodes.find(n => n.id === edge.source);
-            var targetNode = nodes.find(n => n.id === edge.target);
-            var line = edgeGroup.querySelector('[data-source="' + edge.source + '"][data-target="' + edge.target + '"]');
-            
-            if (sourceNode && targetNode && line) {
-                line.setAttribute('x1', sourceNode.x);
-                line.setAttribute('y1', sourceNode.y);
-                line.setAttribute('x2', targetNode.x);
-                line.setAttribute('y2', targetNode.y);
-            }
         });
     }
     
@@ -1957,11 +2348,28 @@
         }
     }
     
+    // Setup layout selector
+    function setupLayoutSelector() {
+        var layoutSelect = document.getElementById('graph-layout-select');
+        if (layoutSelect) {
+            layoutSelect.addEventListener('change', function() {
+                var selectedLayout = layoutSelect.value;
+                console.log('[ATHENA] Switching to ' + selectedLayout + ' layout');
+                
+                // Re-render with new layout
+                if (graphData) {
+                    renderGraph(graphData, selectedLayout);
+                }
+            });
+        }
+    }
+    
     // Start loading after a short delay
     setTimeout(function() {
         loadAthenaData();
         setupSearch();
         setupQueryBuilder();
+        setupLayoutSelector();
     }, 100);
 })();
 
