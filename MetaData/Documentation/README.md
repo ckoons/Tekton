@@ -2,6 +2,12 @@
 
 This is the streamlined documentation structure containing only actively maintained documents.
 
+## 🚀 Quick Starts
+- **[Planning Workflow Quick Start](UserGuides/PlanningWorkflowQuickStart.md)** - Transform ideas into code in 5 minutes
+- **[A2A Quick Start](UserGuides/A2A_Quick_Start.md)** - Get started with AI-to-AI communication
+- **[Engram Quickstart](UserGuides/Engram_Quickstart.md)** - Working with the engram system
+- **[Rhetor Quick Reference](UserGuides/Rhetor_Quick_Reference.md)** - Quick guide to Rhetor AI
+
 ## Core Philosophy
 - **Philosophy.md** - Fundamental design beliefs and principles
 
@@ -9,6 +15,10 @@ This is the streamlined documentation structure containing only actively maintai
 
 ### Architecture
 System design, patterns, and architectural decisions. Critical for understanding how Tekton works.
+
+**Key Documents**:
+- **[Development Sprint Workflow](Architecture/DevelopmentSprintWorkflow.md)** - Complete guide to the planning pipeline
+- **[Workflow Endpoint Standard](Architecture/WorkflowEndpointStandard.md)** - Unified component communication
 
 ### Standards  
 Coding standards, API design principles, UI conventions. Must be kept current with code.
@@ -32,11 +42,8 @@ Training documentation for AI components. Focus on core components:
 ### MCP
 Model Context Protocol documentation for AI tool integration.
 
-### QuickStart
-Getting started guides for new users and developers.
-
 ### UserGuides
-End-user documentation (needs content development).
+End-user documentation and quick start guides for new users and developers.
 
 ### Releases
 Release notes and test suite documentation (to be created).
@@ -45,7 +52,7 @@ Release notes and test suite documentation (to be created).
 
 1. **Always Current**: Philosophy, Architecture, Standards (especially Landmarks_and_Semantic_Tags_Standard.md)
 2. **Update with Changes**: ComponentGuides, AITraining (for affected components)
-3. **Update with Features**: QuickStart, MCP, DeveloperGuides
+3. **Update with Features**: UserGuides, MCP, DeveloperGuides
 4. **Update as Needed**: UserGuides, Releases
 
 **Sprint Completion Requirement**: Always verify compliance with Standards/Landmarks_and_Semantic_Tags_Standard.md before closing any sprint.
