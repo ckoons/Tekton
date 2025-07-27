@@ -51,9 +51,18 @@ class HermesRegistration:
                 "registered_at": datetime.now().isoformat()
             }
             
+            registration_url = f"{self.hermes_url}/api/register"
+            logger.info(f"Attempting to register {component_name} with Hermes at: {registration_url}")
+            logger.debug(f"Registration data: {registration_request}")
+            
+            # DEBUG: Write to file
+            with open(f"/tmp/{component_name}_registration_debug.txt", "a") as f:
+                f.write(f"[{datetime.now()}] POST to: {registration_url}\n")
+                f.write(f"[{datetime.now()}] Data: {registration_request}\n")
+            
             async with aiohttp.ClientSession() as session:
                 async with session.post(
-                    f"{self.hermes_url}/api/register",
+                    registration_url,
                     json=registration_request,
                     timeout=5
                 ) as resp:
@@ -61,16 +70,29 @@ class HermesRegistration:
                         result = await resp.json()
                         self.is_registered = True
                         logger.info(f"Successfully registered {component_name} with Hermes")
+                        # DEBUG: Write to file
+                        with open(f"/tmp/{component_name}_registration_debug.txt", "a") as f:
+                            f.write(f"[{datetime.now()}] SUCCESS: {result}\n")
                         return True
                     else:
-                        logger.error(f"Failed to register with Hermes: HTTP {resp.status}")
+                        response_text = await resp.text()
+                        logger.error(f"Failed to register with Hermes: HTTP {resp.status} - {response_text}")
+                        # DEBUG: Write to file
+                        with open(f"/tmp/{component_name}_registration_debug.txt", "a") as f:
+                            f.write(f"[{datetime.now()}] FAILED: HTTP {resp.status} - {response_text}\n")
                         return False
                         
         except aiohttp.ClientError as e:
-            logger.warning(f"Could not connect to Hermes at {self.hermes_url}: {e}")
+            logger.warning(f"Could not connect to Hermes at {self.hermes_url}/api/register: {e}")
+            # DEBUG: Write to file
+            with open(f"/tmp/{component_name}_registration_debug.txt", "a") as f:
+                f.write(f"[{datetime.now()}] CLIENT ERROR: {e}\n")
             return False
         except Exception as e:
             logger.error(f"Error registering with Hermes: {e}")
+            # DEBUG: Write to file
+            with open(f"/tmp/{component_name}_registration_debug.txt", "a") as f:
+                f.write(f"[{datetime.now()}] ERROR: {e}\n")
             return False
     
     async def heartbeat(self, component_name: str, status: str = "healthy") -> bool:

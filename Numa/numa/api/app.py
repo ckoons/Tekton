@@ -25,8 +25,16 @@ from numa.core.numa_component import NumaComponent
 # Component instance
 numa_component = NumaComponent()
 
+async def startup_callback():
+    """Initialize Numa during startup."""
+    # Initialize the component (registers with Hermes, etc.)
+    await numa_component.initialize(
+        capabilities=numa_component.get_capabilities(),
+        metadata=numa_component.get_metadata()
+    )
+
 # Create FastAPI app using StandardComponentBase
-app = numa_component.create_app()
+app = numa_component.create_app(startup_callback=startup_callback)
 
 class CompanionChatRequest(BaseModel):
     """Request model for companion chat"""

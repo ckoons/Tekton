@@ -9,6 +9,7 @@ import importlib
 import logging
 import os
 from contextlib import asynccontextmanager
+from datetime import datetime
 from typing import List, Dict, Any, Optional, Type, Callable
 
 from fastapi import FastAPI
@@ -18,6 +19,7 @@ from shared.utils.hermes_registration import HermesRegistration, heartbeat_loop
 from shared.utils.logging_setup import setup_component_logging
 from shared.utils.errors import StartupError
 from shared.utils.health_check import create_health_response
+from shared.urls import hermes_url
 
 # Try to import landmarks decorators, but make them optional
 try:
@@ -138,7 +140,15 @@ class StandardComponentBase:
         """
         self.logger.debug("Registering with Hermes")
         
-        self.global_config.hermes_registration = HermesRegistration()
+        # Use the proper Hermes URL from shared.urls
+        registration_url = hermes_url("")
+        self.logger.info(f"Registering {self.component_name} with Hermes at: {registration_url}")
+        
+        # DEBUG: Write to file
+        with open(f"/tmp/{self.component_name}_registration_debug.txt", "a") as f:
+            f.write(f"[{datetime.now()}] Registering {self.component_name} with Hermes at: {registration_url}\n")
+        
+        self.global_config.hermes_registration = HermesRegistration(hermes_url=registration_url)
         
         # Prepare metadata
         registration_metadata = metadata or {}

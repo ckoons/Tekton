@@ -19,6 +19,8 @@ if tekton_root not in sys.path:
     sys.path.append(tekton_root)
 
 from shared.utils.env_config import get_component_config
+from shared.env import TektonEnviron
+from shared.urls import hermes_url
 from tekton.models import TektonBaseModel
 
 logger = logging.getLogger(__name__)
@@ -47,7 +49,19 @@ class HermesMCPClient:
             auth_token: Optional authentication token
             timeout: Request timeout in seconds
         """
-        self.hermes_url = (hermes_url or os.environ.get("HERMES_URL", "http://localhost:8001")).rstrip("/")
+        # Use TektonEnviron pattern for URL resolution
+        if hermes_url:
+            self.hermes_url = hermes_url.rstrip("/")
+        else:
+            # Try environment variable first, then use hermes_url() function
+            env_url = TektonEnviron.get("HERMES_URL")
+            if env_url:
+                self.hermes_url = env_url.rstrip("/")
+            else:
+                # Use the hermes_url() function from shared.urls which respects TektonEnviron
+                from shared.urls import hermes_url as get_hermes_url
+                self.hermes_url = get_hermes_url("")
+        
         self.mcp_base_url = f"{self.hermes_url}/api/mcp/v2"
         self.component_name = component_name
         
@@ -59,7 +73,10 @@ class HermesMCPClient:
                 component_config = getattr(config, component_lower)
                 component_port = component_config.port
             except (AttributeError, TypeError):
-                component_port = int(os.environ.get(f"{component_name.upper()}_PORT"))
+                # Use TektonEnviron instead of os.environ
+                port_str = TektonEnviron.get(f"{component_name.upper()}_PORT")
+                if port_str:
+                    component_port = int(port_str)
         
         self.component_port = component_port
         self.component_version = component_version

@@ -74,6 +74,7 @@ sys.path.insert(0, tekton_root)
 
 # Check if environment is loaded
 from shared.env import TektonEnviron
+from shared.urls import hermes_url
 
 if not TektonEnviron.is_loaded():
     # We're running as a subprocess with environment passed via env=
@@ -546,7 +547,7 @@ class EnhancedStatusChecker:
     async def check_hermes_registration(self, component_name: str) -> bool:
         """Check if component is registered with Hermes"""
         try:
-            async with self.session.get("http://localhost:8001/api/components") as resp:
+            async with self.session.get(hermes_url("/api/components")) as resp:
                 if resp.status == 200:
                     data = await resp.json()
                     registered_names = [
