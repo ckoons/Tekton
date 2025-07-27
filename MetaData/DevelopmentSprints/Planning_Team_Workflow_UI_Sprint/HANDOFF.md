@@ -1,14 +1,42 @@
 # Planning Team Workflow UI Sprint - Handoff Document
 
 ## Current Status
-**Phase**: Planning Complete
-**Next Step**: Begin Phase 1 Implementation
+**Phase**: Phase 1 (Telos) Complete, Phase 2 (Prometheus) In Progress
+**Last Updated**: 2025-01-27
+**Next Step**: Complete Prometheus UI Implementation
 
 ## What Was Accomplished
-1. Created comprehensive sprint plan for Planning Team Workflow UI
-2. Defined Telos UI requirements with Casey
-3. Established JSON structures for proposals and development sprints
-4. Documented workflow: Idea → Proposal → Development Sprint
+
+### Phase 0: Workflow Endpoint Standard ✅
+1. Created `/shared/workflow/endpoint_template.py` for standardized workflow endpoints
+2. Created `/shared/workflow/workflow_handler.py` with base WorkflowHandler class
+3. Added `/workflow` endpoint to ALL 17 Tekton components
+4. Documented in `/MetaData/Documentation/Architecture/WorkflowEndpointStandard.md`
+
+### Phase 1: Telos UI ✅
+1. Updated Telos component with dashboard-based proposal management
+2. Implemented proposal cards with Edit/Remove/Sprint functionality
+3. Created file-based operations for Proposals/ directory
+4. Added proposal JSON template with all required fields
+5. Fixed all hardcoded ports to use tektonUrl()
+6. Removed subtitle, matched menu text size to other components
+
+### Phase 2: Prometheus UI (PARTIAL) 🚧
+1. Updated menu structure: Dashboard, Plans, Revise Schedule, Resources, Retrospective
+2. Created Development Sprint cards UI structure
+3. Added CSS for sprint cards, coder cards, retrospective items
+4. Created backend API `/api/v1/sprints/` with file operations
+5. Removed subtitle to match single-line header style
+
+**Still TODO for Prometheus**:
+- Connect frontend to backend API endpoints
+- Implement sprint card loading from file system
+- Add Remove functionality (move to Superceded/)
+- Implement chat-based Edit for sprints
+- Create Schedule button functionality
+- Build timeline/Gantt view in Plans tab
+- Populate Resources view with actual coder data
+- Add retrospective template generation
 
 ## Key Context for Next Session
 
@@ -70,28 +98,63 @@
 - Should we reuse any existing proposal/requirements code?
 - Any specific color scheme for proposal cards?
 
-## Phase 2 Context (Prometheus)
+## Phase 2 Context (Prometheus) - READY FOR ASSESSMENT
 
-When Phase 1 is complete, Prometheus implementation will need:
+### Instructions for Next Claude:
+1. **First, carefully read the Prometheus section of SPRINT_PLAN.md** (lines 59-88)
+2. **Perform a comprehensive assessment** of what exists vs what's required
+3. **Assume no Prometheus changes remain** - just document what you find
 
-### Key Requirements:
-1. **Dashboard**: Read all `*_Sprint/` directories
-2. **Status tracking**: In DAILY_LOG.md
-3. **Menu items**: Dashboard, Plans, Revise Schedule, Resources, Retrospective, Planning Chat, Team Chat
-4. **Card display**: Strip "_Sprint" suffix from names
-5. **Retrospective**: Structured JSON + team chat transcript
+### Assessment Checklist:
 
-### Directory Structure:
-```
-/MetaData/DevelopmentSprints/
-├── Active_Sprint_1/
-├── Another_Sprint/
-├── Superceded/        (for removed sprints)
-└── Completed/         (with RETROSPECTIVE.json)
-```
+#### Frontend Assessment (`/Hephaestus/ui/components/prometheus/prometheus-component.html`):
+- [ ] Menu structure matches sprint plan (Dashboard, Plans, Revise Schedule, Resources, Retrospective, Planning Chat, Team Chat)
+- [ ] Dashboard panel exists and is set up for Development Sprint cards
+- [ ] Plans panel exists with "What if built today" timeline placeholder
+- [ ] Revise Schedule panel exists for Ready sprint management
+- [ ] Resources panel exists for Coder assignments/capacity
+- [ ] Retrospective panel exists with team improvement structure
+- [ ] CSS classes defined for sprint cards, coder cards, retrospective items
+- [ ] Header has no subtitle (single line like Rhetor/Terma)
+- [ ] Menu font size matches Apollo (no special sizing)
 
-### Status Flow:
-Planning → Ready → Building → Complete → Superceded
+#### Backend Assessment (`/Prometheus/prometheus/api/endpoints/sprints.py`):
+- [ ] Sprint listing endpoint reads from `/MetaData/DevelopmentSprints/`
+- [ ] Strips "_Sprint" suffix for display
+- [ ] Reads DAILY_LOG.md for status tracking
+- [ ] Remove endpoint moves to Superceded/ directory
+- [ ] Status update appends to DAILY_LOG.md
+- [ ] Ready sprints filter works
+- [ ] Coder resources endpoint (may be mock data)
+- [ ] Retrospective creation endpoint
+
+#### Integration Points to Check:
+- [ ] `/workflow` endpoint exists on Prometheus (check `/Prometheus/prometheus/api/fastmcp_endpoints.py`)
+- [ ] Sprint endpoints are registered in app.py
+- [ ] Uses landmarks with fallback imports
+- [ ] No hardcoded ports in frontend
+- [ ] File operations use os/shutil, not API calls
+
+### What You Should Find:
+The previous Claude session claims to have:
+1. Updated the UI menu structure completely
+2. Created all necessary panels
+3. Added comprehensive CSS styling
+4. Created a full backend API for sprint management
+5. Removed the subtitle from the header
+
+### Your Task:
+1. Verify each item in the checklist above
+2. Note any discrepancies between requirements and implementation
+3. Document what JavaScript integration would be needed (if any)
+4. Identify any missing pieces that would prevent the UI from working
+5. Create a summary of findings
+
+### Important Context:
+- Sprint data lives in `/MetaData/DevelopmentSprints/*_Sprint/` directories
+- Each sprint has a DAILY_LOG.md that tracks status changes
+- The UI should read these files through the backend API
+- No JavaScript implementation was done - just HTML/CSS structure
 
 ## Phase 3 Context (Metis)
 
@@ -256,5 +319,44 @@ Tekton Core merge management implementation:
 - Detect conflicts, abort if needed
 - Push to origin if successful
 
+## Common Pitfalls to Avoid
+
+### 1. **NO HARDCODED PORTS**
+- Always use `tektonUrl('component', path)` for API calls
+- Casey was very clear: "NO HARD CODED PORTS"
+- Example: `tektonUrl('prometheus', '/api/v1/sprints')`
+
+### 2. **Use Existing Infrastructure**
+- Don't create new API files when components already have APIs
+- Prometheus runs on its own port with existing API structure
+- Add endpoints to existing routers, don't create new apps
+
+### 3. **File Operations, Not API Calls**
+- For file moves (Remove, Sprint), use Python's os/shutil directly
+- Don't create APIs that call other APIs for simple file operations
+- Example: Moving to Removed/ should use `shutil.move()`, not HTTP calls
+
+### 4. **Landmarks Import Pattern**
+```python
+try:
+    from landmarks import api_contract, integration_point
+except ImportError:
+    # Fallback decorators
+    def api_contract(**kwargs):
+        def decorator(func):
+            return func
+        return decorator
+```
+
+### 5. **Component Naming**
+- "Plan" concept doesn't exist - use "DevelopmentSprints" and "Workflows"
+- Coder-C port range is 8300+ (not 8007)
+- Strip "_Sprint" suffix for display, but backend needs full name
+
+### 6. **UI Consistency**
+- Menu font size should match Apollo (no special sizing)
+- Single-line headers (no subtitles)
+- Use existing CSS patterns from other components
+
 ---
-Ready for implementation! Next session should start with Phase 0 shared components.
+Ready for implementation! Next session should continue with Prometheus JavaScript integration.
