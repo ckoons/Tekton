@@ -1,0 +1,24 @@
+{
+  "name": "Planning_Team_Workflow_UI",
+  "tektonCoreProject": "Tekton",
+  "purpose": "Build comprehensive planning workflow system with Telos UI for idea capture and proposal management",
+  "description": "Create a complete planning workflow system starting with Telos UI for managing proposals, enabling the Planning Team CIs to collaborate on turning ideas into executable Development Sprints. This includes dashboard views, proposal cards, and integration with the workflow pipeline.",
+  "successCriteria": [
+    "Telos Dashboard displays proposals as colorful cards",
+    "Can create, edit, and remove proposals",
+    "Sprint button triggers CI workflow",
+    "File-based storage in MetaData/DevelopmentSprints/Proposals/",
+    "Integration with Planning Team components"
+  ],
+  "requirements": [
+    "CSS-first UI approach",
+    "No hardcoded values",
+    "File-based JSON storage",
+    "Workflow endpoint integration",
+    "Real-time status updates"
+  ],
+  "notes": "This is the first phase of the planning team workflow implementation, focusing on Telos UI updates.",
+  "status": "proposal",
+  "created": "2025-01-26T12:00:00Z",
+  "modified": "2025-01-27T18:34:00Z"
+}
