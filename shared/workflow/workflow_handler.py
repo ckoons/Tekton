@@ -13,6 +13,21 @@ import os
 import json
 import httpx
 import logging
+
+# Import landmarks with fallback
+try:
+    from landmarks import architecture_decision, state_checkpoint, integration_point
+except ImportError:
+    # No-op decorators when landmarks not available
+    def architecture_decision(**kwargs):
+        def decorator(func): return func
+        return decorator
+    def state_checkpoint(**kwargs):
+        def decorator(func): return func
+        return decorator
+    def integration_point(**kwargs):
+        def decorator(func): return func
+        return decorator
 try:
     from shared.env import TektonEnviron
     from shared.urls import tekton_url
@@ -36,6 +51,14 @@ class WorkflowMessage(BaseModel):
     payload: Dict[str, Any]
 
 
+@architecture_decision(
+    title="Workflow Handler Base Class",
+    description="Common workflow handling logic for all Tekton components",
+    rationale="Centralizes workflow file management and message routing to avoid duplication across components",
+    alternatives_considered=["Component-specific handlers", "Direct file access", "Database storage"],
+    decided_by="Casey",
+    decision_date="2025-01-27"
+)
 class WorkflowHandler:
     """
     Base workflow handler for Tekton components.
@@ -219,6 +242,21 @@ class WorkflowHandler:
             logger.error(f"Workflow error: {str(e)}")
             return {"status": "error", "reason": str(e)}
     
+    @state_checkpoint(
+        title="Workflow Work Queue",
+        description="Scans workflow directory for pending work assignments",
+        state_type="file_system",
+        persistence=True,
+        consistency_requirements="Must check all workflow JSON files in directory",
+        recovery_strategy="Returns empty list if directory doesn't exist"
+    )
+    @integration_point(
+        title="Workflow Directory Scanner",
+        description="Reads workflow files from .tekton/workflows/data/ to find component work",
+        target_component="Filesystem",
+        protocol="file_operations",
+        data_flow="scan directory → read JSON files → filter by component → return work items"
+    )
     def check_for_work(self, component_name: str) -> List[Dict[str, Any]]:
         """
         Check .tekton/workflows/data/ directory for work assigned to this component.

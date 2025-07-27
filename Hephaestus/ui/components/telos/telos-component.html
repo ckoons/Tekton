@@ -46,22 +46,32 @@
                 <div class="telos__proposals-container">
                     <div id="proposals-grid" class="telos__proposals-grid">
                         <!-- Sample proposal cards for CSS-first approach -->
-                        <div class="telos__proposal-card telos__proposal-card--blue" data-proposal-name="Planning_Team_Workflow_UI">
-                            <div class="telos__proposal-header">
-                                <h3 class="telos__proposal-title">Planning Team Workflow UI</h3>
+                        <div class="telos__proposal-card telos__proposal-card--blue" 
+                             data-proposal-name="Planning_Team_Workflow_UI"
+                             data-tekton-element="proposal-card"
+                             data-tekton-type="proposal"
+                             data-tekton-state="active">
+                            <div class="telos__proposal-header" data-tekton-zone="header">
+                                <h3 class="telos__proposal-title" data-tekton-content="title">Planning Team Workflow UI</h3>
                                 <div class="telos__proposal-meta">
-                                    <span class="telos__proposal-status">proposal</span>
-                                    <span class="telos__proposal-date">Jan 27, 2025</span>
+                                    <span class="telos__proposal-status" data-tekton-status="proposal">proposal</span>
+                                    <span class="telos__proposal-date" data-tekton-date="created">Jan 27, 2025</span>
                                 </div>
                             </div>
-                            <p class="telos__proposal-description">Create a complete planning workflow system starting with Telos UI for managing proposals, enabling the Planning Team CIs to collaborate on turning ideas into executable Development Sprints.</p>
-                            <div class="telos__proposal-actions">
+                            <p class="telos__proposal-description" data-tekton-content="description">Create a complete planning workflow system starting with Telos UI for managing proposals, enabling the Planning Team CIs to collaborate on turning ideas into executable Development Sprints.</p>
+                            <div class="telos__proposal-actions" data-tekton-zone="actions">
                                 <button class="telos__proposal-action telos__proposal-action--edit" 
-                                        onclick="editProposal('Planning_Team_Workflow_UI')">Edit</button>
+                                        onclick="editProposal('Planning_Team_Workflow_UI')"
+                                        data-tekton-action="edit-proposal"
+                                        data-tekton-trigger="click">Edit</button>
                                 <button class="telos__proposal-action telos__proposal-action--remove" 
-                                        onclick="removeProposal('Planning_Team_Workflow_UI')">Remove</button>
+                                        onclick="removeProposal('Planning_Team_Workflow_UI')"
+                                        data-tekton-action="remove-proposal"
+                                        data-tekton-trigger="click">Remove</button>
                                 <button class="telos__proposal-action telos__proposal-action--primary" 
-                                        onclick="sprintProposal('Planning_Team_Workflow_UI')">Sprint</button>
+                                        onclick="sprintProposal('Planning_Team_Workflow_UI')"
+                                        data-tekton-action="create-sprint"
+                                        data-tekton-trigger="click">Sprint</button>
                             </div>
                         </div>
                         <div class="telos__proposal-card telos__proposal-card--green" data-proposal-name="Enhanced_Memory_System">
@@ -1624,25 +1634,50 @@ function createProposalEditorModal(proposalName, proposalData = null) {
     };
     
     modal.innerHTML = `
-        <div class="telos__modal-content telos__modal-content--large">
-            <div class="telos__modal-header">
+        <div class="telos__modal-content telos__modal-content--large"
+             data-tekton-component="telos-proposal-editor"
+             data-tekton-type="modal"
+             data-tekton-zone="editor"
+             data-tekton-state="active">
+            <div class="telos__modal-header" data-tekton-zone="header">
                 <h2 class="telos__modal-title">${isEdit ? 'Edit' : 'New'} Proposal</h2>
-                <button class="telos__modal-close" onclick="closeProposalEditor()">&times;</button>
+                <button class="telos__modal-close" 
+                        onclick="closeProposalEditor()"
+                        data-tekton-action="close-modal"
+                        data-tekton-trigger="click">&times;</button>
             </div>
-            <div class="telos__modal-body">
-                <form id="proposal-form" class="telos__proposal-form">
+            <div class="telos__modal-body" data-tekton-zone="content">
+                <form id="proposal-form" class="telos__proposal-form" 
+                      data-tekton-form="proposal-editor"
+                      data-tekton-form-type="json">
                     <div class="telos__form-group">
                         <label for="proposal-content">Proposal JSON Content:</label>
                         <textarea id="proposal-content" name="content" rows="25" required 
                                   class="telos__proposal-textarea"
+                                  data-tekton-input="proposal-json"
+                                  data-tekton-input-type="json"
+                                  data-tekton-validation="required"
                                   placeholder="Enter proposal JSON content">${JSON.stringify(displayData, null, 2)}</textarea>
                     </div>
                 </form>
             </div>
-            <div class="telos__modal-footer">
-                <button type="button" class="telos__button telos__button--cancel" onclick="closeProposalEditor()">Cancel</button>
-                <button type="button" class="telos__button telos__button--clear" onclick="clearProposalContent()">Clear</button>
-                <button type="button" class="telos__button telos__button--save" onclick="saveProposal('${proposalName || ''}')">
+            <div class="telos__modal-footer" data-tekton-zone="actions">
+                <button type="button" class="telos__button telos__button--cancel" 
+                        onclick="closeProposalEditor()"
+                        data-tekton-action="cancel"
+                        data-tekton-action-type="secondary"
+                        data-tekton-trigger="click">Cancel</button>
+                <button type="button" class="telos__button telos__button--clear" 
+                        onclick="clearProposalContent()"
+                        data-tekton-action="clear-form"
+                        data-tekton-action-type="secondary"
+                        data-tekton-trigger="click">Clear</button>
+                <button type="button" class="telos__button telos__button--save" 
+                        onclick="saveProposal('${proposalName || ''}')"
+                        data-tekton-action="save-proposal"
+                        data-tekton-action-type="primary"
+                        data-tekton-trigger="click"
+                        data-tekton-target="${isEdit ? 'update' : 'create'}">
                     ${isEdit ? 'Save Changes' : 'Create Proposal'}
                 </button>
             </div>
@@ -1915,22 +1950,33 @@ function addNewProposalCard(proposalData) {
         const color = colors[Math.floor(Math.random() * colors.length)];
         
         const cardHTML = `
-            <div class="telos__proposal-card telos__proposal-card--${color}" data-proposal-name="${newName}">
-                <div class="telos__proposal-header">
-                    <h3 class="telos__proposal-title">${proposalData.name}</h3>
+            <div class="telos__proposal-card telos__proposal-card--${color}" 
+                 data-proposal-name="${newName}"
+                 data-proposal-json='${JSON.stringify(proposalData).replace(/'/g, '&#39;')}'
+                 data-tekton-element="proposal-card"
+                 data-tekton-type="proposal"
+                 data-tekton-state="active">
+                <div class="telos__proposal-header" data-tekton-zone="header">
+                    <h3 class="telos__proposal-title" data-tekton-content="title">${proposalData.name}</h3>
                     <div class="telos__proposal-meta">
-                        <span class="telos__proposal-status">${proposalData.status || 'proposal'}</span>
-                        <span class="telos__proposal-date">${new Date(proposalData.created).toLocaleDateString()}</span>
+                        <span class="telos__proposal-status" data-tekton-status="${proposalData.status || 'proposal'}">${proposalData.status || 'proposal'}</span>
+                        <span class="telos__proposal-date" data-tekton-date="created">${new Date(proposalData.created).toLocaleDateString()}</span>
                     </div>
                 </div>
-                <p class="telos__proposal-description">${proposalData.purpose || proposalData.description}</p>
-                <div class="telos__proposal-actions">
+                <p class="telos__proposal-description" data-tekton-content="description">${proposalData.purpose || proposalData.description}</p>
+                <div class="telos__proposal-actions" data-tekton-zone="actions">
                     <button class="telos__proposal-action telos__proposal-action--edit" 
-                            onclick="editProposal('${newName}')">Edit</button>
+                            onclick="editProposal('${newName}')"
+                            data-tekton-action="edit-proposal"
+                            data-tekton-trigger="click">Edit</button>
                     <button class="telos__proposal-action telos__proposal-action--remove" 
-                            onclick="removeProposal('${newName}')">Remove</button>
+                            onclick="removeProposal('${newName}')"
+                            data-tekton-action="remove-proposal"
+                            data-tekton-trigger="click">Remove</button>
                     <button class="telos__proposal-action telos__proposal-action--primary" 
-                            onclick="sprintProposal('${newName}')">Sprint</button>
+                            onclick="sprintProposal('${newName}')"
+                            data-tekton-action="create-sprint"
+                            data-tekton-trigger="click">Sprint</button>
                 </div>
             </div>
         `;

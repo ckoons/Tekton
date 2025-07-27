@@ -40,7 +40,23 @@ from shared.api import (
     get_openapi_configuration,
     EndpointInfo
 )
-from landmarks import api_contract, integration_point, danger_zone
+# Import landmarks with fallback
+try:
+    from landmarks import api_contract, integration_point, danger_zone, architecture_decision
+except ImportError:
+    # No-op decorators when landmarks not available
+    def api_contract(**kwargs):
+        def decorator(func): return func
+        return decorator
+    def integration_point(**kwargs):
+        def decorator(func): return func
+        return decorator
+    def danger_zone(**kwargs):
+        def decorator(func): return func
+        return decorator
+    def architecture_decision(**kwargs):
+        def decorator(func): return func
+        return decorator
 
 # Use shared logger
 logger = setup_component_logger("telos")
@@ -1221,6 +1237,21 @@ async def create_plan(project_id: str = Path(..., title="The ID of the project")
 
 # Proposal management endpoints
 @routers.v1.post("/proposals/remove")
+@api_contract(
+    title="Remove Proposal",
+    description="Moves a proposal file to the Removed directory",
+    endpoint="/api/v1/proposals/remove",
+    method="POST",
+    request_schema={"proposalName": "string"},
+    response_schema={"status": "string", "message": "string", "source": "string", "target": "string"}
+)
+@integration_point(
+    title="Proposal File Management",
+    description="Moves proposal files between directories using filesystem operations",
+    target_component="Filesystem",
+    protocol="file_operations",
+    data_flow="API request → validate paths → move file → return status"
+)
 async def remove_proposal(request: RemoveProposalRequest):
     """Move a proposal to the Removed directory"""
     try:
@@ -1258,6 +1289,29 @@ async def remove_proposal(request: RemoveProposalRequest):
         raise HTTPException(status_code=500, detail=str(e))
 
 @routers.v1.post("/proposals/sprint")
+@api_contract(
+    title="Create Development Sprint",
+    description="Creates a development sprint from a proposal with required files",
+    endpoint="/api/v1/proposals/sprint",
+    method="POST",
+    request_schema={"proposalName": "string", "proposalData": "object"},
+    response_schema={"status": "string", "message": "string", "sprint_dir": "string", "files_created": "array"}
+)
+@architecture_decision(
+    title="Sprint Creation Pattern",
+    description="Sprints are created with DAILY_LOG.md, HANDOFF.md, and SPRINT_PLAN.md files",
+    rationale="Standardized sprint structure ensures consistency and enables smooth handoffs between Claude sessions",
+    alternatives_considered=["Single README", "No structure", "Database tracking"],
+    decided_by="Casey",
+    decision_date="2025-01-27"
+)
+@integration_point(
+    title="Development Sprint Creation",
+    description="Creates sprint directory structure and moves proposal to Sprints archive",
+    target_component="Filesystem",
+    protocol="file_operations",
+    data_flow="API request → create directories → generate files → move proposal → return status"
+)
 async def create_sprint(request: CreateSprintRequest):
     """Create a development sprint from a proposal"""
     try:
@@ -1376,6 +1430,14 @@ async def create_sprint(request: CreateSprintRequest):
         raise HTTPException(status_code=500, detail=str(e))
 
 @routers.v1.post("/proposals/save")
+@api_contract(
+    title="Save Proposal",
+    description="Saves a proposal to disk as JSON file",
+    endpoint="/api/v1/proposals/save",
+    method="POST",
+    request_schema={"name": "string", "description": "string", "...": "proposal fields"},
+    response_schema={"status": "string", "message": "string", "file_path": "string"}
+)
 async def save_proposal(proposal_data: Dict[str, Any]):
     """Save a proposal to disk"""
     try:
@@ -1407,6 +1469,14 @@ async def save_proposal(proposal_data: Dict[str, Any]):
         raise HTTPException(status_code=500, detail=str(e))
 
 @routers.v1.get("/proposals/load/{proposal_name}")
+@api_contract(
+    title="Load Proposal",
+    description="Loads a proposal from disk",
+    endpoint="/api/v1/proposals/load/{proposal_name}",
+    method="GET",
+    request_schema={"proposal_name": "string (path parameter)"},
+    response_schema={"name": "string", "description": "string", "...": "proposal fields"}
+)
 async def load_proposal(proposal_name: str):
     """Load a proposal from disk"""
     try:

@@ -61,6 +61,38 @@ Triggered when component is clicked in navigation. Component checks for pending 
 }
 ```
 
+### check_work
+Standard action for all components to check their workflow directory for assigned work.
+
+```json
+{
+  "purpose": "check_work",
+  "dest": "telos",
+  "payload": {
+    "component": "telos",
+    "action": "look_for_work"
+  }
+}
+```
+
+Response format:
+```json
+{
+  "status": "success",
+  "component": "telos",
+  "work_available": true,
+  "work_count": 2,
+  "work_items": [
+    {
+      "workflow_id": "planning_team_ui_2025_01_27_143045",
+      "workflow_file": "planning_team_ui_2025_01_27_143045.json",
+      "status": "pending",
+      "component_tasks": [...]
+    }
+  ]
+}
+```
+
 ### process_sprint
 Component should process a sprint at their workflow stage.
 
@@ -112,6 +144,25 @@ The planning workflow follows this status progression:
 10. **Superceded** → Cancelled/replaced
 
 ## Implementation Requirements
+
+### Shared Endpoint Template (NEW)
+
+All components now use a standardized template for creating their workflow endpoint:
+
+```python
+# /shared/workflow/endpoint_template.py
+from shared.workflow.endpoint_template import create_workflow_endpoint
+
+# In your component's API
+workflow_router = create_workflow_endpoint("telos")
+app.include_router(workflow_router)
+```
+
+This provides:
+- Automatic message validation
+- Standard response format
+- Integration with WorkflowHandler
+- Support for check_work action
 
 ### Python Implementation
 
@@ -322,6 +373,35 @@ async def test_workflow_endpoint():
     assert response.json()["status"] == "success"
 ```
 
+## Components with Workflow Endpoint
+
+As of 2025-01-27, all 17 Tekton components have been updated with the standardized workflow endpoint:
+
+### Core Components
+1. **Apollo** - Attention/Prediction
+2. **Athena** - Knowledge
+3. **Engram** - Memory
+4. **Ergon** - Agents/Tools/MCP
+5. **Hermes** - Messages/Data
+6. **Noesis** - Discovery
+7. **Numa** - Companion
+8. **Rhetor** - LLM/Prompt/Context
+9. **Sophia** - Learning
+10. **Terma** - Terminal
+11. **Tekton-core** - Core services
+
+### Planning Team Components
+12. **Telos** - Requirements (with proposal management)
+13. **Prometheus** - Planning
+14. **Metis** - Workflows
+15. **Harmonia** - Orchestration
+16. **Synthesis** - Integration
+
+### Financial Component
+17. **Budget/Penia** - LLM Cost management
+
+All components use the shared `create_workflow_endpoint()` template for consistency.
+
 ## Benefits
 
 1. **Unified Interface**: All components speak the same language
@@ -329,6 +409,7 @@ async def test_workflow_endpoint():
 3. **Extensible**: Easy to add new actions and components
 4. **Debuggable**: Clear message flow and purpose
 5. **Decoupled**: Components don't need to know internal details of others
+6. **Standardized**: 17 components with identical endpoint behavior
 
 ## Migration Guide
 
