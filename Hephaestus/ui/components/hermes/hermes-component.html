@@ -4,9 +4,7 @@
 <!-- Hidden radio inputs for CSS-first tab functionality -->
 <!-- @landmark Navigation: CSS-first radio buttons for tab switching -->
 <input type="radio" name="hermes-tab" id="hermes-tab-registry" checked style="display: none;">
-<input type="radio" name="hermes-tab" id="hermes-tab-messaging" style="display: none;">
-<input type="radio" name="hermes-tab" id="hermes-tab-connections" style="display: none;">
-<input type="radio" name="hermes-tab" id="hermes-tab-history" style="display: none;">
+<input type="radio" name="hermes-tab" id="hermes-tab-database" style="display: none;">
 <input type="radio" name="hermes-tab" id="hermes-tab-chat" style="display: none;">
 <input type="radio" name="hermes-tab" id="hermes-tab-teamchat" style="display: none;">
 <div class="hermes"
@@ -27,7 +25,7 @@
     </div>
     
     <!-- Hermes Menu Bar with Tab Navigation -->
-    <!-- @landmark Menu: Tab navigation for 6 component views -->
+    <!-- @landmark Menu: Tab navigation for 4 component views -->
     <div class="hermes__menu-bar" data-tekton-zone="menu" data-tekton-nav="component-menu">
         <div class="hermes__tabs">
             <label for="hermes-tab-registry" class="hermes__tab" data-tab="registry"
@@ -37,33 +35,19 @@
                  data-tekton-nav-target="registry">
                 <span class="hermes__tab-label">Service Registry</span>
             </label>
-            <label for="hermes-tab-messaging" class="hermes__tab" data-tab="messaging"
-                 data-tekton-menu-item="Message Monitor"
+            <label for="hermes-tab-database" class="hermes__tab" data-tab="database"
+                 data-tekton-menu-item="Database Services"
                  data-tekton-menu-component="hermes"
-                 data-tekton-menu-panel="messaging-panel"
-                 data-tekton-nav-target="messaging">
-                <span class="hermes__tab-label">Message Monitor</span>
-            </label>
-            <label for="hermes-tab-connections" class="hermes__tab" data-tab="connections"
-                 data-tekton-menu-item="Connections"
-                 data-tekton-menu-component="hermes"
-                 data-tekton-menu-panel="connections-panel"
-                 data-tekton-nav-target="connections">
-                <span class="hermes__tab-label">Connections</span>
-            </label>
-            <label for="hermes-tab-history" class="hermes__tab" data-tab="history"
-                 data-tekton-menu-item="Message History"
-                 data-tekton-menu-component="hermes"
-                 data-tekton-menu-panel="history-panel"
-                 data-tekton-nav-target="history">
-                <span class="hermes__tab-label">Message History</span>
+                 data-tekton-menu-panel="database-panel"
+                 data-tekton-nav-target="database">
+                <span class="hermes__tab-label">Database Services</span>
             </label>
             <label for="hermes-tab-chat" class="hermes__tab" data-tekton-chat="tab" data-tab="chat"
-                 data-tekton-menu-item="Message/Data Chat"
+                 data-tekton-menu-item="Message Chat"
                  data-tekton-menu-component="hermes"
                  data-tekton-menu-panel="chat-panel"
                  data-tekton-nav-target="chat">
-                <span class="hermes__tab-label">Message/Data Chat</span>
+                <span class="hermes__tab-label">Message Chat</span>
             </label>
             <label for="hermes-tab-teamchat" class="hermes__tab" data-tekton-chat="tab" data-tab="teamchat"
                  data-tekton-menu-item="Team Chat"
@@ -83,7 +67,7 @@
     </div>
     
     <!-- Hermes Content Area -->
-    <!-- @landmark Content: Main content area with 6 tab panels -->
+    <!-- @landmark Content: Main content area with 4 tab panels -->
     <div class="hermes__content" data-tekton-zone="content" data-tekton-scrollable="true">
         <!-- Registry Tab (Default Active Tab) -->
         <!-- @landmark Panel: Service Registry - View and manage registered Tekton services -->
@@ -91,258 +75,25 @@
              data-tekton-panel="registry"
              data-tekton-panel-for="Service Registry"
              data-tekton-panel-component="hermes">
-            <div class="hermes__control-bar">
-                <div class="hermes__search-container">
-                    <input type="text" id="registry-search" class="hermes__search-input" placeholder="Search components..."
-                           data-tekton-input="registry-search"
-                           data-tekton-input-type="search">
-                    <select id="filter-type" class="hermes__select"
-                            data-tekton-input="filter-type"
-                            data-tekton-input-type="select" data-tekton-select="filter">
-                        <option value="all">All Types</option>
-                        <option value="hermes">Hermes</option>
-                        <option value="rhetor">Rhetor</option>
-                        <option value="engram">Engram</option>
-                        <option value="terma">Terma</option>
-                    </select>
-                </div>
-                <div class="hermes__view-controls">
-                    <button class="hermes__view-button hermes__view-button--active" data-view="grid"
-                            data-tekton-action="set-view"
-                            data-tekton-action-value="grid"
-                            data-tekton-state="active">
-                        <span class="hermes__view-icon">⊞</span>
-                    </button>
-                    <button class="hermes__view-button" data-view="list"
-                            data-tekton-action="set-view"
-                            data-tekton-action-value="list"
-                            data-tekton-state="inactive">
-                        <span class="hermes__view-icon">≡</span>
-                    </button>
-                    <button id="refresh-registry-btn" class="hermes__action-button"
-                            data-tekton-action="refresh-registry"
-                            data-tekton-action-type="primary">
-                        <span class="hermes__button-label">Refresh</span>
-                    </button>
-                </div>
-            </div>
-            
-            <!-- Service Registry Grid View -->
-            <div class="hermes__registry-grid" id="registry-grid-view">
+            <div class="hermes__registry-container">
                 <!-- Component cards will be dynamically inserted here -->
                 <div class="hermes__loading">
                     Loading services...
                 </div>
             </div>
-            
-            <!-- Service Registry List View (Hidden by default) -->
-            <div class="hermes__registry-list" id="registry-list-view" style="display: none;">
-                <table class="hermes__table">
-                    <thead>
-                        <tr>
-                            <th>Status</th>
-                            <th>Component</th>
-                            <th>Type</th>
-                            <th>Endpoint</th>
-                            <th>Capabilities</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="registry-table-body">
-                        <!-- Service rows will be dynamically inserted here -->
-                    </tbody>
-                </table>
-            </div>
         </div>
         
-        <!-- Messaging Tab -->
-        <!-- @landmark Panel: Message Monitor - Real-time message bus monitoring -->
-        <div id="messaging-panel" class="hermes__panel"
-             data-tekton-panel="messaging"
-             data-tekton-panel-for="Message Monitor"
+        <!-- Database Services Tab -->
+        <!-- @landmark Panel: Database Services - View database types and usage -->
+        <div id="database-panel" class="hermes__panel"
+             data-tekton-panel="database"
+             data-tekton-panel-for="Database Services"
              data-tekton-panel-component="hermes"
              data-tekton-panel-active="false">
-            <div class="hermes__control-bar">
-                <div class="hermes__search-container">
-                    <input type="text" id="message-search" class="hermes__search-input" placeholder="Search messages..."
-                           data-tekton-input="message-search"
-                           data-tekton-input-type="search">
-                    <button id="message-search-btn" class="hermes__search-button"
-                            data-tekton-action="search-messages"
-                            data-tekton-action-type="primary">Search</button>
-                </div>
-                <div class="hermes__actions">
-                    <button class="hermes__button" id="clear-messages"
-                            data-tekton-action="clear-messages"
-                            data-tekton-action-type="secondary">Clear</button>
-                    <button class="hermes__button" id="pause-messages"
-                            data-tekton-action="pause-messages"
-                            data-tekton-action-type="secondary"
-                            data-tekton-state="playing">
-                        <span id="pause-icon">⏸️</span> Pause
-                    </button>
-                </div>
-            </div>
-            
-            <div class="hermes__messaging">
-                <div class="hermes__sidebar">
-                    <div class="hermes__filter-section">
-                        <h3 class="hermes__section-title">Message Filters</h3>
-                        <div class="hermes__filter-group">
-                            <label class="hermes__checkbox">
-                                <input type="checkbox" id="filter-registration" checked>
-                                <span class="hermes__checkbox-label">Registration</span>
-                            </label>
-                            <label class="hermes__checkbox">
-                                <input type="checkbox" id="filter-heartbeat" checked>
-                                <span class="hermes__checkbox-label">Heartbeat</span>
-                            </label>
-                            <label class="hermes__checkbox">
-                                <input type="checkbox" id="filter-query" checked>
-                                <span class="hermes__checkbox-label">Query</span>
-                            </label>
-                            <label class="hermes__checkbox">
-                                <input type="checkbox" id="filter-data" checked>
-                                <span class="hermes__checkbox-label">Data</span>
-                            </label>
-                        </div>
-                    </div>
-                    
-                    <div class="hermes__filter-section">
-                        <h3 class="hermes__section-title">Component Filters</h3>
-                        <div class="hermes__filter-group" id="component-filters">
-                            <!-- Component filters will be added dynamically -->
-                            <div class="hermes__loading">
-                                Loading components...
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="hermes__message-display">
-                    <div class="hermes__message-container" id="message-container">
-                        <!-- Messages will be added dynamically -->
-                        <div class="hermes__placeholder">
-                            Messages will appear here. Start a component that uses Hermes to see messages.
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Connections Tab -->
-        <div id="connections-panel" class="hermes__panel"
-             data-tekton-panel="connections"
-             data-tekton-panel-for="Connections"
-             data-tekton-panel-component="hermes"
-             data-tekton-panel-active="false">
-            <div class="hermes__control-bar">
-                <div class="hermes__search-container">
-                    <input type="text" id="connection-search" class="hermes__search-input" placeholder="Search connections..."
-                           data-tekton-input="connection-search"
-                           data-tekton-input-type="search">
-                    <button id="connection-search-btn" class="hermes__search-button"
-                            data-tekton-action="search-connections"
-                            data-tekton-action-type="primary">Search</button>
-                </div>
-                <div class="hermes__actions">
-                    <button class="hermes__button hermes__button--primary" id="add-connection"
-                            data-tekton-action="add-connection"
-                            data-tekton-action-type="primary">
-                        <span class="hermes__button-icon">+</span>
-                        <span class="hermes__button-text">Add Connection</span>
-                    </button>
-                </div>
-            </div>
-            
-            <div class="hermes__connections">
-                <div class="hermes__connections-graph" id="connection-graph">
-                    <!-- Connection visualization will be rendered here -->
-                    <div class="hermes__placeholder">
-                        <div class="hermes__loading">Loading connection graph...</div>
-                    </div>
-                </div>
-                
-                <div class="hermes__connections-details" id="connection-details">
-                    <div class="hermes__placeholder">
-                        <p>Select a connection to view details</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- History Tab -->
-        <div id="history-panel" class="hermes__panel"
-             data-tekton-panel="history"
-             data-tekton-panel-for="Message History"
-             data-tekton-panel-component="hermes"
-             data-tekton-panel-active="false">
-            <div class="hermes__control-bar">
-                <div class="hermes__search-container">
-                    <input type="text" id="history-search" class="hermes__search-input" placeholder="Search messages..."
-                           data-tekton-input="history-search"
-                           data-tekton-input-type="search">
-                    <select id="history-filter" class="hermes__select"
-                            data-tekton-input="history-filter"
-                            data-tekton-input-type="select" data-tekton-select="filter">
-                        <option value="all">All Types</option>
-                        <option value="registration">Registration</option>
-                        <option value="heartbeat">Heartbeat</option>
-                        <option value="query">Query</option>
-                        <option value="data">Data</option>
-                    </select>
-                </div>
-                <div class="hermes__actions">
-                    <button class="hermes__button" id="export-history"
-                            data-tekton-action="export-history"
-                            data-tekton-action-type="secondary">Export</button>
-                    <button class="hermes__button hermes__button--danger" id="clear-history"
-                            data-tekton-action="clear-history"
-                            data-tekton-action-type="danger">Clear History</button>
-                </div>
-            </div>
-            
-            <div class="hermes__history">
-                <div class="hermes__history-filters">
-                    <div class="hermes__filter-group">
-                        <label class="hermes__filter-label">Date Range</label>
-                        <div class="hermes__date-range">
-                            <input type="datetime-local" id="history-start-date" class="hermes__date-input"
-                                   data-tekton-input="history-start-date"
-                                   data-tekton-input-type="datetime">
-                            <span class="hermes__date-separator">to</span>
-                            <input type="datetime-local" id="history-end-date" class="hermes__date-input"
-                                   data-tekton-input="history-end-date"
-                                   data-tekton-input-type="datetime">
-                        </div>
-                    </div>
-                    
-                    <div class="hermes__filter-group">
-                        <label class="hermes__filter-label">Components</label>
-                        <select id="history-component-filter" class="hermes__select" multiple
-                                data-tekton-input="history-component-filter"
-                                data-tekton-input-type="multiselect" data-tekton-select="filter">
-                            <!-- Component options will be added dynamically -->
-                        </select>
-                    </div>
-                </div>
-                
-                <div class="hermes__history-results">
-                    <table class="hermes__table">
-                        <thead>
-                            <tr>
-                                <th>Time</th>
-                                <th>Type</th>
-                                <th>Source</th>
-                                <th>Target</th>
-                                <th>Status</th>
-                                <th>Details</th>
-                            </tr>
-                        </thead>
-                        <tbody id="history-table-body">
-                            <!-- History entries will be added dynamically -->
-                        </tbody>
-                    </table>
+            <div class="hermes__database-container">
+                <!-- Database service cards will be dynamically inserted here -->
+                <div class="hermes__loading">
+                    Loading database services...
                 </div>
             </div>
         </div>
@@ -534,17 +285,7 @@
         font-weight: 500;
     }
     
-    #hermes-tab-messaging:checked ~ .hermes .hermes__tab[for="hermes-tab-messaging"] {
-        border-bottom-color: var(--color-primary, #4285F4);
-        font-weight: 500;
-    }
-    
-    #hermes-tab-connections:checked ~ .hermes .hermes__tab[for="hermes-tab-connections"] {
-        border-bottom-color: var(--color-primary, #4285F4);
-        font-weight: 500;
-    }
-    
-    #hermes-tab-history:checked ~ .hermes .hermes__tab[for="hermes-tab-history"] {
+    #hermes-tab-database:checked ~ .hermes .hermes__tab[for="hermes-tab-database"] {
         border-bottom-color: var(--color-primary, #4285F4);
         font-weight: 500;
     }
@@ -606,15 +347,7 @@
         display: block;
     }
     
-    #hermes-tab-messaging:checked ~ .hermes #messaging-panel {
-        display: block;
-    }
-    
-    #hermes-tab-connections:checked ~ .hermes #connections-panel {
-        display: block;
-    }
-    
-    #hermes-tab-history:checked ~ .hermes #history-panel {
+    #hermes-tab-database:checked ~ .hermes #database-panel {
         display: block;
     }
     
@@ -1154,6 +887,309 @@
         gap: 10px;
         max-width: 350px;
     }
+    
+    /* Service Registry Card Styles */
+    .hermes__registry-container {
+        padding: 24px;
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+        gap: 20px;
+        overflow-y: auto;
+        height: 100%;
+    }
+    
+    .hermes__service-card {
+        background-color: var(--bg-secondary, #252535);
+        border-radius: 12px;
+        padding: 20px;
+        border: 1px solid var(--border-color, #444444);
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+    
+    .hermes__service-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+    
+    .hermes__service-card--active {
+        border-left: 4px solid var(--component-color, #4285F4);
+    }
+    
+    .hermes__service-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 16px;
+    }
+    
+    .hermes__service-info {
+        flex: 1;
+    }
+    
+    .hermes__service-name {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: var(--text-primary, #f0f0f0);
+        margin: 0 0 4px 0;
+    }
+    
+    .hermes__service-version {
+        font-size: 0.9rem;
+        color: var(--text-secondary, #aaaaaa);
+    }
+    
+    .hermes__service-status {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background-color: var(--status-color, #888);
+        box-shadow: 0 0 6px var(--status-color, #888);
+    }
+    
+    .hermes__service-status--active {
+        background-color: #4CAF50;
+        box-shadow: 0 0 8px #4CAF50;
+    }
+    
+    .hermes__service-status--inactive {
+        background-color: #F44336;
+        box-shadow: 0 0 8px #F44336;
+    }
+    
+    .hermes__service-details {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+    
+    .hermes__service-field {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+    
+    .hermes__service-label {
+        font-size: 0.85rem;
+        font-weight: 500;
+        color: var(--text-secondary, #aaaaaa);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .hermes__service-value {
+        font-size: 0.95rem;
+        color: var(--text-primary, #f0f0f0);
+    }
+    
+    .hermes__service-endpoint {
+        font-family: var(--font-family-mono, monospace);
+        font-size: 0.9rem;
+        background-color: var(--bg-tertiary, #333345);
+        padding: 4px 8px;
+        border-radius: 4px;
+        word-break: break-all;
+    }
+    
+    .hermes__service-capabilities {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+    
+    .hermes__capability-badge {
+        background-color: var(--bg-tertiary, #333345);
+        color: var(--text-primary, #f0f0f0);
+        padding: 4px 10px;
+        border-radius: 16px;
+        font-size: 0.85rem;
+        border: 1px solid var(--border-color, #444444);
+    }
+    
+    .hermes__service-heartbeat {
+        font-size: 0.85rem;
+        color: var(--text-secondary, #aaaaaa);
+        margin-top: 8px;
+        text-align: right;
+    }
+    
+    /* Database Services Styles */
+    .hermes__database-container {
+        padding: 24px;
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 20px;
+        overflow-y: auto;
+        height: 100%;
+    }
+    
+    .hermes__database-card {
+        background-color: var(--bg-secondary, #252535);
+        border-radius: 12px;
+        padding: 20px;
+        border: 1px solid var(--border-color, #444444);
+        transition: all 0.3s ease;
+    }
+    
+    .hermes__database-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+    
+    .hermes__database-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 16px;
+    }
+    
+    .hermes__database-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 8px;
+        background: linear-gradient(135deg, var(--db-color-start, #4285F4), var(--db-color-end, #3367D6));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        color: white;
+    }
+    
+    .hermes__database-title {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: var(--text-primary, #f0f0f0);
+        margin: 0;
+    }
+    
+    .hermes__database-stats {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        margin-bottom: 16px;
+    }
+    
+    .hermes__database-stat {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+    
+    .hermes__database-stat-value {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: var(--text-primary, #f0f0f0);
+    }
+    
+    .hermes__database-stat-label {
+        font-size: 0.85rem;
+        color: var(--text-secondary, #aaaaaa);
+    }
+    
+    .hermes__database-users {
+        border-top: 1px solid var(--border-color, #444444);
+        padding-top: 16px;
+    }
+    
+    .hermes__database-users-title {
+        font-size: 0.9rem;
+        font-weight: 500;
+        color: var(--text-secondary, #aaaaaa);
+        margin-bottom: 8px;
+    }
+    
+    .hermes__database-user-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+    
+    .hermes__database-user {
+        background-color: var(--bg-tertiary, #333345);
+        padding: 6px 12px;
+        border-radius: 6px;
+        font-size: 0.9rem;
+        color: var(--text-primary, #f0f0f0);
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+    
+    .hermes__database-user-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background-color: var(--component-color, #888);
+    }
+    
+    /* Component-specific colors */
+    .hermes__service-card[data-component="numa"] { --component-color: #9C27B0; }
+    .hermes__service-card[data-component="tekton"] { --component-color: #FBBC05; }
+    .hermes__service-card[data-component="prometheus"] { --component-color: #C2185B; }
+    .hermes__service-card[data-component="telos"] { --component-color: #00796B; }
+    .hermes__service-card[data-component="metis"] { --component-color: #00BFA5; }
+    .hermes__service-card[data-component="harmonia"] { --component-color: #F57C00; }
+    .hermes__service-card[data-component="synthesis"] { --component-color: #3949AB; }
+    .hermes__service-card[data-component="athena"] { --component-color: #7B1FA2; }
+    .hermes__service-card[data-component="sophia"] { --component-color: #7CB342; }
+    .hermes__service-card[data-component="noesis"] { --component-color: #FF6F00; }
+    .hermes__service-card[data-component="engram"] { --component-color: #34A853; }
+    .hermes__service-card[data-component="apollo"] { --component-color: #FFD600; }
+    .hermes__service-card[data-component="rhetor"] { --component-color: #D32F2F; }
+    .hermes__service-card[data-component="penia"] { --component-color: #34A853; }
+    .hermes__service-card[data-component="hermes"] { --component-color: #4285F4; }
+    .hermes__service-card[data-component="ergon"] { --component-color: #0097A7; }
+    .hermes__service-card[data-component="terma"] { --component-color: #5D4037; }
+    
+    /* Database type colors */
+    .hermes__database-card[data-db-type="vector"] {
+        --db-color-start: #9C27B0;
+        --db-color-end: #7B1FA2;
+    }
+    
+    .hermes__database-card[data-db-type="key-value"] {
+        --db-color-start: #FF6F00;
+        --db-color-end: #F57C00;
+    }
+    
+    .hermes__database-card[data-db-type="graph"] {
+        --db-color-start: #00BFA5;
+        --db-color-end: #00897B;
+    }
+    
+    .hermes__database-card[data-db-type="document"] {
+        --db-color-start: #3949AB;
+        --db-color-end: #303F9F;
+    }
+    
+    .hermes__database-card[data-db-type="cache"] {
+        --db-color-start: #F44336;
+        --db-color-end: #D32F2F;
+    }
+    
+    .hermes__database-card[data-db-type="sql"] {
+        --db-color-start: #4285F4;
+        --db-color-end: #3367D6;
+    }
+    
+    /* Component user dots */
+    .hermes__database-user[data-component="numa"] .hermes__database-user-dot { background-color: #9C27B0; }
+    .hermes__database-user[data-component="tekton"] .hermes__database-user-dot { background-color: #FBBC05; }
+    .hermes__database-user[data-component="prometheus"] .hermes__database-user-dot { background-color: #C2185B; }
+    .hermes__database-user[data-component="telos"] .hermes__database-user-dot { background-color: #00796B; }
+    .hermes__database-user[data-component="metis"] .hermes__database-user-dot { background-color: #00BFA5; }
+    .hermes__database-user[data-component="harmonia"] .hermes__database-user-dot { background-color: #F57C00; }
+    .hermes__database-user[data-component="synthesis"] .hermes__database-user-dot { background-color: #3949AB; }
+    .hermes__database-user[data-component="athena"] .hermes__database-user-dot { background-color: #7B1FA2; }
+    .hermes__database-user[data-component="sophia"] .hermes__database-user-dot { background-color: #7CB342; }
+    .hermes__database-user[data-component="noesis"] .hermes__database-user-dot { background-color: #FF6F00; }
+    .hermes__database-user[data-component="engram"] .hermes__database-user-dot { background-color: #34A853; }
+    .hermes__database-user[data-component="apollo"] .hermes__database-user-dot { background-color: #FFD600; }
+    .hermes__database-user[data-component="rhetor"] .hermes__database-user-dot { background-color: #D32F2F; }
+    .hermes__database-user[data-component="penia"] .hermes__database-user-dot { background-color: #34A853; }
+    .hermes__database-user[data-component="hermes"] .hermes__database-user-dot { background-color: #4285F4; }
+    .hermes__database-user[data-component="ergon"] .hermes__database-user-dot { background-color: #0097A7; }
+    .hermes__database-user[data-component="terma"] .hermes__database-user-dot { background-color: #5D4037; }
 </style>
 
 <script type="text/javascript">
@@ -1639,6 +1675,9 @@ window.addEventListener('DOMContentLoaded', function() {
     console.log('[HERMES] DOM loaded, setting up Hermes component');
     hermes_protectHtmlPanel();
     hermes_loadComponent();
+    // Load initial data
+    hermes_loadServiceRegistry();
+    hermes_loadDatabaseServices();
 });
 
 // IMMEDIATE PROTECTION
@@ -1647,5 +1686,217 @@ if (document.readyState === 'complete' || document.readyState === 'interactive')
     console.log('[HERMES] Document already loaded, setting up Hermes component immediately');
     hermes_protectHtmlPanel();
     hermes_loadComponent();
+    // Load initial data
+    hermes_loadServiceRegistry();
+    hermes_loadDatabaseServices();
 }
+
+// Load Service Registry Data
+function hermes_loadServiceRegistry() {
+    console.log('[HERMES] Loading service registry...');
+    
+    const container = document.querySelector('.hermes__registry-container');
+    if (!container) return;
+    
+    // Fetch components from Hermes API
+    fetch(hermesUrl('/api/components'))
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            container.innerHTML = ''; // Clear loading message
+            
+            // Handle the response format: { total: number, components: array }
+            const components = data.components || [];
+            
+            if (components.length === 0) {
+                container.innerHTML = '<div class="hermes__placeholder">No services registered</div>';
+                return;
+            }
+            
+            // Create cards for each service
+            components.forEach(service => {
+                const card = hermes_createServiceCard(service);
+                container.appendChild(card);
+            });
+        })
+        .catch(error => {
+            console.error('[HERMES] Error loading service registry:', error);
+            container.innerHTML = `<div class="hermes__placeholder">Failed to load services<br><small>${error.message}</small></div>`;
+        });
+}
+
+// Create Service Card
+function hermes_createServiceCard(service) {
+    const card = document.createElement('div');
+    card.className = 'hermes__service-card';
+    card.setAttribute('data-component', service.name.toLowerCase());
+    
+    const isActive = service.healthy !== false;
+    if (isActive) {
+        card.classList.add('hermes__service-card--active');
+    }
+    
+    const lastHeartbeat = service.last_heartbeat ? 
+        new Date(service.last_heartbeat * 1000).toLocaleTimeString() : 
+        'Never';
+    
+    card.innerHTML = `
+        <div class="hermes__service-header">
+            <div class="hermes__service-info">
+                <h3 class="hermes__service-name">${service.name}</h3>
+                <div class="hermes__service-version">v${service.version || '1.0.0'}</div>
+            </div>
+            <div class="hermes__service-status ${isActive ? 'hermes__service-status--active' : 'hermes__service-status--inactive'}"></div>
+        </div>
+        <div class="hermes__service-details">
+            <div class="hermes__service-field">
+                <div class="hermes__service-label">Type</div>
+                <div class="hermes__service-value">${service.type || 'Component'}</div>
+            </div>
+            <div class="hermes__service-field">
+                <div class="hermes__service-label">Endpoint</div>
+                <div class="hermes__service-endpoint">${service.endpoint || 'N/A'}</div>
+            </div>
+            <div class="hermes__service-field">
+                <div class="hermes__service-label">Capabilities</div>
+                <div class="hermes__service-capabilities">
+                    ${(service.capabilities || []).map(cap => 
+                        `<span class="hermes__capability-badge">${cap}</span>`
+                    ).join('')}
+                </div>
+            </div>
+        </div>
+        <div class="hermes__service-heartbeat">Last heartbeat: ${lastHeartbeat}</div>
+    `;
+    
+    return card;
+}
+
+// Load Database Services Data
+function hermes_loadDatabaseServices() {
+    console.log('[HERMES] Loading database services...');
+    
+    const container = document.querySelector('.hermes__database-container');
+    if (!container) return;
+    
+    // Database types configuration
+    const databases = [
+        {
+            type: 'vector',
+            name: 'Vector Database',
+            icon: '🔮',
+            operations: 0,
+            storage: '0 MB',
+            users: []
+        },
+        {
+            type: 'key-value',
+            name: 'Key-Value Store',
+            icon: '🔑',
+            operations: 0,
+            storage: '0 MB',
+            users: []
+        },
+        {
+            type: 'graph',
+            name: 'Graph Database',
+            icon: '🕸️',
+            operations: 0,
+            storage: '0 MB',
+            users: []
+        },
+        {
+            type: 'document',
+            name: 'Document Store',
+            icon: '📄',
+            operations: 0,
+            storage: '0 MB',
+            users: []
+        },
+        {
+            type: 'cache',
+            name: 'Cache Service',
+            icon: '⚡',
+            operations: 0,
+            storage: '0 MB',
+            users: []
+        },
+        {
+            type: 'sql',
+            name: 'SQL Database',
+            icon: '🗃️',
+            operations: 0,
+            storage: '0 MB',
+            users: []
+        }
+    ];
+    
+    // Clear loading message and create cards
+    container.innerHTML = '';
+    databases.forEach(db => {
+        const card = hermes_createDatabaseCard(db);
+        container.appendChild(card);
+    });
+    
+    // TODO: Fetch actual usage data from backend
+}
+
+// Create Database Card
+function hermes_createDatabaseCard(database) {
+    const card = document.createElement('div');
+    card.className = 'hermes__database-card';
+    card.setAttribute('data-db-type', database.type);
+    
+    const usersList = database.users.length > 0 ? 
+        database.users.map(user => 
+            `<div class="hermes__database-user" data-component="${user.toLowerCase()}">
+                <span class="hermes__database-user-dot"></span>
+                ${user}
+            </div>`
+        ).join('') :
+        '<div class="hermes__database-user"><span style="color: var(--text-secondary)">No active users</span></div>';
+    
+    card.innerHTML = `
+        <div class="hermes__database-header">
+            <div class="hermes__database-icon">${database.icon}</div>
+            <h3 class="hermes__database-title">${database.name}</h3>
+        </div>
+        <div class="hermes__database-stats">
+            <div class="hermes__database-stat">
+                <div class="hermes__database-stat-value">${database.operations}</div>
+                <div class="hermes__database-stat-label">Operations</div>
+            </div>
+            <div class="hermes__database-stat">
+                <div class="hermes__database-stat-value">${database.storage}</div>
+                <div class="hermes__database-stat-label">Storage</div>
+            </div>
+        </div>
+        <div class="hermes__database-users">
+            <div class="hermes__database-users-title">Active Components</div>
+            <div class="hermes__database-user-list">
+                ${usersList}
+            </div>
+        </div>
+    `;
+    
+    return card;
+}
+
+// Refresh data when tabs change
+document.querySelectorAll('input[name="hermes-tab"]').forEach(radio => {
+    radio.addEventListener('change', function() {
+        if (this.checked) {
+            const tabName = this.id.replace('hermes-tab-', '');
+            if (tabName === 'registry') {
+                hermes_loadServiceRegistry();
+            } else if (tabName === 'database') {
+                hermes_loadDatabaseServices();
+            }
+        }
+    });
+});
 </script>
