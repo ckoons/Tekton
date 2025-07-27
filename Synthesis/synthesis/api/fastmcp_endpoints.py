@@ -10,6 +10,12 @@ from typing import Dict, Any, List, Optional
 from fastapi import APIRouter, HTTPException, Depends
 from tekton.models.base import TektonBaseModel
 import asyncio
+import sys
+import os
+
+# Import shared workflow endpoint
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', '..', 'shared'))
+from workflow.endpoint_template import create_workflow_endpoint
 
 from tekton.mcp.fastmcp.server import FastMCPServer
 from tekton.mcp.fastmcp.utils.endpoints import add_mcp_endpoints
@@ -448,6 +454,10 @@ async def _end_to_end_synthesis_workflow(parameters: Dict[str, Any]) -> Dict[str
         }
     }
 
+# Add standardized workflow endpoint to the router
+workflow_router = create_workflow_endpoint("synthesis") 
+for route in workflow_router.routes:
+    mcp_router.routes.append(route)
 
 # Export the router
 __all__ = ["mcp_router", "fastmcp_server"]

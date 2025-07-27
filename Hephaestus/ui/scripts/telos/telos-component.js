@@ -8,11 +8,12 @@ class TelosComponent {
     constructor() {
         this.state = {
             initialized: false,
-            activeTab: 'projects', // Default tab is Projects
-            projectsLoaded: false,
+            activeTab: 'dashboard', // Default tab is Dashboard
+            dashboardLoaded: false,
             requirementsLoaded: false,
             traceabilityLoaded: false,
-            validationLoaded: false
+            validationLoaded: false,
+            proposals: [] // Store loaded proposals
         };
     }
     
@@ -49,9 +50,6 @@ class TelosComponent {
     activateComponent() {
         console.log('Activating Telos component');
 
-        // We no longer need to manipulate the panels or global DOM
-        // Our component loader handles this for us
-
         // Find our component container
         const telosContainer = document.querySelector('.telos');
         if (telosContainer) {
@@ -73,8 +71,8 @@ class TelosComponent {
             return;
         }
         
-        // Project Tab Event Listeners
-        this.setupProjectTabListeners(container);
+        // Dashboard Tab Event Listeners
+        this.setupDashboardTabListeners(container);
         
         // Requirements Tab Event Listeners
         this.setupRequirementsTabListeners(container);
@@ -96,59 +94,43 @@ class TelosComponent {
     }
     
     /**
-     * Set up Project tab event listeners
+     * Set up Dashboard tab event listeners
      */
-    setupProjectTabListeners(container) {
-        // Add project button
-        const addProjectBtn = container.querySelector('#add-project-btn');
-        if (addProjectBtn) {
-            addProjectBtn.addEventListener('click', () => {
-                console.log('[TELOS] Add project button clicked');
-                if (window.TektonDebug) TektonDebug.debug('telosComponent', 'Add project button clicked');
-                // In a real implementation, this would show a form to add a new project
-                alert('Add project functionality would be implemented here.');
+    setupDashboardTabListeners(container) {
+        // New proposal button
+        const newProposalBtn = container.querySelector('#new-proposal-btn');
+        if (newProposalBtn) {
+            newProposalBtn.addEventListener('click', () => {
+                console.log('[TELOS] New proposal button clicked');
+                alert('New proposal form would be shown here. This will be implemented as a modal dialog.');
             });
         }
         
-        // Project search button
-        const projectSearchBtn = container.querySelector('#project-search-btn');
-        if (projectSearchBtn) {
-            projectSearchBtn.addEventListener('click', () => {
-                const searchInput = container.querySelector('#project-search');
-                if (searchInput) {
-                    const query = searchInput.value.trim();
-                    console.log(`[TELOS] Project search executed with query: ${query}`);
-                    if (window.TektonDebug) TektonDebug.debug('telosComponent', `Project search executed: ${query}`);
-                    // Here you would search projects
-                    this.searchProjects(query);
-                }
-            });
-        }
-        
-        // Project action buttons delegation (using event delegation for dynamically created items)
-        const projectList = container.querySelector('#project-list');
-        if (projectList) {
-            projectList.addEventListener('click', (e) => {
-                const actionBtn = e.target.closest('.telos__project-action-btn');
-                if (actionBtn) {
-                    const projectItem = actionBtn.closest('.telos__project-item');
-                    const projectName = projectItem ? projectItem.querySelector('.telos__project-name').textContent : '';
-                    const action = actionBtn.textContent.toLowerCase();
+        // Simple radio button event listeners for each proposal
+        const radioButtons = container.querySelectorAll('.telos__proposal-radio');
+        radioButtons.forEach(radio => {
+            radio.addEventListener('change', (e) => {
+                if (e.target.checked) {
+                    const label = container.querySelector(`label[for="${e.target.id}"]`);
+                    const action = label.textContent.toLowerCase();
+                    const proposalCard = e.target.closest('.telos__proposal-card');
+                    const proposalName = proposalCard ? proposalCard.dataset.proposalName : '';
                     
-                    console.log(`[TELOS] Project action: ${action} on project: ${projectName}`);
-                    if (window.TektonDebug) TektonDebug.debug('telosComponent', `Project action: ${action} on ${projectName}`);
+                    console.log(`[TELOS] Action: ${action} on proposal: ${proposalName}`);
                     
-                    // Handle different project actions
-                    if (action === 'view') {
-                        // Switch to requirements tab and filter by this project
-                        this.viewProject(projectName);
-                    } else if (action === 'edit') {
-                        // Show edit project form
-                        alert(`Edit project functionality for "${projectName}" would be implemented here.`);
+                    if (action === 'edit') {
+                        alert(`Edit "${proposalName}" - This will open an edit form.`);
+                    } else if (action === 'remove') {
+                        alert(`Remove "${proposalName}" - This will remove the proposal.`);
+                    } else if (action === 'sprint') {
+                        alert(`Sprint "${proposalName}" - This will initiate a sprint!`);
                     }
+                    
+                    // Reset radio button
+                    e.target.checked = false;
                 }
             });
-        }
+        });
     }
     
     /**
@@ -447,8 +429,8 @@ class TelosComponent {
         if (!chatInput) return;
 
         switch(activeTab) {
-            case 'projects':
-                chatInput.placeholder = "Ask about project management, creation, or organization...";
+            case 'dashboard':
+                chatInput.placeholder = "Ask about proposals, sprint planning, or development ideas...";
                 break;
             case 'requirements':
                 chatInput.placeholder = "Ask about requirements, filtering, or specific requirements...";
@@ -479,11 +461,8 @@ class TelosComponent {
         if (window.TektonDebug) TektonDebug.debug('telosComponent', `Loading content for ${tabId} tab`);
 
         switch (tabId) {
-            case 'projects':
-                if (!this.state.projectsLoaded) {
-                    this.loadProjects();
-                    this.state.projectsLoaded = true;
-                }
+            case 'dashboard':
+                // Dashboard content is already in HTML
                 break;
             case 'requirements':
                 if (!this.state.requirementsLoaded) {
@@ -868,6 +847,111 @@ class TelosComponent {
             }
         }
     }
+    
+    /**
+     * Edit a proposal
+     */
+    editProposal(proposalCard) {
+        const proposalName = proposalCard.dataset.proposalName;
+        const titleElement = proposalCard.querySelector('.telos__proposal-title');
+        const descElement = proposalCard.querySelector('.telos__proposal-description');
+        
+        // For now, use prompt for simple editing
+        const currentTitle = titleElement.textContent;
+        const currentDesc = descElement.textContent;
+        
+        const newTitle = prompt('Edit proposal title:', currentTitle);
+        if (newTitle && newTitle !== currentTitle) {
+            titleElement.textContent = newTitle;
+        }
+        
+        const newDesc = prompt('Edit proposal description:', currentDesc);
+        if (newDesc && newDesc !== currentDesc) {
+            descElement.textContent = newDesc;
+        }
+        
+        console.log(`[TELOS] Edited proposal: ${proposalName}`);
+    }
+    
+    /**
+     * Remove a proposal
+     */
+    removeProposal(proposalCard) {
+        const proposalName = proposalCard.dataset.proposalName;
+        
+        // Add fade-out animation
+        proposalCard.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+        proposalCard.style.opacity = '0';
+        proposalCard.style.transform = 'scale(0.9)';
+        
+        // Remove after animation
+        setTimeout(() => {
+            proposalCard.remove();
+            console.log(`[TELOS] Removed proposal: ${proposalName}`);
+            
+            // Check if no proposals left
+            const proposalsGrid = document.getElementById('proposals-grid');
+            if (proposalsGrid && proposalsGrid.children.length === 0) {
+                proposalsGrid.innerHTML = `
+                    <div class="telos__empty-state">
+                        <h3>No proposals yet</h3>
+                        <p>Click "New Proposal" to create your first development sprint proposal.</p>
+                    </div>
+                `;
+            }
+        }, 300);
+    }
+    
+    /**
+     * Initiate sprint from proposal
+     */
+    async initiateSprintFromProposal(proposalName, proposalCard) {
+        console.log(`[TELOS] Initiating sprint for proposal: ${proposalName}`);
+        
+        // Get proposal data from card
+        const proposalData = {
+            name: proposalName,
+            title: proposalCard.querySelector('.telos__proposal-title').textContent,
+            description: proposalCard.querySelector('.telos__proposal-description').textContent,
+            status: proposalCard.querySelector('.telos__proposal-status').textContent
+        };
+        
+        try {
+            // Create workflow message
+            const workflowMessage = {
+                purpose: {
+                    "telos": "initiate sprint",
+                    "prometheus": "analyze proposal"
+                },
+                dest: "prometheus",
+                payload: {
+                    action: "process_sprint",
+                    sprint_name: `${proposalName}_Sprint`,
+                    proposal: proposalData
+                }
+            };
+            
+            // For now, simulate the workflow trigger
+            console.log('[TELOS] Workflow message:', workflowMessage);
+            
+            // Update the proposal card to show it's being processed
+            const statusElement = proposalCard.querySelector('.telos__proposal-status');
+            statusElement.textContent = 'processing';
+            statusElement.style.backgroundColor = 'var(--telos-warning)';
+            statusElement.style.color = 'white';
+            
+            // Simulate workflow processing
+            setTimeout(() => {
+                statusElement.textContent = 'sprint initiated';
+                statusElement.style.backgroundColor = 'var(--telos-info)';
+                alert(`Sprint successfully initiated for "${proposalName}"!\n\nThe Planning Team CIs will now process this proposal.`);
+            }, 2000);
+            
+        } catch (error) {
+            console.error('[TELOS] Error initiating sprint:', error);
+            alert('Error initiating sprint. Please try again.');
+        }
+    }
 }
 
 // Create global instance
@@ -932,6 +1016,13 @@ window.telos_switchTab = function(tabName) {
         } else {
             clearButton.style.display = 'none';
         }
+    }
+    
+    // Update component state and load content
+    if (window.telosComponent) {
+        window.telosComponent.state.activeTab = tabName;
+        window.telosComponent.updateChatPlaceholder(tabName);
+        window.telosComponent.loadTabContent(tabName);
     }
 };
 

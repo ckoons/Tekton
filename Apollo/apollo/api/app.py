@@ -16,6 +16,10 @@ import uuid
 from typing import Dict, List, Any, Optional, Union
 from contextlib import asynccontextmanager
 
+# Import shared workflow endpoint
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', '..', 'shared'))
+from workflow.endpoint_template import create_workflow_endpoint
+
 import uvicorn
 from fastapi import FastAPI, APIRouter, WebSocket, WebSocketDisconnect, Depends, HTTPException, Query
 from fastapi.responses import JSONResponse
@@ -233,6 +237,10 @@ mount_standard_routers(app, routers)
 
 # Include existing routers
 app.include_router(api_router, prefix="/api/v1")
+
+# Include standardized workflow endpoint
+workflow_router = create_workflow_endpoint("apollo")
+app.include_router(workflow_router)
 app.include_router(ws_router)
 app.include_router(metrics_router, prefix="/api/v1/metrics")
 app.include_router(mcp_router)

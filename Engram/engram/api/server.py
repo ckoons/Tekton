@@ -14,6 +14,10 @@ from datetime import datetime
 from pathlib import Path
 from contextlib import asynccontextmanager
 
+# Import shared workflow endpoint
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', '..', 'shared'))
+from workflow.endpoint_template import create_workflow_endpoint
+
 import uvicorn
 from fastapi import FastAPI, Request, Depends, HTTPException, Header
 from fastapi.middleware.cors import CORSMiddleware
@@ -488,6 +492,10 @@ routers.v1.add_api_route(
 
 # Mount standard routers
 mount_standard_routers(app, routers)
+
+# Include standardized workflow endpoint
+workflow_router = create_workflow_endpoint("engram")
+app.include_router(workflow_router)
 
 # Note: Engram uses shared MCP bridge for standard operation
 # The fastmcp_server.py provides standalone MCP mode when run with --standalone flag

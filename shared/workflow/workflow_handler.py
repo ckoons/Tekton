@@ -7,14 +7,24 @@ All components should extend this class to handle workflow messages.
 
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
-from typing import Dict, Any, Optional, Union
+from typing import Dict, Any, Optional, Union, List
 from datetime import datetime
 import os
 import json
 import httpx
 import logging
-from shared.env import TektonEnviron
-from shared.urls import tekton_url
+try:
+    from shared.env import TektonEnviron
+    from shared.urls import tekton_url
+except ImportError:
+    # For testing, create minimal mock classes
+    class TektonEnviron:
+        @staticmethod
+        def get(key, default=None):
+            return default
+    
+    def tekton_url(component, path=""):
+        return f"http://localhost:8000/{component}{path}"
 
 logger = logging.getLogger(__name__)
 
@@ -209,6 +219,88 @@ class WorkflowHandler:
             logger.error(f"Workflow error: {str(e)}")
             return {"status": "error", "reason": str(e)}
     
+    def check_for_work(self, component_name: str) -> List[Dict[str, Any]]:
+        """
+        Check .tekton/workflows/data/ directory for work assigned to this component.
+        
+        Args:
+            component_name: Name of the component to check work for
+            
+        Returns:
+            List of available work items for the component
+        """
+        work_items = []
+        
+        try:
+            workflow_dir = self._get_workflow_dir()
+            
+            if not os.path.exists(workflow_dir):
+                return work_items
+            
+            # Scan all workflow files
+            for filename in os.listdir(workflow_dir):
+                if filename.endswith('.json'):
+                    filepath = os.path.join(workflow_dir, filename)
+                    
+                    try:
+                        with open(filepath, 'r') as f:
+                            workflow_data = json.load(f)
+                        
+                        # Check if this workflow has work for the component
+                        if self._has_work_for_component(workflow_data, component_name):
+                            work_items.append({
+                                "workflow_id": filename.replace('.json', ''),
+                                "workflow_file": filename,
+                                "status": workflow_data.get("status", "unknown"),
+                                "created": workflow_data.get("created", "unknown"),
+                                "component_tasks": self._extract_component_tasks(workflow_data, component_name)
+                            })
+                            
+                    except (json.JSONDecodeError, IOError) as e:
+                        logger.warning(f"Could not read workflow file {filename}: {e}")
+                        continue
+                        
+        except Exception as e:
+            logger.error(f"Error checking for work: {e}")
+            
+        return work_items
+    
+    def _has_work_for_component(self, workflow_data: Dict[str, Any], component_name: str) -> bool:
+        """Check if workflow data contains work for the specified component."""
+        # Check if component is mentioned in tasks, assignments, or destinations
+        data_str = json.dumps(workflow_data).lower()
+        component_lower = component_name.lower()
+        
+        # Look for component name in various contexts
+        return (
+            component_lower in data_str or
+            f'"{component_name}"' in json.dumps(workflow_data) or
+            workflow_data.get("dest") == component_name or
+            any(task.get("component") == component_name 
+                for task in workflow_data.get("tasks", []) 
+                if isinstance(task, dict))
+        )
+    
+    def _extract_component_tasks(self, workflow_data: Dict[str, Any], component_name: str) -> List[Dict[str, Any]]:
+        """Extract tasks specifically assigned to the component."""
+        component_tasks = []
+        
+        # Look in tasks array
+        for task in workflow_data.get("tasks", []):
+            if isinstance(task, dict) and task.get("component") == component_name:
+                component_tasks.append(task)
+        
+        # Look in payload for component-specific data
+        payload = workflow_data.get("payload", {})
+        if payload.get("component") == component_name:
+            component_tasks.append({
+                "type": "payload_task",
+                "action": payload.get("action", "unknown"),
+                "data": payload
+            })
+            
+        return component_tasks
+
     async def look_for_work(self) -> Dict[str, Any]:
         """
         Check for pending work for this component.

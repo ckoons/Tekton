@@ -23,6 +23,7 @@ if tekton_root not in sys.path:
 # Import shared utils
 from shared.utils.global_config import GlobalConfig
 from shared.utils.logging_setup import setup_component_logging as setup_component_logger
+from shared.workflow.endpoint_template import create_workflow_endpoint
 from shared.api import (
     create_standard_routers,
     mount_standard_routers,
@@ -205,6 +206,10 @@ mount_standard_routers(app, routers)
 
 # MCP router remains at its current location (handled in YetAnotherMCP_Sprint)
 app.include_router(mcp_router)
+
+# Include standardized workflow endpoint
+workflow_router = create_workflow_endpoint("athena")
+app.include_router(workflow_router)
 
 
 @app.exception_handler(Exception)

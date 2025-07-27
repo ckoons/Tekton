@@ -31,6 +31,12 @@ from shared.utils.global_config import GlobalConfig
 from shared.utils.logging_setup import setup_component_logging as setup_component_logger
 from shared.urls import hermes_url
 
+# Import shared workflow endpoint
+try:
+    from shared.workflow.endpoint_template import create_workflow_endpoint
+except ImportError:
+    create_workflow_endpoint = None
+
 # Import landmarks for code annotation
 try:
     from landmarks import (
@@ -551,6 +557,11 @@ mount_standard_routers(app, routers)
 # Mount our enhanced projects API - SIMPLE
 # Integration Point: Projects API Integration - Primary API integration for project management UI
 app.include_router(projects_v2.router)
+
+# Include standardized workflow endpoint
+if create_workflow_endpoint:
+    workflow_router = create_workflow_endpoint("tekton_core")
+    app.include_router(workflow_router)
 
 # Add request logging middleware
 @app.middleware("http")

@@ -2,10 +2,15 @@
 
 import os
 import asyncio
+import sys
 from typing import Dict, List, Optional
 from datetime import datetime
 
 from fastapi import FastAPI, HTTPException, Request
+
+# Import shared workflow endpoint
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', '..', 'shared'))
+from workflow.endpoint_template import create_workflow_endpoint
 from fastapi.responses import JSONResponse, StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -61,6 +66,10 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Include standardized workflow endpoint
+workflow_router = create_workflow_endpoint("noesis")
+app.include_router(workflow_router)
 
 # Global registration instance
 hermes_registration: Optional[HermesRegistration] = None

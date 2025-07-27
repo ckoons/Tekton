@@ -15,6 +15,10 @@ import json
 from enum import Enum
 import logging
 
+# Import shared workflow endpoint
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', '..', 'shared'))
+from workflow.endpoint_template import create_workflow_endpoint
+
 from fastapi import FastAPI, HTTPException, Depends, BackgroundTasks, Query, Path, Body
 from fastapi.responses import StreamingResponse, JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
@@ -727,6 +731,10 @@ routers.v1.include_router(mcp_router, prefix="/mcp", tags=["MCP"])
 
 # Include FastMCP router at its special path
 app.include_router(fastmcp_router, prefix="/api/mcp/v2")  # Mount FastMCP router under /api/mcp/v2
+
+# Include standardized workflow endpoint
+workflow_router = create_workflow_endpoint("ergon")
+app.include_router(workflow_router)
 
 # Add WebSocket endpoint for A2A and MCP (at root level)
 @app.websocket("/ws")

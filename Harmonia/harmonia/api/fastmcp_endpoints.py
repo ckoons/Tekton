@@ -7,9 +7,15 @@ following the unified MCP approach for workflow orchestration.
 
 import logging
 from typing import Optional
+import sys
+import os
 
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import JSONResponse
+
+# Import shared workflow endpoint
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', '..', 'shared'))
+from workflow.endpoint_template import create_workflow_endpoint
 
 from ..core.engine import WorkflowEngine
 from ..core.mcp import (
@@ -156,3 +162,8 @@ async def get_harmonia_status(
             "component": "harmonia",
             "message": f"Status check failed: {str(e)}"
         }
+
+# Add standardized workflow endpoint to the router
+workflow_router = create_workflow_endpoint("harmonia") 
+for route in workflow_router.routes:
+    fastmcp_router.routes.append(route)

@@ -66,6 +66,12 @@ from .fastmcp_endpoints import mcp_router
 from shared.utils.logging_setup import setup_component_logging
 from shared.utils.hermes_registration import HermesRegistration, heartbeat_loop
 
+# Import shared workflow endpoint
+try:
+    from shared.workflow.endpoint_template import create_workflow_endpoint
+except ImportError:
+    create_workflow_endpoint = None
+
 logger = setup_component_logging("terma")
 
 # Models for native terminal launching
@@ -213,6 +219,11 @@ app.add_middleware(
 
 # Include MCP router
 app.include_router(mcp_router, tags=["mcp"])
+
+# Include standardized workflow endpoint
+if create_workflow_endpoint:
+    workflow_router = create_workflow_endpoint("terma")
+    app.include_router(workflow_router)
 
 # Application startup time
 START_TIME = time.time()

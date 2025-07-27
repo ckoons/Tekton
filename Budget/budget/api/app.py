@@ -37,6 +37,12 @@ from shared.utils.startup import component_startup, StartupMetrics
 from shared.utils.errors import StartupError
 from shared.urls import hermes_url
 from shared.env import TektonEnviron
+
+# Import shared workflow endpoint
+try:
+    from shared.workflow.endpoint_template import create_workflow_endpoint
+except ImportError:
+    create_workflow_endpoint = None
 from shared.api import (
     create_standard_routers,
     mount_standard_routers,
@@ -250,6 +256,11 @@ routers.v1.include_router(assistant_router)
 
 # Include MCP router at root (not under v1)
 app.include_router(mcp_router)
+
+# Include standardized workflow endpoint
+if create_workflow_endpoint:
+    workflow_router = create_workflow_endpoint("budget")
+    app.include_router(workflow_router)
 
 # Store component in app state for access by endpoints
 app.state.component = budget_component

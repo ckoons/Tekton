@@ -15,6 +15,7 @@ import sys
 from pathlib import Path
 from typing import Dict, List, Any, Optional, Union
 from shared.env import TektonEnviron
+from shared.workflow.endpoint_template import create_workflow_endpoint
 
 from fastapi import FastAPI, Body, HTTPException, Query, APIRouter, Header, Depends, Request
 from fastapi.middleware.cors import CORSMiddleware
@@ -47,6 +48,10 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Include standardized workflow endpoint
+workflow_router = create_workflow_endpoint("hermes")
+app.include_router(workflow_router)
 
 # Global service instances
 database_manager = None

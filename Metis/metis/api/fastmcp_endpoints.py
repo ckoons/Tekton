@@ -9,6 +9,12 @@ from typing import Dict, Any, List, Optional
 from fastapi import APIRouter, HTTPException, Depends
 from tekton.models.base import TektonBaseModel
 import asyncio
+import sys
+import os
+
+# Import shared workflow endpoint
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', '..', 'shared'))
+from workflow.endpoint_template import create_workflow_endpoint
 
 from tekton.mcp.fastmcp.server import FastMCPServer
 from tekton.mcp.fastmcp.utils.endpoints import add_mcp_endpoints
@@ -274,6 +280,11 @@ async def _analyze_project_complexity_workflow(parameters: Dict[str, Any]) -> Di
         "complexity_analyses": complexity_results,
         "overall_statistics": stats_result["statistics"] if stats_result["success"] else None
     }
+
+# Add standardized workflow endpoint to the router
+workflow_router = create_workflow_endpoint("metis") 
+for route in workflow_router.routes:
+    mcp_router.routes.append(route)
 
 
 # Export the router

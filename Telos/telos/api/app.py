@@ -53,6 +53,17 @@ from .. import __version__
 # Create component instance (singleton)
 component = TelosComponent()
 
+# Import additional modules for proposals
+import shutil
+
+# Proposal request models
+class RemoveProposalRequest(TektonBaseModel):
+    proposalName: str
+
+class CreateSprintRequest(TektonBaseModel):
+    proposalName: str
+    proposalData: Dict[str, Any]
+
 # Request models
 class ProjectCreateRequest(TektonBaseModel):
     name: str
@@ -1206,6 +1217,215 @@ async def create_plan(project_id: str = Path(..., title="The ID of the project")
     
     except Exception as e:
         logger.error(f"Error creating plan: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+# Proposal management endpoints
+@routers.v1.post("/proposals/remove")
+async def remove_proposal(request: RemoveProposalRequest):
+    """Move a proposal to the Removed directory"""
+    try:
+        # Base paths
+        base_path = "/Users/cskoons/projects/github/Coder-C"
+        proposals_path = os.path.join(base_path, "MetaData/DevelopmentSprints/Proposals")
+        removed_path = os.path.join(base_path, "MetaData/DevelopmentSprints/Proposals/Removed")
+        
+        # Ensure directories exist
+        os.makedirs(removed_path, exist_ok=True)
+        
+        proposal_file = f"{request.proposalName}.json"
+        source_path = os.path.join(proposals_path, proposal_file)
+        target_path = os.path.join(removed_path, proposal_file)
+        
+        # Check if source exists
+        if not os.path.exists(source_path):
+            # Maybe it doesn't exist as a file yet, that's ok
+            return JSONResponse(content={
+                "status": "success",
+                "message": f"Proposal {request.proposalName} marked as removed (no file to move)"
+            })
+        
+        # Move the file
+        shutil.move(source_path, target_path)
+        
+        return JSONResponse(content={
+            "status": "success",
+            "message": f"Moved {proposal_file} to Removed directory",
+            "source": source_path,
+            "target": target_path
+        })
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@routers.v1.post("/proposals/sprint")
+async def create_sprint(request: CreateSprintRequest):
+    """Create a development sprint from a proposal"""
+    try:
+        proposal_name = request.proposalName
+        proposal_data = request.proposalData
+        
+        # Base paths
+        base_path = "/Users/cskoons/projects/github/Coder-C"
+        dev_sprints_path = os.path.join(base_path, "MetaData/DevelopmentSprints")
+        proposals_path = os.path.join(base_path, "MetaData/DevelopmentSprints/Proposals")
+        sprints_path = os.path.join(base_path, "MetaData/DevelopmentSprints/Proposals/Sprints")
+        
+        # Ensure directories exist
+        os.makedirs(sprints_path, exist_ok=True)
+        
+        # Create sprint directory
+        sprint_dir = os.path.join(dev_sprints_path, f"{proposal_name}_Sprint")
+        os.makedirs(sprint_dir, exist_ok=True)
+        
+        # Create DAILY_LOG.md
+        daily_log_content = f"""# {proposal_name} Sprint - Daily Log
+
+## Sprint Started: {datetime.now().strftime('%Y-%m-%d')}
+
+### Day 1 - {datetime.now().strftime('%Y-%m-%d')}
+- Sprint initialized from proposal
+- Created sprint structure
+- Ready to begin implementation
+
+---
+"""
+        with open(os.path.join(sprint_dir, "DAILY_LOG.md"), 'w') as f:
+            f.write(daily_log_content)
+        
+        # Create HANDOFF.md
+        handoff_content = f"""# {proposal_name} Sprint - Handoff Document
+
+## Current Status
+- Sprint initialized
+- Proposal: {proposal_data.get('title', proposal_name)}
+- Description: {proposal_data.get('description', 'No description')}
+
+## Next Steps
+1. Review proposal requirements
+2. Begin implementation
+3. Update daily log with progress
+
+## Context for Next Session
+- Proposal has been converted to sprint
+- All required files have been created
+- Ready to start development
+"""
+        with open(os.path.join(sprint_dir, "HANDOFF.md"), 'w') as f:
+            f.write(handoff_content)
+        
+        # Create SPRINT_PLAN.md
+        sprint_plan_content = f"""# {proposal_name} Sprint Plan
+
+## Overview
+**Sprint Name**: {proposal_name}_Sprint  
+**Created**: {datetime.now().strftime('%Y-%m-%d')}  
+**Status**: Active  
+
+## Proposal Details
+{json.dumps(proposal_data, indent=2)}
+
+## Sprint Checklist
+
+### Phase 1: Planning
+- [ ] Review proposal requirements
+- [ ] Identify technical approach
+- [ ] Break down into tasks
+
+### Phase 2: Implementation
+- [ ] Core functionality
+- [ ] Integration points
+- [ ] Error handling
+
+### Phase 3: Testing
+- [ ] Unit tests
+- [ ] Integration tests
+- [ ] User acceptance
+
+### Phase 4: Documentation
+- [ ] Update component docs
+- [ ] API documentation
+- [ ] User guide
+
+## Success Criteria
+- All checklist items completed
+- Tests passing
+- Documentation updated
+"""
+        with open(os.path.join(sprint_dir, "SPRINT_PLAN.md"), 'w') as f:
+            f.write(sprint_plan_content)
+        
+        # Move proposal file to Sprints directory if it exists
+        proposal_file = f"{proposal_name}.json"
+        source_path = os.path.join(proposals_path, proposal_file)
+        if os.path.exists(source_path):
+            target_path = os.path.join(sprints_path, proposal_file)
+            shutil.move(source_path, target_path)
+        
+        # Save the proposal data in the sprint directory
+        with open(os.path.join(sprint_dir, "proposal.json"), 'w') as f:
+            json.dump(proposal_data, f, indent=2)
+        
+        return JSONResponse(content={
+            "status": "success",
+            "message": f"Created sprint {proposal_name}_Sprint",
+            "sprint_dir": sprint_dir,
+            "files_created": ["DAILY_LOG.md", "HANDOFF.md", "SPRINT_PLAN.md", "proposal.json"]
+        })
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@routers.v1.post("/proposals/save")
+async def save_proposal(proposal_data: Dict[str, Any]):
+    """Save a proposal to disk"""
+    try:
+        proposal_name = proposal_data.get('name', '').replace(' ', '_')
+        if not proposal_name:
+            raise ValueError("Proposal must have a name")
+        
+        # Base paths
+        base_path = "/Users/cskoons/projects/github/Coder-C"
+        proposals_path = os.path.join(base_path, "MetaData/DevelopmentSprints/Proposals")
+        
+        # Ensure directory exists
+        os.makedirs(proposals_path, exist_ok=True)
+        
+        proposal_file = f"{proposal_name}.json"
+        file_path = os.path.join(proposals_path, proposal_file)
+        
+        # Save the proposal
+        with open(file_path, 'w') as f:
+            json.dump(proposal_data, f, indent=2)
+        
+        return JSONResponse(content={
+            "status": "success",
+            "message": f"Saved proposal {proposal_name}",
+            "file_path": file_path
+        })
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@routers.v1.get("/proposals/load/{proposal_name}")
+async def load_proposal(proposal_name: str):
+    """Load a proposal from disk"""
+    try:
+        # Base paths
+        base_path = "/Users/cskoons/projects/github/Coder-C"
+        proposals_path = os.path.join(base_path, "MetaData/DevelopmentSprints/Proposals")
+        
+        proposal_file = f"{proposal_name}.json"
+        file_path = os.path.join(proposals_path, proposal_file)
+        
+        if not os.path.exists(file_path):
+            raise HTTPException(status_code=404, detail=f"Proposal {proposal_name} not found")
+        
+        with open(file_path, 'r') as f:
+            proposal_data = json.load(f)
+        
+        return JSONResponse(content=proposal_data)
+        
+    except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 # WebSocket endpoint for real-time interactions

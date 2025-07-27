@@ -31,6 +31,12 @@ from shared.api.documentation import get_openapi_configuration
 from shared.api.endpoints import create_ready_endpoint, create_discovery_endpoint, EndpointInfo
 from shared.api.routers import create_standard_routers, mount_standard_routers
 
+# Import shared workflow endpoint
+try:
+    from shared.workflow.endpoint_template import create_workflow_endpoint
+except ImportError:
+    create_workflow_endpoint = None
+
 # Component configuration
 COMPONENT_NAME = "sophia"
 COMPONENT_VERSION = "0.1.0"
@@ -305,6 +311,11 @@ except ImportError as e:
 
 # Mount standard routers (now with endpoints included)
 mount_standard_routers(app, routers)
+
+# Include standardized workflow endpoint
+if create_workflow_endpoint:
+    workflow_router = create_workflow_endpoint("sophia")
+    app.include_router(workflow_router)
 
 @app.on_event("startup")
 async def startup_event():

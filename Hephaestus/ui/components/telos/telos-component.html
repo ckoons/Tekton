@@ -6,7 +6,7 @@
             <img src="/images/hexagon.jpg" alt="Tekton" class="telos__icon">
             <h2 class="telos__title">
                 <span class="telos__title-main">Telos</span>
-                <span class="telos__title-sub">Requirements Manager</span>
+                <span class="telos__title-sub">Requirements</span>
             </h2>
         </div>
     </div>
@@ -14,17 +14,8 @@
     <!-- Telos Menu Bar with Tab Navigation -->
     <div class="telos__menu-bar" data-tekton-zone="menu" data-tekton-zone="menu" data-tekton-nav="component-menu">
         <div class="telos__tabs" data-tekton-zone="menu">
-            <div class="telos__tab telos__tab--active" data-tab="projects" onclick="telos_switchTab('projects'); return false;" data-tekton-menu-item="Projects" data-tekton-menu-component="telos" data-tekton-menu-active="true" data-tekton-menu-panel="projects-panel" data-tekton-nav-target="projects-panel">
-                <span class="telos__tab-label">Projects</span>
-            </div>
-            <div class="telos__tab" data-tab="requirements" onclick="telos_switchTab('requirements'); return false;" data-tekton-menu-item="Requirements" data-tekton-menu-component="telos" data-tekton-menu-active="false" data-tekton-menu-panel="requirements-panel" data-tekton-nav-target="requirements-panel">
-                <span class="telos__tab-label">Requirements</span>
-            </div>
-            <div class="telos__tab" data-tab="traceability" onclick="telos_switchTab('traceability'); return false;" data-tekton-menu-item="Traceability" data-tekton-menu-component="telos" data-tekton-menu-active="false" data-tekton-menu-panel="traceability-panel" data-tekton-nav-target="traceability-panel">
-                <span class="telos__tab-label">Traceability</span>
-            </div>
-            <div class="telos__tab" data-tab="validation" onclick="telos_switchTab('validation'); return false;" data-tekton-menu-item="Validation" data-tekton-menu-component="telos" data-tekton-menu-active="false" data-tekton-menu-panel="validation-panel" data-tekton-nav-target="validation-panel">
-                <span class="telos__tab-label">Validation</span>
+            <div class="telos__tab telos__tab--active" data-tab="dashboard" onclick="telos_switchTab('dashboard'); return false;" data-tekton-menu-item="Dashboard" data-tekton-menu-component="telos" data-tekton-menu-active="true" data-tekton-menu-panel="dashboard-panel" data-tekton-nav-target="dashboard-panel">
+                <span class="telos__tab-label">Dashboard</span>
             </div>
             <div class="telos__tab" data-tekton-chat="tab" data-tab="reqchat" onclick="telos_switchTab('reqchat'); return false;" data-tekton-menu-item="Requirements Chat" data-tekton-menu-component="telos" data-tekton-menu-active="false" data-tekton-menu-panel="reqchat-panel" data-tekton-nav-target="reqchat-panel">
                 <span class="telos__tab-label">Requirements Chat</span>
@@ -42,52 +33,71 @@
     
     <!-- Telos Content Area -->
     <div class="telos__content" data-tekton-zone="content" data-tekton-scrollable="true">
-        <!-- Projects Tab (Default Active Tab) -->
-        <div id="projects-panel" class="telos__panel telos__panel--active" data-tekton-panel="projects" data-tekton-panel-for="Projects" data-tekton-panel-component="telos" data-tekton-panel-active="true">
-            <div class="telos__projects">
-                <div class="telos__control-bar">
-                    <div class="telos__search-container">
-                        <input type="text" id="project-search" class="telos__search-input" placeholder="Search projects..." data-tekton-input="search">
-                        <button id="project-search-btn" class="telos__search-button" data-tekton-action="search-projects" data-tekton-action-type="primary">Search</button>
-                    </div>
-                    <div class="telos__actions">
-                        <button id="add-project-btn" class="telos__action-button" data-tekton-action="add-project" data-tekton-action-type="primary">
-                            <span class="telos__button-icon">+</span>
-                            <span class="telos__button-label">New Project</span>
-                        </button>
-                    </div>
+        <!-- Dashboard Tab (Default Active Tab) -->
+        <div id="dashboard-panel" class="telos__panel telos__panel--active" data-tekton-panel="dashboard" data-tekton-panel-for="Dashboard" data-tekton-panel-component="telos" data-tekton-panel-active="true">
+            <div class="telos__dashboard">
+                <div class="telos__dashboard-header">
+                    <h3 class="telos__dashboard-title">Development Sprint Proposals</h3>
+                    <button id="new-proposal-btn" class="telos__new-proposal-btn" data-tekton-action="new-proposal" onclick="newProposal()">
+                        <span class="telos__button-icon">+</span>
+                        <span class="telos__button-label">New Proposal</span>
+                    </button>
                 </div>
-                <div class="telos__project-list-container">
-                    <div id="project-list-loading" class="telos__loading-indicator">
-                        <div class="telos__spinner"></div>
-                        <div class="telos__loading-text">Loading projects...</div>
-                    </div>
-                    <div id="project-list" class="telos__project-list" style="display: none;">
-                        <!-- Sample projects for UI testing -->
-                        <div class="telos__project-item">
-                            <div class="telos__project-info">
-                                <div class="telos__project-name">Tekton UI Refactoring</div>
-                                <div class="telos__project-meta">
-                                    <span class="telos__project-count">24 requirements</span>
-                                    <span class="telos__project-status">Active</span>
+                <div class="telos__proposals-container">
+                    <div id="proposals-grid" class="telos__proposals-grid">
+                        <!-- Sample proposal cards for CSS-first approach -->
+                        <div class="telos__proposal-card telos__proposal-card--blue" data-proposal-name="Planning_Team_Workflow_UI">
+                            <div class="telos__proposal-header">
+                                <h3 class="telos__proposal-title">Planning Team Workflow UI</h3>
+                                <div class="telos__proposal-meta">
+                                    <span class="telos__proposal-status">proposal</span>
+                                    <span class="telos__proposal-date">Jan 27, 2025</span>
                                 </div>
                             </div>
-                            <div class="telos__project-actions">
-                                <button class="telos__project-action-btn" data-tekton-action="view-project" data-tekton-action-type="secondary">View</button>
-                                <button class="telos__project-action-btn" data-tekton-action="edit-project" data-tekton-action-type="secondary">Edit</button>
+                            <p class="telos__proposal-description">Create a complete planning workflow system starting with Telos UI for managing proposals, enabling the Planning Team CIs to collaborate on turning ideas into executable Development Sprints.</p>
+                            <div class="telos__proposal-actions">
+                                <button class="telos__proposal-action telos__proposal-action--edit" 
+                                        onclick="editProposal('Planning_Team_Workflow_UI')">Edit</button>
+                                <button class="telos__proposal-action telos__proposal-action--remove" 
+                                        onclick="removeProposal('Planning_Team_Workflow_UI')">Remove</button>
+                                <button class="telos__proposal-action telos__proposal-action--primary" 
+                                        onclick="sprintProposal('Planning_Team_Workflow_UI')">Sprint</button>
                             </div>
                         </div>
-                        <div class="telos__project-item">
-                            <div class="telos__project-info">
-                                <div class="telos__project-name">Engram Memory System</div>
-                                <div class="telos__project-meta">
-                                    <span class="telos__project-count">18 requirements</span>
-                                    <span class="telos__project-status">Active</span>
+                        <div class="telos__proposal-card telos__proposal-card--green" data-proposal-name="Enhanced_Memory_System">
+                            <div class="telos__proposal-header">
+                                <h3 class="telos__proposal-title">Enhanced Memory System</h3>
+                                <div class="telos__proposal-meta">
+                                    <span class="telos__proposal-status">proposal</span>
+                                    <span class="telos__proposal-date">Jan 26, 2025</span>
                                 </div>
                             </div>
-                            <div class="telos__project-actions">
-                                <button class="telos__project-action-btn" data-tekton-action="view-project" data-tekton-action-type="secondary">View</button>
-                                <button class="telos__project-action-btn" data-tekton-action="edit-project" data-tekton-action-type="secondary">Edit</button>
+                            <p class="telos__proposal-description">Build a comprehensive memory system that allows AI components to store, retrieve, and learn from past interactions, improving context awareness and decision-making.</p>
+                            <div class="telos__proposal-actions">
+                                <button class="telos__proposal-action telos__proposal-action--edit" 
+                                        onclick="editProposal('Enhanced_Memory_System')">Edit</button>
+                                <button class="telos__proposal-action telos__proposal-action--remove" 
+                                        onclick="removeProposal('Enhanced_Memory_System')">Remove</button>
+                                <button class="telos__proposal-action telos__proposal-action--primary" 
+                                        onclick="sprintProposal('Enhanced_Memory_System')">Sprint</button>
+                            </div>
+                        </div>
+                        <div class="telos__proposal-card telos__proposal-card--purple" data-proposal-name="AI_Context_Management">
+                            <div class="telos__proposal-header">
+                                <h3 class="telos__proposal-title">AI Context Management</h3>
+                                <div class="telos__proposal-meta">
+                                    <span class="telos__proposal-status">proposal</span>
+                                    <span class="telos__proposal-date">Jan 26, 2025</span>
+                                </div>
+                            </div>
+                            <p class="telos__proposal-description">Develop a context management system that maintains conversation state, tracks user preferences, and provides relevant information to AI components throughout sessions.</p>
+                            <div class="telos__proposal-actions">
+                                <button class="telos__proposal-action telos__proposal-action--edit" 
+                                        onclick="editProposal('AI_Context_Management')">Edit</button>
+                                <button class="telos__proposal-action telos__proposal-action--remove" 
+                                        onclick="removeProposal('AI_Context_Management')">Remove</button>
+                                <button class="telos__proposal-action telos__proposal-action--primary" 
+                                        onclick="sprintProposal('AI_Context_Management')">Sprint</button>
                             </div>
                         </div>
                     </div>
@@ -390,6 +400,12 @@
         color: var(--text-primary, #f0f0f0);
         cursor: pointer;
         transition: all 0.2s ease;
+        font-size: 24px !important; /* FORCE BIGGER FONT */
+        font-weight: 600 !important;
+    }
+    
+    .telos__tab-label {
+        font-size: 24px !important; /* FORCE BIGGER FONT ON LABEL TOO */
     }
     
     .telos__tab:hover {
@@ -871,6 +887,375 @@
         0% { transform: rotate(0deg); }
         100% { transform: rotate(360deg); }
     }
+
+    /* Modal Styles */
+    .telos__modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, 0.7);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+    }
+
+    .telos__modal-content {
+        background-color: var(--bg-primary, #1e1e2e);
+        border: 1px solid var(--border-color, #444444);
+        border-radius: 8px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+        width: 90%;
+        max-width: 600px;
+        max-height: 80vh;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .telos__modal-content--large {
+        max-width: 1200px; /* 2x wider */
+        max-height: 96vh; /* 2x taller */
+        width: 95%;
+    }
+
+    .telos__modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 16px;
+        border-bottom: 1px solid var(--border-color, #444444);
+        background-color: var(--bg-secondary, #252535);
+        border-radius: 8px 8px 0 0;
+    }
+
+    .telos__modal-title {
+        margin: 0;
+        color: var(--text-primary, #f0f0f0);
+        font-size: 1.2rem;
+    }
+
+    .telos__modal-close {
+        background: none;
+        border: none;
+        color: var(--text-secondary, #aaa);
+        font-size: 24px;
+        cursor: pointer;
+        padding: 0;
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 4px;
+        transition: all 0.2s ease;
+    }
+
+    .telos__modal-close:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+        color: var(--text-primary, #f0f0f0);
+    }
+
+    .telos__modal-body {
+        padding: 20px;
+        flex: 1;
+        overflow-y: auto;
+    }
+
+    .telos__proposal-form {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .telos__form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .telos__form-group label {
+        color: var(--text-primary, #f0f0f0);
+        font-weight: 500;
+        font-size: 0.95rem;
+    }
+
+    .telos__proposal-textarea {
+        width: 100%;
+        padding: 12px;
+        background-color: var(--bg-tertiary, #333345);
+        color: var(--text-primary, #f0f0f0);
+        border: 1px solid var(--border-color, #444);
+        border-radius: 4px;
+        font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+        font-size: 13px;
+        resize: vertical;
+        min-height: 400px;
+    }
+
+    .telos__proposal-textarea:focus {
+        outline: none;
+        border-color: #3498db;
+    }
+
+    .telos__modal-footer {
+        display: flex;
+        gap: 12px;
+        justify-content: flex-end;
+        padding: 16px;
+        border-top: 1px solid var(--border-color, #444444);
+        background-color: var(--bg-secondary, #252535);
+        border-radius: 0 0 8px 8px;
+    }
+
+    /* Button Color Updates */
+    .telos__button--cancel {
+        background-color: #2196F3; /* Blue */
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-weight: 500;
+        transition: all 0.2s ease;
+    }
+
+    .telos__button--cancel:hover {
+        background-color: #1976D2; /* Darker blue */
+    }
+
+    .telos__button--clear {
+        background-color: #4CAF50; /* Green */
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-weight: 500;
+        transition: all 0.2s ease;
+    }
+
+    .telos__button--clear:hover {
+        background-color: #45a049; /* Darker green */
+    }
+
+    .telos__button--save {
+        background-color: #9C27B0; /* Purple */
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-weight: 500;
+        transition: all 0.2s ease;
+    }
+
+    .telos__button--save:hover {
+        background-color: #7B1FA2; /* Darker purple */
+    }
+    
+    /* Dashboard Styles */
+    .telos__dashboard {
+        padding: 20px;
+        height: 100%;
+        overflow-y: auto;
+    }
+    
+    .telos__dashboard-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+    
+    .telos__dashboard-title {
+        font-size: 24px;
+        font-weight: 600;
+        color: var(--text-primary, #f0f0f0);
+        margin: 0;
+    }
+    
+    .telos__new-proposal-btn {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 16px;
+        background-color: #3498db;
+        border: none;
+        border-radius: 6px;
+        color: white;
+        font-size: 16px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    
+    .telos__new-proposal-btn:hover {
+        background-color: #2980b9;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+    }
+    
+    .telos__button-icon {
+        font-size: 20px;
+        font-weight: bold;
+    }
+    
+    .telos__proposals-container {
+        width: 100%;
+    }
+    
+    .telos__proposals-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 20px;
+    }
+    
+    .telos__proposal-card {
+        background-color: var(--bg-secondary, #252535);
+        border: 1px solid var(--border-color, #444);
+        border-radius: 8px;
+        padding: 20px;
+        transition: all 0.2s ease;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .telos__proposal-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background-color: currentColor;
+    }
+    
+    .telos__proposal-card--blue::before {
+        background-color: #3498db;
+    }
+    
+    .telos__proposal-card--green::before {
+        background-color: #27ae60;
+    }
+    
+    .telos__proposal-card--purple::before {
+        background-color: #9b59b6;
+    }
+    
+    .telos__proposal-card--orange::before {
+        background-color: #f39c12;
+    }
+    
+    .telos__proposal-card--red::before {
+        background-color: #e74c3c;
+    }
+    
+    .telos__proposal-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+    }
+    
+    .telos__proposal-header {
+        margin-bottom: 12px;
+    }
+    
+    .telos__proposal-title {
+        font-size: 18px;
+        font-weight: 600;
+        color: var(--text-primary, #f0f0f0);
+        margin: 0 0 8px 0;
+    }
+    
+    .telos__proposal-meta {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+    }
+    
+    .telos__proposal-status {
+        padding: 4px 8px;
+        background-color: rgba(52, 152, 219, 0.2);
+        color: #3498db;
+        border-radius: 4px;
+        font-size: 12px;
+        font-weight: 500;
+        text-transform: uppercase;
+    }
+    
+    .telos__proposal-date {
+        color: var(--text-secondary, #aaa);
+        font-size: 14px;
+    }
+    
+    .telos__proposal-description {
+        color: var(--text-primary, #f0f0f0);
+        line-height: 1.5;
+        margin-bottom: 16px;
+        font-size: 14px;
+    }
+    
+    .telos__proposal-actions {
+        display: flex;
+        gap: 8px;
+        justify-content: flex-end;
+    }
+    
+    .telos__proposal-action {
+        padding: 8px 16px;
+        border: 1px solid var(--border-color, #444);
+        background-color: var(--bg-tertiary, #333345);
+        color: var(--text-primary, #f0f0f0);
+        border-radius: 4px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    
+    .telos__proposal-action:hover {
+        background-color: var(--bg-hover, #3a3a4a);
+        transform: translateY(-1px);
+    }
+    
+    .telos__proposal-action--primary {
+        background-color: #3498db;
+        color: white;
+        border-color: #3498db;
+    }
+    
+    .telos__proposal-action--primary:hover {
+        background-color: #2980b9;
+        border-color: #2980b9;
+    }
+    
+    .telos__proposal-action--edit {
+        background-color: #f39c12;
+        color: white;
+        border-color: #f39c12;
+    }
+    
+    .telos__proposal-action--edit:hover {
+        background-color: #e67e22;
+        border-color: #e67e22;
+    }
+    
+    .telos__proposal-action--remove {
+        background-color: #e74c3c;
+        color: white;
+        border-color: #e74c3c;
+    }
+    
+    .telos__proposal-action--remove:hover {
+        background-color: #c0392b;
+        border-color: #c0392b;
+    }
+    
+    .telos__proposal-action:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
 </style>
 
 <script type="text/javascript">
@@ -1108,6 +1493,469 @@ window.telos_sendChat = function() {
     }
     
     return false; // Stop event propagation
+};
+
+// PROPOSAL ACTION FUNCTIONS
+window.editProposal = async function(proposalName) {
+    console.log('[TELOS] Edit proposal clicked:', proposalName);
+    
+    try {
+        const card = document.querySelector(`[data-proposal-name="${proposalName}"]`);
+        if (card) {
+            // First check if we have data stored on the card
+            const proposalJson = card.getAttribute('data-proposal-json');
+            if (proposalJson) {
+                const proposalData = JSON.parse(proposalJson);
+                showProposalEditor(proposalName, proposalData);
+                return false;
+            }
+            
+            // Otherwise try to load from backend
+            try {
+                const response = await fetch(tektonUrl('telos', `/api/v1/proposals/load/${proposalName}`));
+                if (response.ok) {
+                    const proposalData = await response.json();
+                    showProposalEditor(proposalName, proposalData);
+                } else {
+                    // Fallback to extracting from UI
+                    const proposalData = {
+                        name: proposalName.replace(/_/g, ' '),
+                        tektonCoreProject: "Tekton",
+                        purpose: card.querySelector('.telos__proposal-description').textContent,
+                        description: card.querySelector('.telos__proposal-description').textContent,
+                        requirements: ["Requirement 1", "Requirement 2", "Requirement 3"],
+                        successCriteria: ["Success criteria 1", "Success criteria 2", "Success criteria 3"],
+                        template: "feature_development",
+                        complexity: 5,
+                        estimatedHours: 40,
+                        notes: "Extracted from UI",
+                        status: card.querySelector('.telos__proposal-status').textContent,
+                        created: new Date().toISOString(),
+                        modified: new Date().toISOString()
+                    };
+                    showProposalEditor(proposalName, proposalData);
+                }
+            } catch (error) {
+                console.log('[TELOS] Backend not available, using UI data');
+                // Use UI data as fallback
+                const proposalData = {
+                    name: proposalName.replace(/_/g, ' '),
+                    tektonCoreProject: "Tekton",
+                    purpose: card.querySelector('.telos__proposal-description').textContent,
+                    description: card.querySelector('.telos__proposal-description').textContent,
+                    requirements: ["Requirement 1", "Requirement 2", "Requirement 3"],
+                    successCriteria: ["Success criteria 1", "Success criteria 2", "Success criteria 3"],
+                    template: "feature_development",
+                    complexity: 5,
+                    estimatedHours: 40,
+                    notes: "Extracted from UI",
+                    status: card.querySelector('.telos__proposal-status').textContent,
+                    created: new Date().toISOString(),
+                    modified: new Date().toISOString()
+                };
+                showProposalEditor(proposalName, proposalData);
+            }
+        }
+    } catch (error) {
+        console.error('[TELOS] Error loading proposal:', error);
+        showProposalEditor(proposalName);
+    }
+    
+    return false;
+};
+
+window.removeProposal = function(proposalName) {
+    console.log('[TELOS] Remove proposal clicked:', proposalName);
+    if (confirm('Are you sure you want to remove the proposal: ' + proposalName + '?\n\nThis will move it to Removed status.')) {
+        moveProposalToRemoved(proposalName);
+    }
+    return false;
+};
+
+window.sprintProposal = function(proposalName) {
+    console.log('[TELOS] Sprint proposal clicked:', proposalName);
+    if (confirm('Create a Development Sprint from: ' + proposalName + '?\n\nThis will create the sprint structure and move the proposal to Sprints.')) {
+        createDevelopmentSprint(proposalName);
+    }
+    return false;
+};
+
+// NEW PROPOSAL FUNCTION
+window.newProposal = function() {
+    console.log('[TELOS] New proposal clicked');
+    showProposalEditor(null);
+    return false;
+};
+
+// PROPOSAL EDITOR FUNCTIONS
+function showProposalEditor(proposalName, proposalData = null) {
+    const editor = createProposalEditorModal(proposalName, proposalData);
+    document.body.appendChild(editor);
+}
+
+function createProposalEditorModal(proposalName, proposalData = null) {
+    const isEdit = proposalName !== null;
+    const modal = document.createElement('div');
+    modal.className = 'telos__modal-overlay';
+    
+    // Use provided data or create template
+    const displayData = proposalData || {
+        "name": "ProposalName",
+        "tektonCoreProject": "Tekton",
+        "purpose": "Brief one-line statement of what this will achieve",
+        "description": "Detailed description of the proposal, including background, motivation, and approach",
+        "requirements": [
+            "Specific requirement 1",
+            "Specific requirement 2",
+            "Specific requirement 3"
+        ],
+        "successCriteria": [
+            "Measurable outcome 1",
+            "Measurable outcome 2",
+            "Testable condition 3"
+        ],
+        "template": "feature_development",
+        "complexity": 5,
+        "estimatedHours": 40,
+        "notes": "Additional context, risks, or considerations",
+        "status": "proposal",
+        "created": new Date().toISOString(),
+        "modified": new Date().toISOString()
+    };
+    
+    modal.innerHTML = `
+        <div class="telos__modal-content telos__modal-content--large">
+            <div class="telos__modal-header">
+                <h2 class="telos__modal-title">${isEdit ? 'Edit' : 'New'} Proposal</h2>
+                <button class="telos__modal-close" onclick="closeProposalEditor()">&times;</button>
+            </div>
+            <div class="telos__modal-body">
+                <form id="proposal-form" class="telos__proposal-form">
+                    <div class="telos__form-group">
+                        <label for="proposal-content">Proposal JSON Content:</label>
+                        <textarea id="proposal-content" name="content" rows="25" required 
+                                  class="telos__proposal-textarea"
+                                  placeholder="Enter proposal JSON content">${JSON.stringify(displayData, null, 2)}</textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="telos__modal-footer">
+                <button type="button" class="telos__button telos__button--cancel" onclick="closeProposalEditor()">Cancel</button>
+                <button type="button" class="telos__button telos__button--clear" onclick="clearProposalContent()">Clear</button>
+                <button type="button" class="telos__button telos__button--save" onclick="saveProposal('${proposalName || ''}')">
+                    ${isEdit ? 'Save Changes' : 'Create Proposal'}
+                </button>
+            </div>
+        </div>
+    `;
+    return modal;
+}
+
+function closeProposalEditor() {
+    const modal = document.querySelector('.telos__modal-overlay');
+    if (modal) {
+        modal.remove();
+    }
+}
+
+function clearProposalContent() {
+    const textarea = document.getElementById('proposal-content');
+    if (textarea) {
+        // Create fresh template
+        const proposalTemplate = {
+            "name": "ProposalName",
+            "tektonCoreProject": "Tekton",
+            "purpose": "Brief one-line statement of what this will achieve",
+            "description": "Detailed description of the proposal, including background, motivation, and approach",
+            "requirements": [
+                "Specific requirement 1",
+                "Specific requirement 2",
+                "Specific requirement 3"
+            ],
+            "successCriteria": [
+                "Measurable outcome 1",
+                "Measurable outcome 2",
+                "Testable condition 3"
+            ],
+            "template": "feature_development",
+            "complexity": 5,
+            "estimatedHours": 40,
+            "notes": "Additional context, risks, or considerations",
+            "status": "proposal",
+            "created": new Date().toISOString(),
+            "modified": new Date().toISOString()
+        };
+        textarea.value = JSON.stringify(proposalTemplate, null, 2);
+        textarea.focus();
+    }
+}
+
+async function saveProposal(originalName) {
+    const textarea = document.getElementById('proposal-content');
+    if (!textarea) {
+        alert('Error: Could not find proposal content');
+        return;
+    }
+    
+    try {
+        // Parse the JSON content
+        const proposalData = JSON.parse(textarea.value);
+        
+        // Validate required fields
+        if (!proposalData.name || !proposalData.description) {
+            alert('Error: Proposal must have a name and description');
+            return;
+        }
+        
+        // Update timestamps
+        proposalData.modified = new Date().toISOString();
+        if (!proposalData.created) {
+            proposalData.created = new Date().toISOString();
+        }
+        
+        console.log('[TELOS] Saving proposal:', proposalData);
+        
+        // Save to backend
+        try {
+            const response = await fetch(tektonUrl('telos', '/api/v1/proposals/save'), {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(proposalData)
+            });
+            
+            const result = await response.json();
+            console.log('[TELOS] Save result:', result);
+        } catch (error) {
+            console.log('[TELOS] Backend not available, saving to UI only');
+        }
+        
+        // Update the UI
+        if (originalName) {
+            updateProposalCard(originalName, proposalData);
+        } else {
+            addNewProposalCard(proposalData);
+        }
+        
+        closeProposalEditor();
+        
+    } catch (error) {
+        alert('Error: Invalid JSON format. Please check your proposal content.\n\n' + error.message);
+        return;
+    }
+}
+
+async function moveProposalToRemoved(proposalName) {
+    const card = document.querySelector(`[data-proposal-name="${proposalName}"]`);
+    if (card) {
+        console.log('[TELOS] Removing proposal:', proposalName);
+        
+        // Call the backend to actually move the file
+        try {
+            const response = await fetch(tektonUrl('telos', '/api/v1/proposals/remove'), {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    proposalName: proposalName
+                })
+            });
+            
+            const result = await response.json();
+            console.log('[TELOS] Remove result:', result);
+            
+            // Fade out and remove the card
+            card.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+            card.style.opacity = '0';
+            card.style.transform = 'scale(0.9)';
+            
+            setTimeout(() => {
+                card.remove();
+                console.log('[TELOS] Proposal removed from UI:', proposalName);
+                
+                // Check if no proposals left
+                const proposalsGrid = document.getElementById('proposals-grid');
+                if (proposalsGrid && proposalsGrid.children.length === 0) {
+                    proposalsGrid.innerHTML = `
+                        <div class="telos__empty-state">
+                            <h3>No proposals yet</h3>
+                            <p>Click "New Proposal" to create your first development sprint proposal.</p>
+                        </div>
+                    `;
+                }
+            }, 300);
+            
+        } catch (error) {
+            console.error('[TELOS] Error calling remove API:', error);
+            alert('Error removing proposal. Make sure Telos service is running.');
+        }
+    }
+}
+
+async function createDevelopmentSprint(proposalName) {
+    console.log('[TELOS] Creating development sprint for:', proposalName);
+    
+    const card = document.querySelector(`[data-proposal-name="${proposalName}"]`);
+    if (card) {
+        try {
+            // Get proposal data from card
+            const proposalJson = card.getAttribute('data-proposal-json');
+            let proposalData = {};
+            
+            if (proposalJson) {
+                proposalData = JSON.parse(proposalJson);
+            } else {
+                // Fallback if no stored data
+                proposalData = {
+                    name: proposalName,
+                    title: card.querySelector('.telos__proposal-title').textContent,
+                    description: card.querySelector('.telos__proposal-description').textContent,
+                    status: 'sprint'
+                };
+            }
+            
+            // Update UI to show processing
+            const statusSpan = card.querySelector('.telos__proposal-status');
+            if (statusSpan) {
+                statusSpan.textContent = 'creating sprint...';
+                statusSpan.style.backgroundColor = '#ffc107';
+                statusSpan.style.color = 'black';
+            }
+            
+            // Call the backend to create sprint and move files
+            const response = await fetch(tektonUrl('telos', '/api/v1/proposals/sprint'), {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    proposalName: proposalName,
+                    proposalData: proposalData
+                })
+            });
+            
+            const result = await response.json();
+            console.log('[TELOS] Sprint creation result:', result);
+            
+            // Update UI to show sprint status
+            if (statusSpan) {
+                statusSpan.textContent = 'sprint';
+                statusSpan.style.backgroundColor = '#28a745';
+                statusSpan.style.color = 'white';
+            }
+            
+            // Disable buttons since it's now a sprint
+            const buttons = card.querySelectorAll('.telos__proposal-action');
+            buttons.forEach(btn => {
+                btn.disabled = true;
+                btn.style.opacity = '0.5';
+            });
+            
+            console.log('[TELOS] Sprint created successfully:', proposalName);
+            alert(`Sprint created successfully!\n\nDirectory: ${result.sprint_dir}\nFiles created: ${result.files_created.join(', ')}`);
+            
+        } catch (error) {
+            console.error('[TELOS] Error creating sprint:', error);
+            alert('Error creating sprint. Make sure Telos service is running.');
+            
+            // Reset status on error
+            const statusSpan = card.querySelector('.telos__proposal-status');
+            if (statusSpan) {
+                statusSpan.textContent = 'proposal';
+                statusSpan.style.backgroundColor = '';
+                statusSpan.style.color = '';
+            }
+        }
+    }
+}
+
+function updateProposalCard(originalName, proposalData) {
+    const card = document.querySelector(`[data-proposal-name="${originalName}"]`);
+    if (card) {
+        const newName = proposalData.name.replace(/\s+/g, '_');
+        card.setAttribute('data-proposal-name', newName);
+        
+        // Store the full proposal data on the card
+        card.setAttribute('data-proposal-json', JSON.stringify(proposalData));
+        
+        const title = card.querySelector('.telos__proposal-title');
+        if (title) title.textContent = proposalData.name;
+        
+        const description = card.querySelector('.telos__proposal-description');
+        if (description) description.textContent = proposalData.purpose || proposalData.description;
+        
+        // Update status and date
+        const status = card.querySelector('.telos__proposal-status');
+        if (status) status.textContent = proposalData.status || 'proposal';
+        
+        const date = card.querySelector('.telos__proposal-date');
+        if (date) date.textContent = new Date(proposalData.modified).toLocaleDateString();
+        
+        // Update button onclick handlers with new name
+        const editBtn = card.querySelector('.telos__proposal-action--edit');
+        if (editBtn) editBtn.setAttribute('onclick', `editProposal('${newName}')`);
+        
+        const removeBtn = card.querySelector('.telos__proposal-action--remove');
+        if (removeBtn) removeBtn.setAttribute('onclick', `removeProposal('${newName}')`);
+        
+        const sprintBtn = card.querySelector('.telos__proposal-action--primary');
+        if (sprintBtn) sprintBtn.setAttribute('onclick', `sprintProposal('${newName}')`);
+        
+        console.log('[TELOS] Updated proposal card:', proposalData);
+    }
+}
+
+function addNewProposalCard(proposalData) {
+    const grid = document.getElementById('proposals-grid');
+    if (grid) {
+        const newName = proposalData.name.replace(/\s+/g, '_');
+        const colors = ['blue', 'green', 'purple', 'orange', 'red'];
+        const color = colors[Math.floor(Math.random() * colors.length)];
+        
+        const cardHTML = `
+            <div class="telos__proposal-card telos__proposal-card--${color}" data-proposal-name="${newName}">
+                <div class="telos__proposal-header">
+                    <h3 class="telos__proposal-title">${proposalData.name}</h3>
+                    <div class="telos__proposal-meta">
+                        <span class="telos__proposal-status">${proposalData.status || 'proposal'}</span>
+                        <span class="telos__proposal-date">${new Date(proposalData.created).toLocaleDateString()}</span>
+                    </div>
+                </div>
+                <p class="telos__proposal-description">${proposalData.purpose || proposalData.description}</p>
+                <div class="telos__proposal-actions">
+                    <button class="telos__proposal-action telos__proposal-action--edit" 
+                            onclick="editProposal('${newName}')">Edit</button>
+                    <button class="telos__proposal-action telos__proposal-action--remove" 
+                            onclick="removeProposal('${newName}')">Remove</button>
+                    <button class="telos__proposal-action telos__proposal-action--primary" 
+                            onclick="sprintProposal('${newName}')">Sprint</button>
+                </div>
+            </div>
+        `;
+        grid.insertAdjacentHTML('beforeend', cardHTML);
+        console.log('[TELOS] Added new proposal card:', proposalData);
+    }
+}
+
+// GLOBAL WRAPPER FUNCTIONS FOR ONCLICK HANDLERS
+// These functions are called from the onclick handlers in the HTML
+
+window.removeProposal = function(proposalName) {
+    console.log('[TELOS] Remove proposal clicked:', proposalName);
+    if (confirm('Are you sure you want to remove the proposal: ' + proposalName + '?\n\nThis will move it to Removed status.')) {
+        moveProposalToRemoved(proposalName);
+    }
+    return false;
+};
+
+window.sprintProposal = function(proposalName) {
+    console.log('[TELOS] Sprint proposal clicked:', proposalName);
+    if (confirm('Create a Development Sprint from: ' + proposalName + '?\n\nThis will create the sprint structure and move the proposal to Sprints.')) {
+        createDevelopmentSprint(proposalName);
+    }
+    return false;
 };
 
 // LOAD COMPONENT

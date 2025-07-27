@@ -18,6 +18,10 @@ from fastapi.middleware.cors import CORSMiddleware
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from tekton.mcp.fastmcp.utils.endpoints import create_mcp_router, add_standard_mcp_endpoints
+
+# Import shared workflow endpoint
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', '..', 'shared'))
+from workflow.endpoint_template import create_workflow_endpoint
 from tekton.mcp.fastmcp.registry import FastMCPRegistry
 from tekton.mcp.fastmcp.client import FastMCPClient
 
@@ -348,6 +352,10 @@ async def execute_workflow(
 
 # Include MCP router
 app.include_router(mcp_router, prefix="/api/mcp/v2")
+
+# Include standardized workflow endpoint
+workflow_router = create_workflow_endpoint("telos")
+app.include_router(workflow_router)
 
 # Root endpoint
 @app.get("/")

@@ -27,11 +27,13 @@ try:
     from shared.utils.graceful_shutdown import GracefulShutdown, add_fastapi_shutdown
     from shared.utils.health_check import create_health_response
     from shared.utils.hermes_registration import HermesRegistration, heartbeat_loop
+    from shared.workflow.endpoint_template import create_workflow_endpoint
 except ImportError as e:
     logger.warning(f"Could not import shared utils: {e}")
     GracefulShutdown = None
     create_health_response = None
     HermesRegistration = None
+    create_workflow_endpoint = None
 
 # Create FastAPI app
 app = FastAPI(
@@ -48,6 +50,11 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Include standardized workflow endpoint
+if create_workflow_endpoint:
+    workflow_router = create_workflow_endpoint("rhetor")
+    app.include_router(workflow_router)
 
 # Provider configurations
 PROVIDERS = {

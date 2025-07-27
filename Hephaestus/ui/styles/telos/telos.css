@@ -55,19 +55,19 @@
 
 .telos__title {
   display: flex;
-  flex-direction: column;
+  align-items: baseline;
+  gap: 8px;
   margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
 }
 
 .telos__title-main {
-  font-size: 1.5rem;
-  font-weight: 600;
   color: var(--telos-primary);
-  line-height: 1.2;
 }
 
 .telos__title-sub {
-  font-size: 0.875rem;
   color: var(--color-text-secondary);
   font-weight: 400;
 }
@@ -547,3 +547,406 @@
     width: 100%;
   }
 }
+/* Dashboard Styles */
+.telos__dashboard {
+  padding: 20px;
+  height: 100%;
+  overflow-y: auto;
+}
+
+.telos__dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.telos__dashboard-title {
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+.telos__new-proposal-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background-color: var(--telos-primary);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.telos__new-proposal-btn:hover {
+  background-color: #2a69d4;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Proposals Grid */
+.telos__proposals-container {
+  position: relative;
+  min-height: 400px;
+}
+
+.telos__proposals-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 20px;
+  padding: 4px;
+}
+
+/* Proposal Card Styles */
+.telos__proposal-card {
+  background: var(--color-bg-panel);
+  border-radius: 12px;
+  padding: 24px;
+  border: 2px solid transparent;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  min-height: 200px;
+}
+
+.telos__proposal-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 6px;
+  opacity: 0.9;
+}
+
+/* Color Themes for Proposal Cards */
+.telos__proposal-card--blue {
+  border-color: rgba(59, 128, 247, 0.3);
+  background: linear-gradient(to bottom, rgba(59, 128, 247, 0.05), var(--color-bg-panel));
+}
+
+.telos__proposal-card--blue::before {
+  background: linear-gradient(to right, #3b80f7, #2a69d4);
+}
+
+.telos__proposal-card--green {
+  border-color: rgba(40, 167, 69, 0.3);
+  background: linear-gradient(to bottom, rgba(40, 167, 69, 0.05), var(--color-bg-panel));
+}
+
+.telos__proposal-card--green::before {
+  background: linear-gradient(to right, #28a745, #208637);
+}
+
+.telos__proposal-card--purple {
+  border-color: rgba(111, 66, 193, 0.3);
+  background: linear-gradient(to bottom, rgba(111, 66, 193, 0.05), var(--color-bg-panel));
+}
+
+.telos__proposal-card--purple::before {
+  background: linear-gradient(to right, #6f42c1, #5a32a0);
+}
+
+.telos__proposal-card--orange {
+  border-color: rgba(253, 126, 20, 0.3);
+  background: linear-gradient(to bottom, rgba(253, 126, 20, 0.05), var(--color-bg-panel));
+}
+
+.telos__proposal-card--orange::before {
+  background: linear-gradient(to right, #fd7e14, #dc6d0c);
+}
+
+.telos__proposal-card--red {
+  border-color: rgba(220, 53, 69, 0.3);
+  background: linear-gradient(to bottom, rgba(220, 53, 69, 0.05), var(--color-bg-panel));
+}
+
+.telos__proposal-card--red::before {
+  background: linear-gradient(to right, #dc3545, #bd2130);
+}
+
+.telos__proposal-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+}
+
+.telos__proposal-card:hover::before {
+  height: 8px;
+}
+
+/* Proposal Card Content */
+.telos__proposal-header {
+  margin-bottom: 16px;
+}
+
+.telos__proposal-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin: 0 0 8px 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.telos__proposal-meta {
+  display: flex;
+  gap: 12px;
+  font-size: 12px;
+  color: var(--color-text-secondary);
+}
+
+.telos__proposal-status {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 12px;
+  background-color: var(--telos-primary-light);
+  color: var(--telos-primary);
+  font-weight: 500;
+}
+
+.telos__proposal-date {
+  display: flex;
+  align-items: center;
+}
+
+.telos__proposal-description {
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--color-text-secondary);
+  margin-bottom: 20px;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.telos__proposal-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: auto;
+}
+
+/* Hide radio buttons */
+.telos__proposal-radio {
+  display: none;
+}
+
+.telos__proposal-action {
+  flex: 1;
+  padding: 8px 16px;
+  border: 1px solid var(--color-border);
+  background-color: transparent;
+  color: var(--color-text-primary);
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.telos__proposal-action:hover {
+  background-color: var(--color-bg-hover);
+  border-color: var(--telos-primary);
+  color: var(--telos-primary);
+}
+
+/* Edit button - Green */
+.telos__proposal-action--edit {
+  background-color: var(--telos-success);
+  color: white;
+  border-color: var(--telos-success);
+}
+
+.telos__proposal-action--edit:hover {
+  background-color: #208637;
+  border-color: #208637;
+  color: white;
+}
+
+/* Remove button - Red */
+.telos__proposal-action--remove {
+  background-color: var(--telos-danger);
+  color: white;
+  border-color: var(--telos-danger);
+}
+
+.telos__proposal-action--remove:hover {
+  background-color: #bd2130;
+  border-color: #bd2130;
+  color: white;
+}
+
+/* Sprint button - Primary Blue */
+.telos__proposal-action--primary {
+  background-color: var(--telos-primary);
+  color: white;
+  border-color: var(--telos-primary);
+}
+
+.telos__proposal-action--primary:hover {
+  background-color: #2a69d4;
+  border-color: #2a69d4;
+  color: white;
+}
+
+/* Loading state for proposals */
+.telos__proposals-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+}
+
+EOF < /dev/null
+/* Empty state */
+.telos__empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--color-text-secondary);
+}
+
+.telos__empty-state h3 {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin-bottom: 12px;
+}
+
+.telos__empty-state p {
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* Error state */
+.telos__error {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--telos-danger);
+  font-size: 14px;
+}
+
+/* Modal Styles */
+.telos__modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.telos__modal-content {
+  background-color: var(--color-bg-panel);
+  border-radius: 12px;
+  max-width: 600px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.telos__modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.telos__modal-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+.telos__modal-close {
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.telos__modal-close:hover {
+  background-color: var(--color-bg-hover);
+  color: var(--color-text-primary);
+}
+
+.telos__modal-body {
+  padding: 24px;
+}
+
+.telos__proposal-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.telos__form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.telos__form-group label {
+  font-weight: 500;
+  color: var(--color-text-primary);
+  font-size: 14px;
+}
+
+.telos__form-group input,
+.telos__form-group textarea,
+.telos__form-group select {
+  padding: 12px 16px;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  background-color: var(--color-bg-input);
+  color: var(--color-text-primary);
+  font-size: 14px;
+  transition: border-color 0.2s ease;
+}
+
+.telos__form-group input:focus,
+.telos__form-group textarea:focus,
+.telos__form-group select:focus {
+  outline: none;
+  border-color: var(--telos-primary);
+  box-shadow: 0 0 0 3px rgba(59, 128, 247, 0.1);
+}
+
+.telos__form-group textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+.telos__modal-footer {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  padding: 20px 24px;
+  border-top: 1px solid var(--color-border);
+}
+
+EOF < /dev/null
