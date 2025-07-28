@@ -25,6 +25,48 @@ from fastapi.responses import JSONResponse
 from typing import List, Optional
 import json
 
+# Import landmarks with fallback
+try:
+    from landmarks import (
+        architecture_decision,
+        api_contract,
+        integration_point,
+        performance_boundary,
+        state_checkpoint,
+        danger_zone
+    )
+except ImportError:
+    # Define no-op decorators when landmarks not available
+    def architecture_decision(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+    
+    def api_contract(**kwargs):
+        def decorator(func):
+            return func
+        return decorator
+    
+    def integration_point(**kwargs):
+        def decorator(func):
+            return func
+        return decorator
+    
+    def performance_boundary(**kwargs):
+        def decorator(func):
+            return func
+        return decorator
+    
+    def state_checkpoint(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+    
+    def danger_zone(**kwargs):
+        def decorator(func):
+            return func
+        return decorator
+
 # Add Tekton root to path if not already present
 tekton_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..'))
 if tekton_root not in sys.path:
@@ -58,12 +100,41 @@ logger = setup_component_logging("engram")
 from engram.core.engram_component import EngramComponent
 from engram.core import MemoryService
 
+@architecture_decision(
+    title="Engram Memory System Architecture",
+    description="Centralized memory management with vector search and emotional analysis",
+    rationale="Provides persistent memory storage with semantic search capabilities and emotional insights for enhanced AI interactions",
+    alternatives_considered=["Simple key-value storage", "File-based memory", "Database-only solution"],
+    impacts=["ai_memory_context", "semantic_search", "emotional_analysis", "file_upload_support"],
+    decided_by="Casey",
+    decision_date="2025-01-15"
+)
+class _EngramArchitecture:
+    """Architecture marker for Engram's memory system design."""
+    pass
+
+@state_checkpoint(
+    title="Engram Component Singleton",
+    description="Global Engram component instance managing memory services",
+    state_type="singleton",
+    persistence=True,
+    consistency_requirements="Thread-safe singleton with async initialization",
+    recovery_strategy="Reinitialize on startup, restore from persistent storage"
+)
 # Create component singleton
 engram_component = EngramComponent()
 
 # Note: Component configuration and initialization is handled by EngramComponent
 # The component manages memory_manager, hermes_adapter, mcp_bridge internally
 
+@integration_point(
+    title="Engram Startup Integration",
+    description="Initialize Engram component and register with Hermes",
+    target_component="Hermes Service Registry",
+    protocol="HTTP REST API",
+    data_flow="Engram -> Hermes Registration -> Service Discovery",
+    integration_date="2025-01-15"
+)
 async def startup_callback():
     """Initialize Engram component (includes Hermes registration)."""
     # Initialize component (includes Hermes registration)
@@ -102,6 +173,22 @@ async def startup_event():
     await startup_callback()
 
 
+@integration_point(
+    title="Memory Service Client Integration",
+    description="Get client-specific memory service instance",
+    target_component="Memory Manager",
+    protocol="Internal API",
+    data_flow="Request -> Client ID extraction -> Memory Manager -> Client-specific MemoryService",
+    integration_date="2025-01-15"
+)
+@state_checkpoint(
+    title="Client Memory Service",
+    description="Per-client memory service isolation",
+    state_type="client_session",
+    persistence=True,
+    consistency_requirements="Each client gets isolated memory namespace",
+    recovery_strategy="Create new service instance if not found"
+)
 # Dependency to get memory service for a client
 async def get_memory_service(
     request: Request,
@@ -206,6 +293,21 @@ async def add_memory(
         )
 
 @routers.v1.get("/memory/{memory_id}")
+@api_contract(
+    title="Memory Retrieval API",
+    description="Retrieve a specific memory by ID",
+    endpoint="/api/v1/memory/{memory_id}",
+    method="GET",
+    request_schema={"memory_id": "string", "namespace": "string (query param)"},
+    response_schema={"id": "string", "title": "string", "content": "string", "metadata": "object"},
+    performance_requirements="<50ms for cached memories, <200ms for database fetch"
+)
+@performance_boundary(
+    title="Memory Retrieval Performance",
+    description="Demo memories return instantly, real memories fetch from storage",
+    sla="<200ms response time",
+    optimization_notes="Demo memories 1 and 2 bypass storage for instant response"
+)
 async def get_memory(
     memory_id: str,
     namespace: str = "conversations",
@@ -461,9 +563,20 @@ async def deactivate_compartment(
 @routers.v1.post("/memory/upload")
 @api_contract(
     title="Memory File Upload API",
+    description="Upload and process files to create memories",
     endpoint="/api/v1/memory/upload",
     method="POST",
-    request_schema={"file": "file", "metadata": "object"}
+    request_schema={"file": "file (.txt, .md, .json)", "metadata": "object"},
+    response_schema={"id": "string", "filename": "string", "size": "int", "status": "string"},
+    performance_requirements="<500ms for files under 1MB"
+)
+@danger_zone(
+    title="File Upload Processing",
+    description="Processes user-uploaded files with content validation",
+    risk_level="medium",
+    risks=["malicious_content", "large_file_dos", "encoding_issues"],
+    mitigation="File type validation, size limits, UTF-8 decoding with error handling",
+    review_required=True
 )
 async def upload_memory_file(
     file: UploadFile = File(...),
@@ -645,8 +758,18 @@ async def delete_memory(
 @routers.v1.get("/insights")
 @api_contract(
     title="Memory Insights API",
+    description="Get emotional analysis insights from memory patterns",
     endpoint="/api/v1/insights",
-    method="GET"
+    method="GET",
+    response_schema={"insights": "array", "total_memories": "int"},
+    performance_requirements="<100ms for insight calculation"
+)
+@performance_boundary(
+    title="Insights Analysis Performance",
+    description="Analyze memory patterns for emotional insights",
+    sla="<100ms response time",
+    optimization_notes="Pre-calculated insights updated asynchronously",
+    measured_impact="Real-time insights without blocking memory operations"
 )
 async def get_insights(
     memory_service: MemoryService = Depends(get_memory_service)
@@ -722,6 +845,12 @@ async def get_insight_memories(
             content={"error": f"Error getting insight memories: {str(e)}"}
         )
 
+@performance_boundary(
+    title="Insight Emoji Lookup",
+    description="O(1) lookup for emotional insight emojis",
+    sla="<1ms lookup time",
+    optimization_notes="Static dictionary lookup, no computation needed"
+)
 def get_insight_emoji(insight_name: str) -> str:
     """Get emoji for insight type."""
     emoji_map = {

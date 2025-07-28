@@ -89,9 +89,14 @@
         <!-- @landmark Panel: Browse - Card-based memory browser -->
         <div id="browse-panel" class="engram__panel" data-tekton-panel="browse" data-tekton-panel-for="Browse" data-tekton-panel-component="engram">
             <div class="engram__browse">
-                <div class="engram__control-bar">
-                    <div class="engram__browse-filters">
-                        <select id="memory-type-filter" class="engram__filter-select" data-tekton-select="filter">
+                <!-- @landmark Control Bar: Filter and action controls for memory browsing -->
+                <div class="engram__control-bar" data-tekton-zone="control-bar" data-tekton-component="memory-filters">
+                    <div class="engram__browse-filters" data-tekton-zone="filters" data-tekton-state="ready">
+                        <select id="memory-type-filter" class="engram__filter-select" 
+                               data-tekton-select="filter" 
+                               data-tekton-filter="memory-type"
+                               data-tekton-action="filter-change"
+                               data-tekton-trigger="change">
                             <option value="all">All Types</option>
                             <option value="conversation">Conversation</option>
                             <option value="document">Document</option>
@@ -99,55 +104,80 @@
                             <option value="task">Task</option>
                             <option value="note">Note</option>
                         </select>
-                        <select id="memory-sharing-filter" class="engram__filter-select" data-tekton-select="filter">
+                        <select id="memory-sharing-filter" class="engram__filter-select" 
+                               data-tekton-select="filter" 
+                               data-tekton-filter="memory-sharing"
+                               data-tekton-action="filter-change"
+                               data-tekton-trigger="change">
                             <option value="all">All Memories</option>
                             <option value="private">Private</option>
                             <option value="shared">Shared</option>
                         </select>
-                        <select id="filter-action" class="engram__filter-select" data-tekton-select="filter-action" onchange="engram.applySelectedFilter(this.value)">
+                        <select id="filter-action" class="engram__filter-select" 
+                               data-tekton-select="filter-action" 
+                               data-tekton-action="apply-filter"
+                               data-tekton-trigger="change"
+                               data-tekton-target="memory-cards-container"
+                               onchange="engram.applySelectedFilter(this.value)">
                             <option value="">Apply Filter...</option>
                             <option value="type">Apply Type Filter</option>
                             <option value="sharing">Apply Sharing Filter</option>
                             <option value="all">Apply All Filters</option>
                         </select>
                     </div>
-                    <div class="engram__browse-actions">
+                    <div class="engram__browse-actions" data-tekton-zone="actions">
                         <!-- Refresh button removed -->
                     </div>
                 </div>
                 
-                <!-- Memory Cards Container -->
-                <div class="engram__cards-container" id="memory-cards-container">
+                <!-- @landmark Cards Grid: Memory cards display container -->
+                <div class="engram__cards-container" id="memory-cards-container" 
+                     data-tekton-zone="content-grid" 
+                     data-tekton-type="memory-cards"
+                     data-tekton-state="ready"
+                     data-tekton-grid="memory-list">
                     <!-- Cards will be populated dynamically -->
-                    <div class="engram__loading" id="browse-loading" style="display: none;">
-                        <div class="engram__loading-spinner"></div>
-                        <p>Loading memories...</p>
+                    <div class="engram__loading" id="browse-loading" 
+                         style="display: none;" 
+                         data-tekton-state="loading" 
+                         data-tekton-visibility="hidden">
+                        <div class="engram__loading-spinner" data-tekton-animation="spinner"></div>
+                        <p data-tekton-text="loading-message">Loading memories...</p>
                     </div>
                     
                     <!-- Sample memory cards for UI testing -->
-                    <div class="engram__memory-card" data-memory-id="1" data-memory-type="conversation">
-                        <div class="engram__card-header">
-                            <h4 class="engram__card-title">Project Planning Discussion</h4>
-                            <span class="engram__card-status engram__card-status--shared">Shared</span>
+                    <div class="engram__memory-card" 
+                         data-memory-id="1" 
+                         data-memory-type="conversation"
+                         data-tekton-item="memory-card"
+                         data-tekton-type="conversation"
+                         data-tekton-state="default"
+                         data-tekton-nav-target="memory-1">
+                        <div class="engram__card-header" data-tekton-zone="card-header">
+                            <h4 class="engram__card-title" data-tekton-text="memory-title">Project Planning Discussion</h4>
+                            <span class="engram__card-status engram__card-status--shared" 
+                                  data-tekton-status="shared" 
+                                  data-tekton-state="shared">Shared</span>
                         </div>
-                        <div class="engram__card-meta">
-                            <span class="engram__card-type">💬 Conversation</span>
-                            <span class="engram__card-date">May 15, 2023</span>
-                            <span class="engram__card-size">3.2 KB</span>
+                        <div class="engram__card-meta" data-tekton-zone="metadata">
+                            <span class="engram__card-type" data-tekton-data="memory-type">💬 Conversation</span>
+                            <span class="engram__card-date" data-tekton-data="timestamp" data-tekton-temporal="date">May 15, 2023</span>
+                            <span class="engram__card-size" data-tekton-data="file-size">3.2 KB</span>
                         </div>
-                        <div class="engram__card-preview">
-                            <p>Discussion about the upcoming project milestones and resource allocation. Key points include frontend development timeline...</p>
+                        <div class="engram__card-preview" data-tekton-zone="preview">
+                            <p data-tekton-text="memory-preview">Discussion about the upcoming project milestones and resource allocation. Key points include frontend development timeline...</p>
                         </div>
-                        <div class="engram__card-tags">
-                            <span class="engram__tag">project-planning</span>
-                            <span class="engram__tag">milestones</span>
-                            <span class="engram__tag">team</span>
+                        <div class="engram__card-tags" data-tekton-zone="tags">
+                            <span class="engram__tag" data-tekton-tag="project-planning">project-planning</span>
+                            <span class="engram__tag" data-tekton-tag="milestones">milestones</span>
+                            <span class="engram__tag" data-tekton-tag="team">team</span>
                         </div>
-                        <div class="engram__card-actions">
+                        <div class="engram__card-actions" data-tekton-zone="actions">
                             <button class="engram__button engram__button--yellow engram__button--small" 
                                     data-tekton-action="view-memory" 
                                     data-tekton-action-target="1"
                                     data-tekton-action-type="secondary"
+                                    data-tekton-trigger="click"
                                     onclick="engram.viewMemory('1')">
                                 View
                             </button>
@@ -155,6 +185,7 @@
                                     data-tekton-action="edit-memory" 
                                     data-tekton-action-target="1"
                                     data-tekton-action-type="secondary"
+                                    data-tekton-trigger="click"
                                     onclick="engram.editMemory('1')">
                                 Edit
                             </button>
@@ -162,16 +193,25 @@
                                     data-tekton-action="delete-memory" 
                                     data-tekton-action-target="1"
                                     data-tekton-action-type="danger"
+                                    data-tekton-trigger="click"
                                     onclick="engram.deleteMemory('1')">
                                 Delete
                             </button>
                         </div>
                     </div>
                     
-                    <div class="engram__memory-card" data-memory-id="2" data-memory-type="document">
-                        <div class="engram__card-header">
-                            <h4 class="engram__card-title">System Architecture Spec</h4>
-                            <span class="engram__card-status engram__card-status--private">Private</span>
+                    <div class="engram__memory-card" 
+                         data-memory-id="2" 
+                         data-memory-type="document"
+                         data-tekton-item="memory-card"
+                         data-tekton-type="document"
+                         data-tekton-state="default"
+                         data-tekton-nav-target="memory-2">
+                        <div class="engram__card-header" data-tekton-zone="card-header">
+                            <h4 class="engram__card-title" data-tekton-text="memory-title">System Architecture Spec</h4>
+                            <span class="engram__card-status engram__card-status--private" 
+                                  data-tekton-status="private" 
+                                  data-tekton-state="private">Private</span>
                         </div>
                         <div class="engram__card-meta">
                             <span class="engram__card-type">📄 Document</span>
@@ -229,19 +269,40 @@
         
         <!-- Create Tab -->
         <!-- @landmark Panel: Create - Create new memories with file upload -->
-        <div id="create-panel" class="engram__panel" data-tekton-panel="create" data-tekton-panel-for="Create" data-tekton-panel-component="engram">
-            <div class="engram__create">
-                <h3 class="engram__section-title engram__section-title--far-left engram__section-title--spaced">Create New Memory</h3>
+        <div id="create-panel" class="engram__panel" 
+             data-tekton-panel="create" 
+             data-tekton-panel-for="Create" 
+             data-tekton-panel-component="engram"
+             data-tekton-state="ready">
+            <div class="engram__create" data-tekton-zone="create-content">
+                <h3 class="engram__section-title engram__section-title--far-left engram__section-title--spaced" 
+                   data-tekton-text="section-title">Create New Memory</h3>
                 
-                <form id="create-memory-form" class="engram__create-form" onsubmit="engram.uploadMemory(event); return false;">
-                    <div class="engram__form-group">
-                        <label class="engram__form-label" for="memory-title">Title *</label>
-                        <input type="text" id="memory-title" class="engram__form-input" placeholder="Enter memory title" required>
+                <!-- @landmark Form: Memory creation form with validation -->
+                <form id="create-memory-form" class="engram__create-form" 
+                      data-tekton-form="create-memory"
+                      data-tekton-action="submit-form"
+                      data-tekton-trigger="submit"
+                      data-tekton-state="ready"
+                      onsubmit="engram.uploadMemory(event); return false;">
+                    <div class="engram__form-group" data-tekton-zone="form-field">
+                        <label class="engram__form-label" for="memory-title" 
+                               data-tekton-label="required">Title *</label>
+                        <input type="text" id="memory-title" class="engram__form-input" 
+                               placeholder="Enter memory title" 
+                               required
+                               data-tekton-input="text"
+                               data-tekton-validation="required"
+                               data-tekton-field="title">
                     </div>
                     
-                    <div class="engram__form-group">
-                        <label class="engram__form-label" for="memory-type">Type *</label>
-                        <select id="memory-type" class="engram__form-select">
+                    <div class="engram__form-group" data-tekton-zone="form-field">
+                        <label class="engram__form-label" for="memory-type" 
+                               data-tekton-label="required">Type *</label>
+                        <select id="memory-type" class="engram__form-select"
+                               data-tekton-select="memory-type"
+                               data-tekton-validation="required"
+                               data-tekton-field="type">
                             <option value="conversation">Conversation</option>
                             <option value="document">Document</option>
                             <option value="knowledge">Knowledge</option>
@@ -250,56 +311,116 @@
                         </select>
                     </div>
                     
-                    <div class="engram__form-group">
-                        <label class="engram__form-label" for="memory-content">Content</label>
-                        <textarea id="memory-content" class="engram__form-textarea" rows="8" placeholder="Enter memory content or upload a file"></textarea>
+                    <div class="engram__form-group" data-tekton-zone="form-field">
+                        <label class="engram__form-label" for="memory-content" 
+                               data-tekton-label="optional">Content</label>
+                        <textarea id="memory-content" class="engram__form-textarea" 
+                                 rows="8" 
+                                 placeholder="Enter memory content or upload a file"
+                                 data-tekton-input="textarea"
+                                 data-tekton-field="content"></textarea>
                     </div>
                     
-                    <div class="engram__form-group">
-                        <label class="engram__form-label">File Upload</label>
-                        <div class="engram__file-upload-area" id="file-upload-area">
-                            <input type="file" id="memory-file" class="engram__file-input" accept=".txt,.md,.json" style="display: none;" onchange="this.nextElementSibling.querySelector('.engram__upload-text').textContent = this.files[0] ? this.files[0].name : 'Click to upload or drag and drop';">
-                            <label for="memory-file" class="engram__file-upload-label">
-                                <span class="engram__upload-icon">📁</span>
-                                <span class="engram__upload-text">Click to upload or drag and drop</span>
-                                <span class="engram__upload-hint" id="file-name-display">.txt, .md, .json files</span>
+                    <!-- @landmark File Upload: Drag-and-drop file upload with preview -->
+                    <div class="engram__form-group" data-tekton-zone="form-field">
+                        <label class="engram__form-label" data-tekton-label="optional">File Upload</label>
+                        <div class="engram__file-upload-area" id="file-upload-area" 
+                             data-tekton-zone="file-upload"
+                             data-tekton-state="ready"
+                             data-tekton-upload="drag-drop">
+                            <input type="file" id="memory-file" class="engram__file-input" 
+                                   accept=".txt,.md,.json" 
+                                   style="display: none;" 
+                                   data-tekton-input="file"
+                                   data-tekton-field="file"
+                                   data-tekton-action="file-select"
+                                   data-tekton-trigger="change"
+                                   onchange="this.nextElementSibling.querySelector('.engram__upload-text').textContent = this.files[0] ? this.files[0].name : 'Click to upload or drag and drop';">
+                            <label for="memory-file" class="engram__file-upload-label" 
+                                   data-tekton-action="file-browse"
+                                   data-tekton-trigger="click">
+                                <span class="engram__upload-icon" data-tekton-icon="folder">📁</span>
+                                <span class="engram__upload-text" data-tekton-text="upload-prompt">Click to upload or drag and drop</span>
+                                <span class="engram__upload-hint" id="file-name-display" 
+                                      data-tekton-text="file-hint">.txt, .md, .json files</span>
                             </label>
-                            <div class="engram__file-info" id="file-info" style="display: none;">
-                                <span class="engram__file-name" id="file-name"></span>
-                                <button class="engram__file-remove" id="file-remove">Remove</button>
+                            <div class="engram__file-info" id="file-info" 
+                                 style="display: none;" 
+                                 data-tekton-zone="file-preview"
+                                 data-tekton-state="hidden">
+                                <span class="engram__file-name" id="file-name" 
+                                      data-tekton-text="file-name"></span>
+                                <button class="engram__file-remove" id="file-remove" 
+                                        data-tekton-action="remove-file"
+                                        data-tekton-action-type="secondary"
+                                        data-tekton-trigger="click">Remove</button>
                             </div>
                         </div>
                     </div>
                     
-                    <div class="engram__form-group">
-                        <label class="engram__form-label" for="memory-tags">Tags</label>
-                        <input type="text" id="memory-tags" class="engram__form-input" placeholder="Enter tags separated by commas">
+                    <div class="engram__form-group" data-tekton-zone="form-field">
+                        <label class="engram__form-label" for="memory-tags" 
+                               data-tekton-label="optional">Tags</label>
+                        <input type="text" id="memory-tags" class="engram__form-input" 
+                               placeholder="Enter tags separated by commas"
+                               data-tekton-input="text"
+                               data-tekton-field="tags"
+                               data-tekton-format="comma-separated">
                     </div>
                     
-                    <div class="engram__form-group">
-                        <label class="engram__form-label" for="memory-description">Description</label>
-                        <textarea id="memory-description" class="engram__form-textarea" rows="3" placeholder="Brief description (optional)"></textarea>
+                    <div class="engram__form-group" data-tekton-zone="form-field">
+                        <label class="engram__form-label" for="memory-description" 
+                               data-tekton-label="optional">Description</label>
+                        <textarea id="memory-description" class="engram__form-textarea" 
+                                 rows="3" 
+                                 placeholder="Brief description (optional)"
+                                 data-tekton-input="textarea"
+                                 data-tekton-field="description"></textarea>
                     </div>
                     
-                    <div class="engram__form-group">
-                        <label class="engram__form-label">Sharing</label>
-                        <div class="engram__radio-group">
-                            <label class="engram__radio-label">
-                                <input type="radio" name="memory-sharing" value="private" checked>
-                                <span>Private</span>
+                    <div class="engram__form-group" data-tekton-zone="form-field">
+                        <label class="engram__form-label" data-tekton-label="required">Sharing</label>
+                        <div class="engram__radio-group" 
+                             data-tekton-zone="radio-group"
+                             data-tekton-field="sharing">
+                            <label class="engram__radio-label" data-tekton-label="radio">
+                                <input type="radio" name="memory-sharing" value="private" checked
+                                       data-tekton-input="radio"
+                                       data-tekton-action="select-sharing"
+                                       data-tekton-trigger="change"
+                                       data-tekton-value="private">
+                                <span data-tekton-text="radio-label">Private</span>
                             </label>
-                            <label class="engram__radio-label">
-                                <input type="radio" name="memory-sharing" value="shared">
-                                <span>Shared</span>
+                            <label class="engram__radio-label" data-tekton-label="radio">
+                                <input type="radio" name="memory-sharing" value="shared"
+                                       data-tekton-input="radio"
+                                       data-tekton-action="select-sharing"
+                                       data-tekton-trigger="change"
+                                       data-tekton-value="shared">
+                                <span data-tekton-text="radio-label">Shared</span>
                             </label>
                         </div>
                     </div>
                     
-                    <div class="engram__form-actions">
-                        <button type="button" class="engram__button engram__button--clear" id="clear-form-btn" data-tekton-action="clear-form" data-tekton-action-type="secondary" onclick="document.getElementById('create-memory-form').reset(); return false;">
+                    <!-- @landmark Form Actions: Form submission and reset controls -->
+                    <div class="engram__form-actions" 
+                         data-tekton-zone="form-actions"
+                         data-tekton-state="ready">
+                        <button type="button" class="engram__button engram__button--clear" 
+                                id="clear-form-btn" 
+                                data-tekton-action="clear-form" 
+                                data-tekton-action-type="secondary"
+                                data-tekton-trigger="click"
+                                data-tekton-target="create-memory-form"
+                                onclick="document.getElementById('create-memory-form').reset(); return false;">
                             Clear
                         </button>
-                        <button type="submit" class="engram__button engram__button--save" id="save-memory-btn" data-tekton-action="save-memory" data-tekton-action-type="primary">
+                        <button type="submit" class="engram__button engram__button--save" 
+                                id="save-memory-btn" 
+                                data-tekton-action="save-memory" 
+                                data-tekton-action-type="primary"
+                                data-tekton-trigger="submit"
+                                data-tekton-state="ready">
                             Save Memory
                         </button>
                     </div>
@@ -419,36 +540,75 @@
         
         <!-- Insights Tab -->
         <!-- @landmark Panel: Insights - Emotional analysis and patterns -->
-        <div id="insights-panel" class="engram__panel" data-tekton-panel="insights" data-tekton-panel-for="Insights" data-tekton-panel-component="engram">
-            <div class="engram__insights">
-                <div class="engram__insights-header">
-                    <h3 class="engram__section-title">Memory Insights & Emotional Analysis</h3>
-                    <div class="engram__insights-controls">
+        <div id="insights-panel" class="engram__panel" 
+             data-tekton-panel="insights" 
+             data-tekton-panel-for="Insights" 
+             data-tekton-panel-component="engram"
+             data-tekton-state="ready"
+             data-tekton-ai="emotional-analysis">
+            <div class="engram__insights" data-tekton-zone="insights-content">
+                <div class="engram__insights-header" data-tekton-zone="header">
+                    <h3 class="engram__section-title" 
+                       data-tekton-text="section-title">Memory Insights & Emotional Analysis</h3>
+                    <div class="engram__insights-controls" data-tekton-zone="controls">
                         <!-- Refresh Insights button removed -->
                     </div>
                 </div>
                 
-                <div class="engram__insights-container" id="insights-container">
+                <!-- @landmark Insights Grid: AI-generated emotional analysis cards -->
+                <div class="engram__insights-container" id="insights-container" 
+                     data-tekton-zone="insights-grid"
+                     data-tekton-type="ai-analysis"
+                     data-tekton-state="ready"
+                     data-tekton-ai="emotional-insights"
+                     data-tekton-ai-ready="true">
                     <!-- Insights cards will be populated dynamically -->
-                    <div class="engram__loading" id="insights-loading" style="display: none;">
-                        <div class="engram__loading-spinner"></div>
-                        <p>Analyzing memories...</p>
+                    <div class="engram__loading" id="insights-loading" 
+                         style="display: none;" 
+                         data-tekton-state="loading" 
+                         data-tekton-visibility="hidden"
+                         data-tekton-ai="processing">
+                        <div class="engram__loading-spinner" data-tekton-animation="spinner"></div>
+                        <p data-tekton-text="loading-message">Analyzing memories...</p>
                     </div>
                     
                     <!-- Sample insight cards -->
-                    <div class="engram__insight-card" data-insight="joy">
-                        <div class="engram__insight-header">
-                            <h4 class="engram__insight-title">😊 Joy</h4>
-                            <span class="engram__insight-percentage">35%</span>
+                    <div class="engram__insight-card" 
+                         data-insight="joy"
+                         data-tekton-item="insight-card"
+                         data-tekton-type="emotion-analysis"
+                         data-tekton-emotion="joy"
+                         data-tekton-ai="generated"
+                         data-tekton-state="ready">
+                        <div class="engram__insight-header" data-tekton-zone="card-header">
+                            <h4 class="engram__insight-title" 
+                               data-tekton-text="emotion-title">😊 Joy</h4>
+                            <span class="engram__insight-percentage" 
+                                  data-tekton-data="percentage"
+                                  data-tekton-value="35">35%</span>
                         </div>
-                        <div class="engram__insight-content">
-                            <div class="engram__insight-count">86 memories</div>
-                            <div class="engram__insight-keywords">happy, cheerful, delighted, pleased, glad, joyful, elated, excited, enthusiastic</div>
+                        <div class="engram__insight-content" data-tekton-zone="card-content">
+                            <div class="engram__insight-count" 
+                                 data-tekton-data="memory-count"
+                                 data-tekton-value="86">86 memories</div>
+                            <div class="engram__insight-keywords" 
+                                 data-tekton-data="ai-keywords"
+                                 data-tekton-ai="keyword-analysis">happy, cheerful, delighted, pleased, glad, joyful, elated, excited, enthusiastic</div>
                         </div>
-                        <div class="engram__insight-bar">
-                            <div class="engram__insight-fill engram__insight-fill--joy" style="width: 35%"></div>
+                        <div class="engram__insight-bar" 
+                             data-tekton-zone="progress-bar"
+                             data-tekton-type="percentage-bar">
+                            <div class="engram__insight-fill engram__insight-fill--joy" 
+                                 style="width: 35%" 
+                                 data-tekton-progress="35"
+                                 data-tekton-color="joy"></div>
                         </div>
-                        <button class="engram__button engram__button--engram engram__button--small" data-tekton-action="view-insight" data-tekton-action-target="joy" onclick="engram.viewInsight('joy'); return false;">
+                        <button class="engram__button engram__button--engram engram__button--small" 
+                                data-tekton-action="view-insight" 
+                                data-tekton-action-target="joy"
+                                data-tekton-action-type="primary"
+                                data-tekton-trigger="click"
+                                onclick="engram.viewInsight('joy'); return false;">
                             View Memories
                         </button>
                     </div>
@@ -509,19 +669,33 @@
         
         <!-- Chat Tab -->
         <!-- @landmark Panel: Memory Chat - Direct chat with memory-aware AI -->
-        <div id="chat-panel" class="engram__panel" data-tekton-chat="panel" data-tekton-panel="chat" data-tekton-panel-for="Memory Chat" data-tekton-panel-component="engram">
-            <div id="chat-messages" class="engram__chat-messages" data-tekton-chat="messages">
+        <div id="chat-panel" class="engram__panel" 
+             data-tekton-chat="panel" 
+             data-tekton-panel="chat" 
+             data-tekton-panel-for="Memory Chat" 
+             data-tekton-panel-component="engram"
+             data-tekton-ai="engram-specialist"
+             data-tekton-ai-ready="true"
+             data-tekton-state="ready">
+            <div id="chat-messages" class="engram__chat-messages" 
+                 data-tekton-chat="messages"
+                 data-tekton-zone="conversation"
+                 data-tekton-ai="message-area"
+                 data-tekton-state="ready">
                 <!-- Welcome message -->
-                <div class="engram__message engram__message--system">
-                    <div class="engram__message-content">
-                        <div class="engram__message-text">
-                            <h3 class="engram__message-title">Welcome to Engram Memory Chat</h3>
-                            <p>You can ask questions about any memories in the system or request specific information. Try questions like:</p>
-                            <ul>
-                                <li>What do you know about [topic]?</li>
-                                <li>Find information related to [keyword]</li>
-                                <li>Summarize our recent discussions about [topic]</li>
-                                <li>When did we last talk about [topic]?</li>
+                <div class="engram__message engram__message--system" 
+                     data-tekton-message="system"
+                     data-tekton-ai="system-message">
+                    <div class="engram__message-content" data-tekton-zone="message-content">
+                        <div class="engram__message-text" data-tekton-text="message-body">
+                            <h3 class="engram__message-title" 
+                               data-tekton-text="message-title">Welcome to Engram Memory Chat</h3>
+                            <p data-tekton-text="instructions">You can ask questions about any memories in the system or request specific information. Try questions like:</p>
+                            <ul data-tekton-zone="example-prompts">
+                                <li data-tekton-example="prompt">What do you know about [topic]?</li>
+                                <li data-tekton-example="prompt">Find information related to [keyword]</li>
+                                <li data-tekton-example="prompt">Summarize our recent discussions about [topic]</li>
+                                <li data-tekton-example="prompt">When did we last talk about [topic]?</li>
                             </ul>
                         </div>
                     </div>
@@ -531,14 +705,28 @@
         
         <!-- Team Chat Tab -->
         <!-- @landmark Panel: Team Chat - Collaborate with all Tekton AI assistants -->
-        <div id="teamchat-panel" class="engram__panel" data-tekton-chat="panel" data-tekton-panel="teamchat" data-tekton-panel-for="Team Chat" data-tekton-panel-component="engram">
-            <div id="teamchat-messages" class="engram__chat-messages" data-tekton-chat="messages">
+        <div id="teamchat-panel" class="engram__panel" 
+             data-tekton-chat="panel" 
+             data-tekton-panel="teamchat" 
+             data-tekton-panel-for="Team Chat" 
+             data-tekton-panel-component="engram"
+             data-tekton-ai="multi-specialist"
+             data-tekton-ai-ready="true"
+             data-tekton-state="ready">
+            <div id="teamchat-messages" class="engram__chat-messages" 
+                 data-tekton-chat="messages"
+                 data-tekton-zone="team-conversation"
+                 data-tekton-ai="team-message-area"
+                 data-tekton-state="ready">
                 <!-- Welcome message -->
-                <div class="engram__message engram__message--system">
-                    <div class="engram__message-content">
-                        <div class="engram__message-text">
-                            <h3 class="engram__message-title">Tekton Team Chat</h3>
-                            <p>This chat is shared across all Tekton components. Use this for team communication and coordination.</p>
+                <div class="engram__message engram__message--system" 
+                     data-tekton-message="system"
+                     data-tekton-ai="system-message">
+                    <div class="engram__message-content" data-tekton-zone="message-content">
+                        <div class="engram__message-text" data-tekton-text="message-body">
+                            <h3 class="engram__message-title" 
+                               data-tekton-text="message-title">Tekton Team Chat</h3>
+                            <p data-tekton-text="instructions">This chat is shared across all Tekton components. Use this for team communication and coordination.</p>
                         </div>
                     </div>
                 </div>
@@ -547,18 +735,33 @@
     </div>
     
     <!-- Footer with Chat Input -->
-    <!-- @landmark Footer: Chat input area -->
-    <div class="engram__footer" data-tekton-zone="footer">
-        <div class="engram__chat-input-container" data-tekton-chat="input">
-            <div class="engram__chat-prompt" data-tekton-chat="container">></div>
-            <input type="text" id="engram-chat-input" class="engram__chat-input" data-tekton-chat="input" 
+    <!-- @landmark Footer: AI chat input and message transmission -->
+    <div class="engram__footer" 
+         data-tekton-zone="footer"
+         data-tekton-ai="input-interface">
+        <div class="engram__chat-input-container" 
+             data-tekton-chat="input"
+             data-tekton-zone="chat-input"
+             data-tekton-state="ready">
+            <div class="engram__chat-prompt" 
+                 data-tekton-chat="container"
+                 data-tekton-text="prompt-indicator">></div>
+            <input type="text" id="engram-chat-input" class="engram__chat-input" 
+                   data-tekton-chat="input" 
                    data-tekton-input="chat-input"
                    data-tekton-input-type="chat"
+                   data-tekton-ai="user-input"
+                   data-tekton-action="compose-message"
+                   data-tekton-trigger="keydown"
+                   data-tekton-state="ready"
                    placeholder="Enter chat message for Engram memory chat, searching, or memory operations"
                    onkeydown="if(event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); engram_sendChat(); }">
             <button id="engram-send-button" class="engram__send-button"
                     data-tekton-action="send-message" 
-                    data-tekton-action-type="primary">Send</button>
+                    data-tekton-action-type="primary"
+                    data-tekton-trigger="click"
+                    data-tekton-ai="message-send"
+                    data-tekton-state="ready">Send</button>
         </div>
     </div>
 </div>
