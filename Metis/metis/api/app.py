@@ -36,6 +36,7 @@ from shared.api.routers import create_standard_routers, mount_standard_routers
 # Import Metis component
 from metis.core.metis_component import MetisComponent
 from metis.api.routes import router as api_router
+from metis.api.sprint_routes import sprint_router
 from metis.api.schemas import WebSocketMessage, WebSocketRegistration
 from metis.api.fastmcp_endpoints import mcp_router
 
@@ -137,6 +138,7 @@ mount_standard_routers(app, routers)
 
 # Include business logic routers (api_router already has /api/v1 prefix)
 app.include_router(api_router)
+app.include_router(sprint_router)
 app.include_router(mcp_router, prefix="/api/v1/mcp", tags=["MCP"])
 
 
