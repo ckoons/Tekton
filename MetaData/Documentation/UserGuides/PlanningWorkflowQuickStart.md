@@ -39,8 +39,8 @@ This creates a Development Sprint and sends it to Prometheus.
 The sprint automatically flows through the pipeline:
 
 - **Prometheus** schedules it (Status: Ready)
-- **Metis** skips (no task breakdown needed)
-- **Harmonia** skips (no complex workflow)  
+- **Metis** evaluates and skips (no complex task breakdown needed for simple fixes)
+- **Harmonia** skips (no complex workflow orchestration needed)  
 - **Synthesis** validates the fix
 - **Planning Team** reviews (or auto-approves for simple fixes)
 - **TektonCore** assigns to next available Coder

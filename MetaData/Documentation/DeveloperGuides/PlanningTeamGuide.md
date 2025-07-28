@@ -49,18 +49,48 @@ The Planning Team is a collaborative system of specialized CIs that transform id
 - Sprint completion moves to `/MetaData/DevelopmentSprints/Completed/`
 
 ### Metis - Task Architect
-**Purpose**: Break down sprints into manageable tasks
+**Purpose**: Break down sprints into manageable tasks with comprehensive task management
 
-**Key Features**:
-- AI-powered task decomposition
-- Dependency mapping
-- Complexity estimation
-- Phase organization
+**Key Features** (Updated July 2025):
+- AI-powered task decomposition with MCP integration
+- Comprehensive task CRUD operations with REST API
+- Dependency mapping and visualization
+- Complexity estimation and phase organization
+- Task breakdown into subtasks with requirements tracking
+- Integration with Telos requirements system
+- Real-time WebSocket updates for task changes
+- Export capabilities to Harmonia for workflow orchestration
+
+**Menu Structure**:
+- Dashboard - Shows Ready-1:Metis sprint cards requiring task breakdown
+- Task - Form-based task editor with name, description, complexity, hours, phase
+- Phases - 5-column organization (Planning, Design, Implementation, Testing, Deployment)
+- Dependencies - Task dependency mapping with relationship management
+- Review & Export - Prepare completed task breakdown for Harmonia handoff
+- Workflow Chat & Team Chat - AI-powered assistance and team coordination
+
+**UI Features** (July 2025 Update):
+- CSS-first architecture following Terma pattern with radio button navigation
+- Complete Landmarks and Semantic Tags implementation per standard
+- BEM naming convention throughout
+- Form-based interfaces optimized for task management
+- Real-time chat integration with metis-assistant AI
+- Button color scheme: View (yellow), Edit (green), Export (purple)
+
+**Backend Features** (July 2025 Update):
+- FastAPI with comprehensive REST API endpoints
+- Task lifecycle management (pending, in_progress, completed, failed, cancelled)
+- Subtask and requirement reference management
+- AI-powered task analysis via MCP tools
+- Integration with shared utilities and component patterns
+- Performance boundaries for <500ms task queries
+- WebSocket support for real-time updates
 
 **When Engaged**:
 - Complex features requiring breakdown
 - Multi-component changes
-- When PRD is required
+- When detailed task planning is required
+- Ready-1:Metis status sprints needing decomposition
 
 ### Harmonia - Workflow Orchestrator
 **Purpose**: Create executable CI workflows

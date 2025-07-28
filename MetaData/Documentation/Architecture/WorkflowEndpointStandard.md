@@ -393,7 +393,7 @@ As of 2025-01-27, all 17 Tekton components have been updated with the standardiz
 ### Planning Team Components
 12. **Telos** - Requirements (with proposal management)
 13. **Prometheus** - Planning
-14. **Metis** - Workflows
+14. **Metis** - Task Architecture & Management
 15. **Harmonia** - Orchestration
 16. **Synthesis** - Integration
 

@@ -130,6 +130,7 @@ Components use ports 8000-8014 (with Hephaestus UI on 8080). When creating a new
 1. Read the [Component Architecture Guide](./Component_Architecture_Guide.md)
 2. Follow the [Step By Step Tutorial](./Step_By_Step_Tutorial.md)
 3. Use existing components (Apollo, Athena, Prometheus, Metis) as references
+   - Metis provides excellent examples of task management APIs, AI integration via MCP, and comprehensive UI patterns
 4. Keep it simple, keep it working, keep moving forward
 
 ---

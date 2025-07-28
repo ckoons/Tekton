@@ -24,10 +24,14 @@ Whether it's a hotfix, a new feature, documentation update, or retrospective act
    - Resource allocation and scheduling
    - Retrospectives and continuous improvement
 
-3. **Metis** - Task Breakdown
-   - Decomposes sprints into tasks
-   - Manages dependencies
-   - Estimates complexity
+3. **Metis** - Task Architecture & Management
+   - Decomposes sprints into manageable tasks with AI assistance
+   - Comprehensive task lifecycle management (CRUD operations)
+   - Manages task dependencies and relationships
+   - Estimates complexity and effort hours
+   - Organizes tasks into development phases
+   - Provides task breakdown export to Harmonia
+   - Integrates with Telos requirements system
 
 4. **Harmonia** - Workflow Orchestration
    - Creates executable CI workflows
