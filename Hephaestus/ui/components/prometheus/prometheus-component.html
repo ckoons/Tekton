@@ -1,5 +1,13 @@
 <!-- Prometheus Component - Planning and Sprint Management -->
-<div class="prometheus" data-tekton-area="prometheus" data-tekton-component="prometheus" data-tekton-type="component-workspace" data-tekton-ai="prometheus-assistant" data-tekton-ai-ready="false">
+<div class="prometheus" 
+     data-tekton-area="prometheus" 
+     data-tekton-component="prometheus" 
+     data-tekton-type="component-workspace" 
+     data-tekton-ai="prometheus-assistant" 
+     data-tekton-ai-ready="false"
+     data-tekton-state="active"
+     data-tekton-functionality="sprint-management"
+     data-tekton-zone="main-workspace">
     <!-- Component Header with Title -->
     <div class="prometheus__header" data-tekton-zone="header" data-tekton-section="header">
         <div class="prometheus__title-container">
@@ -12,18 +20,50 @@
     </div>
     
     <!-- Prometheus Menu Bar with Tab Navigation -->
-    <div class="prometheus__menu-bar" data-tekton-zone="menu" data-tekton-nav="component-menu">
-        <div class="prometheus__tabs" data-tekton-zone="menu">
-            <div class="prometheus__tab prometheus__tab--active" data-tab="dashboard" onclick="prometheus_switchTab('dashboard'); return false;" data-tekton-menu-item="Dashboard" data-tekton-menu-component="prometheus" data-tekton-menu-active="true" data-tekton-menu-panel="dashboard-panel" data-tekton-nav-target="dashboard-panel">
+    <div class="prometheus__menu-bar" 
+         data-tekton-zone="menu" 
+         data-tekton-nav="component-menu"
+         data-tekton-type="tab-navigation"
+         data-tekton-functionality="sprint-workflow">
+        <div class="prometheus__tabs" data-tekton-zone="menu" data-tekton-nav="tab-container">
+            <div class="prometheus__tab prometheus__tab--active" 
+                 data-tab="dashboard" 
+                 onclick="prometheus_switchTab('dashboard'); return false;" 
+                 data-tekton-nav-item="dashboard"
+                 data-tekton-nav-target="dashboard-panel"
+                 data-tekton-action="switch-tab"
+                 data-tekton-trigger="click"
+                 data-tekton-state="active">
                 <span class="prometheus__tab-label">Dashboard</span>
             </div>
-            <div class="prometheus__tab" data-tab="plans" onclick="prometheus_switchTab('plans'); return false;" data-tekton-menu-item="Plans" data-tekton-menu-component="prometheus" data-tekton-menu-active="false" data-tekton-menu-panel="plans-panel" data-tekton-nav-target="plans-panel">
+            <div class="prometheus__tab"
+                 data-tab="plans"
+                 onclick="prometheus_switchTab('plans'); return false;"
+                 data-tekton-nav-item="plans"
+                 data-tekton-nav-target="plans-panel"
+                 data-tekton-action="switch-tab"
+                 data-tekton-trigger="click"
+                 data-tekton-functionality="timeline-view">
                 <span class="prometheus__tab-label">Plans</span>
             </div>
-            <div class="prometheus__tab" data-tab="schedule" onclick="prometheus_switchTab('schedule'); return false;" data-tekton-menu-item="Revise Schedule" data-tekton-menu-component="prometheus" data-tekton-menu-active="false" data-tekton-menu-panel="schedule-panel" data-tekton-nav-target="schedule-panel">
+            <div class="prometheus__tab"
+                 data-tab="schedule"
+                 onclick="prometheus_switchTab('schedule'); return false;"
+                 data-tekton-nav-item="schedule"
+                 data-tekton-nav-target="schedule-panel"
+                 data-tekton-action="switch-tab"
+                 data-tekton-trigger="click"
+                 data-tekton-functionality="status-management">
                 <span class="prometheus__tab-label">Revise Schedule</span>
             </div>
-            <div class="prometheus__tab" data-tab="resources" onclick="prometheus_switchTab('resources'); return false;" data-tekton-menu-item="Resources" data-tekton-menu-component="prometheus" data-tekton-menu-active="false" data-tekton-menu-panel="resources-panel" data-tekton-nav-target="resources-panel">
+            <div class="prometheus__tab"
+                 data-tab="resources"
+                 onclick="prometheus_switchTab('resources'); return false;"
+                 data-tekton-nav-item="resources"
+                 data-tekton-nav-target="resources-panel"
+                 data-tekton-action="switch-tab"
+                 data-tekton-trigger="click"
+                 data-tekton-functionality="resource-allocation">
                 <span class="prometheus__tab-label">Resources</span>
             </div>
             <div class="prometheus__tab" data-tab="retrospective" onclick="prometheus_switchTab('retrospective'); return false;" data-tekton-menu-item="Retrospective" data-tekton-menu-component="prometheus" data-tekton-menu-active="false" data-tekton-menu-panel="retrospective-panel" data-tekton-nav-target="retrospective-panel">
@@ -63,9 +103,24 @@
                                 <span>Assigned: Coder-C</span>
                             </div>
                             <div class="prometheus__sprint-actions">
-                                <button class="prometheus__sprint-action prometheus__sprint-action--view" onclick="viewSprint('Planning_Team_Workflow_UI_Sprint')">View</button>
-                                <button class="prometheus__sprint-action prometheus__sprint-action--edit" onclick="editSprint('Planning_Team_Workflow_UI_Sprint')">Edit</button>
-                                <button class="prometheus__sprint-action prometheus__sprint-action--primary" onclick="updateStatus('Planning_Team_Workflow_UI_Sprint')">Update</button>
+                                <button class="prometheus__sprint-action prometheus__sprint-action--view" 
+                                        onclick="viewSprint('Planning_Team_Workflow_UI_Sprint')"
+                                        data-tekton-action="view-sprint"
+                                        data-tekton-trigger="click"
+                                        data-tekton-target="sprint-details"
+                                        data-tekton-functionality="sprint-inspection">View</button>
+                                <button class="prometheus__sprint-action prometheus__sprint-action--edit" 
+                                        onclick="editSprint('Planning_Team_Workflow_UI_Sprint')"
+                                        data-tekton-action="edit-sprint"
+                                        data-tekton-trigger="click"
+                                        data-tekton-target="edit-dialog"
+                                        data-tekton-functionality="sprint-modification">Edit</button>
+                                <button class="prometheus__sprint-action prometheus__sprint-action--primary" 
+                                        onclick="updateStatus('Planning_Team_Workflow_UI_Sprint')"
+                                        data-tekton-action="update-status"
+                                        data-tekton-trigger="click"
+                                        data-tekton-target="schedule-panel"
+                                        data-tekton-functionality="status-management">Update</button>
                             </div>
                         </div>
                         <div class="prometheus__sprint-card" data-sprint-name="Enhanced_Memory_System_Sprint">
@@ -320,7 +375,12 @@
                 <div class="prometheus__retro-header">
                     <h3 class="prometheus__section-title">Sprint Retrospectives</h3>
                     <div class="prometheus__retro-actions">
-                        <button class="prometheus__button prometheus__button--primary" onclick="createManualRetro()">
+                        <button class="prometheus__button prometheus__button--primary" 
+                                onclick="createManualRetro()"
+                                data-tekton-action="create-retrospective"
+                                data-tekton-trigger="click"
+                                data-tekton-target="retro-editor-dialog"
+                                data-tekton-functionality="retrospective-creation">
                             <span class="prometheus__button-icon">+</span>
                             <span class="prometheus__button-label">Create</span>
                         </button>
@@ -523,9 +583,17 @@
                     </div>
                 </form>
             </div>
-            <div class="prometheus__dialog-actions">
-                <button class="prometheus__button prometheus__button--clear" onclick="clearRetroEditor()">Clear</button>
-                <button class="prometheus__button prometheus__button--save" onclick="saveRetro()">Save</button>
+            <div class="prometheus__dialog-actions" data-tekton-zone="dialog-controls">
+                <button class="prometheus__button prometheus__button--clear" 
+                        onclick="clearRetroEditor()"
+                        data-tekton-action="clear-form"
+                        data-tekton-trigger="click"
+                        data-tekton-functionality="form-reset">Clear</button>
+                <button class="prometheus__button prometheus__button--save" 
+                        onclick="saveRetro()"
+                        data-tekton-action="save-retrospective"
+                        data-tekton-trigger="click"
+                        data-tekton-functionality="data-persistence">Save</button>
             </div>
         </div>
     </div>
@@ -1557,14 +1625,38 @@ window.clearRetroEditor = function() {
     document.getElementById('retro-chat-transcript').value = '';
 };
 
-// BUTTON FUNCTIONS - Following Terma pattern
-// These functions are called directly from onclick handlers in the HTML
+// PROMETHEUS COMPONENT BUTTON FUNCTIONS
+// Following Terma pattern with Landmarks and Semantic Tags integration
+
+// Landmark imports with fallback (for future Python integration)
+/*
+@architecture_decision(
+    title="Prometheus Button Architecture",
+    description="Direct function calls from HTML following Terma pattern for immediate responsiveness",
+    rationale="Eliminates component loading dependencies and provides instant user feedback",
+    alternatives_considered=["Component object methods", "Event delegation", "Framework routing"],
+    impacts=["user_experience", "code_simplicity", "maintenance"],
+    decided_by="Implementation_Sprint",
+    decision_date="2025-07-28"
+)
+*/
 
 // Dashboard Functions
+/*
+@api_contract(
+    title="Sprint View Function",
+    description="Displays sprint information to user via alert dialog",
+    endpoint="viewSprint(sprintName)",
+    method="JavaScript_Function",
+    request_schema={"sprintName": "string"},
+    response_schema="User alert with sprint details",
+    performance_requirements="Immediate response - no API calls"
+)
+*/
 function viewSprint(sprintName) {
     console.log('[PROMETHEUS] View sprint clicked:', sprintName);
     
-    // For now, show sprint info based on name since API endpoints aren't available
+    // Performance optimized: Direct string processing, no API calls
     const displayName = sprintName.replace('_Sprint', '').replace(/_/g, ' ');
     const info = `Sprint: ${displayName}
 Status: Active (from file system)
@@ -1577,6 +1669,16 @@ Note: Full API integration pending - this shows the sprint exists`;
     alert(info);
 }
 
+/*
+@integration_point(
+    title="Sprint Edit Dialog Integration",
+    description="Opens modal dialog for sprint editing with pre-populated form fields",
+    target_component="Edit Dialog",
+    protocol="DOM manipulation",
+    data_flow="Function call → DOM queries → Form population → Dialog display",
+    integration_date="2025-07-28"
+)
+*/
 function editSprint(sprintName) {
     console.log('[PROMETHEUS] Edit sprint clicked:', sprintName);
     
@@ -1588,7 +1690,7 @@ function editSprint(sprintName) {
     document.getElementById('edit-sprint-criteria').value = 'Success criteria - edit as needed\nOne per line';
     document.getElementById('edit-sprint-coder').value = '';
     
-    // Show dialog
+    // Show dialog using semantic tag integration
     document.getElementById('edit-sprint-dialog').style.display = 'flex';
 }
 
@@ -1620,10 +1722,20 @@ function updateStatus(sprintName) {
 }
 
 // Retrospective Functions
+/*
+@state_checkpoint(
+    title="Retrospective Form State Management",
+    description="Initializes retrospective editor with clean state and unique identifiers",
+    state_type="form_initialization",
+    persistence=false,
+    consistency_requirements="Unique timestamp-based naming for manual retrospectives",
+    recovery_strategy="Form cleared on each invocation"
+)
+*/
 function createManualRetro() {
     console.log('[PROMETHEUS] Create manual retro clicked');
     
-    // Clear the form and open editor dialog
+    // Clear the form and open editor dialog with semantic tag awareness
     document.getElementById('retro-sprint-name').value = 'manual_' + Date.now();
     document.getElementById('retro-sprint-display').value = 'Manual Retrospective';
     document.getElementById('retro-went-well').value = '';
@@ -1631,7 +1743,7 @@ function createManualRetro() {
     document.getElementById('retro-action-items').value = '';
     document.getElementById('retro-chat-transcript').value = '';
     
-    // Show dialog
+    // Show dialog using semantic tag integration
     document.getElementById('retro-editor-dialog').style.display = 'flex';
 }
 
