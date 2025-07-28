@@ -1,76 +1,83 @@
-# UI Update Sprint - Handoff Document
+# Tekton UI Update Sprint - Handoff Document
 
-## Current Status
-**Phase**: Planning Complete
-**Next Step**: Begin Phase 1 - Hermes Validation
+## Current Status: Phase 2 - Engram UI Update (Starting Fresh)
 
-## Sprint Overview
-This sprint covers validation and updates for all Tekton components not included in the Planning Team Workflow sprint. It runs in parallel and ensures every component is functional and ready for integration.
+### Completed Work
 
-## Phase Breakdown
+#### Phase 1: Hermes UI Update ✅
+- Successfully updated Hermes UI from 6 tabs to 4 tabs
+- Implemented card-based displays for all views
+- Fixed component registration issues (all 17 components now register correctly)
+- Fixed hardcoded port issues throughout the codebase (changed from 8001 to 8101)
+- All Hermes functionality tested and working
 
-### Communication & Organization
-- **Phase 1**: Hermes (mail/messaging)
-- **Phase 7**: Penia (resource management)
-- **Phase 8**: Ergon (workflow automation)
+### Next Phase: Engram UI Update
 
-### CI Intelligence Tools
-- **Phase 2**: Engram (semantic memory)
-- **Phase 3**: Rhetor (documentation)
-- **Phase 4**: Apollo (code quality)
-- **Phase 5**: Integration of above three
+#### Context for New Claude
+You are starting fresh on the Engram UI update. The previous attempt has been reverted, so you have a clean slate to work with.
 
-### Research & Analysis
-- **Phase 6**: Noesis & Sophia (research twins)
-- **Phase 10**: Terma & Numa (terminal & math)
+#### Requirements for Engram UI
 
-## Key Context for Next Session
+**Core Requirements:**
+1. Rebuild Engram UI with exactly 6 tabs:
+   - Browse (for browsing existing memories)
+   - Create (for creating new memories with file support)
+   - Search (for searching memories)
+   - Insights (with emotional analysis)
+   - Memory Chat (chat with memory-aware AI)
+   - Team Chat (team collaboration)
 
-### Starting Points
-1. Check Hephaestus component registry for all components
-2. Verify which components already have UI implementations
-3. Start with Hermes as it's likely most complete
+2. **Technical Constraints:**
+   - CSS-first approach using radio buttons for navigation
+   - NO DOM manipulation in JavaScript
+   - Simple HTML injection pattern
+   - BEM naming convention for CSS classes
 
-### Important Notes
-- Phase 9 was intentionally skipped (Casey numbered 1-8, then 10)
-- Focus on validation over new features
-- Document all issues found for follow-on sprints
-- This sprint prepares for YouTube demonstrations
+3. **Features to Implement:**
+   - File upload support for .txt, .md, .json files
+   - Sharing options: private, shared (no "shared with specific users" option)
+   - Emotional analysis showing: joy, frustration, confusion, insight
+   - Card-based display similar to Terma for browse view
+   - Integration with backend APIs for all operations
 
-### Integration Focus (Phase 5)
-Special attention to Phase 5 which integrates:
-- Engram as shared memory for CIs
-- Rhetor for CI documentation
-- Apollo for code pattern storage
+4. **Button Styling:**
+   - Clear button should be green (#4CAF50)
+   - Save button should be blue (#2196F3)
+   - Clear button should be on the left, Save button on the right
 
-This creates a collaborative CI environment where components can:
-- Share learned patterns
-- Document their operations
-- Maintain quality standards
+5. **Insights System:**
+   - Read insights configuration from `.tekton/engram/insights.md`
+   - Each line in the file defines an insight with keywords
+   - Format: `insight_name keyword1 keyword2 keyword3...`
+   - Create cards for each insight showing matching memory counts
 
-## Parallel Execution
-While Planning Team Workflow sprint handles:
-- Telos, Prometheus, Metis, Harmonia, Synthesis, TektonCore
+#### Important Notes:
+- The Engram component is located at `/Hephaestus/ui/components/engram/`
+- Backend API server is at `/Engram/engram/api/server.py`
+- Component should register with Hermes on port 8101
+- Follow the established Tekton patterns seen in other components
 
-This sprint handles:
-- All other components ensuring complete coverage
+#### Files to Focus On:
+- `/Hephaestus/ui/components/engram/engram-component.html` - Main UI file
+- `/Hephaestus/ui/styles/engram/engram-component.css` - Styles (if separate)
+- `/Engram/engram/api/server.py` - Backend API endpoints
+- `/.tekton/engram/insights.md` - Insights configuration
 
-## Success Metrics
-- Every component loads and displays
-- Core functionality verified
-- Integration points tested
-- UI consistency achieved
-- Ready for full integration sprint
+#### Testing Checklist:
+- [ ] All 6 tabs display correctly
+- [ ] Browse tab loads and displays memories
+- [ ] Create tab saves memories successfully
+- [ ] File upload works for .txt, .md, .json
+- [ ] Search functionality returns results
+- [ ] Insights tab shows statistics and emotional analysis
+- [ ] Both chat tabs show input field and send messages
+- [ ] Component registers with Hermes
+- [ ] All API endpoints respond correctly
 
-## Next Implementation Steps
-1. Navigate to Hephaestus
-2. Check each component in registry
-3. Start Hermes validation
-4. Document findings in DAILY_LOG.md
-5. Update task completion in SPRINT_PLAN.md
+### Additional Context:
+- Casey prefers the term "Companion Intelligence (CI)" over "AI"
+- The user values simple, working solutions that are "Hard to Screw Up"
+- Focus on CSS-first navigation without JavaScript DOM manipulation
+- Ensure all UI elements properly communicate with the backend
 
-## Questions to Resolve
-- Current state of each component UI
-- Which backends are currently running
-- Any missing component implementations
-- Priority order within phases
+Good luck with the Engram UI update!

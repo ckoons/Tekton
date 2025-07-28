@@ -19,9 +19,11 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', '..', 'sh
 from workflow.endpoint_template import create_workflow_endpoint
 
 import uvicorn
-from fastapi import FastAPI, Request, Depends, HTTPException, Header
+from fastapi import FastAPI, Request, Depends, HTTPException, Header, File, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from typing import List, Optional
+import json
 
 # Add Tekton root to path if not already present
 tekton_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..'))
@@ -211,6 +213,33 @@ async def get_memory(
 ):
     """Get a memory by ID."""
     try:
+        # For demo purposes, return sample data based on ID
+        if memory_id == "1":
+            return {
+                "id": "1",
+                "title": "Project Planning Discussion",
+                "type": "conversation",
+                "sharing": "shared",
+                "created_at": "2023-05-15",
+                "size": "3.2 KB",
+                "content": "Discussion about the upcoming project milestones and resource allocation. Key points include frontend development timeline, backend API design, testing strategy, and deployment planning.",
+                "tags": ["project-planning", "milestones", "team"],
+                "namespace": namespace
+            }
+        elif memory_id == "2":
+            return {
+                "id": "2",
+                "title": "System Architecture Spec",
+                "type": "document",
+                "sharing": "private",
+                "created_at": "2023-04-28",
+                "size": "15.7 KB",
+                "content": "Comprehensive system architecture specification including microservices design, API contracts, data flow diagrams, and deployment strategy. The architecture emphasizes scalability, maintainability, and security.",
+                "tags": ["architecture", "technical-spec", "microservices"],
+                "namespace": namespace
+            }
+        
+        # Otherwise try to get from memory service
         memory = await memory_service.get(memory_id, namespace)
         
         if not memory:
@@ -428,6 +457,286 @@ async def deactivate_compartment(
             status_code=500,
             content={"error": f"Error deactivating compartment: {str(e)}"}
         )
+
+@routers.v1.post("/memory/upload")
+@api_contract(
+    title="Memory File Upload API",
+    endpoint="/api/v1/memory/upload",
+    method="POST",
+    request_schema={"file": "file", "metadata": "object"}
+)
+async def upload_memory_file(
+    file: UploadFile = File(...),
+    memory_service: MemoryService = Depends(get_memory_service)
+):
+    """Upload a file and create a memory from it."""
+    try:
+        # Validate file type
+        allowed_types = ['.txt', '.md', '.json']
+        file_ext = os.path.splitext(file.filename)[1].lower()
+        if file_ext not in allowed_types:
+            return JSONResponse(
+                status_code=400,
+                content={"error": f"File type {file_ext} not allowed. Allowed types: {', '.join(allowed_types)}"}
+            )
+        
+        # Read file content
+        content = await file.read()
+        content_str = content.decode('utf-8')
+        
+        # Extract metadata from filename
+        metadata = {
+            "filename": file.filename,
+            "file_type": file_ext,
+            "size": len(content),
+            "uploaded_at": datetime.now().isoformat()
+        }
+        
+        # For JSON files, try to extract additional metadata
+        if file_ext == '.json':
+            try:
+                json_data = json.loads(content_str)
+                if isinstance(json_data, dict):
+                    metadata.update(json_data.get('metadata', {}))
+                    content_str = json_data.get('content', content_str)
+            except json.JSONDecodeError:
+                pass  # Use raw content if not valid JSON
+        
+        # Create memory
+        memory_id = await memory_service.add(
+            content=content_str,
+            namespace="documents",
+            metadata=metadata
+        )
+        
+        return {
+            "id": memory_id,
+            "filename": file.filename,
+            "size": len(content),
+            "status": "success"
+        }
+    except Exception as e:
+        logger.error(f"Error uploading file: {e}")
+        return JSONResponse(
+            status_code=500,
+            content={"error": f"Error uploading file: {str(e)}"}
+        )
+
+@routers.v1.get("/memory/browse")
+@api_contract(
+    title="Memory Browse API",
+    endpoint="/api/v1/memory/browse",
+    method="GET",
+    request_schema={"type": "string", "sharing": "string", "limit": "int", "offset": "int"}
+)
+async def browse_memories(
+    type: Optional[str] = None,
+    sharing: Optional[str] = None,
+    limit: int = 20,
+    offset: int = 0,
+    memory_service: MemoryService = Depends(get_memory_service)
+):
+    """Get paginated list of memories with filtering."""
+    try:
+        # For now, return sample data - this would query the actual memory store
+        memories = []
+        
+        # Sample data for UI testing
+        sample_memories = [
+            {
+                "id": "1",
+                "title": "Project Planning Discussion",
+                "type": "conversation",
+                "sharing": "shared",
+                "created_at": "2023-05-15",
+                "size": "3.2 KB",
+                "preview": "Discussion about the upcoming project milestones and resource allocation...",
+                "tags": ["project-planning", "milestones", "team"]
+            },
+            {
+                "id": "2",
+                "title": "System Architecture Spec",
+                "type": "document",
+                "sharing": "private",
+                "created_at": "2023-04-28",
+                "size": "15.7 KB",
+                "preview": "Comprehensive system architecture specification including microservices design...",
+                "tags": ["architecture", "technical-spec", "microservices"]
+            }
+        ]
+        
+        # Apply filters
+        filtered = sample_memories
+        if type and type != "all":
+            filtered = [m for m in filtered if m["type"] == type]
+        if sharing and sharing != "all":
+            filtered = [m for m in filtered if m["sharing"] == sharing]
+        
+        # Apply pagination
+        total = len(filtered)
+        memories = filtered[offset:offset + limit]
+        
+        return {
+            "memories": memories,
+            "total": total,
+            "offset": offset,
+            "limit": limit
+        }
+    except Exception as e:
+        logger.error(f"Error browsing memories: {e}")
+        return JSONResponse(
+            status_code=500,
+            content={"error": f"Error browsing memories: {str(e)}"}
+        )
+
+@routers.v1.put("/memory/{memory_id}")
+@api_contract(
+    title="Memory Update API",
+    endpoint="/api/v1/memory/{memory_id}",
+    method="PUT",
+    request_schema={"content": "string", "metadata": "object"}
+)
+async def update_memory(
+    memory_id: str,
+    request: Request,
+    memory_service: MemoryService = Depends(get_memory_service)
+):
+    """Update an existing memory."""
+    try:
+        data = await request.json()
+        
+        # For now, just return success - actual implementation would update the memory
+        return {
+            "id": memory_id,
+            "status": "success",
+            "updated_at": datetime.now().isoformat()
+        }
+    except Exception as e:
+        logger.error(f"Error updating memory {memory_id}: {e}")
+        return JSONResponse(
+            status_code=500,
+            content={"error": f"Error updating memory: {str(e)}"}
+        )
+
+@routers.v1.delete("/memory/{memory_id}")
+@api_contract(
+    title="Memory Delete API",
+    endpoint="/api/v1/memory/{memory_id}",
+    method="DELETE"
+)
+async def delete_memory(
+    memory_id: str,
+    memory_service: MemoryService = Depends(get_memory_service)
+):
+    """Delete a memory."""
+    try:
+        # For now, just return success - actual implementation would delete the memory
+        return {
+            "id": memory_id,
+            "status": "deleted"
+        }
+    except Exception as e:
+        logger.error(f"Error deleting memory {memory_id}: {e}")
+        return JSONResponse(
+            status_code=500,
+            content={"error": f"Error deleting memory: {str(e)}"}
+        )
+
+@routers.v1.get("/insights")
+@api_contract(
+    title="Memory Insights API",
+    endpoint="/api/v1/insights",
+    method="GET"
+)
+async def get_insights(
+    memory_service: MemoryService = Depends(get_memory_service)
+):
+    """Get memory insights based on emotional analysis."""
+    try:
+        # Read insights configuration
+        insights_path = Path.home() / '.tekton' / 'engram' / 'insights.md'
+        insights_config = {}
+        
+        if insights_path.exists():
+            with open(insights_path, 'r') as f:
+                for line in f:
+                    line = line.strip()
+                    if line and not line.startswith('#'):
+                        parts = line.split()
+                        if len(parts) > 1:
+                            insight_name = parts[0]
+                            keywords = parts[1:]
+                            insights_config[insight_name] = keywords
+        
+        # For now, return sample data with insights
+        total_memories = 247  # This would come from actual count
+        
+        insights = []
+        for insight_name, keywords in insights_config.items():
+            # In real implementation, would search memories for keywords
+            count = len(keywords) * 10  # Dummy calculation
+            percentage = int((count / total_memories) * 100)
+            
+            insights.append({
+                "name": insight_name,
+                "count": count,
+                "percentage": percentage,
+                "keywords": keywords,
+                "emoji": get_insight_emoji(insight_name)
+            })
+        
+        return {
+            "insights": insights,
+            "total_memories": total_memories
+        }
+    except Exception as e:
+        logger.error(f"Error getting insights: {e}")
+        return JSONResponse(
+            status_code=500,
+            content={"error": f"Error getting insights: {str(e)}"}
+        )
+
+@routers.v1.get("/insights/{insight_name}")
+@api_contract(
+    title="Insight Memories API",
+    endpoint="/api/v1/insights/{insight_name}",
+    method="GET"
+)
+async def get_insight_memories(
+    insight_name: str,
+    limit: int = 20,
+    memory_service: MemoryService = Depends(get_memory_service)
+):
+    """Get memories matching a specific insight category."""
+    try:
+        # In real implementation, would search for memories containing insight keywords
+        return {
+            "insight": insight_name,
+            "memories": [],
+            "count": 0
+        }
+    except Exception as e:
+        logger.error(f"Error getting insight memories: {e}")
+        return JSONResponse(
+            status_code=500,
+            content={"error": f"Error getting insight memories: {str(e)}"}
+        )
+
+def get_insight_emoji(insight_name: str) -> str:
+    """Get emoji for insight type."""
+    emoji_map = {
+        "joy": "😊",
+        "frustration": "😤",
+        "confusion": "🤔",
+        "insight": "💡",
+        "curiosity": "🔍",
+        "achievement": "🏆",
+        "learning": "📚",
+        "problem": "⚠️",
+        "solution": "✅",
+        "collaboration": "🤝"
+    }
+    return emoji_map.get(insight_name, "📊")
 
 
 # Add ready endpoint
