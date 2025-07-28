@@ -15,6 +15,42 @@ from ..models.planning import ResourceCreate, ResourceUpdate, ResourceAllocation
 from ..models.shared import StandardResponse, PaginatedResponse
 from shared.env import TektonEnviron
 
+# Import landmarks with fallback
+try:
+    from landmarks import (
+        architecture_decision,
+        api_contract,
+        integration_point,
+        state_checkpoint,
+        performance_boundary
+    )
+except ImportError:
+    # Define no-op decorators when landmarks not available
+    def architecture_decision(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+    
+    def api_contract(**kwargs):
+        def decorator(func):
+            return func
+        return decorator
+    
+    def integration_point(**kwargs):
+        def decorator(func):
+            return func
+        return decorator
+    
+    def state_checkpoint(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+    
+    def performance_boundary(**kwargs):
+        def decorator(func):
+            return func
+        return decorator
+
 
 # Configure logging
 logger = logging.getLogger("prometheus.api.endpoints.resources")
@@ -30,6 +66,14 @@ RESOURCES_FILE = METADATA_PATH / "coder_resources.json"
 resources_db = {}
 
 
+@state_checkpoint(
+    title="Coder Resources File",
+    description="Persistent storage of Coder assignments and capacity",
+    state_type="file",
+    persistence=True,
+    consistency_requirements="Atomic file writes to prevent corruption",
+    recovery_strategy="Default structure if file missing, validate JSON on load"
+)
 def load_coder_resources() -> Dict[str, Any]:
     """Load coder resources from file"""
     if not RESOURCES_FILE.exists():
@@ -426,7 +470,29 @@ async def get_resource_allocation(plan_id: str = Path(..., description="ID of th
 
 # ===== Coder Resource Management Endpoints =====
 
+@architecture_decision(
+    title="Coder Resource Management System",
+    description="File-based tracking of Coder AI assignments and capacity",
+    rationale="Simple, transparent resource allocation that CIs can read/update directly",
+    alternatives_considered=["Database tracking", "In-memory only", "Hermes-based coordination"],
+    impacts=["resource_allocation", "sprint_assignment", "capacity_planning"],
+    decided_by="Casey",
+    decision_date="2025-01-26"
+)
+class _CoderResourceArchitecture:
+    """Marker class for Coder resource management architecture"""
+    pass
+
+
 @router.get("/coders", response_model=StandardResponse)
+@api_contract(
+    title="Get Coder Resources",
+    description="Retrieves all Coder AI resources and their current sprint assignments",
+    endpoint="/api/v1/resources/coders",
+    method="GET",
+    response_schema={"coders": {"Coder-X": {"capacity": "int", "active": ["string"], "queue": ["string"]}}},
+    performance_requirements="<100ms file read"
+)
 async def get_coders():
     """Get all Coder resources and their assignments"""
     try:
@@ -460,6 +526,23 @@ async def get_coder_details(coder_name: str):
 
 
 @router.put("/coders/{coder_name}/assign", response_model=StandardResponse)
+@api_contract(
+    title="Assign Sprint to Coder",
+    description="Assigns a Development Sprint to a Coder AI for implementation",
+    endpoint="/api/v1/resources/coders/{coder_name}/assign",
+    method="PUT",
+    request_schema={"sprint_name": "string", "project": "string"},
+    response_schema={"status": "string", "data": "object"},
+    performance_requirements="<200ms including capacity check"
+)
+@integration_point(
+    title="Coder Sprint Assignment",
+    description="Integrates with TektonCore for sprint branch creation and work assignment",
+    target_component="TektonCore",
+    protocol="workflow_endpoint",
+    data_flow="Prometheus assigns → TektonCore creates branch → Coder begins work",
+    integration_date="2025-01-26"
+)
 async def assign_sprint_to_coder(
     coder_name: str,
     assignment: Dict[str, str] = Body(..., example={"sprint_name": "Planning_Team_UI_Sprint", "project": "TektonCore"})
@@ -542,6 +625,21 @@ async def complete_coder_sprint(
 
 
 @router.get("/capacity", response_model=StandardResponse)
+@api_contract(
+    title="Get Capacity Overview",
+    description="Provides utilization metrics and available slots for all Coders",
+    endpoint="/api/v1/resources/capacity",
+    method="GET",
+    response_schema={"Coder-X": {"capacity": "int", "utilization": "float", "available_slots": "int"}},
+    performance_requirements="<150ms calculation time"
+)
+@performance_boundary(
+    title="Capacity Calculation",
+    description="Real-time capacity metrics for resource planning",
+    sla="<150ms for 4 coders",
+    optimization_notes="Pre-calculated utilization percentages",
+    measured_impact="Enables instant resource allocation decisions"
+)
 async def get_capacity_overview():
     """Get capacity overview for all coders"""
     try:

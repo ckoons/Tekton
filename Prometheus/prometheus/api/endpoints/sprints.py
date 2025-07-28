@@ -15,6 +15,42 @@ from pydantic import BaseModel, Field
 from shared.utils.logging_setup import get_logger
 from shared.env import TektonEnviron
 
+# Import landmarks with fallback
+try:
+    from landmarks import (
+        architecture_decision,
+        api_contract,
+        integration_point,
+        state_checkpoint,
+        danger_zone
+    )
+except ImportError:
+    # Define no-op decorators when landmarks not available
+    def architecture_decision(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+    
+    def api_contract(**kwargs):
+        def decorator(func):
+            return func
+        return decorator
+    
+    def integration_point(**kwargs):
+        def decorator(func):
+            return func
+        return decorator
+    
+    def state_checkpoint(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+    
+    def danger_zone(**kwargs):
+        def decorator(func):
+            return func
+        return decorator
+
 logger = get_logger(__name__)
 
 # Router for sprint endpoints
@@ -152,6 +188,22 @@ def read_proposal_json(sprint_path: Path) -> Dict[str, Any]:
 
 
 @router.get("/list", response_model=List[Dict[str, Any]])
+@api_contract(
+    title="List Development Sprints",
+    description="Retrieves all Development Sprint directories with status from DAILY_LOG.md",
+    endpoint="/api/v1/sprints/list",
+    method="GET",
+    response_schema={"sprints": [{"name": "string", "status": "string", "description": "string"}]},
+    performance_requirements="<500ms for typical 20-30 sprints"
+)
+@integration_point(
+    title="Sprint File System Integration",
+    description="Reads sprint data from MetaData/DevelopmentSprints directory structure",
+    target_component="File System",
+    protocol="file_io",
+    data_flow="Read sprint directories → Parse DAILY_LOG.md → Return sprint list",
+    integration_date="2025-07-28"
+)
 async def list_sprints():
     """List all Development Sprint directories with their status"""
     try:
@@ -213,6 +265,23 @@ async def get_sprint_status(sprint_name: str):
 
 
 @router.put("/{sprint_name}/status")
+@api_contract(
+    title="Update Sprint Status",
+    description="Updates sprint status in DAILY_LOG.md for workflow tracking",
+    endpoint="/api/v1/sprints/{sprint_name}/status",
+    method="PUT",
+    request_schema={"status": "string", "updated_by": "string", "notes": "string"},
+    response_schema={"message": "string"},
+    performance_requirements="<200ms file write operation"
+)
+@state_checkpoint(
+    title="Sprint Status State",
+    description="Sprint status tracked in DAILY_LOG.md for workflow progression",
+    state_type="file",
+    persistence=True,
+    consistency_requirements="Status updates must be atomic and preserve history",
+    recovery_strategy="Read DAILY_LOG.md to recover current status"
+)
 async def update_sprint_status(sprint_name: str, status_update: SprintStatus):
     """Update the status of a sprint in DAILY_LOG.md"""
     try:
@@ -235,6 +304,23 @@ async def update_sprint_status(sprint_name: str, status_update: SprintStatus):
 
 
 @router.post("/{sprint_name}/move")
+@api_contract(
+    title="Move Sprint to Archive",
+    description="Moves completed or superceded sprints to archive folders",
+    endpoint="/api/v1/sprints/{sprint_name}/move",
+    method="POST",
+    request_schema={"destination": "string", "reason": "string"},
+    response_schema={"message": "string"},
+    performance_requirements="<1s for directory move operation"
+)
+@danger_zone(
+    title="Sprint Directory Movement",
+    description="Physically moves sprint directories which affects all references",
+    risk_level="medium",
+    risks=["broken references", "concurrent access conflicts"],
+    mitigation="Update status before move, validate destination exists",
+    review_required=False
+)
 async def move_sprint(sprint_name: str, move_request: SprintMove):
     """Move a sprint to Superceded or Complete folder"""
     try:

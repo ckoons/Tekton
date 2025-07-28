@@ -15,6 +15,36 @@ from ..models.retrospective import (
 )
 from ..models.shared import StandardResponse, PaginatedResponse
 
+# Import landmarks with fallback
+try:
+    from landmarks import (
+        architecture_decision,
+        api_contract,
+        integration_point,
+        state_checkpoint
+    )
+except ImportError:
+    # Define no-op decorators when landmarks not available
+    def architecture_decision(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+    
+    def api_contract(**kwargs):
+        def decorator(func):
+            return func
+        return decorator
+    
+    def integration_point(**kwargs):
+        def decorator(func):
+            return func
+        return decorator
+    
+    def state_checkpoint(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+
 
 # Configure logging
 logger = logging.getLogger("prometheus.api.endpoints.retrospective")
@@ -487,6 +517,20 @@ METADATA_PATH = PathLib(TektonEnviron.get("TEKTON_ROOT", "/Users/cskoons/project
 RETROSPECTIVES_PATH = METADATA_PATH / "Retrospectives"
 
 
+@architecture_decision(
+    title="Epimetheus Retrospective System",
+    description="Dual-nature planning with Prometheus (forward) and Epimetheus (retrospective)",
+    rationale="Learn from past sprints to improve future planning through structured retrospectives",
+    alternatives_considered=["Separate retrospective component", "Post-mortem only approach", "No retrospectives"],
+    impacts=["continuous_improvement", "team_learning", "sprint_quality"],
+    decided_by="Casey",
+    decision_date="2025-01-26"
+)
+class _RetrospectiveArchitecture:
+    """Marker class for retrospective architecture decision"""
+    pass
+
+
 def create_retrospective_template(sprint_name: str, completed_date: str = None) -> Dict[str, Any]:
     """Create a retrospective template for a sprint"""
     if completed_date is None:
@@ -526,6 +570,23 @@ def create_retrospective_template(sprint_name: str, completed_date: str = None) 
 
 
 @router.post("/sprints/{sprint_name}/create", response_model=StandardResponse)
+@api_contract(
+    title="Create Sprint Retrospective",
+    description="Creates retrospective document for completed sprints",
+    endpoint="/api/v1/retrospectives/sprints/{sprint_name}/create",
+    method="POST",
+    request_schema={"teamMembers": "object", "whatWentWell": "array", "actionItems": "array"},
+    response_schema={"status": "string", "data": "object"},
+    performance_requirements="<300ms file creation"
+)
+@integration_point(
+    title="Sprint Retrospective Creation",
+    description="Creates retrospective JSON files linked to completed sprints",
+    target_component="File System",
+    protocol="file_io",
+    data_flow="Sprint completion → Create retrospective template → Save to Retrospectives folder",
+    integration_date="2025-07-28"
+)
 async def create_sprint_retrospective(
     sprint_name: str,
     retrospective_data: Optional[Dict[str, Any]] = Body(None)
@@ -696,6 +757,23 @@ async def list_sprint_retrospectives():
 
 
 @router.post("/create-manual", response_model=StandardResponse)
+@api_contract(
+    title="Create Manual Retrospective",
+    description="Creates ad-hoc retrospectives outside of sprint completion flow",
+    endpoint="/api/v1/retrospectives/create-manual",
+    method="POST",
+    request_schema={"purpose": "string", "participants": ["string"], "scope": "string"},
+    response_schema={"status": "string", "data": "object"},
+    performance_requirements="<200ms file creation"
+)
+@state_checkpoint(
+    title="Manual Retrospective State",
+    description="Tracks non-sprint retrospectives for process improvements",
+    state_type="file",
+    persistence=True,
+    consistency_requirements="Unique naming prevents conflicts",
+    recovery_strategy="Scan Retrospectives folder for manual_* files"
+)
 async def create_manual_retrospective(
     retrospective_request: Dict[str, Any] = Body(..., example={
         "purpose": "Mid-sprint checkpoint",

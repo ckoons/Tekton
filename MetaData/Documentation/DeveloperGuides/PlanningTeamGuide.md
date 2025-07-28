@@ -27,17 +27,26 @@ The Planning Team is a collaborative system of specialized CIs that transform id
 **Purpose**: Manage sprint lifecycle and resource allocation
 
 **Key Features**:
-- Sprint scheduling and status tracking
-- Resource allocation (Coder assignment)
-- Timeline/Gantt visualization
-- Retrospective management
+- Sprint scheduling and status tracking (color-coded cards)
+- Resource allocation (Coder assignment and capacity tracking)
+- Timeline/Gantt visualization (CSS Grid-based)
+- Retrospective management with completion workflow
+- Button-driven interface following Terma pattern
 
 **Menu Structure**:
-- Dashboard - Sprint status overview
-- Plans - Timeline visualization
-- Revise Schedule - Ready sprint management
-- Resources - Coder workload
-- Retrospective - Team improvement
+- Dashboard - Sprint status cards with View/Edit/Update actions
+- Plans - Timeline visualization showing sprint schedules
+- Revise Schedule - Status update form for active sprints
+- Resources - Coder workload and assignment management
+- Retrospective - Create/view/edit retrospectives, complete sprints
+
+**UI Features** (July 2025 Update):
+- Color-coded buttons: View (yellow), Edit (green), Complete (purple)
+- CSS-first architecture with BEM naming convention
+- Footer visible on all tabs (proper positioning)
+- No loading spinners - immediate responsiveness
+- Comprehensive Landmarks and Semantic Tags for CI navigation
+- Sprint completion moves to `/MetaData/DevelopmentSprints/Completed/`
 
 ### Metis - Task Architect
 **Purpose**: Break down sprints into manageable tasks
