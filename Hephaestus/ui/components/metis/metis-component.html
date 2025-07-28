@@ -1,4 +1,14 @@
 <!-- Metis Component - Task Architect for Development Sprints -->
+
+<!-- Hidden radio controls for CSS-only tab functionality -->
+<input type="radio" name="metis-tab" id="metis-tab-dashboard" checked style="display: none;">
+<input type="radio" name="metis-tab" id="metis-tab-task" style="display: none;">
+<input type="radio" name="metis-tab" id="metis-tab-phases" style="display: none;">
+<input type="radio" name="metis-tab" id="metis-tab-dependencies" style="display: none;">
+<input type="radio" name="metis-tab" id="metis-tab-review" style="display: none;">
+<input type="radio" name="metis-tab" id="metis-tab-workflow" style="display: none;">
+<input type="radio" name="metis-tab" id="metis-tab-team" style="display: none;">
+
 <div class="metis" data-tekton-area="metis" data-tekton-component="metis" data-tekton-type="component-workspace" data-tekton-ai="metis-assistant" data-tekton-ai-ready="false">
     <!-- Component Header with Title -->
     <div class="metis__header" data-tekton-zone="header" data-tekton-section="header">
@@ -14,49 +24,50 @@
     <!-- Metis Menu Bar with Tab Navigation -->
     <div class="metis__menu-bar" data-tekton-zone="menu" data-tekton-nav="component-menu">
         <div class="metis__tabs" data-tekton-zone="menu">
-            <div class="metis__tab metis__tab--active" data-tab="dashboard" onclick="metis_switchTab('dashboard'); return false;" 
-                 data-tekton-menu-item="Dashboard" data-tekton-menu-component="metis" data-tekton-menu-active="true" 
-                 data-tekton-menu-panel="dashboard-panel" data-tekton-nav-target="dashboard-panel">
+            <label for="metis-tab-dashboard" class="metis__tab" data-tab="dashboard"
+                   data-tekton-menu-item="Dashboard" data-tekton-menu-component="metis"
+                   data-tekton-menu-panel="metis-dashboard">
                 <span class="metis__tab-label">Dashboard</span>
-            </div>
-            <div class="metis__tab" data-tab="task" onclick="metis_switchTab('task'); return false;" 
-                 data-tekton-menu-item="Task" data-tekton-menu-component="metis" data-tekton-menu-active="false" 
-                 data-tekton-menu-panel="task-panel" data-tekton-nav-target="task-panel">
+            </label>
+            <label for="metis-tab-task" class="metis__tab" data-tab="task"
+                   data-tekton-menu-item="Task" data-tekton-menu-component="metis"
+                   data-tekton-menu-panel="metis-task">
                 <span class="metis__tab-label">Task</span>
-            </div>
-            <div class="metis__tab" data-tab="phases" onclick="metis_switchTab('phases'); return false;" 
-                 data-tekton-menu-item="Phases" data-tekton-menu-component="metis" data-tekton-menu-active="false" 
-                 data-tekton-menu-panel="phases-panel" data-tekton-nav-target="phases-panel">
+            </label>
+            <label for="metis-tab-phases" class="metis__tab" data-tab="phases"
+                   data-tekton-menu-item="Phases" data-tekton-menu-component="metis"
+                   data-tekton-menu-panel="metis-phases">
                 <span class="metis__tab-label">Phases</span>
-            </div>
-            <div class="metis__tab" data-tab="dependencies" onclick="metis_switchTab('dependencies'); return false;" 
-                 data-tekton-menu-item="Dependencies" data-tekton-menu-component="metis" data-tekton-menu-active="false" 
-                 data-tekton-menu-panel="dependencies-panel" data-tekton-nav-target="dependencies-panel">
+            </label>
+            <label for="metis-tab-dependencies" class="metis__tab" data-tab="dependencies"
+                   data-tekton-menu-item="Dependencies" data-tekton-menu-component="metis"
+                   data-tekton-menu-panel="metis-dependencies">
                 <span class="metis__tab-label">Dependencies</span>
-            </div>
-            <div class="metis__tab" data-tab="review" onclick="metis_switchTab('review'); return false;" 
-                 data-tekton-menu-item="Review" data-tekton-menu-component="metis" data-tekton-menu-active="false" 
-                 data-tekton-menu-panel="review-panel" data-tekton-nav-target="review-panel">
+            </label>
+            <label for="metis-tab-review" class="metis__tab" data-tab="review"
+                   data-tekton-menu-item="Review" data-tekton-menu-component="metis"
+                   data-tekton-menu-panel="metis-review">
                 <span class="metis__tab-label">Review</span>
-            </div>
-            <div class="metis__tab" data-tab="workflow" onclick="metis_switchTab('workflow'); return false;" 
-                 data-tekton-menu-item="Workflow Chat" data-tekton-menu-component="metis" data-tekton-menu-active="false" 
-                 data-tekton-menu-panel="workflow-panel" data-tekton-nav-target="workflow-panel">
+            </label>
+            <label for="metis-tab-workflow" class="metis__tab" data-tab="workflow"
+                   data-tekton-menu-item="Workflow Chat" data-tekton-menu-component="metis"
+                   data-tekton-menu-panel="metis-workflow">
                 <span class="metis__tab-label">Workflow Chat</span>
-            </div>
-            <div class="metis__tab" data-tekton-chat="tab" data-tab="teamchat" onclick="metis_switchTab('teamchat'); return false;" 
-                 data-tekton-menu-item="Team Chat" data-tekton-menu-component="metis" data-tekton-menu-active="false" 
-                 data-tekton-menu-panel="teamchat-panel" data-tekton-nav-target="teamchat-panel">
+            </label>
+            <label for="metis-tab-team" class="metis__tab" data-tab="teamchat"
+                   data-tekton-menu-item="Team Chat" data-tekton-menu-component="metis"
+                   data-tekton-menu-panel="metis-team">
                 <span class="metis__tab-label">Team Chat</span>
-            </div>
+            </label>
         </div>
         <div class="metis__actions">
-            <button id="task-add-btn" class="metis__action-button" onclick="metis_addTask(); return false;" 
+            <button id="task-add-btn" class="metis__action-button"
                     data-tekton-action="add-task" data-tekton-action-type="primary" data-tekton-trigger="click">
                 <span class="metis__button-label">Add Task</span>
             </button>
-            <button id="clear-chat-btn" class="metis__action-button" style="display: none;" onclick="metis_clearChat(); return false;" 
-                    data-tekton-action="clear-chat" data-tekton-action-type="secondary" data-tekton-trigger="click">
+            <button id="clear-chat-btn" class="metis__action-button" style="display: none;"
+                    onclick="metis_clearChat(); return false;"
+                    data-tekton-action="clear-chat" data-tekton-action-type="secondary">
                 <span class="metis__button-label">Clear</span>
             </button>
         </div>
@@ -64,10 +75,12 @@
     
     <!-- Metis Content Area -->
     <div class="metis__content" data-tekton-zone="content" data-tekton-scrollable="true">
-        <!-- Dashboard Tab (Default Active Tab) -->
-        <div id="dashboard-panel" class="metis__panel metis__panel--active" 
-             data-tekton-panel="dashboard" data-tekton-panel-for="Dashboard" 
-             data-tekton-panel-component="metis" data-tekton-panel-active="true">
+        <!-- Dashboard Panel (Default Active Panel) -->
+        <div class="metis__panel metis__panel--dashboard" data-tab-content="dashboard"
+             data-tekton-tab-content="dashboard"
+             data-tekton-panel="dashboard"
+             data-tekton-panel-for="Dashboard"
+             data-tekton-panel-component="metis">
             <div class="metis__dashboard" data-tekton-functionality="sprint-cards">
                 <h3 class="metis__section-title">Ready for Task Breakdown</h3>
                 <p class="metis__text">Sprints with status "Ready-1:Metis" requiring task breakdown and planning.</p>
@@ -93,10 +106,10 @@
                             </div>
                         </div>
                         <div class="metis__card-actions">
-                            <button class="metis__button metis__button--view" onclick="metis_viewSprint('example-sprint')"
+                            <button class="metis__button metis__button--view"
                                     data-tekton-action="view-sprint" data-tekton-trigger="click" 
                                     data-tekton-target="task-panel">View</button>
-                            <button class="metis__button metis__button--edit" onclick="metis_editSprint('example-sprint')"
+                            <button class="metis__button metis__button--edit"
                                     data-tekton-action="edit-sprint" data-tekton-trigger="click" 
                                     data-tekton-target="task-editor">Begin Breakdown</button>
                         </div>
@@ -111,10 +124,12 @@
             </div>
         </div>
         
-        <!-- Task Tab -->
-        <div id="task-panel" class="metis__panel" 
-             data-tekton-panel="task" data-tekton-panel-for="Task" 
-             data-tekton-panel-component="metis" data-tekton-panel-active="false">
+        <!-- Task Panel -->
+        <div class="metis__panel metis__panel--task" data-tab-content="task"
+             data-tekton-tab-content="task"
+             data-tekton-panel="task"
+             data-tekton-panel-for="Task"
+             data-tekton-panel-component="metis">
             <div class="metis__task-editor" data-tekton-functionality="task-editor">
                 <h3 class="metis__section-title">Task Editor</h3>
                 <p class="metis__text">Create and edit tasks for the current sprint.</p>
@@ -168,11 +183,9 @@
                     </div>
                     
                     <div class="metis__form-actions">
-                        <button type="submit" class="metis__button metis__button--primary" 
-                                onclick="metis_saveTask()"
+                        <button type="submit" class="metis__button metis__button--primary"
                                 data-tekton-action="save-task" data-tekton-trigger="click">Save Task</button>
-                        <button type="button" class="metis__button metis__button--secondary" 
-                                onclick="metis_clearTaskForm()"
+                        <button type="button" class="metis__button metis__button--secondary"
                                 data-tekton-action="clear-form" data-tekton-trigger="click">Clear</button>
                     </div>
                 </form>
@@ -187,10 +200,12 @@
             </div>
         </div>
         
-        <!-- Phases Tab -->
-        <div id="phases-panel" class="metis__panel" 
-             data-tekton-panel="phases" data-tekton-panel-for="Phases" 
-             data-tekton-panel-component="metis" data-tekton-panel-active="false">
+        <!-- Phases Panel -->
+        <div class="metis__panel metis__panel--phases" data-tab-content="phases"
+             data-tekton-tab-content="phases"
+             data-tekton-panel="phases"
+             data-tekton-panel-for="Phases"
+             data-tekton-panel-component="metis">
             <div class="metis__phases" data-tekton-functionality="task-grouping">
                 <h3 class="metis__section-title">Task Phases</h3>
                 <p class="metis__text">Organize tasks into logical phases for better sprint management.</p>
@@ -249,10 +264,12 @@
             </div>
         </div>
         
-        <!-- Dependencies Tab -->
-        <div id="dependencies-panel" class="metis__panel" 
-             data-tekton-panel="dependencies" data-tekton-panel-for="Dependencies" 
-             data-tekton-panel-component="metis" data-tekton-panel-active="false">
+        <!-- Dependencies Panel -->
+        <div class="metis__panel metis__panel--dependencies" data-tab-content="dependencies"
+             data-tekton-tab-content="dependencies"
+             data-tekton-panel="dependencies"
+             data-tekton-panel-for="Dependencies"
+             data-tekton-panel-component="metis">
             <div class="metis__dependencies" data-tekton-functionality="dependency-mapper">
                 <h3 class="metis__section-title">Task Dependencies</h3>
                 <p class="metis__text">Define relationships between tasks to ensure proper execution order.</p>
@@ -276,8 +293,7 @@
                         </div>
                     </div>
                     
-                    <button class="metis__button metis__button--primary" 
-                            onclick="metis_addDependency()"
+                    <button class="metis__button metis__button--primary"
                             data-tekton-action="add-dependency" data-tekton-trigger="click">Add Dependency</button>
                 </div>
                 
@@ -303,10 +319,12 @@
             </div>
         </div>
         
-        <!-- Review Tab -->
-        <div id="review-panel" class="metis__panel" 
-             data-tekton-panel="review" data-tekton-panel-for="Review" 
-             data-tekton-panel-component="metis" data-tekton-panel-active="false">
+        <!-- Review Panel -->
+        <div class="metis__panel metis__panel--review" data-tab-content="review"
+             data-tekton-tab-content="review"
+             data-tekton-panel="review"
+             data-tekton-panel-for="Review"
+             data-tekton-panel-component="metis">
             <div class="metis__review" data-tekton-functionality="export-harmonia">
                 <h3 class="metis__section-title">Review & Export</h3>
                 <p class="metis__text">Review the task breakdown and export to Harmonia for scheduling.</p>
@@ -341,66 +359,80 @@
                     <p class="metis__text">Send this task breakdown to Harmonia for resource allocation and scheduling.</p>
                     
                     <div class="metis__export-actions">
-                        <button class="metis__button metis__button--export" 
-                                onclick="metis_exportToHarmonia()"
+                        <button class="metis__button metis__button--export"
                                 data-tekton-action="export-harmonia" data-tekton-trigger="click"
                                 data-tekton-target="harmonia">Export to Harmonia</button>
-                        <button class="metis__button metis__button--secondary" 
-                                onclick="metis_previewExport()"
+                        <button class="metis__button metis__button--secondary"
                                 data-tekton-action="preview-export" data-tekton-trigger="click">Preview Export</button>
                     </div>
                 </div>
             </div>
         </div>
         
-        <!-- Workflow Chat Tab (PRESERVED FROM ORIGINAL) -->
-        <div id="workflow-panel" class="metis__panel" data-tekton-panel="workflow" data-tekton-panel-for="Workflow Chat" data-tekton-panel-component="metis" data-tekton-panel-active="false">
-            <div id="workflow-messages" class="metis__chat-messages" data-tekton-chat="messages">
-                <!-- Welcome message -->
-                <div class="metis__message metis__message--system">
-                    <div class="metis__message-content">
-                        <div class="metis__message-text">
-                            <h3 class="metis__message-title">Welcome to Workflow Chat</h3>
-                            <p>You can ask questions about your tasks and workflows. Try questions like:</p>
-                            <ul>
-                                <li>What are the highest priority tasks?</li>
-                                <li>Show me the dependency chain for [task name]</li>
-                                <li>What's the status of the current sprint?</li>
-                                <li>Generate a report of completed tasks</li>
-                            </ul>
-                        </div>
+        <!-- Workflow Chat Panel -->
+        <div class="metis__panel metis__panel--workflow" data-tab-content="workflow-chat"
+             data-tekton-tab-content="workflow-chat"
+             data-tekton-panel="workflow"
+             data-tekton-panel-for="Workflow Chat"
+             data-tekton-panel-component="metis">
+            <div class="chat-interface" data-tekton-chat="workflow"
+                 data-tekton-ai="metis-workflow"
+                 data-tekton-ai-ready="false">
+                <div class="chat-messages" id="metis-workflow-messages"
+                     data-tekton-messages="workflow"
+                     data-tekton-element="chat-messages">
+                    <div class="chat-message system-message">
+                        <strong>Metis:</strong> Welcome to Workflow Chat! I can help you with:
+                        <ul style="margin-top: 8px; margin-bottom: 0;">
+                            <li>What are the highest priority tasks?</li>
+                            <li>Show me the dependency chain for [task name]</li>
+                            <li>What's the status of the current sprint?</li>
+                            <li>Generate a report of completed tasks</li>
+                        </ul>
                     </div>
                 </div>
             </div>
         </div>
         
-        <!-- Team Chat Tab (PRESERVED FROM ORIGINAL) -->
-        <div id="teamchat-panel" class="metis__panel" data-tekton-chat="panel" data-tekton-panel="teamchat" data-tekton-panel-for="Team Chat" data-tekton-panel-component="metis" data-tekton-panel-active="false">
-            <div id="teamchat-messages" class="metis__chat-messages" data-tekton-chat="messages">
-                <!-- Welcome message -->
-                <div class="metis__message metis__message--system">
-                    <div class="metis__message-content">
-                        <div class="metis__message-text">
-                            <h3 class="metis__message-title">Tekton Team Chat</h3>
-                            <p>This chat is shared across all Tekton components. Use this for team communication and coordination.</p>
-                        </div>
+        <!-- Team Chat Panel -->
+        <div class="metis__panel metis__panel--team" data-tab-content="team-chat"
+             data-tekton-tab-content="team-chat"
+             data-tekton-panel="team"
+             data-tekton-panel-for="Team Chat"
+             data-tekton-panel-component="metis"
+             data-tekton-chat="team"
+             data-tekton-ai="metis-orchestrator"
+             data-tekton-ai-ready="false">
+            <div class="chat-interface" data-tekton-chat="team">
+                <div class="chat-messages" id="metis-team-messages"
+                     data-tekton-messages="team"
+                     data-tekton-element="chat-messages">
+                    <div class="chat-message system-message">
+                        <strong>System:</strong> Team Chat allows Metis to coordinate with other AI specialists.
                     </div>
                 </div>
             </div>
         </div>
     </div>
     
-    <!-- Footer with Chat Input (PRESERVED FROM ORIGINAL) -->
-    <div class="metis__footer" data-tekton-zone="footer">
-        <div class="metis__chat-input-container" data-tekton-chat="input">
-            <div class="metis__chat-prompt" data-tekton-chat="container">></div>
-            <input type="text" id="metis-chat-input" class="metis__chat-input" data-tekton-chat="input" 
+    <!-- Footer with Chat Input -->
+    <div class="metis__footer" data-tekton-zone="footer" data-tekton-section="footer">
+        <div class="metis__chat-input-container"
+             data-tekton-chat="metis-workflow"
+             data-tekton-chat-component="metis"
+             data-tekton-element="chat-input-container">
+            <div class="metis__chat-prompt" data-tekton-element="chat-prompt">></div>
+            <input type="text" class="metis__chat-input" id="metis-chat-input"
                    data-tekton-input="chat-input"
                    data-tekton-input-type="chat"
-                   placeholder="Enter message for team or workflow chat"
+                   data-tekton-input-component="metis"
+                   placeholder="Chat with Metis - your task planning and breakdown assistant"
                    onkeydown="if(event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); metis_sendChat(); }">
-            <button id="metis-send-button" class="metis__send-button" onclick="metis_sendChat(); return false;"
-                    data-tekton-action="send-message" data-tekton-action-type="primary" data-tekton-trigger="click">Send</button>
+            <button class="metis__send-button" id="metis-send-button"
+                    onclick="metis_sendChat(); return false;"
+                    data-tekton-action="send-message"
+                    data-tekton-action-type="primary"
+                    data-tekton-action-component="metis">Send</button>
         </div>
     </div>
 </div>
@@ -486,11 +518,6 @@
         background-color: var(--bg-hover, #3a3a4a);
     }
     
-    .metis__tab--active {
-        border-bottom-color: #5c6bc0;
-        font-weight: 500;
-    }
-    
     .metis__actions {
         display: flex;
         gap: 8px;
@@ -517,19 +544,57 @@
     /* Content Area */
     .metis__content {
         flex: 1;
-        overflow-y: auto;
-        padding-bottom: 70px;
+        overflow: hidden;
         position: relative;
+        padding-bottom: 70px;
     }
     
+    /* Panel styling - hidden by default */
     .metis__panel {
         display: none;
         padding: 24px;
         height: 100%;
+        overflow: auto;
     }
     
-    .metis__panel--active {
-        display: block;
+    /* Radio button logic for tab switching - Following Terma's exact pattern */
+    #metis-tab-dashboard:checked ~ .metis .metis__panel--dashboard,
+    #metis-tab-task:checked ~ .metis .metis__panel--task,
+    #metis-tab-phases:checked ~ .metis .metis__panel--phases,
+    #metis-tab-dependencies:checked ~ .metis .metis__panel--dependencies,
+    #metis-tab-review:checked ~ .metis .metis__panel--review,
+    #metis-tab-workflow:checked ~ .metis .metis__panel--workflow,
+    #metis-tab-team:checked ~ .metis .metis__panel--team {
+        display: flex;
+        flex-direction: column;
+    }
+    
+    /* Active tab styling */
+    #metis-tab-dashboard:checked ~ .metis .metis__tab[for="metis-tab-dashboard"],
+    #metis-tab-task:checked ~ .metis .metis__tab[for="metis-tab-task"],
+    #metis-tab-phases:checked ~ .metis .metis__tab[for="metis-tab-phases"],
+    #metis-tab-dependencies:checked ~ .metis .metis__tab[for="metis-tab-dependencies"],
+    #metis-tab-review:checked ~ .metis .metis__tab[for="metis-tab-review"],
+    #metis-tab-workflow:checked ~ .metis .metis__tab[for="metis-tab-workflow"],
+    #metis-tab-team:checked ~ .metis .metis__tab[for="metis-tab-team"] {
+        color: var(--text-primary, #f0f0f0);
+        border-bottom-color: #5c6bc0;
+        background-color: rgba(92, 107, 192, 0.05);
+    }
+    
+    /* Show/hide action buttons based on active tab - Following Terma pattern */
+    #clear-chat-btn {
+        display: none;
+    }
+    
+    #metis-tab-workflow:checked ~ .metis .metis__actions #task-add-btn,
+    #metis-tab-team:checked ~ .metis .metis__actions #task-add-btn {
+        display: none;
+    }
+    
+    #metis-tab-workflow:checked ~ .metis .metis__actions #clear-chat-btn,
+    #metis-tab-team:checked ~ .metis .metis__actions #clear-chat-btn {
+        display: flex;
     }
     
     /* Section Titles */
@@ -961,59 +1026,69 @@
         color: var(--text-secondary, #b0b0b0);
     }
     
-    /* Chat Styles (preserved from original) */
-    .metis__chat-messages {
-        flex: 1;
+    /* Chat Interface - Following Terma's exact pattern */
+    .chat-interface {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .chat-messages {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
         overflow-y: auto;
         padding: 16px;
         display: flex;
         flex-direction: column;
-        gap: 12px;
+        gap: 4px;
     }
     
-    .metis__message {
-        display: flex;
-        gap: 12px;
-    }
-    
-    .metis__message--system {
-        justify-content: center;
-    }
-    
-    .metis__message-content {
-        max-width: 70%;
-        padding: 12px 16px;
-        background-color: var(--bg-secondary, #252535);
-        border-radius: 8px;
-    }
-    
-    .metis__message--system .metis__message-content {
+    .chat-message {
+        margin-bottom: 12px;
+        padding: 8px 12px;
+        border-radius: 4px;
         background-color: transparent;
-        text-align: center;
-        max-width: 90%;
+        position: relative;
     }
     
-    .metis__message-title {
-        margin: 0 0 8px 0;
-        font-size: 1.1rem;
-        font-weight: 500;
+    .chat-message strong {
+        display: inline-block;
+        margin-right: 8px;
+        font-weight: 600;
     }
     
-    .metis__message-text {
-        margin: 0;
-        font-size: 14px;
+    /* System messages */
+    .chat-message.system-message {
+        background-color: rgba(92, 107, 192, 0.05);
+        border-left: 3px solid #5c6bc0;
+        font-style: italic;
     }
     
-    .metis__message-text ul {
-        margin: 8px 0 0 0;
-        padding-left: 20px;
+    .chat-message.system-message strong {
+        color: #5c6bc0;
     }
     
-    .metis__message-text li {
-        margin-bottom: 4px;
+    /* User messages */
+    .chat-message.user-message {
+        background-color: rgba(76, 175, 80, 0.05);
+        border-left: 3px solid #4CAF50;
+        margin-left: 0;
     }
     
-    /* Footer (preserved from original) */
+    .chat-message.user-message strong {
+        color: #4CAF50;
+    }
+    
+    /* Remove old message styles - using Terma's pattern now */
+    
+    /* Footer - Following Terma's pattern */
     .metis__footer {
         position: absolute;
         bottom: 0;
@@ -1022,18 +1097,22 @@
         padding: 12px 16px;
         background-color: var(--bg-secondary, #252535);
         border-top: 1px solid var(--border-color, #444444);
+        height: 70px;
+        box-sizing: border-box;
     }
     
     .metis__chat-input-container {
         display: flex;
         gap: 8px;
         align-items: center;
+        height: 100%;
     }
     
     .metis__chat-prompt {
         color: #5c6bc0;
         font-weight: bold;
         font-size: 16px;
+        min-width: 20px;
     }
     
     .metis__chat-input {
@@ -1044,6 +1123,8 @@
         border-radius: 4px;
         color: var(--text-primary, #f0f0f0);
         font-size: 14px;
+        height: 36px;
+        box-sizing: border-box;
     }
     
     .metis__chat-input:focus {
@@ -1060,6 +1141,8 @@
         font-weight: 500;
         cursor: pointer;
         transition: all 0.2s ease;
+        height: 36px;
+        min-width: 60px;
     }
     
     .metis__send-button:hover {
@@ -1067,62 +1150,23 @@
     }
 </style>
 
-<!-- JavaScript (minimal, following the pattern) -->
+<!-- JavaScript (minimal, following HTML Injection pattern) -->
 <script>
-// Tab switching functionality
-function metis_switchTab(tabName) {
-    console.log('[METIS] Switching to tab:', tabName);
-    
-    // Update active tab
-    const tabs = document.querySelectorAll('.metis__tab');
-    tabs.forEach(tab => {
-        if (tab.getAttribute('data-tab') === tabName) {
-            tab.classList.add('metis__tab--active');
-            tab.setAttribute('data-tekton-menu-active', 'true');
-        } else {
-            tab.classList.remove('metis__tab--active');
-            tab.setAttribute('data-tekton-menu-active', 'false');
-        }
-    });
-    
-    // Update active panel
-    const panels = document.querySelectorAll('.metis__panel');
-    panels.forEach(panel => {
-        if (panel.id === tabName + '-panel') {
-            panel.classList.add('metis__panel--active');
-            panel.setAttribute('data-tekton-panel-active', 'true');
-        } else {
-            panel.classList.remove('metis__panel--active');
-            panel.setAttribute('data-tekton-panel-active', 'false');
-        }
-    });
-    
-    // Show/hide action buttons based on tab
-    const addTaskBtn = document.getElementById('task-add-btn');
-    const clearChatBtn = document.getElementById('clear-chat-btn');
-    
-    if (tabName === 'workflow' || tabName === 'teamchat') {
-        addTaskBtn.style.display = 'none';
-        clearChatBtn.style.display = 'flex';
-    } else {
-        addTaskBtn.style.display = 'flex';
-        clearChatBtn.style.display = 'none';
-    }
-}
+// No tab switching needed - handled by CSS with radio buttons
 
 // Sprint actions
 function metis_viewSprint(sprintId) {
     console.log('[METIS] Viewing sprint:', sprintId);
-    // Switch to task tab
-    metis_switchTab('task');
+    // Check the task radio button to switch tabs - Terma pattern
+    document.getElementById('metis-tab-task').checked = true;
     // Load sprint tasks
     loadSprintTasks(sprintId);
 }
 
 function metis_editSprint(sprintId) {
     console.log('[METIS] Beginning breakdown for sprint:', sprintId);
-    // Switch to task tab and load sprint data
-    metis_switchTab('task');
+    // Check the task radio button to switch tabs - Terma pattern
+    document.getElementById('metis-tab-task').checked = true;
     // Store current sprint ID
     window.currentSprintId = sprintId;
     // Load sprint tasks
@@ -1132,8 +1176,9 @@ function metis_editSprint(sprintId) {
 // Task actions
 function metis_addTask() {
     console.log('[METIS] Adding new task');
-    metis_switchTab('task');
-    document.getElementById('task-form').reset();
+    document.getElementById('metis-tab-task').checked = true;
+    const form = document.getElementById('task-form');
+    if (form) form.reset();
 }
 
 function metis_saveTask() {
@@ -1177,7 +1222,7 @@ function metis_previewExport() {
     // TODO: Show preview dialog
 }
 
-// Chat actions (preserved from original)
+// Chat functions - Terma's exact pattern
 function metis_sendChat() {
     const input = document.getElementById('metis-chat-input');
     const message = input.value.trim();
@@ -1186,31 +1231,112 @@ function metis_sendChat() {
     
     console.log('[METIS] Sending chat message:', message);
     
-    // Determine which chat is active
-    const activePanel = document.querySelector('.metis__panel--active');
-    const isWorkflow = activePanel.id === 'workflow-panel';
-    const isTeamChat = activePanel.id === 'teamchat-panel';
+    // Determine which chat is active based on radio button state
+    const workflowActive = document.getElementById('metis-tab-workflow').checked;
+    const teamActive = document.getElementById('metis-tab-team').checked;
     
-    if (isWorkflow || isTeamChat) {
-        // TODO: Send message to appropriate chat
-        console.log('[METIS] Chat type:', isWorkflow ? 'workflow' : 'team');
+    let targetMessages = null;
+    let chatType = null;
+    
+    if (workflowActive) {
+        targetMessages = document.getElementById('metis-workflow-messages');
+        chatType = 'workflow';
+    } else if (teamActive) {
+        targetMessages = document.getElementById('metis-team-messages');
+        chatType = 'team';
     }
     
-    input.value = '';
+    if (targetMessages) {
+        // Add user message
+        const userMsg = document.createElement('div');
+        userMsg.className = 'chat-message user-message';
+        userMsg.innerHTML = message;
+        targetMessages.appendChild(userMsg);
+        
+        // Scroll to bottom
+        targetMessages.scrollTop = targetMessages.scrollHeight;
+        
+        // Clear input
+        input.value = '';
+        
+        // Send to AI (Terma's exact pattern)
+        if (window.AIChat) {
+            if (chatType === 'workflow') {
+                window.AIChat.sendMessage('metis', message)
+                    .then(response => {
+                        const aiMsg = document.createElement('div');
+                        aiMsg.className = 'chat-message system-message';
+                        aiMsg.innerHTML = `<strong>Metis:</strong> ${response.content}`;
+                        targetMessages.appendChild(aiMsg);
+                        targetMessages.scrollTop = targetMessages.scrollHeight;
+                    })
+                    .catch(err => {
+                        console.error('Failed to send message:', err);
+                        const errorMsg = document.createElement('div');
+                        errorMsg.className = 'chat-message system-message';
+                        errorMsg.innerHTML = `<strong>System:</strong> Failed to connect to Metis AI`;
+                        targetMessages.appendChild(errorMsg);
+                        targetMessages.scrollTop = targetMessages.scrollHeight;
+                    });
+            } else if (chatType === 'team') {
+                window.AIChat.teamChat(message, 'metis')
+                    .then(data => {
+                        if (data.responses && data.responses.length > 0) {
+                            data.responses.forEach(resp => {
+                                const aiMsg = document.createElement('div');
+                                aiMsg.className = 'chat-message system-message';
+                                const sender = resp.socket_id.replace('-ai', '').charAt(0).toUpperCase() + 
+                                             resp.socket_id.replace('-ai', '').slice(1);
+                                aiMsg.innerHTML = `<strong>${sender}:</strong> ${resp.content}`;
+                                targetMessages.appendChild(aiMsg);
+                            });
+                            targetMessages.scrollTop = targetMessages.scrollHeight;
+                        }
+                    })
+                    .catch(err => {
+                        console.error('Failed to send team message:', err);
+                        const errorMsg = document.createElement('div');
+                        errorMsg.className = 'chat-message system-message';
+                        errorMsg.innerHTML = `<strong>System:</strong> Failed to send team message`;
+                        targetMessages.appendChild(errorMsg);
+                        targetMessages.scrollTop = targetMessages.scrollHeight;
+                    });
+            }
+        } else {
+            // Fallback when AIChat not available
+            const aiMsg = document.createElement('div');
+            aiMsg.className = 'chat-message system-message';
+            aiMsg.innerHTML = `<strong>Metis:</strong> AI Chat service is not currently available.`;
+            targetMessages.appendChild(aiMsg);
+            targetMessages.scrollTop = targetMessages.scrollHeight;
+        }
+    }
 }
 
 function metis_clearChat() {
     console.log('[METIS] Clearing chat');
-    const activePanel = document.querySelector('.metis__panel--active');
-    const messagesContainer = activePanel.querySelector('.metis__chat-messages');
-    if (messagesContainer) {
-        // Keep only the welcome message
-        const welcomeMessage = messagesContainer.querySelector('.metis__message--system');
-        messagesContainer.innerHTML = '';
+    
+    const workflowActive = document.getElementById('metis-tab-workflow').checked;
+    const teamActive = document.getElementById('metis-tab-team').checked;
+    
+    let targetMessages = null;
+    
+    if (workflowActive) {
+        targetMessages = document.getElementById('metis-workflow-messages');
+    } else if (teamActive) {
+        targetMessages = document.getElementById('metis-team-messages');
+    }
+    
+    if (targetMessages) {
+        // Keep the welcome message (first system message)
+        const welcomeMessage = targetMessages.querySelector('.chat-message.system-message');
+        targetMessages.innerHTML = '';
         if (welcomeMessage) {
-            messagesContainer.appendChild(welcomeMessage);
+            targetMessages.appendChild(welcomeMessage.cloneNode(true));
         }
     }
+    
+    return false;
 }
 
 // API Functions
@@ -1290,10 +1416,10 @@ function createSprintCard(sprint) {
             </div>
         </div>
         <div class="metis__card-actions">
-            <button class="metis__button metis__button--view" onclick="metis_viewSprint('${sprint.id}')"
+            <button class="metis__button metis__button--view" onclick="metis_viewSprint('${sprint.id}'); return false;"
                     data-tekton-action="view-sprint" data-tekton-trigger="click" 
                     data-tekton-target="task-panel">View</button>
-            <button class="metis__button metis__button--edit" onclick="metis_editSprint('${sprint.id}')"
+            <button class="metis__button metis__button--edit" onclick="metis_editSprint('${sprint.id}'); return false;"
                     data-tekton-action="edit-sprint" data-tekton-trigger="click" 
                     data-tekton-target="task-editor">Begin Breakdown</button>
         </div>
@@ -1668,5 +1794,63 @@ function checkForWork() {
 window.addEventListener('DOMContentLoaded', function() {
     console.log('[METIS] Component loaded');
     checkForWork();
+    
+    // Set up event handlers for buttons without onclick
+    const addTaskBtn = document.getElementById('task-add-btn');
+    if (addTaskBtn) {
+        addTaskBtn.addEventListener('click', function() {
+            metis_addTask();
+        });
+    }
+    
+    // Clear chat button - inline onclick in HTML like Terma
+    
+    // Chat handlers are inline in HTML like Terma
+    
+    // Form submissions
+    const taskForm = document.getElementById('task-form');
+    if (taskForm) {
+        taskForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            metis_saveTask();
+        });
+    }
+    
+    // Button handlers for forms
+    const saveTaskBtn = document.querySelector('[data-tekton-action="save-task"]');
+    if (saveTaskBtn) {
+        saveTaskBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            metis_saveTask();
+        });
+    }
+    
+    const clearFormBtn = document.querySelector('[data-tekton-action="clear-form"]');
+    if (clearFormBtn) {
+        clearFormBtn.addEventListener('click', function() {
+            metis_clearTaskForm();
+        });
+    }
+    
+    const addDepBtn = document.querySelector('[data-tekton-action="add-dependency"]');
+    if (addDepBtn) {
+        addDepBtn.addEventListener('click', function() {
+            metis_addDependency();
+        });
+    }
+    
+    const exportBtn = document.querySelector('[data-tekton-action="export-harmonia"]');
+    if (exportBtn) {
+        exportBtn.addEventListener('click', function() {
+            metis_exportToHarmonia();
+        });
+    }
+    
+    const previewBtn = document.querySelector('[data-tekton-action="preview-export"]');
+    if (previewBtn) {
+        previewBtn.addEventListener('click', function() {
+            metis_previewExport();
+        });
+    }
 });
 </script>
