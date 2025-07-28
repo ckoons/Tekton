@@ -474,3 +474,272 @@ async def finalize_retrospective(retro_id: str = Path(..., description="ID of th
         "message": "Retrospective finalized successfully",
         "data": retro
     }
+
+
+# ===== Enhanced Retrospective Management for Sprints =====
+
+import json
+from pathlib import Path as PathLib
+from shared.env import TektonEnviron
+
+# Get paths
+METADATA_PATH = PathLib(TektonEnviron.get("TEKTON_ROOT", "/Users/cskoons/projects/github/Coder-C")) / "MetaData" / "DevelopmentSprints"
+RETROSPECTIVES_PATH = METADATA_PATH / "Retrospectives"
+
+
+def create_retrospective_template(sprint_name: str, completed_date: str = None) -> Dict[str, Any]:
+    """Create a retrospective template for a sprint"""
+    if completed_date is None:
+        completed_date = datetime.now().strftime("%Y-%m-%d")
+    
+    return {
+        "sprintName": sprint_name,
+        "completedDate": completed_date,
+        "teamMembers": {
+            "prometheus": {
+                "feedback": "",
+                "recommendations": []
+            },
+            "metis": {
+                "feedback": "",
+                "recommendations": []
+            },
+            "harmonia": {
+                "feedback": "",
+                "recommendations": []
+            },
+            "synthesis": {
+                "feedback": "",
+                "recommendations": []
+            },
+            "tektonCore": {
+                "feedback": "",
+                "recommendations": []
+            }
+        },
+        "whatWentWell": [],
+        "whatCouldImprove": [],
+        "actionItems": [],
+        "followUpSprintNeeded": False,
+        "teamChatTranscript": ""
+    }
+
+
+@router.post("/sprints/{sprint_name}/create", response_model=StandardResponse)
+async def create_sprint_retrospective(
+    sprint_name: str,
+    retrospective_data: Optional[Dict[str, Any]] = Body(None)
+):
+    """Create a retrospective for a completed sprint"""
+    try:
+        # Ensure retrospectives directory exists
+        RETROSPECTIVES_PATH.mkdir(parents=True, exist_ok=True)
+        
+        # Create retrospective file path
+        retro_file = RETROSPECTIVES_PATH / f"{sprint_name}_retrospective.json"
+        
+        # Check if retrospective already exists
+        if retro_file.exists() and retrospective_data is None:
+            raise HTTPException(status_code=409, detail=f"Retrospective for {sprint_name} already exists")
+        
+        # Create retrospective data
+        if retrospective_data is None:
+            retrospective_data = create_retrospective_template(sprint_name)
+        else:
+            # Merge with template to ensure all fields exist
+            template = create_retrospective_template(sprint_name)
+            template.update(retrospective_data)
+            retrospective_data = template
+        
+        # Save retrospective
+        with open(retro_file, 'w') as f:
+            json.dump(retrospective_data, f, indent=2)
+        
+        logger.info(f"Created retrospective for sprint {sprint_name}")
+        
+        return {
+            "status": "success",
+            "message": f"Retrospective created for sprint {sprint_name}",
+            "data": retrospective_data
+        }
+    except Exception as e:
+        logger.error(f"Error creating retrospective: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/sprints/{sprint_name}/retrospective", response_model=StandardResponse)
+async def get_sprint_retrospective(sprint_name: str):
+    """Get retrospective for a sprint"""
+    try:
+        retro_file = RETROSPECTIVES_PATH / f"{sprint_name}_retrospective.json"
+        
+        if not retro_file.exists():
+            raise HTTPException(status_code=404, detail=f"No retrospective found for sprint {sprint_name}")
+        
+        with open(retro_file, 'r') as f:
+            retrospective_data = json.load(f)
+        
+        return {
+            "status": "success",
+            "message": f"Retrospective retrieved for sprint {sprint_name}",
+            "data": retrospective_data
+        }
+    except Exception as e:
+        logger.error(f"Error getting retrospective: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.put("/sprints/{sprint_name}/retrospective", response_model=StandardResponse)
+async def update_sprint_retrospective(
+    sprint_name: str,
+    updates: Dict[str, Any] = Body(...)
+):
+    """Update retrospective for a sprint"""
+    try:
+        retro_file = RETROSPECTIVES_PATH / f"{sprint_name}_retrospective.json"
+        
+        if not retro_file.exists():
+            raise HTTPException(status_code=404, detail=f"No retrospective found for sprint {sprint_name}")
+        
+        # Load existing retrospective
+        with open(retro_file, 'r') as f:
+            retrospective_data = json.load(f)
+        
+        # Update fields
+        retrospective_data.update(updates)
+        retrospective_data["lastUpdated"] = datetime.now().isoformat()
+        
+        # Save updated retrospective
+        with open(retro_file, 'w') as f:
+            json.dump(retrospective_data, f, indent=2)
+        
+        logger.info(f"Updated retrospective for sprint {sprint_name}")
+        
+        return {
+            "status": "success",
+            "message": f"Retrospective updated for sprint {sprint_name}",
+            "data": retrospective_data
+        }
+    except Exception as e:
+        logger.error(f"Error updating retrospective: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/sprints/{sprint_name}/retrospective/capture-chat", response_model=StandardResponse)
+async def capture_team_chat(
+    sprint_name: str,
+    chat_data: Dict[str, str] = Body(..., example={"transcript": "Team chat conversation..."})
+):
+    """Capture Team Chat transcript for retrospective"""
+    try:
+        retro_file = RETROSPECTIVES_PATH / f"{sprint_name}_retrospective.json"
+        
+        if not retro_file.exists():
+            # Create retrospective if it doesn't exist
+            retrospective_data = create_retrospective_template(sprint_name)
+        else:
+            with open(retro_file, 'r') as f:
+                retrospective_data = json.load(f)
+        
+        # Update team chat transcript
+        retrospective_data["teamChatTranscript"] = chat_data.get("transcript", "")
+        retrospective_data["chatCapturedAt"] = datetime.now().isoformat()
+        
+        # Save updated retrospective
+        with open(retro_file, 'w') as f:
+            json.dump(retrospective_data, f, indent=2)
+        
+        logger.info(f"Captured team chat for sprint {sprint_name} retrospective")
+        
+        return {
+            "status": "success",
+            "message": f"Team chat captured for sprint {sprint_name}",
+            "data": {"chatLength": len(chat_data.get("transcript", ""))}
+        }
+    except Exception as e:
+        logger.error(f"Error capturing team chat: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/sprints/list-retrospectives", response_model=StandardResponse)
+async def list_sprint_retrospectives():
+    """List all sprint retrospectives"""
+    try:
+        retrospectives = []
+        
+        if RETROSPECTIVES_PATH.exists():
+            for retro_file in RETROSPECTIVES_PATH.glob("*_retrospective.json"):
+                try:
+                    with open(retro_file, 'r') as f:
+                        retro_data = json.load(f)
+                        retrospectives.append({
+                            "sprintName": retro_data.get("sprintName", retro_file.stem.replace("_retrospective", "")),
+                            "completedDate": retro_data.get("completedDate", ""),
+                            "hasTeamChat": bool(retro_data.get("teamChatTranscript", "")),
+                            "actionItemCount": len(retro_data.get("actionItems", [])),
+                            "filePath": str(retro_file)
+                        })
+                except Exception as e:
+                    logger.error(f"Error reading retrospective file {retro_file}: {e}")
+        
+        # Sort by completed date descending
+        retrospectives.sort(key=lambda x: x["completedDate"], reverse=True)
+        
+        return {
+            "status": "success",
+            "message": f"Found {len(retrospectives)} retrospectives",
+            "data": retrospectives
+        }
+    except Exception as e:
+        logger.error(f"Error listing retrospectives: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/create-manual", response_model=StandardResponse)
+async def create_manual_retrospective(
+    retrospective_request: Dict[str, Any] = Body(..., example={
+        "purpose": "Mid-sprint checkpoint",
+        "participants": ["prometheus", "metis"],
+        "scope": "Planning Team Process Improvement"
+    })
+):
+    """Create a manual retrospective for any purpose"""
+    try:
+        # Generate unique name
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        purpose_slug = retrospective_request.get("purpose", "manual").lower().replace(" ", "_")[:30]
+        retro_name = f"manual_{purpose_slug}_{timestamp}"
+        
+        # Create retrospective data
+        retrospective_data = {
+            "name": retro_name,
+            "purpose": retrospective_request.get("purpose", "Manual Retrospective"),
+            "type": "manual",
+            "createdDate": datetime.now().isoformat(),
+            "participants": retrospective_request.get("participants", []),
+            "scope": retrospective_request.get("scope", ""),
+            "discussion": {
+                "topics": [],
+                "insights": [],
+                "actionItems": []
+            },
+            "teamChatTranscript": ""
+        }
+        
+        # Save retrospective
+        RETROSPECTIVES_PATH.mkdir(parents=True, exist_ok=True)
+        retro_file = RETROSPECTIVES_PATH / f"{retro_name}.json"
+        
+        with open(retro_file, 'w') as f:
+            json.dump(retrospective_data, f, indent=2)
+        
+        logger.info(f"Created manual retrospective: {retro_name}")
+        
+        return {
+            "status": "success",
+            "message": "Manual retrospective created",
+            "data": retrospective_data
+        }
+    except Exception as e:
+        logger.error(f"Error creating manual retrospective: {e}")
+        raise HTTPException(status_code=500, detail=str(e))

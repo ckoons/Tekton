@@ -2,14 +2,18 @@
 Resource Endpoints
 
 This module defines the API endpoints for resources in the Prometheus/Epimethius Planning System.
+Enhanced to support Coder resource management for Development Sprints.
 """
 
+import json
 import logging
 from typing import Dict, List, Any, Optional
+from pathlib import Path as PathLib
 from fastapi import APIRouter, HTTPException, Query, Path, Body, Depends
 
 from ..models.planning import ResourceCreate, ResourceUpdate, ResourceAllocation
 from ..models.shared import StandardResponse, PaginatedResponse
+from shared.env import TektonEnviron
 
 
 # Configure logging
@@ -18,9 +22,61 @@ logger = logging.getLogger("prometheus.api.endpoints.resources")
 # Create router
 router = APIRouter(prefix="/resources", tags=["resources"])
 
+# Get paths
+METADATA_PATH = PathLib(TektonEnviron.get("TEKTON_ROOT", "/Users/cskoons/projects/github/Coder-C")) / "MetaData" / "DevelopmentSprints"
+RESOURCES_FILE = METADATA_PATH / "coder_resources.json"
 
 # Placeholder for resource storage (will be replaced with proper storage in future PRs)
 resources_db = {}
+
+
+def load_coder_resources() -> Dict[str, Any]:
+    """Load coder resources from file"""
+    if not RESOURCES_FILE.exists():
+        # Initialize with default structure
+        default_resources = {
+            "coders": {
+                "Tekton": {
+                    "capacity": 3,
+                    "active": [],
+                    "queue": []
+                },
+                "Coder-A": {
+                    "capacity": 3,
+                    "active": [],
+                    "queue": []
+                },
+                "Coder-B": {
+                    "capacity": 3,
+                    "active": [],
+                    "queue": []
+                },
+                "Coder-C": {
+                    "capacity": 3,
+                    "active": [],
+                    "queue": []
+                }
+            }
+        }
+        save_coder_resources(default_resources)
+        return default_resources
+    
+    try:
+        with open(RESOURCES_FILE, 'r') as f:
+            return json.load(f)
+    except Exception as e:
+        logger.error(f"Error loading coder resources: {e}")
+        return {"coders": {}}
+
+
+def save_coder_resources(resources: Dict[str, Any]):
+    """Save coder resources to file"""
+    try:
+        RESOURCES_FILE.parent.mkdir(parents=True, exist_ok=True)
+        with open(RESOURCES_FILE, 'w') as f:
+            json.dump(resources, f, indent=2)
+    except Exception as e:
+        logger.error(f"Error saving coder resources: {e}")
 
 
 # Endpoints
@@ -366,3 +422,146 @@ async def get_resource_allocation(plan_id: str = Path(..., description="ID of th
         "message": "Resource allocation retrieved successfully",
         "data": allocation
     }
+
+
+# ===== Coder Resource Management Endpoints =====
+
+@router.get("/coders", response_model=StandardResponse)
+async def get_coders():
+    """Get all Coder resources and their assignments"""
+    try:
+        resources = load_coder_resources()
+        return {
+            "status": "success",
+            "message": "Coder resources retrieved successfully",
+            "data": resources["coders"]
+        }
+    except Exception as e:
+        logger.error(f"Error getting coder resources: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/coders/{coder_name}", response_model=StandardResponse)
+async def get_coder_details(coder_name: str):
+    """Get details for a specific coder"""
+    try:
+        resources = load_coder_resources()
+        if coder_name not in resources["coders"]:
+            raise HTTPException(status_code=404, detail=f"Coder {coder_name} not found")
+        
+        return {
+            "status": "success",
+            "message": f"Coder {coder_name} details retrieved",
+            "data": resources["coders"][coder_name]
+        }
+    except Exception as e:
+        logger.error(f"Error getting coder details: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.put("/coders/{coder_name}/assign", response_model=StandardResponse)
+async def assign_sprint_to_coder(
+    coder_name: str,
+    assignment: Dict[str, str] = Body(..., example={"sprint_name": "Planning_Team_UI_Sprint", "project": "TektonCore"})
+):
+    """Assign a sprint to a coder"""
+    try:
+        resources = load_coder_resources()
+        if coder_name not in resources["coders"]:
+            raise HTTPException(status_code=404, detail=f"Coder {coder_name} not found")
+        
+        coder = resources["coders"][coder_name]
+        sprint_name = assignment["sprint_name"]
+        project = assignment.get("project", "Unknown")
+        
+        # Check capacity
+        if len(coder["active"]) >= coder["capacity"]:
+            # Add to queue instead
+            if sprint_name not in coder["queue"]:
+                coder["queue"].append(sprint_name)
+            message = f"Sprint {sprint_name} added to {coder_name}'s queue (at capacity)"
+        else:
+            # Add to active
+            if sprint_name not in coder["active"]:
+                coder["active"].append(sprint_name)
+            message = f"Sprint {sprint_name} assigned to {coder_name} as active"
+        
+        save_coder_resources(resources)
+        
+        return {
+            "status": "success",
+            "message": message,
+            "data": coder
+        }
+    except Exception as e:
+        logger.error(f"Error assigning sprint: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.put("/coders/{coder_name}/complete", response_model=StandardResponse)
+async def complete_coder_sprint(
+    coder_name: str,
+    completion: Dict[str, str] = Body(..., example={"sprint_name": "Planning_Team_UI_Sprint"})
+):
+    """Mark a sprint as complete and assign next from queue"""
+    try:
+        resources = load_coder_resources()
+        if coder_name not in resources["coders"]:
+            raise HTTPException(status_code=404, detail=f"Coder {coder_name} not found")
+        
+        coder = resources["coders"][coder_name]
+        sprint_name = completion["sprint_name"]
+        
+        # Remove from active
+        if sprint_name in coder["active"]:
+            coder["active"].remove(sprint_name)
+        
+        # Assign next from queue if available
+        next_sprint = None
+        if coder["queue"] and len(coder["active"]) < coder["capacity"]:
+            next_sprint = coder["queue"].pop(0)
+            coder["active"].append(next_sprint)
+        
+        save_coder_resources(resources)
+        
+        message = f"Sprint {sprint_name} completed for {coder_name}"
+        if next_sprint:
+            message += f", assigned {next_sprint} from queue"
+        
+        return {
+            "status": "success",
+            "message": message,
+            "data": {
+                "coder": coder,
+                "next_sprint": next_sprint
+            }
+        }
+    except Exception as e:
+        logger.error(f"Error completing sprint: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/capacity", response_model=StandardResponse)
+async def get_capacity_overview():
+    """Get capacity overview for all coders"""
+    try:
+        resources = load_coder_resources()
+        overview = {}
+        
+        for coder_name, coder_data in resources["coders"].items():
+            overview[coder_name] = {
+                "capacity": coder_data["capacity"],
+                "active_count": len(coder_data["active"]),
+                "queue_count": len(coder_data["queue"]),
+                "utilization": len(coder_data["active"]) / coder_data["capacity"] * 100 if coder_data["capacity"] > 0 else 0,
+                "available_slots": max(0, coder_data["capacity"] - len(coder_data["active"]))
+            }
+        
+        return {
+            "status": "success",
+            "message": "Capacity overview retrieved",
+            "data": overview
+        }
+    except Exception as e:
+        logger.error(f"Error getting capacity overview: {e}")
+        raise HTTPException(status_code=500, detail=str(e))

@@ -183,8 +183,14 @@
         "timeline_management",
         "roadmap_visualization",
         "improvement_recommendations",
-        "resource_optimization"
-      ]
+        "resource_optimization",
+        "sprint_management",
+        "coder_assignments"
+      ],
+      "componentPath": "components/prometheus/prometheus-component.html",
+      "scripts": [],
+      "styles": [],
+      "usesShadowDom": false
     },
     {
       "id": "telos",

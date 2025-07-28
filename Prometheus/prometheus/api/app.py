@@ -30,6 +30,7 @@ from prometheus.core.prometheus_component import PrometheusComponent
 from .endpoints import planning, tasks, timelines, resources
 from .endpoints import retrospective, history, improvement
 from .endpoints import tracking, llm_integration
+from .endpoints import sprints  # New sprint management endpoints
 from .fastmcp_endpoints import mcp_router
 
 # Set up logging
@@ -181,6 +182,7 @@ def create_app() -> FastAPI:
     routers.v1.include_router(tasks.router, tags=["Prometheus - Tasks"])
     routers.v1.include_router(timelines.router, tags=["Prometheus - Timelines"])
     routers.v1.include_router(resources.router, tags=["Prometheus - Resources"])
+    routers.v1.include_router(sprints.router, tags=["Prometheus - Sprints"])  # New sprint management
     
     # Epimethius (retrospective analysis) API routes
     routers.v1.include_router(retrospective.router, tags=["Epimethius - Retrospective"])
