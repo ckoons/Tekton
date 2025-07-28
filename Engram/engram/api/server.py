@@ -113,14 +113,6 @@ class _EngramArchitecture:
     """Architecture marker for Engram's memory system design."""
     pass
 
-@state_checkpoint(
-    title="Engram Component Singleton",
-    description="Global Engram component instance managing memory services",
-    state_type="singleton",
-    persistence=True,
-    consistency_requirements="Thread-safe singleton with async initialization",
-    recovery_strategy="Reinitialize on startup, restore from persistent storage"
-)
 # Create component singleton
 engram_component = EngramComponent()
 
