@@ -658,7 +658,7 @@ class EnhancedComponentKiller:
     def get_shutdown_order(self, components: List[str]) -> Tuple[List[str], List[str]]:
         """Determine optimal shutdown order: (non_core_components, core_components)"""
         # Core infrastructure components that should be killed last
-        core_components = ["hermes", "engram", "rhetor"]
+        core_components = ["hermes"]  # Only Hermes needs to be last
 
         non_core = []
         core = []
