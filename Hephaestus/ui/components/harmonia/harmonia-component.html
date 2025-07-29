@@ -66,7 +66,7 @@
             </label>
         </div>
         <div class="harmonia__actions">
-            <button id="workflow-create-btn" class="harmonia__action-button"
+            <button id="workflow-create-btn" class="harmonia__action-button harmonia__button--harmonia"
                     onclick="createNewWorkflow()"
                     data-tekton-action="create-workflow" data-tekton-action-type="primary" data-tekton-trigger="click">
                 <span class="harmonia__button-label">New Workflow</span>
@@ -919,6 +919,15 @@
     
     .harmonia__button--primary:hover {
         background-color: #6E47B2;
+    }
+    
+    .harmonia__button--harmonia {
+        background-color: #FF6B35;
+        color: white;
+    }
+    
+    .harmonia__button--harmonia:hover {
+        background-color: #E55A2B;
     }
     
     .harmonia__button--secondary {
@@ -2371,7 +2380,16 @@ async function createNewWorkflow() {
             metadata: {}
         });
         
+        // Store the workflow ID for use in save draft
+        if (result.data && result.data.workflow_definition) {
+            window.currentWorkflowId = result.data.workflow_definition.id;
+        }
+        
         alert(`Workflow created successfully!\nWorkflow: ${workflowName}\nStatus: ${result.status}`);
+        
+        // Switch to workflows tab
+        document.getElementById('harmonia-tab-workflows').checked = true;
+        
         // Refresh the dashboard
         loadDashboardSprints();
     } catch (error) {
@@ -2625,50 +2643,59 @@ This export will be sent to Synthesis for validation and execution.`;
 async function saveHarmoniaDraft() {
     console.log('Save harmonia draft');
     
-    // First try to get a list of existing workflows to save as draft
     try {
-        const workflowsResult = await harmoniaApiCall('/workflows');
-        const workflows = workflowsResult.data || [];
+        // Check if we have a current workflow ID in the session
+        let workflowId = window.currentWorkflowId;
         
-        if (workflows.length === 0) {
+        if (!workflowId) {
             // Create a new workflow first
-            const workflowName = prompt('No existing workflows found. Enter name for new workflow draft:') || 'Draft Workflow';
+            const workflowName = prompt('Enter name for new workflow:') || 'Draft Workflow';
             
             const newWorkflowResult = await harmoniaApiCall('/workflows', 'POST', {
                 name: workflowName,
                 description: 'Draft workflow created from Harmonia UI',
-                tasks: {
-                    'draft-task': {
-                        name: 'Draft Task',
-                        component: 'numa',
-                        description: 'Placeholder task for draft workflow'
-                    }
-                },
+                tasks: {},
                 input: {},
                 output: {},
                 version: "1.0",
                 metadata: { draft: true }
             });
             
-            alert(`New draft workflow created!\nWorkflow: ${workflowName}\nStatus: ${newWorkflowResult.status}\n\nYou can now design your workflow and save it as a draft.`);
-            
-        } else {
-            // Use the first workflow as an example
-            const workflowId = workflows[0].id;
-            const draftData = {
-                workflow_state: 'in_progress',
-                saved_components: ['numa', 'metis'],
-                progress_notes: 'Workflow design in progress',
-                saved_at: new Date().toISOString()
-            };
-            
-            const result = await harmoniaApiCall(`/workflows/${workflowId}/draft`, 'POST', draftData);
-            
-            alert(`Draft saved successfully!\nWorkflow ID: ${result.data.workflow_id}\nDraft ID: ${result.data.draft_id}\nSaved at: ${result.data.saved_at}`);
+            // Extract workflow ID from the response
+            if (newWorkflowResult.data && newWorkflowResult.data.workflow_definition) {
+                workflowId = newWorkflowResult.data.workflow_definition.id;
+                window.currentWorkflowId = workflowId;
+            } else {
+                throw new Error('Failed to create workflow - no ID returned');
+            }
         }
         
+        // Save draft data
+        const draftData = {
+            workflow_state: 'in_progress',
+            saved_components: ['numa', 'metis', 'athena'], // Example components
+            progress_notes: 'Workflow design in progress',
+            saved_at: new Date().toISOString(),
+            canvas_state: {
+                nodes: nodeCounter,
+                connections: connections.length
+            }
+        };
+        
+        const result = await harmoniaApiCall(`/workflows/${workflowId}/draft`, 'POST', draftData);
+        
+        alert(`Draft saved successfully!\nWorkflow ID: ${result.data.workflow_id}\nDraft ID: ${result.data.draft_id}\nSaved at: ${new Date(result.data.saved_at).toLocaleString()}`);
+        
     } catch (error) {
-        alert(`Failed to save draft: ${error.message}`);
+        console.error('Save draft error:', error);
+        // If it's a 404, the workflow doesn't exist
+        if (error.message.includes('404')) {
+            // Clear the stored workflow ID
+            window.currentWorkflowId = null;
+            alert('The workflow no longer exists. Please create a new workflow first.');
+        } else {
+            alert(`Failed to save draft: ${error.message}`);
+        }
     }
 }
 
@@ -2954,4 +2981,463 @@ Proceed with orchestration?`);
         alert(`Failed to begin orchestration: ${error.message}`);
     }
 }
+
+// Template Modal Functions
+function openTemplateModal() {
+    const modal = document.getElementById('template-modal');
+    if (modal) {
+        modal.style.display = 'flex';
+        // Clear form
+        document.getElementById('template-name').value = '';
+        document.getElementById('template-description').value = '';
+        document.getElementById('template-category').value = 'development';
+        document.getElementById('template-difficulty').value = 'medium';
+        document.getElementById('template-duration').value = '';
+        document.getElementById('template-tags').value = '';
+        document.getElementById('template-public').checked = true;
+        
+        // Clear tasks
+        const tasksList = document.getElementById('template-tasks-list');
+        tasksList.innerHTML = `
+            <div class="harmonia__template-task" data-task-index="0">
+                <div class="harmonia__template-task-header">
+                    <input type="text" class="harmonia__template-input" placeholder="Task Name" data-field="name">
+                    <button class="harmonia__button harmonia__button--small harmonia__button--secondary" onclick="removeTemplateTask(0)">Remove</button>
+                </div>
+                <div class="harmonia__template-task-fields">
+                    <select class="harmonia__template-select" data-field="component">
+                        <option value="numa">Numa</option>
+                        <option value="metis">Metis</option>
+                        <option value="prometheus">Prometheus</option>
+                        <option value="athena">Athena</option>
+                        <option value="rhetor">Rhetor</option>
+                        <option value="apollo">Apollo</option>
+                        <option value="hermes">Hermes</option>
+                        <option value="engram">Engram</option>
+                    </select>
+                    <input type="text" class="harmonia__template-input" placeholder="Description" data-field="description">
+                    <input type="number" class="harmonia__template-input harmonia__template-input--small" placeholder="Timeout (s)" data-field="timeout" value="3600">
+                </div>
+            </div>
+        `;
+    }
+}
+
+function closeTemplateModal() {
+    const modal = document.getElementById('template-modal');
+    if (modal) {
+        modal.style.display = 'none';
+    }
+}
+
+let templateTaskCounter = 1;
+
+function addTemplateTask() {
+    const tasksList = document.getElementById('template-tasks-list');
+    const taskIndex = templateTaskCounter++;
+    
+    const taskDiv = document.createElement('div');
+    taskDiv.className = 'harmonia__template-task';
+    taskDiv.dataset.taskIndex = taskIndex;
+    
+    taskDiv.innerHTML = `
+        <div class="harmonia__template-task-header">
+            <input type="text" class="harmonia__template-input" placeholder="Task Name" data-field="name">
+            <button class="harmonia__button harmonia__button--small harmonia__button--secondary" onclick="removeTemplateTask(${taskIndex})">Remove</button>
+        </div>
+        <div class="harmonia__template-task-fields">
+            <select class="harmonia__template-select" data-field="component">
+                <option value="numa">Numa</option>
+                <option value="metis">Metis</option>
+                <option value="prometheus">Prometheus</option>
+                <option value="athena">Athena</option>
+                <option value="rhetor">Rhetor</option>
+                <option value="apollo">Apollo</option>
+                <option value="hermes">Hermes</option>
+                <option value="engram">Engram</option>
+            </select>
+            <input type="text" class="harmonia__template-input" placeholder="Description" data-field="description">
+            <input type="number" class="harmonia__template-input harmonia__template-input--small" placeholder="Timeout (s)" data-field="timeout" value="3600">
+        </div>
+    `;
+    
+    tasksList.appendChild(taskDiv);
+}
+
+function removeTemplateTask(index) {
+    const task = document.querySelector(`[data-task-index="${index}"]`);
+    if (task) {
+        task.remove();
+    }
+}
+
+async function saveTemplate() {
+    // Gather form data
+    const name = document.getElementById('template-name').value;
+    const description = document.getElementById('template-description').value;
+    const category = document.getElementById('template-category').value;
+    const difficulty = document.getElementById('template-difficulty').value;
+    const duration = document.getElementById('template-duration').value;
+    const tags = document.getElementById('template-tags').value.split(',').map(t => t.trim()).filter(t => t);
+    const isPublic = document.getElementById('template-public').checked;
+    
+    if (!name) {
+        alert('Please enter a template name');
+        return;
+    }
+    
+    // Gather tasks
+    const tasks = {};
+    const taskElements = document.querySelectorAll('.harmonia__template-task');
+    
+    taskElements.forEach((taskEl, index) => {
+        const taskName = taskEl.querySelector('[data-field="name"]').value;
+        if (taskName) {
+            const taskId = `task_${index + 1}`;
+            tasks[taskId] = {
+                name: taskName,
+                description: taskEl.querySelector('[data-field="description"]').value,
+                component: taskEl.querySelector('[data-field="component"]').value,
+                dependencies: index > 0 ? [`task_${index}`] : [],
+                parameters: {},
+                timeout: parseInt(taskEl.querySelector('[data-field="timeout"]').value) || 3600
+            };
+        }
+    });
+    
+    if (Object.keys(tasks).length === 0) {
+        alert('Please add at least one task');
+        return;
+    }
+    
+    // Create template object
+    const templateData = {
+        name: name,
+        description: description,
+        workflow_definition: {
+            name: `${name} Workflow`,
+            description: description,
+            tasks: tasks,
+            input: {},
+            output: {},
+            version: "1.0",
+            metadata: {
+                category: category,
+                difficulty: difficulty,
+                estimated_duration: duration
+            }
+        },
+        parameters: {},
+        tags: tags,
+        is_public: isPublic,
+        metadata: {
+            author: "Harmonia Template System",
+            version: "1.0",
+            difficulty: difficulty,
+            estimated_duration: duration
+        },
+        usage_count: 0
+    };
+    
+    try {
+        const result = await harmoniaApiCall('/templates/import', 'POST', templateData);
+        alert(`Template created successfully!\nName: ${result.data.name}\nID: ${result.data.template_id}`);
+        closeTemplateModal();
+        // Refresh templates view
+        loadTemplates();
+    } catch (error) {
+        alert(`Failed to create template: ${error.message}`);
+    }
+}
+
+// Update createHarmoniaTemplate to open modal
+window.createHarmoniaTemplate = function() {
+    console.log('Opening template creation modal');
+    openTemplateModal();
+}
 </script>
+
+<!-- Template Creation Modal -->
+<div id="template-modal" class="harmonia__modal" style="display: none;">
+    <div class="harmonia__modal-content">
+        <div class="harmonia__modal-header">
+            <h2 class="harmonia__modal-title">Create Workflow Template</h2>
+            <button class="harmonia__modal-close" onclick="closeTemplateModal()">&times;</button>
+        </div>
+        
+        <div class="harmonia__modal-body">
+            <div class="harmonia__template-form">
+                <!-- Basic Information -->
+                <div class="harmonia__template-section">
+                    <h3 class="harmonia__template-section-title">Basic Information</h3>
+                    
+                    <div class="harmonia__template-field">
+                        <label class="harmonia__template-label">Template Name</label>
+                        <input type="text" id="template-name" class="harmonia__template-input" placeholder="e.g., Feature Development">
+                    </div>
+                    
+                    <div class="harmonia__template-field">
+                        <label class="harmonia__template-label">Description</label>
+                        <textarea id="template-description" class="harmonia__template-textarea" rows="3" placeholder="Describe what this template is for..."></textarea>
+                    </div>
+                    
+                    <div class="harmonia__template-row">
+                        <div class="harmonia__template-field">
+                            <label class="harmonia__template-label">Category</label>
+                            <select id="template-category" class="harmonia__template-select">
+                                <option value="development">Development</option>
+                                <option value="maintenance">Maintenance</option>
+                                <option value="testing">Testing</option>
+                                <option value="deployment">Deployment</option>
+                                <option value="analysis">Analysis</option>
+                            </select>
+                        </div>
+                        
+                        <div class="harmonia__template-field">
+                            <label class="harmonia__template-label">Difficulty</label>
+                            <select id="template-difficulty" class="harmonia__template-select">
+                                <option value="easy">Easy</option>
+                                <option value="medium">Medium</option>
+                                <option value="hard">Hard</option>
+                            </select>
+                        </div>
+                        
+                        <div class="harmonia__template-field">
+                            <label class="harmonia__template-label">Est. Duration</label>
+                            <input type="text" id="template-duration" class="harmonia__template-input" placeholder="e.g., 4-6 hours">
+                        </div>
+                    </div>
+                    
+                    <div class="harmonia__template-field">
+                        <label class="harmonia__template-label">Tags (comma-separated)</label>
+                        <input type="text" id="template-tags" class="harmonia__template-input" placeholder="e.g., feature, testing, review">
+                    </div>
+                    
+                    <div class="harmonia__template-field">
+                        <label class="harmonia__checkbox-label">
+                            <input type="checkbox" id="template-public" checked>
+                            <span>Make this template public</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <!-- Workflow Tasks -->
+                <div class="harmonia__template-section">
+                    <div class="harmonia__template-section-header">
+                        <h3 class="harmonia__template-section-title">Workflow Tasks</h3>
+                        <button class="harmonia__button harmonia__button--small harmonia__button--primary" onclick="addTemplateTask()">Add Task</button>
+                    </div>
+                    
+                    <div id="template-tasks-list" class="harmonia__template-tasks-list">
+                        <!-- Tasks will be added here dynamically -->
+                        <div class="harmonia__template-task" data-task-index="0">
+                            <div class="harmonia__template-task-header">
+                                <input type="text" class="harmonia__template-input" placeholder="Task Name" data-field="name">
+                                <button class="harmonia__button harmonia__button--small harmonia__button--secondary" onclick="removeTemplateTask(0)">Remove</button>
+                            </div>
+                            <div class="harmonia__template-task-fields">
+                                <select class="harmonia__template-select" data-field="component">
+                                    <option value="numa">Numa</option>
+                                    <option value="metis">Metis</option>
+                                    <option value="prometheus">Prometheus</option>
+                                    <option value="athena">Athena</option>
+                                    <option value="rhetor">Rhetor</option>
+                                    <option value="apollo">Apollo</option>
+                                    <option value="hermes">Hermes</option>
+                                    <option value="engram">Engram</option>
+                                </select>
+                                <input type="text" class="harmonia__template-input" placeholder="Description" data-field="description">
+                                <input type="number" class="harmonia__template-input harmonia__template-input--small" placeholder="Timeout (s)" data-field="timeout" value="3600">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="harmonia__modal-footer">
+            <button class="harmonia__button harmonia__button--secondary" onclick="closeTemplateModal()">Cancel</button>
+            <button class="harmonia__button harmonia__button--primary" onclick="saveTemplate()">Create Template</button>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Modal Styles */
+.harmonia__modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.harmonia__modal-content {
+    background-color: var(--bg-primary, #1a1a2a);
+    border: 1px solid var(--border-color, #444444);
+    border-radius: 12px;
+    width: 90%;
+    max-width: 800px;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.harmonia__modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    border-bottom: 1px solid var(--border-color, #444444);
+}
+
+.harmonia__modal-title {
+    margin: 0;
+    font-size: 1.5rem;
+    color: #7E57C2;
+}
+
+.harmonia__modal-close {
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: var(--text-secondary, #b0b0b0);
+    cursor: pointer;
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+.harmonia__modal-close:hover {
+    background-color: var(--bg-secondary, #252535);
+    color: var(--text-primary, #f0f0f0);
+}
+
+.harmonia__modal-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+}
+
+.harmonia__modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    padding: 20px;
+    border-top: 1px solid var(--border-color, #444444);
+}
+
+/* Template Form Styles */
+.harmonia__template-form {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+}
+
+.harmonia__template-section {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.harmonia__template-section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.harmonia__template-section-title {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: #7E57C2;
+}
+
+.harmonia__template-field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.harmonia__template-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+}
+
+.harmonia__template-label {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-primary, #f0f0f0);
+}
+
+.harmonia__template-input,
+.harmonia__template-select,
+.harmonia__template-textarea {
+    padding: 8px 12px;
+    background-color: var(--bg-tertiary, #333345);
+    border: 1px solid var(--border-color, #444444);
+    border-radius: 4px;
+    color: var(--text-primary, #f0f0f0);
+    font-size: 14px;
+}
+
+.harmonia__template-input:focus,
+.harmonia__template-select:focus,
+.harmonia__template-textarea:focus {
+    outline: none;
+    border-color: #7E57C2;
+}
+
+.harmonia__template-textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+.harmonia__template-input--small {
+    width: 120px;
+}
+
+/* Template Tasks */
+.harmonia__template-tasks-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.harmonia__template-task {
+    background-color: var(--bg-secondary, #252535);
+    border: 1px solid var(--border-color, #444444);
+    border-radius: 8px;
+    padding: 16px;
+}
+
+.harmonia__template-task-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    gap: 12px;
+}
+
+.harmonia__template-task-header .harmonia__template-input {
+    flex: 1;
+}
+
+.harmonia__template-task-fields {
+    display: grid;
+    grid-template-columns: 150px 1fr 120px;
+    gap: 12px;
+}
+</style>
