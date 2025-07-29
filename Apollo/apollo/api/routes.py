@@ -808,6 +808,31 @@ async def get_protocol_violations(
 
 # Message Routes
 
+@api_router.post("/message")
+async def handle_message(
+    request: dict,
+    apollo_manager = Depends(get_apollo_manager)
+):
+    """
+    Handle simple message requests (for aish compatibility).
+    
+    Accepts JSON with 'message' field and returns response.
+    """
+    try:
+        message = request.get("message", "")
+        if not message:
+            return {"error": "No message provided"}
+        
+        # Process the message through Apollo's AI specialist
+        # For now, return a simple response indicating Apollo received it
+        response = f"Apollo received: {message}"
+        
+        return {"response": response}
+        
+    except Exception as e:
+        logger.error(f"Error handling message: {e}")
+        return {"error": str(e)}
+
 @api_router.post("/messages", response_model=APIResponse)
 async def send_message(
     message: TektonMessage,

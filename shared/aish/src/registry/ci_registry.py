@@ -13,7 +13,11 @@ from datetime import datetime
 # Add parent paths for imports
 sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
 from shared.env import TektonEnviron
-from shared.urls import tekton_url
+from shared.urls import (
+    tekton_url, apollo_url, athena_url, engram_url, ergon_url, harmonia_url,
+    hermes_url, metis_url, noesis_url, numa_url, penia_url, prometheus_url,
+    rhetor_url, sophia_url, synthesis_url, telos_url, terma_url, hephaestus_url
+)
 
 # Import landmarks with fallback
 try:
@@ -66,106 +70,89 @@ except ImportError:
 class CIRegistry:
     """Unified registry for all CI types in Tekton."""
     
-    # Greek Chorus CIs with their standard ports and messaging configuration
+    # Greek Chorus CIs with their messaging configuration
     GREEK_CHORUS = {
         'numa': {
-            'port': 8316, 
             'description': 'Companion AI for Tekton Project',
             'message_endpoint': '/api/message',
             'message_format': 'json_simple'
         },
         'prometheus': {
-            'port': 8306, 
             'description': 'Forward planning and foresight',
             'message_endpoint': '/api/message',
             'message_format': 'json_simple'
         },
         'athena': {
-            'port': 8305, 
             'description': 'Strategic wisdom and decision making',
             'message_endpoint': '/api/message',
             'message_format': 'json_simple'
         },
         'synthesis': {
-            'port': 8309, 
             'description': 'Integration and coordination',
             'message_endpoint': '/api/message',
             'message_format': 'json_simple'
         },
         'apollo': {
-            'port': 8312, 
             'description': 'Predictive intelligence and attention',
-            'message_endpoint': '/mcp/process',
-            'message_format': 'mcp'
+            'message_endpoint': '/api/message',
+            'message_format': 'json_simple'
         },
         'rhetor': {
-            'port': 8303, 
             'description': 'Communication and prompt optimization',
-            'message_endpoint': '/api/message',  # Direct to Rhetor
+            'message_endpoint': '/api/message',
             'message_format': 'json_simple'
         },
         'metis': {
-            'port': 8311, 
             'description': 'Analysis and insight',
             'message_endpoint': '/api/message',
             'message_format': 'json_simple'
         },
         'harmonia': {
-            'port': 8307, 
             'description': 'Balance and system harmony',
             'message_endpoint': '/api/message',
             'message_format': 'json_simple'
         },
         'noesis': {
-            'port': 8315, 
             'description': 'Understanding and comprehension',
             'message_endpoint': '/api/message',
             'message_format': 'json_simple'
         },
         'engram': {
-            'port': 8300, 
             'description': 'Memory and persistence',
             'message_endpoint': '/api/message',
             'message_format': 'json_simple'
         },
         'penia': {
-            'port': 8313, 
             'description': 'Resource management',
             'message_endpoint': '/api/message',
             'message_format': 'json_simple'
         },
         'hermes': {
-            'port': 8301, 
             'description': 'Messaging and communication',
             'message_endpoint': '/api/message',
             'message_format': 'json_simple'
         },
         'ergon': {
-            'port': 8302, 
             'description': 'Work execution and tools',
             'message_endpoint': '/api/message',
             'message_format': 'json_simple'
         },
         'sophia': {
-            'port': 8314, 
             'description': 'Wisdom and knowledge',
             'message_endpoint': '/api/message',
             'message_format': 'json_simple'
         },
         'telos': {
-            'port': 8308, 
             'description': 'Purpose and completion',
             'message_endpoint': '/api/message',
             'message_format': 'json_simple'
         },
         'terma': {
-            'port': 8304, 
             'description': 'Terminal management',
             'message_endpoint': '/api/message',
             'message_format': 'json_simple'
         },
         'hephaestus': {
-            'port': 8080, 
             'description': 'User interface',
             'message_endpoint': '/api/message',
             'message_format': 'json_simple'
@@ -191,13 +178,40 @@ class CIRegistry:
     )
     def _load_greek_chorus(self):
         """Load Greek Chorus CIs into registry."""
+        # Map component names to their URL functions
+        url_functions = {
+            'apollo': apollo_url,
+            'athena': athena_url,
+            'engram': engram_url,
+            'ergon': ergon_url,
+            'harmonia': harmonia_url,
+            'hermes': hermes_url,
+            'metis': metis_url,
+            'noesis': noesis_url,
+            'numa': numa_url,
+            'penia': penia_url,
+            'prometheus': prometheus_url,
+            'rhetor': rhetor_url,
+            'sophia': sophia_url,
+            'synthesis': synthesis_url,
+            'telos': telos_url,
+            'terma': terma_url,
+            'hephaestus': hephaestus_url
+        }
+        
         for name, info in self.GREEK_CHORUS.items():
+            # Get the URL function for this component
+            url_fn = url_functions.get(name)
+            if url_fn:
+                endpoint = url_fn()
+            else:
+                # Fallback to tekton_url if specific function not found
+                endpoint = tekton_url(name)
+            
             self._registry[name] = {
                 'name': name,
-                'port': info['port'],
                 'type': 'greek',
-                'host': 'localhost',
-                'endpoint': f"http://localhost:{info['port']}",
+                'endpoint': endpoint,
                 'description': info['description'],
                 'message_endpoint': info.get('message_endpoint', '/rhetor/socket'),
                 'message_format': info.get('message_format', 'rhetor_socket'),
@@ -377,11 +391,18 @@ class CIRegistry:
             output.append("-" * 60)
             for ci in sorted(by_type['greek'], key=lambda x: x['name']):
                 name = ci['name']
-                port = ci['port']
+                endpoint = ci.get('endpoint', '')
+                # Extract port from endpoint for display
+                try:
+                    from urllib.parse import urlparse
+                    parsed = urlparse(endpoint)
+                    port = parsed.port or 80
+                except:
+                    port = 'unknown'
                 desc = ci.get('description', '')
                 forward = f" → {ci['forward_to']}" if 'forward_to' in ci else ""
                 json_mode = " [JSON]" if ci.get('forward_json') else ""
-                output.append(f"  {name:<15} (port {port:<5}){forward}{json_mode}")
+                output.append(f"  {name:<15} (port {port}){forward}{json_mode}")
                 if desc:
                     output.append(f"    {desc}")
             output.append("")
