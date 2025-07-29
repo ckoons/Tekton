@@ -192,9 +192,9 @@ class AIShell:
         responses = {}
         
         if pipeline_type == 'team-chat':
-            # Use the rhetor client for team chat
-            from core.rhetor_client import broadcast_to_rhetor
-            team_responses = broadcast_to_rhetor(pipeline['message'])
+            # Use the broadcast client for team chat
+            from core.broadcast_client import broadcast_to_cis
+            team_responses = broadcast_to_cis(pipeline['message'])
             
             # Format output
             result_lines = ["Team responses:", "-" * 40]

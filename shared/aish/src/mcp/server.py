@@ -77,7 +77,7 @@ except ImportError:
 # Import aish components
 sys.path.insert(0, str(Path(__file__).parent.parent))
 from core.unified_sender import send_to_ci
-from core.rhetor_client import broadcast_to_rhetor
+from core.broadcast_client import broadcast_to_cis
 from registry.ci_registry import get_registry
 from forwarding.forwarding_registry import ForwardingRegistry
 
@@ -310,8 +310,8 @@ async def team_chat(request: Request):
         raise HTTPException(status_code=400, detail="Missing message")
     
     try:
-        # Use rhetor client to broadcast
-        responses = broadcast_to_rhetor(message)
+        # Use broadcast client to send to all CIs
+        responses = broadcast_to_cis(message)
         
         # Format responses for the UI
         formatted_responses = []

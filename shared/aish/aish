@@ -285,8 +285,8 @@ def _handle_ai_command(args, shell, ai_names):
     
     if component == 'team-chat':
         # Team chat needs special handling - broadcast to all Greek Chorus AIs
-        from core.rhetor_client import broadcast_to_rhetor
-        responses = broadcast_to_rhetor(input_data)
+        from core.broadcast_client import broadcast_to_cis
+        responses = broadcast_to_cis(input_data)
         
         if responses:
             print("Team responses:")
@@ -447,6 +447,8 @@ Environment variables:
             print("  aish list                      List all CIs (unified registry)")
             print("  aish list type <type>          List CIs by type (terminal/greek/project)")
             print("  aish list json [type]          List CIs in JSON format")
+            print("  aish list context              Show context state for all CIs")
+            print("  aish list context <ci-name>    Show full context details for specific CI")
             print("  aish list commands             Show this command reference")
             print("  aish <ci-name> \"message\"       Send message to any CI")
             print()

@@ -71,32 +71,32 @@ class CIRegistry:
         'numa': {
             'port': 8316, 
             'description': 'Companion AI for Tekton Project',
-            'message_endpoint': '/rhetor/socket',  # Through Rhetor for now
-            'message_format': 'rhetor_socket'
+            'message_endpoint': '/api/message',
+            'message_format': 'json_simple'
         },
         'prometheus': {
             'port': 8306, 
             'description': 'Forward planning and foresight',
-            'message_endpoint': '/rhetor/socket',
-            'message_format': 'rhetor_socket'
+            'message_endpoint': '/api/message',
+            'message_format': 'json_simple'
         },
         'athena': {
             'port': 8305, 
             'description': 'Strategic wisdom and decision making',
-            'message_endpoint': '/rhetor/socket',
-            'message_format': 'rhetor_socket'
+            'message_endpoint': '/api/message',
+            'message_format': 'json_simple'
         },
         'synthesis': {
             'port': 8309, 
             'description': 'Integration and coordination',
-            'message_endpoint': '/rhetor/socket',
-            'message_format': 'rhetor_socket'
+            'message_endpoint': '/api/message',
+            'message_format': 'json_simple'
         },
         'apollo': {
             'port': 8312, 
             'description': 'Predictive intelligence and attention',
-            'message_endpoint': '/rhetor/socket',
-            'message_format': 'rhetor_socket'
+            'message_endpoint': '/mcp/process',
+            'message_format': 'mcp'
         },
         'rhetor': {
             'port': 8303, 
@@ -107,56 +107,56 @@ class CIRegistry:
         'metis': {
             'port': 8311, 
             'description': 'Analysis and insight',
-            'message_endpoint': '/rhetor/socket',
-            'message_format': 'rhetor_socket'
+            'message_endpoint': '/api/message',
+            'message_format': 'json_simple'
         },
         'harmonia': {
             'port': 8307, 
             'description': 'Balance and system harmony',
-            'message_endpoint': '/rhetor/socket',
-            'message_format': 'rhetor_socket'
+            'message_endpoint': '/api/message',
+            'message_format': 'json_simple'
         },
         'noesis': {
             'port': 8315, 
             'description': 'Understanding and comprehension',
-            'message_endpoint': '/rhetor/socket',
-            'message_format': 'rhetor_socket'
+            'message_endpoint': '/api/message',
+            'message_format': 'json_simple'
         },
         'engram': {
             'port': 8300, 
             'description': 'Memory and persistence',
-            'message_endpoint': '/rhetor/socket',
-            'message_format': 'rhetor_socket'
+            'message_endpoint': '/api/message',
+            'message_format': 'json_simple'
         },
         'penia': {
             'port': 8313, 
             'description': 'Resource management',
-            'message_endpoint': '/rhetor/socket',
-            'message_format': 'rhetor_socket'
+            'message_endpoint': '/api/message',
+            'message_format': 'json_simple'
         },
         'hermes': {
             'port': 8301, 
             'description': 'Messaging and communication',
-            'message_endpoint': '/rhetor/socket',
-            'message_format': 'rhetor_socket'
+            'message_endpoint': '/api/message',
+            'message_format': 'json_simple'
         },
         'ergon': {
             'port': 8302, 
             'description': 'Work execution and tools',
-            'message_endpoint': '/rhetor/socket',
-            'message_format': 'rhetor_socket'
+            'message_endpoint': '/api/message',
+            'message_format': 'json_simple'
         },
         'sophia': {
             'port': 8314, 
             'description': 'Wisdom and knowledge',
-            'message_endpoint': '/rhetor/socket',
-            'message_format': 'rhetor_socket'
+            'message_endpoint': '/api/message',
+            'message_format': 'json_simple'
         },
         'telos': {
             'port': 8308, 
             'description': 'Purpose and completion',
-            'message_endpoint': '/rhetor/socket',
-            'message_format': 'rhetor_socket'
+            'message_endpoint': '/api/message',
+            'message_format': 'json_simple'
         },
         'terma': {
             'port': 8304, 
@@ -175,6 +175,7 @@ class CIRegistry:
     def __init__(self):
         """Initialize the unified CI registry."""
         self._registry: Dict[str, Dict[str, Any]] = {}
+        self._context_state: Dict[str, Dict[str, Any]] = {}  # Apollo-Rhetor coordination state
         self._load_greek_chorus()
         self._load_terminals()
         self._load_projects()
@@ -410,6 +411,143 @@ class CIRegistry:
             output.append("")
         
         return "\n".join(output)
+    
+    # Apollo-Rhetor Coordination Methods
+    @state_checkpoint(
+        title="Apollo-Rhetor Context Coordination",
+        description="In-memory state for Apollo planning and Rhetor execution of CI prompts",
+        state_type="coordination",
+        persistence=False,
+        consistency_requirements="Real-time coordination, no persistence needed",
+        recovery_strategy="State cleared on restart"
+    )
+    def set_ci_staged_context_prompt(self, ci_name: str, prompt_data: Optional[List[Dict]]) -> bool:
+        """
+        Apollo sets staged prompts for future scenarios.
+        
+        Args:
+            ci_name: Name of the CI
+            prompt_data: List of dicts with prompt data, or None to clear
+            
+        Returns:
+            bool: True if successful, False if CI not found
+        """
+        ci_name = ci_name.lower()
+        if ci_name not in self._registry:
+            return False
+            
+        if ci_name not in self._context_state:
+            self._context_state[ci_name] = {}
+            
+        self._context_state[ci_name]['staged_context_prompt'] = prompt_data
+        return True
+    
+    def set_ci_next_context_prompt(self, ci_name: str, prompt_data: Optional[List[Dict]]) -> bool:
+        """
+        Rhetor or direct set of next prompt to inject.
+        
+        Args:
+            ci_name: Name of the CI
+            prompt_data: List of dicts with prompt data, or None to clear
+            
+        Returns:
+            bool: True if successful, False if CI not found
+        """
+        ci_name = ci_name.lower()
+        if ci_name not in self._registry:
+            return False
+            
+        if ci_name not in self._context_state:
+            self._context_state[ci_name] = {}
+            
+        self._context_state[ci_name]['next_context_prompt'] = prompt_data
+        return True
+    
+    def get_ci_last_output(self, ci_name: str) -> Optional[str]:
+        """
+        Get the complete output from CI's last turn.
+        
+        Args:
+            ci_name: Name of the CI
+            
+        Returns:
+            Optional[str]: Last output string (could be text or JSON), or None
+        """
+        ci_name = ci_name.lower()
+        if ci_name not in self._context_state:
+            return None
+            
+        return self._context_state[ci_name].get('last_output')
+    
+    def set_ci_next_from_staged(self, ci_name: str) -> bool:
+        """
+        Move staged_context_prompt -> next_context_prompt and clear staged.
+        This is Rhetor's main action to promote Apollo's plan.
+        
+        Args:
+            ci_name: Name of the CI
+            
+        Returns:
+            bool: True if successful, False if CI not found or no staged prompt
+        """
+        ci_name = ci_name.lower()
+        if ci_name not in self._registry:
+            return False
+            
+        if ci_name not in self._context_state:
+            return False
+            
+        staged = self._context_state[ci_name].get('staged_context_prompt')
+        if staged is None:
+            return False
+            
+        # Move staged to next and clear staged
+        self._context_state[ci_name]['next_context_prompt'] = staged
+        self._context_state[ci_name]['staged_context_prompt'] = None
+        return True
+    
+    def update_ci_last_output(self, ci_name: str, output: str) -> bool:
+        """
+        Store the CI's output when turn completes.
+        
+        Args:
+            ci_name: Name of the CI
+            output: Complete output string from the CI's turn
+            
+        Returns:
+            bool: True if successful, False if CI not found
+        """
+        ci_name = ci_name.lower()
+        if ci_name not in self._registry:
+            return False
+            
+        if ci_name not in self._context_state:
+            self._context_state[ci_name] = {}
+            
+        self._context_state[ci_name]['last_output'] = output
+        return True
+    
+    def get_ci_context_state(self, ci_name: str) -> Optional[Dict[str, Any]]:
+        """
+        Get the complete context state for a CI (for debugging/monitoring).
+        
+        Args:
+            ci_name: Name of the CI
+            
+        Returns:
+            Optional[Dict]: Complete context state or None
+        """
+        ci_name = ci_name.lower()
+        return self._context_state.get(ci_name)
+    
+    def get_all_context_states(self) -> Dict[str, Dict[str, Any]]:
+        """
+        Get all CI context states (for Apollo/Rhetor global view).
+        
+        Returns:
+            Dict: All context states keyed by CI name
+        """
+        return self._context_state.copy()
 
 
 # Singleton instance

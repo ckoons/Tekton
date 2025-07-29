@@ -1,6 +1,6 @@
 """
-Simple Rhetor client for sending messages to Greek Chorus AIs.
-Replaces the old MessageHandler and shell.send_to_ai methods.
+Broadcast client for sending messages to multiple CIs.
+Supports broadcasting to all Greek Chorus AIs or specific CI groups.
 """
 
 import json
@@ -149,16 +149,16 @@ def send_to_rhetor(ai_name: str, message: str, rhetor_endpoint: str = None) -> O
     optimization_notes="Rhetor handles parallel AI queries internally",
     measured_impact="Enables real-time team collaboration"
 )
-def broadcast_to_rhetor(message: str, rhetor_endpoint: str = None) -> Dict[str, str]:
+def broadcast_to_cis(message: str, rhetor_endpoint: str = None) -> Dict[str, str]:
     """
-    Broadcast a message to all Greek Chorus AIs via Rhetor.
+    Broadcast a message to all Greek Chorus CIs.
     
     Args:
         message: Message to broadcast
-        rhetor_endpoint: Optional Rhetor endpoint override
+        rhetor_endpoint: Optional endpoint override (kept for compatibility)
         
     Returns:
-        Dict[str, str]: Responses from each AI
+        Dict[str, str]: Responses from each CI
     """
     if not rhetor_endpoint:
         # Get default Rhetor endpoint

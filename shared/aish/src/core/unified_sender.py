@@ -122,52 +122,72 @@ def send_to_ci(ci_name: str, message: str) -> bool:
             url = ci.get('endpoint') + message_endpoint
             data = json.dumps(msg_data).encode('utf-8')
             
-        elif message_format == 'rhetor_socket':
-            # Use Rhetor client for Greek Chorus AIs
-            from core.rhetor_client import send_to_rhetor
-            response = send_to_rhetor(ci_name, message)
-            if response:
-                print(response)
-                return True
-            return False
+        elif message_format == 'mcp':
+            # MCP format for Apollo and similar services
+            msg_data = {
+                "content": {"message": message},
+                "context": {}
+            }
+            url = ci.get('endpoint') + message_endpoint
+            data = json.dumps(msg_data).encode('utf-8')
             
         else:
             print(f"Unknown message format: {message_format}")
             return False
         
-        # Send the message (for non-Rhetor formats)
-        if message_format != 'rhetor_socket':
-            req = urllib.request.Request(
-                url,
-                data=data,
-                headers={'Content-Type': 'application/json'}
-            )
+        # Send the message
+        req = urllib.request.Request(
+            url,
+            data=data,
+            headers={'Content-Type': 'application/json'}
+        )
+        
+        with urllib.request.urlopen(req, timeout=30) as response:
+            response_text = response.read()
+            result = json.loads(response_text)
             
-            with urllib.request.urlopen(req, timeout=30) as response:
-                result = json.loads(response.read())
-                
-            # Handle response based on format
-            if message_format == 'terma_route':
-                if result.get("success"):
-                    delivered = result.get("delivered_to", [])
-                    if delivered:
-                        print(f"Message sent to: {', '.join(delivered)}")
-                        return True
-                    else:
-                        print("No terminals matched the target")
-                        return False
+        # Capture output for Apollo-Rhetor coordination
+        registry.update_ci_last_output(ci_name, response_text.decode('utf-8'))
+            
+        # Handle response based on format
+        if message_format == 'terma_route':
+            if result.get("success"):
+                delivered = result.get("delivered_to", [])
+                if delivered:
+                    print(f"Message sent to: {', '.join(delivered)}")
+                    return True
                 else:
-                    print(f"Failed: {result.get('error', 'Unknown error')}")
+                    print("No terminals matched the target")
                     return False
             else:
-                # For json_simple format
-                if 'response' in result:
-                    print(result['response'])
-                elif 'message' in result:
-                    print(result['message'])
+                print(f"Failed: {result.get('error', 'Unknown error')}")
+                return False
+        elif message_format == 'mcp':
+            # For MCP format
+            if 'content' in result:
+                content = result['content']
+                if isinstance(content, dict):
+                    if 'error' in content:
+                        print(f"Error: {content['error']}")
+                        return False
+                    elif 'message' in content:
+                        print(content['message'])
+                    else:
+                        print(json.dumps(content, indent=2))
                 else:
-                    print(json.dumps(result, indent=2))
-                return True
+                    print(content)
+            else:
+                print(json.dumps(result, indent=2))
+            return True
+        else:
+            # For json_simple format
+            if 'response' in result:
+                print(result['response'])
+            elif 'message' in result:
+                print(result['message'])
+            else:
+                print(json.dumps(result, indent=2))
+            return True
                 
     except urllib.error.HTTPError as e:
         if e.code == 404:
