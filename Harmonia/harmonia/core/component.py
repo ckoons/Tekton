@@ -16,6 +16,30 @@ from tekton.utils.tekton_http import HTTPClient
 from tekton.utils.tekton_context import ContextManager
 from tekton.utils.tekton_errors import ComponentNotFoundError, TektonNotFoundError
 
+# Import landmarks with fallback
+try:
+    from landmarks import (
+        architecture_decision,
+        integration_point,
+        state_checkpoint
+    )
+except ImportError:
+    # Define no-op decorators when landmarks not available
+    def architecture_decision(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+    
+    def integration_point(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+    
+    def state_checkpoint(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+
 # Define local error class since it's missing from tekton_errors
 class ActionNotFoundError(TektonNotFoundError):
     """Raised when an action is not found for a component."""
@@ -247,6 +271,23 @@ class StandardComponentAdapter:
         return self.action_schemas.get(action)
 
 
+@architecture_decision(
+    title="Component Registry Pattern",
+    description="Central registry for managing connections to all Tekton components",
+    rationale="Enables dynamic component discovery and flexible task routing",
+    alternatives_considered=["Static configuration", "Service mesh", "Direct coupling"],
+    impacts=["workflow_flexibility", "component_decoupling", "system_scalability"],
+    decided_by="Casey",
+    decision_date="2025-01-29"
+)
+@state_checkpoint(
+    title="Component Registry State",
+    description="Maintains registry of available components and their capabilities",
+    state_type="registry",
+    persistence=False,
+    consistency_requirements="Eventually consistent with Hermes service discovery",
+    recovery_strategy="Re-discover components from Hermes on restart"
+)
 class ComponentRegistry:
     """
     Registry for component adapters.
@@ -392,6 +433,14 @@ class ComponentRegistry:
             # Discover components
             await self.discover_components(hermes_url)
     
+    @integration_point(
+        title="Component Action Execution",
+        description="Routes workflow tasks to appropriate Tekton components",
+        target_component="Any Tekton Component",
+        protocol="HTTP REST API",
+        data_flow="TaskDefinition → ComponentAdapter → Component API → Results",
+        integration_date="2025-01-29"
+    )
     async def execute_action(
         self,
         component_name: str,

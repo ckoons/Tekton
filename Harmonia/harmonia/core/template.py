@@ -20,10 +20,45 @@ from harmonia.models.template import (
 from harmonia.models.workflow import WorkflowDefinition
 from harmonia.core.expressions import evaluate_expression, substitute_parameters
 
+# Import landmarks with fallback
+try:
+    from landmarks import (
+        architecture_decision,
+        state_checkpoint
+    )
+except ImportError:
+    # Define no-op decorators when landmarks not available
+    def architecture_decision(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+    
+    def state_checkpoint(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+
 # Configure logger
 logger = logging.getLogger(__name__)
 
 
+@architecture_decision(
+    title="Template System Design",
+    description="File-based template storage for reusable workflow patterns",
+    rationale="Enables teams to share and reuse common workflow patterns",
+    alternatives_considered=["Database storage", "No templating", "External template service"],
+    impacts=["workflow_reusability", "team_productivity", "pattern_consistency"],
+    decided_by="Casey",
+    decision_date="2025-01-29"
+)
+@state_checkpoint(
+    title="Template Storage",
+    description="File-based templates stored in TEKTON_ROOT/harmonia/templates/",
+    state_type="file_system",
+    persistence=True,
+    consistency_requirements="Templates immutable once created",
+    recovery_strategy="Reload from filesystem on startup"
+)
 class TemplateManager:
     """
     Manager for workflow templates.

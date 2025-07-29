@@ -36,10 +36,55 @@ from harmonia.core.state import StateManager
 from harmonia.core.expressions import evaluate_expression, substitute_parameters, evaluate_condition
 from harmonia.core.component import ComponentRegistry
 
+# Import landmarks with fallback
+try:
+    from landmarks import (
+        architecture_decision,
+        performance_boundary,
+        integration_point,
+        danger_zone,
+        state_checkpoint
+    )
+except ImportError:
+    # Define no-op decorators when landmarks not available
+    def architecture_decision(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+    
+    def performance_boundary(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+    
+    def integration_point(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+    
+    def danger_zone(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+    
+    def state_checkpoint(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+
 # Configure logger
 logger = logging.getLogger(__name__)
 
 
+@architecture_decision(
+    title="Workflow Engine Architecture",
+    description="Core orchestration engine that transforms Metis tasks into executable CI workflows",
+    rationale="Provides visual workflow design, component routing, and real-time execution monitoring",
+    alternatives_considered=["Static configuration", "Script-based orchestration", "External workflow tools"],
+    impacts=["task_execution", "component_coordination", "error_handling"],
+    decided_by="Casey",
+    decision_date="2025-01-29"
+)
 class WorkflowEngine:
     """
     Core workflow execution engine.
@@ -91,6 +136,14 @@ class WorkflowEngine:
         
         logger.info("Workflow engine initialized")
     
+    @integration_point(
+        title="Workflow Execution Entry Point",
+        description="Main entry point for executing workflows from Metis task definitions",
+        target_component="ComponentRegistry, StateManager",
+        protocol="internal_api",
+        data_flow="WorkflowDefinition → TaskExecution → Component routing → Results",
+        integration_date="2025-01-29"
+    )
     async def execute_workflow(
         self,
         workflow_def: WorkflowDefinition,
@@ -379,6 +432,21 @@ class WorkflowEngine:
                 if not task.done():
                     task.cancel()
     
+    @performance_boundary(
+        title="Task Execution Pipeline",
+        description="Executes individual tasks with retry logic and component routing",
+        sla="<5s for task routing and initialization",
+        optimization_notes="Semaphore limits concurrent tasks to prevent overload",
+        measured_impact="Enables parallel task execution while maintaining system stability"
+    )
+    @danger_zone(
+        title="Component Task Execution",
+        description="Routes tasks to external components with error handling",
+        risk_level="medium",
+        risks=["component_failures", "timeout_errors", "retry_exhaustion"],
+        mitigation="Retry policy with exponential backoff, error isolation",
+        review_required=True
+    )
     async def _execute_task(
         self,
         workflow_def: WorkflowDefinition,
