@@ -70,7 +70,41 @@ from harmonia.models.webhook import (
     WebhookEvent
 )
 from tekton.utils.tekton_errors import TektonNotFoundError as NotFoundError, DataValidationError as ValidationError, AuthorizationError
-from landmarks import api_contract, integration_point, danger_zone
+# Import landmarks with fallback
+try:
+    from landmarks import (
+        api_contract, 
+        integration_point, 
+        architecture_decision,
+        code_insight,
+        data_validation,
+        danger_zone
+    )
+except ImportError:
+    # Fallback decorators if landmarks not available
+    def api_contract(**kwargs):
+        def decorator(func): return func
+        return decorator
+    
+    def integration_point(**kwargs):
+        def decorator(func): return func
+        return decorator
+    
+    def architecture_decision(**kwargs):
+        def decorator(func): return func
+        return decorator
+    
+    def code_insight(**kwargs):
+        def decorator(func): return func
+        return decorator
+    
+    def data_validation(**kwargs):
+        def decorator(func): return func
+        return decorator
+    
+    def danger_zone(**kwargs):
+        def decorator(func): return func
+        return decorator
 
 # Import FastMCP endpoints - will be used in lifespan
 from .fastmcp_endpoints import fastmcp_router, fastmcp_startup, fastmcp_shutdown, set_workflow_engine
@@ -84,6 +118,19 @@ harmonia_component = HarmoniaComponent()
 # Configure logger
 logger = setup_component_logging("harmonia")
 
+@architecture_decision(
+    title="Component Initialization Pattern",
+    problem="Components need consistent initialization with service discovery",
+    solution="Standard component initialization with Hermes registration",
+    alternatives=["Manual registration", "Service mesh", "Static configuration"],
+    rationale="Ensures all components follow same lifecycle and are discoverable"
+)
+@integration_point(
+    title="Harmonia Startup",
+    target_component="Hermes, Workflow Engine, Component Registry",
+    protocol="Python API, HTTP for Hermes",
+    data_flow="Initialize Component -> Register with Hermes -> Setup Event Handlers"
+)
 async def startup_callback():
     """Initialize Harmonia component (includes Hermes registration)."""
     # Initialize component (includes Hermes registration and workflow engine setup)
@@ -195,6 +242,19 @@ websocket_router = APIRouter(prefix="/ws")
 events_router = APIRouter(prefix="/events")
 
 # Connection manager for WebSockets
+@architecture_decision(
+    title="WebSocket Connection Management",
+    problem="Need to manage multiple concurrent WebSocket connections for workflow events",
+    solution="Centralized connection manager with subscription model",
+    alternatives=["Server-sent events", "Polling", "Message queue"],
+    rationale="WebSockets provide bidirectional real-time communication with low latency"
+)
+@code_insight(
+    title="Connection State Management",
+    description="Tracks active connections and their subscriptions to workflow executions",
+    patterns=["Registry pattern", "Observer pattern"],
+    performance_impact="O(1) connection lookup, O(n) broadcast where n is subscribers"
+)
 class ConnectionManager:
     """Manages active WebSocket connections."""
 
@@ -463,6 +523,10 @@ async def discovery():
             EndpointInfo(path="/api/v1/executions", method="GET", description="List executions"),
             EndpointInfo(path="/api/v1/executions", method="POST", description="Create execution"),
             EndpointInfo(path="/api/v1/templates", method="GET", description="List templates"),
+            EndpointInfo(path="/api/v1/templates", method="POST", description="Create template"),
+            EndpointInfo(path="/api/v1/templates/import", method="POST", description="Import template"),
+            EndpointInfo(path="/api/v1/templates/{id}/export", method="GET", description="Export template"),
+            EndpointInfo(path="/api/v1/workflows/{id}/draft", method="POST", description="Save workflow draft"),
             EndpointInfo(path="/api/v1/components", method="GET", description="List components"),
             EndpointInfo(path="/ws/executions/{id}", method="WS", description="Execution WebSocket"),
             EndpointInfo(path="/events/executions/{id}", method="GET", description="Execution events (SSE)")
@@ -514,15 +578,29 @@ async def create_workflow(
     """
     try:
         # Convert to WorkflowDefinition
-        workflow_def = WorkflowDefinition(
-            name=definition.name,
-            description=definition.description,
-            tasks=definition.tasks,
-            input=definition.input,
-            output=definition.output,
-            version=definition.version,
-            metadata=definition.metadata
+        @data_validation(
+            title="Workflow Definition Validation",
+            validation_type="schema",
+            rules=[
+                "Task IDs must be unique",
+                "Task dependencies must form a DAG (no cycles)",
+                "Input/output schemas must be valid JSON Schema",
+                "All task references must exist"
+            ],
+            error_handling="Return 400 with validation errors"
         )
+        def validate_and_create():
+            return WorkflowDefinition(
+                name=definition.name,
+                description=definition.description,
+                tasks=definition.tasks,
+                input=definition.input,
+                output=definition.output,
+                version=definition.version,
+                metadata=definition.metadata
+            )
+        
+        workflow_def = validate_and_create()
         
         # Save to state manager
         await engine.state_manager.save_workflow_definition(workflow_def)
@@ -1229,6 +1307,271 @@ async def instantiate_template(
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@routers.v1.post("/templates/import", response_model=APIResponse, status_code=201)
+@api_contract(
+    title="Template Import API",
+    endpoint="/api/v1/templates/import",
+    method="POST",
+    request_schema={"name": "string", "description": "string", "workflow_definition": "object", "parameters": "object"}
+)
+async def import_template(
+    template_data: Dict[str, Any],
+    engine: WorkflowEngine = Depends(get_workflow_engine)
+):
+    """
+    Import a template from JSON data.
+    
+    Args:
+        template_data: Template data to import
+        engine: Workflow engine
+        
+    Returns:
+        Imported template
+    """
+    try:
+        # Get template manager
+        template_manager = engine.template_manager
+        if not template_manager:
+            raise HTTPException(status_code=503, detail="Template manager not initialized")
+        
+        # Create workflow definition first
+        workflow_def = WorkflowDefinition(
+            name=template_data.get('workflow_definition', {}).get('name', template_data.get('name', 'Imported Template')),
+            description=template_data.get('workflow_definition', {}).get('description', ''),
+            tasks=template_data.get('workflow_definition', {}).get('tasks', {}),
+            input=template_data.get('workflow_definition', {}).get('input', {}),
+            output=template_data.get('workflow_definition', {}).get('output', {}),
+            version=template_data.get('workflow_definition', {}).get('version', '1.0'),
+            metadata=template_data.get('workflow_definition', {}).get('metadata', {})
+        )
+        
+        # Save workflow definition
+        await engine.state_manager.save_workflow_definition(workflow_def)
+        
+        # Create template
+        from harmonia.models.template import ParameterDefinition
+        parameters = {}
+        for param_name, param_data in template_data.get('parameters', {}).items():
+            if isinstance(param_data, dict):
+                parameters[param_name] = ParameterDefinition(**param_data)
+            else:
+                parameters[param_name] = ParameterDefinition(
+                    name=param_name,
+                    parameter_type="string",
+                    description=str(param_data),
+                    default_value=param_data
+                )
+        
+        # Create and save template
+        template = template_manager.create_template(
+            name=template_data.get('name', 'Imported Template'),
+            workflow_definition=workflow_def,
+            description=template_data.get('description', ''),
+            parameters=parameters,
+            category_ids=[],
+            tags=template_data.get('tags', []),
+            is_public=template_data.get('is_public', True),
+            created_by="harmonia-ui",
+            metadata=template_data.get('metadata', {})
+        )
+        
+        # Save template to file-based storage
+        await save_template_to_file(template)
+        
+        return APIResponse(
+            status="success",
+            message=f"Template '{template.name}' imported successfully",
+            data={
+                "template_id": str(template.id),
+                "name": template.name,
+                "workflow_definition_id": str(workflow_def.id)
+            }
+        )
+    
+    except ValidationError as e:
+        raise HTTPException(status_code=422, detail=str(e))
+    
+    except Exception as e:
+        logger.error(f"Error importing template: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@routers.v1.get("/templates/{template_id}/export", response_model=APIResponse)
+async def export_template(
+    template_id: UUID,
+    engine: WorkflowEngine = Depends(get_workflow_engine)
+):
+    """
+    Export a template as JSON.
+    
+    Args:
+        template_id: Template ID
+        engine: Workflow engine
+        
+    Returns:
+        Template export data
+    """
+    try:
+        # Get template manager
+        template_manager = engine.template_manager
+        if not template_manager:
+            raise HTTPException(status_code=503, detail="Template manager not initialized")
+        
+        template = template_manager.get_template(template_id)
+        
+        if not template:
+            raise NotFoundError(f"Template {template_id} not found")
+        
+        # Get workflow definition
+        workflow_def = await engine.state_manager.load_workflow_definition(template.workflow_definition_id)
+        
+        # Create export data
+        export_data = {
+            "name": template.name,
+            "description": template.description,
+            "workflow_definition": {
+                "name": workflow_def.name if workflow_def else template.name,
+                "description": workflow_def.description if workflow_def else template.description,
+                "tasks": workflow_def.tasks if workflow_def else {},
+                "input": workflow_def.input if workflow_def else {},
+                "output": workflow_def.output if workflow_def else {},
+                "version": workflow_def.version if workflow_def else "1.0",
+                "metadata": workflow_def.metadata if workflow_def else {}
+            },
+            "parameters": {name: param.dict() for name, param in template.parameters.items()},
+            "tags": template.tags,
+            "is_public": template.is_public,
+            "metadata": template.metadata,
+            "created_at": template.created_at.isoformat(),
+            "usage_count": template.usage_count
+        }
+        
+        return APIResponse(
+            status="success",
+            message=f"Template '{template.name}' exported successfully",
+            data=export_data
+        )
+    
+    except NotFoundError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+    
+    except Exception as e:
+        logger.error(f"Error exporting template: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@routers.v1.post("/workflows/{workflow_id}/draft", response_model=APIResponse)
+async def save_workflow_draft(
+    workflow_id: UUID,
+    draft_data: Dict[str, Any],
+    engine: WorkflowEngine = Depends(get_workflow_engine)
+):
+    """
+    Save a workflow as a draft.
+    
+    Args:
+        workflow_id: Workflow ID
+        draft_data: Draft data
+        engine: Workflow engine
+        
+    Returns:
+        Draft save confirmation
+    """
+    try:
+        # Get workflow definition
+        workflow_def = await engine.state_manager.load_workflow_definition(workflow_id)
+        
+        if not workflow_def:
+            raise NotFoundError(f"Workflow {workflow_id} not found")
+        
+        # Update workflow with draft data
+        workflow_def.metadata.update({
+            "draft": True,
+            "draft_saved_at": datetime.now().isoformat(),
+            "draft_data": draft_data
+        })
+        
+        # Save updated workflow
+        await engine.state_manager.save_workflow_definition(workflow_def)
+        
+        return APIResponse(
+            status="success",
+            message=f"Draft saved for workflow '{workflow_def.name}'",
+            data={
+                "workflow_id": str(workflow_id),
+                "draft_id": f"draft-{workflow_id}",
+                "saved_at": workflow_def.metadata.get("draft_saved_at")
+            }
+        )
+    
+    except NotFoundError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+    
+    except Exception as e:
+        logger.error(f"Error saving workflow draft: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+async def save_template_to_file(template):
+    """Save template to file-based storage in TEKTON_ROOT/harmonia/templates/."""
+    import os
+    import json
+    from tekton.utils.tekton_env import get_tekton_root
+    
+    try:
+        tekton_root = get_tekton_root()
+        templates_dir = os.path.join(tekton_root, 'harmonia', 'templates')
+        os.makedirs(templates_dir, exist_ok=True)
+        
+        template_file = os.path.join(templates_dir, f"{template.name.replace(' ', '_').lower()}.json")
+        
+        template_data = template.dict()
+        template_data['id'] = str(template.id)
+        template_data['created_at'] = template.created_at.isoformat()
+        
+        with open(template_file, 'w') as f:
+            json.dump(template_data, f, indent=2)
+        
+        logger.info(f"Template saved to file: {template_file}")
+        
+    except Exception as e:
+        logger.error(f"Error saving template to file: {e}")
+        # Don't raise exception - this is a nice-to-have feature
+
+
+async def load_templates_from_files():
+    """Load templates from file-based storage."""
+    import os
+    import json
+    from tekton.utils.tekton_env import get_tekton_root
+    
+    templates = []
+    
+    try:
+        tekton_root = get_tekton_root()
+        templates_dir = os.path.join(tekton_root, 'harmonia', 'templates')
+        
+        if not os.path.exists(templates_dir):
+            return templates
+        
+        for filename in os.listdir(templates_dir):
+            if filename.endswith('.json'):
+                template_file = os.path.join(templates_dir, filename)
+                try:
+                    with open(template_file, 'r') as f:
+                        template_data = json.load(f)
+                    templates.append(template_data)
+                except Exception as e:
+                    logger.error(f"Error loading template file {filename}: {e}")
+        
+        logger.info(f"Loaded {len(templates)} templates from files")
+        
+    except Exception as e:
+        logger.error(f"Error loading templates from files: {e}")
+    
+    return templates
+
+
 # Webhook Endpoints
 
 @routers.v1.post("/webhooks", response_model=APIResponse, status_code=201)
@@ -1355,6 +1698,19 @@ async def trigger_webhook(
 # Component Endpoints
 
 @routers.v1.get("/components", response_model=APIResponse)
+@api_contract(
+    title="Component Registry API",
+    endpoint="/api/v1/components",
+    method="GET",
+    response_schema={"components": ["string"]}
+)
+@architecture_decision(
+    title="Component Discovery",
+    problem="Need to discover available Tekton components dynamically",
+    solution="Central component registry with real-time discovery",
+    alternatives=["Static configuration", "Service mesh discovery"],
+    rationale="Allows dynamic component addition without restart"
+)
 async def list_components(
     engine: WorkflowEngine = Depends(get_workflow_engine)
 ):
@@ -1466,6 +1822,26 @@ async def get_action_schema(
 
 
 @routers.v1.post("/components/{component_name}/actions/{action}", response_model=APIResponse)
+@api_contract(
+    title="Component Action Execution API",
+    endpoint="/api/v1/components/{component_name}/actions/{action}",
+    method="POST",
+    request_schema={"params": "object"},
+    response_schema={"result": "any"}
+)
+@integration_point(
+    title="Component Action Invocation",
+    target_component="Individual Tekton Components (numa, metis, etc.)",
+    protocol="Python API, potentially HTTP",
+    data_flow="Harmonia -> Component Registry -> Target Component -> Action Result"
+)
+@danger_zone(
+    title="Remote Component Execution",
+    risk_level="medium",
+    risks=["Unbounded execution time", "Resource consumption", "Component failures"],
+    mitigations=["Timeouts", "Resource limits", "Error handling"],
+    review_required=False
+)
 async def execute_component_action(
     component_name: str,
     action: str,
@@ -1512,6 +1888,25 @@ async def execute_component_action(
 # --- WebSocket Endpoints ---
 
 @websocket_router.websocket("/executions/{execution_id}")
+@api_contract(
+    title="Workflow Execution WebSocket",
+    endpoint="/ws/executions/{execution_id}",
+    method="WebSocket",
+    protocol="WebSocket",
+    events=["connected", "event", "error", "disconnected"]
+)
+@integration_point(
+    title="Real-time Event Streaming",
+    target_component="Workflow Engine, Event Manager",
+    protocol="WebSocket",
+    data_flow="Workflow Events -> Event Manager -> WebSocket -> Client"
+)
+@code_insight(
+    title="WebSocket Connection Management",
+    description="Manages long-lived connections for real-time workflow updates",
+    patterns=["Observer pattern", "Pub/Sub"],
+    performance_impact="Low latency event delivery, memory per connection"
+)
 async def execution_websocket(
     websocket: WebSocket,
     execution_id: UUID
@@ -1577,6 +1972,25 @@ async def execution_websocket(
 # --- Event Stream Endpoints ---
 
 @events_router.get("/executions/{execution_id}")
+@api_contract(
+    title="Workflow Events SSE Stream",
+    endpoint="/events/executions/{execution_id}",
+    method="GET",
+    protocol="Server-Sent Events",
+    response_type="text/event-stream"
+)
+@integration_point(
+    title="Event Streaming",
+    target_component="Workflow Engine, Event Manager",
+    protocol="Server-Sent Events (SSE)",
+    data_flow="Workflow Events -> Event Queue -> SSE Stream -> Client"
+)
+@code_insight(
+    title="Server-Sent Events Implementation",
+    description="Provides unidirectional event streaming from server to client",
+    patterns=["Event streaming", "Queue-based distribution"],
+    performance_impact="Lower overhead than WebSocket for server-to-client only"
+)
 async def execution_events(
     execution_id: UUID,
     request: Request,

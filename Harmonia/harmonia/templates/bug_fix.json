@@ -1,0 +1,110 @@
+{
+  "name": "Bug Fix",
+  "description": "Quick workflow for bug investigation, fixing, and verification",
+  "workflow_definition": {
+    "name": "Bug Fix Workflow",
+    "description": "Streamlined bug resolution process",
+    "tasks": {
+      "investigate": {
+        "name": "Investigate Bug",
+        "description": "Analyze the bug and identify root cause",
+        "component": "numa",
+        "dependencies": [],
+        "parameters": {
+          "bug_report": "{{ bug_report }}",
+          "reproduction_steps": "{{ reproduction_steps }}"
+        },
+        "timeout": 1800
+      },
+      "fix": {
+        "name": "Fix Bug",
+        "description": "Implement the bug fix",
+        "component": "numa",
+        "dependencies": ["investigate"],
+        "parameters": {
+          "root_cause": "{{ investigate.output.root_cause }}",
+          "fix_strategy": "{{ investigate.output.recommended_fix }}"
+        },
+        "timeout": 3600
+      },
+      "verify": {
+        "name": "Verify Fix",
+        "description": "Test that the bug is fixed and no regressions introduced",
+        "component": "athena",
+        "dependencies": ["fix"],
+        "parameters": {
+          "original_bug": "{{ bug_report }}",
+          "fix_implementation": "{{ fix.output }}",
+          "regression_tests": true
+        },
+        "timeout": 1800
+      }
+    },
+    "input": {
+      "bug_report": {
+        "type": "string",
+        "description": "Description of the bug"
+      },
+      "reproduction_steps": {
+        "type": "string",
+        "description": "Steps to reproduce the bug"
+      },
+      "priority": {
+        "type": "string",
+        "description": "Bug priority level",
+        "default": "medium"
+      }
+    },
+    "output": {
+      "bug_fixed": {
+        "type": "boolean",
+        "description": "Whether the bug has been successfully fixed"
+      },
+      "fix_location": {
+        "type": "string",
+        "description": "Location of the bug fix"
+      },
+      "verification_results": {
+        "type": "object",
+        "description": "Results of fix verification"
+      }
+    },
+    "version": "1.0",
+    "metadata": {
+      "category": "maintenance",
+      "difficulty": "easy",
+      "estimated_duration": "2-3 hours"
+    }
+  },
+  "parameters": {
+    "bug_report": {
+      "name": "bug_report",
+      "parameter_type": "text",
+      "description": "Detailed description of the bug",
+      "required": true
+    },
+    "reproduction_steps": {
+      "name": "reproduction_steps",
+      "parameter_type": "text",
+      "description": "Steps to reproduce the bug",
+      "required": true
+    },
+    "priority": {
+      "name": "priority",
+      "parameter_type": "select",
+      "description": "Bug priority level",
+      "options": ["low", "medium", "high", "critical"],
+      "default_value": "medium",
+      "required": false
+    }
+  },
+  "tags": ["bug", "fix", "maintenance", "testing"],
+  "is_public": true,
+  "metadata": {
+    "author": "Harmonia Template System",
+    "version": "1.0",
+    "difficulty": "easy",
+    "estimated_duration": "2-3 hours"
+  },
+  "usage_count": 0
+}

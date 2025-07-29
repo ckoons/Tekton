@@ -1,0 +1,119 @@
+{
+  "name": "Feature Development",
+  "description": "Standard workflow for new feature implementation with testing and review stages",
+  "workflow_definition": {
+    "name": "Feature Development Workflow",
+    "description": "Complete feature development pipeline",
+    "tasks": {
+      "design": {
+        "name": "Design Feature",
+        "description": "Design the feature architecture and interfaces",
+        "component": "metis",
+        "dependencies": [],
+        "parameters": {
+          "feature_name": "{{ feature_name }}",
+          "requirements": "{{ requirements }}"
+        },
+        "timeout": 3600
+      },
+      "implement": {
+        "name": "Implement Feature",
+        "description": "Implement the feature code",
+        "component": "numa",
+        "dependencies": ["design"],
+        "parameters": {
+          "design_output": "{{ design.output }}",
+          "coding_standards": "{{ coding_standards }}"
+        },
+        "timeout": 7200
+      },
+      "test": {
+        "name": "Test Feature",
+        "description": "Write and run tests for the feature",
+        "component": "athena",
+        "dependencies": ["implement"],
+        "parameters": {
+          "implementation": "{{ implement.output }}",
+          "test_coverage_target": "{{ test_coverage | default(80) }}"
+        },
+        "timeout": 3600
+      },
+      "review": {
+        "name": "Code Review",
+        "description": "Review code quality and documentation",
+        "component": "rhetor",
+        "dependencies": ["test"],
+        "parameters": {
+          "code_location": "{{ implement.output.code_location }}",
+          "documentation_required": true
+        },
+        "timeout": 1800
+      }
+    },
+    "input": {
+      "feature_name": {
+        "type": "string",
+        "description": "Name of the feature to develop"
+      },
+      "requirements": {
+        "type": "string",
+        "description": "Feature requirements specification"
+      },
+      "coding_standards": {
+        "type": "string",
+        "description": "Coding standards to follow",
+        "default": "tekton_standards"
+      }
+    },
+    "output": {
+      "feature_ready": {
+        "type": "boolean",
+        "description": "Whether the feature is ready for deployment"
+      },
+      "code_location": {
+        "type": "string",
+        "description": "Location of the implemented code"
+      },
+      "test_results": {
+        "type": "object",
+        "description": "Test execution results"
+      }
+    },
+    "version": "1.0",
+    "metadata": {
+      "category": "development",
+      "difficulty": "medium",
+      "estimated_duration": "4-6 hours"
+    }
+  },
+  "parameters": {
+    "feature_name": {
+      "name": "feature_name",
+      "parameter_type": "string",
+      "description": "Name of the feature to develop",
+      "required": true
+    },
+    "requirements": {
+      "name": "requirements",
+      "parameter_type": "text",
+      "description": "Detailed feature requirements",
+      "required": true
+    },
+    "test_coverage": {
+      "name": "test_coverage",
+      "parameter_type": "integer",
+      "description": "Target test coverage percentage",
+      "default_value": 80,
+      "required": false
+    }
+  },
+  "tags": ["development", "feature", "testing", "review"],
+  "is_public": true,
+  "metadata": {
+    "author": "Harmonia Template System",
+    "version": "1.0",
+    "difficulty": "medium",
+    "estimated_duration": "4-6 hours"
+  },
+  "usage_count": 0
+}

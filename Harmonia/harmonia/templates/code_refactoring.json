@@ -1,0 +1,137 @@
+{
+  "name": "Code Refactoring",
+  "description": "Systematic workflow for code refactoring with safety checks",
+  "workflow_definition": {
+    "name": "Code Refactoring Workflow",
+    "description": "Safe code refactoring with comprehensive testing",
+    "tasks": {
+      "analyze": {
+        "name": "Analyze Code",
+        "description": "Analyze existing code structure and identify refactoring opportunities",
+        "component": "metis",
+        "dependencies": [],
+        "parameters": {
+          "code_location": "{{ code_location }}",
+          "refactoring_goals": "{{ refactoring_goals }}"
+        },
+        "timeout": 2400
+      },
+      "backup": {
+        "name": "Create Backup",
+        "description": "Create backup of existing code before refactoring",
+        "component": "numa",
+        "dependencies": ["analyze"],
+        "parameters": {
+          "code_location": "{{ code_location }}",
+          "backup_strategy": "git_branch"
+        },
+        "timeout": 600
+      },
+      "refactor": {
+        "name": "Refactor Code",
+        "description": "Perform the code refactoring",
+        "component": "numa",
+        "dependencies": ["backup"],
+        "parameters": {
+          "refactoring_plan": "{{ analyze.output.refactoring_plan }}",
+          "code_location": "{{ code_location }}",
+          "preserve_functionality": true
+        },
+        "timeout": 5400
+      },
+      "test": {
+        "name": "Test Refactored Code",
+        "description": "Run comprehensive tests to ensure functionality is preserved",
+        "component": "athena",
+        "dependencies": ["refactor"],
+        "parameters": {
+          "test_suite": "full",
+          "performance_regression_check": true,
+          "code_location": "{{ code_location }}"
+        },
+        "timeout": 3600
+      },
+      "review": {
+        "name": "Code Review",
+        "description": "Review refactored code for quality and maintainability",
+        "component": "rhetor",
+        "dependencies": ["test"],
+        "parameters": {
+          "code_location": "{{ code_location }}",
+          "review_criteria": ["maintainability", "readability", "performance"],
+          "documentation_update": true
+        },
+        "timeout": 2400
+      }
+    },
+    "input": {
+      "code_location": {
+        "type": "string",
+        "description": "Location of code to refactor"
+      },
+      "refactoring_goals": {
+        "type": "string",
+        "description": "Goals and objectives for the refactoring"
+      },
+      "preserve_api": {
+        "type": "boolean",
+        "description": "Whether to preserve existing API",
+        "default": true
+      }
+    },
+    "output": {
+      "refactoring_complete": {
+        "type": "boolean",
+        "description": "Whether refactoring completed successfully"
+      },
+      "code_location": {
+        "type": "string",
+        "description": "Location of refactored code"
+      },
+      "performance_impact": {
+        "type": "object",
+        "description": "Performance impact analysis"
+      },
+      "backup_location": {
+        "type": "string",
+        "description": "Location of code backup"
+      }
+    },
+    "version": "1.0",
+    "metadata": {
+      "category": "maintenance",
+      "difficulty": "hard",
+      "estimated_duration": "6-8 hours"
+    }
+  },
+  "parameters": {
+    "code_location": {
+      "name": "code_location",
+      "parameter_type": "string",
+      "description": "File path or directory of code to refactor",
+      "required": true
+    },
+    "refactoring_goals": {
+      "name": "refactoring_goals",
+      "parameter_type": "text",
+      "description": "Specific goals and objectives for the refactoring",
+      "required": true
+    },
+    "preserve_api": {
+      "name": "preserve_api",
+      "parameter_type": "boolean",
+      "description": "Whether to preserve existing public API",
+      "default_value": true,
+      "required": false
+    }
+  },
+  "tags": ["refactoring", "maintenance", "testing", "review", "quality"],
+  "is_public": true,
+  "metadata": {
+    "author": "Harmonia Template System",
+    "version": "1.0",
+    "difficulty": "hard",
+    "estimated_duration": "6-8 hours"
+  },
+  "usage_count": 0
+}

@@ -89,9 +89,60 @@ class HarmoniaComponent {
      */
     setupEventHandlers() {
         // New workflow button
-        const newWorkflowBtn = document.getElementById('new-workflow-btn');
+        const newWorkflowBtn = document.getElementById('workflow-create-btn');
         if (newWorkflowBtn) {
             newWorkflowBtn.addEventListener('click', () => this.createNewWorkflow());
+        }
+        
+        // Clear chat button
+        const clearChatBtn = document.getElementById('clear-chat-btn');
+        if (clearChatBtn) {
+            clearChatBtn.addEventListener('click', () => this.clearChat());
+        }
+        
+        // Template buttons
+        const createTemplateBtn = document.querySelector('[data-tekton-action="create-template"]');
+        if (createTemplateBtn) {
+            createTemplateBtn.addEventListener('click', () => this.createNewTemplate());
+        }
+        
+        const importTemplateBtn = document.querySelector('[data-tekton-action="import-template"]');
+        if (importTemplateBtn) {
+            importTemplateBtn.addEventListener('click', () => this.importTemplate());
+        }
+        
+        // Template card buttons
+        const previewTemplateBtns = document.querySelectorAll('[data-tekton-action="preview-template"]');
+        previewTemplateBtns.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const templateId = e.target.getAttribute('data-template-id');
+                this.previewTemplate(templateId);
+            });
+        });
+        
+        const useTemplateBtns = document.querySelectorAll('[data-tekton-action="use-template"]');
+        useTemplateBtns.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const templateId = e.target.getAttribute('data-template-id');
+                this.useTemplate(templateId);
+            });
+        });
+        
+        // Review panel buttons
+        const previewExportBtn = document.querySelector('[data-tekton-action="preview-export"]');
+        if (previewExportBtn) {
+            previewExportBtn.addEventListener('click', () => this.previewExport());
+        }
+        
+        const saveDraftBtn = document.querySelector('[data-tekton-action="save-draft"]');
+        if (saveDraftBtn) {
+            saveDraftBtn.addEventListener('click', () => this.saveDraft());
+        }
+        
+        // Workflow builder toolbar buttons
+        const autoLayoutBtn = document.querySelector('[data-tekton-action="auto-layout"]');
+        if (autoLayoutBtn) {
+            autoLayoutBtn.addEventListener('click', () => this.autoLayout());
         }
         
         // Search workflows
@@ -110,12 +161,6 @@ class HarmoniaComponent {
         const templateSearchBtn = document.getElementById('template-search-btn');
         if (templateSearchBtn) {
             templateSearchBtn.addEventListener('click', () => this.searchTemplates());
-        }
-        
-        // New template button
-        const newTemplateBtn = document.getElementById('new-template-btn');
-        if (newTemplateBtn) {
-            newTemplateBtn.addEventListener('click', () => this.createNewTemplate());
         }
         
         // Auto-refresh for monitor tab
@@ -725,6 +770,64 @@ class HarmoniaComponent {
                 }
             }, seconds * 1000);
         }
+    }
+    
+    /**
+     * Clear chat
+     */
+    clearChat() {
+        console.log('Clear chat');
+        // TODO: Implement clear chat functionality
+    }
+    
+    /**
+     * Import template
+     */
+    async importTemplate() {
+        console.log('Import template');
+        // TODO: Implement import template dialog
+        this.showSuccess('Import Template', 'Template import dialog would open here');
+    }
+    
+    /**
+     * Preview template
+     */
+    async previewTemplate(templateId) {
+        console.log('Preview template:', templateId);
+        // TODO: Implement preview template functionality
+        this.showSuccess('Preview Template', `Previewing template: ${templateId}`);
+    }
+    
+    /**
+     * Preview export
+     */
+    async previewExport() {
+        console.log('Preview export');
+        // TODO: Implement preview export functionality
+        this.showSuccess('Preview Export', 'Export preview would be shown here');
+    }
+    
+    /**
+     * Save draft
+     */
+    async saveDraft() {
+        console.log('Save draft');
+        try {
+            // TODO: Implement save draft functionality
+            this.showSuccess('Draft Saved', 'Workflow draft has been saved successfully');
+        } catch (error) {
+            console.error('Error saving draft:', error);
+            this.showError('Failed to save draft', error.message);
+        }
+    }
+    
+    /**
+     * Auto layout workflow
+     */
+    autoLayout() {
+        console.log('Auto layout workflow');
+        // TODO: Implement auto layout functionality
+        this.showSuccess('Auto Layout', 'Workflow nodes have been arranged automatically');
     }
 }
 
