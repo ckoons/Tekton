@@ -165,14 +165,11 @@ class CIRegistry:
     def __init__(self):
         """Initialize the unified CI registry."""
         self._registry: Dict[str, Dict[str, Any]] = {}
-        self._context_state = {}  # Initialize context state first
         self._setup_shared_memory()
         self._load_greek_chorus()
         self._load_terminals()
         self._load_projects()
         self._load_forwards()
-        # Sync registry data to shared memory after loading everything
-        self._sync_to_shared_memory()
     
     def _setup_shared_memory(self):
         """Setup shared memory for context state using TEKTON_ROOT as namespace."""
@@ -191,6 +188,12 @@ class CIRegistry:
             self._context_state = {}
             try:
                 self._shm_block = shared_memory.SharedMemory(name=self._shm_name, create=True, size=1024*1024)
+                
+                # Tell resource tracker to forget about this shared memory
+                # so it persists even if this object is garbage collected
+                from multiprocessing import resource_tracker
+                resource_tracker.unregister(self._shm_name, 'shared_memory')
+                
                 self._sync_to_shared_memory()
                 print(f"Created new shared memory: {self._shm_name}")
             except FileExistsError:

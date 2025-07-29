@@ -1050,32 +1050,30 @@ class EnhancedComponentLauncher:
     )
     def get_launch_groups(self, components: List[str]) -> Dict[int, List[str]]:
         """Group components by startup priority with dependency hierarchy:
-        Hermes → Engram → Rhetor → Everything else
+        Hermes → Everything else (including Engram + Rhetor) → UI DevTools
         """
         groups = defaultdict(list)
         
         # Define explicit priority hierarchy
         priority_map = {
-            "hermes": 1,        # First - message bus
-            "engram": 2,        # Second - memory system
-            "rhetor": 3,        # Third - AI whisperer
-            "ui_dev_tools": 5,  # After Hephaestus (priority 4)
+            "hermes": 1,        # First - message bus (must be first)
+            "ui_dev_tools": 3,  # Last - after all other components
         }
         
         for comp_name in components:
             # Special handling for ui_dev_tools which isn't in component config
             if comp_name == "ui_dev_tools":
-                priority = priority_map.get(comp_name, 5)
+                priority = priority_map.get(comp_name, 3)
                 groups[priority].append(comp_name)
                 continue
                 
             comp_info = self.config.get_component(comp_name)
             if comp_info:
-                # Use explicit priority if defined, otherwise use priority 4 (everything else)
+                # Use explicit priority if defined, otherwise use priority 2 (everything else)
                 if comp_name in priority_map:
                     priority = priority_map[comp_name]
                 else:
-                    priority = 4  # Everything else launches after core components
+                    priority = 2  # Everything else (including engram and rhetor) launches after hermes
                     
                 groups[priority].append(comp_name)
                 

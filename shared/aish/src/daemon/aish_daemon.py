@@ -147,6 +147,11 @@ class AishDaemon:
             os.environ['TEKTON_ROOT'] = self.tekton_root
             self.registry = get_registry()
             
+            # Keep a direct reference to the shared memory block to prevent GC
+            if hasattr(self.registry, '_shm_block'):
+                self.shm_block = self.registry._shm_block
+                print(f"Daemon holding shared memory reference: {self.registry._shm_name}")
+            
             print(f"aish daemon running (PID {os.getpid()})")
             
             # Start monitoring thread
