@@ -41,10 +41,21 @@ class AishDaemon:
             if result.returncode == 0:
                 # Look for "aish -s /path/to/tekton/root" pattern
                 pattern = f"aish -s {self.tekton_root}"
+                current_pid = os.getpid()
+                
                 for line in result.stdout.split('\n'):
                     if pattern in line and 'grep' not in line:
-                        print(f"aish daemon already running for {self.tekton_root}")
-                        return True
+                        # Extract PID from ps output (second column)
+                        parts = line.split()
+                        if len(parts) > 1:
+                            try:
+                                line_pid = int(parts[1])
+                                # Don't count ourselves
+                                if line_pid != current_pid:
+                                    print(f"aish daemon already running for {self.tekton_root}")
+                                    return True
+                            except ValueError:
+                                continue
             return False
         except Exception as e:
             print(f"Error checking for existing daemon: {e}")
