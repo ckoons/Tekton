@@ -27,8 +27,7 @@ def handle_list_command(args):
     if not args:
         # Default: show all CIs in text format
         registry = get_registry()
-        registry.refresh()  # Get latest info
-        print(registry.format_text_output())
+        print(registry.format_list())
         return
     
     # Handle context command first
@@ -70,7 +69,7 @@ def handle_list_command(args):
         import json
         print(json.dumps(cis, indent=2))
     else:
-        print(registry.format_text_output(cis))
+        print(registry.format_list())
 
 
 def handle_context_list(args):

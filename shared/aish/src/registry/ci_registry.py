@@ -312,6 +312,8 @@ class CIRegistry:
     
     def get_all_context_states(self) -> Dict[str, Dict[str, Any]]:
         """Get context states for all CIs."""
+        # Reload context state from file to get latest
+        self._context_state = self._file_registry.get('context_state', {})
         return self._context_state.copy()
     
     def set_ci_next_from_staged(self, ci_name: str) -> bool:
