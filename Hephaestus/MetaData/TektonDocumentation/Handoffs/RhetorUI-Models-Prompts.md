@@ -1,1 +1,0 @@
-../../../../MetaData/ComponentDocumentation/Hephaestus/RhetorUI-Models-Prompts.md
