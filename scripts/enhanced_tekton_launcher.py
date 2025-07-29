@@ -1135,7 +1135,6 @@ class EnhancedComponentLauncher:
         """Start the aish daemon for shared memory CI registry"""
         try:
             import subprocess
-            import hashlib
             
             # Get aish path
             aish_path = os.path.join(self.tekton_root, 'shared', 'aish', 'aish')
@@ -1143,24 +1142,16 @@ class EnhancedComponentLauncher:
                 self.log("aish script not found, skipping daemon startup", "warning")
                 return
             
-            # Check if daemon is already running by looking for PID file
-            tekton_hash = hashlib.md5(self.tekton_root.encode()).hexdigest()[:8]
-            pid_file = f"/tmp/aish_daemon_{tekton_hash}.pid"
+            # Check if daemon is already running using ps
+            cmd_check = ['ps', 'aux']
+            result = subprocess.run(cmd_check, capture_output=True, text=True)
             
-            if os.path.exists(pid_file):
-                try:
-                    with open(pid_file, 'r') as f:
-                        pid = int(f.read().strip())
-                    # Check if process is still running
-                    os.kill(pid, 0)  # Send signal 0 to check if process exists
-                    self.log(f"aish daemon already running (PID {pid})", "info")
-                    return
-                except (OSError, ValueError, FileNotFoundError):
-                    # Process doesn't exist or PID file is invalid, remove stale file
-                    try:
-                        os.unlink(pid_file)
-                    except:
-                        pass
+            if result.returncode == 0:
+                pattern = f"aish -s {self.tekton_root}"
+                for line in result.stdout.split('\n'):
+                    if pattern in line and 'grep' not in line:
+                        self.log("aish daemon already running", "info")
+                        return
             
             # Start daemon in background
             cmd = [sys.executable, aish_path, '-s', self.tekton_root]
@@ -1191,16 +1182,16 @@ class EnhancedComponentLauncher:
             # Give it a moment to start
             await asyncio.sleep(2)
             
-            # Check if it's running by looking for PID file
-            if os.path.exists(pid_file):
-                try:
-                    with open(pid_file, 'r') as f:
-                        daemon_pid = int(f.read().strip())
-                    self.log(f"aish daemon started (PID {daemon_pid})", "success")
-                except:
-                    self.log("aish daemon started but PID file not readable", "warning")
-            else:
-                self.log("aish daemon may have failed to start", "warning")
+            # Check if it started by looking for the process
+            result = subprocess.run(cmd_check, capture_output=True, text=True)
+            if result.returncode == 0:
+                pattern = f"aish -s {self.tekton_root}"
+                for line in result.stdout.split('\n'):
+                    if pattern in line and 'grep' not in line:
+                        self.log("aish daemon started successfully", "success")
+                        return
+            
+            self.log("aish daemon may have failed to start", "warning")
                 
         except Exception as e:
             self.log(f"Error starting aish daemon: {e}", "warning")

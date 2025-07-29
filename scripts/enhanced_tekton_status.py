@@ -1112,6 +1112,7 @@ class EnhancedStatusChecker:
     def check_shared_memory_status(self) -> Dict[str, Any]:
         """Check aish shared memory status"""
         import hashlib
+        import subprocess
         from multiprocessing import shared_memory
         
         # Get TEKTON_ROOT
@@ -1121,21 +1122,30 @@ class EnhancedStatusChecker:
         tekton_hash = hashlib.md5(current_tekton_root.encode()).hexdigest()[:8]
         shm_name = f"tekton_ci_registry_{tekton_hash}"
         
-        # Check daemon PID file
-        daemon_pid_file = f"/tmp/aish_daemon_{tekton_hash}.pid"
+        # Check daemon using ps
         daemon_running = False
         daemon_pid = None
         
-        if os.path.exists(daemon_pid_file):
-            try:
-                with open(daemon_pid_file, 'r') as f:
-                    daemon_pid = int(f.read().strip())
-                # Check if process is still running
-                os.kill(daemon_pid, 0)  # Signal 0 to check existence
-                daemon_running = True
-            except (OSError, ValueError, FileNotFoundError):
-                daemon_running = False
-                daemon_pid = None
+        try:
+            cmd = ['ps', 'aux']
+            result = subprocess.run(cmd, capture_output=True, text=True)
+            
+            if result.returncode == 0:
+                pattern = f"aish -s {current_tekton_root}"
+                for line in result.stdout.split('\n'):
+                    if pattern in line and 'grep' not in line:
+                        # Extract PID from ps output (second column)
+                        parts = line.split()
+                        if len(parts) > 1:
+                            try:
+                                daemon_pid = int(parts[1])
+                                daemon_running = True
+                                break
+                            except ValueError:
+                                continue
+        except Exception:
+            daemon_running = False
+            daemon_pid = None
         
         # Check shared memory
         shared_memory_available = False
@@ -1162,8 +1172,7 @@ class EnhancedStatusChecker:
             "shared_memory_size": shared_memory_size,
             "shared_memory_error": shared_memory_error,
             "daemon_running": daemon_running,
-            "daemon_pid": daemon_pid,
-            "daemon_pid_file": daemon_pid_file
+            "daemon_pid": daemon_pid
         }
     
     def format_shared_memory_status(self, shm_status: Dict[str, Any]) -> str:

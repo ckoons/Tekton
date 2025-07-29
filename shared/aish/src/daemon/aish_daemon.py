@@ -27,43 +27,29 @@ class AishDaemon:
     def __init__(self, tekton_root: str):
         self.tekton_root = tekton_root
         self.tekton_hash = hashlib.md5(tekton_root.encode()).hexdigest()[:8]
-        self.daemon_name = f"aish_daemon_{self.tekton_hash}"
-        self.pid_file = f"/tmp/{self.daemon_name}.pid"
         self.registry = None
         self.running = True
         
     def check_existing_daemon(self) -> bool:
-        """Check if a daemon is already running for this TEKTON_ROOT."""
-        if os.path.exists(self.pid_file):
-            try:
-                with open(self.pid_file, 'r') as f:
-                    pid = int(f.read().strip())
-                
-                # Check if process is still running
-                try:
-                    os.kill(pid, 0)  # Send signal 0 to check if process exists
-                    print(f"aish daemon already running for {self.tekton_root} (PID {pid})")
-                    return True
-                except OSError:
-                    # Process doesn't exist, remove stale PID file
-                    os.unlink(self.pid_file)
-                    return False
-            except (ValueError, FileNotFoundError):
-                return False
-        return False
-    
-    def write_pid_file(self):
-        """Write current PID to file."""
-        with open(self.pid_file, 'w') as f:
-            f.write(str(os.getpid()))
-    
-    def cleanup_pid_file(self):
-        """Remove PID file on exit."""
+        """Check if a daemon is already running for this TEKTON_ROOT using ps."""
+        import subprocess
         try:
-            if os.path.exists(self.pid_file):
-                os.unlink(self.pid_file)
-        except:
-            pass
+            # Look for existing aish daemon with this TEKTON_ROOT
+            cmd = ['ps', 'aux']
+            result = subprocess.run(cmd, capture_output=True, text=True)
+            
+            if result.returncode == 0:
+                # Look for "aish -s /path/to/tekton/root" pattern
+                pattern = f"aish -s {self.tekton_root}"
+                for line in result.stdout.split('\n'):
+                    if pattern in line and 'grep' not in line:
+                        print(f"aish daemon already running for {self.tekton_root}")
+                        return True
+            return False
+        except Exception as e:
+            print(f"Error checking for existing daemon: {e}")
+            return False
+    
     
     def signal_handler(self, signum, frame):
         """Handle shutdown signals."""
@@ -143,9 +129,6 @@ class AishDaemon:
         signal.signal(signal.SIGTERM, self.signal_handler)
         signal.signal(signal.SIGINT, self.signal_handler)
         
-        # Write PID file
-        self.write_pid_file()
-        
         try:
             print(f"Starting aish daemon for {self.tekton_root}")
             
@@ -179,7 +162,6 @@ class AishDaemon:
                 except Exception as cleanup_error:
                     print(f"Error closing shared memory: {cleanup_error}")
             
-            self.cleanup_pid_file()
             print("aish daemon stopped")
 
 

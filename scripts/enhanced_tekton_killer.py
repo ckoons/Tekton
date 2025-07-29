@@ -659,62 +659,60 @@ class EnhancedComponentKiller:
     async def stop_aish_daemon(self):
         """Stop the aish daemon for shared memory CI registry"""
         try:
-            import hashlib
+            import subprocess
             
-            # Calculate daemon PID file name
-            tekton_hash = hashlib.md5(tekton_root.encode()).hexdigest()[:8]
-            pid_file = f"/tmp/aish_daemon_{tekton_hash}.pid"
+            # Find daemon process using ps
+            cmd = ['ps', 'aux']
+            result = subprocess.run(cmd, capture_output=True, text=True)
             
-            if not os.path.exists(pid_file):
-                self.log("No aish daemon PID file found", "info")
+            if result.returncode != 0:
+                self.log("Error running ps command", "warning")
                 return
-                
-            try:
-                with open(pid_file, 'r') as f:
-                    daemon_pid = int(f.read().strip())
-                
-                # Check if process is still running
+            
+            # Look for aish daemon with this TEKTON_ROOT
+            pattern = f"aish -s {tekton_root}"
+            daemon_pid = None
+            
+            for line in result.stdout.split('\n'):
+                if pattern in line and 'grep' not in line:
+                    # Extract PID from ps output (second column)
+                    parts = line.split()
+                    if len(parts) > 1:
+                        try:
+                            daemon_pid = int(parts[1])
+                            break
+                        except ValueError:
+                            continue
+            
+            if not daemon_pid:
+                self.log("No aish daemon found running", "info")
+                return
+            
+            self.log(f"Stopping aish daemon (PID {daemon_pid})...", "info")
+            
+            if not self.dry_run:
                 try:
-                    os.kill(daemon_pid, 0)  # Signal 0 to check existence
-                    self.log(f"Stopping aish daemon (PID {daemon_pid})...", "info")
+                    # Send SIGTERM for graceful shutdown
+                    os.kill(daemon_pid, signal.SIGTERM)
                     
-                    if not self.dry_run:
-                        # Send SIGTERM for graceful shutdown
-                        os.kill(daemon_pid, signal.SIGTERM)
-                        
-                        # Wait a moment for graceful shutdown
-                        await asyncio.sleep(2)
-                        
-                        # Check if still running
-                        try:
-                            os.kill(daemon_pid, 0)
-                            # Still running, force kill
-                            self.log(f"Force killing aish daemon (PID {daemon_pid})", "warning")
-                            os.kill(daemon_pid, signal.SIGKILL)
-                        except OSError:
-                            # Process is gone
-                            pass
-                        
-                        self.log("aish daemon stopped", "success")
-                    else:
-                        self.log("[DRY RUN] Would stop aish daemon", "info")
-                        
-                except OSError:
-                    # Process doesn't exist
-                    self.log("aish daemon not running (stale PID file)", "info")
-                    if not self.dry_run:
-                        try:
-                            os.unlink(pid_file)
-                        except:
-                            pass
-                            
-            except (ValueError, FileNotFoundError):
-                self.log("Invalid aish daemon PID file", "warning")
-                if not self.dry_run:
+                    # Wait a moment for graceful shutdown
+                    await asyncio.sleep(2)
+                    
+                    # Check if still running
                     try:
-                        os.unlink(pid_file)
-                    except:
+                        os.kill(daemon_pid, 0)
+                        # Still running, force kill
+                        self.log(f"Force killing aish daemon (PID {daemon_pid})", "warning")
+                        os.kill(daemon_pid, signal.SIGKILL)
+                    except OSError:
+                        # Process is gone
                         pass
+                    
+                    self.log("aish daemon stopped", "success")
+                except OSError as e:
+                    self.log(f"Error stopping daemon: {e}", "warning")
+            else:
+                self.log("[DRY RUN] Would stop aish daemon", "info")
                         
         except Exception as e:
             self.log(f"Error stopping aish daemon: {e}", "warning")

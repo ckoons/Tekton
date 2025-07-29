@@ -178,21 +178,20 @@ class CIRegistry:
         tekton_hash = hashlib.md5(tekton_root.encode()).hexdigest()[:8]
         self._shm_name = f"tekton_ci_registry_{tekton_hash}"
         
-        # Try to connect to existing shared memory, or create new
+        # Try to connect to existing shared memory first (daemon should have created it)
         try:
             self._shm_block = shared_memory.SharedMemory(name=self._shm_name)
-            # Load existing data
             self._load_from_shared_memory()
             print(f"Connected to existing shared memory: {self._shm_name}")
         except FileNotFoundError:
-            # Create new shared memory block (1MB should be plenty)
+            # No existing shared memory - create it (this should only happen for daemon)
             self._context_state = {}
             try:
                 self._shm_block = shared_memory.SharedMemory(name=self._shm_name, create=True, size=1024*1024)
                 self._sync_to_shared_memory()
                 print(f"Created new shared memory: {self._shm_name}")
             except FileExistsError:
-                # Race condition - another process created it
+                # Race condition - another process created it between our checks
                 self._shm_block = shared_memory.SharedMemory(name=self._shm_name)
                 self._load_from_shared_memory()
                 print(f"Connected to existing shared memory: {self._shm_name} (race condition)")
@@ -218,15 +217,29 @@ class CIRegistry:
     def _load_from_shared_memory(self):
         """Load context state from shared memory."""
         try:
-            # Find the end of actual data (before null bytes)
+            # Read the buffer and find the actual data
             buf_bytes = bytes(self._shm_block.buf)
-            end_idx = buf_bytes.find(b'\x00\x00\x00\x00')
-            if end_idx == -1:
-                end_idx = len(buf_bytes)
             
-            if end_idx > 0:
-                data = pickle.loads(buf_bytes[:end_idx])
-                self._context_state = data
+            # Look for the end marker or first null byte sequence
+            null_start = buf_bytes.find(b'\x00\x00\x00\x00')
+            if null_start == -1:
+                # No null sequence found, data might fill the entire buffer
+                null_start = len(buf_bytes)
+                # But check for any null bytes at all
+                single_null = buf_bytes.find(b'\x00')
+                if single_null != -1:
+                    null_start = single_null
+            
+            if null_start > 0:
+                try:
+                    data = pickle.loads(buf_bytes[:null_start])
+                    self._context_state = data
+                except (pickle.PickleError, EOFError) as e:
+                    print(f"Pickle error loading from shared memory: {e}, initializing empty state")
+                    self._context_state = {}
+            else:
+                # No data or all null bytes
+                self._context_state = {}
         except Exception as e:
             print(f"Error loading from shared memory: {e}")
             self._context_state = {}
