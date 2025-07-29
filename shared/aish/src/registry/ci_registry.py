@@ -6,9 +6,12 @@ Manages all CI types (Greek Chorus, Terma terminals, Project CIs) in a single re
 import json
 import os
 import sys
+import hashlib
+import pickle
 from pathlib import Path
 from typing import Dict, List, Optional, Any
 from datetime import datetime
+from multiprocessing import shared_memory
 
 # Add parent paths for imports
 sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
@@ -162,11 +165,79 @@ class CIRegistry:
     def __init__(self):
         """Initialize the unified CI registry."""
         self._registry: Dict[str, Dict[str, Any]] = {}
-        self._context_state: Dict[str, Dict[str, Any]] = {}  # Apollo-Rhetor coordination state
+        self._setup_shared_memory()
         self._load_greek_chorus()
         self._load_terminals()
         self._load_projects()
         self._load_forwards()
+    
+    def _setup_shared_memory(self):
+        """Setup shared memory for context state using TEKTON_ROOT as namespace."""
+        # Create unique shared memory name based on TEKTON_ROOT
+        tekton_root = TektonEnviron.get('TEKTON_ROOT', '/default')
+        tekton_hash = hashlib.md5(tekton_root.encode()).hexdigest()[:8]
+        self._shm_name = f"tekton_ci_registry_{tekton_hash}"
+        
+        # Try to connect to existing shared memory, or create new
+        try:
+            self._shm_block = shared_memory.SharedMemory(name=self._shm_name)
+            # Load existing data
+            self._load_from_shared_memory()
+            print(f"Connected to existing shared memory: {self._shm_name}")
+        except FileNotFoundError:
+            # Create new shared memory block (1MB should be plenty)
+            self._context_state = {}
+            try:
+                self._shm_block = shared_memory.SharedMemory(name=self._shm_name, create=True, size=1024*1024)
+                self._sync_to_shared_memory()
+                print(f"Created new shared memory: {self._shm_name}")
+            except FileExistsError:
+                # Race condition - another process created it
+                self._shm_block = shared_memory.SharedMemory(name=self._shm_name)
+                self._load_from_shared_memory()
+                print(f"Connected to existing shared memory: {self._shm_name} (race condition)")
+        
+        # Don't auto-cleanup shared memory when process exits
+        import atexit
+        atexit.register(self._cleanup_registry)
+    
+    def _sync_to_shared_memory(self):
+        """Sync context state to shared memory."""
+        try:
+            data = pickle.dumps(self._context_state)
+            if len(data) > len(self._shm_block.buf):
+                print(f"Warning: Data size {len(data)} exceeds shared memory size {len(self._shm_block.buf)}")
+                return
+            # Clear the buffer first
+            self._shm_block.buf[:] = b'\x00' * len(self._shm_block.buf)
+            # Write new data
+            self._shm_block.buf[:len(data)] = data
+        except Exception as e:
+            print(f"Error syncing to shared memory: {e}")
+    
+    def _load_from_shared_memory(self):
+        """Load context state from shared memory."""
+        try:
+            # Find the end of actual data (before null bytes)
+            buf_bytes = bytes(self._shm_block.buf)
+            end_idx = buf_bytes.find(b'\x00\x00\x00\x00')
+            if end_idx == -1:
+                end_idx = len(buf_bytes)
+            
+            if end_idx > 0:
+                data = pickle.loads(buf_bytes[:end_idx])
+                self._context_state = data
+        except Exception as e:
+            print(f"Error loading from shared memory: {e}")
+            self._context_state = {}
+    
+    def _cleanup_registry(self):
+        """Cleanup shared memory on exit (but don't unlink it)."""
+        try:
+            if hasattr(self, '_shm_block'):
+                self._shm_block.close()
+        except:
+            pass  # Ignore cleanup errors
     
     @integration_point(
         title="Greek Chorus CI Loading",
@@ -461,6 +532,7 @@ class CIRegistry:
             self._context_state[ci_name] = {}
             
         self._context_state[ci_name]['staged_context_prompt'] = prompt_data
+        self._sync_to_shared_memory()
         return True
     
     def set_ci_next_context_prompt(self, ci_name: str, prompt_data: Optional[List[Dict]]) -> bool:
@@ -482,6 +554,7 @@ class CIRegistry:
             self._context_state[ci_name] = {}
             
         self._context_state[ci_name]['next_context_prompt'] = prompt_data
+        self._sync_to_shared_memory()
         return True
     
     def get_ci_last_output(self, ci_name: str) -> Optional[str]:
@@ -494,6 +567,9 @@ class CIRegistry:
         Returns:
             Optional[str]: Last output string (could be text or JSON), or None
         """
+        # Load latest data from shared memory
+        self._load_from_shared_memory()
+        
         ci_name = ci_name.lower()
         if ci_name not in self._context_state:
             return None
@@ -525,6 +601,7 @@ class CIRegistry:
         # Move staged to next and clear staged
         self._context_state[ci_name]['next_context_prompt'] = staged
         self._context_state[ci_name]['staged_context_prompt'] = None
+        self._sync_to_shared_memory()
         return True
     
     def update_ci_last_output(self, ci_name: str, output: str) -> bool:
@@ -546,6 +623,7 @@ class CIRegistry:
             self._context_state[ci_name] = {}
             
         self._context_state[ci_name]['last_output'] = output
+        self._sync_to_shared_memory()
         return True
     
     def get_ci_context_state(self, ci_name: str) -> Optional[Dict[str, Any]]:
@@ -558,6 +636,9 @@ class CIRegistry:
         Returns:
             Optional[Dict]: Complete context state or None
         """
+        # Load latest data from shared memory
+        self._load_from_shared_memory()
+        
         ci_name = ci_name.lower()
         return self._context_state.get(ci_name)
     
@@ -568,6 +649,9 @@ class CIRegistry:
         Returns:
             Dict: All context states keyed by CI name
         """
+        # Load latest data from shared memory
+        self._load_from_shared_memory()
+        
         return self._context_state.copy()
 
 

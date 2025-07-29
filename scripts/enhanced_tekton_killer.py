@@ -615,6 +615,9 @@ class EnhancedComponentKiller:
         self.log("Cleaning up background sync services...", "nuclear")
         await self.kill_sync_services()
         
+        # Stop aish daemon
+        await self.stop_aish_daemon()
+        
         self.log("☢️  Nuclear protocol complete", "nuclear")
         return results
         
@@ -652,6 +655,69 @@ class EnhancedComponentKiller:
             self.log("No sync services found running", "info")
             
         return killed_count
+    
+    async def stop_aish_daemon(self):
+        """Stop the aish daemon for shared memory CI registry"""
+        try:
+            import hashlib
+            
+            # Calculate daemon PID file name
+            tekton_hash = hashlib.md5(tekton_root.encode()).hexdigest()[:8]
+            pid_file = f"/tmp/aish_daemon_{tekton_hash}.pid"
+            
+            if not os.path.exists(pid_file):
+                self.log("No aish daemon PID file found", "info")
+                return
+                
+            try:
+                with open(pid_file, 'r') as f:
+                    daemon_pid = int(f.read().strip())
+                
+                # Check if process is still running
+                try:
+                    os.kill(daemon_pid, 0)  # Signal 0 to check existence
+                    self.log(f"Stopping aish daemon (PID {daemon_pid})...", "info")
+                    
+                    if not self.dry_run:
+                        # Send SIGTERM for graceful shutdown
+                        os.kill(daemon_pid, signal.SIGTERM)
+                        
+                        # Wait a moment for graceful shutdown
+                        await asyncio.sleep(2)
+                        
+                        # Check if still running
+                        try:
+                            os.kill(daemon_pid, 0)
+                            # Still running, force kill
+                            self.log(f"Force killing aish daemon (PID {daemon_pid})", "warning")
+                            os.kill(daemon_pid, signal.SIGKILL)
+                        except OSError:
+                            # Process is gone
+                            pass
+                        
+                        self.log("aish daemon stopped", "success")
+                    else:
+                        self.log("[DRY RUN] Would stop aish daemon", "info")
+                        
+                except OSError:
+                    # Process doesn't exist
+                    self.log("aish daemon not running (stale PID file)", "info")
+                    if not self.dry_run:
+                        try:
+                            os.unlink(pid_file)
+                        except:
+                            pass
+                            
+            except (ValueError, FileNotFoundError):
+                self.log("Invalid aish daemon PID file", "warning")
+                if not self.dry_run:
+                    try:
+                        os.unlink(pid_file)
+                    except:
+                        pass
+                        
+        except Exception as e:
+            self.log(f"Error stopping aish daemon: {e}", "warning")
     
     def get_shutdown_order(self, components: List[str]) -> Tuple[List[str], List[str]]:
         """Determine optimal shutdown order: (non_core_components, core_components)"""
@@ -1031,6 +1097,11 @@ async def main():
                     print("✅ UI DevTools MCP server terminated")
                 else:
                     print(f"❌ Failed to kill UI DevTools MCP: {message}")
+        
+        # Stop aish daemon when doing full shutdown
+        if args.nuclear or not args.components or args.components.lower() == 'all':
+            print("\n🛑 Stopping aish daemon...")
+            await killer.stop_aish_daemon()
         
         # Final cleanup phase
         if args.nuclear or not args.components or args.components.lower() == 'all':
