@@ -1,17 +1,14 @@
 """
-Unified CI Registry for aish
+Unified CI Registry for aish - File-based implementation
 Manages all CI types (Greek Chorus, Terma terminals, Project CIs) in a single registry.
 """
 
-import json
 import os
 import sys
-import hashlib
-import pickle
+import operator
 from pathlib import Path
 from typing import Dict, List, Optional, Any
 from datetime import datetime
-from multiprocessing import shared_memory
 
 # Add parent paths for imports
 sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
@@ -22,81 +19,34 @@ from shared.urls import (
     rhetor_url, sophia_url, synthesis_url, telos_url, terma_url, hephaestus_url
 )
 
-# Import landmarks with fallback
+# Try to import landmarks if available
 try:
-    from landmarks import (
-        architecture_decision,
-        state_checkpoint,
-        integration_point,
-        performance_boundary
-    )
+    from landmarks import integration_point, state_checkpoint
 except ImportError:
-    # Define no-op decorators when landmarks not available
-    def architecture_decision(**kwargs):
-        def decorator(func_or_class):
-            return func_or_class
+    # Create no-op decorators if landmarks not available
+    def integration_point(**kwargs):
+        def decorator(func):
+            return func
         return decorator
     
     def state_checkpoint(**kwargs):
-        def decorator(func_or_class):
-            return func_or_class
-        return decorator
-    
-    def integration_point(**kwargs):
-        def decorator(func_or_class):
-            return func_or_class
-        return decorator
-    
-    def performance_boundary(**kwargs):
-        def decorator(func_or_class):
-            return func_or_class
+        def decorator(func):
+            return func
         return decorator
 
 
-@architecture_decision(
-    title="Unified CI Registry Architecture",
-    description="Single registry manages all CI types (Greek Chorus, Terma, Projects)",
-    rationale="Eliminates three separate lists, enables federation, simplifies discovery",
-    alternatives_considered=["Separate registries per type", "Hard-coded CI lists", "Service mesh discovery"],
-    impacts=["ci_discovery", "federation_readiness", "dynamic_routing"],
-    decided_by="Casey",
-    decision_date="2025-01-25"
-)
-@state_checkpoint(
-    title="CI Registry State",
-    description="In-memory registry of all available CIs with their configuration",
-    state_type="registry",
-    persistence=False,
-    consistency_requirements="Refresh on demand, tolerates stale data",
-    recovery_strategy="Rebuild from sources on restart"
-)
 class CIRegistry:
-    """Unified registry for all CI types in Tekton."""
+    """Unified CI Registry with file-based persistence."""
     
-    # Greek Chorus CIs with their messaging configuration
+    # Static registry of all Greek Chorus CIs
     GREEK_CHORUS = {
-        'numa': {
-            'description': 'Companion AI for Tekton Project',
-            'message_endpoint': '/api/message',
-            'message_format': 'json_simple'
-        },
-        'prometheus': {
-            'description': 'Forward planning and foresight',
+        'apollo': {
+            'description': 'Attention and prediction',
             'message_endpoint': '/api/message',
             'message_format': 'json_simple'
         },
         'athena': {
-            'description': 'Strategic wisdom and decision making',
-            'message_endpoint': '/api/message',
-            'message_format': 'json_simple'
-        },
-        'synthesis': {
-            'description': 'Integration and coordination',
-            'message_endpoint': '/api/message',
-            'message_format': 'json_simple'
-        },
-        'apollo': {
-            'description': 'Predictive intelligence and attention',
+            'description': 'Strategy and wisdom',
             'message_endpoint': '/api/message',
             'message_format': 'json_simple'
         },
@@ -165,98 +115,23 @@ class CIRegistry:
     def __init__(self):
         """Initialize the unified CI registry."""
         self._registry: Dict[str, Dict[str, Any]] = {}
-        self._setup_shared_memory()
+        
+        # Use file-based storage
+        from .file_registry import FileRegistry
+        tekton_root = TektonEnviron.get('TEKTON_ROOT', '/tmp')
+        self._file_registry = FileRegistry(tekton_root)
+        
+        # Load context state from file
+        self._context_state = self._file_registry.get('context_state', {})
+        
         self._load_greek_chorus()
         self._load_terminals()
         self._load_projects()
         self._load_forwards()
     
-    def _setup_shared_memory(self):
-        """Setup shared memory for context state using TEKTON_ROOT as namespace."""
-        # Create unique shared memory name based on TEKTON_ROOT
-        tekton_root = TektonEnviron.get('TEKTON_ROOT', '/default')
-        tekton_hash = hashlib.md5(tekton_root.encode()).hexdigest()[:8]
-        self._shm_name = f"tekton_ci_registry_{tekton_hash}"
-        
-        # Try to connect to existing shared memory first (daemon should have created it)
-        try:
-            self._shm_block = shared_memory.SharedMemory(name=self._shm_name)
-            self._load_from_shared_memory()
-            print(f"Connected to existing shared memory: {self._shm_name}")
-        except FileNotFoundError:
-            # No existing shared memory - create it (this should only happen for daemon)
-            self._context_state = {}
-            try:
-                self._shm_block = shared_memory.SharedMemory(name=self._shm_name, create=True, size=1024*1024)
-                
-                # Tell resource tracker to forget about this shared memory
-                # so it persists even if this object is garbage collected
-                from multiprocessing import resource_tracker
-                resource_tracker.unregister(self._shm_name, 'shared_memory')
-                
-                self._sync_to_shared_memory()
-                print(f"Created new shared memory: {self._shm_name}")
-            except FileExistsError:
-                # Race condition - another process created it between our checks
-                self._shm_block = shared_memory.SharedMemory(name=self._shm_name)
-                self._load_from_shared_memory()
-                print(f"Connected to existing shared memory: {self._shm_name} (race condition)")
-        
-        # Don't auto-cleanup shared memory when process exits
-        import atexit
-        atexit.register(self._cleanup_registry)
-    
-    def _sync_to_shared_memory(self):
-        """Sync context state to shared memory."""
-        try:
-            data = pickle.dumps(self._context_state)
-            if len(data) > len(self._shm_block.buf):
-                print(f"Warning: Data size {len(data)} exceeds shared memory size {len(self._shm_block.buf)}")
-                return
-            # Clear the buffer first
-            self._shm_block.buf[:] = b'\x00' * len(self._shm_block.buf)
-            # Write new data
-            self._shm_block.buf[:len(data)] = data
-        except Exception as e:
-            print(f"Error syncing to shared memory: {e}")
-    
-    def _load_from_shared_memory(self):
-        """Load context state from shared memory."""
-        try:
-            # Read the buffer and find the actual data
-            buf_bytes = bytes(self._shm_block.buf)
-            
-            # Look for the end marker or first null byte sequence
-            null_start = buf_bytes.find(b'\x00\x00\x00\x00')
-            if null_start == -1:
-                # No null sequence found, data might fill the entire buffer
-                null_start = len(buf_bytes)
-                # But check for any null bytes at all
-                single_null = buf_bytes.find(b'\x00')
-                if single_null != -1:
-                    null_start = single_null
-            
-            if null_start > 0:
-                try:
-                    data = pickle.loads(buf_bytes[:null_start])
-                    self._context_state = data
-                except (pickle.PickleError, EOFError) as e:
-                    print(f"Pickle error loading from shared memory: {e}, initializing empty state")
-                    self._context_state = {}
-            else:
-                # No data or all null bytes
-                self._context_state = {}
-        except Exception as e:
-            print(f"Error loading from shared memory: {e}")
-            self._context_state = {}
-    
-    def _cleanup_registry(self):
-        """Cleanup shared memory on exit (but don't unlink it)."""
-        try:
-            if hasattr(self, '_shm_block'):
-                self._shm_block.close()
-        except:
-            pass  # Ignore cleanup errors
+    def _save_context_state(self):
+        """Save context state to file."""
+        self._file_registry.update('context_state', self._context_state)
     
     @integration_point(
         title="Greek Chorus CI Loading",
@@ -303,205 +178,244 @@ class CIRegistry:
                 'type': 'greek',
                 'endpoint': endpoint,
                 'description': info['description'],
-                'message_endpoint': info.get('message_endpoint', '/rhetor/socket'),
-                'message_format': info.get('message_format', 'rhetor_socket'),
-                'created': datetime.now().isoformat(),
-                'last_seen': datetime.now().isoformat()
+                'message_endpoint': info['message_endpoint'],
+                'message_format': info['message_format']
             }
     
     @integration_point(
         title="Terma Terminal Discovery",
-        description="Dynamically discovers active terminals from Terma registry",
+        description="Discovers running Terma terminals from environment",
         target_component="Terma",
-        protocol="HTTP GET /api/terminals",
-        data_flow="Terma API → terminal list → registry entries with routing info",
+        protocol="Environment Variables",
+        data_flow="TERMA_TERMINALS env → registry entries with PID and attributes",
         integration_date="2025-01-25"
     )
     def _load_terminals(self):
-        """Load active Terma terminals from the terminal registry."""
+        """Load Terma terminals from environment."""
+        terminals_json = TektonEnviron.get('TERMA_TERMINALS', '[]')
         try:
-            # Get terminal registry from Terma
-            terma_url = tekton_url('terma', '/api/terminals')
-            import urllib.request
-            import urllib.error
-            
-            req = urllib.request.Request(terma_url)
-            with urllib.request.urlopen(req, timeout=2) as response:
-                terminals = json.loads(response.read().decode())
-                
+            terminals = eval(terminals_json) if terminals_json else []
             for terminal in terminals:
                 name = terminal.get('name', '').lower()
                 if name:
                     self._registry[name] = {
                         'name': name,
-                        'port': terminal.get('port', 0),
                         'type': 'terminal',
-                        'host': 'localhost',
-                        'endpoint': f"http://localhost:{terminal.get('port', 0)}",
-                        'message_endpoint': '/api/mcp/v2/terminals/route-message',
+                        'endpoint': tekton_url('terma'),
+                        'description': f"Terminal: {terminal.get('shell', 'bash')}",
+                        'message_endpoint': '/api/route',
                         'message_format': 'terma_route',
                         'pid': terminal.get('pid'),
-                        'session_id': terminal.get('session_id'),
-                        'created': terminal.get('created', datetime.now().isoformat()),
-                        'last_seen': datetime.now().isoformat()
+                        'shell': terminal.get('shell', 'bash'),
+                        'created': terminal.get('created')
                     }
         except Exception:
-            # If Terma isn't available, that's OK
-            pass
+            pass  # Ignore parse errors
     
-    @integration_point(
-        title="Project CI Discovery",
-        description="Loads project-specific CIs from Tekton project registry",
-        target_component="Project Registry",
-        protocol="File-based JSON",
-        data_flow="registry.json → project CIs → registry entries",
-        integration_date="2025-01-25"
-    )
     def _load_projects(self):
-        """Load project CIs from the project registry."""
-        try:
-            tekton_root = Path(TektonEnviron.get('TEKTON_ROOT', ''))
-            project_file = tekton_root / '.tekton' / 'project' / 'registry.json'
-            
-            if project_file.exists():
-                with open(project_file, 'r') as f:
-                    projects = json.load(f)
-                    
-                for project_name, project_info in projects.items():
-                    # Add project CI if it has one
-                    if 'ci' in project_info and project_info['ci']:
-                        ci_name = project_info['ci'].lower()
-                        self._registry[ci_name] = {
-                            'name': ci_name,
-                            'port': project_info.get('port', 0),
-                            'type': 'project',
-                            'host': 'localhost',
-                            'endpoint': f"http://localhost:{project_info.get('port', 0)}",
-                            'message_endpoint': '/api/message',  # Assume standard endpoint
-                            'message_format': 'json_simple',
-                            'project': project_name,
-                            'created': project_info.get('created', datetime.now().isoformat()),
-                            'last_seen': datetime.now().isoformat()
-                        }
-        except Exception:
-            # If project registry isn't available, that's OK
-            pass
+        """Load project CIs from Tekton projects."""
+        # TODO: Implement project CI discovery
+        # This will scan TEKTON_ROOT for project configurations
+        pass
     
     def _load_forwards(self):
-        """Load forwarding information and add to CI entries."""
-        try:
-            from forwarding.forwarding_registry import ForwardingRegistry
-            registry = ForwardingRegistry()
-            forwards = registry.list_forwards()
-            
-            # Add forward_to information to CIs
-            for source, target_info in forwards.items():
-                if source in self._registry:
-                    self._registry[source]['forward_to'] = target_info.get('terminal')
-                    self._registry[source]['forward_json'] = target_info.get('json_mode', False)
-        except Exception:
-            # If forwarding registry isn't available, that's OK
-            pass
+        """Load forwarding configurations."""
+        # Load saved forwards from file
+        forwards = self._file_registry.get('forwards', {})
+        for ci_name, forward_config in forwards.items():
+            if ci_name in self._registry:
+                self._registry[ci_name].update(forward_config)
     
-    def get_all(self) -> List[Dict[str, Any]]:
-        """Get all CIs in the registry."""
-        return list(self._registry.values())
+    # Registry Access Methods
+    
+    def get_all(self) -> Dict[str, Dict[str, Any]]:
+        """Get all registered CIs."""
+        return self._registry.copy()
+    
+    def get_by_type(self, ci_type: str) -> List[Dict[str, Any]]:
+        """Get all CIs of a specific type."""
+        return [ci for ci in self._registry.values() if ci.get('type') == ci_type]
     
     def get_by_name(self, name: str) -> Optional[Dict[str, Any]]:
         """Get a specific CI by name."""
         return self._registry.get(name.lower())
     
-    def get_by_type(self, ci_type: str) -> List[Dict[str, Any]]:
-        """Get all CIs of a specific type."""
-        ci_type = ci_type.lower()
-        if ci_type == 'greek':
-            ci_type = 'greek'
-        elif ci_type == 'terminal':
-            ci_type = 'terminal'
-        elif ci_type == 'project':
-            ci_type = 'project'
-        elif ci_type == 'forward':
-            # Special case: CIs that have forwarding set up
-            return [ci for ci in self._registry.values() if 'forward_to' in ci]
-        elif ci_type == 'local':
-            return [ci for ci in self._registry.values() if ci.get('host') == 'localhost']
-        elif ci_type == 'remote':
-            return [ci for ci in self._registry.values() if ci.get('host') != 'localhost']
-        else:
-            return []
-        
-        return [ci for ci in self._registry.values() if ci.get('type') == ci_type]
+    def exists(self, name: str) -> bool:
+        """Check if a CI exists."""
+        return name.lower() in self._registry
     
-    def get_by_purpose(self, purpose: str) -> List[Dict[str, Any]]:
-        """Get all CIs with a specific purpose (requires querying each CI)."""
-        # This would need to query each CI for its current purpose
-        # For now, return empty list as this is a future enhancement
-        return []
+    def get_types(self) -> List[str]:
+        """Get all unique CI types."""
+        return list(set(ci.get('type', 'unknown') for ci in self._registry.values()))
     
-    @performance_boundary(
-        title="Registry Refresh",
-        description="Rebuilds entire CI registry from all sources",
-        sla="<100ms total refresh time",
-        optimization_notes="Parallel loading could improve performance",
-        measured_impact="Enables dynamic CI discovery without restart"
+    # Apollo-Rhetor Coordination Methods
+    
+    @state_checkpoint(
+        title="Apollo-Rhetor Context Coordination",
+        description="File-based state for Apollo planning and Rhetor execution of CI prompts",
+        state_type="coordination",
+        persistence=True,
+        consistency_requirements="File locking ensures consistency",
+        recovery_strategy="State persists in registry.json"
     )
-    def refresh(self):
-        """Refresh the registry with latest information."""
-        self._registry.clear()
-        self._load_greek_chorus()
-        self._load_terminals()
-        self._load_projects()
-        self._load_forwards()
+    def set_ci_staged_context_prompt(self, ci_name: str, prompt_data: Optional[List[Dict]]) -> bool:
+        """Apollo sets staged prompts for future scenarios."""
+        ci_name = ci_name.lower()
+        if ci_name not in self._registry:
+            return False
+            
+        if ci_name not in self._context_state:
+            self._context_state[ci_name] = {}
+            
+        self._context_state[ci_name]['staged_context_prompt'] = prompt_data
+        self._save_context_state()
+        return True
     
-    def to_json(self) -> str:
-        """Return the registry as JSON."""
-        return json.dumps(self.get_all(), indent=2)
+    def set_ci_next_context_prompt(self, ci_name: str, prompt_data: Optional[List[Dict]]) -> bool:
+        """Rhetor or direct set of next prompt to inject."""
+        ci_name = ci_name.lower()
+        if ci_name not in self._registry:
+            return False
+            
+        if ci_name not in self._context_state:
+            self._context_state[ci_name] = {}
+            
+        self._context_state[ci_name]['next_context_prompt'] = prompt_data
+        self._save_context_state()
+        return True
     
-    def format_text_output(self, cis: Optional[List[Dict[str, Any]]] = None) -> str:
-        """Format CIs for text display."""
-        if cis is None:
-            cis = self.get_all()
+    def get_ci_last_output(self, ci_name: str) -> Optional[str]:
+        """Get the complete output from CI's last turn."""
+        ci_name = ci_name.lower()
+        if ci_name not in self._context_state:
+            return None
+            
+        return self._context_state[ci_name].get('last_output')
+    
+    def update_ci_last_output(self, ci_name: str, output: str) -> bool:
+        """Store the CI's output when turn completes."""
+        ci_name = ci_name.lower()
+        if ci_name not in self._registry:
+            return False
+            
+        if ci_name not in self._context_state:
+            self._context_state[ci_name] = {}
+            
+        self._context_state[ci_name]['last_output'] = output
+        self._save_context_state()
+        return True
+    
+    def get_ci_context_state(self, ci_name: str) -> Optional[Dict[str, Any]]:
+        """Get the complete context state for a CI."""
+        ci_name = ci_name.lower()
+        return self._context_state.get(ci_name)
+    
+    def get_all_context_states(self) -> Dict[str, Dict[str, Any]]:
+        """Get context states for all CIs."""
+        return self._context_state.copy()
+    
+    def set_ci_next_from_staged(self, ci_name: str) -> bool:
+        """Move staged_context_prompt -> next_context_prompt and clear staged."""
+        ci_name = ci_name.lower()
+        if ci_name not in self._context_state:
+            return False
+            
+        staged = self._context_state[ci_name].get('staged_context_prompt')
+        if staged is None:
+            return False
+            
+        # Move staged to next and clear staged
+        self._context_state[ci_name]['next_context_prompt'] = staged
+        self._context_state[ci_name]['staged_context_prompt'] = None
+        self._save_context_state()
+        return True
+    
+    # Terminal forwarding methods
+    
+    def set_forward(self, ai_name: str, terminal_name: str, json_mode: bool = False) -> bool:
+        """Set up forwarding from an AI to a terminal."""
+        ai_name = ai_name.lower()
+        terminal_name = terminal_name.lower()
         
-        if not cis:
-            return "No CIs found"
+        if ai_name not in self._registry or terminal_name not in self._registry:
+            return False
+            
+        self._registry[ai_name]['forward_to'] = terminal_name
+        self._registry[ai_name]['forward_json'] = json_mode
+        
+        # Save to file
+        forwards = self._file_registry.get('forwards', {})
+        forwards[ai_name] = {
+            'forward_to': terminal_name,
+            'forward_json': json_mode
+        }
+        self._file_registry.update('forwards', forwards)
+        return True
+    
+    def remove_forward(self, ai_name: str) -> bool:
+        """Remove forwarding for an AI."""
+        ai_name = ai_name.lower()
+        if ai_name not in self._registry:
+            return False
+            
+        self._registry[ai_name].pop('forward_to', None)
+        self._registry[ai_name].pop('forward_json', None)
+        
+        # Remove from file
+        forwards = self._file_registry.get('forwards', {})
+        forwards.pop(ai_name, None)
+        self._file_registry.update('forwards', forwards)
+        return True
+    
+    def get_forwards(self) -> Dict[str, Dict[str, Any]]:
+        """Get all active forwards."""
+        return {
+            name: {
+                'forward_to': ci['forward_to'],
+                'json_mode': ci.get('forward_json', False)
+            }
+            for name, ci in self._registry.items()
+            if 'forward_to' in ci
+        }
+    
+    def format_list(self) -> str:
+        """Format registry contents for display."""
+        if not self._registry:
+            return "No CIs registered"
         
         # Group by type
         by_type = {}
-        for ci in cis:
+        for ci in self._registry.values():
             ci_type = ci.get('type', 'unknown')
             if ci_type not in by_type:
                 by_type[ci_type] = []
             by_type[ci_type].append(ci)
         
         output = []
+        output.append("Unified CI Registry")
+        output.append("=" * 60)
+        output.append("")
         
-        # Show Greek Chorus first
+        # Show Greek Chorus CIs
         if 'greek' in by_type:
-            output.append("Greek Chorus AIs:")
+            output.append("Greek Chorus CIs:")
             output.append("-" * 60)
-            for ci in sorted(by_type['greek'], key=lambda x: x['name']):
+            greek_cis = sorted(by_type['greek'], key=operator.itemgetter('name'))
+            for ci in greek_cis:
                 name = ci['name']
-                endpoint = ci.get('endpoint', '')
-                # Extract port from endpoint for display
-                try:
-                    from urllib.parse import urlparse
-                    parsed = urlparse(endpoint)
-                    port = parsed.port or 80
-                except:
-                    port = 'unknown'
-                desc = ci.get('description', '')
+                desc = ci['description']
+                endpoint = ci['endpoint']
                 forward = f" → {ci['forward_to']}" if 'forward_to' in ci else ""
                 json_mode = " [JSON]" if ci.get('forward_json') else ""
-                output.append(f"  {name:<15} (port {port}){forward}{json_mode}")
-                if desc:
-                    output.append(f"    {desc}")
+                output.append(f"  {name:<15} {desc:<30} {endpoint}{forward}{json_mode}")
             output.append("")
         
-        # Show Terminals
+        # Show Terminal CIs
         if 'terminal' in by_type:
-            output.append("Active Terminals:")
+            output.append("Terminal CIs:")
             output.append("-" * 60)
-            for ci in sorted(by_type['terminal'], key=lambda x: x['name']):
+            terminal_cis = sorted(by_type['terminal'], key=operator.itemgetter('name'))
+            for ci in terminal_cis:
                 name = ci['name']
                 pid = ci.get('pid', 'unknown')
                 forward = f" → {ci['forward_to']}" if 'forward_to' in ci else ""
@@ -513,7 +427,8 @@ class CIRegistry:
         if 'project' in by_type:
             output.append("Project CIs:")
             output.append("-" * 60)
-            for ci in sorted(by_type['project'], key=lambda x: x['name']):
+            project_cis = sorted(by_type['project'], key=operator.itemgetter('name'))
+            for ci in project_cis:
                 name = ci['name']
                 project = ci.get('project', 'unknown')
                 forward = f" → {ci['forward_to']}" if 'forward_to' in ci else ""
@@ -522,164 +437,14 @@ class CIRegistry:
             output.append("")
         
         return "\n".join(output)
-    
-    # Apollo-Rhetor Coordination Methods
-    @state_checkpoint(
-        title="Apollo-Rhetor Context Coordination",
-        description="In-memory state for Apollo planning and Rhetor execution of CI prompts",
-        state_type="coordination",
-        persistence=False,
-        consistency_requirements="Real-time coordination, no persistence needed",
-        recovery_strategy="State cleared on restart"
-    )
-    def set_ci_staged_context_prompt(self, ci_name: str, prompt_data: Optional[List[Dict]]) -> bool:
-        """
-        Apollo sets staged prompts for future scenarios.
-        
-        Args:
-            ci_name: Name of the CI
-            prompt_data: List of dicts with prompt data, or None to clear
-            
-        Returns:
-            bool: True if successful, False if CI not found
-        """
-        ci_name = ci_name.lower()
-        if ci_name not in self._registry:
-            return False
-            
-        if ci_name not in self._context_state:
-            self._context_state[ci_name] = {}
-            
-        self._context_state[ci_name]['staged_context_prompt'] = prompt_data
-        self._sync_to_shared_memory()
-        return True
-    
-    def set_ci_next_context_prompt(self, ci_name: str, prompt_data: Optional[List[Dict]]) -> bool:
-        """
-        Rhetor or direct set of next prompt to inject.
-        
-        Args:
-            ci_name: Name of the CI
-            prompt_data: List of dicts with prompt data, or None to clear
-            
-        Returns:
-            bool: True if successful, False if CI not found
-        """
-        ci_name = ci_name.lower()
-        if ci_name not in self._registry:
-            return False
-            
-        if ci_name not in self._context_state:
-            self._context_state[ci_name] = {}
-            
-        self._context_state[ci_name]['next_context_prompt'] = prompt_data
-        self._sync_to_shared_memory()
-        return True
-    
-    def get_ci_last_output(self, ci_name: str) -> Optional[str]:
-        """
-        Get the complete output from CI's last turn.
-        
-        Args:
-            ci_name: Name of the CI
-            
-        Returns:
-            Optional[str]: Last output string (could be text or JSON), or None
-        """
-        # Load latest data from shared memory
-        self._load_from_shared_memory()
-        
-        ci_name = ci_name.lower()
-        if ci_name not in self._context_state:
-            return None
-            
-        return self._context_state[ci_name].get('last_output')
-    
-    def set_ci_next_from_staged(self, ci_name: str) -> bool:
-        """
-        Move staged_context_prompt -> next_context_prompt and clear staged.
-        This is Rhetor's main action to promote Apollo's plan.
-        
-        Args:
-            ci_name: Name of the CI
-            
-        Returns:
-            bool: True if successful, False if CI not found or no staged prompt
-        """
-        ci_name = ci_name.lower()
-        if ci_name not in self._registry:
-            return False
-            
-        if ci_name not in self._context_state:
-            return False
-            
-        staged = self._context_state[ci_name].get('staged_context_prompt')
-        if staged is None:
-            return False
-            
-        # Move staged to next and clear staged
-        self._context_state[ci_name]['next_context_prompt'] = staged
-        self._context_state[ci_name]['staged_context_prompt'] = None
-        self._sync_to_shared_memory()
-        return True
-    
-    def update_ci_last_output(self, ci_name: str, output: str) -> bool:
-        """
-        Store the CI's output when turn completes.
-        
-        Args:
-            ci_name: Name of the CI
-            output: Complete output string from the CI's turn
-            
-        Returns:
-            bool: True if successful, False if CI not found
-        """
-        ci_name = ci_name.lower()
-        if ci_name not in self._registry:
-            return False
-            
-        if ci_name not in self._context_state:
-            self._context_state[ci_name] = {}
-            
-        self._context_state[ci_name]['last_output'] = output
-        self._sync_to_shared_memory()
-        return True
-    
-    def get_ci_context_state(self, ci_name: str) -> Optional[Dict[str, Any]]:
-        """
-        Get the complete context state for a CI (for debugging/monitoring).
-        
-        Args:
-            ci_name: Name of the CI
-            
-        Returns:
-            Optional[Dict]: Complete context state or None
-        """
-        # Load latest data from shared memory
-        self._load_from_shared_memory()
-        
-        ci_name = ci_name.lower()
-        return self._context_state.get(ci_name)
-    
-    def get_all_context_states(self) -> Dict[str, Dict[str, Any]]:
-        """
-        Get all CI context states (for Apollo/Rhetor global view).
-        
-        Returns:
-            Dict: All context states keyed by CI name
-        """
-        # Load latest data from shared memory
-        self._load_from_shared_memory()
-        
-        return self._context_state.copy()
 
 
 # Singleton instance
-_registry = None
+_registry_instance = None
 
 def get_registry() -> CIRegistry:
-    """Get or create the singleton CI registry."""
-    global _registry
-    if _registry is None:
-        _registry = CIRegistry()
-    return _registry
+    """Get the singleton CI registry instance."""
+    global _registry_instance
+    if _registry_instance is None:
+        _registry_instance = CIRegistry()
+    return _registry_instance

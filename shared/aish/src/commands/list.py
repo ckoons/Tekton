@@ -4,6 +4,7 @@ Handles the unified CI listing with various filters and output formats.
 """
 
 import sys
+import operator
 from pathlib import Path
 
 # Add parent paths for imports
@@ -57,7 +58,6 @@ def handle_list_command(args):
     
     # Get registry and refresh
     registry = get_registry()
-    registry.refresh()
     
     # Get CIs based on filter
     if filter_type:
@@ -80,7 +80,6 @@ def handle_context_list(args):
     - aish list context <ci-name>  # Show full context details for specific CI
     """
     registry = get_registry()
-    registry.refresh()
     
     if not args:
         # Show summary for all CIs
@@ -102,7 +101,11 @@ def show_context_summary(registry):
     all_cis = registry.get_all()
     all_context_states = registry.get_all_context_states()
     
-    for ci in sorted(all_cis, key=lambda x: x['name']):
+    # Sort CIs by name
+    ci_list = list(all_cis.values())
+    ci_list.sort(key=operator.itemgetter('name'))
+    
+    for ci in ci_list:
         ci_name = ci['name']
         context_state = all_context_states.get(ci_name, {})
         
