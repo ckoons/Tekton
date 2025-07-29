@@ -649,6 +649,182 @@
     </div>
 </div>
 
+<!-- Modals - Outside of main component to ensure proper overlay -->
+<!-- Template Creation Modal -->
+<div id="template-modal" class="harmonia__modal" style="display: none;">
+    <div class="harmonia__modal-content">
+        <div class="harmonia__modal-header">
+            <h2 class="harmonia__modal-title">Create Workflow Template</h2>
+            <button class="harmonia__modal-close" onclick="closeTemplateModal()">&times;</button>
+        </div>
+        
+        <div class="harmonia__modal-body">
+            <div class="harmonia__template-form">
+                <!-- Basic Information -->
+                <div class="harmonia__template-section">
+                    <h3 class="harmonia__template-section-title">Basic Information</h3>
+                    
+                    <div class="harmonia__template-field">
+                        <label class="harmonia__template-label">Template Name</label>
+                        <input type="text" id="template-name" class="harmonia__template-input" placeholder="e.g., Feature Development">
+                    </div>
+                    
+                    <div class="harmonia__template-field">
+                        <label class="harmonia__template-label">Description</label>
+                        <textarea id="template-description" class="harmonia__template-textarea" rows="3" placeholder="Describe what this template is for..."></textarea>
+                    </div>
+                    
+                    <div class="harmonia__template-row">
+                        <div class="harmonia__template-field">
+                            <label class="harmonia__template-label">Category</label>
+                            <select id="template-category" class="harmonia__template-select">
+                                <option value="development">Development</option>
+                                <option value="maintenance">Maintenance</option>
+                                <option value="testing">Testing</option>
+                                <option value="deployment">Deployment</option>
+                                <option value="analysis">Analysis</option>
+                            </select>
+                        </div>
+                        
+                        <div class="harmonia__template-field">
+                            <label class="harmonia__template-label">Difficulty</label>
+                            <select id="template-difficulty" class="harmonia__template-select">
+                                <option value="easy">Easy</option>
+                                <option value="medium">Medium</option>
+                                <option value="hard">Hard</option>
+                            </select>
+                        </div>
+                        
+                        <div class="harmonia__template-field">
+                            <label class="harmonia__template-label">Est. Duration</label>
+                            <input type="text" id="template-duration" class="harmonia__template-input" placeholder="e.g., 4-6 hours">
+                        </div>
+                    </div>
+                    
+                    <div class="harmonia__template-field">
+                        <label class="harmonia__template-label">Tags (comma-separated)</label>
+                        <input type="text" id="template-tags" class="harmonia__template-input" placeholder="e.g., feature, testing, review">
+                    </div>
+                    
+                    <div class="harmonia__template-field">
+                        <label class="harmonia__checkbox-label">
+                            <input type="checkbox" id="template-public" checked>
+                            <span>Make this template public</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <!-- Workflow Tasks -->
+                <div class="harmonia__template-section">
+                    <div class="harmonia__template-section-header">
+                        <h3 class="harmonia__template-section-title">Workflow Tasks</h3>
+                        <button class="harmonia__button harmonia__button--small harmonia__button--primary" onclick="addTemplateTask()">Add Task</button>
+                    </div>
+                    
+                    <div id="template-tasks-list" class="harmonia__template-tasks-list">
+                        <!-- Tasks will be added here dynamically -->
+                        <div class="harmonia__template-task" data-task-index="0">
+                            <div class="harmonia__template-task-header">
+                                <input type="text" class="harmonia__template-input" placeholder="Task Name" data-field="name">
+                                <button class="harmonia__button harmonia__button--small harmonia__button--secondary" onclick="removeTemplateTask(0)">Remove</button>
+                            </div>
+                            <div class="harmonia__template-task-fields">
+                                <select class="harmonia__template-select" data-field="component">
+                                    <option value="numa">Numa</option>
+                                    <option value="metis">Metis</option>
+                                    <option value="prometheus">Prometheus</option>
+                                    <option value="athena">Athena</option>
+                                    <option value="rhetor">Rhetor</option>
+                                    <option value="apollo">Apollo</option>
+                                    <option value="hermes">Hermes</option>
+                                    <option value="engram">Engram</option>
+                                </select>
+                                <input type="text" class="harmonia__template-input" placeholder="Description" data-field="description">
+                                <input type="number" class="harmonia__template-input harmonia__template-input--small" placeholder="Timeout (s)" data-field="timeout" value="3600">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="harmonia__modal-footer">
+            <button class="harmonia__button harmonia__button--secondary" onclick="closeTemplateModal()">Cancel</button>
+            <button class="harmonia__button harmonia__button--primary" onclick="saveTemplate()">Create Template</button>
+        </div>
+    </div>
+</div>
+
+<!-- Workflow Editor Modal -->
+<div id="workflow-modal" class="harmonia__modal" style="display: none;">
+    <div class="harmonia__modal-content">
+        <div class="harmonia__modal-header">
+            <h2 class="harmonia__modal-title">Create New Workflow</h2>
+            <button class="harmonia__modal-close" onclick="closeWorkflowModal()">&times;</button>
+        </div>
+        
+        <div class="harmonia__modal-body">
+            <div class="harmonia__workflow-form">
+                <!-- Basic Information -->
+                <div class="harmonia__workflow-section">
+                    <h3 class="harmonia__template-section-title">Workflow Information</h3>
+                    
+                    <div class="harmonia__workflow-field">
+                        <label class="harmonia__workflow-label">Workflow Name</label>
+                        <input type="text" id="workflow-name" class="harmonia__workflow-input" placeholder="e.g., User Authentication Feature">
+                    </div>
+                    
+                    <div class="harmonia__workflow-field">
+                        <label class="harmonia__workflow-label">Description</label>
+                        <textarea id="workflow-description" class="harmonia__workflow-textarea" rows="3" placeholder="Describe the workflow purpose and goals..."></textarea>
+                    </div>
+                    
+                    <div class="harmonia__workflow-row">
+                        <div class="harmonia__workflow-field">
+                            <label class="harmonia__workflow-label">Sprint ID (optional)</label>
+                            <input type="text" id="workflow-sprint-id" class="harmonia__workflow-input" placeholder="Associated sprint ID">
+                        </div>
+                        
+                        <div class="harmonia__workflow-field">
+                            <label class="harmonia__workflow-label">Priority</label>
+                            <select id="workflow-priority" class="harmonia__workflow-select">
+                                <option value="low">Low</option>
+                                <option value="medium" selected>Medium</option>
+                                <option value="high">High</option>
+                                <option value="critical">Critical</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="harmonia__workflow-field">
+                        <label class="harmonia__checkbox-label">
+                            <input type="checkbox" id="workflow-auto-start">
+                            <span>Auto-start workflow after creation</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <!-- Workflow Tasks -->
+                <div class="harmonia__workflow-section">
+                    <div class="harmonia__template-section-header">
+                        <h3 class="harmonia__template-section-title">Workflow Tasks</h3>
+                        <button class="harmonia__button harmonia__button--small harmonia__button--primary" onclick="addWorkflowTask()">Add Task</button>
+                    </div>
+                    
+                    <div id="workflow-tasks-list" class="harmonia__workflow-tasks-list">
+                        <!-- Tasks will be added here dynamically -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="harmonia__modal-footer">
+            <button class="harmonia__button harmonia__button--edit" onclick="clearWorkflowForm()">Clear</button>
+            <button class="harmonia__button harmonia__button--primary" onclick="saveWorkflow()">Create Workflow</button>
+        </div>
+    </div>
+</div>
+
 <!-- Add component-specific styles -->
 <style>
     /* Harmonia component styles using BEM naming convention */
@@ -1607,6 +1783,295 @@
     .harmonia__send-button:hover {
         background-color: #6E47B2;
     }
+    
+    /* Modal Styles - Must be here for proper overlay */
+    .harmonia__modal {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        bottom: 0 !important;
+        width: 100vw !important;
+        height: 100vh !important;
+        background-color: rgba(0, 0, 0, 0.7) !important;
+        align-items: center !important;
+        justify-content: center !important;
+        z-index: 999999 !important;
+        /* display controlled by JavaScript - do not set here */
+    }
+    
+    .harmonia__modal[style*="display: flex"] {
+        display: flex !important;
+    }
+
+    .harmonia__modal-content {
+        position: relative;
+        background-color: var(--bg-primary, #1a1a2a);
+        border: 1px solid var(--border-color, #444444);
+        border-radius: 12px;
+        width: 90%;
+        max-width: 800px;
+        max-height: 90vh;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+    }
+
+    .harmonia__modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 20px;
+        border-bottom: 1px solid var(--border-color, #444444);
+    }
+
+    .harmonia__modal-title {
+        margin: 0;
+        font-size: 1.5rem;
+        color: #7E57C2;
+    }
+
+    .harmonia__modal-close {
+        background: none;
+        border: none;
+        font-size: 24px;
+        color: var(--text-secondary, #b0b0b0);
+        cursor: pointer;
+        padding: 0;
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 4px;
+        transition: all 0.2s ease;
+    }
+
+    .harmonia__modal-close:hover {
+        background-color: var(--bg-secondary, #252535);
+        color: var(--text-primary, #f0f0f0);
+    }
+
+    .harmonia__modal-body {
+        flex: 1;
+        overflow-y: auto;
+        padding: 20px;
+    }
+
+    .harmonia__modal-footer {
+        display: flex;
+        justify-content: flex-end;
+        gap: 12px;
+        padding: 20px;
+        border-top: 1px solid var(--border-color, #444444);
+    }
+
+    /* Template Form Styles */
+    .harmonia__template-form {
+        display: flex;
+        flex-direction: column;
+        gap: 32px;
+    }
+
+    .harmonia__template-section {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .harmonia__template-section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 16px;
+    }
+
+    .harmonia__template-section-title {
+        margin: 0;
+        font-size: 1.1rem;
+        font-weight: 500;
+        color: #7E57C2;
+    }
+
+    .harmonia__template-field {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .harmonia__template-row {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+    }
+
+    .harmonia__template-label {
+        font-size: 14px;
+        font-weight: 500;
+        color: var(--text-primary, #f0f0f0);
+    }
+
+    .harmonia__template-input,
+    .harmonia__template-select,
+    .harmonia__template-textarea {
+        padding: 8px 12px;
+        background-color: var(--bg-tertiary, #333345);
+        border: 1px solid var(--border-color, #444444);
+        border-radius: 4px;
+        color: var(--text-primary, #f0f0f0);
+        font-size: 14px;
+    }
+
+    .harmonia__template-input:focus,
+    .harmonia__template-select:focus,
+    .harmonia__template-textarea:focus {
+        outline: none;
+        border-color: #7E57C2;
+    }
+
+    .harmonia__template-textarea {
+        resize: vertical;
+        min-height: 80px;
+    }
+
+    .harmonia__template-input--small {
+        width: 120px;
+    }
+
+    /* Template Tasks */
+    .harmonia__template-tasks-list {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .harmonia__template-task {
+        background-color: var(--bg-secondary, #252535);
+        border: 1px solid var(--border-color, #444444);
+        border-radius: 8px;
+        padding: 16px;
+    }
+
+    .harmonia__template-task-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 12px;
+        gap: 12px;
+    }
+
+    .harmonia__template-task-header .harmonia__template-input {
+        flex: 1;
+    }
+
+    .harmonia__template-task-fields {
+        display: grid;
+        grid-template-columns: 150px 1fr 120px;
+        gap: 12px;
+    }
+
+    /* Workflow Editor Styles */
+    .harmonia__workflow-form {
+        display: flex;
+        flex-direction: column;
+        gap: 32px;
+    }
+
+    .harmonia__workflow-section {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .harmonia__workflow-field {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .harmonia__workflow-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+    }
+
+    .harmonia__workflow-label {
+        font-size: 14px;
+        font-weight: 500;
+        color: var(--text-primary, #f0f0f0);
+    }
+
+    .harmonia__workflow-input,
+    .harmonia__workflow-select,
+    .harmonia__workflow-textarea {
+        padding: 8px 12px;
+        background-color: var(--bg-tertiary, #333345);
+        border: 1px solid var(--border-color, #444444);
+        border-radius: 4px;
+        color: var(--text-primary, #f0f0f0);
+        font-size: 14px;
+    }
+
+    .harmonia__workflow-input:focus,
+    .harmonia__workflow-select:focus,
+    .harmonia__workflow-textarea:focus {
+        outline: none;
+        border-color: #7E57C2;
+    }
+
+    .harmonia__workflow-textarea {
+        resize: vertical;
+        min-height: 80px;
+    }
+
+    .harmonia__workflow-input--small {
+        width: 80px;
+    }
+
+    /* Workflow Tasks */
+    .harmonia__workflow-tasks-list {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        max-height: 400px;
+        overflow-y: auto;
+    }
+
+    .harmonia__workflow-task {
+        background-color: var(--bg-secondary, #252535);
+        border: 1px solid var(--border-color, #444444);
+        border-radius: 8px;
+        padding: 16px;
+    }
+
+    .harmonia__workflow-task-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 12px;
+        gap: 12px;
+    }
+
+    .harmonia__workflow-task-header .harmonia__workflow-input {
+        flex: 1;
+    }
+
+    .harmonia__workflow-task-fields {
+        display: grid;
+        grid-template-columns: 200px 1fr 80px;
+        gap: 12px;
+        margin-bottom: 12px;
+    }
+
+    .harmonia__workflow-task-dependencies {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+    }
+
+    .harmonia__workflow-task-dependencies .harmonia__workflow-input {
+        flex: 1;
+    }
 </style>
 
 <!-- JavaScript (minimal, following HTML Injection pattern) -->
@@ -2152,6 +2617,19 @@ function checkForWork() {
 // Initialize on load
 window.addEventListener('DOMContentLoaded', function() {
     console.log('[HARMONIA] Component loaded');
+    
+    // Move modals to body to ensure proper overlay
+    const templateModal = document.getElementById('template-modal');
+    const workflowModal = document.getElementById('workflow-modal');
+    
+    if (templateModal && templateModal.parentElement !== document.body) {
+        document.body.appendChild(templateModal);
+    }
+    
+    if (workflowModal && workflowModal.parentElement !== document.body) {
+        document.body.appendChild(workflowModal);
+    }
+    
     checkForWork();
     setupCanvasDragDrop();
     setupToolbar();
@@ -2361,41 +2839,7 @@ async function harmoniaApiCall(endpoint, method = 'GET', data = null) {
 }
 
 // Dashboard - Create New Workflow
-async function createNewWorkflow() {
-    console.log('Create new workflow');
-    
-    const workflowName = prompt('Enter workflow name:');
-    if (!workflowName) return;
-    
-    const description = prompt('Enter workflow description (optional):') || '';
-    
-    try {
-        const result = await harmoniaApiCall('/workflows', 'POST', {
-            name: workflowName,
-            description: description,
-            tasks: {},
-            input: {},
-            output: {},
-            version: "1.0",
-            metadata: {}
-        });
-        
-        // Store the workflow ID for use in save draft
-        if (result.data && result.data.workflow_definition) {
-            window.currentWorkflowId = result.data.workflow_definition.id;
-        }
-        
-        alert(`Workflow created successfully!\nWorkflow: ${workflowName}\nStatus: ${result.status}`);
-        
-        // Switch to workflows tab
-        document.getElementById('harmonia-tab-workflows').checked = true;
-        
-        // Refresh the dashboard
-        loadDashboardSprints();
-    } catch (error) {
-        alert(`Failed to create workflow: ${error.message}`);
-    }
-}
+// Now handled by openWorkflowModal('create') - see workflow modal functions
 
 // Chat - Clear Chat
 function clearHarmoniaChat() {
@@ -2560,48 +3004,7 @@ Tags: ${template.tags?.join(', ') || 'None'}`;
 }
 
 // Templates - Use Template
-async function useHarmoniaTemplate(templateId) {
-    console.log('Use harmonia template:', templateId);
-    
-    // For now, since we don't have real templates, create a mock workflow
-    const workflowName = prompt('Enter name for new workflow:');
-    if (!workflowName) return;
-    
-    try {
-        // Create a workflow based on the template type
-        let taskStructure = {};
-        if (templateId === 'feature-dev') {
-            taskStructure = {
-                'task-1': { name: 'Design Feature', component: 'metis', status: 'pending' },
-                'task-2': { name: 'Implement Feature', component: 'numa', status: 'pending' },
-                'task-3': { name: 'Test Feature', component: 'athena', status: 'pending' }
-            };
-        } else if (templateId === 'bug-fix') {
-            taskStructure = {
-                'task-1': { name: 'Investigate Bug', component: 'numa', status: 'pending' },
-                'task-2': { name: 'Fix Bug', component: 'numa', status: 'pending' },
-                'task-3': { name: 'Verify Fix', component: 'athena', status: 'pending' }
-            };
-        }
-        
-        const result = await harmoniaApiCall('/workflows', 'POST', {
-            name: workflowName,
-            description: `Workflow created from ${templateId} template`,
-            tasks: taskStructure,
-            input: {},
-            output: {},
-            version: "1.0",
-            metadata: { template_id: templateId }
-        });
-        
-        alert(`Workflow created from template!\nWorkflow: ${workflowName}\nTemplate: ${templateId}\nStatus: ${result.status}`);
-        // Switch to workflows tab
-        const workflowsTab = document.querySelector('[data-tab="workflows"]');
-        if (workflowsTab) workflowsTab.click();
-    } catch (error) {
-        alert(`Failed to create workflow from template: ${error.message}`);
-    }
-}
+// Now handled by openWorkflowModal('template') - see workflow modal functions
 
 // Review - Preview Export
 async function previewHarmoniaExport() {
@@ -2649,7 +3052,13 @@ async function saveHarmoniaDraft() {
         
         if (!workflowId) {
             // Create a new workflow first
-            const workflowName = prompt('Enter name for new workflow:') || 'Draft Workflow';
+            const workflowName = prompt('Enter name for new workflow:');
+            
+            // User cancelled the prompt
+            if (!workflowName) {
+                console.log('User cancelled workflow creation');
+                return;
+            }
             
             const newWorkflowResult = await harmoniaApiCall('/workflows', 'POST', {
                 name: workflowName,
@@ -2717,44 +3126,49 @@ function autoLayoutWorkflow() {
 async function pauseExecution(executionId) {
     console.log('Pause execution:', executionId);
     
-    try {
-        const result = await harmoniaApiCall(`/executions/${executionId}/pause`, 'POST');
-        alert(`Execution paused successfully.\nExecution ID: ${executionId}`);
-        // Refresh executions view
-        loadExecutions();
-    } catch (error) {
-        alert(`Failed to pause execution: ${error.message}`);
+    // For mock executions, just show a message
+    if (executionId.startsWith('exec-')) {
+        alert(`Pause Execution\n\nThis is a mock execution. In production, this would pause the workflow execution.\n\nExecution ID: ${executionId}`);
+        return;
     }
+    
+    // For real executions, we need to implement the pause endpoint
+    alert(`Pause Execution\n\nThe pause execution endpoint is not yet implemented in the backend.\n\nExecution ID: ${executionId}\n\nThis feature will be available once the backend API is extended.`);
 }
 
 async function resumeExecution(executionId) {
     console.log('Resume execution:', executionId);
     
-    try {
-        const result = await harmoniaApiCall(`/executions/${executionId}/resume`, 'POST');
-        alert(`Execution resumed successfully.\nExecution ID: ${executionId}`);
-        // Refresh executions view
-        loadExecutions();
-    } catch (error) {
-        alert(`Failed to resume execution: ${error.message}`);
+    // For mock executions, just show a message
+    if (executionId.startsWith('exec-')) {
+        alert(`Resume Execution\n\nThis is a mock execution. In production, this would resume the paused workflow.\n\nExecution ID: ${executionId}`);
+        return;
     }
+    
+    // For real executions, we need to implement the resume endpoint
+    alert(`Resume Execution\n\nThe resume execution endpoint is not yet implemented in the backend.\n\nExecution ID: ${executionId}\n\nThis feature will be available once the backend API is extended.`);
 }
 
 async function cancelExecution(executionId) {
     console.log('Cancel execution:', executionId);
     
+    // For mock executions, just show a message
+    if (executionId.startsWith('exec-')) {
+        if (confirm('Cancel this mock execution?\n\nIn production, this would stop the workflow and clean up resources.')) {
+            alert(`Mock execution cancelled.\nExecution ID: ${executionId}`);
+            // Hide the execution item
+            const execItem = document.querySelector(`[data-execution-id="${executionId}"]`);
+            if (execItem) execItem.style.display = 'none';
+        }
+        return;
+    }
+    
+    // For real executions, we need to implement the cancel endpoint
     if (!confirm('Are you sure you want to cancel this execution? This action cannot be undone.')) {
         return;
     }
     
-    try {
-        const result = await harmoniaApiCall(`/executions/${executionId}/cancel`, 'POST');
-        alert(`Execution cancelled successfully.\nExecution ID: ${executionId}`);
-        // Refresh executions view
-        loadExecutions();
-    } catch (error) {
-        alert(`Failed to cancel execution: ${error.message}`);
-    }
+    alert(`Cancel Execution\n\nThe cancel execution endpoint is not yet implemented in the backend.\n\nExecution ID: ${executionId}\n\nThis feature will be available once the backend API is extended.`);
 }
 
 // Component Tasks Management
@@ -2816,24 +3230,55 @@ async function loadComponentTasks() {
 async function viewExecutionDetails(executionId) {
     console.log('View execution details:', executionId);
     
+    // For mock executions, show mock details
+    if (executionId.startsWith('exec-')) {
+        const mockDetails = `Execution Details: Feature User Authentication
+
+ID: ${executionId}
+Status: Running
+Started: ${new Date().toLocaleString()}
+Duration: 45 minutes
+Tasks Completed: 5 / 11
+Current Task: Implementing login endpoint
+Component: numa
+
+Progress: 45%
+
+Task Breakdown:
+✓ Design Phase (metis) - 25 min
+✓ Schema Design (metis) - 15 min
+✓ API Design (prometheus) - 20 min
+✓ Setup Project (numa) - 10 min
+✓ Create Models (numa) - 15 min
+→ Implement Login (numa) - In Progress
+- Implement Registration (numa) - Pending
+- Write Tests (athena) - Pending
+- Security Review (athena) - Pending
+- Documentation (rhetor) - Pending
+- Final Review (rhetor) - Pending`;
+
+        alert(mockDetails);
+        return;
+    }
+    
     try {
-        const execution = await harmoniaApiCall(`/executions/${executionId}`);
+        const result = await harmoniaApiCall(`/executions/${executionId}`);
+        const execution = result.data;
         
-        const details = `Execution Details: ${execution.workflow_name}
+        const details = `Execution Details: ${execution.workflow_name || 'Unknown'}
 
 ID: ${execution.id}
 Status: ${execution.status}
-Started: ${new Date(execution.started_at).toLocaleString()}
+Started: ${new Date(execution.created_at).toLocaleString()}
 Duration: ${execution.duration || 'In progress'}
-Tasks Completed: ${execution.completed_tasks || 0} / ${execution.total_tasks || 0}
-Current Task: ${execution.current_task || 'None'}
-Component: ${execution.current_component || 'None'}
+Tasks: ${Object.keys(execution.task_statuses || {}).length}
 
-Progress: ${execution.progress_percentage || 0}%`;
+Current State:
+${JSON.stringify(execution.current_state, null, 2)}`;
 
         alert(details);
     } catch (error) {
-        alert(`Failed to load execution details: ${error.message}`);
+        alert(`Failed to load execution details: ${error.message}\n\nNote: The execution may not exist or the endpoint may not be fully implemented.`);
     }
 }
 
@@ -2935,57 +3380,16 @@ Components: ${sprintData.assignedComponents.join(', ')}`;
     if (workflowsTab) workflowsTab.click();
 }
 
-async function beginOrchestration(sprintId) {
-    console.log('Begin orchestration for sprint:', sprintId);
-    
-    const confirmStart = confirm(`Begin Workflow Orchestration for Sprint: ${sprintId}
-
-This will:
-1. Load the sprint tasks from Metis
-2. Open the visual workflow builder
-3. Allow you to design the workflow structure
-4. Configure component routing
-
-Proceed with orchestration?`);
-    
-    if (!confirmStart) return;
-    
-    try {
-        // In a real implementation, this would load sprint data from Metis
-        // For now, create a mock workflow for the sprint
-        const result = await harmoniaApiCall('/workflows', 'POST', {
-            name: `${sprintId} Orchestration`,
-            description: `Workflow orchestration for ${sprintId}`,
-            tasks: {
-                'design': { name: 'Design Phase', component: 'metis', status: 'pending' },
-                'implement': { name: 'Implementation', component: 'numa', status: 'pending' },
-                'test': { name: 'Testing', component: 'athena', status: 'pending' },
-                'review': { name: 'Code Review', component: 'rhetor', status: 'pending' }
-            },
-            input: { sprint_id: sprintId },
-            output: { workflow_ready: true },
-            version: "1.0",
-            metadata: { 
-                sprint_id: sprintId,
-                orchestration_started: new Date().toISOString()
-            }
-        });
-        
-        alert(`Orchestration Started!\nWorkflow: ${sprintId} Orchestration\nStatus: ${result.status}\n\nSwitching to workflow builder...`);
-        
-        // Switch to workflows tab to show the builder
-        const workflowsTab = document.querySelector('[data-tab="workflows"]');
-        if (workflowsTab) workflowsTab.click();
-        
-    } catch (error) {
-        alert(`Failed to begin orchestration: ${error.message}`);
-    }
-}
+// Now handled by openWorkflowModal('orchestrate') - see workflow modal functions
 
 // Template Modal Functions
 function openTemplateModal() {
     const modal = document.getElementById('template-modal');
     if (modal) {
+        // Ensure modal is appended to body for proper overlay
+        if (modal.parentElement !== document.body) {
+            document.body.appendChild(modal);
+        }
         modal.style.display = 'flex';
         // Clear form
         document.getElementById('template-name').value = '';
@@ -3155,289 +3559,330 @@ window.createHarmoniaTemplate = function() {
     console.log('Opening template creation modal');
     openTemplateModal();
 }
-</script>
 
-<!-- Template Creation Modal -->
-<div id="template-modal" class="harmonia__modal" style="display: none;">
-    <div class="harmonia__modal-content">
-        <div class="harmonia__modal-header">
-            <h2 class="harmonia__modal-title">Create Workflow Template</h2>
-            <button class="harmonia__modal-close" onclick="closeTemplateModal()">&times;</button>
-        </div>
+// Workflow Editor Modal Functions
+function openWorkflowModal(mode = 'create', data = null) {
+    const modal = document.getElementById('workflow-modal');
+    if (modal) {
+        // Ensure modal is appended to body for proper overlay
+        if (modal.parentElement !== document.body) {
+            document.body.appendChild(modal);
+        }
+        modal.style.display = 'flex';
         
-        <div class="harmonia__modal-body">
-            <div class="harmonia__template-form">
-                <!-- Basic Information -->
-                <div class="harmonia__template-section">
-                    <h3 class="harmonia__template-section-title">Basic Information</h3>
-                    
-                    <div class="harmonia__template-field">
-                        <label class="harmonia__template-label">Template Name</label>
-                        <input type="text" id="template-name" class="harmonia__template-input" placeholder="e.g., Feature Development">
-                    </div>
-                    
-                    <div class="harmonia__template-field">
-                        <label class="harmonia__template-label">Description</label>
-                        <textarea id="template-description" class="harmonia__template-textarea" rows="3" placeholder="Describe what this template is for..."></textarea>
-                    </div>
-                    
-                    <div class="harmonia__template-row">
-                        <div class="harmonia__template-field">
-                            <label class="harmonia__template-label">Category</label>
-                            <select id="template-category" class="harmonia__template-select">
-                                <option value="development">Development</option>
-                                <option value="maintenance">Maintenance</option>
-                                <option value="testing">Testing</option>
-                                <option value="deployment">Deployment</option>
-                                <option value="analysis">Analysis</option>
-                            </select>
-                        </div>
-                        
-                        <div class="harmonia__template-field">
-                            <label class="harmonia__template-label">Difficulty</label>
-                            <select id="template-difficulty" class="harmonia__template-select">
-                                <option value="easy">Easy</option>
-                                <option value="medium">Medium</option>
-                                <option value="hard">Hard</option>
-                            </select>
-                        </div>
-                        
-                        <div class="harmonia__template-field">
-                            <label class="harmonia__template-label">Est. Duration</label>
-                            <input type="text" id="template-duration" class="harmonia__template-input" placeholder="e.g., 4-6 hours">
-                        </div>
-                    </div>
-                    
-                    <div class="harmonia__template-field">
-                        <label class="harmonia__template-label">Tags (comma-separated)</label>
-                        <input type="text" id="template-tags" class="harmonia__template-input" placeholder="e.g., feature, testing, review">
-                    </div>
-                    
-                    <div class="harmonia__template-field">
-                        <label class="harmonia__checkbox-label">
-                            <input type="checkbox" id="template-public" checked>
-                            <span>Make this template public</span>
-                        </label>
-                    </div>
-                </div>
+        // Set mode
+        window.workflowEditorMode = mode;
+        window.workflowEditorData = data;
+        
+        // Update modal title based on mode
+        const modalTitle = modal.querySelector('.harmonia__modal-title');
+        if (mode === 'create') {
+            modalTitle.textContent = 'Create New Workflow';
+        } else if (mode === 'orchestrate') {
+            modalTitle.textContent = 'Orchestrate Sprint Workflow';
+        } else if (mode === 'template') {
+            modalTitle.textContent = 'Create Workflow from Template';
+        }
+        
+        // Clear or populate form based on mode
+        if (mode === 'create') {
+            // Clear form for new workflow
+            document.getElementById('workflow-name').value = '';
+            document.getElementById('workflow-description').value = '';
+            document.getElementById('workflow-sprint-id').value = '';
+            document.getElementById('workflow-priority').value = 'medium';
+            document.getElementById('workflow-auto-start').checked = false;
+            clearWorkflowTasks();
+        } else if (mode === 'orchestrate' && data) {
+            // Populate with sprint data
+            document.getElementById('workflow-name').value = `${data.sprintName} Workflow`;
+            document.getElementById('workflow-description').value = `Workflow orchestration for ${data.sprintName}`;
+            document.getElementById('workflow-sprint-id').value = data.sprintId;
+            document.getElementById('workflow-priority').value = 'high';
+            document.getElementById('workflow-auto-start').checked = true;
+            
+            // Load sprint tasks if available
+            if (data.tasks) {
+                populateWorkflowTasks(data.tasks);
+            }
+        } else if (mode === 'template' && data) {
+            // Populate with template data
+            document.getElementById('workflow-name').value = data.name || 'New Workflow from Template';
+            document.getElementById('workflow-description').value = data.description || '';
+            document.getElementById('workflow-sprint-id').value = '';
+            document.getElementById('workflow-priority').value = 'medium';
+            document.getElementById('workflow-auto-start').checked = false;
+            
+            // Load template tasks
+            if (data.tasks) {
+                populateWorkflowTasks(data.tasks);
+            }
+        }
+    }
+}
+
+function closeWorkflowModal() {
+    const modal = document.getElementById('workflow-modal');
+    if (modal) {
+        modal.style.display = 'none';
+        window.workflowEditorMode = null;
+        window.workflowEditorData = null;
+    }
+}
+
+function clearWorkflowForm() {
+    // Clear all form fields
+    document.getElementById('workflow-name').value = '';
+    document.getElementById('workflow-description').value = '';
+    document.getElementById('workflow-sprint-id').value = '';
+    document.getElementById('workflow-priority').value = 'medium';
+    document.getElementById('workflow-auto-start').checked = false;
+    
+    // Clear all tasks and add one empty task
+    clearWorkflowTasks();
+    
+    console.log('Workflow form cleared');
+}
+
+let workflowTaskCounter = 0;
+
+function clearWorkflowTasks() {
+    const tasksList = document.getElementById('workflow-tasks-list');
+    tasksList.innerHTML = '';
+    workflowTaskCounter = 0;
+    addWorkflowTask(); // Add one empty task
+}
+
+function populateWorkflowTasks(tasks) {
+    const tasksList = document.getElementById('workflow-tasks-list');
+    tasksList.innerHTML = '';
+    workflowTaskCounter = 0;
+    
+    // Convert tasks object or array to list
+    const taskArray = Array.isArray(tasks) ? tasks : Object.values(tasks);
+    
+    taskArray.forEach(task => {
+        addWorkflowTask(task);
+    });
+    
+    // Add empty task if none exist
+    if (taskArray.length === 0) {
+        addWorkflowTask();
+    }
+}
+
+function addWorkflowTask(taskData = null) {
+    const tasksList = document.getElementById('workflow-tasks-list');
+    const taskIndex = workflowTaskCounter++;
+    
+    const taskDiv = document.createElement('div');
+    taskDiv.className = 'harmonia__workflow-task';
+    taskDiv.dataset.taskIndex = taskIndex;
+    
+    taskDiv.innerHTML = `
+        <div class="harmonia__workflow-task-header">
+            <input type="text" class="harmonia__workflow-input" placeholder="Task Name" data-field="name" value="${taskData?.name || ''}">
+            <button class="harmonia__button harmonia__button--small harmonia__button--secondary" onclick="removeWorkflowTask(${taskIndex})">Remove</button>
+        </div>
+        <div class="harmonia__workflow-task-fields">
+            <select class="harmonia__workflow-select" data-field="component">
+                <option value="">Select Component</option>
+                <option value="numa" ${taskData?.component === 'numa' ? 'selected' : ''}>Numa (Implementation)</option>
+                <option value="metis" ${taskData?.component === 'metis' ? 'selected' : ''}>Metis (Analysis)</option>
+                <option value="prometheus" ${taskData?.component === 'prometheus' ? 'selected' : ''}>Prometheus (Planning)</option>
+                <option value="athena" ${taskData?.component === 'athena' ? 'selected' : ''}>Athena (Testing)</option>
+                <option value="rhetor" ${taskData?.component === 'rhetor' ? 'selected' : ''}>Rhetor (Documentation)</option>
+                <option value="apollo" ${taskData?.component === 'apollo' ? 'selected' : ''}>Apollo (UI/UX)</option>
+                <option value="hermes" ${taskData?.component === 'hermes' ? 'selected' : ''}>Hermes (Communication)</option>
+                <option value="engram" ${taskData?.component === 'engram' ? 'selected' : ''}>Engram (Memory)</option>
+            </select>
+            <input type="text" class="harmonia__workflow-input" placeholder="Task Description" data-field="description" value="${taskData?.description || ''}">
+            <input type="number" class="harmonia__workflow-input harmonia__workflow-input--small" placeholder="Hours" data-field="hours" value="${taskData?.hours || '8'}">
+        </div>
+        <div class="harmonia__workflow-task-dependencies">
+            <label class="harmonia__workflow-label">Dependencies:</label>
+            <input type="text" class="harmonia__workflow-input" placeholder="Comma-separated task names" data-field="dependencies" value="${taskData?.dependencies?.join(', ') || ''}">
+        </div>
+    `;
+    
+    tasksList.appendChild(taskDiv);
+}
+
+function removeWorkflowTask(index) {
+    const task = document.querySelector(`[data-task-index="${index}"]`);
+    if (task) {
+        task.remove();
+    }
+}
+
+async function saveWorkflow() {
+    // Gather form data
+    const name = document.getElementById('workflow-name').value;
+    const description = document.getElementById('workflow-description').value;
+    const sprintId = document.getElementById('workflow-sprint-id').value;
+    const priority = document.getElementById('workflow-priority').value;
+    const autoStart = document.getElementById('workflow-auto-start').checked;
+    
+    if (!name) {
+        alert('Please enter a workflow name');
+        return;
+    }
+    
+    // Gather tasks
+    const tasks = {};
+    const taskElements = document.querySelectorAll('.harmonia__workflow-task');
+    
+    taskElements.forEach((taskEl, index) => {
+        const taskName = taskEl.querySelector('[data-field="name"]').value;
+        if (taskName) {
+            const taskId = `task_${index + 1}`;
+            const dependencies = taskEl.querySelector('[data-field="dependencies"]').value
+                .split(',')
+                .map(d => d.trim())
+                .filter(d => d);
+            
+            tasks[taskId] = {
+                name: taskName,
+                description: taskEl.querySelector('[data-field="description"]').value,
+                component: taskEl.querySelector('[data-field="component"]').value || 'numa',
+                hours: parseInt(taskEl.querySelector('[data-field="hours"]').value) || 8,
+                dependencies: dependencies,
+                parameters: {},
+                status: 'pending'
+            };
+        }
+    });
+    
+    if (Object.keys(tasks).length === 0) {
+        alert('Please add at least one task');
+        return;
+    }
+    
+    // Create workflow object
+    const workflowData = {
+        name: name,
+        description: description,
+        tasks: tasks,
+        input: {
+            sprint_id: sprintId || undefined
+        },
+        output: {
+            status: 'string',
+            results: 'object'
+        },
+        version: "1.0",
+        metadata: {
+            priority: priority,
+            auto_start: autoStart,
+            created_from: window.workflowEditorMode,
+            created_at: new Date().toISOString()
+        }
+    };
+    
+    try {
+        const result = await harmoniaApiCall('/workflows', 'POST', workflowData);
+        
+        // Store the workflow ID
+        if (result.data && result.data.workflow_definition) {
+            window.currentWorkflowId = result.data.workflow_definition.id;
+        }
+        
+        alert(`Workflow created successfully!\nName: ${name}\nTasks: ${Object.keys(tasks).length}\nStatus: ${result.status}`);
+        
+        closeWorkflowModal();
+        
+        // Switch to workflows tab to see the new workflow
+        document.getElementById('harmonia-tab-workflows').checked = true;
+        
+        // If auto-start is enabled and we're in orchestrate mode, start execution
+        if (autoStart && window.workflowEditorMode === 'orchestrate') {
+            if (confirm('Start workflow execution now?')) {
+                // Create execution
+                const execResult = await harmoniaApiCall('/executions', 'POST', {
+                    workflow_id: window.currentWorkflowId,
+                    input: workflowData.input,
+                    metadata: {
+                        started_from: 'workflow_editor',
+                        auto_started: true
+                    }
+                });
                 
-                <!-- Workflow Tasks -->
-                <div class="harmonia__template-section">
-                    <div class="harmonia__template-section-header">
-                        <h3 class="harmonia__template-section-title">Workflow Tasks</h3>
-                        <button class="harmonia__button harmonia__button--small harmonia__button--primary" onclick="addTemplateTask()">Add Task</button>
-                    </div>
-                    
-                    <div id="template-tasks-list" class="harmonia__template-tasks-list">
-                        <!-- Tasks will be added here dynamically -->
-                        <div class="harmonia__template-task" data-task-index="0">
-                            <div class="harmonia__template-task-header">
-                                <input type="text" class="harmonia__template-input" placeholder="Task Name" data-field="name">
-                                <button class="harmonia__button harmonia__button--small harmonia__button--secondary" onclick="removeTemplateTask(0)">Remove</button>
-                            </div>
-                            <div class="harmonia__template-task-fields">
-                                <select class="harmonia__template-select" data-field="component">
-                                    <option value="numa">Numa</option>
-                                    <option value="metis">Metis</option>
-                                    <option value="prometheus">Prometheus</option>
-                                    <option value="athena">Athena</option>
-                                    <option value="rhetor">Rhetor</option>
-                                    <option value="apollo">Apollo</option>
-                                    <option value="hermes">Hermes</option>
-                                    <option value="engram">Engram</option>
-                                </select>
-                                <input type="text" class="harmonia__template-input" placeholder="Description" data-field="description">
-                                <input type="number" class="harmonia__template-input harmonia__template-input--small" placeholder="Timeout (s)" data-field="timeout" value="3600">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+                if (execResult.success) {
+                    alert('Workflow execution started!');
+                    // Switch to executions tab
+                    document.getElementById('harmonia-tab-executions').checked = true;
+                }
+            }
+        }
         
-        <div class="harmonia__modal-footer">
-            <button class="harmonia__button harmonia__button--secondary" onclick="closeTemplateModal()">Cancel</button>
-            <button class="harmonia__button harmonia__button--primary" onclick="saveTemplate()">Create Template</button>
-        </div>
-    </div>
-</div>
-
-<style>
-/* Modal Styles */
-.harmonia__modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0, 0, 0, 0.7);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
+    } catch (error) {
+        alert(`Failed to create workflow: ${error.message}`);
+    }
 }
 
-.harmonia__modal-content {
-    background-color: var(--bg-primary, #1a1a2a);
-    border: 1px solid var(--border-color, #444444);
-    border-radius: 12px;
-    width: 90%;
-    max-width: 800px;
-    max-height: 90vh;
-    display: flex;
-    flex-direction: column;
+// Update createNewWorkflow to use modal
+window.createNewWorkflow = function() {
+    console.log('Opening workflow creation modal');
+    openWorkflowModal('create');
 }
 
-.harmonia__modal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 20px;
-    border-bottom: 1px solid var(--border-color, #444444);
+// Update beginOrchestration to use modal
+window.beginOrchestration = function(sprintId) {
+    console.log('Opening workflow orchestration modal for sprint:', sprintId);
+    // In a real implementation, we would load sprint data first
+    openWorkflowModal('orchestrate', {
+        sprintId: sprintId,
+        sprintName: 'Example Sprint',
+        tasks: [
+            { name: 'Design Phase', component: 'metis', hours: 16 },
+            { name: 'Implementation', component: 'numa', hours: 32 },
+            { name: 'Testing', component: 'athena', hours: 16 },
+            { name: 'Documentation', component: 'rhetor', hours: 8 }
+        ]
+    });
 }
 
-.harmonia__modal-title {
-    margin: 0;
-    font-size: 1.5rem;
-    color: #7E57C2;
+// Update useHarmoniaTemplate to use modal
+window.useHarmoniaTemplate = function(templateId) {
+    console.log('Opening workflow modal with template:', templateId);
+    
+    // Mock template data - in real implementation, load from API
+    const templates = {
+        'feature-dev': {
+            name: 'Feature Development',
+            description: 'Standard workflow for new feature implementation',
+            tasks: [
+                { name: 'Design Feature', component: 'metis', hours: 8 },
+                { name: 'Implement Feature', component: 'numa', hours: 16 },
+                { name: 'Test Feature', component: 'athena', hours: 8 },
+                { name: 'Document Feature', component: 'rhetor', hours: 4 }
+            ]
+        },
+        'bug-fix': {
+            name: 'Bug Fix',
+            description: 'Quick workflow for bug fixes',
+            tasks: [
+                { name: 'Investigate Bug', component: 'numa', hours: 4 },
+                { name: 'Fix Bug', component: 'numa', hours: 8 },
+                { name: 'Verify Fix', component: 'athena', hours: 4 }
+            ]
+        },
+        'refactor': {
+            name: 'Code Refactoring',
+            description: 'Systematic code refactoring workflow',
+            tasks: [
+                { name: 'Analyze Code', component: 'metis', hours: 8 },
+                { name: 'Plan Refactoring', component: 'prometheus', hours: 4 },
+                { name: 'Refactor Code', component: 'numa', hours: 16 },
+                { name: 'Test Changes', component: 'athena', hours: 8 },
+                { name: 'Review Code', component: 'rhetor', hours: 4 }
+            ]
+        }
+    };
+    
+    const templateData = templates[templateId];
+    if (templateData) {
+        openWorkflowModal('template', templateData);
+    }
 }
-
-.harmonia__modal-close {
-    background: none;
-    border: none;
-    font-size: 24px;
-    color: var(--text-secondary, #b0b0b0);
-    cursor: pointer;
-    padding: 0;
-    width: 32px;
-    height: 32px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 4px;
-    transition: all 0.2s ease;
-}
-
-.harmonia__modal-close:hover {
-    background-color: var(--bg-secondary, #252535);
-    color: var(--text-primary, #f0f0f0);
-}
-
-.harmonia__modal-body {
-    flex: 1;
-    overflow-y: auto;
-    padding: 20px;
-}
-
-.harmonia__modal-footer {
-    display: flex;
-    justify-content: flex-end;
-    gap: 12px;
-    padding: 20px;
-    border-top: 1px solid var(--border-color, #444444);
-}
-
-/* Template Form Styles */
-.harmonia__template-form {
-    display: flex;
-    flex-direction: column;
-    gap: 32px;
-}
-
-.harmonia__template-section {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-}
-
-.harmonia__template-section-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 16px;
-}
-
-.harmonia__template-section-title {
-    margin: 0;
-    font-size: 1.1rem;
-    font-weight: 500;
-    color: #7E57C2;
-}
-
-.harmonia__template-field {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.harmonia__template-row {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 16px;
-}
-
-.harmonia__template-label {
-    font-size: 14px;
-    font-weight: 500;
-    color: var(--text-primary, #f0f0f0);
-}
-
-.harmonia__template-input,
-.harmonia__template-select,
-.harmonia__template-textarea {
-    padding: 8px 12px;
-    background-color: var(--bg-tertiary, #333345);
-    border: 1px solid var(--border-color, #444444);
-    border-radius: 4px;
-    color: var(--text-primary, #f0f0f0);
-    font-size: 14px;
-}
-
-.harmonia__template-input:focus,
-.harmonia__template-select:focus,
-.harmonia__template-textarea:focus {
-    outline: none;
-    border-color: #7E57C2;
-}
-
-.harmonia__template-textarea {
-    resize: vertical;
-    min-height: 80px;
-}
-
-.harmonia__template-input--small {
-    width: 120px;
-}
-
-/* Template Tasks */
-.harmonia__template-tasks-list {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-}
-
-.harmonia__template-task {
-    background-color: var(--bg-secondary, #252535);
-    border: 1px solid var(--border-color, #444444);
-    border-radius: 8px;
-    padding: 16px;
-}
-
-.harmonia__template-task-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 12px;
-    gap: 12px;
-}
-
-.harmonia__template-task-header .harmonia__template-input {
-    flex: 1;
-}
-
-.harmonia__template-task-fields {
-    display: grid;
-    grid-template-columns: 150px 1fr 120px;
-    gap: 12px;
-}
-</style>
+</script>
