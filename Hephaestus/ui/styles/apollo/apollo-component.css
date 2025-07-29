@@ -35,8 +35,9 @@
 
 .apollo__title {
     display: flex;
-    flex-direction: column;
-    gap: 2px;
+    flex-direction: row;
+    align-items: baseline;
+    gap: 8px;
 }
 
 .apollo__title-main {
