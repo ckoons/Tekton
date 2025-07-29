@@ -1109,104 +1109,7 @@ class EnhancedStatusChecker:
             else:
                 return f"📈 System: No metrics in last {hours}h"
     
-    def check_shared_memory_status(self) -> Dict[str, Any]:
-        """Check aish shared memory status"""
-        import hashlib
-        import subprocess
-        from multiprocessing import shared_memory
-        
-        # Get TEKTON_ROOT
-        current_tekton_root = tekton_root
-        
-        # Calculate shared memory name based on TEKTON_ROOT
-        tekton_hash = hashlib.md5(current_tekton_root.encode()).hexdigest()[:8]
-        shm_name = f"tekton_ci_registry_{tekton_hash}"
-        
-        # Check daemon using ps
-        daemon_running = False
-        daemon_pid = None
-        
-        try:
-            cmd = ['ps', 'aux']
-            result = subprocess.run(cmd, capture_output=True, text=True)
-            
-            if result.returncode == 0:
-                pattern = f"aish -s {current_tekton_root}"
-                for line in result.stdout.split('\n'):
-                    if pattern in line and 'grep' not in line:
-                        # Extract PID from ps output (second column)
-                        parts = line.split()
-                        if len(parts) > 1:
-                            try:
-                                daemon_pid = int(parts[1])
-                                daemon_running = True
-                                break
-                            except ValueError:
-                                continue
-        except Exception:
-            daemon_running = False
-            daemon_pid = None
-        
-        # Check shared memory
-        shared_memory_available = False
-        shared_memory_size = 0
-        shared_memory_error = None
-        
-        try:
-            shm_block = shared_memory.SharedMemory(name=shm_name)
-            shared_memory_available = True
-            shared_memory_size = len(shm_block.buf)
-            shm_block.close()  # Don't keep it open
-        except FileNotFoundError:
-            shared_memory_available = False
-            shared_memory_error = "Shared memory block not found"
-        except Exception as e:
-            shared_memory_available = False
-            shared_memory_error = str(e)
-        
-        return {
-            "tekton_root": current_tekton_root,
-            "tekton_hash": tekton_hash,
-            "shared_memory_name": shm_name,
-            "shared_memory_available": shared_memory_available,
-            "shared_memory_size": shared_memory_size,
-            "shared_memory_error": shared_memory_error,
-            "daemon_running": daemon_running,
-            "daemon_pid": daemon_pid
-        }
     
-    def format_shared_memory_status(self, shm_status: Dict[str, Any]) -> str:
-        """Format shared memory status for display"""
-        lines = [
-            "aish Shared Memory Status:",
-            f"   TEKTON_ROOT: {shm_status['tekton_root']}",
-            f"   Hash: {shm_status['tekton_hash']}",
-            f"   Shared Memory: {shm_status['shared_memory_name']}"
-        ]
-        
-        # Daemon status
-        if shm_status['daemon_running']:
-            lines.append(f"   Daemon: ✅ Running (PID {shm_status['daemon_pid']})")
-        else:
-            lines.append(f"   Daemon: ❌ Not running")
-        
-        # Shared memory status
-        if shm_status['shared_memory_available']:
-            size_kb = shm_status['shared_memory_size'] / 1024
-            lines.append(f"   Memory Block: ✅ Available ({size_kb:.1f} KB)")
-        else:
-            error = shm_status['shared_memory_error'] or "Unknown error"
-            lines.append(f"   Memory Block: ❌ Not available ({error})")
-        
-        # Overall status
-        if shm_status['daemon_running'] and shm_status['shared_memory_available']:
-            lines.append(f"   Overall: ✅ aish shared memory is working")
-        elif shm_status['shared_memory_available']:
-            lines.append(f"   Overall: ⚠️  Shared memory exists but daemon not running")
-        else:
-            lines.append(f"   Overall: ❌ aish shared memory not available")
-        
-        return "\n".join(lines)
 
 
 async def main():
@@ -1222,7 +1125,6 @@ async def main():
     parser.add_argument("--watch", "-w", type=int, help="Watch mode - refresh every N seconds")
     parser.add_argument("--timeout", type=float, default=2.0, help="HTTP request timeout in seconds (default: 2.0)")
     parser.add_argument("--quick", "-q", action="store_true", help="Quick mode - skip detailed checks for faster results")
-    parser.add_argument("--shared-memory", "-s", action="store_true", help="Show aish shared memory status")
     
     args = parser.parse_args()
     
@@ -1232,16 +1134,6 @@ async def main():
         if args.log is None:
             args.log = 5
     
-    # Handle shared memory status check
-    if args.shared_memory:
-        checker = EnhancedStatusChecker(store_metrics=False, timeout=args.timeout, quick_mode=True)
-        shm_status = checker.check_shared_memory_status()
-        
-        if args.json:
-            print(json.dumps(shm_status, indent=2, default=str))
-        else:
-            print(checker.format_shared_memory_status(shm_status))
-        return
     
     async with EnhancedStatusChecker(store_metrics=not args.no_storage, timeout=args.timeout, quick_mode=args.quick) as checker:
         

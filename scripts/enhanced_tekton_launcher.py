@@ -1129,70 +1129,6 @@ class EnhancedComponentLauncher:
             self.log(f"AI launch error: {str(e)}", "error", component_name)
     
     
-    async def start_aish_daemon(self):
-        """Start the aish daemon for shared memory CI registry"""
-        try:
-            import subprocess
-            
-            # Get aish path
-            aish_path = os.path.join(self.tekton_root, 'shared', 'aish', 'aish')
-            if not os.path.exists(aish_path):
-                self.log("aish script not found, skipping daemon startup", "warning")
-                return
-            
-            # Check if daemon is already running using ps
-            cmd_check = ['ps', 'aux']
-            result = subprocess.run(cmd_check, capture_output=True, text=True)
-            
-            if result.returncode == 0:
-                pattern = f"aish -s {self.tekton_root}"
-                for line in result.stdout.split('\n'):
-                    if pattern in line and 'grep' not in line:
-                        self.log("aish daemon already running", "info")
-                        return
-            
-            # Start daemon in background
-            cmd = [sys.executable, aish_path, '-s', self.tekton_root]
-            self.log("Starting aish daemon for shared memory CI registry...", "info")
-            
-            # Set environment for daemon
-            env = os.environ.copy()
-            env['TEKTON_ROOT'] = self.tekton_root
-            
-            # Start daemon as background process
-            if platform.system() == "Windows":
-                process = subprocess.Popen(
-                    cmd,
-                    env=env,
-                    stdout=subprocess.DEVNULL,
-                    stderr=subprocess.DEVNULL,
-                    creationflags=subprocess.CREATE_NEW_PROCESS_GROUP
-                )
-            else:
-                process = subprocess.Popen(
-                    cmd,
-                    env=env,
-                    stdout=subprocess.DEVNULL,
-                    stderr=subprocess.DEVNULL,
-                    preexec_fn=os.setsid
-                )
-            
-            # Give it a moment to start
-            await asyncio.sleep(2)
-            
-            # Check if it started by looking for the process
-            result = subprocess.run(cmd_check, capture_output=True, text=True)
-            if result.returncode == 0:
-                pattern = f"aish -s {self.tekton_root}"
-                for line in result.stdout.split('\n'):
-                    if pattern in line and 'grep' not in line:
-                        self.log("aish daemon started successfully", "success")
-                        return
-            
-            self.log("aish daemon may have failed to start", "warning")
-                
-        except Exception as e:
-            self.log(f"Error starting aish daemon: {e}", "warning")
 
     def start_health_monitoring(self, interval: int = 30):
         """Start continuous health monitoring"""
@@ -1347,8 +1283,6 @@ async def main():
             launcher.log("No components selected", "warning")
             return
             
-        # Start aish daemon for shared memory CI registry
-        await launcher.start_aish_daemon()
         
         # Launch components
         start_time = time.time()
