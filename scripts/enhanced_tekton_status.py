@@ -1169,7 +1169,7 @@ class EnhancedStatusChecker:
     def format_shared_memory_status(self, shm_status: Dict[str, Any]) -> str:
         """Format shared memory status for display"""
         lines = [
-            "🧠 aish Shared Memory Status:",
+            "aish Shared Memory Status:",
             f"   TEKTON_ROOT: {shm_status['tekton_root']}",
             f"   Hash: {shm_status['tekton_hash']}",
             f"   Shared Memory: {shm_status['shared_memory_name']}"

@@ -168,17 +168,16 @@ class AishDaemon:
         except Exception as e:
             print(f"aish daemon error: {e}")
         finally:
-            # Cleanup shared memory when daemon exits
+            # Close shared memory connection (but don't unlink - leave it for other processes)
             if self.registry:
                 try:
-                    # Get the shared memory block to clean it up properly
+                    # Get the shared memory block to close it properly
                     shm_block = getattr(self.registry, '_shm_block', None)
                     if shm_block:
-                        shm_block.close()
-                        shm_block.unlink()  # Remove the shared memory block
-                        print(f"Cleaned up shared memory: {getattr(self.registry, '_shm_name', 'unknown')}")
+                        shm_block.close()  # Close connection but don't unlink
+                        print(f"Closed shared memory connection: {getattr(self.registry, '_shm_name', 'unknown')}")
                 except Exception as cleanup_error:
-                    print(f"Error cleaning up shared memory: {cleanup_error}")
+                    print(f"Error closing shared memory: {cleanup_error}")
             
             self.cleanup_pid_file()
             print("aish daemon stopped")
