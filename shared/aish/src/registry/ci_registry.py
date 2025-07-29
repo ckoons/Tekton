@@ -165,11 +165,14 @@ class CIRegistry:
     def __init__(self):
         """Initialize the unified CI registry."""
         self._registry: Dict[str, Dict[str, Any]] = {}
+        self._context_state = {}  # Initialize context state first
         self._setup_shared_memory()
         self._load_greek_chorus()
         self._load_terminals()
         self._load_projects()
         self._load_forwards()
+        # Sync registry data to shared memory after loading everything
+        self._sync_to_shared_memory()
     
     def _setup_shared_memory(self):
         """Setup shared memory for context state using TEKTON_ROOT as namespace."""

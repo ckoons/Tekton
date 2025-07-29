@@ -394,8 +394,10 @@ Environment variables:
     
     # Handle daemon mode first
     if args.shared_memory:
-        from src.daemon.aish_daemon import run_daemon
-        run_daemon(args.shared_memory)
+        # Run the daemon directly using the simpler implementation
+        import subprocess
+        daemon_script = src_path / 'daemon' / 'aish_daemon_simple.py'
+        subprocess.run([sys.executable, str(daemon_script), args.shared_memory])
         return
     
     # Create shell instance
