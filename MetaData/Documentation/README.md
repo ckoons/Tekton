@@ -17,6 +17,7 @@ This is the streamlined documentation structure containing only actively maintai
 System design, patterns, and architectural decisions. Critical for understanding how Tekton works.
 
 **Key Documents**:
+- **[CI Registry Architecture](Architecture/CI-Registry-Architecture.md)** - Central CI coordination and Apollo-Rhetor collaboration
 - **[Development Sprint Workflow](Architecture/DevelopmentSprintWorkflow.md)** - Complete guide to the planning pipeline
 - **[Workflow Endpoint Standard](Architecture/WorkflowEndpointStandard.md)** - Unified component communication
 

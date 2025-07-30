@@ -12,6 +12,8 @@ Apollo is the executive coordinator and predictive planning system for the Tekto
 - **Protocol Enforcement**: Define and enforce standards for component interactions
 - **Bidirectional Messaging**: Enable flexible communication between components
 - **CLI Management**: Command-line tools for system monitoring and control
+- **CI Registry Integration**: Monitor all CI exchanges for performance and stress indicators
+- **Context Staging**: Prepare optimized contexts for Rhetor to inject
 
 ## Quick Start
 
