@@ -48,11 +48,6 @@
                 <span class="apollo__tab-label">Team Chat</span>
             </label>
         </div>
-        <div class="apollo__actions">
-            <button id="clear-chat-btn" class="apollo__button apollo__button--secondary" style="display: none;">
-                Clear
-            </button>
-        </div>
     </div>
     
     <!-- Apollo Content Area -->
@@ -1070,43 +1065,6 @@
         });
     }
     
-    // Clear chat functionality
-    window.apollo_clearChat = function() {
-            const attentionActive = document.getElementById('apollo-tab-attention').checked;
-            const teamchatActive = document.getElementById('apollo-tab-teamchat').checked;
-            
-            if (attentionActive) {
-                const messagesContainer = document.getElementById('attention-messages');
-                // Keep the welcome message, remove all others
-                const messages = messagesContainer.querySelectorAll('.chat-message:not(.system-message)');
-                messages.forEach(msg => msg.remove());
-            } else if (teamchatActive) {
-                const messagesContainer = document.getElementById('teamchat-messages');
-                // Keep the welcome message, remove all others
-                const messages = messagesContainer.querySelectorAll('.chat-message:not(.system-message)');
-                messages.forEach(msg => msg.remove());
-            }
-    };
-    
-    // Clear button handler
-    const clearButton = document.getElementById('clear-chat-btn');
-    if (clearButton) {
-        clearButton.addEventListener('click', function(e) {
-            e.preventDefault();
-            window.apollo_clearChat();
-        });
-    }
-    
-    // Clear chat button visibility based on active tab
-    document.addEventListener('change', function(e) {
-        if (e.target.name === 'apollo-tab') {
-            const clearButton = document.getElementById('clear-chat-btn');
-            if (clearButton) {
-                const isChatTab = e.target.id === 'apollo-tab-attention' || e.target.id === 'apollo-tab-teamchat';
-                clearButton.style.display = isChatTab ? 'block' : 'none';
-            }
-        }
-    });
     
     // Initialize Apollo on load
     initializeApollo();
