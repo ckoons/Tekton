@@ -42,6 +42,14 @@ class LocalModelAdapter(ModelAdapter):
                 "supports_embeddings": True,
                 "supports_json_mode": False
             },
+            "llama3.3": {
+                "max_tokens": 8192,
+                "context_window": 131072,  # 128K context
+                "supports_streaming": True,
+                "supports_vision": False,
+                "supports_embeddings": True,
+                "supports_json_mode": False
+            },
             "mixtral": {
                 "max_tokens": 4096,
                 "context_window": 32768,
@@ -80,8 +88,8 @@ class LocalModelAdapter(ModelAdapter):
             async with aiohttp.ClientSession() as session:
                 # Try to ping the server
                 try:
-                    # For Ollama
-                    async with session.get(f"{self.endpoint}/api/health") as response:
+                    # For Ollama - use api/version or api/tags endpoint
+                    async with session.get(f"{self.endpoint}/api/version") as response:
                         if response.status == 200:
                             self.health_status = AdapterHealthStatus.HEALTHY.value
                             return True
@@ -123,30 +131,33 @@ class LocalModelAdapter(ModelAdapter):
             
             # Prepare request based on API type
             if is_ollama:
-                # Prepare Ollama-style request
+                # Prepare Ollama chat-style request
                 if isinstance(prompt, list):
-                    # Convert to string with simple formatting
-                    prompt_text = ""
-                    for msg in prompt:
-                        role = msg.get("role", "user")
-                        content = msg.get("content", "")
-                        prompt_text += f"{role}: {content}\n"
+                    messages = prompt
                 else:
-                    prompt_text = prompt
+                    messages = [{"role": "user", "content": prompt}]
+                
+                # Add system message if provided in options
+                if options.get("system_prompt") and not any(m.get("role") == "system" for m in messages):
+                    messages.insert(0, {"role": "system", "content": options["system_prompt"]})
                 
                 request_data = {
                     "model": self.model,
-                    "prompt": prompt_text,
+                    "messages": messages,
                     "stream": options.get("stream", False),
                     "options": {
                         "temperature": options.get("temperature", 0.7),
                         "top_p": options.get("top_p", 0.95),
                         "top_k": options.get("top_k", 40),
-                        "num_predict": options.get("max_tokens", 1000)
+                        "num_ctx": self.config.get("context_window", 8192)
                     }
                 }
                 
-                api_url = f"{self.endpoint}/api/generate"
+                # Set max tokens if specified
+                if options.get("max_tokens"):
+                    request_data["options"]["num_predict"] = options["max_tokens"]
+                
+                api_url = f"{self.endpoint}/api/chat"
             else:
                 # Prepare OpenAI-compatible request
                 if isinstance(prompt, list):
@@ -236,7 +247,8 @@ class LocalModelAdapter(ModelAdapter):
                     duration = time.time() - start_time
                     
                     if is_ollama:
-                        full_text = result.get("response", "")
+                        # For chat API, response is in message.content
+                        full_text = result.get("message", {}).get("content", "")
                         token_count = result.get("eval_count", 0)
                     else:
                         full_text = result["choices"][0]["message"]["content"]
@@ -254,7 +266,8 @@ class LocalModelAdapter(ModelAdapter):
                 duration = time.time() - start_time
                 
                 if is_ollama:
-                    full_text = result.get("response", "")
+                    # For chat API, response is in message.content
+                    full_text = result.get("message", {}).get("content", "")
                     token_count = result.get("eval_count", 0)
                 else:
                     full_text = result["choices"][0]["message"]["content"]
@@ -272,9 +285,11 @@ class LocalModelAdapter(ModelAdapter):
             self._update_health_status(True)
             
             return {
-                "text": full_text,
+                "content": full_text,
                 "model": self.model,
-                "tokens": token_count,
+                "usage": {
+                    "total_tokens": token_count
+                },
                 "latency": duration,
                 "provider": "local"
             }

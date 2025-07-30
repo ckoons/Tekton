@@ -9,6 +9,8 @@ from .base import ModelAdapter, ModelCapability, AdapterHealthStatus
 from .anthropic import AnthropicAdapter
 from .openai import OpenAIAdapter
 from .local import LocalModelAdapter
+from .grok import GrokAdapter
+from .gemini import GeminiAdapter
 
 __all__ = [
     'ModelAdapter',
@@ -16,5 +18,7 @@ __all__ = [
     'AdapterHealthStatus',
     'AnthropicAdapter',
     'OpenAIAdapter', 
-    'LocalModelAdapter'
+    'LocalModelAdapter',
+    'GrokAdapter',
+    'GeminiAdapter'
 ]

@@ -18,9 +18,22 @@ import sys
 import json
 import asyncio
 import logging
-from typing import Dict, Any, Optional, Callable
+from typing import Dict, Any, Optional, Callable, List
 from abc import ABC, abstractmethod
 import socket
+
+# Add Tekton root to path for model imports
+script_path = os.path.realpath(__file__)
+tekton_root = os.path.dirname(os.path.dirname(os.path.dirname(script_path)))
+if tekton_root not in sys.path:
+    sys.path.insert(0, tekton_root)
+
+# Import model management
+from tekton.core.models.manager import ModelManager
+from tekton.core.models.adapters import (
+    AnthropicAdapter, OpenAIAdapter, LocalModelAdapter,
+    GrokAdapter, GeminiAdapter
+)
 
 # Import landmarks for architectural documentation
 try:
@@ -113,6 +126,7 @@ class AISpecialistWorker(ABC):
             'ping': self._handle_ping,
             'health': self._handle_health,
             'info': self._handle_info,
+            'chat': self._handle_chat,
         }
         
         # AI configuration
@@ -120,12 +134,73 @@ class AISpecialistWorker(ABC):
         self.model_name = os.environ.get(f'{component.upper()}_AI_MODEL', 
                                         self.get_default_model())
         
+        # Initialize model manager
+        self.model_manager = ModelManager()
+        self.model_adapter = None
+        self.model_ready = False
+        
         # Setup logging
         self.logger = logging.getLogger(f"{self.__class__.__name__}.{ai_id}")
         
     def get_default_model(self) -> str:
         """Get default model for this AI specialist."""
         return 'llama3.3:70b'
+    
+    async def initialize_model(self):
+        """Initialize the model adapter based on provider configuration."""
+        try:
+            # Map provider names to adapter classes
+            adapter_map = {
+                'ollama': LocalModelAdapter,
+                'local': LocalModelAdapter,
+                'anthropic': AnthropicAdapter,
+                'openai': OpenAIAdapter,
+                'grok': GrokAdapter,
+                'gemini': GeminiAdapter
+            }
+            
+            # Get adapter class
+            adapter_class = adapter_map.get(self.model_provider.lower())
+            if not adapter_class:
+                self.logger.error(f"Unknown model provider: {self.model_provider}")
+                return False
+            
+            # Prepare configuration
+            config = {
+                'model': self.model_name
+            }
+            
+            # Add provider-specific configuration
+            if self.model_provider.lower() in ['ollama', 'local']:
+                config['endpoint'] = os.environ.get('OLLAMA_ENDPOINT', 'http://localhost:11434')
+            else:
+                # Get API key from environment
+                api_key_var = f"{self.model_provider.upper()}_API_KEY"
+                api_key = os.environ.get(api_key_var)
+                if not api_key:
+                    self.logger.error(f"API key not found: {api_key_var}")
+                    return False
+                config['api_key'] = api_key
+            
+            # Register adapter with model manager
+            success = await self.model_manager.register_adapter(
+                self.model_provider,
+                adapter_class,
+                config
+            )
+            
+            if success:
+                self.model_adapter = self.model_manager.adapters.get(self.model_provider)
+                self.model_ready = True
+                self.logger.info(f"Model initialized: {self.model_provider}:{self.model_name}")
+                return True
+            else:
+                self.logger.error(f"Failed to initialize model adapter")
+                return False
+                
+        except Exception as e:
+            self.logger.error(f"Error initializing model: {e}")
+            return False
     
     @abstractmethod
     def get_system_prompt(self) -> str:
@@ -177,7 +252,54 @@ class AISpecialistWorker(ABC):
             'port': self.port
         }
     
-    # LLM chat handler removed - AIs use simple personality responses instead
+    async def _handle_chat(self, message: Dict[str, Any]) -> Dict[str, Any]:
+        """Handle chat message using the configured model."""
+        if not self.model_ready:
+            return {
+                'type': 'error',
+                'ai_id': self.ai_id,
+                'error': 'Model not initialized'
+            }
+        
+        try:
+            # Prepare messages for the model
+            messages = [
+                {"role": "system", "content": self.get_system_prompt()}
+            ]
+            
+            # Add conversation history if provided
+            if 'history' in message:
+                messages.extend(message['history'])
+            
+            # Add the current user message
+            user_content = message.get('content', message.get('message', ''))
+            messages.append({"role": "user", "content": user_content})
+            
+            # Generate response
+            response = await self.model_adapter.generate(
+                messages,
+                options={
+                    'temperature': message.get('temperature', 0.7),
+                    'max_tokens': message.get('max_tokens', 2048)
+                }
+            )
+            
+            return {
+                'type': 'response',
+                'ai_id': self.ai_id,
+                'content': response['content'],
+                'model': response.get('model', self.model_name),
+                'usage': response.get('usage', {}),
+                'latency': response.get('latency', 0)
+            }
+            
+        except Exception as e:
+            self.logger.error(f"Error generating response: {e}")
+            return {
+                'type': 'error',
+                'ai_id': self.ai_id,
+                'error': str(e)
+            }
     
     # @tekton-method: Handle socket client connections
     # @tekton-async: true
@@ -246,6 +368,11 @@ class AISpecialistWorker(ABC):
     )
     async def start(self):
         """Start the AI specialist server."""
+        # Initialize model adapter
+        model_initialized = await self.initialize_model()
+        if not model_initialized:
+            self.logger.warning(f"Model initialization failed for {self.ai_id}, continuing without LLM support")
+        
         # Pre-initialize connection pool if available
         try:
             from .connection_pool import get_connection_pool

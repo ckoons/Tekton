@@ -217,15 +217,20 @@ When asked about capabilities outside your expertise, acknowledge the limitation
         """Process component-specific messages."""
         msg_type = message.get('type', 'unknown')
         
-        # Let base class handle standard messages
-        if msg_type in ['ping', 'health', 'info']:
+        # Check if we have a handler for this message type
+        if msg_type in self.handlers:
             return await self.handlers[msg_type](message)
         
-        # Handle component-specific messages
+        # For backward compatibility, treat unknown message types as chat
+        if msg_type == 'unknown' or msg_type not in self.handlers:
+            # Route to chat handler
+            return await self._handle_chat(message)
+        
+        # Fallback response
         return {
-            'type': 'response',
+            'type': 'error',
             'ai_id': self.ai_id,
-            'content': f"I am {self.component_info['title']}. I specialize in {self.component_info['expertise']}."
+            'error': f"Unknown message type: {msg_type}"
         }
 
 
