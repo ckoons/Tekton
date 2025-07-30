@@ -67,12 +67,6 @@ class HealthResponse(BaseModel):
     component_name: str
 
 # Lifespan handler for startup and shutdown
-@architecture_decision(
-    title="Apollo Lifespan Management",
-    rationale="Use FastAPI lifespan for component initialization and cleanup",
-    alternatives_considered=["Manual startup/shutdown", "Separate service manager"],
-    decided_by="Casey"
-)
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Handle application startup and shutdown"""

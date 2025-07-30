@@ -11,6 +11,44 @@ import hashlib
 from contextlib import contextmanager
 from typing import Dict, Any, Optional
 
+# Try to import landmarks if available
+try:
+    from landmarks import (
+        architecture_decision,
+        danger_zone,
+        state_checkpoint,
+        performance_boundary
+    )
+except ImportError:
+    # Create no-op decorators if landmarks not available
+    def architecture_decision(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+    
+    def danger_zone(**kwargs):
+        def decorator(func):
+            return func
+        return decorator
+    
+    def state_checkpoint(**kwargs):
+        def decorator(func):
+            return func
+        return decorator
+    
+    def performance_boundary(**kwargs):
+        def decorator(func):
+            return func
+        return decorator
+
+@state_checkpoint(
+    title="Thread-Safe File Registry",
+    description="File-based registry with exclusive locking for concurrent access",
+    state_type="persistent",
+    persistence=True,
+    consistency_requirements="fcntl file locking ensures atomic operations",
+    recovery_strategy="Lock acquisition with timeout prevents deadlocks"
+)
 class FileRegistry:
     def __init__(self, tekton_root: str):
         self.tekton_root = tekton_root
@@ -20,6 +58,14 @@ class FileRegistry:
         self.data_file = os.path.join(self.registry_dir, 'registry.json')
         self.lock_file = os.path.join(self.registry_dir, 'registry.lock')
     
+    @danger_zone(
+        title="File Lock Acquisition",
+        description="Critical section for acquiring exclusive file lock for concurrent access",
+        risk_level="high",
+        risks=["deadlock if process crashes", "timeout on high contention", "race conditions"],
+        mitigation="Timeout mechanism, automatic lock release on process exit",
+        review_required=True
+    )
     @contextmanager
     def _file_lock(self, timeout=5):
         """Acquire exclusive lock for file operations."""
@@ -55,6 +101,14 @@ class FileRegistry:
                     return json.load(f)
             return {}
     
+    @danger_zone(
+        title="Atomic File Write",
+        description="Writes registry data atomically using temp file and rename",
+        risk_level="medium",
+        risks=["partial writes if interrupted", "disk full conditions"],
+        mitigation="Write to temp file first, then atomic rename",
+        review_required=False
+    )
     def write(self, data: Dict[str, Any]):
         """Write registry data with exclusive lock."""
         with self._file_lock():
@@ -64,6 +118,13 @@ class FileRegistry:
                 json.dump(data, f, indent=2)
             os.replace(temp_file, self.data_file)
     
+    @performance_boundary(
+        title="Registry Key Update",
+        description="Read-modify-write operation for single key updates",
+        sla="<10ms typical, <100ms under contention",
+        optimization_notes="Uses file locking to prevent concurrent modifications",
+        measured_impact="Critical for CI state updates during Apollo-Rhetor coordination"
+    )
     def update(self, key: str, value: Any):
         """Update a single key in the registry."""
         with self._file_lock():

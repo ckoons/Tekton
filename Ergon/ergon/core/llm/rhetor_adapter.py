@@ -53,6 +53,9 @@ class RhetorLLMAdapter:
             import aiohttp
             rhetor_url = self.rhetor_url or tekton_url("rhetor", "/api")
             
+            # Add delay to handle timing issues with Rhetor startup
+            await asyncio.sleep(2)
+            
             # Test connection to Rhetor
             # Use base URL for health check (without /api prefix)
             health_url = tekton_url("rhetor", "/health")

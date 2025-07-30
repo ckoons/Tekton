@@ -26,7 +26,25 @@ from apollo.models.context import (
 from apollo.core.context_observer import ContextObserver
 from apollo.core.predictive_engine import PredictiveEngine
 
-from landmarks import architecture_decision, danger_zone, performance_boundary
+# Try to import landmarks
+try:
+    from landmarks import architecture_decision, danger_zone, performance_boundary
+except ImportError:
+    # Define no-op decorators if landmarks not available
+    def architecture_decision(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+    
+    def danger_zone(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+    
+    def performance_boundary(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
 
 # Configure logging
 logger = logging.getLogger(__name__)

@@ -29,21 +29,6 @@ tekton_root = os.path.dirname(os.path.dirname(os.path.dirname(script_path)))
 if tekton_root not in sys.path:
     sys.path.insert(0, tekton_root)
 
-# Import model management
-from tekton.core.models.manager import ModelManager
-from tekton.core.models.adapters import (
-    AnthropicAdapter, OpenAIAdapter, LocalModelAdapter,
-    GrokAdapter, GeminiAdapter
-)
-
-# Import CI registry for storing exchanges
-try:
-    from shared.aish.src.registry.ci_registry import CIRegistry
-    ci_registry = CIRegistry()
-except ImportError:
-    ci_registry = None
-    logging.warning("CI Registry not available for storing AI exchanges")
-
 # Import landmarks for architectural documentation
 try:
     from landmarks import (
@@ -79,6 +64,36 @@ except ImportError:
         def decorator(func):
             return func
         return decorator
+
+# Import model management
+from tekton.core.models.manager import ModelManager
+from tekton.core.models.adapters import (
+    AnthropicAdapter, OpenAIAdapter, LocalModelAdapter,
+    GrokAdapter, GeminiAdapter
+)
+
+# Import CI registry for storing exchanges
+# NOTE: This integration enables Apollo-Rhetor coordination through exchange storage
+try:
+    from shared.aish.src.registry.ci_registry import CIRegistry
+    ci_registry = CIRegistry()
+except ImportError:
+    ci_registry = None
+    logging.warning("CI Registry not available for storing AI exchanges")
+
+# Architecture decision marker for CI Registry integration
+@architecture_decision(
+    title="AI Specialist CI Registry Integration",
+    description="All AI specialists automatically store exchanges in CI Registry",
+    rationale="Enables Apollo to monitor performance/stress and Rhetor to inject context",
+    alternatives_considered=["Per-specialist opt-in", "Separate storage mechanism", "Direct Apollo API calls"],
+    impacts=["apollo_monitoring", "rhetor_context", "performance_tracking"],
+    decided_by="Casey",
+    decision_date="2025-07-30"
+)
+class _CIRegistryIntegration:
+    """Marker class for CI Registry integration architecture"""
+    pass
 
 # Import debug utilities
 try:
@@ -155,6 +170,14 @@ class AISpecialistWorker(ABC):
         """Get default model for this AI specialist."""
         return 'llama3.3:70b'
     
+    @state_checkpoint(
+        title="Model Adapter Initialization",
+        description="Initialize connection to LLM provider (Ollama, Anthropic, etc)",
+        state_type="connection",
+        persistence=False,
+        consistency_requirements="Model must be ready before processing messages",
+        recovery_strategy="Retry on failure, continue without LLM if unavailable"
+    )
     async def initialize_model(self):
         """Initialize the model adapter based on provider configuration."""
         try:
@@ -261,6 +284,13 @@ class AISpecialistWorker(ABC):
             'port': self.port
         }
     
+    @performance_boundary(
+        title="Chat Message Processing",
+        description="Core chat handler with LLM integration",
+        sla="<5s for typical prompts, <30s for complex analysis",
+        optimization_notes="Streams responses when possible, caches model connection",
+        measured_impact="Primary performance bottleneck for AI specialists"
+    )
     async def _handle_chat(self, message: Dict[str, Any]) -> Dict[str, Any]:
         """Handle chat message using the configured model."""
         if not self.model_ready:
@@ -352,6 +382,8 @@ class AISpecialistWorker(ABC):
                     await writer.drain()
                     
                     # Store exchange in CI registry for Apollo-Rhetor coordination
+                    # NOTE: This is a critical integration point for Apollo performance monitoring
+                    # and Rhetor context injection. Exchanges are stored atomically with timestamps.
                     if ci_registry and response.get('type') == 'response':
                         try:
                             # Build exchange record

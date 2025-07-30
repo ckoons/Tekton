@@ -15,6 +15,42 @@ from datetime import datetime, timedelta
 from typing import Dict, List, Any, Optional, Union, Callable
 import uuid
 
+# Try to import landmarks if available
+try:
+    from landmarks import (
+        architecture_decision,
+        state_checkpoint,
+        integration_point,
+        performance_boundary,
+        danger_zone
+    )
+except ImportError:
+    # Create no-op decorators if landmarks not available
+    def architecture_decision(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+    
+    def state_checkpoint(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+    
+    def integration_point(**kwargs):
+        def decorator(func):
+            return func
+        return decorator
+    
+    def performance_boundary(**kwargs):
+        def decorator(func):
+            return func
+        return decorator
+    
+    def danger_zone(**kwargs):
+        def decorator(func):
+            return func
+        return decorator
+
 from apollo.models.context import (
     ContextMetrics,
     ContextState,
@@ -87,6 +123,14 @@ class ContextObserver:
         self.monitoring_task = None
         self.is_running = False
     
+    @integration_point(
+        title="Context Monitoring Start",
+        description="Begins real-time context monitoring from Rhetor",
+        target_component="Rhetor",
+        protocol="HTTP API polling",
+        data_flow="Rhetor metrics → Context Observer → Apollo predictions",
+        integration_date="2025-01-25"
+    )
     async def start(self):
         """Start the context monitoring process."""
         if self.is_running:

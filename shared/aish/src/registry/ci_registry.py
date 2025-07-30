@@ -23,9 +23,26 @@ from shared.urls import (
 
 # Try to import landmarks if available
 try:
-    from landmarks import integration_point, state_checkpoint
+    from landmarks import (
+        architecture_decision,
+        api_contract,
+        integration_point,
+        performance_boundary,
+        state_checkpoint,
+        danger_zone
+    )
 except ImportError:
     # Create no-op decorators if landmarks not available
+    def architecture_decision(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+    
+    def api_contract(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+    
     def integration_point(**kwargs):
         def decorator(func):
             return func
@@ -35,8 +52,41 @@ except ImportError:
         def decorator(func):
             return func
         return decorator
+    
+    def performance_boundary(**kwargs):
+        def decorator(func):
+            return func
+        return decorator
+    
+    def danger_zone(**kwargs):
+        def decorator(func):
+            return func
+        return decorator
 
 
+# Architecture decision marker for the CI Registry pattern
+@architecture_decision(
+    title="Unified CI Registry Architecture",
+    description="Central registry for all Conversational Interfaces (CIs) in Tekton",
+    rationale="Provides single source of truth for CI discovery, context state, and Apollo-Rhetor coordination",
+    alternatives_considered=["Distributed registries per component", "Database-backed registry", "In-memory only"],
+    impacts=["apollo_coordination", "rhetor_context_injection", "ai_specialist_integration"],
+    decided_by="Casey",
+    decision_date="2025-07-30"
+)
+class _CIRegistryArchitecture:
+    """Marker class for CI Registry architecture decision"""
+    pass
+
+
+@state_checkpoint(
+    title="CI Registry File-Based State",
+    description="File-based persistence for CI metadata and context state",
+    state_type="persistent",
+    persistence=True,
+    consistency_requirements="Thread-safe file locking prevents concurrent write corruption",
+    recovery_strategy="Reload from registry.json on startup"
+)
 class CIRegistry:
     """Unified CI Registry with file-based persistence."""
     
@@ -350,6 +400,14 @@ class CIRegistry:
             
         return self._context_state[ci_name].get('last_output')
     
+    @integration_point(
+        title="AI Exchange Storage",
+        description="Stores complete user message and AI response exchanges",
+        target_component="AI Specialists",
+        protocol="Socket JSON messages",
+        data_flow="AI Specialist → update_ci_last_output → registry.json",
+        integration_date="2025-07-30"
+    )
     def update_ci_last_output(self, ci_name: str, output: Union[str, Dict]) -> bool:
         """Store the CI's output when turn completes.
         

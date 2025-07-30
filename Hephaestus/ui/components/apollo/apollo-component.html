@@ -29,22 +29,40 @@
     <!-- Apollo Menu Bar with Tab Navigation -->
     <div class="apollo__menu-bar" data-tekton-zone="menu" data-tekton-nav="component-menu">
         <div class="apollo__tabs">
-            <label for="apollo-tab-dashboard" class="apollo__tab" data-tab="dashboard">
+            <label for="apollo-tab-dashboard" class="apollo__tab" data-tab="dashboard"
+                   data-tekton-nav-item="dashboard"
+                   data-tekton-nav-target="apollo-dashboard"
+                   data-tekton-nav-action="switch-tab">
                 <span class="apollo__tab-label">Dashboard</span>
             </label>
-            <label for="apollo-tab-tokens" class="apollo__tab" data-tab="tokens">
+            <label for="apollo-tab-tokens" class="apollo__tab" data-tab="tokens"
+                   data-tekton-nav-item="tokens"
+                   data-tekton-nav-target="apollo-tokens"
+                   data-tekton-nav-action="switch-tab">
                 <span class="apollo__tab-label">Token Management</span>
             </label>
-            <label for="apollo-tab-protocols" class="apollo__tab" data-tab="protocols">
+            <label for="apollo-tab-protocols" class="apollo__tab" data-tab="protocols"
+                   data-tekton-nav-item="protocols"
+                   data-tekton-nav-target="apollo-protocols"
+                   data-tekton-nav-action="switch-tab">
                 <span class="apollo__tab-label">Protocols</span>
             </label>
-            <label for="apollo-tab-actions" class="apollo__tab" data-tab="actions">
+            <label for="apollo-tab-actions" class="apollo__tab" data-tab="actions"
+                   data-tekton-nav-item="actions"
+                   data-tekton-nav-target="apollo-actions"
+                   data-tekton-nav-action="switch-tab">
                 <span class="apollo__tab-label">Actions</span>
             </label>
-            <label for="apollo-tab-attention" class="apollo__tab" data-tab="attention">
+            <label for="apollo-tab-attention" class="apollo__tab" data-tab="attention"
+                   data-tekton-nav-item="attention-chat"
+                   data-tekton-nav-target="apollo-attention-chat"
+                   data-tekton-nav-action="switch-tab">
                 <span class="apollo__tab-label">Attention Chat</span>
             </label>
-            <label for="apollo-tab-teamchat" class="apollo__tab" data-tab="teamchat">
+            <label for="apollo-tab-teamchat" class="apollo__tab" data-tab="teamchat"
+                   data-tekton-nav-item="team-chat"
+                   data-tekton-nav-target="apollo-team-chat"
+                   data-tekton-nav-action="switch-tab">
                 <span class="apollo__tab-label">Team Chat</span>
             </label>
         </div>
@@ -59,23 +77,25 @@
              data-tekton-tab-content="dashboard"
              data-tekton-panel="dashboard">
             <div class="apollo__dashboard">
-                <div class="apollo__control-bar">
-                    <div class="apollo__stats-container">
-                        <div class="apollo__stat-item">
+                <div class="apollo__control-bar" data-tekton-zone="control-bar">
+                    <div class="apollo__stats-container" data-tekton-metrics="ci-overview">
+                        <div class="apollo__stat-item" data-tekton-metric="active-cis">
                             <span class="apollo__stat-label">Active CIs:</span>
-                            <span class="apollo__stat-value" id="active-ci-count">0</span>
+                            <span class="apollo__stat-value" id="active-ci-count" data-tekton-value="active-ci-count">0</span>
                         </div>
-                        <div class="apollo__stat-item">
+                        <div class="apollo__stat-item" data-tekton-metric="burn-rate">
                             <span class="apollo__stat-label">Total Burn Rate:</span>
-                            <span class="apollo__stat-value" id="total-burn-rate">0</span>
+                            <span class="apollo__stat-value" id="total-burn-rate" data-tekton-value="total-burn-rate">0</span>
                             <span class="apollo__stat-label">tokens/min</span>
                         </div>
-                        <div class="apollo__stat-item">
+                        <div class="apollo__stat-item" data-tekton-metric="critical-cis">
                             <span class="apollo__stat-label">Critical CIs:</span>
-                            <span class="apollo__stat-value" id="critical-ci-count">0</span>
+                            <span class="apollo__stat-value" id="critical-ci-count" data-tekton-value="critical-ci-count">0</span>
                         </div>
                     </div>
-                    <button id="refresh-dashboard-btn" class="apollo__button apollo__button--secondary">
+                    <button id="refresh-dashboard-btn" class="apollo__button apollo__button--secondary"
+                            data-tekton-action="refresh-dashboard"
+                            data-tekton-trigger="click">
                         Refresh
                     </button>
                 </div>
@@ -84,9 +104,12 @@
                     <h3 class="apollo__section-title">CI Master Registry</h3>
                 </div>
                 
-                <div class="apollo__ci-grid" id="ci-grid">
+                <div class="apollo__ci-grid" id="ci-grid"
+                     data-tekton-container="ci-cards"
+                     data-tekton-data-source="apollo-contexts"
+                     data-tekton-refresh-interval="5000">
                     <!-- CI cards will be dynamically inserted here -->
-                    <div class="apollo__loading">Loading CI data...</div>
+                    <div class="apollo__loading" data-tekton-state="loading">Loading CI data...</div>
                 </div>
             </div>
         </div>
@@ -113,24 +136,26 @@
                     </div>
                 </div>
                 
-                <div class="apollo__table-container">
-                    <table class="apollo__table">
+                <div class="apollo__table-container" data-tekton-container="token-table">
+                    <table class="apollo__table" data-tekton-table="token-management">
                         <thead class="apollo__table-header">
                             <tr>
-                                <th class="apollo__table-header-cell">CI Name</th>
-                                <th class="apollo__table-header-cell">Type</th>
-                                <th class="apollo__table-header-cell">Burn Rate</th>
-                                <th class="apollo__table-header-cell">Next Turn</th>
-                                <th class="apollo__table-header-cell">Budget Status</th>
-                                <th class="apollo__table-header-cell">Stress Level</th>
-                                <th class="apollo__table-header-cell">Time Remaining</th>
+                                <th class="apollo__table-header-cell" data-tekton-column="ci-name">CI Name</th>
+                                <th class="apollo__table-header-cell" data-tekton-column="ci-type">Type</th>
+                                <th class="apollo__table-header-cell" data-tekton-column="burn-rate">Burn Rate</th>
+                                <th class="apollo__table-header-cell" data-tekton-column="next-turn">Next Turn</th>
+                                <th class="apollo__table-header-cell" data-tekton-column="budget-status">Budget Status</th>
+                                <th class="apollo__table-header-cell" data-tekton-column="stress-level">Stress Level</th>
+                                <th class="apollo__table-header-cell" data-tekton-column="time-remaining">Time Remaining</th>
                             </tr>
                         </thead>
-                        <tbody id="token-management-tbody">
+                        <tbody id="token-management-tbody" 
+                               data-tekton-container="token-rows"
+                               data-tekton-data-source="apollo-token-metrics">
                             <!-- Rows will be dynamically inserted here -->
                             <tr>
                                 <td colspan="7" class="apollo__table-cell" style="text-align: center; padding: 48px;">
-                                    <div class="apollo__loading">Loading token data...</div>
+                                    <div class="apollo__loading" data-tekton-state="loading">Loading token data...</div>
                                 </td>
                             </tr>
                         </tbody>
@@ -147,12 +172,18 @@
             <div class="apollo__protocols">
                 <div class="apollo__section-header">
                     <h3 class="apollo__section-title">Context Management Protocols</h3>
-                    <button class="apollo__button apollo__button--primary" onclick="openProtocolDialog()">Add Protocol</button>
+                    <button class="apollo__button apollo__button--primary" 
+                            onclick="openProtocolDialog()"
+                            data-tekton-action="add-protocol"
+                            data-tekton-trigger="click"
+                            data-tekton-modal="protocol-dialog">Add Protocol</button>
                 </div>
                 
-                <div class="apollo__protocols-grid" id="protocols-grid">
+                <div class="apollo__protocols-grid" id="protocols-grid"
+                     data-tekton-container="protocol-cards"
+                     data-tekton-data-source="apollo-protocols">
                     <!-- Protocol cards will be dynamically inserted here -->
-                    <div class="apollo__loading">Loading protocols...</div>
+                    <div class="apollo__loading" data-tekton-state="loading">Loading protocols...</div>
                 </div>
             </div>
         </div>
@@ -165,10 +196,19 @@
             <div class="apollo__actions">
                 <div class="apollo__section-header">
                     <h3 class="apollo__section-title">CI Action Queue Management</h3>
-                    <div class="apollo__action-controls">
-                        <button class="apollo__button apollo__button--blue">Prepare Sunset Contexts</button>
-                        <button class="apollo__button apollo__button--green">Optimize Contexts</button>
-                        <button class="apollo__button apollo__button--primary">Refresh Memories</button>
+                    <div class="apollo__action-controls" data-tekton-zone="action-controls">
+                        <button class="apollo__button apollo__button--blue"
+                                data-tekton-action="prepare-sunset"
+                                data-tekton-trigger="click"
+                                data-tekton-target="all-cis">Prepare Sunset Contexts</button>
+                        <button class="apollo__button apollo__button--green"
+                                data-tekton-action="optimize-contexts"
+                                data-tekton-trigger="click"
+                                data-tekton-target="all-cis">Optimize Contexts</button>
+                        <button class="apollo__button apollo__button--primary"
+                                data-tekton-action="refresh-memories"
+                                data-tekton-trigger="click"
+                                data-tekton-target="all-cis">Refresh Memories</button>
                     </div>
                 </div>
                 
@@ -202,9 +242,14 @@
              data-tab-content="attention"
              data-tekton-tab-content="attention"
              data-tekton-panel="attention">
-            <div class="apollo__chat-interface">
-                <div class="apollo__chat-messages" id="attention-messages">
-                    <div class="chat-message system-message">
+            <div class="apollo__chat-interface"
+                 data-tekton-chat="apollo-attention"
+                 data-tekton-ai="apollo"
+                 data-tekton-chat-type="direct">
+                <div class="apollo__chat-messages" id="attention-messages"
+                     data-tekton-chat-messages="true"
+                     data-tekton-scrollable="true">
+                    <div class="chat-message system-message" data-tekton-message-type="system">
                         <strong>Apollo Attention System</strong><br>
                         Welcome to Apollo's direct attention interface. I can help with predictions, token management, and system optimization.
                     </div>
@@ -217,9 +262,14 @@
              data-tab-content="teamchat"
              data-tekton-tab-content="teamchat"
              data-tekton-panel="teamchat">
-            <div class="apollo__chat-interface">
-                <div class="apollo__chat-messages" id="teamchat-messages">
-                    <div class="chat-message system-message">
+            <div class="apollo__chat-interface"
+                 data-tekton-chat="team-broadcast"
+                 data-tekton-ai="all-specialists"
+                 data-tekton-chat-type="broadcast">
+                <div class="apollo__chat-messages" id="teamchat-messages"
+                     data-tekton-chat-messages="true"
+                     data-tekton-scrollable="true">
+                    <div class="chat-message system-message" data-tekton-message-type="system">
                         <strong>Team Chat</strong><br>
                         Messages sent here are broadcast to all active AIs in the Tekton ecosystem.
                     </div>
@@ -231,14 +281,20 @@
     
     <!-- Chat Footer (persistent across all tabs) -->
     <div class="apollo__footer" data-tekton-zone="footer">
-        <div class="apollo__chat-input-container">
+        <div class="apollo__chat-input-container" data-tekton-zone="chat-input">
             <div class="apollo__chat-prompt">></div>
             <input type="text" 
                    id="apollo-chat-input" 
                    class="apollo__chat-input" 
                    placeholder="Type your message..."
-                   data-tekton-input="chat">
-            <button id="apollo-send-button" class="apollo__button apollo__button--primary">Send</button>
+                   data-tekton-input="chat"
+                   data-tekton-chat-input="true"
+                   data-tekton-action-trigger="enter">
+            <button id="apollo-send-button" 
+                    class="apollo__button apollo__button--primary"
+                    data-tekton-action="send-message"
+                    data-tekton-trigger="click"
+                    data-tekton-target="active-chat">Send</button>
         </div>
     </div>
 </div>

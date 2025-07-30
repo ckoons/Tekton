@@ -25,7 +25,7 @@ from apollo.models.context import (
 )
 # Try to import landmarks
 try:
-    from landmarks import architecture_decision, performance_boundary
+    from landmarks import architecture_decision, performance_boundary, state_checkpoint
 except ImportError:
     # Define no-op decorators if landmarks not available
     def architecture_decision(**kwargs):
@@ -34,6 +34,11 @@ except ImportError:
         return decorator
     
     def performance_boundary(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+    
+    def state_checkpoint(**kwargs):
         def decorator(func_or_class):
             return func_or_class
         return decorator
@@ -632,6 +637,23 @@ class HeuristicRule(PredictionRule):
     sla="<500ms prediction generation, 15s update interval",
     metrics={"prediction_rules": "4 concurrent", "history_window": "100 points"},
     optimization_notes="Lightweight statistical methods, async rule evaluation"
+)
+@architecture_decision(
+    title="Apollo Predictive Engine Architecture",
+    description="Statistical prediction engine for context exhaustion and CI performance",
+    rationale="Enables proactive intervention before context limits are reached",
+    alternatives_considered=["Rule-based thresholds", "Machine learning models", "External prediction service"],
+    impacts=["context_management", "performance_optimization", "resource_planning"],
+    decided_by="Casey",
+    decision_date="2025-01-25"
+)
+@state_checkpoint(
+    title="Prediction Model State",
+    description="Statistical models, prediction history, and confidence metrics",
+    state_type="prediction",
+    persistence=True,
+    consistency_requirements="Predictions must be reproducible from historical data",
+    recovery_strategy="Rebuild models from context history"
 )
 class PredictiveEngine:
     """

@@ -26,7 +26,25 @@ from apollo.models.budget import (
     BudgetSummary
 )
 
-from landmarks import state_checkpoint, performance_boundary, architecture_decision
+# Try to import landmarks
+try:
+    from landmarks import state_checkpoint, performance_boundary, architecture_decision
+except ImportError:
+    # Define no-op decorators if landmarks not available
+    def state_checkpoint(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+    
+    def performance_boundary(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+    
+    def architecture_decision(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
 
 # Configure logging
 logger = logging.getLogger(__name__)
