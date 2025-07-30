@@ -89,6 +89,9 @@ from tekton.core.merge_coordinator import MergeCoordinator, MergeState
 # Import our new projects API
 from tekton.api import projects as projects_v2
 
+# Import sprint management API
+from tekton.api import sprints as sprints_api
+
 # Create component instance (singleton)
 component = TektonCoreComponent()
 
@@ -98,6 +101,9 @@ from tekton.core.shared_instances import get_project_manager
 # Architecture Decision: Single ProjectManager instance eliminates V1/V2 confusion
 project_manager = get_project_manager()  # One instance, no V1/V2 confusion
 merge_coordinator = MergeCoordinator()
+
+# Sprint coordination will be initialized after app creation to ensure proper path setup
+sprint_coordinator = None
 
 @integration_point(
     title="TektonCore Startup Integration",
@@ -113,6 +119,8 @@ merge_coordinator = MergeCoordinator()
 )
 async def startup_callback():
     """Initialize component during startup."""
+    global sprint_coordinator
+    
     # Initialize the component (registers with Hermes, etc.)
     await component.initialize(
         capabilities=component.get_capabilities(),
@@ -127,6 +135,42 @@ async def startup_callback():
     except Exception as e:
         logger.error(f"Failed to create Tekton self-management project: {e}")
         # Don't fail startup if this fails
+    
+    # Initialize sprint coordination system (after path is set up)
+    logger.info("STARTUP CALLBACK: Initializing sprint coordination system...")
+    global sprint_coordinator
+    try:
+        # Ensure both paths are in sys.path for sprint components
+        tekton_core_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
+        if tekton_core_path not in sys.path:
+            sys.path.insert(0, tekton_core_path)
+            logger.info(f"STARTUP CALLBACK: Added tekton-core path to sys.path: {tekton_core_path}")
+        
+        logger.info("STARTUP CALLBACK: About to import SprintCoordinator...")
+        from tekton.core.sprint_coordinator import SprintCoordinator
+        logger.info("STARTUP CALLBACK: SprintCoordinator imported successfully")
+        
+        logger.info("STARTUP CALLBACK: Creating SprintCoordinator instance...")
+        sprint_coordinator = SprintCoordinator()
+        logger.info("STARTUP CALLBACK: SprintCoordinator instance created")
+        
+        # Set sprint coordinator in API module
+        logger.info("STARTUP CALLBACK: Setting sprint coordinator in API module...")
+        sprints_api.set_sprint_coordinator(sprint_coordinator)
+        logger.info("STARTUP CALLBACK: Sprint coordination system initialized successfully")
+        
+        # Start sprint coordination system
+        logger.info("STARTUP CALLBACK: Starting sprint coordination system...")
+        await sprint_coordinator.start()
+        logger.info("STARTUP CALLBACK: Sprint coordination system started successfully")
+        
+    except Exception as e:
+        logger.error(f"STARTUP CALLBACK: Failed to initialize sprint coordination system: {e}")
+        logger.error(f"STARTUP CALLBACK: Sprint coordinator error details: {e.__class__.__name__}: {str(e)}")
+        import traceback
+        logger.error(f"STARTUP CALLBACK: Sprint coordinator traceback: {traceback.format_exc()}")
+        sprint_coordinator = None
+        sprints_api.set_sprint_coordinator(None)
 
 # Create FastAPI application using component's create_app
 app = component.create_app(
@@ -557,6 +601,10 @@ mount_standard_routers(app, routers)
 # Mount our enhanced projects API - SIMPLE
 # Integration Point: Projects API Integration - Primary API integration for project management UI
 app.include_router(projects_v2.router)
+
+# Mount sprint management API
+# Integration Point: Sprint Management API - Primary API for development sprint coordination
+app.include_router(sprints_api.router)
 
 # Include standardized workflow endpoint
 if create_workflow_endpoint:

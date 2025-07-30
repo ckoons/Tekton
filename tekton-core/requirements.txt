@@ -10,5 +10,8 @@ fastmcp>=1.0.0
 psutil>=5.9.0
 py-cpuinfo>=8.0.0
 
+# File system monitoring for sprint coordination
+watchdog>=3.0.0
+
 # Optional GPU monitoring
 # pynvml>=11.0.0  # Uncomment to enable NVIDIA GPU monitoring

@@ -44,7 +44,7 @@
                    data-tekton-menu-component="tekton"
                    data-tekton-menu-panel="new-project-panel"
                    onclick="clearNewProjectFields()">
-                <span class="tekton__tab-label">New Project</span>
+                <span class="tekton__tab-label">GitHub Project</span>
             </label>
             <label for="tekton-tab-merges" class="tekton__tab" data-tab="merges"
                    data-tekton-menu-item="Merges"
@@ -1269,6 +1269,16 @@ window.tekton_switchTab = function(tabId) {
             stopDashboardAutoRefresh();
         }
         
+        // Load merges when switching to merges tab
+        if (tabId === 'merges') {
+            loadMergeQueue();
+        }
+        
+        // Load conflicts when switching to conflicts tab
+        if (tabId === 'conflicts') {
+            loadConflicts();
+        }
+        
         // Update component state
         if (window.tektonComponent) {
             window.tektonComponent.state = window.tektonComponent.state || {};
@@ -1892,6 +1902,112 @@ async function loadProjectsDashboard() {
     }
 }
 
+async function loadMergeQueue() {
+    console.log('[TEKTON] Loading merge queue - scanning Development Sprints');
+    
+    try {
+        // Fetch sprints ready for merge from TektonCore Sprint API
+        const response = await fetch(tektonCoreUrl('/api/v1/sprints/merges'));
+        
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.log('[TEKTON] API error response:', errorText);
+            
+            // If sprint coordinator not initialized, show message and suggest restart
+            if (errorText.includes('Sprint coordinator not initialized')) {
+                const mergesContainer = document.getElementById('merges-container');
+                mergesContainer.innerHTML = `
+                    <div class="tekton__error-message">
+                        <strong>Sprint Management System Not Ready</strong><br>
+                        The TektonCore sprint coordinator is not initialized.<br>
+                        Please restart TektonCore to load the sprint management system.<br><br>
+                        <em>Expected: Planning Team Workflow UI Sprint should appear here when ready.</em>
+                    </div>
+                `;
+                return;
+            }
+            
+            throw new Error(`Failed to fetch merge queue: ${response.statusText} - ${errorText}`);
+        }
+        
+        const data = await response.json();
+        console.log('[TEKTON] Loaded merge queue:', data);
+        
+        const mergesContainer = document.getElementById('merges-container');
+        
+        // Check if we have the expected data structure
+        if (!data.success || !data.data || !data.data.merges) {
+            console.log('[TEKTON] Unexpected API response structure:', data);
+            mergesContainer.innerHTML = '<div class="tekton__placeholder-message">No Merges Pending</div>';
+            return;
+        }
+        
+        const merges = data.data.merges;
+        
+        if (merges.length === 0) {
+            mergesContainer.innerHTML = '<div class="tekton__placeholder-message">No Merges Pending</div>';
+            return;
+        }
+        
+        // Clear existing content
+        mergesContainer.innerHTML = '';
+        
+        // Create merge cards for each sprint ready for merge
+        merges.forEach(merge => {
+            const mergeCard = createMergeCard(merge);
+            mergesContainer.appendChild(mergeCard);
+        });
+        
+    } catch (error) {
+        console.error('[TEKTON] Failed to load merge queue:', error);
+        const mergesContainer = document.getElementById('merges-container');
+        mergesContainer.innerHTML = `
+            <div class="tekton__error-message">
+                <strong>Failed to load merge queue</strong><br>
+                ${error.message}<br><br>
+                <button class="tekton__button tekton__button--secondary tekton__button--small" onclick="loadMergeQueue()">Retry</button>
+            </div>
+        `;
+    }
+}
+
+async function loadConflicts() {
+    console.log('[TEKTON] Loading conflicts - scanning for merge conflicts');
+    
+    try {
+        // Fetch conflicts from TektonCore Sprint API
+        const response = await fetch(tektonCoreUrl('/api/v1/sprints/conflicts'));
+        
+        if (!response.ok) {
+            throw new Error(`Failed to fetch conflicts: ${response.statusText}`);
+        }
+        
+        const data = await response.json();
+        console.log('[TEKTON] Loaded conflicts:', data);
+        
+        const conflictsContainer = document.getElementById('conflicts-container');
+        
+        if (!data.conflicts || data.conflicts.length === 0) {
+            conflictsContainer.innerHTML = '<div class="tekton__placeholder-message">No Merge Conflicts Pending</div>';
+            return;
+        }
+        
+        // Clear existing content
+        conflictsContainer.innerHTML = '';
+        
+        // Create conflict cards for each conflicted merge
+        data.conflicts.forEach(conflict => {
+            const conflictCard = createConflictCard(conflict);
+            conflictsContainer.appendChild(conflictCard);
+        });
+        
+    } catch (error) {
+        console.error('[TEKTON] Failed to load conflicts:', error);
+        const conflictsContainer = document.getElementById('conflicts-container');
+        conflictsContainer.innerHTML = `<div class="tekton__error-message">Failed to load conflicts: ${error.message}</div>`;
+    }
+}
+
 function createProjectCard(project) {
     const card = document.createElement('div');
     card.className = 'tekton__project-card';
@@ -1927,6 +2043,107 @@ function createProjectCard(project) {
         
         <div class="tekton__project-footer">
             <button class="tekton__button tekton__button--danger tekton__button--small" onclick="removeProject('${project.id}', '${project.name}')">Remove from Dashboard</button>
+        </div>
+    `;
+    
+    return card;
+}
+
+function createMergeCard(merge) {
+    const card = document.createElement('div');
+    card.className = 'tekton__project-card';
+    card.setAttribute('data-merge-id', merge.id);
+    
+    // Format the updated time
+    const updatedTime = merge.updated_at ? new Date(merge.updated_at).toLocaleString() : 'Unknown';
+    
+    // Create card HTML
+    card.innerHTML = `
+        <div class="tekton__project-header">
+            <h3 class="tekton__project-name">${merge.name}
+                <span class="tekton__project-ai">(Ready for Merge)</span>
+            </h3>
+            <span class="tekton__project-badge">Sprint</span>
+        </div>
+        
+        <div class="tekton__project-remotes">
+            <div class="tekton__remote-row">
+                <span class="tekton__remote-label">Status:</span>
+                <span style="color: #28a745; font-weight: 500;">${merge.status}</span>
+            </div>
+            <div class="tekton__remote-row">
+                <span class="tekton__remote-label">Updated:</span>
+                <span>${updatedTime}</span>
+            </div>
+            <div class="tekton__remote-row">
+                <span class="tekton__remote-label">Updated By:</span>
+                <span>${merge.updated_by || 'Unknown'}</span>
+            </div>
+            ${merge.path ? `
+                <div class="tekton__remote-row">
+                    <span class="tekton__remote-label">Path:</span>
+                    <span style="font-family: monospace; font-size: 0.9em;">${merge.path}</span>
+                </div>
+            ` : ''}
+        </div>
+        
+        <div class="tekton__project-footer">
+            <button class="tekton__button tekton__button--primary tekton__button--small" onclick="executeMerge('${merge.id}', '${merge.name}')">Execute Merge</button>
+            <button class="tekton__button tekton__button--secondary tekton__button--small" onclick="viewMergeDetails('${merge.id}', '${merge.name}')">View Details</button>
+        </div>
+    `;
+    
+    return card;
+}
+
+function createConflictCard(conflict) {
+    const card = document.createElement('div');
+    card.className = 'tekton__project-card';
+    card.setAttribute('data-conflict-id', conflict.id);
+    
+    // Format the conflict time
+    const conflictTime = conflict.conflict_at ? new Date(conflict.conflict_at).toLocaleString() : 'Unknown';
+    
+    // Create card HTML
+    card.innerHTML = `
+        <div class="tekton__project-header">
+            <h3 class="tekton__project-name">${conflict.name}
+                <span class="tekton__project-ai">(Merge Conflict)</span>
+            </h3>
+            <span class="tekton__project-badge" style="background-color: #dc3545;">Conflict</span>
+        </div>
+        
+        <div class="tekton__project-remotes">
+            <div class="tekton__remote-row">
+                <span class="tekton__remote-label">Status:</span>
+                <span style="color: #dc3545; font-weight: 500;">${conflict.status}</span>
+            </div>
+            <div class="tekton__remote-row">
+                <span class="tekton__remote-label">Conflict Since:</span>
+                <span>${conflictTime}</span>
+            </div>
+            <div class="tekton__remote-row">
+                <span class="tekton__remote-label">Coder:</span>
+                <span>${conflict.assigned_coder || 'Unassigned'}</span>
+            </div>
+            ${conflict.conflict_files ? `
+                <div class="tekton__remote-row">
+                    <span class="tekton__remote-label">Files:</span>
+                    <span style="font-family: monospace; font-size: 0.9em;">${conflict.conflict_files.join(', ')}</span>
+                </div>
+            ` : ''}
+            ${conflict.retry_count ? `
+                <div class="tekton__remote-row">
+                    <span class="tekton__remote-label">Retry Count:</span>
+                    <span>${conflict.retry_count}/3</span>
+                </div>
+            ` : ''}
+        </div>
+        
+        <div class="tekton__project-footer">
+            <button class="tekton__button tekton__button--primary tekton__button--small" onclick="resolveConflict('${conflict.id}', '${conflict.name}')">Resolve Conflict</button>
+            <button class="tekton__button tekton__button--secondary tekton__button--small" onclick="viewConflictDetails('${conflict.id}', '${conflict.name}')">View Details</button>
+            <button class="tekton__button tekton__button--danger tekton__button--small" onclick="sendBackToCoder('${conflict.id}', '${conflict.name}')">Send Back to Coder</button>
         </div>
     `;
     
@@ -2090,6 +2307,172 @@ async function removeProject(projectId, projectName) {
     } catch (error) {
         console.error('[TEKTON] Failed to remove project:', error);
         alert(`Failed to remove project: ${error.message}`);
+    }
+}
+
+async function executeMerge(mergeId, mergeName) {
+    if (!confirm(`Execute merge for "${mergeName}"?\n\nThis will merge the sprint changes into the main branch.`)) {
+        return;
+    }
+    
+    console.log(`[TEKTON] Executing merge for ${mergeName} (${mergeId})`);
+    
+    try {
+        const response = await fetch(tektonCoreUrl(`/api/v1/sprints/execute-merge/${mergeId}`), {
+            method: 'POST'
+        });
+        
+        if (!response.ok) {
+            const error = await response.text();
+            throw new Error(`Failed to execute merge: ${error}`);
+        }
+        
+        const result = await response.json();
+        console.log(`[TEKTON] Merge executed successfully:`, result);
+        
+        alert(`Merge executed successfully for "${mergeName}"!`);
+        
+        // Reload merge queue to reflect changes
+        await loadMergeQueue();
+        
+    } catch (error) {
+        console.error('[TEKTON] Failed to execute merge:', error);
+        alert(`Failed to execute merge: ${error.message}`);
+    }
+}
+
+async function viewMergeDetails(mergeId, mergeName) {
+    console.log(`[TEKTON] Viewing merge details for ${mergeName} (${mergeId})`);
+    
+    try {
+        const response = await fetch(tektonCoreUrl(`/api/v1/sprints/merges/${mergeId}`));
+        
+        if (!response.ok) {
+            throw new Error(`Failed to fetch merge details: ${response.statusText}`);
+        }
+        
+        const details = await response.json();
+        console.log(`[TEKTON] Merge details:`, details);
+        
+        // For now, show a simple alert with the details
+        // In the future, this could open a detailed modal
+        let detailsText = `Merge Details for "${mergeName}":\n\n`;
+        detailsText += `Status: ${details.status}\n`;
+        detailsText += `Updated: ${details.updated_at}\n`;
+        detailsText += `Updated By: ${details.updated_by}\n`;
+        if (details.path) detailsText += `Path: ${details.path}\n`;
+        if (details.tasks) detailsText += `Tasks: ${details.tasks.length} tasks\n`;
+        
+        alert(detailsText);
+        
+    } catch (error) {
+        console.error('[TEKTON] Failed to fetch merge details:', error);
+        alert(`Failed to fetch merge details: ${error.message}`);
+    }
+}
+
+async function resolveConflict(conflictId, conflictName) {
+    if (!confirm(`Manually resolve conflict for "${conflictName}"?\n\nThis will mark the conflict as resolved and proceed with the merge.`)) {
+        return;
+    }
+    
+    console.log(`[TEKTON] Resolving conflict for ${conflictName} (${conflictId})`);
+    
+    try {
+        const response = await fetch(tektonCoreUrl(`/api/v1/sprints/resolve-conflict/${conflictId}`), {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                resolution_type: 'manual',
+                reason: 'Human intervention - conflict resolved manually'
+            })
+        });
+        
+        if (!response.ok) {
+            const error = await response.text();
+            throw new Error(`Failed to resolve conflict: ${error}`);
+        }
+        
+        const result = await response.json();
+        console.log(`[TEKTON] Conflict resolved successfully:`, result);
+        
+        alert(`Conflict resolved successfully for "${conflictName}"!`);
+        
+        // Reload conflicts to reflect changes
+        await loadConflicts();
+        
+    } catch (error) {
+        console.error('[TEKTON] Failed to resolve conflict:', error);
+        alert(`Failed to resolve conflict: ${error.message}`);
+    }
+}
+
+async function viewConflictDetails(conflictId, conflictName) {
+    console.log(`[TEKTON] Viewing conflict details for ${conflictName} (${conflictId})`);
+    
+    try {
+        const response = await fetch(tektonCoreUrl(`/api/v1/sprints/conflicts/${conflictId}`));
+        
+        if (!response.ok) {
+            throw new Error(`Failed to fetch conflict details: ${response.statusText}`);
+        }
+        
+        const details = await response.json();
+        console.log(`[TEKTON] Conflict details:`, details);
+        
+        // Show detailed conflict information
+        let detailsText = `Conflict Details for "${conflictName}":\n\n`;
+        detailsText += `Status: ${details.status}\n`;
+        detailsText += `Conflict Since: ${details.conflict_at}\n`;
+        detailsText += `Assigned Coder: ${details.assigned_coder}\n`;
+        detailsText += `Retry Count: ${details.retry_count || 0}/3\n`;
+        if (details.conflict_files) detailsText += `Conflicted Files: ${details.conflict_files.join(', ')}\n`;
+        if (details.conflict_message) detailsText += `\nConflict Message:\n${details.conflict_message}\n`;
+        
+        alert(detailsText);
+        
+    } catch (error) {
+        console.error('[TEKTON] Failed to fetch conflict details:', error);
+        alert(`Failed to fetch conflict details: ${error.message}`);
+    }
+}
+
+async function sendBackToCoder(conflictId, conflictName) {
+    if (!confirm(`Send "${conflictName}" back to Coder for fixes?\n\nThis will create a repair task for the assigned Coder.`)) {
+        return;
+    }
+    
+    console.log(`[TEKTON] Sending back to Coder for ${conflictName} (${conflictId})`);
+    
+    try {
+        const response = await fetch(tektonCoreUrl(`/api/v1/sprints/send-back-to-coder/${conflictId}`), {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                reason: 'Merge conflicts detected - requires Coder intervention'
+            })
+        });
+        
+        if (!response.ok) {
+            const error = await response.text();
+            throw new Error(`Failed to send back to Coder: ${error}`);
+        }
+        
+        const result = await response.json();
+        console.log(`[TEKTON] Sent back to Coder successfully:`, result);
+        
+        alert(`"${conflictName}" sent back to ${result.assigned_coder || 'Coder'} for fixes!`);
+        
+        // Reload conflicts to reflect changes
+        await loadConflicts();
+        
+    } catch (error) {
+        console.error('[TEKTON] Failed to send back to Coder:', error);
+        alert(`Failed to send back to Coder: ${error.message}`);
     }
 }
 
