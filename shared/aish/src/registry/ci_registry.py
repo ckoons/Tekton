@@ -6,6 +6,8 @@ Manages all CI types (Greek Chorus, Terma terminals, Project CIs) in a single re
 import os
 import sys
 import operator
+import json
+import requests
 from pathlib import Path
 from typing import Dict, List, Optional, Any
 from datetime import datetime
@@ -184,39 +186,95 @@ class CIRegistry:
     
     @integration_point(
         title="Terma Terminal Discovery",
-        description="Discovers running Terma terminals from environment",
+        description="Discovers running Terma terminals from Terma API",
         target_component="Terma",
-        protocol="Environment Variables",
-        data_flow="TERMA_TERMINALS env → registry entries with PID and attributes",
+        protocol="HTTP API",
+        data_flow="Terma /api/terminals → registry entries with PID and attributes",
         integration_date="2025-01-25"
     )
     def _load_terminals(self):
-        """Load Terma terminals from environment."""
-        terminals_json = TektonEnviron.get('TERMA_TERMINALS', '[]')
+        """Load Terma terminals from Terma API."""
         try:
-            terminals = eval(terminals_json) if terminals_json else []
-            for terminal in terminals:
-                name = terminal.get('name', '').lower()
-                if name:
-                    self._registry[name] = {
-                        'name': name,
-                        'type': 'terminal',
-                        'endpoint': tekton_url('terma'),
-                        'description': f"Terminal: {terminal.get('shell', 'bash')}",
-                        'message_endpoint': '/api/route',
-                        'message_format': 'terma_route',
-                        'pid': terminal.get('pid'),
-                        'shell': terminal.get('shell', 'bash'),
-                        'created': terminal.get('created')
-                    }
-        except Exception:
-            pass  # Ignore parse errors
+            # Get terminals from Terma API
+            response = requests.get(terma_url('/api/terminals'), timeout=2)
+            if response.status_code == 200:
+                terminals = response.json()
+                for terminal in terminals:
+                    name = terminal.get('name', '').lower()
+                    if name:
+                        self._registry[name] = {
+                            'name': name,
+                            'type': 'terminal',
+                            'endpoint': terma_url(),
+                            'description': f"Terminal: {terminal.get('app', 'unknown')} (pid {terminal.get('pid', '?')})",
+                            'message_endpoint': '/api/route',
+                            'message_format': 'terma_route',
+                            'pid': terminal.get('pid'),
+                            'app': terminal.get('app', 'unknown'),
+                            'status': terminal.get('status', 'unknown'),
+                            'purpose': terminal.get('purpose', ''),
+                            'working_dir': terminal.get('working_dir', ''),
+                            'launched_at': terminal.get('launched_at')
+                        }
+        except Exception as e:
+            # Terma might not be running, that's ok
+            pass
     
     def _load_projects(self):
         """Load project CIs from Tekton projects."""
-        # TODO: Implement project CI discovery
-        # This will scan TEKTON_ROOT for project configurations
-        pass
+        # First try TektonCore API
+        try:
+            response = requests.get(tekton_url('tekton_core', '/api/projects/list'), timeout=2)
+            if response.status_code == 200:
+                projects = response.json()
+                for project in projects:
+                    if project.get('companion_intelligence'):
+                        # Create CI entry for project's companion AI
+                        ci_name = f"{project['name'].lower()}-ai"
+                        self._registry[ci_name] = {
+                            'name': ci_name,
+                            'type': 'project',
+                            'endpoint': tekton_url('tekton_core'),
+                            'description': f"Project AI: {project['name']}",
+                            'message_endpoint': '/api/message',
+                            'message_format': 'json_simple',
+                            'project': project['name'],
+                            'project_id': project['id'],
+                            'companion_intelligence': project['companion_intelligence'],
+                            'local_directory': project.get('local_directory')
+                        }
+                return
+        except Exception:
+            # TektonCore might not be running, fall back to file
+            pass
+        
+        # Fallback to reading projects.json directly
+        try:
+            tekton_root = TektonEnviron.get('TEKTON_ROOT')
+            if tekton_root:
+                projects_file = Path(tekton_root) / '.tekton' / 'projects' / 'projects.json'
+                if projects_file.exists():
+                    with open(projects_file, 'r') as f:
+                        data = json.load(f)
+                        for project in data.get('projects', []):
+                            if project.get('companion_intelligence'):
+                                # Create CI entry for project's companion AI
+                                ci_name = f"{project['name'].lower()}-ai"
+                                self._registry[ci_name] = {
+                                    'name': ci_name,
+                                    'type': 'project',
+                                    'endpoint': tekton_url('tekton_core'),
+                                    'description': f"Project AI: {project['name']}",
+                                    'message_endpoint': '/api/message',
+                                    'message_format': 'json_simple',
+                                    'project': project['name'],
+                                    'project_id': project['id'],
+                                    'companion_intelligence': project['companion_intelligence'],
+                                    'local_directory': project.get('local_directory')
+                                }
+        except Exception:
+            # Projects file might not exist yet
+            pass
     
     def _load_forwards(self):
         """Load forwarding configurations."""
