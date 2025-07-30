@@ -293,10 +293,12 @@
     <input type="radio" name="component-nav" id="nav-profile" style="display: none;">
     <input type="radio" name="component-nav" id="nav-settings" style="display: none;">
     
-    <div class="app-container">
-        <!-- Left Panel -->
-        <div class="left-panel" data-tekton-nav="main" data-tekton-area="navigation">
-            <div class="left-panel-header" data-tekton-section="nav-header">
+    <!-- Main Application Container -->
+    <main class="app-container" role="main">
+        <!-- Left Panel Navigation Sidebar -->
+        <aside class="left-panel" data-tekton-nav="main" data-tekton-area="navigation" role="navigation" aria-label="Main navigation">
+            <!-- Navigation Header -->
+            <header class="left-panel-header" data-tekton-section="nav-header">
                 <div class="tekton-logo">
                     <div class="logo-text">
                         <h1 style="color: #007bff !important; font-size: 2.5rem !important;">Tekton</h1>
@@ -304,10 +306,12 @@
                     </div>
                     <img src="images/Tekton.png" alt="Tekton Pillar" class="pillar-icon" style="height: 85px !important; margin-left: 10px !important; position: absolute !important; right: 0 !important; top: 0 !important; display: block !important; z-index: 5 !important;" onerror="this.src='images/icon.png'; this.onerror=null;">
                 </div>
-            </div>
+            </header>
             
-            <div class="left-panel-nav" data-tekton-section="nav-main">
-                <ul class="component-nav" data-tekton-list="components">
+            <!-- Primary Navigation -->
+            <nav class="left-panel-nav" data-tekton-section="nav-main" aria-label="Component navigation">
+                <!-- Component List -->
+                <ul class="component-nav" data-tekton-list="components" role="list">
                     <li class="nav-item" data-component="numa">
                         <label for="nav-numa" class="nav-label-wrapper" data-tekton-nav-item="numa" data-tekton-nav-target="numa">
                             <span class="nav-label">Numa - Companion</span>
@@ -411,11 +415,14 @@
                         </label>
                     </li>
                 </ul>
-            </div>
+            </nav>
             
-            <div class="left-panel-footer" data-tekton-section="nav-footer">
+            <!-- Navigation Footer -->
+            <footer class="left-panel-footer" data-tekton-section="nav-footer">
                 <div class="footer-separator"></div>
-                <ul class="component-nav" data-tekton-list="utilities">
+                <!-- Utility Navigation -->
+                <nav class="component-nav" data-tekton-list="utilities" aria-label="Utility navigation">
+                <ul>
                     <li class="nav-item" data-component="profile">
                         <label for="nav-profile" class="nav-label-wrapper" data-tekton-nav-item="profile" data-tekton-nav-target="profile">
                             <span class="button-icon">👤</span>
@@ -431,13 +438,14 @@
                         </label>
                     </li>
                 </ul>
-            </div>
-        </div>
+                </nav>
+            </footer>
+        </aside>
         
         <!-- Main Content Area -->
-        <div class="main-content" data-tekton-area="content" data-tekton-type="workspace">
-            <!-- Main Panel (full height) -->
-            <div class="content-main" data-tekton-section="content-container">
+        <section class="main-content" data-tekton-area="content" data-tekton-type="workspace" role="region" aria-label="Main content">
+            <!-- Main Panel Container -->
+            <article class="content-main" data-tekton-section="content-container" role="article" aria-label="Content container">
                 <div class="panel terminal-panel active" id="terminal-panel" data-tekton-panel="terminal" data-tekton-state="active">
                     <div id="terminal" class="terminal">
                         <div id="terminal-content" style="padding: 20px; flex: 1; overflow-y: auto;">
@@ -448,33 +456,33 @@
                                 <span style="color: #888;">Type 'help' for a list of available commands.</span>
                             </div>
                         </div>
-                        <!-- Fixed terminal input container with higher z-index and vivid styling -->
-                        <div id="terminal-input-fixed" style="display: flex; padding: 10px; background: #222; border-top: 2px solid #007bff; position: sticky; bottom: 0; z-index: 100; box-shadow: 0 -2px 10px rgba(0,0,0,0.5);">
+                        <!-- Terminal Input Area -->
+                        <form id="terminal-input-fixed" style="display: flex; padding: 10px; background: #222; border-top: 2px solid #007bff; position: sticky; bottom: 0; z-index: 100; box-shadow: 0 -2px 10px rgba(0,0,0,0.5);" role="form" aria-label="Terminal input">
                             <span style="color: #00ff00; font-weight: bold; margin-right: 10px; font-size: 16px;">></span>
                             <input id="simple-terminal-input" type="text" 
                                 style="flex: 1; background: #111; color: white; border: none; padding: 8px; font-size: 16px; outline: none; caret-color: #00ff00;" 
                                 placeholder="Type here and press Enter" autofocus data-tekton-input="text">
-                        </div>
+                        </form>
                     </div>
                 </div>
                 <div class="panel html-panel" id="html-panel" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow: auto;" data-tekton-panel="components" data-tekton-state="inactive">
                     <!-- HTML controls will be loaded here -->
                 </div>
-            </div>
-        </div>
-    </div>
+            </article>
+        </section>
+    </main>
 
     <!-- Modal for system messages and notifications -->
-    <div class="modal" id="system-modal">
+    <dialog class="modal" id="system-modal" role="dialog" aria-labelledby="modal-title" aria-modal="true">
         <div class="modal-content">
             <span class="close-modal">&times;</span>
             <h2 id="modal-title">System Message</h2>
             <div id="modal-body"></div>
         </div>
-    </div>
+    </dialog>
 
     <!-- Error container for displaying error messages -->
-    <div id="error-container"></div>
+    <section id="error-container" role="alert" aria-live="assertive" aria-atomic="true"></section>
     
     <!-- No splash screen -->
 

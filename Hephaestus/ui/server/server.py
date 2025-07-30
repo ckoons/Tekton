@@ -21,6 +21,42 @@ from urllib.parse import urlparse
 import http.client
 import random
 
+# Import landmark decorators with fallback
+try:
+    from shared.standards.landmarks import (
+        architecture_decision,
+        api_contract,
+        integration_point,
+        performance_boundary,
+        state_checkpoint
+    )
+except ImportError:
+    # Fallback decorators that do nothing
+    def architecture_decision(description):
+        def decorator(func):
+            return func
+        return decorator
+    
+    def api_contract(description):
+        def decorator(func):
+            return func
+        return decorator
+    
+    def integration_point(description):
+        def decorator(func):
+            return func
+        return decorator
+    
+    def performance_boundary(description):
+        def decorator(func):
+            return func
+        return decorator
+    
+    def state_checkpoint(description):
+        def decorator(func):
+            return func
+        return decorator
+
 # Add Tekton root to path if not already present
 tekton_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..', '..'))
 if tekton_root not in sys.path:
@@ -36,6 +72,7 @@ logger = setup_component_logging("hephaestus")
 # Get global configuration instance
 global_config = GlobalConfig.get_instance()
 
+@architecture_decision("Single-port HTTP/WebSocket server architecture for unified UI serving and API proxying")
 class TektonUIRequestHandler(SimpleHTTPRequestHandler):
     """Handler for serving the Tekton UI"""
     
@@ -52,6 +89,7 @@ class TektonUIRequestHandler(SimpleHTTPRequestHandler):
             directory = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
         super().__init__(*args, directory=directory, **kwargs)
     
+    @performance_boundary("Static file serving with caching control and content-type detection")
     def do_GET(self):
         """Handle GET requests"""
         # Add no-cache headers to force browser to reload content
@@ -174,6 +212,7 @@ class TektonUIRequestHandler(SimpleHTTPRequestHandler):
             
         return SimpleHTTPRequestHandler.do_GET(self)
         
+    @integration_point("WebSocket protocol upgrade - bridges HTTP to WebSocket for real-time UI communication")
     def handle_websocket_request(self):
         """Handle WebSocket upgrade request
         
@@ -491,6 +530,7 @@ class TektonUIRequestHandler(SimpleHTTPRequestHandler):
         # Handle any other POST requests with 404
         self.send_error(404, "Not Found")
     
+    @integration_point("API gateway - proxies requests to Ergon, Hermes, and Rhetor backend services")
     def proxy_api_request(self, method):
         """Proxy API requests to the appropriate backend service"""
         try:
@@ -563,6 +603,7 @@ class TektonUIRequestHandler(SimpleHTTPRequestHandler):
             self.send_error(500, f"Error proxying request: {str(e)}")
     
 
+    @api_contract("GET /health, /api/health - Returns component health status in standard Tekton format")
     def handle_health_check(self):
         """Handle health check endpoint for component status monitoring"""
         import json
@@ -596,6 +637,7 @@ class TektonUIRequestHandler(SimpleHTTPRequestHandler):
 
         self.wfile.write(json.dumps(response).encode('utf-8'))
     
+    @api_contract("GET /ready - Returns component readiness status with subsystem checks")
     def handle_ready_check(self):
         """Handle ready check endpoint following Tekton standards"""
         global server_start_time
@@ -628,6 +670,7 @@ class TektonUIRequestHandler(SimpleHTTPRequestHandler):
         
         self.wfile.write(json.dumps(response).encode('utf-8'))
     
+    @api_contract("GET /api/config/ports - Returns Tekton component port configuration")
     def serve_port_configuration(self):
         """Serve port configuration from environment variables"""
         # Get all environment variables for components
@@ -682,6 +725,7 @@ class TektonUIRequestHandler(SimpleHTTPRequestHandler):
         import json
         self.wfile.write(json.dumps(port_vars).encode('utf-8'))
 
+    @api_contract("GET/POST /api/environment - Manages environment variables and Tekton configuration")
     def handle_environment_request(self, method):
         """Handle environment variable API requests"""
         try:
@@ -732,6 +776,8 @@ class TektonUIRequestHandler(SimpleHTTPRequestHandler):
             logger.error(f"Error handling environment request: {e}")
             self.send_error(500, f"Environment request error: {str(e)}")
             
+    @api_contract("GET/POST /api/settings - Manages user settings with persistent storage")
+    @state_checkpoint("User settings management - persists UI preferences and configuration")
     def handle_settings_request(self, method):
         """Handle settings data requests"""
         try:
@@ -818,6 +864,8 @@ class TektonUIRequestHandler(SimpleHTTPRequestHandler):
             logger.error(f"Error handling settings request: {e}")
             self.send_error(500, f"Settings request error: {str(e)}")
             
+    @api_contract("GET/POST /api/profile - Manages user profile with persistent storage")
+    @state_checkpoint("User profile management - persists user identity and preferences")
     def handle_profile_request(self, method):
         """Handle profile data requests"""
         try:
@@ -915,6 +963,7 @@ class TektonUIRequestHandler(SimpleHTTPRequestHandler):
         """Override to use our logger"""
         logger.info(format % args)
 
+@architecture_decision("WebSocket server for real-time bidirectional communication in Single Port Architecture")
 class WebSocketServer:
     """WebSocket server for Tekton UI backend communication"""
     

@@ -1,5 +1,7 @@
 <!-- Synthesis Component - Execution & Integration Engine -->
+<!-- @landmark Synthesis Component Root -->
 <div class="synthesis" data-tekton-area="synthesis" data-tekton-component="synthesis" data-tekton-type="component-workspace" data-tekton-ai="synthesis-assistant" data-tekton-ai-ready="false">
+    <!-- @landmark Header Section -->
     <!-- Component Header with Title -->
     <div class="synthesis__header" data-tekton-zone="header" data-tekton-section="header">
         <div class="synthesis__title-container">
@@ -11,6 +13,7 @@
         </div>
     </div>
     
+    <!-- @landmark Navigation Menu -->
     <!-- Synthesis Menu Bar with Tab Navigation -->
     <div class="synthesis__menu-bar" data-tekton-zone="menu" data-tekton-nav="component-menu">
         <div class="synthesis__tabs" data-tekton-zone="menu">
@@ -46,20 +49,22 @@
         </div>
     </div>
     
+    <!-- @landmark Main Content Area -->
     <!-- Synthesis Content Area -->
     <div class="synthesis__content" data-tekton-zone="content" data-tekton-scrollable="true">
+        <!-- @landmark Dashboard Panel -->
         <!-- Dashboard Panel (Default Active Panel) -->
         <div id="dashboard-panel" class="synthesis__panel synthesis__panel--active" data-tekton-panel="dashboard" data-tekton-panel-for="Dashboard" data-tekton-panel-component="synthesis" data-tekton-panel-active="true">
             <div class="synthesis__dashboard" data-tekton-functionality="sprint-cards">
                 <h3 class="synthesis__section-title">Ready for Validation</h3>
                 <p class="synthesis__text">Sprints with status "Ready-3:Synthesis" requiring validation testing and review.</p>
                 
-                <div class="synthesis__sprint-grid" id="sprint-grid">
+                <div class="synthesis__sprint-grid" id="sprint-grid" data-tekton-list="sprint-cards" data-tekton-list-type="grid" data-tekton-list-empty="no-sprints">
                     <!-- Sprint cards will be populated here by scanning DAILY_LOG.md files -->
                     <!-- Currently no sprints in Ready-3:Synthesis status -->
                 </div>
                 
-                <div class="synthesis__empty-state" id="no-sprints">
+                <div class="synthesis__empty-state" id="no-sprints" data-tekton-empty-state="sprint-grid" data-tekton-state-type="info">
                     <div class="synthesis__empty-icon">🔬</div>
                     <h4 class="synthesis__empty-title">No Sprints Ready for Validation</h4>
                     <p class="synthesis__empty-text">No sprints with status "Ready-3:Synthesis" found. Sprints will appear here when Harmonia completes workflow orchestration.</p>
@@ -67,20 +72,21 @@
             </div>
         </div>
         
+        <!-- @landmark Validation Panel -->
         <!-- Validation Panel -->
         <div id="validation-panel" class="synthesis__panel" data-tekton-panel="validation" data-tekton-panel-for="Validation" data-tekton-panel-component="synthesis" data-tekton-panel-active="false">
             <div class="synthesis__validation" data-tekton-functionality="dry-run-testing">
                 <h3 class="synthesis__section-title">Workflow Validation</h3>
                 <p class="synthesis__text">Dry-run testing interface with step-by-step execution and checkpoint system.</p>
                 
-                <div class="synthesis__validation-controls">
-                    <div class="synthesis__control-group">
+                <div class="synthesis__validation-controls" data-tekton-form="validation-controls" data-tekton-form-type="interactive">
+                    <div class="synthesis__control-group" data-tekton-field="sprint-selection">
                         <label class="synthesis__control-label">Selected Sprint:</label>
                         <select id="validation-sprint-select" class="synthesis__select" data-tekton-select="sprint">
                             <option value="">Select sprint to validate...</option>
                         </select>
                     </div>
-                    <div class="synthesis__control-group">
+                    <div class="synthesis__control-group" data-tekton-field="validation-mode">
                         <label class="synthesis__control-label">Validation Mode:</label>
                         <div class="synthesis__radio-group">
                             <input type="radio" id="dry-run" name="validation-mode" value="dry-run" checked data-tekton-input="mode">
@@ -91,12 +97,12 @@
                     </div>
                 </div>
                 
-                <div class="synthesis__validation-progress" id="validation-progress" style="display: none;">
-                    <div class="synthesis__progress-header">
+                <div class="synthesis__validation-progress" id="validation-progress" style="display: none;" data-tekton-progress="validation" data-tekton-progress-type="stepped" data-tekton-progress-state="inactive">
+                    <div class="synthesis__progress-header" data-tekton-header="progress">
                         <h4 class="synthesis__progress-title">Validation Progress</h4>
                         <button class="synthesis__button synthesis__button--secondary" onclick="rollbackValidation()" data-tekton-action="rollback">Rollback</button>
                     </div>
-                    <div class="synthesis__steps-container">
+                    <div class="synthesis__steps-container" data-tekton-container="steps" data-tekton-container-type="dynamic">
                         <!-- Validation steps will be populated here -->
                     </div>
                 </div>
@@ -112,20 +118,21 @@
             </div>
         </div>
         
+        <!-- @landmark Results Panel -->
         <!-- Results Panel -->
         <div id="results-panel" class="synthesis__panel" data-tekton-panel="results" data-tekton-panel-for="Results" data-tekton-panel-component="synthesis" data-tekton-panel-active="false">
             <div class="synthesis__results" data-tekton-functionality="validation-reports">
                 <h3 class="synthesis__section-title">Validation Results</h3>
                 <p class="synthesis__text">Detailed validation reports with pass/fail status and warnings.</p>
                 
-                <div class="synthesis__results-filter">
-                    <div class="synthesis__filter-group">
+                <div class="synthesis__results-filter" data-tekton-filter="results" data-tekton-filter-type="multi-select">
+                    <div class="synthesis__filter-group" data-tekton-filter-group="sprint">
                         <label class="synthesis__filter-label">Sprint:</label>
                         <select id="results-sprint-filter" class="synthesis__select" data-tekton-select="filter">
                             <option value="all">All Sprints</option>
                         </select>
                     </div>
-                    <div class="synthesis__filter-group">
+                    <div class="synthesis__filter-group" data-tekton-filter-group="status">
                         <label class="synthesis__filter-label">Status:</label>
                         <select id="results-status-filter" class="synthesis__select" data-tekton-select="filter">
                             <option value="all">All Results</option>
@@ -134,7 +141,7 @@
                             <option value="warning">With Warnings</option>
                         </select>
                     </div>
-                    <div class="synthesis__filter-group">
+                    <div class="synthesis__filter-group" data-tekton-filter-group="date">
                         <label class="synthesis__filter-label">Date:</label>
                         <select id="results-date-filter" class="synthesis__select" data-tekton-select="filter">
                             <option value="today">Today</option>
@@ -147,22 +154,22 @@
                 
                 <div class="synthesis__results-container">
                     <div class="synthesis__results-table-container">
-                        <table class="synthesis__table synthesis__results-table">
-                            <thead>
-                                <tr>
-                                    <th>Sprint</th>
-                                    <th>Validation Date</th>
-                                    <th>Duration</th>
-                                    <th>Steps</th>
-                                    <th>Status</th>
-                                    <th>Coverage</th>
-                                    <th>Actions</th>
+                        <table class="synthesis__table synthesis__results-table" data-tekton-table="validation-results" data-tekton-table-type="report" data-tekton-sortable="true">
+                            <thead data-tekton-table-header="true">
+                                <tr data-tekton-row="header">
+                                    <th data-tekton-column="sprint" data-tekton-sortable="true">Sprint</th>
+                                    <th data-tekton-column="date" data-tekton-sortable="true">Validation Date</th>
+                                    <th data-tekton-column="duration" data-tekton-sortable="true">Duration</th>
+                                    <th data-tekton-column="steps" data-tekton-sortable="true">Steps</th>
+                                    <th data-tekton-column="status" data-tekton-sortable="true">Status</th>
+                                    <th data-tekton-column="coverage" data-tekton-sortable="true">Coverage</th>
+                                    <th data-tekton-column="actions" data-tekton-sortable="false">Actions</th>
                                 </tr>
                             </thead>
-                            <tbody id="results-table-body">
+                            <tbody id="results-table-body" data-tekton-table-body="true" data-tekton-loading-state="empty">
                                 <!-- Results will be populated here -->
-                                <tr class="synthesis__results-row">
-                                    <td colspan="7" class="synthesis__no-results">
+                                <tr class="synthesis__results-row" data-tekton-row="empty">
+                                    <td colspan="7" class="synthesis__no-results" data-tekton-cell="empty">
                                         <div class="synthesis__empty-state">
                                             <div class="synthesis__empty-icon">📊</div>
                                             <h4 class="synthesis__empty-title">No Validation Results</h4>
@@ -177,13 +184,14 @@
             </div>
         </div>
         
+        <!-- @landmark Integration Panel -->
         <!-- Integration Panel -->
         <div id="integration-panel" class="synthesis__panel" data-tekton-panel="integration" data-tekton-panel-for="Integration" data-tekton-panel-component="synthesis" data-tekton-panel-active="false">
             <div class="synthesis__integration" data-tekton-functionality="external-systems">
                 <h3 class="synthesis__section-title">External System Integration</h3>
                 <p class="synthesis__text">Test connectivity and integration with external systems and APIs.</p>
                 
-                <div class="synthesis__integration-controls">
+                <div class="synthesis__integration-controls" data-tekton-form="integration-controls" data-tekton-form-type="configuration">
                     <div class="synthesis__control-group">
                         <label class="synthesis__control-label">System Type:</label>
                         <select id="integration-system-type" class="synthesis__select" data-tekton-select="system-type">
@@ -209,29 +217,29 @@
                 </div>
                 
                 <div class="synthesis__integration-results">
-                    <div class="synthesis__systems-grid">
-                        <div class="synthesis__system-card synthesis__system-card--healthy">
-                            <div class="synthesis__system-header">
-                                <div class="synthesis__system-name">Hermes API</div>
-                                <div class="synthesis__system-status synthesis__system-status--healthy">Healthy</div>
+                    <div class="synthesis__systems-grid" data-tekton-list="system-cards" data-tekton-list-type="grid" data-tekton-monitor="true">
+                        <div class="synthesis__system-card synthesis__system-card--healthy" data-tekton-card="system" data-tekton-card-id="hermes" data-tekton-status="healthy" data-tekton-testable="true">
+                            <div class="synthesis__system-header" data-tekton-header="system">
+                                <div class="synthesis__system-name" data-tekton-label="system-name">Hermes API</div>
+                                <div class="synthesis__system-status synthesis__system-status--healthy" data-tekton-indicator="status" data-tekton-status-value="healthy">Healthy</div>
                             </div>
-                            <div class="synthesis__system-details">
-                                <span class="synthesis__system-detail">Response: 45ms</span>
-                                <span class="synthesis__system-detail">Last Check: 2 min ago</span>
+                            <div class="synthesis__system-details" data-tekton-metrics="system">
+                                <span class="synthesis__system-detail" data-tekton-metric="response-time">Response: 45ms</span>
+                                <span class="synthesis__system-detail" data-tekton-metric="last-check">Last Check: 2 min ago</span>
                             </div>
                             <div class="synthesis__system-actions">
                                 <button class="synthesis__button synthesis__button--view" onclick="testSystemIntegration('hermes')" data-tekton-action="test-integration">Test</button>
                             </div>
                         </div>
                         
-                        <div class="synthesis__system-card synthesis__system-card--warning">
-                            <div class="synthesis__system-header">
-                                <div class="synthesis__system-name">External Database</div>
-                                <div class="synthesis__system-status synthesis__system-status--warning">Warning</div>
+                        <div class="synthesis__system-card synthesis__system-card--warning" data-tekton-card="system" data-tekton-card-id="database" data-tekton-status="warning" data-tekton-testable="true">
+                            <div class="synthesis__system-header" data-tekton-header="system">
+                                <div class="synthesis__system-name" data-tekton-label="system-name">External Database</div>
+                                <div class="synthesis__system-status synthesis__system-status--warning" data-tekton-indicator="status" data-tekton-status-value="warning">Warning</div>
                             </div>
-                            <div class="synthesis__system-details">
-                                <span class="synthesis__system-detail">Response: 892ms</span>
-                                <span class="synthesis__system-detail">Last Check: 5 min ago</span>
+                            <div class="synthesis__system-details" data-tekton-metrics="system">
+                                <span class="synthesis__system-detail" data-tekton-metric="response-time">Response: 892ms</span>
+                                <span class="synthesis__system-detail" data-tekton-metric="last-check">Last Check: 5 min ago</span>
                             </div>
                             <div class="synthesis__system-actions">
                                 <button class="synthesis__button synthesis__button--view" onclick="testSystemIntegration('database')" data-tekton-action="test-integration">Test</button>
@@ -251,20 +259,21 @@
             </div>
         </div>
         
+        <!-- @landmark Review Panel -->
         <!-- Review Panel -->
         <div id="review-panel" class="synthesis__panel" data-tekton-panel="review" data-tekton-panel-for="Review" data-tekton-panel-component="synthesis" data-tekton-panel-active="false">
             <div class="synthesis__review" data-tekton-functionality="planning-handoff">
                 <h3 class="synthesis__section-title">Planning Team Handoff</h3>
                 <p class="synthesis__text">Review validation results and hand off validated workflows to the Planning Review team.</p>
                 
-                <div class="synthesis__review-controls">
-                    <div class="synthesis__control-group">
+                <div class="synthesis__review-controls" data-tekton-form="review-controls" data-tekton-form-type="decision">
+                    <div class="synthesis__control-group" data-tekton-field="sprint-review">
                         <label class="synthesis__control-label">Sprint to Review:</label>
                         <select id="review-sprint-select" class="synthesis__select" data-tekton-select="sprint">
                             <option value="">Select validated sprint...</option>
                         </select>
                     </div>
-                    <div class="synthesis__control-group">
+                    <div class="synthesis__control-group" data-tekton-field="review-status">
                         <label class="synthesis__control-label">Review Status:</label>
                         <div class="synthesis__radio-group">
                             <input type="radio" id="approve-sprint" name="review-status" value="approved" data-tekton-input="review-status">
@@ -277,10 +286,10 @@
                     </div>
                 </div>
                 
-                <div class="synthesis__review-summary">
-                    <div class="synthesis__summary-section">
+                <div class="synthesis__review-summary" data-tekton-summary="validation" data-tekton-summary-type="review">
+                    <div class="synthesis__summary-section" data-tekton-section="validation-summary">
                         <h4 class="synthesis__summary-title">Validation Summary</h4>
-                        <div class="synthesis__summary-content" id="validation-summary">
+                        <div class="synthesis__summary-content" id="validation-summary" data-tekton-content="summary" data-tekton-content-type="dynamic">
                             <!-- Validation summary will be populated here -->
                             <div class="synthesis__empty-state">
                                 <div class="synthesis__empty-icon">📋</div>
@@ -289,17 +298,17 @@
                         </div>
                     </div>
                     
-                    <div class="synthesis__summary-section">
+                    <div class="synthesis__summary-section" data-tekton-section="validation-summary">
                         <h4 class="synthesis__summary-title">Requirements Coverage</h4>
-                        <div class="synthesis__coverage-progress">
-                            <div class="synthesis__progress-bar">
-                                <div class="synthesis__progress-fill" style="width: 0%"></div>
+                        <div class="synthesis__coverage-progress" data-tekton-progress="coverage" data-tekton-progress-type="percentage">
+                            <div class="synthesis__progress-bar" data-tekton-progress-bar="true">
+                                <div class="synthesis__progress-fill" style="width: 0%" data-tekton-progress-fill="true" data-tekton-progress-value="0"></div>
                             </div>
-                            <div class="synthesis__progress-text">0% Coverage</div>
+                            <div class="synthesis__progress-text" data-tekton-progress-label="true">0% Coverage</div>
                         </div>
                     </div>
                     
-                    <div class="synthesis__summary-section">
+                    <div class="synthesis__summary-section" data-tekton-section="validation-summary">
                         <h4 class="synthesis__summary-title">Review Notes</h4>
                         <textarea id="review-notes" class="synthesis__textarea" placeholder="Add review notes and recommendations..." data-tekton-input="review-notes"></textarea>
                     </div>
@@ -316,20 +325,21 @@
             </div>
         </div>
         
+        <!-- @landmark Workflow Chat Panel -->
         <!-- Workflow Chat Panel -->
         <div id="workflowchat-panel" class="synthesis__panel" data-tekton-chat="panel" style="position: relative; overflow: hidden;" data-tekton-panel="workflowchat" data-tekton-panel-for="Workflow Chat" data-tekton-panel-component="synthesis" data-tekton-panel-active="false">
-            <div id="workflowchat-messages" class="synthesis__chat-messages" data-tekton-chat="messages">
+            <div id="workflowchat-messages" class="synthesis__chat-messages" data-tekton-chat="messages" data-tekton-chat-type="workflow" data-tekton-scrollable="true">
                 <!-- Welcome message -->
-                <div class="synthesis__message synthesis__message--system">
-                    <div class="synthesis__message-content">
-                        <div class="synthesis__message-text">
+                <div class="synthesis__message synthesis__message--system" data-tekton-message="system" data-tekton-message-type="welcome">
+                    <div class="synthesis__message-content" data-tekton-content="message">
+                        <div class="synthesis__message-text" data-tekton-text="message">
                             <h3 class="synthesis__message-title">Synthesis Validation Assistant</h3>
                             <p>This chat provides assistance with workflow validation and testing. Ask questions about:</p>
-                            <ul>
-                                <li>Validation testing strategies and dry-run execution</li>
-                                <li>Requirements coverage analysis and gap identification</li>
-                                <li>Integration testing with external systems</li>
-                                <li>Best practices for workflow validation and quality assurance</li>
+                            <ul data-tekton-list="help-topics">
+                                <li data-tekton-list-item="topic">Validation testing strategies and dry-run execution</li>
+                                <li data-tekton-list-item="topic">Requirements coverage analysis and gap identification</li>
+                                <li data-tekton-list-item="topic">Integration testing with external systems</li>
+                                <li data-tekton-list-item="topic">Best practices for workflow validation and quality assurance</li>
                             </ul>
                         </div>
                     </div>
@@ -337,13 +347,14 @@
             </div>
         </div>
         
+        <!-- @landmark Team Chat Panel -->
         <!-- Team Chat Tab -->
         <div id="teamchat-panel" class="synthesis__panel" data-tekton-chat="panel" style="position: relative; overflow: hidden;" data-tekton-panel="teamchat" data-tekton-panel-for="Team Chat" data-tekton-panel-component="synthesis" data-tekton-panel-active="false">
-            <div id="teamchat-messages" class="synthesis__chat-messages" data-tekton-chat="messages">
+            <div id="teamchat-messages" class="synthesis__chat-messages" data-tekton-chat="messages" data-tekton-chat-type="team" data-tekton-scrollable="true">
                 <!-- Welcome message -->
-                <div class="synthesis__message synthesis__message--system">
-                    <div class="synthesis__message-content">
-                        <div class="synthesis__message-text">
+                <div class="synthesis__message synthesis__message--system" data-tekton-message="system" data-tekton-message-type="welcome">
+                    <div class="synthesis__message-content" data-tekton-content="message">
+                        <div class="synthesis__message-text" data-tekton-text="message">
                             <h3 class="synthesis__message-title">Tekton Team Chat</h3>
                             <p>This chat is shared across all Tekton components. Use this for team communication and coordination.</p>
                         </div>
@@ -353,6 +364,7 @@
         </div>
     </div>
     
+    <!-- @landmark Footer Section -->
     <!-- Footer with Chat Input -->
     <div class="synthesis__footer" data-tekton-zone="footer">
         <div class="synthesis__chat-input-container" data-tekton-chat="input">
@@ -1472,9 +1484,11 @@ window.synthesis_sendChat = function() {
         // Create user message element
         const messageDiv = document.createElement('div');
         messageDiv.className = 'synthesis__message synthesis__message--user';
+        messageDiv.setAttribute('data-tekton-message', 'user');
+        messageDiv.setAttribute('data-tekton-message-type', 'text');
         messageDiv.innerHTML = `
-            <div class="synthesis__message-content">
-                <div class="synthesis__message-text">${message}</div>
+            <div class="synthesis__message-content" data-tekton-content="message">
+                <div class="synthesis__message-text" data-tekton-text="message">${message}</div>
             </div>
         `;
         
@@ -1500,9 +1514,12 @@ window.synthesis_sendChat = function() {
                         // Create AI response message element
                         const responseDiv = document.createElement('div');
                         responseDiv.className = 'synthesis__message synthesis__message--ai';
+                        responseDiv.setAttribute('data-tekton-message', 'ai');
+                        responseDiv.setAttribute('data-tekton-message-from', 'synthesis');
+                        responseDiv.setAttribute('data-tekton-message-type', 'response');
                         responseDiv.innerHTML = `
-                            <div class="synthesis__message-content">
-                                <div class="synthesis__message-text">Synthesis: ${response.content}</div>
+                            <div class="synthesis__message-content" data-tekton-content="message">
+                                <div class="synthesis__message-text" data-tekton-text="message">Synthesis: ${response.content}</div>
                             </div>
                         `;
                         
@@ -1517,9 +1534,11 @@ window.synthesis_sendChat = function() {
                         // Show error message in chat
                         const errorDiv = document.createElement('div');
                         errorDiv.className = 'synthesis__message synthesis__message--system';
+                        errorDiv.setAttribute('data-tekton-message', 'system');
+                        errorDiv.setAttribute('data-tekton-message-type', 'error');
                         errorDiv.innerHTML = `
-                            <div class="synthesis__message-content">
-                                <div class="synthesis__message-text">Error: Unable to send message. Please try again.</div>
+                            <div class="synthesis__message-content" data-tekton-content="message">
+                                <div class="synthesis__message-text" data-tekton-text="message">Error: Unable to send message. Please try again.</div>
                             </div>
                         `;
                         
@@ -1544,8 +1563,8 @@ window.synthesis_sendChat = function() {
                                 const responseDiv = document.createElement('div');
                                 responseDiv.className = 'synthesis__message synthesis__message--ai';
                                 responseDiv.innerHTML = `
-                                    <div class="synthesis__message-content">
-                                        <div class="synthesis__message-text"><strong>${sender}:</strong> ${resp.content}</div>
+                                    <div class="synthesis__message-content" data-tekton-content="message">
+                                        <div class="synthesis__message-text" data-tekton-text="message"><strong>${sender}:</strong> ${resp.content}</div>
                                     </div>
                                 `;
                                 
@@ -1562,9 +1581,11 @@ window.synthesis_sendChat = function() {
                         // Show error message in chat
                         const errorDiv = document.createElement('div');
                         errorDiv.className = 'synthesis__message synthesis__message--system';
+                        errorDiv.setAttribute('data-tekton-message', 'system');
+                        errorDiv.setAttribute('data-tekton-message-type', 'error');
                         errorDiv.innerHTML = `
-                            <div class="synthesis__message-content">
-                                <div class="synthesis__message-text">Error: Unable to send team message. Please try again.</div>
+                            <div class="synthesis__message-content" data-tekton-content="message">
+                                <div class="synthesis__message-text" data-tekton-text="message">Error: Unable to send team message. Please try again.</div>
                             </div>
                         `;
                         
@@ -1775,30 +1796,30 @@ window.synthesisComponent = {
         card.setAttribute('data-sprint-id', sprint.id);
         
         card.innerHTML = `
-            <div class="synthesis__card-header">
-                <span class="synthesis__sprint-name">${sprint.name}</span>
-                <span class="synthesis__sprint-status synthesis__sprint-status--ready">${sprint.status}</span>
+            <div class="synthesis__card-header" data-tekton-header="sprint-card">
+                <span class="synthesis__sprint-name" data-tekton-text="sprint-name">${sprint.name}</span>
+                <span class="synthesis__sprint-status synthesis__sprint-status--ready" data-tekton-status="sprint" data-tekton-status-value="ready">${sprint.status}</span>
             </div>
-            <div class="synthesis__card-body">
-                <p class="synthesis__sprint-description">${sprint.description}</p>
-                <div class="synthesis__sprint-meta">
-                    <span class="synthesis__meta-item">
-                        <span class="synthesis__meta-label">Tasks:</span>
-                        <span class="synthesis__meta-value">${sprint.tasks}</span>
+            <div class="synthesis__card-body" data-tekton-body="sprint-card">
+                <p class="synthesis__sprint-description" data-tekton-text="sprint-description">${sprint.description}</p>
+                <div class="synthesis__sprint-meta" data-tekton-meta="sprint-stats">
+                    <span class="synthesis__meta-item" data-tekton-meta-item="tasks">
+                        <span class="synthesis__meta-label" data-tekton-label="tasks">Tasks:</span>
+                        <span class="synthesis__meta-value" data-tekton-value="task-count">${sprint.tasks}</span>
                     </span>
-                    <span class="synthesis__meta-item">
-                        <span class="synthesis__meta-label">Total Hours:</span>
-                        <span class="synthesis__meta-value">${sprint.hours}</span>
+                    <span class="synthesis__meta-item" data-tekton-meta-item="hours">
+                        <span class="synthesis__meta-label" data-tekton-label="hours">Total Hours:</span>
+                        <span class="synthesis__meta-value" data-tekton-value="hour-count">${sprint.hours}</span>
                     </span>
                 </div>
-                <div class="synthesis__sprint-meta">
-                    <span class="synthesis__meta-item">
-                        <span class="synthesis__meta-label">Components:</span>
-                        <span class="synthesis__meta-value">${sprint.components.join(', ')}</span>
+                <div class="synthesis__sprint-meta" data-tekton-meta="sprint-components">
+                    <span class="synthesis__meta-item" data-tekton-meta-item="components">
+                        <span class="synthesis__meta-label" data-tekton-label="components">Components:</span>
+                        <span class="synthesis__meta-value" data-tekton-value="component-list">${sprint.components.join(', ')}</span>
                     </span>
                 </div>
             </div>
-            <div class="synthesis__card-actions">
+            <div class="synthesis__card-actions" data-tekton-actions="sprint-card">
                 <button class="synthesis__button synthesis__button--view"
                         onclick="synthesisComponent.viewSprint('${sprint.id}')"
                         data-tekton-action="view-sprint" data-tekton-trigger="click">View</button>
