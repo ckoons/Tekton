@@ -27,7 +27,8 @@ class MinimalLoader {
       'noesis': '/components/noesis/noesis-component.html',
       'terma': '/components/terma/terma-component.html',
       'tekton-dashboard': '/components/tekton-dashboard/tekton-dashboard.html',
-      'prometheus': '/components/prometheus/prometheus-component.html'
+      'prometheus': '/components/prometheus/prometheus-component.html',
+      'synthesis': '/components/synthesis/synthesis-component.html'
     };
     
     // Keep track of the current component to prevent reloading

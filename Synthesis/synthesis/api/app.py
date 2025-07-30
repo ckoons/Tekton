@@ -142,6 +142,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Note: Static files are served by Hephaestus, not by individual component APIs
+# The UI files reside in /Hephaestus/ui/components/synthesis/
+
 # Create standard routers
 routers = create_standard_routers(COMPONENT_NAME)
 

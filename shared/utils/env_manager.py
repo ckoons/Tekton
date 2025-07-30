@@ -434,7 +434,7 @@ TEKTON_HERMES_DISCOVERY=true
 
 # User Preferences (can be overridden by Profile settings)
 # Default model for LLM operations
-TEKTON_DEFAULT_MODEL=claude-3-sonnet
+TEKTON_DEFAULT_MODEL=claude-4-sonnet
 # Default provider for LLM operations  
 TEKTON_DEFAULT_PROVIDER=anthropic
 # Enable notifications (true/false)

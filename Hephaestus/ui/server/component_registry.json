@@ -374,12 +374,21 @@
       "name": "Synthesis",
       "description": "Integration and automation",
       "icon": "🔗",
-      "defaultMode": "terminal",
+      "defaultMode": "html",
       "capabilities": [
         "system_integration",
         "automation",
-        "external_tools"
-      ]
+        "external_tools",
+        "validation_testing",
+        "workflow_validation",
+        "planning_team_workflow"
+      ],
+      "componentPath": "components/synthesis/synthesis-component.html",
+      "scripts": [
+        "scripts/synthesis/synthesis-component.js"
+      ],
+      "styles": [],
+      "usesShadowDom": false
     },
     {
       "id": "metis",

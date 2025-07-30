@@ -6,34 +6,40 @@
             <img src="/images/hexagon.jpg" alt="Tekton" class="synthesis__icon">
             <h2 class="synthesis__title">
                 <span class="synthesis__title-main">Synthesis</span>
-                <span class="synthesis__title-sub">Execution Engine</span>
+                <span class="synthesis__title-sub">Validation Engine</span>
             </h2>
         </div>
     </div>
     
     <!-- Synthesis Menu Bar with Tab Navigation -->
-    <div class="synthesis__menu-bar" data-tekton-zone="menu" data-tekton-zone="menu" data-tekton-nav="component-menu">
+    <div class="synthesis__menu-bar" data-tekton-zone="menu" data-tekton-nav="component-menu">
         <div class="synthesis__tabs" data-tekton-zone="menu">
-            <div class="synthesis__tab synthesis__tab--active" data-tab="executions" onclick="synthesis_switchTab('executions'); return false;" data-tekton-menu-item="Executions" data-tekton-menu-component="synthesis" data-tekton-menu-active="true" data-tekton-menu-panel="executions-panel" data-tekton-nav-target="executions-panel">
-                <span class="synthesis__tab-label">Executions</span>
+            <div class="synthesis__tab synthesis__tab--active" data-tab="dashboard" onclick="synthesis_switchTab('dashboard'); return false;" data-tekton-menu-item="Dashboard" data-tekton-menu-component="synthesis" data-tekton-menu-active="true" data-tekton-menu-panel="dashboard-panel" data-tekton-nav-target="dashboard-panel">
+                <span class="synthesis__tab-label">Dashboard</span>
             </div>
-            <div class="synthesis__tab" data-tab="workflows" onclick="synthesis_switchTab('workflows'); return false;" data-tekton-menu-item="Workflows" data-tekton-menu-component="synthesis" data-tekton-menu-active="false" data-tekton-menu-panel="workflows-panel" data-tekton-nav-target="workflows-panel">
-                <span class="synthesis__tab-label">Workflows</span>
+            <div class="synthesis__tab" data-tab="validation" onclick="synthesis_switchTab('validation'); return false;" data-tekton-menu-item="Validation" data-tekton-menu-component="synthesis" data-tekton-menu-active="false" data-tekton-menu-panel="validation-panel" data-tekton-nav-target="validation-panel">
+                <span class="synthesis__tab-label">Validation</span>
             </div>
-            <div class="synthesis__tab" data-tab="monitoring" onclick="synthesis_switchTab('monitoring'); return false;" data-tekton-menu-item="Monitoring" data-tekton-menu-component="synthesis" data-tekton-menu-active="false" data-tekton-menu-panel="monitoring-panel" data-tekton-nav-target="monitoring-panel">
-                <span class="synthesis__tab-label">Monitoring</span>
+            <div class="synthesis__tab" data-tab="results" onclick="synthesis_switchTab('results'); return false;" data-tekton-menu-item="Results" data-tekton-menu-component="synthesis" data-tekton-menu-active="false" data-tekton-menu-panel="results-panel" data-tekton-nav-target="results-panel">
+                <span class="synthesis__tab-label">Results</span>
             </div>
-            <div class="synthesis__tab" data-tab="history" onclick="synthesis_switchTab('history'); return false;" data-tekton-menu-item="History" data-tekton-menu-component="synthesis" data-tekton-menu-active="false" data-tekton-menu-panel="history-panel" data-tekton-nav-target="history-panel">
-                <span class="synthesis__tab-label">History</span>
+            <div class="synthesis__tab" data-tab="integration" onclick="synthesis_switchTab('integration'); return false;" data-tekton-menu-item="Integration" data-tekton-menu-component="synthesis" data-tekton-menu-active="false" data-tekton-menu-panel="integration-panel" data-tekton-nav-target="integration-panel">
+                <span class="synthesis__tab-label">Integration</span>
             </div>
-            <div class="synthesis__tab" data-tekton-chat="tab" data-tab="execchat" onclick="synthesis_switchTab('execchat'); return false;" data-tekton-menu-item="Execution Chat" data-tekton-menu-component="synthesis" data-tekton-menu-active="false" data-tekton-menu-panel="execchat-panel" data-tekton-nav-target="execchat-panel">
-                <span class="synthesis__tab-label">Execution Chat</span>
+            <div class="synthesis__tab" data-tab="review" onclick="synthesis_switchTab('review'); return false;" data-tekton-menu-item="Review" data-tekton-menu-component="synthesis" data-tekton-menu-active="false" data-tekton-menu-panel="review-panel" data-tekton-nav-target="review-panel">
+                <span class="synthesis__tab-label">Review</span>
+            </div>
+            <div class="synthesis__tab" data-tekton-chat="tab" data-tab="workflowchat" onclick="synthesis_switchTab('workflowchat'); return false;" data-tekton-menu-item="Workflow Chat" data-tekton-menu-component="synthesis" data-tekton-menu-active="false" data-tekton-menu-panel="workflowchat-panel" data-tekton-nav-target="workflowchat-panel">
+                <span class="synthesis__tab-label">Workflow Chat</span>
             </div>
             <div class="synthesis__tab" data-tekton-chat="tab" data-tab="teamchat" onclick="synthesis_switchTab('teamchat'); return false;" data-tekton-menu-item="Team Chat" data-tekton-menu-component="synthesis" data-tekton-menu-active="false" data-tekton-menu-panel="teamchat-panel" data-tekton-nav-target="teamchat-panel">
                 <span class="synthesis__tab-label">Team Chat</span>
             </div>
         </div>
         <div class="synthesis__actions">
+            <button id="validate-sprint-btn" class="synthesis__action-button synthesis__button--validate" style="display: none;" onclick="validateCurrentSprint(); return false;" data-tekton-action="validate-sprint" data-tekton-action-type="primary">
+                <span class="synthesis__button-label">Validate Sprint</span>
+            </button>
             <button id="clear-chat-btn" class="synthesis__action-button" style="display: none;" onclick="synthesis_clearChat(); return false;" data-tekton-action="clear-chat" data-tekton-action-type="secondary">
                 <span class="synthesis__button-label">Clear</span>
             </button>
@@ -42,175 +48,126 @@
     
     <!-- Synthesis Content Area -->
     <div class="synthesis__content" data-tekton-zone="content" data-tekton-scrollable="true">
-        <!-- Executions Tab (Default Active Tab) -->
-        <div id="executions-panel" class="synthesis__panel synthesis__panel--active" data-tekton-panel="executions" data-tekton-panel-for="Executions" data-tekton-panel-component="synthesis" data-tekton-panel-active="true">
-            <div class="synthesis__executions">
-                <div class="synthesis__control-bar">
-                    <div class="synthesis__search-container">
-                        <input type="text" id="execution-search" class="synthesis__search-input" placeholder="Search executions..." data-tekton-input="search">
-                        <button id="execution-search-btn" class="synthesis__search-button" data-tekton-action="search-executions" data-tekton-action-type="primary">Search</button>
-                    </div>
-                    <div class="synthesis__actions">
-                        <button id="new-execution-btn" class="synthesis__action-button" data-tekton-action="new-execution" data-tekton-action-type="primary">
-                            <span class="synthesis__button-icon">+</span>
-                            <span class="synthesis__button-label">New Execution</span>
-                        </button>
-                        <button id="refresh-executions-btn" class="synthesis__action-button" data-tekton-action="refresh-executions" data-tekton-action-type="secondary">
-                            <span class="synthesis__button-label">Refresh</span>
-                        </button>
-                    </div>
+        <!-- Dashboard Panel (Default Active Panel) -->
+        <div id="dashboard-panel" class="synthesis__panel synthesis__panel--active" data-tekton-panel="dashboard" data-tekton-panel-for="Dashboard" data-tekton-panel-component="synthesis" data-tekton-panel-active="true">
+            <div class="synthesis__dashboard" data-tekton-functionality="sprint-cards">
+                <h3 class="synthesis__section-title">Ready for Validation</h3>
+                <p class="synthesis__text">Sprints with status "Ready-3:Synthesis" requiring validation testing and review.</p>
+                
+                <div class="synthesis__sprint-grid" id="sprint-grid">
+                    <!-- Sprint cards will be populated here by scanning DAILY_LOG.md files -->
+                    <!-- Currently no sprints in Ready-3:Synthesis status -->
                 </div>
                 
-                <div class="synthesis__executions-list-container">
-                    <div id="executions-list-loading" class="synthesis__loading-indicator">
-                        <div class="synthesis__spinner"></div>
-                        <div class="synthesis__loading-text">Loading executions...</div>
-                    </div>
-                    <div id="executions-list" class="synthesis__executions-list" style="display: none;">
-                        <!-- Sample executions for UI testing -->
-                        <div class="synthesis__execution-item synthesis__execution-item--running">
-                            <div class="synthesis__execution-header">
-                                <div class="synthesis__execution-title">Document Processing Pipeline</div>
-                                <div class="synthesis__execution-meta">
-                                    <span class="synthesis__execution-id">exec-23a5f9d7</span>
-                                    <span class="synthesis__execution-status synthesis__execution-status--running">Running</span>
-                                </div>
-                            </div>
-                            <div class="synthesis__execution-progress">
-                                <div class="synthesis__progress-bar">
-                                    <div class="synthesis__progress-fill" style="width: 45%"></div>
-                                </div>
-                                <div class="synthesis__progress-text">45% (Step 5 of 11)</div>
-                            </div>
-                            <div class="synthesis__execution-actions">
-                                <button class="synthesis__button synthesis__button--small" data-tekton-action="view-details" data-tekton-action-type="secondary">View Details</button>
-                                <button class="synthesis__button synthesis__button--small" data-tekton-action="cancel-execution" data-tekton-action-type="secondary">Cancel</button>
-                            </div>
-                        </div>
-                        
-                        <div class="synthesis__execution-item synthesis__execution-item--completed">
-                            <div class="synthesis__execution-header">
-                                <div class="synthesis__execution-title">System Health Check</div>
-                                <div class="synthesis__execution-meta">
-                                    <span class="synthesis__execution-id">exec-18e7c3b2</span>
-                                    <span class="synthesis__execution-status synthesis__execution-status--completed">Completed</span>
-                                </div>
-                            </div>
-                            <div class="synthesis__execution-progress">
-                                <div class="synthesis__progress-bar">
-                                    <div class="synthesis__progress-fill" style="width: 100%"></div>
-                                </div>
-                                <div class="synthesis__progress-text">Completed (8/8 steps)</div>
-                            </div>
-                            <div class="synthesis__execution-actions">
-                                <button class="synthesis__button synthesis__button--small" data-tekton-action="view-details" data-tekton-action-type="secondary">View Details</button>
-                                <button class="synthesis__button synthesis__button--small" data-tekton-action="rerun-execution" data-tekton-action-type="primary">Rerun</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="synthesis__execution-details-container" id="execution-details-panel">
-                    <div class="synthesis__empty-state">
-                        <div class="synthesis__empty-state-content">
-                            <h3 class="synthesis__empty-state-title">Select an execution to view details</h3>
-                            <p class="synthesis__empty-state-text">Choose an execution from the list above or create a new execution to get started.</p>
-                        </div>
-                    </div>
+                <div class="synthesis__empty-state" id="no-sprints">
+                    <div class="synthesis__empty-icon">🔬</div>
+                    <h4 class="synthesis__empty-title">No Sprints Ready for Validation</h4>
+                    <p class="synthesis__empty-text">No sprints with status "Ready-3:Synthesis" found. Sprints will appear here when Harmonia completes workflow orchestration.</p>
                 </div>
             </div>
         </div>
         
-        <!-- Workflows Tab -->
-        <div id="workflows-panel" class="synthesis__panel" data-tekton-panel="workflows" data-tekton-panel-for="Workflows" data-tekton-panel-component="synthesis" data-tekton-panel-active="false">
-            <div class="synthesis__workflows">
-                <div class="synthesis__control-bar">
-                    <div class="synthesis__filter-container">
-                        <div class="synthesis__input-group">
-                            <span class="synthesis__input-label">Category</span>
-                            <select id="workflow-category-filter" class="synthesis__select" data-tekton-select="filter">
-                                <option value="">All Categories</option>
-                                <option value="data-processing">Data Processing</option>
-                                <option value="system">System</option>
-                                <option value="integration">Integration</option>
-                                <option value="analysis">Analysis</option>
-                                <option value="deployment">Deployment</option>
-                            </select>
-                        </div>
-                        <div class="synthesis__input-group">
-                            <span class="synthesis__input-label">Show</span>
-                            <select id="workflow-status-filter" class="synthesis__select" data-tekton-select="filter">
-                                <option value="">All Workflows</option>
-                                <option value="active">Active Only</option>
-                                <option value="archived">Archived Only</option>
-                            </select>
-                        </div>
+        <!-- Validation Panel -->
+        <div id="validation-panel" class="synthesis__panel" data-tekton-panel="validation" data-tekton-panel-for="Validation" data-tekton-panel-component="synthesis" data-tekton-panel-active="false">
+            <div class="synthesis__validation" data-tekton-functionality="dry-run-testing">
+                <h3 class="synthesis__section-title">Workflow Validation</h3>
+                <p class="synthesis__text">Dry-run testing interface with step-by-step execution and checkpoint system.</p>
+                
+                <div class="synthesis__validation-controls">
+                    <div class="synthesis__control-group">
+                        <label class="synthesis__control-label">Selected Sprint:</label>
+                        <select id="validation-sprint-select" class="synthesis__select" data-tekton-select="sprint">
+                            <option value="">Select sprint to validate...</option>
+                        </select>
                     </div>
-                    <div class="synthesis__actions">
-                        <button id="new-workflow-btn" class="synthesis__action-button" data-tekton-action="new-workflow" data-tekton-action-type="primary">
-                            <span class="synthesis__button-icon">+</span>
-                            <span class="synthesis__button-label">New Workflow</span>
-                        </button>
-                        <button id="import-workflow-btn" class="synthesis__action-button" data-tekton-action="import-workflow" data-tekton-action-type="primary">
-                            <span class="synthesis__button-icon">↓</span>
-                            <span class="synthesis__button-label">Import</span>
-                        </button>
+                    <div class="synthesis__control-group">
+                        <label class="synthesis__control-label">Validation Mode:</label>
+                        <div class="synthesis__radio-group">
+                            <input type="radio" id="dry-run" name="validation-mode" value="dry-run" checked data-tekton-input="mode">
+                            <label for="dry-run" class="synthesis__radio-label">Dry Run (Safe)</label>
+                            <input type="radio" id="live-run" name="validation-mode" value="live-run" data-tekton-input="mode">
+                            <label for="live-run" class="synthesis__radio-label">Live Execution</label>
+                        </div>
                     </div>
                 </div>
                 
-                <div class="synthesis__workflows-list-container">
-                    <div id="workflows-list-loading" class="synthesis__loading-indicator">
-                        <div class="synthesis__spinner"></div>
-                        <div class="synthesis__loading-text">Loading workflows...</div>
+                <div class="synthesis__validation-progress" id="validation-progress" style="display: none;">
+                    <div class="synthesis__progress-header">
+                        <h4 class="synthesis__progress-title">Validation Progress</h4>
+                        <button class="synthesis__button synthesis__button--secondary" onclick="rollbackValidation()" data-tekton-action="rollback">Rollback</button>
                     </div>
-                    <div id="workflows-list" class="synthesis__workflows-list" style="display: none;">
-                        <table class="synthesis__table">
+                    <div class="synthesis__steps-container">
+                        <!-- Validation steps will be populated here -->
+                    </div>
+                </div>
+                
+                <div class="synthesis__validation-actions">
+                    <button id="start-validation-btn" class="synthesis__button synthesis__button--validate" onclick="startValidation()" data-tekton-action="start-validation" data-tekton-action-type="primary">
+                        <span class="synthesis__button-label">Start Validation</span>
+                    </button>
+                    <button id="stop-validation-btn" class="synthesis__button synthesis__button--secondary" onclick="stopValidation()" data-tekton-action="stop-validation" style="display: none;">
+                        <span class="synthesis__button-label">Stop Validation</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Results Panel -->
+        <div id="results-panel" class="synthesis__panel" data-tekton-panel="results" data-tekton-panel-for="Results" data-tekton-panel-component="synthesis" data-tekton-panel-active="false">
+            <div class="synthesis__results" data-tekton-functionality="validation-reports">
+                <h3 class="synthesis__section-title">Validation Results</h3>
+                <p class="synthesis__text">Detailed validation reports with pass/fail status and warnings.</p>
+                
+                <div class="synthesis__results-filter">
+                    <div class="synthesis__filter-group">
+                        <label class="synthesis__filter-label">Sprint:</label>
+                        <select id="results-sprint-filter" class="synthesis__select" data-tekton-select="filter">
+                            <option value="all">All Sprints</option>
+                        </select>
+                    </div>
+                    <div class="synthesis__filter-group">
+                        <label class="synthesis__filter-label">Status:</label>
+                        <select id="results-status-filter" class="synthesis__select" data-tekton-select="filter">
+                            <option value="all">All Results</option>
+                            <option value="passed">Passed</option>
+                            <option value="failed">Failed</option>
+                            <option value="warning">With Warnings</option>
+                        </select>
+                    </div>
+                    <div class="synthesis__filter-group">
+                        <label class="synthesis__filter-label">Date:</label>
+                        <select id="results-date-filter" class="synthesis__select" data-tekton-select="filter">
+                            <option value="today">Today</option>
+                            <option value="week">Last Week</option>
+                            <option value="month">Last Month</option>
+                            <option value="all">All Time</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="synthesis__results-container">
+                    <div class="synthesis__results-table-container">
+                        <table class="synthesis__table synthesis__results-table">
                             <thead>
                                 <tr>
-                                    <th>Name</th>
-                                    <th>Category</th>
+                                    <th>Sprint</th>
+                                    <th>Validation Date</th>
+                                    <th>Duration</th>
                                     <th>Steps</th>
-                                    <th>Last Execution</th>
                                     <th>Status</th>
+                                    <th>Coverage</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                <!-- Sample workflows for UI testing -->
-                                <tr class="synthesis__workflow-row">
-                                    <td>Document Processing Pipeline</td>
-                                    <td>Data Processing</td>
-                                    <td>11</td>
-                                    <td>2025-05-14 09:45</td>
-                                    <td><span class="synthesis__status synthesis__status--active">Active</span></td>
-                                    <td>
-                                        <button class="synthesis__table-action-btn" data-tekton-action="edit-workflow" data-tekton-action-type="secondary">Edit</button>
-                                        <button class="synthesis__table-action-btn" data-tekton-action="run-workflow" data-tekton-action-type="primary">Run</button>
-                                        <button class="synthesis__table-action-btn" data-tekton-action="export-workflow" data-tekton-action-type="secondary">Export</button>
-                                    </td>
-                                </tr>
-                                <tr class="synthesis__workflow-row">
-                                    <td>System Health Check</td>
-                                    <td>System</td>
-                                    <td>8</td>
-                                    <td>2025-05-14 08:30</td>
-                                    <td><span class="synthesis__status synthesis__status--active">Active</span></td>
-                                    <td>
-                                        <button class="synthesis__table-action-btn" data-tekton-action="edit-workflow" data-tekton-action-type="secondary">Edit</button>
-                                        <button class="synthesis__table-action-btn" data-tekton-action="run-workflow" data-tekton-action-type="primary">Run</button>
-                                        <button class="synthesis__table-action-btn" data-tekton-action="export-workflow" data-tekton-action-type="secondary">Export</button>
-                                    </td>
-                                </tr>
-                                <tr class="synthesis__workflow-row">
-                                    <td>Data Backup Routine</td>
-                                    <td>System</td>
-                                    <td>5</td>
-                                    <td>2025-05-13 23:00</td>
-                                    <td><span class="synthesis__status synthesis__status--active">Active</span></td>
-                                    <td>
-                                        <button class="synthesis__table-action-btn" data-tekton-action="edit-workflow" data-tekton-action-type="secondary">Edit</button>
-                                        <button class="synthesis__table-action-btn" data-tekton-action="run-workflow" data-tekton-action-type="primary">Run</button>
-                                        <button class="synthesis__table-action-btn" data-tekton-action="export-workflow" data-tekton-action-type="secondary">Export</button>
+                            <tbody id="results-table-body">
+                                <!-- Results will be populated here -->
+                                <tr class="synthesis__results-row">
+                                    <td colspan="7" class="synthesis__no-results">
+                                        <div class="synthesis__empty-state">
+                                            <div class="synthesis__empty-icon">📊</div>
+                                            <h4 class="synthesis__empty-title">No Validation Results</h4>
+                                            <p class="synthesis__empty-text">Run validation tests to see results here.</p>
+                                        </div>
                                     </td>
                                 </tr>
                             </tbody>
@@ -220,203 +177,159 @@
             </div>
         </div>
         
-        <!-- Monitoring Tab -->
-        <div id="monitoring-panel" class="synthesis__panel" data-tekton-panel="monitoring" data-tekton-panel-for="Monitoring" data-tekton-panel-component="synthesis" data-tekton-panel-active="false">
-            <div class="synthesis__monitoring">
-                <div class="synthesis__control-bar">
-                    <div class="synthesis__filter-container">
-                        <div class="synthesis__input-group">
-                            <span class="synthesis__input-label">Time Range</span>
-                            <select id="monitoring-timerange" class="synthesis__select" data-tekton-select="option">
-                                <option value="1h">Last Hour</option>
-                                <option value="6h">Last 6 Hours</option>
-                                <option value="24h" selected>Last 24 Hours</option>
-                                <option value="7d">Last 7 Days</option>
-                                <option value="30d">Last 30 Days</option>
-                            </select>
-                        </div>
-                        <div class="synthesis__input-group">
-                            <span class="synthesis__input-label">Interval</span>
-                            <select id="monitoring-interval" class="synthesis__select" data-tekton-select="option">
-                                <option value="1m">1 Minute</option>
-                                <option value="5m" selected>5 Minutes</option>
-                                <option value="15m">15 Minutes</option>
-                                <option value="1h">1 Hour</option>
-                                <option value="6h">6 Hours</option>
-                                <option value="1d">1 Day</option>
-                            </select>
-                        </div>
+        <!-- Integration Panel -->
+        <div id="integration-panel" class="synthesis__panel" data-tekton-panel="integration" data-tekton-panel-for="Integration" data-tekton-panel-component="synthesis" data-tekton-panel-active="false">
+            <div class="synthesis__integration" data-tekton-functionality="external-systems">
+                <h3 class="synthesis__section-title">External System Integration</h3>
+                <p class="synthesis__text">Test connectivity and integration with external systems and APIs.</p>
+                
+                <div class="synthesis__integration-controls">
+                    <div class="synthesis__control-group">
+                        <label class="synthesis__control-label">System Type:</label>
+                        <select id="integration-system-type" class="synthesis__select" data-tekton-select="system-type">
+                            <option value="">Select system type...</option>
+                            <option value="api">REST API</option>
+                            <option value="database">Database</option>
+                            <option value="message-queue">Message Queue</option>
+                            <option value="file-system">File System</option>
+                            <option value="service">External Service</option>
+                        </select>
                     </div>
-                    <div class="synthesis__actions">
-                        <button id="refresh-monitoring-btn" class="synthesis__action-button" data-tekton-action="refresh-monitoring" data-tekton-action-type="secondary">
-                            <span class="synthesis__button-label">Refresh</span>
-                        </button>
+                    <div class="synthesis__control-group">
+                        <label class="synthesis__control-label">Test Mode:</label>
+                        <div class="synthesis__checkbox-group">
+                            <input type="checkbox" id="connectivity-test" checked data-tekton-input="test-type">
+                            <label for="connectivity-test" class="synthesis__checkbox-label">Connectivity Test</label>
+                            <input type="checkbox" id="data-validation" data-tekton-input="test-type">
+                            <label for="data-validation" class="synthesis__checkbox-label">Data Validation</label>
+                            <input type="checkbox" id="performance-test" data-tekton-input="test-type">
+                            <label for="performance-test" class="synthesis__checkbox-label">Performance Test</label>
+                        </div>
                     </div>
                 </div>
                 
-                <!-- Metrics Dashboard -->
-                <div class="synthesis__dashboard">
-                    <div class="synthesis__metrics-grid">
-                        <div class="synthesis__metric-card">
-                            <div class="synthesis__metric-value">12</div>
-                            <div class="synthesis__metric-label">Active Executions</div>
+                <div class="synthesis__integration-results">
+                    <div class="synthesis__systems-grid">
+                        <div class="synthesis__system-card synthesis__system-card--healthy">
+                            <div class="synthesis__system-header">
+                                <div class="synthesis__system-name">Hermes API</div>
+                                <div class="synthesis__system-status synthesis__system-status--healthy">Healthy</div>
+                            </div>
+                            <div class="synthesis__system-details">
+                                <span class="synthesis__system-detail">Response: 45ms</span>
+                                <span class="synthesis__system-detail">Last Check: 2 min ago</span>
+                            </div>
+                            <div class="synthesis__system-actions">
+                                <button class="synthesis__button synthesis__button--view" onclick="testSystemIntegration('hermes')" data-tekton-action="test-integration">Test</button>
+                            </div>
                         </div>
-                        <div class="synthesis__metric-card">
-                            <div class="synthesis__metric-value">158</div>
-                            <div class="synthesis__metric-label">Executions Today</div>
-                        </div>
-                        <div class="synthesis__metric-card">
-                            <div class="synthesis__metric-value">94.2%</div>
-                            <div class="synthesis__metric-label">Success Rate</div>
-                        </div>
-                        <div class="synthesis__metric-card">
-                            <div class="synthesis__metric-value">4.8s</div>
-                            <div class="synthesis__metric-label">Avg. Response Time</div>
+                        
+                        <div class="synthesis__system-card synthesis__system-card--warning">
+                            <div class="synthesis__system-header">
+                                <div class="synthesis__system-name">External Database</div>
+                                <div class="synthesis__system-status synthesis__system-status--warning">Warning</div>
+                            </div>
+                            <div class="synthesis__system-details">
+                                <span class="synthesis__system-detail">Response: 892ms</span>
+                                <span class="synthesis__system-detail">Last Check: 5 min ago</span>
+                            </div>
+                            <div class="synthesis__system-actions">
+                                <button class="synthesis__button synthesis__button--view" onclick="testSystemIntegration('database')" data-tekton-action="test-integration">Test</button>
+                            </div>
                         </div>
                     </div>
                     
-                    <div class="synthesis__charts-container">
-                        <div class="synthesis__chart-wrapper">
-                            <h3 class="synthesis__chart-title">Execution Volume</h3>
-                            <div id="execution-volume-chart" class="synthesis__chart"></div>
-                        </div>
-                        <div class="synthesis__chart-wrapper">
-                            <h3 class="synthesis__chart-title">Execution Duration</h3>
-                            <div id="execution-duration-chart" class="synthesis__chart"></div>
-                        </div>
-                        <div class="synthesis__chart-wrapper">
-                            <h3 class="synthesis__chart-title">Resource Usage</h3>
-                            <div id="resource-usage-chart" class="synthesis__chart"></div>
-                        </div>
-                        <div class="synthesis__chart-wrapper">
-                            <h3 class="synthesis__chart-title">Error Rate</h3>
-                            <div id="error-rate-chart" class="synthesis__chart"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- History Tab -->
-        <div id="history-panel" class="synthesis__panel" data-tekton-panel="history" data-tekton-panel-for="History" data-tekton-panel-component="synthesis" data-tekton-panel-active="false">
-            <div class="synthesis__history">
-                <div class="synthesis__control-bar">
-                    <div class="synthesis__filter-container">
-                        <div class="synthesis__input-group">
-                            <span class="synthesis__input-label">Status</span>
-                            <select id="history-status-filter" class="synthesis__select" data-tekton-select="filter">
-                                <option value="">All Statuses</option>
-                                <option value="completed">Completed</option>
-                                <option value="failed">Failed</option>
-                                <option value="cancelled">Cancelled</option>
-                            </select>
-                        </div>
-                        <div class="synthesis__input-group">
-                            <span class="synthesis__input-label">Workflow</span>
-                            <select id="history-workflow-filter" class="synthesis__select" data-tekton-select="filter">
-                                <option value="">All Workflows</option>
-                                <!-- Dynamically populated -->
-                            </select>
-                        </div>
-                        <div class="synthesis__input-group">
-                            <span class="synthesis__input-label">Date Range</span>
-                            <select id="history-date-filter" class="synthesis__select" data-tekton-select="filter">
-                                <option value="today">Today</option>
-                                <option value="yesterday">Yesterday</option>
-                                <option value="7days" selected>Last 7 Days</option>
-                                <option value="30days">Last 30 Days</option>
-                                <option value="custom">Custom Range</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="synthesis__actions">
-                        <button id="export-history-btn" class="synthesis__action-button" data-tekton-action="export-history" data-tekton-action-type="secondary">
-                            <span class="synthesis__button-label">Export</span>
+                    <div class="synthesis__integration-actions">
+                        <button id="test-all-integrations-btn" class="synthesis__button synthesis__button--validate" onclick="testAllIntegrations()" data-tekton-action="test-all-integrations">
+                            <span class="synthesis__button-label">Test All Systems</span>
+                        </button>
+                        <button id="export-integration-report-btn" class="synthesis__button synthesis__button--export" onclick="exportIntegrationReport()" data-tekton-action="export-report">
+                            <span class="synthesis__button-label">Export Report</span>
                         </button>
                     </div>
                 </div>
+            </div>
+        </div>
+        
+        <!-- Review Panel -->
+        <div id="review-panel" class="synthesis__panel" data-tekton-panel="review" data-tekton-panel-for="Review" data-tekton-panel-component="synthesis" data-tekton-panel-active="false">
+            <div class="synthesis__review" data-tekton-functionality="planning-handoff">
+                <h3 class="synthesis__section-title">Planning Team Handoff</h3>
+                <p class="synthesis__text">Review validation results and hand off validated workflows to the Planning Review team.</p>
                 
-                <div class="synthesis__history-table-container">
-                    <table class="synthesis__table synthesis__history-table">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Workflow</th>
-                                <th>Started</th>
-                                <th>Duration</th>
-                                <th>Steps</th>
-                                <th>Status</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="history-table-body">
-                            <!-- Sample history entries for UI testing -->
-                            <tr class="synthesis__history-row">
-                                <td>exec-18e7c3b2</td>
-                                <td>System Health Check</td>
-                                <td>2025-05-14 08:30</td>
-                                <td>2m 15s</td>
-                                <td>8/8</td>
-                                <td><span class="synthesis__status synthesis__status--completed">Completed</span></td>
-                                <td>
-                                    <button class="synthesis__table-action-btn" data-tekton-action="view-history-details" data-tekton-action-type="secondary">Details</button>
-                                    <button class="synthesis__table-action-btn">Rerun</button>
-                                </td>
-                            </tr>
-                            <tr class="synthesis__history-row">
-                                <td>exec-29b7d3a1</td>
-                                <td>Data Backup Routine</td>
-                                <td>2025-05-13 23:00</td>
-                                <td>12m 08s</td>
-                                <td>5/5</td>
-                                <td><span class="synthesis__status synthesis__status--completed">Completed</span></td>
-                                <td>
-                                    <button class="synthesis__table-action-btn" data-tekton-action="view-history-details" data-tekton-action-type="secondary">Details</button>
-                                    <button class="synthesis__table-action-btn">Rerun</button>
-                                </td>
-                            </tr>
-                            <tr class="synthesis__history-row">
-                                <td>exec-15f9e2c7</td>
-                                <td>API Integration Test</td>
-                                <td>2025-05-13 14:22</td>
-                                <td>3m 45s</td>
-                                <td>6/12</td>
-                                <td><span class="synthesis__status synthesis__status--failed">Failed</span></td>
-                                <td>
-                                    <button class="synthesis__table-action-btn" data-tekton-action="view-history-details" data-tekton-action-type="secondary">Details</button>
-                                    <button class="synthesis__table-action-btn">Rerun</button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                <div class="synthesis__review-controls">
+                    <div class="synthesis__control-group">
+                        <label class="synthesis__control-label">Sprint to Review:</label>
+                        <select id="review-sprint-select" class="synthesis__select" data-tekton-select="sprint">
+                            <option value="">Select validated sprint...</option>
+                        </select>
+                    </div>
+                    <div class="synthesis__control-group">
+                        <label class="synthesis__control-label">Review Status:</label>
+                        <div class="synthesis__radio-group">
+                            <input type="radio" id="approve-sprint" name="review-status" value="approved" data-tekton-input="review-status">
+                            <label for="approve-sprint" class="synthesis__radio-label">Approve for Implementation</label>
+                            <input type="radio" id="reject-sprint" name="review-status" value="rejected" data-tekton-input="review-status">
+                            <label for="reject-sprint" class="synthesis__radio-label">Reject (Needs Rework)</label>
+                            <input type="radio" id="conditional-sprint" name="review-status" value="conditional" data-tekton-input="review-status">
+                            <label for="conditional-sprint" class="synthesis__radio-label">Conditional Approval</label>
+                        </div>
+                    </div>
                 </div>
                 
-                <div class="synthesis__pagination">
-                    <button class="synthesis__pagination-btn synthesis__pagination-btn--disabled">&lt;&lt;</button>
-                    <button class="synthesis__pagination-btn synthesis__pagination-btn--active">1</button>
-                    <button class="synthesis__pagination-btn">2</button>
-                    <button class="synthesis__pagination-btn">3</button>
-                    <span class="synthesis__pagination-ellipsis">...</span>
-                    <button class="synthesis__pagination-btn">12</button>
-                    <button class="synthesis__pagination-btn">&gt;&gt;</button>
+                <div class="synthesis__review-summary">
+                    <div class="synthesis__summary-section">
+                        <h4 class="synthesis__summary-title">Validation Summary</h4>
+                        <div class="synthesis__summary-content" id="validation-summary">
+                            <!-- Validation summary will be populated here -->
+                            <div class="synthesis__empty-state">
+                                <div class="synthesis__empty-icon">📋</div>
+                                <p class="synthesis__empty-text">Select a sprint to view validation summary.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="synthesis__summary-section">
+                        <h4 class="synthesis__summary-title">Requirements Coverage</h4>
+                        <div class="synthesis__coverage-progress">
+                            <div class="synthesis__progress-bar">
+                                <div class="synthesis__progress-fill" style="width: 0%"></div>
+                            </div>
+                            <div class="synthesis__progress-text">0% Coverage</div>
+                        </div>
+                    </div>
+                    
+                    <div class="synthesis__summary-section">
+                        <h4 class="synthesis__summary-title">Review Notes</h4>
+                        <textarea id="review-notes" class="synthesis__textarea" placeholder="Add review notes and recommendations..." data-tekton-input="review-notes"></textarea>
+                    </div>
+                </div>
+                
+                <div class="synthesis__review-actions">
+                    <button id="submit-review-btn" class="synthesis__button synthesis__button--export" onclick="submitReview()" data-tekton-action="submit-review">
+                        <span class="synthesis__button-label">Submit to Planning Review</span>
+                    </button>
+                    <button id="save-draft-btn" class="synthesis__button synthesis__button--secondary" onclick="saveDraftReview()" data-tekton-action="save-draft">
+                        <span class="synthesis__button-label">Save Draft</span>
+                    </button>
                 </div>
             </div>
         </div>
         
-        <!-- Execution Chat Tab -->
-        <div id="execchat-panel" class="synthesis__panel" data-tekton-chat="panel" style="position: relative; overflow: hidden;" data-tekton-panel="execchat" data-tekton-panel-for="Execution Chat" data-tekton-panel-component="synthesis" data-tekton-panel-active="false">
-            <div id="execchat-messages" class="synthesis__chat-messages" data-tekton-chat="messages">
+        <!-- Workflow Chat Panel -->
+        <div id="workflowchat-panel" class="synthesis__panel" data-tekton-chat="panel" style="position: relative; overflow: hidden;" data-tekton-panel="workflowchat" data-tekton-panel-for="Workflow Chat" data-tekton-panel-component="synthesis" data-tekton-panel-active="false">
+            <div id="workflowchat-messages" class="synthesis__chat-messages" data-tekton-chat="messages">
                 <!-- Welcome message -->
                 <div class="synthesis__message synthesis__message--system">
                     <div class="synthesis__message-content">
                         <div class="synthesis__message-text">
-                            <h3 class="synthesis__message-title">Execution Assistant</h3>
-                            <p>This chat provides assistance with execution planning and workflow management. Ask questions about:</p>
+                            <h3 class="synthesis__message-title">Synthesis Validation Assistant</h3>
+                            <p>This chat provides assistance with workflow validation and testing. Ask questions about:</p>
                             <ul>
-                                <li>Creating and managing execution plans</li>
-                                <li>Workflow optimization and debugging</li>
-                                <li>Integration with external systems</li>
-                                <li>Best practices for process execution</li>
+                                <li>Validation testing strategies and dry-run execution</li>
+                                <li>Requirements coverage analysis and gap identification</li>
+                                <li>Integration testing with external systems</li>
+                                <li>Best practices for workflow validation and quality assurance</li>
                             </ul>
                         </div>
                     </div>
@@ -445,7 +358,7 @@
         <div class="synthesis__chat-input-container" data-tekton-chat="input">
             <div class="synthesis__chat-prompt" data-tekton-chat="container">></div>
             <input type="text" id="synthesis-chat-input" class="synthesis__chat-input" data-tekton-chat="input" 
-                   placeholder="Enter chat message, execution questions, or workflow commands"
+                   placeholder="Enter validation questions, testing commands, or chat messages"
                    onkeypress="if(event.key==='Enter'){synthesis_sendChat(); return false;}">
             <button id="synthesis-send-button" class="synthesis__send-button" onclick="synthesis_sendChat(); return false;" data-tekton-action="send-message" data-tekton-action-type="primary">Send</button>
         </div>
@@ -1092,6 +1005,334 @@
     .synthesis__send-button:hover {
         background-color: #1976D2; /* Darker blue for hover */
     }
+    
+    /* Sprint Cards (following Planning Team workflow pattern) */
+    .synthesis__section-title {
+        margin: 16px 0 8px 16px;
+        font-size: 1.2rem;
+        font-weight: 500;
+    }
+    
+    .synthesis__text {
+        margin: 0 0 16px 16px;
+        opacity: 0.8;
+        font-size: 0.9rem;
+    }
+    
+    .synthesis__sprint-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 16px;
+        padding: 16px;
+    }
+    
+    .synthesis__sprint-card {
+        background-color: var(--bg-secondary, #252535);
+        border-radius: 8px;
+        border-left: 4px solid var(--color-primary, #2196F3);
+        padding: 16px;
+        transition: all 0.2s ease;
+    }
+    
+    .synthesis__sprint-card:hover {
+        background-color: var(--bg-hover, #3a3a4a);
+        transform: translateY(-2px);
+    }
+    
+    .synthesis__card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 12px;
+    }
+    
+    .synthesis__sprint-name {
+        font-size: 1.1rem;
+        font-weight: 500;
+        flex: 1;
+    }
+    
+    .synthesis__sprint-status {
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 0.8rem;
+        font-weight: 500;
+        margin-left: 12px;
+    }
+    
+    .synthesis__sprint-status--ready {
+        background-color: rgba(33, 150, 243, 0.2);
+        color: #2196F3;
+        border: 1px solid #2196F3;
+    }
+    
+    .synthesis__card-body {
+        margin-bottom: 16px;
+    }
+    
+    .synthesis__sprint-description {
+        font-size: 0.9rem;
+        line-height: 1.4;
+        margin-bottom: 12px;
+        opacity: 0.9;
+    }
+    
+    .synthesis__sprint-meta {
+        display: flex;
+        gap: 16px;
+        font-size: 0.85rem;
+        opacity: 0.8;
+    }
+    
+    .synthesis__meta-item {
+        display: flex;
+        gap: 4px;
+    }
+    
+    .synthesis__meta-label {
+        font-weight: 500;
+    }
+    
+    .synthesis__card-actions {
+        display: flex;
+        gap: 8px;
+        justify-content: flex-end;
+    }
+    
+    /* Button Color Scheme (Sprint Requirements) */
+    .synthesis__button--view {
+        background-color: #FFC107; /* Yellow for View */
+        border-color: #FFC107;
+        color: #000;
+    }
+    
+    .synthesis__button--view:hover {
+        background-color: #FFB300;
+        border-color: #FFB300;
+    }
+    
+    .synthesis__button--edit {
+        background-color: #4CAF50; /* Green for Edit */
+        border-color: #4CAF50;
+        color: white;
+    }
+    
+    .synthesis__button--edit:hover {
+        background-color: #45a049;
+        border-color: #45a049;
+    }
+    
+    .synthesis__button--validate,
+    .synthesis__button--export {
+        background-color: #7B1FA2; /* Purple for Export/Validate */
+        border-color: #7B1FA2;
+        color: white;
+    }
+    
+    .synthesis__button--validate:hover,
+    .synthesis__button--export:hover {
+        background-color: #6A1B9A;
+        border-color: #6A1B9A;
+    }
+    
+    /* Validation Controls */
+    .synthesis__validation-controls,
+    .synthesis__integration-controls,
+    .synthesis__review-controls {
+        background-color: var(--bg-secondary, #252535);
+        padding: 16px;
+        margin: 16px;
+        border-radius: 8px;
+        border: 1px solid var(--border-color, #444444);
+    }
+    
+    .synthesis__control-group {
+        margin-bottom: 16px;
+    }
+    
+    .synthesis__control-group:last-child {
+        margin-bottom: 0;
+    }
+    
+    .synthesis__control-label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 500;
+        font-size: 0.9rem;
+    }
+    
+    .synthesis__radio-group,
+    .synthesis__checkbox-group {
+        display: flex;
+        gap: 16px;
+        flex-wrap: wrap;
+    }
+    
+    .synthesis__radio-label,
+    .synthesis__checkbox-label {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.9rem;
+        cursor: pointer;
+    }
+    
+    .synthesis__textarea {
+        width: 100%;
+        min-height: 100px;
+        padding: 12px;
+        background-color: var(--bg-element, #2a2a3a);
+        border: 1px solid var(--border-color, #444444);
+        border-radius: 4px;
+        color: var(--text-primary, #f0f0f0);
+        font-family: inherit;
+        font-size: 0.9rem;
+        line-height: 1.4;
+        resize: vertical;
+    }
+    
+    .synthesis__textarea:focus {
+        outline: none;
+        border-color: var(--color-primary, #2196F3);
+    }
+    
+    /* System Cards */
+    .synthesis__systems-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 16px;
+        margin: 16px;
+    }
+    
+    .synthesis__system-card {
+        background-color: var(--bg-secondary, #252535);
+        border-radius: 8px;
+        padding: 16px;
+        border-left: 4px solid transparent;
+    }
+    
+    .synthesis__system-card--healthy {
+        border-left-color: #4CAF50;
+    }
+    
+    .synthesis__system-card--warning {
+        border-left-color: #FF9800;
+    }
+    
+    .synthesis__system-card--error {
+        border-left-color: #F44336;
+    }
+    
+    .synthesis__system-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 8px;
+    }
+    
+    .synthesis__system-name {
+        font-weight: 500;
+    }
+    
+    .synthesis__system-status {
+        padding: 2px 8px;
+        border-radius: 3px;
+        font-size: 0.8rem;
+        font-weight: 500;
+    }
+    
+    .synthesis__system-status--healthy {
+        background-color: rgba(76, 175, 80, 0.2);
+        color: #4CAF50;
+    }
+    
+    .synthesis__system-status--warning {
+        background-color: rgba(255, 152, 0, 0.2);
+        color: #FF9800;
+    }
+    
+    .synthesis__system-status--error {
+        background-color: rgba(244, 67, 54, 0.2);
+        color: #F44336;
+    }
+    
+    .synthesis__system-details {
+        display: flex;
+        gap: 12px;
+        font-size: 0.85rem;
+        opacity: 0.8;
+        margin-bottom: 12px;
+    }
+    
+    .synthesis__system-actions {
+        display: flex;
+        justify-content: flex-end;
+    }
+    
+    /* Action Groups */
+    .synthesis__validation-actions,
+    .synthesis__integration-actions,
+    .synthesis__review-actions {
+        display: flex;
+        gap: 12px;
+        justify-content: center;
+        padding: 16px;
+        background-color: var(--bg-tertiary, #333345);
+        margin: 16px;
+        border-radius: 8px;
+    }
+    
+    /* Review Summary */
+    .synthesis__review-summary {
+        margin: 16px;
+        display: grid;
+        gap: 16px;
+        grid-template-columns: 1fr;
+    }
+    
+    .synthesis__summary-section {
+        background-color: var(--bg-secondary, #252535);
+        padding: 16px;
+        border-radius: 8px;
+        border: 1px solid var(--border-color, #444444);
+    }
+    
+    .synthesis__summary-title {
+        margin: 0 0 12px 0;
+        font-size: 1rem;
+        font-weight: 500;
+    }
+    
+    .synthesis__coverage-progress {
+        margin-top: 8px;
+    }
+    
+    /* Results Filter */
+    .synthesis__results-filter {
+        display: flex;
+        gap: 16px;
+        padding: 16px;
+        background-color: var(--bg-secondary, #252535);
+        border-bottom: 1px solid var(--border-color, #444444);
+        flex-wrap: wrap;
+    }
+    
+    .synthesis__filter-group {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .synthesis__filter-label {
+        font-size: 0.9rem;
+        font-weight: 500;
+        white-space: nowrap;
+    }
+    
+    .synthesis__no-results {
+        text-align: center;
+        padding: 40px 20px;
+    }
 </style>
 
 <script type="text/javascript">
@@ -1150,7 +1391,13 @@ window.synthesis_switchTab = function(tabId) {
         // Update clear button visibility for chat tabs
         const clearButton = synthesisContainer.querySelector('#clear-chat-btn');
         if (clearButton) {
-            clearButton.style.display = (tabId === 'execchat' || tabId === 'teamchat') ? 'block' : 'none';
+            clearButton.style.display = (tabId === 'workflowchat' || tabId === 'teamchat') ? 'block' : 'none';
+        }
+        
+        // Update validate button visibility for validation tabs
+        const validateButton = synthesisContainer.querySelector('#validate-sprint-btn');
+        if (validateButton) {
+            validateButton.style.display = (tabId === 'dashboard' || tabId === 'validation') ? 'block' : 'none';
         }
         
         // Update component state
@@ -1165,6 +1412,14 @@ window.synthesis_switchTab = function(tabId) {
             
             if (typeof window.synthesisComponent.loadTabContent === 'function') {
                 window.synthesisComponent.loadTabContent(tabId);
+            }
+            
+            // Special handling for dashboard to ensure sprints load
+            if (tabId === 'dashboard' && window.synthesisComponent.renderSprintCards) {
+                console.log('[SYNTHESIS] Dashboard tab activated, re-rendering sprint cards');
+                setTimeout(() => {
+                    window.synthesisComponent.renderSprintCards();
+                }, 50);
             }
             
             if (typeof window.synthesisComponent.saveComponentState === 'function') {
@@ -1202,12 +1457,12 @@ window.synthesis_sendChat = function() {
         }
         
         // Determine which chat to send to using Terma-style binary fallback
-        const execChatTab = synthesisContainer.querySelector('[data-tab="execchat"]');
-        const execChatActive = execChatTab && execChatTab.classList.contains('synthesis__tab--active');
-        const chatType = execChatActive ? 'execchat' : 'teamchat';
+        const workflowChatTab = synthesisContainer.querySelector('[data-tab="workflowchat"]');
+        const workflowChatActive = workflowChatTab && workflowChatTab.classList.contains('synthesis__tab--active');
+        const chatType = workflowChatActive ? 'workflowchat' : 'teamchat';
         
         // Get the appropriate chat container
-        const chatContainer = synthesisContainer.querySelector(chatType === 'execchat' ? '#execchat-messages' : '#teamchat-messages');
+        const chatContainer = synthesisContainer.querySelector(chatType === 'workflowchat' ? '#workflowchat-messages' : '#teamchat-messages');
         
         if (!chatContainer) {
             console.error('[SYNTHESIS] Send Chat: Cannot find chat container for', chatType);
@@ -1236,7 +1491,7 @@ window.synthesis_sendChat = function() {
         // Send message to backend via window.AIChat
         if (window.AIChat) {
             // Determine which AIChat method to use based on chat type
-            if (chatType === 'execchat') {
+            if (chatType === 'workflowchat') {
                 // For execution chat, use sendMessage with component name
                 if (typeof window.AIChat.sendMessage === 'function') {
                     window.AIChat.sendMessage('synthesis', message).then(response => {
@@ -1354,8 +1609,8 @@ window.synthesis_clearChat = function() {
         const chatType = activeTab.getAttribute('data-tab');
         let chatContainer;
         
-        if (chatType === 'execchat') {
-            chatContainer = synthesisContainer.querySelector('#execchat-messages');
+        if (chatType === 'workflowchat') {
+            chatContainer = synthesisContainer.querySelector('#workflowchat-messages');
         } else if (chatType === 'teamchat') {
             chatContainer = synthesisContainer.querySelector('#teamchat-messages');
         }
@@ -1382,37 +1637,214 @@ window.synthesis_clearChat = function() {
     return false; // Stop event propagation
 };
 
-// LOAD COMPONENT
-// Load after defining tab switching to ensure it's available
-function synthesis_loadComponent() {
-    console.log('[SYNTHESIS] Loading component script...');
+// INITIALIZE COMPONENT
+// Initialize the component after the minimal loader loads scripts
+function synthesis_initializeComponent() {
+    console.log('[SYNTHESIS] Initializing component...');
     
-    const timestamp = new Date().getTime();
-    const scriptPath = `/scripts/synthesis/synthesis-component.js?t=${timestamp}`;
-    
-    const script = document.createElement('script');
-    script.src = scriptPath;
-    script.async = false;
-    script.onload = function() {
-        console.log('[SYNTHESIS] Component script loaded successfully');
-        
-        if (window.synthesisComponent && typeof window.synthesisComponent.init === 'function') {
-            try {
-                window.synthesisComponent.init();
-                console.log('[SYNTHESIS] Component initialized');
-            } catch (err) {
-                console.error('[SYNTHESIS] Component initialization error:', err);
-            }
-        } else {
-            console.warn('[SYNTHESIS] Component init function not found');
+    if (window.synthesisComponent && typeof window.synthesisComponent.init === 'function') {
+        try {
+            window.synthesisComponent.init();
+            console.log('[SYNTHESIS] Component initialized');
+        } catch (err) {
+            console.error('[SYNTHESIS] Component initialization error:', err);
         }
-    };
-    script.onerror = function() {
-        console.error('[SYNTHESIS] Failed to load component script');
-    };
-    
-    document.body.appendChild(script);
+    } else {
+        console.warn('[SYNTHESIS] Component init function not found - will retry in 500ms');
+        // The minimal loader should handle loading the scripts
+        // but if it fails, we'll keep trying
+        setTimeout(synthesis_initializeComponent, 500);
+    }
 }
+
+// TEMPORARY: Direct load as fallback
+// This is a temporary workaround until we fix the minimal loader issue
+function synthesis_directLoadFallback() {
+    console.log('[SYNTHESIS] Checking for component:', !!window.synthesisComponent, typeof window.synthesisComponent?.init);
+    
+    if (!window.synthesisComponent || typeof window.synthesisComponent.init !== 'function') {
+        console.log('[SYNTHESIS] Attempting direct script load as fallback...');
+        const script = document.createElement('script');
+        script.src = '/scripts/synthesis/synthesis-component.js?t=' + Date.now();
+        script.onload = function() {
+            console.log('[SYNTHESIS] Direct load successful');
+            console.log('[SYNTHESIS] After load - component exists:', !!window.synthesisComponent);
+            console.log('[SYNTHESIS] After load - init exists:', typeof window.synthesisComponent?.init);
+            synthesis_initializeComponent();
+        };
+        script.onerror = function(error) {
+            console.error('[SYNTHESIS] Direct load failed:', error);
+        };
+        document.head.appendChild(script);
+    } else {
+        console.log('[SYNTHESIS] Component already loaded, initializing...');
+        synthesis_initializeComponent();
+    }
+}
+
+// Try direct load after a delay if minimal loader fails
+setTimeout(synthesis_directLoadFallback, 2000);
+
+// INLINE COMPONENT DEFINITION (TEMPORARY)
+// This ensures the component works immediately while we debug the external loading
+window.synthesisComponent = {
+    state: {
+        activeTab: 'dashboard',
+        sprints: [],
+        currentSprint: null,
+        validationInProgress: false
+    },
+
+    init: function() {
+        console.log('[SYNTHESIS INLINE] Component initializing...');
+        
+        // Wait a moment for DOM to be ready
+        setTimeout(() => {
+            this.loadSprintsFromDailyLogs();
+            this.setupEventListeners();
+            console.log('[SYNTHESIS INLINE] Component initialized');
+        }, 100);
+    },
+
+    loadSprintsFromDailyLogs: function() {
+        console.log('[SYNTHESIS INLINE] Loading Ready-3:Synthesis sprints...');
+        
+        const testSprints = [
+            {
+                id: 'test-synthesis-validation',
+                name: 'Test Synthesis Validation',
+                status: 'Ready-3:Synthesis',
+                tasks: 8,
+                hours: 32,
+                description: 'Test sprint created to validate the Synthesis UI implementation.',
+                components: ['Hermes', 'Engram', 'Athena', 'Synthesis'],
+                path: 'Test_Synthesis_Validation_Sprint'
+            },
+            {
+                id: 'ai-memory-enhancement',
+                name: 'AI Memory Enhancement',
+                status: 'Ready-3:Synthesis',
+                tasks: 12,
+                hours: 48,
+                description: 'Enhance the Engram memory system with advanced semantic search capabilities.',
+                components: ['Engram', 'Hermes', 'Sophia', 'Athena'],
+                path: 'AI_Memory_Enhancement_Sprint'
+            }
+        ];
+
+        this.state.sprints = testSprints;
+        this.renderSprintCards();
+    },
+
+    renderSprintCards: function() {
+        console.log('[SYNTHESIS INLINE] renderSprintCards called with', this.state.sprints.length, 'sprints');
+        
+        const sprintGrid = document.getElementById('sprint-grid');
+        const noSprintsDiv = document.getElementById('no-sprints');
+        
+        if (!sprintGrid) {
+            console.error('[SYNTHESIS INLINE] Sprint grid not found');
+            return;
+        }
+
+        if (this.state.sprints.length === 0) {
+            if (noSprintsDiv) {
+                noSprintsDiv.style.display = 'block';
+            }
+            sprintGrid.innerHTML = '';
+            return;
+        }
+
+        if (noSprintsDiv) {
+            noSprintsDiv.style.display = 'none';
+        }
+
+        sprintGrid.innerHTML = '';
+
+        this.state.sprints.forEach(sprint => {
+            const card = this.createSprintCard(sprint);
+            sprintGrid.appendChild(card);
+        });
+
+        console.log(`[SYNTHESIS INLINE] Rendered ${this.state.sprints.length} sprint cards`);
+    },
+
+    createSprintCard: function(sprint) {
+        const card = document.createElement('div');
+        card.className = 'synthesis__sprint-card';
+        card.setAttribute('data-sprint-id', sprint.id);
+        
+        card.innerHTML = `
+            <div class="synthesis__card-header">
+                <span class="synthesis__sprint-name">${sprint.name}</span>
+                <span class="synthesis__sprint-status synthesis__sprint-status--ready">${sprint.status}</span>
+            </div>
+            <div class="synthesis__card-body">
+                <p class="synthesis__sprint-description">${sprint.description}</p>
+                <div class="synthesis__sprint-meta">
+                    <span class="synthesis__meta-item">
+                        <span class="synthesis__meta-label">Tasks:</span>
+                        <span class="synthesis__meta-value">${sprint.tasks}</span>
+                    </span>
+                    <span class="synthesis__meta-item">
+                        <span class="synthesis__meta-label">Total Hours:</span>
+                        <span class="synthesis__meta-value">${sprint.hours}</span>
+                    </span>
+                </div>
+                <div class="synthesis__sprint-meta">
+                    <span class="synthesis__meta-item">
+                        <span class="synthesis__meta-label">Components:</span>
+                        <span class="synthesis__meta-value">${sprint.components.join(', ')}</span>
+                    </span>
+                </div>
+            </div>
+            <div class="synthesis__card-actions">
+                <button class="synthesis__button synthesis__button--view"
+                        onclick="synthesisComponent.viewSprint('${sprint.id}')"
+                        data-tekton-action="view-sprint" data-tekton-trigger="click">View</button>
+                <button class="synthesis__button synthesis__button--validate"
+                        onclick="synthesisComponent.beginValidation('${sprint.id}')"
+                        data-tekton-action="validate-sprint" data-tekton-trigger="click">Validate</button>
+                <button class="synthesis__button synthesis__button--secondary"
+                        onclick="synthesisComponent.skipToReview('${sprint.id}')"
+                        data-tekton-action="skip-to-review" data-tekton-trigger="click">Skip to Review</button>
+            </div>
+        `;
+        
+        return card;
+    },
+
+    viewSprint: function(sprintId) {
+        console.log('[SYNTHESIS INLINE] View sprint:', sprintId);
+        const sprint = this.state.sprints.find(s => s.id === sprintId);
+        if (sprint) {
+            this.state.currentSprint = sprint;
+            synthesis_switchTab('validation');
+        }
+    },
+
+    beginValidation: function(sprintId) {
+        console.log('[SYNTHESIS INLINE] Begin validation for sprint:', sprintId);
+        const sprint = this.state.sprints.find(s => s.id === sprintId);
+        if (sprint) {
+            this.state.currentSprint = sprint;
+            synthesis_switchTab('validation');
+        }
+    },
+
+    skipToReview: function(sprintId) {
+        console.log('[SYNTHESIS INLINE] Skip to review for sprint:', sprintId);
+        const sprint = this.state.sprints.find(s => s.id === sprintId);
+        if (sprint) {
+            this.state.currentSprint = sprint;
+            synthesis_switchTab('review');
+        }
+    },
+
+    setupEventListeners: function() {
+        // Basic event listeners
+    }
+};
 
 // HTML PANEL PROTECTION
 // Setup explicit protection for the HTML panel to prevent it being hidden
@@ -1468,7 +1900,7 @@ function synthesis_protectHtmlPanel() {
 window.addEventListener('DOMContentLoaded', function() {
     console.log('[SYNTHESIS] DOM loaded, setting up Synthesis component');
     synthesis_protectHtmlPanel();
-    synthesis_loadComponent();
+    synthesis_initializeComponent();
 });
 
 // IMMEDIATE PROTECTION
@@ -1476,6 +1908,63 @@ window.addEventListener('DOMContentLoaded', function() {
 if (document.readyState === 'complete' || document.readyState === 'interactive') {
     console.log('[SYNTHESIS] Document already loaded, setting up Synthesis component immediately');
     synthesis_protectHtmlPanel();
-    synthesis_loadComponent();
+    synthesis_initializeComponent();
 }
+
+// SYNTHESIS VALIDATION FUNCTIONS
+// Global functions for the Planning Team workflow validation interface
+
+window.validateCurrentSprint = function() {
+    console.log('[SYNTHESIS] Validate current sprint clicked');
+    // TODO: Implement sprint validation logic
+    return false;
+};
+
+window.startValidation = function() {
+    console.log('[SYNTHESIS] Start validation clicked');
+    // TODO: Implement validation start logic
+    return false;
+};
+
+window.stopValidation = function() {
+    console.log('[SYNTHESIS] Stop validation clicked');
+    // TODO: Implement validation stop logic
+    return false;
+};
+
+window.rollbackValidation = function() {
+    console.log('[SYNTHESIS] Rollback validation clicked');
+    // TODO: Implement validation rollback logic
+    return false;
+};
+
+window.testSystemIntegration = function(systemName) {
+    console.log('[SYNTHESIS] Test system integration:', systemName);
+    // TODO: Implement system integration testing
+    return false;
+};
+
+window.testAllIntegrations = function() {
+    console.log('[SYNTHESIS] Test all integrations clicked');
+    // TODO: Implement comprehensive integration testing
+    return false;
+};
+
+window.exportIntegrationReport = function() {
+    console.log('[SYNTHESIS] Export integration report clicked');
+    // TODO: Implement integration report export
+    return false;
+};
+
+window.submitReview = function() {
+    console.log('[SYNTHESIS] Submit review clicked');
+    // TODO: Implement review submission to Planning Team
+    return false;
+};
+
+window.saveDraftReview = function() {
+    console.log('[SYNTHESIS] Save draft review clicked');
+    // TODO: Implement draft review saving
+    return false;
+};
 </script>
