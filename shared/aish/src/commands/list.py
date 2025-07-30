@@ -93,7 +93,7 @@ def show_context_summary(registry):
     """Show context state summary for all CIs."""
     print("CI Context States (Apollo-Rhetor Coordination)")
     print("=" * 80)
-    print(f"{'CI Name':<15} {'Next':<6} {'Staged':<8} {'Last Output (first 30 chars)':<35}")
+    print(f"{'CI Name':<15} {'Next':<6} {'Staged':<8} {'Last User Message (first 30 chars)':<35}")
     print("-" * 80)
     
     # Get all CIs and their context states
@@ -112,13 +112,21 @@ def show_context_summary(registry):
         has_next = "Yes" if context_state.get('next_context_prompt') else "No"
         has_staged = "Yes" if context_state.get('staged_context_prompt') else "No"
         
-        # Get first 30 chars of last output
+        # Get first 30 chars of last output or user message
         last_output = context_state.get('last_output', '')
         if last_output:
-            # Clean up whitespace and truncate
-            output_preview = last_output.replace('\n', ' ').strip()[:30]
-            if len(last_output) > 30:
-                output_preview += "..."
+            # Check if it's the new exchange format (dict) or old format (string)
+            if isinstance(last_output, dict):
+                # New format: show user message first 30 chars
+                user_msg = last_output.get('user_message', '')
+                output_preview = user_msg.replace('\n', ' ').strip()[:30]
+                if len(user_msg) > 30:
+                    output_preview += "..."
+            else:
+                # Old format: show output first 30 chars
+                output_preview = last_output.replace('\n', ' ').strip()[:30]
+                if len(last_output) > 30:
+                    output_preview += "..."
         else:
             output_preview = "(no output)"
         
@@ -166,13 +174,39 @@ def show_context_details(registry, ci_name):
     else:
         print("Status: None")
     
-    # Show last output
+    # Show last exchange (user message + AI response)
     last_output = context_state.get('last_output')
-    print("\n[Last Output]")
+    print("\n[Last Exchange]")
     if last_output:
-        print("Status: Captured")
-        print("-" * 60)
-        print(last_output)
-        print("-" * 60)
+        if isinstance(last_output, dict):
+            # New format: show full exchange
+            print("Status: Captured")
+            print("\nUser Message:")
+            print("-" * 60)
+            print(last_output.get('user_message', '(no message)'))
+            print("-" * 60)
+            
+            ai_response = last_output.get('ai_response', {})
+            print("\nAI Response:")
+            print("-" * 60)
+            print(ai_response.get('content', '(no content)'))
+            print("-" * 60)
+            
+            # Show metadata
+            print(f"\nModel: {ai_response.get('model', 'unknown')}")
+            if 'usage' in ai_response:
+                print(f"Tokens: {ai_response['usage'].get('total_tokens', 'unknown')}")
+            if 'latency' in ai_response:
+                print(f"Latency: {ai_response['latency']:.2f}s")
+            if 'timestamp' in last_output:
+                from datetime import datetime
+                timestamp = datetime.fromtimestamp(last_output['timestamp'])
+                print(f"Time: {timestamp.strftime('%Y-%m-%d %H:%M:%S')}")
+        else:
+            # Old format: just show the output
+            print("Status: Captured (legacy format)")
+            print("-" * 60)
+            print(last_output)
+            print("-" * 60)
     else:
         print("Status: No output captured")

@@ -9,7 +9,7 @@ import operator
 import json
 import requests
 from pathlib import Path
-from typing import Dict, List, Optional, Any
+from typing import Dict, List, Optional, Any, Union
 from datetime import datetime
 
 # Add parent paths for imports
@@ -342,7 +342,7 @@ class CIRegistry:
         self._save_context_state()
         return True
     
-    def get_ci_last_output(self, ci_name: str) -> Optional[str]:
+    def get_ci_last_output(self, ci_name: str) -> Optional[Union[str, Dict]]:
         """Get the complete output from CI's last turn."""
         ci_name = ci_name.lower()
         if ci_name not in self._context_state:
@@ -350,8 +350,13 @@ class CIRegistry:
             
         return self._context_state[ci_name].get('last_output')
     
-    def update_ci_last_output(self, ci_name: str, output: str) -> bool:
-        """Store the CI's output when turn completes."""
+    def update_ci_last_output(self, ci_name: str, output: Union[str, Dict]) -> bool:
+        """Store the CI's output when turn completes.
+        
+        Args:
+            ci_name: Name of the CI
+            output: Either a string (backward compatible) or dict with full exchange
+        """
         ci_name = ci_name.lower()
         if ci_name not in self._registry:
             return False

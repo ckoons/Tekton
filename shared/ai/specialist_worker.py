@@ -18,6 +18,7 @@ import sys
 import json
 import asyncio
 import logging
+import time
 from typing import Dict, Any, Optional, Callable, List
 from abc import ABC, abstractmethod
 import socket
@@ -34,6 +35,14 @@ from tekton.core.models.adapters import (
     AnthropicAdapter, OpenAIAdapter, LocalModelAdapter,
     GrokAdapter, GeminiAdapter
 )
+
+# Import CI registry for storing exchanges
+try:
+    from shared.aish.src.registry.ci_registry import CIRegistry
+    ci_registry = CIRegistry()
+except ImportError:
+    ci_registry = None
+    logging.warning("CI Registry not available for storing AI exchanges")
 
 # Import landmarks for architectural documentation
 try:
@@ -341,6 +350,21 @@ class AISpecialistWorker(ABC):
                     # Send response
                     writer.write(json.dumps(response).encode() + b'\n')
                     await writer.drain()
+                    
+                    # Store exchange in CI registry for Apollo-Rhetor coordination
+                    if ci_registry and response.get('type') == 'response':
+                        try:
+                            # Build exchange record
+                            exchange = {
+                                'user_message': message.get('content', message.get('message', '')),
+                                'ai_response': response,
+                                'timestamp': time.time()
+                            }
+                            # Store with title-cased component name for CI registry
+                            ci_registry.update_ci_last_output(self.component.title(), exchange)
+                        except Exception as e:
+                            # Storage failure shouldn't break the flow
+                            self.logger.debug(f"Failed to store exchange in CI registry: {e}")
                     
                 except json.JSONDecodeError:
                     error_response = {'type': 'error', 'error': 'Invalid JSON'}
