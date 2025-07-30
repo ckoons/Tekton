@@ -1270,7 +1270,9 @@ window.tekton_switchTab = function(tabId) {
         }
         
         // Load merges when switching to merges tab
+        console.log('[TEKTON] Tab switching to:', tabId);
         if (tabId === 'merges') {
+            console.log('[TEKTON] Merges tab detected, calling loadMergeQueue');
             loadMergeQueue();
         }
         
@@ -1904,6 +1906,7 @@ async function loadProjectsDashboard() {
 
 async function loadMergeQueue() {
     console.log('[TEKTON] Loading merge queue - scanning Development Sprints');
+    console.log('[TEKTON] URL:', tektonCoreUrl('/api/v1/sprints/merges'));
     
     try {
         // Fetch sprints ready for merge from TektonCore Sprint API
@@ -1932,12 +1935,16 @@ async function loadMergeQueue() {
         
         const data = await response.json();
         console.log('[TEKTON] Loaded merge queue:', data);
+        console.log('[TEKTON] data.success:', data.success);
+        console.log('[TEKTON] data.data:', data.data);
+        console.log('[TEKTON] data.data.merges:', data.data ? data.data.merges : 'undefined');
         
         const mergesContainer = document.getElementById('merges-container');
         
         // Check if we have the expected data structure
         if (!data.success || !data.data || !data.data.merges) {
             console.log('[TEKTON] Unexpected API response structure:', data);
+            console.log('[TEKTON] Missing: success?', !data.success, 'data?', !data.data, 'merges?', !data.data?.merges);
             mergesContainer.innerHTML = '<div class="tekton__placeholder-message">No Merges Pending</div>';
             return;
         }
@@ -2570,6 +2577,8 @@ window.addEventListener('DOMContentLoaded', function() {
     loadProjectsDashboard();
     // Load project CIs for Projects Chat
     loadProjectCIs();
+    // Load merge queue data for Merges tab
+    loadMergeQueue();
 });
 
 // IMMEDIATE PROTECTION
@@ -2580,6 +2589,8 @@ if (document.readyState === 'complete' || document.readyState === 'interactive')
     loadProjectsDashboard();
     // Load project CIs for Projects Chat
     loadProjectCIs();
+    // Load merge queue data for Merges tab
+    loadMergeQueue();
 }
 </script>
 

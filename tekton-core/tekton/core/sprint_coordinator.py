@@ -292,30 +292,44 @@ class SprintCoordinator:
     
     def get_merge_status(self) -> Dict[str, Any]:
         """Get merge coordination status"""
+        # Fixed sprint_path -> path attribute issue
+        logger.info("GET_MERGE_STATUS: Starting merge status check...")
         
         # Get all sprints from DevSprintMonitor
         all_sprints = self.sprint_monitor.get_all_sprints()
+        logger.info(f"GET_MERGE_STATUS: Found {len(all_sprints)} total sprints")
+        
+        # Log each sprint for debugging
+        for sprint in all_sprints:
+            logger.info(f"GET_MERGE_STATUS: Sprint '{sprint.name}' has status '{sprint.status.value}'")
         
         # Find sprints that are Ready for Merge
         ready_for_merge = []
         for sprint in all_sprints:
             if sprint.status.value == "Ready for Merge":
+                logger.info(f"GET_MERGE_STATUS: Found ready sprint: {sprint.name}")
                 ready_for_merge.append({
                     "id": sprint.name.replace(" ", "_").replace("-", "_"),
                     "name": sprint.name,
                     "status": sprint.status.value,
-                    "path": str(sprint.sprint_path),
+                    "path": str(sprint.path),
                     "updated_at": sprint.last_updated,
                     "updated_by": getattr(sprint, 'updated_by', 'Unknown'),
                     "tasks": len(getattr(sprint, 'tasks', []))
                 })
         
-        return {
+        logger.info(f"GET_MERGE_STATUS: Returning {len(ready_for_merge)} ready sprints")
+        
+        result = {
             "merges": ready_for_merge,
             "total_ready": len(ready_for_merge),
             "queue_length": len(ready_for_merge),
             "timestamp": datetime.now().isoformat()
         }
+        
+        logger.info(f"GET_MERGE_STATUS: Result: {result}")
+        
+        return result
     
     async def assign_sprint_to_coder(self, sprint_name: str, coder_id: str) -> bool:
         """Manually assign sprint to specific Coder"""
