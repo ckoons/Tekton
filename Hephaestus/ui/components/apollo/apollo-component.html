@@ -931,9 +931,10 @@
                 effectivenessValue.textContent = this.value + '%';
             });
         }
-        
-        // CHAT FUNCTIONALITY - Following Terma's pattern
-        window.apollo_sendChat = async function() {
+    }
+    
+    // CHAT FUNCTIONALITY - Following Terma's pattern - moved outside initializeApollo for global access
+    window.apollo_sendChat = async function() {
             const input = document.getElementById('apollo-chat-input');
             const message = input.value.trim();
             
@@ -1047,30 +1048,30 @@
                     messagesContainer.scrollTop = messagesContainer.scrollHeight;
                 }
             }
-        };
-        
-        // Add event handlers for chat
-        const sendButton = document.getElementById('apollo-send-button');
-        if (sendButton) {
-            sendButton.addEventListener('click', function(e) {
+    };
+    
+    // Add event handlers for chat
+    const sendButton = document.getElementById('apollo-send-button');
+    if (sendButton) {
+        sendButton.addEventListener('click', function(e) {
+            e.preventDefault();
+            window.apollo_sendChat();
+        });
+    }
+    
+    // Enter key handler for chat input
+    const chatInput = document.getElementById('apollo-chat-input');
+    if (chatInput) {
+        chatInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
                 e.preventDefault();
                 window.apollo_sendChat();
-            });
-        }
-        
-        // Enter key handler for chat input
-        const chatInput = document.getElementById('apollo-chat-input');
-        if (chatInput) {
-            chatInput.addEventListener('keydown', function(e) {
-                if (e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault();
-                    window.apollo_sendChat();
-                }
-            });
-        }
-        
-        // Clear chat functionality
-        window.apollo_clearChat = function() {
+            }
+        });
+    }
+    
+    // Clear chat functionality
+    window.apollo_clearChat = function() {
             const attentionActive = document.getElementById('apollo-tab-attention').checked;
             const teamchatActive = document.getElementById('apollo-tab-teamchat').checked;
             
@@ -1085,27 +1086,29 @@
                 const messages = messagesContainer.querySelectorAll('.chat-message:not(.system-message)');
                 messages.forEach(msg => msg.remove());
             }
-        };
-        
-        // Clear button handler
-        const clearButton = document.getElementById('clear-chat-btn');
-        if (clearButton) {
-            clearButton.addEventListener('click', function(e) {
-                e.preventDefault();
-                window.apollo_clearChat();
-            });
-        }
-        
-        // Clear chat button visibility based on active tab
-        document.addEventListener('change', function(e) {
-            if (e.target.name === 'apollo-tab') {
-                const clearButton = document.getElementById('clear-chat-btn');
-                if (clearButton) {
-                    const isChatTab = e.target.id === 'apollo-tab-attention' || e.target.id === 'apollo-tab-teamchat';
-                    clearButton.style.display = isChatTab ? 'block' : 'none';
-                }
-            }
+    };
+    
+    // Clear button handler
+    const clearButton = document.getElementById('clear-chat-btn');
+    if (clearButton) {
+        clearButton.addEventListener('click', function(e) {
+            e.preventDefault();
+            window.apollo_clearChat();
         });
     }
+    
+    // Clear chat button visibility based on active tab
+    document.addEventListener('change', function(e) {
+        if (e.target.name === 'apollo-tab') {
+            const clearButton = document.getElementById('clear-chat-btn');
+            if (clearButton) {
+                const isChatTab = e.target.id === 'apollo-tab-attention' || e.target.id === 'apollo-tab-teamchat';
+                clearButton.style.display = isChatTab ? 'block' : 'none';
+            }
+        }
+    });
+    
+    // Initialize Apollo on load
+    initializeApollo();
 })();
 </script>
