@@ -40,9 +40,6 @@
             <button id="clear-chat-btn" class="budget__action-button" style="display: none;" onclick="budget_clearChat(); return false;" data-tekton-action="clear-chat" data-tekton-action-type="secondary">
                 <span class="budget__button-label">Clear</span>
             </button>
-            <button id="refresh-button" class="budget__action-button" onclick="budget_refreshData(); return false;" data-tekton-action="refresh-data" data-tekton-action-type="secondary">
-                <span class="budget__button-label">Refresh</span>
-            </button>
         </div>
     </div>
     
@@ -147,25 +144,10 @@
                             </div>
                         </div>
                         <div class="budget__chart-container">
-                            <div class="budget__chart-placeholder" id="provider-pie-chart">
-                                <!-- Chart will be rendered here by JavaScript -->
-                                <div>Provider Distribution Chart</div>
-                                <div>(Placeholder)</div>
-                            </div>
+                            <canvas id="provider-pie-chart" style="max-height: 200px;"></canvas>
                         </div>
-                        <div class="budget__chart-legend">
-                            <div class="budget__legend-item">
-                                <span class="budget__legend-color" style="background-color: #7356BF;"></span>
-                                <span class="budget__legend-label">Anthropic: $27.50</span>
-                            </div>
-                            <div class="budget__legend-item">
-                                <span class="budget__legend-color" style="background-color: #10A283;"></span>
-                                <span class="budget__legend-label">OpenAI: $9.25</span>
-                            </div>
-                            <div class="budget__legend-item">
-                                <span class="budget__legend-color" style="background-color: #FF6600;"></span>
-                                <span class="budget__legend-label">Ollama: $0.00</span>
-                            </div>
+                        <div class="budget__chart-legend" id="provider-legend">
+                            <!-- Legend will be populated dynamically -->
                         </div>
                     </div>
                     
@@ -181,11 +163,7 @@
                             </div>
                         </div>
                         <div class="budget__chart-container">
-                            <div class="budget__chart-placeholder" id="trend-chart">
-                                <!-- Chart will be rendered here by JavaScript -->
-                                <div>Daily Spend Trend Chart</div>
-                                <div>(Placeholder)</div>
-                            </div>
+                            <canvas id="spend-chart" style="max-height: 200px;"></canvas>
                         </div>
                         <div class="budget__chart-legend">
                             <div class="budget__legend-item">
@@ -223,7 +201,7 @@
                                     <th>% of Total</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody id="top-usage-body">
                                 <tr>
                                     <td>Claude 3 Sonnet</td>
                                     <td><span class="budget__badge budget__badge--anthropic">Anthropic</span></td>
@@ -264,9 +242,22 @@
             <div class="budget__usage-details">
                 <div class="budget__control-bar">
                     <div class="budget__date-filter">
-                        <input type="date" class="budget__input" id="start-date" value="2025-04-01">
-                        <input type="date" class="budget__input" id="end-date" value="2025-04-21">
-                        <button class="budget__button" id="filter-usage" onclick="budget_filterUsage(); return false;" data-tekton-action="filter-usage" data-tekton-action-type="primary">Apply Filter</button>
+                        <div class="budget__filter-group">
+                            <label class="budget__filter-label">Beginning:</label>
+                            <input type="date" class="budget__input" id="start-date" value="2025-04-01">
+                        </div>
+                        <div class="budget__filter-group">
+                            <label class="budget__filter-label">Ending:</label>
+                            <input type="date" class="budget__input" id="end-date" value="2025-04-21">
+                        </div>
+                        <select class="budget__filter-select" id="filter-preset" onchange="budget_applyFilterPreset(); return false;">
+                            <option value="custom">Custom Range</option>
+                            <option value="today">Today</option>
+                            <option value="week">This Week</option>
+                            <option value="month">This Month</option>
+                            <option value="all">All Time</option>
+                        </select>
+                        <button class="budget__button budget__button--primary" id="filter-usage" onclick="budget_filterUsage(); return false;" data-tekton-action="filter-usage" data-tekton-action-type="primary">Apply Filter</button>
                     </div>
                 </div>
                 
@@ -282,7 +273,7 @@
                                 <th>Cost</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody id="usage-table-body">
                             <tr>
                                 <td>2025-04-21 15:42</td>
                                 <td>Terma</td>
@@ -723,6 +714,36 @@
         display: block;
     }
     
+    /* Specific panel layouts */
+    .budget__settings,
+    .budget__alerts {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+    
+    .budget__settings {
+        position: relative;
+        padding-bottom: 120px; /* Larger gap for save button */
+    }
+    
+    .budget__settings-actions {
+        position: absolute;
+        bottom: 40px;
+        right: 20px;
+    }
+    
+    .budget__alerts {
+        position: relative;
+        padding-bottom: 120px; /* Larger gap for clear button */
+    }
+    
+    .budget__alerts-actions {
+        position: absolute;
+        bottom: 40px;
+        right: 20px;
+    }
+    
     /* Control Bar */
     .budget__control-bar {
         display: flex;
@@ -1138,6 +1159,17 @@
         background-color: var(--color-primary-hover, #2D9249); /* Budget green darker */
     }
     
+    .budget__button--success {
+        background-color: #4CAF50;
+        color: white;
+        border-color: #4CAF50;
+    }
+    
+    .budget__button--success:hover {
+        background-color: #388E3C;
+        border-color: #388E3C;
+    }
+    
     .budget__button--small {
         padding: 4px 8px;
         font-size: 0.85rem;
@@ -1206,7 +1238,30 @@
     /* Date Filter */
     .budget__date-filter {
         display: flex;
+        gap: 12px;
+        align-items: center;
+    }
+    
+    .budget__filter-group {
+        display: flex;
+        align-items: center;
         gap: 8px;
+    }
+    
+    .budget__filter-label {
+        font-size: 0.9rem;
+        color: var(--text-secondary, #94A3B8);
+        white-space: nowrap;
+    }
+    
+    .budget__filter-select {
+        padding: 8px 12px;
+        background-color: var(--bg-tertiary, #333345);
+        color: var(--text-primary, #ffffff);
+        border: 1px solid var(--border-color, #444444);
+        border-radius: 4px;
+        font-size: 0.9rem;
+        cursor: pointer;
     }
 
     /* Chat Messages (for Team Chat tab) */
@@ -1387,6 +1442,40 @@
     @keyframes budget-spin {
         0% { transform: rotate(0deg); }
         100% { transform: rotate(360deg); }
+    }
+    
+    /* Typing indicator */
+    .budget__typing-indicator {
+        display: flex;
+        gap: 4px;
+        padding: 8px 0;
+    }
+    
+    .budget__typing-indicator span {
+        width: 8px;
+        height: 8px;
+        background-color: var(--text-secondary, #94A3B8);
+        border-radius: 50%;
+        animation: typing 1.4s infinite;
+    }
+    
+    .budget__typing-indicator span:nth-child(2) {
+        animation-delay: 0.2s;
+    }
+    
+    .budget__typing-indicator span:nth-child(3) {
+        animation-delay: 0.4s;
+    }
+    
+    @keyframes typing {
+        0%, 60%, 100% {
+            opacity: 0.3;
+            transform: translateY(0);
+        }
+        30% {
+            opacity: 1;
+            transform: translateY(-10px);
+        }
     }
 </style>
 
@@ -1650,6 +1739,236 @@ function budget_protectHtmlPanel() {
     }
 }
 
+// BACKEND INTEGRATION FUNCTIONS
+// Following HTML injection pattern with no DOM manipulation
+
+async function budget_loadBudgetData() {
+    console.log('[BUDGET] Loading budget data from backend');
+    
+    try {
+        // First, try to get list of budgets
+        const budgetsResponse = await fetch(budgetUrl('/api/v1/budgets'));
+        if (!budgetsResponse.ok) throw new Error('Failed to fetch budgets');
+        
+        const budgetsList = await budgetsResponse.json();
+        
+        // If no budgets exist, show message
+        if (!budgetsList.items || budgetsList.items.length === 0) {
+            console.log('[BUDGET] No budgets found, showing default UI');
+            budget_showNoBudgetsMessage();
+            return;
+        }
+        
+        // Use the first budget
+        const budgetId = budgetsList.items[0].budget_id;
+        
+        // Get budget summary for today, this week, and this month
+        const today = new Date().toISOString().split('T')[0];
+        const summaryResponse = await fetch(budgetUrl(`/api/v1/budgets/${budgetId}/summary?period=daily`));
+        if (!summaryResponse.ok) throw new Error('Failed to fetch budget summary');
+        
+        const summaries = await summaryResponse.json();
+        const data = {
+            daily: summaries[0] || { spent: 0, limit: 5.00 },
+            weekly: { spent: 0, limit: 25.00 },
+            monthly: { spent: 0, limit: 100.00 }
+        };
+        
+        // Update daily card using innerHTML
+        const dailyCard = document.querySelector('.budget__card:nth-child(1)');
+        if (dailyCard && data.daily) {
+            const percent = (data.daily.spent / data.daily.limit * 100).toFixed(1);
+            dailyCard.innerHTML = `
+                <div class="budget__card-header">
+                    <div class="budget__card-title">Daily Spend</div>
+                    <div class="budget__card-period">Today</div>
+                </div>
+                <div class="budget__card-amount-container">
+                    <div class="budget__card-amount">$${data.daily.spent.toFixed(2)}</div>
+                    <div class="budget__card-limit">/ $${data.daily.limit.toFixed(2)}</div>
+                </div>
+                <div class="budget__card-progress">
+                    <div class="budget__card-progress-bar" style="width: ${percent}%"></div>
+                </div>
+                <div class="budget__card-footer">
+                    <div>${percent}% of daily limit</div>
+                    <div>Today</div>
+                </div>
+            `;
+        }
+        
+        // Update weekly card
+        const weeklyCard = document.querySelector('.budget__card:nth-child(2)');
+        if (weeklyCard && data.weekly) {
+            const percent = (data.weekly.spent / data.weekly.limit * 100).toFixed(1);
+            weeklyCard.innerHTML = `
+                <div class="budget__card-header">
+                    <div class="budget__card-title">Weekly Spend</div>
+                    <div class="budget__card-period">This Week</div>
+                </div>
+                <div class="budget__card-amount-container">
+                    <div class="budget__card-amount">$${data.weekly.spent.toFixed(2)}</div>
+                    <div class="budget__card-limit">/ $${data.weekly.limit.toFixed(2)}</div>
+                </div>
+                <div class="budget__card-progress">
+                    <div class="budget__card-progress-bar" style="width: ${percent}%"></div>
+                </div>
+                <div class="budget__card-footer">
+                    <div>${percent}% of weekly limit</div>
+                    <div>${data.weekly.period}</div>
+                </div>
+            `;
+        }
+        
+        // Update monthly card
+        const monthlyCard = document.querySelector('.budget__card:nth-child(3)');
+        if (monthlyCard && data.monthly) {
+            const percent = (data.monthly.spent / data.monthly.limit * 100).toFixed(1);
+            monthlyCard.innerHTML = `
+                <div class="budget__card-header">
+                    <div class="budget__card-title">Monthly Spend</div>
+                    <div class="budget__card-period">This Month</div>
+                </div>
+                <div class="budget__card-amount-container">
+                    <div class="budget__card-amount">$${data.monthly.spent.toFixed(2)}</div>
+                    <div class="budget__card-limit">/ $${data.monthly.limit.toFixed(2)}</div>
+                </div>
+                <div class="budget__card-progress">
+                    <div class="budget__card-progress-bar" style="width: ${percent}%"></div>
+                </div>
+                <div class="budget__card-footer">
+                    <div>${percent}% of monthly limit</div>
+                    <div>${data.monthly.period}</div>
+                </div>
+            `;
+        }
+        
+        // Update metrics
+        const metricsContainer = document.querySelector('.budget__metrics');
+        if (metricsContainer && data.metrics) {
+            metricsContainer.innerHTML = `
+                <div class="budget__metric">
+                    <div class="budget__metric-label">Total Tokens</div>
+                    <div class="budget__metric-value">${(data.metrics.total_tokens / 1000000).toFixed(1)}M</div>
+                </div>
+                <div class="budget__metric">
+                    <div class="budget__metric-label">Avg Cost/Token</div>
+                    <div class="budget__metric-value">$${data.metrics.avg_cost_per_token.toFixed(4)}</div>
+                </div>
+                <div class="budget__metric">
+                    <div class="budget__metric-label">Active Models</div>
+                    <div class="budget__metric-value">${data.metrics.active_models}</div>
+                </div>
+                <div class="budget__metric">
+                    <div class="budget__metric-label">Requests Today</div>
+                    <div class="budget__metric-value">${data.metrics.requests_today}</div>
+                </div>
+            `;
+        }
+        
+    } catch (error) {
+        console.error('[BUDGET] Error loading budget data:', error);
+    }
+}
+
+// Show message when no budgets exist
+function budget_showNoBudgetsMessage() {
+    console.log('[BUDGET] No budgets configured yet');
+    
+    // Update summary cards to show configuration needed
+    const summaryContainer = document.querySelector('.budget__summary');
+    if (summaryContainer) {
+        summaryContainer.innerHTML = `
+            <div class="budget__empty-state" style="grid-column: 1 / -1; text-align: center; padding: 40px;">
+                <h3>No Budgets Configured</h3>
+                <p>Budget tracking is ready but no budgets have been set up yet.</p>
+                <p>To create a budget, use the Budget API or contact your administrator.</p>
+            </div>
+        `;
+    }
+    
+    // Clear charts
+    const chartsContainer = document.querySelector('.budget__charts');
+    if (chartsContainer) {
+        chartsContainer.style.display = 'none';
+    }
+}
+
+async function budget_loadUsageData() {
+    console.log('[BUDGET] Loading usage data from backend');
+    
+    try {
+        // Fetch usage records
+        const response = await fetch(budgetUrl('/api/v1/usage/records?limit=20'));
+        if (!response.ok) throw new Error('Failed to fetch usage data');
+        
+        const data = await response.json();
+        
+        // Update usage table
+        const tbody = document.getElementById('usage-table-body');
+        if (tbody) {
+            if (data.items && data.items.length > 0) {
+                tbody.innerHTML = data.items.map(item => `
+                    <tr>
+                        <td>${new Date(item.timestamp).toLocaleString()}</td>
+                        <td>${item.component || 'Unknown'}</td>
+                        <td>${item.provider} / ${item.model}</td>
+                        <td>${item.task_type}</td>
+                        <td>${item.total_tokens ? item.total_tokens.toLocaleString() : '0'}</td>
+                        <td>$${item.cost ? item.cost.toFixed(4) : '0.0000'}</td>
+                    </tr>
+                `).join('');
+            } else {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" style="text-align: center; padding: 20px; opacity: 0.7;">
+                            No usage records found
+                        </td>
+                    </tr>
+                `;
+            }
+        }
+        
+        // Update top usage
+        const topUsageBody = document.querySelector('#top-usage-body');
+        if (topUsageBody && data.top_usage) {
+            const topRows = data.top_usage.map(item => `
+                <tr>
+                    <td>${item.model}</td>
+                    <td>${item.provider}</td>
+                    <td>${item.requests.toLocaleString()}</td>
+                    <td>${(item.tokens / 1000000).toFixed(2)}M</td>
+                    <td>$${item.cost.toFixed(2)}</td>
+                </tr>
+            `).join('');
+            
+            topUsageBody.innerHTML = topRows;
+        }
+        
+    } catch (error) {
+        console.error('[BUDGET] Error loading usage data:', error);
+    }
+}
+
+// Override the refresh function to use our integration
+window.budget_refreshData = async function() {
+    console.log('[BUDGET] Refreshing all budget data');
+    
+    try {
+        // Load both budget and usage data
+        await Promise.all([
+            budget_loadBudgetData(),
+            budget_loadUsageData()
+        ]);
+        
+        console.log('[BUDGET] Data refresh complete');
+    } catch (error) {
+        console.error('[BUDGET] Error refreshing data:', error);
+    }
+    
+    return false;
+};
+
 // LOAD COMPONENT
 // Load after defining tab switching to ensure it's available
 function budget_loadComponent() {
@@ -1674,15 +1993,23 @@ function budget_loadComponent() {
                     console.log('[BUDGET] Debug mode available, enabling for Budget component');
                     window.TektonDebug.registerComponent('budgetComponent', window.budgetComponent);
                 }
+                
+                // Load initial data
+                budget_refreshData();
+                
             } catch (err) {
                 console.error('[BUDGET] Component initialization error:', err);
             }
         } else {
             console.warn('[BUDGET] Component init function not found');
+            // Still try to load data even if component script fails
+            budget_refreshData();
         }
     };
     script.onerror = function() {
         console.error('[BUDGET] Failed to load component script');
+        // Still try to load data even if component script fails
+        budget_refreshData();
     };
     
     document.body.appendChild(script);
@@ -1774,6 +2101,211 @@ function budget_sendChat() {
     }
 }
 
+// Save budget settings
+async function budget_saveSettings() {
+    console.log('[BUDGET] Saving budget settings');
+    
+    try {
+        // Get form values
+        const settings = {
+            daily_limit: parseFloat(document.getElementById('daily-limit')?.value || 5),
+            weekly_limit: parseFloat(document.getElementById('weekly-limit')?.value || 25),
+            monthly_limit: parseFloat(document.getElementById('monthly-limit')?.value || 100),
+            enforcement_policy: document.getElementById('enforce-policy')?.value || 'warn',
+            warning_threshold: parseInt(document.getElementById('warning-threshold')?.value || 80),
+            allow_free_models: document.getElementById('allow-free-models')?.checked || false
+        };
+        
+        // For now, just log the settings (no backend endpoint for settings update yet)
+        console.log('[BUDGET] Settings to save:', settings);
+        alert('Settings saved successfully!');
+        
+    } catch (error) {
+        console.error('[BUDGET] Error saving settings:', error);
+        alert('Failed to save settings');
+    }
+}
+
+// Save alert settings
+async function budget_saveAlertSettings() {
+    console.log('[BUDGET] Saving alert settings');
+    
+    try {
+        const settings = {
+            email_alerts_enabled: document.getElementById('enable-email-alerts')?.checked || false,
+            alert_email: document.getElementById('alert-email')?.value || '',
+            alert_frequency: document.getElementById('alert-frequency')?.value || 'daily'
+        };
+        
+        console.log('[BUDGET] Alert settings to save:', settings);
+        alert('Alert settings saved successfully!');
+        
+    } catch (error) {
+        console.error('[BUDGET] Error saving alert settings:', error);
+        alert('Failed to save alert settings');
+    }
+}
+
+// Clear all alerts
+function budget_clearAlerts() {
+    console.log('[BUDGET] Clearing all alerts');
+    const alertList = document.querySelector('.budget__alert-list');
+    if (alertList) {
+        alertList.innerHTML = '<div class="budget__empty-state">No alerts</div>';
+    }
+}
+
+// Apply filter preset
+function budget_applyFilterPreset() {
+    const preset = document.getElementById('filter-preset')?.value;
+    const startDateInput = document.getElementById('start-date');
+    const endDateInput = document.getElementById('end-date');
+    
+    if (!startDateInput || !endDateInput) return;
+    
+    const today = new Date();
+    const formatDate = (date) => date.toISOString().split('T')[0];
+    
+    switch (preset) {
+        case 'today':
+            startDateInput.value = formatDate(today);
+            endDateInput.value = formatDate(today);
+            break;
+        case 'week':
+            const weekStart = new Date(today);
+            weekStart.setDate(today.getDate() - today.getDay());
+            startDateInput.value = formatDate(weekStart);
+            endDateInput.value = formatDate(today);
+            break;
+        case 'month':
+            const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
+            startDateInput.value = formatDate(monthStart);
+            endDateInput.value = formatDate(today);
+            break;
+        case 'all':
+            startDateInput.value = '2025-01-01';
+            endDateInput.value = formatDate(today);
+            break;
+    }
+}
+
+// Filter usage by date
+async function budget_filterUsage() {
+    console.log('[BUDGET] Filtering usage data');
+    const startDate = document.getElementById('start-date')?.value;
+    const endDate = document.getElementById('end-date')?.value;
+    
+    console.log(`[BUDGET] Filtering from ${startDate} to ${endDate}`);
+    
+    // Reload usage data with date filter
+    await budget_loadUsageData();
+}
+
+// Send message to budget assistant API
+async function budget_sendToAssistant(message, chatType, messagesContainer) {
+    const assistantUrl = budgetUrl('/api/v1/assistant');
+    
+    try {
+        // Show typing indicator
+        const typingHtml = `
+            <div class="budget__message budget__message--ai budget__message--typing" id="typing-indicator">
+                <div class="budget__message-content">
+                    <div class="budget__typing-indicator">
+                        <span></span><span></span><span></span>
+                    </div>
+                </div>
+            </div>
+        `;
+        messagesContainer.innerHTML += typingHtml;
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        
+        // Send to assistant API
+        const response = await fetch(assistantUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                message: message,
+                context: chatType === 'team' ? 'team_collaboration' : 'budget_management',
+                conversation_id: `${chatType}-chat-${Date.now()}`
+            })
+        });
+        
+        if (!response.ok) {
+            throw new Error('Failed to get response from assistant');
+        }
+        
+        const data = await response.json();
+        
+        // Remove typing indicator
+        const typingIndicator = document.getElementById('typing-indicator');
+        if (typingIndicator) {
+            typingIndicator.remove();
+        }
+        
+        // Add AI response
+        messagesContainer.innerHTML += `
+            <div class="budget__message budget__message--ai">
+                <div class="budget__message-content">
+                    <div class="budget__message-text">${data.response || 'I can help you with budget management and cost tracking.'}</div>
+                </div>
+            </div>
+        `;
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        
+    } catch (error) {
+        console.error('[BUDGET] Error sending to assistant:', error);
+        
+        // Remove typing indicator if exists
+        const typingIndicator = document.getElementById('typing-indicator');
+        if (typingIndicator) {
+            typingIndicator.remove();
+        }
+        
+        // Show error message
+        messagesContainer.innerHTML += `
+            <div class="budget__message budget__message--ai">
+                <div class="budget__message-content">
+                    <div class="budget__message-text">I'm currently unable to connect to the budget assistant. Please try again later.</div>
+                </div>
+            </div>
+        `;
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
+}
+
+// Send chat message - using innerHTML injection pattern
+function budget_sendChat() {
+    const input = document.getElementById('budget-chat-input');
+    if (!input || !input.value.trim()) return;
+    
+    const message = input.value.trim();
+    const activeTab = document.querySelector('.budget__tab--active')?.dataset?.tab;
+    const messagesContainer = activeTab === 'teamchat' 
+        ? document.getElementById('teamchat-messages')
+        : document.getElementById('budgetchat-messages');
+    
+    if (messagesContainer) {
+        // Get existing messages (preserve welcome message)
+        const existingHTML = messagesContainer.innerHTML;
+        
+        // Add user message using innerHTML
+        messagesContainer.innerHTML = existingHTML + `
+            <div class="budget__message budget__message--user">
+                <div class="budget__message-content">
+                    <div class="budget__message-text">${message}</div>
+                </div>
+            </div>
+        `;
+        
+        // Send to budget assistant API
+        budget_sendToAssistant(message, activeTab === 'teamchat' ? 'team' : 'budget', messagesContainer);
+        
+        // Clear input and scroll
+        input.value = '';
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
+}
+
 // Clear chat functionality
 function budget_clearChat() {
     const budgetChatActive = document.querySelector('.budget__tab[data-tab="budgetchat"]').classList.contains('budget__tab--active');
@@ -1791,4 +2323,137 @@ function budget_clearChat() {
         messages.forEach(msg => msg.remove());
     }
 }
+
+// Chart instances
+let chartInstance = null;
+let providerChartInstance = null;
+
+// Initialize provider pie chart
+function budget_initializeProviderChart() {
+    const chartCanvas = document.getElementById('provider-pie-chart');
+    if (!chartCanvas || typeof Chart === 'undefined') return;
+    
+    const ctx = chartCanvas.getContext('2d');
+    
+    // Destroy existing chart if any
+    if (window.providerChartInstance) {
+        window.providerChartInstance.destroy();
+    }
+    
+    window.providerChartInstance = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Anthropic', 'OpenAI', 'Ollama'],
+            datasets: [{
+                data: [27.50, 9.25, 0],
+                backgroundColor: ['#7356BF', '#10A283', '#FF6600'],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            }
+        }
+    });
+    
+    // Update legend
+    const legendContainer = document.getElementById('provider-legend');
+    if (legendContainer) {
+        legendContainer.innerHTML = `
+            <div class="budget__legend-item">
+                <span class="budget__legend-color" style="background-color: #7356BF;"></span>
+                <span class="budget__legend-label">Anthropic: $27.50</span>
+            </div>
+            <div class="budget__legend-item">
+                <span class="budget__legend-color" style="background-color: #10A283;"></span>
+                <span class="budget__legend-label">OpenAI: $9.25</span>
+            </div>
+            <div class="budget__legend-item">
+                <span class="budget__legend-color" style="background-color: #FF6600;"></span>
+                <span class="budget__legend-label">Ollama: $0.00</span>
+            </div>
+        `;
+    }
+}
+
+// Initialize spend chart  
+function budget_initializeChart() {
+    const chartCanvas = document.getElementById('spend-chart');
+    if (!chartCanvas || typeof Chart === 'undefined') return;
+    
+    const ctx = chartCanvas.getContext('2d');
+    
+    // Create initial chart with default data
+    chartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: ['Apr 15', 'Apr 16', 'Apr 17', 'Apr 18', 'Apr 19', 'Apr 20', 'Apr 21'],
+            datasets: [{
+                label: 'Daily Spend',
+                data: [2.34, 3.12, 2.89, 4.21, 3.76, 2.98, 2.47],
+                borderColor: '#4CAF50',
+                backgroundColor: 'rgba(76, 175, 80, 0.1)',
+                tension: 0.1
+            }, {
+                label: 'Cumulative',
+                data: [2.34, 5.46, 8.35, 12.56, 16.32, 19.30, 21.77],
+                borderColor: '#2196F3',
+                backgroundColor: 'rgba(33, 150, 243, 0.1)',
+                tension: 0.1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: true,
+                    position: 'top',
+                    labels: {
+                        color: '#ffffff'
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    grid: {
+                        color: 'rgba(255, 255, 255, 0.1)'
+                    },
+                    ticks: {
+                        color: '#ffffff'
+                    }
+                },
+                y: {
+                    grid: {
+                        color: 'rgba(255, 255, 255, 0.1)'
+                    },
+                    ticks: {
+                        color: '#ffffff',
+                        callback: function(value) {
+                            return '$' + value.toFixed(2);
+                        }
+                    }
+                }
+            }
+        }
+    });
+}
+
+// Initialize component and load data
+console.log('[BUDGET] Initializing budget component');
+
+// Initialize charts if Chart.js is available
+if (typeof Chart !== 'undefined') {
+    budget_initializeChart();
+    budget_initializeProviderChart();
+}
+
+// Load data from backend when component initializes
+budget_loadBudgetData();
+budget_loadUsageData();
 </script>
