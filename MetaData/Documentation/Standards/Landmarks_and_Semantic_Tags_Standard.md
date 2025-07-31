@@ -234,6 +234,43 @@ async def team_chat(request: Request):
     pass
 ```
 
+### TektonCore Automated Merge Sprint
+```python
+# Architecture decision for merge strategy
+@architecture_decision(
+    title="Dry-Run Merge Strategy",
+    description="Use git merge --no-commit to detect conflicts without corruption",
+    rationale="Allows safe conflict detection while keeping repository clean",
+    alternatives_considered=["Temporary branches", "Merge simulation"],
+    decided_by="Casey",
+    decision_date="2025-01-31"
+)
+async def dry_run_merge(self, branch_name: str):
+    pass
+
+# Danger zone for concurrent operations
+@danger_zone(
+    title="Concurrent Merge Operations",
+    description="Multiple merge operations can corrupt repository state",
+    risk_level="high",
+    risks=["repository corruption", "lost commits", "branch conflicts"],
+    mitigation="Queue-based processing, atomic operations, merge locks"
+)
+async def merge_branch(self, branch_name: str):
+    pass
+
+# API contract for merge endpoints
+@api_contract(
+    title="Dry-Run Merge API",
+    endpoint="/sprints/merge/dry-run",
+    method="POST",
+    request_schema={"merge_id": "str", "merge_name": "str"},
+    response_schema={"can_merge": "bool", "conflicts": "List[Dict]"}
+)
+async def dry_run_merge(request: DryRunMergeRequest):
+    pass
+```
+
 ### Claude Code IDE Sprint
 ```python
 # Performance boundary for caching
@@ -274,6 +311,55 @@ class TektonInspector:
             data-tekton-trigger="team-broadcast">
         Send to Team
     </button>
+</div>
+```
+
+### TektonCore Merge UI Example
+```html
+<!-- Sprint merge card with full tagging -->
+<div class="tekton__merge-card"
+     data-tekton-element="merge-card"
+     data-tekton-merge-id="${merge.id}"
+     data-tekton-status="${merge.status}"
+     data-tekton-priority="${merge.priority}">
+    
+    <div class="tekton__merge-header"
+         data-tekton-zone="header">
+        <h3 data-tekton-element="merge-name">${merge.name}</h3>
+        <span data-tekton-element="status-badge"
+              data-tekton-status="ready-for-merge">Ready</span>
+    </div>
+    
+    <div class="tekton__merge-actions"
+         data-tekton-zone="actions">
+        <button data-tekton-action="execute-merge"
+                data-tekton-merge-target="${merge.id}"
+                data-tekton-trigger="dry-run"
+                data-tekton-workflow="merge-check">
+            Execute
+        </button>
+    </div>
+</div>
+
+<!-- Conflict resolution modal -->
+<div class="tekton__modal-overlay"
+     data-tekton-modal="merge-conflict"
+     data-tekton-modal-type="decision"
+     data-tekton-conflict-type="content"
+     data-tekton-ai-ready="true">
+    
+    <div class="tekton__modal-actions"
+         data-tekton-zone="resolution-actions">
+        <button data-tekton-action="fix-conflict"
+                data-tekton-ai="conflict-resolver"
+                data-tekton-confidence="high">Fix</button>
+        <button data-tekton-action="consult-coder"
+                data-tekton-target="original-coder"
+                data-tekton-workflow="human-review">Consult</button>
+        <button data-tekton-action="redo-sprint"
+                data-tekton-priority="1"
+                data-tekton-workflow="sprint-recreation">Redo</button>
+    </div>
 </div>
 ```
 
@@ -347,5 +433,6 @@ Remember Casey's wisdom: "Map First, Build Second" - but also "Update the Map Wh
 
 ---
 
-*Last Updated: 2025-01-19*
-*Standard Version: 1.0*
+*Last Updated: 2025-01-31*
+*Standard Version: 1.1*
+*Changes: Added TektonCore automated merge examples for both landmarks and semantic tags*
