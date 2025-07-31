@@ -782,6 +782,42 @@
         background-color: #45a049;
     }
     
+    .tekton__button--status {
+        background-color: #4CAF50;  /* Green for status */
+        color: white;
+    }
+    
+    .tekton__button--status:hover {
+        background-color: #388E3C;
+    }
+    
+    .tekton__button--pull {
+        background-color: #2196F3;  /* Blue for pull */
+        color: white;
+    }
+    
+    .tekton__button--pull:hover {
+        background-color: #1976D2;
+    }
+    
+    .tekton__button--push {
+        background-color: #FFD700;  /* Gold for push */
+        color: #1a1a1a;
+    }
+    
+    .tekton__button--push:hover {
+        background-color: #FFC700;
+    }
+    
+    .tekton__button--pr {
+        background-color: #9C27B0;  /* Purple for pull request */
+        color: white;
+    }
+    
+    .tekton__button--pr:hover {
+        background-color: #7B1FA2;
+    }
+    
     .tekton__button--small {
         padding: 6px 16px;
         font-size: 0.9rem;
@@ -798,6 +834,14 @@
         margin-top: 16px;
         padding-top: 12px;
         border-top: 1px solid var(--border-color, #444444);
+    }
+    
+    .tekton__project-git-actions {
+        display: flex;
+        gap: 8px;
+        margin-top: 12px;
+        padding-top: 12px;
+        border-top: 1px solid var(--border-color, #333);
     }
     
     .tekton__remove-btn {
@@ -1576,12 +1620,12 @@
     }
     
     .tekton__button--redo {
-        background-color: #2196F3;  /* Blue for redo */
+        background-color: #9C27B0;  /* Purple for redo */
         color: white;
     }
     
     .tekton__button--redo:hover {
-        background-color: #1976D2;
+        background-color: #7B1FA2;
     }
     
     /* Clear button visibility for chat tabs */
@@ -2372,12 +2416,32 @@ function createProjectCard(project) {
     card.className = 'tekton__project-card';
     card.setAttribute('data-project-id', project.id);
     
+    // Determine which Git buttons to show
+    const hasFork = project.forked_repository;
+    const hasUpstream = project.upstream_repository;
+    
+    let gitButtons = '';
+    if (hasFork && !hasUpstream) {
+        // Fork only - Status, Pull, Push
+        gitButtons = `
+            <button class="tekton__button tekton__button--status tekton__button--small" onclick="gitAction('${project.id}', 'status', 'fork')">Status</button>
+            <button class="tekton__button tekton__button--pull tekton__button--small" onclick="gitAction('${project.id}', 'pull', 'fork')">Pull</button>
+            <button class="tekton__button tekton__button--push tekton__button--small" onclick="gitAction('${project.id}', 'push', 'fork')">Push</button>
+        `;
+    } else if (hasUpstream) {
+        // Has upstream - Status, Pull, Pull Request
+        gitButtons = `
+            <button class="tekton__button tekton__button--status tekton__button--small" onclick="gitAction('${project.id}', 'status', 'upstream')">Status</button>
+            <button class="tekton__button tekton__button--pull tekton__button--small" onclick="gitAction('${project.id}', 'pull', 'upstream')">Pull</button>
+            <button class="tekton__button tekton__button--pr tekton__button--small" onclick="gitAction('${project.id}', 'pull-request', 'upstream')">Pull Request</button>
+        `;
+    }
+    
     // Create card HTML
     card.innerHTML = `
         <div class="tekton__project-header">
             <h3 class="tekton__project-name">
                 ${project.name}
-                <div class="tekton__project-status-icon ${project.active ? '' : 'tekton__project-status-icon--inactive'}"></div>
             </h3>
             ${project.is_tekton_self ? '<span class="tekton__project-badge">Self-Managing</span>' : ''}
         </div>
@@ -2401,6 +2465,8 @@ function createProjectCard(project) {
                 </div>
             ` : '<div class="tekton__remote-row"><span class="tekton__remote-missing">No upstream repository configured</span></div>'}
         </div>
+        
+        ${gitButtons ? `<div class="tekton__project-git-actions">${gitButtons}</div>` : ''}
         
         <div class="tekton__project-footer">
             <button class="tekton__button tekton__button--danger tekton__button--small" onclick="removeProject('${project.id}', '${project.name}')">Remove</button>
@@ -2493,15 +2559,18 @@ async function loadAllSprints() {
     sprintsContainer.innerHTML = '<div class="tekton__loading-indicator"><div class="tekton__spinner"></div><div>Loading sprints...</div></div>';
     
     try {
-        // Scan sprint directories
-        const response = await fetch(tektonCoreUrl('/api/v1/sprints/all'));
+        // Scan sprint directories - use the status endpoint to get all sprints
+        const response = await fetch(tektonCoreUrl('/api/v1/sprints/status'));
         
         if (!response.ok) {
             throw new Error(`Failed to fetch sprints: ${response.statusText}`);
         }
         
-        const data = await response.json();
-        console.log('[TEKTON] Loaded sprints:', data);
+        const result = await response.json();
+        console.log('[TEKTON] Loaded sprints:', result);
+        
+        // Extract sprints from the response
+        const data = result.data || {};
         
         if (!data.sprints || data.sprints.length === 0) {
             sprintsContainer.innerHTML = '<div class="tekton__placeholder-message">No sprints found</div>';
