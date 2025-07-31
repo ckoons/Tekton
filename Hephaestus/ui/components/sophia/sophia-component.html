@@ -146,18 +146,61 @@
                 
                 <!-- Intelligence Dashboard -->
                 <div class="sophia__intelligence-dashboard">
-                    <div class="sophia__radar-chart-wrapper">
-                        <h3 class="sophia__section-title">Component Intelligence Profile</h3>
-                        <div id="sophia-radar-chart" class="sophia__chart"></div>
+                    <div class="sophia__intelligence-content">
+                        <div class="sophia__radar-chart-wrapper">
+                            <h3 class="sophia__section-title">Component Intelligence Profile</h3>
+                            <div id="sophia-radar-chart" class="sophia__chart"></div>
+                        </div>
+                        <div class="sophia__dimension-details">
+                            <h3 class="sophia__section-title">Dimension Details</h3>
+                            <div id="sophia-dimension-table" class="sophia__table">
+                        <table class="sophia__table">
+                            <thead>
+                                <tr>
+                                    <th>Dimension</th>
+                                    <th>Score</th>
+                                    <th>Status</th>
+                                    <th>Trend</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Language Processing</td>
+                                    <td>92%</td>
+                                    <td><span class="sophia__status sophia__status--completed">Excellent</span></td>
+                                    <td>↑ +2%</td>
+                                </tr>
+                                <tr>
+                                    <td>Reasoning</td>
+                                    <td>85%</td>
+                                    <td><span class="sophia__status sophia__status--running">Good</span></td>
+                                    <td>→ 0%</td>
+                                </tr>
+                                <tr>
+                                    <td>Knowledge</td>
+                                    <td>89%</td>
+                                    <td><span class="sophia__status sophia__status--completed">Excellent</span></td>
+                                    <td>↑ +1%</td>
+                                </tr>
+                                <tr>
+                                    <td>Learning</td>
+                                    <td>78%</td>
+                                    <td><span class="sophia__status sophia__status--pending">Developing</span></td>
+                                    <td>↑ +5%</td>
+                                </tr>
+                                <tr>
+                                    <td>Problem Solving</td>
+                                    <td>94%</td>
+                                    <td><span class="sophia__status sophia__status--completed">Excellent</span></td>
+                                    <td>↑ +3%</td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
-                    <div class="sophia__dimension-details">
-                        <h3 class="sophia__section-title">Dimension Details</h3>
-                        <div id="sophia-dimension-table" class="sophia__table"></div>
-                    </div>
-                </div>
-                
-                <!-- Component Comparison -->
-                <div class="sophia__intelligence-comparison">
+                        </div>
+                        
+                        <!-- Component Comparison -->
+                        <div class="sophia__intelligence-comparison">
                     <h3 class="sophia__section-title">Component Comparison</h3>
                     <div class="sophia__comparison-controls">
                         <div class="sophia__input-group sophia__input-group--inline">
@@ -169,10 +212,12 @@
                             <select id="sophia-comparison-component2" class="sophia__select" data-tekton-select="option">
                                 <!-- Dynamically populated -->
                             </select>
-                            <button id="sophia-compare-btn" class="sophia__button sophia__button--primary" data-tekton-action="compare-intelligence" data-tekton-action-type="primary">Compare</button>
+                            <button id="sophia-compare-btn" class="sophia__button sophia__button--primary" onclick="sophia_compareComponents(); return false;" data-tekton-action="compare-intelligence" data-tekton-action-type="primary">Compare</button>
                         </div>
                     </div>
                     <div id="sophia-comparison-chart" class="sophia__chart"></div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -235,8 +280,12 @@
                                 <td>Terma, Rhetor</td>
                                 <td>2025-04-22</td>
                                 <td>
-                                    <button class="sophia__button sophia__button--small" data-tekton-action="view-item" data-tekton-action-type="secondary">View</button>
-                                    <button class="sophia__button sophia__button--small" data-tekton-action="view-results" data-tekton-action-type="secondary">Results</button>
+                                    <button class="sophia__button sophia__button--small sophia__button--blue" 
+                                            onclick="sophia_viewExperiment('claude-vs-gpt'); return false;"
+                                            data-tekton-action="view-item" data-tekton-action-type="secondary">View</button>
+                                    <button class="sophia__button sophia__button--small sophia__button--purple" 
+                                            onclick="sophia_viewExperimentResults('claude-vs-gpt'); return false;"
+                                            data-tekton-action="view-results" data-tekton-action-type="secondary">Results</button>
                                 </td>
                             </tr>
                             <tr class="sophia__table-row">
@@ -246,8 +295,12 @@
                                 <td>Engram</td>
                                 <td>2025-05-01</td>
                                 <td>
-                                    <button class="sophia__button sophia__button--small" data-tekton-action="view-item" data-tekton-action-type="secondary">View</button>
-                                    <button class="sophia__button sophia__button--small" data-tekton-action="monitor-item" data-tekton-action-type="secondary">Monitor</button>
+                                    <button class="sophia__button sophia__button--small sophia__button--blue" 
+                                            onclick="sophia_viewExperiment('memory-retrieval'); return false;"
+                                            data-tekton-action="view-item" data-tekton-action-type="secondary">View</button>
+                                    <button class="sophia__button sophia__button--small sophia__button--green" 
+                                            onclick="sophia_monitorExperiment('memory-retrieval'); return false;"
+                                            data-tekton-action="monitor-item" data-tekton-action-type="secondary">Monitor</button>
                                 </td>
                             </tr>
                         </tbody>
@@ -321,8 +374,12 @@
                                 <td>Engram</td>
                                 <td><span class="sophia__status sophia__status--in-progress">In Progress</span></td>
                                 <td>
-                                    <button class="sophia__button sophia__button--small" data-tekton-action="view-item" data-tekton-action-type="secondary">View</button>
-                                    <button class="sophia__button sophia__button--small" data-tekton-action="update-item" data-tekton-action-type="secondary">Update</button>
+                                    <button class="sophia__button sophia__button--small sophia__button--blue" 
+                                            onclick="sophia_viewRecommendation('semantic-search'); return false;"
+                                            data-tekton-action="view-item" data-tekton-action-type="secondary">View</button>
+                                    <button class="sophia__button sophia__button--small sophia__button--green" 
+                                            onclick="sophia_updateRecommendation('semantic-search'); return false;"
+                                            data-tekton-action="update-item" data-tekton-action-type="secondary">Update</button>
                                 </td>
                             </tr>
                             <tr class="sophia__table-row">
@@ -332,8 +389,12 @@
                                 <td>Harmonia</td>
                                 <td><span class="sophia__status sophia__status--pending">Pending</span></td>
                                 <td>
-                                    <button class="sophia__button sophia__button--small" data-tekton-action="view-item" data-tekton-action-type="secondary">View</button>
-                                    <button class="sophia__button sophia__button--small" data-tekton-action="approve-item" data-tekton-action-type="primary">Approve</button>
+                                    <button class="sophia__button sophia__button--small sophia__button--blue" 
+                                            onclick="sophia_viewRecommendation('harmonia-optimization'); return false;"
+                                            data-tekton-action="view-item" data-tekton-action-type="secondary">View</button>
+                                    <button class="sophia__button sophia__button--small sophia__button--gold" 
+                                            onclick="sophia_approveRecommendation('harmonia-optimization'); return false;"
+                                            data-tekton-action="approve-item" data-tekton-action-type="primary">Approve</button>
                                 </td>
                             </tr>
                         </tbody>
@@ -429,10 +490,12 @@
                                 <p><strong>Progress:</strong> 3/5 experiments completed</p>
                             </div>
                             <div class="sophia__protocol-actions">
-                                <button class="sophia__button sophia__button--small" 
+                                <button class="sophia__button sophia__button--small sophia__button--blue" 
+                                        onclick="sophia_viewProtocolResults('manifold-validation-001'); return false;"
                                         data-tekton-action="view-results" 
                                         data-tekton-action-type="secondary">View Results</button>
-                                <button class="sophia__button sophia__button--small" 
+                                <button class="sophia__button sophia__button--small sophia__button--green" 
+                                        onclick="sophia_monitorProtocol('manifold-validation-001'); return false;"
                                         data-tekton-action="monitor-protocol" 
                                         data-tekton-action-type="secondary">Monitor</button>
                             </div>
@@ -452,8 +515,10 @@
                                 <p><strong>Result:</strong> Confirmed with 95% confidence</p>
                             </div>
                             <div class="sophia__protocol-actions">
-                                <button class="sophia__button sophia__button--small">View Results</button>
-                                <button class="sophia__button sophia__button--small">Export</button>
+                                <button class="sophia__button sophia__button--small sophia__button--blue"
+                                        onclick="sophia_viewProtocolResults('scaling-law-verification'); return false;">View Results</button>
+                                <button class="sophia__button sophia__button--small sophia__button--gold"
+                                        onclick="sophia_exportProtocol('scaling-law-verification'); return false;">Export</button>
                             </div>
                         </div>
                     </div>
@@ -796,8 +861,8 @@
     
     .sophia__chart {
         width: 100%;
-        height: 200px;
-        background-color: var(--bg-element, #2a2a3a);
+        min-height: 300px;
+        background-color: transparent;
         border-radius: 4px;
         display: flex;
         align-items: center;
@@ -812,15 +877,21 @@
     
     /* Intelligence Dashboard */
     .sophia__intelligence-dashboard {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+        height: 100%;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+    
+    .sophia__intelligence-content {
+        display: flex;
+        flex-direction: column;
         gap: 20px;
         padding: 16px;
-        padding-bottom: 40px;
+        padding-bottom: 120px;
+        min-height: calc(100% + 10%);
     }
     
     .sophia__radar-chart-wrapper {
-        grid-column: 1 / -1;
         background-color: var(--bg-secondary, #252535);
         border: 1px solid var(--border-color, #444444);
         border-radius: 4px;
@@ -828,7 +899,6 @@
     }
     
     .sophia__dimension-details {
-        grid-column: 1 / -1;
         background-color: var(--bg-secondary, #252535);
         border: 1px solid var(--border-color, #444444);
         border-radius: 4px;
@@ -836,11 +906,10 @@
     }
     
     .sophia__intelligence-comparison {
-        grid-column: 1 / -1;
-        background-color: var(--bg-secondary, #252535);
-        border: 1px solid var(--border-color, #444444);
+        background-color: transparent;
+        border: none;
         border-radius: 4px;
-        padding: 16px;
+        padding: 16px 0;
         margin-top: 0;
     }
     
@@ -925,6 +994,46 @@
     .sophia__button--small {
         padding: 3px 8px;
         font-size: 0.8rem;
+    }
+    
+    .sophia__button--blue {
+        background-color: #2196F3;
+        color: white;
+        border-color: #2196F3;
+    }
+    
+    .sophia__button--blue:hover {
+        background-color: #1976D2;
+    }
+    
+    .sophia__button--green {
+        background-color: #4CAF50;
+        color: white;
+        border-color: #4CAF50;
+    }
+    
+    .sophia__button--green:hover {
+        background-color: #388E3C;
+    }
+    
+    .sophia__button--gold {
+        background-color: #FF9800;
+        color: white;
+        border-color: #FF9800;
+    }
+    
+    .sophia__button--gold:hover {
+        background-color: #F57C00;
+    }
+    
+    .sophia__button--purple {
+        background-color: #9C27B0;
+        color: white;
+        border-color: #9C27B0;
+    }
+    
+    .sophia__button--purple:hover {
+        background-color: #7B1FA2;
     }
     
     /* Loading Indicator */
@@ -1478,41 +1587,49 @@
         transition: height 0.3s ease;
     }
     
-    .sophia__intelligence-radar {
+    .sophia__intelligence-split {
         display: flex;
-        flex-direction: column;
-        gap: 16px;
+        gap: 32px;
         padding: 12px;
+        height: 100%;
     }
     
-    .sophia__radar-center {
-        text-align: center;
-        padding: 16px;
+    .sophia__score-section {
+        flex: 0 0 200px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
         background-color: rgba(76, 175, 80, 0.1);
         border-radius: 8px;
         border: 1px solid rgba(76, 175, 80, 0.3);
+        padding: 24px;
     }
     
     .sophia__radar-score {
-        font-size: 2rem;
+        font-size: 3rem;
         font-weight: 600;
         color: #4CAF50;
+        margin-bottom: 8px;
     }
     
     .sophia__radar-label {
-        font-size: 0.9rem;
+        font-size: 1rem;
         color: var(--text-secondary, #aaa);
+        text-align: center;
     }
     
-    .sophia__radar-dimensions {
+    .sophia__dimensions-section {
+        flex: 1;
         display: flex;
         flex-direction: column;
-        gap: 8px;
+        gap: 12px;
+        justify-content: center;
     }
     
     .sophia__dimension-item {
         display: grid;
-        grid-template-columns: 1fr 2fr auto;
+        grid-template-columns: 140px 1fr 60px;
         align-items: center;
         gap: 12px;
         font-size: 0.8rem;
@@ -1529,6 +1646,105 @@
         height: 100%;
         border-radius: 3px;
         transition: width 0.5s ease;
+    }
+    
+    .sophia__comparison-display {
+        min-height: 200px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: rgba(255, 152, 0, 0.1);
+        border-radius: 8px;
+        border: 2px dashed #FF9800;
+    }
+    
+    .sophia__comparison-message {
+        color: var(--text-secondary, #aaa);
+        font-style: italic;
+        text-align: center;
+    }
+    
+    .sophia__comparison-results {
+        padding: 16px;
+        border: 2px solid #FF9800;
+        border-radius: 8px;
+        background-color: var(--bg-secondary, #252535);
+        margin-bottom: 40px;
+    }
+    
+    .sophia__comparison-title {
+        text-align: center;
+        margin-bottom: 20px;
+        color: #4CAF50;
+        font-size: 1.2rem;
+    }
+    
+    .sophia__comparison-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+    }
+    
+    .sophia__comparison-table th,
+    .sophia__comparison-table td {
+        padding: 10px;
+        text-align: left;
+        border-bottom: 1px solid var(--border-color, #444444);
+    }
+    
+    .sophia__comparison-table th {
+        font-weight: 500;
+        background-color: var(--bg-secondary, #252535);
+        color: var(--text-primary, #f0f0f0);
+    }
+    
+    .sophia__comparison-table th:first-child {
+        width: 40%;
+    }
+    
+    .sophia__comparison-table th:nth-child(2),
+    .sophia__comparison-table th:nth-child(3) {
+        width: 30%;
+        text-align: center;
+    }
+    
+    .sophia__comparison-table td:nth-child(2),
+    .sophia__comparison-table td:nth-child(3) {
+        text-align: center;
+    }
+    
+    .sophia__comparison-cell {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+    }
+    
+    .sophia__comparison-value {
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+    
+    .sophia__comparison-bar-wrapper {
+        width: 100%;
+        height: 8px;
+        background-color: var(--bg-tertiary, #333345);
+        border-radius: 4px;
+        overflow: hidden;
+    }
+    
+    .sophia__comparison-bar {
+        height: 100%;
+        border-radius: 4px;
+        transition: width 0.5s ease;
+    }
+    
+    .sophia__comparison-bar--left {
+        background-color: #4CAF50;
+    }
+    
+    .sophia__comparison-bar--right {
+        background-color: #2196F3;
     }
 </style>
 
@@ -1938,12 +2154,12 @@ function sophia_initializeFallbackCharts() {
     const radarChart = document.getElementById('sophia-radar-chart');
     if (radarChart) {
         radarChart.innerHTML = `
-            <div class="sophia__intelligence-radar">
-                <div class="sophia__radar-center">
+            <div class="sophia__intelligence-split">
+                <div class="sophia__score-section">
                     <div class="sophia__radar-score">87</div>
                     <div class="sophia__radar-label">Overall Score</div>
                 </div>
-                <div class="sophia__radar-dimensions">
+                <div class="sophia__dimensions-section">
                     <div class="sophia__dimension-item">
                         <span>Language Processing</span>
                         <div class="sophia__dimension-bar">
@@ -1983,6 +2199,34 @@ function sophia_initializeFallbackCharts() {
             </div>
         `;
     }
+    
+    // Component Comparison Chart
+    const comparisonChart = document.getElementById('sophia-comparison-chart');
+    if (comparisonChart) {
+        comparisonChart.innerHTML = `
+            <div class="sophia__comparison-display">
+                <div class="sophia__comparison-message">
+                    Select two components above to compare their intelligence profiles
+                </div>
+            </div>
+        `;
+    }
+    
+    // Populate component dropdowns
+    const componentNames = ['Apollo', 'Athena', 'Engram', 'Ergon', 'Harmonia', 'Hermes', 'Noesis', 'Numa', 'Penia', 'Prometheus', 'Rhetor', 'Sophia', 'Synthesis', 'Telos', 'Terma'];
+    
+    const componentSelects = document.querySelectorAll('#sophia-comparison-component1, #sophia-comparison-component2');
+    componentSelects.forEach(select => {
+        if (select) {
+            select.innerHTML = '<option value="">Select Component</option>';
+            componentNames.forEach(name => {
+                const option = document.createElement('option');
+                option.value = name.toLowerCase();
+                option.textContent = name;
+                select.appendChild(option);
+            });
+        }
+    });
     
     // Start live updates
     sophia_startLiveUpdates();
@@ -2031,6 +2275,193 @@ function sophia_startLiveUpdates() {
         
     }, 2000);
 }
+
+// COMPARISON FUNCTIONALITY
+window.sophia_compareComponents = function() {
+    const comp1 = document.getElementById('sophia-comparison-component1').value;
+    const comp2 = document.getElementById('sophia-comparison-component2').value;
+    const comparisonChart = document.getElementById('sophia-comparison-chart');
+    
+    if (!comp1 || !comp2) {
+        alert('Please select two components to compare');
+        return;
+    }
+    
+    if (comp1 === comp2) {
+        alert('Please select two different components');
+        return;
+    }
+    
+    // Generate comparison visualization
+    if (comparisonChart) {
+        const scores1 = {
+            language: 80 + Math.random() * 20,
+            reasoning: 75 + Math.random() * 20,
+            knowledge: 82 + Math.random() * 18,
+            learning: 70 + Math.random() * 25,
+            problemSolving: 85 + Math.random() * 15
+        };
+        
+        const scores2 = {
+            language: 80 + Math.random() * 20,
+            reasoning: 75 + Math.random() * 20,
+            knowledge: 82 + Math.random() * 18,
+            learning: 70 + Math.random() * 25,
+            problemSolving: 85 + Math.random() * 15
+        };
+        
+        comparisonChart.innerHTML = `
+            <div class="sophia__comparison-results">
+                <h4 class="sophia__comparison-title">${comp1.charAt(0).toUpperCase() + comp1.slice(1)} vs ${comp2.charAt(0).toUpperCase() + comp2.slice(1)}</h4>
+                <table class="sophia__comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Dimension</th>
+                            <th>${comp1.charAt(0).toUpperCase() + comp1.slice(1)}</th>
+                            <th>${comp2.charAt(0).toUpperCase() + comp2.slice(1)}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Language Processing</td>
+                            <td>
+                                <div class="sophia__comparison-cell">
+                                    <div class="sophia__comparison-value">${Math.round(scores1.language)}%</div>
+                                    <div class="sophia__comparison-bar-wrapper">
+                                        <div class="sophia__comparison-bar sophia__comparison-bar--left" style="width: ${scores1.language}%"></div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="sophia__comparison-cell">
+                                    <div class="sophia__comparison-value">${Math.round(scores2.language)}%</div>
+                                    <div class="sophia__comparison-bar-wrapper">
+                                        <div class="sophia__comparison-bar sophia__comparison-bar--right" style="width: ${scores2.language}%"></div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Reasoning</td>
+                            <td>
+                                <div class="sophia__comparison-cell">
+                                    <div class="sophia__comparison-value">${Math.round(scores1.reasoning)}%</div>
+                                    <div class="sophia__comparison-bar-wrapper">
+                                        <div class="sophia__comparison-bar sophia__comparison-bar--left" style="width: ${scores1.reasoning}%"></div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="sophia__comparison-cell">
+                                    <div class="sophia__comparison-value">${Math.round(scores2.reasoning)}%</div>
+                                    <div class="sophia__comparison-bar-wrapper">
+                                        <div class="sophia__comparison-bar sophia__comparison-bar--right" style="width: ${scores2.reasoning}%"></div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Knowledge</td>
+                            <td>
+                                <div class="sophia__comparison-cell">
+                                    <div class="sophia__comparison-value">${Math.round(scores1.knowledge)}%</div>
+                                    <div class="sophia__comparison-bar-wrapper">
+                                        <div class="sophia__comparison-bar sophia__comparison-bar--left" style="width: ${scores1.knowledge}%"></div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="sophia__comparison-cell">
+                                    <div class="sophia__comparison-value">${Math.round(scores2.knowledge)}%</div>
+                                    <div class="sophia__comparison-bar-wrapper">
+                                        <div class="sophia__comparison-bar sophia__comparison-bar--right" style="width: ${scores2.knowledge}%"></div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Learning</td>
+                            <td>
+                                <div class="sophia__comparison-cell">
+                                    <div class="sophia__comparison-value">${Math.round(scores1.learning)}%</div>
+                                    <div class="sophia__comparison-bar-wrapper">
+                                        <div class="sophia__comparison-bar sophia__comparison-bar--left" style="width: ${scores1.learning}%"></div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="sophia__comparison-cell">
+                                    <div class="sophia__comparison-value">${Math.round(scores2.learning)}%</div>
+                                    <div class="sophia__comparison-bar-wrapper">
+                                        <div class="sophia__comparison-bar sophia__comparison-bar--right" style="width: ${scores2.learning}%"></div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Problem Solving</td>
+                            <td>
+                                <div class="sophia__comparison-cell">
+                                    <div class="sophia__comparison-value">${Math.round(scores1.problemSolving)}%</div>
+                                    <div class="sophia__comparison-bar-wrapper">
+                                        <div class="sophia__comparison-bar sophia__comparison-bar--left" style="width: ${scores1.problemSolving}%"></div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="sophia__comparison-cell">
+                                    <div class="sophia__comparison-value">${Math.round(scores2.problemSolving)}%</div>
+                                    <div class="sophia__comparison-bar-wrapper">
+                                        <div class="sophia__comparison-bar sophia__comparison-bar--right" style="width: ${scores2.problemSolving}%"></div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        `;
+    }
+};
+
+// BUTTON FUNCTIONS FOR THEORY VALIDATION
+window.sophia_viewProtocolResults = function(protocolId) {
+    alert(`View Results: Displaying detailed results for protocol ${protocolId}\n\nThis would show:\n• Experiment data and measurements\n• Statistical analysis results\n• Graphs and visualizations\n• Confidence intervals`);
+};
+
+window.sophia_monitorProtocol = function(protocolId) {
+    alert(`Monitor Protocol: Opening real-time monitoring for ${protocolId}\n\nThis would show:\n• Live experiment progress\n• Real-time data streaming\n• Alert notifications\n• Performance metrics`);
+};
+
+window.sophia_exportProtocol = function(protocolId) {
+    alert(`Export Protocol: Preparing export for ${protocolId}\n\nExport options:\n• PDF report with full analysis\n• CSV data files\n• JSON raw data\n• Jupyter notebook format`);
+};
+
+// BUTTON FUNCTIONS FOR EXPERIMENTS
+window.sophia_viewExperiment = function(experimentId) {
+    alert(`View Experiment: Opening details for ${experimentId}\n\nThis would display:\n• Experiment configuration\n• Variables and controls\n• Participant/component list\n• Timeline and schedule`);
+};
+
+window.sophia_viewExperimentResults = function(experimentId) {
+    alert(`View Results: Analyzing results for ${experimentId}\n\nThis would show:\n• Statistical significance tests\n• Performance comparisons\n• Outcome metrics\n• Recommendation insights`);
+};
+
+window.sophia_monitorExperiment = function(experimentId) {
+    alert(`Monitor Experiment: Live tracking for ${experimentId}\n\nMonitoring:\n• Current progress: 67%\n• Active participants\n• Real-time metrics\n• Anomaly detection alerts`);
+};
+
+// BUTTON FUNCTIONS FOR RECOMMENDATIONS
+window.sophia_viewRecommendation = function(recommendationId) {
+    alert(`View Recommendation: Details for ${recommendationId}\n\nShowing:\n• Full recommendation description\n• Implementation plan\n• Expected benefits\n• Risk assessment`);
+};
+
+window.sophia_updateRecommendation = function(recommendationId) {
+    alert(`Update Recommendation: Editing ${recommendationId}\n\nUpdate options:\n• Modify priority level\n• Add implementation notes\n• Update status\n• Assign to team members`);
+};
+
+window.sophia_approveRecommendation = function(recommendationId) {
+    alert(`Approve Recommendation: Approving ${recommendationId}\n\nApproval will:\n• Move to implementation queue\n• Notify assigned teams\n• Allocate resources\n• Start tracking progress`);
+};
 
 // CHAT CLEARING FUNCTION
 window.sophia_clearChat = function() {
