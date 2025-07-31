@@ -705,6 +705,13 @@
         align-items: center;
         gap: 8px;
         margin-bottom: 12px;
+        justify-content: space-between;
+    }
+    
+    .tekton__remote-actions {
+        display: flex;
+        gap: 6px;
+        margin-left: auto;
     }
     
     .tekton__remote-label {
@@ -831,9 +838,9 @@
     .tekton__project-footer {
         display: flex;
         justify-content: flex-end;
+        gap: 8px;
         margin-top: 16px;
         padding-top: 12px;
-        border-top: 1px solid var(--border-color, #444444);
     }
     
     .tekton__project-git-actions {
@@ -841,7 +848,6 @@
         gap: 8px;
         margin-top: 12px;
         padding-top: 12px;
-        border-top: 1px solid var(--border-color, #333);
     }
     
     .tekton__remove-btn {
@@ -1045,6 +1051,22 @@
     .tekton__sprint-card:hover {
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         border-color: #666;
+    }
+    
+    .tekton__sprint-info {
+        display: flex;
+        gap: 20px;
+        margin: 12px 0;
+        font-size: 0.9em;
+    }
+    
+    .tekton__sprint-details {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        margin: 12px 0;
+        font-size: 0.85em;
+        color: var(--text-secondary, #ccc);
     }
     
     /* Loading Indicator */
@@ -2455,6 +2477,13 @@ function createProjectCard(project) {
                 <div class="tekton__remote-row">
                     <span class="tekton__remote-label">Fork:</span>
                     <span style="font-size: 0.85rem; opacity: 0.8;">${project.forked_repository.split('/').slice(-2).join('/')}</span>
+                    ${hasFork && !hasUpstream ? `
+                        <div class="tekton__remote-actions">
+                            <button class="tekton__button tekton__button--status tekton__button--small" onclick="gitAction('${project.id}', 'status', 'fork')">Status</button>
+                            <button class="tekton__button tekton__button--pull tekton__button--small" onclick="gitAction('${project.id}', 'pull', 'fork')">Pull</button>
+                            <button class="tekton__button tekton__button--push tekton__button--small" onclick="gitAction('${project.id}', 'push', 'fork')">Push</button>
+                        </div>
+                    ` : ''}
                 </div>
             ` : '<div class="tekton__remote-row"><span class="tekton__remote-missing">No fork repository configured</span></div>'}
             
@@ -2462,11 +2491,16 @@ function createProjectCard(project) {
                 <div class="tekton__remote-row">
                     <span class="tekton__remote-label">Upstream:</span>
                     <span style="font-size: 0.85rem; opacity: 0.8;">${project.upstream_repository.split('/').slice(-2).join('/')}</span>
+                    ${hasUpstream ? `
+                        <div class="tekton__remote-actions">
+                            <button class="tekton__button tekton__button--status tekton__button--small" onclick="gitAction('${project.id}', 'status', 'upstream')">Status</button>
+                            <button class="tekton__button tekton__button--pull tekton__button--small" onclick="gitAction('${project.id}', 'pull', 'upstream')">Pull</button>
+                            <button class="tekton__button tekton__button--pr tekton__button--small" onclick="gitAction('${project.id}', 'pull-request', 'upstream')">Pull Request</button>
+                        </div>
+                    ` : ''}
                 </div>
             ` : '<div class="tekton__remote-row"><span class="tekton__remote-missing">No upstream repository configured</span></div>'}
         </div>
-        
-        ${gitButtons ? `<div class="tekton__project-git-actions">${gitButtons}</div>` : ''}
         
         <div class="tekton__project-footer">
             <button class="tekton__button tekton__button--danger tekton__button--small" onclick="removeProject('${project.id}', '${project.name}')">Remove</button>
@@ -2596,7 +2630,7 @@ async function loadAllSprints() {
 function createSprintCard(sprint) {
     const card = document.createElement('div');
     card.className = 'tekton__sprint-card';
-    card.setAttribute('data-sprint-id', sprint.id);
+    card.setAttribute('data-sprint-name', sprint.name);
     
     const statusClass = sprint.status.toLowerCase().replace(/ /g, '-');
     
@@ -2607,18 +2641,19 @@ function createSprintCard(sprint) {
         </div>
         
         <div class="tekton__sprint-info">
-            <div><strong>Priority:</strong> ${sprint.priority || 3}</div>
-            <div><strong>Project:</strong> ${sprint.project || 'Unknown'}</div>
+            <div><strong>Coder:</strong> ${sprint.assigned_coder ? `Coder-${sprint.assigned_coder}` : 'Unassigned'}</div>
+            <div><strong>Tasks:</strong> ${sprint.task_count || 0}</div>
         </div>
         
-        <div class="tekton__sprint-overview">
-            ${sprint.overview || 'No overview available'}
+        <div class="tekton__sprint-details">
+            <div><strong>Branch:</strong> ${sprint.branch_name || 'No branch'}</div>
+            <div><strong>Updated:</strong> ${sprint.last_updated ? new Date(sprint.last_updated).toLocaleDateString() : 'Unknown'}</div>
         </div>
         
         <div class="tekton__sprint-actions">
-            <button class="tekton__button tekton__button--sprints tekton__button--small" onclick="showSprintDailyLog('${sprint.id}', '${sprint.name}')">Daily Log</button>
-            <button class="tekton__button tekton__button--details tekton__button--small" onclick="showSprintHandoff('${sprint.id}', '${sprint.name}')">Handoff</button>
-            <button class="tekton__button tekton__button--secondary tekton__button--small" style="background-color: #9C27B0;" onclick="showSprintPlan('${sprint.id}', '${sprint.name}')">Sprint Plan</button>
+            <button class="tekton__button tekton__button--sprints tekton__button--small" onclick="showSprintDailyLog('${sprint.name}', '${sprint.name}')">Daily Log</button>
+            <button class="tekton__button tekton__button--details tekton__button--small" onclick="showSprintHandoff('${sprint.name}', '${sprint.name}')">Handoff</button>
+            <button class="tekton__button tekton__button--secondary tekton__button--small" style="background-color: #9C27B0;" onclick="showSprintPlan('${sprint.name}', '${sprint.name}')">Sprint Plan</button>
         </div>
     `;
     

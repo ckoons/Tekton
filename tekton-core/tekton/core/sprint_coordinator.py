@@ -418,6 +418,43 @@ class SprintCoordinator:
             logger.error(f"Failed to create test sprint: {e}")
             return False
     
+    async def perform_dry_run_merge(self, merge_id: str, merge_name: str) -> Dict[str, Any]:
+        """Perform a dry-run merge to check for conflicts"""
+        
+        # Find the sprint
+        sprint = None
+        for sprint_name, s in self.sprint_monitor.sprints.items():
+            if sprint_name == merge_name:
+                sprint = s
+                break
+        
+        if not sprint:
+            return {
+                "success": False,
+                "error": f"Sprint {merge_name} not found"
+            }
+        
+        # Get branch name
+        branch_name = f"sprint/coder-{sprint.assigned_coder.lower()}/{merge_name.lower().replace('_', '-')}"
+        
+        # Perform dry-run
+        success, result = await self.branch_manager.dry_run_merge(branch_name)
+        
+        if success:
+            return {
+                "success": True,
+                "merge_id": merge_id,
+                "merge_name": merge_name,
+                **result
+            }
+        else:
+            return {
+                "success": False,
+                "merge_id": merge_id,
+                "merge_name": merge_name,
+                "error": result.get("error", "Unknown error")
+            }
+    
     def get_debug_info(self) -> Dict[str, Any]:
         """Get detailed debug information"""
         

@@ -119,6 +119,74 @@ async def get_sprint_status(sprint_name: Optional[str] = None):
         raise HTTPException(status_code=500, detail=str(e))
 
 @api_contract(
+    title="Complete Merge API",
+    endpoint="/sprints/complete-merge/{merge_id}",
+    method="POST",
+    request_schema={"merge_id": "str"},
+    response_schema={"success": "bool", "message": "str"},
+    description="Complete a clean merge (after successful dry-run)"
+)
+@router.post("/complete-merge/{merge_id}")
+async def complete_merge(merge_id: str):
+    """Complete a clean merge"""
+    
+    if not sprint_coordinator:
+        raise HTTPException(status_code=503, detail="Sprint coordinator not initialized")
+    
+    try:
+        # Find the sprint by merge_id
+        merges = sprint_coordinator.get_merge_status()
+        merge_sprint = None
+        
+        for merge in merges.get("merges", []):
+            if merge.get("id") == merge_id:
+                merge_sprint = merge
+                break
+        
+        if not merge_sprint:
+            raise HTTPException(status_code=404, detail="Merge not found")
+        
+        # Get branch name
+        sprint_name = merge_sprint.get("name")
+        sprint = None
+        for s_name, s in sprint_coordinator.sprint_monitor.sprints.items():
+            if s_name == sprint_name:
+                sprint = s
+                break
+        
+        if not sprint:
+            raise HTTPException(status_code=404, detail="Sprint not found")
+        
+        branch_name = f"sprint/coder-{sprint.assigned_coder.lower()}/{sprint_name.lower().replace('_', '-')}"
+        
+        # Perform actual merge
+        success, message = await sprint_coordinator.branch_manager.merge_branch(branch_name)
+        
+        if success:
+            # Update sprint status
+            sprint.status = "Merged"
+            await sprint_coordinator.sprint_monitor._update_daily_log_status(
+                sprint_name, 
+                "Merged",
+                f"Sprint merged to main by TektonCore"
+            )
+            
+            return {
+                "success": True,
+                "message": f"Successfully merged {sprint_name}",
+                "merge_id": merge_id,
+                "timestamp": datetime.now().isoformat()
+            }
+        else:
+            raise HTTPException(status_code=400, detail=message)
+            
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Failed to complete merge: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_contract(
     title="Sprint Assignment API",
     endpoint="/sprints/assign",
     method="POST", 
@@ -159,6 +227,74 @@ async def assign_sprint(request: SprintAssignmentRequest):
         raise HTTPException(status_code=500, detail=str(e))
 
 @api_contract(
+    title="Complete Merge API",
+    endpoint="/sprints/complete-merge/{merge_id}",
+    method="POST",
+    request_schema={"merge_id": "str"},
+    response_schema={"success": "bool", "message": "str"},
+    description="Complete a clean merge (after successful dry-run)"
+)
+@router.post("/complete-merge/{merge_id}")
+async def complete_merge(merge_id: str):
+    """Complete a clean merge"""
+    
+    if not sprint_coordinator:
+        raise HTTPException(status_code=503, detail="Sprint coordinator not initialized")
+    
+    try:
+        # Find the sprint by merge_id
+        merges = sprint_coordinator.get_merge_status()
+        merge_sprint = None
+        
+        for merge in merges.get("merges", []):
+            if merge.get("id") == merge_id:
+                merge_sprint = merge
+                break
+        
+        if not merge_sprint:
+            raise HTTPException(status_code=404, detail="Merge not found")
+        
+        # Get branch name
+        sprint_name = merge_sprint.get("name")
+        sprint = None
+        for s_name, s in sprint_coordinator.sprint_monitor.sprints.items():
+            if s_name == sprint_name:
+                sprint = s
+                break
+        
+        if not sprint:
+            raise HTTPException(status_code=404, detail="Sprint not found")
+        
+        branch_name = f"sprint/coder-{sprint.assigned_coder.lower()}/{sprint_name.lower().replace('_', '-')}"
+        
+        # Perform actual merge
+        success, message = await sprint_coordinator.branch_manager.merge_branch(branch_name)
+        
+        if success:
+            # Update sprint status
+            sprint.status = "Merged"
+            await sprint_coordinator.sprint_monitor._update_daily_log_status(
+                sprint_name, 
+                "Merged",
+                f"Sprint merged to main by TektonCore"
+            )
+            
+            return {
+                "success": True,
+                "message": f"Successfully merged {sprint_name}",
+                "merge_id": merge_id,
+                "timestamp": datetime.now().isoformat()
+            }
+        else:
+            raise HTTPException(status_code=400, detail=message)
+            
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Failed to complete merge: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_contract(
     title="Coder Status API",
     endpoint="/sprints/coders",
     method="GET",
@@ -184,6 +320,74 @@ async def get_coder_status():
         
     except Exception as e:
         logger.error(f"Failed to get coder status: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_contract(
+    title="Complete Merge API",
+    endpoint="/sprints/complete-merge/{merge_id}",
+    method="POST",
+    request_schema={"merge_id": "str"},
+    response_schema={"success": "bool", "message": "str"},
+    description="Complete a clean merge (after successful dry-run)"
+)
+@router.post("/complete-merge/{merge_id}")
+async def complete_merge(merge_id: str):
+    """Complete a clean merge"""
+    
+    if not sprint_coordinator:
+        raise HTTPException(status_code=503, detail="Sprint coordinator not initialized")
+    
+    try:
+        # Find the sprint by merge_id
+        merges = sprint_coordinator.get_merge_status()
+        merge_sprint = None
+        
+        for merge in merges.get("merges", []):
+            if merge.get("id") == merge_id:
+                merge_sprint = merge
+                break
+        
+        if not merge_sprint:
+            raise HTTPException(status_code=404, detail="Merge not found")
+        
+        # Get branch name
+        sprint_name = merge_sprint.get("name")
+        sprint = None
+        for s_name, s in sprint_coordinator.sprint_monitor.sprints.items():
+            if s_name == sprint_name:
+                sprint = s
+                break
+        
+        if not sprint:
+            raise HTTPException(status_code=404, detail="Sprint not found")
+        
+        branch_name = f"sprint/coder-{sprint.assigned_coder.lower()}/{sprint_name.lower().replace('_', '-')}"
+        
+        # Perform actual merge
+        success, message = await sprint_coordinator.branch_manager.merge_branch(branch_name)
+        
+        if success:
+            # Update sprint status
+            sprint.status = "Merged"
+            await sprint_coordinator.sprint_monitor._update_daily_log_status(
+                sprint_name, 
+                "Merged",
+                f"Sprint merged to main by TektonCore"
+            )
+            
+            return {
+                "success": True,
+                "message": f"Successfully merged {sprint_name}",
+                "merge_id": merge_id,
+                "timestamp": datetime.now().isoformat()
+            }
+        else:
+            raise HTTPException(status_code=400, detail=message)
+            
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Failed to complete merge: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 @api_contract(
@@ -221,6 +425,74 @@ async def get_merge_status():
         
     except Exception as e:
         logger.error(f"Failed to get merge status: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_contract(
+    title="Complete Merge API",
+    endpoint="/sprints/complete-merge/{merge_id}",
+    method="POST",
+    request_schema={"merge_id": "str"},
+    response_schema={"success": "bool", "message": "str"},
+    description="Complete a clean merge (after successful dry-run)"
+)
+@router.post("/complete-merge/{merge_id}")
+async def complete_merge(merge_id: str):
+    """Complete a clean merge"""
+    
+    if not sprint_coordinator:
+        raise HTTPException(status_code=503, detail="Sprint coordinator not initialized")
+    
+    try:
+        # Find the sprint by merge_id
+        merges = sprint_coordinator.get_merge_status()
+        merge_sprint = None
+        
+        for merge in merges.get("merges", []):
+            if merge.get("id") == merge_id:
+                merge_sprint = merge
+                break
+        
+        if not merge_sprint:
+            raise HTTPException(status_code=404, detail="Merge not found")
+        
+        # Get branch name
+        sprint_name = merge_sprint.get("name")
+        sprint = None
+        for s_name, s in sprint_coordinator.sprint_monitor.sprints.items():
+            if s_name == sprint_name:
+                sprint = s
+                break
+        
+        if not sprint:
+            raise HTTPException(status_code=404, detail="Sprint not found")
+        
+        branch_name = f"sprint/coder-{sprint.assigned_coder.lower()}/{sprint_name.lower().replace('_', '-')}"
+        
+        # Perform actual merge
+        success, message = await sprint_coordinator.branch_manager.merge_branch(branch_name)
+        
+        if success:
+            # Update sprint status
+            sprint.status = "Merged"
+            await sprint_coordinator.sprint_monitor._update_daily_log_status(
+                sprint_name, 
+                "Merged",
+                f"Sprint merged to main by TektonCore"
+            )
+            
+            return {
+                "success": True,
+                "message": f"Successfully merged {sprint_name}",
+                "merge_id": merge_id,
+                "timestamp": datetime.now().isoformat()
+            }
+        else:
+            raise HTTPException(status_code=400, detail=message)
+            
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Failed to complete merge: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 @api_contract(
@@ -271,6 +543,74 @@ async def resolve_merge_conflict(request: MergeConflictResolution):
         raise HTTPException(status_code=500, detail=str(e))
 
 @api_contract(
+    title="Complete Merge API",
+    endpoint="/sprints/complete-merge/{merge_id}",
+    method="POST",
+    request_schema={"merge_id": "str"},
+    response_schema={"success": "bool", "message": "str"},
+    description="Complete a clean merge (after successful dry-run)"
+)
+@router.post("/complete-merge/{merge_id}")
+async def complete_merge(merge_id: str):
+    """Complete a clean merge"""
+    
+    if not sprint_coordinator:
+        raise HTTPException(status_code=503, detail="Sprint coordinator not initialized")
+    
+    try:
+        # Find the sprint by merge_id
+        merges = sprint_coordinator.get_merge_status()
+        merge_sprint = None
+        
+        for merge in merges.get("merges", []):
+            if merge.get("id") == merge_id:
+                merge_sprint = merge
+                break
+        
+        if not merge_sprint:
+            raise HTTPException(status_code=404, detail="Merge not found")
+        
+        # Get branch name
+        sprint_name = merge_sprint.get("name")
+        sprint = None
+        for s_name, s in sprint_coordinator.sprint_monitor.sprints.items():
+            if s_name == sprint_name:
+                sprint = s
+                break
+        
+        if not sprint:
+            raise HTTPException(status_code=404, detail="Sprint not found")
+        
+        branch_name = f"sprint/coder-{sprint.assigned_coder.lower()}/{sprint_name.lower().replace('_', '-')}"
+        
+        # Perform actual merge
+        success, message = await sprint_coordinator.branch_manager.merge_branch(branch_name)
+        
+        if success:
+            # Update sprint status
+            sprint.status = "Merged"
+            await sprint_coordinator.sprint_monitor._update_daily_log_status(
+                sprint_name, 
+                "Merged",
+                f"Sprint merged to main by TektonCore"
+            )
+            
+            return {
+                "success": True,
+                "message": f"Successfully merged {sprint_name}",
+                "merge_id": merge_id,
+                "timestamp": datetime.now().isoformat()
+            }
+        else:
+            raise HTTPException(status_code=400, detail=message)
+            
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Failed to complete merge: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_contract(
     title="Merge Retry API",
     endpoint="/sprints/retry-merge/{merge_id}",
     method="POST",
@@ -307,6 +647,74 @@ async def retry_merge(merge_id: str):
         raise HTTPException(status_code=500, detail=str(e))
 
 @api_contract(
+    title="Complete Merge API",
+    endpoint="/sprints/complete-merge/{merge_id}",
+    method="POST",
+    request_schema={"merge_id": "str"},
+    response_schema={"success": "bool", "message": "str"},
+    description="Complete a clean merge (after successful dry-run)"
+)
+@router.post("/complete-merge/{merge_id}")
+async def complete_merge(merge_id: str):
+    """Complete a clean merge"""
+    
+    if not sprint_coordinator:
+        raise HTTPException(status_code=503, detail="Sprint coordinator not initialized")
+    
+    try:
+        # Find the sprint by merge_id
+        merges = sprint_coordinator.get_merge_status()
+        merge_sprint = None
+        
+        for merge in merges.get("merges", []):
+            if merge.get("id") == merge_id:
+                merge_sprint = merge
+                break
+        
+        if not merge_sprint:
+            raise HTTPException(status_code=404, detail="Merge not found")
+        
+        # Get branch name
+        sprint_name = merge_sprint.get("name")
+        sprint = None
+        for s_name, s in sprint_coordinator.sprint_monitor.sprints.items():
+            if s_name == sprint_name:
+                sprint = s
+                break
+        
+        if not sprint:
+            raise HTTPException(status_code=404, detail="Sprint not found")
+        
+        branch_name = f"sprint/coder-{sprint.assigned_coder.lower()}/{sprint_name.lower().replace('_', '-')}"
+        
+        # Perform actual merge
+        success, message = await sprint_coordinator.branch_manager.merge_branch(branch_name)
+        
+        if success:
+            # Update sprint status
+            sprint.status = "Merged"
+            await sprint_coordinator.sprint_monitor._update_daily_log_status(
+                sprint_name, 
+                "Merged",
+                f"Sprint merged to main by TektonCore"
+            )
+            
+            return {
+                "success": True,
+                "message": f"Successfully merged {sprint_name}",
+                "merge_id": merge_id,
+                "timestamp": datetime.now().isoformat()
+            }
+        else:
+            raise HTTPException(status_code=400, detail=message)
+            
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Failed to complete merge: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_contract(
     title="System Status API",
     endpoint="/sprints/system",
     method="GET",
@@ -332,6 +740,74 @@ async def get_system_status():
         
     except Exception as e:
         logger.error(f"Failed to get system status: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_contract(
+    title="Complete Merge API",
+    endpoint="/sprints/complete-merge/{merge_id}",
+    method="POST",
+    request_schema={"merge_id": "str"},
+    response_schema={"success": "bool", "message": "str"},
+    description="Complete a clean merge (after successful dry-run)"
+)
+@router.post("/complete-merge/{merge_id}")
+async def complete_merge(merge_id: str):
+    """Complete a clean merge"""
+    
+    if not sprint_coordinator:
+        raise HTTPException(status_code=503, detail="Sprint coordinator not initialized")
+    
+    try:
+        # Find the sprint by merge_id
+        merges = sprint_coordinator.get_merge_status()
+        merge_sprint = None
+        
+        for merge in merges.get("merges", []):
+            if merge.get("id") == merge_id:
+                merge_sprint = merge
+                break
+        
+        if not merge_sprint:
+            raise HTTPException(status_code=404, detail="Merge not found")
+        
+        # Get branch name
+        sprint_name = merge_sprint.get("name")
+        sprint = None
+        for s_name, s in sprint_coordinator.sprint_monitor.sprints.items():
+            if s_name == sprint_name:
+                sprint = s
+                break
+        
+        if not sprint:
+            raise HTTPException(status_code=404, detail="Sprint not found")
+        
+        branch_name = f"sprint/coder-{sprint.assigned_coder.lower()}/{sprint_name.lower().replace('_', '-')}"
+        
+        # Perform actual merge
+        success, message = await sprint_coordinator.branch_manager.merge_branch(branch_name)
+        
+        if success:
+            # Update sprint status
+            sprint.status = "Merged"
+            await sprint_coordinator.sprint_monitor._update_daily_log_status(
+                sprint_name, 
+                "Merged",
+                f"Sprint merged to main by TektonCore"
+            )
+            
+            return {
+                "success": True,
+                "message": f"Successfully merged {sprint_name}",
+                "merge_id": merge_id,
+                "timestamp": datetime.now().isoformat()
+            }
+        else:
+            raise HTTPException(status_code=400, detail=message)
+            
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Failed to complete merge: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 # Development and testing endpoints
@@ -368,6 +844,74 @@ async def create_test_sprint(request: CreateTestSprintRequest):
         logger.error(f"Failed to create test sprint: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
+@api_contract(
+    title="Complete Merge API",
+    endpoint="/sprints/complete-merge/{merge_id}",
+    method="POST",
+    request_schema={"merge_id": "str"},
+    response_schema={"success": "bool", "message": "str"},
+    description="Complete a clean merge (after successful dry-run)"
+)
+@router.post("/complete-merge/{merge_id}")
+async def complete_merge(merge_id: str):
+    """Complete a clean merge"""
+    
+    if not sprint_coordinator:
+        raise HTTPException(status_code=503, detail="Sprint coordinator not initialized")
+    
+    try:
+        # Find the sprint by merge_id
+        merges = sprint_coordinator.get_merge_status()
+        merge_sprint = None
+        
+        for merge in merges.get("merges", []):
+            if merge.get("id") == merge_id:
+                merge_sprint = merge
+                break
+        
+        if not merge_sprint:
+            raise HTTPException(status_code=404, detail="Merge not found")
+        
+        # Get branch name
+        sprint_name = merge_sprint.get("name")
+        sprint = None
+        for s_name, s in sprint_coordinator.sprint_monitor.sprints.items():
+            if s_name == sprint_name:
+                sprint = s
+                break
+        
+        if not sprint:
+            raise HTTPException(status_code=404, detail="Sprint not found")
+        
+        branch_name = f"sprint/coder-{sprint.assigned_coder.lower()}/{sprint_name.lower().replace('_', '-')}"
+        
+        # Perform actual merge
+        success, message = await sprint_coordinator.branch_manager.merge_branch(branch_name)
+        
+        if success:
+            # Update sprint status
+            sprint.status = "Merged"
+            await sprint_coordinator.sprint_monitor._update_daily_log_status(
+                sprint_name, 
+                "Merged",
+                f"Sprint merged to main by TektonCore"
+            )
+            
+            return {
+                "success": True,
+                "message": f"Successfully merged {sprint_name}",
+                "merge_id": merge_id,
+                "timestamp": datetime.now().isoformat()
+            }
+        else:
+            raise HTTPException(status_code=400, detail=message)
+            
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Failed to complete merge: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
 @router.get("/debug")
 async def get_debug_info():
     """Get detailed debug information (development only)"""
@@ -387,6 +931,74 @@ async def get_debug_info():
         
     except Exception as e:
         logger.error(f"Failed to get debug info: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_contract(
+    title="Complete Merge API",
+    endpoint="/sprints/complete-merge/{merge_id}",
+    method="POST",
+    request_schema={"merge_id": "str"},
+    response_schema={"success": "bool", "message": "str"},
+    description="Complete a clean merge (after successful dry-run)"
+)
+@router.post("/complete-merge/{merge_id}")
+async def complete_merge(merge_id: str):
+    """Complete a clean merge"""
+    
+    if not sprint_coordinator:
+        raise HTTPException(status_code=503, detail="Sprint coordinator not initialized")
+    
+    try:
+        # Find the sprint by merge_id
+        merges = sprint_coordinator.get_merge_status()
+        merge_sprint = None
+        
+        for merge in merges.get("merges", []):
+            if merge.get("id") == merge_id:
+                merge_sprint = merge
+                break
+        
+        if not merge_sprint:
+            raise HTTPException(status_code=404, detail="Merge not found")
+        
+        # Get branch name
+        sprint_name = merge_sprint.get("name")
+        sprint = None
+        for s_name, s in sprint_coordinator.sprint_monitor.sprints.items():
+            if s_name == sprint_name:
+                sprint = s
+                break
+        
+        if not sprint:
+            raise HTTPException(status_code=404, detail="Sprint not found")
+        
+        branch_name = f"sprint/coder-{sprint.assigned_coder.lower()}/{sprint_name.lower().replace('_', '-')}"
+        
+        # Perform actual merge
+        success, message = await sprint_coordinator.branch_manager.merge_branch(branch_name)
+        
+        if success:
+            # Update sprint status
+            sprint.status = "Merged"
+            await sprint_coordinator.sprint_monitor._update_daily_log_status(
+                sprint_name, 
+                "Merged",
+                f"Sprint merged to main by TektonCore"
+            )
+            
+            return {
+                "success": True,
+                "message": f"Successfully merged {sprint_name}",
+                "merge_id": merge_id,
+                "timestamp": datetime.now().isoformat()
+            }
+        else:
+            raise HTTPException(status_code=400, detail=message)
+            
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Failed to complete merge: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 @integration_point(
@@ -420,6 +1032,74 @@ async def stream_sprint_status(background_tasks: BackgroundTasks):
         logger.error(f"Failed to get streaming status: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
+@api_contract(
+    title="Complete Merge API",
+    endpoint="/sprints/complete-merge/{merge_id}",
+    method="POST",
+    request_schema={"merge_id": "str"},
+    response_schema={"success": "bool", "message": "str"},
+    description="Complete a clean merge (after successful dry-run)"
+)
+@router.post("/complete-merge/{merge_id}")
+async def complete_merge(merge_id: str):
+    """Complete a clean merge"""
+    
+    if not sprint_coordinator:
+        raise HTTPException(status_code=503, detail="Sprint coordinator not initialized")
+    
+    try:
+        # Find the sprint by merge_id
+        merges = sprint_coordinator.get_merge_status()
+        merge_sprint = None
+        
+        for merge in merges.get("merges", []):
+            if merge.get("id") == merge_id:
+                merge_sprint = merge
+                break
+        
+        if not merge_sprint:
+            raise HTTPException(status_code=404, detail="Merge not found")
+        
+        # Get branch name
+        sprint_name = merge_sprint.get("name")
+        sprint = None
+        for s_name, s in sprint_coordinator.sprint_monitor.sprints.items():
+            if s_name == sprint_name:
+                sprint = s
+                break
+        
+        if not sprint:
+            raise HTTPException(status_code=404, detail="Sprint not found")
+        
+        branch_name = f"sprint/coder-{sprint.assigned_coder.lower()}/{sprint_name.lower().replace('_', '-')}"
+        
+        # Perform actual merge
+        success, message = await sprint_coordinator.branch_manager.merge_branch(branch_name)
+        
+        if success:
+            # Update sprint status
+            sprint.status = "Merged"
+            await sprint_coordinator.sprint_monitor._update_daily_log_status(
+                sprint_name, 
+                "Merged",
+                f"Sprint merged to main by TektonCore"
+            )
+            
+            return {
+                "success": True,
+                "message": f"Successfully merged {sprint_name}",
+                "merge_id": merge_id,
+                "timestamp": datetime.now().isoformat()
+            }
+        else:
+            raise HTTPException(status_code=400, detail=message)
+            
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Failed to complete merge: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
 # New merge workflow endpoints
 
 @api_contract(
@@ -438,29 +1118,94 @@ async def dry_run_merge(request: DryRunMergeRequest):
         raise HTTPException(status_code=503, detail="Sprint coordinator not initialized")
     
     try:
-        # Simulate dry-run merge
-        await asyncio.sleep(1)  # Simulate processing
+        # Perform actual dry-run merge
+        result = await sprint_coordinator.perform_dry_run_merge(request.merge_id, request.merge_name)
         
-        # For now, return mock data
-        # TODO: Implement actual git merge --no-commit logic
-        return {
-            "success": True,
-            "merge_id": request.merge_id,
-            "merge_name": request.merge_name,
-            "can_merge": False,
-            "conflicts": [
-                {
-                    "file": "src/main.py",
-                    "line": 42,
-                    "type": "content",
-                    "description": "Both branches modified this function"
-                }
-            ],
-            "timestamp": datetime.now().isoformat()
-        }
+        if result.get("success"):
+            return {
+                "success": True,
+                "merge_id": request.merge_id,
+                "merge_name": request.merge_name,
+                "can_merge": result.get("can_merge", False),
+                "conflicts": result.get("conflicts", []),
+                "timestamp": datetime.now().isoformat()
+            }
+        else:
+            raise HTTPException(
+                status_code=400,
+                detail=result.get("error", "Failed to perform dry-run merge")
+            )
         
     except Exception as e:
         logger.error(f"Failed to perform dry-run merge: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_contract(
+    title="Complete Merge API",
+    endpoint="/sprints/complete-merge/{merge_id}",
+    method="POST",
+    request_schema={"merge_id": "str"},
+    response_schema={"success": "bool", "message": "str"},
+    description="Complete a clean merge (after successful dry-run)"
+)
+@router.post("/complete-merge/{merge_id}")
+async def complete_merge(merge_id: str):
+    """Complete a clean merge"""
+    
+    if not sprint_coordinator:
+        raise HTTPException(status_code=503, detail="Sprint coordinator not initialized")
+    
+    try:
+        # Find the sprint by merge_id
+        merges = sprint_coordinator.get_merge_status()
+        merge_sprint = None
+        
+        for merge in merges.get("merges", []):
+            if merge.get("id") == merge_id:
+                merge_sprint = merge
+                break
+        
+        if not merge_sprint:
+            raise HTTPException(status_code=404, detail="Merge not found")
+        
+        # Get branch name
+        sprint_name = merge_sprint.get("name")
+        sprint = None
+        for s_name, s in sprint_coordinator.sprint_monitor.sprints.items():
+            if s_name == sprint_name:
+                sprint = s
+                break
+        
+        if not sprint:
+            raise HTTPException(status_code=404, detail="Sprint not found")
+        
+        branch_name = f"sprint/coder-{sprint.assigned_coder.lower()}/{sprint_name.lower().replace('_', '-')}"
+        
+        # Perform actual merge
+        success, message = await sprint_coordinator.branch_manager.merge_branch(branch_name)
+        
+        if success:
+            # Update sprint status
+            sprint.status = "Merged"
+            await sprint_coordinator.sprint_monitor._update_daily_log_status(
+                sprint_name, 
+                "Merged",
+                f"Sprint merged to main by TektonCore"
+            )
+            
+            return {
+                "success": True,
+                "message": f"Successfully merged {sprint_name}",
+                "merge_id": merge_id,
+                "timestamp": datetime.now().isoformat()
+            }
+        else:
+            raise HTTPException(status_code=400, detail=message)
+            
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Failed to complete merge: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 @api_contract(
@@ -501,6 +1246,74 @@ async def fix_merge_conflicts(request: FixMergeRequest):
         raise HTTPException(status_code=500, detail=str(e))
 
 @api_contract(
+    title="Complete Merge API",
+    endpoint="/sprints/complete-merge/{merge_id}",
+    method="POST",
+    request_schema={"merge_id": "str"},
+    response_schema={"success": "bool", "message": "str"},
+    description="Complete a clean merge (after successful dry-run)"
+)
+@router.post("/complete-merge/{merge_id}")
+async def complete_merge(merge_id: str):
+    """Complete a clean merge"""
+    
+    if not sprint_coordinator:
+        raise HTTPException(status_code=503, detail="Sprint coordinator not initialized")
+    
+    try:
+        # Find the sprint by merge_id
+        merges = sprint_coordinator.get_merge_status()
+        merge_sprint = None
+        
+        for merge in merges.get("merges", []):
+            if merge.get("id") == merge_id:
+                merge_sprint = merge
+                break
+        
+        if not merge_sprint:
+            raise HTTPException(status_code=404, detail="Merge not found")
+        
+        # Get branch name
+        sprint_name = merge_sprint.get("name")
+        sprint = None
+        for s_name, s in sprint_coordinator.sprint_monitor.sprints.items():
+            if s_name == sprint_name:
+                sprint = s
+                break
+        
+        if not sprint:
+            raise HTTPException(status_code=404, detail="Sprint not found")
+        
+        branch_name = f"sprint/coder-{sprint.assigned_coder.lower()}/{sprint_name.lower().replace('_', '-')}"
+        
+        # Perform actual merge
+        success, message = await sprint_coordinator.branch_manager.merge_branch(branch_name)
+        
+        if success:
+            # Update sprint status
+            sprint.status = "Merged"
+            await sprint_coordinator.sprint_monitor._update_daily_log_status(
+                sprint_name, 
+                "Merged",
+                f"Sprint merged to main by TektonCore"
+            )
+            
+            return {
+                "success": True,
+                "message": f"Successfully merged {sprint_name}",
+                "merge_id": merge_id,
+                "timestamp": datetime.now().isoformat()
+            }
+        else:
+            raise HTTPException(status_code=400, detail=message)
+            
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Failed to complete merge: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_contract(
     title="Consult Coder API",
     endpoint="/sprints/merge/consult",
     method="POST",
@@ -535,6 +1348,74 @@ async def consult_coder(request: ConsultCoderRequest):
         
     except Exception as e:
         logger.error(f"Failed to consult Coder: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_contract(
+    title="Complete Merge API",
+    endpoint="/sprints/complete-merge/{merge_id}",
+    method="POST",
+    request_schema={"merge_id": "str"},
+    response_schema={"success": "bool", "message": "str"},
+    description="Complete a clean merge (after successful dry-run)"
+)
+@router.post("/complete-merge/{merge_id}")
+async def complete_merge(merge_id: str):
+    """Complete a clean merge"""
+    
+    if not sprint_coordinator:
+        raise HTTPException(status_code=503, detail="Sprint coordinator not initialized")
+    
+    try:
+        # Find the sprint by merge_id
+        merges = sprint_coordinator.get_merge_status()
+        merge_sprint = None
+        
+        for merge in merges.get("merges", []):
+            if merge.get("id") == merge_id:
+                merge_sprint = merge
+                break
+        
+        if not merge_sprint:
+            raise HTTPException(status_code=404, detail="Merge not found")
+        
+        # Get branch name
+        sprint_name = merge_sprint.get("name")
+        sprint = None
+        for s_name, s in sprint_coordinator.sprint_monitor.sprints.items():
+            if s_name == sprint_name:
+                sprint = s
+                break
+        
+        if not sprint:
+            raise HTTPException(status_code=404, detail="Sprint not found")
+        
+        branch_name = f"sprint/coder-{sprint.assigned_coder.lower()}/{sprint_name.lower().replace('_', '-')}"
+        
+        # Perform actual merge
+        success, message = await sprint_coordinator.branch_manager.merge_branch(branch_name)
+        
+        if success:
+            # Update sprint status
+            sprint.status = "Merged"
+            await sprint_coordinator.sprint_monitor._update_daily_log_status(
+                sprint_name, 
+                "Merged",
+                f"Sprint merged to main by TektonCore"
+            )
+            
+            return {
+                "success": True,
+                "message": f"Successfully merged {sprint_name}",
+                "merge_id": merge_id,
+                "timestamp": datetime.now().isoformat()
+            }
+        else:
+            raise HTTPException(status_code=400, detail=message)
+            
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Failed to complete merge: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 @api_contract(
@@ -574,4 +1455,72 @@ async def redo_sprint(request: RedoSprintRequest):
         
     except Exception as e:
         logger.error(f"Failed to redo sprint: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_contract(
+    title="Complete Merge API",
+    endpoint="/sprints/complete-merge/{merge_id}",
+    method="POST",
+    request_schema={"merge_id": "str"},
+    response_schema={"success": "bool", "message": "str"},
+    description="Complete a clean merge (after successful dry-run)"
+)
+@router.post("/complete-merge/{merge_id}")
+async def complete_merge(merge_id: str):
+    """Complete a clean merge"""
+    
+    if not sprint_coordinator:
+        raise HTTPException(status_code=503, detail="Sprint coordinator not initialized")
+    
+    try:
+        # Find the sprint by merge_id
+        merges = sprint_coordinator.get_merge_status()
+        merge_sprint = None
+        
+        for merge in merges.get("merges", []):
+            if merge.get("id") == merge_id:
+                merge_sprint = merge
+                break
+        
+        if not merge_sprint:
+            raise HTTPException(status_code=404, detail="Merge not found")
+        
+        # Get branch name
+        sprint_name = merge_sprint.get("name")
+        sprint = None
+        for s_name, s in sprint_coordinator.sprint_monitor.sprints.items():
+            if s_name == sprint_name:
+                sprint = s
+                break
+        
+        if not sprint:
+            raise HTTPException(status_code=404, detail="Sprint not found")
+        
+        branch_name = f"sprint/coder-{sprint.assigned_coder.lower()}/{sprint_name.lower().replace('_', '-')}"
+        
+        # Perform actual merge
+        success, message = await sprint_coordinator.branch_manager.merge_branch(branch_name)
+        
+        if success:
+            # Update sprint status
+            sprint.status = "Merged"
+            await sprint_coordinator.sprint_monitor._update_daily_log_status(
+                sprint_name, 
+                "Merged",
+                f"Sprint merged to main by TektonCore"
+            )
+            
+            return {
+                "success": True,
+                "message": f"Successfully merged {sprint_name}",
+                "merge_id": merge_id,
+                "timestamp": datetime.now().isoformat()
+            }
+        else:
+            raise HTTPException(status_code=400, detail=message)
+            
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Failed to complete merge: {e}")
         raise HTTPException(status_code=500, detail=str(e))

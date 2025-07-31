@@ -331,6 +331,75 @@ class BranchManager:
         mitigation="Pre-merge validation, atomic operations, rollback capability",
         monitoring="Merge success rates, conflict frequency, rollback occurrences"
     )
+    async def dry_run_merge(self, branch_name: str, target_branch: str = "main") -> Tuple[bool, Dict[str, Any]]:
+        """Perform dry-run merge to check for conflicts without committing"""
+        
+        if branch_name not in self.branches:
+            return False, {"error": "Branch not found"}
+        
+        branch_info = self.branches[branch_name]
+        repo_path = Path(branch_info.repo_path)
+        
+        logger.info(f"Performing dry-run merge of {branch_name} to {target_branch}")
+        
+        try:
+            # Save current branch
+            current_branch_result = await self._run_git_command(repo_path, ["rev-parse", "--abbrev-ref", "HEAD"])
+            current_branch = current_branch_result.stdout.strip()
+            
+            # Checkout target branch and update
+            await self._run_git_command(repo_path, ["checkout", target_branch])
+            await self._run_git_command(repo_path, ["pull", "origin", target_branch])
+            
+            # Attempt merge with --no-commit flag
+            result = await self._run_git_command(repo_path, ["merge", "--no-commit", "--no-ff", branch_name])
+            
+            conflicts = []
+            can_merge = False
+            
+            if result.returncode == 0:
+                # No conflicts
+                can_merge = True
+                logger.info(f"Dry-run merge successful - no conflicts for {branch_name}")
+            else:
+                # Get conflict details
+                conflict_result = await self._run_git_command(repo_path, ["diff", "--name-only", "--diff-filter=U"])
+                conflict_files = [f.strip() for f in conflict_result.stdout.split('\n') if f.strip()]
+                
+                for file in conflict_files:
+                    # Get more details about the conflict
+                    diff_result = await self._run_git_command(repo_path, ["diff", file])
+                    conflicts.append({
+                        "file": file,
+                        "type": "content",
+                        "description": f"Both branches modified {file}"
+                    })
+                
+                logger.warning(f"Dry-run merge found {len(conflicts)} conflicts for {branch_name}")
+            
+            # Always abort the merge
+            await self._run_git_command(repo_path, ["merge", "--abort"])
+            
+            # Return to original branch
+            await self._run_git_command(repo_path, ["checkout", current_branch])
+            
+            return True, {
+                "can_merge": can_merge,
+                "conflicts": conflicts,
+                "branch_name": branch_name,
+                "target_branch": target_branch
+            }
+            
+        except Exception as e:
+            logger.error(f"Error during dry-run merge: {e}")
+            # Try to clean up
+            try:
+                await self._run_git_command(repo_path, ["merge", "--abort"])
+                await self._run_git_command(repo_path, ["checkout", current_branch])
+            except:
+                pass
+            return False, {"error": str(e)}
+    
     async def merge_branch(self, branch_name: str, target_branch: str = "main") -> Tuple[bool, str]:
         """Merge branch to target branch"""
         
