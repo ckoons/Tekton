@@ -4,10 +4,10 @@
 <script src="/scripts/tekton-urls.js"></script>
 
 <!-- Hidden radio controls for CSS-only tab functionality -->
-<input type="radio" name="tekton-tab" id="tekton-tab-dashboard" checked style="display: none;">
+<input type="radio" name="tekton-tab" id="tekton-tab-projects" checked style="display: none;">
 <input type="radio" name="tekton-tab" id="tekton-tab-new-project" style="display: none;">
+<input type="radio" name="tekton-tab" id="tekton-tab-sprints" style="display: none;">
 <input type="radio" name="tekton-tab" id="tekton-tab-merges" style="display: none;">
-<input type="radio" name="tekton-tab" id="tekton-tab-conflicts" style="display: none;">
 <input type="radio" name="tekton-tab" id="tekton-tab-projectschat" style="display: none;">
 <input type="radio" name="tekton-tab" id="tekton-tab-projectchat" style="display: none;">
 <input type="radio" name="tekton-tab" id="tekton-tab-teamchat" style="display: none;">
@@ -33,11 +33,11 @@
     <!-- Tekton Menu Bar with Tab Navigation -->
     <div class="tekton__menu-bar" data-tekton-zone="menu" data-tekton-nav="component-menu">
         <div class="tekton__tabs">
-            <label for="tekton-tab-dashboard" class="tekton__tab" data-tab="dashboard"
-                   data-tekton-menu-item="Dashboard"
+            <label for="tekton-tab-projects" class="tekton__tab" data-tab="projects"
+                   data-tekton-menu-item="Projects"
                    data-tekton-menu-component="tekton"
-                   data-tekton-menu-panel="dashboard-panel">
-                <span class="tekton__tab-label">Dashboard</span>
+                   data-tekton-menu-panel="projects-panel">
+                <span class="tekton__tab-label">Projects</span>
             </label>
             <label for="tekton-tab-new-project" class="tekton__tab" data-tab="new-project"
                    data-tekton-menu-item="New Project"
@@ -46,17 +46,17 @@
                    onclick="clearNewProjectFields()">
                 <span class="tekton__tab-label">GitHub Project</span>
             </label>
+            <label for="tekton-tab-sprints" class="tekton__tab" data-tab="sprints"
+                   data-tekton-menu-item="Sprints"
+                   data-tekton-menu-component="tekton"
+                   data-tekton-menu-panel="sprints-panel">
+                <span class="tekton__tab-label">Sprints</span>
+            </label>
             <label for="tekton-tab-merges" class="tekton__tab" data-tab="merges"
                    data-tekton-menu-item="Merges"
                    data-tekton-menu-component="tekton"
                    data-tekton-menu-panel="merges-panel">
                 <span class="tekton__tab-label">Merges</span>
-            </label>
-            <label for="tekton-tab-conflicts" class="tekton__tab" data-tab="conflicts"
-                   data-tekton-menu-item="Conflicts"
-                   data-tekton-menu-component="tekton"
-                   data-tekton-menu-panel="conflicts-panel">
-                <span class="tekton__tab-label">Conflicts</span>
             </label>
             <label for="tekton-tab-projectschat" class="tekton__tab" data-tab="projectschat"
                    data-tekton-menu-item="Projects Chat"
@@ -77,14 +77,6 @@
                 <span class="tekton__tab-label">Team Chat</span>
             </label>
         </div>
-        <div class="tekton__actions">
-            <button id="clear-chat-btn" class="tekton__action-button" style="display: none;"
-                    data-tekton-action="clear-chat"
-                    data-tekton-action-type="secondary"
-                    onclick="tekton_clearChat(); return false;">
-                <span class="tekton__button-label">Clear</span>
-            </button>
-        </div>
     </div>
     
     <!-- Submenu Bar (hidden by default, shown when Projects Chat is active) -->
@@ -100,11 +92,11 @@
     <!-- Tekton Content Area -->
     <div class="tekton__content" data-tekton-zone="content" data-tekton-scrollable="true">
         <!-- Dashboard Tab (Default Active Tab) -->
-        <div id="dashboard-panel" class="tekton__panel tekton__panel--dashboard"
-             data-tekton-panel="dashboard"
-             data-tekton-panel-for="Dashboard"
+        <div id="projects-panel" class="tekton__panel tekton__panel--projects"
+             data-tekton-panel="projects"
+             data-tekton-panel-for="Projects"
              data-tekton-panel-component="tekton"
-             data-tekton-tab-content="dashboard">
+             data-tekton-tab-content="projects">
             <div class="tekton__projects" data-tekton-element="projects-container">
                 <div class="tekton__projects-list" id="projects-list"
                      data-tekton-element="projects-list"
@@ -189,6 +181,21 @@
             </div>
         </div>
         
+        <!-- Sprints Tab -->
+        <div id="sprints-panel" class="tekton__panel tekton__panel--sprints"
+             data-tekton-panel="sprints"
+             data-tekton-panel-for="Sprints"
+             data-tekton-panel-component="tekton">
+            <div class="tekton__sprints" data-tekton-element="sprints-container">
+                <div class="tekton__sprints-list" id="sprints-list"
+                     data-tekton-element="sprints-list"
+                     data-tekton-list="sprints">
+                    <!-- Sprints will be populated dynamically -->
+                    <div class="tekton__placeholder-message">Click to load sprints</div>
+                </div>
+            </div>
+        </div>
+        
         <!-- Merges Tab -->
         <div id="merges-panel" class="tekton__panel tekton__panel--merges"
              data-tekton-panel="merges"
@@ -203,22 +210,6 @@
                 </div>
             </div>
         </div>
-        
-        <!-- Conflicts Tab -->
-        <div id="conflicts-panel" class="tekton__panel tekton__panel--conflicts"
-             data-tekton-panel="conflicts"
-             data-tekton-panel-for="Conflicts"
-             data-tekton-panel-component="tekton">
-            <div class="tekton__conflicts" data-tekton-element="conflicts-container">
-                <div class="tekton__conflicts-container" id="conflicts-container"
-                     data-tekton-element="conflicts-list"
-                     data-tekton-list="conflicts">
-                    <!-- Conflicts will be populated dynamically -->
-                    <div class="tekton__placeholder-message">No Merge Conflicts Pending</div>
-                </div>
-            </div>
-        </div>
-        
         
         <!-- Projects Chat Tab -->
         <div id="projectschat-panel" class="tekton__panel"
@@ -631,35 +622,50 @@
     }
     
     /* Project Card Styles */
+    .tekton__projects-list {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+        padding: 16px;
+    }
+    
     .tekton__project-card {
         background-color: var(--bg-secondary, #252535);
-        border: 1px solid var(--border-color, #444444);
+        border: 2px solid #FFD700;  /* Tekton Core gold border */
         border-radius: 8px;
-        padding: 20px;
-        margin-bottom: 16px;
+        padding: 16px;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        display: flex;
+        flex-direction: column;
+        transition: all 0.2s ease;
+    }
+    
+    .tekton__project-card:hover {
+        box-shadow: 0 4px 8px rgba(255, 215, 0, 0.3);
+        border-color: #FFA500;
     }
     
     .tekton__project-header {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        margin-bottom: 16px;
-        border-bottom: 1px solid var(--border-color, #444444);
-        padding-bottom: 12px;
+        margin-bottom: 12px;
     }
     
     .tekton__project-name {
         margin: 0;
-        font-size: 1.3rem;
-        font-weight: 500;
+        font-size: 1.5rem;  /* Larger font for project name */
+        font-weight: 600;
         color: var(--text-primary, #f0f0f0);
+        display: flex;
+        align-items: center;
+        gap: 8px;
     }
     
     .tekton__project-ai {
-        font-size: 0.9rem;
+        font-size: 1rem;  /* Same size as Fork: label */
         font-weight: normal;
-        opacity: 0.7;
+        opacity: 0.8;
         margin-left: 8px;
     }
     
@@ -672,6 +678,24 @@
         font-weight: 500;
     }
     
+    .tekton__project-status-icon {
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background-color: #4CAF50;  /* Green for active */
+        margin-left: auto;
+    }
+    
+    .tekton__project-status-icon--inactive {
+        background-color: #757575;
+    }
+    
+    .tekton__project-info {
+        font-size: 1rem;
+        color: var(--text-secondary, #aaa);
+        margin-top: 4px;
+    }
+    
     .tekton__project-remotes {
         margin: 16px 0;
     }
@@ -681,7 +705,6 @@
         align-items: center;
         gap: 8px;
         margin-bottom: 12px;
-        padding: 8px 0;
     }
     
     .tekton__remote-label {
@@ -730,14 +753,33 @@
     }
     
     .tekton__button--danger {
-        background-color: transparent;
-        color: var(--danger-color, #dc3545);
-        border: 1px solid var(--danger-color, #dc3545);
+        background-color: #dc3545;  /* Red background */
+        color: white;
+        border: none;
     }
     
     .tekton__button--danger:hover {
-        background-color: var(--danger-color, #dc3545);
+        background-color: #c82333;
+    }
+    
+    .tekton__button--details {
+        background-color: #2196F3;  /* Blue for Details */
         color: white;
+        border: none;
+    }
+    
+    .tekton__button--details:hover {
+        background-color: #1976D2;
+    }
+    
+    .tekton__button--sprints {
+        background-color: #4CAF50;  /* Green for Sprints */
+        color: white;
+        border: none;
+    }
+    
+    .tekton__button--sprints:hover {
+        background-color: #45a049;
     }
     
     .tekton__button--small {
@@ -860,6 +902,105 @@
     
     .tekton__card-action-btn:hover {
         background-color: var(--bg-hover, #3a3a4a);
+    }
+    
+    /* Merge Card Styles */
+    .tekton__merges-container {
+        padding: 16px;
+    }
+    
+    .tekton__merge-card {
+        background-color: var(--bg-secondary, #252535);
+        border: 2px solid #FFD700;  /* Tekton Core gold border */
+        border-radius: 8px;
+        padding: 16px;
+        margin-bottom: 16px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        transition: all 0.2s ease;
+    }
+    
+    .tekton__merge-card:hover {
+        box-shadow: 0 4px 8px rgba(255, 215, 0, 0.3);
+        border-color: #FFA500;
+    }
+    
+    .tekton__merge-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 12px;
+    }
+    
+    .tekton__merge-name {
+        font-size: 1.3rem;
+        font-weight: 600;
+        color: var(--text-primary, #f0f0f0);
+        margin: 0;
+        flex: 1;
+    }
+    
+    .tekton__status-badge {
+        padding: 4px 12px;
+        border-radius: 16px;
+        font-size: 0.85rem;
+        font-weight: 500;
+        color: white;
+    }
+    
+    .tekton__status-badge--ready {
+        background-color: #4CAF50;
+    }
+    
+    .tekton__status-badge--building {
+        background-color: #2196F3;
+    }
+    
+    .tekton__merge-details {
+        font-size: 0.95rem;
+        color: var(--text-secondary, #aaa);
+        line-height: 1.6;
+    }
+    
+    .tekton__merge-detail-row {
+        margin-bottom: 8px;
+    }
+    
+    .tekton__merge-actions {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-top: 16px;
+    }
+    
+    .tekton__button--merge {
+        background-color: #FFD700;  /* Tekton Core gold */
+        color: #1a1a2a;
+        font-weight: 600;
+    }
+    
+    .tekton__button--merge:hover {
+        background-color: #FFA500;
+    }
+    
+    /* Sprint Card Styles */
+    .tekton__sprints-list {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+        padding: 16px;
+    }
+    
+    .tekton__sprint-card {
+        background-color: var(--bg-secondary, #252535);
+        border: 1px solid var(--border-color, #444444);
+        border-radius: 8px;
+        padding: 16px;
+        transition: all 0.2s ease;
+    }
+    
+    .tekton__sprint-card:hover {
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        border-color: #666;
     }
     
     /* Loading Indicator */
@@ -1165,10 +1306,10 @@
         display: none;
     }
     
-    #tekton-tab-dashboard:checked ~ .tekton .tekton__panel--dashboard,
+    #tekton-tab-projects:checked ~ .tekton .tekton__panel--projects,
     #tekton-tab-new-project:checked ~ .tekton .tekton__panel--new-project,
+    #tekton-tab-sprints:checked ~ .tekton .tekton__panel--sprints,
     #tekton-tab-merges:checked ~ .tekton .tekton__panel--merges,
-    #tekton-tab-conflicts:checked ~ .tekton .tekton__panel--conflicts,
     #tekton-tab-projectschat:checked ~ .tekton #projectschat-panel,
     #tekton-tab-projectchat:checked ~ .tekton #projectchat-panel,
     #tekton-tab-teamchat:checked ~ .tekton #teamchat-panel {
@@ -1177,10 +1318,10 @@
     }
     
     /* Active tab styling */
-    #tekton-tab-dashboard:checked ~ .tekton .tekton__tab[data-tab="dashboard"],
+    #tekton-tab-projects:checked ~ .tekton .tekton__tab[data-tab="projects"],
     #tekton-tab-new-project:checked ~ .tekton .tekton__tab[data-tab="new-project"],
+    #tekton-tab-sprints:checked ~ .tekton .tekton__tab[data-tab="sprints"],
     #tekton-tab-merges:checked ~ .tekton .tekton__tab[data-tab="merges"],
-    #tekton-tab-conflicts:checked ~ .tekton .tekton__tab[data-tab="conflicts"],
     #tekton-tab-projectschat:checked ~ .tekton .tekton__tab[data-tab="projectschat"],
     #tekton-tab-projectchat:checked ~ .tekton .tekton__tab[data-tab="projectchat"],
     #tekton-tab-teamchat:checked ~ .tekton .tekton__tab[data-tab="teamchat"] {
@@ -1188,12 +1329,262 @@
         border-bottom: 2px solid #FFA500;
     }
     
-    /* Clear button visibility for chat tabs */
-    #tekton-tab-projectschat:checked ~ .tekton #clear-chat-btn,
-    #tekton-tab-projectchat:checked ~ .tekton #clear-chat-btn,
-    #tekton-tab-teamchat:checked ~ .tekton #clear-chat-btn {
-        display: block !important;
+    /* Modal Styles */
+    .tekton__modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, 0.7);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
     }
+    
+    .tekton__modal {
+        background-color: var(--bg-primary, #1a1a2a);
+        border: 2px solid #FFD700;
+        border-radius: 8px;
+        padding: 24px;
+        max-width: 800px;
+        max-height: 80vh;
+        overflow-y: auto;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+    }
+    
+    .tekton__modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        padding-bottom: 16px;
+        border-bottom: 1px solid var(--border-color, #444);
+    }
+    
+    .tekton__modal-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: var(--text-primary, #f0f0f0);
+        margin: 0;
+    }
+    
+    .tekton__modal-close {
+        background: none;
+        border: none;
+        color: var(--text-secondary, #aaa);
+        font-size: 1.5rem;
+        cursor: pointer;
+        padding: 0;
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .tekton__modal-close:hover {
+        color: var(--text-primary, #f0f0f0);
+    }
+    
+    .tekton__modal-body {
+        margin-bottom: 20px;
+    }
+    
+    .tekton__modal--wide {
+        max-width: 90vw;
+        width: 1200px;
+    }
+    
+    .tekton__modal-tabs {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+        border-bottom: 2px solid var(--border-color, #333);
+    }
+    
+    .tekton__modal-tab {
+        padding: 10px 20px;
+        background: none;
+        border: none;
+        color: var(--text-secondary, #ccc);
+        cursor: pointer;
+        transition: all 0.3s ease;
+        border-bottom: 2px solid transparent;
+        margin-bottom: -2px;
+    }
+    
+    .tekton__modal-tab:hover {
+        color: var(--text-primary, #f0f0f0);
+    }
+    
+    .tekton__modal-tab--active {
+        color: #FFD700;
+        border-bottom-color: #FFD700;
+    }
+    
+    .tekton__modal-panel {
+        min-height: 300px;
+    }
+    
+    .tekton__metadata-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+    }
+    
+    .tekton__metadata-item {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+    }
+    
+    .tekton__metadata-label {
+        color: var(--text-secondary, #ccc);
+        font-size: 0.9em;
+    }
+    
+    .tekton__metadata-value {
+        color: var(--text-primary, #f0f0f0);
+        font-weight: 500;
+    }
+    
+    .tekton__settings-form {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+    
+    .tekton__field {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .tekton__label {
+        color: var(--text-secondary, #ccc);
+        font-size: 0.9em;
+    }
+    
+    .tekton__sprints-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 15px;
+        max-height: 60vh;
+        overflow-y: auto;
+        padding: 10px;
+    }
+    
+    .tekton__empty-state {
+        grid-column: 1 / -1;
+        text-align: center;
+        padding: 40px;
+        color: var(--text-secondary, #ccc);
+        font-size: 1.1em;
+    }
+    
+    .tekton__error {
+        grid-column: 1 / -1;
+        text-align: center;
+        padding: 40px;
+        color: #FF5252;
+        font-size: 1.1em;
+    }
+    
+    .tekton__conflict-details {
+        background-color: var(--bg-secondary, #242424);
+        border: 1px solid var(--border-color, #333);
+        border-radius: 6px;
+        padding: 15px;
+        margin: 15px 0;
+        max-height: 200px;
+        overflow-y: auto;
+    }
+    
+    .tekton__conflict-item {
+        margin-bottom: 10px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid var(--border-color, #333);
+    }
+    
+    .tekton__conflict-item:last-child {
+        margin-bottom: 0;
+        padding-bottom: 0;
+        border-bottom: none;
+    }
+    
+    .tekton__modal-actions {
+        display: flex;
+        gap: 12px;
+        justify-content: flex-end;
+        padding-top: 16px;
+        border-top: 1px solid var(--border-color, #444);
+    }
+    
+    .tekton__conflict-details {
+        background-color: var(--bg-secondary, #252535);
+        border: 1px solid var(--border-color, #444);
+        border-radius: 4px;
+        padding: 16px;
+        margin-bottom: 20px;
+        font-family: monospace;
+        font-size: 0.9rem;
+        max-height: 300px;
+        overflow-y: auto;
+        white-space: pre-wrap;
+    }
+    
+    .tekton__editor {
+        width: 100%;
+        min-height: 400px;
+        background-color: var(--bg-secondary, #252535);
+        color: var(--text-primary, #f0f0f0);
+        border: 1px solid var(--border-color, #444);
+        border-radius: 4px;
+        padding: 16px;
+        font-family: monospace;
+        font-size: 0.95rem;
+        resize: vertical;
+    }
+    
+    .tekton__button--cancel {
+        background-color: #FFC107;  /* Yellow for cancel */
+        color: #1a1a2a;
+    }
+    
+    .tekton__button--cancel:hover {
+        background-color: #FFB300;
+    }
+    
+    .tekton__button--fix {
+        background-color: #4CAF50;  /* Green for fix */
+        color: white;
+    }
+    
+    .tekton__button--fix:hover {
+        background-color: #45a049;
+    }
+    
+    .tekton__button--consult {
+        background-color: #2196F3;  /* Blue for consult */
+        color: white;
+    }
+    
+    .tekton__button--consult:hover {
+        background-color: #1976D2;
+    }
+    
+    .tekton__button--redo {
+        background-color: #2196F3;  /* Blue for redo */
+        color: white;
+    }
+    
+    .tekton__button--redo:hover {
+        background-color: #1976D2;
+    }
+    
+    /* Clear button visibility for chat tabs */
     
     @keyframes tekton-spin {
         0% { transform: rotate(0deg); }
@@ -1254,14 +1645,9 @@ window.tekton_switchTab = function(tabId) {
             }
         });
         
-        // Update clear button visibility for chat tabs
-        const clearButton = tektonContainer.querySelector('#clear-chat-btn');
-        if (clearButton) {
-            clearButton.style.display = (tabId === 'projectchat' || tabId === 'teamchat') ? 'block' : 'none';
-        }
         
-        // Load dashboard projects when switching to dashboard tab
-        if (tabId === 'dashboard') {
+        // Load projects when switching to projects tab
+        if (tabId === 'projects') {
             loadProjectsDashboard();
             startDashboardAutoRefresh();
         } else {
@@ -1276,10 +1662,12 @@ window.tekton_switchTab = function(tabId) {
             loadMergeQueue();
         }
         
-        // Load conflicts when switching to conflicts tab
-        if (tabId === 'conflicts') {
-            loadConflicts();
+        // Load sprints when switching to sprints tab
+        if (tabId === 'sprints') {
+            console.log('[TEKTON] Sprints tab detected, calling loadAllSprints');
+            loadAllSprints();
         }
+        
         
         // Update component state
         if (window.tektonComponent) {
@@ -1978,42 +2366,6 @@ async function loadMergeQueue() {
     }
 }
 
-async function loadConflicts() {
-    console.log('[TEKTON] Loading conflicts - scanning for merge conflicts');
-    
-    try {
-        // Fetch conflicts from TektonCore Sprint API
-        const response = await fetch(tektonCoreUrl('/api/v1/sprints/conflicts'));
-        
-        if (!response.ok) {
-            throw new Error(`Failed to fetch conflicts: ${response.statusText}`);
-        }
-        
-        const data = await response.json();
-        console.log('[TEKTON] Loaded conflicts:', data);
-        
-        const conflictsContainer = document.getElementById('conflicts-container');
-        
-        if (!data.conflicts || data.conflicts.length === 0) {
-            conflictsContainer.innerHTML = '<div class="tekton__placeholder-message">No Merge Conflicts Pending</div>';
-            return;
-        }
-        
-        // Clear existing content
-        conflictsContainer.innerHTML = '';
-        
-        // Create conflict cards for each conflicted merge
-        data.conflicts.forEach(conflict => {
-            const conflictCard = createConflictCard(conflict);
-            conflictsContainer.appendChild(conflictCard);
-        });
-        
-    } catch (error) {
-        console.error('[TEKTON] Failed to load conflicts:', error);
-        const conflictsContainer = document.getElementById('conflicts-container');
-        conflictsContainer.innerHTML = `<div class="tekton__error-message">Failed to load conflicts: ${error.message}</div>`;
-    }
-}
 
 function createProjectCard(project) {
     const card = document.createElement('div');
@@ -2023,33 +2375,37 @@ function createProjectCard(project) {
     // Create card HTML
     card.innerHTML = `
         <div class="tekton__project-header">
-            <h3 class="tekton__project-name">${project.name} 
-                <span class="tekton__project-ai">(${project.companion_intelligence || 'llama3.3:70b'})</span>
+            <h3 class="tekton__project-name">
+                ${project.name}
+                <div class="tekton__project-status-icon ${project.active ? '' : 'tekton__project-status-icon--inactive'}"></div>
             </h3>
             ${project.is_tekton_self ? '<span class="tekton__project-badge">Self-Managing</span>' : ''}
+        </div>
+        
+        <div class="tekton__project-info">
+            CI: ${project.companion_intelligence || 'llama3.3:70b'}
         </div>
         
         <div class="tekton__project-remotes">
             ${project.forked_repository ? `
                 <div class="tekton__remote-row">
                     <span class="tekton__remote-label">Fork:</span>
-                    <button class="tekton__button tekton__button--secondary tekton__button--small" onclick="gitAction('${project.id}', 'status', 'fork', event)">Status</button>
-                    <button class="tekton__button tekton__button--secondary tekton__button--small" onclick="gitAction('${project.id}', 'pull', 'fork', event)">Pull</button>
-                    <button class="tekton__button tekton__button--secondary tekton__button--small" onclick="gitAction('${project.id}', 'push', 'fork', event)">Push</button>
+                    <span style="font-size: 0.85rem; opacity: 0.8;">${project.forked_repository.split('/').slice(-2).join('/')}</span>
                 </div>
             ` : '<div class="tekton__remote-row"><span class="tekton__remote-missing">No fork repository configured</span></div>'}
             
             ${project.upstream_repository ? `
                 <div class="tekton__remote-row">
                     <span class="tekton__remote-label">Upstream:</span>
-                    <button class="tekton__button tekton__button--secondary tekton__button--small" onclick="gitAction('${project.id}', 'pull', 'upstream', event)">Pull</button>
-                    <button class="tekton__button tekton__button--secondary tekton__button--small" onclick="gitAction('${project.id}', 'pr', 'upstream', event)">Pull Request</button>
+                    <span style="font-size: 0.85rem; opacity: 0.8;">${project.upstream_repository.split('/').slice(-2).join('/')}</span>
                 </div>
             ` : '<div class="tekton__remote-row"><span class="tekton__remote-missing">No upstream repository configured</span></div>'}
         </div>
         
         <div class="tekton__project-footer">
-            <button class="tekton__button tekton__button--danger tekton__button--small" onclick="removeProject('${project.id}', '${project.name}')">Remove from Dashboard</button>
+            <button class="tekton__button tekton__button--danger tekton__button--small" onclick="removeProject('${project.id}', '${project.name}')">Remove</button>
+            <button class="tekton__button tekton__button--details tekton__button--small" onclick="showProjectDetails('${project.id}', '${project.name}')">Details</button>
+            <button class="tekton__button tekton__button--sprints tekton__button--small" onclick="showProjectSprints('${project.id}', '${project.name}')">Sprints</button>
         </div>
     `;
     
@@ -2058,103 +2414,450 @@ function createProjectCard(project) {
 
 function createMergeCard(merge) {
     const card = document.createElement('div');
-    card.className = 'tekton__project-card';
+    card.className = 'tekton__merge-card';
     card.setAttribute('data-merge-id', merge.id);
     
     // Format the updated time
     const updatedTime = merge.updated_at ? new Date(merge.updated_at).toLocaleString() : 'Unknown';
     
+    // Extract status without parentheses
+    const statusText = merge.status.replace(/[()]/g, '');
+    
+    // Determine status badge class
+    const statusClass = statusText.toLowerCase().includes('ready') ? 'tekton__status-badge--ready' : 'tekton__status-badge--building';
+    
     // Create card HTML
     card.innerHTML = `
-        <div class="tekton__project-header">
-            <h3 class="tekton__project-name">${merge.name}
-                <span class="tekton__project-ai">(Ready for Merge)</span>
-            </h3>
-            <span class="tekton__project-badge">Sprint</span>
+        <div class="tekton__merge-header">
+            <h3 class="tekton__merge-name">${merge.name}</h3>
+            <span class="tekton__status-badge ${statusClass}">${statusText}</span>
         </div>
         
-        <div class="tekton__project-remotes">
-            <div class="tekton__remote-row">
-                <span class="tekton__remote-label">Status:</span>
-                <span style="color: #28a745; font-weight: 500;">${merge.status}</span>
+        <div class="tekton__merge-details">
+            <div class="tekton__merge-detail-row">
+                <strong>Path:</strong> ${merge.path || 'Unknown'}
             </div>
-            <div class="tekton__remote-row">
-                <span class="tekton__remote-label">Updated:</span>
-                <span>${updatedTime}</span>
+            <div class="tekton__merge-detail-row">
+                <strong>Priority:</strong> ${merge.priority || 3} • <strong>Updated:</strong> ${updatedTime} • <strong>Updated By:</strong> ${merge.updated_by || 'Unknown'}
             </div>
-            <div class="tekton__remote-row">
-                <span class="tekton__remote-label">Updated By:</span>
-                <span>${merge.updated_by || 'Unknown'}</span>
-            </div>
-            ${merge.path ? `
-                <div class="tekton__remote-row">
-                    <span class="tekton__remote-label">Path:</span>
-                    <span style="font-family: monospace; font-size: 0.9em;">${merge.path}</span>
-                </div>
-            ` : ''}
         </div>
         
-        <div class="tekton__project-footer">
-            <button class="tekton__button tekton__button--primary tekton__button--small" onclick="executeMerge('${merge.id}', '${merge.name}')">Execute Merge</button>
-            <button class="tekton__button tekton__button--secondary tekton__button--small" onclick="viewMergeDetails('${merge.id}', '${merge.name}')">View Details</button>
+        <div class="tekton__merge-actions">
+            <button class="tekton__button tekton__button--merge tekton__button--small" onclick="executeMerge('${merge.id}', '${merge.name}')">Merge</button>
+            <span style="margin-left: 12px; color: var(--text-secondary, #aaa);">
+                <strong>Branch:</strong> ${merge.branch_name || 'Unknown branch'}
+            </span>
         </div>
     `;
     
     return card;
 }
 
-function createConflictCard(conflict) {
+
+// Show project details in modal
+async function showProjectDetails(projectId, projectName) {
+    console.log(`[TEKTON] Showing details for project ${projectName}`);
+    
+    try {
+        // Fetch project details including README
+        const response = await fetch(tektonCoreUrl(`/api/v1/projects/${projectId}`));
+        
+        if (!response.ok) {
+            throw new Error(`Failed to fetch project details: ${response.statusText}`);
+        }
+        
+        const project = await response.json();
+        
+        // Create modal for README editing
+        showProjectDetailsModal(project);
+        
+    } catch (error) {
+        console.error('[TEKTON] Failed to fetch project details:', error);
+        alert(`Failed to fetch project details: ${error.message}`);
+    }
+}
+
+// Show project sprints in modal
+async function showProjectSprints(projectId, projectName) {
+    console.log(`[TEKTON] Showing sprints for project ${projectName}`);
+    
+    // Create modal to show sprints for this project
+    showProjectSprintsModal(projectId, projectName);
+}
+
+// Load all sprints for the Sprints tab
+async function loadAllSprints() {
+    console.log('[TEKTON] Loading all sprints');
+    
+    const sprintsContainer = document.getElementById('sprints-list');
+    sprintsContainer.innerHTML = '<div class="tekton__loading-indicator"><div class="tekton__spinner"></div><div>Loading sprints...</div></div>';
+    
+    try {
+        // Scan sprint directories
+        const response = await fetch(tektonCoreUrl('/api/v1/sprints/all'));
+        
+        if (!response.ok) {
+            throw new Error(`Failed to fetch sprints: ${response.statusText}`);
+        }
+        
+        const data = await response.json();
+        console.log('[TEKTON] Loaded sprints:', data);
+        
+        if (!data.sprints || data.sprints.length === 0) {
+            sprintsContainer.innerHTML = '<div class="tekton__placeholder-message">No sprints found</div>';
+            return;
+        }
+        
+        // Clear loading
+        sprintsContainer.innerHTML = '';
+        
+        // Create sprint cards
+        data.sprints.forEach(sprint => {
+            const sprintCard = createSprintCard(sprint);
+            sprintsContainer.appendChild(sprintCard);
+        });
+        
+    } catch (error) {
+        console.error('[TEKTON] Failed to load sprints:', error);
+        sprintsContainer.innerHTML = `<div class="tekton__error-message">Failed to load sprints: ${error.message}</div>`;
+    }
+}
+
+// Create a sprint card
+function createSprintCard(sprint) {
     const card = document.createElement('div');
-    card.className = 'tekton__project-card';
-    card.setAttribute('data-conflict-id', conflict.id);
+    card.className = 'tekton__sprint-card';
+    card.setAttribute('data-sprint-id', sprint.id);
     
-    // Format the conflict time
-    const conflictTime = conflict.conflict_at ? new Date(conflict.conflict_at).toLocaleString() : 'Unknown';
+    const statusClass = sprint.status.toLowerCase().replace(/ /g, '-');
     
-    // Create card HTML
     card.innerHTML = `
-        <div class="tekton__project-header">
-            <h3 class="tekton__project-name">${conflict.name}
-                <span class="tekton__project-ai">(Merge Conflict)</span>
-            </h3>
-            <span class="tekton__project-badge" style="background-color: #dc3545;">Conflict</span>
+        <div class="tekton__sprint-header">
+            <h4 class="tekton__sprint-name">${sprint.name}</h4>
+            <span class="tekton__status-badge tekton__status-badge--${statusClass}">${sprint.status}</span>
         </div>
         
-        <div class="tekton__project-remotes">
-            <div class="tekton__remote-row">
-                <span class="tekton__remote-label">Status:</span>
-                <span style="color: #dc3545; font-weight: 500;">${conflict.status}</span>
-            </div>
-            <div class="tekton__remote-row">
-                <span class="tekton__remote-label">Conflict Since:</span>
-                <span>${conflictTime}</span>
-            </div>
-            <div class="tekton__remote-row">
-                <span class="tekton__remote-label">Coder:</span>
-                <span>${conflict.assigned_coder || 'Unassigned'}</span>
-            </div>
-            ${conflict.conflict_files ? `
-                <div class="tekton__remote-row">
-                    <span class="tekton__remote-label">Files:</span>
-                    <span style="font-family: monospace; font-size: 0.9em;">${conflict.conflict_files.join(', ')}</span>
-                </div>
-            ` : ''}
-            ${conflict.retry_count ? `
-                <div class="tekton__remote-row">
-                    <span class="tekton__remote-label">Retry Count:</span>
-                    <span>${conflict.retry_count}/3</span>
-                </div>
-            ` : ''}
+        <div class="tekton__sprint-info">
+            <div><strong>Priority:</strong> ${sprint.priority || 3}</div>
+            <div><strong>Project:</strong> ${sprint.project || 'Unknown'}</div>
         </div>
         
-        <div class="tekton__project-footer">
-            <button class="tekton__button tekton__button--primary tekton__button--small" onclick="resolveConflict('${conflict.id}', '${conflict.name}')">Resolve Conflict</button>
-            <button class="tekton__button tekton__button--secondary tekton__button--small" onclick="viewConflictDetails('${conflict.id}', '${conflict.name}')">View Details</button>
-            <button class="tekton__button tekton__button--danger tekton__button--small" onclick="sendBackToCoder('${conflict.id}', '${conflict.name}')">Send Back to Coder</button>
+        <div class="tekton__sprint-overview">
+            ${sprint.overview || 'No overview available'}
+        </div>
+        
+        <div class="tekton__sprint-actions">
+            <button class="tekton__button tekton__button--sprints tekton__button--small" onclick="showSprintDailyLog('${sprint.id}', '${sprint.name}')">Daily Log</button>
+            <button class="tekton__button tekton__button--details tekton__button--small" onclick="showSprintHandoff('${sprint.id}', '${sprint.name}')">Handoff</button>
+            <button class="tekton__button tekton__button--secondary tekton__button--small" style="background-color: #9C27B0;" onclick="showSprintPlan('${sprint.id}', '${sprint.name}')">Sprint Plan</button>
         </div>
     `;
     
     return card;
+}
+
+// Show merge conflict modal
+function showMergeConflictModal(mergeId, mergeName, conflictData) {
+    // Store conflict data globally for use in fix/consult functions
+    window.lastMergeConflictData = conflictData;
+    
+    // Format conflict details
+    let conflictDetails = '';
+    if (conflictData.conflicts && Array.isArray(conflictData.conflicts)) {
+        conflictDetails = conflictData.conflicts.map(conflict => 
+            `<div class="tekton__conflict-item">
+                <strong>${conflict.file}</strong> - Line ${conflict.line || 'N/A'}: ${conflict.description}
+            </div>`
+        ).join('');
+    } else {
+        conflictDetails = 'Conflict details unavailable';
+    }
+    
+    const modalHtml = `
+        <div class="tekton__modal-overlay" id="merge-conflict-modal">
+            <div class="tekton__modal">
+                <div class="tekton__modal-header">
+                    <h2 class="tekton__modal-title">Merge Conflicts Detected - ${mergeName}</h2>
+                    <button class="tekton__modal-close" onclick="closeMergeConflictModal()">×</button>
+                </div>
+                
+                <div class="tekton__modal-body">
+                    <p>The merge cannot be completed automatically due to conflicts:</p>
+                    
+                    <div class="tekton__conflict-details">
+${conflictDetails}
+                    </div>
+                    
+                    <p><strong>Total Conflicts:</strong> ${conflictData.conflicts ? conflictData.conflicts.length : 'Unknown'}</p>
+                </div>
+                
+                <div class="tekton__modal-actions">
+                    <button class="tekton__button tekton__button--cancel" onclick="cancelMerge('${mergeId}', '${mergeName}')">Cancel</button>
+                    <button class="tekton__button tekton__button--fix" onclick="fixMergeConflict('${mergeId}', '${mergeName}')">Fix</button>
+                    <button class="tekton__button tekton__button--consult" onclick="consultCoder('${mergeId}', '${mergeName}')">Consult</button>
+                    <button class="tekton__button tekton__button--redo" onclick="redoSprint('${mergeId}', '${mergeName}')">Redo</button>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+}
+
+function closeMergeConflictModal() {
+    const modal = document.getElementById('merge-conflict-modal');
+    if (modal) {
+        modal.remove();
+    }
+}
+
+// Cancel merge - revert working directory
+async function cancelMerge(mergeId, mergeName) {
+    console.log(`[TEKTON] Cancelling merge for ${mergeName}`);
+    closeMergeConflictModal();
+    
+    try {
+        await fetch(tektonCoreUrl(`/api/v1/sprints/cancel-merge/${mergeId}`), {
+            method: 'POST'
+        });
+        
+        console.log('[TEKTON] Merge cancelled, working directory reverted');
+    } catch (error) {
+        console.error('[TEKTON] Failed to cancel merge:', error);
+    }
+}
+
+// Fix merge conflict using AI
+async function fixMergeConflict(mergeId, mergeName) {
+    console.log(`[TEKTON] Attempting AI fix for ${mergeName}`);
+    
+    // Get conflict data from modal
+    const conflictData = window.lastMergeConflictData || {};
+    closeMergeConflictModal();
+    
+    try {
+        const response = await fetch(tektonCoreUrl('/api/v1/sprints/merge/fix'), {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                merge_id: mergeId,
+                merge_name: mergeName,
+                conflict_data: conflictData
+            })
+        });
+        
+        if (!response.ok) {
+            throw new Error(`AI fix failed: ${await response.text()}`);
+        }
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            alert(`Merge conflicts resolved successfully for "${mergeName}"!`);
+            await loadMergeQueue();
+        } else {
+            // AI failed - show options
+            alert(`AI was unable to resolve conflicts. Please choose Consult or Redo.`);
+            showMergeConflictModal(mergeId, mergeName, conflictData);
+        }
+        
+    } catch (error) {
+        console.error('[TEKTON] Failed to fix merge:', error);
+        alert(`Failed to fix merge: ${error.message}`);
+    }
+}
+
+// Consult coder to fix conflicts
+async function consultCoder(mergeId, mergeName) {
+    console.log(`[TEKTON] Consulting coder for ${mergeName}`);
+    
+    // Get conflict data from modal
+    const conflictData = window.lastMergeConflictData || {};
+    closeMergeConflictModal();
+    
+    try {
+        const response = await fetch(tektonCoreUrl('/api/v1/sprints/merge/consult'), {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                merge_id: mergeId,
+                merge_name: mergeName,
+                conflict_data: conflictData
+            })
+        });
+        
+        if (!response.ok) {
+            throw new Error(`Consult failed: ${await response.text()}`);
+        }
+        
+        const result = await response.json();
+        alert(`Merge task sent to the assigned Coder for "${mergeName}". They will resolve the conflicts.`);
+        await loadMergeQueue();
+        
+    } catch (error) {
+        console.error('[TEKTON] Failed to consult coder:', error);
+        alert(`Failed to consult coder: ${error.message}`);
+    }
+}
+
+// Redo sprint - delete branch and start fresh
+async function redoSprint(mergeId, mergeName) {
+    if (!confirm(`Are you sure you want to redo "${mergeName}"?\n\nThis will delete the branch and restart the sprint with priority 1.`)) {
+        return;
+    }
+    
+    console.log(`[TEKTON] Redoing sprint ${mergeName}`);
+    closeMergeConflictModal();
+    
+    try {
+        const response = await fetch(tektonCoreUrl('/api/v1/sprints/merge/redo'), {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                merge_id: mergeId,
+                merge_name: mergeName,
+                new_coder: null  // Let backend assign
+            })
+        });
+        
+        if (!response.ok) {
+            throw new Error(`Redo failed: ${await response.text()}`);
+        }
+        
+        const result = await response.json();
+        alert(`Sprint "${mergeName}" has been reset. Branch deleted, priority set to 1, and reassigned to ${result.new_sprint.coder}.`);
+        await loadMergeQueue();
+        
+    } catch (error) {
+        console.error('[TEKTON] Failed to redo sprint:', error);
+        alert(`Failed to redo sprint: ${error.message}`);
+    }
+}
+
+// Show sprint daily log in editor modal
+async function showSprintDailyLog(sprintId, sprintName) {
+    console.log(`[TEKTON] Showing daily log for sprint ${sprintName}`);
+    
+    try {
+        const response = await fetch(tektonCoreUrl(`/api/v1/sprints/${sprintId}/daily-log`));
+        
+        if (!response.ok) {
+            throw new Error(`Failed to fetch daily log: ${response.statusText}`);
+        }
+        
+        const data = await response.json();
+        showSprintFileEditor(sprintId, sprintName, 'DAILY_LOG.md', data.content);
+        
+    } catch (error) {
+        console.error('[TEKTON] Failed to fetch daily log:', error);
+        alert(`Failed to fetch daily log: ${error.message}`);
+    }
+}
+
+// Show sprint handoff in editor modal
+async function showSprintHandoff(sprintId, sprintName) {
+    console.log(`[TEKTON] Showing handoff for sprint ${sprintName}`);
+    
+    try {
+        const response = await fetch(tektonCoreUrl(`/api/v1/sprints/${sprintId}/handoff`));
+        
+        if (!response.ok) {
+            throw new Error(`Failed to fetch handoff: ${response.statusText}`);
+        }
+        
+        const data = await response.json();
+        showSprintFileEditor(sprintId, sprintName, 'HANDOFF.md', data.content);
+        
+    } catch (error) {
+        console.error('[TEKTON] Failed to fetch handoff:', error);
+        alert(`Failed to fetch handoff: ${error.message}`);
+    }
+}
+
+// Show sprint plan in editor modal
+async function showSprintPlan(sprintId, sprintName) {
+    console.log(`[TEKTON] Showing sprint plan for ${sprintName}`);
+    
+    try {
+        const response = await fetch(tektonCoreUrl(`/api/v1/sprints/${sprintId}/sprint-plan`));
+        
+        if (!response.ok) {
+            throw new Error(`Failed to fetch sprint plan: ${response.statusText}`);
+        }
+        
+        const data = await response.json();
+        showSprintFileEditor(sprintId, sprintName, 'Sprint_Plan.md', data.content);
+        
+    } catch (error) {
+        console.error('[TEKTON] Failed to fetch sprint plan:', error);
+        alert(`Failed to fetch sprint plan: ${error.message}`);
+    }
+}
+
+// Show sprint file editor modal
+function showSprintFileEditor(sprintId, sprintName, fileName, content) {
+    const modalHtml = `
+        <div class="tekton__modal-overlay" id="sprint-editor-modal">
+            <div class="tekton__modal" style="max-width: 900px;">
+                <div class="tekton__modal-header">
+                    <h2 class="tekton__modal-title">${sprintName} - ${fileName}</h2>
+                    <button class="tekton__modal-close" onclick="closeSprintEditor()">×</button>
+                </div>
+                
+                <div class="tekton__modal-body">
+                    <textarea id="sprint-file-content" class="tekton__editor">${content || ''}</textarea>
+                </div>
+                
+                <div class="tekton__modal-actions">
+                    <button class="tekton__button tekton__button--cancel" onclick="closeSprintEditor()">Clear</button>
+                    <button class="tekton__button tekton__button--sprints" onclick="saveSprintFile('${sprintId}', '${fileName}')">Save</button>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+}
+
+function closeSprintEditor() {
+    const modal = document.getElementById('sprint-editor-modal');
+    if (modal) {
+        modal.remove();
+    }
+}
+
+// Save sprint file
+async function saveSprintFile(sprintId, fileName) {
+    const content = document.getElementById('sprint-file-content').value;
+    console.log(`[TEKTON] Saving ${fileName} for sprint ${sprintId}`);
+    
+    try {
+        const endpoint = fileName.toLowerCase().replace('.md', '').replace('_', '-');
+        const response = await fetch(tektonCoreUrl(`/api/v1/sprints/${sprintId}/${endpoint}`), {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ content })
+        });
+        
+        if (!response.ok) {
+            throw new Error(`Failed to save file: ${response.statusText}`);
+        }
+        
+        alert(`${fileName} saved successfully!`);
+        closeSprintEditor();
+        
+        // Reload sprints if on sprints tab
+        const activeTab = document.querySelector('.tekton__tab[type="radio"]:checked');
+        if (activeTab && activeTab.id === 'tekton-tab-sprints') {
+            loadAllSprints();
+        }
+        
+    } catch (error) {
+        console.error('[TEKTON] Failed to save file:', error);
+        alert(`Failed to save file: ${error.message}`);
+    }
 }
 
 // Git action state for retry functionality
@@ -2268,6 +2971,304 @@ async function refreshProjectStatus(projectId) {
     // This will be implemented with auto-refresh
 }
 
+// Show project details modal with README editor
+function showProjectDetailsModal(project) {
+    console.log('[TEKTON] Showing project details for:', project.name);
+    
+    // Create modal overlay
+    const modalOverlay = document.createElement('div');
+    modalOverlay.className = 'tekton__modal-overlay';
+    modalOverlay.id = 'tekton-project-details-modal';
+    
+    modalOverlay.innerHTML = `
+        <div class="tekton__modal">
+            <div class="tekton__modal-header">
+                <h3 class="tekton__modal-title">Project: ${project.name}</h3>
+                <button class="tekton__modal-close" onclick="closeProjectDetailsModal()">×</button>
+            </div>
+            <div class="tekton__modal-body">
+                <div class="tekton__modal-tabs">
+                    <button class="tekton__modal-tab tekton__modal-tab--active" onclick="switchProjectTab('readme')">README</button>
+                    <button class="tekton__modal-tab" onclick="switchProjectTab('metadata')">Metadata</button>
+                    <button class="tekton__modal-tab" onclick="switchProjectTab('settings')">Settings</button>
+                </div>
+                <div id="project-readme-panel" class="tekton__modal-panel">
+                    <textarea id="project-readme-editor" class="tekton__editor">Loading README...</textarea>
+                    <div class="tekton__modal-actions">
+                        <button class="tekton__button tekton__button--secondary" onclick="resetProjectReadme()">Reset</button>
+                        <button class="tekton__button tekton__button--primary" onclick="saveProjectReadme('${project.id}')">Save README</button>
+                    </div>
+                </div>
+                <div id="project-metadata-panel" class="tekton__modal-panel" style="display: none;">
+                    <div class="tekton__metadata-grid">
+                        <div class="tekton__metadata-item">
+                            <span class="tekton__metadata-label">Project ID:</span>
+                            <span class="tekton__metadata-value">${project.id}</span>
+                        </div>
+                        <div class="tekton__metadata-item">
+                            <span class="tekton__metadata-label">Repository:</span>
+                            <span class="tekton__metadata-value">${project.repo_url || 'Not set'}</span>
+                        </div>
+                        <div class="tekton__metadata-item">
+                            <span class="tekton__metadata-label">Active Sprints:</span>
+                            <span class="tekton__metadata-value">${project.active_sprints || 0}</span>
+                        </div>
+                        <div class="tekton__metadata-item">
+                            <span class="tekton__metadata-label">Total Sprints:</span>
+                            <span class="tekton__metadata-value">${project.total_sprints || 0}</span>
+                        </div>
+                        <div class="tekton__metadata-item">
+                            <span class="tekton__metadata-label">Created:</span>
+                            <span class="tekton__metadata-value">${project.created_at || 'Unknown'}</span>
+                        </div>
+                        <div class="tekton__metadata-item">
+                            <span class="tekton__metadata-label">Last Updated:</span>
+                            <span class="tekton__metadata-value">${project.updated_at || 'Unknown'}</span>
+                        </div>
+                    </div>
+                </div>
+                <div id="project-settings-panel" class="tekton__modal-panel" style="display: none;">
+                    <div class="tekton__settings-form">
+                        <div class="tekton__field">
+                            <label class="tekton__label">Project Name:</label>
+                            <input type="text" class="tekton__input" value="${project.name}" id="project-name-input">
+                        </div>
+                        <div class="tekton__field">
+                            <label class="tekton__label">Repository URL:</label>
+                            <input type="text" class="tekton__input" value="${project.repo_url || ''}" id="project-repo-input">
+                        </div>
+                        <div class="tekton__field">
+                            <label class="tekton__label">Default Branch:</label>
+                            <input type="text" class="tekton__input" value="${project.default_branch || 'main'}" id="project-branch-input">
+                        </div>
+                        <div class="tekton__modal-actions">
+                            <button class="tekton__button tekton__button--secondary" onclick="closeProjectDetailsModal()">Cancel</button>
+                            <button class="tekton__button tekton__button--primary" onclick="saveProjectSettings('${project.id}')">Save Settings</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modalOverlay);
+    modalOverlay.style.display = 'flex';
+    
+    // Load README content
+    loadProjectReadme(project.id);
+}
+
+// Close project details modal
+function closeProjectDetailsModal() {
+    const modal = document.getElementById('tekton-project-details-modal');
+    if (modal) {
+        modal.remove();
+    }
+}
+
+// Switch tabs in project details modal
+function switchProjectTab(tab) {
+    const tabs = document.querySelectorAll('.tekton__modal-tab');
+    const panels = document.querySelectorAll('.tekton__modal-panel');
+    
+    tabs.forEach(t => t.classList.remove('tekton__modal-tab--active'));
+    panels.forEach(p => p.style.display = 'none');
+    
+    if (tab === 'readme') {
+        tabs[0].classList.add('tekton__modal-tab--active');
+        document.getElementById('project-readme-panel').style.display = 'block';
+    } else if (tab === 'metadata') {
+        tabs[1].classList.add('tekton__modal-tab--active');
+        document.getElementById('project-metadata-panel').style.display = 'block';
+    } else if (tab === 'settings') {
+        tabs[2].classList.add('tekton__modal-tab--active');
+        document.getElementById('project-settings-panel').style.display = 'block';
+    }
+}
+
+// Load project README
+async function loadProjectReadme(projectId) {
+    try {
+        const response = await fetch(tektonUrl(`/projects/${projectId}/readme`));
+        const data = await response.json();
+        
+        const editor = document.getElementById('project-readme-editor');
+        if (editor) {
+            editor.value = data.content || '# Project README\n\nNo README content yet.';
+            editor.dataset.originalContent = editor.value;
+        }
+    } catch (error) {
+        console.error('[TEKTON] Error loading README:', error);
+        const editor = document.getElementById('project-readme-editor');
+        if (editor) {
+            editor.value = '# Project README\n\nFailed to load README content.';
+        }
+    }
+}
+
+// Reset README to original content
+function resetProjectReadme() {
+    const editor = document.getElementById('project-readme-editor');
+    if (editor && editor.dataset.originalContent) {
+        editor.value = editor.dataset.originalContent;
+    }
+}
+
+// Save project README
+async function saveProjectReadme(projectId) {
+    const editor = document.getElementById('project-readme-editor');
+    if (!editor) return;
+    
+    try {
+        const response = await fetch(tektonUrl(`/projects/${projectId}/readme`), {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ content: editor.value })
+        });
+        
+        if (response.ok) {
+            editor.dataset.originalContent = editor.value;
+            alert('README saved successfully!');
+        } else {
+            alert('Failed to save README');
+        }
+    } catch (error) {
+        console.error('[TEKTON] Error saving README:', error);
+        alert('Error saving README: ' + error.message);
+    }
+}
+
+// Save project settings
+async function saveProjectSettings(projectId) {
+    const nameInput = document.getElementById('project-name-input');
+    const repoInput = document.getElementById('project-repo-input');
+    const branchInput = document.getElementById('project-branch-input');
+    
+    try {
+        const response = await fetch(tektonUrl(`/projects/${projectId}`), {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                name: nameInput.value,
+                repo_url: repoInput.value,
+                default_branch: branchInput.value
+            })
+        });
+        
+        if (response.ok) {
+            alert('Settings saved successfully!');
+            closeProjectDetailsModal();
+            loadProjectsDashboard(); // Refresh projects
+        } else {
+            alert('Failed to save settings');
+        }
+    } catch (error) {
+        console.error('[TEKTON] Error saving settings:', error);
+        alert('Error saving settings: ' + error.message);
+    }
+}
+
+// Show project sprints modal
+function showProjectSprintsModal(projectId, projectName) {
+    console.log('[TEKTON] Showing sprints for project:', projectName);
+    
+    // Create modal overlay
+    const modalOverlay = document.createElement('div');
+    modalOverlay.className = 'tekton__modal-overlay';
+    modalOverlay.id = 'tekton-project-sprints-modal';
+    
+    modalOverlay.innerHTML = `
+        <div class="tekton__modal tekton__modal--wide">
+            <div class="tekton__modal-header">
+                <h3 class="tekton__modal-title">Sprints for: ${projectName}</h3>
+                <button class="tekton__modal-close" onclick="closeProjectSprintsModal()">×</button>
+            </div>
+            <div class="tekton__modal-body">
+                <div class="tekton__sprints-grid" id="project-sprints-grid">
+                    <div class="tekton__loading">Loading project sprints...</div>
+                </div>
+                <div class="tekton__modal-actions">
+                    <button class="tekton__button tekton__button--secondary" onclick="closeProjectSprintsModal()">Close</button>
+                    <button class="tekton__button tekton__button--primary" onclick="createNewSprint('${projectId}', '${projectName}')">Create New Sprint</button>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modalOverlay);
+    modalOverlay.style.display = 'flex';
+    
+    // Load project sprints
+    loadProjectSprints(projectId);
+}
+
+// Close project sprints modal
+function closeProjectSprintsModal() {
+    const modal = document.getElementById('tekton-project-sprints-modal');
+    if (modal) {
+        modal.remove();
+    }
+}
+
+// Load sprints for a specific project
+async function loadProjectSprints(projectId) {
+    try {
+        const response = await fetch(tektonUrl(`/projects/${projectId}/sprints`));
+        const data = await response.json();
+        
+        const grid = document.getElementById('project-sprints-grid');
+        if (!grid) return;
+        
+        if (data.sprints && data.sprints.length > 0) {
+            grid.innerHTML = data.sprints.map(sprint => `
+                <div class="tekton__sprint-card tekton__sprint-card--${sprint.status.toLowerCase().replace(/\s+/g, '-')}">
+                    <div class="tekton__sprint-header">
+                        <h4 class="tekton__sprint-name">${sprint.name}</h4>
+                        <span class="tekton__sprint-badge">${sprint.coder || 'Unassigned'}</span>
+                    </div>
+                    <div class="tekton__sprint-info">
+                        <div class="tekton__info-item">
+                            <span class="tekton__info-label">Status:</span>
+                            <span class="tekton__info-value">${sprint.status}</span>
+                        </div>
+                        <div class="tekton__info-item">
+                            <span class="tekton__info-label">Priority:</span>
+                            <span class="tekton__info-value">${sprint.priority}</span>
+                        </div>
+                        <div class="tekton__info-item">
+                            <span class="tekton__info-label">Updated:</span>
+                            <span class="tekton__info-value">${sprint.updated || 'Unknown'}</span>
+                        </div>
+                    </div>
+                    <div class="tekton__sprint-actions">
+                        <button class="tekton__button tekton__button--small" onclick="showSprintDailyLog('${sprint.id}', '${sprint.name}')">Daily Log</button>
+                        <button class="tekton__button tekton__button--small" onclick="showSprintPlan('${sprint.id}', '${sprint.name}')">Plan</button>
+                        <button class="tekton__button tekton__button--small" onclick="showSprintHandoff('${sprint.id}', '${sprint.name}')">Handoff</button>
+                    </div>
+                </div>
+            `).join('');
+        } else {
+            grid.innerHTML = '<div class="tekton__empty-state">No sprints found for this project</div>';
+        }
+    } catch (error) {
+        console.error('[TEKTON] Error loading project sprints:', error);
+        const grid = document.getElementById('project-sprints-grid');
+        if (grid) {
+            grid.innerHTML = '<div class="tekton__error">Failed to load sprints</div>';
+        }
+    }
+}
+
+// Create new sprint for project
+function createNewSprint(projectId, projectName) {
+    const sprintName = prompt(`Enter name for new sprint in ${projectName}:`);
+    if (!sprintName) return;
+    
+    // TODO: Implement sprint creation API call
+    alert(`Creating sprint "${sprintName}" for project ${projectName}`);
+    loadProjectSprints(projectId); // Refresh the list
+}
+
 // Auto-refresh functionality
 let dashboardRefreshInterval = null;
 
@@ -2318,29 +3319,49 @@ async function removeProject(projectId, projectName) {
 }
 
 async function executeMerge(mergeId, mergeName) {
-    if (!confirm(`Execute merge for "${mergeName}"?\n\nThis will merge the sprint changes into the main branch.`)) {
-        return;
-    }
-    
-    console.log(`[TEKTON] Executing merge for ${mergeName} (${mergeId})`);
+    console.log(`[TEKTON] Starting dry-run merge for ${mergeName} (${mergeId})`);
     
     try {
-        const response = await fetch(tektonCoreUrl(`/api/v1/sprints/execute-merge/${mergeId}`), {
-            method: 'POST'
+        // First do a dry-run merge using the new endpoint
+        const response = await fetch(tektonCoreUrl('/api/v1/sprints/merge/dry-run'), {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                merge_id: mergeId,
+                merge_name: mergeName
+            })
         });
         
         if (!response.ok) {
             const error = await response.text();
-            throw new Error(`Failed to execute merge: ${error}`);
+            throw new Error(`Failed to execute dry-run: ${error}`);
         }
         
         const result = await response.json();
-        console.log(`[TEKTON] Merge executed successfully:`, result);
+        console.log(`[TEKTON] Dry-run result:`, result);
         
-        alert(`Merge executed successfully for "${mergeName}"!`);
-        
-        // Reload merge queue to reflect changes
-        await loadMergeQueue();
+        if (result.can_merge && (!result.conflicts || result.conflicts.length === 0)) {
+            // Clean merge - auto commit and push
+            console.log(`[TEKTON] Clean merge detected, auto-committing`);
+            
+            const commitResponse = await fetch(tektonCoreUrl(`/api/v1/sprints/complete-merge/${mergeId}`), {
+                method: 'POST'
+            });
+            
+            if (!commitResponse.ok) {
+                throw new Error(`Failed to complete merge: ${await commitResponse.text()}`);
+            }
+            
+            alert(`Merge completed successfully for "${mergeName}"!`);
+            
+            // Reload merge queue to reflect changes
+            await loadMergeQueue();
+            
+        } else {
+            // Has conflicts - show modal
+            console.log(`[TEKTON] Merge conflicts detected`);
+            showMergeConflictModal(mergeId, mergeName, result);
+        }
         
     } catch (error) {
         console.error('[TEKTON] Failed to execute merge:', error);
@@ -2378,78 +3399,11 @@ async function viewMergeDetails(mergeId, mergeName) {
     }
 }
 
-async function resolveConflict(conflictId, conflictName) {
-    if (!confirm(`Manually resolve conflict for "${conflictName}"?\n\nThis will mark the conflict as resolved and proceed with the merge.`)) {
-        return;
-    }
-    
-    console.log(`[TEKTON] Resolving conflict for ${conflictName} (${conflictId})`);
-    
-    try {
-        const response = await fetch(tektonCoreUrl(`/api/v1/sprints/resolve-conflict/${conflictId}`), {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                resolution_type: 'manual',
-                reason: 'Human intervention - conflict resolved manually'
-            })
-        });
-        
-        if (!response.ok) {
-            const error = await response.text();
-            throw new Error(`Failed to resolve conflict: ${error}`);
-        }
-        
-        const result = await response.json();
-        console.log(`[TEKTON] Conflict resolved successfully:`, result);
-        
-        alert(`Conflict resolved successfully for "${conflictName}"!`);
-        
-        // Reload conflicts to reflect changes
-        await loadConflicts();
-        
-    } catch (error) {
-        console.error('[TEKTON] Failed to resolve conflict:', error);
-        alert(`Failed to resolve conflict: ${error.message}`);
-    }
-}
 
-async function viewConflictDetails(conflictId, conflictName) {
-    console.log(`[TEKTON] Viewing conflict details for ${conflictName} (${conflictId})`);
-    
-    try {
-        const response = await fetch(tektonCoreUrl(`/api/v1/sprints/conflicts/${conflictId}`));
-        
-        if (!response.ok) {
-            throw new Error(`Failed to fetch conflict details: ${response.statusText}`);
-        }
-        
-        const details = await response.json();
-        console.log(`[TEKTON] Conflict details:`, details);
-        
-        // Show detailed conflict information
-        let detailsText = `Conflict Details for "${conflictName}":\n\n`;
-        detailsText += `Status: ${details.status}\n`;
-        detailsText += `Conflict Since: ${details.conflict_at}\n`;
-        detailsText += `Assigned Coder: ${details.assigned_coder}\n`;
-        detailsText += `Retry Count: ${details.retry_count || 0}/3\n`;
-        if (details.conflict_files) detailsText += `Conflicted Files: ${details.conflict_files.join(', ')}\n`;
-        if (details.conflict_message) detailsText += `\nConflict Message:\n${details.conflict_message}\n`;
-        
-        alert(detailsText);
-        
-    } catch (error) {
-        console.error('[TEKTON] Failed to fetch conflict details:', error);
-        alert(`Failed to fetch conflict details: ${error.message}`);
-    }
-}
 
 async function sendBackToCoder(conflictId, conflictName) {
-    if (!confirm(`Send "${conflictName}" back to Coder for fixes?\n\nThis will create a repair task for the assigned Coder.`)) {
-        return;
-    }
+    // Function removed - conflicts feature removed
+    return;
     
     console.log(`[TEKTON] Sending back to Coder for ${conflictName} (${conflictId})`);
     
@@ -2474,8 +3428,7 @@ async function sendBackToCoder(conflictId, conflictName) {
         
         alert(`"${conflictName}" sent back to ${result.assigned_coder || 'Coder'} for fixes!`);
         
-        // Reload conflicts to reflect changes
-        await loadConflicts();
+        // Function removed - conflicts feature removed
         
     } catch (error) {
         console.error('[TEKTON] Failed to send back to Coder:', error);

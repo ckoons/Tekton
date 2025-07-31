@@ -12,6 +12,7 @@ from typing import Dict, List, Optional, Any
 from fastapi import APIRouter, HTTPException, BackgroundTasks
 from pydantic import BaseModel, Field
 from datetime import datetime
+import asyncio
 
 from shared.utils.logging_setup import setup_component_logging
 
@@ -59,6 +60,29 @@ class CreateTestSprintRequest(BaseModel):
     """Request to create test sprint"""
     sprint_name: str = Field(..., description="Test sprint name")
     coder_id: str = Field(..., description="Coder to assign (A, B, or C)")
+
+class DryRunMergeRequest(BaseModel):
+    """Request to perform dry-run merge"""
+    merge_id: str = Field(..., description="Merge identifier")
+    merge_name: str = Field(..., description="Sprint name being merged")
+
+class FixMergeRequest(BaseModel):
+    """Request to fix merge conflicts with AI"""
+    merge_id: str = Field(..., description="Merge identifier")
+    merge_name: str = Field(..., description="Sprint name being merged")
+    conflict_data: Dict[str, Any] = Field(..., description="Conflict information")
+
+class ConsultCoderRequest(BaseModel):
+    """Request to consult original Coder"""
+    merge_id: str = Field(..., description="Merge identifier")
+    merge_name: str = Field(..., description="Sprint name being merged")
+    conflict_data: Dict[str, Any] = Field(..., description="Conflict information")
+
+class RedoSprintRequest(BaseModel):
+    """Request to redo sprint with new Coder"""
+    merge_id: str = Field(..., description="Merge identifier")
+    merge_name: str = Field(..., description="Sprint name to redo")
+    new_coder: Optional[str] = Field(None, description="New Coder assignment (A, B, or C)")
 
 # Create router
 router = APIRouter(prefix="/api/v1/sprints", tags=["Sprint Management"])
@@ -394,4 +418,160 @@ async def stream_sprint_status(background_tasks: BackgroundTasks):
         
     except Exception as e:
         logger.error(f"Failed to get streaming status: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+# New merge workflow endpoints
+
+@api_contract(
+    title="Dry-Run Merge API",
+    endpoint="/sprints/merge/dry-run",
+    method="POST",
+    request_schema={"merge_id": "str", "merge_name": "str"},
+    response_schema={"success": "bool", "conflicts": "List[Dict]", "can_merge": "bool"},
+    description="Perform dry-run merge to check for conflicts"
+)
+@router.post("/merge/dry-run")
+async def dry_run_merge(request: DryRunMergeRequest):
+    """Perform dry-run merge to check for conflicts"""
+    
+    if not sprint_coordinator:
+        raise HTTPException(status_code=503, detail="Sprint coordinator not initialized")
+    
+    try:
+        # Simulate dry-run merge
+        await asyncio.sleep(1)  # Simulate processing
+        
+        # For now, return mock data
+        # TODO: Implement actual git merge --no-commit logic
+        return {
+            "success": True,
+            "merge_id": request.merge_id,
+            "merge_name": request.merge_name,
+            "can_merge": False,
+            "conflicts": [
+                {
+                    "file": "src/main.py",
+                    "line": 42,
+                    "type": "content",
+                    "description": "Both branches modified this function"
+                }
+            ],
+            "timestamp": datetime.now().isoformat()
+        }
+        
+    except Exception as e:
+        logger.error(f"Failed to perform dry-run merge: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_contract(
+    title="Fix Merge Conflicts API",
+    endpoint="/sprints/merge/fix",
+    method="POST",
+    request_schema={"merge_id": "str", "merge_name": "str", "conflict_data": "Dict"},
+    response_schema={"success": "bool", "resolution": "Dict", "message": "str"},
+    description="Use AI to fix merge conflicts"
+)
+@router.post("/merge/fix")
+async def fix_merge_conflicts(request: FixMergeRequest):
+    """Use AI to fix merge conflicts"""
+    
+    if not sprint_coordinator:
+        raise HTTPException(status_code=503, detail="Sprint coordinator not initialized")
+    
+    try:
+        # Simulate AI conflict resolution
+        await asyncio.sleep(2)  # Simulate AI processing
+        
+        # TODO: Implement actual AI-powered conflict resolution
+        return {
+            "success": True,
+            "merge_id": request.merge_id,
+            "merge_name": request.merge_name,
+            "resolution": {
+                "files_fixed": 1,
+                "strategy": "AI-powered resolution",
+                "confidence": 0.95
+            },
+            "message": "Conflicts resolved using AI assistance",
+            "timestamp": datetime.now().isoformat()
+        }
+        
+    except Exception as e:
+        logger.error(f"Failed to fix merge conflicts: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_contract(
+    title="Consult Coder API",
+    endpoint="/sprints/merge/consult",
+    method="POST",
+    request_schema={"merge_id": "str", "merge_name": "str", "conflict_data": "Dict"},
+    response_schema={"success": "bool", "consultation": "Dict", "message": "str"},
+    description="Consult original Coder for conflict resolution"
+)
+@router.post("/merge/consult")
+async def consult_coder(request: ConsultCoderRequest):
+    """Consult original Coder for conflict resolution"""
+    
+    if not sprint_coordinator:
+        raise HTTPException(status_code=503, detail="Sprint coordinator not initialized")
+    
+    try:
+        # Simulate Coder consultation
+        await asyncio.sleep(1.5)  # Simulate consultation
+        
+        # TODO: Implement actual Coder consultation logic
+        return {
+            "success": True,
+            "merge_id": request.merge_id,
+            "merge_name": request.merge_name,
+            "consultation": {
+                "coder": "Coder-A",
+                "response": "Recommend accepting incoming changes for function X",
+                "confidence": "high"
+            },
+            "message": "Coder consultation completed",
+            "timestamp": datetime.now().isoformat()
+        }
+        
+    except Exception as e:
+        logger.error(f"Failed to consult Coder: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_contract(
+    title="Redo Sprint API",
+    endpoint="/sprints/merge/redo",
+    method="POST",
+    request_schema={"merge_id": "str", "merge_name": "str", "new_coder": "Optional[str]"},
+    response_schema={"success": "bool", "new_sprint": "Dict", "message": "str"},
+    description="Redo sprint with new Coder assignment"
+)
+@router.post("/merge/redo")
+async def redo_sprint(request: RedoSprintRequest):
+    """Redo sprint with new Coder assignment"""
+    
+    if not sprint_coordinator:
+        raise HTTPException(status_code=503, detail="Sprint coordinator not initialized")
+    
+    try:
+        # Simulate sprint redo
+        await asyncio.sleep(2)  # Simulate processing
+        
+        new_coder = request.new_coder or "B"  # Default to Coder-B if not specified
+        
+        # TODO: Implement actual sprint redo logic
+        return {
+            "success": True,
+            "merge_id": request.merge_id,
+            "new_sprint": {
+                "name": f"{request.merge_name}_REDO",
+                "coder": f"Coder-{new_coder}",
+                "status": "Assigned",
+                "created": datetime.now().isoformat()
+            },
+            "message": f"Sprint reassigned to Coder-{new_coder} for redo",
+            "timestamp": datetime.now().isoformat()
+        }
+        
+    except Exception as e:
+        logger.error(f"Failed to redo sprint: {e}")
         raise HTTPException(status_code=500, detail=str(e))
