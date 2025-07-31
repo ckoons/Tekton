@@ -1969,7 +1969,7 @@ async function loadProjectCIs() {
     console.log('[TEKTON] Loading project CIs');
     
     try {
-        const response = await fetch(tektonUrl('/api/projects'));
+        const response = await fetch(tektonUrl('tekton-core', '/api/projects'));
         const data = await response.json();
         
         // Reset with Tekton first
@@ -2205,7 +2205,7 @@ function prepareNewProject() {
     
     // Get the actual resolved path - need to make API call to get TEKTON_ROOT
     // For now, show the resolved path format that backend will use
-    fetch(tektonUrl('/api/v1/config/tekton-root'))
+    fetch(tektonUrl('tekton-core', '/api/v1/config/tekton-root'))
         .then(response => response.json())
         .then(data => {
             const tektonRoot = data.tekton_root;
@@ -2270,7 +2270,7 @@ async function createNewProject() {
     
     try {
         // Call TektonCore API to create project
-        const apiUrl = tektonUrl('/api/projects');
+        const apiUrl = tektonUrl('tekton-core', '/api/projects');
         console.log('[TEKTON] Generated API URL:', apiUrl);
         console.log('[TEKTON] Making API call to:', apiUrl);
         console.log('[TEKTON] Request data:', JSON.stringify(projectData, null, 2));
@@ -2326,7 +2326,7 @@ async function loadProjectsDashboard() {
     
     try {
         // Fetch projects from TektonCore API
-        const response = await fetch(tektonUrl('/api/projects'));
+        const response = await fetch(tektonUrl('tekton-core', '/api/projects'));
         
         if (!response.ok) {
             throw new Error(`Failed to fetch projects: ${response.statusText}`);
@@ -2337,7 +2337,7 @@ async function loadProjectsDashboard() {
         
         const projectsList = document.getElementById('projects-list');
         
-        if (data.projects.length === 0) {
+        if (!data.projects || data.projects.length === 0) {
             projectsList.innerHTML = '<div class="tekton__placeholder-message">Create a New Project<br>No projects are currently managed by Tekton</div>';
             return;
         }
@@ -2360,11 +2360,11 @@ async function loadProjectsDashboard() {
 
 async function loadMergeQueue() {
     console.log('[TEKTON] Loading merge queue - scanning Development Sprints');
-    console.log('[TEKTON] URL:', tektonUrl('/api/v1/sprints/merges'));
+    console.log('[TEKTON] URL:', tektonUrl('tekton-core', '/api/v1/sprints/merges'));
     
     try {
         // Fetch sprints ready for merge from TektonCore Sprint API
-        const response = await fetch(tektonUrl('/api/v1/sprints/merges'));
+        const response = await fetch(tektonUrl('tekton-core', '/api/v1/sprints/merges'));
         
         if (!response.ok) {
             const errorText = await response.text();
@@ -2560,7 +2560,7 @@ async function showProjectDetails(projectId, projectName) {
     
     try {
         // Fetch project details including README
-        const response = await fetch(tektonUrl(`/api/v1/projects/${projectId}`));
+        const response = await fetch(tektonUrl('tekton-core', `/api/v1/projects/${projectId}`));
         
         if (!response.ok) {
             throw new Error(`Failed to fetch project details: ${response.statusText}`);
@@ -2599,7 +2599,7 @@ async function loadAllSprints() {
     
     try {
         // Scan sprint directories - use the status endpoint to get all sprints
-        const url = tektonUrl('/api/v1/sprints/status');
+        const url = tektonUrl('tekton-core', '/api/v1/sprints/status');
         console.log('[TEKTON] Fetching sprints from:', url);
         
         const response = await fetch(url);
@@ -2732,7 +2732,7 @@ async function cancelMerge(mergeId, mergeName) {
     closeMergeConflictModal();
     
     try {
-        await fetch(tektonUrl(`/api/v1/sprints/cancel-merge/${mergeId}`), {
+        await fetch(tektonUrl('tekton-core', `/api/v1/sprints/cancel-merge/${mergeId}`), {
             method: 'POST'
         });
         
@@ -2751,7 +2751,7 @@ async function fixMergeConflict(mergeId, mergeName) {
     closeMergeConflictModal();
     
     try {
-        const response = await fetch(tektonUrl('/api/v1/sprints/merge/fix'), {
+        const response = await fetch(tektonUrl('tekton-core', '/api/v1/sprints/merge/fix'), {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -2791,7 +2791,7 @@ async function consultCoder(mergeId, mergeName) {
     closeMergeConflictModal();
     
     try {
-        const response = await fetch(tektonUrl('/api/v1/sprints/merge/consult'), {
+        const response = await fetch(tektonUrl('tekton-core', '/api/v1/sprints/merge/consult'), {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -2825,7 +2825,7 @@ async function redoSprint(mergeId, mergeName) {
     closeMergeConflictModal();
     
     try {
-        const response = await fetch(tektonUrl('/api/v1/sprints/merge/redo'), {
+        const response = await fetch(tektonUrl('tekton-core', '/api/v1/sprints/merge/redo'), {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -2854,7 +2854,7 @@ async function showSprintDailyLog(sprintId, sprintName) {
     console.log(`[TEKTON] Showing daily log for sprint ${sprintName}`);
     
     try {
-        const response = await fetch(tektonUrl(`/api/v1/sprints/${sprintId}/daily-log`));
+        const response = await fetch(tektonUrl('tekton-core', `/api/v1/sprints/${sprintId}/daily-log`));
         
         if (!response.ok) {
             throw new Error(`Failed to fetch daily log: ${response.statusText}`);
@@ -2874,7 +2874,7 @@ async function showSprintHandoff(sprintId, sprintName) {
     console.log(`[TEKTON] Showing handoff for sprint ${sprintName}`);
     
     try {
-        const response = await fetch(tektonUrl(`/api/v1/sprints/${sprintId}/handoff`));
+        const response = await fetch(tektonUrl('tekton-core', `/api/v1/sprints/${sprintId}/handoff`));
         
         if (!response.ok) {
             throw new Error(`Failed to fetch handoff: ${response.statusText}`);
@@ -2894,7 +2894,7 @@ async function showSprintPlan(sprintId, sprintName) {
     console.log(`[TEKTON] Showing sprint plan for ${sprintName}`);
     
     try {
-        const response = await fetch(tektonUrl(`/api/v1/sprints/${sprintId}/sprint-plan`));
+        const response = await fetch(tektonUrl('tekton-core', `/api/v1/sprints/${sprintId}/sprint-plan`));
         
         if (!response.ok) {
             throw new Error(`Failed to fetch sprint plan: ${response.statusText}`);
@@ -2948,7 +2948,7 @@ async function saveSprintFile(sprintId, fileName) {
     
     try {
         const endpoint = fileName.toLowerCase().replace('.md', '').replace('_', '-');
-        const response = await fetch(tektonUrl(`/api/v1/sprints/${sprintId}/${endpoint}`), {
+        const response = await fetch(tektonUrl('tekton-core', `/api/v1/sprints/${sprintId}/${endpoint}`), {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json'
@@ -3204,7 +3204,7 @@ function switchProjectTab(tab) {
 // Load project README
 async function loadProjectReadme(projectId) {
     try {
-        const response = await fetch(tektonUrl(`/projects/${projectId}/readme`));
+        const response = await fetch(tektonUrl('tekton-core', `/projects/${projectId}/readme`));
         const data = await response.json();
         
         const editor = document.getElementById('project-readme-editor');
@@ -3235,7 +3235,7 @@ async function saveProjectReadme(projectId) {
     if (!editor) return;
     
     try {
-        const response = await fetch(tektonUrl(`/projects/${projectId}/readme`), {
+        const response = await fetch(tektonUrl('tekton-core', `/projects/${projectId}/readme`), {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ content: editor.value })
@@ -3260,7 +3260,7 @@ async function saveProjectSettings(projectId) {
     const branchInput = document.getElementById('project-branch-input');
     
     try {
-        const response = await fetch(tektonUrl(`/projects/${projectId}`), {
+        const response = await fetch(tektonUrl('tekton-core', `/projects/${projectId}`), {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -3328,7 +3328,7 @@ function closeProjectSprintsModal() {
 // Load sprints for a specific project
 async function loadProjectSprints(projectId) {
     try {
-        const response = await fetch(tektonUrl(`/projects/${projectId}/sprints`));
+        const response = await fetch(tektonUrl('tekton-core', `/projects/${projectId}/sprints`));
         const data = await response.json();
         
         const grid = document.getElementById('project-sprints-grid');
@@ -3414,7 +3414,7 @@ async function removeProject(projectId, projectName) {
     }
     
     try {
-        const response = await fetch(tektonUrl(`/api/v1/projects/${projectId}`), {
+        const response = await fetch(tektonUrl('tekton-core', `/api/v1/projects/${projectId}`), {
             method: 'DELETE'
         });
         
@@ -3438,7 +3438,7 @@ async function executeMerge(mergeId, mergeName) {
     
     try {
         // First do a dry-run merge using the new endpoint
-        const response = await fetch(tektonUrl('/api/v1/sprints/merge/dry-run'), {
+        const response = await fetch(tektonUrl('tekton-core', '/api/v1/sprints/merge/dry-run'), {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -3459,7 +3459,7 @@ async function executeMerge(mergeId, mergeName) {
             // Clean merge - auto commit and push
             console.log(`[TEKTON] Clean merge detected, auto-committing`);
             
-            const commitResponse = await fetch(tektonUrl(`/api/v1/sprints/complete-merge/${mergeId}`), {
+            const commitResponse = await fetch(tektonUrl('tekton-core', `/api/v1/sprints/complete-merge/${mergeId}`), {
                 method: 'POST'
             });
             
@@ -3488,7 +3488,7 @@ async function viewMergeDetails(mergeId, mergeName) {
     console.log(`[TEKTON] Viewing merge details for ${mergeName} (${mergeId})`);
     
     try {
-        const response = await fetch(tektonUrl(`/api/v1/sprints/merges/${mergeId}`));
+        const response = await fetch(tektonUrl('tekton-core', `/api/v1/sprints/merges/${mergeId}`));
         
         if (!response.ok) {
             throw new Error(`Failed to fetch merge details: ${response.statusText}`);
@@ -3523,7 +3523,7 @@ async function sendBackToCoder(conflictId, conflictName) {
     console.log(`[TEKTON] Sending back to Coder for ${conflictName} (${conflictId})`);
     
     try {
-        const response = await fetch(tektonUrl(`/api/v1/sprints/send-back-to-coder/${conflictId}`), {
+        const response = await fetch(tektonUrl('tekton-core', `/api/v1/sprints/send-back-to-coder/${conflictId}`), {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
