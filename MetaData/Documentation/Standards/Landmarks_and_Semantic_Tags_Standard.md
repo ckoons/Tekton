@@ -314,6 +314,91 @@ class TektonInspector:
 </div>
 ```
 
+### Penia/Budget Component Sprint
+```python
+# Architecture decision for budget tracking
+@architecture_decision(
+    title="Real-time Budget Tracking Architecture",
+    description="Live budget monitoring with WebSocket updates",
+    rationale="Provides immediate cost visibility to prevent overruns",
+    alternatives_considered=["Polling-based updates", "Batch processing"],
+    impacts=["cost_management", "user_experience", "system_performance"],
+    decided_by="Casey",
+    decision_date="2025-07-31"
+)
+class BudgetEngine:
+    pass
+
+# API contract for budget API
+@api_contract(
+    title="Budget Summary API",
+    endpoint="/api/v1/budgets/{budget_id}/summary",
+    method="GET",
+    request_schema={"period": "str"},
+    response_schema={"daily": "dict", "weekly": "dict", "monthly": "dict"},
+    performance_requirements="<100ms response time"
+)
+async def get_budget_summary(budget_id: str, period: str):
+    pass
+
+# Performance boundary for usage tracking
+@performance_boundary(
+    title="Usage Record Processing",
+    description="Process incoming usage records in real-time",
+    sla="<50ms per record",
+    optimization_notes="Batch database writes for efficiency",
+    measured_impact="Handles 1000+ records/second"
+)
+async def record_usage(self, usage_data: dict):
+    pass
+```
+
+### Penia UI Semantic Tags
+```html
+<!-- Budget component with full semantic tagging -->
+<div class="budget" 
+     data-tekton-area="budget" 
+     data-tekton-component="budget" 
+     data-tekton-type="component-workspace" 
+     data-tekton-ai="budget-assistant" 
+     data-tekton-ai-ready="false">
+    
+    <!-- Menu navigation -->
+    <div class="budget__menu-bar" 
+         data-tekton-zone="menu" 
+         data-tekton-nav="component-menu">
+        <div class="budget__tab" 
+             data-tab="dashboard" 
+             data-tekton-menu-item="Dashboard"
+             data-tekton-menu-component="budget"
+             data-tekton-menu-active="true"
+             data-tekton-menu-panel="dashboard-panel"
+             data-tekton-nav-target="dashboard-panel">
+            <span class="budget__tab-label">Dashboard</span>
+        </div>
+    </div>
+    
+    <!-- Actions with proper tagging -->
+    <button class="budget__button budget__button--success" 
+            id="clear-alerts" 
+            onclick="budget_clearAlerts(); return false;" 
+            data-tekton-action="clear-alerts" 
+            data-tekton-action-type="success">
+        Clear All
+    </button>
+    
+    <!-- Filter controls -->
+    <div class="budget__filter-group">
+        <label class="budget__filter-label">Beginning:</label>
+        <input type="date" 
+               class="budget__input" 
+               id="start-date"
+               data-tekton-filter="start-date"
+               data-tekton-filter-type="date">
+    </div>
+</div>
+```
+
 ### TektonCore Merge UI Example
 ```html
 <!-- Sprint merge card with full tagging -->
@@ -433,6 +518,6 @@ Remember Casey's wisdom: "Map First, Build Second" - but also "Update the Map Wh
 
 ---
 
-*Last Updated: 2025-01-31*
-*Standard Version: 1.1*
-*Changes: Added TektonCore automated merge examples for both landmarks and semantic tags*
+*Last Updated: 2025-07-31*
+*Standard Version: 1.2*
+*Changes: Added Penia/Budget component examples for both landmarks and semantic tags*
