@@ -3641,6 +3641,28 @@ function tekton_protectHtmlPanel() {
 // This ensures the functions are available before the tab events need them
 window.addEventListener('DOMContentLoaded', function() {
     console.log('[TEKTON] DOM loaded, setting up Tekton component');
+    
+    // Set up tab switching listeners
+    const radioButtons = document.querySelectorAll('input[name="tekton-tab"]');
+    radioButtons.forEach(radio => {
+        radio.addEventListener('change', function() {
+            if (this.checked) {
+                const tabId = this.id.replace('tekton-tab-', '');
+                console.log('[TEKTON] Radio button changed to:', tabId);
+                
+                // Load data for specific tabs
+                if (tabId === 'projects') {
+                    loadProjectsDashboard();
+                } else if (tabId === 'sprints') {
+                    console.log('[TEKTON] Loading sprints from radio change');
+                    loadAllSprints();
+                } else if (tabId === 'merges') {
+                    loadMergeQueue();
+                }
+            }
+        });
+    });
+    
     // Load dashboard projects since dashboard tab is checked by default
     loadProjectsDashboard();
     // Load project CIs for Projects Chat
@@ -3653,6 +3675,28 @@ window.addEventListener('DOMContentLoaded', function() {
 // In case the DOM is already loaded
 if (document.readyState === 'complete' || document.readyState === 'interactive') {
     console.log('[TEKTON] Document already loaded, setting up Tekton component immediately');
+    
+    // Set up tab switching listeners
+    const radioButtons = document.querySelectorAll('input[name="tekton-tab"]');
+    radioButtons.forEach(radio => {
+        radio.addEventListener('change', function() {
+            if (this.checked) {
+                const tabId = this.id.replace('tekton-tab-', '');
+                console.log('[TEKTON] Radio button changed to:', tabId);
+                
+                // Load data for specific tabs
+                if (tabId === 'projects') {
+                    loadProjectsDashboard();
+                } else if (tabId === 'sprints') {
+                    console.log('[TEKTON] Loading sprints from radio change');
+                    loadAllSprints();
+                } else if (tabId === 'merges') {
+                    loadMergeQueue();
+                }
+            }
+        });
+    });
+    
     // Load dashboard projects since dashboard tab is checked by default
     loadProjectsDashboard();
     // Load project CIs for Projects Chat
