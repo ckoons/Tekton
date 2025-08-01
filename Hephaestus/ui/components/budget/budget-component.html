@@ -2059,7 +2059,7 @@ function budget_sendChat() {
     if (chatType === 'budgetchat') {
         // Send message to Penia AI via AIChat
         if (window.AIChat) {
-            window.AIChat.sendMessage('penia', message)
+            window.AIChat.sendMessage('budget', message)
                 .then(response => {
                     const aiMessageDiv = document.createElement('div');
                     aiMessageDiv.className = 'budget__message budget__message--ai';
@@ -2297,8 +2297,59 @@ function budget_sendChat() {
             </div>
         `;
         
-        // Send to budget assistant API
-        budget_sendToAssistant(message, activeTab === 'teamchat' ? 'team' : 'budget', messagesContainer);
+        // Send to backend
+        if (activeTab === 'budgetchat') {
+            // Direct message to budget
+            if (window.AIChat) {
+                window.AIChat.sendMessage('penia', message)
+                    .then(response => {
+                        messagesContainer.innerHTML += `
+                            <div class="budget__message budget__message--ai">
+                                <div class="budget__message-content">
+                                    <div class="budget__message-text"><strong>Penia:</strong> ${response.content}</div>
+                                </div>
+                            </div>
+                        `;
+                        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                    })
+                    .catch(err => {
+                        console.error('Failed to send message:', err);
+                        messagesContainer.innerHTML += `
+                            <div class="budget__message budget__message--system">
+                                <div class="budget__message-content">
+                                    <div class="budget__message-text"><strong>System:</strong> Failed to connect to Budget AI</div>
+                                </div>
+                            </div>
+                        `;
+                        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                    });
+            }
+        } else {
+            // Team chat
+            if (window.AIChat) {
+                window.AIChat.teamChat(message, 'penia')
+                    .then(data => {
+                        // Display team responses
+                        if (data.responses && data.responses.length > 0) {
+                            data.responses.forEach(resp => {
+                                const sender = resp.socket_id.replace('-ai', '').charAt(0).toUpperCase() + 
+                                             resp.socket_id.replace('-ai', '').slice(1);
+                                messagesContainer.innerHTML += `
+                                    <div class="budget__message budget__message--ai">
+                                        <div class="budget__message-content">
+                                            <div class="budget__message-text"><strong>${sender}:</strong> ${resp.content}</div>
+                                        </div>
+                                    </div>
+                                `;
+                            });
+                            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                        }
+                    })
+                    .catch(err => {
+                        console.error('Failed to send team message:', err);
+                    });
+            }
+        }
         
         // Clear input and scroll
         input.value = '';
