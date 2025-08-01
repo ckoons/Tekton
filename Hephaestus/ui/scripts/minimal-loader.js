@@ -198,6 +198,9 @@ class MinimalLoader {
         await this.loadUtilityScript('/scripts/shared/tab-navigation-debug.js');
         await this.loadUtilityScript('/scripts/shared/component-loading-guard.js');
         await this.loadUtilityScript('/scripts/shared/tab-switcher.js');
+        await this.loadUtilityScript('/scripts/shared/ai-chat.js');
+        await this.loadUtilityScript('/scripts/shared/single-chat.js');
+        await this.loadUtilityScript('/scripts/shared/team-chat.js');
         
         console.log(`MinimalLoader: All utilities loaded successfully`);
       } catch (error) {

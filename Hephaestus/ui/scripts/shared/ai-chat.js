@@ -21,6 +21,86 @@ window.AIChat = {
     teamChatUrl: 'http://localhost:8003/api/team-chat',
     specialistUrl: 'http://localhost:8003/api/v1/ai/specialists',
     
+    // Processing message management
+    processingIntervals: new Map(), // Track intervals by container ID
+    
+    /**
+     * Show processing message with animated dots
+     * @param {HTMLElement} container - The message container element
+     * @param {string} baseText - Base text (default: "Processing")
+     * @param {string} componentPrefix - Component CSS prefix (e.g., 'budget', 'terma')
+     * @returns {HTMLElement} The processing message element
+     */
+    showProcessingMessage(container, baseText = "Processing", componentPrefix = null) {
+        // Remove any existing processing message
+        this.hideProcessingMessage(container);
+        
+        // Create processing message element
+        const processingDiv = document.createElement('div');
+        
+        // Determine CSS classes based on component
+        if (componentPrefix) {
+            processingDiv.className = `${componentPrefix}__message ${componentPrefix}__message--system processing-message`;
+        } else {
+            processingDiv.className = 'chat-message system-message processing-message';
+        }
+        processingDiv.setAttribute('data-processing', 'true');
+        
+        // Initial content with proper structure
+        let dotCount = 0;
+        const updateContent = () => {
+            if (componentPrefix) {
+                processingDiv.innerHTML = `
+                    <div class="${componentPrefix}__message-content">
+                        <div class="${componentPrefix}__message-text">
+                            <strong>System:</strong> ${baseText}${'.'.repeat(dotCount)}
+                        </div>
+                    </div>
+                `;
+            } else {
+                processingDiv.innerHTML = `<strong>System:</strong> ${baseText}${'.'.repeat(dotCount)}`;
+            }
+        };
+        
+        updateContent();
+        
+        // Add to container
+        container.appendChild(processingDiv);
+        
+        // Animate dots
+        const intervalId = setInterval(() => {
+            dotCount = (dotCount + 1) % 4; // Cycles through 0,1,2,3
+            updateContent();
+        }, 500); // Update every 500ms
+        
+        // Store interval ID for cleanup
+        this.processingIntervals.set(container.id || container, intervalId);
+        
+        // Scroll to bottom
+        container.scrollTop = container.scrollHeight;
+        
+        return processingDiv;
+    },
+    
+    /**
+     * Hide processing message and clear animation
+     * @param {HTMLElement} container - The message container element
+     */
+    hideProcessingMessage(container) {
+        // Clear interval
+        const intervalId = this.processingIntervals.get(container.id || container);
+        if (intervalId) {
+            clearInterval(intervalId);
+            this.processingIntervals.delete(container.id || container);
+        }
+        
+        // Remove processing message element
+        const processingMsg = container.querySelector('[data-processing="true"]');
+        if (processingMsg) {
+            processingMsg.remove();
+        }
+    },
+    
     /**
      * Send a message to a single AI specialist (like aish apollo "message")
      * @param {string} aiName - The AI name (e.g., 'noesis', 'apollo') 

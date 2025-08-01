@@ -1,6 +1,10 @@
 <!-- Budget Component - LLM Usage and Budget Management -->
 <!-- Load Chart.js dependency -->
 <script src="/scripts/chart.js"></script>
+<!-- Load chat dependencies -->
+<script src="/scripts/shared/ai-chat.js"></script>
+<script src="/scripts/shared/single-chat.js"></script>
+<script src="/scripts/shared/team-chat.js"></script>
 
 <div class="budget" data-tekton-area="budget" data-tekton-component="budget" data-tekton-type="component-workspace" data-tekton-ai="budget-assistant" data-tekton-ai-ready="false">
     <!-- Component Header with Title -->
@@ -37,9 +41,7 @@
             </div>
         </div>
         <div class="budget__actions">
-            <button id="clear-chat-btn" class="budget__action-button" style="display: none;" onclick="budget_clearChat(); return false;" data-tekton-action="clear-chat" data-tekton-action-type="secondary">
-                <span class="budget__button-label">Clear</span>
-            </button>
+            <!-- Clear button removed per request -->
         </div>
     </div>
     
@@ -1997,6 +1999,9 @@ function budget_loadComponent() {
                 // Load initial data
                 budget_refreshData();
                 
+                // Initialize unified chat components
+                budget_initChats();
+                
             } catch (err) {
                 console.error('[BUDGET] Component initialization error:', err);
             }
@@ -2004,12 +2009,16 @@ function budget_loadComponent() {
             console.warn('[BUDGET] Component init function not found');
             // Still try to load data even if component script fails
             budget_refreshData();
+            // Initialize chats even if component script fails
+            budget_initChats();
         }
     };
     script.onerror = function() {
         console.error('[BUDGET] Failed to load component script');
         // Still try to load data even if component script fails
         budget_refreshData();
+        // Initialize chats even if component script fails
+        budget_initChats();
     };
     
     document.body.appendChild(script);
@@ -2029,77 +2038,15 @@ if (document.readyState === 'complete' || document.readyState === 'interactive')
     console.log('[BUDGET] Document already loaded, setting up Budget component immediately');
     budget_protectHtmlPanel();
     budget_loadComponent();
+    
+    // Initialize chats after a short delay to ensure everything is loaded
+    setTimeout(function() {
+        console.log('[BUDGET] Delayed chat initialization');
+        budget_initChats();
+    }, 500);
 }
 
-// Chat functionality - Following Numa's pattern
-function budget_sendChat() {
-    const input = document.getElementById('budget-chat-input');
-    const message = input.value.trim();
-    
-    if (!message) return;
-    
-    // Determine which tab is active
-    const budgetChatActive = document.querySelector('.budget__tab[data-tab="budgetchat"]').classList.contains('budget__tab--active');
-    const chatType = budgetChatActive ? 'budgetchat' : 'teamchat';
-    const messagesContainer = document.getElementById(`${chatType}-messages`);
-    
-    // Add user message
-    const userMessageDiv = document.createElement('div');
-    userMessageDiv.className = 'budget__message budget__message--user';
-    userMessageDiv.innerHTML = `<div class="budget__message-content"><div class="budget__message-text">${message}</div></div>`;
-    messagesContainer.appendChild(userMessageDiv);
-    
-    // Clear input
-    input.value = '';
-    
-    // Scroll to bottom
-    messagesContainer.scrollTop = messagesContainer.scrollHeight;
-    
-    // Send to backend
-    if (chatType === 'budgetchat') {
-        // Send message to Penia AI via AIChat
-        if (window.AIChat) {
-            window.AIChat.sendMessage('budget', message)
-                .then(response => {
-                    const aiMessageDiv = document.createElement('div');
-                    aiMessageDiv.className = 'budget__message budget__message--ai';
-                    aiMessageDiv.innerHTML = `<div class="budget__message-content"><div class="budget__message-text"><strong>Penia:</strong> ${response.content}</div></div>`;
-                    messagesContainer.appendChild(aiMessageDiv);
-                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
-                })
-                .catch(err => {
-                    console.error('Failed to send message:', err);
-                    const errorDiv = document.createElement('div');
-                    errorDiv.className = 'budget__message budget__message--system';
-                    errorDiv.innerHTML = `<div class="budget__message-content"><div class="budget__message-text"><strong>System:</strong> Failed to connect to Budget AI</div></div>`;
-                    messagesContainer.appendChild(errorDiv);
-                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
-                });
-        }
-    } else {
-        // Team chat
-        if (window.AIChat) {
-            window.AIChat.teamChat(message, 'budget')
-                .then(data => {
-                    // Display team responses
-                    if (data.responses && data.responses.length > 0) {
-                        data.responses.forEach(resp => {
-                            const aiMessageDiv = document.createElement('div');
-                            aiMessageDiv.className = 'budget__message budget__message--ai';
-                            const sender = resp.socket_id.replace('-ai', '').charAt(0).toUpperCase() + 
-                                         resp.socket_id.replace('-ai', '').slice(1);
-                            aiMessageDiv.innerHTML = `<div class="budget__message-content"><div class="budget__message-text"><strong>${sender}:</strong> ${resp.content}</div></div>`;
-                            messagesContainer.appendChild(aiMessageDiv);
-                        });
-                        messagesContainer.scrollTop = messagesContainer.scrollHeight;
-                    }
-                })
-                .catch(err => {
-                    console.error('Failed to send team message:', err);
-                });
-        }
-    }
-}
+// Chat functionality removed - using unified chat component below
 
 // Save budget settings
 async function budget_saveSettings() {
@@ -2273,88 +2220,57 @@ async function budget_sendToAssistant(message, chatType, messagesContainer) {
     }
 }
 
-// Send chat message - using innerHTML injection pattern
+// Initialize unified chat components
+function budget_initChats() {
+    console.log('[BUDGET] Initializing unified chat components');
+    
+    // Check if modules are loaded, if not, wait and retry
+    if (!window.SingleChat || !window.TeamChat) {
+        console.log('[BUDGET] Chat modules not loaded yet, waiting...');
+        setTimeout(function() {
+            budget_initChats(); // Retry
+        }, 100);
+        return;
+    }
+    
+    const budgetChatEl = document.getElementById('budgetchat-messages');
+    const teamChatEl = document.getElementById('teamchat-messages');
+    
+    if (window.SingleChat && budgetChatEl) {
+        window.SingleChat.init(budgetChatEl, 'budget', 'budget');
+        console.log('[BUDGET] SingleChat initialized');
+    }
+    
+    if (window.TeamChat && teamChatEl) {
+        window.TeamChat.init(teamChatEl, 'budget', 'budget');
+        console.log('[BUDGET] TeamChat initialized');
+    }
+}
+
+// Send chat message - delegates to unified chat components
 function budget_sendChat() {
     const input = document.getElementById('budget-chat-input');
     if (!input || !input.value.trim()) return;
     
     const message = input.value.trim();
     const activeTab = document.querySelector('.budget__tab--active')?.dataset?.tab;
-    const messagesContainer = activeTab === 'teamchat' 
-        ? document.getElementById('teamchat-messages')
-        : document.getElementById('budgetchat-messages');
     
-    if (messagesContainer) {
-        // Get existing messages (preserve welcome message)
-        const existingHTML = messagesContainer.innerHTML;
-        
-        // Add user message using innerHTML
-        messagesContainer.innerHTML = existingHTML + `
-            <div class="budget__message budget__message--user">
-                <div class="budget__message-content">
-                    <div class="budget__message-text">${message}</div>
-                </div>
-            </div>
-        `;
-        
-        // Send to backend
-        if (activeTab === 'budgetchat') {
-            // Direct message to budget
-            if (window.AIChat) {
-                window.AIChat.sendMessage('penia', message)
-                    .then(response => {
-                        messagesContainer.innerHTML += `
-                            <div class="budget__message budget__message--ai">
-                                <div class="budget__message-content">
-                                    <div class="budget__message-text"><strong>Penia:</strong> ${response.content}</div>
-                                </div>
-                            </div>
-                        `;
-                        messagesContainer.scrollTop = messagesContainer.scrollHeight;
-                    })
-                    .catch(err => {
-                        console.error('Failed to send message:', err);
-                        messagesContainer.innerHTML += `
-                            <div class="budget__message budget__message--system">
-                                <div class="budget__message-content">
-                                    <div class="budget__message-text"><strong>System:</strong> Failed to connect to Budget AI</div>
-                                </div>
-                            </div>
-                        `;
-                        messagesContainer.scrollTop = messagesContainer.scrollHeight;
-                    });
-            }
-        } else {
-            // Team chat
-            if (window.AIChat) {
-                window.AIChat.teamChat(message, 'penia')
-                    .then(data => {
-                        // Display team responses
-                        if (data.responses && data.responses.length > 0) {
-                            data.responses.forEach(resp => {
-                                const sender = resp.socket_id.replace('-ai', '').charAt(0).toUpperCase() + 
-                                             resp.socket_id.replace('-ai', '').slice(1);
-                                messagesContainer.innerHTML += `
-                                    <div class="budget__message budget__message--ai">
-                                        <div class="budget__message-content">
-                                            <div class="budget__message-text"><strong>${sender}:</strong> ${resp.content}</div>
-                                        </div>
-                                    </div>
-                                `;
-                            });
-                            messagesContainer.scrollTop = messagesContainer.scrollHeight;
-                        }
-                    })
-                    .catch(err => {
-                        console.error('Failed to send team message:', err);
-                    });
-            }
+    if (activeTab === 'budgetchat') {
+        // Use SingleChat for budget AI
+        const budgetChatEl = document.getElementById('budgetchat-messages');
+        if (window.SingleChat && budgetChatEl) {
+            window.SingleChat.sendMessage(budgetChatEl, message);
         }
-        
-        // Clear input and scroll
-        input.value = '';
-        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    } else if (activeTab === 'teamchat') {
+        // Use TeamChat for team broadcast
+        const teamChatEl = document.getElementById('teamchat-messages');
+        if (window.TeamChat && teamChatEl) {
+            window.TeamChat.sendMessage(teamChatEl, message);
+        }
     }
+    
+    // Clear input
+    input.value = '';
 }
 
 // Clear chat functionality

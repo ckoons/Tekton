@@ -62,8 +62,8 @@ window.budgetComponent = (function() {
         stateManager.addListener(updateUI);
         
         // Set up chat input handler
-        const chatInput = document.getElementById('chat-input');
-        const sendButton = document.getElementById('send-button');
+        const chatInput = document.getElementById('budget-chat-input');
+        const sendButton = document.getElementById('budget-send-button');
         
         if (chatInput && sendButton) {
             // Send message on Enter key
@@ -1247,7 +1247,7 @@ window.budgetComponent = (function() {
      * Send a chat message from the input field
      */
     async function sendChatMessage() {
-        const chatInput = document.getElementById('chat-input');
+        const chatInput = document.getElementById('budget-chat-input');
         if (!chatInput || !chatInput.value.trim()) return;
         
         const message = chatInput.value.trim();
@@ -1342,7 +1342,7 @@ window.budgetComponent = (function() {
      * @param {string} tabId - Active tab ID
      */
     function updateChatPlaceholder(tabId) {
-        const chatInput = document.getElementById('chat-input');
+        const chatInput = document.getElementById('budget-chat-input');
         if (!chatInput) return;
         
         if (tabId === 'budgetchat') {
