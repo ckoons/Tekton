@@ -313,8 +313,10 @@ async def team_chat(request: Request):
         # Use broadcast client to send to all CIs
         responses = broadcast_to_cis(message)
         
-        # Format responses for the UI
+        # Format responses for the UI and update registry
         formatted_responses = []
+        registry = get_registry()
+        
         for ai_name, response in responses.items():
             if not response.startswith('ERROR:'):
                 formatted_responses.append({
@@ -322,6 +324,9 @@ async def team_chat(request: Request):
                     "content": response,
                     "socket_id": ai_name
                 })
+                
+                # Update the registry with each CI's response
+                registry.update_ci_last_output(ai_name, response)
         
         return {"responses": formatted_responses}
     except Exception as e:

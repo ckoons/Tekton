@@ -72,22 +72,48 @@ window.AIChat = {
      * @returns {Promise<Object>} Team chat response
      */
     async teamChat(message, fromComponent = 'ui', targetAIs = []) {
-        // Use aish MCP endpoint via dynamic URL building
-        const response = await fetch(aishUrl('/api/mcp/v2/tools/team-chat'), {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                message: message
-            })
-        });
-        
-        if (!response.ok) {
-            throw new Error(`Team chat failed: ${response.statusText}`);
+        try {
+            // Use aish MCP endpoint via dynamic URL building
+            const response = await fetch(aishUrl('/api/mcp/v2/tools/team-chat'), {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    message: message,
+                    from_component: fromComponent,
+                    target_ais: targetAIs
+                })
+            });
+            
+            if (!response.ok) {
+                const errorData = await response.json();
+                console.error('Team chat error:', errorData);
+                return {
+                    responses: [],
+                    error: errorData.detail || `Team chat failed: ${response.statusText}`
+                };
+            }
+            
+            const data = await response.json();
+            
+            // Validate response format
+            if (!data.responses || !Array.isArray(data.responses)) {
+                console.error('Invalid team chat response format:', data);
+                return {
+                    responses: [],
+                    error: 'Invalid response format from team chat'
+                };
+            }
+            
+            return data;
+        } catch (error) {
+            console.error('Team chat error:', error);
+            return {
+                responses: [],
+                error: 'Network error: ' + error.message
+            };
         }
-        
-        return await response.json();
     },
     
     /**
