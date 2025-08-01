@@ -1,5 +1,10 @@
 <!-- Apollo Component - Attention and Prediction System -->
 
+<!-- Load chat dependencies -->
+<script src="/scripts/shared/ai-chat.js"></script>
+<script src="/scripts/shared/single-chat.js"></script>
+<script src="/scripts/shared/team-chat.js"></script>
+
 <!-- Hidden radio inputs for CSS-first tab functionality -->
 <input type="radio" name="apollo-tab" id="apollo-tab-dashboard" checked style="display: none;">
 <input type="radio" name="apollo-tab" id="apollo-tab-tokens" style="display: none;">
@@ -314,6 +319,11 @@
         setTimeout(() => {
             initializeApollo();
         }, 0);
+    }
+    
+    // Helper function to construct Apollo API URLs
+    function apolloUrl(path) {
+        return `http://localhost:8113${path}`;
     }
     
     function initializeApollo() {
@@ -985,120 +995,53 @@
     }
     
     // CHAT FUNCTIONALITY - Following Terma's pattern - moved outside initializeApollo for global access
-    window.apollo_sendChat = async function() {
-            const input = document.getElementById('apollo-chat-input');
-            const message = input.value.trim();
-            
-            if (!message) return;
-            
-            // Determine which tab is active
-            const attentionActive = document.getElementById('apollo-tab-attention').checked;
-            const teamchatActive = document.getElementById('apollo-tab-teamchat').checked;
-            
-            if (!attentionActive && !teamchatActive) return;
-            
-            const chatType = attentionActive ? 'attention' : 'teamchat';
-            const messagesContainer = document.getElementById(`${chatType}-messages`);
-            
-            // Add user message
-            const userMessageDiv = document.createElement('div');
-            userMessageDiv.className = 'chat-message user-message';
-            userMessageDiv.innerHTML = message;
-            messagesContainer.appendChild(userMessageDiv);
-            
-            // Clear input
-            input.value = '';
-            
-            // Scroll to bottom
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
-            
-            // Send to appropriate backend
-            if (chatType === 'attention') {
-                // Direct message to Apollo attention system
-                if (window.AIChat) {
-                    window.AIChat.sendMessage('apollo', message)
-                        .then(response => {
-                            const aiMessageDiv = document.createElement('div');
-                            aiMessageDiv.className = 'chat-message ai-message';
-                            aiMessageDiv.innerHTML = `<strong>Apollo:</strong> ${response.content}`;
-                            messagesContainer.appendChild(aiMessageDiv);
-                            messagesContainer.scrollTop = messagesContainer.scrollHeight;
-                        })
-                        .catch(err => {
-                            console.error('Failed to send message:', err);
-                            const errorDiv = document.createElement('div');
-                            errorDiv.className = 'chat-message error-message';
-                            errorDiv.innerHTML = `<strong>Error:</strong> Failed to connect to Apollo AI`;
-                            messagesContainer.appendChild(errorDiv);
-                            messagesContainer.scrollTop = messagesContainer.scrollHeight;
-                        });
-                } else {
-                    // Fallback if AIChat not available
-                    const systemDiv = document.createElement('div');
-                    systemDiv.className = 'chat-message system-message';
-                    systemDiv.innerHTML = `<strong>System:</strong> Apollo attention system is being configured. AIChat service not available.`;
-                    messagesContainer.appendChild(systemDiv);
-                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
-                }
-            } else {
-                // Team chat through shared system
-                if (window.AIChat) {
-                    window.AIChat.teamChat(message, 'apollo')
-                        .then(data => {
-                            // Display team responses
-                            if (data.responses && data.responses.length > 0) {
-                                data.responses.forEach(resp => {
-                                    const aiMessageDiv = document.createElement('div');
-                                    aiMessageDiv.className = 'chat-message ai-message';
-                                    const sender = resp.socket_id.replace('-ai', '').charAt(0).toUpperCase() + 
-                                                 resp.socket_id.replace('-ai', '').slice(1);
-                                    aiMessageDiv.innerHTML = `<strong>${sender}:</strong> ${resp.content}`;
-                                    messagesContainer.appendChild(aiMessageDiv);
-                                });
-                                messagesContainer.scrollTop = messagesContainer.scrollHeight;
-                            }
-                        })
-                        .catch(err => {
-                            console.error('Failed to send team message:', err);
-                            const errorDiv = document.createElement('div');
-                            errorDiv.className = 'chat-message error-message';
-                            errorDiv.innerHTML = `<strong>Error:</strong> Failed to send team message`;
-                            messagesContainer.appendChild(errorDiv);
-                            messagesContainer.scrollTop = messagesContainer.scrollHeight;
-                        });
-                } else {
-                    // Fallback to direct aish MCP call
-                    try {
-                        const aishPort = '8118';
-                        const response = await fetch(`http://localhost:${aishPort}/api/mcp/v2/tools/team-chat`, {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json'
-                            },
-                            body: JSON.stringify({
-                                message: message,
-                                sender: 'Apollo'
-                            })
-                        });
-                        
-                        if (response.ok) {
-                            const systemDiv = document.createElement('div');
-                            systemDiv.className = 'chat-message system-message';
-                            systemDiv.innerHTML = `<strong>System:</strong> Message broadcast to all AIs`;
-                            messagesContainer.appendChild(systemDiv);
-                        } else {
-                            throw new Error('Failed to send message');
-                        }
-                    } catch (error) {
-                        console.error('[APOLLO] Error sending team chat:', error);
-                        const errorDiv = document.createElement('div');
-                        errorDiv.className = 'chat-message error-message';
-                        errorDiv.innerHTML = `<strong>Error:</strong> Could not send message`;
-                        messagesContainer.appendChild(errorDiv);
-                    }
-                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
-                }
+    // Initialize unified chat components
+    function apollo_initChats() {
+        console.log('[Apollo] Initializing unified chat components');
+        
+        // Check if modules are loaded, if not, wait and retry
+        if (!window.SingleChat || !window.TeamChat) {
+            console.log('[Apollo] Chat modules not loaded yet, waiting...');
+            setTimeout(function() {
+                apollo_initChats(); // Retry
+            }, 100);
+            return;
+        }
+        
+        const attentionChatEl = document.getElementById('attention-messages');
+        const teamChatEl = document.getElementById('teamchat-messages');
+        
+        if (window.SingleChat && attentionChatEl) {
+            window.SingleChat.init(attentionChatEl, 'apollo', 'chat-message');
+            console.log('[Apollo] SingleChat initialized for attention chat');
+        }
+        
+        if (window.TeamChat && teamChatEl) {
+            window.TeamChat.init(teamChatEl, 'apollo', 'chat-message');
+            console.log('[Apollo] TeamChat initialized');
+        }
+    }
+
+    window.apollo_sendChat = function() {
+        const input = document.getElementById('apollo-chat-input');
+        const message = input.value.trim();
+        if (!message) return;
+        
+        const attentionActive = document.getElementById('apollo-tab-attention').checked;
+        
+        if (attentionActive) {
+            const attentionChatEl = document.getElementById('attention-messages');
+            if (window.SingleChat && attentionChatEl) {
+                window.SingleChat.sendMessage(attentionChatEl, message);
             }
+        } else {
+            const teamChatEl = document.getElementById('teamchat-messages');
+            if (window.TeamChat && teamChatEl) {
+                window.TeamChat.sendMessage(teamChatEl, message);
+            }
+        }
+        
+        input.value = '';
     };
     
     // Add event handlers for chat
@@ -1124,5 +1067,8 @@
     
     // Initialize Apollo on load
     initializeApollo();
+    
+    // Initialize unified chat components
+    apollo_initChats();
 })();
 </script>

@@ -1,6 +1,11 @@
 <!-- Hermes Component - Message and Data Handling -->
 <!-- @landmark Component: Hermes - Inter-component messaging and service registry hub -->
 
+<!-- Load chat dependencies -->
+<script src="/scripts/shared/ai-chat.js"></script>
+<script src="/scripts/shared/single-chat.js"></script>
+<script src="/scripts/shared/team-chat.js"></script>
+
 <!-- Hidden radio inputs for CSS-first tab functionality -->
 <!-- @landmark Navigation: CSS-first radio buttons for tab switching -->
 <input type="radio" name="hermes-tab" id="hermes-tab-registry" checked style="display: none;">
@@ -58,11 +63,7 @@
             </label>
         </div>
         <div class="hermes__actions">
-            <button id="clear-chat-btn" class="hermes__action-button" style="display: none;"
-                    data-tekton-action="clear-chat"
-                    data-tekton-action-type="secondary">
-                <span class="hermes__button-label">Clear</span>
-            </button>
+            <!-- Clear button removed per request -->
         </div>
     </div>
     
@@ -1197,6 +1198,11 @@
 // CSS-first navigation - radio buttons handle tab switching
 // Listen for tab changes to update component state
 document.addEventListener('DOMContentLoaded', function() {
+    // Initialize chat components
+    setTimeout(() => {
+        hermes_initChats();
+    }, 100);
+    
     const radioButtons = document.querySelectorAll('input[name="hermes-tab"]');
     radioButtons.forEach(radio => {
         radio.addEventListener('change', function() {
@@ -1235,97 +1241,42 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // Chat functionality - Following Numa's pattern
+// Initialize chat components
+function hermes_initChats() {
+    const messageChatEl = document.getElementById('chat-messages');
+    const teamChatEl = document.getElementById('teamchat-messages');
+    
+    if (window.SingleChat && messageChatEl) {
+        window.SingleChat.init(messageChatEl, 'hermes', 'hermes');
+    }
+    
+    if (window.TeamChat && teamChatEl) {
+        window.TeamChat.init(teamChatEl, 'hermes', 'hermes');
+    }
+}
+
+// Chat sending function - delegate to unified chat components
 function hermes_sendChat() {
     const input = document.getElementById('hermes-chat-input');
     const message = input.value.trim();
-    
     if (!message) return;
     
-    // Determine which tab is active using radio buttons
     const chatRadio = document.getElementById('hermes-tab-chat');
     const teamchatRadio = document.getElementById('hermes-tab-teamchat');
-    const chatType = chatRadio.checked ? 'chat' : (teamchatRadio.checked ? 'teamchat' : null);
     
-    if (!chatType) {
-        console.error('[HERMES] No chat tab is active');
-        return;
+    if (chatRadio.checked) {
+        const messageChatEl = document.getElementById('chat-messages');
+        if (window.SingleChat && messageChatEl) {
+            window.SingleChat.sendMessage(messageChatEl, message);
+        }
+    } else if (teamchatRadio.checked) {
+        const teamChatEl = document.getElementById('teamchat-messages');
+        if (window.TeamChat && teamChatEl) {
+            window.TeamChat.sendMessage(teamChatEl, message);
+        }
     }
-    const messagesContainer = document.getElementById(`${chatType}-messages`);
     
-    // Add user message
-    const userMessageDiv = document.createElement('div');
-    userMessageDiv.className = 'hermes__message hermes__message--user';
-    userMessageDiv.innerHTML = `<div class="hermes__message-content"><div class="hermes__message-text">${message}</div></div>`;
-    messagesContainer.appendChild(userMessageDiv);
-    
-    // Clear input
     input.value = '';
-    
-    // Scroll to bottom
-    messagesContainer.scrollTop = messagesContainer.scrollHeight;
-    
-    // Send to backend
-    if (chatType === 'chat') {
-        // Direct message to hermes
-        if (window.AIChat) {
-            console.log('[HERMES] Sending message to Hermes AI');
-            window.AIChat.sendMessage('hermes', message)
-                .then(response => {
-                    const aiMessageDiv = document.createElement('div');
-                    aiMessageDiv.className = 'hermes__message hermes__message--ai';
-                    aiMessageDiv.innerHTML = `<div class="hermes__message-content"><div class="hermes__message-text"><strong>Hermes:</strong> ${response.content}</div></div>`;
-                    messagesContainer.appendChild(aiMessageDiv);
-                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
-                })
-                .catch(err => {
-                    console.error('Failed to send message:', err);
-                    const errorDiv = document.createElement('div');
-                    errorDiv.className = 'hermes__message hermes__message--system';
-                    errorDiv.innerHTML = `<div class="hermes__message-content"><div class="hermes__message-text"><strong>System:</strong> Failed to connect to Hermes AI</div></div>`;
-                    messagesContainer.appendChild(errorDiv);
-                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
-                });
-        } else {
-            console.error('[HERMES] AIChat not available');
-            const errorDiv = document.createElement('div');
-            errorDiv.className = 'hermes__message hermes__message--system';
-            errorDiv.innerHTML = `<div class="hermes__message-content"><div class="hermes__message-text"><strong>System:</strong> AI Chat service not available</div></div>`;
-            messagesContainer.appendChild(errorDiv);
-        }
-    } else {
-        // Team chat
-        if (window.AIChat) {
-            console.log('[HERMES] Sending team chat message');
-            window.AIChat.teamChat(message, 'hermes')
-                .then(data => {
-                    // Display team responses
-                    if (data.responses && data.responses.length > 0) {
-                        data.responses.forEach(resp => {
-                            const aiMessageDiv = document.createElement('div');
-                            aiMessageDiv.className = 'hermes__message hermes__message--ai';
-                            const sender = resp.socket_id.replace('-ai', '').charAt(0).toUpperCase() + 
-                                         resp.socket_id.replace('-ai', '').slice(1);
-                            aiMessageDiv.innerHTML = `<div class="hermes__message-content"><div class="hermes__message-text"><strong>${sender}:</strong> ${resp.content}</div></div>`;
-                            messagesContainer.appendChild(aiMessageDiv);
-                        });
-                        messagesContainer.scrollTop = messagesContainer.scrollHeight;
-                    }
-                })
-                .catch(err => {
-                    console.error('Failed to send team message:', err);
-                    const errorDiv = document.createElement('div');
-                    errorDiv.className = 'hermes__message hermes__message--system';
-                    errorDiv.innerHTML = `<div class="hermes__message-content"><div class="hermes__message-text"><strong>System:</strong> Failed to send team message</div></div>`;
-                    messagesContainer.appendChild(errorDiv);
-                });
-        } else {
-            console.error('[HERMES] AIChat not available for team chat');
-            const errorDiv = document.createElement('div');
-            errorDiv.className = 'hermes__message hermes__message--system';
-            errorDiv.innerHTML = `<div class="hermes__message-content"><div class="hermes__message-text"><strong>System:</strong> AI Chat service not available</div></div>`;
-            messagesContainer.appendChild(errorDiv);
-        }
-    }
 }
 
 // Clear chat functionality
@@ -1438,11 +1389,7 @@ window.hermes_switchTab = function(tabId) {
             }
         });
         
-        // Update clear button visibility for chat tabs
-        const clearButton = hermesContainer.querySelector('#clear-chat-btn');
-        if (clearButton) {
-            clearButton.style.display = (tabId === 'chat' || tabId === 'teamchat') ? 'block' : 'none';
-        }
+        // Clear button removed, no need to update visibility
         
         // Update component state
         if (window.hermesComponent) {
@@ -1678,6 +1625,10 @@ window.addEventListener('DOMContentLoaded', function() {
     // Load initial data
     hermes_loadServiceRegistry();
     hermes_loadDatabaseServices();
+    // Initialize chat components
+    setTimeout(() => {
+        hermes_initChats();
+    }, 100);
 });
 
 // IMMEDIATE PROTECTION
@@ -1689,6 +1640,10 @@ if (document.readyState === 'complete' || document.readyState === 'interactive')
     // Load initial data
     hermes_loadServiceRegistry();
     hermes_loadDatabaseServices();
+    // Initialize chat components
+    setTimeout(() => {
+        hermes_initChats();
+    }, 100);
 }
 
 // Load Service Registry Data

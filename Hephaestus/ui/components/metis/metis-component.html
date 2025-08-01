@@ -1,5 +1,10 @@
 <!-- Metis Component - Task Architect for Development Sprints -->
 
+<!-- Load chat dependencies -->
+<script src="/scripts/shared/ai-chat.js"></script>
+<script src="/scripts/shared/single-chat.js"></script>
+<script src="/scripts/shared/team-chat.js"></script>
+
 <!-- Hidden radio controls for CSS-only tab functionality -->
 <input type="radio" name="metis-tab" id="metis-tab-dashboard" checked style="display: none;">
 <input type="radio" name="metis-tab" id="metis-tab-task" style="display: none;">
@@ -61,10 +66,7 @@
             </label>
         </div>
         <div class="metis__actions">
-            <button id="task-add-btn" class="metis__action-button"
-                    data-tekton-action="add-task" data-tekton-action-type="primary" data-tekton-trigger="click">
-                <span class="metis__button-label">Add Task</span>
-            </button>
+            <!-- Add Task button removed per request -->
             <button id="clear-chat-btn" class="metis__action-button" style="display: none;"
                     onclick="metis_clearChat(); return false;"
                     data-tekton-action="clear-chat" data-tekton-action-type="secondary">
@@ -1222,95 +1224,54 @@ function metis_previewExport() {
     // TODO: Show preview dialog
 }
 
+// Initialize unified chat components
+function metis_initChats() {
+    console.log('[Metis] Initializing unified chat components');
+    
+    // Check if modules are loaded, if not, wait and retry
+    if (!window.SingleChat || !window.TeamChat) {
+        console.log('[Metis] Chat modules not loaded yet, waiting...');
+        setTimeout(function() {
+            metis_initChats(); // Retry
+        }, 100);
+        return;
+    }
+    
+    const workflowChatEl = document.getElementById('metis-workflow-messages');
+    const teamChatEl = document.getElementById('metis-team-messages');
+    
+    if (window.SingleChat && workflowChatEl) {
+        window.SingleChat.init(workflowChatEl, 'metis', 'chat-message');
+        console.log('[Metis] SingleChat initialized for workflow chat');
+    }
+    
+    if (window.TeamChat && teamChatEl) {
+        window.TeamChat.init(teamChatEl, 'metis', 'chat-message');
+        console.log('[Metis] TeamChat initialized');
+    }
+}
+
 // Chat functions - Terma's exact pattern
 function metis_sendChat() {
     const input = document.getElementById('metis-chat-input');
     const message = input.value.trim();
-    
     if (!message) return;
     
-    console.log('[METIS] Sending chat message:', message);
-    
-    // Determine which chat is active based on radio button state
     const workflowActive = document.getElementById('metis-tab-workflow').checked;
-    const teamActive = document.getElementById('metis-tab-team').checked;
-    
-    let targetMessages = null;
-    let chatType = null;
     
     if (workflowActive) {
-        targetMessages = document.getElementById('metis-workflow-messages');
-        chatType = 'workflow';
-    } else if (teamActive) {
-        targetMessages = document.getElementById('metis-team-messages');
-        chatType = 'team';
-    }
-    
-    if (targetMessages) {
-        // Add user message
-        const userMsg = document.createElement('div');
-        userMsg.className = 'chat-message user-message';
-        userMsg.innerHTML = message;
-        targetMessages.appendChild(userMsg);
-        
-        // Scroll to bottom
-        targetMessages.scrollTop = targetMessages.scrollHeight;
-        
-        // Clear input
-        input.value = '';
-        
-        // Send to AI (Terma's exact pattern)
-        if (window.AIChat) {
-            if (chatType === 'workflow') {
-                window.AIChat.sendMessage('metis', message)
-                    .then(response => {
-                        const aiMsg = document.createElement('div');
-                        aiMsg.className = 'chat-message system-message';
-                        aiMsg.innerHTML = `<strong>Metis:</strong> ${response.content}`;
-                        targetMessages.appendChild(aiMsg);
-                        targetMessages.scrollTop = targetMessages.scrollHeight;
-                    })
-                    .catch(err => {
-                        console.error('Failed to send message:', err);
-                        const errorMsg = document.createElement('div');
-                        errorMsg.className = 'chat-message system-message';
-                        errorMsg.innerHTML = `<strong>System:</strong> Failed to connect to Metis AI`;
-                        targetMessages.appendChild(errorMsg);
-                        targetMessages.scrollTop = targetMessages.scrollHeight;
-                    });
-            } else if (chatType === 'team') {
-                window.AIChat.teamChat(message, 'metis')
-                    .then(data => {
-                        if (data.responses && data.responses.length > 0) {
-                            data.responses.forEach(resp => {
-                                const aiMsg = document.createElement('div');
-                                aiMsg.className = 'chat-message system-message';
-                                const sender = resp.socket_id.replace('-ai', '').charAt(0).toUpperCase() + 
-                                             resp.socket_id.replace('-ai', '').slice(1);
-                                aiMsg.innerHTML = `<strong>${sender}:</strong> ${resp.content}`;
-                                targetMessages.appendChild(aiMsg);
-                            });
-                            targetMessages.scrollTop = targetMessages.scrollHeight;
-                        }
-                    })
-                    .catch(err => {
-                        console.error('Failed to send team message:', err);
-                        const errorMsg = document.createElement('div');
-                        errorMsg.className = 'chat-message system-message';
-                        errorMsg.innerHTML = `<strong>System:</strong> Failed to send team message`;
-                        targetMessages.appendChild(errorMsg);
-                        targetMessages.scrollTop = targetMessages.scrollHeight;
-                    });
-            }
-        } else {
-            // Fallback when AIChat not available
-            const aiMsg = document.createElement('div');
-            aiMsg.className = 'chat-message system-message';
-            aiMsg.innerHTML = `<strong>Metis:</strong> AI Chat service is not currently available.`;
-            targetMessages.appendChild(aiMsg);
-            targetMessages.scrollTop = targetMessages.scrollHeight;
+        const workflowChatEl = document.getElementById('metis-workflow-messages');
+        if (window.SingleChat && workflowChatEl) {
+            window.SingleChat.sendMessage(workflowChatEl, message);
+        }
+    } else {
+        const teamChatEl = document.getElementById('metis-team-messages');
+        if (window.TeamChat && teamChatEl) {
+            window.TeamChat.sendMessage(teamChatEl, message);
         }
     }
+    
+    input.value = '';
 }
 
 function metis_clearChat() {
@@ -1853,4 +1814,7 @@ window.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+
+// Initialize unified chat components on load
+metis_initChats();
 </script>

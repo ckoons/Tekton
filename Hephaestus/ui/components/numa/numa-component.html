@@ -1,5 +1,10 @@
 <!-- Numa Component - Platform AI Mentor -->
 
+<!-- Load chat dependencies -->
+<script src="/scripts/shared/ai-chat.js"></script>
+<script src="/scripts/shared/single-chat.js"></script>
+<script src="/scripts/shared/team-chat.js"></script>
+
 <!-- Hidden radio controls for CSS-only tab functionality -->
 <input type="radio" name="numa-tab" id="numa-tab-companion" checked style="display: none;">
 <input type="radio" name="numa-tab" id="numa-tab-team" style="display: none;">
@@ -470,96 +475,54 @@ setTimeout(() => {
     }
 }, 100);
 
+// Initialize unified chat components
+function numa_initChats() {
+    console.log('[Numa] Initializing unified chat components');
+    
+    // Check if modules are loaded, if not, wait and retry
+    if (!window.SingleChat || !window.TeamChat) {
+        console.log('[Numa] Chat modules not loaded yet, waiting...');
+        setTimeout(function() {
+            numa_initChats(); // Retry
+        }, 100);
+        return;
+    }
+    
+    const companionChatEl = document.getElementById('numa-companion-messages');
+    const teamChatEl = document.getElementById('numa-team-messages');
+    
+    if (window.SingleChat && companionChatEl) {
+        window.SingleChat.init(companionChatEl, 'numa', 'chat-message');
+        console.log('[Numa] SingleChat initialized for companion chat');
+    }
+    
+    if (window.TeamChat && teamChatEl) {
+        window.TeamChat.init(teamChatEl, 'numa', 'chat-message');
+        console.log('[Numa] TeamChat initialized');
+    }
+}
+
 // Chat functionality
 function numa_sendChat() {
     const input = document.getElementById('numa-chat-input');
     const message = input.value.trim();
-    
     if (!message) return;
     
-    // Determine which tab is active
     const companionActive = document.getElementById('numa-tab-companion').checked;
-    const chatType = companionActive ? 'companion' : 'team';
-    const messagesContainer = document.getElementById(`numa-${chatType}-messages`);
     
-    // Add user message
-    const userMessageDiv = document.createElement('div');
-    userMessageDiv.className = 'chat-message user-message';
-    userMessageDiv.innerHTML = message;
-    messagesContainer.appendChild(userMessageDiv);
-    
-    // Clear input
-    input.value = '';
-    
-    // Scroll to bottom
-    messagesContainer.scrollTop = messagesContainer.scrollHeight;
-    
-    // Send to backend
-    if (chatType === 'companion') {
-        // Direct message to numa
-        if (window.AIChat) {
-            // Set AI status to active
-            const aiStatus = document.querySelector('.numa__ai-status');
-            if (aiStatus) aiStatus.setAttribute('data-ai-status', 'active');
-            
-            window.AIChat.sendMessage('numa', message)
-                .then(response => {
-                    const aiMessageDiv = document.createElement('div');
-                    aiMessageDiv.className = 'chat-message ai-message';
-                    aiMessageDiv.innerHTML = `<strong>Numa:</strong> ${response.content}`;
-                    messagesContainer.appendChild(aiMessageDiv);
-                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
-                })
-                .catch(err => {
-                    console.error('Failed to send message:', err);
-                    const errorDiv = document.createElement('div');
-                    errorDiv.className = 'chat-message system-message';
-                    errorDiv.innerHTML = `<strong>System:</strong> Failed to connect to Numa AI`;
-                    messagesContainer.appendChild(errorDiv);
-                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
-                });
-        } else {
-            // Fallback to component's own endpoint
-            fetch(numaUrl('/api/companion-chat'), {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ message: message, user_id: 'default' })
-            })
-            .then(response => response.json())
-            .then(data => {
-                const aiMessageDiv = document.createElement('div');
-                aiMessageDiv.className = 'chat-message ai-message';
-                aiMessageDiv.innerHTML = `<strong>Numa:</strong> ${data.response}`;
-                messagesContainer.appendChild(aiMessageDiv);
-                messagesContainer.scrollTop = messagesContainer.scrollHeight;
-            })
-            .catch(err => {
-                console.error('Failed to send message:', err);
-            });
+    if (companionActive) {
+        const companionChatEl = document.getElementById('numa-companion-messages');
+        if (window.SingleChat && companionChatEl) {
+            window.SingleChat.sendMessage(companionChatEl, message);
         }
     } else {
-        // Team chat through Rhetor
-        if (window.AIChat) {
-            window.AIChat.teamChat(message, 'numa')
-                .then(data => {
-                    // Display team responses
-                    if (data.responses && data.responses.length > 0) {
-                        data.responses.forEach(resp => {
-                            const aiMessageDiv = document.createElement('div');
-                            aiMessageDiv.className = 'chat-message ai-message';
-                            const sender = resp.socket_id.replace('-ai', '').charAt(0).toUpperCase() + 
-                                         resp.socket_id.replace('-ai', '').slice(1);
-                            aiMessageDiv.innerHTML = `<strong>${sender}:</strong> ${resp.content}`;
-                            messagesContainer.appendChild(aiMessageDiv);
-                        });
-                        messagesContainer.scrollTop = messagesContainer.scrollHeight;
-                    }
-                })
-                .catch(err => {
-                    console.error('Failed to send team message:', err);
-                });
+        const teamChatEl = document.getElementById('numa-team-messages');
+        if (window.TeamChat && teamChatEl) {
+            window.TeamChat.sendMessage(teamChatEl, message);
         }
     }
+    
+    input.value = '';
 }
 
 // Add enter key handler for chat input when component loads
@@ -569,4 +532,7 @@ document.addEventListener('DOMContentLoaded', function() {
         chatInput.focus();
     }
 });
+
+// Initialize unified chat components on load
+numa_initChats();
 </script>

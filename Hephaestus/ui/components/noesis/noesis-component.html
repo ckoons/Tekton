@@ -1,5 +1,10 @@
 <!-- Noesis Component - Discovery System -->
 
+<!-- Load chat dependencies -->
+<script src="/scripts/shared/ai-chat.js"></script>
+<script src="/scripts/shared/single-chat.js"></script>
+<script src="/scripts/shared/team-chat.js"></script>
+
 <!-- Hidden radio controls for CSS-only tab functionality -->
 <input type="radio" name="noesis-tab" id="noesis-tab-analysis" checked style="display: none;">
 <input type="radio" name="noesis-tab" id="noesis-tab-discovery" style="display: none;">
@@ -1183,6 +1188,9 @@ setTimeout(() => {
         console.log('Noesis 3D manifold viewer initialized');
     }
     
+    // Initialize chat components
+    noesis_initChats();
+    
     // Test pattern detection system with a demo pattern after 3 seconds
     setTimeout(() => {
         console.log('Checking pattern detector availability...');
@@ -1380,75 +1388,41 @@ setTimeout(() => {
 }, 100);
 
 // Chat functionality - EXACT COPY from Terma
+// Initialize chat components
+function noesis_initChats() {
+    const discoveryChatEl = document.getElementById('noesis-discovery-messages');
+    const teamChatEl = document.getElementById('noesis-team-messages');
+    
+    if (window.SingleChat && discoveryChatEl) {
+        window.SingleChat.init(discoveryChatEl, 'noesis', 'chat-message');
+    }
+    
+    if (window.TeamChat && teamChatEl) {
+        window.TeamChat.init(teamChatEl, 'noesis', 'chat-message');
+    }
+}
+
+// Chat sending function - delegate to unified chat components
 window.noesis_sendChat = function() {
     const input = document.getElementById('noesis-chat-input');
     const message = input.value.trim();
-    
     if (!message) return;
     
-    // Determine which tab is active
     const discoveryActive = document.getElementById('noesis-tab-discovery').checked;
-    const chatType = discoveryActive ? 'discovery' : 'team';
-    const messagesContainer = document.getElementById(`noesis-${chatType}-messages`);
     
-    // Add user message
-    const userMessageDiv = document.createElement('div');
-    userMessageDiv.className = 'chat-message user-message';
-    userMessageDiv.innerHTML = message;
-    messagesContainer.appendChild(userMessageDiv);
-    
-    // Clear input
-    input.value = '';
-    
-    // Scroll to bottom
-    messagesContainer.scrollTop = messagesContainer.scrollHeight;
-    
-    // Send to backend
-    if (chatType === 'discovery') {
-        // Direct message to noesis
-        if (window.AIChat) {
-            window.AIChat.sendMessage('noesis', message)
-                .then(response => {
-                    const aiMessageDiv = document.createElement('div');
-                    aiMessageDiv.className = 'chat-message ai-message';
-                    aiMessageDiv.innerHTML = `<strong>Noesis:</strong> ${response.content}`;
-                    messagesContainer.appendChild(aiMessageDiv);
-                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
-                })
-                .catch(err => {
-                    console.error('[Noesis] Chat error:', err);
-                    const errorDiv = document.createElement('div');
-                    errorDiv.className = 'chat-message system-message';
-                    errorDiv.innerHTML = '<strong>System:</strong> Failed to connect to Noesis';
-                    messagesContainer.appendChild(errorDiv);
-                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
-                });
+    if (discoveryActive) {
+        const discoveryChatEl = document.getElementById('noesis-discovery-messages');
+        if (window.SingleChat && discoveryChatEl) {
+            window.SingleChat.sendMessage(discoveryChatEl, message);
         }
     } else {
-        // Team chat
-        if (window.AIChat) {
-            window.AIChat.teamChat(message, 'noesis')
-                .then(responses => {
-                    if (responses && responses.length > 0) {
-                        responses.forEach(resp => {
-                            const aiMessageDiv = document.createElement('div');
-                            aiMessageDiv.className = 'chat-message ai-message';
-                            aiMessageDiv.innerHTML = `<strong>${resp.from}:</strong> ${resp.message}`;
-                            messagesContainer.appendChild(aiMessageDiv);
-                        });
-                        messagesContainer.scrollTop = messagesContainer.scrollHeight;
-                    }
-                })
-                .catch(err => {
-                    console.error('[Noesis] Team chat error:', err);
-                    const errorDiv = document.createElement('div');
-                    errorDiv.className = 'chat-message system-message';
-                    errorDiv.innerHTML = '<strong>System:</strong> Failed to send team message';
-                    messagesContainer.appendChild(errorDiv);
-                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
-                });
+        const teamChatEl = document.getElementById('noesis-team-messages');
+        if (window.TeamChat && teamChatEl) {
+            window.TeamChat.sendMessage(teamChatEl, message);
         }
     }
+    
+    input.value = '';
 }
 
 // Test functions for manual debugging

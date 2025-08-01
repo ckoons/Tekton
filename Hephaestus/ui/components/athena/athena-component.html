@@ -1,5 +1,10 @@
 <!-- Athena Component - Knowledge Graph -->
 
+<!-- Load chat dependencies -->
+<script src="/scripts/shared/ai-chat.js"></script>
+<script src="/scripts/shared/single-chat.js"></script>
+<script src="/scripts/shared/team-chat.js"></script>
+
 <!-- Hidden radio inputs for CSS-first tab functionality -->
 <input type="radio" name="athena-tab" id="athena-tab-graph" checked style="display: none;">
 <input type="radio" name="athena-tab" id="athena-tab-entities" style="display: none;">
@@ -2373,93 +2378,56 @@
     }, 100);
 })();
 
+// Initialize unified chat components
+function athena_initChats() {
+    console.log('[Athena] Initializing unified chat components');
+    
+    // Check if modules are loaded, if not, wait and retry
+    if (!window.SingleChat || !window.TeamChat) {
+        console.log('[Athena] Chat modules not loaded yet, waiting...');
+        setTimeout(function() {
+            athena_initChats(); // Retry
+        }, 100);
+        return;
+    }
+    
+    const knowledgeChatEl = document.getElementById('athena-chat-messages');
+    const teamChatEl = document.getElementById('athena-teamchat-messages');
+    
+    if (window.SingleChat && knowledgeChatEl) {
+        window.SingleChat.init(knowledgeChatEl, 'athena', 'chat-message');
+        console.log('[Athena] SingleChat initialized for knowledge chat');
+    }
+    
+    if (window.TeamChat && teamChatEl) {
+        window.TeamChat.init(teamChatEl, 'athena', 'chat-message');
+        console.log('[Athena] TeamChat initialized');
+    }
+}
+
 // SIMPLE ATHENA CHAT
 window.athena_sendChat = function() {
-    var input = document.getElementById('athena-chat-input');
-    var message = input.value.trim();
-    
+    const input = document.getElementById('athena-chat-input');
+    const message = input.value.trim();
     if (!message) return;
     
-    // Determine which tab is active
-    var knowledgeChatActive = document.getElementById('athena-tab-chat').checked;
-    var teamChatActive = document.getElementById('athena-tab-teamchat').checked;
+    const knowledgeChatActive = document.getElementById('athena-tab-chat').checked;
     
     if (knowledgeChatActive) {
-        // Knowledge Chat
-        var messagesContainer = document.getElementById('athena-chat-messages');
-        
-        // Add user message
-        var userMessageDiv = document.createElement('div');
-        userMessageDiv.className = 'chat-message user-message';
-        userMessageDiv.innerHTML = message;
-        messagesContainer.appendChild(userMessageDiv);
-        
-        // Clear input
-        input.value = '';
-        
-        // Scroll to bottom
-        messagesContainer.scrollTop = messagesContainer.scrollHeight;
-        
-        // Send to backend
-        if (window.AIChat) {
-            window.AIChat.sendMessage('athena', message)
-                .then(function(response) {
-                    var aiMessageDiv = document.createElement('div');
-                    aiMessageDiv.className = 'chat-message ai-message';
-                    aiMessageDiv.innerHTML = '<strong>Athena:</strong> ' + response.content;
-                    messagesContainer.appendChild(aiMessageDiv);
-                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
-                })
-                .catch(function(err) {
-                    console.error('Failed to send message:', err);
-                    var errorDiv = document.createElement('div');
-                    errorDiv.className = 'chat-message system-message';
-                    errorDiv.innerHTML = '<strong>System:</strong> Failed to connect to Athena AI';
-                    messagesContainer.appendChild(errorDiv);
-                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
-                });
+        const knowledgeChatEl = document.getElementById('athena-chat-messages');
+        if (window.SingleChat && knowledgeChatEl) {
+            window.SingleChat.sendMessage(knowledgeChatEl, message);
         }
-    } else if (teamChatActive) {
-        // Team Chat
-        var messagesContainer = document.getElementById('athena-teamchat-messages');
-        
-        // Add broadcast message
-        var userMessageDiv = document.createElement('div');
-        userMessageDiv.className = 'chat-message user-message';
-        userMessageDiv.innerHTML = message;
-        messagesContainer.appendChild(userMessageDiv);
-        
-        // Clear input
-        input.value = '';
-        
-        // Scroll to bottom
-        messagesContainer.scrollTop = messagesContainer.scrollHeight;
-        
-        // Team chat through Rhetor
-        if (window.AIChat) {
-            window.AIChat.teamChat(message, 'athena')
-                .then(function(data) {
-                    // Display team responses
-                    if (data.responses && data.responses.length > 0) {
-                        data.responses.forEach(function(resp) {
-                            var aiMessageDiv = document.createElement('div');
-                            aiMessageDiv.className = 'chat-message ai-message';
-                            var sender = resp.socket_id.replace('-ai', '').charAt(0).toUpperCase() + 
-                                         resp.socket_id.replace('-ai', '').slice(1);
-                            aiMessageDiv.innerHTML = '<strong>' + sender + ':</strong> ' + resp.content;
-                            messagesContainer.appendChild(aiMessageDiv);
-                        });
-                        messagesContainer.scrollTop = messagesContainer.scrollHeight;
-                    }
-                })
-                .catch(function(err) {
-                    console.error('Failed to send team message:', err);
-                    var errorDiv = document.createElement('div');
-                    errorDiv.className = 'chat-message system-message';
-                    errorDiv.innerHTML = '<strong>System:</strong> Failed to send team message';
-                    messagesContainer.appendChild(errorDiv);
-                });
+    } else {
+        const teamChatEl = document.getElementById('athena-teamchat-messages');
+        if (window.TeamChat && teamChatEl) {
+            window.TeamChat.sendMessage(teamChatEl, message);
         }
     }
+    
+    input.value = '';
 };
+
+// Initialize unified chat components on load
+athena_initChats();
 </script>

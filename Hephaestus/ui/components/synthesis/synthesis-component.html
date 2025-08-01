@@ -1,4 +1,10 @@
 <!-- Synthesis Component - Execution & Integration Engine -->
+
+<!-- Load chat dependencies -->
+<script src="/scripts/shared/ai-chat.js"></script>
+<script src="/scripts/shared/single-chat.js"></script>
+<script src="/scripts/shared/team-chat.js"></script>
+
 <!-- @landmark Synthesis Component Root -->
 <div class="synthesis" data-tekton-area="synthesis" data-tekton-component="synthesis" data-tekton-type="component-workspace" data-tekton-ai="synthesis-assistant" data-tekton-ai-ready="false">
     <!-- @landmark Header Section -->
@@ -43,9 +49,7 @@
             <button id="validate-sprint-btn" class="synthesis__action-button synthesis__button--validate" style="display: none;" onclick="validateCurrentSprint(); return false;" data-tekton-action="validate-sprint" data-tekton-action-type="primary">
                 <span class="synthesis__button-label">Validate Sprint</span>
             </button>
-            <button id="clear-chat-btn" class="synthesis__action-button" style="display: none;" onclick="synthesis_clearChat(); return false;" data-tekton-action="clear-chat" data-tekton-action-type="secondary">
-                <span class="synthesis__button-label">Clear</span>
-            </button>
+            <!-- Clear button removed per request -->
         </div>
     </div>
     
@@ -914,6 +918,10 @@
     .synthesis__message--user {
         align-self: flex-end;
     }
+    
+    .synthesis__message--ai {
+        align-self: flex-start;
+    }
 
     .synthesis__message--system {
         align-self: center;
@@ -921,23 +929,25 @@
     }
 
     .synthesis__message-content {
-        padding: 12px;
-        background-color: var(--bg-secondary, #252535);
-        border-radius: 12px;
+        /* Content wrapper - styles are on the specific message types */
     }
 
     .synthesis__message--user .synthesis__message-content {
-        background-color: rgba(76, 175, 80, 0.05);
-        color: var(--text-primary, #f0f0f0);
-        border-radius: 8px;
-        border-left: 3px solid #4CAF50;
+        background-color: #4CAF50;
+        color: white;
+        border-radius: 18px;
+        border-bottom-right-radius: 4px;
+        padding: 10px 16px;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.1);
     }
 
     .synthesis__message--ai .synthesis__message-content {
-        background-color: rgba(33, 150, 243, 0.05);
+        background-color: var(--bg-secondary, #252535);
         color: var(--text-primary, #f0f0f0);
-        border-radius: 8px;
-        border-left: 3px solid #2196F3;
+        border-radius: 18px;
+        border-bottom-left-radius: 4px;
+        padding: 10px 16px;
+        border: 1px solid var(--border-color, #444444);
     }
 
     .synthesis__message--system .synthesis__message-content {
@@ -1400,11 +1410,7 @@ window.synthesis_switchTab = function(tabId) {
             }
         });
         
-        // Update clear button visibility for chat tabs
-        const clearButton = synthesisContainer.querySelector('#clear-chat-btn');
-        if (clearButton) {
-            clearButton.style.display = (tabId === 'workflowchat' || tabId === 'teamchat') ? 'block' : 'none';
-        }
+        // Clear button removed, no need to update visibility
         
         // Update validate button visibility for validation tabs
         const validateButton = synthesisContainer.querySelector('#validate-sprint-btn');
@@ -1445,8 +1451,46 @@ window.synthesis_switchTab = function(tabId) {
     return false; // Stop event propagation
 };
 
-// CHAT SENDING FUNCTION
+// Initialize chat components
+function synthesis_initChats() {
+    const workflowChatEl = document.getElementById('workflowchat-messages');
+    const teamChatEl = document.getElementById('teamchat-messages');
+    
+    if (window.SingleChat && workflowChatEl) {
+        window.SingleChat.init(workflowChatEl, 'synthesis', 'synthesis');
+    }
+    
+    if (window.TeamChat && teamChatEl) {
+        window.TeamChat.init(teamChatEl, 'synthesis', 'synthesis');
+    }
+}
+
+// CHAT SENDING FUNCTION - delegate to unified chat components
 window.synthesis_sendChat = function() {
+    const input = document.getElementById('synthesis-chat-input');
+    const message = input.value.trim();
+    if (!message) return;
+    
+    const workflowChatTab = document.querySelector('[data-tab="workflowchat"]');
+    const workflowChatActive = workflowChatTab && workflowChatTab.classList.contains('synthesis__tab--active');
+    
+    if (workflowChatActive) {
+        const workflowChatEl = document.getElementById('workflowchat-messages');
+        if (window.SingleChat && workflowChatEl) {
+            window.SingleChat.sendMessage(workflowChatEl, message);
+        }
+    } else {
+        const teamChatEl = document.getElementById('teamchat-messages');
+        if (window.TeamChat && teamChatEl) {
+            window.TeamChat.sendMessage(teamChatEl, message);
+        }
+    }
+    
+    input.value = '';
+};
+
+// Keep the rest of the teamchat implementation for now
+window.synthesis_sendChat_original = function() {
     console.log('[SYNTHESIS] Sending chat message');
     
     try {
@@ -1988,4 +2032,9 @@ window.saveDraftReview = function() {
     // TODO: Implement draft review saving
     return false;
 };
+
+// Initialize chat when component loads
+setTimeout(() => {
+    synthesis_initChats();
+}, 100);
 </script>

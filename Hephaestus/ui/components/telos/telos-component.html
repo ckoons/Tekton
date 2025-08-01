@@ -1,4 +1,10 @@
 <!-- Telos Component - Requirements Management -->
+
+<!-- Load chat dependencies -->
+<script src="/scripts/shared/ai-chat.js"></script>
+<script src="/scripts/shared/single-chat.js"></script>
+<script src="/scripts/shared/team-chat.js"></script>
+
 <div class="telos" data-tekton-area="telos" data-tekton-component="telos" data-tekton-type="component-workspace" data-tekton-ai="telos-assistant" data-tekton-ai-ready="false">
     <!-- Component Header with Title -->
     <div class="telos__header" data-tekton-zone="header" data-tekton-section="header">
@@ -25,9 +31,7 @@
             </div>
         </div>
         <div class="telos__actions">
-            <button id="clear-chat-btn" class="telos__action-button" style="display: none;" onclick="telos_clearChat(); return false;" data-tekton-action="clear-chat" data-tekton-action-type="secondary">
-                <span class="telos__button-label">Clear</span>
-            </button>
+            <!-- Clear button removed per request -->
         </div>
     </div>
     
@@ -410,12 +414,12 @@
         color: var(--text-primary, #f0f0f0);
         cursor: pointer;
         transition: all 0.2s ease;
-        font-size: 24px !important; /* FORCE BIGGER FONT */
-        font-weight: 600 !important;
+        font-size: 14px;
+        font-weight: 500;
     }
     
     .telos__tab-label {
-        font-size: 24px !important; /* FORCE BIGGER FONT ON LABEL TOO */
+        font-size: 14px;
     }
     
     .telos__tab:hover {
@@ -1390,119 +1394,55 @@ window.telos_clearChat = function() {
     return false; // Stop event propagation
 };
 
-// CHAT SENDING FUNCTION
-window.telos_sendChat = function() {
-    console.log('[TELOS] Send chat clicked');
+// Initialize unified chat components
+function telos_initChats() {
+    console.log('[Telos] Initializing unified chat components');
     
-    try {
-        // Get telos container
-        const telosContainer = document.querySelector('.telos');
-        if (!telosContainer) {
-            console.error('[TELOS] Send Chat: Cannot find telos container');
-            return false;
-        }
-        
-        // Get chat input
-        const chatInput = telosContainer.querySelector('#telos-chat-input');
-        if (!chatInput) {
-            console.error('[TELOS] Send Chat: Cannot find chat input');
-            return false;
-        }
-        
-        const message = chatInput.value.trim();
-        if (!message) {
-            console.log('[TELOS] Send Chat: Empty message, ignoring');
-            return false;
-        }
-        
-        // Get active tab
-        const activeTab = telosContainer.querySelector('.telos__tab--active');
-        const tabId = activeTab ? activeTab.getAttribute('data-tab') : '';
-        
-        if (tabId === 'reqchat' || tabId === 'teamchat') {
-            const panel = telosContainer.querySelector('#' + tabId + '-messages');
-            if (panel) {
-                // Create user message
-                const userMsg = document.createElement('div');
-                userMsg.className = 'telos__message telos__message--user';
-                userMsg.innerHTML = message;
-                panel.appendChild(userMsg);
-                
-                // Clear input
-                chatInput.value = '';
-                
-                // Scroll to bottom
-                panel.scrollTop = panel.scrollHeight;
-                
-                console.log('[TELOS] Message sent to ' + tabId);
-                
-                // Send to backend
-                if (tabId === 'reqchat') {
-                    // Requirements chat - direct message to telos
-                    if (window.AIChat) {
-                        window.AIChat.sendMessage('telos', message)
-                            .then(response => {
-                                const aiMsg = document.createElement('div');
-                                aiMsg.className = 'telos__message telos__message--ai';
-                                aiMsg.innerHTML = `<strong>Telos:</strong> ${response.content}`;
-                                panel.appendChild(aiMsg);
-                                panel.scrollTop = panel.scrollHeight;
-                            })
-                            .catch(err => {
-                                console.error('[TELOS] Failed to send message:', err);
-                                const errorDiv = document.createElement('div');
-                                errorDiv.className = 'telos__message telos__message--system';
-                                errorDiv.innerHTML = `<strong>System:</strong> Failed to connect to Telos AI`;
-                                panel.appendChild(errorDiv);
-                                panel.scrollTop = panel.scrollHeight;
-                            });
-                    } else {
-                        console.error('[TELOS] AIChat not available');
-                        const errorDiv = document.createElement('div');
-                        errorDiv.className = 'telos__message telos__message--system';
-                        errorDiv.innerHTML = `<strong>System:</strong> AI Chat system not available`;
-                        panel.appendChild(errorDiv);
-                        panel.scrollTop = panel.scrollHeight;
-                    }
-                } else if (tabId === 'teamchat') {
-                    // Team chat through Rhetor
-                    if (window.AIChat) {
-                        window.AIChat.teamChat(message, 'telos')
-                            .then(data => {
-                                // Display team responses
-                                if (data.responses && data.responses.length > 0) {
-                                    data.responses.forEach(resp => {
-                                        const aiMsg = document.createElement('div');
-                                        aiMsg.className = 'telos__message telos__message--ai';
-                                        const sender = resp.socket_id.replace('-ai', '').charAt(0).toUpperCase() + 
-                                                     resp.socket_id.replace('-ai', '').slice(1);
-                                        aiMsg.innerHTML = `<strong>${sender}:</strong> ${resp.content}`;
-                                        panel.appendChild(aiMsg);
-                                    });
-                                    panel.scrollTop = panel.scrollHeight;
-                                }
-                            })
-                            .catch(err => {
-                                console.error('[TELOS] Failed to send team message:', err);
-                                const errorDiv = document.createElement('div');
-                                errorDiv.className = 'telos__message telos__message--system';
-                                errorDiv.innerHTML = `<strong>System:</strong> Failed to send team message`;
-                                panel.appendChild(errorDiv);
-                                panel.scrollTop = panel.scrollHeight;
-                            });
-                    } else {
-                        console.error('[TELOS] AIChat not available for team chat');
-                    }
-                }
-            }
-        } else {
-            console.log('[TELOS] Send Chat: Not in a chat tab');
-        }
-    } catch (err) {
-        console.error('[TELOS] Error sending chat:', err);
+    // Check if modules are loaded, if not, wait and retry
+    if (!window.SingleChat || !window.TeamChat) {
+        console.log('[Telos] Chat modules not loaded yet, waiting...');
+        setTimeout(function() {
+            telos_initChats(); // Retry
+        }, 100);
+        return;
     }
     
-    return false; // Stop event propagation
+    const reqChatEl = document.getElementById('reqchat-messages');
+    const teamChatEl = document.getElementById('teamchat-messages');
+    
+    if (window.SingleChat && reqChatEl) {
+        window.SingleChat.init(reqChatEl, 'telos', 'telos');
+        console.log('[Telos] SingleChat initialized for requirements chat');
+    }
+    
+    if (window.TeamChat && teamChatEl) {
+        window.TeamChat.init(teamChatEl, 'telos', 'telos');
+        console.log('[Telos] TeamChat initialized');
+    }
+}
+
+// CHAT SENDING FUNCTION
+window.telos_sendChat = function() {
+    const input = document.getElementById('telos-chat-input');
+    const message = input.value.trim();
+    if (!message) return;
+    
+    const activeTab = document.querySelector('.telos__tab--active');
+    const tabId = activeTab ? activeTab.getAttribute('data-tab') : '';
+    
+    if (tabId === 'reqchat') {
+        const reqChatEl = document.getElementById('reqchat-messages');
+        if (window.SingleChat && reqChatEl) {
+            window.SingleChat.sendMessage(reqChatEl, message);
+        }
+    } else if (tabId === 'teamchat') {
+        const teamChatEl = document.getElementById('teamchat-messages');
+        if (window.TeamChat && teamChatEl) {
+            window.TeamChat.sendMessage(teamChatEl, message);
+        }
+    }
+    
+    input.value = '';
 };
 
 // PROPOSAL ACTION FUNCTIONS
@@ -2100,4 +2040,7 @@ if (document.readyState === 'complete' || document.readyState === 'interactive')
     telos_protectHtmlPanel();
     telos_loadComponent();
 }
+
+// Initialize unified chat components on load
+telos_initChats();
 </script>

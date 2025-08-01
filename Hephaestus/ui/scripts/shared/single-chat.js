@@ -23,7 +23,8 @@ window.SingleChat = {
         'telos': { aiName: 'telos', displayName: 'Telos' },
         'synthesis': { aiName: 'synthesis', displayName: 'Synthesis' },
         'engram': { aiName: 'engram', displayName: 'Engram' },
-        'codex': { aiName: 'codex', displayName: 'Codex' }
+        'codex': { aiName: 'codex', displayName: 'Codex' },
+        'tekton': { aiName: 'tekton_core', displayName: 'Tekton' } // tekton-core component
     },
     
     /**

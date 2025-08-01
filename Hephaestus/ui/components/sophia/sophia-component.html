@@ -1,4 +1,10 @@
 <!-- Sophia Component - AI Intelligence Measurement & Continuous Improvement -->
+
+<!-- Load chat dependencies -->
+<script src="/scripts/shared/ai-chat.js"></script>
+<script src="/scripts/shared/single-chat.js"></script>
+<script src="/scripts/shared/team-chat.js"></script>
+
 <div class="sophia" data-tekton-area="sophia" data-tekton-component="sophia" data-tekton-type="component-workspace" data-tekton-ai="sophia-assistant" data-tekton-ai-ready="false">
     <!-- Component Header with Title -->
     <div class="sophia__header" data-tekton-zone="header" data-tekton-section="header">
@@ -37,9 +43,7 @@
             </div>
         </div>
         <div class="sophia__actions">
-            <button id="clear-chat-btn" class="sophia__action-button" style="display: none;" onclick="sophia_clearChat(); return false;" data-tekton-action="clear-chat" data-tekton-action-type="secondary">
-                <span class="sophia__button-label">Clear</span>
-            </button>
+            <!-- Clear button removed per request -->
         </div>
     </div>
     
@@ -1801,11 +1805,7 @@ window.sophia_switchTab = function(tabId) {
             }
         });
         
-        // Update clear button visibility for chat tabs
-        const clearButton = sophiaContainer.querySelector('#clear-chat-btn');
-        if (clearButton) {
-            clearButton.style.display = (tabId === 'teamchat' || tabId === 'researchchat') ? 'block' : 'none';
-        }
+        // Clear button removed, no need to update visibility
         
         // Update chat input placeholder based on active tab
         const chatInput = sophiaContainer.querySelector('#sophia-chat-input');
@@ -1844,8 +1844,62 @@ window.sophia_switchTab = function(tabId) {
     return false; // Stop event propagation
 };
 
-// CHAT SENDING FUNCTION
+// Initialize chat components
+function sophia_initChats() {
+    console.log('[SOPHIA] Initializing chats');
+    const researchChatEl = document.getElementById('researchchat-messages');
+    const teamChatEl = document.getElementById('teamchat-messages');
+    
+    console.log('[SOPHIA] Research chat element:', researchChatEl);
+    console.log('[SOPHIA] Team chat element:', teamChatEl);
+    
+    if (window.SingleChat && researchChatEl) {
+        console.log('[SOPHIA] Initializing SingleChat for research chat');
+        window.SingleChat.init(researchChatEl, 'sophia', 'sophia');
+        console.log('[SOPHIA] SingleChat initialized, component name:', researchChatEl.getAttribute('data-component-name'));
+    }
+    
+    if (window.TeamChat && teamChatEl) {
+        console.log('[SOPHIA] Initializing TeamChat for team chat');
+        window.TeamChat.init(teamChatEl, 'sophia', 'sophia');
+    }
+}
+
+// CHAT SENDING FUNCTION - delegate to unified chat components
 window.sophia_sendChat = function() {
+    console.log('[SOPHIA] Send chat clicked');
+    const input = document.getElementById('sophia-chat-input');
+    const message = input.value.trim();
+    if (!message) {
+        console.log('[SOPHIA] No message to send');
+        return;
+    }
+    
+    const activeTab = document.querySelector('.sophia__tab--active');
+    const tabId = activeTab ? activeTab.getAttribute('data-tab') : '';
+    console.log('[SOPHIA] Active tab:', tabId);
+    
+    if (tabId === 'researchchat') {
+        const researchChatEl = document.getElementById('researchchat-messages');
+        console.log('[SOPHIA] Research chat element:', researchChatEl);
+        console.log('[SOPHIA] SingleChat available:', !!window.SingleChat);
+        if (window.SingleChat && researchChatEl) {
+            window.SingleChat.sendMessage(researchChatEl, message);
+        }
+    } else if (tabId === 'teamchat') {
+        const teamChatEl = document.getElementById('teamchat-messages');
+        console.log('[SOPHIA] Team chat element:', teamChatEl);
+        console.log('[SOPHIA] TeamChat available:', !!window.TeamChat);
+        if (window.TeamChat && teamChatEl) {
+            window.TeamChat.sendMessage(teamChatEl, message);
+        }
+    }
+    
+    input.value = '';
+};
+
+// Keep the original implementation for reference
+window.sophia_sendChat_original = function() {
     console.log('[SOPHIA] Send chat clicked');
     
     try {
@@ -2599,6 +2653,10 @@ window.addEventListener('DOMContentLoaded', function() {
     console.log('[SOPHIA] DOM loaded, setting up Sophia component');
     sophia_protectHtmlPanel();
     sophia_loadComponent();
+    // Initialize chat components
+    setTimeout(() => {
+        sophia_initChats();
+    }, 100);
 });
 
 // IMMEDIATE PROTECTION
@@ -2607,5 +2665,9 @@ if (document.readyState === 'complete' || document.readyState === 'interactive')
     console.log('[SOPHIA] Document already loaded, setting up Sophia component immediately');
     sophia_protectHtmlPanel();
     sophia_loadComponent();
+    // Initialize chat components
+    setTimeout(() => {
+        sophia_initChats();
+    }, 100);
 }
 </script>

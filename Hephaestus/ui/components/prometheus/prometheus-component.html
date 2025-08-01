@@ -1,4 +1,10 @@
 <!-- Prometheus Component - Planning and Sprint Management -->
+
+<!-- Load chat dependencies -->
+<script src="/scripts/shared/ai-chat.js"></script>
+<script src="/scripts/shared/single-chat.js"></script>
+<script src="/scripts/shared/team-chat.js"></script>
+
 <div class="prometheus" 
      data-tekton-area="prometheus" 
      data-tekton-component="prometheus" 
@@ -1522,6 +1528,33 @@ window.prometheus_switchTab = function(tabId) {
     return false;
 };
 
+// Initialize unified chat components
+function prometheus_initChats() {
+    console.log('[Prometheus] Initializing unified chat components');
+    
+    // Check if modules are loaded, if not, wait and retry
+    if (!window.SingleChat || !window.TeamChat) {
+        console.log('[Prometheus] Chat modules not loaded yet, waiting...');
+        setTimeout(function() {
+            prometheus_initChats(); // Retry
+        }, 100);
+        return;
+    }
+    
+    const planningChatEl = document.getElementById('planningchat-messages');
+    const teamChatEl = document.getElementById('teamchat-messages');
+    
+    if (window.SingleChat && planningChatEl) {
+        window.SingleChat.init(planningChatEl, 'prometheus', 'prometheus');
+        console.log('[Prometheus] SingleChat initialized for planning chat');
+    }
+    
+    if (window.TeamChat && teamChatEl) {
+        window.TeamChat.init(teamChatEl, 'prometheus', 'prometheus');
+        console.log('[Prometheus] TeamChat initialized');
+    }
+}
+
 // Send chat function
 window.prometheus_sendChat = function() {
     const input = document.getElementById('prometheus-chat-input');
@@ -1531,60 +1564,19 @@ window.prometheus_sendChat = function() {
     const activeTab = document.querySelector('.prometheus__tab--active');
     const tabId = activeTab ? activeTab.getAttribute('data-tab') : '';
     
-    if (tabId !== 'planningchat' && tabId !== 'teamchat') return false;
-    
-    const messagesContainer = document.getElementById(tabId + '-messages');
-    if (!messagesContainer) return false;
-    
-    // Add user message
-    const userMessage = document.createElement('div');
-    userMessage.className = 'prometheus__message prometheus__message--user';
-    userMessage.innerHTML = `<div class="prometheus__message-content"><div class="prometheus__message-text">${message}</div></div>`;
-    messagesContainer.appendChild(userMessage);
-    
-    // Clear input
-    input.value = '';
-    
-    // Scroll to bottom
-    messagesContainer.scrollTop = messagesContainer.scrollHeight;
-    
-    // Handle AI response if available
-    if (window.AIChat && typeof window.AIChat.sendMessage === 'function') {
-        const aiMessage = document.createElement('div');
-        aiMessage.className = 'prometheus__message prometheus__message--ai';
-        aiMessage.innerHTML = `<div class="prometheus__message-content"><div class="prometheus__message-text">Thinking...</div></div>`;
-        messagesContainer.appendChild(aiMessage);
-        
-        const aiPromise = tabId === 'planningchat' 
-            ? window.AIChat.sendMessage('prometheus', message)
-            : window.AIChat.teamChat(message, 'prometheus');
-            
-        aiPromise.then(response => {
-            const messageText = aiMessage.querySelector('.prometheus__message-text');
-            if (messageText) {
-                if (tabId === 'planningchat') {
-                    messageText.textContent = 'Prometheus: ' + (response.content || response.response || response);
-                } else {
-                    if (response.responses && response.responses.length > 0) {
-                        const teamResponses = response.responses.map(r => 
-                            `${r.specialist_id}: ${r.content}`
-                        ).join('\n\n');
-                        messageText.textContent = teamResponses;
-                    } else {
-                        messageText.textContent = 'No team responses received.';
-                    }
-                }
-            }
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
-        }).catch(error => {
-            console.error('[PROMETHEUS] AI Chat error:', error);
-            const messageText = aiMessage.querySelector('.prometheus__message-text');
-            if (messageText) {
-                messageText.textContent = 'Sorry, I encountered an error processing your request.';
-            }
-        });
+    if (tabId === 'planningchat') {
+        const planningChatEl = document.getElementById('planningchat-messages');
+        if (window.SingleChat && planningChatEl) {
+            window.SingleChat.sendMessage(planningChatEl, message);
+        }
+    } else if (tabId === 'teamchat') {
+        const teamChatEl = document.getElementById('teamchat-messages');
+        if (window.TeamChat && teamChatEl) {
+            window.TeamChat.sendMessage(teamChatEl, message);
+        }
     }
     
+    input.value = '';
     return false;
 };
 
@@ -1971,4 +1963,7 @@ document.addEventListener('DOMContentLoaded', function() {
     };
     document.body.appendChild(script);
 });
+
+// Initialize unified chat components on load
+prometheus_initChats();
 </script>

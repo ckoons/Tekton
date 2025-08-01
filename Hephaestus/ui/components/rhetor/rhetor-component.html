@@ -26,6 +26,11 @@
 -->
 <!-- @landmark Component: Rhetor - LLM orchestration, prompt engineering, and context management hub -->
 
+<!-- Load chat dependencies -->
+<script src="/scripts/shared/ai-chat.js"></script>
+<script src="/scripts/shared/single-chat.js"></script>
+<script src="/scripts/shared/team-chat.js"></script>
+
 <!-- Hidden radio inputs for CSS-first tab functionality -->
 <!-- @landmark Navigation: CSS-first radio buttons for tab switching -->
 <input type="radio" name="rhetor-tab" id="tab-dashboard" checked style="display: none;">
@@ -108,11 +113,7 @@
       </label>
     </div>
     <div class="rhetor__actions">
-      <button id="clear-chat-btn" class="rhetor__action-button" style="display: none;"
-              data-tekton-action="clear-chat"
-              data-tekton-action-type="secondary">
-        <span class="rhetor__button-label">Clear</span>
-      </button>
+      <!-- Clear button removed per request -->
     </div>
   </div>
   
@@ -1979,18 +1980,7 @@ SUCCESS CRITERIA:
   }
   
   /* Show/hide clear button based on chat tabs */
-  #tab-llmchat:checked ~ .rhetor #clear-chat-btn,
-  #tab-teamchat:checked ~ .rhetor #clear-chat-btn {
-    display: block !important;
-  }
-  
-  #tab-dashboard:checked ~ .rhetor #clear-chat-btn,
-  #tab-models:checked ~ .rhetor #clear-chat-btn,
-  #tab-prompts:checked ~ .rhetor #clear-chat-btn,
-  #tab-contexts:checked ~ .rhetor #clear-chat-btn,
-  #tab-specialists:checked ~ .rhetor #clear-chat-btn {
-    display: none !important;
-  }
+  /* Clear button removed - no CSS needed */
   
   /* Container */
   .rhetor {
@@ -4174,6 +4164,11 @@ setTimeout(() => {
 // Add event listeners immediately - no DOMContentLoaded
 // This runs when the script is evaluated, which is after the HTML is injected
 
+// Initialize chat components
+setTimeout(() => {
+    rhetor_initChats();
+}, 100);
+
 // Debug tab switching
 const allTabs = document.querySelectorAll('input[name="rhetor-tab"]');
 console.log('[RHETOR] Found tabs:', allTabs.length);
@@ -4557,39 +4552,41 @@ function rhetor_updateContextMetrics() {
 
 
 // Send chat message (works for both LLM Chat and Team Chat)
-function rhetor_sendChat() {
-    console.log('[RHETOR] rhetor_sendChat() called');
+// Initialize chat components
+function rhetor_initChats() {
+    const llmChatEl = document.getElementById('llmchat-messages');
+    const teamChatEl = document.getElementById('teamchat-messages');
     
-    const input = document.getElementById('chat-input');
-    const message = input.value.trim();
-    
-    console.log('[RHETOR] Input element:', input);
-    console.log('[RHETOR] Message:', message);
-    
-    if (!message) {
-        console.log('[RHETOR] No message to send');
-        return;
+    if (window.SingleChat && llmChatEl) {
+        window.SingleChat.init(llmChatEl, 'rhetor', 'rhetor');
     }
     
-    // Check which chat is active
+    if (window.TeamChat && teamChatEl) {
+        window.TeamChat.init(teamChatEl, 'rhetor', 'rhetor');
+    }
+}
+
+// Chat sending function - delegate to unified chat components
+function rhetor_sendChat() {
+    const input = document.getElementById('chat-input');
+    const message = input.value.trim();
+    if (!message) return;
+    
     const llmChatActive = document.getElementById('tab-llmchat').checked;
     const teamChatActive = document.getElementById('tab-teamchat').checked;
     
-    console.log('[RHETOR] LLM Chat active:', llmChatActive);
-    console.log('[RHETOR] Team Chat active:', teamChatActive);
-    console.log('[RHETOR] rhetorUrl function available:', typeof window.rhetorUrl);
-    
     if (llmChatActive) {
-        console.log('[RHETOR] Sending to LLM chat');
-        rhetor_sendLLMChatMessage(message);
+        const llmChatEl = document.getElementById('llmchat-messages');
+        if (window.SingleChat && llmChatEl) {
+            window.SingleChat.sendMessage(llmChatEl, message);
+        }
     } else if (teamChatActive) {
-        console.log('[RHETOR] Sending to team chat');
-        rhetor_sendTeamChatMessage(message);
-    } else {
-        console.warn('[RHETOR] No chat tab is active');
+        const teamChatEl = document.getElementById('teamchat-messages');
+        if (window.TeamChat && teamChatEl) {
+            window.TeamChat.sendMessage(teamChatEl, message);
+        }
     }
     
-    // Clear input
     input.value = '';
 }
 

@@ -1,5 +1,10 @@
 <!-- Harmonia Component - Workflow Orchestration and CI Routing -->
 
+<!-- Load chat dependencies -->
+<script src="/scripts/shared/ai-chat.js"></script>
+<script src="/scripts/shared/single-chat.js"></script>
+<script src="/scripts/shared/team-chat.js"></script>
+
 <!-- Hidden radio controls for CSS-only tab functionality -->
 <input type="radio" name="harmonia-tab" id="harmonia-tab-dashboard" checked style="display: none;">
 <input type="radio" name="harmonia-tab" id="harmonia-tab-workflows" style="display: none;">
@@ -2177,95 +2182,42 @@ function harmonia_saveDraft() {
     alert('Workflow draft saved');
 }
 
-// Chat functions - Terma's exact pattern
+// Initialize chat components
+function harmonia_initChats() {
+    const workflowChatEl = document.getElementById('harmonia-workflow-messages');
+    const teamChatEl = document.getElementById('harmonia-team-messages');
+    
+    if (window.SingleChat && workflowChatEl) {
+        window.SingleChat.init(workflowChatEl, 'harmonia', 'chat-message');
+    }
+    
+    if (window.TeamChat && teamChatEl) {
+        window.TeamChat.init(teamChatEl, 'harmonia', 'chat-message');
+    }
+}
+
+// Chat functions - delegate to unified chat components
 function harmonia_sendChat() {
     const input = document.getElementById('harmonia-chat-input');
     const message = input.value.trim();
-    
     if (!message) return;
     
-    console.log('[HARMONIA] Sending chat message:', message);
-    
-    // Determine which chat is active based on radio button state
     const workflowActive = document.getElementById('harmonia-tab-workflow').checked;
     const teamActive = document.getElementById('harmonia-tab-team').checked;
     
-    let targetMessages = null;
-    let chatType = null;
-    
     if (workflowActive) {
-        targetMessages = document.getElementById('harmonia-workflow-messages');
-        chatType = 'workflow';
+        const workflowChatEl = document.getElementById('harmonia-workflow-messages');
+        if (window.SingleChat && workflowChatEl) {
+            window.SingleChat.sendMessage(workflowChatEl, message);
+        }
     } else if (teamActive) {
-        targetMessages = document.getElementById('harmonia-team-messages');
-        chatType = 'team';
-    }
-    
-    if (targetMessages) {
-        // Add user message
-        const userMsg = document.createElement('div');
-        userMsg.className = 'chat-message user-message';
-        userMsg.innerHTML = message;
-        targetMessages.appendChild(userMsg);
-        
-        // Scroll to bottom
-        targetMessages.scrollTop = targetMessages.scrollHeight;
-        
-        // Clear input
-        input.value = '';
-        
-        // Send to AI (Terma's exact pattern)
-        if (window.AIChat) {
-            if (chatType === 'workflow') {
-                window.AIChat.sendMessage('harmonia', message)
-                    .then(response => {
-                        const aiMsg = document.createElement('div');
-                        aiMsg.className = 'chat-message system-message';
-                        aiMsg.innerHTML = `<strong>Harmonia:</strong> ${response.content}`;
-                        targetMessages.appendChild(aiMsg);
-                        targetMessages.scrollTop = targetMessages.scrollHeight;
-                    })
-                    .catch(err => {
-                        console.error('Failed to send message:', err);
-                        const errorMsg = document.createElement('div');
-                        errorMsg.className = 'chat-message system-message';
-                        errorMsg.innerHTML = `<strong>System:</strong> Failed to connect to Harmonia AI`;
-                        targetMessages.appendChild(errorMsg);
-                        targetMessages.scrollTop = targetMessages.scrollHeight;
-                    });
-            } else if (chatType === 'team') {
-                window.AIChat.teamChat(message, 'harmonia')
-                    .then(data => {
-                        if (data.responses && data.responses.length > 0) {
-                            data.responses.forEach(resp => {
-                                const aiMsg = document.createElement('div');
-                                aiMsg.className = 'chat-message system-message';
-                                const sender = resp.socket_id.replace('-ai', '').charAt(0).toUpperCase() + 
-                                             resp.socket_id.replace('-ai', '').slice(1);
-                                aiMsg.innerHTML = `<strong>${sender}:</strong> ${resp.content}`;
-                                targetMessages.appendChild(aiMsg);
-                            });
-                            targetMessages.scrollTop = targetMessages.scrollHeight;
-                        }
-                    })
-                    .catch(err => {
-                        console.error('Failed to send team message:', err);
-                        const errorMsg = document.createElement('div');
-                        errorMsg.className = 'chat-message system-message';
-                        errorMsg.innerHTML = `<strong>System:</strong> Failed to send team message`;
-                        targetMessages.appendChild(errorMsg);
-                        targetMessages.scrollTop = targetMessages.scrollHeight;
-                    });
-            }
-        } else {
-            // Fallback when AIChat not available
-            const aiMsg = document.createElement('div');
-            aiMsg.className = 'chat-message system-message';
-            aiMsg.innerHTML = `<strong>Harmonia:</strong> AI Chat service is not currently available.`;
-            targetMessages.appendChild(aiMsg);
-            targetMessages.scrollTop = targetMessages.scrollHeight;
+        const teamChatEl = document.getElementById('harmonia-team-messages');
+        if (window.TeamChat && teamChatEl) {
+            window.TeamChat.sendMessage(teamChatEl, message);
         }
     }
+    
+    input.value = '';
 }
 
 function harmonia_clearChat() {
@@ -3885,4 +3837,9 @@ window.useHarmoniaTemplate = function(templateId) {
         openWorkflowModal('template', templateData);
     }
 }
+
+// Initialize chat when component loads
+setTimeout(() => {
+    harmonia_initChats();
+}, 100);
 </script>

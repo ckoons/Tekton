@@ -1,6 +1,11 @@
 <!-- Engram Component - Memory and Knowledge Management -->
 <!-- @landmark Component: Engram - Advanced memory and knowledge management system -->
 
+<!-- Load chat dependencies -->
+<script src="/scripts/shared/ai-chat.js"></script>
+<script src="/scripts/shared/single-chat.js"></script>
+<script src="/scripts/shared/team-chat.js"></script>
+
 <!-- Hidden radio inputs for CSS-first tab functionality -->
 <!-- @landmark Navigation: CSS-first radio buttons for tab switching -->
 <input type="radio" name="engram-tab" id="engram-tab-browse" checked style="display: none;">
@@ -76,9 +81,7 @@
             </label>
         </div>
         <div class="engram__actions">
-            <button id="clear-chat-btn" class="engram__action-button" style="display: none;" data-tekton-action="clear-chat" data-tekton-action-type="secondary">
-                <span class="engram__button-label">Clear</span>
-            </button>
+            <!-- Clear button removed per request -->
         </div>
     </div>
     
@@ -2120,117 +2123,65 @@
 <script src="/scripts/shared/ai-chat.js"></script>
 <script src="/scripts/engram/engram-component.js"></script>
 <script type="text/javascript">
-// Update clear button visibility based on active tab
-function engram_updateClearButton() {
-    const chatRadio = document.getElementById('engram-tab-chat');
-    const teamchatRadio = document.getElementById('engram-tab-teamchat');
-    const clearButton = document.getElementById('clear-chat-btn');
+// Initialize chat components
+function engram_initChats() {
+    console.log('[ENGRAM] Initializing chats');
+    const memoryChatEl = document.getElementById('chat-messages');
+    const teamChatEl = document.getElementById('teamchat-messages');
     
-    if (clearButton) {
-        if (chatRadio.checked || teamchatRadio.checked) {
-            clearButton.style.display = 'block';
-        } else {
-            clearButton.style.display = 'none';
-        }
+    console.log('[ENGRAM] Memory chat element:', memoryChatEl);
+    console.log('[ENGRAM] Team chat element:', teamChatEl);
+    
+    if (window.SingleChat && memoryChatEl) {
+        console.log('[ENGRAM] Initializing SingleChat');
+        window.SingleChat.init(memoryChatEl, 'engram', 'engram');
+    }
+    
+    if (window.TeamChat && teamChatEl) {
+        console.log('[ENGRAM] Initializing TeamChat');
+        window.TeamChat.init(teamChatEl, 'engram', 'engram');
     }
 }
 
-// Listen for tab changes
+// Listen for tab changes and initialize chats
 document.addEventListener('DOMContentLoaded', function() {
-    const radioButtons = document.querySelectorAll('input[name="engram-tab"]');
-    radioButtons.forEach(radio => {
-        radio.addEventListener('change', engram_updateClearButton);
-    });
-    // Initial update
-    engram_updateClearButton();
+    console.log('[ENGRAM] DOMContentLoaded event fired');
+    // Initialize chat components
+    setTimeout(() => {
+        engram_initChats();
+    }, 100);
 });
 
-// Chat functionality - CSS-first navigation aware
-function engram_sendChat() {
+// Also try immediate initialization if DOM is already loaded
+if (document.readyState === 'complete' || document.readyState === 'interactive') {
+    console.log('[ENGRAM] Document already loaded, initializing immediately');
+    setTimeout(() => {
+        engram_initChats();
+    }, 100);
+}
+
+// Chat functionality - delegate to unified chat components
+window.engram_sendChat = function() {
     const input = document.getElementById('engram-chat-input');
     const message = input.value.trim();
-    
     if (!message) return;
     
-    // Determine which tab is active using radio buttons
     const chatRadio = document.getElementById('engram-tab-chat');
     const teamchatRadio = document.getElementById('engram-tab-teamchat');
-    const chatType = chatRadio.checked ? 'chat' : (teamchatRadio.checked ? 'teamchat' : null);
     
-    if (!chatType) {
-        console.error('No chat tab is active');
-        return;
+    if (chatRadio.checked) {
+        const memoryChatEl = document.getElementById('chat-messages');
+        if (window.SingleChat && memoryChatEl) {
+            window.SingleChat.sendMessage(memoryChatEl, message);
+        }
+    } else if (teamchatRadio.checked) {
+        const teamChatEl = document.getElementById('teamchat-messages');
+        if (window.TeamChat && teamChatEl) {
+            window.TeamChat.sendMessage(teamChatEl, message);
+        }
     }
     
-    const messagesContainerId = chatType === 'chat' ? 'chat-messages' : 'teamchat-messages';
-    const messagesContainer = document.getElementById(messagesContainerId);
-    
-    // Add user message
-    const userMessageDiv = document.createElement('div');
-    userMessageDiv.className = 'engram__message engram__message--user';
-    userMessageDiv.innerHTML = `<div class="engram__message-content"><div class="engram__message-text">${message}</div></div>`;
-    messagesContainer.appendChild(userMessageDiv);
-    
-    // Clear input
     input.value = '';
-    
-    // Scroll to bottom
-    messagesContainer.scrollTop = messagesContainer.scrollHeight;
-    
-    // Send to backend
-    if (chatType === 'chat') {
-        // Memory chat - use engram specialist
-        if (window.AIChat) {
-            window.AIChat.sendMessage('engram', message)
-                .then(response => {
-                    const aiMessageDiv = document.createElement('div');
-                    aiMessageDiv.className = 'engram__message engram__message--ai';
-                    aiMessageDiv.innerHTML = `<div class="engram__message-content"><div class="engram__message-text"><strong>Engram:</strong> ${response.content}</div></div>`;
-                    messagesContainer.appendChild(aiMessageDiv);
-                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
-                })
-                .catch(err => {
-                    console.error('Failed to send message:', err);
-                    const errorDiv = document.createElement('div');
-                    errorDiv.className = 'engram__message engram__message--system';
-                    errorDiv.innerHTML = `<div class="engram__message-content"><div class="engram__message-text"><strong>System:</strong> Failed to connect to Engram AI. Make sure aish MCP is running.</div></div>`;
-                    messagesContainer.appendChild(errorDiv);
-                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
-                });
-        } else {
-            console.error('AIChat not available');
-            const errorDiv = document.createElement('div');
-            errorDiv.className = 'engram__message engram__message--system';
-            errorDiv.innerHTML = `<div class="engram__message-content"><div class="engram__message-text"><strong>System:</strong> AI Chat service not available</div></div>`;
-            messagesContainer.appendChild(errorDiv);
-        }
-    } else {
-        // Team chat
-        if (window.AIChat) {
-            window.AIChat.teamChat(message, 'engram')
-                .then(data => {
-                    // Display team responses
-                    if (data.responses && data.responses.length > 0) {
-                        data.responses.forEach(resp => {
-                            const aiMessageDiv = document.createElement('div');
-                            aiMessageDiv.className = 'engram__message engram__message--ai';
-                            const sender = resp.socket_id.replace('-ai', '').charAt(0).toUpperCase() + 
-                                         resp.socket_id.replace('-ai', '').slice(1);
-                            aiMessageDiv.innerHTML = `<div class="engram__message-content"><div class="engram__message-text"><strong>${sender}:</strong> ${resp.content}</div></div>`;
-                            messagesContainer.appendChild(aiMessageDiv);
-                        });
-                        messagesContainer.scrollTop = messagesContainer.scrollHeight;
-                    }
-                })
-                .catch(err => {
-                    console.error('Failed to send team message:', err);
-                    const errorDiv = document.createElement('div');
-                    errorDiv.className = 'engram__message engram__message--system';
-                    errorDiv.innerHTML = `<div class="engram__message-content"><div class="engram__message-text"><strong>System:</strong> Failed to send team message</div></div>`;
-                    messagesContainer.appendChild(errorDiv);
-                });
-        }
-    }
 }
 
 // Clear chat functionality - CSS-first aware

@@ -1,6 +1,11 @@
 <!-- Ergon Component - Agent Management and LLM Integration -->
 <!-- @landmark Component: Ergon - Agent builder, tools manager, and MCP connections hub -->
 
+<!-- Load chat dependencies -->
+<script src="/scripts/shared/ai-chat.js"></script>
+<script src="/scripts/shared/single-chat.js"></script>
+<script src="/scripts/shared/team-chat.js"></script>
+
 <!-- Hidden radio inputs for CSS-first tab functionality -->
 <!-- @landmark Navigation: CSS-first radio buttons for tab switching -->
 <input type="radio" name="ergon-tab" id="ergon-tab-agents" checked style="display: none;">
@@ -70,9 +75,7 @@
             </label>
         </div>
         <div class="ergon__actions">
-            <button id="clear-chat-btn" class="ergon__action-button" style="display: none;" data-tekton-action="clear-chat" data-tekton-action-type="secondary">
-                <span class="ergon__button-label">Clear</span>
-            </button>
+            <!-- Clear button removed per request -->
             <button id="create-agent-button" class="ergon__action-button" data-tekton-action="create-agent" data-tekton-action-type="primary">
                 <span class="ergon__button-label">Create Agent</span>
             </button>
@@ -845,33 +848,61 @@
 <script src="/scripts/shared/ai-chat.js"></script>
 <script src="/scripts/ergon-service.js"></script>
 <script type="text/javascript">
-// Update clear button visibility based on active tab
-function ergon_updateClearButton() {
-    const chatRadio = document.getElementById('ergon-tab-chat');
-    const teamchatRadio = document.getElementById('ergon-tab-teamchat');
-    const clearButton = document.getElementById('clear-chat-btn');
+// Initialize chat components
+function ergon_initChats() {
+    const toolChatEl = document.getElementById('ergon-messages');
+    const teamChatEl = document.getElementById('awt-team-messages');
     
-    if (clearButton) {
-        if (chatRadio.checked || teamchatRadio.checked) {
-            clearButton.style.display = 'block';
-        } else {
-            clearButton.style.display = 'none';
-        }
+    if (window.SingleChat && toolChatEl) {
+        window.SingleChat.init(toolChatEl, 'ergon', 'ergon');
+    }
+    
+    if (window.TeamChat && teamChatEl) {
+        window.TeamChat.init(teamChatEl, 'ergon', 'ergon');
     }
 }
 
-// Listen for tab changes
+// Listen for tab changes and initialize chats
 document.addEventListener('DOMContentLoaded', function() {
-    const radioButtons = document.querySelectorAll('input[name="ergon-tab"]');
-    radioButtons.forEach(radio => {
-        radio.addEventListener('change', ergon_updateClearButton);
-    });
-    // Initial update
-    ergon_updateClearButton();
+    // Initialize chat components
+    setTimeout(() => {
+        ergon_initChats();
+    }, 100);
 });
 
-// Chat functionality - CSS-first navigation aware
+// Also try immediate initialization if DOM is already loaded
+if (document.readyState === 'complete' || document.readyState === 'interactive') {
+    setTimeout(() => {
+        ergon_initChats();
+    }, 100);
+}
+
+// Chat functionality - delegate to unified chat components
 window.ergon_sendChat = function() {
+    const input = document.getElementById('ergon-chat-input');
+    const message = input.value.trim();
+    if (!message) return;
+    
+    const chatRadio = document.getElementById('ergon-tab-chat');
+    const teamchatRadio = document.getElementById('ergon-tab-teamchat');
+    
+    if (chatRadio.checked) {
+        const toolChatEl = document.getElementById('ergon-messages');
+        if (window.SingleChat && toolChatEl) {
+            window.SingleChat.sendMessage(toolChatEl, message);
+        }
+    } else if (teamchatRadio.checked) {
+        const teamChatEl = document.getElementById('awt-team-messages');
+        if (window.TeamChat && teamChatEl) {
+            window.TeamChat.sendMessage(teamChatEl, message);
+        }
+    }
+    
+    input.value = '';
+};
+
+// Keep the original implementation for reference
+window.ergon_sendChat_original = function() {
     const input = document.getElementById('ergon-chat-input');
     const message = input.value.trim();
     
