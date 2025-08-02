@@ -179,6 +179,7 @@ class CIRegistry:
         self._load_greek_chorus()
         self._load_terminals()
         self._load_projects()
+        self._load_tools()  # Load CI tools
         self._load_forwards()
     
     def _save_context_state(self):
@@ -325,6 +326,51 @@ class CIRegistry:
         except Exception:
             # Projects file might not exist yet
             pass
+    
+    @integration_point(
+        title="CI Tools Loading",
+        description="Loads CI coding tools (Claude Code, Cursor, etc.) from registry",
+        target_component="CI Tools",
+        protocol="Socket Bridge",
+        data_flow="CI Tools Registry → registry entries with ports and capabilities",
+        integration_date="2025-08-02"
+    )
+    def _load_tools(self):
+        """Load CI tools from the CI tools registry."""
+        try:
+            # Import CI tools registry if available
+            from shared.ci_tools import get_registry
+            tools_registry = get_registry()
+            
+            # Get all registered tools
+            tools = tools_registry.get_tools()
+            
+            for tool_name, tool_config in tools.items():
+                # Check if tool is running
+                status = tools_registry.get_tool_status(tool_name)
+                
+                self._registry[tool_name] = {
+                    'name': tool_name,
+                    'type': 'tool',
+                    'endpoint': f"socket://localhost:{tool_config['port']}",
+                    'port': tool_config['port'],
+                    'description': tool_config['description'],
+                    'message_endpoint': '/socket',
+                    'message_format': 'json',
+                    'executable': tool_config.get('executable'),
+                    'capabilities': tool_config.get('capabilities', {}),
+                    'running': status.get('running', False),
+                    'pid': status.get('pid'),
+                    'uptime': status.get('uptime')
+                }
+                
+        except ImportError:
+            # CI tools module not available yet
+            pass
+        except Exception as e:
+            # Log but don't fail
+            import logging
+            logging.debug(f"Failed to load CI tools: {e}")
     
     def _load_forwards(self):
         """Load forwarding configurations."""
@@ -557,6 +603,21 @@ class CIRegistry:
                 forward = f" → {ci['forward_to']}" if 'forward_to' in ci else ""
                 json_mode = " [JSON]" if ci.get('forward_json') else ""
                 output.append(f"  {name:<15} (project: {project}){forward}{json_mode}")
+            output.append("")
+        
+        # Show CI Tools
+        if 'tool' in by_type:
+            output.append("CI Tools:")
+            output.append("-" * 60)
+            tool_cis = sorted(by_type['tool'], key=operator.itemgetter('name'))
+            for ci in tool_cis:
+                name = ci['name']
+                desc = ci['description']
+                port = ci.get('port', 'unknown')
+                status = "running" if ci.get('running', False) else "stopped"
+                forward = f" → {ci['forward_to']}" if 'forward_to' in ci else ""
+                json_mode = " [JSON]" if ci.get('forward_json') else ""
+                output.append(f"  {name:<15} {desc:<30} port:{port} ({status}){forward}{json_mode}")
             output.append("")
         
         return "\n".join(output)

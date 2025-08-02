@@ -305,7 +305,8 @@ MCP Server Management:
         by_type = {
             'greek': [],
             'terminal': [],
-            'project': []
+            'project': [],
+            'tool': []
         }
         
         for ci in registry.list_all():
@@ -330,6 +331,13 @@ MCP Server Management:
             print("\nProject CIs:")
             for ci in sorted(by_type['project'], key=lambda x: x['name']):
                 print(f"  {ci['name']:<15} - {ci.get('description', 'Project CI')}")
+        
+        # Show CI Tools
+        if by_type['tool']:
+            print("\nCI Tools:")
+            for ci in sorted(by_type['tool'], key=lambda x: x['name']):
+                status = "running" if ci.get('running', False) else "stopped"
+                print(f"  {ci['name']:<15} - {ci.get('description', 'CI tool')} ({status})")
         
         print("\nUse any CI name in a command: aish <name> \"message\"")
     

@@ -49,7 +49,7 @@ def handle_list_command(args):
             # Next argument is the type filter
             i += 1
             filter_type = args[i].lower()
-        elif filter_type is None and arg in ['terminal', 'greek', 'project', 'forward', 'local', 'remote']:
+        elif filter_type is None and arg in ['terminal', 'greek', 'project', 'tool', 'forward', 'local', 'remote']:
             # Direct filter without 'type' keyword
             filter_type = arg
         

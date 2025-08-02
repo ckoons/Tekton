@@ -131,6 +131,10 @@ def send_to_ci(ci_name: str, message: str) -> bool:
             url = ci.get('endpoint') + message_endpoint
             data = json.dumps(msg_data).encode('utf-8')
             
+        elif message_format == 'json' and ci.get('type') == 'tool':
+            # Socket-based CI tools
+            return _send_to_tool(ci_name, message, ci)
+            
         else:
             print(f"Unknown message format: {message_format}")
             return False
@@ -197,4 +201,91 @@ def send_to_ci(ci_name: str, message: str) -> bool:
         return False
     except Exception as e:
         print(f"Error sending to {ci_name}: {e}")
+        return False
+
+
+@integration_point(
+    title="CI Tool Message Handler",
+    description="Sends messages to socket-based CI tools",
+    target_component="CI Tools",
+    protocol="Socket Bridge",
+    data_flow="aish → tool launcher → socket bridge → CI tool process",
+    integration_date="2025-08-02"
+)
+def _send_to_tool(tool_name: str, message: str, ci_info: dict) -> bool:
+    """
+    Send a message to a CI tool via socket bridge.
+    
+    Args:
+        tool_name: Name of the CI tool
+        message: Message to send
+        ci_info: CI registry information
+        
+    Returns:
+        bool: True if message was sent successfully
+    """
+    try:
+        # Import CI tools support
+        from shared.ci_tools import get_registry as get_tool_registry
+        from shared.ci_tools.tool_launcher import ToolLauncher
+        
+        # Get tool registry and launcher
+        tool_registry = get_tool_registry()
+        launcher = ToolLauncher.get_instance()
+        
+        # Check if tool is running
+        if not ci_info.get('running', False):
+            print(f"Starting {tool_name}...")
+            if not launcher.launch_tool(tool_name):
+                print(f"Failed to start {tool_name}")
+                return False
+        
+        # Get adapter for the tool
+        adapter = tool_registry.get_adapter(tool_name)
+        if not adapter:
+            print(f"No adapter found for {tool_name}")
+            return False
+        
+        # Send message through adapter
+        message_data = {
+            'type': 'message',
+            'content': message,
+            'session_id': ci_info.get('current_session')
+        }
+        
+        if adapter.send_message(message_data):
+            # Wait for response (with timeout)
+            import time
+            timeout = 30
+            start_time = time.time()
+            
+            while time.time() - start_time < timeout:
+                # Check for response from socket bridge
+                bridge = launcher.get_bridge(tool_name)
+                if bridge:
+                    response = bridge.get_message(timeout=0.1)
+                    if response:
+                        # Print response
+                        content = response.get('content', '')
+                        if content:
+                            print(content)
+                        
+                        # Store in registry for Apollo-Rhetor
+                        registry = get_registry()
+                        registry.update_ci_last_output(tool_name, json.dumps(response))
+                        
+                        return True
+                time.sleep(0.1)
+            
+            print(f"Timeout waiting for response from {tool_name}")
+            return False
+        else:
+            print(f"Failed to send message to {tool_name}")
+            return False
+            
+    except ImportError:
+        print(f"CI tools support not available")
+        return False
+    except Exception as e:
+        print(f"Error communicating with {tool_name}: {e}")
         return False
