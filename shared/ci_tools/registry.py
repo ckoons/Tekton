@@ -270,13 +270,50 @@ class CIToolRegistry:
         Returns:
             Available port number
         """
-        used_ports = {config['port'] for config in self.tools.values()}
+        from shared.env import TektonEnviron
         
-        port = start_port
-        while port in used_ports:
-            port += 1
+        # Check port allocation mode
+        port_mode = TektonEnviron.get('CI_TOOLS_PORT_MODE', 'fixed')
         
-        return port
+        if port_mode == 'dynamic':
+            # Dynamic allocation - find any available port
+            return self._allocate_dynamic_port()
+        else:
+            # Fixed allocation - use sequential ports
+            used_ports = {config['port'] for config in self.tools.values() if isinstance(config.get('port'), int)}
+            
+            port = start_port
+            while port in used_ports:
+                port += 1
+            
+            return port
+    
+    def _allocate_dynamic_port(self) -> int:
+        """Allocate a dynamic port."""
+        import socket
+        from shared.env import TektonEnviron
+        
+        # Get port range from config
+        port_range = TektonEnviron.get('CI_TOOLS_PORT_RANGE', '50000-60000')
+        try:
+            min_port, max_port = map(int, port_range.split('-'))
+        except:
+            min_port, max_port = 50000, 60000
+        
+        # Try to find an available port in the range
+        for _ in range(100):  # Try up to 100 times
+            with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+                s.bind(('', 0))
+                port = s.getsockname()[1]
+                
+                # Check if in desired range
+                if min_port <= port <= max_port:
+                    return port
+        
+        # Fallback: use any available port
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            s.bind(('', 0))
+            return s.getsockname()[1]
     
     def _load_custom_tools(self):
         """Load custom tool configurations."""

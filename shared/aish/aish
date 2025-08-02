@@ -204,6 +204,9 @@ def _dispatch_command(command_type, args, shell):
     elif command_type == 'inbox':
         from commands.inbox import handle_inbox_command
         return handle_inbox_command(args.message or [])
+    elif command_type == 'tools':
+        from shared.ci_tools.commands import handle_tools_command
+        return handle_tools_command(args.message or [])
     return False
 
 
@@ -492,6 +495,15 @@ Environment variables:
             print("  aish list type tool            List available CI tools")
             print("  aish forward claude-code <terminal>  Forward tool output to terminal")
             print()
+            print("CI TOOLS LIFECYCLE:")
+            print("  aish tools list                List available CI tools")
+            print("  aish tools status [name]       Show tool/instance status")
+            print("  aish tools launch <name>       Launch a tool")
+            print("  aish tools terminate <name>    Terminate tool/instance")
+            print("  aish tools instances           List running instances")
+            print("  aish tools create <name> --type <tool>  Create named instance")
+            print("  aish tools capabilities <name> Show tool capabilities")
+            print()
             print("SESSION CAPTURE:")
             print("  aish review start              Start recording terminal session")
             print("  aish review stop               Stop recording and save session")
@@ -579,6 +591,9 @@ Environment variables:
     
     if args.ai_or_script == 'route':
         return _dispatch_command('route', args, shell)
+    
+    if args.ai_or_script == 'tools':
+        return _dispatch_command('tools', args, shell)
     
     # Claude Code IDE commands
     if args.ai_or_script == 'introspect':

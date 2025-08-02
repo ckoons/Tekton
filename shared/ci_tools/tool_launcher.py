@@ -8,7 +8,7 @@ from typing import Dict, Optional, Any
 from .base_adapter import BaseCIToolAdapter
 from .socket_bridge import SocketBridge
 from .registry import get_registry
-from .adapters import ClaudeCodeAdapter
+from .adapters import ClaudeCodeAdapter, GenericAdapter
 
 try:
     from landmarks import architecture_decision, state_checkpoint
@@ -64,20 +64,24 @@ class ToolLauncher:
         state_type="process",
         state_key="running_tools"
     )
-    def launch_tool(self, tool_name: str, session_id: Optional[str] = None) -> bool:
+    def launch_tool(self, tool_name: str, session_id: Optional[str] = None, instance_name: Optional[str] = None) -> bool:
         """
         Launch a CI tool with socket bridge.
         
         Args:
             tool_name: Name of the tool to launch
             session_id: Optional session identifier
+            instance_name: Optional instance name (allows multiple instances)
             
         Returns:
             True if launched successfully
         """
+        # Use instance name if provided, otherwise use tool name
+        launch_key = instance_name or tool_name
+        
         # Check if already running
-        if tool_name in self.tools and self.tools[tool_name]['adapter'].running:
-            self.logger.info(f"{tool_name} is already running")
+        if launch_key in self.tools and self.tools[launch_key]['adapter'].running:
+            self.logger.info(f"{launch_key} is already running")
             return True
         
         # Get tool configuration
@@ -113,15 +117,17 @@ class ToolLauncher:
                 bridge.stop()
                 return False
             
-            # Store references
-            self.tools[tool_name] = {
+            # Store references using launch key
+            self.tools[launch_key] = {
                 'adapter': adapter,
                 'bridge': bridge,
-                'config': tool_config
+                'config': tool_config,
+                'tool_name': tool_name,
+                'instance_name': instance_name
             }
             
             # Mark as running in registry
-            self.registry.mark_running(tool_name, adapter, adapter.process.pid)
+            self.registry.mark_running(launch_key, adapter, adapter.process.pid)
             
             self.logger.info(f"Successfully launched {tool_name}")
             return True
@@ -130,20 +136,20 @@ class ToolLauncher:
             self.logger.error(f"Failed to launch {tool_name}: {e}")
             return False
     
-    def terminate_tool(self, tool_name: str) -> bool:
+    def terminate_tool(self, tool_key: str) -> bool:
         """
         Terminate a CI tool.
         
         Args:
-            tool_name: Name of the tool to terminate
+            tool_key: Name or instance key of the tool to terminate
             
         Returns:
             True if terminated successfully
         """
-        if tool_name not in self.tools:
+        if tool_key not in self.tools:
             return True
         
-        tool_info = self.tools[tool_name]
+        tool_info = self.tools[tool_key]
         
         try:
             # Terminate adapter (which terminates process)
@@ -155,16 +161,16 @@ class ToolLauncher:
                 tool_info['bridge'].stop()
             
             # Remove from tracking
-            del self.tools[tool_name]
+            del self.tools[tool_key]
             
             # Mark as stopped in registry
-            self.registry.mark_stopped(tool_name)
+            self.registry.mark_stopped(tool_key)
             
-            self.logger.info(f"Terminated {tool_name}")
+            self.logger.info(f"Terminated {tool_key}")
             return True
             
         except Exception as e:
-            self.logger.error(f"Failed to terminate {tool_name}: {e}")
+            self.logger.error(f"Failed to terminate {tool_key}: {e}")
             return False
     
     def terminate_all(self):
@@ -206,18 +212,24 @@ class ToolLauncher:
     
     def _create_adapter(self, tool_name: str, config: Dict[str, Any]) -> Optional[BaseCIToolAdapter]:
         """Create adapter instance for a tool."""
-        # Map tool names to adapter classes
+        # Check for base_type first (for user-defined tools)
+        base_type = config.get('base_type', tool_name)
+        
+        # Map tool types to adapter classes
         adapter_map = {
             'claude-code': ClaudeCodeAdapter,
+            'generic': GenericAdapter,
             # Add more adapters as they're implemented
             # 'cursor': CursorAdapter,
             # 'continue': ContinueAdapter,
         }
         
-        adapter_class = adapter_map.get(tool_name)
-        if not adapter_class:
-            self.logger.warning(f"No adapter implemented for {tool_name}, using base adapter")
-            # Could implement a generic adapter here
-            return None
+        # Try base_type first, then tool_name
+        adapter_class = adapter_map.get(base_type) or adapter_map.get(tool_name)
         
-        return adapter_class(port=config['port'])
+        if not adapter_class:
+            self.logger.warning(f"No adapter for {tool_name} (base_type: {base_type}), using generic adapter")
+            adapter_class = GenericAdapter
+        
+        # Pass full config to adapter
+        return adapter_class(tool_name, config)
