@@ -2041,17 +2041,49 @@ function cancelNewProject() {
 function clearNewProjectFields() {
     console.log('[TEKTON] Clearing new project fields');
     
-    // Clear all form fields
-    document.getElementById('github-url').value = '';
-    document.getElementById('local-directory').value = '';
-    document.getElementById('forked-repository').value = '';
-    document.getElementById('upstream-repository').value = '';
-    document.getElementById('companion-intelligence').selectedIndex = 0;
+    // Check if we have values from Ergon
+    const ergonGithubUrl = sessionStorage.getItem('ergon_github_url');
+    const ergonLocalPath = sessionStorage.getItem('ergon_local_path');
     
-    // Disable the Create button
-    document.getElementById('create-project-btn').disabled = true;
+    if (ergonGithubUrl) {
+        console.log('[TEKTON] Found GitHub URL from Ergon:', ergonGithubUrl);
+        document.getElementById('github-url').value = ergonGithubUrl;
+        sessionStorage.removeItem('ergon_github_url'); // Clear after use
+        
+        // Clear other fields
+        document.getElementById('local-directory').value = '';
+        document.getElementById('forked-repository').value = '';
+        document.getElementById('upstream-repository').value = '';
+        
+        // Auto-prepare the project
+        setTimeout(() => {
+            prepareNewProject();
+        }, 100);
+    } else if (ergonLocalPath) {
+        console.log('[TEKTON] Found local path from Ergon:', ergonLocalPath);
+        document.getElementById('local-directory').value = ergonLocalPath;
+        sessionStorage.removeItem('ergon_local_path'); // Clear after use
+        
+        // Clear other fields
+        document.getElementById('github-url').value = '';
+        document.getElementById('forked-repository').value = '';
+        document.getElementById('upstream-repository').value = '';
+        
+        // Enable the Create button for local projects
+        document.getElementById('create-project-btn').disabled = false;
+    } else {
+        // Clear all form fields
+        document.getElementById('github-url').value = '';
+        document.getElementById('local-directory').value = '';
+        document.getElementById('forked-repository').value = '';
+        document.getElementById('upstream-repository').value = '';
+        document.getElementById('companion-intelligence').selectedIndex = 0;
+        
+        // Disable the Create button
+        document.getElementById('create-project-btn').disabled = true;
+    }
     
-    console.log('[TEKTON] Project fields cleared');
+    console.log('[TEKTON] Project fields initialized');
 }
 
 function prepareNewProject() {
@@ -2499,12 +2531,32 @@ async function loadAllSprints() {
         // Clear loading
         sprintsContainer.innerHTML = '';
         
-        // Create sprint cards
-        data.sprints.forEach(sprint => {
+        // Create sprint cards and check automation status
+        for (const sprint of data.sprints) {
             console.log('[TEKTON] Creating card for sprint:', sprint.name);
+            
+            // Check if sprint has automation enabled
+            try {
+                const encodedName = encodeURIComponent(sprint.name);
+                const planResponse = await fetch(tektonUrl('tekton-core', `/api/v1/sprints/${encodedName}/sprint-plan`));
+                
+                if (planResponse.ok) {
+                    const planData = await planResponse.json();
+                    const content = planData.content || '';
+                    
+                    // Check if this sprint is automated
+                    const automatedMatch = content.match(/Automated:\s*(Yes|No)/i);
+                    if (automatedMatch) {
+                        sprint.automated = automatedMatch[1];
+                    }
+                }
+            } catch (err) {
+                console.error(`[TEKTON] Failed to check automation for sprint ${sprint.name}:`, err);
+            }
+            
             const sprintCard = createSprintCard(sprint);
             sprintsContainer.appendChild(sprintCard);
-        });
+        }
         
         console.log('[TEKTON] Successfully loaded', data.sprints.length, 'sprints');
         
@@ -2531,6 +2583,7 @@ function createSprintCard(sprint) {
         <div class="tekton__sprint-info">
             <div><strong>Coder:</strong> ${sprint.assigned_coder ? `Coder-${sprint.assigned_coder}` : 'Unassigned'}</div>
             <div><strong>Tasks:</strong> ${sprint.task_count || 0}</div>
+            <div><strong>Automated:</strong> ${sprint.automated || 'No'}</div>
         </div>
         
         <div class="tekton__sprint-details">
@@ -2540,8 +2593,9 @@ function createSprintCard(sprint) {
         
         <div class="tekton__sprint-actions">
             <button class="tekton__button tekton__button--sprints tekton__button--small" onclick="showSprintDailyLog('${sprint.name}', '${sprint.name}')">Daily Log</button>
-            <button class="tekton__button tekton__button--details tekton__button--small" onclick="showSprintHandoff('${sprint.name}', '${sprint.name}')">Handoff</button>
+            <button class="tekton__button tekton__button--details tekton__button--small" style="background-color: #FFD700; color: #1a1a2a;" onclick="showSprintHandoff('${sprint.name}', '${sprint.name}')">Handoff</button>
             <button class="tekton__button tekton__button--secondary tekton__button--small" style="background-color: #9C27B0;" onclick="showSprintPlan('${sprint.name}', '${sprint.name}')">Sprint Plan</button>
+            <button class="tekton__button tekton__button--automate tekton__button--small" style="background-color: #00BCD4; color: #1a1a2a;" onclick="showAutomationModal('${sprint.name}')">Automate</button>
         </div>
     `;
     
@@ -2849,6 +2903,180 @@ async function saveSprintFile(sprintId, fileName) {
     } catch (error) {
         console.error('[TEKTON] Failed to save file:', error);
         alert(`Failed to save file: ${error.message}`);
+    }
+}
+
+// Show automation modal for a sprint
+async function showAutomationModal(sprintName) {
+    console.log(`[TEKTON] Showing automation modal for sprint ${sprintName}`);
+    
+    try {
+        // Fetch sprint details to get current automation settings
+        // Use the correct endpoint format for TektonCore
+        const encodedName = encodeURIComponent(sprintName);
+        const response = await fetch(tektonUrl('tekton-core', `/api/v1/sprints/${encodedName}/sprint-plan`));
+        
+        if (!response.ok) {
+            throw new Error(`Failed to fetch sprint details: ${response.statusText}`);
+        }
+        
+        const data = await response.json();
+        const content = data.content || '';
+        
+        // Parse automation settings from Sprint Plan
+        const automatedMatch = content.match(/Automated:\s*(Yes|No)/i);
+        const autonomyMatch = content.match(/Autonomy Level:\s*(Autonomous|Co-Developer|Advisory|Assisted|Guided)/i);
+        
+        const currentAutomated = automatedMatch ? automatedMatch[1] : 'No';
+        const currentAutonomy = autonomyMatch ? autonomyMatch[1] : 'Co-Developer';
+        
+        const modalHtml = `
+            <div class="tekton__modal-overlay" id="automation-modal">
+                <div class="tekton__modal" style="max-width: 600px;">
+                    <div class="tekton__modal-header">
+                        <h2 class="tekton__modal-title">Automation Settings - ${sprintName}</h2>
+                        <button class="tekton__modal-close" onclick="closeAutomationModal()">×</button>
+                    </div>
+                    
+                    <div class="tekton__modal-body">
+                        <div class="tekton__settings-form">
+                            <div class="tekton__field">
+                                <label class="tekton__label">Enable Automation:</label>
+                                <select id="automation-enabled" class="tekton__form-select">
+                                    <option value="No" ${currentAutomated === 'No' ? 'selected' : ''}>No - Manual Development</option>
+                                    <option value="Yes" ${currentAutomated === 'Yes' ? 'selected' : ''}>Yes - Ergon Managed</option>
+                                </select>
+                            </div>
+                            
+                            <div class="tekton__field" id="autonomy-field" style="${currentAutomated === 'No' ? 'display: none;' : ''}">
+                                <label class="tekton__label">Autonomy Level:</label>
+                                <select id="autonomy-level" class="tekton__form-select">
+                                    <option value="Co-Developer" ${currentAutonomy === 'Co-Developer' ? 'selected' : ''}>Co-Developer - Works with human</option>
+                                    <option value="Autonomous" ${currentAutonomy === 'Autonomous' ? 'selected' : ''}>Autonomous - Full automation</option>
+                                </select>
+                            </div>
+                            
+                            <div class="tekton__field">
+                                <p class="tekton__help-text">
+                                    When automation is enabled, Ergon will manage this sprint according to the selected autonomy level.
+                                    The sprint will appear in Ergon's Development panel.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="tekton__modal-actions">
+                        <button class="tekton__button tekton__button--cancel" onclick="closeAutomationModal()">Cancel</button>
+                        <button class="tekton__button tekton__button--automate" style="background-color: #00BCD4; color: #1a1a2a;" onclick="saveAutomationSettings('${sprintName}')">Save Settings</button>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        document.body.insertAdjacentHTML('beforeend', modalHtml);
+        
+        // Add event listener to show/hide autonomy field
+        document.getElementById('automation-enabled').addEventListener('change', function(e) {
+            const autonomyField = document.getElementById('autonomy-field');
+            autonomyField.style.display = e.target.value === 'Yes' ? 'block' : 'none';
+        });
+        
+    } catch (error) {
+        console.error('[TEKTON] Failed to show automation modal:', error);
+        alert(`Failed to load automation settings: ${error.message}`);
+    }
+}
+
+function closeAutomationModal() {
+    const modal = document.getElementById('automation-modal');
+    if (modal) {
+        modal.remove();
+    }
+}
+
+// Save automation settings to Sprint Plan
+async function saveAutomationSettings(sprintName) {
+    const automated = document.getElementById('automation-enabled').value;
+    const autonomyLevel = document.getElementById('autonomy-level').value;
+    
+    console.log(`[TEKTON] Saving automation settings for ${sprintName}: Automated=${automated}, Autonomy=${autonomyLevel}`);
+    
+    try {
+        // First, fetch the current sprint plan
+        const encodedName = encodeURIComponent(sprintName);
+        const response = await fetch(tektonUrl('tekton-core', `/api/v1/sprints/${encodedName}/sprint-plan`));
+        
+        if (!response.ok) {
+            throw new Error(`Failed to fetch sprint plan: ${response.statusText}`);
+        }
+        
+        const data = await response.json();
+        let content = data.content || '';
+        
+        // Update or add automation settings in the Sprint Plan
+        // Check if automation settings already exist
+        if (content.match(/Automated:\s*(Yes|No)/i)) {
+            content = content.replace(/Automated:\s*(Yes|No)/i, `Automated: ${automated}`);
+        } else {
+            // Add at the beginning after the title
+            const lines = content.split('\n');
+            let insertIndex = 0;
+            
+            // Find the first non-empty line after the title
+            for (let i = 0; i < lines.length; i++) {
+                if (lines[i].trim() && !lines[i].startsWith('#')) {
+                    insertIndex = i;
+                    break;
+                }
+            }
+            
+            lines.splice(insertIndex, 0, `Automated: ${automated}`);
+            content = lines.join('\n');
+        }
+        
+        // Update autonomy level
+        if (content.match(/Autonomy Level:\s*[^\n]+/i)) {
+            content = content.replace(/Autonomy Level:\s*[^\n]+/i, `Autonomy Level: ${autonomyLevel}`);
+        } else {
+            // Add after Automated field
+            const lines = content.split('\n');
+            for (let i = 0; i < lines.length; i++) {
+                if (lines[i].match(/Automated:\s*(Yes|No)/i)) {
+                    lines.splice(i + 1, 0, `Autonomy Level: ${autonomyLevel}`);
+                    break;
+                }
+            }
+            content = lines.join('\n');
+        }
+        
+        // Save the updated sprint plan
+        const saveResponse = await fetch(tektonUrl('tekton-core', `/api/v1/sprints/${encodedName}/sprint-plan`), {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ content })
+        });
+        
+        if (!saveResponse.ok) {
+            throw new Error(`Failed to save sprint plan: ${saveResponse.statusText}`);
+        }
+        
+        alert(`Automation settings saved successfully!`);
+        closeAutomationModal();
+        
+        // Reload sprints to show updated automation status
+        loadAllSprints();
+        
+        // Notify Ergon to refresh if it's listening
+        if (automated === 'Yes') {
+            // Store a flag that Ergon can check
+            sessionStorage.setItem('ergon_refresh_needed', 'true');
+        }
+        
+    } catch (error) {
+        console.error('[TEKTON] Failed to save automation settings:', error);
+        alert(`Failed to save automation settings: ${error.message}`);
     }
 }
 

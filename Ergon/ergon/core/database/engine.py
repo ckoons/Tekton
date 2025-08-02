@@ -9,10 +9,10 @@ from contextlib import contextmanager
 from typing import Generator, Any
 import os
 
-from ergon.utils.config.settings import settings
+from ...utils.config.settings import settings
 
 # Import Base from base module
-from ergon.core.database.base import Base
+from .base import Base
 
 # Create engine
 engine = create_engine(

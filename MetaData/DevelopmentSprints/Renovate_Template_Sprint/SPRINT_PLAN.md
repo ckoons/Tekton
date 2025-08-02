@@ -1,6 +1,8 @@
 # Sprint: [COMPONENT] Renovation
 
 ## Overview
+Automated: Yes
+Autonomy Level: Co-Developer
 Bring [COMPONENT] up to current Tekton standards, remove technical debt, ensure real data in UI, and integrate with aish MCP for all AI communication.
 
 ## Goals

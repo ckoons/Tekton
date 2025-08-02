@@ -13,7 +13,7 @@ from typing import Dict, Any, List, Optional, Union, Callable, AsyncGenerator
 from enum import Enum
 import httpx
 
-from ergon.utils.config.settings import settings
+from ...utils.config.settings import settings
 
 logger = logging.getLogger(__name__)
 

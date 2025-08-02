@@ -12,11 +12,11 @@ Key components:
 - ClientManager: Client registration and lifecycle management
 """
 
-from ergon.core.memory.service import MemoryService
-from ergon.core.memory.rag import RAGService, RAGToolFunctions
-from ergon.core.memory.utils.categories import MemoryCategory
-from ergon.core.memory.models.schema import Memory, MemoryCollection
-from ergon.core.memory.services.client import ClientManager, client_manager
+from .service import MemoryService
+from .rag import RAGService, RAGToolFunctions
+from .utils.categories import MemoryCategory
+from .models.schema import Memory, MemoryCollection
+from .services.client import ClientManager, client_manager
 
 __all__ = [
     'MemoryService',

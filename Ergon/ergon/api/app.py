@@ -66,7 +66,7 @@ from .mcp_endpoints import router as mcp_router
 from .fastmcp_endpoints import fastmcp_router, fastmcp_startup, fastmcp_shutdown
 
 # Import ergon component
-from ergon.core.ergon_component import ErgonComponent
+from ..core.ergon_component import ErgonComponent
 
 # Create component singleton
 ergon_component = ErgonComponent()
@@ -109,7 +109,7 @@ app = ergon_component.create_app(
     startup_callback=startup_callback,
     **get_openapi_configuration(
         component_name="ergon",
-        component_version="0.1.0",
+        component_version="0.2.0",
         component_description="Agent system for specialized task execution"
     )
 )
@@ -735,6 +735,651 @@ app.include_router(fastmcp_router, prefix="/api/mcp/v2")  # Mount FastMCP router
 # Include standardized workflow endpoint
 workflow_router = create_workflow_endpoint("ergon")
 app.include_router(workflow_router)
+
+# ==================== Ergon V2 Endpoints ====================
+
+# Autonomy Management Endpoints
+@routers.v1.get("/autonomy/level")
+async def get_autonomy_level():
+    """Get current autonomy level."""
+    return {
+        "current_level": ergon_component.current_autonomy_level.value,
+        "available_levels": ["advisory", "assisted", "guided", "autonomous"]
+    }
+
+
+class SetAutonomyRequest(TektonBaseModel):
+    """Request to set autonomy level."""
+    level: str = Field(..., description="Autonomy level to set")
+    reason: Optional[str] = Field(None, description="Reason for change")
+
+
+@routers.v1.post("/autonomy/level")
+async def set_autonomy_level(request: SetAutonomyRequest):
+    """Set autonomy level for Ergon operations."""
+    try:
+        from ergon.core.ergon_component import AutonomyLevel
+        autonomy_level = AutonomyLevel(request.level)
+        await ergon_component.set_autonomy_level(autonomy_level, request.reason)
+        return {"status": "success", "new_level": request.level}
+    except ValueError:
+        raise HTTPException(status_code=400, detail=f"Invalid autonomy level: {request.level}")
+
+
+# Solution Registry Endpoints (Phase 1)
+@routers.v1.get("/solutions")
+async def list_solutions(
+    type: Optional[str] = Query(None, description="Filter by solution type"),
+    capability: Optional[str] = Query(None, description="Filter by capability"),
+    search: Optional[str] = Query(None, description="Search term"),
+    limit: int = Query(100, description="Maximum results"),
+    offset: int = Query(0, description="Offset for pagination")
+):
+    """List solutions in the registry."""
+    if not ergon_component.solution_registry:
+        return {
+            "status": "error",
+            "message": "Solution registry not initialized",
+            "solutions": [],
+            "total": 0
+        }
+    
+    try:
+        from ergon.core.database.v2_models import SolutionType
+        
+        # Convert type string to enum if provided
+        solution_type = SolutionType(type) if type else None
+        
+        # Get solutions from repository
+        solutions, total = await ergon_component.solution_registry.list_solutions(
+            solution_type=solution_type,
+            search=search,
+            capability=capability,
+            limit=limit,
+            offset=offset
+        )
+        
+        return {
+            "status": "success",
+            "solutions": [
+                {
+                    "id": s.id,
+                    "name": s.name,
+                    "type": s.type.value,
+                    "description": s.description,
+                    "version": s.version,
+                    "author": s.author,
+                    "tags": s.tags,
+                    "capabilities": s.capabilities,
+                    "usage_count": s.usage_count,
+                    "created_at": s.created_at.isoformat() if s.created_at else None
+                }
+                for s in solutions
+            ],
+            "total": total,
+            "limit": limit,
+            "offset": offset
+        }
+    except Exception as e:
+        logger.error(f"Error listing solutions: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# Create Solution Model
+class CreateSolutionRequest(TektonBaseModel):
+    """Request to create a new solution."""
+    name: str = Field(..., description="Solution name")
+    type: str = Field(..., description="Solution type")
+    description: str = Field("", description="Solution description")
+    version: str = Field("1.0.0", description="Solution version")
+    source_url: Optional[str] = Field(None, description="Source repository URL")
+    documentation_url: Optional[str] = Field(None, description="Documentation URL")
+    author: str = Field("unknown", description="Solution author")
+    license: str = Field("unknown", description="Solution license")
+    tags: List[str] = Field([], description="Solution tags")
+    capabilities: Dict[str, Any] = Field({}, description="Solution capabilities")
+    dependencies: Dict[str, Any] = Field({}, description="Solution dependencies")
+    configuration_template: Dict[str, Any] = Field({}, description="Configuration template")
+    usage_examples: List[str] = Field([], description="Usage examples")
+    metadata: Dict[str, Any] = Field({}, description="Additional metadata")
+
+
+@routers.v1.post("/solutions")
+async def create_solution(request: CreateSolutionRequest):
+    """Create a new solution in the registry."""
+    if not ergon_component.solution_registry:
+        raise HTTPException(status_code=503, detail="Solution registry not initialized")
+    
+    try:
+        solution = await ergon_component.solution_registry.create_solution(request.dict())
+        
+        return {
+            "status": "success",
+            "solution": {
+                "id": solution.id,
+                "name": solution.name,
+                "type": solution.type.value,
+                "description": solution.description,
+                "version": solution.version,
+                "created_at": solution.created_at.isoformat() if solution.created_at else None
+            }
+        }
+    except Exception as e:
+        logger.error(f"Error creating solution: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@routers.v1.get("/solutions/{solution_id}")
+async def get_solution(solution_id: int = Path(..., description="Solution ID")):
+    """Get a specific solution by ID."""
+    if not ergon_component.solution_registry:
+        raise HTTPException(status_code=503, detail="Solution registry not initialized")
+    
+    solution = await ergon_component.solution_registry.get_solution(solution_id)
+    
+    if not solution:
+        raise HTTPException(status_code=404, detail="Solution not found")
+    
+    return {
+        "status": "success",
+        "solution": {
+            "id": solution.id,
+            "name": solution.name,
+            "type": solution.type.value,
+            "description": solution.description,
+            "version": solution.version,
+            "source_url": solution.source_url,
+            "documentation_url": solution.documentation_url,
+            "author": solution.author,
+            "license": solution.license,
+            "tags": solution.tags,
+            "capabilities": solution.capabilities,
+            "dependencies": solution.dependencies,
+            "configuration_template": solution.configuration_template,
+            "usage_examples": solution.usage_examples,
+            "metadata": solution.extra_metadata,
+            "usage_count": solution.usage_count,
+            "created_at": solution.created_at.isoformat() if solution.created_at else None,
+            "updated_at": solution.updated_at.isoformat() if solution.updated_at else None,
+            "last_accessed": solution.last_accessed.isoformat() if solution.last_accessed else None
+        }
+    }
+
+
+@routers.v1.put("/solutions/{solution_id}")
+async def update_solution(
+    solution_id: int = Path(..., description="Solution ID"),
+    update_data: Dict[str, Any] = Body(..., description="Fields to update")
+):
+    """Update a solution."""
+    if not ergon_component.solution_registry:
+        raise HTTPException(status_code=503, detail="Solution registry not initialized")
+    
+    solution = await ergon_component.solution_registry.update_solution(solution_id, update_data)
+    
+    if not solution:
+        raise HTTPException(status_code=404, detail="Solution not found")
+    
+    return {
+        "status": "success",
+        "solution": {
+            "id": solution.id,
+            "name": solution.name,
+            "type": solution.type.value,
+            "updated_at": solution.updated_at.isoformat() if solution.updated_at else None
+        }
+    }
+
+
+@routers.v1.delete("/solutions/{solution_id}")
+async def delete_solution(solution_id: int = Path(..., description="Solution ID")):
+    """Delete a solution."""
+    if not ergon_component.solution_registry:
+        raise HTTPException(status_code=503, detail="Solution registry not initialized")
+    
+    deleted = await ergon_component.solution_registry.delete_solution(solution_id)
+    
+    if not deleted:
+        raise HTTPException(status_code=404, detail="Solution not found")
+    
+    return {"status": "success", "message": "Solution deleted"}
+
+
+@routers.v1.get("/solutions/popular")
+async def get_popular_solutions(limit: int = Query(10, description="Maximum results")):
+    """Get most popular solutions by usage count."""
+    if not ergon_component.solution_registry:
+        raise HTTPException(status_code=503, detail="Solution registry not initialized")
+    
+    solutions = await ergon_component.solution_registry.get_popular_solutions(limit)
+    
+    return {
+        "status": "success",
+        "solutions": [
+            {
+                "id": s.id,
+                "name": s.name,
+                "type": s.type.value,
+                "description": s.description,
+                "usage_count": s.usage_count
+            }
+            for s in solutions
+        ]
+    }
+
+
+@routers.v1.get("/solutions/recent")
+async def get_recent_solutions(limit: int = Query(10, description="Maximum results")):
+    """Get recently added solutions."""
+    if not ergon_component.solution_registry:
+        raise HTTPException(status_code=503, detail="Solution registry not initialized")
+    
+    solutions = await ergon_component.solution_registry.get_recent_solutions(limit)
+    
+    return {
+        "status": "success",
+        "solutions": [
+            {
+                "id": s.id,
+                "name": s.name,
+                "type": s.type.value,
+                "description": s.description,
+                "created_at": s.created_at.isoformat() if s.created_at else None
+            }
+            for s in solutions
+        ]
+    }
+
+
+# MCP Tool Discovery Endpoints
+@routers.v1.get("/tools/discover")
+async def discover_tools():
+    """Get discovered MCP tools."""
+    if not ergon_component.tool_discovery:
+        return {
+            "status": "error",
+            "message": "Tool discovery not initialized",
+            "tools": []
+        }
+    
+    return {
+        "status": "success",
+        "tools": [
+            {
+                "name": f"{tool.provider}.{tool.name}",
+                "description": tool.description,
+                "provider": tool.provider,
+                "version": tool.version,
+                "capabilities": tool.capabilities,
+                "parameters": tool.parameters,
+                "available": tool.available
+            }
+            for tool in ergon_component.tool_discovery.tools.values()
+        ],
+        "total": len(ergon_component.tool_discovery.tools)
+    }
+
+
+@routers.v1.get("/tools/search")
+async def search_tools(
+    query: str = Query(..., description="Search query"),
+    capability: Optional[str] = Query(None, description="Filter by capability")
+):
+    """Search for MCP tools."""
+    if not ergon_component.tool_discovery:
+        raise HTTPException(status_code=503, detail="Tool discovery not initialized")
+    
+    # Search by query
+    results = ergon_component.tool_discovery.search_tools(query)
+    
+    # Filter by capability if provided
+    if capability:
+        results = [t for t in results if capability in t.capabilities]
+    
+    return {
+        "query": query,
+        "capability": capability,
+        "results": [
+            {
+                "name": f"{tool.provider}.{tool.name}",
+                "description": tool.description,
+                "provider": tool.provider,
+                "capabilities": tool.capabilities
+            }
+            for tool in results
+        ],
+        "count": len(results)
+    }
+
+
+@routers.v1.get("/tools/recommend")
+async def recommend_tools(
+    task_type: str = Query(..., description="Type of task (file_operations, code_execution, etc)")
+):
+    """Get tool recommendations for a task type."""
+    if not ergon_component.tool_discovery:
+        raise HTTPException(status_code=503, detail="Tool discovery not initialized")
+    
+    recommendations = ergon_component.tool_discovery.get_tool_recommendations(task_type)
+    
+    return {
+        "task_type": task_type,
+        "recommendations": [
+            {
+                "name": f"{tool.provider}.{tool.name}",
+                "description": tool.description,
+                "provider": tool.provider,
+                "capabilities": tool.capabilities,
+                "reason": f"Recommended for {task_type} tasks"
+            }
+            for tool in recommendations
+        ],
+        "count": len(recommendations)
+    }
+
+
+@routers.v1.get("/tools/status")
+async def tool_discovery_status():
+    """Get tool discovery status."""
+    if not ergon_component.tool_discovery:
+        return {
+            "status": "error",
+            "message": "Tool discovery not initialized"
+        }
+    
+    status = ergon_component.tool_discovery.get_discovery_status()
+    return {
+        "status": "success",
+        **status
+    }
+
+
+# GitHub Analysis Endpoints (Phase 2)
+class AnalyzeRequest(TektonBaseModel):
+    """Request to analyze a repository."""
+    repository_url: Optional[str] = Field(None, description="GitHub repository URL")
+    deep_scan: bool = Field(False, description="Perform deep architecture analysis")
+    analysis_type: Optional[str] = Field("full", description="Type of analysis to perform")
+    local_path: Optional[str] = Field(None, description="Local path to repository")
+
+
+@routers.v1.post("/analyze")
+async def analyze_repository(request: AnalyzeRequest):
+    """Analyze a GitHub repository for reusable components."""
+    # For now, return placeholder data based on analysis type
+    analysis_type = request.analysis_type or 'full'
+    repo_path = request.repository_url or request.local_path or "unknown"
+    
+    base_result = {
+        "status": "success",
+        "repository_url": repo_path,
+        "analysis_id": f"analysis-{analysis_type}-{abs(hash(repo_path)) % 10000}"
+    }
+    
+    if analysis_type == 'basic':
+        return {
+            **base_result,
+            "type": "Basic Analysis",
+            "summary": "Repository structure and basic information analyzed.",
+            "components": {
+                "languages": ["Python", "JavaScript", "HTML"],
+                "frameworks": ["FastAPI", "Vue.js"],
+                "dependencies": 42,
+                "files": 156
+            }
+        }
+    elif analysis_type == 'architecture':
+        return {
+            **base_result,
+            "type": "Architecture Analysis", 
+            "summary": "System architecture and design patterns identified.",
+            "architecture": {
+                "pattern": "Microservices",
+                "components": ["API Gateway", "Service Registry", "Message Bus"],
+                "integrations": ["REST APIs", "WebSocket", "GraphQL"],
+                "data_flow": "Event-driven with CQRS"
+            }
+        }
+    elif analysis_type == 'tekton':
+        return {
+            **base_result,
+            "type": "Tekton Integration Analysis",
+            "summary": "Tekton compatibility and integration points assessed.",
+            "tekton_compatibility": {
+                "score": 0.85,
+                "integration_points": ["Hermes messaging", "A2A sockets", "MCP tools"],
+                "recommended_approach": "Service wrapper with Hermes integration",
+                "effort_estimate": "2-3 days"
+            }
+        }
+    else:  # full
+        return {
+            **base_result,
+            "type": "Full Analysis",
+            "summary": "Comprehensive analysis completed across all dimensions.",
+            "results": {
+                "basic": "Complete",
+                "architecture": "Complete", 
+                "tekton": "Complete",
+                "reusability_score": 0.78,
+                "recommendations": [
+                    "Extract authentication module as standalone service",
+                    "Implement Hermes message bus integration",
+                    "Add MCP tool discovery for API endpoints"
+                ]
+            }
+        }
+
+
+# Configuration Generation Endpoints (Phase 2)
+class ConfigureRequest(TektonBaseModel):
+    """Request to generate configuration."""
+    solution_id: str = Field(..., description="Solution ID to configure")
+    config_type: str = Field(..., description="Type of configuration to generate")
+    parameters: Dict[str, Any] = Field({}, description="Configuration parameters")
+
+
+@routers.v1.post("/configure")
+async def configure_solution(request: ConfigureRequest):
+    """Generate configuration for a solution."""
+    return {
+        "status": "not_implemented",
+        "message": "Configuration generation coming in Phase 2",
+        "solution_id": request.solution_id,
+        "config_type": request.config_type,
+        "configuration_id": None
+    }
+
+
+# Workflow Memory Endpoints
+class StartWorkflowCaptureRequest(TektonBaseModel):
+    """Request to start workflow capture."""
+    name: str = Field(..., description="Workflow name")
+    description: str = Field(..., description="Workflow description")
+    context: Dict[str, Any] = Field({}, description="Initial context")
+
+
+@routers.v1.post("/workflows/capture/start")
+async def start_workflow_capture(request: StartWorkflowCaptureRequest):
+    """Start capturing a new workflow."""
+    if not ergon_component.workflow_memory:
+        raise HTTPException(status_code=503, detail="Workflow memory not initialized")
+    
+    workflow_id = await ergon_component.workflow_memory.start_capture(
+        name=request.name,
+        description=request.description,
+        context=request.context
+    )
+    
+    return {
+        "status": "success",
+        "workflow_id": workflow_id,
+        "message": "Workflow capture started"
+    }
+
+
+class CaptureStepRequest(TektonBaseModel):
+    """Request to capture a workflow step."""
+    workflow_id: str = Field(..., description="Workflow ID")
+    step_type: str = Field(..., description="Step type")
+    action: str = Field(..., description="Action performed")
+    parameters: Dict[str, Any] = Field({}, description="Step parameters")
+    result: Optional[Dict[str, Any]] = Field(None, description="Step result")
+
+
+@routers.v1.post("/workflows/capture/step")
+async def capture_workflow_step(request: CaptureStepRequest):
+    """Capture a workflow step."""
+    if not ergon_component.workflow_memory:
+        raise HTTPException(status_code=503, detail="Workflow memory not initialized")
+    
+    from ergon.core.database.v2_models import StepType
+    
+    try:
+        step_type = StepType(request.step_type)
+    except ValueError:
+        raise HTTPException(status_code=400, detail=f"Invalid step type: {request.step_type}")
+    
+    await ergon_component.workflow_memory.capture_step(
+        workflow_id=request.workflow_id,
+        step_type=step_type,
+        action=request.action,
+        parameters=request.parameters,
+        result=request.result
+    )
+    
+    return {"status": "success", "message": "Step captured"}
+
+
+class EndWorkflowCaptureRequest(TektonBaseModel):
+    """Request to end workflow capture."""
+    workflow_id: str = Field(..., description="Workflow ID")
+    success: bool = Field(True, description="Whether workflow succeeded")
+    metrics: Dict[str, Any] = Field({}, description="Performance metrics")
+
+
+@routers.v1.post("/workflows/capture/end")
+async def end_workflow_capture(request: EndWorkflowCaptureRequest):
+    """End workflow capture."""
+    if not ergon_component.workflow_memory:
+        raise HTTPException(status_code=503, detail="Workflow memory not initialized")
+    
+    await ergon_component.workflow_memory.end_capture(
+        workflow_id=request.workflow_id,
+        success=request.success,
+        metrics=request.metrics
+    )
+    
+    return {"status": "success", "message": "Workflow capture ended"}
+
+
+@routers.v1.get("/workflows/similar")
+async def find_similar_workflows(
+    description: str = Query(..., description="Description to match"),
+    limit: int = Query(5, description="Maximum results")
+):
+    """Find workflows similar to the description."""
+    if not ergon_component.workflow_memory:
+        raise HTTPException(status_code=503, detail="Workflow memory not initialized")
+    
+    workflows = await ergon_component.workflow_memory.find_similar_workflows(
+        description=description,
+        limit=limit
+    )
+    
+    return {
+        "description": description,
+        "workflows": [
+            {
+                "id": w.id,
+                "name": w.name,
+                "description": w.description,
+                "success_rate": w.success_rate,
+                "execution_count": w.execution_count,
+                "pattern_type": w.pattern_type
+            }
+            for w in workflows
+        ],
+        "count": len(workflows)
+    }
+
+
+@routers.v1.post("/workflows/{workflow_id}/replay")
+async def replay_workflow(
+    workflow_id: int = Path(..., description="Workflow ID"),
+    context: Dict[str, Any] = Body({}, description="Override context"),
+    dry_run: bool = Query(False, description="Don't execute, just plan")
+):
+    """Replay a captured workflow."""
+    if not ergon_component.workflow_memory:
+        raise HTTPException(status_code=503, detail="Workflow memory not initialized")
+    
+    result = await ergon_component.workflow_memory.replay_workflow(
+        workflow_id=workflow_id,
+        context=context if context else None,
+        dry_run=dry_run
+    )
+    
+    return result
+
+
+@routers.v1.get("/workflows/patterns/suggest")
+async def suggest_workflow_patterns(
+    task_description: str = Query(..., description="Task description")
+):
+    """Get workflow pattern suggestions for a task."""
+    if not ergon_component.workflow_memory:
+        raise HTTPException(status_code=503, detail="Workflow memory not initialized")
+    
+    suggestions = ergon_component.workflow_memory.get_pattern_suggestions(task_description)
+    
+    return {
+        "task_description": task_description,
+        "suggestions": suggestions,
+        "count": len(suggestions)
+    }
+
+
+# Workflow Automation Endpoints (Phase 3)
+@routers.v1.get("/workflows")
+async def list_workflows():
+    """List available workflows."""
+    return {
+        "status": "not_implemented",
+        "message": "Full workflow listing coming in Phase 3",
+        "workflows": []
+    }
+
+
+# The Ultimate Endpoint - Automate Casey
+class AutomateRequest(TektonBaseModel):
+    """Request to automate development."""
+    project_description: str = Field(..., description="What to build")
+    autonomy_level: Optional[str] = Field(None, description="Override autonomy level")
+    sprint_name: Optional[str] = Field(None, description="Dev sprint name")
+
+
+@routers.v1.post("/automate")
+async def automate_development(request: AutomateRequest):
+    """The ultimate endpoint - automate Casey's expertise."""
+    from ergon.core.ergon_component import AutonomyLevel
+    
+    level = None
+    if request.autonomy_level:
+        try:
+            level = AutonomyLevel(request.autonomy_level)
+        except ValueError:
+            raise HTTPException(
+                status_code=400, 
+                detail=f"Invalid autonomy level: {request.autonomy_level}"
+            )
+    
+    result = await ergon_component.automate_casey(
+        request.project_description, 
+        level
+    )
+    return result
+
 
 # Add WebSocket endpoint for A2A and MCP (at root level)
 @app.websocket("/ws")

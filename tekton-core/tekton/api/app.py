@@ -91,6 +91,7 @@ from tekton.api import projects as projects_v2
 
 # Import sprint management API
 from tekton.api import sprints as sprints_api
+from tekton.api import sprints_file_endpoints
 
 # Create component instance (singleton)
 component = TektonCoreComponent()
@@ -605,6 +606,9 @@ app.include_router(projects_v2.router)
 # Mount sprint management API
 # Integration Point: Sprint Management API - Primary API for development sprint coordination
 app.include_router(sprints_api.router)
+
+# Mount sprint file endpoints (daily-log, handoff, sprint-plan)
+app.include_router(sprints_file_endpoints.router, prefix="/api/v1/sprints")
 
 # Include standardized workflow endpoint
 if create_workflow_endpoint:

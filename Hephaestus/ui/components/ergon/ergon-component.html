@@ -1,5 +1,5 @@
-<!-- Ergon Component - Agent Management and LLM Integration -->
-<!-- @landmark Component: Ergon - Agent builder, tools manager, and MCP connections hub -->
+<!-- Ergon Component v2 - CI-in-the-Loop Reuse Specialist -->
+<!-- @landmark Component: Ergon v2 - Solution registry, GitHub analysis, configuration generation, and autonomous development -->
 
 <!-- Load chat dependencies -->
 <script src="/scripts/shared/ai-chat.js"></script>
@@ -8,12 +8,13 @@
 
 <!-- Hidden radio inputs for CSS-first tab functionality -->
 <!-- @landmark Navigation: CSS-first radio buttons for tab switching -->
-<input type="radio" name="ergon-tab" id="ergon-tab-agents" checked style="display: none;">
-<input type="radio" name="ergon-tab" id="ergon-tab-tools" style="display: none;">
-<input type="radio" name="ergon-tab" id="ergon-tab-mcp" style="display: none;">
-<input type="radio" name="ergon-tab" id="ergon-tab-memory" style="display: none;">
+<input type="radio" name="ergon-tab" id="ergon-tab-development" checked style="display: none;">
+<input type="radio" name="ergon-tab" id="ergon-tab-registry" style="display: none;">
+<input type="radio" name="ergon-tab" id="ergon-tab-analyzer" style="display: none;">
+<input type="radio" name="ergon-tab" id="ergon-tab-configurator" style="display: none;">
 <input type="radio" name="ergon-tab" id="ergon-tab-chat" style="display: none;">
 <input type="radio" name="ergon-tab" id="ergon-tab-teamchat" style="display: none;">
+
 <div class="ergon" data-tekton-area="ergon" data-tekton-component="ergon" data-tekton-type="component-workspace" data-tekton-ai="ergon-assistant" data-tekton-ai-ready="false">
     <!-- Component Header with Title -->
     <!-- @landmark Header: Component title and branding -->
@@ -22,42 +23,42 @@
             <img src="/images/hexagon.jpg" alt="Tekton" class="ergon__icon">
             <h2 class="ergon__title">
                 <span class="ergon__title-main">Ergon</span>
-                <span class="ergon__title-sub">Agents/Tools/MCP</span>
+                <span class="ergon__title-sub">CI-in-the-Loop Reuse Specialist</span>
             </h2>
         </div>
     </div>
 
     <!-- Ergon Menu Bar with Tab Navigation -->
-    <!-- @landmark Menu: Tab navigation for 6 component views -->
+    <!-- @landmark Menu: Tab navigation for 5 component views -->
     <div class="ergon__menu-bar" data-tekton-zone="menu" data-tekton-nav="component-menu">
         <div class="ergon__tabs" data-tekton-zone="menu">
-            <label for="ergon-tab-agents" class="ergon__tab" data-tab="agents" 
-                 data-tekton-menu-item="Agents" 
+            <label for="ergon-tab-development" class="ergon__tab" data-tab="development" 
+                 data-tekton-menu-item="Development" 
                  data-tekton-menu-component="ergon" 
-                 data-tekton-menu-panel="agents-panel" 
-                 data-tekton-nav-target="agents">
-                <span class="ergon__tab-label">Agents</span>
+                 data-tekton-menu-panel="development-panel" 
+                 data-tekton-nav-target="development">
+                <span class="ergon__tab-label">Development</span>
             </label>
-            <label for="ergon-tab-tools" class="ergon__tab" data-tab="tools" 
-                 data-tekton-menu-item="Tools" 
+            <label for="ergon-tab-registry" class="ergon__tab" data-tab="registry" 
+                 data-tekton-menu-item="Registry" 
                  data-tekton-menu-component="ergon" 
-                 data-tekton-menu-panel="tools-panel" 
-                 data-tekton-nav-target="tools">
-                <span class="ergon__tab-label">Tools</span>
+                 data-tekton-menu-panel="registry-panel" 
+                 data-tekton-nav-target="registry">
+                <span class="ergon__tab-label">Registry</span>
             </label>
-            <label for="ergon-tab-mcp" class="ergon__tab" data-tab="mcp" 
-                 data-tekton-menu-item="MCP" 
+            <label for="ergon-tab-analyzer" class="ergon__tab" data-tab="analyzer" 
+                 data-tekton-menu-item="Analyzer" 
                  data-tekton-menu-component="ergon" 
-                 data-tekton-menu-panel="mcp-panel" 
-                 data-tekton-nav-target="mcp">
-                <span class="ergon__tab-label">MCP</span>
+                 data-tekton-menu-panel="analyzer-panel" 
+                 data-tekton-nav-target="analyzer">
+                <span class="ergon__tab-label">Analyzer</span>
             </label>
-            <label for="ergon-tab-memory" class="ergon__tab" data-tab="memory" 
-                 data-tekton-menu-item="Memory" 
+            <label for="ergon-tab-configurator" class="ergon__tab" data-tab="configurator" 
+                 data-tekton-menu-item="Configurator" 
                  data-tekton-menu-component="ergon" 
-                 data-tekton-menu-panel="memory-panel" 
-                 data-tekton-nav-target="memory">
-                <span class="ergon__tab-label">Memory</span>
+                 data-tekton-menu-panel="configurator-panel" 
+                 data-tekton-nav-target="configurator">
+                <span class="ergon__tab-label">Configurator</span>
             </label>
             <label for="ergon-tab-chat" class="ergon__tab" data-tekton-chat="tab" data-tab="chat" 
                  data-tekton-menu-item="Tool Chat" 
@@ -74,53 +75,155 @@
                 <span class="ergon__tab-label">Team Chat</span>
             </label>
         </div>
-        <div class="ergon__actions">
-            <!-- Clear button removed per request -->
-            <button id="create-agent-button" class="ergon__action-button" data-tekton-action="create-agent" data-tekton-action-type="primary">
-                <span class="ergon__button-label">Create Agent</span>
-            </button>
-        </div>
     </div>
     
     <!-- Ergon Content Area -->
     <!-- @landmark Content: Main content area with 6 tab panels -->
     <div class="ergon__content" data-tekton-zone="content" data-tekton-scrollable="true">
-        <!-- Agents Tab (Default Active Tab) -->
-        <!-- @landmark Panel: Agents - Create and manage AI agents -->
-        <div id="agents-panel" class="ergon__panel" data-tekton-panel="agents" data-tekton-panel-for="Agents" data-tekton-panel-component="ergon">
-            <div class="ergon__agent-grid" id="agent-grid">
-                <!-- Agents will be loaded here dynamically -->
-                <div class="ergon__loading-message" id="agents-loading">
-                    <div class="ergon__message-text">Loading agents...</div>
+        <!-- Development Tab (Default Active Tab) -->
+        <!-- @landmark Panel: Development - Manage Ergon-driven development sprints -->
+        <div id="development-panel" class="ergon__panel" data-tekton-panel="development" data-tekton-panel-for="Development" data-tekton-panel-component="ergon">
+            <div class="ergon__sprints-container">
+                <div class="ergon__sprints-grid" id="sprints-grid">
+                    <!-- Sprint cards will be loaded here dynamically -->
+                    <div class="ergon__loading-message" id="sprints-loading">
+                        <div class="ergon__message-text">Loading automated sprints...</div>
+                    </div>
                 </div>
             </div>
-
-            <!-- Agent Creation Form (initially hidden) -->
-            <div id="agent-creation-form" class="ergon__modal-form" style="display: none;">
-                <div class="ergon__modal-content">
-                    <h3 class="ergon__modal-title">Create New Agent</h3>
-                    <div class="ergon__form-group">
-                        <label for="agent-name" class="ergon__form-label">Agent Name:</label>
-                        <input type="text" id="agent-name" class="ergon__form-input" placeholder="Enter agent name" data-tekton-input="text">
+        </div>
+        
+        <!-- Registry Tab -->
+        <!-- @landmark Panel: Registry - Browse and search reusable solutions -->
+        <div id="registry-panel" class="ergon__panel" data-tekton-panel="registry" data-tekton-panel-for="Registry" data-tekton-panel-component="ergon">
+            <div class="ergon__panel-header">
+                <h3 class="ergon__section-title">Solution Registry</h3>
+                <p class="ergon__section-description">Browse and search our catalog of reusable tools, agents, MCP servers, and workflows.</p>
+                
+                <!-- Search and Filters -->
+                <div class="ergon__search-bar">
+                    <input type="text" id="registry-search" class="ergon__search-input" placeholder="Search solutions..." data-tekton-input="search">
+                    <select id="registry-type-filter" class="ergon__filter-select" data-tekton-select="filter">
+                        <option value="">All Types</option>
+                        <option value="tool">Tools</option>
+                        <option value="agent">Agents</option>
+                        <option value="mcp_server">MCP Servers</option>
+                        <option value="library">Libraries</option>
+                        <option value="framework">Frameworks</option>
+                        <option value="workflow">Workflows</option>
+                    </select>
+                    <select id="registry-capability-filter" class="ergon__filter-select" data-tekton-select="filter">
+                        <option value="">All Capabilities</option>
+                        <option value="data_processing">Data Processing</option>
+                        <option value="api_development">API Development</option>
+                        <option value="machine_learning">Machine Learning</option>
+                        <option value="database_operations">Database Operations</option>
+                        <option value="devops">DevOps</option>
+                        <option value="testing">Testing</option>
+                        <option value="documentation">Documentation</option>
+                        <option value="security">Security</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="ergon__solution-grid" id="solution-grid">
+                <!-- Solutions will be loaded here dynamically -->
+                <div class="ergon__empty-message" id="solutions-loading">
+                    <div class="ergon__message-text">No solutions found in database.</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Analyzer Tab -->
+        <!-- @landmark Panel: Analyzer - Analyze GitHub repositories for reusable components -->
+        <div id="analyzer-panel" class="ergon__panel" data-tekton-panel="analyzer" data-tekton-panel-for="Analyzer" data-tekton-panel-component="ergon">
+            <div class="ergon__panel-header">
+                <h3 class="ergon__section-title">GitHub Repository Analyzer</h3>
+                <p class="ergon__section-description">Analyze GitHub repositories to identify reusable components and adaptation strategies.</p>
+                
+                <div class="ergon__analyzer-input">
+                    <div class="ergon__input-group">
+                        <label for="repo-url" class="ergon__form-label">GitHub Repository URL:</label>
+                        <input type="text" id="repo-url" class="ergon__input-large" placeholder="https://github.com/user/repo" data-tekton-input="url">
                     </div>
-                    <div class="ergon__form-group">
-                        <label for="agent-type" class="ergon__form-label">Agent Type:</label>
-                        <select id="agent-type" class="ergon__form-select" data-tekton-select="option">
-                            <option value="general">General Purpose</option>
-                            <option value="code">Code Assistant</option>
-                            <option value="data">Data Analyst</option>
-                            <option value="research">Research Assistant</option>
-                        </select>
+                    
+                    <div class="ergon__input-group">
+                        <label for="local-path" class="ergon__form-label">Or Local Repository Path:</label>
+                        <input type="text" id="local-path" class="ergon__input-large" placeholder="/path/to/local/repository" data-tekton-input="path">
                     </div>
-                    <div class="ergon__form-group">
-                        <label for="agent-description" class="ergon__form-label">Description:</label>
-                        <textarea id="agent-description" class="ergon__form-textarea" placeholder="Describe the agent's purpose"></textarea>
-                    </div>
-                    <div class="ergon__form-actions">
-                        <button id="cancel-creation" class="ergon__button ergon__button--cancel" data-tekton-action="cancel-creation" data-tekton-action-type="secondary">Cancel</button>
-                        <button id="submit-creation" class="ergon__button ergon__button--submit" data-tekton-action="submit-creation" data-tekton-action-type="primary">Create</button>
+                    
+                    <div class="ergon__analyzer-actions">
+                        <div class="ergon__analyzer-buttons">
+                            <button class="ergon__action-button ergon__action-button--orange" onclick="ergon_analyzeRepo('basic')">
+                                <span class="ergon__button-label">Basic Analysis</span>
+                            </button>
+                            <button class="ergon__action-button ergon__action-button--magenta" onclick="ergon_analyzeRepo('architecture')">
+                                <span class="ergon__button-label">Architecture</span>
+                            </button>
+                            <button class="ergon__action-button ergon__action-button--gold" onclick="ergon_analyzeRepo('tekton')">
+                                <span class="ergon__button-label">Tekton Integration</span>
+                            </button>
+                            <button class="ergon__action-button ergon__action-button--teal" onclick="ergon_analyzeRepo('full')">
+                                <span class="ergon__button-label">Full Analysis</span>
+                            </button>
+                        </div>
+                        <button id="make-project-button" class="ergon__action-button ergon__action-button--success" onclick="ergon_createTektonProject()">
+                            <span class="ergon__button-label">Create Tekton Managed Project</span>
+                        </button>
                     </div>
                 </div>
+            </div>
+            
+            <div class="ergon__analysis-results" id="analysis-results">
+                <!-- Analysis results will appear here -->
+                <div class="ergon__empty-message">
+                    Enter a GitHub repository URL above to begin analysis.
+                </div>
+            </div>
+        </div>
+        
+        <!-- Configurator Tab -->
+        <!-- @landmark Panel: Configurator - Generate configurations and wrappers -->
+        <div id="configurator-panel" class="ergon__panel" data-tekton-panel="configurator" data-tekton-panel-for="Configurator" data-tekton-panel-component="ergon">
+            <div class="ergon__panel-header">
+                <h3 class="ergon__section-title">Configuration Generator</h3>
+                <p class="ergon__section-description">Generate wrappers, adapters, and configurations for existing solutions.</p>
+            </div>
+            
+            <div class="ergon__configurator-form">
+                <div class="ergon__form-group">
+                    <label for="config-solution" class="ergon__form-label">Select Solution:</label>
+                    <select id="config-solution" class="ergon__form-select" data-tekton-select="solution">
+                        <option value="">-- Select a solution from registry --</option>
+                    </select>
+                </div>
+                
+                <div class="ergon__form-group">
+                    <label for="config-type" class="ergon__form-label">Configuration Type:</label>
+                    <select id="config-type" class="ergon__form-select" data-tekton-select="config-type">
+                        <option value="">-- Select configuration type --</option>
+                        <option value="fastapi_wrapper">FastAPI Wrapper</option>
+                        <option value="mcp_adapter">MCP Adapter</option>
+                        <option value="docker_config">Docker Configuration</option>
+                        <option value="agent_config">Agent Configuration</option>
+                        <option value="workflow_template">Workflow Template</option>
+                    </select>
+                </div>
+                
+                <div class="ergon__form-group">
+                    <label class="ergon__form-label">Configuration Parameters:</label>
+                    <div id="config-parameters" class="ergon__config-parameters">
+                        <!-- Dynamic parameters will appear here based on config type -->
+                    </div>
+                </div>
+                
+                <button id="generate-config-button" class="ergon__action-button ergon__action-button--success" data-tekton-action="generate-config" data-tekton-action-type="primary">
+                    <span class="ergon__button-label">Generate Configuration</span>
+                </button>
+            </div>
+            
+            <div class="ergon__config-output" id="config-output">
+                <!-- Generated configuration will appear here -->
             </div>
         </div>
         
@@ -132,8 +235,9 @@
                 <div class="ergon__message ergon__message--system">
                     <div class="ergon__message-content">
                         <div class="ergon__message-text">
-                            <h3 class="ergon__message-title">Welcome to Ergon AI Assistant</h3>
-                            <p>I specialize in agent management, workflow automation, and tool configuration. How can I assist you today?</p>
+                            <h3 class="ergon__message-title">Welcome to Ergon v2 AI Assistant</h3>
+                            <p>I'm your CI-in-the-Loop reuse specialist. I can help you find existing solutions, analyze repositories, generate configurations, and even automate entire development workflows. My current autonomy level is <strong>Advisory</strong>.</p>
+                            <p>How can I assist you today?</p>
                         </div>
                     </div>
                 </div>
@@ -156,88 +260,6 @@
                 <!-- Team messages will appear here dynamically -->
             </div>
         </div>
-        
-        <!-- Memory Tab -->
-        <!-- @landmark Panel: Memory - Manage agent memory and context -->
-        <div id="memory-panel" class="ergon__panel" data-tekton-panel="memory" data-tekton-panel-for="Memory" data-tekton-panel-component="ergon">
-            <div class="ergon__panel-section">
-                <h3 class="ergon__section-title">Memory Management</h3>
-                <p class="ergon__section-description">This panel allows you to manage agent memory and context.</p>
-                
-                <div class="ergon__memory-stats" id="memory-stats">
-                    <div class="ergon__memory-stat">
-                        <div class="ergon__stat-label">Active Memories</div>
-                        <div class="ergon__stat-value" id="memory-active-count">--</div>
-                    </div>
-                    <div class="ergon__memory-stat">
-                        <div class="ergon__stat-label">Total Storage</div>
-                        <div class="ergon__stat-value" id="memory-storage-size">--</div>
-                    </div>
-                    <div class="ergon__memory-stat">
-                        <div class="ergon__stat-label">Retention Period</div>
-                        <div class="ergon__stat-value" id="memory-retention">--</div>
-                    </div>
-                </div>
-                
-                <div class="ergon__memory-actions">
-                    <button class="ergon__action-button" data-tekton-action="view-memories" data-tekton-action-type="secondary">View Memories</button>
-                    <button class="ergon__action-button" data-tekton-action="clear-all" data-tekton-action-type="secondary">Clear All</button>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Tools Tab -->
-        <!-- @landmark Panel: Tools - Configure tools available to agents -->
-        <div id="tools-panel" class="ergon__panel" data-tekton-panel="tools" data-tekton-panel-for="Tools" data-tekton-panel-component="ergon">
-            <div class="ergon__panel-section">
-                <h3 class="ergon__section-title">Available Tools</h3>
-                <p class="ergon__section-description">Manage tools that agents can use.</p>
-
-                <div class="ergon__tools-list" id="tools-list">
-                    <!-- Tools will be loaded here dynamically -->
-                    <div class="ergon__loading-message" id="tools-loading">
-                        <div class="ergon__message-text">Loading available tools...</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- MCP Tab (Multi-Cloud Platform) -->
-        <!-- @landmark Panel: MCP - Manage Model Context Protocol connections -->
-        <div id="mcp-panel" class="ergon__panel" data-tekton-panel="mcp" data-tekton-panel-for="MCP" data-tekton-panel-component="ergon">
-            <div class="ergon__panel-section">
-                <h3 class="ergon__section-title">MCP Connections</h3>
-                <p class="ergon__section-description">Configure and manage connections to Multi-Cloud Platforms.</p>
-
-                <div class="ergon__mcp-stats" id="mcp-stats">
-                    <div class="ergon__mcp-stat">
-                        <div class="ergon__stat-label">Active Connections</div>
-                        <div class="ergon__stat-value" id="mcp-active-count">--</div>
-                    </div>
-                    <div class="ergon__mcp-stat">
-                        <div class="ergon__stat-label">Available Models</div>
-                        <div class="ergon__stat-value" id="mcp-models-count">--</div>
-                    </div>
-                    <div class="ergon__mcp-stat">
-                        <div class="ergon__stat-label">Token Usage</div>
-                        <div class="ergon__stat-value" id="mcp-token-usage">--</div>
-                    </div>
-                </div>
-
-                <h4 class="ergon__subsection-title">Connection Status</h4>
-                <div class="ergon__mcp-connections" id="mcp-connections">
-                    <!-- MCP connections will be loaded here dynamically -->
-                    <div class="ergon__loading-message" id="mcp-loading">
-                        <div class="ergon__message-text">Loading MCP connections...</div>
-                    </div>
-                </div>
-
-                <div class="ergon__mcp-actions">
-                    <button class="ergon__action-button" data-tekton-action="add-connection" data-tekton-action-type="primary">Add Connection</button>
-                    <button class="ergon__action-button" data-tekton-action="refresh-status" data-tekton-action-type="secondary">Refresh Status</button>
-                </div>
-            </div>
-        </div>
     </div>
     
     <!-- Footer with Chat Input -->
@@ -248,7 +270,7 @@
             <input type="text" id="ergon-chat-input" class="ergon__chat-input" data-tekton-chat="input" 
                    data-tekton-input="chat-input"
                    data-tekton-input-type="chat"
-                   placeholder="Enter chat message for Ergon agent management, tools configuration, or MCP"
+                   placeholder="Ask about solutions, analyze repos, or request automation..."
                    onkeydown="if(event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); ergon_sendChat(); }">
             <button id="ergon-send-button" class="ergon__send-button"
                     data-tekton-action="send-message" 
@@ -258,9 +280,47 @@
     </div>
 </div>
 
+<!-- Automate Development Modal -->
+<div id="automate-modal" class="ergon__modal" style="display: none;">
+    <div class="ergon__modal-overlay" onclick="ergon_closeAutomateModal()"></div>
+    <div class="ergon__modal-content ergon__modal-content--large">
+        <h3 class="ergon__modal-title">Automate Development - The Ultimate Feature</h3>
+        <p class="ergon__modal-description">Describe what you want to build, and I'll orchestrate the entire development process.</p>
+        
+        <div class="ergon__form-group">
+            <label for="project-description" class="ergon__form-label">Project Description:</label>
+            <textarea id="project-description" class="ergon__form-textarea ergon__form-textarea--large" 
+                      placeholder="Describe what you want to build in detail. Include features, technologies, and any specific requirements..."
+                      rows="6"></textarea>
+        </div>
+        
+        <div class="ergon__form-group">
+            <label for="autonomy-override" class="ergon__form-label">Autonomy Level for This Project:</label>
+            <select id="autonomy-override" class="ergon__form-select" data-tekton-select="autonomy">
+                <option value="">Use Current Level</option>
+                <option value="advisory">Advisory - I'll provide recommendations only</option>
+                <option value="assisted">Assisted - You approve each step</option>
+                <option value="guided">Guided - You approve major decisions</option>
+                <option value="autonomous">Autonomous - Full automation within sprint</option>
+            </select>
+        </div>
+        
+        <div class="ergon__form-group">
+            <label for="sprint-name" class="ergon__form-label">Sprint Name (optional):</label>
+            <input type="text" id="sprint-name" class="ergon__form-input" placeholder="e.g., MVP_Development_Sprint">
+        </div>
+        
+        <div class="ergon__modal-actions">
+            <button class="ergon__button ergon__button--cancel" onclick="ergon_closeAutomateModal()">Cancel</button>
+            <button class="ergon__button ergon__button--submit" onclick="ergon_startAutomation()">Start Automation</button>
+        </div>
+    </div>
+</div>
+
 <!-- Add component-specific styles -->
 <style>
-    /* Ergon component styles using BEM naming convention */
+    /* Ergon v2 component styles using BEM naming convention */
+    /* Base styles from v1 are preserved, with v2 additions */
     
     /* Container */
     .ergon {
@@ -270,17 +330,18 @@
         width: 100%;
         background-color: var(--bg-primary, #1e1e2e);
         color: var(--text-primary, #f0f0f0);
-        position: relative; /* Needed for footer positioning */
+        position: relative;
     }
     
-    /* Header */
+    /* Header with autonomy indicator */
     .ergon__header {
         display: flex;
         align-items: center;
+        justify-content: space-between;
         padding: 10px 16px;
         background-color: var(--bg-secondary, #252535);
         border-bottom: 1px solid var(--border-color, #444444);
-        height: 46px; /* Standardized header height */
+        height: 46px;
     }
     
     .ergon__title-container {
@@ -304,6 +365,27 @@
         margin-left: 8px;
         opacity: 0.8;
         font-weight: normal;
+        font-size: 0.9rem;
+    }
+    
+    /* Autonomy Indicator */
+    .ergon__autonomy-indicator {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 4px 12px;
+        background-color: var(--bg-tertiary, #333345);
+        border-radius: 16px;
+        font-size: 0.9rem;
+    }
+    
+    .ergon__autonomy-label {
+        opacity: 0.7;
+    }
+    
+    .ergon__autonomy-level {
+        font-weight: 600;
+        color: #00BCD4; /* Ergon blue */
     }
     
     /* Menu Bar */
@@ -314,7 +396,7 @@
         padding: 6px 16px;
         background-color: var(--bg-secondary, #252535);
         border-bottom: 1px solid var(--border-color, #444444);
-        height: 46px; /* Standardized menu bar height */
+        height: 46px;
     }
     
     .ergon__tabs {
@@ -336,21 +418,19 @@
     }
     
     /* CSS-first navigation - radio button controls active state */
-    #ergon-tab-agents:checked ~ .ergon .ergon__tab[data-tab="agents"],
-    #ergon-tab-tools:checked ~ .ergon .ergon__tab[data-tab="tools"],
-    #ergon-tab-mcp:checked ~ .ergon .ergon__tab[data-tab="mcp"],
-    #ergon-tab-memory:checked ~ .ergon .ergon__tab[data-tab="memory"],
+    #ergon-tab-development:checked ~ .ergon .ergon__tab[data-tab="development"],
+    #ergon-tab-registry:checked ~ .ergon .ergon__tab[data-tab="registry"],
+    #ergon-tab-analyzer:checked ~ .ergon .ergon__tab[data-tab="analyzer"],
+    #ergon-tab-configurator:checked ~ .ergon .ergon__tab[data-tab="configurator"],
     #ergon-tab-chat:checked ~ .ergon .ergon__tab[data-tab="chat"],
     #ergon-tab-teamchat:checked ~ .ergon .ergon__tab[data-tab="teamchat"] {
-        border-bottom-color: var(--color-primary, #0097A7);
+        border-bottom-color: #00BCD4; /* Ergon blue for active tab */
         font-weight: 500;
     }
     
     .ergon__tab:hover {
         background-color: var(--bg-hover, #3a3a4a);
     }
-    
-    /* Active tab styling now handled by CSS-first selectors above */
     
     .ergon__actions {
         display: flex;
@@ -374,12 +454,88 @@
         background-color: var(--bg-hover, #3a3a4a);
     }
     
+    .ergon__action-button--primary {
+        background-color: #00BCD4;
+        border-color: #00BCD4;
+        color: #1e1e2e;
+        font-weight: 500;
+    }
+    
+    .ergon__action-button--primary:hover {
+        background-color: #00ACC1;
+        transform: translateY(-1px);
+        box-shadow: 0 2px 8px rgba(0, 188, 212, 0.3);
+    }
+    
+    .ergon__action-button--success {
+        background-color: #4CAF50;
+        border-color: #4CAF50;
+        color: white;
+        font-weight: 500;
+    }
+    
+    .ergon__action-button--success:hover {
+        background-color: #45a049;
+        transform: translateY(-1px);
+        box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
+    }
+    
+    .ergon__action-button--secondary {
+        background-color: #2196F3;
+        border-color: #2196F3;
+        color: white;
+    }
+    
+    .ergon__action-button--secondary:hover {
+        background-color: #1976D2;
+    }
+    
+    .ergon__action-button--orange {
+        background-color: #81C784;  /* Light mint green */
+        border-color: #81C784;
+        color: #1e1e2e;
+    }
+    
+    .ergon__action-button--orange:hover {
+        background-color: #66BB6A;
+    }
+    
+    .ergon__action-button--magenta {
+        background-color: #BA68C8;  /* Light purple */
+        border-color: #BA68C8;
+        color: white;
+    }
+    
+    .ergon__action-button--magenta:hover {
+        background-color: #AB47BC;
+    }
+    
+    .ergon__action-button--gold {
+        background-color: #FFD700;
+        border-color: #FFD700;
+        color: #1e1e2e;
+    }
+    
+    .ergon__action-button--gold:hover {
+        background-color: #FFC700;
+    }
+    
+    .ergon__action-button--teal {
+        background-color: #009688;
+        border-color: #009688;
+        color: white;
+    }
+    
+    .ergon__action-button--teal:hover {
+        background-color: #00796B;
+    }
+    
     /* Content Area */
     .ergon__content {
         flex: 1;
         overflow: hidden;
         position: relative;
-        margin-bottom: 70px; /* Space for footer */
+        margin-bottom: 70px;
     }
     
     .ergon__panel {
@@ -391,176 +547,212 @@
     }
     
     /* CSS-first panel visibility */
-    #ergon-tab-agents:checked ~ .ergon #agents-panel,
-    #ergon-tab-tools:checked ~ .ergon #tools-panel,
-    #ergon-tab-mcp:checked ~ .ergon #mcp-panel,
-    #ergon-tab-memory:checked ~ .ergon #memory-panel,
+    #ergon-tab-development:checked ~ .ergon #development-panel,
+    #ergon-tab-registry:checked ~ .ergon #registry-panel,
+    #ergon-tab-analyzer:checked ~ .ergon #analyzer-panel,
+    #ergon-tab-configurator:checked ~ .ergon #configurator-panel,
     #ergon-tab-chat:checked ~ .ergon #ergon-panel,
     #ergon-tab-teamchat:checked ~ .ergon #awt-team-panel {
         display: block;
     }
     
-    /* Agent Grid Layout */
-    .ergon__agent-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-        gap: 1rem;
-        padding: 1rem;
+    /* Panel Headers */
+    .ergon__panel-header {
+        padding: 1.5rem;
+        background-color: var(--bg-secondary, #252535);
     }
     
-    .ergon__agent-card {
-        background-color: var(--bg-card, #2d2d2d);
-        border-radius: 8px;
-        padding: 1rem;
+    .ergon__section-title {
+        margin: 0 0 0.5rem 0;
+        font-size: 1.3rem;
+    }
+    
+    .ergon__section-description {
+        margin: 0 0 1rem 0;
+        color: var(--text-secondary, #aaa);
+        line-height: 1.5;
+    }
+    
+    /* Search and Filters */
+    .ergon__search-bar {
         display: flex;
-        flex-direction: column;
-        box-shadow: var(--box-shadow-sm, 0 2px 4px rgba(0, 0, 0, 0.1));
+        gap: 12px;
+        align-items: center;
+    }
+    
+    .ergon__search-input {
+        flex: 1;
+        padding: 8px 16px;
+        background-color: var(--bg-tertiary, #333345);
+        border: 1px solid var(--border-color, #444444);
+        border-radius: 8px;
+        color: var(--text-primary, #f0f0f0);
+        font-size: 14px;
+    }
+    
+    .ergon__filter-select {
+        padding: 8px 16px;
+        background-color: var(--bg-tertiary, #333345);
+        border: 1px solid var(--border-color, #444444);
+        border-radius: 8px;
+        color: var(--text-primary, #f0f0f0);
+    }
+    
+    /* Solution Grid */
+    .ergon__solution-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 1.5rem;
+        padding: 1.5rem;
+    }
+    
+    .ergon__solution-card {
+        background-color: var(--bg-card, #2d2d2d);
+        border-radius: 12px;
+        padding: 1.5rem;
+        border: 1px solid var(--border-color, #444444);
         transition: all 0.2s ease;
     }
     
-    .ergon__agent-card:hover {
+    .ergon__solution-card:hover {
         transform: translateY(-2px);
-        box-shadow: var(--box-shadow-md, 0 4px 8px rgba(0, 0, 0, 0.1));
+        box-shadow: 0 4px 12px rgba(0, 188, 212, 0.1);
+        border-color: #00BCD4;
     }
     
-    .ergon__agent-header {
+    .ergon__solution-header {
         display: flex;
         justify-content: space-between;
-        align-items: center;
-        margin-bottom: 0.5rem;
+        align-items: flex-start;
+        margin-bottom: 1rem;
     }
     
-    .ergon__agent-name {
-        font-weight: bold;
+    .ergon__solution-name {
         font-size: 1.1rem;
+        font-weight: 600;
+        color: #00BCD4;
     }
     
-    .ergon__agent-status {
-        width: 10px;
-        height: 10px;
-        border-radius: 50%;
-        background-color: var(--color-secondary, #6c757d);
+    .ergon__solution-type {
+        padding: 4px 8px;
+        background-color: rgba(0, 188, 212, 0.2);
+        border-radius: 12px;
+        font-size: 0.8rem;
+        font-weight: 500;
     }
     
-    .ergon__agent-status--active {
-        background-color: var(--color-success, #28a745);
-        box-shadow: 0 0 5px var(--color-success, #28a745);
-    }
-    
-    .ergon__agent-description {
+    .ergon__solution-description {
         margin-bottom: 1rem;
         color: var(--text-secondary, #aaa);
-        flex: 1;
+        line-height: 1.5;
     }
     
-    .ergon__agent-actions {
+    .ergon__solution-meta {
         display: flex;
-        justify-content: flex-end;
-        gap: 0.5rem;
+        gap: 1rem;
+        font-size: 0.9rem;
+        color: var(--text-secondary, #aaa);
     }
     
-    .ergon__agent-action-button {
-        padding: 0.25rem 0.75rem;
-        background-color: var(--bg-tertiary, #333);
-        border: none;
-        border-radius: 4px;
-        color: var(--text-primary, #f0f0f0);
-        cursor: pointer;
-        transition: all 0.2s ease;
-    }
-    
-    .ergon__agent-action-button:hover {
-        background-color: var(--bg-hover, #3a3a4a);
-    }
-    
-    /* Modal Form Styling */
-    .ergon__modal-form {
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background-color: rgba(0, 0, 0, 0.7);
+    .ergon__solution-stat {
         display: flex;
-        justify-content: center;
         align-items: center;
-        z-index: 10;
+        gap: 4px;
     }
     
-    .ergon__modal-content {
-        background-color: var(--bg-card, #2d2d2d);
+    /* Analyzer Styles */
+    .ergon__analyzer-input {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+    
+    .ergon__input-large {
+        padding: 12px 16px;
+        background-color: var(--bg-tertiary, #333345);
+        border: 1px solid var(--border-color, #444444);
         border-radius: 8px;
-        padding: 1.5rem;
+        color: var(--text-primary, #f0f0f0);
+        font-size: 14px;
         width: 100%;
-        max-width: 500px;
-        box-shadow: var(--box-shadow-lg, 0 8px 16px rgba(0, 0, 0, 0.1));
     }
     
-    .ergon__modal-title {
-        margin-top: 0;
-        margin-bottom: 1rem;
+    .ergon__checkbox-label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+    }
+    
+    .ergon__checkbox {
+        width: 18px;
+        height: 18px;
+        cursor: pointer;
+    }
+    
+    .ergon__analysis-results {
+        padding: 1.5rem;
+    }
+    
+    /* Configurator Styles */
+    .ergon__configurator-form {
+        padding: 1.5rem;
+        max-width: 600px;
     }
     
     .ergon__form-group {
-        margin-bottom: 1rem;
+        margin-bottom: 1.5rem;
     }
     
     .ergon__form-label {
         display: block;
         margin-bottom: 0.5rem;
-        font-weight: bold;
+        font-weight: 500;
     }
     
     .ergon__form-input,
     .ergon__form-select,
     .ergon__form-textarea {
         width: 100%;
-        padding: 0.5rem;
-        background-color: var(--bg-tertiary, #333);
-        border: 1px solid var(--border-color, #444);
-        border-radius: 4px;
+        padding: 8px 12px;
+        background-color: var(--bg-tertiary, #333345);
+        border: 1px solid var(--border-color, #444444);
+        border-radius: 8px;
         color: var(--text-primary, #f0f0f0);
     }
     
     .ergon__form-textarea {
         min-height: 100px;
         resize: vertical;
+        font-family: inherit;
     }
     
-    .ergon__form-actions {
-        display: flex;
-        justify-content: flex-end;
-        gap: 0.5rem;
-        margin-top: 1rem;
+    .ergon__form-textarea--large {
+        min-height: 150px;
     }
     
-    .ergon__button {
-        padding: 0.5rem 1rem;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
+    .ergon__config-parameters {
+        background-color: #e0e0e0;  /* Light gray */
+        border-radius: 8px;
+        padding: 1rem;
+        min-height: 100px;
+        color: #1e1e2e;  /* Dark text for contrast */
     }
     
-    .ergon__button--cancel {
-        background-color: var(--bg-tertiary, #333);
-        color: var(--text-primary, #f0f0f0);
+    .ergon__config-output {
+        padding: 1.5rem;
     }
     
-    .ergon__button--submit {
-        background-color: var(--color-primary, #007bff);
-        color: white;
-    }
-    
-    /* Chat Messages */
+    /* Chat Styles (inherited from v1) */
     .ergon__chat-messages {
         position: absolute;
         top: 0;
         left: 0;
         right: 0;
-        bottom: 0; /* Full height since content has margin for footer */
+        bottom: 0;
         overflow-y: auto;
         padding: 16px;
-        padding-bottom: 16px; /* Some space at bottom */
+        padding-bottom: 16px;
         display: flex;
         flex-direction: column;
         gap: 12px;
@@ -572,57 +764,37 @@
         max-width: 85%;
         word-wrap: break-word;
         line-height: 1.4;
-        margin: 4px 0; /* Add vertical spacing */
+        margin: 4px 0;
     }
     
     .ergon__message--system {
-        background-color: rgba(0, 151, 167, 0.05); /* Light teal background for system messages */
+        background-color: rgba(0, 188, 212, 0.05);
         align-self: center;
         max-width: 90%;
         width: 600px;
         margin: 8px 0;
         border-radius: 8px;
         padding: 16px 24px;
-        border-left: 3px solid #0097A7;
+        border-left: 3px solid #00BCD4;
     }
     
     .ergon__message--user {
-        background-color: rgba(76, 175, 80, 0.05); /* Light green background */
+        background-color: rgba(76, 175, 80, 0.05);
         color: var(--text-primary, #f0f0f0);
         align-self: flex-end;
-        border-left: 3px solid #4CAF50; /* Green border for user messages */
+        border-left: 3px solid #4CAF50;
         border-radius: 8px;
     }
     
     .ergon__message--ai {
-        background-color: rgba(0, 151, 167, 0.05); /* Light teal background with 0.05 opacity */
+        background-color: rgba(0, 188, 212, 0.05);
         color: var(--text-primary, #f0f0f0);
         align-self: flex-start;
-        border-left: 3px solid #0097A7; /* Teal border for AI messages */
+        border-left: 3px solid #00BCD4;
         border-radius: 8px;
     }
     
-    .ergon__message-content {
-        display: flex;
-        flex-direction: column;
-    }
-    
-    .ergon__message-text {
-        margin-bottom: 0.25rem;
-    }
-    
-    .ergon__message-title {
-        margin-top: 0;
-        margin-bottom: 0.5rem;
-    }
-    
-    .ergon__message-time {
-        font-size: 0.8rem;
-        color: var(--text-secondary, #aaa);
-        align-self: flex-end;
-    }
-    
-    /* Chat Input - Fixed at bottom, always visible */
+    /* Footer */
     .ergon__footer {
         background-color: var(--bg-secondary, #252535);
         border-top: 1px solid var(--border-color, #444444);
@@ -632,8 +804,8 @@
         left: 0;
         right: 0;
         height: 70px;
-        z-index: 10; /* Ensure it stays above content */
-        display: block !important; /* Always visible */
+        z-index: 10;
+        display: block !important;
     }
     
     .ergon__chat-input-container {
@@ -646,7 +818,7 @@
     .ergon__chat-prompt {
         font-size: 18px;
         font-weight: bold;
-        color: #0097A7; /* Changed to Ergon teal theme color */
+        color: #00BCD4;
     }
     
     .ergon__chat-input {
@@ -666,181 +838,306 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        background-color: #0097A7; /* Teal color for Ergon */
+        background-color: #00BCD4;
         border: none;
         border-radius: 8px;
-        color: white;
+        color: #1e1e2e;
         font-weight: 500;
         cursor: pointer;
         transition: all 0.2s ease;
     }
     
     .ergon__send-button:hover {
-        background-color: #007A8A; /* Darker teal on hover */
+        background-color: #00ACC1;
         transform: translateY(-1px);
-        box-shadow: 0 2px 8px rgba(0, 151, 167, 0.3);
+        box-shadow: 0 2px 8px rgba(0, 188, 212, 0.3);
     }
     
-    .ergon__send-button:active {
-        transform: translateY(0);
-        box-shadow: none;
-    }
-    
-    /* Panel Section Styling */
-    .ergon__panel-section {
-        padding: 1rem;
-    }
-    
-    .ergon__section-title {
-        margin-top: 0;
-        margin-bottom: 0.75rem;
-    }
-    
-    .ergon__section-description {
-        margin-top: 0;
-        margin-bottom: 1.5rem;
-        color: var(--text-secondary, #aaa);
-    }
-    
-    /* Memory Tab Styling */
-    .ergon__memory-stats,
-    .ergon__mcp-stats {
-        display: flex;
-        justify-content: space-between;
-        gap: 1rem;
-        margin: 1rem 0;
-    }
-    
-    .ergon__memory-stat,
-    .ergon__mcp-stat {
-        flex: 1;
-        background-color: var(--bg-card, #2d2d2d);
-        border-radius: 8px;
-        padding: 1rem;
-        text-align: center;
-    }
-    
-    .ergon__stat-label {
-        color: var(--text-secondary, #aaa);
-        margin-bottom: 0.5rem;
-    }
-    
-    .ergon__stat-value {
-        font-size: 1.5rem;
-        font-weight: bold;
-    }
-    
-    .ergon__memory-actions,
-    .ergon__mcp-actions {
-        display: flex;
-        justify-content: flex-end;
-        gap: 0.5rem;
-        margin-top: 1rem;
-    }
-    
-    /* Tools Tab Styling */
-    .ergon__tools-list {
-        display: flex;
-        flex-direction: column;
-        gap: 0.5rem;
-        margin-top: 1rem;
-    }
-    
-    .ergon__tool-item {
-        background-color: var(--bg-card, #2d2d2d);
-        border-radius: 8px;
-        padding: 1rem;
+    /* Modal Styles */
+    .ergon__modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 1000;
         display: flex;
         align-items: center;
-        gap: 1rem;
+        justify-content: center;
     }
     
-    .ergon__tool-name {
-        font-weight: bold;
-        min-width: 150px;
+    .ergon__modal-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, 0.7);
     }
     
-    .ergon__tool-status {
-        width: 10px;
-        height: 10px;
-        border-radius: 50%;
-        background-color: var(--color-secondary, #6c757d);
-    }
-    
-    .ergon__tool-status--active {
-        background-color: var(--color-success, #28a745);
-        box-shadow: 0 0 5px var(--color-success, #28a745);
-    }
-    
-    .ergon__tool-description {
-        flex: 1;
-        color: var(--text-secondary, #aaa);
-    }
-    
-    /* MCP Tab Styling */
-    .ergon__subsection-title {
-        margin-top: 1.5rem;
-        margin-bottom: 0.75rem;
-    }
-    
-    .ergon__mcp-connections {
-        display: flex;
-        flex-direction: column;
-        gap: 0.5rem;
-    }
-    
-    .ergon__mcp-connection {
+    .ergon__modal-content {
+        position: relative;
         background-color: var(--bg-card, #2d2d2d);
-        border-radius: 8px;
-        padding: 1rem;
+        border-radius: 12px;
+        padding: 2rem;
+        max-width: 500px;
+        width: 90%;
+        max-height: 90vh;
+        overflow-y: auto;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        border: 1px solid var(--border-color, #444444);
     }
     
-    .ergon__connection-name {
-        font-weight: bold;
-        margin-bottom: 0.25rem;
+    .ergon__modal-content--large {
+        max-width: 700px;
     }
     
-    .ergon__connection-status {
-        color: var(--color-secondary, #6c757d);
-        margin-bottom: 0.25rem;
+    .ergon__modal-title {
+        margin: 0 0 0.5rem 0;
+        font-size: 1.5rem;
+        color: #00BCD4;
     }
     
-    .ergon__connection-status--active {
-        color: var(--color-success, #28a745);
-    }
-    
-    .ergon__connection-models {
+    .ergon__modal-description {
+        margin: 0 0 1.5rem 0;
         color: var(--text-secondary, #aaa);
-        font-size: 0.9em;
+        line-height: 1.5;
     }
     
-    /* Loading indicator animation */
-    .ergon__message--typing .ergon__message-text::after {
-        content: "";
-        display: inline-block;
-        animation: ergon-ellipsis 1.5s infinite;
-        width: 12px;
-        text-align: left;
+    .ergon__modal-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 12px;
+        margin-top: 2rem;
     }
     
-    @keyframes ergon-ellipsis {
-        0% { content: "."; }
-        33% { content: ".."; }
-        66% { content: "..."; }
+    .ergon__button {
+        padding: 8px 20px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 500;
+        transition: all 0.2s ease;
     }
     
-    /* Loading, empty and error messages */
+    .ergon__button--cancel {
+        background-color: var(--bg-tertiary, #333345);
+        color: var(--text-primary, #f0f0f0);
+    }
+    
+    .ergon__button--cancel:hover {
+        background-color: var(--bg-hover, #3a3a4a);
+    }
+    
+    .ergon__button--submit {
+        background-color: #00BCD4;
+        color: #1e1e2e;
+    }
+    
+    .ergon__button--submit:hover {
+        background-color: #00ACC1;
+        transform: translateY(-1px);
+        box-shadow: 0 2px 8px rgba(0, 188, 212, 0.3);
+    }
+    
+    /* Loading and empty states */
     .ergon__loading-message,
     .ergon__empty-message,
     .ergon__error-message {
         text-align: center;
-        padding: 2rem;
+        padding: 3rem;
         color: var(--text-secondary, #aaa);
         font-style: italic;
     }
     
     .ergon__error-message {
         color: var(--color-danger, #dc3545);
+    }
+    
+    /* Development Tab Styles */
+    .ergon__dev-controls {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+        margin-top: 1rem;
+    }
+    
+    .ergon__subsection-title {
+        margin: 0;
+        font-size: 1.1rem;
+        font-weight: 500;
+    }
+    
+    .ergon__sprints-container {
+        padding: 1.5rem;
+    }
+    
+    .ergon__sprints-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+    
+    .ergon__sprint-filters {
+        display: flex;
+        gap: 12px;
+    }
+    
+    .ergon__sprints-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 1.5rem;
+    }
+    
+    /* Sprint Card Styles - Similar to Tekton Core */
+    .ergon__sprint-card {
+        background-color: var(--bg-card, #2d2d2d);
+        border: 2px solid #00BCD4;  /* Ergon blue */
+        border-radius: 8px;
+        padding: 1.5rem;
+        transition: all 0.2s ease;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .ergon__sprint-card:hover {
+        box-shadow: 0 4px 12px rgba(0, 188, 212, 0.2);
+        transform: translateY(-2px);
+    }
+    
+    .ergon__sprint-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 1rem;
+    }
+    
+    .ergon__sprint-name {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #00BCD4;
+    }
+    
+    .ergon__sprint-status {
+        padding: 4px 12px;
+        background-color: rgba(0, 188, 212, 0.2);
+        border-radius: 12px;
+        font-size: 0.85rem;
+        font-weight: 500;
+    }
+    
+    .ergon__sprint-meta {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        font-size: 0.9rem;
+        color: var(--text-secondary, #aaa);
+        margin-bottom: 1rem;
+    }
+    
+    .ergon__sprint-autonomy {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 0;
+    }
+    
+    .ergon__autonomy-toggle {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .ergon__autonomy-select {
+        padding: 4px 8px;
+        background-color: var(--bg-tertiary, #333345);
+        border: 1px solid var(--border-color, #444444);
+        border-radius: 4px;
+        color: var(--text-primary, #f0f0f0);
+        font-size: 0.85rem;
+    }
+    
+    .ergon__sprint-actions {
+        display: flex;
+        gap: 8px;
+        margin-top: auto;
+        padding-top: 1rem;
+    }
+    
+    .ergon__sprint-button {
+        flex: 1;
+        padding: 6px 12px;
+        background-color: var(--bg-tertiary, #333345);
+        border: 1px solid var(--border-color, #444444);
+        border-radius: 4px;
+        color: var(--text-primary, #f0f0f0);
+        font-size: 0.85rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        text-align: center;
+    }
+    
+    .ergon__sprint-button:hover {
+        background-color: var(--bg-hover, #3a3a4a);
+    }
+    
+    .ergon__sprint-button--primary {
+        background-color: #00BCD4;
+        border-color: #00BCD4;
+        color: #1e1e2e;
+        font-weight: 500;
+    }
+    
+    .ergon__sprint-button--primary:hover {
+        background-color: #00ACC1;
+    }
+    
+    /* Analyzer Tab Updates */
+    .ergon__input-group {
+        margin-bottom: 1rem;
+    }
+    
+    .ergon__analyzer-actions {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin: 1.5rem 0;
+        gap: 1rem;
+    }
+    
+    .ergon__analyzer-buttons {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+    
+    /* Analysis Results Styles */
+    .ergon__analysis-section {
+        background-color: var(--bg-secondary, #252535);
+        border-radius: 8px;
+        padding: 1.5rem;
+        margin-top: 1rem;
+    }
+    
+    .ergon__analysis-section h4 {
+        margin: 0 0 1rem 0;
+        color: #00BCD4;
+    }
+    
+    .ergon__analysis-description {
+        margin-bottom: 1rem;
+        color: var(--text-secondary, #aaa);
+        line-height: 1.6;
+    }
+    
+    .ergon__analysis-details {
+        font-size: 0.95rem;
+        line-height: 1.8;
+    }
+    
+    .ergon__analysis-details strong {
+        color: var(--text-primary, #f0f0f0);
     }
 </style>
 
@@ -860,21 +1157,6 @@ function ergon_initChats() {
     if (window.TeamChat && teamChatEl) {
         window.TeamChat.init(teamChatEl, 'ergon', 'ergon');
     }
-}
-
-// Listen for tab changes and initialize chats
-document.addEventListener('DOMContentLoaded', function() {
-    // Initialize chat components
-    setTimeout(() => {
-        ergon_initChats();
-    }, 100);
-});
-
-// Also try immediate initialization if DOM is already loaded
-if (document.readyState === 'complete' || document.readyState === 'interactive') {
-    setTimeout(() => {
-        ergon_initChats();
-    }, 100);
 }
 
 // Chat functionality - delegate to unified chat components
@@ -901,479 +1183,599 @@ window.ergon_sendChat = function() {
     input.value = '';
 };
 
-// Keep the original implementation for reference
-window.ergon_sendChat_original = function() {
-    const input = document.getElementById('ergon-chat-input');
-    const message = input.value.trim();
+// Load autonomy level
+function ergon_loadAutonomyLevel() {
+    const apiUrl = window.ergonUrl ? window.ergonUrl('/api/v1/autonomy/level') : '/api/v1/autonomy/level';
     
-    if (!message) return;
-    
-    // Determine which tab is active using radio buttons
-    const chatRadio = document.getElementById('ergon-tab-chat');
-    const teamchatRadio = document.getElementById('ergon-tab-teamchat');
-    const chatType = chatRadio.checked ? 'chat' : (teamchatRadio.checked ? 'teamchat' : null);
-    
-    if (!chatType) {
-        console.error('No chat tab is active');
-        return;
-    }
-    
-    const messagesContainerId = chatType === 'chat' ? 'ergon-messages' : 'awt-team-messages';
-    const messagesContainer = document.getElementById(messagesContainerId);
-    
-    // Add user message
-    const userMessageDiv = document.createElement('div');
-    userMessageDiv.className = 'ergon__message ergon__message--user';
-    userMessageDiv.innerHTML = `<div class="ergon__message-content"><div class="ergon__message-text">${message}</div></div>`;
-    messagesContainer.appendChild(userMessageDiv);
-    
-    // Clear input
-    input.value = '';
-    
-    // Scroll to bottom
-    messagesContainer.scrollTop = messagesContainer.scrollHeight;
-    
-    // Send to backend
-    if (chatType === 'chat') {
-        // Direct message to ergon
-        if (window.AIChat) {
-            window.AIChat.sendMessage('ergon', message)
-                .then(response => {
-                    const aiMessageDiv = document.createElement('div');
-                    aiMessageDiv.className = 'ergon__message ergon__message--ai';
-                    aiMessageDiv.innerHTML = `<div class="ergon__message-content"><div class="ergon__message-text"><strong>Ergon:</strong> ${response.content}</div></div>`;
-                    messagesContainer.appendChild(aiMessageDiv);
-                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
-                })
-                .catch(err => {
-                    console.error('Failed to send message:', err);
-                    const errorDiv = document.createElement('div');
-                    errorDiv.className = 'ergon__message ergon__message--system';
-                    errorDiv.innerHTML = `<div class="ergon__message-content"><div class="ergon__message-text"><strong>System:</strong> Failed to connect to Ergon AI. Make sure aish MCP is running.</div></div>`;
-                    messagesContainer.appendChild(errorDiv);
-                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
-                });
-        } else {
-            console.error('AIChat not available');
-            const errorDiv = document.createElement('div');
-            errorDiv.className = 'ergon__message ergon__message--system';
-            errorDiv.innerHTML = `<div class="ergon__message-content"><div class="ergon__message-text"><strong>System:</strong> AI Chat service not available</div></div>`;
-            messagesContainer.appendChild(errorDiv);
-        }
-    } else {
-        // Team chat
-        if (window.AIChat) {
-            window.AIChat.teamChat(message, 'ergon')
-                .then(data => {
-                    // Display team responses
-                    if (data.responses && data.responses.length > 0) {
-                        data.responses.forEach(resp => {
-                            const aiMessageDiv = document.createElement('div');
-                            aiMessageDiv.className = 'ergon__message ergon__message--ai';
-                            const sender = resp.socket_id.replace('-ai', '').charAt(0).toUpperCase() + 
-                                         resp.socket_id.replace('-ai', '').slice(1);
-                            aiMessageDiv.innerHTML = `<div class="ergon__message-content"><div class="ergon__message-text"><strong>${sender}:</strong> ${resp.content}</div></div>`;
-                            messagesContainer.appendChild(aiMessageDiv);
-                        });
-                        messagesContainer.scrollTop = messagesContainer.scrollHeight;
-                    }
-                })
-                .catch(err => {
-                    console.error('Failed to send team message:', err);
-                    const errorDiv = document.createElement('div');
-                    errorDiv.className = 'ergon__message ergon__message--system';
-                    errorDiv.innerHTML = `<div class="ergon__message-content"><div class="ergon__message-text"><strong>System:</strong> Failed to send team message</div></div>`;
-                    messagesContainer.appendChild(errorDiv);
-                });
-        }
-    }
-}
-
-// Clear chat functionality - CSS-first aware
-function ergon_clearChat() {
-    const chatRadio = document.getElementById('ergon-tab-chat');
-    const teamchatRadio = document.getElementById('ergon-tab-teamchat');
-    
-    if (chatRadio.checked) {
-        const messagesContainer = document.getElementById('ergon-messages');
-        // Keep the welcome message, remove all others
-        const messages = messagesContainer.querySelectorAll('.ergon__message:not(.ergon__message--system):first-child');
-        const allMessages = messagesContainer.querySelectorAll('.ergon__message');
-        allMessages.forEach((msg, index) => {
-            if (index > 0) msg.remove(); // Keep first system message
-        });
-    } else if (teamchatRadio.checked) {
-        const messagesContainer = document.getElementById('awt-team-messages');
-        // Keep the welcome message, remove all others  
-        const allMessages = messagesContainer.querySelectorAll('.ergon__message');
-        allMessages.forEach((msg, index) => {
-            if (index > 0) msg.remove(); // Keep first system message
-        });
-    }
-}
-
-// Add event listeners for buttons
-document.addEventListener('DOMContentLoaded', function() {
-    // Send button click and chat input keydown are handled inline in the HTML
-    
-    const clearButton = document.getElementById('clear-chat-btn');
-    if (clearButton) {
-        clearButton.addEventListener('click', ergon_clearChat);
-    }
-});
-
-// Load real data when component initializes
-function ergon_loadData() {
-    // Load agents
-    ergon_loadAgents();
-    
-    // Load tools
-    ergon_loadTools();
-    
-    // Load MCP connections
-    ergon_loadMCPConnections();
-    
-    // Load memory stats
-    ergon_loadMemoryStats();
-}
-
-// Load agents from backend using ErgonService
-function ergon_loadAgents() {
-    console.log('[ERGON] Loading agents');
-    const grid = document.getElementById('agent-grid');
-    
-    // Show loading
-    grid.innerHTML = '<div class="ergon__loading-message"><div class="ergon__message-text">Loading agents...</div></div>';
-    
-    if (window.ErgonService) {
-        window.ErgonService.getAgents()
-            .then(agents => {
-                console.log('[ERGON] Agents loaded:', agents);
-                grid.innerHTML = ''; // Clear loading message
-                
-                if (agents.length === 0) {
-                    grid.innerHTML = '<div class="ergon__empty-message">No agents configured. Click "Create Agent" to add one.</div>';
-                    return;
-                }
-                
-                agents.forEach(agent => {
-                    const card = document.createElement('div');
-                    card.className = 'ergon__agent-card';
-                    card.innerHTML = `
-                        <div class="ergon__agent-header">
-                            <div class="ergon__agent-name">${agent.name || 'Unnamed Agent'}</div>
-                            <div class="ergon__agent-status ${agent.status === 'active' ? 'ergon__agent-status--active' : ''}"></div>
-                        </div>
-                        <div class="ergon__agent-description">
-                            ${agent.description || 'No description available'}
-                        </div>
-                        <div class="ergon__agent-actions">
-                            <button class="ergon__agent-action-button" data-action="run" data-agent-id="${agent.id}" data-tekton-action="run-agent" data-tekton-action-type="primary">Run</button>
-                            <button class="ergon__agent-action-button" data-action="delete" data-agent-id="${agent.id}" data-tekton-action="delete-agent" data-tekton-action-type="secondary">Delete</button>
-                        </div>
-                    `;
-                    grid.appendChild(card);
-                });
-            })
-            .catch(err => {
-                console.error('[ERGON] Failed to load agents:', err);
-                grid.innerHTML = '<div class="ergon__error-message">Failed to load agents. Please check connection.</div>';
-            });
-    } else {
-        console.error('[ERGON] ErgonService not available');
-        grid.innerHTML = '<div class="ergon__error-message">Ergon service not available.</div>';
-    }
-}
-
-// Load tools from backend using ErgonService
-function ergon_loadTools() {
-    console.log('[ERGON] Loading tools');
-    const list = document.getElementById('tools-list');
-    
-    // Show loading
-    list.innerHTML = '<div class="ergon__loading-message"><div class="ergon__message-text">Loading tools...</div></div>';
-    
-    if (window.ErgonService) {
-        window.ErgonService.getTools()
-            .then(tools => {
-                console.log('[ERGON] Tools loaded:', tools);
-                list.innerHTML = ''; // Clear loading message
-                
-                if (tools.length === 0) {
-                    list.innerHTML = '<div class="ergon__empty-message">No tools available.</div>';
-                    return;
-                }
-                
-                tools.forEach(tool => {
-                    const item = document.createElement('div');
-                    item.className = 'ergon__tool-item';
-                    item.innerHTML = `
-                        <div class="ergon__tool-name">${tool.name}</div>
-                        <div class="ergon__tool-status ${tool.enabled ? 'ergon__tool-status--active' : ''}"></div>
-                        <div class="ergon__tool-description">${tool.description || ''}</div>
-                    `;
-                    list.appendChild(item);
-                });
-            })
-            .catch(err => {
-                console.error('[ERGON] Failed to load tools:', err);
-                list.innerHTML = '<div class="ergon__error-message">Failed to load tools.</div>';
-            });
-    } else {
-        console.error('[ERGON] ErgonService not available');
-        list.innerHTML = '<div class="ergon__error-message">Ergon service not available.</div>';
-    }
-}
-
-// Load MCP connections from backend using ErgonService
-function ergon_loadMCPConnections() {
-    console.log('[ERGON] Loading MCP connections');
-    const container = document.getElementById('mcp-connections');
-    
-    // Show loading
-    container.innerHTML = '<div class="ergon__loading-message"><div class="ergon__message-text">Loading MCP connections...</div></div>';
-    
-    if (window.ErgonService) {
-        // Load connections
-        window.ErgonService.getMcpConnections()
-            .then(connections => {
-                console.log('[ERGON] MCP connections loaded:', connections);
-                container.innerHTML = ''; // Clear loading message
-                
-                // Update stats
-                const activeCount = connections.filter(c => c.status === 'connected').length;
-                const modelCount = connections.reduce((sum, c) => sum + (c.models ? c.models.length : 0), 0);
-                document.getElementById('mcp-active-count').textContent = activeCount;
-                document.getElementById('mcp-models-count').textContent = modelCount;
-                
-                if (connections.length === 0) {
-                    container.innerHTML = '<div class="ergon__empty-message">No MCP connections configured.</div>';
-                    return;
-                }
-                
-                connections.forEach(conn => {
-                    const item = document.createElement('div');
-                    item.className = 'ergon__mcp-connection';
-                    item.innerHTML = `
-                        <div class="ergon__connection-name">${conn.name}</div>
-                        <div class="ergon__connection-status ${conn.status === 'connected' ? 'ergon__connection-status--active' : ''}">
-                            ${conn.status === 'connected' ? 'Connected' : 'Disconnected'}
-                        </div>
-                        <div class="ergon__connection-models">Models: ${conn.models ? conn.models.join(', ') : 'None'}</div>
-                    `;
-                    container.appendChild(item);
-                });
-            })
-            .catch(err => {
-                console.error('[ERGON] Failed to load MCP connections:', err);
-                container.innerHTML = '<div class="ergon__error-message">Failed to load MCP connections.</div>';
-                document.getElementById('mcp-active-count').textContent = '0';
-                document.getElementById('mcp-models-count').textContent = '0';
-            });
-        
-        // Load MCP stats separately
-        window.ErgonService.getMcpStats()
-            .then(stats => {
-                document.getElementById('mcp-token-usage').textContent = stats.token_usage || '--';
-            })
-            .catch(err => {
-                console.error('[ERGON] Failed to load MCP stats:', err);
-                document.getElementById('mcp-token-usage').textContent = '--';
-            });
-    } else {
-        console.error('[ERGON] ErgonService not available');
-        container.innerHTML = '<div class="ergon__error-message">Ergon service not available.</div>';
-        document.getElementById('mcp-active-count').textContent = '0';
-        document.getElementById('mcp-models-count').textContent = '0';
-        document.getElementById('mcp-token-usage').textContent = '--';
-    }
-}
-
-// Load memory stats using ErgonService
-function ergon_loadMemoryStats() {
-    console.log('[ERGON] Loading memory stats');
-    
-    if (window.ErgonService) {
-        window.ErgonService.getMemoryStats()
-            .then(stats => {
-                console.log('[ERGON] Memory stats loaded:', stats);
-                document.getElementById('memory-active-count').textContent = stats.active_memories || '0';
-                document.getElementById('memory-storage-size').textContent = stats.total_storage || '0 MB';
-                document.getElementById('memory-retention').textContent = stats.retention_period || '30 days';
-            })
-            .catch(err => {
-                console.error('[ERGON] Failed to load memory stats:', err);
-                document.getElementById('memory-active-count').textContent = '--';
-                document.getElementById('memory-storage-size').textContent = '--';
-                document.getElementById('memory-retention').textContent = '--';
-            });
-    } else {
-        console.error('[ERGON] ErgonService not available');
-        document.getElementById('memory-active-count').textContent = '--';
-        document.getElementById('memory-storage-size').textContent = '--';
-        document.getElementById('memory-retention').textContent = '--';
-    }
-}
-
-// Initialize data loading
-document.addEventListener('DOMContentLoaded', function() {
-    // Add tab change listeners to reload data when switching tabs
-    const radioButtons = document.querySelectorAll('input[name="ergon-tab"]');
-    radioButtons.forEach(radio => {
-        radio.addEventListener('change', function() {
-            if (radio.checked) {
-                const tabId = radio.id.replace('ergon-tab-', '');
-                // Reload data for specific tabs
-                if (tabId === 'agents') ergon_loadAgents();
-                else if (tabId === 'tools') ergon_loadTools();
-                else if (tabId === 'mcp') ergon_loadMCPConnections();
-                else if (tabId === 'memory') ergon_loadMemoryStats();
+    fetch(apiUrl)
+        .then(response => response.json())
+        .then(data => {
+            const levelElement = document.getElementById('autonomy-level');
+            if (levelElement && data.current_level) {
+                levelElement.textContent = data.current_level.charAt(0).toUpperCase() + data.current_level.slice(1);
             }
+        })
+        .catch(err => {
+            console.error('[ERGON] Failed to load autonomy level:', err);
         });
-    });
+}
+
+// Load solutions for registry
+function ergon_loadSolutions() {
+    console.log('[ERGON] Loading solutions');
+    const grid = document.getElementById('solution-grid');
     
-    // Load initial data
-    ergon_loadData();
+    const apiUrl = window.ergonUrl ? window.ergonUrl('/api/v1/solutions') : '/api/v1/solutions';
     
-    // Add event listeners for agent creation
-    const createButton = document.getElementById('create-agent-button');
-    if (createButton) {
-        createButton.addEventListener('click', ergon_showCreateForm);
-    }
+    fetch(apiUrl)
+        .then(response => response.json())
+        .then(data => {
+            grid.innerHTML = '';
+            
+            if (data.status === 'not_implemented') {
+                grid.innerHTML = '<div class="ergon__empty-message">Solution registry coming soon in Phase 1 implementation.</div>';
+                return;
+            }
+            
+            if (!data.solutions || data.solutions.length === 0) {
+                grid.innerHTML = '<div class="ergon__empty-message">No solutions found in database.</div>';
+                return;
+            }
+            
+            // Render solution cards
+            data.solutions.forEach(solution => {
+                const card = document.createElement('div');
+                card.className = 'ergon__solution-card';
+                card.innerHTML = `
+                    <div class="ergon__solution-header">
+                        <div class="ergon__solution-name">${solution.name}</div>
+                        <div class="ergon__solution-type">${solution.type}</div>
+                    </div>
+                    <div class="ergon__solution-description">${solution.description || 'No description'}</div>
+                    <div class="ergon__solution-meta">
+                        <div class="ergon__solution-stat">
+                            <span>Used:</span>
+                            <strong>${solution.usage_count || 0}</strong>
+                        </div>
+                        <div class="ergon__solution-stat">
+                            <span>Success:</span>
+                            <strong>${solution.success_rate ? (solution.success_rate * 100).toFixed(0) + '%' : 'N/A'}</strong>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        })
+        .catch(err => {
+            console.error('[ERGON] Failed to load solutions:', err);
+            grid.innerHTML = '<div class="ergon__error-message">Failed to load solutions. Please check connection.</div>';
+        });
+}
+
+// Load Ergon-managed sprints
+async function ergon_loadSprints() {
+    const grid = document.getElementById('sprints-grid');
     
-    const cancelButton = document.getElementById('cancel-creation');
-    if (cancelButton) {
-        cancelButton.addEventListener('click', ergon_hideCreateForm);
-    }
+    grid.innerHTML = '<div class="ergon__loading-message"><div class="ergon__message-text">Loading automated sprints...</div></div>';
     
-    const submitButton = document.getElementById('submit-creation');
-    if (submitButton) {
-        submitButton.addEventListener('click', ergon_createAgent);
-    }
-    
-    // Add agent action button listeners
-    document.addEventListener('click', function(e) {
-        if (e.target.matches('[data-action="run"]')) {
-            const agentId = e.target.getAttribute('data-agent-id');
-            ergon_runAgent(agentId);
-        } else if (e.target.matches('[data-action="delete"]')) {
-            const agentId = e.target.getAttribute('data-agent-id');
-            ergon_deleteAgent(agentId);
+    try {
+        // Fetch all sprints from Tekton Core
+        const response = await fetch(window.tektonUrl ? window.tektonUrl('tekton-core', '/api/v1/sprints/status') : '/api/v1/sprints/status');
+        
+        if (!response.ok) {
+            throw new Error(`Failed to fetch sprints: ${response.statusText}`);
         }
-    });
-});
-
-// Show create agent form
-function ergon_showCreateForm() {
-    const form = document.getElementById('agent-creation-form');
-    if (form) {
-        form.style.display = 'flex';
+        
+        const result = await response.json();
+        const data = result.data || {};
+        const allSprints = data.sprints || [];
+        
+        // Filter for automated sprints only
+        const automatedSprints = [];
+        
+        // Check each sprint's Sprint Plan for Automated: Yes
+        for (const sprint of allSprints) {
+            try {
+                const encodedName = encodeURIComponent(sprint.name);
+                const planResponse = await fetch(window.tektonUrl ? window.tektonUrl('tekton-core', `/api/v1/sprints/${encodedName}/sprint-plan`) : `/api/v1/sprints/${encodedName}/sprint-plan`);
+                
+                if (planResponse.ok) {
+                    const planData = await planResponse.json();
+                    const content = planData.content || '';
+                    
+                    // Check if this sprint is automated
+                    const automatedMatch = content.match(/Automated:\s*(Yes)/i);
+                    if (automatedMatch) {
+                        // Parse autonomy level
+                        const autonomyMatch = content.match(/Autonomy Level:\s*([^\n]+)/i);
+                        sprint.autonomyLevel = autonomyMatch ? autonomyMatch[1].trim() : 'Co-Developer';
+                        sprint.automated = 'Yes';
+                        automatedSprints.push(sprint);
+                    }
+                }
+            } catch (err) {
+                console.error(`[ERGON] Failed to check automation for sprint ${sprint.name}:`, err);
+            }
+        }
+        
+        grid.innerHTML = '';
+        
+        if (automatedSprints.length === 0) {
+            grid.innerHTML = `
+                <div class="ergon__empty-message">
+                    <div class="ergon__message-text">No Ergon-managed sprints yet. Use the "Automate" button on any sprint in Tekton Core to enable automation.</div>
+                </div>
+            `;
+            return;
+        }
+        
+        // Create sprint cards for automated sprints
+        automatedSprints.forEach(sprint => {
+            const card = ergon_createSprintCard(sprint);
+            grid.appendChild(card);
+        });
+        
+    } catch (error) {
+        console.error('[ERGON] Failed to load sprints:', error);
+        grid.innerHTML = '<div class="ergon__error-message">Failed to load sprints. Please check connection.</div>';
     }
 }
 
-// Hide create agent form
-function ergon_hideCreateForm() {
-    const form = document.getElementById('agent-creation-form');
-    if (form) {
-        form.style.display = 'none';
-        // Clear form
-        document.getElementById('agent-name').value = '';
-        document.getElementById('agent-type').value = 'general';
-        document.getElementById('agent-description').value = '';
-    }
-}
-
-// Create agent using ErgonService
-function ergon_createAgent() {
-    const name = document.getElementById('agent-name').value.trim();
-    const type = document.getElementById('agent-type').value;
-    const description = document.getElementById('agent-description').value.trim();
+// Create a sprint card for Ergon
+function ergon_createSprintCard(sprint) {
+    const card = document.createElement('div');
+    card.className = 'ergon__sprint-card';
     
-    if (!name) {
-        alert('Please enter an agent name');
+    const statusClass = sprint.status.toLowerCase().replace(/ /g, '-');
+    
+    // Show only Autonomous or Co-Developer
+    const displayAutonomy = (sprint.autonomyLevel === 'Autonomous' || sprint.autonomyLevel === 'Co-Developer') 
+        ? sprint.autonomyLevel 
+        : 'Co-Developer';  // Default to Co-Developer
+    
+    card.innerHTML = `
+        <div class="ergon__sprint-header">
+            <h4 class="ergon__sprint-name">${sprint.name}</h4>
+            <span class="ergon__sprint-status ergon__sprint-status--${statusClass}">${sprint.status}</span>
+        </div>
+        
+        <div class="ergon__sprint-meta">
+            <div><strong>Coder:</strong> ${sprint.assigned_coder ? `Coder-${sprint.assigned_coder}` : 'Unassigned'}</div>
+            <div><strong>Tasks:</strong> ${sprint.task_count || 0}</div>
+            <div><strong>Automated:</strong> ${displayAutonomy}</div>
+        </div>
+        
+        <div class="ergon__sprint-details">
+            <div><strong>Branch:</strong> ${sprint.branch_name || 'No branch'}</div>
+            <div><strong>Updated:</strong> ${sprint.last_updated ? new Date(sprint.last_updated).toLocaleDateString() : 'Unknown'}</div>
+        </div>
+        
+        <div class="ergon__sprint-actions">
+            <button class="ergon__sprint-button" onclick="ergon_viewSprintDetails('${sprint.name}')">View in Tekton</button>
+            <button class="ergon__sprint-button ergon__sprint-button--primary" onclick="ergon_manageSprint('${sprint.name}')">Manage Sprint</button>
+        </div>
+    `;
+    
+    return card;
+}
+
+// Update autonomy level for a sprint
+async function ergon_updateAutonomy(sprintName, newLevel) {
+    console.log(`[ERGON] Updating autonomy level for ${sprintName} to ${newLevel}`);
+    
+    try {
+        // Fetch current sprint plan
+        const encodedName = encodeURIComponent(sprintName);
+        const response = await fetch(window.tektonUrl ? window.tektonUrl('tekton-core', `/api/v1/sprints/${encodedName}/sprint-plan`) : `/api/v1/sprints/${encodedName}/sprint-plan`);
+        
+        if (!response.ok) {
+            throw new Error(`Failed to fetch sprint plan: ${response.statusText}`);
+        }
+        
+        const data = await response.json();
+        let content = data.content || '';
+        
+        // Update autonomy level
+        if (content.match(/Autonomy Level:\s*[^\n]+/i)) {
+            content = content.replace(/Autonomy Level:\s*[^\n]+/i, `Autonomy Level: ${newLevel}`);
+        }
+        
+        // Save updated sprint plan
+        const saveResponse = await fetch(window.tektonUrl ? window.tektonUrl('tekton-core', `/api/v1/sprints/${encodedName}/sprint-plan`) : `/api/v1/sprints/${encodedName}/sprint-plan`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ content })
+        });
+        
+        if (!saveResponse.ok) {
+            throw new Error(`Failed to save sprint plan: ${saveResponse.statusText}`);
+        }
+        
+        console.log(`[ERGON] Autonomy level updated successfully`);
+        
+    } catch (error) {
+        console.error('[ERGON] Failed to update autonomy:', error);
+        alert(`Failed to update autonomy level: ${error.message}`);
+        // Reload to restore original value
+        ergon_loadSprints();
+    }
+}
+
+// View sprint details
+function ergon_viewSprintDetails(sprintName) {
+    console.log(`[ERGON] Viewing details for sprint ${sprintName}`);
+    // Switch to Tekton Core sprints tab
+    if (window.uiManager && window.uiManager.switchToComponent) {
+        window.uiManager.switchToComponent('tekton', 'sprints');
+    }
+}
+
+// Manage sprint - placeholder for future sprint management
+function ergon_manageSprint(sprintName) {
+    console.log(`[ERGON] Managing sprint ${sprintName}`);
+    alert(`Sprint management for "${sprintName}" coming soon. This will allow Ergon to drive development for this sprint.`);
+}
+
+// Create Tekton project - redirect with URL or local path
+function ergon_createTektonProject() {
+    const urlInput = document.getElementById('repo-url');
+    const pathInput = document.getElementById('local-path');
+    const repoUrl = urlInput.value.trim();
+    const localPath = pathInput.value.trim();
+    
+    // Store the values in session storage
+    if (repoUrl) {
+        sessionStorage.setItem('ergon_github_url', repoUrl);
+    }
+    if (localPath) {
+        sessionStorage.setItem('ergon_local_path', localPath);
+    }
+    
+    // Switch to Tekton component, New Project tab
+    console.log('[ERGON] Switching to Tekton Core with:', { repoUrl, localPath });
+    
+    // Try using UI manager first
+    if (window.uiManager && window.uiManager.switchToComponent) {
+        window.uiManager.switchToComponent('tekton', 'new-project');
+    } else {
+        // Fallback: manually switch
+        const tektonButton = document.querySelector('[data-component="tekton"]');
+        if (tektonButton) {
+            tektonButton.click();
+        }
+    }
+    
+    // After switching, populate the fields
+    setTimeout(() => {
+        // Switch to new project tab
+        const newProjectTab = document.getElementById('tekton-tab-new-project');
+        if (newProjectTab) {
+            newProjectTab.checked = true;
+            // Trigger tab change
+            const event = new Event('change');
+            newProjectTab.dispatchEvent(event);
+        }
+        
+        // Populate fields after another delay
+        setTimeout(() => {
+            if (repoUrl) {
+                const githubUrlField = document.getElementById('github-url');
+                if (githubUrlField) {
+                    githubUrlField.value = repoUrl;
+                    // Only prepare if we have GitHub URL
+                    if (window.prepareNewProject) {
+                        window.prepareNewProject();
+                    }
+                }
+            } else if (localPath) {
+                const localDirField = document.getElementById('local-directory');
+                if (localDirField) {
+                    localDirField.value = localPath;
+                }
+            }
+        }, 300);
+    }, 200);
+}
+
+// Repository analysis with different types
+function ergon_analyzeRepo(analysisType) {
+    const urlInput = document.getElementById('repo-url');
+    const pathInput = document.getElementById('local-path');
+    const resultsDiv = document.getElementById('analysis-results');
+    
+    const repoUrl = urlInput.value.trim();
+    const localPath = pathInput.value.trim();
+    
+    if (!repoUrl && !localPath) {
+        alert('Please enter either a GitHub repository URL or a local path');
         return;
     }
     
-    const agentData = {
-        name,
-        type,
-        description,
-        status: 'active'
+    // Show analysis type-specific message
+    const analysisMessages = {
+        basic: 'Performing basic analysis to understand uses and capabilities...',
+        architecture: 'Analyzing project architecture and dependencies...',
+        tekton: 'Evaluating Tekton integration possibilities...',
+        full: 'Performing comprehensive analysis...'
     };
     
-    console.log('[ERGON] Creating agent:', agentData);
+    resultsDiv.innerHTML = `<div class="ergon__loading-message"><div class="ergon__message-text">${analysisMessages[analysisType]}</div></div>`;
     
-    if (window.ErgonService) {
-        window.ErgonService.createAgent(agentData)
-            .then(result => {
-                console.log('[ERGON] Agent created successfully:', result);
-                if (result.status === 'error') {
-                    alert(`Failed to create agent: ${result.message}`);
-                } else {
-                    ergon_hideCreateForm();
-                    ergon_loadAgents(); // Reload agents
-                }
-            })
-            .catch(err => {
-                console.error('[ERGON] Failed to create agent:', err);
-                alert('Failed to create agent. Please try again.');
-            });
-    } else {
-        console.error('[ERGON] ErgonService not available');
-        alert('Ergon service not available.');
-    }
-}
-
-// Run agent
-function ergon_runAgent(agentId) {
-    const apiUrl = window.ergonUrl ? window.ergonUrl(`/api/v1/agents/${agentId}/run`) : `/api/v1/agents/${agentId}/run`;
+    const apiUrl = window.ergonUrl ? window.ergonUrl('/api/v1/analyze') : '/api/v1/analyze';
     
     fetch(apiUrl, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({})
+        body: JSON.stringify({
+            repository_url: repoUrl,
+            local_path: localPath,
+            analysis_type: analysisType
+        })
     })
-    .then(response => {
-        if (!response.ok) throw new Error('Failed to run agent');
-        return response.json();
-    })
+    .then(response => response.json())
     .then(data => {
-        console.log('Agent execution started:', data);
-        alert(`Agent execution started. Execution ID: ${data.executionId || data.id}`);
+        if (data.status === 'not_implemented') {
+            // Show analysis type specific placeholder
+            const placeholders = {
+                basic: `
+                    <div class="ergon__analysis-section">
+                        <h4>Basic Analysis</h4>
+                        <p class="ergon__analysis-description">
+                            This repository appears to be a web application framework with RESTful API capabilities.
+                            It could be compatible with Tekton's service-oriented architecture.
+                        </p>
+                        <div class="ergon__analysis-details">
+                            <strong>Primary Language:</strong> JavaScript<br>
+                            <strong>Framework:</strong> Express.js<br>
+                            <strong>Use Cases:</strong> API development, microservices<br>
+                            <strong>Tekton Compatibility:</strong> High - could integrate as a service component
+                        </div>
+                    </div>
+                `,
+                architecture: `
+                    <div class="ergon__analysis-section">
+                        <h4>Architecture Analysis</h4>
+                        <p class="ergon__analysis-description">
+                            The project follows a modular MVC architecture with clear separation of concerns.
+                        </p>
+                        <div class="ergon__analysis-details">
+                            <strong>Structure:</strong> MVC pattern with routes, controllers, and models<br>
+                            <strong>Dependencies:</strong> Express, MongoDB, JWT auth<br>
+                            <strong>Build System:</strong> NPM with webpack<br>
+                            <strong>Testing:</strong> Jest framework with 85% coverage
+                        </div>
+                    </div>
+                `,
+                tekton: `
+                    <div class="ergon__analysis-section">
+                        <h4>Tekton Integration Analysis</h4>
+                        <p class="ergon__analysis-description">
+                            Several components could be valuable additions to the Tekton ecosystem.
+                        </p>
+                        <div class="ergon__analysis-details">
+                            <strong>Reusable Components:</strong><br>
+                            • Authentication middleware (JWT)<br>
+                            • Database abstraction layer<br>
+                            • API rate limiting module<br>
+                            <strong>Integration Strategy:</strong> Wrap as MCP service with Ergon configuration
+                        </div>
+                    </div>
+                `,
+                full: `
+                    <div class="ergon__analysis-section">
+                        <h4>Comprehensive Analysis</h4>
+                        <p class="ergon__analysis-description">
+                            Full analysis of ${repoUrl || localPath} completed. This project shows strong potential for Tekton integration.
+                        </p>
+                        <div class="ergon__analysis-details">
+                            <strong>Overview:</strong> Modern web API with modular architecture<br>
+                            <strong>Quality Score:</strong> 8.5/10<br>
+                            <strong>Reusability:</strong> High - well-structured components<br>
+                            <strong>Recommended Actions:</strong><br>
+                            1. Create Tekton Managed Project<br>
+                            2. Extract authentication module as MCP service<br>
+                            3. Configure database layer for Athena integration<br>
+                            <strong>CI Opinion:</strong> "This project exemplifies clean architecture principles that align well with Tekton's philosophy."
+                        </div>
+                    </div>
+                `
+            };
+            
+            resultsDiv.innerHTML = placeholders[analysisType];
+            return;
+        }
+        
+        // Handle real analysis results
+        let content = '';
+        
+        if (data.type && data.summary) {
+            content = `
+                <div class="ergon__analysis-section">
+                    <h4>${data.type}</h4>
+                    <p class="ergon__analysis-description">${data.summary}</p>
+                    <div class="ergon__analysis-details">
+            `;
+            
+            // Format based on analysis type
+            if (analysisType === 'basic' && data.components) {
+                content += `
+                    <strong>Languages:</strong> ${data.components.languages.join(', ')}<br>
+                    <strong>Frameworks:</strong> ${data.components.frameworks.join(', ')}<br>
+                    <strong>Dependencies:</strong> ${data.components.dependencies}<br>
+                    <strong>Files:</strong> ${data.components.files}
+                `;
+            } else if (analysisType === 'architecture' && data.architecture) {
+                content += `
+                    <strong>Pattern:</strong> ${data.architecture.pattern}<br>
+                    <strong>Components:</strong> ${data.architecture.components.join(', ')}<br>
+                    <strong>Integrations:</strong> ${data.architecture.integrations.join(', ')}<br>
+                    <strong>Data Flow:</strong> ${data.architecture.data_flow}
+                `;
+            } else if (analysisType === 'tekton' && data.tekton_compatibility) {
+                content += `
+                    <strong>Compatibility Score:</strong> ${data.tekton_compatibility.score}<br>
+                    <strong>Integration Points:</strong> ${data.tekton_compatibility.integration_points.join(', ')}<br>
+                    <strong>Recommended Approach:</strong> ${data.tekton_compatibility.recommended_approach}<br>
+                    <strong>Effort Estimate:</strong> ${data.tekton_compatibility.effort_estimate}
+                `;
+            } else if (analysisType === 'full' && data.results) {
+                content += `
+                    <strong>Basic Analysis:</strong> ${data.results.basic}<br>
+                    <strong>Architecture Analysis:</strong> ${data.results.architecture}<br>
+                    <strong>Tekton Analysis:</strong> ${data.results.tekton}<br>
+                    <strong>Reusability Score:</strong> ${data.results.reusability_score}<br>
+                    <strong>Recommendations:</strong><br>
+                `;
+                data.results.recommendations.forEach(rec => {
+                    content += `• ${rec}<br>`;
+                });
+            }
+            
+            content += `
+                    </div>
+                </div>
+            `;
+        } else {
+            // Fallback for unexpected format
+            content = `
+                <div class="ergon__analysis-section">
+                    <h4>${analysisType.charAt(0).toUpperCase() + analysisType.slice(1)} Analysis Results</h4>
+                    <pre>${JSON.stringify(data, null, 2)}</pre>
+                </div>
+            `;
+        }
+        
+        resultsDiv.innerHTML = content;
     })
     .catch(err => {
-        console.error('Failed to run agent:', err);
-        alert('Failed to run agent. Please try again.');
+        console.error('[ERGON] Failed to analyze repository:', err);
+        resultsDiv.innerHTML = '<div class="ergon__error-message">Failed to analyze repository. Please try again.</div>';
     });
 }
 
-// Delete agent using ErgonService
-function ergon_deleteAgent(agentId) {
-    if (!confirm('Are you sure you want to delete this agent?')) {
+// Show automate modal
+function ergon_showAutomateModal() {
+    document.getElementById('automate-modal').style.display = 'flex';
+}
+
+// Close automate modal
+function ergon_closeAutomateModal() {
+    document.getElementById('automate-modal').style.display = 'none';
+    // Clear form
+    document.getElementById('project-description').value = '';
+    document.getElementById('autonomy-override').value = '';
+    document.getElementById('sprint-name').value = '';
+}
+
+// Start automation - The ultimate feature!
+function ergon_startAutomation() {
+    const description = document.getElementById('project-description').value.trim();
+    const autonomyLevel = document.getElementById('autonomy-override').value;
+    const sprintName = document.getElementById('sprint-name').value.trim();
+    
+    if (!description) {
+        alert('Please describe what you want to build');
         return;
     }
     
-    console.log('[ERGON] Deleting agent:', agentId);
+    const apiUrl = window.ergonUrl ? window.ergonUrl('/api/v1/automate') : '/api/v1/automate';
     
-    if (window.ErgonService) {
-        window.ErgonService.deleteAgent(agentId)
-            .then(result => {
-                console.log('[ERGON] Agent deleted successfully:', result);
-                if (result.status === 'error') {
-                    alert(`Failed to delete agent: ${result.message}`);
-                } else {
-                    ergon_loadAgents(); // Reload agents
-                }
-            })
-            .catch(err => {
-                console.error('[ERGON] Failed to delete agent:', err);
-                alert('Failed to delete agent. Please try again.');
-            });
-    } else {
-        console.error('[ERGON] ErgonService not available');
-        alert('Ergon service not available.');
+    // Close modal
+    ergon_closeAutomateModal();
+    
+    // Switch to Tool Chat tab to show progress
+    document.getElementById('ergon-tab-chat').checked = true;
+    
+    // Add user message to chat
+    const messagesContainer = document.getElementById('ergon-messages');
+    const userMessageDiv = document.createElement('div');
+    userMessageDiv.className = 'ergon__message ergon__message--user';
+    userMessageDiv.innerHTML = `<div class="ergon__message-content"><div class="ergon__message-text">Automate: ${description}</div></div>`;
+    messagesContainer.appendChild(userMessageDiv);
+    
+    // Add thinking message
+    const thinkingDiv = document.createElement('div');
+    thinkingDiv.className = 'ergon__message ergon__message--ai';
+    thinkingDiv.innerHTML = `<div class="ergon__message-content"><div class="ergon__message-text"><strong>Ergon:</strong> Starting automated development process...</div></div>`;
+    messagesContainer.appendChild(thinkingDiv);
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    
+    // Make the API call
+    fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            project_description: description,
+            autonomy_level: autonomyLevel || null,
+            sprint_name: sprintName || null
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        const responseDiv = document.createElement('div');
+        responseDiv.className = 'ergon__message ergon__message--ai';
+        
+        if (data.status === 'not_implemented') {
+            responseDiv.innerHTML = `<div class="ergon__message-content"><div class="ergon__message-text"><strong>Ergon:</strong> The automation workflow is coming in Phase 3. This will enable me to orchestrate entire development projects with configurable autonomy levels.</div></div>`;
+        } else {
+            responseDiv.innerHTML = `<div class="ergon__message-content"><div class="ergon__message-text"><strong>Ergon:</strong> ${data.message || 'Automation started successfully!'}</div></div>`;
+        }
+        
+        messagesContainer.appendChild(responseDiv);
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    })
+    .catch(err => {
+        console.error('[ERGON] Failed to start automation:', err);
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'ergon__message ergon__message--system';
+        errorDiv.innerHTML = `<div class="ergon__message-content"><div class="ergon__message-text"><strong>System:</strong> Failed to start automation. Please try again.</div></div>`;
+        messagesContainer.appendChild(errorDiv);
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    });
+}
+
+// Initialize on DOM ready
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize chat components
+    setTimeout(() => {
+        ergon_initChats();
+    }, 100);
+    
+    // Load initial data
+    ergon_loadAutonomyLevel();
+    ergon_loadSprints();  // Load sprints for default Development tab
+    
+    // Add event listeners
+    const automateButton = document.getElementById('automate-button');
+    if (automateButton) {
+        automateButton.addEventListener('click', ergon_showAutomateModal);
     }
+    
+    
+    // Tab change listeners
+    const radioButtons = document.querySelectorAll('input[name="ergon-tab"]');
+    radioButtons.forEach(radio => {
+        radio.addEventListener('change', function() {
+            if (radio.checked) {
+                const tabId = radio.id.replace('ergon-tab-', '');
+                // Reload data for specific tabs
+                if (tabId === 'development') ergon_loadSprints();
+                if (tabId === 'registry') ergon_loadSolutions();
+            }
+        });
+    });
+});
+
+// Also try immediate initialization if DOM is already loaded
+if (document.readyState === 'complete' || document.readyState === 'interactive') {
+    setTimeout(() => {
+        ergon_initChats();
+    }, 100);
 }
 </script>

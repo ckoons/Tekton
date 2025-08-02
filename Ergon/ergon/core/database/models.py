@@ -5,7 +5,7 @@ from sqlalchemy.orm import relationship
 from datetime import datetime
 
 # Import Base from the base module
-from ergon.core.database.base import Base
+from .base import Base
 
 # Association table for agent <-> tools
 agent_tool = Table(

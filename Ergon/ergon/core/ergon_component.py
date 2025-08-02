@@ -1,37 +1,75 @@
-"""Ergon component implementation using StandardComponentBase."""
+"""Ergon component implementation using StandardComponentBase.
+
+Ergon v2 is Tekton's CI-in-the-loop reusability expert and autonomous development orchestrator.
+It catalogs, analyzes, configures, and autonomously builds solutions while learning from 
+patterns to automate development expertise.
+"""
 import logging
 import os
 from typing import List, Dict, Any
 from pathlib import Path
+from enum import Enum
 
 from shared.utils.standard_component import StandardComponentBase
-from ergon.core.database.engine import get_db_session, init_db
-from ergon.core.memory.service import MemoryService
-from ergon.core.a2a_client import A2AClient
-from ergon.core.agents.generator import AgentGenerator
-from ergon.core.agents.runner import AgentRunner
-from ergon.utils.config.settings import settings
-from landmarks import architecture_decision, state_checkpoint
+from .database.engine import get_db_session, init_db
+from .memory.service import MemoryService
+from .a2a_client import A2AClient
+from .agents.generator import AgentGenerator
+from .agents.runner import AgentRunner
+from .mcp.tool_discovery import MCPToolDiscovery
+from .repository import SolutionRepository
+from .memory.workflow_memory import WorkflowMemory
+from ..utils.config.settings import settings
+from landmarks import architecture_decision, state_checkpoint, danger_zone, integration_point, performance_boundary
 
 logger = logging.getLogger(__name__)
 
+
+class AutonomyLevel(Enum):
+    """Levels of autonomy for Ergon's CI-in-the-loop operations."""
+    ADVISORY = "advisory"        # Just recommendations
+    ASSISTED = "assisted"        # User approves each step  
+    GUIDED = "guided"           # User approves major decisions
+    AUTONOMOUS = "autonomous"    # Full autonomy within sprint
+
 @architecture_decision(
-    title="Agent-based task execution",
-    rationale="Ergon provides specialized agents for different task types (browser, GitHub, mail) with autonomous execution capabilities",
-    alternatives_considered=["Direct API integration", "Manual task execution", "Single agent type"])
+    title="CI-in-the-Loop Architecture",
+    rationale="Transform from human-in-the-loop to CI-in-the-loop development, enabling 50x productivity gains by automating Casey's expertise",
+    alternatives_considered=["Traditional agent builder", "Simple registry", "Manual configuration only"],
+    decided_by="Casey"
+)
 @state_checkpoint(
-    title="Agent system state",
+    title="Ergon Workflow Memory State",
     state_type="persistent",
     persistence=True,
-    consistency_requirements="Agent configurations and memory must persist",
-    recovery_strategy="Reload from database and memory service"
+    consistency_requirements="Workflow patterns and decisions must be preserved across sessions for learning",
+    recovery_strategy="Restore from PostgreSQL with JSONB fields for flexible evolution"
+)
+@danger_zone(
+    title="Autonomous Development Authority",
+    risk_level="high",
+    risks=["Autonomous code generation", "Direct repository modification", "Automatic dependency installation"],
+    mitigations=["Progressive autonomy levels", "User approval workflows", "Full audit trails", "Sandbox testing"],
+    review_required=True
+)
+@integration_point(
+    title="Multi-CI Orchestration",
+    target_component="All Tekton components",
+    protocol="MCP and Socket communication",
+    data_flow="Ergon -> MCP/Socket -> Other CIs -> Results -> Ergon learning"
+)
+@performance_boundary(
+    title="GitHub Analysis Performance",
+    sla="<5s for repository scan, 10 repos/minute throughput",
+    metrics={"memory": "2GB", "cpu": "2 cores", "cache_ttl": "24h"},
+    optimization_notes="Cache analysis results, background processing for large repos"
 )
 class ErgonComponent(StandardComponentBase):
-    """Ergon agent system component with specialized task execution capabilities."""
+    """Ergon v2: CI-in-the-Loop Reuse Specialist and Autonomous Builder."""
     
     def __init__(self):
-        super().__init__(component_name="ergon", version="0.1.0")
-        # Component-specific attributes - initialized in proper order
+        super().__init__(component_name="ergon", version="0.2.0")
+        # Existing component attributes
         self.db_path = None
         self.memory_service = None
         self.terminal_memory = None
@@ -39,6 +77,21 @@ class ErgonComponent(StandardComponentBase):
         self.agent_generator = None
         self.agent_runner = None
         self.mcp_bridge = None
+        
+        # V2 Core subsystems (initialized in _component_specific_init)
+        self.solution_registry = None
+        self.github_analyzer = None
+        self.configuration_engine = None
+        self.workflow_memory = None
+        self.autonomy_manager = None
+        self.ci_orchestrator = None
+        self.metrics_engine = None
+        self.tool_discovery = None     # MCP tool discovery
+        
+        # V2 Runtime state
+        self.current_autonomy_level = AutonomyLevel.ADVISORY
+        self.active_workflows = {}
+        self.learning_enabled = True
         
     async def _component_specific_init(self):
         """Initialize Ergon-specific services in dependency order."""
@@ -90,6 +143,85 @@ class ErgonComponent(StandardComponentBase):
             self.agent_runner = None
         
         logger.info("Ergon component core initialization completed")
+        
+        # Initialize V2 subsystems
+        logger.info("Initializing Ergon v2 CI-in-the-loop subsystems")
+        
+        # Initialize core v2 subsystems (placeholders for now)
+        await self._init_solution_registry()
+        await self._init_github_analyzer()
+        await self._init_configuration_engine()
+        await self._init_workflow_memory()
+        await self._init_autonomy_manager()
+        await self._init_ci_orchestrator()
+        await self._init_metrics_engine()
+        
+        # Import existing Tekton tools into registry
+        await self._import_tekton_tools()
+        
+        # Initialize MCP tool discovery
+        await self._init_mcp_tool_discovery()
+        
+        logger.info("Ergon v2 initialization complete - ready to automate development")
+    
+    async def _init_solution_registry(self):
+        """Initialize the solution registry for cataloging reusable components."""
+        try:
+            self.solution_registry = SolutionRepository()
+            logger.info("Solution registry initialized")
+        except Exception as e:
+            logger.warning(f"Failed to initialize solution registry: {e}")
+            self.solution_registry = None
+    
+    async def _init_github_analyzer(self):
+        """Initialize GitHub analyzer for deep repository understanding."""
+        # TODO: Implement GitHub analyzer
+        logger.info("GitHub analyzer initialization placeholder")
+    
+    async def _init_configuration_engine(self):
+        """Initialize configuration engine for wrapper and adapter generation."""
+        # TODO: Implement configuration engine
+        logger.info("Configuration engine initialization placeholder")
+    
+    async def _init_workflow_memory(self):
+        """Initialize workflow memory for capturing and replaying patterns."""
+        try:
+            self.workflow_memory = WorkflowMemory(self)
+            await self.workflow_memory.start_analysis()
+            logger.info("Workflow memory initialized with pattern analysis")
+        except Exception as e:
+            logger.warning(f"Failed to initialize workflow memory: {e}")
+            self.workflow_memory = None
+    
+    async def _init_autonomy_manager(self):
+        """Initialize autonomy manager for progressive automation levels."""
+        # TODO: Implement autonomy manager
+        logger.info("Autonomy manager initialization placeholder")
+    
+    async def _init_ci_orchestrator(self):
+        """Initialize CI orchestrator for coordinating multi-CI workflows."""
+        # TODO: Implement CI orchestrator
+        logger.info("CI orchestrator initialization placeholder")
+    
+    async def _init_metrics_engine(self):
+        """Initialize metrics engine for tracking productivity improvements."""
+        # TODO: Implement metrics engine
+        logger.info("Metrics engine initialization placeholder")
+    
+    async def _import_tekton_tools(self):
+        """Import existing Tekton components into the solution registry."""
+        # TODO: Scan Tekton components and import into registry
+        logger.info("Importing Tekton tools placeholder")
+    
+    async def _init_mcp_tool_discovery(self):
+        """Initialize MCP tool discovery service."""
+        try:
+            self.tool_discovery = MCPToolDiscovery(self)
+            await self.tool_discovery.start_discovery()
+            logger.info("MCP tool discovery service initialized")
+        except Exception as e:
+            logger.warning(f"Failed to initialize MCP tool discovery: {e}")
+            self.tool_discovery = None
     
     async def _component_specific_cleanup(self):
         """Cleanup Ergon-specific resources in reverse dependency order."""
@@ -151,9 +283,31 @@ class ErgonComponent(StandardComponentBase):
         
         # Database connections are handled by the database engine
         logger.info("Database cleanup completed")
+        
+        # Cleanup v2 resources
+        logger.info("Cleaning up Ergon v2 resources")
+        
+        # Stop MCP tool discovery
+        if self.tool_discovery:
+            try:
+                await self.tool_discovery.stop_discovery()
+                logger.info("MCP tool discovery cleaned up")
+            except Exception as e:
+                logger.warning(f"Error cleaning up MCP tool discovery: {e}")
+        
+        # Stop workflow memory analysis
+        if self.workflow_memory:
+            try:
+                await self.workflow_memory.stop_analysis()
+                logger.info("Workflow memory analysis stopped")
+            except Exception as e:
+                logger.warning(f"Error stopping workflow memory analysis: {e}")
+        
+        logger.info("Ergon v2 cleanup complete")
     
     def get_capabilities(self) -> List[str]:
         """Get component capabilities."""
+        # Original capabilities
         capabilities = [
             "agent_creation",
             "agent_execution", 
@@ -166,22 +320,88 @@ class ErgonComponent(StandardComponentBase):
         
         if self.mcp_bridge:
             capabilities.append("mcp_bridge")
+        
+        # V2 capabilities
+        capabilities.extend([
+            "solution_registry",
+            "github_analysis", 
+            "configuration_generation",
+            "workflow_automation",
+            "ci_orchestration",
+            "autonomous_building",
+            "pattern_learning",
+            "metrics_tracking",
+            "tool_chat",
+            "team_chat"
+        ])
             
         return capabilities
     
     def get_metadata(self) -> Dict[str, Any]:
         """Get component metadata."""
         metadata = {
-            "description": "Agent system for specialized task execution",
+            "description": "CI-in-the-Loop Reuse Specialist and Autonomous Development Orchestrator",
             "database": str(self.db_path) if self.db_path else None,
             "category": "execution",
+            "type": "execution_specialist",
             "a2a_enabled": bool(self.a2a_client),
             "memory_enabled": bool(self.memory_service),
             "agent_generator_enabled": bool(self.agent_generator),
-            "mcp_enabled": bool(self.mcp_bridge)
+            "mcp_enabled": bool(self.mcp_bridge),
+            "responsibilities": [
+                "Catalog and analyze reusable solutions",
+                "Generate configurations and wrappers",
+                "Orchestrate autonomous development workflows",
+                "Learn from development patterns",
+                "Coordinate multi-CI collaborations",
+                "Track productivity improvements"
+            ],
+            "autonomy_level": self.current_autonomy_level.value,
+            "learning_enabled": self.learning_enabled,
+            "socket_port": 8102,
+            "ui_theme": "purple"
         }
         
         return metadata
+    
+    async def set_autonomy_level(self, level: AutonomyLevel, reason: str = None):
+        """Set the current autonomy level for Ergon's operations."""
+        old_level = self.current_autonomy_level
+        self.current_autonomy_level = level
+        
+        logger.info(f"Autonomy level changed from {old_level.value} to {level.value}")
+        if reason:
+            logger.info(f"Reason: {reason}")
+        
+        # Track this in metrics
+        if self.metrics_engine:
+            # await self.metrics_engine.track_autonomy_change(old_level, level, reason)
+            pass
+    
+    async def automate_casey(self, project_description: str, autonomy_level: AutonomyLevel = None):
+        """The ultimate goal - automate Casey's development expertise.
+        
+        Args:
+            project_description: Description of what to build
+            autonomy_level: Override default autonomy level for this project
+        """
+        if autonomy_level:
+            await self.set_autonomy_level(autonomy_level, f"Project request: {project_description[:50]}...")
+        
+        logger.info(f"Starting automated development with {self.current_autonomy_level.value} autonomy")
+        logger.info(f"Project: {project_description}")
+        
+        # TODO: Implement the full automation workflow
+        # 1. Analyze requirements
+        # 2. Find similar past workflows  
+        # 3. Adapt workflow to current needs
+        # 4. Execute with appropriate autonomy
+        # 5. Learn from execution
+        
+        return {
+            "status": "not_implemented",
+            "message": "Automation workflow coming in Phase 3"
+        }
 
 
 # Convenience functions for backward compatibility during migration
