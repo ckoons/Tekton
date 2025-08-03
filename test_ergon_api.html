@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Ergon API</title>
+</head>
+<body>
+    <h1>Testing Ergon API</h1>
+    <div id="results"></div>
+    
+    <script>
+    // Simulate the window.ergonUrl function
+    window.ERGON_PORT = 8102;
+    
+    function ergonUrl(path) {
+        return `http://localhost:${window.ERGON_PORT}${path}`;
+    }
+    
+    async function testAPI() {
+        const results = document.getElementById('results');
+        const apiUrl = ergonUrl('/api/v1/solutions');
+        
+        results.innerHTML = `<p>Testing URL: ${apiUrl}</p>`;
+        
+        try {
+            const response = await fetch(apiUrl);
+            const data = await response.json();
+            
+            results.innerHTML += `<p>Response status: ${response.status}</p>`;
+            results.innerHTML += `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+            
+            // Check the condition
+            if (data.status === 'not_implemented' || data.detail === 'Not Found') {
+                results.innerHTML += '<p style="color: green">✓ Condition matches! Should show hardcoded solutions.</p>';
+            } else {
+                results.innerHTML += '<p style="color: red">✗ Condition does not match.</p>';
+            }
+            
+        } catch (error) {
+            results.innerHTML += `<p style="color: red">Error: ${error.message}</p>`;
+        }
+    }
+    
+    testAPI();
+    </script>
+</body>
+</html>
