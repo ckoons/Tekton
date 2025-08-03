@@ -30,7 +30,7 @@ except ImportError:
         return decorator
 
 from .. import get_registry
-from ..launcher_instance import get_launcher
+from ..simple_launcher_v2 import SimpleToolLauncherV2 as SimpleToolLauncher
 
 
 @integration_point(
@@ -167,75 +167,70 @@ def list_tools():
         print(f"{name:<15} {config['description']:<35} {config['port']:<10} {running:<10}")
     
     # Show instances if any
-    launcher = get_launcher()
-    if launcher.tools:
+    launcher = SimpleToolLauncher()
+    running_tools = launcher.get_running_tools()
+    if running_tools:
         print("\nRunning Instances:")
         print("-" * 70)
-        for instance_name, info in launcher.tools.items():
-            tool_type = info['config']['display_name']
-            pid = info['adapter'].process.pid if info['adapter'].process else 'N/A'
-            port = info['config'].get('port', 'N/A')
-            print(f"  {instance_name:<20} ({tool_type}, PID: {pid}, Port: {port})")
+        for tool_name, info in running_tools.items():
+            pid = info.get('pid', 'N/A')
+            port = info.get('port', 'N/A')
+            print(f"  {tool_name:<20} (PID: {pid}, Port: {port})")
 
 
 def show_status(tool_name=None):
     """Show status for a specific tool or all tools."""
-    launcher = get_launcher()
+    launcher = SimpleToolLauncher()
     registry = get_registry()
     
     if tool_name:
-        # Check if it's an instance name first
-        if tool_name in launcher.tools:
-            # Show instance status
-            info = launcher.tools[tool_name]
-            status = info['adapter'].get_status()
-            print(f"Instance: {tool_name}")
-            print(f"Type: {info['config']['display_name']}")
-            print(f"Status: {'Running' if status['running'] else 'Stopped'}")
-            if status['running']:
-                print(f"PID: {status['pid']}")
-                print(f"Session: {status['session'] or 'default'}")
+        # Get status from launcher
+        status = launcher.get_tool_status(tool_name)
+        
+        if status['running']:
+            print(f"Tool: {tool_name}")
+            print(f"Status: Running")
+            print(f"PID: {status['pid']}")
+            print(f"Port: {status['port']}")
+            print(f"Session: {status.get('session', 'default')}")
+            if 'uptime' in status:
                 print(f"Uptime: {status['uptime']:.1f} seconds")
-                print(f"Messages sent: {status['metrics']['messages_sent']}")
-                print(f"Messages received: {status['metrics']['messages_received']}")
-                print(f"Errors: {status['metrics']['errors']}")
         else:
-            # Show tool type status
-            status = registry.get_tool_status(tool_name)
-            if 'error' in status:
-                print(f"Error: {status['error']}")
-            else:
+            # Check if configured
+            tool_config = registry.get_tool(tool_name)
+            if tool_config:
                 print(f"Tool: {tool_name}")
+                print(f"Status: Stopped")
                 print(f"Configured: Yes")
-                print(f"Port: {status['config']['port']}")
-                print(f"Running: {'Yes' if status['running'] else 'No'}")
-                if status['running']:
-                    print(f"PID: {status['pid']}")
-                    print(f"Uptime: {status['uptime']:.1f} seconds")
+                print(f"Port: {tool_config.get('port', 'auto')}")
+            else:
+                print(f"Error: Unknown tool '{tool_name}'")
     else:
         # Show all status
-        all_status = launcher.get_all_status()
         print("CI Tools Status:")
         print("-" * 50)
         
-        # Show configured tools
+        # Show configured tools with their status
         tools = registry.get_tools()
-        for name in tools:
-            status = registry.get_tool_status(name)
-            running = "running" if status.get('running') else "stopped"
-            print(f"{name:<15} {running}")
+        running_tools = launcher.get_running_tools()
         
-        # Show instances
-        if launcher.tools:
-            print("\nInstances:")
-            for instance_name, info in launcher.tools.items():
-                status = info['adapter'].get_status()
-                print(f"  {instance_name:<20} ({'running' if status['running'] else 'stopped'})")
+        for name in tools:
+            if name in running_tools:
+                info = running_tools[name]
+                print(f"{name:<15} running (PID: {info['pid']})")
+            else:
+                print(f"{name:<15} stopped")
+        
+        # Show any running tools not in registry
+        for name in running_tools:
+            if name not in tools:
+                info = running_tools[name]
+                print(f"{name:<15} running (PID: {info['pid']}) [unregistered]")
 
 
 def launch_tool(tool_name, args):
     """Launch a CI tool."""
-    launcher = get_launcher()
+    launcher = SimpleToolLauncher()
     registry = get_registry()
     
     # Parse arguments
@@ -257,8 +252,9 @@ def launch_tool(tool_name, args):
     launch_name = instance_name or tool_name
     
     # Check if already running
-    if launch_name in launcher.tools:
-        print(f"{launch_name} is already running")
+    status = launcher.get_tool_status(launch_name)
+    if status['running']:
+        print(f"{launch_name} is already running (PID: {status['pid']})")
         return
     
     # Verify tool exists
@@ -270,11 +266,10 @@ def launch_tool(tool_name, args):
     if launcher.launch_tool(tool_name, session_id, instance_name):
         print(f"✓ {launch_name} launched successfully")
         
-        # Show connection info
-        tool_info = launcher.tools.get(launch_name)
-        if tool_info:
-            actual_port = tool_info['config'].get('port', 'N/A')
-            print(f"  Port: {actual_port}")
+        # Get actual status to show port
+        status = launcher.get_tool_status(launch_name)
+        if status.get('port'):
+            print(f"  Port: {status['port']}")
         else:
             print(f"  Port: {tool_config['port']}")
         print(f"  Session: {session_id or 'default'}")
@@ -285,22 +280,25 @@ def launch_tool(tool_name, args):
 
 def terminate_tool(name):
     """Terminate a tool or instance."""
-    launcher = get_launcher()
+    launcher = SimpleToolLauncher()
     
-    if name in launcher.tools:
+    # Check if running
+    status = launcher.get_tool_status(name)
+    if status['running']:
         print(f"Terminating {name}...")
         if launcher.terminate_tool(name):
             print(f"✓ {name} terminated")
         else:
             print(f"✗ Failed to terminate {name}")
     else:
-        print(f"No running instance named '{name}'")
+        print(f"'{name}' is not running")
         
         # Show running instances
-        if launcher.tools:
+        running_tools = launcher.get_running_tools()
+        if running_tools:
             print("\nRunning instances:")
-            for instance_name in launcher.tools:
-                print(f"  {instance_name}")
+            for tool_name in running_tools:
+                print(f"  {tool_name}")
 
 
 def show_capabilities(tool_name):
@@ -365,25 +363,24 @@ def create_instance(instance_name, args):
 
 def list_instances():
     """List all running tool instances."""
-    launcher = get_launcher()
+    launcher = SimpleToolLauncher()
+    running_tools = launcher.get_running_tools()
     
-    if not launcher.tools:
+    if not running_tools:
         print("No running tool instances")
         return
     
     print("Running Tool Instances:")
     print("-" * 80)
-    print(f"{'Instance':<20} {'Type':<15} {'PID':<10} {'Session':<15} {'Uptime':<10}")
+    print(f"{'Instance':<20} {'PID':<10} {'Port':<10} {'Session':<15}")
     print("-" * 80)
     
-    for instance_name, info in launcher.tools.items():
-        status = info['adapter'].get_status()
-        tool_type = info['config'].get('base_type', info['adapter'].tool_name)
-        pid = status.get('pid', 'N/A')
-        session = status.get('session', 'default') or 'default'
-        uptime = f"{status.get('uptime', 0):.0f}s" if status.get('uptime') else 'N/A'
+    for tool_name, info in running_tools.items():
+        pid = info.get('pid', 'N/A')
+        port = info.get('port', 'N/A')
+        session = info.get('session_id', 'default') or 'default'
         
-        print(f"{instance_name:<20} {tool_type:<15} {str(pid):<10} {session:<15} {uptime:<10}")
+        print(f"{tool_name:<20} {str(pid):<10} {str(port):<10} {session:<15}")
 
 
 @architecture_decision(
@@ -573,7 +570,7 @@ def undefine_tool(tool_name):
     # Users can always re-add them if needed
     
     # Check if running
-    launcher = get_launcher()
+    launcher = SimpleToolLauncher()
     if tool_name in launcher.tools:
         print(f"Cannot undefine '{tool_name}' while it's running")
         print(f"First terminate with: aish tools terminate {tool_name}")

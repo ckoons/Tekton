@@ -168,8 +168,6 @@ class ToolLauncher:
             
             self.logger.info(f"Successfully launched {tool_name}")
             self.logger.info(f"Tools tracking: {list(self.tools.keys())}")
-            print(f"DEBUG: Added {launch_key} to tools dict, now have: {list(self.tools.keys())}")
-            print(f"DEBUG: launcher id after adding: {id(self)}")
             return True
             
         except Exception as e:

@@ -170,16 +170,57 @@ class BaseCIToolAdapter(abc.ABC):
             self.logger.info(f"Launching {self.tool_name}: {' '.join(args)}")
             self.logger.debug(f"Working directory: {os.getcwd()}")
             
-            # Launch process
-            self.logger.debug("Creating subprocess.Popen...")
-            self.process = subprocess.Popen(
-                args,
-                stdin=subprocess.PIPE,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-                env=env,
-                bufsize=-1  # Use default buffering
-            )
+            # Check if we should use C launcher
+            use_c_launcher = self.config.get('use_c_launcher', True)
+            
+            if use_c_launcher:
+                # Use C launcher for reliable process management
+                launcher_path = Path(__file__).parent / 'bin' / 'ci_tool_launcher'
+                self.logger.info(f"Checking for C launcher at: {launcher_path}")
+                if not launcher_path.exists():
+                    self.logger.warning(f"C launcher not found at {launcher_path}, falling back to Python")
+                    use_c_launcher = False
+                else:
+                    self.logger.info(f"Found C launcher at {launcher_path}")
+            
+            if use_c_launcher:
+                # Build C launcher command
+                launcher_args = [
+                    str(launcher_path),
+                    '--tool', self.tool_name,
+                    '--executable', str(exe_path)
+                ]
+                
+                # Add port if configured
+                if hasattr(self, 'port') and self.port:
+                    launcher_args.extend(['--port', str(self.port)])
+                
+                # Add tool arguments
+                if len(args) > 1:
+                    launcher_args.append('--args')
+                    launcher_args.extend(args[1:])
+                
+                self.logger.debug(f"Using C launcher: {' '.join(launcher_args)}")
+                
+                # Launch via C launcher
+                self.process = subprocess.Popen(
+                    launcher_args,
+                    stdin=subprocess.PIPE,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.PIPE,
+                    env=env
+                )
+            else:
+                # Fall back to Python subprocess
+                self.logger.debug("Creating subprocess.Popen...")
+                self.process = subprocess.Popen(
+                    args,
+                    stdin=subprocess.PIPE,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.PIPE,
+                    env=env,
+                    bufsize=-1  # Use default buffering
+                )
             
             self.logger.debug(f"Process created with PID: {self.process.pid}")
             
@@ -201,18 +242,9 @@ class BaseCIToolAdapter(abc.ABC):
             self.current_session = session_id
             self.metrics['start_time'] = time.time()
             
-            # Keep a reference to stdin to prevent garbage collection
+            # Keep a reference to stdin for consistency
             self._stdin = self.process.stdin
             self.logger.debug(f"stdin pipe: {self._stdin}")
-            
-            # Ensure stdin stays open - write a newline to establish the pipe
-            # This prevents immediate EOF in the child process
-            try:
-                self._stdin.write(b'\n')
-                self._stdin.flush()
-                self.logger.debug("Sent initial newline to keep stdin alive")
-            except Exception as e:
-                self.logger.warning(f"Could not send initial newline to stdin: {e}")
             
             self.logger.debug("Starting monitor threads...")
             # Start output monitoring threads
