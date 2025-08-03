@@ -62,6 +62,9 @@ class ClaudeCodeAdapter(BaseCIToolAdapter):
         # Claude Code specific state
         self.context_window = []
         self.max_context_messages = 10
+        self.session_id = None
+        self.message_count = 0
+        self.use_claude_max = True  # Use subscription instead of API
     
     def get_executable_path(self) -> Optional[Path]:
         """Find Claude Code executable."""
@@ -102,93 +105,63 @@ class ClaudeCodeAdapter(BaseCIToolAdapter):
     
     def get_launch_args(self, session_id: Optional[str] = None) -> List[str]:
         """Get Claude Code launch arguments."""
-        # Use launch_args from config if available
+        # Start with base args from config
         if self.config and 'launch_args' in self.config:
             args = self.config['launch_args'].copy()
         else:
-            args = [
-                '--stdio-mode',  # Use stdin/stdout for communication
-                '--json-format',  # Use JSON for structured communication
-                '--no-gui'  # Headless mode
-            ]
+            args = ['--print']
         
-        # Add session if provided and not using custom launch_args
-        if session_id and '--session' not in str(args):
-            args.extend(['--session', session_id])
+        # For Claude Max, we'll maintain context through our own message history
+        # rather than relying on --continue which seems problematic
         
-        # Add workspace if in project directory and not using custom launch_args
+        # Add workspace if in project directory
         import os
         workspace = os.getcwd()
-        if workspace and '--workspace' not in str(args):
-            args.extend(['--workspace', workspace])
+        if workspace and '--add-dir' not in str(args):
+            args.extend(['--add-dir', workspace])
         
         return args
     
     def translate_to_tool(self, message: Dict[str, Any]) -> str:
         """Translate Tekton message to Claude Code format."""
-        # Claude Code expects JSON messages
-        claude_message = {
-            'id': message.get('id', str(time.time())),
-            'type': 'request',
-            'action': self._map_action(message),
-            'content': message.get('content', ''),
-            'metadata': {
-                'session': message.get('session_id'),
-                'context': message.get('context', {}),
-                'timestamp': message.get('timestamp', time.time())
-            }
-        }
-        
-        # Add to context window
-        self._update_context(message)
-        
-        # Include context if available
-        if self.context_window:
-            claude_message['context'] = self._get_context_messages()
-        
-        return json.dumps(claude_message)
+        # Each interaction is standalone - like a new day
+        # The message should already contain any necessary context
+        return message.get('content', '')
     
     def translate_from_tool(self, output: str) -> Dict[str, Any]:
         """Translate Claude Code output to Tekton format."""
-        try:
-            # Try to parse as JSON first
-            claude_output = json.loads(output)
-            
-            # Map to Tekton format
-            return {
-                'type': 'response',
-                'ci': 'claude-code',
-                'content': claude_output.get('content', ''),
-                'metadata': {
-                    'request_id': claude_output.get('id'),
-                    'status': claude_output.get('status', 'success'),
-                    'tokens_used': claude_output.get('usage', {}).get('total_tokens'),
-                    'model': claude_output.get('model'),
-                    'capabilities_used': self._extract_capabilities(claude_output)
-                },
-                'timestamp': time.time()
-            }
-            
-        except json.JSONDecodeError:
-            # Handle plain text output
-            return {
-                'type': 'response',
-                'ci': 'claude-code',
-                'content': output,
-                'metadata': {
-                    'format': 'plain_text'
-                },
-                'timestamp': time.time()
-            }
+        self.message_count += 1
+        
+        # Simple response for Claude Max subscription mode
+        return {
+            'type': 'response',
+            'ci': 'claude-code',
+            'content': output.strip(),
+            'metadata': {
+                'message_count': self.message_count,
+                'format': 'plain_text',
+                'subscription': 'Claude Max',
+                'mode': 'stateless'  # Each message is independent
+            },
+            'timestamp': time.time()
+        }
+    
+    def should_reset_session(self) -> bool:
+        """Check if we should reset the session."""
+        # Reset after 50 messages or if explicitly requested
+        return self.message_count > 50
+    
+    def reset_session(self):
+        """Reset the session, dropping the session ID."""
+        self.logger.info(f"Resetting session (was: {self.session_id})")
+        self.session_id = None
+        self.message_count = 0
+        self.context_window = []
     
     def send_shutdown_command(self):
         """Send graceful shutdown to Claude Code."""
-        shutdown_msg = {
-            'type': 'command',
-            'action': 'shutdown',
-            'graceful': True
-        }
-        self.send_message(shutdown_msg)
+        # For batch mode, there's nothing to shutdown
+        pass
     
     def on_output(self, message: Dict[str, Any]):
         """Handle output from Claude Code."""
