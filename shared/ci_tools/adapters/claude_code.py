@@ -18,9 +18,23 @@ class ClaudeCodeAdapter(BaseCIToolAdapter):
     through stdin/stdout while presenting a socket interface.
     """
     
-    def __init__(self, port: int = 8400):
+    def __init__(self, tool_name: str = 'claude-code', config: Optional[Dict[str, Any]] = None):
         """Initialize Claude Code adapter."""
-        config = {
+        # If config is passed, use it; otherwise use defaults
+        if config and isinstance(config, dict):
+            # Extract port from config if available
+            port = config.get('port', 8400)
+            if port == 'auto':
+                port = 8400  # Default port for now
+        else:
+            # Legacy support: if tool_name is actually a port number
+            if isinstance(tool_name, int):
+                port = tool_name
+                tool_name = 'claude-code'
+            else:
+                port = 8400
+        
+        default_config = {
             'display_name': 'Claude Code',
             'executable': 'claude-code',
             'capabilities': {
@@ -39,7 +53,11 @@ class ClaudeCodeAdapter(BaseCIToolAdapter):
             }
         }
         
-        super().__init__('claude-code', port, config)
+        # Merge configs if provided
+        if config and isinstance(config, dict):
+            default_config.update(config)
+        
+        super().__init__(tool_name, port, default_config)
         
         # Claude Code specific state
         self.context_window = []
@@ -47,6 +65,12 @@ class ClaudeCodeAdapter(BaseCIToolAdapter):
     
     def get_executable_path(self) -> Optional[Path]:
         """Find Claude Code executable."""
+        # First check if we have executable in config (from tools.json)
+        if self.config and 'executable' in self.config:
+            exe_path = Path(self.config['executable'])
+            if exe_path.exists():
+                return exe_path
+        
         # Check common locations
         possible_paths = [
             Path('/usr/local/bin/claude-code'),
@@ -78,20 +102,24 @@ class ClaudeCodeAdapter(BaseCIToolAdapter):
     
     def get_launch_args(self, session_id: Optional[str] = None) -> List[str]:
         """Get Claude Code launch arguments."""
-        args = [
-            '--stdio-mode',  # Use stdin/stdout for communication
-            '--json-format',  # Use JSON for structured communication
-            '--no-gui'  # Headless mode
-        ]
+        # Use launch_args from config if available
+        if self.config and 'launch_args' in self.config:
+            args = self.config['launch_args'].copy()
+        else:
+            args = [
+                '--stdio-mode',  # Use stdin/stdout for communication
+                '--json-format',  # Use JSON for structured communication
+                '--no-gui'  # Headless mode
+            ]
         
-        # Add session if provided
-        if session_id:
+        # Add session if provided and not using custom launch_args
+        if session_id and '--session' not in str(args):
             args.extend(['--session', session_id])
         
-        # Add workspace if in project directory
+        # Add workspace if in project directory and not using custom launch_args
         import os
         workspace = os.getcwd()
-        if workspace:
+        if workspace and '--workspace' not in str(args):
             args.extend(['--workspace', workspace])
         
         return args
