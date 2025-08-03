@@ -3,6 +3,7 @@ Tool Launcher - Manages CI tool lifecycle and socket bridges.
 """
 
 import logging
+import threading
 from typing import Dict, Optional, Any
 
 from .base_adapter import BaseCIToolAdapter
@@ -57,10 +58,14 @@ class ToolLauncher:
     """
     
     _instance = None
+    _lock = threading.Lock()
     
     def __new__(cls):
         if cls._instance is None:
-            cls._instance = super().__new__(cls)
+            with cls._lock:
+                # Double-check locking pattern
+                if cls._instance is None:
+                    cls._instance = super().__new__(cls)
         return cls._instance
     
     def __init__(self):
@@ -70,6 +75,7 @@ class ToolLauncher:
             self.tools = {}  # tool_name -> dict with adapter, bridge
             self.registry = get_registry()
             self.initialized = True
+            self.logger.info(f"ToolLauncher initialized, id: {id(self)}")
     
     @classmethod
     def get_instance(cls) -> 'ToolLauncher':
@@ -109,20 +115,33 @@ class ToolLauncher:
             return False
         
         try:
+            # Allocate port dynamically if needed
+            port = tool_config.get('port')
+            if port == 'auto' or port is None:
+                port = self.registry.find_available_port()
+                self.logger.info(f"Allocated dynamic port {port} for {tool_name}")
+            
+            # Create a copy of config with actual port
+            runtime_config = tool_config.copy()
+            runtime_config['port'] = port
+            
             # Create adapter based on tool
-            adapter = self._create_adapter(tool_name, tool_config)
+            adapter = self._create_adapter(tool_name, runtime_config)
             if not adapter:
                 return False
             
-            # Create socket bridge
-            bridge = SocketBridge(tool_name, tool_config['port'])
+            # Create socket bridge with allocated port
+            bridge = SocketBridge(tool_name, port)
             bridge.connect_adapter(adapter)
             
-            # Set message handler
+            # Set message handler to send messages TO the tool
             def handle_message(msg):
-                adapter.on_output(msg)
+                adapter.send_message(msg)
             
             bridge.set_message_handler(handle_message)
+            
+            # Set adapter output handler to send messages FROM the tool
+            adapter.on_output = lambda msg: bridge.send_message(msg)
             
             # Start socket bridge
             if not bridge.start():
@@ -139,7 +158,7 @@ class ToolLauncher:
             self.tools[launch_key] = {
                 'adapter': adapter,
                 'bridge': bridge,
-                'config': tool_config,
+                'config': runtime_config,  # Use runtime_config with actual port
                 'tool_name': tool_name,
                 'instance_name': instance_name
             }
@@ -148,6 +167,9 @@ class ToolLauncher:
             self.registry.mark_running(launch_key, adapter, adapter.process.pid)
             
             self.logger.info(f"Successfully launched {tool_name}")
+            self.logger.info(f"Tools tracking: {list(self.tools.keys())}")
+            print(f"DEBUG: Added {launch_key} to tools dict, now have: {list(self.tools.keys())}")
+            print(f"DEBUG: launcher id after adding: {id(self)}")
             return True
             
         except Exception as e:
@@ -251,3 +273,17 @@ class ToolLauncher:
         
         # Pass full config to adapter
         return adapter_class(tool_name, config)
+
+
+# Global singleton instance
+_launcher_instance = None
+_launcher_lock = threading.Lock()
+
+def get_tool_launcher() -> ToolLauncher:
+    """Get the global tool launcher instance."""
+    global _launcher_instance
+    if _launcher_instance is None:
+        with _launcher_lock:
+            if _launcher_instance is None:
+                _launcher_instance = ToolLauncher()
+    return _launcher_instance

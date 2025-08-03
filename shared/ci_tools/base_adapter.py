@@ -6,6 +6,7 @@ All CI tool adapters must inherit from this class.
 import abc
 import json
 import logging
+import os
 import subprocess
 import threading
 import time
@@ -153,46 +154,82 @@ class BaseCIToolAdapter(abc.ABC):
             return True
         
         exe_path = self.get_executable_path()
+        self.logger.debug(f"Executable path for {self.tool_name}: {exe_path}")
         if not exe_path or not exe_path.exists():
-            self.logger.error(f"Executable not found for {self.tool_name}")
+            self.logger.error(f"Executable not found for {self.tool_name} at path: {exe_path}")
             return False
         
         try:
             # Prepare environment
             env = self._prepare_environment(session_id)
+            self.logger.debug(f"Environment prepared with {len(env)} variables")
             
             # Get launch arguments
             args = [str(exe_path)] + self.get_launch_args(session_id)
             
             self.logger.info(f"Launching {self.tool_name}: {' '.join(args)}")
+            self.logger.debug(f"Working directory: {os.getcwd()}")
             
             # Launch process
+            self.logger.debug("Creating subprocess.Popen...")
             self.process = subprocess.Popen(
                 args,
                 stdin=subprocess.PIPE,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
                 env=env,
-                bufsize=0  # Unbuffered
+                bufsize=-1  # Use default buffering
             )
+            
+            self.logger.debug(f"Process created with PID: {self.process.pid}")
+            
+            # Check if process started properly
+            time.sleep(0.1)  # Brief pause to let process initialize
+            poll_result = self.process.poll()
+            if poll_result is not None:
+                self.logger.error(f"Process exited immediately with code: {poll_result}")
+                # Try to read any error output
+                try:
+                    stderr_output = self.process.stderr.read().decode()
+                    if stderr_output:
+                        self.logger.error(f"Process stderr: {stderr_output}")
+                except:
+                    pass
+                return False
             
             self.running = True
             self.current_session = session_id
             self.metrics['start_time'] = time.time()
             
+            # Keep a reference to stdin to prevent garbage collection
+            self._stdin = self.process.stdin
+            self.logger.debug(f"stdin pipe: {self._stdin}")
+            
+            # Ensure stdin stays open - write a newline to establish the pipe
+            # This prevents immediate EOF in the child process
+            try:
+                self._stdin.write(b'\n')
+                self._stdin.flush()
+                self.logger.debug("Sent initial newline to keep stdin alive")
+            except Exception as e:
+                self.logger.warning(f"Could not send initial newline to stdin: {e}")
+            
+            self.logger.debug("Starting monitor threads...")
             # Start output monitoring threads
             self._start_monitors()
             
+            self.logger.debug("Performing health check...")
             # Perform health check
             if not self._health_check():
+                self.logger.error("Health check failed")
                 self.terminate()
                 return False
             
-            self.logger.info(f"{self.tool_name} launched successfully")
+            self.logger.info(f"{self.tool_name} launched successfully with PID {self.process.pid}")
             return True
             
         except Exception as e:
-            self.logger.error(f"Failed to launch {self.tool_name}: {e}")
+            self.logger.error(f"Failed to launch {self.tool_name}: {e}", exc_info=True)
             self.metrics['errors'] += 1
             return False
     
@@ -214,9 +251,13 @@ class BaseCIToolAdapter(abc.ABC):
             # Translate to tool format
             tool_command = self.translate_to_tool(message)
             
-            # Send to process stdin
-            self.process.stdin.write(f"{tool_command}\n".encode())
-            self.process.stdin.flush()
+            # Send to process stdin (use stored reference)
+            if hasattr(self, '_stdin') and self._stdin:
+                self._stdin.write(f"{tool_command}\n".encode())
+                self._stdin.flush()
+            else:
+                self.process.stdin.write(f"{tool_command}\n".encode())
+                self.process.stdin.flush()
             
             self.metrics['messages_sent'] += 1
             self.logger.debug(f"Sent to {self.tool_name}: {tool_command}")
@@ -317,20 +358,39 @@ class BaseCIToolAdapter(abc.ABC):
     def _start_monitors(self):
         """Start threads to monitor stdout and stderr."""
         def monitor_stdout():
-            for line in iter(self.process.stdout.readline, b''):
-                if line:
-                    self._handle_output(line.decode().strip())
+            self.logger.debug(f"Starting stdout monitor thread for {self.tool_name}")
+            try:
+                for line in iter(self.process.stdout.readline, b''):
+                    if line:
+                        decoded_line = line.decode().strip()
+                        self.logger.debug(f"stdout: {decoded_line}")
+                        self._handle_output(decoded_line)
+                    else:
+                        self.logger.debug("Empty line received from stdout")
+                self.logger.debug("stdout monitor thread exiting - stream closed")
+            except Exception as e:
+                self.logger.error(f"Error in stdout monitor: {e}", exc_info=True)
         
         def monitor_stderr():
-            for line in iter(self.process.stderr.readline, b''):
-                if line:
-                    self._handle_error(line.decode().strip())
+            self.logger.debug(f"Starting stderr monitor thread for {self.tool_name}")
+            try:
+                for line in iter(self.process.stderr.readline, b''):
+                    if line:
+                        decoded_line = line.decode().strip()
+                        self.logger.debug(f"stderr: {decoded_line}")
+                        self._handle_error(decoded_line)
+                    else:
+                        self.logger.debug("Empty line received from stderr")
+                self.logger.debug("stderr monitor thread exiting - stream closed")
+            except Exception as e:
+                self.logger.error(f"Error in stderr monitor: {e}", exc_info=True)
         
-        stdout_thread = threading.Thread(target=monitor_stdout, daemon=True)
-        stderr_thread = threading.Thread(target=monitor_stderr, daemon=True)
+        stdout_thread = threading.Thread(target=monitor_stdout, daemon=True, name=f"{self.tool_name}-stdout")
+        stderr_thread = threading.Thread(target=monitor_stderr, daemon=True, name=f"{self.tool_name}-stderr")
         
         stdout_thread.start()
         stderr_thread.start()
+        self.logger.debug(f"Monitor threads started: {stdout_thread.name}, {stderr_thread.name}")
     
     @state_checkpoint(
         title="Tool Output Processing",
@@ -361,9 +421,31 @@ class BaseCIToolAdapter(abc.ABC):
     
     def _health_check(self) -> bool:
         """Perform health check after launch."""
+        # Check if tool defines no health check
+        if self.config.get('health_check') == 'none':
+            self.logger.debug("Health check disabled by config")
+            return True
+            
         # Default implementation - override in subclass
+        self.logger.debug("Performing default health check...")
         time.sleep(0.5)  # Give process time to start
-        return self.process.poll() is None
+        poll_result = self.process.poll()
+        if poll_result is None:
+            self.logger.debug(f"Health check passed - process still running (PID: {self.process.pid})")
+            return True
+        else:
+            self.logger.error(f"Health check failed - process exited with code: {poll_result}")
+            # Try to capture any final output
+            try:
+                remaining_stdout = self.process.stdout.read().decode()
+                remaining_stderr = self.process.stderr.read().decode()
+                if remaining_stdout:
+                    self.logger.error(f"Remaining stdout: {remaining_stdout}")
+                if remaining_stderr:
+                    self.logger.error(f"Remaining stderr: {remaining_stderr}")
+            except:
+                pass
+            return False
     
     # Override these in subclasses
     def on_output(self, message: Dict[str, Any]):

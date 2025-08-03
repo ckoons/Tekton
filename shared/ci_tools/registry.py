@@ -42,12 +42,13 @@ except ImportError:
         return decorator
 
 
-# CI Tools configuration
-CI_TOOLS_CONFIG = {
+# Default CI Tools configuration
+# These will be written to config file on first run
+DEFAULT_TOOLS_CONFIG = {
     'claude-code': {
         'display_name': 'Claude Code',
         'type': 'tool',
-        'port': 8400,
+        'port': 'auto',
         'description': 'Claude AI coding assistant',
         'executable': 'claude-code',
         'launch_args': ['--no-sandbox', '--enable-stdio-bridge'],
@@ -68,7 +69,7 @@ CI_TOOLS_CONFIG = {
     'cursor': {
         'display_name': 'Cursor',
         'type': 'tool',
-        'port': 8401,
+        'port': 'auto',
         'description': 'AI-powered code editor',
         'executable': 'cursor',
         'launch_args': ['--cli-mode', '--socket-bridge'],
@@ -87,7 +88,7 @@ CI_TOOLS_CONFIG = {
     'continue': {
         'display_name': 'Continue',
         'type': 'tool',
-        'port': 8402,
+        'port': 'auto',
         'description': 'Open-source AI code assistant',
         'executable': 'continue',
         'launch_args': ['--headless', '--socket-mode'],
@@ -140,12 +141,12 @@ class CIToolRegistry:
     def __init__(self):
         """Initialize the registry."""
         self.logger = logging.getLogger("ci_tools.registry")
-        self.tools = CI_TOOLS_CONFIG.copy()
+        self.tools = {}
         self.running_tools = {}
         self.adapters = {}
         
-        # Load custom tools if available
-        self._load_custom_tools()
+        # Initialize with defaults if needed, then load from file
+        self._initialize_tools()
     
     @state_checkpoint(
         title="Get Tools",
@@ -203,8 +204,8 @@ class CIToolRegistry:
         self.tools[tool_name] = config
         self.logger.info(f"Registered tool: {tool_name}")
         
-        # Save to custom tools
-        self._save_custom_tools()
+        # Save all tools
+        self._save_tools()
         
         return True
     
@@ -221,13 +222,9 @@ class CIToolRegistry:
         if tool_name not in self.tools:
             return False
         
-        # Don't allow unregistering built-in tools
-        if tool_name in CI_TOOLS_CONFIG:
-            self.logger.error(f"Cannot unregister built-in tool: {tool_name}")
-            return False
-        
+        # All tools can now be unregistered since they're all in config
         del self.tools[tool_name]
-        self._save_custom_tools()
+        self._save_tools()
         
         return True
     
@@ -302,29 +299,16 @@ class CIToolRegistry:
         """
         Find an available port for a new tool.
         
+        Always uses dynamic allocation.
+        
         Args:
-            start_port: Port to start searching from
+            start_port: Port to start searching from (ignored for dynamic)
             
         Returns:
             Available port number
         """
-        from shared.env import TektonEnviron
-        
-        # Check port allocation mode
-        port_mode = TektonEnviron.get('CI_TOOLS_PORT_MODE', 'fixed')
-        
-        if port_mode == 'dynamic':
-            # Dynamic allocation - find any available port
-            return self._allocate_dynamic_port()
-        else:
-            # Fixed allocation - use sequential ports
-            used_ports = {config['port'] for config in self.tools.values() if isinstance(config.get('port'), int)}
-            
-            port = start_port
-            while port in used_ports:
-                port += 1
-            
-            return port
+        # Always use dynamic allocation
+        return self._allocate_dynamic_port()
     
     def _allocate_dynamic_port(self) -> int:
         """Allocate a dynamic port."""
@@ -353,8 +337,8 @@ class CIToolRegistry:
             s.bind(('', 0))
             return s.getsockname()[1]
     
-    def _load_custom_tools(self):
-        """Load custom tool configurations."""
+    def _initialize_tools(self):
+        """Initialize tools from config file, creating defaults if needed."""
         try:
             import os
             from shared.env import TektonEnviron
@@ -363,22 +347,30 @@ class CIToolRegistry:
             if not tekton_root:
                 return
             
-            custom_file = Path(tekton_root) / '.tekton' / 'ci_tools' / 'custom_tools.json'
-            if custom_file.exists():
-                with open(custom_file, 'r') as f:
-                    custom_tools = json.load(f)
+            tools_dir = Path(tekton_root) / '.tekton' / 'ci_tools'
+            tools_dir.mkdir(parents=True, exist_ok=True)
+            
+            tools_file = tools_dir / 'tools.json'
+            
+            if tools_file.exists():
+                # Load existing tools
+                with open(tools_file, 'r') as f:
+                    self.tools = json.load(f)
+                    self.logger.info(f"Loaded {len(self.tools)} tools from config")
+            else:
+                # First run - write defaults to file
+                self.tools = DEFAULT_TOOLS_CONFIG.copy()
+                with open(tools_file, 'w') as f:
+                    json.dump(self.tools, f, indent=2)
+                    self.logger.info(f"Created tools config with {len(self.tools)} default tools")
                     
-                for tool_name, config in custom_tools.items():
-                    if tool_name not in self.tools:
-                        config['type'] = 'tool'  # Ensure correct type
-                        self.tools[tool_name] = config
-                        self.logger.info(f"Loaded custom tool: {tool_name}")
-                        
         except Exception as e:
-            self.logger.error(f"Failed to load custom tools: {e}")
+            self.logger.error(f"Failed to initialize tools: {e}")
+            # Fall back to defaults in memory
+            self.tools = DEFAULT_TOOLS_CONFIG.copy()
     
-    def _save_custom_tools(self):
-        """Save custom tool configurations."""
+    def _save_tools(self):
+        """Save all tool configurations."""
         try:
             import os
             from shared.env import TektonEnviron
@@ -387,23 +379,16 @@ class CIToolRegistry:
             if not tekton_root:
                 return
             
-            # Get custom tools (not in default config)
-            custom_tools = {
-                name: config
-                for name, config in self.tools.items()
-                if name not in CI_TOOLS_CONFIG
-            }
+            tools_dir = Path(tekton_root) / '.tekton' / 'ci_tools'
+            tools_dir.mkdir(parents=True, exist_ok=True)
             
-            if custom_tools:
-                custom_dir = Path(tekton_root) / '.tekton' / 'ci_tools'
-                custom_dir.mkdir(parents=True, exist_ok=True)
-                
-                custom_file = custom_dir / 'custom_tools.json'
-                with open(custom_file, 'w') as f:
-                    json.dump(custom_tools, f, indent=2)
+            tools_file = tools_dir / 'tools.json'
+            with open(tools_file, 'w') as f:
+                json.dump(self.tools, f, indent=2)
+                self.logger.info(f"Saved {len(self.tools)} tools to config")
                     
         except Exception as e:
-            self.logger.error(f"Failed to save custom tools: {e}")
+            self.logger.error(f"Failed to save tools: {e}")
 
 
 # Global registry instance

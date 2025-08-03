@@ -29,10 +29,8 @@ except ImportError:
             return func
         return decorator
 
-# Add parent paths for imports
-sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
-
-from shared.ci_tools import get_registry, ToolLauncher
+from .. import get_registry
+from ..launcher_instance import get_launcher
 
 
 @integration_point(
@@ -169,19 +167,20 @@ def list_tools():
         print(f"{name:<15} {config['description']:<35} {config['port']:<10} {running:<10}")
     
     # Show instances if any
-    launcher = ToolLauncher.get_instance()
+    launcher = get_launcher()
     if launcher.tools:
         print("\nRunning Instances:")
         print("-" * 70)
         for instance_name, info in launcher.tools.items():
             tool_type = info['config']['display_name']
             pid = info['adapter'].process.pid if info['adapter'].process else 'N/A'
-            print(f"  {instance_name:<20} ({tool_type}, PID: {pid})")
+            port = info['config'].get('port', 'N/A')
+            print(f"  {instance_name:<20} ({tool_type}, PID: {pid}, Port: {port})")
 
 
 def show_status(tool_name=None):
     """Show status for a specific tool or all tools."""
-    launcher = ToolLauncher.get_instance()
+    launcher = get_launcher()
     registry = get_registry()
     
     if tool_name:
@@ -236,7 +235,7 @@ def show_status(tool_name=None):
 
 def launch_tool(tool_name, args):
     """Launch a CI tool."""
-    launcher = ToolLauncher.get_instance()
+    launcher = get_launcher()
     registry = get_registry()
     
     # Parse arguments
@@ -272,8 +271,12 @@ def launch_tool(tool_name, args):
         print(f"✓ {launch_name} launched successfully")
         
         # Show connection info
-        tool_config = registry.get_tool(tool_name)
-        print(f"  Port: {tool_config['port']}")
+        tool_info = launcher.tools.get(launch_name)
+        if tool_info:
+            actual_port = tool_info['config'].get('port', 'N/A')
+            print(f"  Port: {actual_port}")
+        else:
+            print(f"  Port: {tool_config['port']}")
         print(f"  Session: {session_id or 'default'}")
         print(f"  Use: aish {launch_name} \"message\"")
     else:
@@ -282,7 +285,7 @@ def launch_tool(tool_name, args):
 
 def terminate_tool(name):
     """Terminate a tool or instance."""
-    launcher = ToolLauncher.get_instance()
+    launcher = get_launcher()
     
     if name in launcher.tools:
         print(f"Terminating {name}...")
@@ -362,7 +365,7 @@ def create_instance(instance_name, args):
 
 def list_instances():
     """List all running tool instances."""
-    launcher = ToolLauncher.get_instance()
+    launcher = get_launcher()
     
     if not launcher.tools:
         print("No running tool instances")
@@ -472,10 +475,8 @@ def define_tool(tool_name, args):
     if 'base_type' not in config:
         config['base_type'] = 'generic'
     
-    # Allocate port if needed
-    if config['port'] == 'auto':
-        config['port'] = registry.find_available_port()
-        print(f"Allocated port: {config['port']}")
+    # Keep 'auto' for dynamic allocation at launch time
+    # Don't allocate port at definition time
     
     # Register the tool
     if registry.register_tool(tool_name, config):
@@ -568,14 +569,11 @@ def undefine_tool(tool_name):
         print(f"Tool '{tool_name}' not found")
         return
     
-    # Check if it's user-defined
-    if tool_config.get('defined_by') != 'user':
-        print(f"Cannot undefine built-in tool '{tool_name}'")
-        print("Only user-defined tools can be undefined")
-        return
+    # All tools can now be undefined since they're all in the config file
+    # Users can always re-add them if needed
     
     # Check if running
-    launcher = ToolLauncher.get_instance()
+    launcher = get_launcher()
     if tool_name in launcher.tools:
         print(f"Cannot undefine '{tool_name}' while it's running")
         print(f"First terminate with: aish tools terminate {tool_name}")
