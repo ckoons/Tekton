@@ -13,7 +13,11 @@ from pathlib import Path
 from typing import Dict, Optional, Any, List
 
 try:
-    from landmarks import architecture_decision, integration_point
+    from landmarks import (
+        architecture_decision, 
+        integration_point,
+        state_checkpoint
+    )
 except ImportError:
     def architecture_decision(**kwargs):
         def decorator(func):
@@ -24,13 +28,21 @@ except ImportError:
         def decorator(func):
             return func
         return decorator
+    
+    def state_checkpoint(**kwargs):
+        def decorator(func):
+            return func
+        return decorator
 
 
 @architecture_decision(
     title="CI Tool Adapter Base Class",
     description="Base adapter provides common interface for all CI tools",
     rationale="Ensures consistent behavior and simplifies tool integration",
-    tags=["ci-tools", "adapter-pattern"]
+    alternatives_considered=["Direct subprocess management", "Tool-specific implementations", "External tool managers"],
+    impacts=["tool_integration", "socket_communication", "lifecycle_management"],
+    decided_by="Casey",
+    decision_date="2025-08-02"
 )
 class BaseCIToolAdapter(abc.ABC):
     """
@@ -122,7 +134,9 @@ class BaseCIToolAdapter(abc.ABC):
         title="CI Tool Launch",
         description="Launches CI tool process with proper environment",
         target_component="CI Tool Process",
-        protocol="Subprocess"
+        protocol="Subprocess",
+        data_flow="adapter.launch() → subprocess.Popen → tool process → socket bridge",
+        integration_date="2025-08-02"
     )
     def launch(self, session_id: Optional[str] = None) -> bool:
         """
@@ -318,6 +332,14 @@ class BaseCIToolAdapter(abc.ABC):
         stdout_thread.start()
         stderr_thread.start()
     
+    @state_checkpoint(
+        title="Tool Output Processing",
+        description="Processes and translates tool output maintaining message state",
+        state_type="message_flow",
+        persistence=False,
+        consistency_requirements="Ordered message delivery, no dropped messages",
+        recovery_strategy="Log errors and continue processing"
+    )
     def _handle_output(self, output: str):
         """Handle output from tool stdout."""
         try:

@@ -12,8 +12,19 @@ import queue
 from typing import Dict, Any, Optional, Callable
 
 try:
-    from landmarks import integration_point, performance_boundary
+    from landmarks import (
+        architecture_decision, 
+        integration_point, 
+        performance_boundary,
+        danger_zone,
+        state_checkpoint
+    )
 except ImportError:
+    def architecture_decision(**kwargs):
+        def decorator(func):
+            return func
+        return decorator
+    
     def integration_point(**kwargs):
         def decorator(func):
             return func
@@ -23,13 +34,34 @@ except ImportError:
         def decorator(func):
             return func
         return decorator
+    
+    def danger_zone(**kwargs):
+        def decorator(func):
+            return func
+        return decorator
+    
+    def state_checkpoint(**kwargs):
+        def decorator(func):
+            return func
+        return decorator
 
 
+@architecture_decision(
+    title="Socket Bridge Architecture",
+    description="Bidirectional bridge between CI tools and Tekton's socket interface",
+    rationale="Maintains 'CIs are sockets' philosophy while allowing stdio-based tools",
+    alternatives_considered=["Direct socket integration in tools", "HTTP REST APIs", "Named pipes"],
+    impacts=["tool_communication", "message_routing", "client_compatibility"],
+    decided_by="Casey",
+    decision_date="2025-08-02"
+)
 @integration_point(
-    title="Socket Bridge",
+    title="Socket Bridge Integration",
     description="Bridges socket communication with CI tool processes",
     target_component="CI Tool Process",
-    protocol="Socket"
+    protocol="TCP Socket",
+    data_flow="client → socket → bridge → adapter → tool",
+    integration_date="2025-08-02"
 )
 class SocketBridge:
     """
@@ -202,6 +234,14 @@ class SocketBridge:
                     if self.error_handler:
                         self.error_handler(str(e))
     
+    @danger_zone(
+        title="Concurrent Client Handler",
+        description="Manages client socket lifecycle with multiple threads",
+        risk_level="medium",
+        risks=["socket leaks", "thread synchronization", "message ordering"],
+        mitigation="Proper cleanup, thread-safe queues, connection state tracking",
+        review_required=False
+    )
     def _handle_client(self, client_socket: socket.socket):
         """Handle a connected client."""
         self.connected = True

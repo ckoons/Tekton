@@ -6,12 +6,43 @@ Provides lifecycle management for CI tools.
 import sys
 from pathlib import Path
 
+# Try to import landmarks
+try:
+    from landmarks import (
+        api_contract,
+        integration_point,
+        architecture_decision
+    )
+except ImportError:
+    def api_contract(**kwargs):
+        def decorator(func):
+            return func
+        return decorator
+    
+    def integration_point(**kwargs):
+        def decorator(func):
+            return func
+        return decorator
+    
+    def architecture_decision(**kwargs):
+        def decorator(func):
+            return func
+        return decorator
+
 # Add parent paths for imports
 sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
 
 from shared.ci_tools import get_registry, ToolLauncher
 
 
+@integration_point(
+    title="CI Tools Command Handler",
+    description="Central command dispatcher for CI tool lifecycle management",
+    target_component="aish CLI",
+    protocol="CLI commands",
+    data_flow="aish CLI → tools.py → registry/launcher → tool process",
+    integration_date="2025-08-02"
+)
 def handle_tools_command(args):
     """
     Handle CI tools commands:
@@ -352,6 +383,15 @@ def list_instances():
         print(f"{instance_name:<20} {tool_type:<15} {str(pid):<10} {session:<15} {uptime:<10}")
 
 
+@architecture_decision(
+    title="Dynamic Tool Definition",
+    description="Users can define new CI tools without code changes",
+    rationale="Enables rapid integration of new tools without modifying core code",
+    alternatives_considered=["Hard-coded tool list", "Plugin system", "Configuration files only"],
+    impacts=["tool_flexibility", "user_experience", "security"],
+    decided_by="Casey",
+    decision_date="2025-08-02"
+)
 def define_tool(tool_name, args):
     """Define a new CI tool."""
     registry = get_registry()

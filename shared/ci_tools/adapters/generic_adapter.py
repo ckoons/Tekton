@@ -8,9 +8,41 @@ import logging
 from typing import Dict, Any, Optional
 from pathlib import Path
 
+# Try to import landmarks
+try:
+    from landmarks import (
+        architecture_decision,
+        integration_point,
+        performance_boundary
+    )
+except ImportError:
+    def architecture_decision(**kwargs):
+        def decorator(func):
+            return func
+        return decorator
+    
+    def integration_point(**kwargs):
+        def decorator(func):
+            return func
+        return decorator
+    
+    def performance_boundary(**kwargs):
+        def decorator(func):
+            return func
+        return decorator
+
 from ..base_adapter import BaseCIToolAdapter
 
 
+@architecture_decision(
+    title="Generic Adapter Pattern",
+    description="Universal adapter for any stdio-based tool",
+    rationale="Enables integration of any command-line tool without custom adapters",
+    alternatives_considered=["Tool-specific adapters only", "Plugin architecture", "Binary protocol"],
+    impacts=["tool_compatibility", "message_formats", "extensibility"],
+    decided_by="Casey",
+    decision_date="2025-08-02"
+)
 class GenericAdapter(BaseCIToolAdapter):
     """
     Generic adapter for stdio-based CI tools.
@@ -98,6 +130,14 @@ class GenericAdapter(BaseCIToolAdapter):
             # Plain text format
             return content + '\n'
     
+    @integration_point(
+        title="Tool Output Translation",
+        description="Translates tool-specific output to Tekton message format",
+        target_component="CI Tool Process",
+        protocol="JSON/Text",
+        data_flow="tool stdout → adapter → JSON message → socket",
+        integration_date="2025-08-02"
+    )
     def translate_from_tool(self, output: str) -> Optional[Dict[str, Any]]:
         """
         Translate tool output to standard format.

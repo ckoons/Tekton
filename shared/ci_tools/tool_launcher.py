@@ -11,7 +11,12 @@ from .registry import get_registry
 from .adapters import ClaudeCodeAdapter, GenericAdapter
 
 try:
-    from landmarks import architecture_decision, state_checkpoint
+    from landmarks import (
+        architecture_decision, 
+        state_checkpoint,
+        integration_point,
+        danger_zone
+    )
 except ImportError:
     def architecture_decision(**kwargs):
         def decorator(func):
@@ -22,13 +27,26 @@ except ImportError:
         def decorator(func):
             return func
         return decorator
+    
+    def integration_point(**kwargs):
+        def decorator(func):
+            return func
+        return decorator
+    
+    def danger_zone(**kwargs):
+        def decorator(func):
+            return func
+        return decorator
 
 
 @architecture_decision(
     title="Singleton Tool Launcher",
     description="Singleton tool launcher manages all CI tool processes",
-    rationale="Centralized lifecycle management prevents orphan processes",
-    tags=["ci-tools", "lifecycle", "singleton"]
+    rationale="Centralized lifecycle management prevents orphan processes and port conflicts",
+    alternatives_considered=["Per-tool launchers", "Process manager integration", "Systemd services"],
+    impacts=["process_management", "resource_allocation", "multi_instance_support"],
+    decided_by="Casey",
+    decision_date="2025-08-02"
 )
 class ToolLauncher:
     """

@@ -8,14 +8,35 @@ from pathlib import Path
 from typing import Dict, List, Optional, Any
 
 try:
-    from landmarks import api_contract, state_checkpoint
+    from landmarks import (
+        architecture_decision,
+        api_contract, 
+        state_checkpoint,
+        integration_point,
+        performance_boundary
+    )
 except ImportError:
+    def architecture_decision(**kwargs):
+        def decorator(func):
+            return func
+        return decorator
+    
     def api_contract(**kwargs):
         def decorator(func):
             return func
         return decorator
     
     def state_checkpoint(**kwargs):
+        def decorator(func):
+            return func
+        return decorator
+    
+    def integration_point(**kwargs):
+        def decorator(func):
+            return func
+        return decorator
+    
+    def performance_boundary(**kwargs):
         def decorator(func):
             return func
         return decorator
@@ -85,6 +106,23 @@ CI_TOOLS_CONFIG = {
 }
 
 
+@architecture_decision(
+    title="CI Tool Registry Pattern",
+    description="Centralized registry for all CI tool configurations and lifecycle",
+    rationale="Single source of truth for tool discovery, configuration, and state persistence",
+    alternatives_considered=["Individual tool configs", "Database storage", "Service discovery"],
+    impacts=["tool_management", "persistence", "multi_instance_support"],
+    decided_by="Casey",
+    decision_date="2025-08-02"
+)
+@state_checkpoint(
+    title="CI Tool Registry State",
+    description="Persistent registry of tool configurations and custom definitions",
+    state_type="persistent",
+    persistence=True,
+    consistency_requirements="Thread-safe access, atomic updates",
+    recovery_strategy="Reload from disk on startup, merge with built-ins"
+)
 @api_contract(
     title="CI Tool Registry API",
     endpoint="/api/tools",
