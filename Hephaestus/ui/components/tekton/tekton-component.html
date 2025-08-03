@@ -2230,7 +2230,7 @@ async function createNewProject() {
     return false;
 }
 
-async function loadProjectsDashboard() {
+window.loadProjectsDashboard = async function loadProjectsDashboard() {
     console.log('[TEKTON] Loading projects dashboard');
     
     try {
@@ -2495,7 +2495,7 @@ async function showProjectSprints(projectId, projectName) {
 }
 
 // Load all sprints for the Sprints tab
-async function loadAllSprints() {
+window.loadAllSprints = async function loadAllSprints() {
     console.log('[TEKTON] Loading all sprints');
     
     const sprintsContainer = document.getElementById('sprints-list');

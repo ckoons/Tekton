@@ -362,7 +362,7 @@ class SettingsManager {
             'budget': { main: 'Penia', sub: 'LLM Cost Management' },
             'penia': { main: 'Penia', sub: 'LLM Cost Management' },
             'hermes': { main: 'Hermes', sub: 'Messages/Data' },
-            'ergon': { main: 'Ergon', sub: 'Agents/Tools/Mcp' },
+            'ergon': { main: 'Ergon', sub: 'Automation/Tools' },
             'terma': { main: 'Terma', sub: 'AI Terminals' },
             'profile': { main: 'Profile', sub: '' },
             'settings': { main: 'Settings', sub: '' }
@@ -384,7 +384,7 @@ class SettingsManager {
             'budget': { main: '', sub: 'LLM Cost Management' },
             'penia': { main: '', sub: 'LLM Cost Management' },
             'hermes': { main: '', sub: 'Messages/Data' },
-            'ergon': { main: '', sub: 'Agents/Tools/Mcp' },
+            'ergon': { main: '', sub: 'Automation/Tools' },
             'terma': { main: '', sub: 'AI Terminals' },
             'profile': { main: 'Profile', sub: '' },
             'settings': { main: 'Settings', sub: '' }
@@ -457,7 +457,7 @@ class SettingsManager {
                 case 'budget': return 'Penia - LLM Cost Management';
                 case 'penia': return 'Penia - LLM Cost Management';
                 case 'hermes': return 'Hermes - Messages/Data';
-                case 'ergon': return 'Ergon - Agents/Tools/Mcp';
+                case 'ergon': return 'Ergon - Automation/Tools';
                 case 'terma': return 'Terma - AI Terminals';
                 case 'profile': return 'Profile';
                 case 'settings': return 'Settings';
@@ -482,7 +482,7 @@ class SettingsManager {
                 case 'budget': return 'LLM Cost Management';
                 case 'penia': return 'LLM Cost Management';
                 case 'hermes': return 'Messages/Data';
-                case 'ergon': return 'Agents/Tools/Mcp';
+                case 'ergon': return 'Automation/Tools';
                 case 'terma': return 'AI Terminals';
                 case 'profile': return 'Profile';
                 case 'settings': return 'Settings';
@@ -516,7 +516,7 @@ class SettingsManager {
                 case 'budget': return 'Penia<span class="nav-label-sub"> - LLM Cost</span>';
                 case 'penia': return 'Penia<span class="nav-label-sub"> - LLM Cost</span>';
                 case 'hermes': return 'Hermes<span class="nav-label-sub"> - Messages/Data</span>';
-                case 'ergon': return 'Ergon<span class="nav-label-sub"> - Agents/Tools/MCP</span>';
+                case 'ergon': return 'Ergon<span class="nav-label-sub"> - Automation/Tools</span>';
                 case 'terma': return 'Terma<span class="nav-label-sub"> - Terminal</span>';
                 case 'profile': return 'Profile';
                 case 'settings': return 'Settings';
@@ -539,7 +539,7 @@ class SettingsManager {
                 case 'apollo': return 'Attention/Prediction';
                 case 'rhetor': return 'LLM/Prompt/Context';
                 case 'hermes': return 'Messages/Data';
-                case 'ergon': return 'Agents/Tools/MCP';
+                case 'ergon': return 'Automation/Tools';
                 case 'terma': return 'Terminal';
                 case 'budget': return 'LLM Cost';
                 case 'penia': return 'LLM Cost';
@@ -558,14 +558,14 @@ class SettingsManager {
     getChatTabLabel(context) {
         if (this.settings.showGreekNames) {
             switch(context) {
-                case 'ergon': return 'Ergon - Tools';
+                case 'ergon': return 'Ergon - Automation/Tools';
                 case 'awt-team': return 'Team Chat';
                 case 'agora': return 'Team Chat';
                 default: return context;
             }
         } else {
             switch(context) {
-                case 'ergon': return 'Tools';
+                case 'ergon': return 'Automation/Tools';
                 case 'awt-team': return 'Team Chat';
                 case 'agora': return 'Team Chat';
                 default: return context;

@@ -144,7 +144,7 @@ async def get_sprint_plan(sprint_name: str):
         # Get sprint directory path
         tekton_root = os.environ.get("TEKTON_ROOT", os.getcwd())
         sprint_dir = os.path.join(tekton_root, "MetaData", "DevelopmentSprints", sprint_name)
-        sprint_plan_path = os.path.join(sprint_dir, "Sprint_Plan.md")
+        sprint_plan_path = os.path.join(sprint_dir, "SPRINT_PLAN.md")
         
         if not os.path.exists(sprint_plan_path):
             # Return a default Sprint Plan if file doesn't exist
@@ -192,7 +192,7 @@ async def update_sprint_plan(sprint_name: str, request: Dict[str, str]):
         # Get sprint directory path
         tekton_root = os.environ.get("TEKTON_ROOT", os.getcwd())
         sprint_dir = os.path.join(tekton_root, "MetaData", "DevelopmentSprints", sprint_name)
-        sprint_plan_path = os.path.join(sprint_dir, "Sprint_Plan.md")
+        sprint_plan_path = os.path.join(sprint_dir, "SPRINT_PLAN.md")
         
         # Create directory if it doesn't exist
         os.makedirs(sprint_dir, exist_ok=True)

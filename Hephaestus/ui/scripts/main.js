@@ -51,7 +51,15 @@ window.tektonUI = {
     switchComponent: function(componentId) {
         if (componentId && componentId !== this.activeComponent) {
             this.log(`Switching component from ${this.activeComponent} to ${componentId}`);
-            uiManager.activateComponent(componentId);
+            // Use CSS-first navigation
+            const navRadio = document.getElementById(`nav-${componentId}`);
+            if (navRadio) {
+                navRadio.checked = true;
+                navRadio.dispatchEvent(new Event('change'));
+                this.activeComponent = componentId;
+            } else {
+                console.error(`Component navigation radio not found: nav-${componentId}`);
+            }
         }
     },
     

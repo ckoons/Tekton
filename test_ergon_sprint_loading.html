@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Ergon Sprint Loading</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1000px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .success { color: green; }
+        .error { color: red; }
+        .info { color: blue; }
+        .warning { color: orange; }
+        pre {
+            background: #f0f0f0;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <h1>Test Ergon Sprint Loading</h1>
+    
+    <div class="test-section">
+        <h2>Environment Check</h2>
+        <button onclick="checkEnvironment()">Check Environment</button>
+        <div id="env-results"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Sprint Loading Test</h2>
+        <button onclick="testSprintLoading()">Test Sprint Loading</button>
+        <button onclick="testDirectAPI()">Test Direct API</button>
+        <div id="sprint-results"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Ergon Simulation</h2>
+        <button onclick="simulateErgonLoad()">Simulate Ergon Load</button>
+        <div id="ergon-results"></div>
+    </div>
+    
+    <script>
+    // Set up environment if not already set
+    window.TEKTON_CORE_PORT = window.TEKTON_CORE_PORT || 8110;
+    
+    // Mock tektonUrl if not available
+    if (!window.tektonUrl) {
+        window.tektonUrl = function(component, path = "") {
+            const ports = {
+                'tekton-core': 8110,
+                'ergon': 8102
+            };
+            const port = ports[component] || 8000;
+            return `http://localhost:${port}${path}`;
+        };
+    }
+    
+    function log(element, message, type = 'info') {
+        const div = document.createElement('div');
+        div.className = type;
+        div.innerHTML = `${new Date().toLocaleTimeString()}: ${message}`;
+        element.appendChild(div);
+    }
+    
+    async function checkEnvironment() {
+        const results = document.getElementById('env-results');
+        results.innerHTML = '';
+        
+        log(results, 'Checking environment variables...', 'info');
+        
+        // Check key variables
+        const vars = [
+            'TEKTON_CORE_PORT',
+            'ERGON_PORT',
+            'tektonUrl'
+        ];
+        
+        vars.forEach(varName => {
+            const value = window[varName];
+            if (value) {
+                log(results, `✓ ${varName} = ${typeof value === 'function' ? 'function defined' : value}`, 'success');
+            } else {
+                log(results, `✗ ${varName} is not defined`, 'error');
+            }
+        });
+        
+        // Test URL construction
+        try {
+            const testUrl = window.tektonUrl('tekton-core', '/api/v1/sprints/status');
+            log(results, `✓ tektonUrl test: ${testUrl}`, 'success');
+        } catch (err) {
+            log(results, `✗ tektonUrl error: ${err.message}`, 'error');
+        }
+    }
+    
+    async function testDirectAPI() {
+        const results = document.getElementById('sprint-results');
+        results.innerHTML = '';
+        
+        log(results, 'Testing direct API calls...', 'info');
+        
+        // Test without tektonUrl
+        const directUrl = `http://localhost:8110/api/v1/sprints/status`;
+        log(results, `Fetching: ${directUrl}`, 'info');
+        
+        try {
+            const response = await fetch(directUrl);
+            log(results, `Response status: ${response.status}`, response.ok ? 'success' : 'error');
+            
+            if (response.ok) {
+                const data = await response.json();
+                log(results, `✓ API is accessible`, 'success');
+                log(results, `<pre>${JSON.stringify(data, null, 2)}</pre>`, 'info');
+            }
+        } catch (err) {
+            log(results, `✗ Fetch error: ${err.message}`, 'error');
+        }
+    }
+    
+    async function testSprintLoading() {
+        const results = document.getElementById('sprint-results');
+        results.innerHTML = '';
+        
+        log(results, 'Starting sprint loading test...', 'info');
+        
+        try {
+            // Test 1: Check sprint status endpoint
+            const url = window.tektonUrl('tekton-core', '/api/v1/sprints/status');
+            log(results, `Fetching from: ${url}`, 'info');
+            
+            const response = await fetch(url);
+            log(results, `Response status: ${response.status}`, response.ok ? 'success' : 'error');
+            
+            if (response.ok) {
+                const result = await response.json();
+                const data = result.data || {};
+                const allSprints = data.sprints || [];
+                
+                log(results, `Found ${allSprints.length} total sprints`, 'success');
+                
+                // Test 2: Check each sprint for automation
+                const automatedSprints = [];
+                
+                for (const sprint of allSprints) {
+                    log(results, `Checking sprint: ${sprint.name}`, 'info');
+                    
+                    try {
+                        const encodedName = encodeURIComponent(sprint.name);
+                        const planUrl = window.tektonUrl('tekton-core', `/api/v1/sprints/${encodedName}/sprint-plan`);
+                        log(results, `  Fetching plan from: ${planUrl}`, 'info');
+                        
+                        const planResponse = await fetch(planUrl);
+                        
+                        if (planResponse.ok) {
+                            const planData = await planResponse.json();
+                            const content = planData.content || '';
+                            
+                            // Check if automated
+                            const automatedMatch = content.match(/Automated:\s*(Yes)/i);
+                            if (automatedMatch) {
+                                const autonomyMatch = content.match(/Autonomy Level:\s*([^\n]+)/i);
+                                log(results, `  ✓ ${sprint.name} is automated! Autonomy: ${autonomyMatch ? autonomyMatch[1] : 'Unknown'}`, 'success');
+                                automatedSprints.push({
+                                    ...sprint,
+                                    automated: 'Yes',
+                                    autonomyLevel: autonomyMatch ? autonomyMatch[1].trim() : 'Co-Developer'
+                                });
+                            } else {
+                                log(results, `  - ${sprint.name} is not automated`, 'warning');
+                            }
+                        } else {
+                            log(results, `  ✗ Failed to get plan for ${sprint.name}: ${planResponse.status}`, 'error');
+                        }
+                    } catch (err) {
+                        log(results, `  ✗ Error checking ${sprint.name}: ${err.message}`, 'error');
+                    }
+                }
+                
+                log(results, `<h3>Summary: ${automatedSprints.length} automated sprints found</h3>`, 'info');
+                if (automatedSprints.length > 0) {
+                    log(results, `<pre>${JSON.stringify(automatedSprints, null, 2)}</pre>`, 'success');
+                }
+                
+            } else {
+                log(results, `Failed to fetch sprints: ${response.statusText}`, 'error');
+            }
+        } catch (error) {
+            log(results, `Error: ${error.message}`, 'error');
+            log(results, `<pre>${error.stack}</pre>`, 'error');
+        }
+    }
+    
+    async function simulateErgonLoad() {
+        const results = document.getElementById('ergon-results');
+        results.innerHTML = '';
+        
+        log(results, 'Simulating Ergon sprint loading...', 'info');
+        
+        // This simulates what ergon_loadSprints() does
+        try {
+            const url = window.tektonUrl('tekton-core', '/api/v1/sprints/status');
+            const response = await fetch(url);
+            
+            if (!response.ok) {
+                throw new Error(`Failed to fetch sprints: ${response.status} ${response.statusText}`);
+            }
+            
+            const result = await response.json();
+            const data = result.data || {};
+            const allSprints = data.sprints || [];
+            
+            const automatedSprints = [];
+            
+            log(results, `Checking ${allSprints.length} sprints for automation...`, 'info');
+            
+            for (const sprint of allSprints) {
+                try {
+                    const encodedName = encodeURIComponent(sprint.name);
+                    const planUrl = window.tektonUrl('tekton-core', `/api/v1/sprints/${encodedName}/sprint-plan`);
+                    
+                    const planResponse = await fetch(planUrl);
+                    
+                    if (planResponse.ok) {
+                        const planData = await planResponse.json();
+                        const content = planData.content || '';
+                        
+                        const automatedMatch = content.match(/Automated:\s*(Yes)/i);
+                        if (automatedMatch) {
+                            const autonomyMatch = content.match(/Autonomy Level:\s*([^\n]+)/i);
+                            sprint.autonomyLevel = autonomyMatch ? autonomyMatch[1].trim() : 'Co-Developer';
+                            sprint.automated = 'Yes';
+                            automatedSprints.push(sprint);
+                            log(results, `✓ Found automated sprint: ${sprint.name}`, 'success');
+                        }
+                    }
+                } catch (err) {
+                    log(results, `Error checking ${sprint.name}: ${err.message}`, 'error');
+                }
+            }
+            
+            log(results, `<h3>Found ${automatedSprints.length} automated sprints</h3>`, 'info');
+            
+            if (automatedSprints.length === 0) {
+                log(results, 'No Ergon-managed sprints found. This is what would be shown in Ergon UI.', 'warning');
+            } else {
+                log(results, '<h4>These sprints would be displayed in Ergon:</h4>', 'success');
+                automatedSprints.forEach(sprint => {
+                    log(results, `Sprint: ${sprint.name} - Status: ${sprint.status} - Autonomy: ${sprint.autonomyLevel}`, 'success');
+                });
+            }
+            
+        } catch (err) {
+            log(results, `Failed to load sprints: ${err.message}`, 'error');
+        }
+    }
+    
+    // Auto-run environment check on load
+    window.addEventListener('load', () => {
+        checkEnvironment();
+    });
+    </script>
+</body>
+</html>

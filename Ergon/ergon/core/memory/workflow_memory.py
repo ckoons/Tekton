@@ -14,7 +14,7 @@ from dataclasses import dataclass, field
 from enum import Enum
 from sqlalchemy import select, and_, or_, func
 
-from ..database.v2_models import Workflow, WorkflowStep, WorkflowStatus, StepType
+from ..database.v2_models import Workflow, WorkflowStep, StepType
 from ..database.engine import get_db_session
 
 # Import landmarks with fallback
@@ -167,11 +167,12 @@ class WorkflowMemory:
             workflow = Workflow(
                 name=name,
                 description=description,
-                trigger_type="manual",
-                trigger_conditions={},
-                context=context or {},
-                pattern_type=WorkflowPattern.SEQUENTIAL.value,
-                status=WorkflowStatus.ACTIVE
+                pattern={
+                    "type": WorkflowPattern.SEQUENTIAL.value,
+                    "context": context or {},
+                    "trigger": "manual"
+                },
+                created_by="ergon"
             )
             session.add(workflow)
             session.commit()
@@ -269,15 +270,24 @@ class WorkflowMemory:
             ).first()
             
             if workflow:
-                workflow.status = WorkflowStatus.COMPLETED if success else WorkflowStatus.FAILED
-                workflow.success_count += 1 if success else 0
-                workflow.failure_count += 0 if success else 1
-                workflow.execution_count += 1
+                # Update workflow metrics
+                workflow.usage_count += 1
+                if success:
+                    # Update success rate
+                    current_rate = workflow.success_rate or 0.0
+                    new_rate = ((current_rate * (workflow.usage_count - 1)) + 1.0) / workflow.usage_count
+                    workflow.success_rate = new_rate
+                else:
+                    # Update success rate for failure
+                    current_rate = workflow.success_rate or 0.0
+                    new_rate = (current_rate * (workflow.usage_count - 1)) / workflow.usage_count
+                    workflow.success_rate = new_rate
                 
                 if metrics:
                     workflow.avg_duration = metrics.get("duration", 0)
                     
-                workflow.last_executed = datetime.utcnow()
+                workflow.last_used_at = datetime.utcnow()
+                workflow.updated_at = datetime.utcnow()
                 session.commit()
                 
         # Remove from active captures
@@ -308,7 +318,7 @@ class WorkflowMemory:
             workflows = session.query(Workflow)\
                 .filter(
                     and_(
-                        Workflow.status == WorkflowStatus.COMPLETED,
+                        Workflow.success_rate > 0.5,  # Filter for reasonably successful workflows
                         or_(
                             Workflow.name.ilike(search_pattern),
                             Workflow.description.ilike(search_pattern)
@@ -392,12 +402,9 @@ class WorkflowMemory:
                 # Get recent successful workflows
                 workflows = session.query(Workflow)\
                     .filter(
-                        and_(
-                            Workflow.status == WorkflowStatus.COMPLETED,
-                            Workflow.success_rate > 0.8
-                        )
+                        Workflow.success_rate > 0.8
                     )\
-                    .order_by(Workflow.last_executed.desc())\
+                    .order_by(Workflow.last_used_at.desc())\
                     .limit(20)\
                     .all()
                 

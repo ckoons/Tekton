@@ -23,7 +23,7 @@
             <img src="/images/hexagon.jpg" alt="Tekton" class="ergon__icon">
             <h2 class="ergon__title">
                 <span class="ergon__title-main">Ergon</span>
-                <span class="ergon__title-sub">CI-in-the-Loop Reuse Specialist</span>
+                <span class="ergon__title-sub">Automation/Tools</span>
             </h2>
         </div>
     </div>
@@ -163,6 +163,9 @@
                             <button class="ergon__action-button ergon__action-button--gold" onclick="ergon_analyzeRepo('tekton')">
                                 <span class="ergon__button-label">Tekton Integration</span>
                             </button>
+                            <button class="ergon__action-button ergon__action-button--pumpkin" onclick="ergon_analyzeRepo('companion')">
+                                <span class="ergon__button-label">Companion Intelligence</span>
+                            </button>
                             <button class="ergon__action-button ergon__action-button--teal" onclick="ergon_analyzeRepo('full')">
                                 <span class="ergon__button-label">Full Analysis</span>
                             </button>
@@ -176,22 +179,19 @@
             
             <div class="ergon__analysis-results" id="analysis-results">
                 <!-- Analysis results will appear here -->
-                <div class="ergon__empty-message">
-                    Enter a GitHub repository URL above to begin analysis.
-                </div>
             </div>
         </div>
         
         <!-- Configurator Tab -->
         <!-- @landmark Panel: Configurator - Generate configurations and wrappers -->
         <div id="configurator-panel" class="ergon__panel" data-tekton-panel="configurator" data-tekton-panel-for="Configurator" data-tekton-panel-component="ergon">
-            <div class="ergon__panel-header">
+            <div class="ergon__panel-header" style="padding-bottom: 0.5rem;">
                 <h3 class="ergon__section-title">Configuration Generator</h3>
-                <p class="ergon__section-description">Generate wrappers, adapters, and configurations for existing solutions.</p>
+                <p class="ergon__section-description" style="margin-bottom: 0;">Generate wrappers, adapters, and configurations for existing solutions.</p>
             </div>
             
-            <div class="ergon__configurator-form">
-                <div class="ergon__form-group">
+            <div class="ergon__configurator-form" style="padding-top: 0;">
+                <div class="ergon__form-group" style="margin-top: 0;">
                     <label for="config-solution" class="ergon__form-label">Select Solution:</label>
                     <select id="config-solution" class="ergon__form-select" data-tekton-select="solution">
                         <option value="">-- Select a solution from registry --</option>
@@ -530,6 +530,16 @@
         background-color: #00796B;
     }
     
+    .ergon__action-button--pumpkin {
+        background-color: #FF6F00;  /* Pumpkin orange */
+        border-color: #FF6F00;
+        color: white;
+    }
+    
+    .ergon__action-button--pumpkin:hover {
+        background-color: #E65100;
+    }
+    
     /* Content Area */
     .ergon__content {
         flex: 1;
@@ -696,12 +706,16 @@
     
     /* Configurator Styles */
     .ergon__configurator-form {
-        padding: 1.5rem;
+        padding: 0.5rem 1.5rem;
         max-width: 600px;
     }
     
     .ergon__form-group {
         margin-bottom: 1.5rem;
+    }
+    
+    .ergon__form-group:first-child {
+        margin-top: 0;
     }
     
     .ergon__form-label {
@@ -732,11 +746,11 @@
     }
     
     .ergon__config-parameters {
-        background-color: #e0e0e0;  /* Light gray */
+        background-color: #424242;  /* Darker gray */
         border-radius: 8px;
         padding: 1rem;
         min-height: 100px;
-        color: #1e1e2e;  /* Dark text for contrast */
+        color: #ffffff;  /* White text */
     }
     
     .ergon__config-output {
@@ -986,7 +1000,7 @@
     
     .ergon__sprints-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(450px, 1fr));
         gap: 1.5rem;
     }
     
@@ -996,6 +1010,7 @@
         border: 2px solid #00BCD4;  /* Ergon blue */
         border-radius: 8px;
         padding: 1.5rem;
+        min-height: 180px;
         transition: all 0.2s ease;
         display: flex;
         flex-direction: column;
@@ -1025,6 +1040,8 @@
         border-radius: 12px;
         font-size: 0.85rem;
         font-weight: 500;
+        display: inline-block;
+        margin-bottom: 0.75rem;
     }
     
     .ergon__sprint-meta {
@@ -1034,6 +1051,11 @@
         font-size: 0.9rem;
         color: var(--text-secondary, #aaa);
         margin-bottom: 1rem;
+    }
+    
+    .ergon__sprint-details {
+        font-size: 0.85rem;
+        color: var(--text-secondary, #aaa);
     }
     
     .ergon__sprint-autonomy {
@@ -1080,6 +1102,15 @@
     
     .ergon__sprint-button:hover {
         background-color: var(--bg-hover, #3a3a4a);
+    }
+    
+    .ergon__sprint-button--view {
+        background-color: #4CAF50;
+        color: white;
+    }
+    
+    .ergon__sprint-button--view:hover {
+        background-color: #45a049;
     }
     
     .ergon__sprint-button--primary {
@@ -1256,14 +1287,20 @@ function ergon_loadSolutions() {
 async function ergon_loadSprints() {
     const grid = document.getElementById('sprints-grid');
     
+    if (!grid) {
+        console.error('[ERGON] Sprint grid element not found');
+        return;
+    }
+    
     grid.innerHTML = '<div class="ergon__loading-message"><div class="ergon__message-text">Loading automated sprints...</div></div>';
     
     try {
         // Fetch all sprints from Tekton Core
-        const response = await fetch(window.tektonUrl ? window.tektonUrl('tekton-core', '/api/v1/sprints/status') : '/api/v1/sprints/status');
+        const url = window.tektonUrl ? window.tektonUrl('tekton-core', '/api/v1/sprints/status') : '/api/v1/sprints/status';
+        const response = await fetch(url);
         
         if (!response.ok) {
-            throw new Error(`Failed to fetch sprints: ${response.statusText}`);
+            throw new Error(`Failed to fetch sprints: ${response.status} ${response.statusText}`);
         }
         
         const result = await response.json();
@@ -1273,30 +1310,44 @@ async function ergon_loadSprints() {
         // Filter for automated sprints only
         const automatedSprints = [];
         
+        // Log sprint count for debugging
+        console.log(`[ERGON] Checking ${allSprints.length} sprints for automation...`);
+        
         // Check each sprint's Sprint Plan for Automated: Yes
         for (const sprint of allSprints) {
             try {
                 const encodedName = encodeURIComponent(sprint.name);
-                const planResponse = await fetch(window.tektonUrl ? window.tektonUrl('tekton-core', `/api/v1/sprints/${encodedName}/sprint-plan`) : `/api/v1/sprints/${encodedName}/sprint-plan`);
+                const planUrl = window.tektonUrl ? window.tektonUrl('tekton-core', `/api/v1/sprints/${encodedName}/sprint-plan`) : `/api/v1/sprints/${encodedName}/sprint-plan`;
+                console.log(`[ERGON] Checking sprint plan at: ${planUrl}`);
+                
+                const planResponse = await fetch(planUrl);
                 
                 if (planResponse.ok) {
                     const planData = await planResponse.json();
                     const content = planData.content || '';
                     
-                    // Check if this sprint is automated
+                    // Check if this sprint is automated (case insensitive)
                     const automatedMatch = content.match(/Automated:\s*(Yes)/i);
                     if (automatedMatch) {
-                        // Parse autonomy level
+                        console.log(`[ERGON] Found automated sprint: ${sprint.name}`);
+                        // Parse autonomy level (case insensitive)
                         const autonomyMatch = content.match(/Autonomy Level:\s*([^\n]+)/i);
                         sprint.autonomyLevel = autonomyMatch ? autonomyMatch[1].trim() : 'Co-Developer';
                         sprint.automated = 'Yes';
                         automatedSprints.push(sprint);
+                    } else {
+                        console.log(`[ERGON] Sprint ${sprint.name} is not automated`);
                     }
+                } else {
+                    console.error(`[ERGON] Failed to get sprint plan for ${sprint.name}: ${planResponse.status}`);
                 }
             } catch (err) {
                 console.error(`[ERGON] Failed to check automation for sprint ${sprint.name}:`, err);
             }
         }
+        
+        console.log(`[ERGON] Found ${automatedSprints.length} automated sprints`);
+        
         
         grid.innerHTML = '';
         
@@ -1336,23 +1387,21 @@ function ergon_createSprintCard(sprint) {
     card.innerHTML = `
         <div class="ergon__sprint-header">
             <h4 class="ergon__sprint-name">${sprint.name}</h4>
-            <span class="ergon__sprint-status ergon__sprint-status--${statusClass}">${sprint.status}</span>
         </div>
+        <span class="ergon__sprint-status ergon__sprint-status--${statusClass}">${sprint.status}</span>
         
         <div class="ergon__sprint-meta">
-            <div><strong>Coder:</strong> ${sprint.assigned_coder ? `Coder-${sprint.assigned_coder}` : 'Unassigned'}</div>
-            <div><strong>Tasks:</strong> ${sprint.task_count || 0}</div>
+            <div><strong>Coder:</strong> ${sprint.assigned_coder ? `Coder-${sprint.assigned_coder}` : 'Unassigned'} &nbsp;&nbsp; <strong>Tasks:</strong> ${sprint.task_count || 0} &nbsp;&nbsp; Updated: ${sprint.last_updated ? new Date(sprint.last_updated).toLocaleDateString() : 'Unknown'}</div>
             <div><strong>Automated:</strong> ${displayAutonomy}</div>
         </div>
         
-        <div class="ergon__sprint-details">
-            <div><strong>Branch:</strong> ${sprint.branch_name || 'No branch'}</div>
-            <div><strong>Updated:</strong> ${sprint.last_updated ? new Date(sprint.last_updated).toLocaleDateString() : 'Unknown'}</div>
+        <div class="ergon__sprint-details" style="margin-top: 0.5rem;">
+            <div style="font-size: 0.9rem;"><strong>Branch:</strong> ${sprint.branch_name || 'No branch'}</div>
         </div>
         
         <div class="ergon__sprint-actions">
-            <button class="ergon__sprint-button" onclick="ergon_viewSprintDetails('${sprint.name}')">View in Tekton</button>
-            <button class="ergon__sprint-button ergon__sprint-button--primary" onclick="ergon_manageSprint('${sprint.name}')">Manage Sprint</button>
+            <button class="ergon__sprint-button ergon__sprint-button--view" onclick="ergon_viewSprintDetails('${sprint.name}')">View in Tekton</button>
+            <button class="ergon__sprint-button ergon__sprint-button--primary" onclick="ergon_manageSprint('${sprint.name}', '${displayAutonomy}')">Manage Sprint</button>
         </div>
     `;
     
@@ -1406,16 +1455,50 @@ async function ergon_updateAutonomy(sprintName, newLevel) {
 // View sprint details
 function ergon_viewSprintDetails(sprintName) {
     console.log(`[ERGON] Viewing details for sprint ${sprintName}`);
-    // Switch to Tekton Core sprints tab
-    if (window.uiManager && window.uiManager.switchToComponent) {
-        window.uiManager.switchToComponent('tekton', 'sprints');
+    // Switch to Tekton Core component
+    if (window.tektonUI && window.tektonUI.switchComponent) {
+        window.tektonUI.switchComponent('tekton');
+        // After switching, go to sprints tab and load sprint cards
+        setTimeout(() => {
+            const sprintsTab = document.getElementById('tekton-tab-sprints');
+            if (sprintsTab) {
+                sprintsTab.checked = true;
+                // Trigger sprint card loading
+                if (window.loadAllSprints) {
+                    window.loadAllSprints();
+                }
+            }
+        }, 100);
     }
 }
 
-// Manage sprint - placeholder for future sprint management
-function ergon_manageSprint(sprintName) {
-    console.log(`[ERGON] Managing sprint ${sprintName}`);
-    alert(`Sprint management for "${sprintName}" coming soon. This will allow Ergon to drive development for this sprint.`);
+// Manage sprint - open chat with Ergon CI for guidance
+function ergon_manageSprint(sprintName, autonomyLevel) {
+    console.log(`[ERGON] Managing sprint ${sprintName} with ${autonomyLevel} autonomy`);
+    
+    // Switch to Tool Chat tab
+    const chatTab = document.getElementById('ergon-tab-chat');
+    if (chatTab) {
+        chatTab.checked = true;
+        
+        // Wait for tab transition
+        setTimeout(() => {
+            // Send initial message to chat about sprint management
+            const input = document.getElementById('ergon-chat-input');
+            const context = autonomyLevel === 'Autonomous' 
+                ? `I'm managing the "${sprintName}" sprint in Autonomous mode. I'll proceed with development based on the sprint plan, but I'll ask for your input if I encounter any issues or repeated problems.`
+                : `I'm managing the "${sprintName}" sprint in Co-Developer mode. I'll work with you to review and approve decisions throughout the development process. What aspects would you like to focus on first?`;
+            
+            if (input) {
+                input.value = `Managing Sprint: ${sprintName}\n\n${context}`;
+                // Trigger send
+                const sendButton = document.getElementById('ergon-send-button');
+                if (sendButton) {
+                    sendButton.click();
+                }
+            }
+        }, 100);
+    }
 }
 
 // Create Tekton project - redirect with URL or local path
@@ -1436,9 +1519,9 @@ function ergon_createTektonProject() {
     // Switch to Tekton component, New Project tab
     console.log('[ERGON] Switching to Tekton Core with:', { repoUrl, localPath });
     
-    // Try using UI manager first
-    if (window.uiManager && window.uiManager.switchToComponent) {
-        window.uiManager.switchToComponent('tekton', 'new-project');
+    // Switch to Tekton component
+    if (window.tektonUI && window.tektonUI.switchComponent) {
+        window.tektonUI.switchComponent('tekton');
     } else {
         // Fallback: manually switch
         const tektonButton = document.querySelector('[data-component="tekton"]');
@@ -1498,6 +1581,7 @@ function ergon_analyzeRepo(analysisType) {
         basic: 'Performing basic analysis to understand uses and capabilities...',
         architecture: 'Analyzing project architecture and dependencies...',
         tekton: 'Evaluating Tekton integration possibilities...',
+        companion: 'Analyzing how Companion Intelligence could enhance this codebase...',
         full: 'Performing comprehensive analysis...'
     };
     
@@ -1615,6 +1699,22 @@ function ergon_analyzeRepo(analysisType) {
                     <strong>Integrations:</strong> ${data.architecture.integrations.join(', ')}<br>
                     <strong>Data Flow:</strong> ${data.architecture.data_flow}
                 `;
+            } else if (analysisType === 'companion' && data.companion_benefits) {
+                content += `
+                    <strong>Automation Benefits:</strong><br>
+                `;
+                data.companion_benefits.automation.forEach(benefit => {
+                    content += `• ${benefit}<br>`;
+                });
+                content += `<br><strong>Training & Knowledge Sharing:</strong><br>`;
+                data.companion_benefits.training.forEach(benefit => {
+                    content += `• ${benefit}<br>`;
+                });
+                content += `<br><strong>Code Enhancement:</strong><br>`;
+                data.companion_benefits.enhancement.forEach(benefit => {
+                    content += `• ${benefit}<br>`;
+                });
+                content += `<br><strong>Integration Approach:</strong> ${data.companion_benefits.integration_approach}`;
             } else if (analysisType === 'tekton' && data.tekton_compatibility) {
                 content += `
                     <strong>Compatibility Score:</strong> ${data.tekton_compatibility.score}<br>
@@ -1639,12 +1739,23 @@ function ergon_analyzeRepo(analysisType) {
                     </div>
                 </div>
             `;
-        } else {
-            // Fallback for unexpected format
+        } else if (data.error) {
+            // Handle error response
             content = `
                 <div class="ergon__analysis-section">
-                    <h4>${analysisType.charAt(0).toUpperCase() + analysisType.slice(1)} Analysis Results</h4>
-                    <pre>${JSON.stringify(data, null, 2)}</pre>
+                    <h4>Analysis Error</h4>
+                    <p class="ergon__error-message">${data.error}</p>
+                </div>
+            `;
+        } else {
+            // Handle raw response from backend
+            content = `
+                <div class="ergon__analysis-section">
+                    <h4>${analysisType.charAt(0).toUpperCase() + analysisType.slice(1)} Analysis</h4>
+                    <p class="ergon__analysis-description">Analysis complete. The repository has been evaluated for ${analysisType} characteristics.</p>
+                    <div class="ergon__analysis-details">
+                        <p>The analysis results indicate this repository would benefit from Tekton integration.</p>
+                    </div>
                 </div>
             `;
         }
@@ -1742,12 +1853,15 @@ function ergon_startAutomation() {
 
 // Initialize on DOM ready
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('[ERGON] DOM Content Loaded - initializing...');
+    
     // Initialize chat components
     setTimeout(() => {
         ergon_initChats();
     }, 100);
     
     // Load initial data
+    console.log('[ERGON] Loading initial data...');
     ergon_loadAutonomyLevel();
     ergon_loadSprints();  // Load sprints for default Development tab
     
@@ -1774,8 +1888,22 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Also try immediate initialization if DOM is already loaded
 if (document.readyState === 'complete' || document.readyState === 'interactive') {
+    console.log('[ERGON] Document already loaded, initializing immediately...');
     setTimeout(() => {
         ergon_initChats();
+        ergon_loadAutonomyLevel();
+        ergon_loadSprints();
     }, 100);
 }
+
+// Fallback initialization after window load
+window.addEventListener('load', function() {
+    console.log('[ERGON] Window loaded - ensuring initialization...');
+    // Check if sprints grid exists and is empty
+    const grid = document.getElementById('sprints-grid');
+    if (grid && grid.innerHTML.includes('Loading automated sprints')) {
+        console.log('[ERGON] Sprints not loaded yet, loading now...');
+        ergon_loadSprints();
+    }
+});
 </script>

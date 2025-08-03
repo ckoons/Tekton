@@ -1140,6 +1140,30 @@ async def analyze_repository(request: AnalyzeRequest):
                 "data_flow": "Event-driven with CQRS"
             }
         }
+    elif analysis_type == 'companion':
+        return {
+            **base_result,
+            "type": "Companion Intelligence Analysis",
+            "summary": "Evaluating how CI integration could transform development workflow.",
+            "companion_benefits": {
+                "automation": [
+                    "Automated code reviews with context awareness",
+                    "Intelligent refactoring suggestions",
+                    "Real-time bug detection and fixes"
+                ],
+                "training": [
+                    "Interactive code explanations",
+                    "Best practices enforcement",
+                    "Team knowledge sharing"
+                ],
+                "enhancement": [
+                    "Performance optimization recommendations",
+                    "Security vulnerability detection",
+                    "Architecture evolution guidance"
+                ],
+                "integration_approach": "Embedded CI with MCP tools and Hermes messaging"
+            }
+        }
     elif analysis_type == 'tekton':
         return {
             **base_result,
