@@ -24,6 +24,48 @@ import logging
 from .cache_rag import CacheRAGEngine
 from .codebase_indexer import CodebaseIndexer
 
+# Landmark imports with fallback
+try:
+    from landmarks import (
+        architecture_decision,
+        api_contract,
+        integration_point,
+        performance_boundary,
+        state_checkpoint,
+        danger_zone
+    )
+except ImportError:
+    # Define no-op decorators when landmarks not available
+    def architecture_decision(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+    
+    def api_contract(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+    
+    def integration_point(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+    
+    def performance_boundary(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+    
+    def state_checkpoint(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+    
+    def danger_zone(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+
 logger = logging.getLogger(__name__)
 
 @dataclass
@@ -59,6 +101,23 @@ class AdaptationStrategy:
     estimated_effort: str
     alternative_approaches: List[Dict[str, Any]]
 
+@architecture_decision(
+    title="Companion Intelligence Architecture",
+    description="CI-in-the-Loop development system binding AI with codebase understanding",
+    rationale="Enables CIs to become codebase experts, driving development with deep understanding",
+    alternatives_considered=["Generic AI assistants", "Rule-based systems", "Simple code completion"],
+    impacts=["development_workflow", "ai_autonomy", "code_quality"],
+    decided_by="Casey Koons",
+    decision_date="2024-02-01"
+)
+@state_checkpoint(
+    title="CI Understanding State",
+    description="Maintains CI's learned understanding and interaction history",
+    state_type="ai_knowledge",
+    persistence=True,
+    consistency_requirements="Preserve learning across sessions",
+    recovery_strategy="Reload from persisted state, re-analyze if needed"
+)
 class CompanionIntelligence:
     """
     A CI that deeply understands and can work with a specific codebase
@@ -89,6 +148,13 @@ class CompanionIntelligence:
         # Initialize understanding
         self._analyze_codebase()
         
+    @performance_boundary(
+        title="Codebase Analysis",
+        description="Initial deep analysis to build CI understanding",
+        sla="<60s for typical codebase",
+        optimization_notes="Runs once on initialization, cached thereafter",
+        measured_impact="Enables informed AI assistance without repeated analysis"
+    )
     def _analyze_codebase(self):
         """Analyze codebase to build initial understanding"""
         logger.info(f"{self.ci_name} is analyzing the codebase...")
@@ -349,6 +415,31 @@ class CompanionIntelligence:
         
         return metrics
         
+    @api_contract(
+        title="Task Assistance API",
+        description="Provide intelligent assistance for development tasks",
+        endpoint="/ci/assist",
+        method="POST",
+        request_schema={"task_description": "str"},
+        response_schema={
+            "task": "str",
+            "analysis": "dict",
+            "approach": "dict",
+            "relevant_code": "List[dict]",
+            "examples": "List[dict]",
+            "risks": "List[dict]",
+            "confidence": "float"
+        },
+        performance_requirements="<5s for comprehensive assistance"
+    )
+    @danger_zone(
+        title="Async Task Processing",
+        description="Multiple async operations that analyze and generate assistance",
+        risk_level="medium",
+        risks=["concurrent RAG queries", "potential timeout on complex tasks"],
+        mitigation="Timeout handling, error boundaries for each async operation",
+        review_required=False
+    )
     async def assist_with_task(self, task_description: str) -> Dict[str, Any]:
         """
         Assist with a development task using codebase understanding
@@ -707,6 +798,14 @@ class NewFeature:
         pass
 """
         
+    @state_checkpoint(
+        title="Interaction Learning",
+        description="Learn from each interaction to improve future assistance",
+        state_type="learning_history",
+        persistence=True,
+        consistency_requirements="Append-only history, pattern extraction",
+        recovery_strategy="Reload interaction history from persistence"
+    )
     def _learn_from_interaction(self, task: str, approach: Dict[str, Any]):
         """Learn from the interaction"""
         # Record interaction
@@ -743,6 +842,22 @@ class NewFeature:
             
         return min(max(base_confidence, 0.1), 0.95)
         
+    @api_contract(
+        title="Use Case Adaptation API",
+        description="Generate strategy for adapting codebase to new use cases",
+        endpoint="/ci/adapt",
+        method="POST",
+        request_schema={"use_case": "str"},
+        response_schema={
+            "use_case": "str",
+            "approach": "str",
+            "required_changes": "List[dict]",
+            "risk_assessment": "dict",
+            "estimated_effort": "str",
+            "alternative_approaches": "List[dict]"
+        },
+        performance_requirements="<10s for adaptation analysis"
+    )
     def adapt_for_use_case(self, use_case: str) -> AdaptationStrategy:
         """
         Generate strategy for adapting codebase to new use case
@@ -950,6 +1065,19 @@ class NewFeature:
         else:
             return '1-2 months'
             
+    @api_contract(
+        title="Autonomy Assessment API",
+        description="Recommend CI autonomy level based on understanding",
+        endpoint="/ci/autonomy",
+        method="GET",
+        request_schema={},
+        response_schema={
+            "recommendation": "str",
+            "confidence_factors": "dict",
+            "reasoning": "str"
+        },
+        performance_requirements="<100ms response"
+    )
     def get_autonomy_recommendation(self) -> str:
         """
         Recommend autonomy level based on codebase understanding
@@ -986,6 +1114,14 @@ class NewFeature:
 
 
 # Integration with Ergon
+@integration_point(
+    title="Companion Intelligence Integration",
+    description="Integrates CI-in-the-Loop system with Ergon",
+    target_component="Ergon",
+    protocol="solution_registry",
+    data_flow="Ergon → CI instantiation → Deep codebase understanding → Intelligent assistance",
+    integration_date="2024-02-01"
+)
 def create_companion_intelligence_solution():
     """
     Create the Companion Intelligence solution for Ergon's registry

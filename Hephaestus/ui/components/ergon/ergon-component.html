@@ -31,47 +31,67 @@
     <!-- Ergon Menu Bar with Tab Navigation -->
     <!-- @landmark Menu: Tab navigation for 5 component views -->
     <div class="ergon__menu-bar" data-tekton-zone="menu" data-tekton-nav="component-menu">
-        <div class="ergon__tabs" data-tekton-zone="menu">
+        <div class="ergon__tabs" data-tekton-zone="menu" data-tekton-nav="tabs" data-tekton-nav-type="component-tabs">
             <label for="ergon-tab-development" class="ergon__tab" data-tab="development" 
                  data-tekton-menu-item="Development" 
                  data-tekton-menu-component="ergon" 
                  data-tekton-menu-panel="development-panel" 
-                 data-tekton-nav-target="development">
+                 data-tekton-nav-target="development"
+                 data-tekton-nav-item="tab"
+                 data-tekton-nav-action="switch-tab"
+                 data-tekton-trigger="click">
                 <span class="ergon__tab-label">Development</span>
             </label>
             <label for="ergon-tab-registry" class="ergon__tab" data-tab="registry" 
                  data-tekton-menu-item="Registry" 
                  data-tekton-menu-component="ergon" 
                  data-tekton-menu-panel="registry-panel" 
-                 data-tekton-nav-target="registry">
+                 data-tekton-nav-target="registry"
+                 data-tekton-nav-item="tab"
+                 data-tekton-nav-action="switch-tab"
+                 data-tekton-trigger="click">
                 <span class="ergon__tab-label">Registry</span>
             </label>
             <label for="ergon-tab-analyzer" class="ergon__tab" data-tab="analyzer" 
                  data-tekton-menu-item="Analyzer" 
                  data-tekton-menu-component="ergon" 
                  data-tekton-menu-panel="analyzer-panel" 
-                 data-tekton-nav-target="analyzer">
+                 data-tekton-nav-target="analyzer"
+                 data-tekton-nav-item="tab"
+                 data-tekton-nav-action="switch-tab"
+                 data-tekton-trigger="click">
                 <span class="ergon__tab-label">Analyzer</span>
             </label>
             <label for="ergon-tab-configurator" class="ergon__tab" data-tab="configurator" 
                  data-tekton-menu-item="Configurator" 
                  data-tekton-menu-component="ergon" 
                  data-tekton-menu-panel="configurator-panel" 
-                 data-tekton-nav-target="configurator">
+                 data-tekton-nav-target="configurator"
+                 data-tekton-nav-item="tab"
+                 data-tekton-nav-action="switch-tab"
+                 data-tekton-trigger="click">
                 <span class="ergon__tab-label">Configurator</span>
             </label>
             <label for="ergon-tab-chat" class="ergon__tab" data-tekton-chat="tab" data-tab="chat" 
                  data-tekton-menu-item="Tool Chat" 
                  data-tekton-menu-component="ergon" 
                  data-tekton-menu-panel="ergon-panel" 
-                 data-tekton-nav-target="chat">
+                 data-tekton-nav-target="chat"
+                 data-tekton-nav-item="tab"
+                 data-tekton-nav-action="switch-tab"
+                 data-tekton-trigger="click"
+                 data-tekton-ai="chat-tab">
                 <span class="ergon__tab-label">Tool Chat</span>
             </label>
             <label for="ergon-tab-teamchat" class="ergon__tab" data-tekton-chat="tab" data-tab="teamchat" 
                  data-tekton-menu-item="Team Chat" 
                  data-tekton-menu-component="ergon" 
                  data-tekton-menu-panel="awt-team-panel" 
-                 data-tekton-nav-target="teamchat">
+                 data-tekton-nav-target="teamchat"
+                 data-tekton-nav-item="tab"
+                 data-tekton-nav-action="switch-tab"
+                 data-tekton-trigger="click"
+                 data-tekton-ai="team-chat-tab">
                 <span class="ergon__tab-label">Team Chat</span>
             </label>
         </div>
@@ -82,12 +102,12 @@
     <div class="ergon__content" data-tekton-zone="content" data-tekton-scrollable="true">
         <!-- Development Tab (Default Active Tab) -->
         <!-- @landmark Panel: Development - Manage Ergon-driven development sprints -->
-        <div id="development-panel" class="ergon__panel" data-tekton-panel="development" data-tekton-panel-for="Development" data-tekton-panel-component="ergon">
-            <div class="ergon__sprints-container">
-                <div class="ergon__sprints-grid" id="sprints-grid">
+        <div id="development-panel" class="ergon__panel" data-tekton-panel="development" data-tekton-panel-for="Development" data-tekton-panel-component="ergon" data-tekton-type="panel" data-tekton-zone="content-panel" data-tekton-state="active" data-tekton-visibility="visible">
+            <div class="ergon__sprints-container" data-tekton-component="sprints-container" data-tekton-zone="sprints">
+                <div class="ergon__sprints-grid" id="sprints-grid" data-tekton-component="sprints-grid" data-tekton-type="container" data-tekton-state="loading">
                     <!-- Sprint cards will be loaded here dynamically -->
-                    <div class="ergon__loading-message" id="sprints-loading">
-                        <div class="ergon__message-text">Loading automated sprints...</div>
+                    <div class="ergon__loading-message" id="sprints-loading" data-tekton-type="loading-indicator" data-tekton-state="loading">
+                        <div class="ergon__message-text" data-tekton-type="loading-text">Loading automated sprints...</div>
                     </div>
                 </div>
             </div>
@@ -95,15 +115,15 @@
         
         <!-- Registry Tab -->
         <!-- @landmark Panel: Registry - Browse and search reusable solutions -->
-        <div id="registry-panel" class="ergon__panel" data-tekton-panel="registry" data-tekton-panel-for="Registry" data-tekton-panel-component="ergon">
+        <div id="registry-panel" class="ergon__panel" data-tekton-panel="registry" data-tekton-panel-for="Registry" data-tekton-panel-component="ergon" data-tekton-type="panel" data-tekton-zone="content-panel" data-tekton-state="inactive" data-tekton-visibility="hidden">
             <div class="ergon__panel-header">
                 <h3 class="ergon__section-title">Solution Registry</h3>
                 <p class="ergon__section-description">Browse and search our catalog of reusable tools, agents, MCP servers, and workflows.</p>
                 
                 <!-- Search and Filters -->
-                <div class="ergon__search-bar">
-                    <input type="text" id="registry-search" class="ergon__search-input" placeholder="Search solutions..." data-tekton-input="search">
-                    <select id="registry-type-filter" class="ergon__filter-select" data-tekton-select="filter">
+                <div class="ergon__search-bar" data-tekton-component="search-bar" data-tekton-type="search-container">
+                    <input type="text" id="registry-search" class="ergon__search-input" placeholder="Search solutions..." data-tekton-input="search" data-tekton-type="search-input" data-tekton-action="filter" data-tekton-target="solution-grid">
+                    <select id="registry-type-filter" class="ergon__filter-select" data-tekton-select="filter" data-tekton-type="filter-select" data-tekton-action="filter-type" data-tekton-target="solution-grid">
                         <option value="">All Types</option>
                         <option value="tool">Tools</option>
                         <option value="agent">Agents</option>
@@ -112,7 +132,7 @@
                         <option value="framework">Frameworks</option>
                         <option value="workflow">Workflows</option>
                     </select>
-                    <select id="registry-capability-filter" class="ergon__filter-select" data-tekton-select="filter">
+                    <select id="registry-capability-filter" class="ergon__filter-select" data-tekton-select="filter" data-tekton-type="filter-select" data-tekton-action="filter-capability" data-tekton-target="solution-grid">
                         <option value="">All Capabilities</option>
                         <option value="data_processing">Data Processing</option>
                         <option value="api_development">API Development</option>
@@ -126,81 +146,81 @@
                 </div>
             </div>
             
-            <div class="ergon__solution-grid" id="solution-grid">
+            <div class="ergon__solution-grid" id="solution-grid" data-tekton-component="solution-grid" data-tekton-type="container" data-tekton-state="empty">
                 <!-- Solutions will be loaded here dynamically -->
-                <div class="ergon__empty-message" id="solutions-loading">
-                    <div class="ergon__message-text">No solutions found in database.</div>
+                <div class="ergon__empty-message" id="solutions-loading" data-tekton-type="empty-state" data-tekton-state="empty">
+                    <div class="ergon__message-text" data-tekton-type="empty-text">No solutions found in database.</div>
                 </div>
             </div>
         </div>
         
         <!-- Analyzer Tab -->
         <!-- @landmark Panel: Analyzer - Analyze GitHub repositories for reusable components -->
-        <div id="analyzer-panel" class="ergon__panel" data-tekton-panel="analyzer" data-tekton-panel-for="Analyzer" data-tekton-panel-component="ergon">
+        <div id="analyzer-panel" class="ergon__panel" data-tekton-panel="analyzer" data-tekton-panel-for="Analyzer" data-tekton-panel-component="ergon" data-tekton-type="panel" data-tekton-zone="content-panel" data-tekton-state="inactive" data-tekton-visibility="hidden">
             <div class="ergon__panel-header">
                 <h3 class="ergon__section-title">GitHub Repository Analyzer</h3>
                 <p class="ergon__section-description">Analyze GitHub repositories to identify reusable components and adaptation strategies.</p>
                 
-                <div class="ergon__analyzer-input">
+                <div class="ergon__analyzer-input" data-tekton-component="analyzer-input" data-tekton-type="form-container">
                     <div class="ergon__input-group">
                         <label for="repo-url" class="ergon__form-label">GitHub Repository URL:</label>
-                        <input type="text" id="repo-url" class="ergon__input-large" placeholder="https://github.com/user/repo" data-tekton-input="url">
+                        <input type="text" id="repo-url" class="ergon__input-large" placeholder="https://github.com/user/repo" data-tekton-input="url" data-tekton-type="url-input" data-tekton-action="analyze-repo" data-tekton-state="empty">
                     </div>
                     
                     <div class="ergon__input-group">
                         <label for="local-path" class="ergon__form-label">Or Local Repository Path:</label>
-                        <input type="text" id="local-path" class="ergon__input-large" placeholder="/path/to/local/repository" data-tekton-input="path">
+                        <input type="text" id="local-path" class="ergon__input-large" placeholder="/path/to/local/repository" data-tekton-input="path" data-tekton-type="path-input" data-tekton-action="analyze-local" data-tekton-state="empty">
                     </div>
                     
-                    <div class="ergon__analyzer-actions">
-                        <div class="ergon__analyzer-buttons">
-                            <button class="ergon__action-button ergon__action-button--orange" onclick="ergon_analyzeRepo('basic')">
+                    <div class="ergon__analyzer-actions" data-tekton-component="analyzer-actions" data-tekton-type="action-container">
+                        <div class="ergon__analyzer-buttons" data-tekton-type="button-group">
+                            <button class="ergon__action-button ergon__action-button--orange" onclick="ergon_analyzeRepo('basic')" data-tekton-action="analyze" data-tekton-action-type="basic" data-tekton-trigger="click" data-tekton-target="analysis-results">
                                 <span class="ergon__button-label">Basic Analysis</span>
                             </button>
-                            <button class="ergon__action-button ergon__action-button--magenta" onclick="ergon_analyzeRepo('architecture')">
+                            <button class="ergon__action-button ergon__action-button--magenta" onclick="ergon_analyzeRepo('architecture')" data-tekton-action="analyze" data-tekton-action-type="architecture" data-tekton-trigger="click" data-tekton-target="analysis-results">
                                 <span class="ergon__button-label">Architecture</span>
                             </button>
-                            <button class="ergon__action-button ergon__action-button--gold" onclick="ergon_analyzeRepo('tekton')">
+                            <button class="ergon__action-button ergon__action-button--gold" onclick="ergon_analyzeRepo('tekton')" data-tekton-action="analyze" data-tekton-action-type="tekton" data-tekton-trigger="click" data-tekton-target="analysis-results">
                                 <span class="ergon__button-label">Tekton Integration</span>
                             </button>
-                            <button class="ergon__action-button ergon__action-button--pumpkin" onclick="ergon_analyzeRepo('companion')">
+                            <button class="ergon__action-button ergon__action-button--pumpkin" onclick="ergon_analyzeRepo('companion')" data-tekton-action="analyze" data-tekton-action-type="companion" data-tekton-trigger="click" data-tekton-target="analysis-results" data-tekton-ai="companion-analysis">
                                 <span class="ergon__button-label">Companion Intelligence</span>
                             </button>
-                            <button class="ergon__action-button ergon__action-button--teal" onclick="ergon_analyzeRepo('full')">
+                            <button class="ergon__action-button ergon__action-button--teal" onclick="ergon_analyzeRepo('full')" data-tekton-action="analyze" data-tekton-action-type="full" data-tekton-trigger="click" data-tekton-target="analysis-results">
                                 <span class="ergon__button-label">Full Analysis</span>
                             </button>
                         </div>
-                        <button id="make-project-button" class="ergon__action-button ergon__action-button--success" onclick="ergon_createTektonProject()">
+                        <button id="make-project-button" class="ergon__action-button ergon__action-button--success" onclick="ergon_createTektonProject()" data-tekton-action="create-project" data-tekton-action-type="primary" data-tekton-trigger="click" data-tekton-nav-action="switch-component" data-tekton-nav-target="tekton">
                             <span class="ergon__button-label">Create Tekton Managed Project</span>
                         </button>
                     </div>
                 </div>
             </div>
             
-            <div class="ergon__analysis-results" id="analysis-results">
+            <div class="ergon__analysis-results" id="analysis-results" data-tekton-component="analysis-results" data-tekton-type="results-container" data-tekton-state="empty">
                 <!-- Analysis results will appear here -->
             </div>
         </div>
         
         <!-- Configurator Tab -->
         <!-- @landmark Panel: Configurator - Generate configurations and wrappers -->
-        <div id="configurator-panel" class="ergon__panel" data-tekton-panel="configurator" data-tekton-panel-for="Configurator" data-tekton-panel-component="ergon">
+        <div id="configurator-panel" class="ergon__panel" data-tekton-panel="configurator" data-tekton-panel-for="Configurator" data-tekton-panel-component="ergon" data-tekton-type="panel" data-tekton-zone="content-panel" data-tekton-state="inactive" data-tekton-visibility="hidden">
             <div class="ergon__panel-header" style="padding-bottom: 0.5rem;">
                 <h3 class="ergon__section-title">Configuration Generator</h3>
                 <p class="ergon__section-description" style="margin-bottom: 0;">Generate wrappers, adapters, and configurations for existing solutions.</p>
             </div>
             
-            <div class="ergon__configurator-form" style="padding-top: 0;">
+            <div class="ergon__configurator-form" style="padding-top: 0;" data-tekton-component="configurator-form" data-tekton-type="form-container">
                 <div class="ergon__form-group" style="margin-top: 0;">
                     <label for="config-solution" class="ergon__form-label">Select Solution:</label>
-                    <select id="config-solution" class="ergon__form-select" data-tekton-select="solution">
+                    <select id="config-solution" class="ergon__form-select" data-tekton-select="solution" data-tekton-type="solution-select" data-tekton-action="load-config-options" data-tekton-target="config-parameters" data-tekton-state="empty">
                         <option value="">-- Select a solution from registry --</option>
                     </select>
                 </div>
                 
                 <div class="ergon__form-group">
                     <label for="config-type" class="ergon__form-label">Configuration Type:</label>
-                    <select id="config-type" class="ergon__form-select" data-tekton-select="config-type">
+                    <select id="config-type" class="ergon__form-select" data-tekton-select="config-type" data-tekton-type="config-type-select" data-tekton-action="load-parameters" data-tekton-target="config-parameters" data-tekton-state="empty">
                         <option value="">-- Select configuration type --</option>
                         <option value="fastapi_wrapper">FastAPI Wrapper</option>
                         <option value="mcp_adapter">MCP Adapter</option>
@@ -212,32 +232,32 @@
                 
                 <div class="ergon__form-group">
                     <label class="ergon__form-label">Configuration Parameters:</label>
-                    <div id="config-parameters" class="ergon__config-parameters">
+                    <div id="config-parameters" class="ergon__config-parameters" data-tekton-component="config-parameters" data-tekton-type="parameter-container" data-tekton-state="empty">
                         <!-- Dynamic parameters will appear here based on config type -->
                     </div>
                 </div>
                 
-                <button id="generate-config-button" class="ergon__action-button ergon__action-button--success" data-tekton-action="generate-config" data-tekton-action-type="primary">
+                <button id="generate-config-button" class="ergon__action-button ergon__action-button--success" data-tekton-action="generate-config" data-tekton-action-type="primary" data-tekton-trigger="click" data-tekton-target="config-output" data-tekton-status="enabled">
                     <span class="ergon__button-label">Generate Configuration</span>
                 </button>
             </div>
             
-            <div class="ergon__config-output" id="config-output">
+            <div class="ergon__config-output" id="config-output" data-tekton-component="config-output" data-tekton-type="output-container" data-tekton-state="empty">
                 <!-- Generated configuration will appear here -->
             </div>
         </div>
         
         <!-- Tool Chat Tab -->
         <!-- @landmark Panel: Tool Chat - Direct chat with Ergon AI assistant -->
-        <div id="ergon-panel" class="ergon__panel" data-tekton-panel="ergon" data-tekton-panel-for="Tool Chat" data-tekton-panel-component="ergon">
-            <div id="ergon-messages" class="ergon__chat-messages" data-tekton-chat="messages">
+        <div id="ergon-panel" class="ergon__panel" data-tekton-panel="ergon" data-tekton-panel-for="Tool Chat" data-tekton-panel-component="ergon" data-tekton-type="panel" data-tekton-zone="content-panel" data-tekton-state="inactive" data-tekton-visibility="hidden" data-tekton-chat="panel" data-tekton-ai="chat-panel" data-tekton-ai-ready="true">
+            <div id="ergon-messages" class="ergon__chat-messages" data-tekton-chat="messages" data-tekton-component="chat-messages" data-tekton-type="message-container" data-tekton-ai="message-area">
                 <!-- Welcome message -->
-                <div class="ergon__message ergon__message--system">
-                    <div class="ergon__message-content">
-                        <div class="ergon__message-text">
-                            <h3 class="ergon__message-title">Welcome to Ergon v2 AI Assistant</h3>
-                            <p>I'm your CI-in-the-Loop reuse specialist. I can help you find existing solutions, analyze repositories, generate configurations, and even automate entire development workflows. My current autonomy level is <strong>Advisory</strong>.</p>
-                            <p>How can I assist you today?</p>
+                <div class="ergon__message ergon__message--system" data-tekton-chat="message" data-tekton-message-type="system" data-tekton-type="welcome-message">
+                    <div class="ergon__message-content" data-tekton-zone="message-content">
+                        <div class="ergon__message-text" data-tekton-type="message-text">
+                            <h3 class="ergon__message-title" data-tekton-type="message-title">Welcome to Ergon v2 AI Assistant</h3>
+                            <p data-tekton-type="message-paragraph">I'm your CI-in-the-Loop reuse specialist. I can help you find existing solutions, analyze repositories, generate configurations, and even automate entire development workflows. My current autonomy level is <strong data-tekton-ai="autonomy-indicator">Advisory</strong>.</p>
+                            <p data-tekton-type="message-paragraph">How can I assist you today?</p>
                         </div>
                     </div>
                 </div>
@@ -246,14 +266,14 @@
         
         <!-- Team Chat Tab -->
         <!-- @landmark Panel: Team Chat - Collaborate with all Tekton AI assistants -->
-        <div id="awt-team-panel" class="ergon__panel" data-tekton-panel="awt-team" data-tekton-panel-for="Team Chat" data-tekton-panel-component="ergon">
-            <div id="awt-team-messages" class="ergon__chat-messages" data-tekton-chat="messages">
+        <div id="awt-team-panel" class="ergon__panel" data-tekton-panel="awt-team" data-tekton-panel-for="Team Chat" data-tekton-panel-component="ergon" data-tekton-type="panel" data-tekton-zone="content-panel" data-tekton-state="inactive" data-tekton-visibility="hidden" data-tekton-chat="panel" data-tekton-ai="team-chat-panel" data-tekton-ai-ready="true">
+            <div id="awt-team-messages" class="ergon__chat-messages" data-tekton-chat="messages" data-tekton-component="team-messages" data-tekton-type="message-container" data-tekton-ai="team-message-area">
                 <!-- Welcome message -->
-                <div class="ergon__message ergon__message--system">
-                    <div class="ergon__message-content">
-                        <div class="ergon__message-text">
-                            <h3 class="ergon__message-title">Tekton Team Chat</h3>
-                            <p>This chat is shared across all Tekton components. Use this for team communication and coordination.</p>
+                <div class="ergon__message ergon__message--system" data-tekton-chat="message" data-tekton-message-type="system" data-tekton-type="welcome-message" data-tekton-ai="team-welcome">
+                    <div class="ergon__message-content" data-tekton-zone="message-content">
+                        <div class="ergon__message-text" data-tekton-type="message-text">
+                            <h3 class="ergon__message-title" data-tekton-type="message-title">Tekton Team Chat</h3>
+                            <p data-tekton-type="message-paragraph">This chat is shared across all Tekton components. Use this for team communication and coordination.</p>
                         </div>
                     </div>
                 </div>
@@ -264,8 +284,8 @@
     
     <!-- Footer with Chat Input -->
     <!-- @landmark Footer: Chat input area -->
-    <div class="ergon__footer" data-tekton-zone="footer">
-        <div class="ergon__chat-input-container" data-tekton-chat="input">
+    <div class="ergon__footer" data-tekton-zone="footer" data-tekton-component="chat-footer" data-tekton-type="input-area">
+        <div class="ergon__chat-input-container" data-tekton-chat="input" data-tekton-component="input-container" data-tekton-type="chat-input-group">
             <div class="ergon__chat-prompt" data-tekton-chat="container">></div>
             <input type="text" id="ergon-chat-input" class="ergon__chat-input" data-tekton-chat="input" 
                    data-tekton-input="chat-input"
@@ -275,15 +295,18 @@
             <button id="ergon-send-button" class="ergon__send-button"
                     data-tekton-action="send-message" 
                     data-tekton-action-type="primary"
+                    data-tekton-trigger="click"
+                    data-tekton-target="chat-messages"
+                    data-tekton-status="enabled"
                     onclick="ergon_sendChat(); return false;">Send</button>
         </div>
     </div>
 </div>
 
 <!-- Automate Development Modal -->
-<div id="automate-modal" class="ergon__modal" style="display: none;">
-    <div class="ergon__modal-overlay" onclick="ergon_closeAutomateModal()"></div>
-    <div class="ergon__modal-content ergon__modal-content--large">
+<div id="automate-modal" class="ergon__modal" style="display: none;" data-tekton-component="automate-modal" data-tekton-type="modal" data-tekton-state="hidden" data-tekton-visibility="hidden" data-tekton-ai="automation-modal">
+    <div class="ergon__modal-overlay" onclick="ergon_closeAutomateModal()" data-tekton-type="overlay" data-tekton-action="close-modal" data-tekton-trigger="click"></div>
+    <div class="ergon__modal-content ergon__modal-content--large" data-tekton-type="modal-content" data-tekton-zone="modal-body">
         <h3 class="ergon__modal-title">Automate Development - The Ultimate Feature</h3>
         <p class="ergon__modal-description">Describe what you want to build, and I'll orchestrate the entire development process.</p>
         
@@ -291,12 +314,16 @@
             <label for="project-description" class="ergon__form-label">Project Description:</label>
             <textarea id="project-description" class="ergon__form-textarea ergon__form-textarea--large" 
                       placeholder="Describe what you want to build in detail. Include features, technologies, and any specific requirements..."
-                      rows="6"></textarea>
+                      rows="6"
+                      data-tekton-input="project-description"
+                      data-tekton-type="textarea"
+                      data-tekton-ai="project-input"
+                      data-tekton-state="empty"></textarea>
         </div>
         
         <div class="ergon__form-group">
             <label for="autonomy-override" class="ergon__form-label">Autonomy Level for This Project:</label>
-            <select id="autonomy-override" class="ergon__form-select" data-tekton-select="autonomy">
+            <select id="autonomy-override" class="ergon__form-select" data-tekton-select="autonomy" data-tekton-type="autonomy-select" data-tekton-ai="autonomy-level" data-tekton-state="default">
                 <option value="">Use Current Level</option>
                 <option value="advisory">Advisory - I'll provide recommendations only</option>
                 <option value="assisted">Assisted - You approve each step</option>
@@ -307,12 +334,12 @@
         
         <div class="ergon__form-group">
             <label for="sprint-name" class="ergon__form-label">Sprint Name (optional):</label>
-            <input type="text" id="sprint-name" class="ergon__form-input" placeholder="e.g., MVP_Development_Sprint">
+            <input type="text" id="sprint-name" class="ergon__form-input" placeholder="e.g., MVP_Development_Sprint" data-tekton-input="sprint-name" data-tekton-type="text-input" data-tekton-state="empty">
         </div>
         
-        <div class="ergon__modal-actions">
-            <button class="ergon__button ergon__button--cancel" onclick="ergon_closeAutomateModal()">Cancel</button>
-            <button class="ergon__button ergon__button--submit" onclick="ergon_startAutomation()">Start Automation</button>
+        <div class="ergon__modal-actions" data-tekton-type="action-container" data-tekton-zone="modal-footer">
+            <button class="ergon__button ergon__button--cancel" onclick="ergon_closeAutomateModal()" data-tekton-action="cancel" data-tekton-action-type="secondary" data-tekton-trigger="click">Cancel</button>
+            <button class="ergon__button ergon__button--submit" onclick="ergon_startAutomation()" data-tekton-action="start-automation" data-tekton-action-type="primary" data-tekton-trigger="click" data-tekton-ai="start-automation" data-tekton-status="enabled">Start Automation</button>
         </div>
     </div>
 </div>
@@ -1188,6 +1215,12 @@ function ergon_initChats() {
     if (window.TeamChat && teamChatEl) {
         window.TeamChat.init(teamChatEl, 'ergon', 'ergon');
     }
+    
+    // Update main component AI ready state
+    const ergonComponent = document.querySelector('[data-tekton-component="ergon"]');
+    if (ergonComponent) {
+        ergonComponent.setAttribute('data-tekton-ai-ready', 'true');
+    }
 }
 
 // Chat functionality - delegate to unified chat components
@@ -1252,6 +1285,8 @@ window.ergon_loadSolutions = function ergon_loadSolutions() {
         })
         .then(data => {
             grid.innerHTML = '';
+            // Update grid state
+            grid.setAttribute('data-tekton-state', 'loading');
             
             if (data.status === 'not_implemented' || data.detail === 'Not Found') {
                 // Show the solutions we created
@@ -1290,7 +1325,8 @@ window.ergon_loadSolutions = function ergon_loadSolutions() {
             }
             
             if (!data.solutions || data.solutions.length === 0) {
-                grid.innerHTML = '<div class="ergon__empty-message">No solutions found in database.</div>';
+                grid.innerHTML = '<div class="ergon__empty-message" data-tekton-type="empty-state" data-tekton-state="empty">No solutions found in database.</div>';
+                grid.setAttribute('data-tekton-state', 'empty');
                 return;
             }
             
@@ -1298,25 +1334,31 @@ window.ergon_loadSolutions = function ergon_loadSolutions() {
             data.solutions.forEach(solution => {
                 const card = document.createElement('div');
                 card.className = 'ergon__solution-card';
+                card.setAttribute('data-tekton-component', 'solution-card');
+                card.setAttribute('data-tekton-type', 'card');
+                card.setAttribute('data-tekton-solution-type', solution.type);
+                card.setAttribute('data-tekton-solution-name', solution.name);
                 card.innerHTML = `
-                    <div class="ergon__solution-header">
-                        <div class="ergon__solution-name">${solution.name}</div>
-                        <div class="ergon__solution-type">${solution.type}</div>
+                    <div class="ergon__solution-header" data-tekton-zone="card-header">
+                        <div class="ergon__solution-name" data-tekton-type="solution-name">${solution.name}</div>
+                        <div class="ergon__solution-type" data-tekton-type="solution-type" data-tekton-status="${solution.type}">${solution.type}</div>
                     </div>
-                    <div class="ergon__solution-description">${solution.description || 'No description'}</div>
-                    <div class="ergon__solution-meta">
-                        <div class="ergon__solution-stat">
+                    <div class="ergon__solution-description" data-tekton-type="description">${solution.description || 'No description'}</div>
+                    <div class="ergon__solution-meta" data-tekton-zone="card-meta">
+                        <div class="ergon__solution-stat" data-tekton-type="stat" data-tekton-stat-type="usage">
                             <span>Used:</span>
-                            <strong>${solution.usage_count || 0}</strong>
+                            <strong data-tekton-value="usage-count">${solution.usage_count || 0}</strong>
                         </div>
-                        <div class="ergon__solution-stat">
+                        <div class="ergon__solution-stat" data-tekton-type="stat" data-tekton-stat-type="success">
                             <span>Success:</span>
-                            <strong>${solution.success_rate ? (solution.success_rate * 100).toFixed(0) + '%' : 'N/A'}</strong>
+                            <strong data-tekton-value="success-rate">${solution.success_rate ? (solution.success_rate * 100).toFixed(0) + '%' : 'N/A'}</strong>
                         </div>
                     </div>
                 `;
                 grid.appendChild(card);
             });
+            // Update grid state to loaded
+            grid.setAttribute('data-tekton-state', 'loaded');
         })
         .catch(err => {
             console.error('[ERGON] Failed to load solutions:', err);
@@ -1354,30 +1396,38 @@ window.ergon_loadSolutions = function ergon_loadSolutions() {
             ];
             
             grid.innerHTML = '';
+            // Update grid state
+            grid.setAttribute('data-tekton-state', 'loading');
             
             // Render solution cards
             solutions.forEach(solution => {
                 const card = document.createElement('div');
                 card.className = 'ergon__solution-card';
+                card.setAttribute('data-tekton-component', 'solution-card');
+                card.setAttribute('data-tekton-type', 'card');
+                card.setAttribute('data-tekton-solution-type', solution.type);
+                card.setAttribute('data-tekton-solution-name', solution.name);
                 card.innerHTML = `
-                    <div class="ergon__solution-header">
-                        <div class="ergon__solution-name">${solution.name}</div>
-                        <div class="ergon__solution-type">${solution.type}</div>
+                    <div class="ergon__solution-header" data-tekton-zone="card-header">
+                        <div class="ergon__solution-name" data-tekton-type="solution-name">${solution.name}</div>
+                        <div class="ergon__solution-type" data-tekton-type="solution-type" data-tekton-status="${solution.type}">${solution.type}</div>
                     </div>
-                    <div class="ergon__solution-description">${solution.description || 'No description'}</div>
-                    <div class="ergon__solution-meta">
-                        <div class="ergon__solution-stat">
+                    <div class="ergon__solution-description" data-tekton-type="description">${solution.description || 'No description'}</div>
+                    <div class="ergon__solution-meta" data-tekton-zone="card-meta">
+                        <div class="ergon__solution-stat" data-tekton-type="stat" data-tekton-stat-type="usage">
                             <span>Used:</span>
-                            <strong>${solution.usage_count || 0}</strong>
+                            <strong data-tekton-value="usage-count">${solution.usage_count || 0}</strong>
                         </div>
-                        <div class="ergon__solution-stat">
+                        <div class="ergon__solution-stat" data-tekton-type="stat" data-tekton-stat-type="success">
                             <span>Success:</span>
-                            <strong>${solution.success_rate ? (solution.success_rate * 100).toFixed(0) + '%' : 'N/A'}</strong>
+                            <strong data-tekton-value="success-rate">${solution.success_rate ? (solution.success_rate * 100).toFixed(0) + '%' : 'N/A'}</strong>
                         </div>
                     </div>
                 `;
                 grid.appendChild(card);
             });
+            // Update grid state to loaded
+            grid.setAttribute('data-tekton-state', 'loaded');
         });
 }
 
@@ -1448,13 +1498,16 @@ async function ergon_loadSprints() {
         
         
         grid.innerHTML = '';
+        // Update grid state
+        grid.setAttribute('data-tekton-state', 'loading');
         
         if (automatedSprints.length === 0) {
             grid.innerHTML = `
-                <div class="ergon__empty-message">
-                    <div class="ergon__message-text">No Ergon-managed sprints yet. Use the "Automate" button on any sprint in Tekton Core to enable automation.</div>
+                <div class="ergon__empty-message" data-tekton-type="empty-state" data-tekton-state="empty">
+                    <div class="ergon__message-text" data-tekton-type="empty-text">No Ergon-managed sprints yet. Use the "Automate" button on any sprint in Tekton Core to enable automation.</div>
                 </div>
             `;
+            grid.setAttribute('data-tekton-state', 'empty');
             return;
         }
         
@@ -1463,10 +1516,13 @@ async function ergon_loadSprints() {
             const card = ergon_createSprintCard(sprint);
             grid.appendChild(card);
         });
+        // Update grid state to loaded
+        grid.setAttribute('data-tekton-state', 'loaded');
         
     } catch (error) {
         console.error('[ERGON] Failed to load sprints:', error);
-        grid.innerHTML = '<div class="ergon__error-message">Failed to load sprints. Please check connection.</div>';
+        grid.innerHTML = '<div class="ergon__error-message" data-tekton-type="error-state" data-tekton-status="error">Failed to load sprints. Please check connection.</div>';
+        grid.setAttribute('data-tekton-state', 'error');
     }
 }
 
@@ -1474,6 +1530,11 @@ async function ergon_loadSprints() {
 function ergon_createSprintCard(sprint) {
     const card = document.createElement('div');
     card.className = 'ergon__sprint-card';
+    card.setAttribute('data-tekton-component', 'sprint-card');
+    card.setAttribute('data-tekton-type', 'card');
+    card.setAttribute('data-tekton-sprint-name', sprint.name);
+    card.setAttribute('data-tekton-sprint-status', sprint.status);
+    card.setAttribute('data-tekton-ai', 'automated-sprint');
     
     const statusClass = sprint.status.toLowerCase().replace(/ /g, '-');
     
@@ -1483,23 +1544,23 @@ function ergon_createSprintCard(sprint) {
         : 'Co-Developer';  // Default to Co-Developer
     
     card.innerHTML = `
-        <div class="ergon__sprint-header">
-            <h4 class="ergon__sprint-name">${sprint.name}</h4>
+        <div class="ergon__sprint-header" data-tekton-zone="card-header">
+            <h4 class="ergon__sprint-name" data-tekton-type="sprint-name">${sprint.name}</h4>
         </div>
-        <span class="ergon__sprint-status ergon__sprint-status--${statusClass}">${sprint.status}</span>
+        <span class="ergon__sprint-status ergon__sprint-status--${statusClass}" data-tekton-status="${sprint.status}" data-tekton-type="status-badge">${sprint.status}</span>
         
-        <div class="ergon__sprint-meta">
-            <div><strong>Coder:</strong> ${sprint.assigned_coder ? `Coder-${sprint.assigned_coder}` : 'Unassigned'} &nbsp;&nbsp; <strong>Tasks:</strong> ${sprint.task_count || 0} &nbsp;&nbsp; Updated: ${sprint.last_updated ? new Date(sprint.last_updated).toLocaleDateString() : 'Unknown'}</div>
-            <div><strong>Automated:</strong> ${displayAutonomy}</div>
-        </div>
-        
-        <div class="ergon__sprint-details" style="margin-top: 0.5rem;">
-            <div style="font-size: 0.9rem;"><strong>Branch:</strong> ${sprint.branch_name || 'No branch'}</div>
+        <div class="ergon__sprint-meta" data-tekton-zone="card-meta">
+            <div data-tekton-type="meta-info"><strong>Coder:</strong> ${sprint.assigned_coder ? `Coder-${sprint.assigned_coder}` : 'Unassigned'} &nbsp;&nbsp; <strong>Tasks:</strong> ${sprint.task_count || 0} &nbsp;&nbsp; Updated: ${sprint.last_updated ? new Date(sprint.last_updated).toLocaleDateString() : 'Unknown'}</div>
+            <div data-tekton-type="automation-info" data-tekton-ai="autonomy-level" data-tekton-ai-level="${displayAutonomy}"><strong>Automated:</strong> ${displayAutonomy}</div>
         </div>
         
-        <div class="ergon__sprint-actions">
-            <button class="ergon__sprint-button ergon__sprint-button--view" onclick="ergon_viewSprintDetails('${sprint.name}')">View in Tekton</button>
-            <button class="ergon__sprint-button ergon__sprint-button--primary" onclick="ergon_manageSprint('${sprint.name}', '${displayAutonomy}')">Manage Sprint</button>
+        <div class="ergon__sprint-details" style="margin-top: 0.5rem;" data-tekton-zone="card-details">
+            <div style="font-size: 0.9rem;" data-tekton-type="branch-info"><strong>Branch:</strong> ${sprint.branch_name || 'No branch'}</div>
+        </div>
+        
+        <div class="ergon__sprint-actions" data-tekton-zone="card-actions" data-tekton-type="action-container">
+            <button class="ergon__sprint-button ergon__sprint-button--view" onclick="ergon_viewSprintDetails('${sprint.name}')" data-tekton-action="view-details" data-tekton-action-type="secondary" data-tekton-trigger="click" data-tekton-nav-action="switch-component" data-tekton-nav-target="tekton">View in Tekton</button>
+            <button class="ergon__sprint-button ergon__sprint-button--primary" onclick="ergon_manageSprint('${sprint.name}', '${displayAutonomy}')" data-tekton-action="manage-sprint" data-tekton-action-type="primary" data-tekton-trigger="click" data-tekton-ai="manage-sprint" data-tekton-target="chat">Manage Sprint</button>
         </div>
     `;
     
@@ -1683,7 +1744,7 @@ function ergon_analyzeRepo(analysisType) {
         full: 'Performing comprehensive analysis...'
     };
     
-    resultsDiv.innerHTML = `<div class="ergon__loading-message"><div class="ergon__message-text">${analysisMessages[analysisType]}</div></div>`;
+    resultsDiv.innerHTML = `<div class="ergon__loading-message" data-tekton-type="loading-indicator" data-tekton-state="loading"><div class="ergon__message-text" data-tekton-type="loading-text">${analysisMessages[analysisType]}</div></div>`;
     
     const apiUrl = window.ergonUrl ? window.ergonUrl('/api/v1/analyze') : '/api/v1/analyze';
     
@@ -1704,13 +1765,13 @@ function ergon_analyzeRepo(analysisType) {
             // Show analysis type specific placeholder
             const placeholders = {
                 basic: `
-                    <div class="ergon__analysis-section">
-                        <h4>Basic Analysis</h4>
-                        <p class="ergon__analysis-description">
+                    <div class="ergon__analysis-section" data-tekton-component="analysis-section" data-tekton-type="analysis-result" data-tekton-analysis-type="basic">
+                        <h4 data-tekton-type="section-title">Basic Analysis</h4>
+                        <p class="ergon__analysis-description" data-tekton-type="analysis-description">
                             This repository appears to be a web application framework with RESTful API capabilities.
                             It could be compatible with Tekton's service-oriented architecture.
                         </p>
-                        <div class="ergon__analysis-details">
+                        <div class="ergon__analysis-details" data-tekton-type="analysis-details" data-tekton-zone="details">
                             <strong>Primary Language:</strong> JavaScript<br>
                             <strong>Framework:</strong> Express.js<br>
                             <strong>Use Cases:</strong> API development, microservices<br>
@@ -1719,12 +1780,12 @@ function ergon_analyzeRepo(analysisType) {
                     </div>
                 `,
                 architecture: `
-                    <div class="ergon__analysis-section">
-                        <h4>Architecture Analysis</h4>
-                        <p class="ergon__analysis-description">
+                    <div class="ergon__analysis-section" data-tekton-component="analysis-section" data-tekton-type="analysis-result" data-tekton-analysis-type="architecture">
+                        <h4 data-tekton-type="section-title">Architecture Analysis</h4>
+                        <p class="ergon__analysis-description" data-tekton-type="analysis-description">
                             The project follows a modular MVC architecture with clear separation of concerns.
                         </p>
-                        <div class="ergon__analysis-details">
+                        <div class="ergon__analysis-details" data-tekton-type="analysis-details" data-tekton-zone="details">
                             <strong>Structure:</strong> MVC pattern with routes, controllers, and models<br>
                             <strong>Dependencies:</strong> Express, MongoDB, JWT auth<br>
                             <strong>Build System:</strong> NPM with webpack<br>
@@ -1733,12 +1794,12 @@ function ergon_analyzeRepo(analysisType) {
                     </div>
                 `,
                 tekton: `
-                    <div class="ergon__analysis-section">
-                        <h4>Tekton Integration Analysis</h4>
-                        <p class="ergon__analysis-description">
+                    <div class="ergon__analysis-section" data-tekton-component="analysis-section" data-tekton-type="analysis-result" data-tekton-analysis-type="tekton">
+                        <h4 data-tekton-type="section-title">Tekton Integration Analysis</h4>
+                        <p class="ergon__analysis-description" data-tekton-type="analysis-description">
                             Several components could be valuable additions to the Tekton ecosystem.
                         </p>
-                        <div class="ergon__analysis-details">
+                        <div class="ergon__analysis-details" data-tekton-type="analysis-details" data-tekton-zone="details">
                             <strong>Reusable Components:</strong><br>
                             • Authentication middleware (JWT)<br>
                             • Database abstraction layer<br>
@@ -1747,13 +1808,29 @@ function ergon_analyzeRepo(analysisType) {
                         </div>
                     </div>
                 `,
+                companion: `
+                    <div class="ergon__analysis-section" data-tekton-component="analysis-section" data-tekton-type="analysis-result" data-tekton-analysis-type="companion" data-tekton-ai="companion-analysis">
+                        <h4 data-tekton-type="section-title">Companion Intelligence Analysis</h4>
+                        <p class="ergon__analysis-description" data-tekton-type="analysis-description">
+                            This codebase would benefit significantly from having a dedicated Companion Intelligence.
+                        </p>
+                        <div class="ergon__analysis-details" data-tekton-type="analysis-details" data-tekton-zone="details">
+                            <strong>CI Benefits:</strong><br>
+                            • Deep codebase understanding and pattern recognition<br>
+                            • Automated documentation and code generation<br>
+                            • Intelligent refactoring suggestions<br>
+                            • Context-aware development assistance<br>
+                            <strong data-tekton-ai="recommendation">Recommendation:</strong> Bind a CI to accelerate development by 10x
+                        </div>
+                    </div>
+                `,
                 full: `
-                    <div class="ergon__analysis-section">
-                        <h4>Comprehensive Analysis</h4>
-                        <p class="ergon__analysis-description">
+                    <div class="ergon__analysis-section" data-tekton-component="analysis-section" data-tekton-type="analysis-result" data-tekton-analysis-type="full" data-tekton-ai="comprehensive-analysis">
+                        <h4 data-tekton-type="section-title">Comprehensive Analysis</h4>
+                        <p class="ergon__analysis-description" data-tekton-type="analysis-description">
                             Full analysis of ${repoUrl || localPath} completed. This project shows strong potential for Tekton integration.
                         </p>
-                        <div class="ergon__analysis-details">
+                        <div class="ergon__analysis-details" data-tekton-type="analysis-details" data-tekton-zone="details">
                             <strong>Overview:</strong> Modern web API with modular architecture<br>
                             <strong>Quality Score:</strong> 8.5/10<br>
                             <strong>Reusability:</strong> High - well-structured components<br>
@@ -1761,13 +1838,14 @@ function ergon_analyzeRepo(analysisType) {
                             1. Create Tekton Managed Project<br>
                             2. Extract authentication module as MCP service<br>
                             3. Configure database layer for Athena integration<br>
-                            <strong>CI Opinion:</strong> "This project exemplifies clean architecture principles that align well with Tekton's philosophy."
+                            <strong data-tekton-ai="opinion">CI Opinion:</strong> "This project exemplifies clean architecture principles that align well with Tekton's philosophy."
                         </div>
                     </div>
                 `
             };
             
             resultsDiv.innerHTML = placeholders[analysisType];
+            resultsDiv.setAttribute('data-tekton-state', 'loaded');
             return;
         }
         
@@ -1859,10 +1937,12 @@ function ergon_analyzeRepo(analysisType) {
         }
         
         resultsDiv.innerHTML = content;
+        resultsDiv.setAttribute('data-tekton-state', 'loaded');
     })
     .catch(err => {
         console.error('[ERGON] Failed to analyze repository:', err);
-        resultsDiv.innerHTML = '<div class="ergon__error-message">Failed to analyze repository. Please try again.</div>';
+        resultsDiv.innerHTML = '<div class="ergon__error-message" data-tekton-type="error-state" data-tekton-status="error">Failed to analyze repository. Please try again.</div>';
+        resultsDiv.setAttribute('data-tekton-state', 'error');
     });
 }
 
@@ -1903,13 +1983,21 @@ function ergon_startAutomation() {
     const messagesContainer = document.getElementById('ergon-messages');
     const userMessageDiv = document.createElement('div');
     userMessageDiv.className = 'ergon__message ergon__message--user';
-    userMessageDiv.innerHTML = `<div class="ergon__message-content"><div class="ergon__message-text">Automate: ${description}</div></div>`;
+    userMessageDiv.setAttribute('data-tekton-chat', 'message');
+    userMessageDiv.setAttribute('data-tekton-message-type', 'user');
+    userMessageDiv.setAttribute('data-tekton-type', 'chat-message');
+    userMessageDiv.innerHTML = `<div class="ergon__message-content" data-tekton-zone="message-content"><div class="ergon__message-text" data-tekton-type="message-text">Automate: ${description}</div></div>`;
     messagesContainer.appendChild(userMessageDiv);
     
     // Add thinking message
     const thinkingDiv = document.createElement('div');
     thinkingDiv.className = 'ergon__message ergon__message--ai';
-    thinkingDiv.innerHTML = `<div class="ergon__message-content"><div class="ergon__message-text"><strong>Ergon:</strong> Starting automated development process...</div></div>`;
+    thinkingDiv.setAttribute('data-tekton-chat', 'message');
+    thinkingDiv.setAttribute('data-tekton-message-type', 'ai');
+    thinkingDiv.setAttribute('data-tekton-type', 'chat-message');
+    thinkingDiv.setAttribute('data-tekton-ai', 'thinking');
+    thinkingDiv.setAttribute('data-tekton-state', 'processing');
+    thinkingDiv.innerHTML = `<div class="ergon__message-content" data-tekton-zone="message-content"><div class="ergon__message-text" data-tekton-type="message-text"><strong>Ergon:</strong> Starting automated development process...</div></div>`;
     messagesContainer.appendChild(thinkingDiv);
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
     
@@ -1929,11 +2017,16 @@ function ergon_startAutomation() {
     .then(data => {
         const responseDiv = document.createElement('div');
         responseDiv.className = 'ergon__message ergon__message--ai';
+        responseDiv.setAttribute('data-tekton-chat', 'message');
+        responseDiv.setAttribute('data-tekton-message-type', 'ai');
+        responseDiv.setAttribute('data-tekton-type', 'chat-message');
+        responseDiv.setAttribute('data-tekton-ai', 'response');
+        responseDiv.setAttribute('data-tekton-state', 'complete');
         
         if (data.status === 'not_implemented') {
-            responseDiv.innerHTML = `<div class="ergon__message-content"><div class="ergon__message-text"><strong>Ergon:</strong> The automation workflow is coming in Phase 3. This will enable me to orchestrate entire development projects with configurable autonomy levels.</div></div>`;
+            responseDiv.innerHTML = `<div class="ergon__message-content" data-tekton-zone="message-content"><div class="ergon__message-text" data-tekton-type="message-text"><strong>Ergon:</strong> The automation workflow is coming in Phase 3. This will enable me to orchestrate entire development projects with configurable autonomy levels.</div></div>`;
         } else {
-            responseDiv.innerHTML = `<div class="ergon__message-content"><div class="ergon__message-text"><strong>Ergon:</strong> ${data.message || 'Automation started successfully!'}</div></div>`;
+            responseDiv.innerHTML = `<div class="ergon__message-content" data-tekton-zone="message-content"><div class="ergon__message-text" data-tekton-type="message-text"><strong>Ergon:</strong> ${data.message || 'Automation started successfully!'}</div></div>`;
         }
         
         messagesContainer.appendChild(responseDiv);
@@ -1943,7 +2036,11 @@ function ergon_startAutomation() {
         console.error('[ERGON] Failed to start automation:', err);
         const errorDiv = document.createElement('div');
         errorDiv.className = 'ergon__message ergon__message--system';
-        errorDiv.innerHTML = `<div class="ergon__message-content"><div class="ergon__message-text"><strong>System:</strong> Failed to start automation. Please try again.</div></div>`;
+        errorDiv.setAttribute('data-tekton-chat', 'message');
+        errorDiv.setAttribute('data-tekton-message-type', 'system');
+        errorDiv.setAttribute('data-tekton-type', 'chat-message');
+        errorDiv.setAttribute('data-tekton-status', 'error');
+        errorDiv.innerHTML = `<div class="ergon__message-content" data-tekton-zone="message-content"><div class="ergon__message-text" data-tekton-type="message-text"><strong>System:</strong> Failed to start automation. Please try again.</div></div>`;
         messagesContainer.appendChild(errorDiv);
         messagesContainer.scrollTop = messagesContainer.scrollHeight;
     });
@@ -1976,12 +2073,31 @@ window.addEventListener('DOMContentLoaded', function() {
             if (this.checked) {
                 const tabId = this.id.replace('ergon-tab-', '');
                 console.log('[ERGON] Tab changed to:', tabId);
+                
+                // Update panel states
+                document.querySelectorAll('.ergon__panel').forEach(panel => {
+                    panel.setAttribute('data-tekton-state', 'inactive');
+                    panel.setAttribute('data-tekton-visibility', 'hidden');
+                });
+                
+                // Activate the selected panel
+                const activePanel = document.getElementById(tabId === 'chat' ? 'ergon-panel' : 
+                                                         tabId === 'teamchat' ? 'awt-team-panel' : 
+                                                         `${tabId}-panel`);
+                if (activePanel) {
+                    activePanel.setAttribute('data-tekton-state', 'active');
+                    activePanel.setAttribute('data-tekton-visibility', 'visible');
+                }
+                
                 // Reload data for specific tabs
                 if (tabId === 'development') {
                     ergon_loadSprints();
                 } else if (tabId === 'registry') {
                     console.log('[ERGON] Loading solutions from tab change');
                     ergon_loadSolutions();
+                } else if (tabId === 'configurator') {
+                    console.log('[ERGON] Loading configurator solutions from tab change');
+                    ergon_loadConfiguratorSolutions();
                 }
             }
         });
@@ -2001,12 +2117,30 @@ if (document.readyState === 'complete' || document.readyState === 'interactive')
                 const tabId = this.id.replace('ergon-tab-', '');
                 console.log('[ERGON] Tab changed to:', tabId);
                 
+                // Update panel states
+                document.querySelectorAll('.ergon__panel').forEach(panel => {
+                    panel.setAttribute('data-tekton-state', 'inactive');
+                    panel.setAttribute('data-tekton-visibility', 'hidden');
+                });
+                
+                // Activate the selected panel
+                const activePanel = document.getElementById(tabId === 'chat' ? 'ergon-panel' : 
+                                                         tabId === 'teamchat' ? 'awt-team-panel' : 
+                                                         `${tabId}-panel`);
+                if (activePanel) {
+                    activePanel.setAttribute('data-tekton-state', 'active');
+                    activePanel.setAttribute('data-tekton-visibility', 'visible');
+                }
+                
                 // Load data for specific tabs
                 if (tabId === 'development') {
                     ergon_loadSprints();
                 } else if (tabId === 'registry') {
                     console.log('[ERGON] Loading solutions from tab change');
                     ergon_loadSolutions();
+                } else if (tabId === 'configurator') {
+                    console.log('[ERGON] Loading configurator solutions from tab change');
+                    ergon_loadConfiguratorSolutions();
                 }
             }
         });
@@ -2016,6 +2150,137 @@ if (document.readyState === 'complete' || document.readyState === 'interactive')
     ergon_loadAutonomyLevel();
     ergon_loadSprints();
 }
+
+// Load solutions into configurator dropdown
+window.ergon_loadConfiguratorSolutions = function() {
+    console.log('[ERGON] Loading solutions for configurator');
+    const select = document.getElementById('config-solution');
+    
+    if (!select) {
+        console.error('[ERGON] Config solution select element not found!');
+        return;
+    }
+    
+    // Clear existing options except the first one
+    while (select.options.length > 1) {
+        select.remove(1);
+    }
+    
+    const apiUrl = window.ergonUrl ? window.ergonUrl('/api/v1/solutions') : '/api/v1/solutions';
+    
+    fetch(apiUrl)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            // Use the same hardcoded solutions as Registry
+            const solutions = [
+                {
+                    id: "codebase-indexer",
+                    name: "Codebase Indexer",
+                    type: "analysis"
+                },
+                {
+                    id: "rag-engine",
+                    name: "RAG Engine",
+                    type: "intelligence"
+                },
+                {
+                    id: "cache-rag",
+                    name: "Cache RAG",
+                    type: "intelligence"
+                },
+                {
+                    id: "companion-intelligence",
+                    name: "Companion Intelligence",
+                    type: "intelligence"
+                }
+            ];
+            
+            // Add solutions to dropdown
+            solutions.forEach(solution => {
+                const option = document.createElement('option');
+                option.value = solution.id;
+                option.textContent = solution.name;
+                option.setAttribute('data-solution-type', solution.type);
+                select.appendChild(option);
+            });
+            
+            // Update select state
+            select.setAttribute('data-tekton-state', 'loaded');
+            
+            // Also populate config type dropdown when solution is selected
+            select.addEventListener('change', function() {
+                const selectedSolution = this.value;
+                const configTypeSelect = document.getElementById('config-type');
+                
+                if (selectedSolution && configTypeSelect) {
+                    // Clear existing options except the first one
+                    while (configTypeSelect.options.length > 1) {
+                        configTypeSelect.remove(1);
+                    }
+                    
+                    // Add config types based on solution
+                    const configTypes = [
+                        { value: 'wrapper', text: 'Service Wrapper' },
+                        { value: 'adapter', text: 'Adapter Pattern' },
+                        { value: 'mcp', text: 'MCP Service' },
+                        { value: 'api', text: 'REST API' },
+                        { value: 'cli', text: 'CLI Tool' }
+                    ];
+                    
+                    configTypes.forEach(type => {
+                        const option = document.createElement('option');
+                        option.value = type.value;
+                        option.textContent = type.text;
+                        configTypeSelect.appendChild(option);
+                    });
+                    
+                    configTypeSelect.setAttribute('data-tekton-state', 'loaded');
+                }
+            });
+        })
+        .catch(err => {
+            console.error('[ERGON] Failed to load solutions:', err);
+            
+            // Still populate with hardcoded solutions on error
+            const solutions = [
+                {
+                    id: "codebase-indexer",
+                    name: "Codebase Indexer",
+                    type: "analysis"
+                },
+                {
+                    id: "rag-engine",
+                    name: "RAG Engine",
+                    type: "intelligence"
+                },
+                {
+                    id: "cache-rag",
+                    name: "Cache RAG",
+                    type: "intelligence"
+                },
+                {
+                    id: "companion-intelligence",
+                    name: "Companion Intelligence",
+                    type: "intelligence"
+                }
+            ];
+            
+            solutions.forEach(solution => {
+                const option = document.createElement('option');
+                option.value = solution.id;
+                option.textContent = solution.name;
+                option.setAttribute('data-solution-type', solution.type);
+                select.appendChild(option);
+            });
+            
+            select.setAttribute('data-tekton-state', 'loaded');
+        });
+};
 
 // Fallback initialization after window load
 window.addEventListener('load', function() {

@@ -19,6 +19,48 @@ from pathlib import Path
 
 from .codebase_indexer import CodebaseIndexer, MethodSignature, DataStructure
 
+# Landmark imports with fallback
+try:
+    from landmarks import (
+        architecture_decision,
+        api_contract,
+        integration_point,
+        performance_boundary,
+        state_checkpoint,
+        danger_zone
+    )
+except ImportError:
+    # Define no-op decorators when landmarks not available
+    def architecture_decision(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+    
+    def api_contract(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+    
+    def integration_point(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+    
+    def performance_boundary(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+    
+    def state_checkpoint(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+    
+    def danger_zone(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+
 logger = logging.getLogger(__name__)
 
 @dataclass
@@ -50,6 +92,23 @@ class RAGResponse:
     suggestions: List[Dict[str, Any]]
     metadata: Dict[str, Any]
 
+@architecture_decision(
+    title="RAG Engine Architecture",
+    description="Retrieval-Augmented Generation engine combining codebase indexing with LLM capabilities",
+    rationale="Provides contextual code understanding by retrieving relevant code snippets before LLM generation",
+    alternatives_considered=["Pure LLM without retrieval", "Keyword-based search", "AST-only analysis"],
+    impacts=["code_understanding", "llm_accuracy", "response_quality"],
+    decided_by="Ergon Team",
+    decision_date="2024-01-01"
+)
+@state_checkpoint(
+    title="RAG Engine State",
+    description="Manages codebase index and embeddings cache for retrieval",
+    state_type="index_and_cache",
+    persistence=True,
+    consistency_requirements="Index must reflect current codebase state",
+    recovery_strategy="Rebuild index from codebase if corrupted"
+)
 class RAGEngine:
     """
     RAG engine that combines code indexing with LLM capabilities
@@ -84,6 +143,13 @@ class RAGEngine:
         with open(index_path, 'w') as f:
             json.dump(self.index, f, indent=2)
             
+    @performance_boundary(
+        title="Embedding Generation",
+        description="Build semantic embeddings for all code elements",
+        sla="<10s for typical codebase",
+        optimization_notes="Batch processing and caching for efficiency",
+        measured_impact="One-time cost enables fast semantic search"
+    )
     def _build_embeddings(self):
         """Build embeddings for all indexed items"""
         # In a real implementation, this would use a proper embedding model
@@ -136,6 +202,26 @@ class RAGEngine:
             
         self._build_embeddings()
         
+    @api_contract(
+        title="RAG Query API",
+        description="Execute retrieval-augmented generation query",
+        endpoint="/rag/query",
+        method="POST",
+        request_schema={
+            "query": "string",
+            "context_type": "Optional[string]",
+            "max_contexts": "int",
+            "include_call_graph": "bool",
+            "include_related_files": "bool"
+        },
+        response_schema={
+            "answer": "string",
+            "contexts": "List[CodeContext]",
+            "confidence": "float",
+            "suggestions": "List[Dict]"
+        },
+        performance_requirements="<3s for retrieval and generation"
+    )
     def query(self, rag_query: RAGQuery) -> RAGResponse:
         """
         Execute a RAG query
@@ -172,6 +258,13 @@ class RAGEngine:
             }
         )
         
+    @performance_boundary(
+        title="Context Retrieval",
+        description="Retrieve relevant code contexts using semantic search",
+        sla="<500ms for up to 10 contexts",
+        optimization_notes="Uses pre-computed embeddings and efficient similarity search",
+        measured_impact="Enables sub-second context retrieval for improved UX"
+    )
     def _retrieve_contexts(self, query: RAGQuery) -> List[CodeContext]:
         """Retrieve relevant code contexts for the query"""
         contexts = []
@@ -532,6 +625,14 @@ class RAGEngine:
 
 
 # Integration with Ergon
+@integration_point(
+    title="Ergon RAG Integration",
+    description="Integrates RAG engine with Ergon's solution registry",
+    target_component="Ergon",
+    protocol="solution_registry",
+    data_flow="Ergon registry → RAG instantiation → Code understanding services",
+    integration_date="2024-01-01"
+)
 def create_rag_solution():
     """
     Create the RAG solution for Ergon's registry

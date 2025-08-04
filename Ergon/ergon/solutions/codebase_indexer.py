@@ -22,6 +22,48 @@ from dataclasses import dataclass, asdict
 from datetime import datetime
 import logging
 
+# Landmark imports with fallback
+try:
+    from landmarks import (
+        architecture_decision,
+        api_contract,
+        integration_point,
+        performance_boundary,
+        state_checkpoint,
+        danger_zone
+    )
+except ImportError:
+    # Define no-op decorators when landmarks not available
+    def architecture_decision(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+    
+    def api_contract(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+    
+    def integration_point(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+    
+    def performance_boundary(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+    
+    def state_checkpoint(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+    
+    def danger_zone(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+
 logger = logging.getLogger(__name__)
 
 @dataclass
@@ -70,6 +112,23 @@ class SemanticTag:
     line_number: int
     metadata: Dict[str, Any]
 
+@architecture_decision(
+    title="Codebase Indexer Architecture",
+    description="AST-based codebase analysis for comprehensive code understanding",
+    rationale="Provides foundation for all code intelligence features by extracting method signatures, calls, and structures",
+    alternatives_considered=["Regex-based parsing", "Language server protocol", "CTags"],
+    impacts=["code_understanding", "refactoring_capabilities", "semantic_search"],
+    decided_by="Ergon Team",
+    decision_date="2023-12-01"
+)
+@state_checkpoint(
+    title="Codebase Index",
+    description="Complete structural index of codebase elements",
+    state_type="code_index",
+    persistence=True,
+    consistency_requirements="Must reflect current codebase state, file hash verification",
+    recovery_strategy="Full re-index from source files"
+)
 class CodebaseIndexer:
     """
     Indexes a codebase to extract structural and semantic information
@@ -84,6 +143,23 @@ class CodebaseIndexer:
         self.file_hashes: Dict[str, str] = {}
         self.index_timestamp = datetime.utcnow()
         
+    @api_contract(
+        title="Codebase Indexing API",
+        description="Index entire codebase for structural analysis",
+        endpoint="/indexer/index",
+        method="POST",
+        request_schema={
+            "include_patterns": "List[str]",
+            "exclude_patterns": "List[str]"
+        },
+        response_schema={
+            "statistics": "dict",
+            "method_signatures": "List[MethodSignature]",
+            "data_structures": "List[DataStructure]",
+            "semantic_tags": "List[SemanticTag]"
+        },
+        performance_requirements="<30s for typical codebase"
+    )
     def index_codebase(self, include_patterns: List[str] = None, 
                       exclude_patterns: List[str] = None) -> Dict[str, Any]:
         """
@@ -175,6 +251,13 @@ class CodebaseIndexer:
         elif file_path.suffix == '.java':
             self._index_java_file(file_path)
             
+    @performance_boundary(
+        title="Python AST Parsing",
+        description="Parse Python files using AST for accurate extraction",
+        sla="<100ms per file",
+        optimization_notes="AST parsing provides accuracy over regex approaches",
+        measured_impact="Accurate extraction of all code elements"
+    )
     def _index_python_file(self, file_path: Path):
         """Index a Python file using AST"""
         with open(file_path, 'r', encoding='utf-8') as f:
@@ -238,6 +321,14 @@ class CodebaseIndexer:
         # For now, we'll use regex-based extraction
         pass
         
+    @integration_point(
+        title="Semantic Tag Extraction",
+        description="Extract landmarks and semantic tags from code comments",
+        target_component="Landmarks System",
+        protocol="comment_parsing",
+        data_flow="Source files → Regex extraction → Semantic tag database",
+        integration_date="2024-01-01"
+    )
     def _extract_semantic_tags(self, file_path: Path):
         """Extract semantic tags from file comments"""
         with open(file_path, 'r', encoding='utf-8') as f:
@@ -335,6 +426,19 @@ class CodebaseIndexer:
                     
         return results
         
+    @api_contract(
+        title="Method Call Graph API",
+        description="Get call graph showing method relationships",
+        endpoint="/indexer/method-graph",
+        method="GET",
+        request_schema={"method_name": "str"},
+        response_schema={
+            "method": "str",
+            "callers": "List[str]",
+            "callees": "List[str]"
+        },
+        performance_requirements="<50ms response time"
+    )
     def get_method_graph(self, method_name: str) -> Dict[str, Any]:
         """
         Get call graph for a method
@@ -527,6 +631,14 @@ class PythonIndexVisitor(ast.NodeVisitor):
 
 
 # Integration with Ergon
+@integration_point(
+    title="Codebase Indexer Integration",
+    description="Integrates codebase indexer with Ergon's solution registry",
+    target_component="Ergon",
+    protocol="solution_registry",
+    data_flow="Ergon → Indexer instantiation → Code analysis services",
+    integration_date="2023-12-01"
+)
 def create_indexer_solution():
     """
     Create the codebase indexer solution for Ergon's registry
