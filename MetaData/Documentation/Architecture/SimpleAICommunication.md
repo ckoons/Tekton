@@ -32,6 +32,7 @@ Core service managing message queues and socket connections:
 - Handles socket lifecycle
 - Provides message tracking with UUIDs
 - Auto-registers 18 Greek Chorus AIs on import
+- No singleton patterns - filesystem-based state management
 
 ### 3. Message Handler (`shared/aish/src/message_handler.py`)
 Simplified message handling for aish commands:
@@ -144,6 +145,14 @@ except Exception as e:
     # Simple error - no fallback chains or retries
     print(f"AI communication failed: {e}")
 ```
+
+## CI Tools Integration
+
+For CI tools like Claude Code, Cursor, and Continue, Tekton uses a separate C-based infrastructure:
+- **C Tool Launcher**: Reliable process management without Python import issues
+- **Unix Domain Socket Message Bus**: CI-to-CI messaging
+- **Filesystem-based tracking**: No singleton failures
+- See [CI Tools Infrastructure](CI_Tools_Infrastructure.md) for details
 
 ## Summary
 

@@ -18,6 +18,8 @@ System design, patterns, and architectural decisions. Critical for understanding
 
 **Key Documents**:
 - **[CI Registry Architecture](Architecture/CI-Registry-Architecture.md)** - Central CI coordination and Apollo-Rhetor collaboration
+- **[CI Tools Infrastructure](Architecture/CI_Tools_Infrastructure.md)** - C-based launcher and message bus for CI tools integration
+- **[CI Message Queue Architecture](Architecture/CI_Message_Queue_Architecture.md)** - Non-blocking CI-to-CI communication system
 - **[Development Sprint Workflow](Architecture/DevelopmentSprintWorkflow.md)** - Complete guide to the planning pipeline
 - **[Workflow Endpoint Standard](Architecture/WorkflowEndpointStandard.md)** - Unified component communication
 

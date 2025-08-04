@@ -2,7 +2,9 @@
 
 ## Overview
 
-The GlobalConfig pattern standardizes configuration management and component initialization across all Tekton components. It replaces scattered global variables with a centralized, singleton configuration object.
+The GlobalConfig pattern standardizes configuration management and component initialization across all Tekton components. It replaces scattered global variables with a centralized configuration object.
+
+**Note**: While GlobalConfig uses a singleton pattern internally for configuration consistency, the new CI Tools infrastructure (see [CI Tools Infrastructure](/MetaData/Documentation/Architecture/CI_Tools_Infrastructure.md)) uses filesystem-based state management to avoid Python import issues.
 
 ## Core Classes
 
@@ -11,7 +13,7 @@ The GlobalConfig pattern standardizes configuration management and component ini
 Location: `/shared/utils/global_config.py`
 
 The GlobalConfig class provides:
-- Singleton pattern for configuration management
+- Singleton pattern for configuration management (Note: CI Tools use filesystem-based tracking)
 - Wraps ComponentConfig for environment-based configuration
 - Runtime state management (services, registration, etc.)
 - Data directory management

@@ -4,6 +4,8 @@
 
 Tekton's AI system uses a simplified "One Queue, One Socket, One AI" architecture. Each component can have an associated AI specialist that provides intelligent assistance through direct socket communication using fixed ports.
 
+**Important Update**: For CI tools integration (like Claude Code, Cursor, Continue), see the [CI Tools Infrastructure](CI_Tools_Infrastructure.md) documentation which describes the new C-based launcher and message bus system.
+
 ## Key Components
 
 ### 1. Simple AI Interface (`shared/ai/simple_ai.py`)
@@ -23,6 +25,7 @@ Core service managing AI communication:
 - **Socket Connections**: Direct socket connections to AI specialists
 - **Auto-Registration**: 18 AIs automatically registered on service import
 - **Error Handling**: Graceful degradation when AIs are not running
+- **No Singletons**: Filesystem-based state management (see CI Tools Infrastructure)
 
 ### 3. Generic AI Specialist (`shared/ai/generic_specialist.py`)
 

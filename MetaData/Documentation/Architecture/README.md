@@ -30,6 +30,12 @@ This directory contains the architectural documentation for the Tekton system. T
 ### AI and Intelligence Architecture
 - [AI Orchestration Architecture](./AI_Orchestration_Architecture.md): AI specialist management and MCP tools orchestration
 - [LLM Integration Plan](./LLMIntegrationPlan.md): LLM integration architecture
+- [AI Registry](./AIRegistry.md): AI communication architecture and registry system
+- [Simple AI Communication](./SimpleAICommunication.md): Simplified "One Queue, One Socket, One AI" architecture
+
+### CI Tools Infrastructure
+- [CI Tools Infrastructure](./CI_Tools_Infrastructure.md): C-based launcher and message bus for CI tools
+- [CI Message Queue Architecture](./CI_Message_Queue_Architecture.md): Non-blocking message queue system for CI-to-CI communication
 
 ### State Management
 - [State Management Architecture](./StateManagementArchitecture.md): Application-wide state management approach

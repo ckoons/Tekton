@@ -78,7 +78,7 @@ The state management system consists of the following core components:
 The central state store that manages all state data and provides APIs for state manipulation:
 
 ```javascript
-// Access the singleton instance
+// Access the state manager instance
 const stateManager = window.tektonUI.stateManager;
 
 // Get state from a namespace
