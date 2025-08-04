@@ -725,6 +725,12 @@
         color: var(--text-secondary, #d0d0d0);
     }
     
+    .tekton__remote-value {
+        font-size: 0.85rem;
+        opacity: 0.8;
+        margin-left: 0.5rem;
+    }
+    
     .tekton__remote-missing {
         font-size: 0.9rem;
         opacity: 0.6;
@@ -2210,9 +2216,9 @@ async function createNewProject() {
         // Clear the form after creation
         cancelNewProject();
         
-        // Switch to dashboard to show the new project
-        document.getElementById('tekton-tab-dashboard').checked = true;
-        tekton_switchTab('dashboard');
+        // Switch to projects tab to show the new project
+        document.getElementById('tekton-tab-projects').checked = true;
+        tekton_switchTab('projects');
         
         // Refresh project list
         await loadProjectsDashboard();
@@ -2385,28 +2391,24 @@ function createProjectCard(project) {
             ${project.forked_repository ? `
                 <div class="tekton__remote-row">
                     <span class="tekton__remote-label">Fork:</span>
-                    <span style="font-size: 0.85rem; opacity: 0.8;">${project.forked_repository.split('/').slice(-2).join('/')}</span>
-                    ${hasFork && !hasUpstream ? `
-                        <div class="tekton__remote-actions">
-                            <button class="tekton__button tekton__button--status tekton__button--small" onclick="gitAction('${project.id}', 'status', 'fork')">Status</button>
-                            <button class="tekton__button tekton__button--pull tekton__button--small" onclick="gitAction('${project.id}', 'pull', 'fork')">Pull</button>
-                            <button class="tekton__button tekton__button--push tekton__button--small" onclick="gitAction('${project.id}', 'push', 'fork')">Push</button>
-                        </div>
-                    ` : ''}
+                    <span class="tekton__remote-value">${project.forked_repository.split('/').slice(-2).join('/')}</span>
+                    <div class="tekton__remote-actions">
+                        <button class="tekton__button tekton__button--status tekton__button--small" onclick="gitAction('${project.id}', 'status', 'fork')">Status</button>
+                        <button class="tekton__button tekton__button--pull tekton__button--small" onclick="gitAction('${project.id}', 'pull', 'fork')">Pull</button>
+                        <button class="tekton__button tekton__button--push tekton__button--small" onclick="gitAction('${project.id}', 'push', 'fork')">Push</button>
+                    </div>
                 </div>
             ` : '<div class="tekton__remote-row"><span class="tekton__remote-missing">No fork repository configured</span></div>'}
             
             ${project.upstream_repository ? `
                 <div class="tekton__remote-row">
                     <span class="tekton__remote-label">Upstream:</span>
-                    <span style="font-size: 0.85rem; opacity: 0.8;">${project.upstream_repository.split('/').slice(-2).join('/')}</span>
-                    ${hasUpstream ? `
-                        <div class="tekton__remote-actions">
-                            <button class="tekton__button tekton__button--status tekton__button--small" onclick="gitAction('${project.id}', 'status', 'upstream')">Status</button>
-                            <button class="tekton__button tekton__button--pull tekton__button--small" onclick="gitAction('${project.id}', 'pull', 'upstream')">Pull</button>
-                            <button class="tekton__button tekton__button--pr tekton__button--small" onclick="gitAction('${project.id}', 'pull-request', 'upstream')">Pull Request</button>
-                        </div>
-                    ` : ''}
+                    <span class="tekton__remote-value">${project.upstream_repository.split('/').slice(-2).join('/')}</span>
+                    <div class="tekton__remote-actions">
+                        <button class="tekton__button tekton__button--status tekton__button--small" onclick="gitAction('${project.id}', 'status', 'upstream')">Status</button>
+                        <button class="tekton__button tekton__button--pull tekton__button--small" onclick="gitAction('${project.id}', 'pull', 'upstream')">Pull</button>
+                        <button class="tekton__button tekton__button--pr tekton__button--small" onclick="gitAction('${project.id}', 'pull-request', 'upstream')">Pull Request</button>
+                    </div>
                 </div>
             ` : '<div class="tekton__remote-row"><span class="tekton__remote-missing">No upstream repository configured</span></div>'}
         </div>

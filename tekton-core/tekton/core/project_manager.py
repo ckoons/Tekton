@@ -22,6 +22,7 @@ from enum import Enum
 from urllib.parse import urlparse
 
 from shared.utils.logging_setup import setup_component_logging
+from shared.env import TektonEnviron
 
 # Import landmarks for architectural documentation
 try:
