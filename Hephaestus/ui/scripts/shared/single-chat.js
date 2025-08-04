@@ -5,26 +5,26 @@
  */
 
 window.SingleChat = {
-    // Component configuration mapping
+    // Component configuration mapping - using -ai suffix for AI specialists (42xxx ports)
     config: {
-        'terma': { aiName: 'terma', displayName: 'Terma' },
-        'budget': { aiName: 'penia', displayName: 'Penia' },
-        'numa': { aiName: 'numa', displayName: 'Numa' },
-        'athena': { aiName: 'athena', displayName: 'Athena' },
-        'apollo': { aiName: 'apollo', displayName: 'Apollo' },
-        'rhetor': { aiName: 'rhetor', displayName: 'Rhetor' },
-        'hermes': { aiName: 'hermes', displayName: 'Hermes' },
-        'sophia': { aiName: 'sophia', displayName: 'Sophia' },
-        'noesis': { aiName: 'noesis', displayName: 'Noesis' },
-        'metis': { aiName: 'metis', displayName: 'Metis' },
-        'harmonia': { aiName: 'harmonia', displayName: 'Harmonia' },
-        'prometheus': { aiName: 'prometheus', displayName: 'Prometheus' },
-        'ergon': { aiName: 'ergon', displayName: 'Ergon' },
-        'telos': { aiName: 'telos', displayName: 'Telos' },
-        'synthesis': { aiName: 'synthesis', displayName: 'Synthesis' },
-        'engram': { aiName: 'engram', displayName: 'Engram' },
-        'codex': { aiName: 'codex', displayName: 'Codex' },
-        'tekton': { aiName: 'tekton_core', displayName: 'Tekton' } // tekton-core component
+        'terma': { aiName: 'terma-ai', displayName: 'Terma' },
+        'budget': { aiName: 'penia-ai', displayName: 'Penia' },
+        'numa': { aiName: 'numa-ai', displayName: 'Numa' },
+        'athena': { aiName: 'athena-ai', displayName: 'Athena' },
+        'apollo': { aiName: 'apollo-ai', displayName: 'Apollo' },
+        'rhetor': { aiName: 'rhetor-ai', displayName: 'Rhetor' },
+        'hermes': { aiName: 'hermes-ai', displayName: 'Hermes' },
+        'sophia': { aiName: 'sophia-ai', displayName: 'Sophia' },
+        'noesis': { aiName: 'noesis-ai', displayName: 'Noesis' },
+        'metis': { aiName: 'metis-ai', displayName: 'Metis' },
+        'harmonia': { aiName: 'harmonia-ai', displayName: 'Harmonia' },
+        'prometheus': { aiName: 'prometheus-ai', displayName: 'Prometheus' },
+        'ergon': { aiName: 'ergon-ai', displayName: 'Ergon' },
+        'telos': { aiName: 'telos-ai', displayName: 'Telos' },
+        'synthesis': { aiName: 'synthesis-ai', displayName: 'Synthesis' },
+        'engram': { aiName: 'engram-ai', displayName: 'Engram' },
+        'codex': { aiName: 'codex-ai', displayName: 'Codex' },
+        'tekton': { aiName: 'tekton-core-ai', displayName: 'Tekton' } // tekton-core AI specialist
     },
     
     /**

@@ -225,17 +225,21 @@ class CIRegistry:
                 except:
                     pass
         
-        # Fallback to default offsets if component not in registry yet
-        COMPONENT_OFFSETS = {
-            'tekton-core': 0, 'hermes': 1, 'engram': 2, 'rhetor': 3,
-            'numa': 16, 'athena': 5, 'harmonia': 6, 'metis': 7,
-            'terma': 8, 'penia': 9, 'noesis': 10, 'prometheus': 11,
-            'apollo': 12, 'ergon': 13, 'sophia': 14, 'telos': 15,
-            'synthesis': 17, 'hephaestus': 18
-        }
+        # If we can't find it in registry, look up the actual environment variable
+        component_upper = component_name.upper().replace('-', '_')
+        ai_port_env = TektonEnviron.get(f'{component_upper}_AI_PORT')
+        if ai_port_env:
+            return int(ai_port_env)
         
-        offset = COMPONENT_OFFSETS.get(component_name, 0)
-        return ai_port_base + offset
+        # Last resort - calculate from component port env var
+        component_port_env = TektonEnviron.get(f'{component_upper}_PORT')
+        if component_port_env:
+            component_port = int(component_port_env)
+            offset = component_port - component_port_base
+            return ai_port_base + offset
+        
+        # If all else fails, raise an error instead of guessing
+        raise ValueError(f"Cannot determine AI port for {component_name}")
     
     @integration_point(
         title="Greek Chorus CI Loading",

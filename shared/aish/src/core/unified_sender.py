@@ -9,7 +9,7 @@ import urllib.error
 import urllib.parse
 from typing import Optional
 
-from ..registry.ci_registry import get_registry
+from registry.ci_registry import get_registry
 
 # Import landmarks with fallback
 try:
@@ -130,13 +130,20 @@ def send_to_ci(ci_name: str, message: str) -> bool:
             
             try:
                 response = ai_send_sync(ai_name, message, "localhost", port)
+                # Print response for MCP server to capture
                 print(response)
                 # Update last output for coordination
                 registry.update_ci_last_output(ci_name, response)
                 return True
             except Exception as e:
-                print(f"Error sending to AI specialist {ai_name} on port {port}: {e}")
-                return False
+                # Print error message as response so MCP can return it
+                error_msg = f"Failed to connect to {ai_name} on port {port}: {str(e)}"
+                print(error_msg)
+                # Also log to stderr for debugging
+                import sys
+                print(f"Error sending to AI specialist {ai_name} on port {port}: {e}", file=sys.stderr)
+                # Still return True so MCP captures the error message
+                return True
                 
         elif message_format == 'json_simple':
             # Simple JSON format for direct API calls

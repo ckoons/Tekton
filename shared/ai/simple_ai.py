@@ -79,13 +79,25 @@ async def ai_send(ai_id: str, message: str, host: Optional[str] = None, port: Op
     if not host or not port:
         raise ValueError(f"Host and port required for {ai_id}")
     
-    # Register AI if not already registered
-    if ai_id not in service.sockets:
+    # Always create a fresh connection to avoid reuse issues
+    # First clean up any existing connection
+    if ai_id in service.sockets:
         try:
-            reader, writer = await asyncio.open_connection(host, port)
-            service.register_ai(ai_id, reader, writer)
-        except Exception as e:
-            raise Exception(f"Could not connect to {ai_id}: {e}")
+            _, old_writer = service.sockets[ai_id]
+            old_writer.close()
+            await old_writer.wait_closed()
+        except:
+            pass
+        del service.sockets[ai_id]
+        if ai_id in service.queues:
+            del service.queues[ai_id]
+    
+    # Create new connection
+    try:
+        reader, writer = await asyncio.open_connection(host, port)
+        service.register_ai(ai_id, reader, writer)
+    except Exception as e:
+        raise Exception(f"Could not connect to {ai_id}: {e}")
     
     # Send message async
     msg_id = service.send_message_async(ai_id, message)
