@@ -9,7 +9,7 @@ import urllib.error
 import urllib.parse
 from typing import Optional
 
-from registry.ci_registry import get_registry
+from ..registry.ci_registry import get_registry
 
 # Import landmarks with fallback
 try:
@@ -116,6 +116,28 @@ def send_to_ci(ci_name: str, message: str) -> bool:
             url = tekton_url('terma', message_endpoint)
             data = json.dumps(msg_data).encode('utf-8')
             
+        elif message_format == 'json_simple' and ci.get('type') == 'ai_specialist':
+            # Direct AI specialist communication
+            from shared.ai.simple_ai import ai_send_sync
+            
+            # Extract port from CI data or endpoint
+            port = ci.get('port')
+            if not port and 'endpoint' in ci:
+                port = int(ci['endpoint'].split(':')[-1])
+            
+            # Use the name with -ai suffix for AI communication
+            ai_name = f"{ci.get('base_name', ci_name)}-ai"
+            
+            try:
+                response = ai_send_sync(ai_name, message, "localhost", port)
+                print(response)
+                # Update last output for coordination
+                registry.update_ci_last_output(ci_name, response)
+                return True
+            except Exception as e:
+                print(f"Error sending to AI specialist {ai_name} on port {port}: {e}")
+                return False
+                
         elif message_format == 'json_simple':
             # Simple JSON format for direct API calls
             msg_data = {"message": message}

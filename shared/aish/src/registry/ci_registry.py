@@ -92,6 +92,11 @@ class CIRegistry:
     
     # Static registry of all Greek Chorus CIs
     GREEK_CHORUS = {
+        'tekton-core': {
+            'description': 'System orchestration and coordination',
+            'message_endpoint': '/api/message',
+            'message_format': 'json_simple'
+        },
         'apollo': {
             'description': 'Attention and prediction',
             'message_endpoint': '/api/message',
@@ -152,6 +157,16 @@ class CIRegistry:
             'message_endpoint': '/api/message',
             'message_format': 'json_simple'
         },
+        'synthesis': {
+            'description': 'Integration and synthesis',
+            'message_endpoint': '/api/message',
+            'message_format': 'json_simple'
+        },
+        'numa': {
+            'description': 'Specialist orchestration and guidance',
+            'message_endpoint': '/api/message', 
+            'message_format': 'json_simple'
+        },
         'terma': {
             'description': 'Terminal management',
             'message_endpoint': '/api/message',
@@ -176,6 +191,12 @@ class CIRegistry:
         # Load context state from file
         self._context_state = self._file_registry.get('context_state', {})
         
+        # Component aliases
+        self.ALIASES = {
+            'tekton': 'tekton-core',
+            # Add other aliases as needed
+        }
+        
         self._load_greek_chorus()
         self._load_terminals()
         self._load_projects()
@@ -185,6 +206,36 @@ class CIRegistry:
     def _save_context_state(self):
         """Save context state to file."""
         self._file_registry.update('context_state', self._context_state)
+    
+    def get_ai_port(self, component_name: str) -> int:
+        """Calculate AI port based on component port and environment settings."""
+        # Get base ports from environment
+        component_port_base = int(TektonEnviron.get('TEKTON_PORT_BASE', '8000'))
+        ai_port_base = int(TektonEnviron.get('TEKTON_AI_PORT_BASE', '45000'))
+        
+        # Get the component's actual endpoint from registry
+        if component_name in self._registry:
+            endpoint = self._registry[component_name].get('endpoint', '')
+            if endpoint:
+                # Extract port from endpoint like "http://localhost:8316"
+                try:
+                    component_port = int(endpoint.split(':')[-1])
+                    offset = component_port - component_port_base
+                    return ai_port_base + offset
+                except:
+                    pass
+        
+        # Fallback to default offsets if component not in registry yet
+        COMPONENT_OFFSETS = {
+            'tekton-core': 0, 'hermes': 1, 'engram': 2, 'rhetor': 3,
+            'numa': 16, 'athena': 5, 'harmonia': 6, 'metis': 7,
+            'terma': 8, 'penia': 9, 'noesis': 10, 'prometheus': 11,
+            'apollo': 12, 'ergon': 13, 'sophia': 14, 'telos': 15,
+            'synthesis': 17, 'hephaestus': 18
+        }
+        
+        offset = COMPONENT_OFFSETS.get(component_name, 0)
+        return ai_port_base + offset
     
     @integration_point(
         title="Greek Chorus CI Loading",
@@ -198,6 +249,7 @@ class CIRegistry:
         """Load Greek Chorus CIs into registry."""
         # Map component names to their URL functions
         url_functions = {
+            'tekton-core': tekton_url,
             'apollo': apollo_url,
             'athena': athena_url,
             'engram': engram_url,
@@ -221,7 +273,10 @@ class CIRegistry:
             # Get the URL function for this component
             url_fn = url_functions.get(name)
             if url_fn:
-                endpoint = url_fn()
+                if name == 'tekton-core':
+                    endpoint = url_fn('tekton-core')
+                else:
+                    endpoint = url_fn()
             else:
                 # Fallback to tekton_url if specific function not found
                 endpoint = tekton_url(name)
@@ -391,12 +446,45 @@ class CIRegistry:
         return [ci for ci in self._registry.values() if ci.get('type') == ci_type]
     
     def get_by_name(self, name: str) -> Optional[Dict[str, Any]]:
-        """Get a specific CI by name."""
+        """Get CI by name, handling both base names and -ai suffixes."""
+        # Handle aliases first
+        name = self.ALIASES.get(name, name)
+        
+        # Check direct match first (for terminals, tools, etc.)
+        direct_match = self._registry.get(name.lower())
+        if direct_match:
+            return direct_match
+        
+        # Handle base names and -ai suffix for Greek Chorus
+        base_name = name[:-3] if name.endswith('-ai') else name
+        
+        if base_name in self.GREEK_CHORUS:
+            # Build the CI data with dynamic port
+            ci_data = self.GREEK_CHORUS[base_name].copy()
+            ci_data['name'] = name  # Preserve the requested name
+            ci_data['base_name'] = base_name
+            ci_data['type'] = 'ai_specialist'
+            
+            # Calculate the AI port dynamically
+            ai_port = self.get_ai_port(base_name)
+            ci_data['endpoint'] = f"http://localhost:{ai_port}"
+            ci_data['port'] = ai_port
+            
+            return ci_data
+        
+        # Check if it's a CI tool
+        return self._check_ci_tools(name)
+    
+    def _check_ci_tools(self, name: str) -> Optional[Dict[str, Any]]:
+        """Check if name refers to a CI tool."""
+        # Reload tools in case they've changed
+        self._load_tools()
         return self._registry.get(name.lower())
     
     def exists(self, name: str) -> bool:
         """Check if a CI exists."""
-        return name.lower() in self._registry
+        # Use get_by_name which handles all the lookup logic
+        return self.get_by_name(name) is not None
     
     def get_types(self) -> List[str]:
         """Get all unique CI types."""
