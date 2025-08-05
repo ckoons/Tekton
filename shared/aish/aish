@@ -207,6 +207,9 @@ def _dispatch_command(command_type, args, shell):
     elif command_type == 'tools':
         from shared.ci_tools.commands import handle_tools_command
         return handle_tools_command(args.message or [])
+    elif command_type == 'ci-tool':
+        from shared.ci_tools.commands import handle_ci_tool_command
+        return handle_ci_tool_command(args.message or [])
     return False
 
 

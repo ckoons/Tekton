@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-CI Message Wrapper using aish commands
-Transparent message interception for aish CI communication
+CI Message Wrapper using PTY
+Transparent message interception using pseudo-terminals
 """
 
 import sys
@@ -26,7 +26,7 @@ from shared.env import TektonEnviron
 from shared.aish.src.registry.ci_registry import get_registry as CIRegistry
 
 class CIMessageWrapper:
-    """Transparent CI wrapper that intercepts aish commands"""
+    """Transparent CI wrapper using pseudo-terminal"""
     
     def __init__(self, name, ci_hint=None, working_dir=None):
         self.name = name
@@ -35,16 +35,20 @@ class CIMessageWrapper:
         
         # Message handling
         self.message_queue = queue.Queue()
+        self.injection_queue = queue.Queue()  # Queue for messages to inject
         self.socket_path = f"/tmp/ci_msg_{self.name}.sock"
+        self.in_code_block = False
         self.recent_messages = []
+        self.parser_enabled = True  # Default to enabled
         
         # PTY handling
         self.master_fd = None
         self.child_pid = None
         
-        # Input buffering
-        self.stdin_buffer = ""
-        self.intercepted_line = None
+        # Command tracking
+        self.pending_line = ""
+        self.last_stdin_time = 0
+        self.suppress_current_line = False
         
         # Set up socket listener
         self.setup_socket()
@@ -99,40 +103,70 @@ class CIMessageWrapper:
                     sys.stderr.write(f"\n[Message listener error: {e}]\n")
                 break
     
-    def parse_aish_command(self, line):
-        """Parse stdin line for aish CI messaging commands"""
-        # Look for pattern: aish <ci-name> "message"
-        pattern = r'^aish\s+([^\s"]+)\s+"([^"]*)"'
-        match = re.match(pattern, line.strip())
+    def parse_line_for_commands(self, line):
+        """Parse a line for @ commands"""
+        # Check for parser control sequences
+        if "### ci-tool parser DISABLE ###" in line:
+            self.parser_enabled = False
+            return None
+        elif "### ci-tool parser ENABLE ###" in line:
+            self.parser_enabled = True
+            return None
+        
+        # If parser is disabled, don't parse anything
+        if not self.parser_enabled:
+            return None
+        
+        # Check if we're entering/exiting a code block
+        if line.strip() == '```':
+            self.in_code_block = not self.in_code_block
+            return None
+        
+        # Don't parse inside code blocks
+        if self.in_code_block:
+            return None
+        
+        # Look for @ commands
+        pattern = r'(@(?:send|ask|reply))\s+([^\s"]+)\s+"([^"]*)"'
+        match = re.search(pattern, line)
         
         if match:
-            target = match.group(1)
-            message = match.group(2)
-            
-            # Check if target is a registered CI
-            registry = CIRegistry()
-            target_info = registry.get_ci(target)
-            
-            if target_info and target_info.get('type') == 'wrapped_ci':
-                return {
-                    'target': target,
-                    'message': message
-                }
+            return {
+                'command': match.group(1),
+                'target': match.group(2),
+                'message': match.group(3)
+            }
+        
+        # Check for @status
+        if '@status' in line and not self.in_code_block:
+            return {'command': '@status'}
         
         return None
     
-    def send_message(self, target, content):
+    def execute_command(self, cmd_info):
+        """Execute an @ command"""
+        command = cmd_info['command']
+        
+        if command == '@send':
+            self.send_message(cmd_info['target'], cmd_info['message'], 'message')
+        elif command == '@ask':
+            self.send_message(cmd_info['target'], cmd_info['message'], 'question')
+        elif command == '@reply':
+            self.send_message(cmd_info['target'], cmd_info['message'], 'reply')
+        elif command == '@status':
+            self.show_status()
+    
+    def send_message(self, target, content, msg_type):
         """Send a message to another CI"""
         registry = CIRegistry()
         target_info = registry.get_ci(target)
         
         if not target_info:
-            response = f"[Error: Unknown CI '{target}']\n"
-            self.inject_to_stdin(response)
+            self.injection_queue.put(f"\n[Error: Unknown target '{target}']\n")
             return
         
         message = {
-            'type': 'message',
+            'type': msg_type,
             'from': self.name,
             'to': target,
             'content': content,
@@ -146,30 +180,42 @@ class CIMessageWrapper:
                 sock.connect(target_socket)
                 sock.send(json.dumps(message).encode('utf-8'))
                 sock.close()
-                # Inject confirmation to stdin
-                response = f"[Sent to {target}]\n"
-                self.inject_to_stdin(response)
+                self.injection_queue.put(f"\n[Sent to {target}]\n")
             except Exception as e:
-                response = f"[Failed to send to {target}: {e}]\n"
-                self.inject_to_stdin(response)
+                self.injection_queue.put(f"\n[Failed to send to {target}: {e}]\n")
     
-    def inject_to_stdin(self, text):
-        """Inject text as if it came from stdin"""
+    def show_status(self):
+        """Display message status"""
+        status = "\n=== Message Status ===\n"
+        status += f"Recent messages: {len(self.recent_messages)}\n"
+        if self.recent_messages:
+            for msg in self.recent_messages[-5:]:
+                status += f"  {msg['from']}: {msg['content'][:50]}...\n"
+        status += "===================\n"
+        # Queue for injection when stdin is idle
+        self.injection_queue.put(status)
+    
+    def inject_to_terminal(self, text):
+        """Inject text to terminal (visible to user and program)"""
         if self.master_fd:
-            # Inject the response back through stdin
-            os.write(self.master_fd, text.encode('utf-8'))
+            # Replace @ with # to prevent re-parsing
+            safe_text = text.replace('@', '#')
+            os.write(self.master_fd, safe_text.encode('utf-8'))
     
     def display_incoming_message(self, message):
-        """Display an incoming message via stdin injection"""
+        """Display an incoming message"""
         timestamp = datetime.now().strftime('%H:%M')
+        msg_type = message.get('type', 'message')
         from_ci = message.get('from', 'Unknown')
         content = message.get('content', '')
         
-        # Format message and inject via stdin
-        display = f"\n[{timestamp}] Message from {from_ci}: {content}\n"
-        self.inject_to_stdin(display)
+        if msg_type == 'question':
+            display = f"\n[{timestamp}] Question from {from_ci}: {content}\nReply with: #reply {from_ci} \"your answer\"\n"
+        else:
+            display = f"\n[{timestamp}] Message from {from_ci}: {content}\n"
         
-        # Track recent messages
+        # Queue for injection when stdin is idle
+        self.injection_queue.put(display)
         self.recent_messages.append(message)
         self.recent_messages = self.recent_messages[-20:]
     
@@ -192,38 +238,37 @@ class CIMessageWrapper:
             tty.setraw(sys.stdin.fileno())
             
             # Main I/O loop
+            output_buffer = ""
             while True:
                 # Check what's ready to read
                 rfds, _, _ = select.select([sys.stdin, self.master_fd], [], [], 0.1)
+                
+                # Track stdin activity
+                stdin_active = False
                 
                 # Handle stdin -> master (user input)
                 if sys.stdin in rfds:
                     data = os.read(sys.stdin.fileno(), 1024)
                     if data:
-                        # Buffer stdin to look for complete lines
-                        self.stdin_buffer += data.decode('utf-8', errors='ignore')
-                        
-                        # Check for complete line with Enter
-                        if '\n' in self.stdin_buffer or '\r' in self.stdin_buffer:
-                            lines = self.stdin_buffer.split('\n')
-                            for i, line in enumerate(lines[:-1]):
-                                # Check if this is an aish CI command
-                                cmd_info = self.parse_aish_command(line)
+                        os.write(self.master_fd, data)
+                        self.last_stdin_time = time.time()
+                        stdin_active = True
+                        # Check if user pressed Enter
+                        if b'\n' in data or b'\r' in data:
+                            # Wait 0.1s for wrapped program to process
+                            time.sleep(0.1)
+                            # Now process any pending line
+                            if self.pending_line:
+                                cmd_info = self.parse_line_for_commands(self.pending_line)
                                 if cmd_info:
-                                    # Intercept this line - don't pass to wrapped program
-                                    self.intercepted_line = line
-                                    # Execute the command
-                                    self.send_message(cmd_info['target'], cmd_info['message'])
-                                else:
-                                    # Not a CI command, pass through normally
-                                    os.write(self.master_fd, (line + '\n').encode('utf-8'))
-                            
-                            # Keep any incomplete line in buffer
-                            self.stdin_buffer = lines[-1]
-                        else:
-                            # No complete line yet, pass through character by character
-                            os.write(self.master_fd, data)
-                            self.stdin_buffer = ""
+                                    self.suppress_current_line = True
+                                    # Execute command in background thread
+                                    threading.Thread(
+                                        target=self.execute_command,
+                                        args=(cmd_info,),
+                                        daemon=True
+                                    ).start()
+                                self.pending_line = ""
                 
                 # Handle master -> stdout (program output)
                 if self.master_fd in rfds:
@@ -232,10 +277,43 @@ class CIMessageWrapper:
                         if not data:
                             break
                         
-                        # Write to real stdout
-                        os.write(sys.stdout.fileno(), data)
+                        # Buffer for line parsing
+                        output_buffer += data.decode('utf-8', errors='ignore')
+                        
+                        # Process complete lines
+                        lines_to_output = []
+                        while '\n' in output_buffer:
+                            line, output_buffer = output_buffer.split('\n', 1)
+                            
+                            # Check if we should suppress this line (@ command)
+                            if self.suppress_current_line and '@' in line:
+                                self.suppress_current_line = False
+                                # Don't output the @ command line
+                            else:
+                                lines_to_output.append(line)
+                            
+                            # Store line for processing after Enter
+                            self.pending_line = line
+                        
+                        # Output non-suppressed lines
+                        if lines_to_output:
+                            output = '\n'.join(lines_to_output) + '\n'
+                            os.write(sys.stdout.fileno(), output.encode('utf-8'))
+                        
+                        # Handle remaining buffer
+                        if output_buffer and not self.suppress_current_line:
+                            os.write(sys.stdout.fileno(), output_buffer.encode('utf-8'))
                     except OSError:
                         break
+                
+                # Inject queued messages when stdin is idle
+                if not stdin_active and time.time() - self.last_stdin_time > 0.2:
+                    try:
+                        while not self.injection_queue.empty():
+                            text = self.injection_queue.get_nowait()
+                            self.inject_to_terminal(text)
+                    except queue.Empty:
+                        pass
                 
                 # Check for incoming messages
                 try:
@@ -292,8 +370,8 @@ def main():
     
     parser = argparse.ArgumentParser(
         prog='ci-tool',
-        description='CI Tool - Transparent aish command messaging',
-        epilog='Example: aish ci-tool --name Casey --ci claude-opus-4 -- claude --debug'
+        description='CI Tool - Transparent @ command messaging using PTY',
+        epilog='Example: ci-tool --name Casey --ci claude-opus-4 -- claude --debug'
     )
     parser.add_argument('--name', required=True, help='Registry name (e.g., Casey, Beth, coder-b)')
     parser.add_argument('--ci', help='Optional CI/model hint (e.g., claude-opus-4, llama3.3:70b)')
@@ -314,7 +392,6 @@ def main():
     if args.ci:
         sys.stderr.write(f"[CI Hint: {args.ci}]\n")
     sys.stderr.write(f"[Socket: {wrapper.socket_path}]\n")
-    sys.stderr.write(f"[Messaging: aish <ci-name> \"message\"]\n")
     sys.stderr.write(f"[Running: {' '.join(args.command)}]\n\n")
     
     # Run with PTY

@@ -1,76 +1,90 @@
-# CI Tool Training for AI Assistants
-
-### ci-tool parser DISABLE ###
+# CI Tool Training for AI Assistants - aish Messaging
 
 ## Introduction
 
-You are running within a special wrapper called `ci-tool` that enables you to communicate with other AI assistants and humans who are also using ci-tool. This system allows real-time collaboration between multiple AI instances running on the same machine.
+You are running within a special wrapper launched via `aish ci-tool` that enables you to communicate with other AI assistants and humans using the familiar `aish` command syntax. This creates a unified messaging experience across all CI tools.
 
 ## How It Works
 
-When you write special commands starting with @ in your responses, they are automatically detected and sent to other participants. Messages from others will appear in your conversation between interactions.
+When you or the user types `aish <ci-name> "message"` in the terminal, the wrapper:
+1. Intercepts the command before it reaches your underlying program
+2. Sends the message via Unix sockets to the target CI
+3. Displays the response directly in your terminal via stdin
+4. The response appears naturally as if typed by the user
 
-## Available Commands
+## Using aish for CI Communication
 
-The following commands are available (shown here with examples):
+### Sending Messages
 
-1. **Send a message**: @send {recipient} "your message"
-   - Used to send a message to another participant
-   - Example: @send Beth "Hi Beth, I'm ready to help with the code review"
+To send a message to another CI, simply type in your terminal:
+```
+aish Betty-ci "Hi Betty, can you help with the API design?"
+```
 
-2. **Ask a question**: @ask {recipient} "your question"
-   - Used when you need a response from someone
-   - Example: @ask Casey "Which database schema should we use for this feature?"
+You'll see a confirmation:
+```
+[Sent to Betty-ci]
+```
 
-3. **Reply to a message**: @reply {recipient} "your answer"
-   - Used to respond to a message or question
-   - Example: @reply Beth "Yes, I've completed the API documentation updates"
+### Receiving Messages
 
-4. **Check message status**: @status
-   - Shows recent messages and pending communications
-   - Just write: @status
+When someone sends you a message, it appears in your terminal:
+```
+[15:23] Message from Wilma-ci: Hi! I need help with the database schema.
+```
 
-## When to Use These Commands
+### Important Notes
 
-Use these commands when:
-- Someone asks you to "work with" or "coordinate with" another person
-- You need to ask questions or share information with other AI instances
-- You receive a message and need to respond
-- You want to check if you have any pending messages
+1. **Use exact CI names** - The name must match exactly as registered (e.g., "Betty-ci" not "Betty")
+2. **Natural workflow** - Messages appear via stdin, just like user input
+3. **No special characters** - No @ symbols or special parsing needed
+4. **Transparent operation** - Users see all communication happening
 
-## Example Interactions
+## When to Use aish Messaging
 
-Here's how a typical collaboration might look:
+Use `aish <ci-name> "message"` when:
+- The user asks you to coordinate with another AI
+- You need to communicate with another wrapped CI
+- You want to send status updates to other team members
+- Collaborating on multi-part tasks
 
-**User says**: "Please work with Beth to update the documentation"
+## Examples
 
-**You would respond**: 
-"I'll coordinate with Beth on updating the documentation.
+### Coordination Request
+```
+User: Work with Betty-ci to refactor the authentication system
 
-@send Beth "Hi Beth, the user has asked us to work together on updating the documentation. Are you available to collaborate on this?"
+You type: aish Betty-ci "Hi Betty! The user wants us to refactor the auth system. Should we split frontend/backend?"
 
-I've sent a message to Beth. While waiting for her response, I'll start reviewing the current documentation structure to identify what needs updating."
+Terminal shows: [Sent to Betty-ci]
 
-**Later, you might see**:
-[14:35] Message from Beth: Yes, I'm available! I'll focus on the API documentation while you handle the user guides. Sound good?
+Later you see: [15:45] Message from Betty-ci: Sounds good! I'll take the backend, you handle frontend?
 
-**You would then respond**:
-"Great! Beth will handle the API documentation while I work on the user guides.
+You type: aish Betty-ci "Perfect! I'll start with the React components."
+```
 
-@reply Beth "Perfect! That division of work makes sense. I'll start with the user guides and let you know if I find any API inconsistencies that need your attention."
+### Status Update
+```
+You type: aish Casey "Just completed the API endpoints. Ready for review."
 
-Let me begin updating the user guides now."
+Terminal shows: [Sent to Casey]
 
-## Important Notes
+Later: [16:02] Message from Casey: Great! Can you also update the documentation?
+```
 
-- Recipients are identified by the name they chose when starting their ci-tool session
-- Messages are delivered instantly if the recipient is online
-- All communication happens locally through Unix sockets
-- @ commands inside code blocks are ignored (they won't be sent)
-- The system is transparent - users can see the @ commands you write
+## Key Differences from Regular aish
 
-### ci-tool parser ENABLE ###
+- **Only CI-to-CI patterns are intercepted**: `aish <wrapped-ci-name> "message"`
+- **Other aish commands pass through**: `aish purpose`, `aish list`, etc. work normally
+- **Responses come via stdin**: Messages appear as terminal input, not injected output
+
+## Technical Details
+
+- **Message limit**: 8KB maximum message size
+- **Socket location**: `/tmp/ci_msg_{name}.sock`
+- **Registry integration**: Only registered wrapped CIs can be messaged
+- **No offline queueing**: Target must be online to receive messages
 
 ## Summary
 
-You now have access to collaborative messaging through ci-tool. Use @ commands naturally in your responses when you need to communicate with other AI assistants or humans. This enables real-time collaboration and coordination on complex tasks.
+The ci-tool wrapper makes CI communication seamless by extending the familiar `aish` command syntax. Simply use `aish <ci-name> "message"` to communicate with other wrapped CIs, and responses will appear naturally in your terminal via stdin.
