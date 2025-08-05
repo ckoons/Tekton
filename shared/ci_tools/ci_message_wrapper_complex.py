@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """
-Simple CI Message Wrapper using line-based interception
+CI Message Wrapper using aish commands
+Transparent message interception for aish CI communication
 """
 
 import sys
@@ -25,7 +26,7 @@ from shared.env import TektonEnviron
 from shared.aish.src.registry.ci_registry import get_registry as CIRegistry
 
 class CIMessageWrapper:
-    """Simple line-based CI wrapper"""
+    """Transparent CI wrapper that intercepts aish commands"""
     
     def __init__(self, name, ci_hint=None, working_dir=None):
         self.name = name
@@ -35,10 +36,15 @@ class CIMessageWrapper:
         # Message handling
         self.message_queue = queue.Queue()
         self.socket_path = f"/tmp/ci_msg_{self.name}.sock"
+        self.recent_messages = []
         
         # PTY handling
         self.master_fd = None
         self.child_pid = None
+        
+        # Input buffering
+        self.stdin_buffer = ""
+        self.intercepted_line = None
         
         # Set up socket listener
         self.setup_socket()
@@ -74,6 +80,7 @@ class CIMessageWrapper:
         if self.ci_hint:
             entry['ci_hint'] = self.ci_hint
         
+        # Use the proper registration method
         registry.register_wrapped_ci(entry)
     
     def socket_listener(self):
@@ -88,14 +95,13 @@ class CIMessageWrapper:
                     message = json.loads(data)
                     self.message_queue.put(message)
             except Exception as e:
+                if self.master_fd:  # Only print if still running
+                    sys.stderr.write(f"\n[Message listener error: {e}]\n")
                 break
     
-    def check_aish_command(self, line):
-        """Check if line is an aish CI command"""
-        # Pattern: aish <ci-name> "message"
-        if not line.startswith('aish '):
-            return None
-            
+    def parse_aish_command(self, line):
+        """Parse stdin line for aish CI messaging commands"""
+        # Look for pattern: aish <ci-name> "message"
         pattern = r'^aish\s+([^\s"]+)\s+"([^"]*)"'
         match = re.match(pattern, line.strip())
         
@@ -108,7 +114,10 @@ class CIMessageWrapper:
             target_info = registry.get_ci(target)
             
             if target_info and target_info.get('type') == 'wrapped_ci':
-                return {'target': target, 'message': message}
+                return {
+                    'target': target,
+                    'message': message
+                }
         
         return None
     
@@ -118,7 +127,9 @@ class CIMessageWrapper:
         target_info = registry.get_ci(target)
         
         if not target_info:
-            return f"[Error: Unknown CI '{target}']\n"
+            response = f"[Error: Unknown CI '{target}']\n"
+            self.inject_to_stdin(response)
+            return
         
         message = {
             'type': 'message',
@@ -135,70 +146,100 @@ class CIMessageWrapper:
                 sock.connect(target_socket)
                 sock.send(json.dumps(message).encode('utf-8'))
                 sock.close()
-                return f"[Sent to {target}]\n"
+                # Inject confirmation to stdin
+                response = f"[Sent to {target}]\n"
+                self.inject_to_stdin(response)
             except Exception as e:
-                return f"[Failed to send to {target}: {e}]\n"
-        return f"[CI {target} not reachable]\n"
+                response = f"[Failed to send to {target}: {e}]\n"
+                self.inject_to_stdin(response)
     
-    def run_simple(self, command):
-        """Run command with simple line-based interception"""
-        # Create PTY
-        self.child_pid, self.master_fd = pty.fork()
+    def inject_to_stdin(self, text):
+        """Inject text as if it came from stdin"""
+        if self.master_fd:
+            # Inject the response back through stdin
+            os.write(self.master_fd, text.encode('utf-8'))
+    
+    def display_incoming_message(self, message):
+        """Display an incoming message via stdin injection"""
+        timestamp = datetime.now().strftime('%H:%M')
+        from_ci = message.get('from', 'Unknown')
+        content = message.get('content', '')
         
-        if self.child_pid == 0:
-            # Child process
-            os.chdir(self.working_dir)
-            os.execvp(command[0], command)
+        # Format message and inject via stdin
+        display = f"\n[{timestamp}] Message from {from_ci}: {content}\n"
+        self.inject_to_stdin(display)
         
-        # Parent process
-        # Save terminal settings
+        # Track recent messages
+        self.recent_messages.append(message)
+        self.recent_messages = self.recent_messages[-20:]
+    
+    def run_with_pty(self, command):
+        """Run command with PTY for transparent I/O"""
+        # Save current terminal settings if we have a tty
         old_tty = None
         if sys.stdin.isatty():
             old_tty = termios.tcgetattr(sys.stdin)
-            tty.setraw(sys.stdin.fileno())
         
         try:
-            # Simple I/O loop
-            input_line = ""
+            # Create PTY
+            self.child_pid, self.master_fd = pty.fork()
             
+            if self.child_pid == 0:
+                # Child process - exec the command
+                os.chdir(self.working_dir)
+                os.execvp(command[0], command)
+            
+            # Parent process - handle I/O
+            # Set stdin to raw mode if we have a tty
+            if old_tty:
+                tty.setraw(sys.stdin.fileno())
+            
+            # Main I/O loop
+            return_code = 0  # Default return code
             while True:
-                # Check what's ready
+                # Check what's ready to read
                 rfds, _, _ = select.select([sys.stdin, self.master_fd], [], [], 0.1)
                 
-                # Handle user input
+                # Handle stdin -> master (user input)
                 if sys.stdin in rfds:
-                    char = os.read(sys.stdin.fileno(), 1)
-                    if not char:
-                        break
-                    
-                    # Build line
-                    input_line += char.decode('utf-8', errors='ignore')
-                    
-                    # On Enter, check if it's an aish command
-                    if char in b'\n\r':
-                        line = input_line.strip()
-                        cmd_info = self.check_aish_command(line)
+                    data = os.read(sys.stdin.fileno(), 1024)
+                    if data:
+                        # For raw mode, we need to handle data differently
+                        # Check if this looks like the start of an aish command
+                        decoded = data.decode('utf-8', errors='ignore')
+                        self.stdin_buffer += decoded
                         
-                        if cmd_info:
-                            # It's a CI command - handle it
-                            response = self.send_message(cmd_info['target'], cmd_info['message'])
-                            # Inject response to terminal
-                            os.write(self.master_fd, response.encode('utf-8'))
-                            input_line = ""
+                        # If we see a newline, check if the buffer contains an aish command
+                        if '\n' in decoded or '\r' in decoded:
+                            # Only try to parse if line starts with 'aish '
+                            line = self.stdin_buffer.strip()
+                            if line.startswith('aish '):
+                                cmd_info = self.parse_aish_command(line)
+                                if cmd_info:
+                                    # This is a CI messaging command - intercept it
+                                    self.stdin_buffer = ""
+                                    # Execute the command
+                                    self.send_message(cmd_info['target'], cmd_info['message'])
+                                    continue
+                            
+                            # Not an aish CI command, pass everything through
+                            os.write(self.master_fd, self.stdin_buffer.encode('utf-8'))
+                            self.stdin_buffer = ""
                         else:
-                            # Normal input - pass through
-                            os.write(self.master_fd, input_line.encode('utf-8'))
-                            input_line = ""
-                    else:
-                        # Not Enter - pass through immediately
-                        os.write(self.master_fd, char)
+                            # No newline yet, just pass through the data
+                            os.write(self.master_fd, data)
+                            # Only keep in buffer if it might be start of 'aish'
+                            if not self.stdin_buffer.startswith('aish'):
+                                self.stdin_buffer = ""
                 
-                # Handle program output
+                # Handle master -> stdout (program output)
                 if self.master_fd in rfds:
                     try:
                         data = os.read(self.master_fd, 1024)
                         if not data:
                             break
+                        
+                        # Write to real stdout
                         os.write(sys.stdout.fileno(), data)
                     except OSError:
                         break
@@ -206,26 +247,24 @@ class CIMessageWrapper:
                 # Check for incoming messages
                 try:
                     message = self.message_queue.get_nowait()
-                    # Format and inject
-                    timestamp = datetime.now().strftime('%H:%M')
-                    from_ci = message.get('from', 'Unknown')
-                    content = message.get('content', '')
-                    display = f"\n[{timestamp}] Message from {from_ci}: {content}\n"
-                    os.write(self.master_fd, display.encode('utf-8'))
+                    self.display_incoming_message(message)
                 except queue.Empty:
                     pass
                 
-                # Check if child exited
+                # Check if child process ended
                 pid, status = os.waitpid(self.child_pid, os.WNOHANG)
                 if pid != 0:
+                    return_code = os.WEXITSTATUS(status) if os.WIFEXITED(status) else 1
                     break
             
+            return return_code
+            
         finally:
-            # Restore terminal
+            # Restore terminal settings if we had them
             if old_tty:
                 termios.tcsetattr(sys.stdin, termios.TCSADRAIN, old_tty)
             
-            # Cleanup
+            # Clean up
             if self.master_fd:
                 os.close(self.master_fd)
             self.cleanup()
@@ -253,6 +292,7 @@ class CIMessageWrapper:
 
 def main():
     """Main entry point"""
+    # Initialize TektonEnviron first
     from shared.env import TektonEnvironLock
     TektonEnvironLock.load()
     
@@ -260,10 +300,11 @@ def main():
     
     parser = argparse.ArgumentParser(
         prog='ci-tool',
-        description='CI Tool - Simple line-based aish messaging'
+        description='CI Tool - Transparent aish command messaging',
+        epilog='Example: aish ci-tool --name Casey --ci claude-opus-4 -- claude --debug'
     )
-    parser.add_argument('--name', required=True, help='Registry name')
-    parser.add_argument('--ci', help='Optional CI/model hint')
+    parser.add_argument('--name', required=True, help='Registry name (e.g., Casey, Beth, coder-b)')
+    parser.add_argument('--ci', help='Optional CI/model hint (e.g., claude-opus-4, llama3.3:70b)')
     parser.add_argument('--dir', default=os.getcwd(), help='Working directory')
     parser.add_argument('command', nargs='+', help='Command to run')
     
@@ -278,17 +319,20 @@ def main():
     
     # Display startup info
     sys.stderr.write(f"[CI Tool: {args.name} ready]\n")
+    if args.ci:
+        sys.stderr.write(f"[CI Hint: {args.ci}]\n")
     sys.stderr.write(f"[Socket: {wrapper.socket_path}]\n")
     sys.stderr.write(f"[Messaging: aish <ci-name> \"message\"]\n")
     sys.stderr.write(f"[Running: {' '.join(args.command)}]\n\n")
     
-    # Run with simple line handling
+    # Run with PTY
     try:
-        wrapper.run_simple(args.command)
+        return_code = wrapper.run_with_pty(args.command)
     except KeyboardInterrupt:
         sys.stderr.write("\n[CI Tool: Interrupted]\n")
+        return_code = 130  # Standard shell interrupt code
     
-    sys.exit(0)
+    sys.exit(return_code)
 
 
 if __name__ == "__main__":
