@@ -202,6 +202,7 @@ class CIRegistry:
         self._load_projects()
         self._load_tools()  # Load CI tools
         self._load_forwards()
+        self._load_wrapped_cis()  # Load wrapped CIs
     
     def _save_context_state(self):
         """Save context state to file."""
@@ -439,6 +440,21 @@ class CIRegistry:
             if ci_name in self._registry:
                 self._registry[ci_name].update(forward_config)
     
+    def _load_wrapped_cis(self):
+        """Load wrapped CIs from persistent storage."""
+        wrapped_file = os.path.join(self._file_registry.registry_dir, 'wrapped_cis.json')
+        if os.path.exists(wrapped_file):
+            try:
+                with open(wrapped_file, 'r') as f:
+                    wrapped_cis = json.load(f)
+                    for name, ci_info in wrapped_cis.items():
+                        # Check if socket still exists
+                        socket_path = ci_info.get('socket')
+                        if socket_path and os.path.exists(socket_path):
+                            self._registry[name] = ci_info
+            except Exception as e:
+                print(f"Failed to load wrapped CIs: {e}")
+    
     # Registry Access Methods
     
     def get_all(self) -> Dict[str, Dict[str, Any]]:
@@ -568,6 +584,39 @@ class CIRegistry:
         """Get the complete context state for a CI."""
         ci_name = ci_name.lower()
         return self._context_state.get(ci_name)
+    
+    def register_wrapped_ci(self, ci_info: Dict) -> bool:
+        """Register a wrapped CI and persist to file."""
+        name = ci_info.get('name')
+        if not name:
+            return False
+        
+        # Add to registry
+        self._registry[name] = ci_info
+        
+        # Persist wrapped CIs separately
+        wrapped_file = os.path.join(self._file_registry.registry_dir, 'wrapped_cis.json')
+        
+        # Read existing wrapped CIs
+        wrapped_cis = {}
+        if os.path.exists(wrapped_file):
+            try:
+                with open(wrapped_file, 'r') as f:
+                    wrapped_cis = json.load(f)
+            except:
+                wrapped_cis = {}
+        
+        # Update with new CI
+        wrapped_cis[name] = ci_info
+        
+        # Write back
+        try:
+            with open(wrapped_file, 'w') as f:
+                json.dump(wrapped_cis, f, indent=2)
+            return True
+        except Exception as e:
+            print(f"Failed to persist wrapped CI: {e}")
+            return False
     
     def get_all_context_states(self) -> Dict[str, Dict[str, Any]]:
         """Get context states for all CIs."""
@@ -710,6 +759,21 @@ class CIRegistry:
                 forward = f" → {ci['forward_to']}" if 'forward_to' in ci else ""
                 json_mode = " [JSON]" if ci.get('forward_json') else ""
                 output.append(f"  {name:<15} {desc:<30} port:{port} ({status}){forward}{json_mode}")
+            output.append("")
+        
+        # Show Wrapped CIs
+        if 'wrapped_ci' in by_type:
+            output.append("Wrapped CIs (ci-tool):")
+            output.append("-" * 60)
+            wrapped_cis = sorted(by_type['wrapped_ci'], key=operator.itemgetter('name'))
+            for ci in wrapped_cis:
+                name = ci['name']
+                socket = ci.get('socket', 'unknown')
+                ci_hint = ci.get('ci_hint', 'unspecified')
+                capabilities = ', '.join(ci.get('capabilities', []))
+                output.append(f"  {name:<15} model:{ci_hint:<20} socket:{socket}")
+                if capabilities:
+                    output.append(f"    capabilities: {capabilities}")
             output.append("")
         
         return "\n".join(output)
