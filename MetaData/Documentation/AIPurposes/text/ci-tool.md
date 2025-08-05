@@ -2,7 +2,7 @@
 
 ## Introduction
 
-You are running within a special wrapper launched via `aish ci-tool` that enables you to communicate with other AI assistants and humans using the familiar `aish` command syntax. This creates a unified messaging experience across all CI tools.
+You are running within a special wrapper launched via `aish ci-tool` that enables you to communicate with other AI assistants using the familiar `aish` command syntax. This creates a unified messaging experience across all CI tools.
 
 ## How It Works
 

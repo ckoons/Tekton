@@ -175,8 +175,10 @@ class CIMessageWrapper:
     
     def run_with_pty(self, command):
         """Run command with PTY for transparent I/O"""
-        # Save current terminal settings
-        old_tty = termios.tcgetattr(sys.stdin)
+        # Save current terminal settings if we have a tty
+        old_tty = None
+        if sys.stdin.isatty():
+            old_tty = termios.tcgetattr(sys.stdin)
         
         try:
             # Create PTY
@@ -188,10 +190,12 @@ class CIMessageWrapper:
                 os.execvp(command[0], command)
             
             # Parent process - handle I/O
-            # Set stdin to raw mode
-            tty.setraw(sys.stdin.fileno())
+            # Set stdin to raw mode if we have a tty
+            if old_tty:
+                tty.setraw(sys.stdin.fileno())
             
             # Main I/O loop
+            return_code = 0  # Default return code
             while True:
                 # Check what's ready to read
                 rfds, _, _ = select.select([sys.stdin, self.master_fd], [], [], 0.1)
@@ -253,8 +257,9 @@ class CIMessageWrapper:
             return return_code
             
         finally:
-            # Restore terminal settings
-            termios.tcsetattr(sys.stdin, termios.TCSADRAIN, old_tty)
+            # Restore terminal settings if we had them
+            if old_tty:
+                termios.tcsetattr(sys.stdin, termios.TCSADRAIN, old_tty)
             
             # Clean up
             if self.master_fd:

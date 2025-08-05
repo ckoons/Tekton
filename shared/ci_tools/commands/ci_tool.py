@@ -19,9 +19,30 @@ def handle_ci_tool_command(args):
       aish ci-tool --name Casey --ci claude-opus-4 -- claude --debug
       aish ci-tool --name Betty-ci -- claude
     """
-    if not args or args[0] in ['help', '-h', '--help']:
+    # For ci-tool, we need to handle the full command line ourselves
+    # because it has its own argument structure
+    
+    # Get the full command line after 'aish ci-tool'
+    # sys.argv looks like: ['aish', 'ci-tool', '--name', 'Wilma-ci', ...]
+    import sys
+    
+    # Debug output
+    if os.environ.get('AISH_DEBUG'):
+        print(f"[DEBUG] sys.argv: {sys.argv}", file=sys.stderr)
+        print(f"[DEBUG] args: {args}", file=sys.stderr)
+    
+    # Find where 'ci-tool' appears in argv
+    try:
+        ci_tool_idx = sys.argv.index('ci-tool')
+        # Get all args after 'ci-tool'
+        ci_tool_args = sys.argv[ci_tool_idx + 1:]
+    except ValueError:
+        # Shouldn't happen but handle gracefully
+        ci_tool_args = args or []
+    
+    if not ci_tool_args or (ci_tool_args and ci_tool_args[0] in ['help', '-h', '--help']):
         show_ci_tool_help()
-        return
+        return True  # Return True to indicate command was handled
     
     # Build the command to execute the actual ci-tool wrapper
     ci_tool_path = Path(__file__).parent.parent / 'ci-tool'
@@ -31,7 +52,7 @@ def handle_ci_tool_command(args):
         return
     
     # Pass all arguments directly to ci-tool
-    cmd = [str(ci_tool_path)] + args
+    cmd = [str(ci_tool_path)] + ci_tool_args
     
     try:
         # Execute ci-tool in a subprocess

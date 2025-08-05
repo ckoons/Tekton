@@ -318,6 +318,13 @@ def _handle_ai_command(args, shell, ai_names):
     decision_date="2025-01-18"
 )
 def main():
+    # Special handling for ci-tool which needs its own argument parsing
+    if len(sys.argv) > 1 and sys.argv[1] == 'ci-tool':
+        from shared.ci_tools.commands import handle_ci_tool_command
+        # Pass empty args since ci-tool will read from sys.argv directly
+        handle_ci_tool_command([])
+        return
+    
     parser = argparse.ArgumentParser(
         description='aish - The AI Shell\n\nProvides AI capabilities in your terminal through the Tekton platform.',
         epilog='''Examples:
@@ -597,6 +604,9 @@ Environment variables:
     
     if args.ai_or_script == 'tools':
         return _dispatch_command('tools', args, shell)
+    
+    if args.ai_or_script == 'ci-tool':
+        return _dispatch_command('ci-tool', args, shell)
     
     # Claude Code IDE commands
     if args.ai_or_script == 'introspect':
