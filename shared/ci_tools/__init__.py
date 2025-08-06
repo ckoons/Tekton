@@ -1,11 +1,5 @@
 """
-CI Tools Integration for Tekton
-Provides socket-based integration for external CI coding tools.
+CI Tools - Simple process wrappers with message injection
 """
 
-from .base_adapter import BaseCIToolAdapter
-from .registry import CIToolRegistry, get_registry
-from .socket_bridge import SocketBridge
-from .tool_launcher import ToolLauncher, get_tool_launcher
-
-__all__ = ['BaseCIToolAdapter', 'CIToolRegistry', 'SocketBridge', 'ToolLauncher', 'get_registry', 'get_tool_launcher']
+__version__ = '2.0.0'

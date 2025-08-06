@@ -57,9 +57,9 @@ class TestList(AishTest):
             self.error_message = f"Exit code {exit_code}, expected 0"
             return False
         
-        # Check for AI components
-        if "Greek Chorus AIs:" not in stdout:
-            self.error_message = "Missing AI components header"
+        # Check for CI components
+        if "Greek Chorus CIs:" not in stdout:
+            self.error_message = "Missing CI components header"
             return False
         
         # Check for some known AIs
@@ -102,7 +102,7 @@ class TestStatus(AishTest):
             return False
         
         # Check for expected sections
-        expected = ["aish Status Report", "Active AI Forwards:", "AI Components:"]
+        expected = ["aish Status Report", "Greek Chorus Components:", "Active Forwards:"]
         for text in expected:
             if text not in stdout:
                 self.error_message = f"Missing section: {text}"
@@ -127,7 +127,7 @@ class TestStatusJson(AishTest):
             data = json.loads(stdout)
             
             # Check for expected keys
-            expected_keys = ["ai_forwards", "project_forwards", "ai_status"]
+            expected_keys = ["configuration", "greek_chorus"]
             for key in expected_keys:
                 if key not in data:
                     self.error_message = f"Missing JSON key: {key}"

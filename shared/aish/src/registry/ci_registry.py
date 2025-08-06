@@ -200,7 +200,7 @@ class CIRegistry:
         self._load_greek_chorus()
         self._load_terminals()
         self._load_projects()
-        self._load_tools()  # Load CI tools
+        # self._load_tools()  # Removed - old CI tools infrastructure deprecated
         self._load_forwards()
         self._load_wrapped_cis()  # Load wrapped CIs
     
@@ -746,34 +746,19 @@ class CIRegistry:
                 output.append(f"  {name:<15} (project: {project}){forward}{json_mode}")
             output.append("")
         
-        # Show CI Tools
-        if 'tool' in by_type:
-            output.append("CI Tools:")
-            output.append("-" * 60)
-            tool_cis = sorted(by_type['tool'], key=operator.itemgetter('name'))
-            for ci in tool_cis:
-                name = ci['name']
-                desc = ci['description']
-                port = ci.get('port', 'unknown')
-                status = "running" if ci.get('running', False) else "stopped"
-                forward = f" → {ci['forward_to']}" if 'forward_to' in ci else ""
-                json_mode = " [JSON]" if ci.get('forward_json') else ""
-                output.append(f"  {name:<15} {desc:<30} port:{port} ({status}){forward}{json_mode}")
-            output.append("")
-        
-        # Show Wrapped CIs
+        # Show CI Tools (all wrapped processes)
+        ci_tools_items = []
         if 'wrapped_ci' in by_type:
-            output.append("Wrapped CIs (ci-tool):")
+            ci_tools_items.extend(by_type['wrapped_ci'])
+        
+        if ci_tools_items:
+            output.append("CI Tools (wrapped processes):")
             output.append("-" * 60)
-            wrapped_cis = sorted(by_type['wrapped_ci'], key=operator.itemgetter('name'))
-            for ci in wrapped_cis:
-                name = ci['name']
-                socket = ci.get('socket', 'unknown')
-                ci_hint = ci.get('ci_hint', 'unspecified')
-                capabilities = ', '.join(ci.get('capabilities', []))
-                output.append(f"  {name:<15} model:{ci_hint:<20} socket:{socket}")
-                if capabilities:
-                    output.append(f"    capabilities: {capabilities}")
+            sorted_tools = sorted(ci_tools_items, key=operator.itemgetter('name'))
+            for item in sorted_tools:
+                name = item['name']
+                socket = item.get('socket', 'unknown')
+                output.append(f"  {name:<20} socket:{socket}")
             output.append("")
         
         return "\n".join(output)

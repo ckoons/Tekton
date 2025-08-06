@@ -20,12 +20,12 @@ class UnifiedListTest(AishTest):
             self.error_message = f"Command failed with code {code}: {stderr}"
             return False
         
-        if "Greek Chorus AIs:" not in stdout:
+        if "Greek Chorus CIs:" not in stdout:
             self.error_message = "Output missing Greek Chorus section"
             return False
         
-        if "Active Terminals:" not in stdout:
-            self.error_message = "Output missing Active Terminals section"
+        if "Terminal CIs:" not in stdout:
+            self.error_message = "Output missing Terminal CIs section"
             return False
         
         return True
@@ -46,9 +46,9 @@ class UnifiedListTypeTest(AishTest):
             return False
         
         # Count Greek Chorus entries
-        greek_count = stdout.count("(port")
+        greek_count = stdout.count("http://localhost:")
         if greek_count < 10:
-            self.error_message = f"Expected at least 10 Greek Chorus AIs, found {greek_count}"
+            self.error_message = f"Expected at least 10 Greek Chorus CIs, found {greek_count}"
             return False
         
         # Test terminal filter
@@ -79,12 +79,12 @@ class UnifiedListJsonTest(AishTest):
         
         try:
             data = json.loads(stdout)
-            if not isinstance(data, list):
-                self.error_message = "JSON output is not a list"
+            if not isinstance(data, dict):
+                self.error_message = "JSON output is not a dict"
                 return False
             
             # Check for message configuration
-            numa = next((ci for ci in data if ci.get('name') == 'numa'), None)
+            numa = data.get('numa')
             if not numa:
                 self.error_message = "numa not found in JSON output"
                 return False
@@ -93,8 +93,8 @@ class UnifiedListJsonTest(AishTest):
                 self.error_message = "message_format field missing from numa"
                 return False
             
-            if numa['message_format'] != 'rhetor_socket':
-                self.error_message = f"Expected rhetor_socket format, got {numa['message_format']}"
+            if numa['message_format'] != 'json_simple':
+                self.error_message = f"Expected json_simple format, got {numa['message_format']}"
                 return False
             
         except json.JSONDecodeError as e:

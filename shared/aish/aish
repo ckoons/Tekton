@@ -204,9 +204,6 @@ def _dispatch_command(command_type, args, shell):
     elif command_type == 'inbox':
         from commands.inbox import handle_inbox_command
         return handle_inbox_command(args.message or [])
-    elif command_type == 'tools':
-        from shared.ci_tools.commands import handle_tools_command
-        return handle_tools_command(args.message or [])
     elif command_type == 'ci-tool':
         from shared.ci_tools.commands import handle_ci_tool_command
         return handle_ci_tool_command(args.message or [])
@@ -611,9 +608,6 @@ Environment variables:
     
     if args.ai_or_script == 'route':
         return _dispatch_command('route', args, shell)
-    
-    if args.ai_or_script == 'tools':
-        return _dispatch_command('tools', args, shell)
     
     if args.ai_or_script == 'ci-tool':
         return _dispatch_command('ci-tool', args, shell)
