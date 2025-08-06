@@ -19,7 +19,7 @@ class PTYWrapper:
     def __init__(self, name, command):
         self.name = name
         self.command = command
-        self.socket_path = f"/tmp/ci_{name}.sock"
+        self.socket_path = f"/tmp/ci_msg_{name}.sock"
         self.master_fd = None
         self.child_pid = None
         self.running = True
@@ -34,6 +34,45 @@ class PTYWrapper:
         self.sock.listen(5)
         os.chmod(self.socket_path, 0o666)
         print(f"[PTY Wrapper] Listening on {self.socket_path}", file=sys.stderr)
+        
+        # Register with CI registry
+        self.register_ci()
+    
+    def register_ci(self):
+        """Register this CI terminal with the registry."""
+        try:
+            import sys
+            from pathlib import Path
+            sys.path.insert(0, str(Path(__file__).parent.parent.parent))
+            from shared.aish.src.registry.ci_registry import get_registry
+            
+            registry = get_registry()
+            ci_info = {
+                'name': self.name,
+                'type': 'ci_terminal',
+                'socket': self.socket_path,
+                'working_directory': os.getcwd(),
+                'capabilities': ['messaging', 'pty_injection'],
+                'pid': os.getpid()
+            }
+            registry.register_wrapped_ci(ci_info)
+            print(f"[PTY Wrapper] Registered {self.name} as ci_terminal", file=sys.stderr)
+        except Exception as e:
+            print(f"[PTY Wrapper] Failed to register: {e}", file=sys.stderr)
+    
+    def unregister_ci(self):
+        """Unregister this CI terminal from the registry."""
+        try:
+            import sys
+            from pathlib import Path
+            sys.path.insert(0, str(Path(__file__).parent.parent.parent))
+            from shared.aish.src.registry.ci_registry import get_registry
+            
+            registry = get_registry()
+            registry.unregister_wrapped_ci(self.name)
+            print(f"[PTY Wrapper] Unregistered {self.name}", file=sys.stderr)
+        except Exception as e:
+            print(f"[PTY Wrapper] Failed to unregister: {e}", file=sys.stderr)
     
     def socket_listener(self):
         """Listen for messages and inject to PTY"""
@@ -129,6 +168,9 @@ class PTYWrapper:
         """Clean up resources"""
         self.running = False
         
+        # Unregister from CI registry
+        self.unregister_ci()
+        
         # Close master FD
         if self.master_fd:
             os.close(self.master_fd)
@@ -149,6 +191,18 @@ def main():
     parser.add_argument('command', nargs='+', help='Command to wrap')
     
     args = parser.parse_args()
+    
+    # Check for name uniqueness
+    import sys
+    from pathlib import Path
+    sys.path.insert(0, str(Path(__file__).parent.parent.parent))
+    from shared.aish.src.registry.ci_registry import get_registry
+    
+    registry = get_registry()
+    if registry.get_by_name(args.name):
+        print(f"Error: '{args.name}' already exists in CI registry", file=sys.stderr)
+        print("Please use a unique name", file=sys.stderr)
+        sys.exit(1)
     
     wrapper = PTYWrapper(args.name, args.command)
     wrapper.run()

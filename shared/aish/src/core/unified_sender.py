@@ -164,6 +164,30 @@ def send_to_ci(ci_name: str, message: str) -> bool:
             # Socket-based CI tools
             return _send_to_tool(ci_name, message, ci)
             
+        elif ci.get('type') in ['ci_tool', 'ci_terminal']:
+            # Direct socket communication for CI tools and terminals
+            import socket
+            socket_path = ci.get('socket', f"/tmp/ci_msg_{ci_name}.sock")
+            
+            try:
+                sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+                sock.connect(socket_path)
+                message_data = {
+                    'from': 'aish',
+                    'content': message,
+                    'type': 'message'
+                }
+                sock.send(json.dumps(message_data).encode('utf-8'))
+                sock.close()
+                print(f"Message sent to {ci_name}")
+                return True
+            except FileNotFoundError:
+                print(f"Socket not found for {ci_name}: {socket_path}")
+                return False
+            except Exception as e:
+                print(f"Error sending to {ci_name}: {e}")
+                return False
+            
         else:
             print(f"Unknown message format: {message_format}")
             return False

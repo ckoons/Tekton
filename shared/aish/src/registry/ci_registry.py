@@ -618,6 +618,39 @@ class CIRegistry:
             print(f"Failed to persist wrapped CI: {e}")
             return False
     
+    def unregister_wrapped_ci(self, name: str) -> bool:
+        """Unregister a wrapped CI and remove from persistence."""
+        if name not in self._registry:
+            return False
+        
+        # Remove from registry
+        del self._registry[name]
+        
+        # Update persistent storage
+        wrapped_file = os.path.join(self._file_registry.registry_dir, 'wrapped_cis.json')
+        
+        # Read existing wrapped CIs
+        wrapped_cis = {}
+        if os.path.exists(wrapped_file):
+            try:
+                with open(wrapped_file, 'r') as f:
+                    wrapped_cis = json.load(f)
+            except:
+                wrapped_cis = {}
+        
+        # Remove the CI
+        if name in wrapped_cis:
+            del wrapped_cis[name]
+        
+        # Write back
+        try:
+            with open(wrapped_file, 'w') as f:
+                json.dump(wrapped_cis, f, indent=2)
+            return True
+        except Exception as e:
+            print(f"Failed to update wrapped CI persistence: {e}")
+            return False
+    
     def get_all_context_states(self) -> Dict[str, Dict[str, Any]]:
         """Get context states for all CIs."""
         # Reload context state from file to get latest
@@ -720,9 +753,52 @@ class CIRegistry:
                 output.append(f"  {name:<15} {desc:<30} {endpoint}{forward}{json_mode}")
             output.append("")
         
-        # Show Terminal CIs
+        # Show CI Tools (ci_tool type)
+        ci_tool_items = []
+        if 'ci_tool' in by_type:
+            ci_tool_items.extend(by_type['ci_tool'])
+        # Keep backwards compatibility temporarily
+        if 'wrapped_ci' in by_type:
+            for item in by_type['wrapped_ci']:
+                # Assume wrapped_ci without -terminal suffix are tools
+                if not item.get('capabilities') or 'pty_injection' not in item.get('capabilities', []):
+                    ci_tool_items.append(item)
+        
+        if ci_tool_items:
+            output.append("CI Tools:")
+            output.append("-" * 60)
+            sorted_tools = sorted(ci_tool_items, key=operator.itemgetter('name'))
+            for item in sorted_tools:
+                name = item['name']
+                socket = item.get('socket', 'unknown')
+                output.append(f"  {name:<20} socket:{socket}")
+            output.append("")
+        
+        # Show CI Terminals (ci_terminal type)
+        ci_terminal_items = []
+        if 'ci_terminal' in by_type:
+            ci_terminal_items.extend(by_type['ci_terminal'])
+        # Keep backwards compatibility temporarily
+        if 'wrapped_ci' in by_type:
+            for item in by_type['wrapped_ci']:
+                # Check for PTY injection capability
+                if 'pty_injection' in item.get('capabilities', []):
+                    ci_terminal_items.append(item)
+        
+        if ci_terminal_items:
+            output.append("CI Terminals (PTY-wrapped):")
+            output.append("-" * 60)
+            sorted_terminals = sorted(ci_terminal_items, key=operator.itemgetter('name'))
+            for item in sorted_terminals:
+                name = item['name']
+                socket = item.get('socket', 'unknown')
+                pid = item.get('pid', 'unknown')
+                output.append(f"  {name:<20} socket:{socket} (pid {pid})")
+            output.append("")
+        
+        # Show Terminals (from terma)
         if 'terminal' in by_type:
-            output.append("Terminal CIs:")
+            output.append("Terminals (terma):")
             output.append("-" * 60)
             terminal_cis = sorted(by_type['terminal'], key=operator.itemgetter('name'))
             for ci in terminal_cis:
@@ -744,21 +820,6 @@ class CIRegistry:
                 forward = f" → {ci['forward_to']}" if 'forward_to' in ci else ""
                 json_mode = " [JSON]" if ci.get('forward_json') else ""
                 output.append(f"  {name:<15} (project: {project}){forward}{json_mode}")
-            output.append("")
-        
-        # Show CI Tools (all wrapped processes)
-        ci_tools_items = []
-        if 'wrapped_ci' in by_type:
-            ci_tools_items.extend(by_type['wrapped_ci'])
-        
-        if ci_tools_items:
-            output.append("CI Tools (wrapped processes):")
-            output.append("-" * 60)
-            sorted_tools = sorted(ci_tools_items, key=operator.itemgetter('name'))
-            for item in sorted_tools:
-                name = item['name']
-                socket = item.get('socket', 'unknown')
-                output.append(f"  {name:<20} socket:{socket}")
             output.append("")
         
         return "\n".join(output)

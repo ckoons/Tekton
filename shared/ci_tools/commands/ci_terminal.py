@@ -31,6 +31,24 @@ def handle_ci_terminal_command(args):
         show_ci_terminal_help()
         return True
     
+    # Extract name from arguments to check uniqueness
+    name = None
+    for i, arg in enumerate(ci_terminal_args):
+        if arg == '--name' and i + 1 < len(ci_terminal_args):
+            name = ci_terminal_args[i + 1]
+            break
+    
+    # Check name uniqueness if provided
+    if name:
+        sys.path.insert(0, str(Path(__file__).parent.parent.parent))
+        from shared.aish.src.registry.ci_registry import get_registry
+        
+        registry = get_registry()
+        if registry.get_by_name(name):
+            print(f"Error: '{name}' already exists in CI registry")
+            print("Please use a unique name")
+            sys.exit(1)
+    
     # Build the command to execute the PTY wrapper
     wrapper_path = Path(__file__).parent.parent / 'ci_pty_wrapper.py'
     

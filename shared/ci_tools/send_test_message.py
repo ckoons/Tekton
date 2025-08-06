@@ -9,7 +9,7 @@ import json
 
 def send_message(ci_name, from_name, content):
     """Send a message to a CI wrapper"""
-    socket_path = f"/tmp/ci_{ci_name}.sock"
+    socket_path = f"/tmp/ci_msg_{ci_name}.sock"
     
     message = {
         'from': from_name,
