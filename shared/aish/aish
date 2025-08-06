@@ -328,6 +328,13 @@ def main():
         handle_ci_tool_command([])
         return
     
+    # Special handling for ci-terminal which needs its own argument parsing
+    if len(sys.argv) > 1 and sys.argv[1] == 'ci-terminal':
+        from shared.ci_tools.commands import handle_ci_terminal_command
+        # Pass empty args since ci-terminal will read from sys.argv directly
+        handle_ci_terminal_command([])
+        return
+    
     parser = argparse.ArgumentParser(
         description='aish - The AI Shell\n\nProvides AI capabilities in your terminal through the Tekton platform.',
         epilog='''Examples:
