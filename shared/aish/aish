@@ -210,6 +210,9 @@ def _dispatch_command(command_type, args, shell):
     elif command_type == 'ci-tool':
         from shared.ci_tools.commands import handle_ci_tool_command
         return handle_ci_tool_command(args.message or [])
+    elif command_type == 'ci-terminal':
+        from shared.ci_tools.commands import handle_ci_terminal_command
+        return handle_ci_terminal_command(args.message or [])
     return False
 
 
@@ -607,6 +610,9 @@ Environment variables:
     
     if args.ai_or_script == 'ci-tool':
         return _dispatch_command('ci-tool', args, shell)
+    
+    if args.ai_or_script == 'ci-terminal':
+        return _dispatch_command('ci-terminal', args, shell)
     
     # Claude Code IDE commands
     if args.ai_or_script == 'introspect':

@@ -10,27 +10,15 @@ from pathlib import Path
 
 def handle_ci_tool_command(args):
     """
-    Handle ci-tool command to launch wrapped CI terminals.
+    Handle ci-tool command to launch simple wrapped processes.
     
     Usage:
-      aish ci-tool --name <name> [--ci <model>] [--dir <path>] -- <command...>
+      aish ci-tool --name <name> -- <command...>
     
     Examples:
-      aish ci-tool --name Casey --ci claude-opus-4 -- claude --debug
-      aish ci-tool --name Betty-ci -- claude
+      aish ci-tool --name processor -- python script.py
+      aish ci-tool --name logger -- node app.js
     """
-    # For ci-tool, we need to handle the full command line ourselves
-    # because it has its own argument structure
-    
-    # Get the full command line after 'aish ci-tool'
-    # sys.argv looks like: ['aish', 'ci-tool', '--name', 'Wilma-ci', ...]
-    import sys
-    
-    # Debug output
-    if os.environ.get('AISH_DEBUG'):
-        print(f"[DEBUG] sys.argv: {sys.argv}", file=sys.stderr)
-        print(f"[DEBUG] args: {args}", file=sys.stderr)
-    
     # Find where 'ci-tool' appears in argv
     try:
         ci_tool_idx = sys.argv.index('ci-tool')
@@ -42,21 +30,20 @@ def handle_ci_tool_command(args):
     
     if not ci_tool_args or (ci_tool_args and ci_tool_args[0] in ['help', '-h', '--help']):
         show_ci_tool_help()
-        return True  # Return True to indicate command was handled
+        return True
     
-    # Build the command to execute the actual ci-tool wrapper
-    ci_tool_path = Path(__file__).parent.parent / 'ci-tool'
+    # Build the command to execute the simple wrapper
+    wrapper_path = Path(__file__).parent.parent / 'ci_simple_wrapper.py'
     
-    if not ci_tool_path.exists():
-        print(f"Error: ci-tool wrapper not found at {ci_tool_path}")
+    if not wrapper_path.exists():
+        print(f"Error: Simple wrapper not found at {wrapper_path}")
         return
     
-    # Pass all arguments directly to ci-tool
-    cmd = [str(ci_tool_path)] + ci_tool_args
+    # Pass all arguments directly to simple wrapper
+    cmd = [sys.executable, str(wrapper_path)] + ci_tool_args
     
     try:
-        # Execute ci-tool in a subprocess
-        # Use execvp to replace the current process
+        # Execute wrapper in a subprocess
         os.execvp(cmd[0], cmd)
     except Exception as e:
         print(f"Error launching ci-tool: {e}")
@@ -65,43 +52,38 @@ def handle_ci_tool_command(args):
 
 def show_ci_tool_help():
     """Show help for ci-tool command."""
-    print("""CI Tool - Wrapped CI Terminal with aish Messaging
+    print("""CI Tool - Simple Process Wrapper with Message Injection
 
 Usage:
-  aish ci-tool --name <name> [options] -- <command...>
+  aish ci-tool --name <name> -- <command...>
 
 Options:
-  --name <name>     Required. Registry name for this CI (e.g., Casey, Betty-ci)
-  --ci <model>      Optional. CI/model hint (e.g., claude-opus-4, llama3.3:70b)
-  --dir <path>      Optional. Working directory (defaults to current directory)
+  --name <name>     Required. Name for this process's message socket
 
 Examples:
-  # Launch Claude with messaging capabilities
-  aish ci-tool --name Casey --ci claude-opus-4 -- claude --debug
+  # Launch Python script with message injection
+  aish ci-tool --name processor -- python data_processor.py
   
-  # Launch another Claude instance
-  aish ci-tool --name Betty-ci -- claude
+  # Launch Node.js application
+  aish ci-tool --name server -- node server.js
   
-  # Launch a different tool
-  aish ci-tool --name Reviewer --ci gpt-4 -- openai-cli
+  # Launch any command-line tool
+  aish ci-tool --name analyzer -- ./analyze_data.sh
 
 Messaging:
-  Once launched, you can send messages between wrapped CIs using:
-    aish <ci-name> "message"
+  Once launched, messages can be injected into the process's stdin:
+    ./send_test_message.py <name> <from> <message>
   
   Example:
-    # In Casey's terminal:
-    aish Betty-ci "Hi Betty, can you help with the API?"
+    # In another terminal:
+    ./send_test_message.py processor control "START_BATCH_JOB"
     
-    # Betty sees:
-    [15:23] Message from Casey: Hi Betty, can you help with the API?
-    
-    # Betty types:
-    aish Casey "Sure! What do you need?"
+    # The processor sees on stdin:
+    [15:23] Message from control: START_BATCH_JOB
 
 Notes:
-  - The CI name must be unique across all running wrapped CIs
-  - Messages are delivered via Unix sockets
-  - Only wrapped CIs (launched with ci-tool) can receive messages
-  - Use 'aish list' to see all registered CIs including wrapped ones
+  - Uses subprocess with stdin pipe control
+  - Messages are injected into the process's stdin stream
+  - Suitable for non-terminal programs and scripts
+  - For terminal programs (like Claude, bash), use 'aish ci-terminal' instead
 """)
