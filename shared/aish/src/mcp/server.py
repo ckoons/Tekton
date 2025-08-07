@@ -181,6 +181,10 @@ async def get_capabilities():
                     "description": "List available AI specialists",
                     "parameters": {}
                 },
+                "list-project-cis": {
+                    "description": "List project CIs with their dynamically allocated ports",
+                    "parameters": {}
+                },
                 "get-ci": {
                     "description": "Get full details for a specific CI",
                     "endpoint": "GET /tools/ci/{ci_name}"
@@ -656,6 +660,45 @@ async def manage_project_forward(request: Request):
 # ==============================================
 # CI Tools Management Endpoints
 # ==============================================
+
+@mcp_router.post("/tools/list-project-cis")
+async def list_project_cis():
+    """
+    List project CIs with their dynamically allocated ports
+    """
+    try:
+        registry = get_registry()
+        all_cis = registry.get_all()
+        
+        project_cis = []
+        for ci_name, ci in all_cis.items():
+            # Include CIs that are marked as project CIs
+            if ci.get('is_project_ci'):
+                # Special handling for numa/Tekton
+                if ci_name == 'numa' and ci.get('project') == 'Tekton':
+                    project_cis.append({
+                        "name": "numa",
+                        "project": "Tekton",
+                        "port": registry.get_ai_port('numa'),  # Get numa's AI port
+                        "type": "greek",  # numa is part of Greek Chorus
+                        "description": "Tekton project CI (numa)"
+                    })
+                else:
+                    # Regular project CIs with dynamic ports
+                    project_cis.append({
+                        "name": ci.get('name'),
+                        "project": ci.get('project'),
+                        "port": ci.get('port', 0),
+                        "ai_port": ci.get('ai_port', 0),
+                        "type": ci.get('type'),
+                        "description": ci.get('description', '')
+                    })
+        
+        return {"project_cis": project_cis}
+    except Exception as e:
+        logger.error(f"Error listing project CIs: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
 
 @mcp_router.get("/tools/ci-tools")
 @api_contract(

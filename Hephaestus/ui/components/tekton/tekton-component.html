@@ -1849,32 +1849,76 @@ function tekton_sendChat() {
 let projectCIs = []; // Array to store project CI mappings
 
 async function loadProjectCIs() {
-    console.log('[TEKTON] Loading project CIs');
+    console.log('[TEKTON] Loading project CIs with dynamic ports');
     
     try {
-        const response = await fetch(tektonUrl('tekton-core', '/api/projects'));
-        const data = await response.json();
+        // First, get the actual project CIs from aish registry
+        const projectCIsResponse = await fetch(aishUrl('/api/mcp/v2/tools/list-project-cis'), {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({})
+        });
         
-        // Reset with Tekton first
-        projectCIs = [
-            {
-                project_name: "Tekton",
-                ci_socket: "numa",
-                socket_port: window.NUMA_AI_PORT || getAIPort(window.NUMA_PORT)
-            }
-        ];
-        
-        // Add other projects alphabetically
-        data.projects
-            .filter(p => !p.is_tekton_self)
-            .sort((a, b) => a.name.localeCompare(b.name))
-            .forEach((project, index) => {
+        if (projectCIsResponse.ok) {
+            const ciData = await projectCIsResponse.json();
+            
+            // Build projectCIs array from actual registry data
+            projectCIs = [];
+            
+            ciData.project_cis.forEach(ci => {
+                console.log('[TEKTON] Found project CI:', ci);
+                
+                // Use the actual allocated port from registry
+                const port = ci.port || ci.ai_port || 0;
+                
                 projectCIs.push({
-                    project_name: project.name,
-                    ci_socket: `project-${project.name.toLowerCase().replace(/[^a-z0-9]/g, '-')}-ai`,
-                    socket_port: (window.TEKTON_AI_PORT_BASE || 45000) + 100 + index
+                    project_name: ci.project,
+                    ci_socket: ci.name,
+                    socket_port: port,
+                    type: ci.type,
+                    description: ci.description
                 });
             });
+            
+            // Sort alphabetically but keep Tekton first
+            projectCIs.sort((a, b) => {
+                if (a.project_name === 'Tekton') return -1;
+                if (b.project_name === 'Tekton') return 1;
+                return a.project_name.localeCompare(b.project_name);
+            });
+            
+            console.log('[TEKTON] Loaded project CIs:', projectCIs);
+        } else {
+            console.warn('[TEKTON] Could not fetch project CIs, falling back to projects list');
+            
+            // Fallback: Load from projects API 
+            const response = await fetch(tektonUrl('tekton-core', '/api/projects'));
+            const data = await response.json();
+            
+            // Reset with Tekton first (uses numa)
+            projectCIs = [
+                {
+                    project_name: "Tekton",
+                    ci_socket: "numa",
+                    socket_port: window.NUMA_AI_PORT || getAIPort(window.NUMA_PORT)
+                }
+            ];
+            
+            // Add other projects (but without real ports)
+            data.projects
+                .filter(p => !p.is_tekton_self)
+                .sort((a, b) => a.name.localeCompare(b.name))
+                .forEach((project) => {
+                    projectCIs.push({
+                        project_name: project.name,
+                        ci_socket: `${project.name.toLowerCase()}-ai`,
+                        socket_port: 0, // Unknown port
+                        description: `Project AI for ${project.name}`
+                    });
+                });
+        }
         
         // Update dropdown
         const selector = document.getElementById('project-ci-selector');
@@ -1883,7 +1927,9 @@ async function loadProjectCIs() {
             projectCIs.forEach(ci => {
                 const option = document.createElement('option');
                 option.value = ci.project_name;
-                option.textContent = ci.project_name;
+                // Show port if known
+                const portInfo = ci.socket_port ? ` (port ${ci.socket_port})` : '';
+                option.textContent = `${ci.project_name}${portInfo}`;
                 selector.appendChild(option);
             });
         }
