@@ -139,6 +139,15 @@ class PTYWrapper:
     
     def run(self):
         """Run the wrapped command in a PTY"""
+        # Set up signal handler for clean shutdown
+        def signal_handler(signum, frame):
+            print(f"\n[PTY Wrapper] Received signal {signum}, cleaning up...", file=sys.stderr)
+            self.cleanup()
+            sys.exit(0)
+        
+        signal.signal(signal.SIGINT, signal_handler)
+        signal.signal(signal.SIGTERM, signal_handler)
+        
         # Set up socket
         self.setup_socket()
         
@@ -203,18 +212,46 @@ class PTYWrapper:
         """Clean up resources"""
         self.running = False
         
+        # Terminate child process if still running
+        if self.child_pid and self.child_pid > 0:
+            try:
+                os.kill(self.child_pid, signal.SIGTERM)
+                print(f"[PTY Wrapper] Sent SIGTERM to child {self.child_pid}", file=sys.stderr)
+                # Give it a moment to exit cleanly
+                import time
+                time.sleep(0.5)
+                # Check if still running and force kill if needed
+                try:
+                    os.kill(self.child_pid, 0)  # Check if process exists
+                    os.kill(self.child_pid, signal.SIGKILL)
+                    print(f"[PTY Wrapper] Force killed child {self.child_pid}", file=sys.stderr)
+                except ProcessLookupError:
+                    pass  # Process already terminated
+            except ProcessLookupError:
+                pass  # Process already terminated
+        
         # Unregister from CI registry
         self.unregister_ci()
         
         # Close master FD
         if self.master_fd:
-            os.close(self.master_fd)
+            try:
+                os.close(self.master_fd)
+            except OSError:
+                pass  # Already closed
         
         # Clean up socket
         if hasattr(self, 'sock'):
-            self.sock.close()
+            try:
+                self.sock.close()
+            except:
+                pass
         if os.path.exists(self.socket_path):
-            os.unlink(self.socket_path)
+            try:
+                os.unlink(self.socket_path)
+                print(f"[PTY Wrapper] Removed socket {self.socket_path}", file=sys.stderr)
+            except:
+                pass
         
         print(f"[PTY Wrapper] Cleaned up", file=sys.stderr)
 

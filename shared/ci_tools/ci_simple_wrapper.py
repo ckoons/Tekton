@@ -10,19 +10,43 @@ import threading
 import socket
 import json
 import select
+import signal
 from datetime import datetime
 
 class SimpleWrapper:
     def __init__(self, name, command):
         self.name = name
         self.command = command
-        self.socket_path = f"/tmp/ci_{name}.sock"
+        self.socket_path = f"/tmp/ci_msg_{name}.sock"  # Use same pattern as PTY wrapper
         self.process = None
         self.running = True
         
     def setup_socket(self):
         """Set up Unix socket for receiving messages"""
+        # Check for orphaned process like PTY wrapper does
         if os.path.exists(self.socket_path):
+            try:
+                result = subprocess.run(['lsof', '-t', self.socket_path], 
+                                      capture_output=True, text=True)
+                if result.returncode == 0 and result.stdout.strip():
+                    old_pid = int(result.stdout.strip())
+                    # Check if it's a CI wrapper for the same name
+                    ps_result = subprocess.run(['ps', '-p', str(old_pid), '-o', 'command='],
+                                             capture_output=True, text=True)
+                    cmdline = ps_result.stdout
+                    if ('ci_simple_wrapper' in cmdline or 'ci-tool' in cmdline) and self.name in cmdline:
+                        print(f"[Wrapper] Found orphaned process {old_pid}, terminating...", file=sys.stderr)
+                        os.kill(old_pid, signal.SIGTERM)
+                        import time
+                        time.sleep(0.5)
+                        try:
+                            os.kill(old_pid, 0)
+                            os.kill(old_pid, signal.SIGKILL)
+                        except ProcessLookupError:
+                            pass
+            except Exception as e:
+                print(f"[Wrapper] Could not check for orphaned process: {e}", file=sys.stderr)
+            
             os.unlink(self.socket_path)
         
         self.sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
@@ -30,6 +54,45 @@ class SimpleWrapper:
         self.sock.listen(5)
         os.chmod(self.socket_path, 0o666)
         print(f"[Wrapper] Listening on {self.socket_path}", file=sys.stderr)
+        
+        # Register with CI registry
+        self.register_ci()
+    
+    def register_ci(self):
+        """Register this CI with the registry."""
+        try:
+            import sys
+            from pathlib import Path
+            sys.path.insert(0, str(Path(__file__).parent.parent.parent))
+            from shared.aish.src.registry.ci_registry import get_registry
+            
+            registry = get_registry()
+            ci_info = {
+                'name': self.name,
+                'type': 'ci_tool',
+                'socket': self.socket_path,
+                'working_directory': os.getcwd(),
+                'capabilities': ['messaging', 'stdin_injection'],
+                'pid': os.getpid()
+            }
+            registry.register_wrapped_ci(ci_info)
+            print(f"[Wrapper] Registered {self.name} as ci_tool", file=sys.stderr)
+        except Exception as e:
+            print(f"[Wrapper] Failed to register: {e}", file=sys.stderr)
+    
+    def unregister_ci(self):
+        """Unregister this CI from the registry."""
+        try:
+            import sys
+            from pathlib import Path
+            sys.path.insert(0, str(Path(__file__).parent.parent.parent))
+            from shared.aish.src.registry.ci_registry import get_registry
+            
+            registry = get_registry()
+            registry.unregister_wrapped_ci(self.name)
+            print(f"[Wrapper] Unregistered {self.name}", file=sys.stderr)
+        except Exception as e:
+            print(f"[Wrapper] Failed to unregister: {e}", file=sys.stderr)
     
     def socket_listener(self):
         """Listen for messages and inject to child's stdin"""
@@ -62,6 +125,15 @@ class SimpleWrapper:
     
     def run(self):
         """Run the wrapped command with stdin control"""
+        # Set up signal handler for clean shutdown
+        def signal_handler(signum, frame):
+            print(f"\n[Wrapper] Received signal {signum}, cleaning up...", file=sys.stderr)
+            self.cleanup()
+            sys.exit(0)
+        
+        signal.signal(signal.SIGINT, signal_handler)
+        signal.signal(signal.SIGTERM, signal_handler)
+        
         # Set up socket
         self.setup_socket()
         
@@ -104,13 +176,27 @@ class SimpleWrapper:
         # Terminate child if still running
         if self.process and self.process.poll() is None:
             self.process.terminate()
-            self.process.wait()
+            try:
+                self.process.wait(timeout=2)
+            except subprocess.TimeoutExpired:
+                self.process.kill()
+                self.process.wait()
+        
+        # Unregister from CI registry
+        self.unregister_ci()
         
         # Clean up socket
         if hasattr(self, 'sock'):
-            self.sock.close()
+            try:
+                self.sock.close()
+            except:
+                pass
         if os.path.exists(self.socket_path):
-            os.unlink(self.socket_path)
+            try:
+                os.unlink(self.socket_path)
+                print(f"[Wrapper] Removed socket {self.socket_path}", file=sys.stderr)
+            except:
+                pass
         
         print(f"[Wrapper] Cleaned up", file=sys.stderr)
 
