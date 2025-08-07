@@ -129,6 +129,10 @@ async def list_projects(state: Optional[str] = Query(None, description="Filter b
         filter_state = ProjectState(state) if state else None
         projects = project_manager.registry.list_projects(filter_state)
         
+        # Ensure project CIs are running when projects are listed
+        # This happens when the UI loads the project cards
+        await project_manager.ensure_project_cis_running(projects)
+        
         project_responses = []
         for p in projects:
             # Check if working directory exists
@@ -192,6 +196,9 @@ async def create_project(request: CreateProjectRequest):
             companion_intelligence=request.companion_intelligence,
             description=request.description
         )
+        
+        # Launch the project CI immediately after creation
+        await project_manager.launch_project_ci(project)
         
         response = ProjectResponse(
             id=project.id,

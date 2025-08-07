@@ -141,26 +141,14 @@ def send_to_ci(ci_name: str, message: str) -> bool:
                 registry.update_ci_last_output(ci_name, response)
                 return True
             except Exception as e:
-                # For project CIs that aren't running, provide a helpful message
-                if ci.get('is_project_ci'):
-                    project_name = ci.get('project', 'Unknown')
-                    ci_model = ci.get('companion_intelligence', 'Unknown model')
-                    # Print a stub response explaining the CI isn't running
-                    stub_response = (f"Project CI for {project_name} is not currently running. "
-                                   f"This project is configured to use {ci_model} as its Companion Intelligence. "
-                                   f"To launch this CI, run: tekton-core launch-ci {project_name}")
-                    print(stub_response)
-                    # Still return True so MCP captures the message
-                    return True
-                else:
-                    # For Greek Chorus AIs, print error message
-                    error_msg = f"Failed to connect to {ai_name} on port {port}: {str(e)}"
-                    print(error_msg)
-                    # Also log to stderr for debugging
-                    import sys
-                    print(f"Error sending to AI specialist {ai_name} on port {port}: {e}", file=sys.stderr)
-                    # Still return True so MCP captures the error message
-                    return True
+                # Print error message as response so MCP can return it
+                error_msg = f"Failed to connect to {ai_name} on port {port}: {str(e)}"
+                print(error_msg)
+                # Also log to stderr for debugging
+                import sys
+                print(f"Error sending to AI specialist {ai_name} on port {port}: {e}", file=sys.stderr)
+                # Still return True so MCP captures the error message
+                return True
                 
         elif message_format == 'json_simple':
             # Simple JSON format for direct API calls

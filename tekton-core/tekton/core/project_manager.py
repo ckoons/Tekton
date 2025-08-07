@@ -879,3 +879,138 @@ class ProjectManager:
             "project": asdict(project),
             "git_status": git_status
         }
+    
+    async def launch_project_ci(self, project: Project) -> bool:
+        """
+        Launch AI specialist for a project CI if not already running.
+        Uses the same infrastructure as Greek Chorus CIs but with dynamic ports.
+        
+        Args:
+            project: Project to launch CI for
+            
+        Returns:
+            True if CI is running (either launched or already running)
+        """
+        # Special case: Tekton project uses numa (always running)
+        if project.name.lower() == "tekton":
+            logger.info(f"Project {project.name} uses numa as its CI (always running)")
+            return True
+        
+        # Check if CI is already registered and potentially running
+        try:
+            from shared.aish.src.registry.ci_registry import get_registry
+            registry = get_registry()
+            
+            ci_name = f"{project.name.lower()}-ai"
+            ci_info = registry.get_by_name(ci_name)
+            
+            if ci_info:
+                # CI is registered, check if it's actually running
+                port = ci_info.get('ai_port', ci_info.get('port', 0))
+                if port:
+                    # Try to connect to verify it's running
+                    import socket
+                    try:
+                        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                        sock.settimeout(1)
+                        sock.connect(('localhost', port))
+                        sock.close()
+                        logger.info(f"Project CI {ci_name} already running on port {port}")
+                        return True
+                    except (socket.error, socket.timeout):
+                        logger.info(f"Project CI {ci_name} registered but not running, will launch")
+        except ImportError:
+            logger.error("CI Registry not available")
+            return False
+        
+        # Launch the project CI using the same pattern as Greek Chorus
+        try:
+            import sys
+            import subprocess
+            
+            # Get or allocate dynamic port for this project
+            from shared.aish.src.registry.ci_registry import get_registry
+            registry = get_registry()
+            
+            # Register the project CI if not already registered
+            registry._register_project_ci({
+                'id': project.id,
+                'name': project.name,
+                'companion_intelligence': project.companion_intelligence or 'llama3.3:70b',
+                'local_directory': project.local_directory
+            })
+            
+            # Get the allocated port
+            ci_info = registry.get_by_name(f"{project.name.lower()}-ai")
+            if not ci_info:
+                logger.error(f"Failed to register project CI for {project.name}")
+                return False
+            
+            ai_port = ci_info.get('ai_port', ci_info.get('port', 0))
+            if not ai_port:
+                logger.error(f"No port allocated for project CI {project.name}")
+                return False
+            
+            # Launch the AI specialist process
+            # Use generic specialist which can be run as a module
+            cmd = [
+                sys.executable, '-m', 'shared.ai.generic_specialist',
+                '--port', str(ai_port),
+                '--component', project.name.lower(),
+                '--ai-id', f"{project.name.lower()}-ai"
+            ]
+            
+            logger.info(f"Launching project CI for {project.name} on port {ai_port}")
+            logger.debug(f"Launch command: {' '.join(cmd)}")
+            
+            # Get Tekton root for environment
+            tekton_root = TektonEnviron.get('TEKTON_ROOT', os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
+            
+            process = subprocess.Popen(
+                cmd,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                env={**os.environ, 'PYTHONPATH': tekton_root}
+            )
+            
+            logger.info(f"Project CI {project.name}-ai launched with PID {process.pid}")
+            
+            # Wait for CI to be ready (try connecting for up to 10 seconds)
+            import time
+            start_time = time.time()
+            while time.time() - start_time < 10:
+                try:
+                    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                    sock.settimeout(1)
+                    sock.connect(('localhost', ai_port))
+                    sock.close()
+                    logger.info(f"Project CI {project.name}-ai is ready on port {ai_port}")
+                    return True
+                except (socket.error, socket.timeout):
+                    await asyncio.sleep(0.5)
+            
+            logger.warning(f"Project CI {project.name}-ai launched but not responding after 10 seconds")
+            return False
+            
+        except Exception as e:
+            logger.error(f"Failed to launch project CI for {project.name}: {e}")
+            return False
+    
+    async def ensure_project_cis_running(self, projects: Optional[List[Project]] = None):
+        """
+        Ensure CIs are running for all active projects.
+        Called when projects are listed or accessed.
+        
+        Args:
+            projects: Optional list of projects, if None will check all projects
+        """
+        if projects is None:
+            projects = self.registry.list_projects()
+        
+        for project in projects:
+            # Only launch CIs for projects with companion intelligence configured
+            if project.companion_intelligence:
+                try:
+                    await self.launch_project_ci(project)
+                except Exception as e:
+                    logger.error(f"Failed to ensure CI for project {project.name}: {e}")
