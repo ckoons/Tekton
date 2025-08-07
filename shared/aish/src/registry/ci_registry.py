@@ -692,13 +692,14 @@ class CIRegistry:
         # Regular projects get dynamic ports
         ci_name = f"{project_name.lower()}-ai"
         port = self._allocate_project_port(project_name)
-        ai_port = port + 34000  # Offset for AI port
+        # For project CIs, the AI specialist runs directly on the allocated port
+        # No need for separate ai_port
         
         self._registry[ci_name] = {
             'name': ci_name,
             'type': 'ai_specialist',  # Use ai_specialist for proper routing
             'port': port,
-            'ai_port': ai_port,
+            'ai_port': port,  # Same as port for project CIs
             'endpoint': f'http://localhost:{port}',
             'description': f"Project AI: {project_name}",
             'message_endpoint': '/api/message',
