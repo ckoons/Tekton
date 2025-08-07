@@ -9,7 +9,7 @@ import urllib.error
 import urllib.parse
 from typing import Optional
 
-from registry.ci_registry import get_registry
+from shared.aish.src.registry.ci_registry import get_registry
 
 # Import landmarks with fallback
 try:
