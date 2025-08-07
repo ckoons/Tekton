@@ -1849,7 +1849,7 @@ function tekton_sendChat() {
 let projectCIs = []; // Array to store project CI mappings
 
 async function loadProjectCIs() {
-    console.log('[TEKTON] Loading project CIs with dynamic ports');
+    console.log('[TEKTON] Loading project CIs');
     
     try {
         // First, get the actual project CIs from aish registry
@@ -1870,13 +1870,19 @@ async function loadProjectCIs() {
             ciData.project_cis.forEach(ci => {
                 console.log('[TEKTON] Found project CI:', ci);
                 
-                // Use the actual allocated port from registry
-                const port = ci.port || ci.ai_port || 0;
+                // For messaging, we need to use the correct AI name format
+                let aiName;
+                if (ci.name === 'numa') {
+                    // Numa needs the -ai suffix for messaging through AIChat
+                    aiName = 'numa-ai';
+                } else {
+                    // Other project CIs already have the correct name format
+                    aiName = ci.name;
+                }
                 
                 projectCIs.push({
                     project_name: ci.project,
-                    ci_socket: ci.name,
-                    socket_port: port,
+                    ci_socket: aiName,  // Use the correct AI name for messaging
                     type: ci.type,
                     description: ci.description
                 });
@@ -1897,16 +1903,16 @@ async function loadProjectCIs() {
             const response = await fetch(tektonUrl('tekton-core', '/api/projects'));
             const data = await response.json();
             
-            // Reset with Tekton first (uses numa)
+            // Reset with Tekton first (uses numa-ai)
             projectCIs = [
                 {
                     project_name: "Tekton",
-                    ci_socket: "numa",
-                    socket_port: window.NUMA_AI_PORT || getAIPort(window.NUMA_PORT)
+                    ci_socket: "numa-ai",  // Use numa-ai for messaging
+                    description: "Tekton project CI (numa)"
                 }
             ];
             
-            // Add other projects (but without real ports)
+            // Add other projects
             data.projects
                 .filter(p => !p.is_tekton_self)
                 .sort((a, b) => a.name.localeCompare(b.name))
@@ -1914,22 +1920,19 @@ async function loadProjectCIs() {
                     projectCIs.push({
                         project_name: project.name,
                         ci_socket: `${project.name.toLowerCase()}-ai`,
-                        socket_port: 0, // Unknown port
                         description: `Project AI for ${project.name}`
                     });
                 });
         }
         
-        // Update dropdown
+        // Update dropdown - without confusing port numbers
         const selector = document.getElementById('project-ci-selector');
         if (selector) {
             selector.innerHTML = '';
             projectCIs.forEach(ci => {
                 const option = document.createElement('option');
                 option.value = ci.project_name;
-                // Show port if known
-                const portInfo = ci.socket_port ? ` (port ${ci.socket_port})` : '';
-                option.textContent = `${ci.project_name}${portInfo}`;
+                option.textContent = ci.project_name;
                 selector.appendChild(option);
             });
         }
