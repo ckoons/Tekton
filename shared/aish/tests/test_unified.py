@@ -24,8 +24,9 @@ class UnifiedListTest(AishTest):
             self.error_message = "Output missing Greek Chorus section"
             return False
         
-        if "Terminal CIs:" not in stdout:
-            self.error_message = "Output missing Terminal CIs section"
+        # Check for new terminal sections
+        if "Terminals (terma):" not in stdout and "CI Terminals" not in stdout:
+            self.error_message = "Output missing Terminal sections"
             return False
         
         return True
@@ -122,15 +123,25 @@ class UnifiedListJsonFilterTest(AishTest):
         try:
             data = json.loads(stdout)
             
-            # Check all entries are terminals
-            for ci in data:
-                if ci.get('type') != 'terminal':
-                    self.error_message = f"Non-terminal CI in filtered output: {ci.get('name')}"
+            # Check all entries are terminals (either terma terminals or ci_terminal type)
+            # Handle both list and dict formats
+            if isinstance(data, list):
+                items = data
+            else:
+                items = data.values()
+                
+            for ci in items:
+                ci_type = ci.get('type')
+                name = ci.get('name', 'unknown')
+                if ci_type not in ['terminal', 'ci_terminal', 'terma_terminal']:
+                    self.error_message = f"Non-terminal CI in filtered output: {name} (type: {ci_type})"
                     return False
                 
-                if ci.get('message_format') != 'terma_route':
-                    self.error_message = f"Terminal {ci.get('name')} missing terma_route format"
-                    return False
+                # Only terma terminals should have terma_route format
+                if ci_type in ['terminal', 'terma_terminal']:
+                    if ci.get('message_format') != 'terma_route':
+                        self.error_message = f"Terminal {name} missing terma_route format"
+                        return False
             
         except json.JSONDecodeError as e:
             self.error_message = f"Invalid JSON output: {e}"
@@ -161,6 +172,146 @@ class UnifiedMessagingTest(AishTest):
         return True
 
 
+class CITypeSectionsTest(AishTest):
+    """Test that new CI type sections appear correctly"""
+    
+    def test(self) -> bool:
+        """Run the test"""
+        import os
+        aish_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'aish')
+        code, stdout, stderr = self.run_command(f"{aish_path} list")
+        
+        if code != 0:
+            self.error_message = f"Command failed with code {code}: {stderr}"
+            return False
+        
+        # Check for proper ordering and sections
+        sections = ["Greek Chorus CIs:", "CI Tools:", "CI Terminals", "Terminals (terma):", "Project CIs:"]
+        last_pos = -1
+        
+        for section in sections:
+            # Some sections might not exist if no items
+            if section in stdout:
+                pos = stdout.find(section)
+                if pos <= last_pos:
+                    self.error_message = f"Section {section} is out of order"
+                    return False
+                last_pos = pos
+        
+        return True
+
+
+class CIToolTypeTest(AishTest):
+    """Test filtering for ci_tool type"""
+    
+    def test(self) -> bool:
+        """Run the test"""
+        import json
+        import os
+        
+        aish_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'aish')
+        
+        # First check if any ci_tools exist
+        code, stdout, stderr = self.run_command(f"{aish_path} list json")
+        if code != 0:
+            self.error_message = f"Command failed: {stderr}"
+            return False
+        
+        try:
+            data = json.loads(stdout)
+            # Check for any ci_tool or wrapped_ci entries
+            has_tools = any(ci.get('type') in ['ci_tool', 'wrapped_ci'] for ci in data.values())
+            
+            if has_tools:
+                # Verify they appear in the right section
+                code, stdout, stderr = self.run_command(f"{aish_path} list")
+                if "CI Tools:" in stdout or "CI Tools (wrapped processes):" in stdout:
+                    return True
+                else:
+                    self.error_message = "CI tools exist but not shown in CI Tools section"
+                    return False
+            
+            # No tools exist, which is okay
+            return True
+            
+        except json.JSONDecodeError as e:
+            self.error_message = f"Invalid JSON: {e}"
+            return False
+
+
+class RegistrationTest(AishTest):
+    """Test CI registration and unregistration"""
+    
+    def test(self) -> bool:
+        """Run the test"""
+        import tempfile
+        import os
+        import sys
+        
+        # Create a test script that uses the registry
+        test_script = '''
+import sys
+import os
+# Add the Coder-C root to path
+sys.path.insert(0, "/Users/cskoons/projects/github/Coder-C")
+from shared.aish.src.registry.ci_registry import get_registry
+
+registry = get_registry()
+
+# Test registration
+test_ci = {
+    "name": "test-ci-reg",
+    "type": "ci_tool",
+    "socket": "/tmp/ci_msg_test-ci-reg.sock",
+    "working_directory": "/tmp",
+    "capabilities": ["messaging"]
+}
+
+# Register
+if not registry.register_wrapped_ci(test_ci):
+    print("Registration failed")
+    sys.exit(1)
+
+# Check it exists
+if not registry.get_by_name("test-ci-reg"):
+    print("CI not found after registration")
+    sys.exit(1)
+
+# Unregister
+if not registry.unregister_wrapped_ci("test-ci-reg"):
+    print("Unregistration failed")
+    sys.exit(1)
+
+# Check it's gone
+if registry.get_by_name("test-ci-reg"):
+    print("CI still exists after unregistration")
+    sys.exit(1)
+
+print("Registration test passed")
+'''
+        
+        # Write and run test script
+        with tempfile.NamedTemporaryFile(mode='w', suffix='.py', delete=False) as f:
+            f.write(test_script)
+            temp_file = f.name
+        
+        try:
+            code, stdout, stderr = self.run_command(f"python3 {temp_file}")
+            
+            if code != 0:
+                self.error_message = f"Registration test failed: {stdout} {stderr}"
+                return False
+            
+            if "Registration test passed" not in stdout:
+                self.error_message = "Registration test didn't complete"
+                return False
+            
+            return True
+            
+        finally:
+            os.unlink(temp_file)
+
+
 def create_suite() -> TestSuite:
     """Create the unified test suite"""
     suite = TestSuite("unified")
@@ -189,6 +340,21 @@ def create_suite() -> TestSuite:
     suite.add_test(UnifiedMessagingTest(
         "unified_messaging",
         "Test sending messages through unified system"
+    ))
+    
+    suite.add_test(CITypeSectionsTest(
+        "ci_type_sections",
+        "Test new CI type sections appear in correct order"
+    ))
+    
+    suite.add_test(CIToolTypeTest(
+        "ci_tool_type",
+        "Test CI tool type filtering and display"
+    ))
+    
+    suite.add_test(RegistrationTest(
+        "registration",
+        "Test CI registration and unregistration"
     ))
     
     return suite
