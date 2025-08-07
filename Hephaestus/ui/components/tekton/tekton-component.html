@@ -3254,13 +3254,11 @@ async function gitAction(projectId, action, remote, event) {
         button.disabled = false;
         
         if (response.ok && result.return_code === 0) {
-            // Success - show output in modal for status and pull commands
+            // Success - show output in modal for all git commands
             console.log(`[TEKTON] Git ${action} succeeded for ${result.project_name}`);
             
-            // Show output modal for status and pull commands
-            if (action === 'status' || action === 'pull') {
-                showGitOutputModal(action, remote, result);
-            }
+            // Always show output modal for git commands
+            showGitOutputModal(action, remote, result);
             
             // If it was a pull or push, refresh the project status
             if (action === 'pull' || action === 'push') {
@@ -3298,6 +3296,25 @@ function showGitOutputModal(action, remote, result) {
     
     const actionTitle = action.charAt(0).toUpperCase() + action.slice(1);
     
+    // Generate appropriate description based on action
+    let description = '';
+    switch(action) {
+        case 'status':
+            description = 'Current repository status:';
+            break;
+        case 'pull':
+            description = `Successfully pulled from ${remote}:`;
+            break;
+        case 'push':
+            description = `Successfully pushed to ${remote}:`;
+            break;
+        case 'pr':
+            description = 'Pull request operation result:';
+            break;
+        default:
+            description = `Git ${action} result:`;
+    }
+    
     modalOverlay.innerHTML = `
         <div class="tekton__output-modal">
             <div class="tekton__output-modal-header">
@@ -3305,10 +3322,8 @@ function showGitOutputModal(action, remote, result) {
                 <button class="tekton__modal-close" onclick="closeGitOutputModal()">×</button>
             </div>
             <div class="tekton__output-modal-body">
-                <div class="tekton__output-description">
-                    ${action === 'status' ? 'Current repository status:' : `Pulled from ${remote}:`}
-                </div>
-                <pre class="tekton__output-content">${result.output || 'No output available'}</pre>
+                <div class="tekton__output-description">${description}</div>
+                <pre class="tekton__output-content">${result.output || 'Operation completed successfully'}</pre>
             </div>
             <div class="tekton__output-modal-footer">
                 <button class="tekton__button tekton__button--primary" onclick="closeGitOutputModal()">Close</button>
@@ -3327,21 +3342,56 @@ function closeGitOutputModal() {
 }
 
 function showGitErrorModal(action, remote, result) {
-    const modal = document.getElementById('tekton-error-modal-overlay');
-    const title = document.getElementById('tekton-error-modal-title');
-    const description = document.getElementById('tekton-error-description');
-    const output = document.getElementById('tekton-error-output');
+    // Remove any existing error modal first
+    const existingModal = document.getElementById('tekton-error-modal-dynamic');
+    if (existingModal) {
+        existingModal.remove();
+    }
     
-    title.textContent = `Git ${action} Failed`;
-    description.textContent = `Failed to ${action} from ${remote} for "${result.project_name || 'project'}"`;
-    output.textContent = result.output || result.error || 'No error details available';
+    // Create error modal dynamically and append to body
+    const modalOverlay = document.createElement('div');
+    modalOverlay.className = 'tekton__error-modal-overlay';
+    modalOverlay.id = 'tekton-error-modal-dynamic';
+    modalOverlay.style.display = 'flex';
     
-    modal.style.display = 'flex';
+    modalOverlay.innerHTML = `
+        <div class="tekton__error-modal">
+            <div class="tekton__error-modal-header">
+                <h3 class="tekton__error-modal-title">Git ${action} Failed</h3>
+            </div>
+            
+            <div class="tekton__error-modal-body">
+                <div class="tekton__error-description">
+                    Failed to ${action} from ${remote} for "${result.project_name || 'project'}"
+                </div>
+                
+                <div class="tekton__error-output">
+                    ${result.output || result.error || 'No error details available'}
+                </div>
+            </div>
+            
+            <div class="tekton__error-modal-footer">
+                <button class="tekton__button tekton__button--secondary" onclick="closeErrorModal()">Cancel</button>
+                <button class="tekton__button tekton__button--primary" onclick="retryLastGitAction()">Retry</button>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modalOverlay);
 }
 
 function closeErrorModal() {
-    const modal = document.getElementById('tekton-error-modal-overlay');
-    modal.style.display = 'none';
+    // Close the dynamically created modal
+    const modal = document.getElementById('tekton-error-modal-dynamic');
+    if (modal) {
+        modal.remove();
+    }
+    
+    // Also hide the old static modal if it exists (for backwards compatibility)
+    const oldModal = document.getElementById('tekton-error-modal-overlay');
+    if (oldModal) {
+        oldModal.style.display = 'none';
+    }
 }
 
 async function retryLastGitAction() {
