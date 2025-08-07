@@ -141,14 +141,45 @@ def list_projects(args: List[str]) -> bool:
         print("\nUse the Tekton UI to create projects.")
         return True
     
+    # Get CI registry to find ports
+    sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
+    from shared.aish.src.registry.ci_registry import get_registry
+    ci_registry = get_registry()
+    
     print("Tekton Managed Projects:")
-    print("-" * 70)
-    print(f"{'Project':<20} {'CI':<20} {'Forward':<30}")
-    print("-" * 70)
+    print("-" * 90)
+    print(f"{'Project':<20} {'CI':<20} {'Port':<10} {'Forward':<30}")
+    print("-" * 90)
     
     for project in projects:
         project_name = project.get('name', 'Unknown')
-        companion_ai = project.get('companion_ai', 'none')
+        companion_ai = project.get('companion_intelligence', 'none')
+        
+        # Get port from CI registry
+        port_display = "n/a"
+        if companion_ai and companion_ai != 'none':
+            # Special case for Tekton
+            if project_name.lower() == 'tekton':
+                companion_ai = "numa"
+                numa_ci = ci_registry.get_by_name('numa')
+                if numa_ci:
+                    # numa uses endpoint not port field
+                    if 'port' in numa_ci:
+                        port_display = str(numa_ci['port'])
+                    elif 'endpoint' in numa_ci:
+                        # Extract port from endpoint URL
+                        endpoint = numa_ci['endpoint']
+                        port_display = endpoint.split(':')[-1].rstrip('/')
+                    else:
+                        port_display = 'n/a'
+            else:
+                ci_name = f"{project_name.lower()}-ai"
+                project_ci = ci_registry.get_by_name(ci_name)
+                if project_ci:
+                    port_display = str(project_ci.get('port', 'n/a'))
+                companion_ai = ci_name
+        else:
+            companion_ai = "none"
         
         # Check if this project is forwarded
         forward_key = f"project:{project_name}"
@@ -174,13 +205,9 @@ def list_projects(args: List[str]) -> bool:
         else:
             forward_display = "none"
         
-        # Special handling for Tekton project
-        if project_name == "Tekton":
-            companion_ai = "numa-ai"  # Tekton uses Numa as its CI
-        
-        print(f"{project_name:<20} {companion_ai:<20} {forward_display:<30}")
+        print(f"{project_name:<20} {companion_ai:<20} {port_display:<10} {forward_display:<30}")
     
-    print("-" * 70)
+    print("-" * 90)
     print(f"\nTotal projects: {len(projects)}")
     
     # Show legend if there are any forwards

@@ -340,20 +340,7 @@ class CIRegistry:
                 projects = response.json()
                 for project in projects:
                     if project.get('companion_intelligence'):
-                        # Create CI entry for project's companion AI
-                        ci_name = f"{project['name'].lower()}-ai"
-                        self._registry[ci_name] = {
-                            'name': ci_name,
-                            'type': 'project',
-                            'endpoint': tekton_url('tekton_core'),
-                            'description': f"Project AI: {project['name']}",
-                            'message_endpoint': '/api/message',
-                            'message_format': 'json_simple',
-                            'project': project['name'],
-                            'project_id': project['id'],
-                            'companion_intelligence': project['companion_intelligence'],
-                            'local_directory': project.get('local_directory')
-                        }
+                        self._register_project_ci(project)
                 return
         except Exception:
             # TektonCore might not be running, fall back to file
@@ -369,20 +356,7 @@ class CIRegistry:
                         data = json.load(f)
                         for project in data.get('projects', []):
                             if project.get('companion_intelligence'):
-                                # Create CI entry for project's companion AI
-                                ci_name = f"{project['name'].lower()}-ai"
-                                self._registry[ci_name] = {
-                                    'name': ci_name,
-                                    'type': 'project',
-                                    'endpoint': tekton_url('tekton_core'),
-                                    'description': f"Project AI: {project['name']}",
-                                    'message_endpoint': '/api/message',
-                                    'message_format': 'json_simple',
-                                    'project': project['name'],
-                                    'project_id': project['id'],
-                                    'companion_intelligence': project['companion_intelligence'],
-                                    'local_directory': project.get('local_directory')
-                                }
+                                self._register_project_ci(project)
         except Exception:
             # Projects file might not exist yet
             pass
@@ -651,6 +625,110 @@ class CIRegistry:
             print(f"Failed to update wrapped CI persistence: {e}")
             return False
     
+    def _allocate_project_port(self, project_name: str) -> int:
+        """Allocate a dynamic port for a project CI using OS allocation."""
+        # Use a persistent file to track allocated ports
+        port_file = os.path.join(self._file_registry.registry_dir, 'project_ports.json')
+        
+        # Load existing allocations
+        allocations = {}
+        if os.path.exists(port_file):
+            try:
+                with open(port_file, 'r') as f:
+                    allocations = json.load(f)
+            except:
+                allocations = {}
+        
+        # Check if this project already has a port
+        if project_name in allocations:
+            return allocations[project_name]
+        
+        # Let the OS allocate a dynamic port
+        import socket
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sock.bind(('', 0))  # Bind to any available port
+        port = sock.getsockname()[1]
+        sock.close()
+        
+        # Save the allocation
+        allocations[project_name] = port
+        with open(port_file, 'w') as f:
+            json.dump(allocations, f, indent=2)
+        
+        return port
+    
+    def _deallocate_project_port(self, project_name: str):
+        """Release a project's allocated port."""
+        port_file = os.path.join(self._file_registry.registry_dir, 'project_ports.json')
+        
+        if os.path.exists(port_file):
+            try:
+                with open(port_file, 'r') as f:
+                    allocations = json.load(f)
+                
+                if project_name in allocations:
+                    del allocations[project_name]
+                    
+                    with open(port_file, 'w') as f:
+                        json.dump(allocations, f, indent=2)
+            except:
+                pass
+    
+    def _register_project_ci(self, project: Dict[str, Any]):
+        """Register a project CI with dynamic port allocation."""
+        project_name = project['name']
+        
+        # Special case: Tekton project uses numa
+        if project_name.lower() == 'tekton':
+            # Use numa as Tekton's CI
+            ci_name = 'numa'
+            # numa already exists in Greek Chorus, just mark it as Tekton's project CI
+            if ci_name in self._registry:
+                self._registry[ci_name]['is_project_ci'] = True
+                self._registry[ci_name]['project'] = 'Tekton'
+                self._registry[ci_name]['project_id'] = project['id']
+            return
+        
+        # Regular projects get dynamic ports
+        ci_name = f"{project_name.lower()}-ai"
+        port = self._allocate_project_port(project_name)
+        ai_port = port + 34000  # Offset for AI port
+        
+        self._registry[ci_name] = {
+            'name': ci_name,
+            'type': 'ai_specialist',  # Use ai_specialist for proper routing
+            'port': port,
+            'ai_port': ai_port,
+            'endpoint': f'http://localhost:{port}',
+            'description': f"Project AI: {project_name}",
+            'message_endpoint': '/api/message',
+            'message_format': 'json_simple',
+            'project': project_name,
+            'project_id': project['id'],
+            'companion_intelligence': project['companion_intelligence'],
+            'local_directory': project.get('local_directory'),
+            'is_project_ci': True
+        }
+    
+    def unregister_project_ci(self, project_name: str) -> bool:
+        """Unregister a project CI and deallocate its port."""
+        # Special case: Tekton uses numa, don't unregister numa
+        if project_name.lower() == 'tekton':
+            if 'numa' in self._registry:
+                # Just remove project association
+                self._registry['numa'].pop('is_project_ci', None)
+                self._registry['numa'].pop('project', None) 
+                self._registry['numa'].pop('project_id', None)
+            return True
+        
+        ci_name = f"{project_name.lower()}-ai"
+        if ci_name in self._registry:
+            del self._registry[ci_name]
+            self._deallocate_project_port(project_name)
+            return True
+        
+        return False
+    
     def get_all_context_states(self) -> Dict[str, Dict[str, Any]]:
         """Get context states for all CIs."""
         # Reload context state from file to get latest
@@ -809,17 +887,38 @@ class CIRegistry:
                 output.append(f"  {name:<15} (pid {pid}){forward}{json_mode}")
             output.append("")
         
-        # Show Project CIs
+        # Show Project CIs (now shown as AI specialists with project info)
+        project_cis = []
         if 'project' in by_type:
+            project_cis.extend(by_type['project'])
+        # Also include ai_specialist CIs that are project CIs
+        if 'ai_specialist' in by_type:
+            for ci in by_type['ai_specialist']:
+                if ci.get('is_project_ci'):
+                    project_cis.append(ci)
+        # Include any CI marked as project CI (like numa)
+        for ci_type in by_type:
+            if ci_type not in ['project', 'ai_specialist']:
+                for ci in by_type[ci_type]:
+                    if ci.get('is_project_ci'):
+                        project_cis.append(ci)
+        
+        if project_cis:
             output.append("Project CIs:")
             output.append("-" * 60)
-            project_cis = sorted(by_type['project'], key=operator.itemgetter('name'))
-            for ci in project_cis:
+            sorted_projects = sorted(project_cis, key=operator.itemgetter('name'))
+            for ci in sorted_projects:
                 name = ci['name']
                 project = ci.get('project', 'unknown')
+                port = ci.get('port', ci.get('endpoint', '').split(':')[-1].rstrip('/'))
+                # Special case for numa/Tekton
+                if name == 'numa' and project == 'Tekton':
+                    display_name = 'numa (Tekton)'
+                else:
+                    display_name = name
                 forward = f" → {ci['forward_to']}" if 'forward_to' in ci else ""
                 json_mode = " [JSON]" if ci.get('forward_json') else ""
-                output.append(f"  {name:<15} (project: {project}){forward}{json_mode}")
+                output.append(f"  {display_name:<20} port:{port:<5} (project: {project}){forward}{json_mode}")
             output.append("")
         
         return "\n".join(output)
