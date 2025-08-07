@@ -56,12 +56,17 @@ def handle_ci_terminal_command(args):
         print(f"Error: PTY wrapper not found at {wrapper_path}")
         return
     
+    # Set TEKTON_CI_NAME environment variable if name was provided
+    env = os.environ.copy()
+    if name:
+        env['TEKTON_CI_NAME'] = name
+    
     # Pass all arguments directly to PTY wrapper
     cmd = [sys.executable, str(wrapper_path)] + ci_terminal_args
     
     try:
-        # Execute wrapper in a subprocess
-        os.execvp(cmd[0], cmd)
+        # Execute wrapper with the environment
+        os.execvpe(cmd[0], cmd, env)
     except Exception as e:
         print(f"Error launching ci-terminal: {e}")
         sys.exit(1)

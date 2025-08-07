@@ -444,10 +444,11 @@ class CIRegistry:
         # Handle aliases first
         name = self.ALIASES.get(name, name)
         
-        # Check direct match first (for terminals, tools, etc.)
-        direct_match = self._registry.get(name.lower())
-        if direct_match:
-            return direct_match
+        # Check direct match first (case-insensitive for terminals, tools, etc.)
+        # Search through registry keys with case-insensitive comparison
+        for key, value in self._registry.items():
+            if key.lower() == name.lower():
+                return value
         
         # Handle base names and -ai suffix for Greek Chorus
         base_name = name[:-3] if name.endswith('-ai') else name

@@ -4,6 +4,7 @@ Handles Greek Chorus, Terminals, and Project CIs through their endpoints.
 """
 
 import json
+import os
 import urllib.request
 import urllib.error
 import urllib.parse
@@ -174,11 +175,15 @@ def send_to_ci(ci_name: str, message: str) -> bool:
             import socket
             socket_path = ci.get('socket', f"/tmp/ci_msg_{ci_name}.sock")
             
+            # Detect if we're running as a CI ourselves using environment variable
+            ci_name_env = os.environ.get('TEKTON_CI_NAME')
+            sender_name = f"aish ({ci_name_env})" if ci_name_env else 'aish'
+            
             try:
                 sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
                 sock.connect(socket_path)
                 message_data = {
-                    'from': 'aish',
+                    'from': sender_name,
                     'content': message,
                     'type': 'message'
                 }

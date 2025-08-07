@@ -39,12 +39,24 @@ def handle_ci_tool_command(args):
         print(f"Error: Simple wrapper not found at {wrapper_path}")
         return
     
+    # Extract name from arguments to set environment variable
+    name = None
+    for i, arg in enumerate(ci_tool_args):
+        if arg == '--name' and i + 1 < len(ci_tool_args):
+            name = ci_tool_args[i + 1]
+            break
+    
+    # Set TEKTON_CI_NAME environment variable if name was provided
+    env = os.environ.copy()
+    if name:
+        env['TEKTON_CI_NAME'] = name
+    
     # Pass all arguments directly to simple wrapper
     cmd = [sys.executable, str(wrapper_path)] + ci_tool_args
     
     try:
-        # Execute wrapper in a subprocess
-        os.execvp(cmd[0], cmd)
+        # Execute wrapper with the environment
+        os.execvpe(cmd[0], cmd, env)
     except Exception as e:
         print(f"Error launching ci-tool: {e}")
         sys.exit(1)

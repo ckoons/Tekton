@@ -26,7 +26,42 @@ class PTYWrapper:
         
     def setup_socket(self):
         """Set up Unix socket for receiving messages"""
+        # If socket exists, check for orphaned process
         if os.path.exists(self.socket_path):
+            # Try to find process that owns this socket
+            try:
+                import subprocess
+                result = subprocess.run(['lsof', '-t', self.socket_path], 
+                                      capture_output=True, text=True)
+                if result.returncode == 0 and result.stdout.strip():
+                    old_pid = int(result.stdout.strip())
+                    # Verify it's a CI wrapper process (not some other process)
+                    try:
+                        with open(f'/proc/{old_pid}/cmdline', 'r') as f:
+                            cmdline = f.read()
+                    except:
+                        # Fall back to ps command for macOS
+                        ps_result = subprocess.run(['ps', '-p', str(old_pid), '-o', 'command='],
+                                                 capture_output=True, text=True)
+                        cmdline = ps_result.stdout
+                    
+                    # Check if it's a CI wrapper for the same name
+                    if ('ci_pty_wrapper' in cmdline or 'ci-tool' in cmdline) and self.name in cmdline:
+                        print(f"[PTY Wrapper] Found orphaned process {old_pid} for {self.name}, terminating...", file=sys.stderr)
+                        os.kill(old_pid, signal.SIGTERM)
+                        import time
+                        time.sleep(0.5)
+                        # Check if still exists and force kill if needed
+                        try:
+                            os.kill(old_pid, 0)  # Check if process exists
+                            os.kill(old_pid, signal.SIGKILL)
+                            print(f"[PTY Wrapper] Force killed orphaned process {old_pid}", file=sys.stderr)
+                        except ProcessLookupError:
+                            print(f"[PTY Wrapper] Orphaned process {old_pid} terminated cleanly", file=sys.stderr)
+            except Exception as e:
+                print(f"[PTY Wrapper] Could not check for orphaned process: {e}", file=sys.stderr)
+            
+            # Remove the socket file
             os.unlink(self.socket_path)
         
         self.sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
