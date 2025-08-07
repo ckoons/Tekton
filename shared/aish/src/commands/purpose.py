@@ -52,6 +52,8 @@ class PurposeCommand:
         if not self.tekton_root:
             raise RuntimeError("TEKTON_ROOT not set in environment")
         self.playbook_dir = Path(self.tekton_root) / ".tekton" / "playbook"
+        # Also check MetaData/Documentation/AIPurposes
+        self.ai_purposes_dir = Path(self.tekton_root) / "MetaData" / "Documentation" / "AIPurposes"
         # Use terma_url() instead of hardcoded URL
         self.terma_base_url = terma_url()
         
@@ -86,8 +88,10 @@ class PurposeCommand:
         for purpose in purposes:
             self._display_playbook_content(purpose)
             
-        # Show full playbook path
-        print(f"\nFull playbook: {self.playbook_dir}")
+        # Show both playbook paths
+        print(f"\nPlaybook locations:")
+        print(f"  {self.playbook_dir}")
+        print(f"  {self.ai_purposes_dir}")
         
         # If running in the target terminal, export TEKTON_PURPOSE
         current_terminal = TektonEnviron.get('TERMA_TERMINAL_NAME', '')
@@ -134,41 +138,65 @@ class PurposeCommand:
         """Display playbook content for a given purpose."""
         print(f"=== {purpose.upper()} ===")
         
-        # Search for matching files in playbook directory
+        # Search for matching files in both playbook and AIPurposes directories
         found = False
         purpose_lower = purpose.lower()
         
-        # Get all top-level directories under playbook
-        if not self.playbook_dir.exists():
-            print(f"Playbook directory not found: {self.playbook_dir}")
-            return
-            
-        # Process each top-level directory
-        for top_dir in self.playbook_dir.iterdir():
-            if not top_dir.is_dir():
-                continue
-                
-            # Look for matches at the "targets" level (files and directories in top_dir)
-            for item in top_dir.iterdir():
-                item_name = item.stem.lower()  # Remove extension for comparison
-                
-                # Check if this item matches our purpose (case-insensitive)
-                if item_name == purpose_lower:
-                    if item.is_file():
-                        # File match - print its contents
-                        print(f"\n(from {item.relative_to(self.playbook_dir)})")
-                        try:
-                            with open(item, 'r', encoding='utf-8') as f:
-                                print(f.read())
-                            found = True
-                        except Exception as e:
-                            print(f"Error reading file: {e}")
-                            
-                    elif item.is_dir():
-                        # Directory match - print all files recursively
-                        found_files = self._print_all_files_in_directory(item)
-                        if found_files:
-                            found = True
+        # First check .tekton/playbook directory
+        if self.playbook_dir.exists():
+            # Process each top-level directory
+            for top_dir in self.playbook_dir.iterdir():
+                if not top_dir.is_dir():
+                    continue
+                    
+                # Look for matches at the "targets" level (files and directories in top_dir)
+                for item in top_dir.iterdir():
+                    item_name = item.stem.lower()  # Remove extension for comparison
+                    
+                    # Check if this item matches our purpose (case-insensitive)
+                    if item_name == purpose_lower:
+                        if item.is_file():
+                            # File match - print its contents
+                            print(f"\n(from {item.relative_to(self.tekton_root)})")
+                            try:
+                                with open(item, 'r', encoding='utf-8') as f:
+                                    print(f.read())
+                                found = True
+                            except Exception as e:
+                                print(f"Error reading file: {e}")
+                                
+                        elif item.is_dir():
+                            # Directory match - print all files recursively
+                            found_files = self._print_all_files_in_directory(item)
+                            if found_files:
+                                found = True
+        
+        # Then check MetaData/Documentation/AIPurposes directory
+        if self.ai_purposes_dir.exists():
+            # Look in all subdirectories of AIPurposes
+            for subdir in self.ai_purposes_dir.iterdir():
+                if subdir.is_dir():
+                    # Look for matching files in this subdirectory
+                    for item in subdir.iterdir():
+                        item_name = item.stem.lower()  # Remove extension for comparison
+                        
+                        # Check if this item matches our purpose (case-insensitive)
+                        if item_name == purpose_lower:
+                            if item.is_file():
+                                # File match - print its contents
+                                print(f"\n(from {item.relative_to(self.tekton_root)})")
+                                try:
+                                    with open(item, 'r', encoding='utf-8') as f:
+                                        print(f.read())
+                                    found = True
+                                except Exception as e:
+                                    print(f"Error reading file: {e}")
+                                    
+                            elif item.is_dir():
+                                # Directory match - print all files recursively
+                                found_files = self._print_all_files_in_directory(item)
+                                if found_files:
+                                    found = True
         
         if not found:
             print(f"No playbook content found for '{purpose}'")
@@ -192,7 +220,17 @@ class PurposeCommand:
                     continue
                     
                 # Print file contents
-                print(f"\n(from {file_path.relative_to(self.playbook_dir)})")
+                # Try to make path relative to tekton_root for better display
+                try:
+                    rel_path = file_path.relative_to(self.tekton_root)
+                except ValueError:
+                    # If not under tekton_root, try playbook_dir
+                    try:
+                        rel_path = file_path.relative_to(self.playbook_dir)
+                    except ValueError:
+                        rel_path = file_path
+                
+                print(f"\n(from {rel_path})")
                 try:
                     with open(file_path, 'r', encoding='utf-8') as f:
                         print(f.read())
