@@ -15,20 +15,26 @@ class MinimalLoader {
   constructor() {
     // Standard component paths
     this.componentPaths = {
-      'athena': '/components/athena/athena-component.html',
-      'ergon': '/components/ergon/ergon-component.html',
-      'rhetor': '/components/rhetor/rhetor-component.html',
       'apollo': '/components/apollo/apollo-component.html',
-      'metis': '/components/metis/metis-component.html',
+      'athena': '/components/athena/athena-component.html',
       'budget': '/components/budget/budget-component.html',
-      'profile': '/components/profile/profile-component.html',
-      'settings': '/components/settings/settings-component.html',
-      'numa': '/components/numa/numa-component.html',
+      'engram': '/components/engram/engram-component.html',
+      'ergon': '/components/ergon/ergon-component.html',
+      'harmonia': '/components/harmonia/harmonia-component.html',
+      'hermes': '/components/hermes/hermes-component.html',
+      'metis': '/components/metis/metis-component.html',
       'noesis': '/components/noesis/noesis-component.html',
-      'terma': '/components/terma/terma-component.html',
-      'tekton-dashboard': '/components/tekton-dashboard/tekton-dashboard.html',
+      'numa': '/components/numa/numa-component.html',
+      'profile': '/components/profile/profile-component.html',
       'prometheus': '/components/prometheus/prometheus-component.html',
-      'synthesis': '/components/synthesis/synthesis-component.html'
+      'rhetor': '/components/rhetor/rhetor-component.html',
+      'settings': '/components/settings/settings-component.html',
+      'sophia': '/components/sophia/sophia-component.html',
+      'synthesis': '/components/synthesis/synthesis-component.html',
+      'tekton': '/components/tekton/tekton-component.html',
+      'tekton-dashboard': '/components/tekton-dashboard/tekton-dashboard.html',
+      'telos': '/components/telos/telos-component.html',
+      'terma': '/components/terma/terma-component.html'
     };
     
     // Keep track of the current component to prevent reloading
