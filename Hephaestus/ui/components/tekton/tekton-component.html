@@ -3222,16 +3222,16 @@ async function gitAction(projectId, action, remote, event) {
         let method = 'POST';
         let url = '';
         
-        // Build endpoint based on action
+        // Build endpoint based on action - note: no /v1/ in the API path
         switch (action) {
             case 'status':
-                endpoint = `/api/v1/projects/${projectId}/git/status`;
+                endpoint = `/api/projects/${projectId}/git/status`;
                 break;
             case 'pull':
-                endpoint = `/api/v1/projects/${projectId}/git/pull?remote=${remote}`;
+                endpoint = `/api/projects/${projectId}/git/pull?remote=${remote}`;
                 break;
             case 'push':
-                endpoint = `/api/v1/projects/${projectId}/git/push`;
+                endpoint = `/api/projects/${projectId}/git/push`;
                 break;
             case 'pr':
                 // Pull request is not yet implemented
@@ -3242,7 +3242,7 @@ async function gitAction(projectId, action, remote, event) {
                 return;
         }
         
-        url = tektonUrl(endpoint);
+        url = tektonUrl('tekton-core', endpoint);
         
         // Show subtle loading indicator on the button if event exists
         if (event && event.target) {
@@ -3252,8 +3252,30 @@ async function gitAction(projectId, action, remote, event) {
             button.disabled = true;
         }
         
-        const response = await fetch(url, { method });
-        const result = await response.json();
+        const response = await fetch(url, { 
+            method,
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: method === 'POST' ? JSON.stringify({}) : undefined
+        });
+        
+        // Log the raw response for debugging
+        console.log(`[TEKTON] Git ${action} response status:`, response.status);
+        
+        let result;
+        try {
+            result = await response.json();
+            console.log(`[TEKTON] Git ${action} response data:`, result);
+        } catch (jsonError) {
+            console.error(`[TEKTON] Failed to parse response as JSON:`, jsonError);
+            const text = await response.text();
+            console.error(`[TEKTON] Response text:`, text);
+            result = {
+                error: `Server error: ${text || 'Invalid response format'}`,
+                project_name: projectId
+            };
+        }
         
         // Restore button if it exists
         if (button) {
@@ -3261,7 +3283,7 @@ async function gitAction(projectId, action, remote, event) {
             button.disabled = false;
         }
         
-        if (response.ok && result.return_code === 0) {
+        if (response.ok && result && result.return_code === 0) {
             // Success - show output in modal for all git commands
             console.log(`[TEKTON] Git ${action} succeeded for ${result.project_name}`);
             
@@ -3273,7 +3295,8 @@ async function gitAction(projectId, action, remote, event) {
                 setTimeout(() => refreshProjectStatus(projectId), 1000);
             }
         } else {
-            // Error - show modal
+            // Error - show modal with better error details
+            console.error(`[TEKTON] Git ${action} failed:`, result);
             showGitErrorModal(action, remote, result);
         }
         
@@ -3305,21 +3328,32 @@ function showGitOutputModal(action, remote, result) {
     
     // Generate appropriate description based on action
     let description = '';
+    let output = '';
+    
     switch(action) {
         case 'status':
             description = 'Current repository status:';
+            // Use 'status' field for git status, show clean message if empty
+            output = result.status || result.output;
+            if (!output || output.trim() === '') {
+                output = '✓ Working directory clean - no changes to commit';
+            }
             break;
         case 'pull':
             description = `Successfully pulled from ${remote}:`;
+            output = result.output || result.status || 'Pull completed successfully';
             break;
         case 'push':
             description = `Successfully pushed to ${remote}:`;
+            output = result.output || result.status || 'Push completed successfully';
             break;
         case 'pr':
             description = 'Pull request operation result:';
+            output = result.output || result.status || 'Operation completed';
             break;
         default:
             description = `Git ${action} result:`;
+            output = result.output || result.status || 'Operation completed';
     }
     
     modalOverlay.innerHTML = `
@@ -3330,7 +3364,7 @@ function showGitOutputModal(action, remote, result) {
             </div>
             <div class="tekton__output-modal-body">
                 <div class="tekton__output-description">${description}</div>
-                <pre class="tekton__output-content">${result.output || 'Operation completed successfully'}</pre>
+                <pre class="tekton__output-content">${output}</pre>
             </div>
             <div class="tekton__output-modal-footer">
                 <button class="tekton__button tekton__button--primary" onclick="closeGitOutputModal()">Close</button>
@@ -3355,6 +3389,26 @@ function showGitErrorModal(action, remote, result) {
         existingModal.remove();
     }
     
+    // Extract error details from various possible fields
+    let errorDetails = '';
+    if (result) {
+        // Try different fields where error might be stored
+        errorDetails = result.output || 
+                      result.error || 
+                      result.message || 
+                      result.stderr || 
+                      result.stdout ||
+                      result.detail ||
+                      result.error_message ||
+                      (result.data && result.data.error) ||
+                      JSON.stringify(result, null, 2);
+    } else {
+        errorDetails = 'No response received from server';
+    }
+    
+    // Get project name from result or use projectId
+    const projectName = result?.project_name || result?.project || 'Unknown';
+    
     // Create error modal dynamically and append to body
     const modalOverlay = document.createElement('div');
     modalOverlay.className = 'tekton__error-modal-overlay';
@@ -3364,17 +3418,15 @@ function showGitErrorModal(action, remote, result) {
     modalOverlay.innerHTML = `
         <div class="tekton__error-modal">
             <div class="tekton__error-modal-header">
-                <h3 class="tekton__error-modal-title">Git ${action} Failed</h3>
+                <h3 class="tekton__error-modal-title">Git ${action.charAt(0).toUpperCase() + action.slice(1)} Failed</h3>
             </div>
             
             <div class="tekton__error-modal-body">
                 <div class="tekton__error-description">
-                    Failed to ${action} from ${remote} for "${result.project_name || 'project'}"
+                    Failed to ${action} from ${remote} for "${projectName}"
                 </div>
                 
-                <div class="tekton__error-output">
-                    ${result.output || result.error || 'No error details available'}
-                </div>
+                <pre class="tekton__error-output">${errorDetails}</pre>
             </div>
             
             <div class="tekton__error-modal-footer">
