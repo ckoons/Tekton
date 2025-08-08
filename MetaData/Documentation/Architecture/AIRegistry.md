@@ -85,12 +85,19 @@ Each AI specialist has a unique personality defined in `COMPONENT_EXPERTISE`:
 
 ### Model Configuration
 
-Default model: `llama3.3:70b`
+Default model: `gpt-oss:20b` (with automatic thinking level detection)
+
+The system now features **dynamic model selection** based on keywords in your queries:
+- **Quick tasks**: gpt-oss:20b (default)
+- **Problem solving**: gpt-oss:120b with focused parameters
+- **Deep thinking**: gpt-oss:120b with maximum reasoning
+
+See [AI Thinking Levels Documentation](./AI_Thinking_Levels.md) for details.
 
 Models can be configured per component:
 ```bash
-export ATHENA_AI_MODEL=llama3.1:70b
-export RHETOR_AI_MODEL=qwen2.5-coder:32b
+export ATHENA_AI_MODEL=gpt-oss:120b
+export RHETOR_AI_MODEL=gpt-oss:20b
 ```
 
 ## Usage Examples

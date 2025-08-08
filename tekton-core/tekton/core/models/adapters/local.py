@@ -34,6 +34,14 @@ class LocalModelAdapter(ModelAdapter):
         
         # Set capabilities based on model
         model_capabilities = {
+            "gpt-oss": {
+                "max_tokens": 4096,
+                "context_window": 32768,
+                "supports_streaming": True,
+                "supports_vision": False,
+                "supports_embeddings": True,
+                "supports_json_mode": True
+            },
             "llama3": {
                 "max_tokens": 4096,
                 "context_window": 8192,

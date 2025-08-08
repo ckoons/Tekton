@@ -603,7 +603,7 @@ class ProjectManager:
                 local_directory=tekton_root,
                 forked_repository=remotes.origin,
                 upstream_repository=remotes.upstream,
-                companion_intelligence="llama3.3:70b",
+                companion_intelligence="gpt-oss:20b",
                 is_tekton_self=True,
                 metadata={
                     "auto_created": True,
@@ -637,7 +637,7 @@ class ProjectManager:
         local_directory: str,
         forked_repository: Optional[str] = None,
         upstream_repository: Optional[str] = None,
-        companion_intelligence: str = "llama3.3:70b",
+        companion_intelligence: str = "gpt-oss:20b",
         description: str = ""
     ) -> Project:
         """Create project from GitHub URL using GitHub CLI workflow"""
@@ -764,7 +764,7 @@ class ProjectManager:
         
         return project
     
-    async def import_existing_project(self, local_directory: str, companion_intelligence: str = "llama3.3:70b") -> Project:
+    async def import_existing_project(self, local_directory: str, companion_intelligence: str = "gpt-oss:20b") -> Project:
         """Import an existing git project"""
         
         # Ensure Tekton self-check has run
@@ -936,7 +936,7 @@ class ProjectManager:
             registry._register_project_ci({
                 'id': project.id,
                 'name': project.name,
-                'companion_intelligence': project.companion_intelligence or 'llama3.3:70b',
+                'companion_intelligence': project.companion_intelligence or 'gpt-oss:20b',
                 'local_directory': project.local_directory
             })
             

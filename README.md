@@ -21,6 +21,7 @@ Tekton serves as the "builder" - the central coordinator between various AI mode
 - **Resource Optimization**: Uses the right AI for each task based on complexity and requirements
 - **Zero-Downtime Restarts**: Advanced socket reuse enables immediate component restarts without port conflicts
 - **AI Specialists**: Each component has an intelligent AI assistant with specialized expertise
+- **Dynamic Thinking Levels**: Automatically selects AI model depth based on task complexity (gpt-oss:20b for quick tasks, gpt-oss:120b for deep reasoning)
 
 ## Architecture
 
@@ -93,12 +94,23 @@ Tekton is built on several foundational principles:
 - Hardware-specific optimizations (GPU acceleration, Apple Silicon support)
 - Graceful degradation when preferred resources are unavailable
 
+## AI Thinking Levels
+
+Tekton features intelligent model selection that automatically chooses the right AI depth based on your request:
+
+- **"Show me..."** → Quick response with gpt-oss:20b (13GB, fast)
+- **"Analyze this..."** → Analytical thinking with gpt-oss:120b (65GB, smart)
+- **"Deeply think about..."** → Deep reasoning with maximum parameters
+
+Simply phrase your requests naturally and Tekton adapts. See [AI Thinking Levels Documentation](MetaData/Documentation/Architecture/AI_Thinking_Levels.md) for details.
+
 ## Requirements
 
 - Python 3.10+
 - Linux or macOS
 - UV package manager (installed automatically if not present)
 - `TEKTON_ROOT` environment variable (set to Tekton repository root)
+- Ollama with gpt-oss models (20b and 120b) for optimal performance
 
 ## Installation
 

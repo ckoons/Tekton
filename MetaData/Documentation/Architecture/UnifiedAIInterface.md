@@ -224,7 +224,8 @@ class MessageType(Enum):
     "type": "message",
     "content": "AI response",
     "ai_id": "apollo-ai",
-    "model": "llama3.3:70b",
+    "model": "gpt-oss:20b",
+    "thinking_level": "Quick Response",
     "elapsed_time": 2.5,
     "total_tokens": 150
 }

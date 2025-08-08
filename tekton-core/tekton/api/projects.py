@@ -75,14 +75,14 @@ class CreateProjectRequest(BaseModel):
     local_directory: str = Field(..., description="Local working directory path")
     forked_repository: Optional[str] = Field(None, description="Fork repository URL")
     upstream_repository: Optional[str] = Field(None, description="Upstream repository URL")
-    companion_intelligence: str = Field("llama3.3:70b", description="AI model selection")
+    companion_intelligence: str = Field("gpt-oss:20b", description="AI model selection")
     description: Optional[str] = Field("", description="Project description")
 
 
 class ImportProjectRequest(BaseModel):
     """Request model for importing existing project"""
     local_directory: str = Field(..., description="Local git repository path")
-    companion_intelligence: str = Field("llama3.3:70b", description="AI model selection")
+    companion_intelligence: str = Field("gpt-oss:20b", description="AI model selection")
 
 
 class ProjectResponse(BaseModel):

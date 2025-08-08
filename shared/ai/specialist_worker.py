@@ -168,7 +168,55 @@ class AISpecialistWorker(ABC):
         
     def get_default_model(self) -> str:
         """Get default model for this AI specialist."""
-        return 'llama3.3:70b'
+        return 'gpt-oss:20b'
+    
+    def detect_thinking_level(self, text: str) -> tuple[str, float, int]:
+        """
+        Detect required thinking level based on keywords in the text.
+        
+        Returns:
+            Tuple of (model_name, temperature, max_tokens)
+        """
+        import re
+        
+        text_lower = text.lower()
+        
+        # Level 4: Extended Context & Deep Reasoning
+        if any(phrase in text_lower for phrase in [
+            "deeply think", "carefully consider", "contemplate", "reason through",
+            "comprehensive analysis", "thorough examination", "full review", 
+            "explore all", "extensive analysis"
+        ]):
+            return 'gpt-oss:120b', 0.9, 4096
+        
+        # Level 3: Analytical Thinking
+        if any(phrase in text_lower for phrase in [
+            "think about", "consider this", "analyze", "explain why", 
+            "understand", "debug", "investigate", "examine", "evaluate"
+        ]):
+            return 'gpt-oss:120b', 0.7, 3072
+        
+        # Level 2: Code Generation & Problem Solving
+        if any(phrase in text_lower for phrase in [
+            "write code", "implement", "create function", "generate", 
+            "solve", "fix", "optimize", "refactor"
+        ]):
+            return 'gpt-oss:120b', 0.6, 2048
+        
+        # Level 1: Quick/Simple Tasks (Default)
+        # Keywords: quick, simple, list, show, status, check, what, where, when
+        return 'gpt-oss:20b', 0.5, 1536
+    
+    def _get_thinking_level_name(self, model: str, temperature: float) -> str:
+        """Get human-readable thinking level name."""
+        if model == 'gpt-oss:120b':
+            if temperature >= 0.9:
+                return "Deep Reasoning"
+            elif temperature >= 0.7:
+                return "Analytical"
+            else:
+                return "Problem Solving"
+        return "Quick Response"
     
     @state_checkpoint(
         title="Model Adapter Initialization",
@@ -314,20 +362,45 @@ class AISpecialistWorker(ABC):
             user_content = message.get('content', message.get('message', ''))
             messages.append({"role": "user", "content": user_content})
             
+            # Detect thinking level and select appropriate model
+            detected_model, detected_temp, detected_tokens = self.detect_thinking_level(user_content)
+            
+            # Check if we need to switch models temporarily
+            original_model = None
+            if detected_model != self.model_name:
+                original_model = self.model_name
+                self.logger.info(f"Switching from {self.model_name} to {detected_model} based on keywords")
+                
+                # Temporarily update model configuration
+                self.model_name = detected_model
+                if hasattr(self.model_adapter, 'model'):
+                    self.model_adapter.model = detected_model
+            
+            # Use detected parameters unless explicitly overridden
+            temperature = message.get('temperature', detected_temp)
+            max_tokens = message.get('max_tokens', detected_tokens)
+            
             # Generate response
             response = await self.model_adapter.generate(
                 messages,
                 options={
-                    'temperature': message.get('temperature', 0.7),
-                    'max_tokens': message.get('max_tokens', 2048)
+                    'temperature': temperature,
+                    'max_tokens': max_tokens
                 }
             )
+            
+            # Restore original model if we switched
+            if original_model:
+                self.model_name = original_model
+                if hasattr(self.model_adapter, 'model'):
+                    self.model_adapter.model = original_model
             
             return {
                 'type': 'response',
                 'ai_id': self.ai_id,
                 'content': response['content'],
-                'model': response.get('model', self.model_name),
+                'model': response.get('model', detected_model),
+                'thinking_level': self._get_thinking_level_name(detected_model, detected_temp),
                 'usage': response.get('usage', {}),
                 'latency': response.get('latency', 0)
             }
