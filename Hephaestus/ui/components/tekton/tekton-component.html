@@ -2483,16 +2483,16 @@ function createProjectCard(project) {
     if (hasFork && !hasUpstream) {
         // Fork only - Status, Pull, Push
         gitButtons = `
-            <button class="tekton__button tekton__button--status tekton__button--small" onclick="gitAction('${project.id}', 'status', 'fork')">Status</button>
-            <button class="tekton__button tekton__button--pull tekton__button--small" onclick="gitAction('${project.id}', 'pull', 'fork')">Pull</button>
-            <button class="tekton__button tekton__button--push tekton__button--small" onclick="gitAction('${project.id}', 'push', 'fork')">Push</button>
+            <button class="tekton__button tekton__button--status tekton__button--small" onclick="gitAction('${project.id}', 'status', 'fork', event)">Status</button>
+            <button class="tekton__button tekton__button--pull tekton__button--small" onclick="gitAction('${project.id}', 'pull', 'fork', event)">Pull</button>
+            <button class="tekton__button tekton__button--push tekton__button--small" onclick="gitAction('${project.id}', 'push', 'fork', event)">Push</button>
         `;
     } else if (hasUpstream) {
         // Has upstream - Status, Pull, Pull Request
         gitButtons = `
-            <button class="tekton__button tekton__button--status tekton__button--small" onclick="gitAction('${project.id}', 'status', 'upstream')">Status</button>
-            <button class="tekton__button tekton__button--pull tekton__button--small" onclick="gitAction('${project.id}', 'pull', 'upstream')">Pull</button>
-            <button class="tekton__button tekton__button--pr tekton__button--small" onclick="gitAction('${project.id}', 'pull-request', 'upstream')">Pull Request</button>
+            <button class="tekton__button tekton__button--status tekton__button--small" onclick="gitAction('${project.id}', 'status', 'upstream', event)">Status</button>
+            <button class="tekton__button tekton__button--pull tekton__button--small" onclick="gitAction('${project.id}', 'pull', 'upstream', event)">Pull</button>
+            <button class="tekton__button tekton__button--pr tekton__button--small" onclick="gitAction('${project.id}', 'pull-request', 'upstream', event)">Pull Request</button>
         `;
     }
     
@@ -2515,9 +2515,9 @@ function createProjectCard(project) {
                     <span class="tekton__remote-label">Fork:</span>
                     <span class="tekton__remote-value">${project.forked_repository.split('/').slice(-2).join('/')}</span>
                     <div class="tekton__remote-actions">
-                        <button class="tekton__button tekton__button--status tekton__button--small" onclick="gitAction('${project.id}', 'status', 'fork')">Status</button>
-                        <button class="tekton__button tekton__button--pull tekton__button--small" onclick="gitAction('${project.id}', 'pull', 'fork')">Pull</button>
-                        <button class="tekton__button tekton__button--push tekton__button--small" onclick="gitAction('${project.id}', 'push', 'fork')">Push</button>
+                        <button class="tekton__button tekton__button--status tekton__button--small" onclick="gitAction('${project.id}', 'status', 'fork', event)">Status</button>
+                        <button class="tekton__button tekton__button--pull tekton__button--small" onclick="gitAction('${project.id}', 'pull', 'fork', event)">Pull</button>
+                        <button class="tekton__button tekton__button--push tekton__button--small" onclick="gitAction('${project.id}', 'push', 'fork', event)">Push</button>
                     </div>
                 </div>
             ` : '<div class="tekton__remote-row"><span class="tekton__remote-missing">No fork repository configured</span></div>'}
@@ -2527,9 +2527,9 @@ function createProjectCard(project) {
                     <span class="tekton__remote-label">Upstream:</span>
                     <span class="tekton__remote-value">${project.upstream_repository.split('/').slice(-2).join('/')}</span>
                     <div class="tekton__remote-actions">
-                        <button class="tekton__button tekton__button--status tekton__button--small" onclick="gitAction('${project.id}', 'status', 'upstream')">Status</button>
-                        <button class="tekton__button tekton__button--pull tekton__button--small" onclick="gitAction('${project.id}', 'pull', 'upstream')">Pull</button>
-                        <button class="tekton__button tekton__button--pr tekton__button--small" onclick="gitAction('${project.id}', 'pull-request', 'upstream')">Pull Request</button>
+                        <button class="tekton__button tekton__button--status tekton__button--small" onclick="gitAction('${project.id}', 'status', 'upstream', event)">Status</button>
+                        <button class="tekton__button tekton__button--pull tekton__button--small" onclick="gitAction('${project.id}', 'pull', 'upstream', event)">Pull</button>
+                        <button class="tekton__button tekton__button--pr tekton__button--small" onclick="gitAction('${project.id}', 'pull-request', 'upstream', event)">Pull Request</button>
                     </div>
                 </div>
             ` : '<div class="tekton__remote-row"><span class="tekton__remote-missing">No upstream repository configured</span></div>'}
@@ -3213,6 +3213,10 @@ async function gitAction(projectId, action, remote, event) {
     // Store for retry
     lastGitAction = { projectId, action, remote };
     
+    // Button tracking variables - declare outside try block for error handling
+    let button = null;
+    let originalText = '';
+    
     try {
         let endpoint = '';
         let method = 'POST';
@@ -3240,18 +3244,22 @@ async function gitAction(projectId, action, remote, event) {
         
         url = tektonUrl(endpoint);
         
-        // Show subtle loading indicator on the button
-        const button = event.target;
-        const originalText = button.textContent;
-        button.textContent = '...';
-        button.disabled = true;
+        // Show subtle loading indicator on the button if event exists
+        if (event && event.target) {
+            button = event.target;
+            originalText = button.textContent;
+            button.textContent = '...';
+            button.disabled = true;
+        }
         
         const response = await fetch(url, { method });
         const result = await response.json();
         
-        // Restore button
-        button.textContent = originalText;
-        button.disabled = false;
+        // Restore button if it exists
+        if (button) {
+            button.textContent = originalText;
+            button.disabled = false;
+        }
         
         if (response.ok && result.return_code === 0) {
             // Success - show output in modal for all git commands
@@ -3273,9 +3281,8 @@ async function gitAction(projectId, action, remote, event) {
         console.error(`[TEKTON] Git action failed:`, error);
         
         // Restore button if it exists
-        if (event && event.target) {
-            const button = event.target;
-            button.textContent = button.textContent.replace('...', '');
+        if (button) {
+            button.textContent = originalText || button.textContent.replace('...', '');
             button.disabled = false;
         }
         
