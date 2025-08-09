@@ -210,6 +210,12 @@ def _dispatch_command(command_type, args, shell):
     elif command_type == 'ci-terminal':
         from shared.ci_tools.commands import handle_ci_terminal_command
         return handle_ci_terminal_command(args.message or [])
+    elif command_type == 'sundown':
+        from commands.sundown import handle_sundown_command
+        return handle_sundown_command(['sundown'] + (args.message or []))
+    elif command_type == 'sunrise':
+        from commands.sundown import handle_sunrise_command
+        return handle_sunrise_command(['sunrise'] + (args.message or []))
     return False
 
 
@@ -538,6 +544,11 @@ Environment variables:
             print("  aish alias show tag            Show alias details")
             print("  aish tag [args]                Execute alias with optional args")
             print()
+            print("SUNDOWN/SUNRISE (Apollo/Rhetor Context Management):")
+            print("  aish sundown <ci-name> [reason]  Gracefully preserve CI context")
+            print("  aish sunrise <ci-name>            Restore CI with continuity")
+            print("  aish sundown status               Show CIs currently in sundown")
+            print()
             print("INBOX SYSTEM:")
             print("  aish inbox                     Show message counts (prompt:1 new:3 keep:0)")
             print("  aish inbox send <type> <ci> \"msg\"  Send message to CI's inbox")
@@ -614,6 +625,12 @@ Environment variables:
     
     if args.ai_or_script == 'ci-terminal':
         return _dispatch_command('ci-terminal', args, shell)
+    
+    if args.ai_or_script == 'sundown':
+        return _dispatch_command('sundown', args, shell)
+    
+    if args.ai_or_script == 'sunrise':
+        return _dispatch_command('sunrise', args, shell)
     
     # Claude Code IDE commands
     if args.ai_or_script == 'introspect':
