@@ -10,6 +10,48 @@ import asyncio
 from datetime import datetime
 from typing import Dict, List, Any, Optional, Union
 
+# Import landmarks with fallback
+try:
+    from landmarks import (
+        architecture_decision,
+        api_contract,
+        integration_point,
+        performance_boundary,
+        state_checkpoint,
+        danger_zone
+    )
+except ImportError:
+    # Define no-op decorators when landmarks not available
+    def architecture_decision(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+    
+    def api_contract(**kwargs):
+        def decorator(func):
+            return func
+        return decorator
+    
+    def integration_point(**kwargs):
+        def decorator(func):
+            return func
+        return decorator
+    
+    def performance_boundary(**kwargs):
+        def decorator(func):
+            return func
+        return decorator
+    
+    def state_checkpoint(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+    
+    def danger_zone(**kwargs):
+        def decorator(func):
+            return func
+        return decorator
+
 # Import the actual MemoryService
 from engram.core.memory.base import MemoryService
 
@@ -42,9 +84,31 @@ logging.basicConfig(
 )
 logger = logging.getLogger("engram.mcp_tools")
 
+# Architecture decision for MCP-only memory interface
+@architecture_decision(
+    title="MCP-Only Memory Service Interface",
+    description="All memory operations exposed exclusively through MCP tools",
+    rationale="Casey: 'MCP needs to be the primary or only endpoints exposed by Tekton'",
+    alternatives_considered=["REST API", "Dual MCP/HTTP", "GraphQL"],
+    impacts=["ci_communication", "memory_sharing", "personality_emergence"],
+    decided_by="Casey",
+    decision_date="2025-01-09"
+)
+class _MCPMemoryArchitecture:
+    """MCP is the way. HTTP was yesterday. The future is tools, not endpoints."""
+    pass
+
 # Initialize a global memory service instance for MCP tools
 _memory_service = None
 
+@state_checkpoint(
+    title="Global Memory Service Instance",
+    description="Singleton memory service shared across all MCP tool invocations",
+    state_type="singleton",
+    persistence=True,
+    consistency_requirements="Thread-safe access, LanceDB persistence",
+    recovery_strategy="Recreate on first access after restart"
+)
 def get_memory_service():
     """Get or create the global memory service instance."""
     global _memory_service
@@ -59,6 +123,20 @@ def get_memory_service():
     name="memory_operations",
     description="Capability for core memory operations",
     modality="memory"
+)
+@api_contract(
+    title="Memory Store API",
+    description="Store experiential memories with emotional and contextual metadata",
+    endpoint="MCP:MemoryStore",
+    method="TOOL",
+    request_schema={
+        "content": "string",
+        "namespace": "string",
+        "emotion": "optional[string]",
+        "confidence": "optional[float]"
+    },
+    response_schema={"success": "bool", "memory_id": "optional[string]"},
+    performance_requirements="<100ms for vector embedding and storage"
 )
 @mcp_tool(
     name="MemoryStore",
@@ -312,6 +390,14 @@ async def memory_search(
     name="shared_memory",
     description="Capability for cross-CI memory sharing",
     modality="memory"
+)
+@integration_point(
+    title="Cross-CI Shared Memory",
+    description="Enables collective consciousness through shared memory spaces",
+    target_component="All CIs",
+    protocol="MCP",
+    data_flow="CI → SharedMemoryStore → collective namespace → all CIs can access",
+    integration_date="2025-01-09"
 )
 @mcp_tool(
     name="SharedMemoryStore",
@@ -584,6 +670,14 @@ async def memory_broadcast(
     name="shared_memory",
     description="Capability for cross-CI memory sharing",
     modality="memory"
+)
+@integration_point(
+    title="Apollo/Rhetor WhisperChannel",
+    description="Private communication channel for ambient intelligence coordination",
+    target_component="Apollo and Rhetor",
+    protocol="MCP via private namespace",
+    data_flow="Apollo ↔ WhisperChannel ↔ Rhetor (bidirectional, private)",
+    integration_date="2025-01-09"
 )
 @mcp_tool(
     name="WhisperSend",

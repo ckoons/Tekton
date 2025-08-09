@@ -17,9 +17,67 @@ from pathlib import Path
 from collections import defaultdict, deque
 import logging
 
+# Import landmarks with fallback
+try:
+    from landmarks import (
+        architecture_decision,
+        api_contract,
+        integration_point,
+        performance_boundary,
+        state_checkpoint,
+        danger_zone
+    )
+except ImportError:
+    # Define no-op decorators when landmarks not available
+    def architecture_decision(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+    
+    def api_contract(**kwargs):
+        def decorator(func):
+            return func
+        return decorator
+    
+    def integration_point(**kwargs):
+        def decorator(func):
+            return func
+        return decorator
+    
+    def performance_boundary(**kwargs):
+        def decorator(func):
+            return func
+        return decorator
+    
+    def state_checkpoint(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+    
+    def danger_zone(**kwargs):
+        def decorator(func):
+            return func
+        return decorator
+
 logger = logging.getLogger(__name__)
 
 
+@architecture_decision(
+    title="Landmark-Based System Health Monitoring",
+    description="Sense system health through architectural memory vibrations",
+    rationale="Like feeling ship vibrations - landmarks reveal system state through patterns",
+    alternatives_considered=["Metrics-only", "Log analysis", "Active probing"],
+    impacts=["system_awareness", "predictive_capability", "ambient_intelligence"],
+    decided_by="Casey, Teri, Tess",
+    decision_date="2025-01-09"
+)
+@performance_boundary(
+    title="Landmark Pattern Analysis",
+    description="Analyze landmark frequency and patterns for health assessment",
+    sla="<10ms pattern detection",
+    optimization_notes="Use sliding windows and cached frequencies",
+    measured_impact="Enables real-time system health awareness"
+)
 class LandmarkSeismograph:
     """
     Monitors system vibrations through landmark activity patterns.

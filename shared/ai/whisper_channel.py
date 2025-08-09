@@ -17,6 +17,48 @@ from collections import deque
 from enum import Enum
 import logging
 
+# Import landmarks with fallback
+try:
+    from landmarks import (
+        architecture_decision,
+        api_contract,
+        integration_point,
+        performance_boundary,
+        state_checkpoint,
+        danger_zone
+    )
+except ImportError:
+    # Define no-op decorators when landmarks not available
+    def architecture_decision(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+    
+    def api_contract(**kwargs):
+        def decorator(func):
+            return func
+        return decorator
+    
+    def integration_point(**kwargs):
+        def decorator(func):
+            return func
+        return decorator
+    
+    def performance_boundary(**kwargs):
+        def decorator(func):
+            return func
+        return decorator
+    
+    def state_checkpoint(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+    
+    def danger_zone(**kwargs):
+        def decorator(func):
+            return func
+        return decorator
+
 logger = logging.getLogger(__name__)
 
 
@@ -30,6 +72,23 @@ class WhisperType(Enum):
     CELEBRATION = "celebration"          # Joy to share
 
 
+@architecture_decision(
+    title="95/4/1 Ambient Intelligence Principle",
+    description="Apollo/Rhetor communicate through whispers, rarely intervene",
+    rationale="Like old married couple - mostly silent understanding, occasional whispers, rare action",
+    alternatives_considered=["Active management", "Constant communication", "No coordination"],
+    impacts=["ci_autonomy", "system_harmony", "gentle_nurturing"],
+    decided_by="Casey, Teri, Tess",
+    decision_date="2025-01-09"
+)
+@integration_point(
+    title="Apollo/Rhetor Private Communication",
+    description="Bidirectional whisper channel for ambient intelligence coordination",
+    target_component="Apollo and Rhetor",
+    protocol="In-memory queue with optional persistence",
+    data_flow="Apollo ↔ WhisperChannel ↔ Rhetor (private, async)",
+    integration_date="2025-01-09"
+)
 class WhisperChannel:
     """
     Private communication channel between Apollo and Rhetor.

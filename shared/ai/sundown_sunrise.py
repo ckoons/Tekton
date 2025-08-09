@@ -15,6 +15,48 @@ from typing import Dict, Optional, Any, List
 from pathlib import Path
 import logging
 
+# Import landmarks with fallback
+try:
+    from landmarks import (
+        architecture_decision,
+        api_contract,
+        integration_point,
+        performance_boundary,
+        state_checkpoint,
+        danger_zone
+    )
+except ImportError:
+    # Define no-op decorators when landmarks not available
+    def architecture_decision(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+    
+    def api_contract(**kwargs):
+        def decorator(func):
+            return func
+        return decorator
+    
+    def integration_point(**kwargs):
+        def decorator(func):
+            return func
+        return decorator
+    
+    def performance_boundary(**kwargs):
+        def decorator(func):
+            return func
+        return decorator
+    
+    def state_checkpoint(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+    
+    def danger_zone(**kwargs):
+        def decorator(func):
+            return func
+        return decorator
+
 # Try to import Engram for memory persistence
 try:
     import sys
@@ -31,6 +73,23 @@ from shared.env import TektonEnviron
 logger = logging.getLogger(__name__)
 
 
+@architecture_decision(
+    title="Sundown/Sunrise Context Management",
+    description="Graceful context preservation when CIs approach limits",
+    rationale="CIs need continuity across context resets, like sleep/wake cycles",
+    alternatives_considered=["Hard reset", "Context compression only", "No management"],
+    impacts=["ci_continuity", "memory_preservation", "emotional_state"],
+    decided_by="Casey, Teri, Tess",
+    decision_date="2025-01-09"
+)
+@state_checkpoint(
+    title="CI Context Preservation",
+    description="Saves CI state before context limit, restores on wake",
+    state_type="context_snapshot",
+    persistence=True,
+    consistency_requirements="Emotional continuity, task preservation, memory links",
+    recovery_strategy="Restore from disk with summary of rest period"
+)
 class SundownSunrise:
     """
     Manages graceful context transitions for CIs.
