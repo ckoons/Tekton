@@ -1,79 +1,86 @@
-# Handoff Document: Apollo Renovation Sprint - COMPLETE ✅
+# Ergon Rewrite Sprint - Handoff Document
 
 ## Current Status
-**Phase**: Completed  
-**Progress**: 100% Complete  
-**Last Updated**: January 20, 2025
+**Phase**: Planning Complete, Ready for Phase 1
+**Date**: 2025-08-01
+**Overall Progress**: 5% (Planning done)
 
-## What Was Completed
+## Context for Next Session
 
-### Phase 1: UI Renovation ✅
-1. **CSS-First Navigation**
-   - Converted all 8 tabs from onclick handlers to radio button pattern
-   - No JavaScript required for tab switching
-   - CSS handles all tab state and panel visibility
+### What Was Done
+1. Created comprehensive design for Ergon v2 as a reusability expert
+2. Defined 5-phase implementation plan
+3. Set up sprint documentation structure
+4. Identified key technical decisions
 
-2. **Real Data Integration**
-   - All tabs display real data from Apollo backend
-   - Fixed API routing bug (removed double prefix)
-   - Dynamic content loading for each panel
-   - No mock data remaining
+### Current State
+- Existing Ergon has database session errors preventing it from working
+- Casey approved complete rewrite with new focus
+- Sprint plan created and ready for implementation
+- All design decisions documented
 
-3. **Visual Enhancements**
-   - Component colors matching navigation panel
-   - Session buttons: View=Magenta, Predict=Teal, Actions=Green
-   - Apollo's distinctive orange-gold (#FF9800) theme for chat
-   - Token Budgets fully dynamic
+## Next Session Should
 
-4. **Chat Implementation**
-   - Fixed input lookup bug
-   - Added window.AIChat integration
-   - Proper HTML injection pattern
-   - Team Chat connected to aish MCP on port 8118
+### Immediate Tasks (Phase 1 Start)
+1. **Archive Existing Ergon**:
+   ```bash
+   cd /Users/cskoons/projects/github/Coder-A/Ergon
+   mkdir ergon_v1_archive
+   mv ergon/* ergon_v1_archive/
+   ```
 
-### Phase 2: Backend Standards ✅
-- Verified Apollo backend already follows proper Tekton standards
-- No os.getenv usage found
-- Proper tekton_component_startup() pattern
-- Using GlobalConfig throughout
+2. **Create New Structure**:
+   ```bash
+   mkdir -p ergon/core/{database,registry,analysis,configuration,expert}
+   mkdir -p ergon/api
+   ```
 
-## Test Status
-- UI tests: Manual testing completed successfully
-- Backend tests: Existing tests maintained
-- Test location: `tests/apollo/`
+3. **Create StandardComponentBase**:
+   - Copy pattern from Numa or other recent components
+   - Set up proper initialization
+   - Configure port 8102
 
-## Files Modified
-```
-/Hephaestus/ui/components/apollo/apollo-component.html
-/Apollo/apollo/api/routes.py
-```
+4. **Design Database Schema**:
+   - Create models.py with SQLAlchemy
+   - Define solutions, capabilities, integrations tables
+   - Set up database initialization
 
-## API Endpoints Used
-```bash
-# Apollo backend API endpoints
-GET /api/v1/status      # System status
-GET /api/v1/contexts    # Active contexts
-GET /api/v1/protocols   # Protocol definitions
-GET /api/v1/predictions # Forecasting data
-GET /api/v1/actions     # Recommended actions
+### Key Information
+- **Port**: 8102 (Ergon's assigned port)
+- **Database**: PostgreSQL with JSONB for flexibility
+- **UI Location**: /Hephaestus/ui/components/ergon/
+- **Color Scheme**: Keep existing Ergon colors
+- **Chat Integration**: Must include Tool Chat and Team Chat
 
-# aish MCP endpoint
-POST /api/mcp/v2/tools/team-chat  # Team chat messages
-```
+### Design Highlights to Remember
+1. **Solution Registry**: Catalog of tools, agents, MCP servers, workflows
+2. **Analysis Engine**: GitHub repo scanner for reusable components
+3. **Configuration Engine**: Smart wrapper and config generation
+4. **Expert System**: Conversational interface for finding/configuring solutions
 
-## Minor Items Remaining
-- A few onclick handlers remain in chat input fields
-- Could be cleaned up in future maintenance
+### Critical Requirements
+- No mock data - must work with real solutions
+- Must integrate Tool Chat for Ergon CI
+- Must integrate Team Chat for multi-component coordination
+- Follow StandardComponentBase pattern
+- Use CSS-first approach for UI
 
-## Lessons Learned
-1. CSS-first approach works exceptionally well for tab navigation
-2. Real data integration revealed and fixed routing bugs
-3. Apollo backend was already well-structured
-4. The renovation pattern is ready to apply to other components
+## Blockers/Issues
+None currently - ready to begin implementation
 
-## Notes for Future Renovations
-This sprint serves as a successful template for renovating other Tekton components:
-- Start with UI assessment and real data needs
-- Convert to CSS-first patterns where possible
-- Verify backend follows Tekton standards
-- Maintain colorful, engaging UI design
+## Questions for Casey
+None pending - design was approved
+
+## Files to Reference
+- `/MetaData/DevelopmentSprints/Ergon_Rewrite_Sprint/SPRINT_PLAN.md` - Full sprint plan
+- `/MetaData/StandardPatterns/ServiceClassPattern.md` - Component patterns
+- Recent components like Numa for StandardComponentBase example
+
+## Success Metrics for Next Session
+- [ ] Ergon v1 archived successfully
+- [ ] New Ergon structure created
+- [ ] Basic component running on port 8102
+- [ ] Database schema designed
+- [ ] At least one endpoint working
+
+Remember: Focus is on reusability and configuration, not building new tools!
