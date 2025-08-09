@@ -18,8 +18,9 @@ from datetime import datetime, timedelta
 import sys
 import os
 
-# Add parent directory to path
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+# Add Tekton root to path
+tekton_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+sys.path.insert(0, tekton_root)
 
 from shared.ai.sundown_sunrise import SundownSunrise
 from shared.ai.landmark_seismograph import LandmarkSeismograph, apollo_sense, rhetor_sense

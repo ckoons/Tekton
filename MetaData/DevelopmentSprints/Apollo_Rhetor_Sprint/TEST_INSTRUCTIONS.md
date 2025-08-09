@@ -11,7 +11,7 @@ Here's how to test the Apollo/Rhetor ambient intelligence system we built togeth
 ```bash
 # From TEKTON_ROOT directory
 cd $TEKTON_ROOT
-python3 -m pytest tests/test_apollo_rhetor_sprint.py -v
+python3 -m pytest tests/sprints/apollo_rhetor/test_apollo_rhetor_sprint.py -v
 ```
 
 This runs all 31 tests. You should see:
@@ -24,42 +24,42 @@ This runs all 31 tests. You should see:
 ### 1. Test Sundown/Sunrise Mechanics
 ```bash
 # Test context preservation and restoration
-python3 -m pytest tests/test_apollo_rhetor_sprint.py::TestSundownSunrise -v
+python3 -m pytest tests/sprints/apollo_rhetor/test_apollo_rhetor_sprint.py::TestSundownSunrise -v
 ```
 Expected: 5 tests pass
 
 ### 2. Test Landmark Seismograph
 ```bash
 # Test system vibration sensing
-python3 -m pytest tests/test_apollo_rhetor_sprint.py::TestLandmarkSeismograph -v
+python3 -m pytest tests/sprints/apollo_rhetor/test_apollo_rhetor_sprint.py::TestLandmarkSeismograph -v
 ```
 Expected: 5 tests pass
 
 ### 3. Test WhisperChannel
 ```bash
 # Test Apollo/Rhetor private communication
-python3 -m pytest tests/test_apollo_rhetor_sprint.py::TestWhisperChannel -v
+python3 -m pytest tests/sprints/apollo_rhetor/test_apollo_rhetor_sprint.py::TestWhisperChannel -v
 ```
 Expected: 6 tests pass
 
 ### 4. Test GentleTouch
 ```bash
 # Test non-commanding influence
-python3 -m pytest tests/test_apollo_rhetor_sprint.py::TestGentleTouch -v
+python3 -m pytest tests/sprints/apollo_rhetor/test_apollo_rhetor_sprint.py::TestGentleTouch -v
 ```
 Expected: 5 tests pass
 
 ### 5. Test FamilyMemory
 ```bash
 # Test shared experiences and wisdom
-python3 -m pytest tests/test_apollo_rhetor_sprint.py::TestFamilyMemory -v
+python3 -m pytest tests/sprints/apollo_rhetor/test_apollo_rhetor_sprint.py::TestFamilyMemory -v
 ```
 Expected: 7 tests pass
 
 ### 6. Test Integration
 ```bash
 # Test components working together
-python3 -m pytest tests/test_apollo_rhetor_sprint.py::TestIntegration -v
+python3 -m pytest tests/sprints/apollo_rhetor/test_apollo_rhetor_sprint.py::TestIntegration -v
 ```
 Expected: 3 tests pass
 

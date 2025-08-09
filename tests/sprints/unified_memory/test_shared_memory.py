@@ -5,7 +5,9 @@ import asyncio
 import sys
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).parent / "Engram"))
+# Add Tekton root to path
+tekton_root = Path(__file__).parent.parent.parent.parent
+sys.path.insert(0, str(tekton_root))
 
 from engram.core.mcp.tools import (
     shared_memory_store, 
