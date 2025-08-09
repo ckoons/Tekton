@@ -121,10 +121,15 @@ class MemoryService:
         Returns:
             Boolean indicating success
         """
-        # Validate namespace
+        # Validate namespace - allow dynamic namespaces for cross-CI sharing
         valid_namespaces = self.namespaces + self.compartment_manager.get_compartment_namespaces()
         
-        if namespace not in valid_namespaces:
+        # Allow special namespaces for cross-CI memory sharing
+        if namespace.startswith(("shared-", "gifts-", "whisper-", "broadcasts")):
+            # These are valid dynamic namespaces for cross-CI sharing
+            if hasattr(self.storage, "initialize_namespace"):
+                self.storage.initialize_namespace(namespace)
+        elif namespace not in valid_namespaces:
             # Invalid namespace, fall back to default
             logger.warning(f"Invalid namespace: {namespace}, using 'conversations'")
             namespace = "conversations"
