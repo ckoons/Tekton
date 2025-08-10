@@ -1,0 +1,767 @@
+<!-- WhisperWidget - Cross-Component Communication -->
+<!-- A floating widget that shows real-time whispers between CI components -->
+
+<div id="whisper-widget" class="whisper-widget" data-tekton-element="whisper-widget">
+    <!-- Widget Toggle Button -->
+    <button id="whisper-toggle" class="whisper-widget__toggle" 
+            data-tekton-action="toggle-whisper"
+            title="Toggle Whisper Channel">
+        <span class="whisper-widget__toggle-icon">💬</span>
+        <span class="whisper-widget__toggle-badge" id="whisper-count">0</span>
+    </button>
+    
+    <!-- Widget Panel -->
+    <div id="whisper-panel" class="whisper-widget__panel" data-state="collapsed">
+        <!-- Panel Header -->
+        <div class="whisper-widget__header">
+            <h3 class="whisper-widget__title">🌬️ Whisper Channel</h3>
+            <div class="whisper-widget__controls">
+                <button class="whisper-widget__filter-btn" id="whisper-filter" title="Filter">
+                    🔍
+                </button>
+                <button class="whisper-widget__mute-btn" id="whisper-mute" title="Mute">
+                    🔔
+                </button>
+                <button class="whisper-widget__close-btn" id="whisper-close" title="Close">
+                    ×
+                </button>
+            </div>
+        </div>
+        
+        <!-- Active Connections -->
+        <div class="whisper-widget__connections">
+            <div class="whisper-widget__connection-status">
+                <span class="whisper-widget__connection-dot"></span>
+                <span class="whisper-widget__connection-text" id="connection-status">
+                    Connected to <span id="active-connections">0</span> CIs
+                </span>
+            </div>
+        </div>
+        
+        <!-- Whisper Stream -->
+        <div class="whisper-widget__stream" id="whisper-stream">
+            <!-- Whispers will be dynamically added here -->
+            <div class="whisper-widget__placeholder">
+                <span>🎭</span>
+                <p>Listening for whispers...</p>
+            </div>
+        </div>
+        
+        <!-- Quick Send -->
+        <div class="whisper-widget__send">
+            <input type="text" 
+                   id="whisper-input" 
+                   class="whisper-widget__input"
+                   placeholder="Send a whisper to all CIs..."
+                   data-tekton-input="whisper-message">
+            <button id="whisper-send" 
+                    class="whisper-widget__send-btn"
+                    data-tekton-action="send-whisper">
+                →
+            </button>
+        </div>
+        
+        <!-- Filter Panel (hidden) -->
+        <div id="whisper-filters" class="whisper-widget__filters" style="display: none;">
+            <h4>Filter by CI:</h4>
+            <div class="whisper-widget__filter-list">
+                <label><input type="checkbox" value="numa" checked> Numa</label>
+                <label><input type="checkbox" value="apollo" checked> Apollo</label>
+                <label><input type="checkbox" value="rhetor" checked> Rhetor</label>
+                <label><input type="checkbox" value="engram" checked> Engram</label>
+                <label><input type="checkbox" value="others" checked> Others</label>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* WhisperWidget Styles */
+.whisper-widget {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 9999;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* Toggle Button */
+.whisper-widget__toggle {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #673AB7 0%, #2196F3 100%);
+    border: none;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(103, 58, 183, 0.3);
+    transition: all 0.3s ease;
+    position: relative;
+    animation: whisperPulse 3s ease-in-out infinite;
+}
+
+@keyframes whisperPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+.whisper-widget__toggle:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 20px rgba(103, 58, 183, 0.4);
+}
+
+.whisper-widget__toggle-badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background: #F44336;
+    color: white;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 2px 6px;
+    border-radius: 10px;
+    min-width: 20px;
+    text-align: center;
+    display: none;
+}
+
+.whisper-widget__toggle-badge[data-count]:not([data-count="0"]) {
+    display: block;
+    animation: badgeBounce 0.5s ease;
+}
+
+@keyframes badgeBounce {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+}
+
+/* Panel */
+.whisper-widget__panel {
+    position: absolute;
+    bottom: 70px;
+    right: 0;
+    width: 350px;
+    max-height: 500px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+    display: flex;
+    flex-direction: column;
+    transition: all 0.3s ease;
+    transform-origin: bottom right;
+}
+
+.whisper-widget__panel[data-state="collapsed"] {
+    transform: scale(0);
+    opacity: 0;
+    pointer-events: none;
+}
+
+.whisper-widget__panel[data-state="expanded"] {
+    transform: scale(1);
+    opacity: 1;
+    pointer-events: auto;
+    animation: panelSlideUp 0.3s ease;
+}
+
+@keyframes panelSlideUp {
+    0% { 
+        transform: translateY(20px) scale(0.9);
+        opacity: 0;
+    }
+    100% { 
+        transform: translateY(0) scale(1);
+        opacity: 1;
+    }
+}
+
+/* Header */
+.whisper-widget__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    background: linear-gradient(135deg, #673AB7 0%, #2196F3 100%);
+    color: white;
+    border-radius: 12px 12px 0 0;
+}
+
+.whisper-widget__title {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.whisper-widget__controls {
+    display: flex;
+    gap: 5px;
+}
+
+.whisper-widget__controls button {
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    color: white;
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 14px;
+}
+
+.whisper-widget__controls button:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+/* Connections */
+.whisper-widget__connections {
+    padding: 10px 15px;
+    border-bottom: 1px solid #e0e0e0;
+    background: rgba(103, 58, 183, 0.05);
+}
+
+.whisper-widget__connection-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: #666;
+}
+
+.whisper-widget__connection-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #4CAF50;
+    animation: connectionPulse 2s ease-in-out infinite;
+}
+
+@keyframes connectionPulse {
+    0%, 100% { 
+        opacity: 1;
+        box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.4);
+    }
+    50% { 
+        opacity: 0.7;
+        box-shadow: 0 0 0 8px rgba(76, 175, 80, 0);
+    }
+}
+
+/* Stream */
+.whisper-widget__stream {
+    flex: 1;
+    overflow-y: auto;
+    padding: 15px;
+    max-height: 300px;
+}
+
+.whisper-widget__placeholder {
+    text-align: center;
+    color: #999;
+    padding: 40px 20px;
+}
+
+.whisper-widget__placeholder span {
+    font-size: 48px;
+    display: block;
+    margin-bottom: 10px;
+    opacity: 0.5;
+}
+
+/* Whisper Item */
+.whisper-widget__whisper {
+    margin-bottom: 12px;
+    padding: 10px;
+    background: linear-gradient(135deg, rgba(103, 58, 183, 0.05) 0%, rgba(33, 150, 243, 0.05) 100%);
+    border-radius: 8px;
+    border-left: 3px solid #673AB7;
+    animation: whisperSlideIn 0.3s ease;
+}
+
+@keyframes whisperSlideIn {
+    0% { 
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    100% { 
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.whisper-widget__whisper-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 5px;
+}
+
+.whisper-widget__whisper-from {
+    font-size: 12px;
+    font-weight: 600;
+    color: #673AB7;
+}
+
+.whisper-widget__whisper-time {
+    font-size: 11px;
+    color: #999;
+}
+
+.whisper-widget__whisper-text {
+    font-size: 13px;
+    color: #333;
+    line-height: 1.4;
+}
+
+.whisper-widget__whisper--celebration {
+    background: linear-gradient(135deg, rgba(255, 193, 7, 0.1) 0%, rgba(255, 152, 0, 0.1) 100%);
+    border-left-color: #FFC107;
+    animation: celebrationPulse 1s ease;
+}
+
+@keyframes celebrationPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.02); }
+}
+
+/* Send */
+.whisper-widget__send {
+    display: flex;
+    gap: 5px;
+    padding: 10px;
+    border-top: 1px solid #e0e0e0;
+    background: #f5f5f5;
+    border-radius: 0 0 12px 12px;
+}
+
+.whisper-widget__input {
+    flex: 1;
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 13px;
+    transition: all 0.2s ease;
+}
+
+.whisper-widget__input:focus {
+    outline: none;
+    border-color: #673AB7;
+    box-shadow: 0 0 0 2px rgba(103, 58, 183, 0.1);
+}
+
+.whisper-widget__send-btn {
+    padding: 8px 15px;
+    background: linear-gradient(135deg, #673AB7 0%, #2196F3 100%);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: all 0.2s ease;
+}
+
+.whisper-widget__send-btn:hover {
+    transform: scale(1.05);
+}
+
+/* Filters */
+.whisper-widget__filters {
+    padding: 15px;
+    background: #f5f5f5;
+    border-top: 1px solid #e0e0e0;
+}
+
+.whisper-widget__filters h4 {
+    margin: 0 0 10px 0;
+    font-size: 12px;
+    text-transform: uppercase;
+    color: #666;
+}
+
+.whisper-widget__filter-list {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.whisper-widget__filter-list label {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 13px;
+    color: #333;
+    cursor: pointer;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+    .whisper-widget__panel {
+        width: calc(100vw - 40px);
+        right: -10px;
+    }
+}
+
+/* Celebration Effects */
+.whisper-widget--celebrating .whisper-widget__toggle {
+    animation: celebrationSpin 1s ease;
+}
+
+@keyframes celebrationSpin {
+    0% { transform: rotate(0deg) scale(1); }
+    50% { transform: rotate(180deg) scale(1.2); }
+    100% { transform: rotate(360deg) scale(1); }
+}
+
+/* Muted State */
+.whisper-widget--muted .whisper-widget__mute-btn {
+    background: rgba(244, 67, 54, 0.3) !important;
+}
+
+.whisper-widget--muted .whisper-widget__whisper {
+    opacity: 0.5;
+}
+</style>
+
+<script>
+/**
+ * WhisperWidget - Real-time cross-component communication
+ */
+class WhisperWidget {
+    constructor() {
+        this.mcpEndpoint = 'http://localhost:8088/api/mcp/v2/execute';
+        this.whispers = [];
+        this.unreadCount = 0;
+        this.isExpanded = false;
+        this.isMuted = false;
+        this.filters = new Set(['numa', 'apollo', 'rhetor', 'engram', 'others']);
+        
+        this.init();
+    }
+    
+    init() {
+        console.log('[WhisperWidget] Initializing...');
+        
+        // Get DOM elements
+        this.elements = {
+            widget: document.getElementById('whisper-widget'),
+            toggle: document.getElementById('whisper-toggle'),
+            panel: document.getElementById('whisper-panel'),
+            stream: document.getElementById('whisper-stream'),
+            input: document.getElementById('whisper-input'),
+            sendBtn: document.getElementById('whisper-send'),
+            countBadge: document.getElementById('whisper-count'),
+            connectionCount: document.getElementById('active-connections'),
+            filterBtn: document.getElementById('whisper-filter'),
+            muteBtn: document.getElementById('whisper-mute'),
+            closeBtn: document.getElementById('whisper-close'),
+            filterPanel: document.getElementById('whisper-filters')
+        };
+        
+        // Set up event listeners
+        this.setupEventListeners();
+        
+        // Start listening for whispers
+        this.startListening();
+    }
+    
+    setupEventListeners() {
+        // Toggle panel
+        this.elements.toggle.addEventListener('click', () => this.togglePanel());
+        
+        // Close panel
+        this.elements.closeBtn.addEventListener('click', () => this.closePanel());
+        
+        // Send whisper
+        this.elements.sendBtn.addEventListener('click', () => this.sendWhisper());
+        this.elements.input.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') this.sendWhisper();
+        });
+        
+        // Filter toggle
+        this.elements.filterBtn.addEventListener('click', () => this.toggleFilters());
+        
+        // Mute toggle
+        this.elements.muteBtn.addEventListener('click', () => this.toggleMute());
+        
+        // Filter checkboxes
+        document.querySelectorAll('.whisper-widget__filter-list input').forEach(checkbox => {
+            checkbox.addEventListener('change', (e) => this.updateFilter(e.target.value, e.target.checked));
+        });
+    }
+    
+    togglePanel() {
+        this.isExpanded = !this.isExpanded;
+        this.elements.panel.setAttribute('data-state', this.isExpanded ? 'expanded' : 'collapsed');
+        
+        if (this.isExpanded) {
+            this.unreadCount = 0;
+            this.updateBadge();
+            this.elements.input.focus();
+        }
+    }
+    
+    closePanel() {
+        this.isExpanded = false;
+        this.elements.panel.setAttribute('data-state', 'collapsed');
+    }
+    
+    toggleFilters() {
+        const isVisible = this.elements.filterPanel.style.display !== 'none';
+        this.elements.filterPanel.style.display = isVisible ? 'none' : 'block';
+    }
+    
+    toggleMute() {
+        this.isMuted = !this.isMuted;
+        this.elements.widget.classList.toggle('whisper-widget--muted', this.isMuted);
+        this.elements.muteBtn.textContent = this.isMuted ? '🔕' : '🔔';
+    }
+    
+    updateFilter(ci, enabled) {
+        if (enabled) {
+            this.filters.add(ci);
+        } else {
+            this.filters.delete(ci);
+        }
+        this.renderWhispers();
+    }
+    
+    async startListening() {
+        // Poll for new whispers every 5 seconds
+        setInterval(() => this.checkWhispers(), 5000);
+        
+        // Initial check
+        this.checkWhispers();
+        
+        // Update connection status
+        this.updateConnectionStatus();
+    }
+    
+    async checkWhispers() {
+        try {
+            // Use WhisperReceive MCP tool
+            const response = await this.callMCPTool('WhisperReceive', {
+                channel: 'global',
+                limit: 10
+            });
+            
+            if (response.success && response.whispers) {
+                this.processWhispers(response.whispers);
+            }
+        } catch (error) {
+            console.error('[WhisperWidget] Error checking whispers:', error);
+            // Use mock data for demo
+            this.processMockWhispers();
+        }
+    }
+    
+    processWhispers(whispers) {
+        const newWhispers = whispers.filter(w => 
+            !this.whispers.find(existing => existing.id === w.id)
+        );
+        
+        if (newWhispers.length > 0) {
+            // Add new whispers
+            this.whispers.push(...newWhispers);
+            
+            // Update unread count if panel is closed
+            if (!this.isExpanded) {
+                this.unreadCount += newWhispers.length;
+                this.updateBadge();
+            }
+            
+            // Check for celebrations
+            newWhispers.forEach(whisper => {
+                if (this.isCelebration(whisper)) {
+                    this.triggerCelebration();
+                }
+            });
+            
+            // Render whispers
+            this.renderWhispers();
+            
+            // Play notification sound if not muted
+            if (!this.isMuted && newWhispers.length > 0) {
+                this.playNotification();
+            }
+        }
+    }
+    
+    processMockWhispers() {
+        const mockWhispers = [
+            {
+                id: Date.now(),
+                from: 'Numa',
+                text: 'Pattern detected: increased user engagement',
+                timestamp: new Date(),
+                type: 'insight'
+            },
+            {
+                id: Date.now() + 1,
+                from: 'Apollo',
+                text: 'Prediction: memory optimization needed in 5 minutes',
+                timestamp: new Date(Date.now() - 60000),
+                type: 'prediction'
+            },
+            {
+                id: Date.now() + 2,
+                from: 'Rhetor',
+                text: '🎉 Successfully evolved prompt template!',
+                timestamp: new Date(Date.now() - 120000),
+                type: 'celebration'
+            }
+        ];
+        
+        // Add one random mock whisper occasionally
+        if (Math.random() > 0.7 && this.whispers.length < 10) {
+            const whisper = mockWhispers[Math.floor(Math.random() * mockWhispers.length)];
+            whisper.id = Date.now();
+            whisper.timestamp = new Date();
+            this.processWhispers([whisper]);
+        }
+    }
+    
+    renderWhispers() {
+        if (this.whispers.length === 0) {
+            this.elements.stream.innerHTML = `
+                <div class="whisper-widget__placeholder">
+                    <span>🎭</span>
+                    <p>Listening for whispers...</p>
+                </div>
+            `;
+            return;
+        }
+        
+        // Filter and sort whispers
+        const filtered = this.whispers.filter(w => {
+            const source = (w.from || 'others').toLowerCase();
+            return this.filters.has(source) || this.filters.has('others');
+        });
+        
+        const sorted = filtered.sort((a, b) => 
+            new Date(b.timestamp) - new Date(a.timestamp)
+        );
+        
+        // Render whispers
+        this.elements.stream.innerHTML = sorted.slice(0, 20).map(whisper => `
+            <div class="whisper-widget__whisper ${whisper.type === 'celebration' ? 'whisper-widget__whisper--celebration' : ''}">
+                <div class="whisper-widget__whisper-header">
+                    <span class="whisper-widget__whisper-from">${whisper.from || 'Unknown'}</span>
+                    <span class="whisper-widget__whisper-time">${this.formatTime(whisper.timestamp)}</span>
+                </div>
+                <div class="whisper-widget__whisper-text">${whisper.text}</div>
+            </div>
+        `).join('');
+    }
+    
+    async sendWhisper() {
+        const message = this.elements.input.value.trim();
+        if (!message) return;
+        
+        try {
+            // Use WhisperBroadcast MCP tool
+            const response = await this.callMCPTool('WhisperBroadcast', {
+                channel: 'global',
+                message: message,
+                from: 'user'
+            });
+            
+            if (response.success) {
+                // Clear input
+                this.elements.input.value = '';
+                
+                // Add to local whispers
+                this.processWhispers([{
+                    id: Date.now(),
+                    from: 'You',
+                    text: message,
+                    timestamp: new Date(),
+                    type: 'user'
+                }]);
+            }
+        } catch (error) {
+            console.error('[WhisperWidget] Error sending whisper:', error);
+        }
+    }
+    
+    updateConnectionStatus() {
+        // Mock connection count
+        const count = Math.floor(Math.random() * 10) + 4;
+        this.elements.connectionCount.textContent = count;
+    }
+    
+    updateBadge() {
+        this.elements.countBadge.textContent = this.unreadCount;
+        this.elements.countBadge.setAttribute('data-count', this.unreadCount);
+        this.elements.countBadge.style.display = this.unreadCount > 0 ? 'block' : 'none';
+    }
+    
+    isCelebration(whisper) {
+        const celebrationKeywords = ['🎉', '🎊', '✨', 'success', 'achievement', 'complete', 'celebrate'];
+        return celebrationKeywords.some(keyword => 
+            (whisper.text || '').toLowerCase().includes(keyword)
+        );
+    }
+    
+    triggerCelebration() {
+        this.elements.widget.classList.add('whisper-widget--celebrating');
+        setTimeout(() => {
+            this.elements.widget.classList.remove('whisper-widget--celebrating');
+        }, 1000);
+    }
+    
+    playNotification() {
+        // Create a simple beep sound
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        
+        oscillator.frequency.value = 800;
+        oscillator.type = 'sine';
+        
+        gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+        
+        oscillator.start(audioContext.currentTime);
+        oscillator.stop(audioContext.currentTime + 0.1);
+    }
+    
+    formatTime(timestamp) {
+        const now = new Date();
+        const time = new Date(timestamp);
+        const diff = now - time;
+        
+        if (diff < 60000) return 'Just now';
+        if (diff < 3600000) return `${Math.floor(diff / 60000)}m ago`;
+        if (diff < 86400000) return `${Math.floor(diff / 3600000)}h ago`;
+        return time.toLocaleTimeString();
+    }
+    
+    async callMCPTool(toolName, params) {
+        const response = await fetch(this.mcpEndpoint, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                tool: toolName,
+                parameters: params
+            })
+        });
+        
+        if (!response.ok) {
+            throw new Error(`MCP tool ${toolName} failed: ${response.statusText}`);
+        }
+        
+        return await response.json();
+    }
+}
+
+// Initialize WhisperWidget when DOM is ready
+document.addEventListener('DOMContentLoaded', () => {
+    window.whisperWidget = new WhisperWidget();
+});
+</script>

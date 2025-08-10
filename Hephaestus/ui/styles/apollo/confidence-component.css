@@ -1,0 +1,491 @@
+/**
+ * Apollo Confidence Component Styles
+ * Prediction confidence tracking and calibration visualization
+ */
+
+/* Confidence Container */
+.apollo__confidence {
+    padding: 20px;
+    height: 100%;
+    overflow-y: auto;
+    background: #0a0a0a;
+    color: #e0e0e0;
+}
+
+/* Confidence Header */
+.apollo__confidence-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid rgba(33, 150, 243, 0.2);
+}
+
+.apollo__confidence-title {
+    font-size: 24px;
+    font-weight: 600;
+    color: #333;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.apollo__confidence-controls {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.apollo__confidence-select {
+    padding: 8px 12px;
+    border: 1px solid #FFD600;
+    border-radius: 6px;
+    background: #1a1a1a;
+    color: #FFD600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.apollo__confidence-select:hover {
+    border-color: #2196F3;
+    box-shadow: 0 2px 4px rgba(33, 150, 243, 0.1);
+}
+
+.apollo__confidence-btn {
+    padding: 8px 16px;
+    background: linear-gradient(135deg, #FFD600 0%, #FFA000 100%);
+    color: #0a0a0a;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.apollo__confidence-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(33, 150, 243, 0.3);
+}
+
+/* Overall Confidence Score */
+.apollo__confidence-score {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 40px;
+}
+
+.apollo__confidence-meter {
+    text-align: center;
+}
+
+.apollo__confidence-ring {
+    position: relative;
+    width: 200px;
+    height: 200px;
+    margin: 0 auto;
+    animation: confidencePulse 4s ease-in-out infinite;
+}
+
+@keyframes confidencePulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+.apollo__confidence-svg {
+    width: 100%;
+    height: 100%;
+    transform: rotate(-90deg);
+}
+
+.apollo__confidence-circle {
+    transition: stroke-dashoffset 1s ease-out;
+    animation: confidenceGlow 3s ease-in-out infinite;
+}
+
+@keyframes confidenceGlow {
+    0%, 100% { filter: drop-shadow(0 0 10px rgba(33, 150, 243, 0.3)); }
+    50% { filter: drop-shadow(0 0 20px rgba(33, 150, 243, 0.6)); }
+}
+
+.apollo__confidence-percent {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 36px;
+    font-weight: 700;
+    background: linear-gradient(135deg, #2196F3 0%, #4CAF50 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.apollo__confidence-label {
+    margin-top: 20px;
+    font-size: 16px;
+    font-weight: 500;
+    color: #666;
+}
+
+.apollo__confidence-status {
+    margin-top: 10px;
+    font-size: 14px;
+    color: #999;
+    font-style: italic;
+    animation: statusBlink 2s ease-in-out infinite;
+}
+
+@keyframes statusBlink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+/* Confidence Breakdown */
+.apollo__confidence-breakdown {
+    background: #1a1a1a;
+    border: 1px solid #FFD600;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 30px;
+    box-shadow: 0 4px 12px rgba(255, 214, 0, 0.1);
+}
+
+.apollo__confidence-breakdown h3 {
+    margin: 0 0 20px 0;
+    font-size: 18px;
+    color: #FFD600;
+    border-bottom: 2px solid #FFD600;
+    padding-bottom: 10px;
+}
+
+.apollo__confidence-categories {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.apollo__confidence-category {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.apollo__category-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.apollo__category-icon {
+    font-size: 20px;
+}
+
+.apollo__category-name {
+    flex: 1;
+    font-size: 14px;
+    font-weight: 500;
+    color: #e0e0e0;
+}
+
+.apollo__category-score {
+    font-size: 16px;
+    font-weight: 700;
+    color: #2196F3;
+}
+
+.apollo__category-bar {
+    height: 24px;
+    background: #f0f0f0;
+    border-radius: 12px;
+    overflow: hidden;
+    position: relative;
+}
+
+.apollo__category-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #2196F3 0%, #4CAF50 100%);
+    border-radius: 12px;
+    transition: width 1s ease-out;
+    box-shadow: 0 2px 4px rgba(33, 150, 243, 0.3);
+    animation: fillSlide 1s ease-out;
+}
+
+@keyframes fillSlide {
+    0% { width: 0; }
+}
+
+/* Calibration Chart */
+.apollo__calibration {
+    background: #1a1a1a;
+    border: 1px solid #FFD600;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 30px;
+    box-shadow: 0 4px 12px rgba(255, 214, 0, 0.1);
+}
+
+.apollo__calibration h3 {
+    margin: 0 0 10px 0;
+    font-size: 18px;
+    color: #FFD600;
+}
+
+.apollo__calibration-info {
+    font-size: 12px;
+    color: #999;
+    margin-bottom: 15px;
+    font-style: italic;
+}
+
+.apollo__calibration-chart {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 300px;
+    position: relative;
+}
+
+#calibration-canvas {
+    max-width: 100%;
+    height: auto;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+}
+
+/* Recent Predictions */
+.apollo__recent-predictions {
+    background: #1a1a1a;
+    border: 1px solid #FFD600;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 30px;
+    box-shadow: 0 4px 12px rgba(255, 214, 0, 0.1);
+}
+
+.apollo__recent-predictions h3 {
+    margin: 0 0 20px 0;
+    font-size: 18px;
+    color: #FFD600;
+    border-bottom: 2px solid #FFD600;
+    padding-bottom: 10px;
+}
+
+.apollo__predictions-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.apollo__prediction-item {
+    padding: 15px;
+    background: linear-gradient(135deg, rgba(33, 150, 243, 0.05) 0%, rgba(76, 175, 80, 0.05) 100%);
+    border-radius: 8px;
+    border-left: 3px solid #2196F3;
+    transition: all 0.3s ease;
+    animation: predictionSlide 0.5s ease-out;
+}
+
+@keyframes predictionSlide {
+    0% { 
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    100% { 
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.apollo__prediction-item:hover {
+    background: linear-gradient(135deg, rgba(33, 150, 243, 0.1) 0%, rgba(76, 175, 80, 0.1) 100%);
+    transform: translateX(5px);
+}
+
+.apollo__prediction-time {
+    font-size: 12px;
+    color: #999;
+    margin-bottom: 5px;
+}
+
+.apollo__prediction-content {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.apollo__prediction-text {
+    flex: 1;
+    font-size: 14px;
+    color: #333;
+}
+
+.apollo__prediction-confidence {
+    font-size: 14px;
+    font-weight: 600;
+    color: #2196F3;
+}
+
+.apollo__prediction-outcome {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 500;
+}
+
+.apollo__prediction-outcome--success {
+    background: rgba(76, 175, 80, 0.1);
+    color: #4CAF50;
+}
+
+.apollo__prediction-outcome--pending {
+    background: rgba(255, 193, 7, 0.1);
+    color: #FFC107;
+}
+
+.apollo__prediction-outcome--failed {
+    background: rgba(244, 67, 54, 0.1);
+    color: #F44336;
+}
+
+/* Confidence Trends */
+.apollo__confidence-trends {
+    background: #1a1a1a;
+    border: 1px solid #FFD600;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 12px rgba(255, 214, 0, 0.1);
+}
+
+.apollo__confidence-trends h3 {
+    margin: 0 0 20px 0;
+    font-size: 18px;
+    color: #FFD600;
+    border-bottom: 2px solid #FFD600;
+    padding-bottom: 10px;
+}
+
+.apollo__trends-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 15px;
+}
+
+.apollo__trend-card {
+    text-align: center;
+    padding: 20px;
+    background: linear-gradient(135deg, rgba(33, 150, 243, 0.05) 0%, rgba(76, 175, 80, 0.05) 100%);
+    border-radius: 10px;
+    transition: all 0.3s ease;
+    animation: trendPulse 3s ease-in-out infinite;
+}
+
+@keyframes trendPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.02); }
+}
+
+.apollo__trend-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(33, 150, 243, 0.2);
+}
+
+.apollo__trend-icon {
+    font-size: 32px;
+    margin-bottom: 10px;
+}
+
+.apollo__trend-label {
+    font-size: 12px;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 5px;
+}
+
+.apollo__trend-value {
+    font-size: 24px;
+    font-weight: 700;
+    background: linear-gradient(135deg, #2196F3 0%, #4CAF50 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* Panel visibility */
+.apollo__panel--confidence {
+    display: none;
+}
+
+#apollo-tab-confidence:checked ~ .apollo .apollo__panel--confidence {
+    display: block;
+}
+
+/* Tab highlighting */
+#apollo-tab-confidence:checked ~ .apollo label[for="apollo-tab-confidence"] {
+    border-bottom: 2px solid #2196F3;
+    font-weight: 600;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .apollo__confidence-header {
+        flex-direction: column;
+        gap: 15px;
+        align-items: flex-start;
+    }
+    
+    .apollo__trends-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+    
+    .apollo__confidence-ring {
+        width: 150px;
+        height: 150px;
+    }
+    
+    .apollo__confidence-percent {
+        font-size: 28px;
+    }
+}
+
+/* Loading Animation */
+.apollo__confidence--loading {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+.apollo__confidence--loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 40px;
+    height: 40px;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #2196F3;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: translate(-50%, -50%) rotate(0deg); }
+    100% { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+/* Success Animation */
+.apollo__confidence--success {
+    animation: successGlow 1s ease-out;
+}
+
+@keyframes successGlow {
+    0%, 100% { background: transparent; }
+    50% { background: rgba(76, 175, 80, 0.1); }
+}

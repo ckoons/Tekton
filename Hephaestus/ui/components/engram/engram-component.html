@@ -5,13 +5,15 @@
 <script src="/scripts/shared/ai-chat.js"></script>
 <script src="/scripts/shared/single-chat.js"></script>
 <script src="/scripts/shared/team-chat.js"></script>
+<!-- Load Pattern Detective -->
+<script src="/scripts/engram/pattern-detective.js"></script>
 
 <!-- Hidden radio inputs for CSS-first tab functionality -->
 <!-- @landmark Navigation: CSS-first radio buttons for tab switching -->
 <input type="radio" name="engram-tab" id="engram-tab-browse" checked style="display: none;">
 <input type="radio" name="engram-tab" id="engram-tab-create" style="display: none;">
 <input type="radio" name="engram-tab" id="engram-tab-search" style="display: none;">
-<input type="radio" name="engram-tab" id="engram-tab-insights" style="display: none;">
+<input type="radio" name="engram-tab" id="engram-tab-patterns" style="display: none;">
 <input type="radio" name="engram-tab" id="engram-tab-chat" style="display: none;">
 <input type="radio" name="engram-tab" id="engram-tab-teamchat" style="display: none;">
 <div class="engram" data-tekton-area="engram" data-tekton-component="engram" data-tekton-type="component-workspace" data-tekton-ai="engram-assistant" data-tekton-ai-ready="false">
@@ -55,13 +57,13 @@
                  data-tekton-nav-target="search">
                 <span class="engram__tab-label">Search</span>
             </label>
-            <!-- Insights Tab -->
-            <label for="engram-tab-insights" class="engram__tab" data-tab="insights" 
-                 data-tekton-menu-item="Insights" 
+            <!-- Patterns Tab (Pattern Detective) -->
+            <label for="engram-tab-patterns" class="engram__tab" data-tab="patterns" 
+                 data-tekton-menu-item="Patterns" 
                  data-tekton-menu-component="engram" 
-                 data-tekton-menu-panel="insights-panel" 
-                 data-tekton-nav-target="insights">
-                <span class="engram__tab-label">Insights</span>
+                 data-tekton-menu-panel="patterns-panel" 
+                 data-tekton-nav-target="patterns">
+                <span class="engram__tab-label">Patterns</span>
             </label>
             <!-- Memory Chat Tab -->
             <label for="engram-tab-chat" class="engram__tab" data-tekton-chat="tab" data-tab="chat" 
@@ -541,41 +543,56 @@
             </div>
         </div>
         
-        <!-- Insights Tab -->
-        <!-- @landmark Panel: Insights - Emotional analysis and patterns -->
-        <div id="insights-panel" class="engram__panel" 
-             data-tekton-panel="insights" 
-             data-tekton-panel-for="Insights" 
+        <!-- Patterns Tab (Pattern Detective) -->
+        <!-- @landmark Panel: Patterns - Intelligent pattern recognition system -->
+        <div id="patterns-panel" class="engram__panel" 
+             data-tekton-panel="patterns" 
+             data-tekton-panel-for="Patterns" 
              data-tekton-panel-component="engram"
              data-tekton-state="ready"
-             data-tekton-ai="emotional-analysis">
-            <div class="engram__insights" data-tekton-zone="insights-content">
-                <div class="engram__insights-header" data-tekton-zone="header">
+             data-tekton-ai="pattern-detection">
+            <div class="engram__patterns" data-tekton-zone="patterns-content">
+                <div class="engram__patterns-header" data-tekton-zone="header">
                     <h3 class="engram__section-title" 
-                       data-tekton-text="section-title">Memory Insights & Emotional Analysis</h3>
-                    <div class="engram__insights-controls" data-tekton-zone="controls">
-                        <!-- Refresh Insights button removed -->
+                       data-tekton-text="section-title">Pattern Detective - Emergent Discoveries</h3>
+                    <div class="engram__patterns-controls" data-tekton-zone="controls">
+                        <select id="pattern-type-filter" class="engram__filter-select">
+                            <option value="all">All Patterns</option>
+                            <option value="repeating_success">Success Patterns</option>
+                            <option value="stress_correlation">Stress Correlations</option>
+                            <option value="discovery">Discoveries</option>
+                            <option value="emotional">Emotional Patterns</option>
+                            <option value="behavioral">Behavioral Patterns</option>
+                        </select>
+                        <button id="detect-patterns-btn" class="engram__button engram__button--primary" style="background: #00BCD4; color: white; border: none;">
+                            Detect New Patterns
+                        </button>
                     </div>
                 </div>
                 
-                <!-- @landmark Insights Grid: AI-generated emotional analysis cards -->
-                <div class="engram__insights-container" id="insights-container" 
-                     data-tekton-zone="insights-grid"
-                     data-tekton-type="ai-analysis"
-                     data-tekton-state="ready"
-                     data-tekton-ai="emotional-insights"
-                     data-tekton-ai-ready="true">
-                    <!-- Insights cards will be populated dynamically -->
-                    <div class="engram__loading" id="insights-loading" 
-                         style="display: none;" 
-                         data-tekton-state="loading" 
-                         data-tekton-visibility="hidden"
-                         data-tekton-ai="processing">
-                        <div class="engram__loading-spinner" data-tekton-animation="spinner"></div>
-                        <p data-tekton-text="loading-message">Analyzing memories...</p>
+                <!-- Pattern Cards Container -->
+                <div class="engram__patterns-container" id="patterns-container" 
+                     data-tekton-zone="patterns-grid"
+                     data-tekton-type="pattern-analysis"
+                     data-tekton-state="ready">
+                    
+                    <!-- Loading State -->
+                    <div class="engram__loading" id="patterns-loading" 
+                         style="display: none;">
+                        <div class="engram__loading-spinner"></div>
+                        <p>🔍 Detecting patterns in memories...</p>
                     </div>
                     
-                    <!-- Sample insight cards -->
+                    <!-- Pattern cards will be dynamically populated here -->
+                    <div id="pattern-cards" class="engram__pattern-cards">
+                        <!-- Pattern cards inserted by JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Old insight cards (commented out for pattern detective)
+        <div style="display: none;">
                     <div class="engram__insight-card" 
                          data-insight="joy"
                          data-tekton-item="insight-card"
@@ -669,6 +686,7 @@
                 </div>
             </div>
         </div>
+        </div> <!-- End of hidden old insight cards -->
         
         <!-- Chat Tab -->
         <!-- @landmark Panel: Memory Chat - Direct chat with memory-aware AI -->
@@ -905,7 +923,7 @@
     #engram-tab-browse:checked ~ .engram #browse-panel,
     #engram-tab-create:checked ~ .engram #create-panel,
     #engram-tab-search:checked ~ .engram #search-panel,
-    #engram-tab-insights:checked ~ .engram #insights-panel,
+    #engram-tab-patterns:checked ~ .engram #patterns-panel,
     #engram-tab-chat:checked ~ .engram #chat-panel,
     #engram-tab-teamchat:checked ~ .engram #teamchat-panel {
         display: block;
@@ -1222,7 +1240,146 @@
         color: white;
     }
     
-    /* Insights Panel */
+    /* Patterns Panel (Pattern Detective) */
+    .engram__patterns {
+        padding: 24px;
+    }
+    
+    .engram__patterns-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 24px;
+    }
+    
+    .engram__patterns-controls {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+    }
+    
+    .engram__patterns-container {
+        min-height: 400px;
+    }
+    
+    .engram__pattern-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 20px;
+    }
+    
+    .engram__pattern-card {
+        background: var(--bg-secondary, #252535);
+        border: 2px solid var(--border-color, #444);
+        border-radius: 12px;
+        padding: 20px;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .engram__pattern-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 4px;
+        height: 100%;
+        background: var(--pattern-color, #9C27B0);
+    }
+    
+    .engram__pattern-card--repeating_success { --pattern-color: #4CAF50; }
+    .engram__pattern-card--stress_correlation { --pattern-color: #FF9800; }
+    .engram__pattern-card--discovery { --pattern-color: #2196F3; }
+    .engram__pattern-card--emotional { --pattern-color: #E91E63; }
+    .engram__pattern-card--behavioral { --pattern-color: #9C27B0; }
+    
+    .engram__pattern-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+        border-color: var(--pattern-color, #9C27B0);
+    }
+    
+    .engram__pattern-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 12px;
+    }
+    
+    .engram__pattern-icon {
+        font-size: 24px;
+    }
+    
+    .engram__pattern-type {
+        font-size: 0.875rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--text-secondary);
+    }
+    
+    .engram__pattern-description {
+        font-size: 1.125rem;
+        line-height: 1.4;
+        margin-bottom: 16px;
+        color: var(--text-primary);
+    }
+    
+    .engram__pattern-confidence {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 12px;
+    }
+    
+    .engram__pattern-confidence-bar {
+        flex: 1;
+        height: 8px;
+        background: var(--bg-tertiary, #1a1a2a);
+        border-radius: 4px;
+        overflow: hidden;
+    }
+    
+    .engram__pattern-confidence-fill {
+        height: 100%;
+        background: linear-gradient(90deg, var(--pattern-color, #9C27B0), var(--pattern-color-light, #BA68C8));
+        transition: width 0.5s ease;
+    }
+    
+    .engram__pattern-confidence-text {
+        font-weight: 600;
+        color: var(--pattern-color, #9C27B0);
+    }
+    
+    .engram__pattern-meta {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.875rem;
+        color: var(--text-secondary);
+        margin-bottom: 12px;
+    }
+    
+    .engram__pattern-observations {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+    
+    .engram__pattern-action {
+        padding: 8px 12px;
+        background: var(--bg-tertiary, #1a1a2a);
+        border-radius: 6px;
+        font-size: 0.875rem;
+        color: var(--text-primary);
+        border: 1px solid var(--border-color, #444);
+        margin-top: 12px;
+    }
+    
+    .engram__pattern-action::before {
+        content: '💡 ';
+    }
+    
+    /* Old Insights Panel (keeping for backwards compatibility) */
     .engram__insights {
         padding: 24px;
     }

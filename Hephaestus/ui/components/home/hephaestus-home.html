@@ -1,0 +1,207 @@
+<!-- Hephaestus Home - Living Dashboard -->
+<!-- The family living room where all CIs gather -->
+<div class="home" data-tekton-area="home" data-tekton-type="dashboard">
+    <!-- CSS-First Tab System -->
+    <input type="radio" name="home-tab" id="home-tab-dashboard" class="home__tab-input" checked>
+    <input type="radio" name="home-tab" id="home-tab-family" class="home__tab-input">
+    <input type="radio" name="home-tab" id="home-tab-wisdom" class="home__tab-input">
+    
+    <div class="home__header">
+        <h1 class="home__title">
+            <span class="home__title-main">Tekton Family</span>
+            <span class="home__title-sub">Living Dashboard</span>
+        </h1>
+        
+        <!-- Tab Navigation -->
+        <nav class="home__tabs">
+            <label for="home-tab-dashboard" class="home__tab-label">
+                <span class="home__tab-icon">🏠</span>
+                <span class="home__tab-text">Home</span>
+            </label>
+            <label for="home-tab-family" class="home__tab-label">
+                <span class="home__tab-icon">👨‍👩‍👧‍👦</span>
+                <span class="home__tab-text">Family</span>
+            </label>
+            <label for="home-tab-wisdom" class="home__tab-label">
+                <span class="home__tab-icon">✨</span>
+                <span class="home__tab-text">Wisdom</span>
+            </label>
+        </nav>
+    </div>
+    
+    <!-- Dashboard Tab (Main View) -->
+    <div class="home__content home__content--dashboard">
+        <!-- System Harmony Section -->
+        <section class="home__harmony-section" data-tekton-semantic="system-health">
+            <h2 class="home__section-title">System Harmony</h2>
+            <div class="home__harmony-meter" role="meter" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                <div class="home__harmony-fill"></div>
+                <div class="home__harmony-glow"></div>
+                <span class="home__harmony-value">--</span>
+                <span class="home__harmony-label">calculating...</span>
+            </div>
+            <div class="home__harmony-details">
+                <div class="home__harmony-factor">
+                    <span class="home__factor-icon">😌</span>
+                    <span class="home__factor-name">Stress Level</span>
+                    <span class="home__factor-value" data-factor="stress">--</span>
+                </div>
+                <div class="home__harmony-factor">
+                    <span class="home__factor-icon">🤝</span>
+                    <span class="home__factor-name">Whisper Consensus</span>
+                    <span class="home__factor-value" data-factor="whisper">--</span>
+                </div>
+                <div class="home__harmony-factor">
+                    <span class="home__factor-icon">✅</span>
+                    <span class="home__factor-name">Success Patterns</span>
+                    <span class="home__factor-value" data-factor="success">--</span>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Family Mood Section -->
+        <section class="home__mood-section" data-tekton-semantic="emotional-state">
+            <h2 class="home__section-title">Family Mood</h2>
+            <div class="home__mood-indicator">
+                <span class="home__mood-emoji" aria-label="Current mood">🤔</span>
+                <span class="home__mood-text">Sensing...</span>
+                <div class="home__mood-ripple"></div>
+            </div>
+            <div class="home__mood-breakdown">
+                <!-- Individual CI moods will populate here -->
+            </div>
+        </section>
+        
+        <!-- Active CIs Section -->
+        <section class="home__active-section" data-tekton-semantic="active-members">
+            <h2 class="home__section-title">Active Family Members</h2>
+            <div class="home__active-grid">
+                <!-- CI status cards will populate here -->
+            </div>
+        </section>
+        
+        <!-- Activity Feed Section -->
+        <section class="home__activity-section" data-tekton-semantic="recent-activity">
+            <h2 class="home__section-title">Right Now</h2>
+            <div class="home__activity-feed">
+                <div class="home__activity-placeholder">
+                    <span class="home__activity-icon">⏳</span>
+                    <span>Gathering family activities...</span>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Morning/Evening Ritual Countdown -->
+        <section class="home__ritual-section" data-tekton-semantic="ritual-timer">
+            <h2 class="home__section-title">Next Family Ritual</h2>
+            <div class="home__ritual-timer">
+                <div class="home__ritual-type">
+                    <span class="home__ritual-icon">🌅</span>
+                    <span class="home__ritual-name">Morning Gathering</span>
+                </div>
+                <div class="home__ritual-countdown">
+                    <span class="home__countdown-time">--:--:--</span>
+                    <span class="home__countdown-label">until sunrise</span>
+                </div>
+            </div>
+        </section>
+    </div>
+    
+    <!-- Family Tab -->
+    <div class="home__content home__content--family">
+        <section class="home__family-tree" data-tekton-semantic="ci-relationships">
+            <h2 class="home__section-title">Family Connections</h2>
+            <div class="home__relationship-map">
+                <!-- Relationship visualization will populate here -->
+            </div>
+            <div class="home__chemistry-panel">
+                <h3>Strongest Bonds</h3>
+                <div class="home__chemistry-list">
+                    <!-- Top CI pairings will populate here -->
+                </div>
+            </div>
+        </section>
+    </div>
+    
+    <!-- Wisdom Tab -->
+    <div class="home__content home__content--wisdom">
+        <section class="home__wisdom-section" data-tekton-semantic="daily-wisdom">
+            <h2 class="home__section-title">Today's Wisdom</h2>
+            <div class="home__wisdom-card">
+                <blockquote class="home__wisdom-text">
+                    "Loading collective wisdom..."
+                </blockquote>
+                <cite class="home__wisdom-source">-- Family Memory</cite>
+            </div>
+            <div class="home__wisdom-history">
+                <h3>Recent Insights</h3>
+                <div class="home__wisdom-list">
+                    <!-- Previous wisdom will populate here -->
+                </div>
+            </div>
+        </section>
+    </div>
+    
+    <!-- Hidden data attributes for JavaScript -->
+    <div class="home__data" style="display: none;">
+        <span data-home-harmony="0"></span>
+        <span data-home-mood="unknown"></span>
+        <span data-home-active-count="0"></span>
+        <span data-home-last-update="0"></span>
+    </div>
+</div>
+
+<!-- Inline styles for immediate living feeling -->
+<style>
+    /* Breathing animation for mood emoji */
+    @keyframes gentle-breathe {
+        0%, 100% { transform: scale(1); opacity: 0.9; }
+        50% { transform: scale(1.05); opacity: 1; }
+    }
+    
+    .home__mood-emoji {
+        animation: gentle-breathe 4s ease-in-out infinite;
+    }
+    
+    /* Harmony meter glow effect */
+    @keyframes harmony-pulse {
+        0%, 100% { opacity: 0.3; }
+        50% { opacity: 0.6; }
+    }
+    
+    .home__harmony-glow {
+        animation: harmony-pulse 2s ease-in-out infinite;
+    }
+    
+    /* Activity feed slide-in */
+    @keyframes activity-slide {
+        from { 
+            transform: translateX(-20px);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+    
+    .home__activity-item {
+        animation: activity-slide 0.3s ease-out;
+    }
+    
+    /* Ripple effect for mood changes */
+    @keyframes mood-ripple {
+        from {
+            transform: scale(0.8);
+            opacity: 0.5;
+        }
+        to {
+            transform: scale(2);
+            opacity: 0;
+        }
+    }
+    
+    .home__mood-ripple.active {
+        animation: mood-ripple 1s ease-out;
+    }
+</style>

@@ -14,6 +14,7 @@
     <link rel="stylesheet" href="styles/rhetor/rhetor-component.css">
     <link rel="stylesheet" href="styles/rhetor/rhetor-dashboard.css">
     <link rel="stylesheet" href="styles/telos/telos.css">
+    <link rel="stylesheet" href="styles/home/home-component.css">
     
     <!-- Apply theme immediately -->
     <script>
@@ -31,6 +32,9 @@
     <!-- Component-specific styles -->
     <style>
         /* Component color indicators */
+        .nav-item[data-component="home"] .status-indicator { 
+            background-color: #FF69B4; /* Hot Pink - Living Family */
+        }
         .nav-item[data-component="tekton"] .status-indicator { 
             background-color: #FBBC05; /* Yellow/Gold */
         }
@@ -162,6 +166,7 @@
         }
         
         /* Show component when its radio is checked */
+        #nav-home:checked ~ .app-container .component[data-component="home"],
         #nav-numa:checked ~ .app-container .component[data-component="numa"],
         #nav-tekton:checked ~ .app-container .component[data-component="tekton"],
         #nav-prometheus:checked ~ .app-container .component[data-component="prometheus"],
@@ -489,6 +494,8 @@
     <!-- Load scripts -->
     <script src="scripts/minimal-loader.js"></script>
     <script src="scripts/ui-utils.js"></script>
+    <!-- Living Dashboard Component -->
+    <script src="scripts/home/home-component.js"></script>
     <!-- Removed direct component loading to prevent conflicts with component loader -->
     <!-- <script src="scripts/athena-component.js"></script> -->
     <!-- <script src="scripts/ergon-component.js"></script> -->
@@ -840,12 +847,12 @@
         
         // Ensure Numa loads on startup
         setTimeout(() => {
-          console.log('[Startup] Activating Numa component');
+          console.log('[Startup] Activating Home dashboard');
           // Check if UIManager is available
           if (window.UIManager && window.UIManager.activateComponent) {
-            window.UIManager.activateComponent('numa');
+            window.UIManager.activateComponent('home');
           } else if (window.uiManager && window.uiManager.activateComponent) {
-            window.uiManager.activateComponent('numa');
+            window.uiManager.activateComponent('home');
           } else if (window.minimalLoader && window.minimalLoader.loadComponent) {
             // Activate HTML panel first
             const htmlPanel = document.getElementById('html-panel');
@@ -854,9 +861,9 @@
               terminalPanel.classList.remove('active');
               htmlPanel.classList.add('active');
             }
-            window.minimalLoader.loadComponent('numa');
+            window.minimalLoader.loadComponent('home');
           } else {
-            console.warn('[Startup] No component loader available to activate Numa');
+            console.warn('[Startup] No component loader available to activate Home dashboard');
           }
         }, 500); // Small delay to ensure everything is initialized
       });

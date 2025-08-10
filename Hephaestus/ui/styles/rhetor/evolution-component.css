@@ -1,0 +1,601 @@
+/**
+ * Rhetor Evolution Component Styles
+ * Prompt genealogy and evolution tracking visualization
+ */
+
+/* Evolution Container */
+.rhetor__evolution {
+    padding: 20px;
+    height: 100%;
+    overflow-y: auto;
+    background: #0a0a0a;
+    color: #e0e0e0;
+}
+
+/* Evolution Header */
+.rhetor__evolution-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid rgba(103, 58, 183, 0.2);
+}
+
+.rhetor__evolution-title {
+    font-size: 24px;
+    font-weight: 600;
+    color: #ffffff;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.rhetor__evolution-controls {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.rhetor__evolution-select {
+    padding: 8px 12px;
+    border: 1px solid #00BCD4;
+    border-radius: 6px;
+    background: #1a1a1a;
+    color: #00BCD4;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.rhetor__evolution-select:hover {
+    border-color: #673AB7;
+    box-shadow: 0 2px 4px rgba(103, 58, 183, 0.1);
+}
+
+.rhetor__evolution-btn {
+    padding: 8px 16px;
+    background: #00BCD4;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.rhetor__evolution-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(103, 58, 183, 0.3);
+}
+
+/* Evolution Stats */
+.rhetor__evolution-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+.rhetor__evolution-stat {
+    padding: 15px;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: all 0.3s ease;
+    animation: statPulse 3s ease-in-out infinite;
+}
+
+.rhetor__evolution-stat:nth-child(1) {
+    background: #D32F2F;
+    border: 1px solid #FF5252;
+}
+
+.rhetor__evolution-stat:nth-child(2) {
+    background: #1976D2;
+    border: 1px solid #2196F3;
+}
+
+.rhetor__evolution-stat:nth-child(3) {
+    background: #388E3C;
+    border: 1px solid #4CAF50;
+}
+
+.rhetor__evolution-stat:nth-child(4) {
+    background: #7B1FA2;
+    border: 1px solid #9C27B0;
+}
+
+@keyframes statPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.02); }
+}
+
+.rhetor__evolution-stat:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(103, 58, 183, 0.2);
+}
+
+.rhetor__evolution-stat-label {
+    font-size: 12px;
+    color: #ffffff;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 5px;
+}
+
+.rhetor__evolution-stat-value {
+    font-size: 28px;
+    font-weight: 700;
+    color: #ffffff;
+}
+
+/* Genealogy Tree */
+.rhetor__genealogy-tree {
+    background: #0a0a0a;
+    border: 2px solid #D32F2F;
+    border-radius: 12px;
+    padding: 20px;
+    min-height: 400px;
+    box-shadow: 0 4px 12px rgba(211, 47, 47, 0.2);
+    position: relative;
+    overflow: auto;
+}
+
+.rhetor__genealogy-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 300px;
+    color: #666;
+}
+
+.rhetor__loading-spinner {
+    font-size: 48px;
+    animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Tree Nodes */
+.rhetor__tree-node {
+    position: relative;
+    display: inline-block;
+    margin: 10px;
+    padding: 12px 16px;
+    background: linear-gradient(135deg, rgba(103, 58, 183, 0.1) 0%, rgba(33, 150, 243, 0.1) 100%);
+    border: 2px solid #673AB7;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    animation: nodeAppear 0.5s ease-out;
+}
+
+@keyframes nodeAppear {
+    0% { 
+        opacity: 0;
+        transform: scale(0.8);
+    }
+    100% { 
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.rhetor__tree-node:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 16px rgba(103, 58, 183, 0.3);
+    background: linear-gradient(135deg, rgba(103, 58, 183, 0.2) 0%, rgba(33, 150, 243, 0.2) 100%);
+}
+
+.rhetor__tree-node--root {
+    background: linear-gradient(135deg, #673AB7 0%, #512DA8 100%);
+    color: white;
+    border-color: #512DA8;
+}
+
+.rhetor__tree-node--success {
+    border-color: #4CAF50;
+    background: linear-gradient(135deg, rgba(76, 175, 80, 0.1) 0%, rgba(139, 195, 74, 0.1) 100%);
+}
+
+.rhetor__tree-node--failed {
+    border-color: #F44336;
+    background: linear-gradient(135deg, rgba(244, 67, 54, 0.1) 0%, rgba(229, 57, 53, 0.1) 100%);
+}
+
+.rhetor__node-title {
+    font-weight: 600;
+    font-size: 14px;
+    margin-bottom: 4px;
+}
+
+.rhetor__node-stats {
+    font-size: 12px;
+    color: #666;
+    display: flex;
+    gap: 10px;
+}
+
+.rhetor__node-stat {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+}
+
+/* Tree Connections */
+.rhetor__tree-connection {
+    position: absolute;
+    background: linear-gradient(90deg, #673AB7 0%, #2196F3 100%);
+    height: 2px;
+    transform-origin: left center;
+    z-index: -1;
+    animation: connectionGrow 0.5s ease-out;
+}
+
+@keyframes connectionGrow {
+    0% { width: 0; }
+    100% { width: 100%; }
+}
+
+/* Timeline View */
+.rhetor__timeline-view {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    min-height: 400px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.rhetor__timeline-item {
+    position: relative;
+    padding-left: 40px;
+    margin-bottom: 30px;
+    animation: slideInLeft 0.5s ease-out;
+}
+
+@keyframes slideInLeft {
+    0% { 
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    100% { 
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.rhetor__timeline-marker {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 20px;
+    height: 20px;
+    background: linear-gradient(135deg, #673AB7 0%, #2196F3 100%);
+    border-radius: 50%;
+    box-shadow: 0 2px 8px rgba(103, 58, 183, 0.3);
+    animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { 
+        box-shadow: 0 2px 8px rgba(103, 58, 183, 0.3);
+    }
+    50% { 
+        box-shadow: 0 2px 16px rgba(103, 58, 183, 0.5);
+    }
+}
+
+.rhetor__timeline-content {
+    background: linear-gradient(135deg, rgba(103, 58, 183, 0.05) 0%, rgba(33, 150, 243, 0.05) 100%);
+    padding: 15px;
+    border-radius: 8px;
+    border-left: 3px solid #673AB7;
+}
+
+.rhetor__timeline-time {
+    font-size: 12px;
+    color: #999;
+    margin-bottom: 5px;
+}
+
+.rhetor__timeline-title {
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.rhetor__timeline-description {
+    font-size: 14px;
+    color: #666;
+}
+
+/* Metrics View */
+.rhetor__metrics-view {
+    padding: 20px;
+}
+
+.rhetor__metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.rhetor__metrics-card {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+}
+
+.rhetor__metrics-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(103, 58, 183, 0.15);
+}
+
+.rhetor__metrics-card h3 {
+    margin: 0 0 15px 0;
+    font-size: 16px;
+    color: #333;
+    border-bottom: 2px solid rgba(103, 58, 183, 0.2);
+    padding-bottom: 10px;
+}
+
+/* Metrics Bars */
+.rhetor__metrics-bars {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.rhetor__metric-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.rhetor__metric-label {
+    font-size: 12px;
+    color: #666;
+    min-width: 80px;
+}
+
+.rhetor__metric-progress {
+    flex: 1;
+    height: 20px;
+    background: #f0f0f0;
+    border-radius: 10px;
+    overflow: hidden;
+    position: relative;
+}
+
+.rhetor__metric-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #673AB7 0%, #2196F3 100%);
+    border-radius: 10px;
+    transition: width 1s ease-out;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 5px;
+    animation: fillGrow 1s ease-out;
+}
+
+@keyframes fillGrow {
+    0% { width: 0; }
+}
+
+.rhetor__metric-value {
+    font-size: 11px;
+    color: white;
+    font-weight: 600;
+}
+
+/* Top Performers List */
+.rhetor__metrics-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.rhetor__metric-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background: linear-gradient(135deg, rgba(103, 58, 183, 0.05) 0%, rgba(33, 150, 243, 0.05) 100%);
+    border-radius: 6px;
+    transition: all 0.3s ease;
+}
+
+.rhetor__metric-item:hover {
+    background: linear-gradient(135deg, rgba(103, 58, 183, 0.1) 0%, rgba(33, 150, 243, 0.1) 100%);
+    transform: translateX(5px);
+}
+
+.rhetor__metric-rank {
+    font-size: 18px;
+    font-weight: 700;
+    color: #673AB7;
+    min-width: 30px;
+}
+
+.rhetor__metric-name {
+    flex: 1;
+    font-size: 14px;
+    color: #333;
+    margin: 0 10px;
+}
+
+.rhetor__metric-score {
+    font-size: 14px;
+    font-weight: 600;
+    color: #4CAF50;
+}
+
+/* Mutation Impact Delta */
+.rhetor__metrics-delta {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.rhetor__delta-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px;
+    border-left: 3px solid transparent;
+    transition: all 0.3s ease;
+}
+
+.rhetor__delta-item--positive {
+    border-left-color: #4CAF50;
+    background: linear-gradient(90deg, rgba(76, 175, 80, 0.1) 0%, transparent 100%);
+}
+
+.rhetor__delta-item--negative {
+    border-left-color: #F44336;
+    background: linear-gradient(90deg, rgba(244, 67, 54, 0.1) 0%, transparent 100%);
+}
+
+.rhetor__delta-label {
+    font-size: 14px;
+    color: #333;
+}
+
+.rhetor__delta-value {
+    font-size: 16px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.rhetor__delta-value--positive {
+    color: #4CAF50;
+}
+
+.rhetor__delta-value--negative {
+    color: #F44336;
+}
+
+.rhetor__delta-arrow {
+    font-size: 12px;
+}
+
+/* Modal */
+.rhetor__modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+}
+
+.rhetor__modal-content {
+    background: white;
+    border-radius: 12px;
+    padding: 30px;
+    max-width: 600px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+    position: relative;
+    animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+    0% { 
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    100% { 
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.rhetor__modal-close {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    font-size: 24px;
+    cursor: pointer;
+    color: #999;
+    transition: color 0.3s ease;
+}
+
+.rhetor__modal-close:hover {
+    color: #333;
+}
+
+.rhetor__modal-title {
+    margin: 0 0 20px 0;
+    font-size: 20px;
+    color: #333;
+    border-bottom: 2px solid rgba(103, 58, 183, 0.2);
+    padding-bottom: 10px;
+}
+
+.rhetor__modal-body {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .rhetor__evolution-stats {
+        grid-template-columns: 1fr 1fr;
+    }
+    
+    .rhetor__metrics-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .rhetor__evolution-header {
+        flex-direction: column;
+        gap: 15px;
+        align-items: flex-start;
+    }
+}
+
+/* Animation Classes */
+.rhetor__evolution--animating {
+    animation: evolutionPulse 0.5s ease-out;
+}
+
+@keyframes evolutionPulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.02); }
+    100% { transform: scale(1); }
+}
+
+/* Success Animation */
+.rhetor__evolution--success {
+    animation: successFlash 1s ease-out;
+}
+
+@keyframes successFlash {
+    0%, 100% { background: transparent; }
+    50% { background: rgba(76, 175, 80, 0.1); }
+}

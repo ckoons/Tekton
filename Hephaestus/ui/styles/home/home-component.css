@@ -1,0 +1,512 @@
+/* Hephaestus Home Component - Living Dashboard Styles */
+/* A living, breathing representation of CI family life */
+
+/* Base Component Structure */
+.home {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Header */
+.home__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem;
+    background: var(--bg-elevated);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.home__title {
+    display: flex;
+    flex-direction: column;
+}
+
+.home__title-main {
+    font-size: 1.75rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    letter-spacing: -0.02em;
+}
+
+.home__title-sub {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    margin-top: 0.25rem;
+}
+
+/* CSS-First Tab System */
+.home__tab-input {
+    display: none;
+}
+
+.home__tabs {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.home__tab-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.625rem 1rem;
+    background: var(--bg-secondary);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+}
+
+.home__tab-label:hover {
+    background: var(--bg-hover);
+    border-color: var(--border-hover);
+}
+
+.home__tab-icon {
+    font-size: 1.25rem;
+}
+
+.home__tab-text {
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+/* Tab State Management */
+#home-tab-dashboard:checked ~ .home__header .home__tab-label[for="home-tab-dashboard"],
+#home-tab-family:checked ~ .home__header .home__tab-label[for="home-tab-family"],
+#home-tab-wisdom:checked ~ .home__header .home__tab-label[for="home-tab-wisdom"] {
+    background: var(--primary);
+    color: var(--primary-text);
+    border-color: var(--primary-dark);
+}
+
+/* Content Panels */
+.home__content {
+    display: none;
+    flex: 1;
+    padding: 1.5rem;
+    overflow-y: auto;
+    animation: fadeIn 0.3s ease;
+}
+
+#home-tab-dashboard:checked ~ .home__content--dashboard,
+#home-tab-family:checked ~ .home__content--family,
+#home-tab-wisdom:checked ~ .home__content--wisdom {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+/* Section Styling */
+.home__section-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: var(--text-primary);
+}
+
+/* Harmony Meter - The System's Heartbeat */
+.home__harmony-section {
+    grid-column: span 2;
+    background: var(--bg-elevated);
+    padding: 1.5rem;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+}
+
+.home__harmony-meter {
+    position: relative;
+    width: 100%;
+    height: 60px;
+    background: var(--bg-secondary);
+    border-radius: 30px;
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+}
+
+.home__harmony-fill {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: var(--harmony-percent, 0%);
+    background: linear-gradient(90deg, 
+        hsl(var(--harmony-hue, 120), 70%, 50%),
+        hsl(var(--harmony-hue, 120), 70%, 60%));
+    transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 30px;
+}
+
+.home__harmony-glow {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(ellipse at center, 
+        hsla(var(--harmony-hue, 120), 70%, 60%, 0.3) 0%,
+        transparent 70%);
+    pointer-events: none;
+}
+
+.home__harmony-value {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.home__harmony-label {
+    position: absolute;
+    left: 50%;
+    bottom: 8px;
+    transform: translateX(-50%);
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.home__harmony-details {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+}
+
+.home__harmony-factor {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0.75rem;
+    background: var(--bg-secondary);
+    border-radius: 8px;
+}
+
+.home__factor-icon {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.home__factor-name {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.25rem;
+}
+
+.home__factor-value {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+/* Mood Indicator - The Family's Emotional State */
+.home__mood-section {
+    background: var(--bg-elevated);
+    padding: 1.5rem;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+}
+
+.home__mood-indicator {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2rem;
+}
+
+.home__mood-emoji {
+    font-size: 4rem;
+    line-height: 1;
+    user-select: none;
+    position: relative;
+    z-index: 2;
+}
+
+.home__mood-text {
+    margin-top: 1rem;
+    font-size: 1.25rem;
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.home__mood-ripple {
+    position: absolute;
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: radial-gradient(circle, 
+        hsla(var(--mood-hue, 200), 70%, 60%, 0.2) 0%,
+        transparent 70%);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+}
+
+.home__mood-breakdown {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+/* Active CIs Grid */
+.home__active-section {
+    background: var(--bg-elevated);
+    padding: 1.5rem;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+}
+
+.home__active-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    gap: 0.75rem;
+}
+
+.home__ci-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0.75rem;
+    background: var(--bg-secondary);
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.home__ci-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.home__ci-card.active {
+    background: var(--bg-active);
+    border: 1px solid var(--primary);
+}
+
+.home__ci-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--ci-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    margin-bottom: 0.5rem;
+}
+
+.home__ci-name {
+    font-size: 0.75rem;
+    font-weight: 500;
+    text-align: center;
+}
+
+.home__ci-status {
+    font-size: 0.625rem;
+    color: var(--text-secondary);
+    margin-top: 0.25rem;
+}
+
+/* Activity Feed - Right Now */
+.home__activity-section {
+    grid-column: span 2;
+    background: var(--bg-elevated);
+    padding: 1.5rem;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+}
+
+.home__activity-feed {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.home__activity-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 0.75rem;
+    background: var(--bg-secondary);
+    border-radius: 8px;
+    border-left: 3px solid var(--activity-color);
+}
+
+.home__activity-icon {
+    font-size: 1.25rem;
+    flex-shrink: 0;
+}
+
+.home__activity-content {
+    flex: 1;
+}
+
+.home__activity-text {
+    font-size: 0.875rem;
+    color: var(--text-primary);
+    line-height: 1.4;
+}
+
+.home__activity-time {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    margin-top: 0.25rem;
+}
+
+.home__activity-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    padding: 2rem;
+    color: var(--text-secondary);
+}
+
+/* Ritual Timer */
+.home__ritual-section {
+    background: var(--bg-elevated);
+    padding: 1.5rem;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+}
+
+.home__ritual-timer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1rem;
+}
+
+.home__ritual-type {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.home__ritual-icon {
+    font-size: 2rem;
+}
+
+.home__ritual-name {
+    font-size: 1.125rem;
+    font-weight: 500;
+}
+
+.home__countdown-time {
+    font-size: 2rem;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    color: var(--primary);
+}
+
+.home__countdown-label {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    margin-top: 0.5rem;
+}
+
+/* Wisdom Card */
+.home__wisdom-card {
+    background: linear-gradient(135deg, var(--bg-elevated), var(--bg-secondary));
+    padding: 2rem;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    position: relative;
+    overflow: hidden;
+}
+
+.home__wisdom-card::before {
+    content: '✨';
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    font-size: 2rem;
+    opacity: 0.2;
+}
+
+.home__wisdom-text {
+    font-size: 1.25rem;
+    line-height: 1.6;
+    font-style: italic;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.home__wisdom-source {
+    display: block;
+    margin-top: 1rem;
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    text-align: right;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideUp {
+    from { 
+        transform: translateY(20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .home__content {
+        grid-template-columns: 1fr;
+    }
+    
+    .home__harmony-section,
+    .home__activity-section {
+        grid-column: span 1;
+    }
+    
+    .home__harmony-details {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Living Elements - The Breathing UI */
+.home--breathing {
+    animation: subtle-pulse 10s ease-in-out infinite;
+}
+
+@keyframes subtle-pulse {
+    0%, 100% { filter: brightness(1); }
+    50% { filter: brightness(1.02); }
+}
+
+/* Color Variables for Moods */
+.home[data-mood="content"] { --mood-hue: 120; }
+.home[data-mood="focused"] { --mood-hue: 200; }
+.home[data-mood="stressed"] { --mood-hue: 0; }
+.home[data-mood="excited"] { --mood-hue: 45; }
+.home[data-mood="peaceful"] { --mood-hue: 180; }
+
+/* Harmony Color Scale */
+.home[data-harmony-level="high"] { --harmony-hue: 120; }
+.home[data-harmony-level="medium"] { --harmony-hue: 60; }
+.home[data-harmony-level="low"] { --harmony-hue: 30; }
+.home[data-harmony-level="critical"] { --harmony-hue: 0; }

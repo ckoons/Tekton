@@ -31,6 +31,10 @@
 <script src="/scripts/shared/single-chat.js"></script>
 <script src="/scripts/shared/team-chat.js"></script>
 
+<!-- Load Evolution component -->
+<link rel="stylesheet" href="/styles/rhetor/evolution-component.css">
+<script src="/scripts/rhetor/evolution-tracker.js"></script>
+
 <!-- Hidden radio inputs for CSS-first tab functionality -->
 <!-- @landmark Navigation: CSS-first radio buttons for tab switching -->
 <input type="radio" name="rhetor-tab" id="tab-dashboard" checked style="display: none;">
@@ -38,6 +42,7 @@
 <input type="radio" name="rhetor-tab" id="tab-prompts" style="display: none;">
 <input type="radio" name="rhetor-tab" id="tab-contexts" style="display: none;">
 <input type="radio" name="rhetor-tab" id="tab-specialists" style="display: none;">
+<input type="radio" name="rhetor-tab" id="tab-evolution" style="display: none;">
 <input type="radio" name="rhetor-tab" id="tab-llmchat" style="display: none;">
 <input type="radio" name="rhetor-tab" id="tab-teamchat" style="display: none;">
 <div class="rhetor" 
@@ -96,6 +101,13 @@
              data-tekton-menu-component="rhetor"
              data-tekton-menu-panel="specialists-panel">
         <span class="rhetor__tab-label">Specialists</span>
+      </label>
+      <!-- Evolution (new) -->
+      <label for="tab-evolution" class="rhetor__tab" data-tab="evolution" 
+             data-tekton-menu-item="Evolution"
+             data-tekton-menu-component="rhetor"
+             data-tekton-menu-panel="evolution-panel">
+        <span class="rhetor__tab-label">Evolution</span>
       </label>
       <!-- LLM Chat (moved to right) -->
       <label for="tab-llmchat" class="rhetor__tab" data-tab="llmchat" 
@@ -666,6 +678,107 @@
           <button class="rhetor__button rhetor__button--primary" onclick="rhetor_saveConfiguration()"
                   data-tekton-action="save-configuration"
                   data-tekton-action-type="primary">Save Configuration</button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Evolution Tab -->
+    <!-- @landmark Panel: Evolution - Prompt genealogy and evolution tracking -->
+    <div id="evolution-panel" class="rhetor__panel" 
+         data-tekton-panel="evolution"
+         data-tekton-panel-for="Evolution"
+         data-tekton-panel-component="rhetor">
+      <div class="rhetor__evolution" data-tekton-element="evolution-container">
+        <!-- Evolution Header -->
+        <div class="rhetor__evolution-header">
+          <h2 class="rhetor__evolution-title">Prompt Evolution Tracker</h2>
+          <div class="rhetor__evolution-controls">
+            <select id="evolution-view-mode" class="rhetor__evolution-select">
+              <option value="tree">Genealogy Tree</option>
+              <option value="timeline">Timeline View</option>
+              <option value="metrics">Success Metrics</option>
+            </select>
+            <button id="refresh-evolution" class="rhetor__evolution-btn">Refresh</button>
+          </div>
+        </div>
+        
+        <!-- Evolution Stats -->
+        <div class="rhetor__evolution-stats">
+          <div class="rhetor__evolution-stat">
+            <span class="rhetor__evolution-stat-label">Total Prompts</span>
+            <span class="rhetor__evolution-stat-value" id="total-prompts">--</span>
+          </div>
+          <div class="rhetor__evolution-stat">
+            <span class="rhetor__evolution-stat-label">Generations</span>
+            <span class="rhetor__evolution-stat-value" id="prompt-generations">--</span>
+          </div>
+          <div class="rhetor__evolution-stat">
+            <span class="rhetor__evolution-stat-label">Success Rate</span>
+            <span class="rhetor__evolution-stat-value" id="prompt-success-rate">--</span>
+          </div>
+          <div class="rhetor__evolution-stat">
+            <span class="rhetor__evolution-stat-label">Active Branches</span>
+            <span class="rhetor__evolution-stat-value" id="active-branches">--</span>
+          </div>
+        </div>
+        
+        <!-- Genealogy Tree View -->
+        <div id="genealogy-tree" class="rhetor__genealogy-tree">
+          <!-- Tree will be dynamically populated -->
+          <div class="rhetor__genealogy-loading">
+            <span class="rhetor__loading-spinner">⏳</span>
+            <p>Loading prompt genealogy...</p>
+          </div>
+        </div>
+        
+        <!-- Timeline View (hidden by default) -->
+        <div id="timeline-view" class="rhetor__timeline-view" style="display: none;">
+          <!-- Timeline will be dynamically populated -->
+        </div>
+        
+        <!-- Metrics View (hidden by default) -->
+        <div id="metrics-view" class="rhetor__metrics-view" style="display: none;">
+          <div class="rhetor__metrics-grid">
+            <!-- Success by Category -->
+            <div class="rhetor__metrics-card">
+              <h3>Success by Category</h3>
+              <div class="rhetor__metrics-bars" id="category-success">
+                <!-- Will be populated -->
+              </div>
+            </div>
+            <!-- Evolution Effectiveness -->
+            <div class="rhetor__metrics-card">
+              <h3>Evolution Effectiveness</h3>
+              <div class="rhetor__metrics-chart" id="evolution-chart">
+                <!-- Will be populated -->
+              </div>
+            </div>
+            <!-- Top Performing Prompts -->
+            <div class="rhetor__metrics-card">
+              <h3>Top Performers</h3>
+              <div class="rhetor__metrics-list" id="top-prompts">
+                <!-- Will be populated -->
+              </div>
+            </div>
+            <!-- Mutation Success -->
+            <div class="rhetor__metrics-card">
+              <h3>Mutation Impact</h3>
+              <div class="rhetor__metrics-delta" id="mutation-impact">
+                <!-- Will be populated -->
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Prompt Detail Modal (hidden) -->
+        <div id="prompt-detail-modal" class="rhetor__modal" style="display: none;">
+          <div class="rhetor__modal-content">
+            <span class="rhetor__modal-close">&times;</span>
+            <h3 class="rhetor__modal-title">Prompt Details</h3>
+            <div class="rhetor__modal-body" id="prompt-detail-body">
+              <!-- Will be populated -->
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -1946,6 +2059,11 @@ SUCCESS CRITERIA:
     display: block;
   }
   
+  /* Evolution panel - visible when evolution radio is checked */
+  #tab-evolution:checked ~ .rhetor #evolution-panel {
+    display: block;
+  }
+  
   /* LLM Chat panel - visible when llmchat radio is checked */
   #tab-llmchat:checked ~ .rhetor #llmchat-panel {
     display: block;
@@ -1973,6 +2091,7 @@ SUCCESS CRITERIA:
   #tab-prompts:checked ~ .rhetor label[for="tab-prompts"],
   #tab-contexts:checked ~ .rhetor label[for="tab-contexts"],
   #tab-specialists:checked ~ .rhetor label[for="tab-specialists"],
+  #tab-evolution:checked ~ .rhetor label[for="tab-evolution"],
   #tab-llmchat:checked ~ .rhetor label[for="tab-llmchat"],
   #tab-teamchat:checked ~ .rhetor label[for="tab-teamchat"] {
     border-bottom-color: var(--color-primary, #673AB7);

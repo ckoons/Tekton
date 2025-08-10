@@ -5,11 +5,16 @@
 <script src="/scripts/shared/single-chat.js"></script>
 <script src="/scripts/shared/team-chat.js"></script>
 
+<!-- Load Confidence component -->
+<link rel="stylesheet" href="/styles/apollo/confidence-component.css">
+<script src="/scripts/apollo/confidence-tracker.js"></script>
+
 <!-- Hidden radio inputs for CSS-first tab functionality -->
 <input type="radio" name="apollo-tab" id="apollo-tab-dashboard" checked style="display: none;">
 <input type="radio" name="apollo-tab" id="apollo-tab-tokens" style="display: none;">
 <input type="radio" name="apollo-tab" id="apollo-tab-protocols" style="display: none;">
 <input type="radio" name="apollo-tab" id="apollo-tab-actions" style="display: none;">
+<input type="radio" name="apollo-tab" id="apollo-tab-confidence" style="display: none;">
 <input type="radio" name="apollo-tab" id="apollo-tab-attention" style="display: none;">
 <input type="radio" name="apollo-tab" id="apollo-tab-teamchat" style="display: none;">
 
@@ -57,6 +62,12 @@
                    data-tekton-nav-target="apollo-actions"
                    data-tekton-nav-action="switch-tab">
                 <span class="apollo__tab-label">Actions</span>
+            </label>
+            <label for="apollo-tab-confidence" class="apollo__tab" data-tab="confidence"
+                   data-tekton-nav-item="confidence"
+                   data-tekton-nav-target="apollo-confidence"
+                   data-tekton-nav-action="switch-tab">
+                <span class="apollo__tab-label">Confidence</span>
             </label>
             <label for="apollo-tab-attention" class="apollo__tab" data-tab="attention"
                    data-tekton-nav-item="attention-chat"
@@ -238,6 +249,149 @@
                             </tr>
                         </tbody>
                     </table>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Confidence Panel -->
+        <div class="apollo__panel apollo__panel--confidence" 
+             data-tab-content="confidence"
+             data-tekton-tab-content="confidence"
+             data-tekton-panel="confidence">
+            <div class="apollo__confidence" data-tekton-element="confidence-container">
+                <!-- Confidence Header -->
+                <div class="apollo__confidence-header">
+                    <h2 class="apollo__confidence-title">Prediction Confidence Dashboard</h2>
+                    <div class="apollo__confidence-controls">
+                        <select id="confidence-timeframe" class="apollo__confidence-select">
+                            <option value="1h">Last Hour</option>
+                            <option value="24h" selected>Last 24 Hours</option>
+                            <option value="7d">Last 7 Days</option>
+                            <option value="30d">Last 30 Days</option>
+                        </select>
+                        <button id="refresh-confidence" class="apollo__confidence-btn">Refresh</button>
+                    </div>
+                </div>
+                
+                <!-- Overall Confidence Score -->
+                <div class="apollo__confidence-score">
+                    <div class="apollo__confidence-meter">
+                        <div class="apollo__confidence-ring">
+                            <svg viewBox="0 0 200 200" class="apollo__confidence-svg">
+                                <circle cx="100" cy="100" r="90" fill="none" stroke="#e0e0e0" stroke-width="12"/>
+                                <circle cx="100" cy="100" r="90" fill="none" stroke="url(#confidence-gradient)" 
+                                        stroke-width="12" stroke-dasharray="565" stroke-dashoffset="113"
+                                        class="apollo__confidence-circle" id="confidence-circle"/>
+                                <defs>
+                                    <linearGradient id="confidence-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                        <stop offset="0%" style="stop-color:#4CAF50;stop-opacity:1" />
+                                        <stop offset="100%" style="stop-color:#2196F3;stop-opacity:1" />
+                                    </linearGradient>
+                                </defs>
+                            </svg>
+                            <div class="apollo__confidence-percent">
+                                <span id="confidence-value">--</span>%
+                            </div>
+                        </div>
+                        <div class="apollo__confidence-label">Overall Confidence</div>
+                        <div class="apollo__confidence-status" id="confidence-status">Calibrating...</div>
+                    </div>
+                </div>
+                
+                <!-- Confidence Breakdown -->
+                <div class="apollo__confidence-breakdown">
+                    <h3>Confidence by Category</h3>
+                    <div class="apollo__confidence-categories">
+                        <div class="apollo__confidence-category">
+                            <div class="apollo__category-header">
+                                <span class="apollo__category-name">Intent Recognition</span>
+                                <span class="apollo__category-score" id="intent-score">--</span>
+                            </div>
+                            <div class="apollo__category-bar">
+                                <div class="apollo__category-fill" id="intent-fill" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        <div class="apollo__confidence-category">
+                            <div class="apollo__category-header">
+                                <span class="apollo__category-name">Action Prediction</span>
+                                <span class="apollo__category-score" id="action-score">--</span>
+                            </div>
+                            <div class="apollo__category-bar">
+                                <div class="apollo__category-fill" id="action-fill" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        <div class="apollo__confidence-category">
+                            <div class="apollo__category-header">
+                                <span class="apollo__category-name">Timing Accuracy</span>
+                                <span class="apollo__category-score" id="timing-score">--</span>
+                            </div>
+                            <div class="apollo__category-bar">
+                                <div class="apollo__category-fill" id="timing-fill" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        <div class="apollo__confidence-category">
+                            <div class="apollo__category-header">
+                                <span class="apollo__category-name">Pattern Prediction</span>
+                                <span class="apollo__category-score" id="pattern-score">--</span>
+                            </div>
+                            <div class="apollo__category-bar">
+                                <div class="apollo__category-fill" id="pattern-fill" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Calibration Chart -->
+                <div class="apollo__calibration">
+                    <h3>Calibration Chart</h3>
+                    <div class="apollo__calibration-info">
+                        <span>Perfect calibration: predictions match actual outcomes</span>
+                    </div>
+                    <div class="apollo__calibration-chart" id="calibration-chart">
+                        <!-- Chart will be rendered here -->
+                        <canvas id="calibration-canvas" width="400" height="300"></canvas>
+                    </div>
+                </div>
+                
+                <!-- Recent Predictions -->
+                <div class="apollo__recent-predictions">
+                    <h3>Recent Predictions</h3>
+                    <div class="apollo__predictions-list" id="predictions-list">
+                        <!-- Predictions will be populated here -->
+                        <div class="apollo__prediction-item">
+                            <div class="apollo__prediction-time">Loading...</div>
+                            <div class="apollo__prediction-content">
+                                <span class="apollo__prediction-text">Fetching recent predictions...</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Confidence Trends -->
+                <div class="apollo__confidence-trends">
+                    <h3>Confidence Trends</h3>
+                    <div class="apollo__trends-grid">
+                        <div class="apollo__trend-card">
+                            <div class="apollo__trend-icon">📈</div>
+                            <div class="apollo__trend-label">Improving</div>
+                            <div class="apollo__trend-value" id="improving-count">--</div>
+                        </div>
+                        <div class="apollo__trend-card">
+                            <div class="apollo__trend-icon">📊</div>
+                            <div class="apollo__trend-label">Stable</div>
+                            <div class="apollo__trend-value" id="stable-count">--</div>
+                        </div>
+                        <div class="apollo__trend-card">
+                            <div class="apollo__trend-icon">📉</div>
+                            <div class="apollo__trend-label">Declining</div>
+                            <div class="apollo__trend-value" id="declining-count">--</div>
+                        </div>
+                        <div class="apollo__trend-card">
+                            <div class="apollo__trend-icon">⚡</div>
+                            <div class="apollo__trend-label">High Variance</div>
+                            <div class="apollo__trend-value" id="variance-count">--</div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
