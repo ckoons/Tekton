@@ -2337,12 +2337,12 @@ window.sophia_compareComponents = function() {
     const comparisonChart = document.getElementById('sophia-comparison-chart');
     
     if (!comp1 || !comp2) {
-        alert('Please select two components to compare');
+        TektonModal.warning('Please select two components to compare');
         return;
     }
     
     if (comp1 === comp2) {
-        alert('Please select two different components');
+        TektonModal.warning('Please select two different components');
         return;
     }
     
@@ -2480,41 +2480,41 @@ window.sophia_compareComponents = function() {
 
 // BUTTON FUNCTIONS FOR THEORY VALIDATION
 window.sophia_viewProtocolResults = function(protocolId) {
-    alert(`View Results: Displaying detailed results for protocol ${protocolId}\n\nThis would show:\n• Experiment data and measurements\n• Statistical analysis results\n• Graphs and visualizations\n• Confidence intervals`);
+    TektonModal.info(`View Results: Displaying detailed results for protocol ${protocolId}\n\nThis would show:\n• Experiment data and measurements\n• Statistical analysis results\n• Graphs and visualizations\n• Confidence intervals`);
 };
 
 window.sophia_monitorProtocol = function(protocolId) {
-    alert(`Monitor Protocol: Opening real-time monitoring for ${protocolId}\n\nThis would show:\n• Live experiment progress\n• Real-time data streaming\n• Alert notifications\n• Performance metrics`);
+    TektonModal.info(`Monitor Protocol: Opening real-time monitoring for ${protocolId}\n\nThis would show:\n• Live experiment progress\n• Real-time data streaming\n• Alert notifications\n• Performance metrics`);
 };
 
 window.sophia_exportProtocol = function(protocolId) {
-    alert(`Export Protocol: Preparing export for ${protocolId}\n\nExport options:\n• PDF report with full analysis\n• CSV data files\n• JSON raw data\n• Jupyter notebook format`);
+    TektonModal.success(`Export Protocol: Preparing export for ${protocolId}\n\nExport options:\n• PDF report with full analysis\n• CSV data files\n• JSON raw data\n• Jupyter notebook format`);
 };
 
 // BUTTON FUNCTIONS FOR EXPERIMENTS
 window.sophia_viewExperiment = function(experimentId) {
-    alert(`View Experiment: Opening details for ${experimentId}\n\nThis would display:\n• Experiment configuration\n• Variables and controls\n• Participant/component list\n• Timeline and schedule`);
+    TektonModal.info(`View Experiment: Opening details for ${experimentId}\n\nThis would display:\n• Experiment configuration\n• Variables and controls\n• Participant/component list\n• Timeline and schedule`);
 };
 
 window.sophia_viewExperimentResults = function(experimentId) {
-    alert(`View Results: Analyzing results for ${experimentId}\n\nThis would show:\n• Statistical significance tests\n• Performance comparisons\n• Outcome metrics\n• Recommendation insights`);
+    TektonModal.info(`View Results: Analyzing results for ${experimentId}\n\nThis would show:\n• Statistical significance tests\n• Performance comparisons\n• Outcome metrics\n• Recommendation insights`);
 };
 
 window.sophia_monitorExperiment = function(experimentId) {
-    alert(`Monitor Experiment: Live tracking for ${experimentId}\n\nMonitoring:\n• Current progress: 67%\n• Active participants\n• Real-time metrics\n• Anomaly detection alerts`);
+    TektonModal.info(`Monitor Experiment: Live tracking for ${experimentId}\n\nMonitoring:\n• Current progress: 67%\n• Active participants\n• Real-time metrics\n• Anomaly detection alerts`);
 };
 
 // BUTTON FUNCTIONS FOR RECOMMENDATIONS
 window.sophia_viewRecommendation = function(recommendationId) {
-    alert(`View Recommendation: Details for ${recommendationId}\n\nShowing:\n• Full recommendation description\n• Implementation plan\n• Expected benefits\n• Risk assessment`);
+    TektonModal.info(`View Recommendation: Details for ${recommendationId}\n\nShowing:\n• Full recommendation description\n• Implementation plan\n• Expected benefits\n• Risk assessment`);
 };
 
 window.sophia_updateRecommendation = function(recommendationId) {
-    alert(`Update Recommendation: Editing ${recommendationId}\n\nUpdate options:\n• Modify priority level\n• Add implementation notes\n• Update status\n• Assign to team members`);
+    TektonModal.info(`Update Recommendation: Editing ${recommendationId}\n\nUpdate options:\n• Modify priority level\n• Add implementation notes\n• Update status\n• Assign to team members`);
 };
 
 window.sophia_approveRecommendation = function(recommendationId) {
-    alert(`Approve Recommendation: Approving ${recommendationId}\n\nApproval will:\n• Move to implementation queue\n• Notify assigned teams\n• Allocate resources\n• Start tracking progress`);
+    TektonModal.success(`Approve Recommendation: Approving ${recommendationId}\n\nApproval will:\n• Move to implementation queue\n• Notify assigned teams\n• Allocate resources\n• Start tracking progress`);
 };
 
 // CHAT CLEARING FUNCTION

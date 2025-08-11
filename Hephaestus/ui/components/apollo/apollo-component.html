@@ -1066,7 +1066,7 @@
             const effectiveness = document.getElementById('protocol-effectiveness').value;
             
             if (!name || !description) {
-                alert('Please fill in all required fields');
+                TektonModal.warning('Please fill in all required fields');
                 return;
             }
             
@@ -1090,11 +1090,11 @@
                     closeProtocolDialog();
                     updateProtocols(); // Refresh the protocols list
                 } else {
-                    alert('Failed to save protocol');
+                    TektonModal.error('Failed to save protocol');
                 }
             } catch (error) {
                 console.error('Error saving protocol:', error);
-                alert('Error saving protocol');
+                TektonModal.error('Error saving protocol');
             }
         };
         

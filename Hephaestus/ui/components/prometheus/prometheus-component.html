@@ -1658,7 +1658,7 @@ Coder Assignment: Check DAILY_LOG.md for assignment
 
 Note: Full API integration pending - this shows the sprint exists`;
     
-    alert(info);
+    TektonModal.info(info);
 }
 
 /*
@@ -1770,7 +1770,7 @@ function viewRetro(sprintName) {
         })
         .catch(error => {
             console.error('Error loading retrospective:', error);
-            alert(`Error loading retrospective for ${sprintName}: ${error.message}`);
+            TektonModal.error(`Error loading retrospective for ${sprintName}: ${error.message}`);
         });
 }
 
@@ -1781,10 +1781,10 @@ function editRetro(sprintName) {
     viewRetro(sprintName);
 }
 
-function completeSprint(sprintName) {
+async function completeSprint(sprintName) {
     console.log('[PROMETHEUS] Complete sprint clicked:', sprintName);
     
-    if (!confirm(`Complete sprint "${sprintName}" and move to retrospectives?\n\nThis will:\n- Update status to "Complete"\n- Move to Completed directory\n- Make available for retrospective`)) {
+    if (!(await TektonModal.confirm(`Complete sprint "${sprintName}" and move to retrospectives?\n\nThis will:\n- Update status to "Complete"\n- Move to Completed directory\n- Make available for retrospective`))) {
         return;
     }
     
@@ -1818,14 +1818,14 @@ function completeSprint(sprintName) {
         return response.json();
     })
     .then(() => {
-        alert(`Sprint "${sprintName}" has been completed and moved to the Completed directory.`);
+        TektonModal.success(`Sprint "${sprintName}" has been completed and moved to the Completed directory.`);
         
         // Refresh the page to show updated data
         window.location.reload();
     })
     .catch(error => {
         console.error('Error completing sprint:', error);
-        alert(`Failed to complete sprint: ${error.message}`);
+        TektonModal.error(`Failed to complete sprint: ${error.message}`);
     });
 }
 
@@ -1850,13 +1850,13 @@ function saveSprintEdits() {
     })
     .then(() => {
         closeEditDialog();
-        alert('Sprint saved successfully!');
+        TektonModal.success('Sprint saved successfully!');
         // Refresh page to show changes
         window.location.reload();
     })
     .catch(error => {
         console.error('Error saving sprint:', error);
-        alert(`Failed to save sprint changes: ${error.message}`);
+        TektonModal.error(`Failed to save sprint changes: ${error.message}`);
     });
 }
 
@@ -1880,13 +1880,13 @@ function saveRetro() {
     })
     .then(() => {
         closeRetroEditor();
-        alert('Retrospective saved successfully!');
+        TektonModal.success('Retrospective saved successfully!');
         // Refresh page to show changes
         window.location.reload();
     })
     .catch(error => {
         console.error('Error saving retrospective:', error);
-        alert(`Failed to save retrospective: ${error.message}`);
+        TektonModal.error(`Failed to save retrospective: ${error.message}`);
     });
 }
 
@@ -1896,7 +1896,7 @@ function updateSchedule() {
     const notes = document.getElementById('schedule-notes').value;
     
     if (!sprintName) {
-        alert('Please select a sprint');
+        TektonModal.warning('Please select a sprint');
         return;
     }
     
@@ -1917,7 +1917,7 @@ function updateSchedule() {
         // Clear form
         document.getElementById('schedule-notes').value = '';
         
-        alert(`Sprint "${sprintName}" status updated to "${status}"`);
+        TektonModal.success(`Sprint "${sprintName}" status updated to "${status}"`);
         
         // Add to log
         const logEntry = document.createElement('div');
@@ -1934,7 +1934,7 @@ function updateSchedule() {
     })
     .catch(error => {
         console.error('Error updating schedule:', error);
-        alert(`Failed to update schedule: ${error.message}`);
+        TektonModal.error(`Failed to update schedule: ${error.message}`);
     });
 }
 

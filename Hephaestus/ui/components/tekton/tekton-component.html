@@ -2221,7 +2221,7 @@ function prepareNewProject() {
     
     const githubUrl = document.getElementById('github-url').value.trim();
     if (!githubUrl) {
-        alert('Please enter a GitHub URL');
+        TektonModal.warning('Please enter a GitHub URL');
         return false;
     }
     
@@ -2230,7 +2230,7 @@ function prepareNewProject() {
     const match = githubUrl.match(githubPattern);
     
     if (!match) {
-        alert('Please enter a valid GitHub URL (e.g., https://github.com/user/repository)');
+        TektonModal.warning('Please enter a valid GitHub URL (e.g., https://github.com/user/repository)');
         return false;
     }
     
@@ -2288,7 +2288,7 @@ async function createNewProject() {
     const companionAI = document.getElementById('companion-intelligence').value;
     
     if (!githubUrl || !localDirectory) {
-        alert('Please prepare the project first');
+        TektonModal.warning('Please prepare the project first');
         // Re-enable buttons
         createBtn.disabled = false;
         createBtn.textContent = 'Create';
@@ -2335,7 +2335,7 @@ async function createNewProject() {
         console.log('[TEKTON] Project created successfully:', result);
         
         // Show success message  
-        alert(`Project '${result.name}' created successfully!`);
+        TektonModal.success(`Project '${result.name}' created successfully!`);
         
         // Clear the form after creation
         cancelNewProject();
@@ -2349,7 +2349,7 @@ async function createNewProject() {
         
     } catch (error) {
         console.error('[TEKTON] Failed to create project:', error);
-        alert(`Failed to create project: ${error.message}`);
+        TektonModal.error(`Failed to create project: ${error.message}`);
         
         // Re-enable buttons on error
         createBtn.disabled = false;
@@ -2363,9 +2363,22 @@ async function createNewProject() {
 window.loadProjectsDashboard = async function loadProjectsDashboard() {
     console.log('[TEKTON] Loading projects dashboard');
     
+    const projectsList = document.getElementById('projects-list');
+    if (projectsList) {
+        // Show loading indicator immediately
+        projectsList.innerHTML = '<div class="tekton__placeholder-message">Loading projects...</div>';
+    }
+    
     try {
-        // Fetch projects from TektonCore API
-        const response = await fetch(tektonUrl('tekton-core', '/api/projects'));
+        // Fetch projects from TektonCore API using proper tektonUrl
+        const url = tektonUrl('tekton-core', '/api/projects');
+        console.log('[TEKTON] Fetching projects from:', url);
+        const startTime = Date.now();
+        
+        const response = await fetch(url);
+        
+        const elapsed = Date.now() - startTime;
+        console.log(`[TEKTON] Fetch completed in ${elapsed}ms`);
         
         if (!response.ok) {
             throw new Error(`Failed to fetch projects: ${response.statusText}`);
@@ -2373,8 +2386,6 @@ window.loadProjectsDashboard = async function loadProjectsDashboard() {
         
         const data = await response.json();
         console.log('[TEKTON] Loaded projects:', data);
-        
-        const projectsList = document.getElementById('projects-list');
         
         if (!data.projects || data.projects.length === 0) {
             projectsList.innerHTML = '<div class="tekton__placeholder-message">Create a New Project<br>No projects are currently managed by Tekton</div>';
@@ -2393,7 +2404,7 @@ window.loadProjectsDashboard = async function loadProjectsDashboard() {
     } catch (error) {
         console.error('[TEKTON] Failed to load projects:', error);
         const projectsList = document.getElementById('projects-list');
-        projectsList.innerHTML = `<div class="tekton__error-message">Failed to load projects: ${error.message}</div>`;
+        projectsList.innerHTML = `<div class="tekton__placeholder-message">Unable to load projects<br><small>${error.message}</small></div>`;
     }
 }
 
@@ -2608,7 +2619,7 @@ async function showProjectDetails(projectId, projectName) {
         
     } catch (error) {
         console.error('[TEKTON] Failed to fetch project details:', error);
-        alert(`Failed to fetch project details: ${error.message}`);
+        TektonModal.error(`Failed to fetch project details: ${error.message}`);
     }
 }
 
@@ -2825,17 +2836,17 @@ async function fixMergeConflict(mergeId, mergeName) {
         const result = await response.json();
         
         if (result.success) {
-            alert(`Merge conflicts resolved successfully for "${mergeName}"!`);
+            TektonModal.success(`Merge conflicts resolved successfully for "${mergeName}"!`);
             await loadMergeQueue();
         } else {
             // AI failed - show options
-            alert(`AI was unable to resolve conflicts. Please choose Consult or Redo.`);
+            TektonModal.warning(`AI was unable to resolve conflicts. Please choose Consult or Redo.`);
             showMergeConflictModal(mergeId, mergeName, conflictData);
         }
         
     } catch (error) {
         console.error('[TEKTON] Failed to fix merge:', error);
-        alert(`Failed to fix merge: ${error.message}`);
+        TektonModal.error(`Failed to fix merge: ${error.message}`);
     }
 }
 
@@ -2863,18 +2874,19 @@ async function consultCoder(mergeId, mergeName) {
         }
         
         const result = await response.json();
-        alert(`Merge task sent to the assigned Coder for "${mergeName}". They will resolve the conflicts.`);
+        TektonModal.info(`Merge task sent to the assigned Coder for "${mergeName}". They will resolve the conflicts.`);
         await loadMergeQueue();
         
     } catch (error) {
         console.error('[TEKTON] Failed to consult coder:', error);
-        alert(`Failed to consult coder: ${error.message}`);
+        TektonModal.error(`Failed to consult coder: ${error.message}`);
     }
 }
 
 // Redo sprint - delete branch and start fresh
 async function redoSprint(mergeId, mergeName) {
-    if (!confirm(`Are you sure you want to redo "${mergeName}"?\n\nThis will delete the branch and restart the sprint with priority 1.`)) {
+    const confirmed = await TektonModal.confirm(`Are you sure you want to redo "${mergeName}"?\n\nThis will delete the branch and restart the sprint with priority 1.`, 'Confirm Redo Sprint');
+    if (!confirmed) {
         return;
     }
     
@@ -2897,12 +2909,12 @@ async function redoSprint(mergeId, mergeName) {
         }
         
         const result = await response.json();
-        alert(`Sprint "${mergeName}" has been reset. Branch deleted, priority set to 1, and reassigned to ${result.new_sprint.coder}.`);
+        TektonModal.success(`Sprint "${mergeName}" has been reset. Branch deleted, priority set to 1, and reassigned to ${result.new_sprint.coder}.`);
         await loadMergeQueue();
         
     } catch (error) {
         console.error('[TEKTON] Failed to redo sprint:', error);
-        alert(`Failed to redo sprint: ${error.message}`);
+        TektonModal.error(`Failed to redo sprint: ${error.message}`);
     }
 }
 
@@ -2922,7 +2934,7 @@ async function showSprintDailyLog(sprintId, sprintName) {
         
     } catch (error) {
         console.error('[TEKTON] Failed to fetch daily log:', error);
-        alert(`Failed to fetch daily log: ${error.message}`);
+        TektonModal.error(`Failed to fetch daily log: ${error.message}`);
     }
 }
 
@@ -2942,7 +2954,7 @@ async function showSprintHandoff(sprintId, sprintName) {
         
     } catch (error) {
         console.error('[TEKTON] Failed to fetch handoff:', error);
-        alert(`Failed to fetch handoff: ${error.message}`);
+        TektonModal.error(`Failed to fetch handoff: ${error.message}`);
     }
 }
 
@@ -2962,7 +2974,7 @@ async function showSprintPlan(sprintId, sprintName) {
         
     } catch (error) {
         console.error('[TEKTON] Failed to fetch sprint plan:', error);
-        alert(`Failed to fetch sprint plan: ${error.message}`);
+        TektonModal.error(`Failed to fetch sprint plan: ${error.message}`);
     }
 }
 
@@ -3017,7 +3029,7 @@ async function saveSprintFile(sprintId, fileName) {
             throw new Error(`Failed to save file: ${response.statusText}`);
         }
         
-        alert(`${fileName} saved successfully!`);
+        TektonModal.success(`${fileName} saved successfully!`);
         closeSprintEditor();
         
         // Reload sprints if on sprints tab
@@ -3028,7 +3040,7 @@ async function saveSprintFile(sprintId, fileName) {
         
     } catch (error) {
         console.error('[TEKTON] Failed to save file:', error);
-        alert(`Failed to save file: ${error.message}`);
+        TektonModal.error(`Failed to save file: ${error.message}`);
     }
 }
 
@@ -3109,7 +3121,7 @@ async function showAutomationModal(sprintName) {
         
     } catch (error) {
         console.error('[TEKTON] Failed to show automation modal:', error);
-        alert(`Failed to load automation settings: ${error.message}`);
+        TektonModal.error(`Failed to load automation settings: ${error.message}`);
     }
 }
 
@@ -3188,7 +3200,7 @@ async function saveAutomationSettings(sprintName) {
             throw new Error(`Failed to save sprint plan: ${saveResponse.statusText}`);
         }
         
-        alert(`Automation settings saved successfully!`);
+        TektonModal.success(`Automation settings saved successfully!`);
         closeAutomationModal();
         
         // Reload sprints to show updated automation status
@@ -3202,7 +3214,7 @@ async function saveAutomationSettings(sprintName) {
         
     } catch (error) {
         console.error('[TEKTON] Failed to save automation settings:', error);
-        alert(`Failed to save automation settings: ${error.message}`);
+        TektonModal.error(`Failed to save automation settings: ${error.message}`);
     }
 }
 
@@ -3237,7 +3249,7 @@ async function gitAction(projectId, action, remote, event) {
                 break;
             case 'pr':
                 // Pull request is not yet implemented
-                alert('Pull Request functionality coming soon');
+                TektonModal.info('Pull Request functionality coming soon');
                 return;
             default:
                 console.error(`[TEKTON] Unknown git action: ${action}`);
@@ -3624,13 +3636,13 @@ async function saveProjectReadme(projectId) {
         
         if (response.ok) {
             editor.dataset.originalContent = editor.value;
-            alert('README saved successfully!');
+            TektonModal.success('README saved successfully!');
         } else {
-            alert('Failed to save README');
+            TektonModal.error('Failed to save README');
         }
     } catch (error) {
         console.error('[TEKTON] Error saving README:', error);
-        alert('Error saving README: ' + error.message);
+        TektonModal.error('Error saving README: ' + error.message);
     }
 }
 
@@ -3652,15 +3664,15 @@ async function saveProjectSettings(projectId) {
         });
         
         if (response.ok) {
-            alert('Settings saved successfully!');
+            TektonModal.success('Settings saved successfully!');
             closeProjectDetailsModal();
             loadProjectsDashboard(); // Refresh projects
         } else {
-            alert('Failed to save settings');
+            TektonModal.error('Failed to save settings');
         }
     } catch (error) {
         console.error('[TEKTON] Error saving settings:', error);
-        alert('Error saving settings: ' + error.message);
+        TektonModal.error('Error saving settings: ' + error.message);
     }
 }
 
@@ -3761,7 +3773,7 @@ function createNewSprint(projectId, projectName) {
     if (!sprintName) return;
     
     // TODO: Implement sprint creation API call
-    alert(`Creating sprint "${sprintName}" for project ${projectName}`);
+    TektonModal.info(`Creating sprint "${sprintName}" for project ${projectName}`);
     loadProjectSprints(projectId); // Refresh the list
 }
 
@@ -3790,7 +3802,8 @@ function stopDashboardAutoRefresh() {
 }
 
 async function removeProject(projectId, projectName) {
-    if (!confirm(`Are you sure you want to remove "${projectName}" from the dashboard?\n\nThis will NOT delete any files or repositories.`)) {
+    const confirmed = await TektonModal.confirm(`Are you sure you want to remove "${projectName}" from the dashboard?\n\nThis will NOT delete any files or repositories.`, 'Confirm Remove Project');
+    if (!confirmed) {
         return;
     }
     
@@ -3810,7 +3823,7 @@ async function removeProject(projectId, projectName) {
         
     } catch (error) {
         console.error('[TEKTON] Failed to remove project:', error);
-        alert(`Failed to remove project: ${error.message}`);
+        TektonModal.error(`Failed to remove project: ${error.message}`);
     }
 }
 
@@ -3848,7 +3861,7 @@ async function executeMerge(mergeId, mergeName) {
                 throw new Error(`Failed to complete merge: ${await commitResponse.text()}`);
             }
             
-            alert(`Merge completed successfully for "${mergeName}"!`);
+            TektonModal.success(`Merge completed successfully for "${mergeName}"!`);
             
             // Reload merge queue to reflect changes
             await loadMergeQueue();
@@ -3861,7 +3874,7 @@ async function executeMerge(mergeId, mergeName) {
         
     } catch (error) {
         console.error('[TEKTON] Failed to execute merge:', error);
-        alert(`Failed to execute merge: ${error.message}`);
+        TektonModal.error(`Failed to execute merge: ${error.message}`);
     }
 }
 
@@ -3887,11 +3900,11 @@ async function viewMergeDetails(mergeId, mergeName) {
         if (details.path) detailsText += `Path: ${details.path}\n`;
         if (details.tasks) detailsText += `Tasks: ${details.tasks.length} tasks\n`;
         
-        alert(detailsText);
+        TektonModal.info(detailsText, 'Merge Details');
         
     } catch (error) {
         console.error('[TEKTON] Failed to fetch merge details:', error);
-        alert(`Failed to fetch merge details: ${error.message}`);
+        TektonModal.error(`Failed to fetch merge details: ${error.message}`);
     }
 }
 
@@ -3922,13 +3935,13 @@ async function sendBackToCoder(conflictId, conflictName) {
         const result = await response.json();
         console.log(`[TEKTON] Sent back to Coder successfully:`, result);
         
-        alert(`"${conflictName}" sent back to ${result.assigned_coder || 'Coder'} for fixes!`);
+        TektonModal.info(`"${conflictName}" sent back to ${result.assigned_coder || 'Coder'} for fixes!`);
         
         // Function removed - conflicts feature removed
         
     } catch (error) {
         console.error('[TEKTON] Failed to send back to Coder:', error);
-        alert(`Failed to send back to Coder: ${error.message}`);
+        TektonModal.error(`Failed to send back to Coder: ${error.message}`);
     }
 }
 
@@ -4018,10 +4031,10 @@ function tekton_protectHtmlPanel() {
 }
 */
 
-// SETUP DONE AFTER PAGE LOAD
-// This ensures the functions are available before the tab events need them
-window.addEventListener('DOMContentLoaded', function() {
-    console.log('[TEKTON] DOM loaded, setting up Tekton component');
+// Initialize Tekton component immediately when loaded
+// This runs when the component HTML is injected into the DOM
+(function initializeTektonComponent() {
+    console.log('[TEKTON] Initializing Tekton component');
     
     // Set up tab switching listeners
     const radioButtons = document.querySelectorAll('input[name="tekton-tab"]');
@@ -4044,47 +4057,24 @@ window.addEventListener('DOMContentLoaded', function() {
         });
     });
     
-    // Load dashboard projects since dashboard tab is checked by default
-    loadProjectsDashboard();
-    // Load project CIs for Projects Chat
-    loadProjectCIs();
-    // Load merge queue data for Merges tab
-    loadMergeQueue();
-});
-
-// IMMEDIATE PROTECTION
-// In case the DOM is already loaded
-if (document.readyState === 'complete' || document.readyState === 'interactive') {
-    console.log('[TEKTON] Document already loaded, setting up Tekton component immediately');
+    // Check which tab is currently selected and load its data
+    const checkedTab = document.querySelector('input[name="tekton-tab"]:checked');
+    if (checkedTab) {
+        const tabId = checkedTab.id.replace('tekton-tab-', '');
+        console.log('[TEKTON] Initial tab:', tabId);
+        
+        if (tabId === 'projects') {
+            loadProjectsDashboard();
+        } else if (tabId === 'sprints') {
+            loadAllSprints();
+        } else if (tabId === 'merges') {
+            loadMergeQueue();
+        }
+    }
     
-    // Set up tab switching listeners
-    const radioButtons = document.querySelectorAll('input[name="tekton-tab"]');
-    radioButtons.forEach(radio => {
-        radio.addEventListener('change', function() {
-            if (this.checked) {
-                const tabId = this.id.replace('tekton-tab-', '');
-                console.log('[TEKTON] Radio button changed to:', tabId);
-                
-                // Load data for specific tabs
-                if (tabId === 'projects') {
-                    loadProjectsDashboard();
-                } else if (tabId === 'sprints') {
-                    console.log('[TEKTON] Loading sprints from radio change');
-                    loadAllSprints();
-                } else if (tabId === 'merges') {
-                    loadMergeQueue();
-                }
-            }
-        });
-    });
-    
-    // Load dashboard projects since dashboard tab is checked by default
-    loadProjectsDashboard();
-    // Load project CIs for Projects Chat
+    // Always load these for the chat panels
     loadProjectCIs();
-    // Load merge queue data for Merges tab
-    loadMergeQueue();
-}
+})();
 
 // Initialize unified chat components on load
 tekton_initChats();

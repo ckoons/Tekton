@@ -1605,7 +1605,7 @@ async function ergon_updateAutonomy(sprintName, newLevel) {
         
     } catch (error) {
         console.error('[ERGON] Failed to update autonomy:', error);
-        alert(`Failed to update autonomy level: ${error.message}`);
+        TektonModal.error(`Failed to update autonomy level: ${error.message}`);
         // Reload to restore original value
         ergon_loadSprints();
     }
@@ -1731,7 +1731,7 @@ function ergon_analyzeRepo(analysisType) {
     const localPath = pathInput.value.trim();
     
     if (!repoUrl && !localPath) {
-        alert('Please enter either a GitHub repository URL or a local path');
+        TektonModal.warning('Please enter either a GitHub repository URL or a local path');
         return;
     }
     
@@ -1967,7 +1967,7 @@ function ergon_startAutomation() {
     const sprintName = document.getElementById('sprint-name').value.trim();
     
     if (!description) {
-        alert('Please describe what you want to build');
+        TektonModal.warning('Please describe what you want to build');
         return;
     }
     

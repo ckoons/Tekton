@@ -166,6 +166,30 @@ document.addEventListener('DOMContentLoaded', function() {
     window.terminalManager = new TerminalManager('terminal');
     terminalManager.init();
     
+    // Connect radio navigation to component loader
+    console.log('Setting up navigation event listeners...');
+    document.querySelectorAll('input[name="component-nav"]').forEach(radio => {
+        radio.addEventListener('change', (e) => {
+            if (e.target.checked) {
+                const componentId = e.target.id.replace('nav-', '');
+                console.log(`Navigation changed to: ${componentId}`);
+                if (window.minimalLoader) {
+                    window.minimalLoader.loadComponent(componentId);
+                } else {
+                    console.error('MinimalLoader not available');
+                }
+            }
+        });
+    });
+    
+    // Load initial component (numa is checked by default)
+    console.log('Loading initial component: numa');
+    if (window.minimalLoader) {
+        window.minimalLoader.loadComponent('numa');
+    } else {
+        console.error('MinimalLoader not available for initial load');
+    }
+    
     // Initialize localStorage manager
     window.storageManager = new StorageManager();
     

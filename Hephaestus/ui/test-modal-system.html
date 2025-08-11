@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tekton Modal System Test</title>
+    
+    <!-- Include base styles and modal system -->
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/themes/theme-base.css">
+    <link rel="stylesheet" href="styles/themes/theme-pure-black.css">
+    <link rel="stylesheet" href="shared/modal-system.css">
+    
+    <style>
+        body {
+            padding: 40px;
+            background: #1a1a2a;
+            color: #f0f0f0;
+        }
+        
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            color: #FFD700;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #FFD700;
+            padding-bottom: 10px;
+        }
+        
+        .test-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #252535;
+            border-radius: 8px;
+            border: 1px solid #444444;
+        }
+        
+        h2 {
+            color: #5a9fd4;
+            margin-bottom: 15px;
+        }
+        
+        .test-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .test-btn {
+            padding: 10px 20px;
+            background: #333345;
+            color: #f0f0f0;
+            border: 1px solid #FFD700;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .test-btn:hover {
+            background: #FFD700;
+            color: #1a1a2a;
+        }
+        
+        .result-display {
+            margin-top: 20px;
+            padding: 10px;
+            background: #1a1a2a;
+            border: 1px solid #444444;
+            border-radius: 4px;
+            font-family: monospace;
+            min-height: 40px;
+            color: #4CAF50;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>Tekton Modal System Test Suite</h1>
+        
+        <!-- Basic Modals -->
+        <div class="test-section">
+            <h2>Basic Modal Types</h2>
+            <div class="test-buttons">
+                <button class="test-btn" onclick="testAlert()">Alert (Info)</button>
+                <button class="test-btn" onclick="testSuccess()">Success</button>
+                <button class="test-btn" onclick="testError()">Error</button>
+                <button class="test-btn" onclick="testWarning()">Warning</button>
+            </div>
+            <div id="basic-result" class="result-display">Click a button to test modals</div>
+        </div>
+        
+        <!-- Interactive Modals -->
+        <div class="test-section">
+            <h2>Interactive Modals</h2>
+            <div class="test-buttons">
+                <button class="test-btn" onclick="testConfirm()">Confirm Dialog</button>
+                <button class="test-btn" onclick="testPrompt()">Prompt Input</button>
+                <button class="test-btn" onclick="testLoading()">Loading Modal</button>
+            </div>
+            <div id="interactive-result" class="result-display">Results will appear here</div>
+        </div>
+        
+        <!-- Size Variants -->
+        <div class="test-section">
+            <h2>Size Variants</h2>
+            <div class="test-buttons">
+                <button class="test-btn" onclick="testSmall()">Small Modal</button>
+                <button class="test-btn" onclick="testMedium()">Medium Modal</button>
+                <button class="test-btn" onclick="testLarge()">Large Modal</button>
+                <button class="test-btn" onclick="testFullscreen()">Fullscreen Modal</button>
+            </div>
+        </div>
+        
+        <!-- Custom Options -->
+        <div class="test-section">
+            <h2>Custom Options</h2>
+            <div class="test-buttons">
+                <button class="test-btn" onclick="testCustomButtons()">Custom Buttons</button>
+                <button class="test-btn" onclick="testNoClose()">No Close Button</button>
+                <button class="test-btn" onclick="testNoBackdropClose()">No Backdrop Close</button>
+                <button class="test-btn" onclick="testMultiple()">Multiple Modals</button>
+            </div>
+        </div>
+        
+        <!-- Native Replacement Examples -->
+        <div class="test-section">
+            <h2>Native Dialog Replacements</h2>
+            <div class="test-buttons">
+                <button class="test-btn" onclick="oldAlert()">Old alert()</button>
+                <button class="test-btn" onclick="newAlert()">New TektonAlert()</button>
+                <button class="test-btn" onclick="oldConfirm()">Old confirm()</button>
+                <button class="test-btn" onclick="newConfirm()">New TektonConfirm()</button>
+            </div>
+            <div id="replacement-result" class="result-display">Compare old vs new dialogs</div>
+        </div>
+    </div>
+    
+    <!-- Include modal factory -->
+    <script src="shared/modal-factory.js"></script>
+    
+    <script>
+        // Basic modal tests
+        function testAlert() {
+            TektonModal.alert('This is an informational alert using the new Tekton modal system.', 'Information');
+            document.getElementById('basic-result').textContent = 'Alert modal shown';
+        }
+        
+        function testSuccess() {
+            TektonModal.success('Operation completed successfully! The project has been created.');
+            document.getElementById('basic-result').textContent = 'Success modal shown';
+        }
+        
+        function testError() {
+            TektonModal.error('Failed to connect to the server. Please check your connection and try again.');
+            document.getElementById('basic-result').textContent = 'Error modal shown';
+        }
+        
+        function testWarning() {
+            TektonModal.warning('This action will delete all data. Please make sure you have a backup.');
+            document.getElementById('basic-result').textContent = 'Warning modal shown';
+        }
+        
+        // Interactive modal tests
+        async function testConfirm() {
+            const result = await TektonModal.confirm('Are you sure you want to delete this project?', 'Confirm Deletion');
+            document.getElementById('interactive-result').textContent = `Confirm result: ${result ? 'Confirmed' : 'Cancelled'}`;
+        }
+        
+        async function testPrompt() {
+            const result = await TektonModal.prompt('Please enter the project name:', 'New Project', 'my-project');
+            document.getElementById('interactive-result').textContent = `Prompt result: ${result || 'Cancelled'}`;
+        }
+        
+        function testLoading() {
+            const closeLoading = TektonModal.loading('Processing your request...');
+            document.getElementById('interactive-result').textContent = 'Loading modal shown - will close in 3 seconds';
+            setTimeout(() => {
+                closeLoading();
+                document.getElementById('interactive-result').textContent = 'Loading modal closed';
+            }, 3000);
+        }
+        
+        // Size variant tests
+        function testSmall() {
+            TektonModal.show({
+                title: 'Small Modal',
+                message: 'This is a small modal window.',
+                size: 'small'
+            });
+        }
+        
+        function testMedium() {
+            TektonModal.show({
+                title: 'Medium Modal',
+                message: 'This is a medium-sized modal window with more content. ' +
+                         'It provides a good balance between space and focus.',
+                size: 'medium'
+            });
+        }
+        
+        function testLarge() {
+            TektonModal.show({
+                title: 'Large Modal',
+                message: 'This is a large modal window that can contain extensive content. ' +
+                         'It\'s perfect for displaying detailed information, forms, or documentation. ' +
+                         'The large size provides plenty of space while still maintaining focus.',
+                size: 'large'
+            });
+        }
+        
+        function testFullscreen() {
+            TektonModal.show({
+                title: 'Fullscreen Modal',
+                message: 'This modal takes up almost the entire screen. ' +
+                         'It\'s ideal for immersive experiences or when you need maximum space.',
+                size: 'fullscreen'
+            });
+        }
+        
+        // Custom option tests
+        async function testCustomButtons() {
+            const result = await TektonModal.show({
+                title: 'Custom Actions',
+                message: 'Choose an action to perform:',
+                buttons: ['Save Draft', 'Publish', 'Cancel'],
+                type: 'info'
+            });
+            alert(`Button clicked: ${['Save Draft', 'Publish', 'Cancel'][result] || 'None'}`);
+        }
+        
+        function testNoClose() {
+            TektonModal.show({
+                title: 'No Close Button',
+                message: 'This modal has no close button. Use the Cancel button or press Escape.',
+                showClose: false,
+                buttons: ['Cancel', 'Continue']
+            });
+        }
+        
+        function testNoBackdropClose() {
+            TektonModal.show({
+                title: 'No Backdrop Close',
+                message: 'Clicking outside this modal will not close it. Use the buttons or press Escape.',
+                closeOnBackdrop: false
+            });
+        }
+        
+        function testMultiple() {
+            TektonModal.info('This is the first modal');
+            setTimeout(() => {
+                TektonModal.warning('This is the second modal stacked on top');
+                setTimeout(() => {
+                    TektonModal.success('This is the third modal - press Escape to close them one by one');
+                }, 500);
+            }, 500);
+        }
+        
+        // Native replacement comparisons
+        function oldAlert() {
+            alert('This is the old native alert dialog');
+            document.getElementById('replacement-result').textContent = 'Native alert shown';
+        }
+        
+        function newAlert() {
+            TektonModal.alert('This is the new Tekton alert with dark theme and golden accent');
+            document.getElementById('replacement-result').textContent = 'Tekton alert shown';
+        }
+        
+        async function oldConfirm() {
+            const result = confirm('This is the old native confirm dialog');
+            document.getElementById('replacement-result').textContent = `Native confirm: ${result}`;
+        }
+        
+        async function newConfirm() {
+            const result = await TektonModal.confirm('This is the new Tekton confirm with professional styling');
+            document.getElementById('replacement-result').textContent = `Tekton confirm: ${result}`;
+        }
+    </script>
+</body>
+</html>

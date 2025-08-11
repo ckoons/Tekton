@@ -2035,7 +2035,7 @@ async function terminateTerminal(pid) {
     
     // Standard confirmation dialog
     const message = `Terminate terminal process ${pid}?\n\nThis will forcefully close the terminal window.`;
-    if (!confirm(message)) {
+    if (!(await TektonModal.confirm(message))) {
         return;
     }
     
@@ -2063,11 +2063,11 @@ async function terminateTerminal(pid) {
         } else {
             console.error('[Terma] Failed to terminate terminal:', response.status);
             const error = await response.text();
-            alert(`Failed to terminate terminal: ${error}`);
+            TektonModal.error(`Failed to terminate terminal: ${error}`);
         }
     } catch (error) {
         console.error('[Terma] Error terminating terminal:', error);
-        alert(`Error terminating terminal: ${error.message}`);
+        TektonModal.error(`Error terminating terminal: ${error.message}`);
     }
 }
 

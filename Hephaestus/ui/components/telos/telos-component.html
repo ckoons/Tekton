@@ -1514,17 +1514,17 @@ window.editProposal = async function(proposalName) {
     return false;
 };
 
-window.removeProposal = function(proposalName) {
+window.removeProposal = async function(proposalName) {
     console.log('[TELOS] Remove proposal clicked:', proposalName);
-    if (confirm('Are you sure you want to remove the proposal: ' + proposalName + '?\n\nThis will move it to Removed status.')) {
+    if (await TektonModal.confirm('Are you sure you want to remove the proposal: ' + proposalName + '?\n\nThis will move it to Removed status.')) {
         moveProposalToRemoved(proposalName);
     }
     return false;
 };
 
-window.sprintProposal = function(proposalName) {
+window.sprintProposal = async function(proposalName) {
     console.log('[TELOS] Sprint proposal clicked:', proposalName);
-    if (confirm('Create a Development Sprint from: ' + proposalName + '?\n\nThis will create the sprint structure and move the proposal to Sprints.')) {
+    if (await TektonModal.confirm('Create a Development Sprint from: ' + proposalName + '?\n\nThis will create the sprint structure and move the proposal to Sprints.')) {
         createDevelopmentSprint(proposalName);
     }
     return false;
@@ -1668,7 +1668,7 @@ function clearProposalContent() {
 async function saveProposal(originalName) {
     const textarea = document.getElementById('proposal-content');
     if (!textarea) {
-        alert('Error: Could not find proposal content');
+        TektonModal.error('Error: Could not find proposal content');
         return;
     }
     
@@ -1678,7 +1678,7 @@ async function saveProposal(originalName) {
         
         // Validate required fields
         if (!proposalData.name || !proposalData.description) {
-            alert('Error: Proposal must have a name and description');
+            TektonModal.error('Error: Proposal must have a name and description');
             return;
         }
         
@@ -1716,7 +1716,7 @@ async function saveProposal(originalName) {
         closeProposalEditor();
         
     } catch (error) {
-        alert('Error: Invalid JSON format. Please check your proposal content.\n\n' + error.message);
+        TektonModal.error('Error: Invalid JSON format. Please check your proposal content.\n\n' + error.message);
         return;
     }
 }
@@ -1764,7 +1764,7 @@ async function moveProposalToRemoved(proposalName) {
             
         } catch (error) {
             console.error('[TELOS] Error calling remove API:', error);
-            alert('Error removing proposal. Make sure Telos service is running.');
+            TektonModal.error('Error removing proposal. Make sure Telos service is running.');
         }
     }
 }
@@ -1829,11 +1829,11 @@ async function createDevelopmentSprint(proposalName) {
             });
             
             console.log('[TELOS] Sprint created successfully:', proposalName);
-            alert(`Sprint created successfully!\n\nDirectory: ${result.sprint_dir}\nFiles created: ${result.files_created.join(', ')}`);
+            TektonModal.success(`Sprint created successfully!\n\nDirectory: ${result.sprint_dir}\nFiles created: ${result.files_created.join(', ')}`);
             
         } catch (error) {
             console.error('[TELOS] Error creating sprint:', error);
-            alert('Error creating sprint. Make sure Telos service is running.');
+            TektonModal.error('Error creating sprint. Make sure Telos service is running.');
             
             // Reset status on error
             const statusSpan = card.querySelector('.telos__proposal-status');
@@ -1928,17 +1928,17 @@ function addNewProposalCard(proposalData) {
 // GLOBAL WRAPPER FUNCTIONS FOR ONCLICK HANDLERS
 // These functions are called from the onclick handlers in the HTML
 
-window.removeProposal = function(proposalName) {
+window.removeProposal = async function(proposalName) {
     console.log('[TELOS] Remove proposal clicked:', proposalName);
-    if (confirm('Are you sure you want to remove the proposal: ' + proposalName + '?\n\nThis will move it to Removed status.')) {
+    if (await TektonModal.confirm('Are you sure you want to remove the proposal: ' + proposalName + '?\n\nThis will move it to Removed status.')) {
         moveProposalToRemoved(proposalName);
     }
     return false;
 };
 
-window.sprintProposal = function(proposalName) {
+window.sprintProposal = async function(proposalName) {
     console.log('[TELOS] Sprint proposal clicked:', proposalName);
-    if (confirm('Create a Development Sprint from: ' + proposalName + '?\n\nThis will create the sprint structure and move the proposal to Sprints.')) {
+    if (await TektonModal.confirm('Create a Development Sprint from: ' + proposalName + '?\n\nThis will create the sprint structure and move the proposal to Sprints.')) {
         createDevelopmentSprint(proposalName);
     }
     return false;

@@ -2113,7 +2113,7 @@ function harmonia_createWorkflow() {
 function harmonia_autoLayout() {
     console.log('[HARMONIA] Auto-layout workflow');
     // TODO: Implement auto-layout algorithm
-    alert('Auto-layout will arrange nodes for optimal readability');
+    TektonModal.info('Auto-layout will arrange nodes for optimal readability');
 }
 
 // Template actions
@@ -2142,7 +2142,7 @@ function harmonia_pauseExecution(executionId) {
 
 function harmonia_cancelExecution(executionId) {
     console.log('[HARMONIA] Cancelling execution:', executionId);
-    if (confirm('Are you sure you want to cancel this execution?')) {
+    if (await TektonModal.confirm('Are you sure you want to cancel this execution?')) {
         // TODO: Cancel execution via API
     }
 }
@@ -2168,7 +2168,7 @@ function harmonia_exportToSynthesis() {
     };
     console.log('[HARMONIA] Export options:', options);
     // TODO: Implement export logic
-    alert('Workflow exported to Synthesis successfully!');
+    TektonModal.success('Workflow exported to Synthesis successfully!');
 }
 
 function harmonia_previewExport() {
@@ -2179,7 +2179,7 @@ function harmonia_previewExport() {
 function harmonia_saveDraft() {
     console.log('[HARMONIA] Saving draft');
     // TODO: Save workflow draft
-    alert('Workflow draft saved');
+    TektonModal.success('Workflow draft saved');
 }
 
 // Initialize chat components
@@ -2320,7 +2320,7 @@ function updatePropertiesPanel(node) {
 
 function deleteNode(nodeId) {
     const node = document.querySelector(`[data-node-id="${nodeId}"]`);
-    if (node && confirm('Delete this node?')) {
+    if (node && await TektonModal.confirm('Delete this node?')) {
         node.remove();
         // Clear properties panel
         document.getElementById('properties-editor').innerHTML = `
@@ -2679,7 +2679,7 @@ window.addEventListener('DOMContentLoaded', function() {
     if (createTemplateBtn) {
         createTemplateBtn.addEventListener('click', function() {
             console.log('[HARMONIA] Creating new template');
-            alert('Template creator not yet implemented');
+            TektonModal.info('Template creator not yet implemented');
         });
     }
     
@@ -2687,7 +2687,7 @@ window.addEventListener('DOMContentLoaded', function() {
     if (importTemplateBtn) {
         importTemplateBtn.addEventListener('click', function() {
             console.log('[HARMONIA] Importing template');
-            alert('Template import not yet implemented');
+            TektonModal.info('Template import not yet implemented');
         });
     }
 });
@@ -2828,12 +2828,12 @@ async function createHarmoniaTemplate() {
         
         // Note: The backend expects workflow_definition_id, but we don't have the workflow ID from the response
         // This is a limitation of the current API structure - showing the error for now
-        alert(`Template creation requires workflow definition ID.\nCreated workflow: ${templateName} Workflow\nStatus: ${workflowResult.status}\n\nNote: Template creation needs workflow ID from the response.`);
+        TektonModal.info(`Template creation requires workflow definition ID.\nCreated workflow: ${templateName} Workflow\nStatus: ${workflowResult.status}\n\nNote: Template creation needs workflow ID from the response.`);
         
         // Refresh templates view
         loadTemplates();
     } catch (error) {
-        alert(`Failed to create template: ${error.message}`);
+        TektonModal.error(`Failed to create template: ${error.message}`);
     }
 }
 
@@ -2868,7 +2868,7 @@ async function importHarmoniaTemplate() {
             "metadata": {}
         };
         
-        alert(`Sample Template Format:\n\n${JSON.stringify(sampleTemplate, null, 2)}`);
+        TektonModal.info(`Sample Template Format:\n\n${JSON.stringify(sampleTemplate, null, 2)}`);
         return;
     }
     
@@ -2876,14 +2876,14 @@ async function importHarmoniaTemplate() {
         const template = JSON.parse(templateData);
         const result = await harmoniaApiCall('/templates/import', 'POST', template);
         
-        alert(`Template imported successfully!\nName: ${result.data.name}\nID: ${result.data.template_id}`);
+        TektonModal.success(`Template imported successfully!\nName: ${result.data.name}\nID: ${result.data.template_id}`);
         // Refresh templates view
         loadTemplates();
     } catch (error) {
         if (error.message.includes('JSON') || error.message.includes('Unexpected token')) {
-            alert('Invalid JSON format. Please check your template data.\n\nUse the sample format shown when you click Import Template without entering data.');
+            TektonModal.info('Invalid JSON format. Please check your template data.\n\nUse the sample format shown when you click Import Template without entering data.');
         } else {
-            alert(`Failed to import template: ${error.message}`);
+            TektonModal.error(`Failed to import template: ${error.message}`);
         }
     }
 }
@@ -2933,7 +2933,7 @@ Difficulty: ${template.difficulty}
 
 This template includes predefined workflow steps optimized for ${template.name.toLowerCase()} scenarios.`;
         
-        alert(preview);
+        TektonModal.info(preview);
     } else {
         // Try to load from API for real templates
         try {
@@ -2948,9 +2948,9 @@ Usage Count: ${template.usage_count || 0}
 
 Tags: ${template.tags?.join(', ') || 'None'}`;
             
-            alert(preview);
+            TektonModal.info(preview);
         } catch (error) {
-            alert(`Failed to load template preview: ${error.message}`);
+            TektonModal.error(`Failed to load template preview: ${error.message}`);
         }
     }
 }
@@ -2991,7 +2991,7 @@ Export Time: ${new Date(exportData.workflow_definition.metadata.exported_at).toL
 
 This export will be sent to Synthesis for validation and execution.`;
     
-    alert(preview);
+    TektonModal.info(preview);
 }
 
 // Review - Save Draft
@@ -3045,7 +3045,7 @@ async function saveHarmoniaDraft() {
         
         const result = await harmoniaApiCall(`/workflows/${workflowId}/draft`, 'POST', draftData);
         
-        alert(`Draft saved successfully!\nWorkflow ID: ${result.data.workflow_id}\nDraft ID: ${result.data.draft_id}\nSaved at: ${new Date(result.data.saved_at).toLocaleString()}`);
+        TektonModal.success(`Draft saved successfully!\nWorkflow ID: ${result.data.workflow_id}\nDraft ID: ${result.data.draft_id}\nSaved at: ${new Date(result.data.saved_at).toLocaleString()}`);
         
     } catch (error) {
         console.error('Save draft error:', error);
@@ -3053,9 +3053,9 @@ async function saveHarmoniaDraft() {
         if (error.message.includes('404')) {
             // Clear the stored workflow ID
             window.currentWorkflowId = null;
-            alert('The workflow no longer exists. Please create a new workflow first.');
+            TektonModal.info('The workflow no longer exists. Please create a new workflow first.');
         } else {
-            alert(`Failed to save draft: ${error.message}`);
+            TektonModal.error(`Failed to save draft: ${error.message}`);
         }
     }
 }
@@ -3068,9 +3068,9 @@ function autoLayoutWorkflow() {
     const canvas = document.getElementById('workflow-canvas');
     if (canvas) {
         // This would trigger actual auto-layout algorithm
-        alert('Auto Layout Applied\n\nWorkflow nodes have been automatically arranged for optimal visualization.');
+        TektonModal.info('Auto Layout Applied\n\nWorkflow nodes have been automatically arranged for optimal visualization.');
     } else {
-        alert('No workflow canvas found to layout.');
+        TektonModal.info('No workflow canvas found to layout.');
     }
 }
 
@@ -3080,12 +3080,12 @@ async function pauseExecution(executionId) {
     
     // For mock executions, just show a message
     if (executionId.startsWith('exec-')) {
-        alert(`Pause Execution\n\nThis is a mock execution. In production, this would pause the workflow execution.\n\nExecution ID: ${executionId}`);
+        TektonModal.info(`Pause Execution\n\nThis is a mock execution. In production, this would pause the workflow execution.\n\nExecution ID: ${executionId}`);
         return;
     }
     
     // For real executions, we need to implement the pause endpoint
-    alert(`Pause Execution\n\nThe pause execution endpoint is not yet implemented in the backend.\n\nExecution ID: ${executionId}\n\nThis feature will be available once the backend API is extended.`);
+    TektonModal.info(`Pause Execution\n\nThe pause execution endpoint is not yet implemented in the backend.\n\nExecution ID: ${executionId}\n\nThis feature will be available once the backend API is extended.`);
 }
 
 async function resumeExecution(executionId) {
@@ -3093,12 +3093,12 @@ async function resumeExecution(executionId) {
     
     // For mock executions, just show a message
     if (executionId.startsWith('exec-')) {
-        alert(`Resume Execution\n\nThis is a mock execution. In production, this would resume the paused workflow.\n\nExecution ID: ${executionId}`);
+        TektonModal.info(`Resume Execution\n\nThis is a mock execution. In production, this would resume the paused workflow.\n\nExecution ID: ${executionId}`);
         return;
     }
     
     // For real executions, we need to implement the resume endpoint
-    alert(`Resume Execution\n\nThe resume execution endpoint is not yet implemented in the backend.\n\nExecution ID: ${executionId}\n\nThis feature will be available once the backend API is extended.`);
+    TektonModal.info(`Resume Execution\n\nThe resume execution endpoint is not yet implemented in the backend.\n\nExecution ID: ${executionId}\n\nThis feature will be available once the backend API is extended.`);
 }
 
 async function cancelExecution(executionId) {
@@ -3106,8 +3106,8 @@ async function cancelExecution(executionId) {
     
     // For mock executions, just show a message
     if (executionId.startsWith('exec-')) {
-        if (confirm('Cancel this mock execution?\n\nIn production, this would stop the workflow and clean up resources.')) {
-            alert(`Mock execution cancelled.\nExecution ID: ${executionId}`);
+        if (await TektonModal.confirm('Cancel this mock execution?\n\nIn production, this would stop the workflow and clean up resources.')) {
+            TektonModal.info(`Mock execution cancelled.\nExecution ID: ${executionId}`);
             // Hide the execution item
             const execItem = document.querySelector(`[data-execution-id="${executionId}"]`);
             if (execItem) execItem.style.display = 'none';
@@ -3116,11 +3116,11 @@ async function cancelExecution(executionId) {
     }
     
     // For real executions, we need to implement the cancel endpoint
-    if (!confirm('Are you sure you want to cancel this execution? This action cannot be undone.')) {
+    if (!await TektonModal.confirm('Are you sure you want to cancel this execution? This action cannot be undone.')) {
         return;
     }
     
-    alert(`Cancel Execution\n\nThe cancel execution endpoint is not yet implemented in the backend.\n\nExecution ID: ${executionId}\n\nThis feature will be available once the backend API is extended.`);
+    TektonModal.info(`Cancel Execution\n\nThe cancel execution endpoint is not yet implemented in the backend.\n\nExecution ID: ${executionId}\n\nThis feature will be available once the backend API is extended.`);
 }
 
 // Component Tasks Management
@@ -3134,11 +3134,11 @@ async function assignComponentTask(taskId, componentName) {
             assignment_time: new Date().toISOString()
         });
         
-        alert(`Task assigned successfully!\nTask ID: ${taskId}\nComponent: ${componentName}`);
+        TektonModal.success(`Task assigned successfully!\nTask ID: ${taskId}\nComponent: ${componentName}`);
         // Refresh component tasks view
         loadComponentTasks();
     } catch (error) {
-        alert(`Failed to assign task: ${error.message}`);
+        TektonModal.error(`Failed to assign task: ${error.message}`);
     }
 }
 
@@ -3147,11 +3147,11 @@ async function unassignComponentTask(taskId) {
     
     try {
         const result = await harmoniaApiCall(`/component-tasks/${taskId}/unassign`, 'POST');
-        alert(`Task unassigned successfully.\nTask ID: ${taskId}`);
+        TektonModal.success(`Task unassigned successfully.\nTask ID: ${taskId}`);
         // Refresh component tasks view
         loadComponentTasks();
     } catch (error) {
-        alert(`Failed to unassign task: ${error.message}`);
+        TektonModal.error(`Failed to unassign task: ${error.message}`);
     }
 }
 
@@ -3209,7 +3209,7 @@ Task Breakdown:
 - Documentation (rhetor) - Pending
 - Final Review (rhetor) - Pending`;
 
-        alert(mockDetails);
+        TektonModal.info(mockDetails);
         return;
     }
     
@@ -3228,9 +3228,9 @@ Tasks: ${Object.keys(execution.task_statuses || {}).length}
 Current State:
 ${JSON.stringify(execution.current_state, null, 2)}`;
 
-        alert(details);
+        TektonModal.info(details);
     } catch (error) {
-        alert(`Failed to load execution details: ${error.message}\n\nNote: The execution may not exist or the endpoint may not be fully implemented.`);
+        TektonModal.error(`Failed to load execution details: ${error.message}\n\nNote: The execution may not exist or the endpoint may not be fully implemented.`);
     }
 }
 
@@ -3242,7 +3242,7 @@ async function editComponentMapping(taskType, currentComponent) {
     const newComponent = prompt(`Change ${taskType} tasks assignment from ${currentComponent} to:\n\nAvailable components: ${components.join(', ')}`);
     
     if (!newComponent || !components.includes(newComponent)) {
-        if (newComponent) alert('Invalid component name. Please choose from the available components.');
+        if (newComponent) TektonModal.info('Invalid component name. Please choose from the available components.');
         return;
     }
     
@@ -3253,7 +3253,7 @@ async function editComponentMapping(taskType, currentComponent) {
             previous_component: currentComponent
         });
         
-        alert(`Mapping updated successfully!\n${taskType} tasks are now assigned to ${newComponent}`);
+        TektonModal.success(`Mapping updated successfully!\n${taskType} tasks are now assigned to ${newComponent}`);
         
         // Update the UI
         const row = document.querySelector(`[data-task-type="${taskType}"]`);
@@ -3263,7 +3263,7 @@ async function editComponentMapping(taskType, currentComponent) {
         }
         
     } catch (error) {
-        alert(`Failed to update mapping: ${error.message}`);
+        TektonModal.error(`Failed to update mapping: ${error.message}`);
     }
 }
 
@@ -3290,11 +3290,11 @@ async function addComponentAction() {
             }
         });
         
-        alert(`Component action added successfully!\nComponent: ${componentName}\nAction: ${actionName}`);
+        TektonModal.success(`Component action added successfully!\nComponent: ${componentName}\nAction: ${actionName}`);
         // Refresh component tasks view
         loadComponentTasks();
     } catch (error) {
-        alert(`Failed to add component action: ${error.message}`);
+        TektonModal.error(`Failed to add component action: ${error.message}`);
     }
 }
 
@@ -3325,7 +3325,7 @@ Total Hours: ${sprintData.totalHours}
 Completed: ${sprintData.completedTasks}/${sprintData.tasks}
 Components: ${sprintData.assignedComponents.join(', ')}`;
 
-    alert(details);
+    TektonModal.info(details);
     
     // Switch to workflows tab to show the sprint
     const workflowsTab = document.querySelector('[data-tab="workflows"]');
@@ -3438,7 +3438,7 @@ async function saveTemplate() {
     const isPublic = document.getElementById('template-public').checked;
     
     if (!name) {
-        alert('Please enter a template name');
+        TektonModal.info('Please enter a template name');
         return;
     }
     
@@ -3462,7 +3462,7 @@ async function saveTemplate() {
     });
     
     if (Object.keys(tasks).length === 0) {
-        alert('Please add at least one task');
+        TektonModal.info('Please add at least one task');
         return;
     }
     
@@ -3497,12 +3497,12 @@ async function saveTemplate() {
     
     try {
         const result = await harmoniaApiCall('/templates/import', 'POST', templateData);
-        alert(`Template created successfully!\nName: ${result.data.name}\nID: ${result.data.template_id}`);
+        TektonModal.success(`Template created successfully!\nName: ${result.data.name}\nID: ${result.data.template_id}`);
         closeTemplateModal();
         // Refresh templates view
         loadTemplates();
     } catch (error) {
-        alert(`Failed to create template: ${error.message}`);
+        TektonModal.error(`Failed to create template: ${error.message}`);
     }
 }
 
@@ -3676,7 +3676,7 @@ async function saveWorkflow() {
     const autoStart = document.getElementById('workflow-auto-start').checked;
     
     if (!name) {
-        alert('Please enter a workflow name');
+        TektonModal.info('Please enter a workflow name');
         return;
     }
     
@@ -3706,7 +3706,7 @@ async function saveWorkflow() {
     });
     
     if (Object.keys(tasks).length === 0) {
-        alert('Please add at least one task');
+        TektonModal.info('Please add at least one task');
         return;
     }
     
@@ -3739,7 +3739,7 @@ async function saveWorkflow() {
             window.currentWorkflowId = result.data.workflow_definition.id;
         }
         
-        alert(`Workflow created successfully!\nName: ${name}\nTasks: ${Object.keys(tasks).length}\nStatus: ${result.status}`);
+        TektonModal.success(`Workflow created successfully!\nName: ${name}\nTasks: ${Object.keys(tasks).length}\nStatus: ${result.status}`);
         
         closeWorkflowModal();
         
@@ -3748,7 +3748,7 @@ async function saveWorkflow() {
         
         // If auto-start is enabled and we're in orchestrate mode, start execution
         if (autoStart && window.workflowEditorMode === 'orchestrate') {
-            if (confirm('Start workflow execution now?')) {
+            if (await TektonModal.confirm('Start workflow execution now?')) {
                 // Create execution
                 const execResult = await harmoniaApiCall('/executions', 'POST', {
                     workflow_id: window.currentWorkflowId,
@@ -3760,7 +3760,7 @@ async function saveWorkflow() {
                 });
                 
                 if (execResult.success) {
-                    alert('Workflow execution started!');
+                    TektonModal.info('Workflow execution started!');
                     // Switch to executions tab
                     document.getElementById('harmonia-tab-executions').checked = true;
                 }
@@ -3768,7 +3768,7 @@ async function saveWorkflow() {
         }
         
     } catch (error) {
-        alert(`Failed to create workflow: ${error.message}`);
+        TektonModal.error(`Failed to create workflow: ${error.message}`);
     }
 }
 

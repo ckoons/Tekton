@@ -2065,11 +2065,11 @@ async function budget_saveSettings() {
         
         // For now, just log the settings (no backend endpoint for settings update yet)
         console.log('[BUDGET] Settings to save:', settings);
-        alert('Settings saved successfully!');
+        TektonModal.success('Settings saved successfully!');
         
     } catch (error) {
         console.error('[BUDGET] Error saving settings:', error);
-        alert('Failed to save settings');
+        TektonModal.error('Failed to save settings');
     }
 }
 
@@ -2085,11 +2085,11 @@ async function budget_saveAlertSettings() {
         };
         
         console.log('[BUDGET] Alert settings to save:', settings);
-        alert('Alert settings saved successfully!');
+        TektonModal.success('Alert settings saved successfully!');
         
     } catch (error) {
         console.error('[BUDGET] Error saving alert settings:', error);
-        alert('Failed to save alert settings');
+        TektonModal.error('Failed to save alert settings');
     }
 }
 

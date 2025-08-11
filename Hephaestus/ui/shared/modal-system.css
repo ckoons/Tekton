@@ -1,0 +1,352 @@
+/* Tekton Modal System - Dark Theme Professional Styling */
+/* CSS-First approach with minimal JavaScript dependency */
+
+:root {
+    /* Modal color scheme - dark theme with golden accent */
+    --modal-bg: var(--bg-primary, #1a1a2a);
+    --modal-border: #FFD700; /* Tekton golden accent */
+    --modal-border-hover: #FFA500; /* Slightly orange on hover */
+    --modal-header-bg: var(--bg-secondary, #252535);
+    --modal-backdrop: rgba(0, 0, 0, 0.7);
+    --modal-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+    --modal-shadow-hover: 0 4px 8px rgba(255, 215, 0, 0.3);
+    --modal-animation-duration: 200ms;
+    
+    /* Modal type colors */
+    --modal-success-color: #4CAF50;
+    --modal-error-color: #dc3545;
+    --modal-warning-color: #FFA500;
+    --modal-info-color: var(--accent-color, #5a9fd4);
+}
+
+/* Animation keyframes for smooth entry */
+@keyframes tekton-modal-fade-in {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes tekton-modal-slide-in {
+    from {
+        opacity: 0;
+        transform: translate(-50%, calc(-50% - 20px));
+    }
+    to {
+        opacity: 1;
+        transform: translate(-50%, -50%);
+    }
+}
+
+/* Backdrop with blur effect */
+.tekton-modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--modal-backdrop);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    z-index: 8999;
+    animation: tekton-modal-fade-in var(--modal-animation-duration) ease-out;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Base modal container */
+.tekton-modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: var(--modal-bg);
+    border: 2px solid var(--modal-border);
+    border-radius: 8px;
+    box-shadow: var(--modal-shadow);
+    z-index: 9000;
+    animation: tekton-modal-slide-in var(--modal-animation-duration) ease-out;
+    min-width: 400px;
+    max-width: 90%;
+    max-height: 80vh;
+    display: flex;
+    flex-direction: column;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.tekton-modal:hover {
+    border-color: var(--modal-border-hover);
+    box-shadow: var(--modal-shadow-hover);
+}
+
+/* Modal size variants */
+.tekton-modal--small {
+    max-width: 400px;
+}
+
+.tekton-modal--medium {
+    max-width: 600px;
+}
+
+.tekton-modal--large {
+    max-width: 800px;
+}
+
+.tekton-modal--fullscreen {
+    width: 95vw;
+    height: 95vh;
+    max-width: none;
+    max-height: none;
+}
+
+/* Modal header */
+.tekton-modal-header {
+    padding: 20px;
+    background: var(--modal-header-bg);
+    border-bottom: 1px solid var(--border-color, #444444);
+    border-radius: 6px 6px 0 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.tekton-modal-title {
+    margin: 0;
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--text-primary, #f0f0f0);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Modal close button */
+.tekton-modal-close {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary, #d0d0d0);
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.tekton-modal-close:hover {
+    background-color: var(--bg-tertiary, #333345);
+    color: var(--modal-border);
+}
+
+/* Modal body */
+.tekton-modal-body {
+    padding: 20px;
+    flex: 1;
+    overflow-y: auto;
+    color: var(--text-primary, #f0f0f0);
+}
+
+.tekton-modal-message {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    margin-bottom: 16px;
+}
+
+/* Modal footer */
+.tekton-modal-footer {
+    padding: 20px;
+    border-top: 1px solid var(--border-color, #444444);
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+}
+
+/* Modal buttons */
+.tekton-modal-btn {
+    padding: 8px 20px;
+    border-radius: 4px;
+    border: 1px solid transparent;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-weight: 500;
+}
+
+.tekton-modal-btn--primary {
+    background-color: var(--modal-border);
+    color: #1a1a2a;
+    border-color: var(--modal-border);
+}
+
+.tekton-modal-btn--primary:hover {
+    background-color: var(--modal-border-hover);
+    border-color: var(--modal-border-hover);
+    box-shadow: 0 2px 8px rgba(255, 215, 0, 0.3);
+}
+
+.tekton-modal-btn--secondary {
+    background-color: transparent;
+    color: var(--text-primary, #f0f0f0);
+    border-color: var(--border-color, #444444);
+}
+
+.tekton-modal-btn--secondary:hover {
+    background-color: var(--bg-tertiary, #333345);
+    border-color: var(--modal-border);
+    color: var(--modal-border);
+}
+
+/* Modal type variants - color accents */
+.tekton-modal--success .tekton-modal-title {
+    color: var(--modal-success-color);
+}
+
+.tekton-modal--success {
+    border-color: var(--modal-success-color);
+}
+
+.tekton-modal--error .tekton-modal-title {
+    color: var(--modal-error-color);
+}
+
+.tekton-modal--error {
+    border-color: var(--modal-error-color);
+}
+
+.tekton-modal--warning .tekton-modal-title {
+    color: var(--modal-warning-color);
+}
+
+.tekton-modal--warning {
+    border-color: var(--modal-warning-color);
+}
+
+.tekton-modal--info .tekton-modal-title {
+    color: var(--modal-info-color);
+}
+
+.tekton-modal--info {
+    border-color: var(--modal-info-color);
+}
+
+/* Modal icon styles */
+.tekton-modal-icon {
+    width: 24px;
+    height: 24px;
+    display: inline-block;
+}
+
+.tekton-modal-icon--success::before {
+    content: "✓";
+    color: var(--modal-success-color);
+    font-size: 1.5rem;
+}
+
+.tekton-modal-icon--error::before {
+    content: "✕";
+    color: var(--modal-error-color);
+    font-size: 1.5rem;
+}
+
+.tekton-modal-icon--warning::before {
+    content: "⚠";
+    color: var(--modal-warning-color);
+    font-size: 1.5rem;
+}
+
+.tekton-modal-icon--info::before {
+    content: "ℹ";
+    color: var(--modal-info-color);
+    font-size: 1.5rem;
+}
+
+/* Loading state */
+.tekton-modal--loading .tekton-modal-body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 150px;
+}
+
+.tekton-modal-spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid var(--border-color, #444444);
+    border-top-color: var(--modal-border);
+    border-radius: 50%;
+    animation: tekton-spin 1s linear infinite;
+}
+
+@keyframes tekton-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.tekton-modal-loading-text {
+    margin-top: 16px;
+    color: var(--text-secondary, #d0d0d0);
+    font-size: 1rem;
+}
+
+/* Focus trap styles */
+.tekton-modal:focus {
+    outline: 2px solid var(--modal-border);
+    outline-offset: 2px;
+}
+
+.tekton-modal-btn:focus {
+    outline: 2px solid var(--modal-border);
+    outline-offset: 2px;
+}
+
+/* Multiple modal stacking */
+.tekton-modal-backdrop:nth-of-type(2) {
+    z-index: 9999;
+}
+
+.tekton-modal-backdrop:nth-of-type(2) .tekton-modal {
+    z-index: 10000;
+}
+
+.tekton-modal-backdrop:nth-of-type(3) {
+    z-index: 10999;
+}
+
+.tekton-modal-backdrop:nth-of-type(3) .tekton-modal {
+    z-index: 11000;
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+    .tekton-modal {
+        min-width: 95%;
+        max-width: 95%;
+        margin: 10px;
+    }
+    
+    .tekton-modal-header {
+        padding: 16px;
+    }
+    
+    .tekton-modal-body {
+        padding: 16px;
+    }
+    
+    .tekton-modal-footer {
+        padding: 16px;
+        flex-direction: column;
+    }
+    
+    .tekton-modal-btn {
+        width: 100%;
+    }
+}

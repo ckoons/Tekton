@@ -4628,19 +4628,19 @@ function rhetor_saveContext() {
             .then(result => {
                 console.log('[RHETOR] Context saved:', result);
                 if (result.status === 'error') {
-                    alert(`Failed to save context: ${result.message}`);
+                    TektonModal.error(`Failed to save context: ${result.message}`);
                 } else {
-                    alert(`Context saved for ${componentName}`);
+                    TektonModal.success(`Context saved for ${componentName}`);
                     rhetor_hideContextEditor();
                 }
             })
             .catch(error => {
                 console.error('[RHETOR] Error saving context:', error);
-                alert('Error saving context. Please try again.');
+                TektonModal.error('Error saving context. Please try again.');
             });
     } else {
         console.error('[RHETOR] RhetorService not available');
-        alert('Rhetor service not available.');
+        TektonModal.error('Rhetor service not available.');
     }
 }
 
