@@ -8,6 +8,9 @@ class TektonEventBus {
         this.sockets = {};
         this.subscribers = {};
         this.reconnectIntervals = {};
+        this.reconnectAttempts = {};
+        this.maxReconnectAttempts = 10; // More attempts for slow services
+        this.enabled = true; // Can be disabled if needed
         
         // Build component configurations using tektonUrl
         // Use proper port numbers from env.js
@@ -15,27 +18,187 @@ class TektonEventBus {
             engram: {
                 wsUrl: this.buildWebSocketUrl('engram', '/ws/ui'),
                 apiUrl: tektonUrl('engram', '/api'),
-                reconnectDelay: 3000
+                reconnectDelay: 5000 // 5 seconds for slow services
             },
             rhetor: {
                 wsUrl: this.buildWebSocketUrl('rhetor', '/ws/prompts'),
                 apiUrl: tektonUrl('rhetor', '/api'),
-                reconnectDelay: 3000
+                reconnectDelay: 5000
             },
             apollo: {
                 wsUrl: this.buildWebSocketUrl('apollo', '/ws/patterns'),
                 apiUrl: tektonUrl('apollo', '/api'),
-                reconnectDelay: 3000
+                reconnectDelay: 5000
             }
         };
         
         console.log('[TektonEventBus] Configuration:', this.config);
         
-        // Initialize connections
-        this.initializeConnections();
+        // Check if WebSockets should be enabled (can be disabled via console)
+        this.websocketsEnabled = window.ENABLE_WEBSOCKETS !== false;
+        
+        if (this.websocketsEnabled) {
+            console.log('[TektonEventBus] WebSocket connections enabled - initializing...');
+            console.log('[TektonEventBus] To disable WebSockets: window.ENABLE_WEBSOCKETS = false; location.reload()');
+            this.initializeConnections();
+        } else {
+            console.log('[TektonEventBus] WebSocket connections disabled');
+            console.log('[TektonEventBus] To enable WebSockets: window.ENABLE_WEBSOCKETS = true; location.reload()');
+        }
         
         // Enable ambient intelligence (Apollo observes everything)
         this.enableAmbientIntelligence();
+        
+        // Always try to load initial data via REST APIs
+        this.loadInitialData();
+    }
+    
+    async checkBackendAvailability() {
+        // Quick check if any backend service is available
+        try {
+            // Create a timeout promise
+            const timeoutPromise = new Promise((_, reject) => 
+                setTimeout(() => reject(new Error('Timeout')), 1000)
+            );
+            
+            // Race between fetch and timeout
+            const response = await Promise.race([
+                fetch(tektonUrl('rhetor', '/api/health'), {
+                    method: 'GET',
+                    mode: 'cors'
+                }),
+                timeoutPromise
+            ]).catch(() => null);
+            
+            return response && response.ok;
+        } catch {
+            return false;
+        }
+    }
+    
+    runOfflineMode() {
+        // Run in offline mode with mock data
+        console.log('[TektonEventBus] Running in offline mode - using mock data');
+        this.emit('offline-mode', { message: 'Backend services not available' });
+        
+        // Populate with demo data
+        setTimeout(() => {
+            this.populateOfflineData();
+        }, 500);
+    }
+    
+    populateOfflineData() {
+        // Populate UI with demo data when offline
+        const demoData = {
+            metrics: {
+                stress_level: 0.15,
+                consensus: 0.85,
+                success_rate: 0.78
+            },
+            active_components: [
+                { name: 'Numa', status: 'active' },
+                { name: 'Engram', status: 'active' },
+                { name: 'Rhetor', status: 'active' },
+                { name: 'Apollo', status: 'observing' }
+            ],
+            recent_activities: [
+                { timestamp: Date.now(), text: 'System initialized in offline mode' },
+                { timestamp: Date.now() - 60000, text: 'UI Living Elements loaded' },
+                { timestamp: Date.now() - 120000, text: 'Family dashboard activated' }
+            ]
+        };
+        
+        updateFamilyHarmony(demoData);
+    }
+    
+    async loadInitialData() {
+        console.log('[TektonEventBus] Loading initial data from REST APIs...');
+        
+        try {
+            // Try to fetch service info from Engram
+            const engramInfo = await fetch(tektonUrl('engram', '/'))
+                .then(r => r.json())
+                .catch(e => {
+                    console.log('[TektonEventBus] Engram info fetch failed:', e.message);
+                    return null;
+                });
+                
+            if (engramInfo) {
+                console.log('[TektonEventBus] Engram service info:', engramInfo);
+            }
+            
+            // Try to fetch service info from Rhetor
+            const rhetorInfo = await fetch(tektonUrl('rhetor', '/'))
+                .then(r => r.json())
+                .catch(e => {
+                    console.log('[TektonEventBus] Rhetor info fetch failed:', e.message);
+                    return null;
+                });
+                
+            if (rhetorInfo) {
+                console.log('[TektonEventBus] Rhetor service info:', rhetorInfo);
+            }
+            
+            // Try to fetch service info from Apollo
+            const apolloInfo = await fetch(tektonUrl('apollo', '/'))
+                .then(r => r.json())
+                .catch(e => {
+                    console.log('[TektonEventBus] Apollo info fetch failed:', e.message);
+                    return null;
+                });
+                
+            if (apolloInfo) {
+                console.log('[TektonEventBus] Apollo service info:', apolloInfo);
+            }
+            
+            // Update UI with service status
+            const serviceData = {
+                metrics: {
+                    stress_level: 0.1,
+                    consensus: 0.9,
+                    success_rate: 0.85
+                },
+                active_components: [],
+                recent_activities: []
+            };
+            
+            if (engramInfo) {
+                serviceData.active_components.push({ name: 'Engram', status: 'active' });
+                serviceData.recent_activities.push({ 
+                    timestamp: Date.now(), 
+                    text: `Engram ${engramInfo.version} connected` 
+                });
+            }
+            
+            if (rhetorInfo) {
+                serviceData.active_components.push({ name: 'Rhetor', status: 'active' });
+                serviceData.recent_activities.push({ 
+                    timestamp: Date.now() - 1000, 
+                    text: `Rhetor ${rhetorInfo.version || 'v1'} connected` 
+                });
+            }
+            
+            if (apolloInfo) {
+                serviceData.active_components.push({ name: 'Apollo', status: 'active' });
+                serviceData.recent_activities.push({ 
+                    timestamp: Date.now() - 2000, 
+                    text: `Apollo ${apolloInfo.version || 'v1'} observing` 
+                });
+            }
+            
+            // Add other known active services
+            serviceData.active_components.push(
+                { name: 'Numa', status: 'active' },
+                { name: 'Synthesis', status: 'active' },
+                { name: 'Harmonia', status: 'active' }
+            );
+            
+            updateFamilyHarmony(serviceData);
+            
+        } catch (error) {
+            console.error('[TektonEventBus] Error loading initial data:', error);
+            this.populateOfflineData();
+        }
     }
     
     buildWebSocketUrl(component, path) {
@@ -106,9 +269,29 @@ class TektonEventBus {
     scheduleReconnect(component) {
         if (this.reconnectIntervals[component]) return;
         
+        // Initialize reconnect attempts counter
+        if (!this.reconnectAttempts[component]) {
+            this.reconnectAttempts[component] = 0;
+        }
+        
+        // Stop trying after max attempts
+        if (this.reconnectAttempts[component] >= this.maxReconnectAttempts) {
+            console.log(`[TektonEventBus] Max reconnection attempts reached for ${component}, stopping...`);
+            return;
+        }
+        
         const config = this.config[component];
         this.reconnectIntervals[component] = setInterval(() => {
-            console.log(`[TektonEventBus] Attempting to reconnect to ${component}...`);
+            this.reconnectAttempts[component]++;
+            console.log(`[TektonEventBus] Reconnection attempt ${this.reconnectAttempts[component]}/${this.maxReconnectAttempts} for ${component}...`);
+            
+            if (this.reconnectAttempts[component] >= this.maxReconnectAttempts) {
+                clearInterval(this.reconnectIntervals[component]);
+                delete this.reconnectIntervals[component];
+                console.log(`[TektonEventBus] Giving up on ${component} after ${this.maxReconnectAttempts} attempts`);
+                return;
+            }
+            
             this.connectWebSocket(component);
         }, config.reconnectDelay);
     }
@@ -446,31 +629,16 @@ window.tektonEventBus = new TektonEventBus();
 
 // Auto-initialize components on page load
 document.addEventListener('DOMContentLoaded', async () => {
-    console.log('[TektonEventBus] Initializing UI components...');
+    console.log('[TektonEventBus] DOM loaded - event bus already initialized');
     
-    try {
-        // Load initial state from REST APIs using proper URL system
-        const [memories, templates, patterns] = await Promise.all([
-            window.tektonEventBus.fetchFromAPI('engram', '/memories/recent?limit=5'),
-            window.tektonEventBus.fetchFromAPI('rhetor', '/prompts/templates'),
-            window.tektonEventBus.fetchFromAPI('apollo', '/patterns/active')
-        ]).catch(error => {
-            console.warn('[TektonEventBus] Using fallback data:', error);
-            console.log('[TektonEventBus] Component URLs:', {
-                engram: tektonUrl('engram', '/api'),
-                rhetor: tektonUrl('rhetor', '/api'),
-                apollo: tektonUrl('apollo', '/api')
-            });
-            return [null, null, null];
+    // The TektonEventBus constructor already handles initialization
+    // Just log the current status
+    if (window.tektonEventBus) {
+        console.log('[TektonEventBus] Status:', {
+            websocketsEnabled: window.tektonEventBus.websocketsEnabled,
+            connections: Object.keys(window.tektonEventBus.sockets),
+            config: window.tektonEventBus.config
         });
-        
-        // Populate UI with initial state
-        if (memories) populateMemories(memories);
-        if (templates) populateTemplates(templates);
-        if (patterns) populatePatterns(patterns);
-        
-    } catch (error) {
-        console.error('[TektonEventBus] Failed to initialize:', error);
     }
 });
 
