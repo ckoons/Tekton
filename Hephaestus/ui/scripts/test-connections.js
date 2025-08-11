@@ -5,17 +5,25 @@
 
 function testBackendConnections() {
     console.log('[TEST] Starting backend connection tests...');
+    console.log('[TEST] Using Tekton environment:', {
+        ENGRAM_PORT: window.ENGRAM_PORT,
+        RHETOR_PORT: window.RHETOR_PORT,
+        APOLLO_PORT: window.APOLLO_PORT,
+        TEKTON_HOST: window.TEKTON_HOST || 'localhost'
+    });
     
     const services = {
-        engram: { port: 8002, endpoint: '/ws/ui' },
-        rhetor: { port: 8005, endpoint: '/ws/prompts' },
-        apollo: { port: 8012, endpoint: '/ws/patterns' }
+        engram: { endpoint: '/ws/ui' },
+        rhetor: { endpoint: '/ws/prompts' },
+        apollo: { endpoint: '/ws/patterns' }
     };
     
     const results = {};
     
     Object.entries(services).forEach(([name, config]) => {
-        const wsUrl = `ws://localhost:${config.port}${config.endpoint}`;
+        // Use tektonUrl to build proper URLs
+        const httpUrl = tektonUrl(name, config.endpoint);
+        const wsUrl = httpUrl.replace(/^http/, 'ws');
         console.log(`[TEST] Testing ${name} at ${wsUrl}...`);
         
         try {
@@ -58,16 +66,17 @@ function testBackendConnections() {
     setTimeout(() => {
         console.log('\n[TEST] Testing REST API endpoints...\n');
         
+        // Use tektonUrl for proper API URLs
         Promise.all([
-            fetch('http://localhost:8002/api/memories/recent?limit=1')
+            fetch(tektonUrl('engram', '/api/memories/recent?limit=1'))
                 .then(r => ({ service: 'engram', status: r.status, ok: r.ok }))
                 .catch(e => ({ service: 'engram', error: e.message })),
             
-            fetch('http://localhost:8005/api/prompts/templates')
+            fetch(tektonUrl('rhetor', '/api/prompts/templates'))
                 .then(r => ({ service: 'rhetor', status: r.status, ok: r.ok }))
                 .catch(e => ({ service: 'rhetor', error: e.message })),
             
-            fetch('http://localhost:8012/api/patterns/active')
+            fetch(tektonUrl('apollo', '/api/patterns/active'))
                 .then(r => ({ service: 'apollo', status: r.status, ok: r.ok }))
                 .catch(e => ({ service: 'apollo', error: e.message }))
         ]).then(apiResults => {

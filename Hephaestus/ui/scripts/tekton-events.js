@@ -9,30 +9,40 @@ class TektonEventBus {
         this.subscribers = {};
         this.reconnectIntervals = {};
         
-        // Component configurations
+        // Build component configurations using tektonUrl
+        // Use proper port numbers from env.js
         this.config = {
             engram: {
-                wsUrl: 'ws://localhost:8002/ws/ui',
-                apiUrl: 'http://localhost:8002/api',
+                wsUrl: this.buildWebSocketUrl('engram', '/ws/ui'),
+                apiUrl: tektonUrl('engram', '/api'),
                 reconnectDelay: 3000
             },
             rhetor: {
-                wsUrl: 'ws://localhost:8005/ws/prompts',
-                apiUrl: 'http://localhost:8005/api',
+                wsUrl: this.buildWebSocketUrl('rhetor', '/ws/prompts'),
+                apiUrl: tektonUrl('rhetor', '/api'),
                 reconnectDelay: 3000
             },
             apollo: {
-                wsUrl: 'ws://localhost:8012/ws/patterns',
-                apiUrl: 'http://localhost:8012/api',
+                wsUrl: this.buildWebSocketUrl('apollo', '/ws/patterns'),
+                apiUrl: tektonUrl('apollo', '/api'),
                 reconnectDelay: 3000
             }
         };
+        
+        console.log('[TektonEventBus] Configuration:', this.config);
         
         // Initialize connections
         this.initializeConnections();
         
         // Enable ambient intelligence (Apollo observes everything)
         this.enableAmbientIntelligence();
+    }
+    
+    buildWebSocketUrl(component, path) {
+        // Build WebSocket URL using tektonUrl with ws:// scheme
+        const httpUrl = tektonUrl(component, path);
+        // Convert http to ws, https to wss
+        return httpUrl.replace(/^http/, 'ws');
     }
     
     initializeConnections() {
@@ -439,13 +449,18 @@ document.addEventListener('DOMContentLoaded', async () => {
     console.log('[TektonEventBus] Initializing UI components...');
     
     try {
-        // Load initial state from REST APIs
+        // Load initial state from REST APIs using proper URL system
         const [memories, templates, patterns] = await Promise.all([
             window.tektonEventBus.fetchFromAPI('engram', '/memories/recent?limit=5'),
             window.tektonEventBus.fetchFromAPI('rhetor', '/prompts/templates'),
             window.tektonEventBus.fetchFromAPI('apollo', '/patterns/active')
         ]).catch(error => {
             console.warn('[TektonEventBus] Using fallback data:', error);
+            console.log('[TektonEventBus] Component URLs:', {
+                engram: tektonUrl('engram', '/api'),
+                rhetor: tektonUrl('rhetor', '/api'),
+                apollo: tektonUrl('apollo', '/api')
+            });
             return [null, null, null];
         });
         
