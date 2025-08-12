@@ -247,7 +247,7 @@
 
 /* Timeline View */
 .rhetor__timeline-view {
-    background: white;
+    background: var(--bg-secondary, #252535);
     border-radius: 12px;
     padding: 20px;
     min-height: 400px;
@@ -328,7 +328,7 @@
 }
 
 .rhetor__metrics-card {
-    background: white;
+    background: var(--bg-secondary, #252535);
     border-radius: 12px;
     padding: 20px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
@@ -512,7 +512,7 @@
 }
 
 .rhetor__modal-content {
-    background: white;
+    background: var(--bg-secondary, #252535);
     border-radius: 12px;
     padding: 30px;
     max-width: 600px;

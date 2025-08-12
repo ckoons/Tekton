@@ -22,7 +22,7 @@
   align-items: center;
   padding: 1rem;
   border-bottom: 1px solid var(--tekton-border-color, #ddd);
-  background-color: var(--tekton-header-bg, #fff);
+  background-color: var(--bg-primary, #1a1a2a);
 }
 
 .ergon__title {
@@ -116,7 +116,7 @@
 .ergon__tabs {
   display: flex;
   border-bottom: 1px solid var(--tekton-border-color, #ddd);
-  background-color: var(--tekton-tabs-bg, #fff);
+  background-color: var(--bg-secondary, #252535);
 }
 
 .ergon__tab {
@@ -191,7 +191,7 @@
   padding: 0.5rem;
   border-radius: 4px;
   border: 1px solid var(--tekton-border-color, #ddd);
-  background-color: white;
+  background-color: var(--bg-secondary, #252535);
   font-size: 0.9rem;
 }
 
@@ -204,7 +204,7 @@
 
 /* Agent Card */
 .ergon__agent-card {
-  background-color: white;
+  background-color: var(--bg-secondary, #252535);
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
   padding: 1rem;
@@ -309,7 +309,7 @@
 .ergon__execution-item {
   display: flex;
   flex-direction: column;
-  background-color: white;
+  background-color: var(--bg-secondary, #252535);
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
   padding: 1rem;
@@ -439,7 +439,7 @@
 }
 
 .ergon__modal-content {
-  background-color: white;
+  background-color: var(--bg-secondary, #252535);
   border-radius: 8px;
   width: 90%;
   max-width: 600px;
@@ -578,7 +578,7 @@
 .ergon__notification {
   padding: 1rem;
   border-radius: 4px;
-  background-color: white;
+  background-color: var(--bg-secondary, #252535);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
   display: flex;
   align-items: center;
