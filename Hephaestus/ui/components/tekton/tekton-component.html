@@ -224,14 +224,18 @@
              data-tekton-panel-for="Projects Chat"
              data-tekton-panel-component="tekton"
              data-tekton-tab-content="projectschat">
-            <div id="projectschat-messages" class="tekton__chat-messages"
-                 data-tekton-element="chat-messages"
-                 data-tekton-chat="projects-chat">
-                <div class="tekton__message tekton__message--system">
-                    <div class="tekton__message-content">
-                        <div class="tekton__message-text">
-                            <h3 class="tekton__message-title">Project CI Assistant</h3>
-                            <p id="projects-chat-instructions">Select a project to chat with its Companion Intelligence.</p>
+            <div class="chat-interface" data-tekton-chat="projects"
+                 data-tekton-ai="tekton-projects"
+                 data-tekton-ai-ready="false">
+                <div id="projectschat-messages" class="tekton__chat-messages"
+                     data-tekton-element="chat-messages"
+                     data-tekton-chat="projects-chat">
+                    <div class="tekton__message tekton__message--system">
+                        <div class="tekton__message-content">
+                            <div class="tekton__message-text">
+                                <h3 class="tekton__message-title">Project CI Assistant</h3>
+                                <p id="projects-chat-instructions">Select a project to chat with its Companion Intelligence.</p>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -244,23 +248,27 @@
              data-tekton-panel-for="Builder Chat"
              data-tekton-panel-component="tekton"
              data-tekton-tab-content="projectchat">
-            <div id="projectchat-messages" class="tekton__chat-messages"
-                 data-tekton-element="chat-messages"
-                 data-tekton-chat="project-chat">
-                <!-- Welcome message -->
-                <div class="tekton__message tekton__message--system"
-                     data-tekton-element="chat-message"
-                     data-tekton-message-type="system">
-                    <div class="tekton__message-content">
-                        <div class="tekton__message-text">
-                            <h3 class="tekton__message-title">Project Management Assistant</h3>
-                            <p>This chat provides assistance with GitHub project management. Ask questions about:</p>
-                            <ul>
-                                <li>Repository management and setup</li>
-                                <li>Branch strategies and workflows</li>
-                                <li>Pull requests and code reviews</li>
-                                <li>Best practices for GitHub projects</li>
-                            </ul>
+            <div class="chat-interface" data-tekton-chat="builder"
+                 data-tekton-ai="tekton-builder"
+                 data-tekton-ai-ready="false">
+                <div id="projectchat-messages" class="tekton__chat-messages"
+                     data-tekton-element="chat-messages"
+                     data-tekton-chat="project-chat">
+                    <!-- Welcome message -->
+                    <div class="tekton__message tekton__message--system"
+                         data-tekton-element="chat-message"
+                         data-tekton-message-type="system">
+                        <div class="tekton__message-content">
+                            <div class="tekton__message-text">
+                                <h3 class="tekton__message-title">Project Management Assistant</h3>
+                                <p>This chat provides assistance with GitHub project management. Ask questions about:</p>
+                                <ul>
+                                    <li>Repository management and setup</li>
+                                    <li>Branch strategies and workflows</li>
+                                    <li>Pull requests and code reviews</li>
+                                    <li>Best practices for GitHub projects</li>
+                                </ul>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -273,17 +281,21 @@
              data-tekton-panel-for="Team Chat"
              data-tekton-panel-component="tekton"
              data-tekton-tab-content="teamchat">
-            <div id="teamchat-messages" class="tekton__chat-messages"
-                 data-tekton-element="chat-messages"
-                 data-tekton-chat="team-chat">
-                <!-- Welcome message -->
-                <div class="tekton__message tekton__message--system"
-                     data-tekton-element="chat-message"
-                     data-tekton-message-type="system">
-                    <div class="tekton__message-content">
-                        <div class="tekton__message-text">
-                            <h3 class="tekton__message-title">Tekton Team Chat</h3>
-                            <p>This chat is shared across all Tekton components. Use this for team communication and coordination.</p>
+            <div class="chat-interface" data-tekton-chat="team"
+                 data-tekton-ai="tekton-orchestrator"
+                 data-tekton-ai-ready="false">
+                <div id="teamchat-messages" class="tekton__chat-messages"
+                     data-tekton-element="chat-messages"
+                     data-tekton-chat="team-chat">
+                    <!-- Welcome message -->
+                    <div class="tekton__message tekton__message--system"
+                         data-tekton-element="chat-message"
+                         data-tekton-message-type="system">
+                        <div class="tekton__message-content">
+                            <div class="tekton__message-text">
+                                <h3 class="tekton__message-title">Tekton Team Chat</h3>
+                                <p>This chat is shared across all Tekton components. Use this for team communication and coordination.</p>
+                            </div>
                         </div>
                     </div>
                 </div>
