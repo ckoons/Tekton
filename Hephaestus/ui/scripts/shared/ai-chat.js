@@ -17,7 +17,7 @@ console.log('[FILE_TRACE] Loading: ai-chat.js');
 // This consolidation ensures all AI communication goes through a single
 // source of truth (aish MCP server) rather than scattered endpoints.
 window.AIChat = {
-    // Legacy endpoints (to be removed)
+    // Rhetor endpoints - simple proxy that works
     teamChatUrl: 'http://localhost:8003/api/team-chat',
     specialistUrl: 'http://localhost:8003/api/v1/ai/specialists',
     
@@ -102,24 +102,20 @@ window.AIChat = {
     },
     
     /**
-     * Send a message to a single AI specialist (like aish apollo "message")
-     * @param {string} aiName - The AI name (e.g., 'noesis', 'apollo') 
-     * Note: Use base names without '-ai' suffix as per MCP migration
+     * Send a message to a single AI specialist
+     * @param {string} aiName - The AI name (e.g., 'terma-ai', 'apollo-ai') 
      * @param {string} message - The message to send
      * @returns {Promise<Object>} The AI's response
      */
     async sendMessage(aiName, message) {
         try {
-            // Use aish MCP endpoint via dynamic URL building
-            const response = await fetch(aishUrl('/api/mcp/v2/tools/send-message'), {
+            const response = await fetch(`${this.specialistUrl}/${aiName}/message`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    ai_name: aiName,
-                    message: message,
-                    stream: false  // Can be made configurable later
+                    message: message
                 })
             });
             
@@ -129,10 +125,10 @@ window.AIChat = {
             
             const data = await response.json();
             
-            if (data.response) {
+            if (data.success && data.response) {
                 return {
                     content: data.response,
-                    ai_id: aiName,
+                    ai_id: data.ai_id,
                     success: true
                 };
             } else {
@@ -145,7 +141,7 @@ window.AIChat = {
     },
     
     /**
-     * Send team chat message (like aish team-chat "message")
+     * Send team chat message
      * @param {string} message - The message to send
      * @param {string} fromComponent - Which component is sending (e.g., 'rhetor', 'numa')
      * @param {Array<string>} targetAIs - Optional list of specific AIs (empty = all)
@@ -153,8 +149,8 @@ window.AIChat = {
      */
     async teamChat(message, fromComponent = 'ui', targetAIs = []) {
         try {
-            // Use aish MCP endpoint via dynamic URL building
-            const response = await fetch(aishUrl('/api/mcp/v2/tools/team-chat'), {
+            // Use the direct team chat endpoint
+            const response = await fetch(this.teamChatUrl, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
