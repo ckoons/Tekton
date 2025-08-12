@@ -806,14 +806,14 @@ function addChatInterfaceStyles() {
             border-radius: 8px;
             overflow: hidden;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: #ffffff;
-            color: #333333;
+            background-color: var(--bg-primary, #1a1a2a);
+            color: var(--text-primary, #f0f0f0);
         }
         
         /* Themes */
         .chat-theme-light {
-            background-color: #ffffff;
-            color: #333333;
+            background-color: var(--bg-primary, #1a1a2a);
+            color: var(--text-primary, #f0f0f0);
         }
         
         .chat-theme-dark {
@@ -840,7 +840,7 @@ function addChatInterfaceStyles() {
             padding: 6px 10px;
             border-radius: 4px;
             border: 1px solid #d0d0d0;
-            background-color: #fff;
+            background-color: var(--bg-secondary, #252535);
             font-size: 14px;
         }
         
@@ -943,7 +943,7 @@ function addChatInterfaceStyles() {
         }
         
         .chat-message-thinking .chat-content {
-            background-color: #fff0f5;
+            background-color: var(--bg-tertiary, #333345);
             margin-right: auto;
             border: 1px dashed #ffb6c1;
             border-bottom-left-radius: 2px;
@@ -1062,7 +1062,7 @@ function addChatInterfaceStyles() {
             display: flex;
             padding: 12px 16px;
             border-top: 1px solid rgba(0, 0, 0, 0.1);
-            background-color: #fff;
+            background-color: var(--bg-secondary, #252535);
             gap: 12px;
             position: relative;
         }
@@ -1084,8 +1084,8 @@ function addChatInterfaceStyles() {
             min-height: 24px;
             max-height: 150px;
             overflow-y: auto;
-            background-color: #fff;
-            color: #333;
+            background-color: var(--bg-secondary, #252535);
+            color: var(--text-primary, #f0f0f0);
         }
         
         .chat-theme-dark .chat-input {
