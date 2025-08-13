@@ -1,0 +1,47 @@
+{
+  "name": "Landmark_Work_Products",
+  "tektonCoreProject": "Tekton",
+  "purpose": "Implement landmarks in work products to create living documentation with institutional memory",
+  "description": "Extend the landmark system beyond code into all work products (sprint plans, proposals, documentation). Create a three-layer system where code generates structural landmarks, CIs add semantic landmarks, and patterns emerge into suggested landmarks. This enables work products to become teaching documents that carry accumulated wisdom.",
+  "successCriteria": [
+    "LandmarkRegistry implemented with add(), suggest(), fire() methods",
+    "CIs can naturally write landmarks in documents using @ notation",
+    "Structural landmarks auto-generated at state transitions",
+    "Emergent landmarks discovered from repeated patterns",
+    "Work products become searchable by landmark type",
+    "Knowledge graph visualization of landmark connections"
+  ],
+  "requirements": [
+    "Hybrid approach: code-generated + CI-added + pattern-discovered",
+    "Registry must be accessible from both code and CI contexts",
+    "Landmark syntax must feel natural in documents",
+    "System must track landmark usage patterns",
+    "Must integrate with existing code landmark system"
+  ],
+  "landmark_types": {
+    "structural": [
+      "@landmark:state_transition",
+      "@landmark:workflow_checkpoint", 
+      "@landmark:sprint_initiated",
+      "@landmark:proposal_approved"
+    ],
+    "semantic": [
+      "@decision_point",
+      "@pattern_reference",
+      "@coaching_moment",
+      "@example_needed",
+      "@context_bridge",
+      "@complexity_flag",
+      "@evolution_point"
+    ],
+    "emergent": [
+      "Patterns discovered through repeated use",
+      "CI consensus landmarks",
+      "Cross-domain connections"
+    ]
+  },
+  "notes": "Casey's insight: 'squirrel!' moments when landmarks fire unexpectedly. Cari's relay race metaphor: passing accumulated wisdom. The apprenticeship model: teaching through examples not instructions.",
+  "status": "proposal",
+  "created": "2025-01-13T22:30:00Z",
+  "modified": "2025-01-13T22:30:00Z"
+}

@@ -96,6 +96,7 @@ CLAUDE.md
 
 # Landmark operational data (not the system itself)
 landmarks/data/*.json
+landmarks/data/registry.json
 !landmarks/data/.gitkeep
 
 # Component registrations (runtime)
