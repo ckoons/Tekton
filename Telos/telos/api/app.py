@@ -1236,6 +1236,49 @@ async def create_plan(project_id: str = Path(..., title="The ID of the project")
         raise HTTPException(status_code=500, detail=str(e))
 
 # Proposal management endpoints
+@routers.v1.get("/proposals")
+@api_contract(
+    title="List Proposals",
+    description="Lists all proposal JSON files in the Proposals directory",
+    endpoint="/api/v1/proposals",
+    method="GET",
+    request_schema={},
+    response_schema={"proposals": "array of proposal objects"}
+)
+async def list_proposals():
+    """List all proposals from the Proposals directory"""
+    try:
+        # Use main Tekton path, not Coder-C
+        base_path = "/Users/cskoons/projects/github/Tekton"
+        proposals_path = os.path.join(base_path, "MetaData/DevelopmentSprints/Proposals")
+        
+        proposals = []
+        
+        # Check if directory exists
+        if os.path.exists(proposals_path):
+            # List all JSON files
+            for filename in os.listdir(proposals_path):
+                if filename.endswith('.json'):
+                    file_path = os.path.join(proposals_path, filename)
+                    try:
+                        with open(file_path, 'r') as f:
+                            proposal_data = json.load(f)
+                            # Add filename without extension as identifier
+                            proposal_data['filename'] = filename[:-5]  # Remove .json
+                            proposals.append(proposal_data)
+                    except Exception as e:
+                        logger.error(f"Error reading proposal {filename}: {e}")
+                        continue
+        
+        # Sort by modified date (newest first)
+        proposals.sort(key=lambda x: x.get('modified', x.get('created', '')), reverse=True)
+        
+        return {"proposals": proposals}
+        
+    except Exception as e:
+        logger.error(f"Error listing proposals: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
 @routers.v1.post("/proposals/remove")
 @api_contract(
     title="Remove Proposal",
@@ -1255,8 +1298,8 @@ async def create_plan(project_id: str = Path(..., title="The ID of the project")
 async def remove_proposal(request: RemoveProposalRequest):
     """Move a proposal to the Removed directory"""
     try:
-        # Base paths
-        base_path = "/Users/cskoons/projects/github/Coder-C"
+        # Base paths - use main Tekton path
+        base_path = "/Users/cskoons/projects/github/Tekton"
         proposals_path = os.path.join(base_path, "MetaData/DevelopmentSprints/Proposals")
         removed_path = os.path.join(base_path, "MetaData/DevelopmentSprints/Proposals/Removed")
         
@@ -1319,7 +1362,7 @@ async def create_sprint(request: CreateSprintRequest):
         proposal_data = request.proposalData
         
         # Base paths
-        base_path = "/Users/cskoons/projects/github/Coder-C"
+        base_path = "/Users/cskoons/projects/github/Tekton"
         dev_sprints_path = os.path.join(base_path, "MetaData/DevelopmentSprints")
         proposals_path = os.path.join(base_path, "MetaData/DevelopmentSprints/Proposals")
         sprints_path = os.path.join(base_path, "MetaData/DevelopmentSprints/Proposals/Sprints")
@@ -1446,7 +1489,7 @@ async def save_proposal(proposal_data: Dict[str, Any]):
             raise ValueError("Proposal must have a name")
         
         # Base paths
-        base_path = "/Users/cskoons/projects/github/Coder-C"
+        base_path = "/Users/cskoons/projects/github/Tekton"
         proposals_path = os.path.join(base_path, "MetaData/DevelopmentSprints/Proposals")
         
         # Ensure directory exists
@@ -1481,7 +1524,7 @@ async def load_proposal(proposal_name: str):
     """Load a proposal from disk"""
     try:
         # Base paths
-        base_path = "/Users/cskoons/projects/github/Coder-C"
+        base_path = "/Users/cskoons/projects/github/Tekton"
         proposals_path = os.path.join(base_path, "MetaData/DevelopmentSprints/Proposals")
         
         proposal_file = f"{proposal_name}.json"

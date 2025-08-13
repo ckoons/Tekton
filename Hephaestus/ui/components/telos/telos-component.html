@@ -1715,6 +1715,9 @@ async function saveProposal(originalName) {
         
         closeProposalEditor();
         
+        // Reload proposals to show the new/updated one
+        loadProposals();
+        
     } catch (error) {
         TektonModal.error('Error: Invalid JSON format. Please check your proposal content.\n\n' + error.message);
         return;
@@ -1750,16 +1753,8 @@ async function moveProposalToRemoved(proposalName) {
                 card.remove();
                 console.log('[TELOS] Proposal removed from UI:', proposalName);
                 
-                // Check if no proposals left
-                const proposalsGrid = document.getElementById('proposals-grid');
-                if (proposalsGrid && proposalsGrid.children.length === 0) {
-                    proposalsGrid.innerHTML = `
-                        <div class="telos__empty-state">
-                            <h3>No proposals yet</h3>
-                            <p>Click "New Proposal" to create your first development sprint proposal.</p>
-                        </div>
-                    `;
-                }
+                // Reload all proposals to refresh the display
+                loadProposals();
             }, 300);
             
         } catch (error) {
@@ -2025,12 +2020,119 @@ function telos_protectHtmlPanel() {
     }
 }
 
+// Function to load proposals dynamically
+async function loadProposals() {
+    console.log('[TELOS] Loading proposals from backend...');
+    try {
+        const response = await fetch(tektonUrl('telos', '/api/v1/proposals'));
+        if (!response.ok) {
+            console.error('[TELOS] Failed to load proposals:', response.statusText);
+            return;
+        }
+        
+        const data = await response.json();
+        const proposals = data.proposals || [];
+        console.log('[TELOS] Loaded proposals:', proposals.length);
+        
+        // Get the proposals grid container
+        const grid = document.getElementById('proposals-grid');
+        if (!grid) {
+            console.error('[TELOS] Proposals grid not found');
+            return;
+        }
+        
+        // Clear existing content (remove the hardcoded sample)
+        grid.innerHTML = '';
+        
+        // Color classes for cards
+        const colors = ['blue', 'green', 'purple', 'orange', 'pink', 'teal'];
+        let colorIndex = 0;
+        
+        // Generate cards for each proposal
+        proposals.forEach(proposal => {
+            const color = colors[colorIndex % colors.length];
+            colorIndex++;
+            
+            // Format date
+            const date = new Date(proposal.modified || proposal.created);
+            const formattedDate = date.toLocaleDateString('en-US', { 
+                month: 'short', 
+                day: 'numeric', 
+                year: 'numeric' 
+            });
+            
+            // Create card HTML
+            const cardHtml = `
+                <div class="telos__proposal-card telos__proposal-card--${color}" 
+                     data-proposal-name="${proposal.filename || proposal.name}"
+                     data-tekton-element="proposal-card"
+                     data-tekton-type="proposal"
+                     data-tekton-color="${color}">
+                    <div class="telos__proposal-header" data-tekton-zone="header">
+                        <h3 class="telos__proposal-title" data-tekton-content="title">
+                            ${proposal.name.replace(/_/g, ' ')}
+                        </h3>
+                        <div class="telos__proposal-meta">
+                            <span class="telos__proposal-status" data-tekton-status="${proposal.status || 'proposal'}">
+                                ${proposal.status || 'proposal'}
+                            </span>
+                            <span class="telos__proposal-date" data-tekton-date="created">
+                                ${formattedDate}
+                            </span>
+                        </div>
+                    </div>
+                    <p class="telos__proposal-description" data-tekton-content="description">
+                        ${proposal.description || proposal.purpose || ''}
+                    </p>
+                    <div class="telos__proposal-actions" data-tekton-zone="actions">
+                        <button class="telos__proposal-action telos__proposal-action--edit" 
+                                onclick="editProposal('${proposal.filename || proposal.name}')"
+                                data-tekton-action="edit-proposal"
+                                data-tekton-action-type="primary">
+                            <span class="telos__action-label">Edit</span>
+                        </button>
+                        <button class="telos__proposal-action telos__proposal-action--sprint" 
+                                onclick="createSprint('${proposal.filename || proposal.name}')"
+                                data-tekton-action="create-sprint"
+                                data-tekton-action-type="success"
+                                style="background-color: #3b82f6;">
+                            <span class="telos__action-label">Sprint</span>
+                        </button>
+                        <button class="telos__proposal-action telos__proposal-action--remove" 
+                                onclick="removeProposal('${proposal.filename || proposal.name}')"
+                                data-tekton-action="remove-proposal"
+                                data-tekton-action-type="danger">
+                            <span class="telos__action-label">Remove</span>
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            grid.innerHTML += cardHtml;
+        });
+        
+        // If no proposals, show a message
+        if (proposals.length === 0) {
+            grid.innerHTML = `
+                <div class="telos__empty-state">
+                    <h3>No proposals yet</h3>
+                    <p>Click "New Proposal" to create your first proposal</p>
+                </div>
+            `;
+        }
+        
+    } catch (error) {
+        console.error('[TELOS] Error loading proposals:', error);
+    }
+}
+
 // SETUP DONE AFTER PAGE LOAD
 // This ensures the functions are available before the tab events need them
 window.addEventListener('DOMContentLoaded', function() {
     console.log('[TELOS] DOM loaded, setting up Telos component');
     telos_protectHtmlPanel();
     telos_loadComponent();
+    loadProposals(); // Load proposals on page load
 });
 
 // IMMEDIATE PROTECTION
@@ -2039,6 +2141,7 @@ if (document.readyState === 'complete' || document.readyState === 'interactive')
     console.log('[TELOS] Document already loaded, setting up Telos component immediately');
     telos_protectHtmlPanel();
     telos_loadComponent();
+    loadProposals(); // Load proposals if DOM is already ready
 }
 
 // Initialize unified chat components on load
