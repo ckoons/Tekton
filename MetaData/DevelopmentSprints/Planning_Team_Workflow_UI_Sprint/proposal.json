@@ -1,0 +1,7 @@
+{
+  "name": "Planning_Team_Workflow_UI",
+  "tektonCoreProject": "Tekton",
+  "purpose": "Build comprehensive planning workflow system with Telos UI",
+  "description": "Create a complete planning workflow system starting with Telos UI",
+  "status": "sprint"
+}
