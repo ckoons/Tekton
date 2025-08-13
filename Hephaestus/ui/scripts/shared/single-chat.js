@@ -24,7 +24,7 @@ window.SingleChat = {
         'synthesis': { aiName: 'synthesis-ai', displayName: 'Synthesis' },
         'engram': { aiName: 'engram-ai', displayName: 'Engram' },
         'codex': { aiName: 'codex-ai', displayName: 'Codex' },
-        'tekton': { aiName: 'tekton-core-ai', displayName: 'Tekton' } // tekton-core AI specialist
+        'tekton': { aiName: 'tekton_core-ai', displayName: 'Tekton' } // tekton-core AI specialist
     },
     
     /**
