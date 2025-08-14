@@ -1,0 +1,23 @@
+{
+  "name": "Deployable_Units",
+  "tektonCoreProject": "Tekton",
+  "purpose": "Ergon should manage containers/deployable-units like Tekton Core manages GitHub & Projects",
+  "description": "Ergon automates development, maintains a database of solutions, and should also manage and configure containers",
+  "requirements": [
+    "Add docker-like capabilities to Ergon, to manage and configure but not deploy containers",
+    "Ergon's focus is automation and solutions and creation and configuration of deployable units apps+config, container+config+ci",
+    "Assignment of CI to containers"
+  ],
+  "successCriteria": [
+    "Create/Delete/Modify/Run(in Ergon sandbox)/Suspend/Resume container",
+    "assign CI to container",
+    "Create test suite and run successfully"
+  ],
+  "template": "feature_development",
+  "complexity": 3,
+  "estimatedHours": 8,
+  "notes": "Need to analyze specific Docker-like capabilities and workflows, build testable deployable units, don't deploy other than to Ergon sandbox; 'till' will need to search Ergon and find containers for deployment; this does not need to be Docker containers in other words we could have a Tekton container and that be a deployable unit but it's best to reuse Docker for our userbase",
+  "status": "proposal",
+  "created": "2025-08-14T14:54:31.379Z",
+  "modified": "2025-08-14T15:07:07.381Z"
+}

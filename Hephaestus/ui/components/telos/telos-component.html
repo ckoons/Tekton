@@ -2092,7 +2092,7 @@ async function loadProposals() {
                             <span class="telos__action-label">Edit</span>
                         </button>
                         <button class="telos__proposal-action telos__proposal-action--sprint" 
-                                onclick="createSprint('${proposal.filename || proposal.name}')"
+                                onclick="createDevelopmentSprint('${proposal.filename || proposal.name}')"
                                 data-tekton-action="create-sprint"
                                 data-tekton-action-type="success"
                                 style="background-color: #3b82f6;">
