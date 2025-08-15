@@ -311,7 +311,18 @@ def _handle_ai_command(args, shell, ai_names):
     else:
         # Use unified sender for everything else
         from core.unified_sender import send_to_ci
-        send_to_ci(component, input_data)
+        
+        # Determine sender name - try terma first, then fall back to USER
+        sender_name = None
+        terma_name = TektonEnviron.get('TERMA_TERMINAL_NAME')
+        if terma_name and terma_name != 'unnamed':
+            sender_name = terma_name
+        else:
+            # Fall back to system user
+            import os
+            sender_name = os.environ.get('USER', 'aish')
+        
+        send_to_ci(component, input_data, sender_name=sender_name)
 
 
 @architecture_decision(

@@ -8,6 +8,7 @@ import os
 import urllib.request
 import urllib.error
 import urllib.parse
+from datetime import datetime
 from typing import Optional
 
 from shared.aish.src.registry.ci_registry import get_registry
@@ -67,17 +68,54 @@ except ImportError:
     optimization_notes="Registry cached in memory, format check is O(1)",
     measured_impact="Adds negligible latency to message delivery"
 )
-def send_to_ci(ci_name: str, message: str) -> bool:
+def send_to_ci(ci_name: str, message: str, sender_name: Optional[str] = None) -> bool:
     """
     Send a message to any CI using the unified registry.
     
     Args:
         ci_name: Name of the CI to send to
         message: Message to send
+        sender_name: Optional name of the sender
         
     Returns:
         bool: True if message was sent successfully
     """
+    # Check for forwarding FIRST - before trying to reach the component
+    from forwarding.forwarding_registry import ForwardingRegistry
+    forwarding_registry = ForwardingRegistry()
+    forward_config = forwarding_registry.get_forward_config(ci_name)
+    
+    if forward_config:
+        # Component is forwarded to a terminal
+        terminal_name = forward_config.get("terminal")
+        json_mode = forward_config.get("json_mode", False)
+        
+        # Route to the terminal instead
+        print(f"[Forward: {ci_name} → {terminal_name}]")
+        
+        # Format message for terminal
+        if json_mode:
+            from datetime import datetime as dt
+            forward_msg = json.dumps({
+                "from": ci_name,
+                "sender": sender_name or "aish",
+                "content": message,
+                "timestamp": dt.now().isoformat()
+            }, indent=2)
+        else:
+            forward_msg = f"[{ci_name}]: {message}"
+        
+        # Send to terminal using terma
+        from commands.terma import terma_send_message_to_terminal
+        success = terma_send_message_to_terminal(terminal_name, forward_msg)
+        
+        if success:
+            print(f"Message forwarded to {terminal_name}")
+        else:
+            print(f"Failed to forward to {terminal_name}")
+        
+        return success
+    
     # Get CI info from registry
     registry = get_registry()
     ci = registry.get_by_name(ci_name)
@@ -102,10 +140,14 @@ def send_to_ci(ci_name: str, message: str) -> bool:
             from shared.env import TektonEnviron
             from datetime import datetime
             
+            # Use provided sender_name or get from environment
+            if not sender_name:
+                sender_name = TektonEnviron.get('TERMA_TERMINAL_NAME', 'aish')
+            
             msg_data = {
                 "from": {
                     "terma_id": TektonEnviron.get('TERMA_SESSION_ID', 'aish-direct'),
-                    "name": TektonEnviron.get('TERMA_TERMINAL_NAME', 'aish')
+                    "name": sender_name
                 },
                 "target": ci_name,
                 "message": message,
@@ -175,9 +217,11 @@ def send_to_ci(ci_name: str, message: str) -> bool:
             import socket
             socket_path = ci.get('socket', f"/tmp/ci_msg_{ci_name}.sock")
             
-            # Detect if we're running as a CI ourselves using environment variable
-            ci_name_env = os.environ.get('TEKTON_CI_NAME')
-            sender_name = f"aish ({ci_name_env})" if ci_name_env else 'aish'
+            # Use provided sender_name or detect from environment
+            if not sender_name:
+                # Detect if we're running as a CI ourselves using environment variable
+                ci_name_env = os.environ.get('TEKTON_CI_NAME')
+                sender_name = f"aish ({ci_name_env})" if ci_name_env else 'aish'
             
             try:
                 sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
