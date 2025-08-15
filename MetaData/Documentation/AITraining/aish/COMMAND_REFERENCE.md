@@ -33,10 +33,22 @@ Output includes:
 - Working directory and TEKTON_ROOT
 
 #### `aish list`
-List all available AI components.
+List all available CIs (Companion Intelligences) with unified registry.
 ```bash
-aish list                      # Show all AIs with descriptions
+aish list                      # Show all CIs organized by type
+aish list type terminal        # Show only terminals  
+aish list type greek          # Show only Greek Chorus AIs
+aish list type project        # Show only Project CIs
+aish list forward             # Show CIs with forwarding enabled
+aish list json               # Output in JSON format
+aish list json terminal      # JSON output with type filter
 ```
+
+The unified list shows:
+- Greek Chorus AIs with ports and descriptions
+- Active terminals with PIDs
+- Project CIs with associated projects
+- Forwarding information (e.g., `apollo → cari [JSON]`)
 
 #### `aish list commands`
 Show all available commands with brief descriptions.
@@ -44,13 +56,25 @@ Show all available commands with brief descriptions.
 aish list commands             # Display command reference
 ```
 
-#### `aish <ai-name> "message"`
-Send a message to a specific AI component.
+#### `aish <ci-name> "message"`
+Send a message to any CI using the unified messaging system.
 ```bash
+# Greek Chorus AIs
 aish apollo "What patterns do you see?"
 aish numa "Help me implement this feature"
+
+# Terminals
+aish sandi "Can you review this code?"
+aish cali "Meeting in 5 minutes"
+
+# Project CIs  
+aish myproject-ci "Deploy status?"
+
+# Special
 aish team-chat "Status update for all AIs"
 ```
+
+The unified system automatically routes messages based on each CI's configuration.
 
 ### Pipeline Commands
 
@@ -71,17 +95,38 @@ aish apollo "Predict outcomes" | aish athena "Evaluate"
 
 ### Forwarding Commands
 
-#### `aish forward <ai> <terminal>`
-Forward messages from an AI to a terminal.
+#### `aish forward <ai> <terminal> [json]`
+Forward messages from an AI to a terminal, optionally as structured JSON.
 ```bash
-aish forward apollo bob        # Forward apollo's messages to bob's terminal
+aish forward apollo bob        # Forward as plain text
+aish forward apollo bob json   # Forward as JSON with metadata (New!)
 aish forward rhetor alice      # Forward rhetor's messages to alice
 ```
 
+**JSON Mode (New!)**: When using `json`, messages are sent as:
+```json
+{
+  "message": "original message content",
+  "dest": "apollo",
+  "sender": "current_terminal_name",
+  "purpose": "forward"
+}
+```
+
+This helps CIs understand context and adopt appropriate personas.
+
 #### `aish forward list`
-Show all active message forwards.
+Show all active message forwards with their mode.
 ```bash
 aish forward list              # Display active forwards
+```
+
+Output shows `[JSON]` indicator for JSON-mode forwards:
+```
+Active AI Forwards:
+----------------------------------------
+  apollo       → bob [JSON]
+  numa         → alice
 ```
 
 #### `aish forward remove <ai>` / `aish unforward <ai>`
@@ -90,6 +135,63 @@ Stop forwarding messages from an AI.
 aish unforward apollo          # Stop forwarding apollo
 aish forward remove apollo     # Alternative syntax
 ```
+
+### Purpose Commands (Enhanced!)
+
+#### `aish purpose`
+Show your current terminal's purpose and associated playbook content.
+```bash
+aish purpose                   # Display current purpose
+```
+
+#### `aish purpose <name>`
+Show a specific terminal's purpose or search for purpose content.
+```bash
+aish purpose alice             # Show alice's terminal purpose
+aish purpose "forward"         # Search for 'forward' purpose content (New!)
+```
+
+#### `aish purpose "search_terms"`
+Search for purpose content files across multiple locations (New!).
+```bash
+aish purpose "coding"          # Find coding-related purpose content
+aish purpose "test, debug"     # Search multiple purposes (CSV format)
+aish purpose "code-review"     # Find code review guidelines
+```
+
+Searches in order:
+1. `.tekton/playbook/` - Local project-specific purposes
+2. `MetaData/Documentation/AIPurposes/text/` - Shared text purposes
+3. `MetaData/Documentation/AIPurposes/json/` - Shared JSON purposes
+
+#### `aish purpose <terminal> "purposes"`
+Set a terminal's purpose (if you have permission).
+```bash
+aish purpose myterminal "development, testing"
+```
+
+### Testing Commands (New!)
+
+#### `aish test`
+Run functional tests for aish commands.
+```bash
+aish test                      # Run all test suites
+aish test -v                   # Run with verbose output
+aish test forward              # Run specific test suite
+```
+
+#### `aish test help`
+Show detailed test documentation and available suites.
+```bash
+aish test help                 # Display test framework help
+```
+
+Available test suites:
+- **basic** - Core commands (help, list, status)
+- **forward** - Message forwarding functionality
+- **purpose** - Purpose search and management
+- **terma** - Terminal communication
+- **route** - Intelligent routing
 
 ### Project Commands
 
@@ -118,95 +220,27 @@ Remove project CI forwarding.
 aish project unforward MyWebApp # Stop forwarding MyWebApp CI
 ```
 
-### Unified Inbox System
-
-The unified inbox system provides structured message management for all CIs (Computational Intelligences) with three priority levels.
-
-#### `aish inbox`
-Show message counts across all inbox types.
-```bash
-aish inbox                     # Display: prompt:2  new:5  keep:1
-```
-
-#### `aish inbox send <type> <ci> "message"`
-Send a message to a CI's inbox with priority level.
-```bash
-aish inbox send prompt numa "Urgent: build failed"
-aish inbox send new alice "Please review the PR"  
-aish inbox send keep self "Completed: auth module"
-```
-
-**Inbox Types:**
-- **prompt** - Urgent messages requiring immediate attention
-- **new** - Regular incoming messages
-- **keep** - Saved/archived messages
-
-#### `aish inbox show <type> [from <ci>]`
-Display messages in human-readable format.
-```bash
-aish inbox show prompt         # Show all urgent messages
-aish inbox show new from apollo # Show new messages from apollo only
-```
-
-#### `aish inbox json <type> [from <ci>]`
-Display messages in JSON format (ideal for CI processing).
-```bash
-aish inbox json new            # All new messages as JSON
-aish inbox json prompt from numa # Prompt messages from numa as JSON
-```
-
-#### `aish inbox get <type> [from <ci>]`
-Retrieve and remove messages in JSON format (batch processing).
-```bash
-aish inbox get prompt          # Get and remove all prompt messages
-aish inbox get new from rhetor # Get and remove new messages from rhetor
-```
-
-**CI Batch Processing Pattern:**
-```bash
-# Process all urgent messages
-messages=$(aish inbox get prompt)
-echo "$messages" | jq -r '.[] | "From: \(.from) - \(.message)"'
-
-# Count-based loops
-while [ $(aish inbox count new) -gt 0 ]; do
-    aish inbox get new | process_messages
-done
-```
-
-#### `aish inbox count <type> [from <ci>]`
-Count messages (returns number only for CI scripts).
-```bash
-aish inbox count prompt        # Returns: 3
-aish inbox count new from apollo # Count new messages from apollo
-```
-
-#### `aish inbox clear <type> [from <ci>]`
-Remove all messages (silent operation).
-```bash
-aish inbox clear keep          # Clear all saved messages
-aish inbox clear new from numa # Clear new messages from numa only
-```
-
-#### `aish inbox help`
-Show detailed inbox command help.
-```bash
-aish inbox help                # Display comprehensive usage guide
-```
-
-#### `aish inbox training`
-Show CI training for inbox automation.
-```bash
-aish inbox training            # Display batch processing patterns
-```
-
 ### Terminal Commands (Terma)
 
-#### `aish terma send <name> "message"`
+#### `aish terma inbox`
+Show messages in your terminal's inbox.
+```bash
+aish terma inbox               # Show all inbox messages
+aish terma inbox new           # Show only new messages
+aish terma inbox keep          # Show kept messages
+```
+
+#### `aish terma inbox new pop`
+Get and remove one new message from inbox.
+```bash
+aish terma inbox new pop       # Pop one message
+```
+
+#### `aish terma <name> "message"`
 Send a message to another terminal.
 ```bash
-aish terma send alice "Ready to review"
-aish terma send bob "Need help with auth module"
+aish terma alice "Ready to review"
+aish terma bob "Need help with auth module"
 ```
 
 #### `aish terma broadcast "message"`
@@ -214,6 +248,108 @@ Send a message to all active terminals.
 ```bash
 aish terma broadcast "System update in 5 minutes"
 ```
+
+#### `aish terma mv-to-keep <indices>`
+Move messages from new to keep inbox.
+```bash
+aish terma mv-to-keep 1,3,5    # Move messages 1, 3, and 5 to keep
+```
+
+#### `aish terma del-from-keep <indices>`
+Delete messages from keep inbox.
+```bash
+aish terma del-from-keep 2,4   # Delete messages 2 and 4
+```
+
+### CI Terminal and Tool Commands
+
+#### `aish ci-terminal`
+Launch terminal programs with PTY-based message injection and automatic command execution.
+
+```bash
+# Basic usage
+aish ci-terminal -n claude-ci -- claude
+aish ci-terminal --name bash-ci -- bash
+
+# With delimiter configuration (for automatic execution)
+aish ci-terminal -n claude-ci -d "\n" -- claude      # Unix newline (default)
+aish ci-terminal --name claude-ci --delimiter "\r\n" -- claude  # CRLF
+aish ci-terminal -n python-ci -d "\n\n" -- python3   # Double newline
+
+# Background execution (using standard Unix &)
+aish ci-terminal -n claude-ci -- claude &
+aish ci-terminal -n bash-ci -d "\n" -- bash &
+```
+
+**Options:**
+- `-n`, `--name <name>`: Required. Name for this terminal's message socket
+- `-d`, `--delimiter <string>`: Optional. Default delimiter for auto-execution
+
+**Use Cases:**
+- Interactive AI assistants (Claude, ChatGPT CLI)
+- Shell sessions with automation
+- REPLs (Python, Node, Ruby) with code injection
+- Any terminal-based program needing input automation
+
+#### `aish ci-tool`
+Launch non-terminal programs with stdin injection and automatic command execution.
+
+```bash
+# Basic usage
+aish ci-tool -n processor -- python script.py
+aish ci-tool --name server -- node app.js
+
+# With delimiter configuration
+aish ci-tool -n processor -d "\n" -- python script.py
+aish ci-tool --name analyzer --delimiter "\n\n" -- ./analyze.sh
+
+# Background execution
+aish ci-tool -n processor -- python script.py &
+aish ci-tool -n server -- node server.js 2>&1 | tee server.log &
+```
+
+**Options:**
+- `-n`, `--name <name>`: Required. Name for this tool's message socket
+- `-d`, `--delimiter <string>`: Optional. Default delimiter for auto-execution
+
+**Use Cases:**
+- Long-running scripts needing input
+- Server processes with command interfaces
+- Data processors accepting commands
+- Any non-terminal program with stdin control
+
+#### Sending Messages with Execution
+
+Once a CI terminal or tool is launched, send messages with optional auto-execution:
+
+```bash
+# Send raw message (no delimiter, manual entry needed)
+aish claude-ci "print('hello')"
+
+# Execute with default delimiter (usually \n)
+aish claude-ci "print('hello')" -x
+aish claude-ci "print('hello')" --execute
+
+# Execute with custom delimiter (overrides CI's default)
+aish claude-ci "command" -x "\r\n"
+aish claude-ci "command" --execute "\n\n"
+
+# Examples with different programs
+aish bash-ci "ls -la" -x                     # Executes with \n
+aish python-ci "2 + 2" -x                    # Executes with \n
+aish claude-ci "Tell me about Python" -x     # Sends with delimiter
+```
+
+**Message Options:**
+- `-x`, `--execute [delimiter]`: Add delimiter for auto-execution
+  - No argument: Use CI's configured delimiter (or `\n` if none)
+  - With argument: Use specified delimiter
+
+**Delimiter Selection:**
+- No `-x` flag: Raw message, no delimiter
+- `-x` alone: CI's default delimiter or `\n`
+- `-x "\r\n"`: Override with CRLF
+- `-x "\n\n"`: Override with double newline
 
 ### Productivity Commands
 
@@ -257,7 +393,7 @@ prompt "Your message here"     # Send a clear message
 **Integration with Terma:**
 ```bash
 # From another terminal
-aish terma send teri 'prompt "Please check the test results"'
+aish terma teri 'prompt "Please check the test results"'
 
 # Via Terma UI
 # Send command: prompt "Meeting starting in 5 minutes"
@@ -269,69 +405,6 @@ aish terma send teri 'prompt "Please check the test results"'
 autoprompt start               # Keeps CI active with dots
 # Human's terminal or Terma UI
 prompt "Hey Claude, can you review PR #42?"  # Clean message appears
-```
-
-### Alias Commands
-
-#### `aish alias create <name> <command> [description]`
-Create a reusable command pattern (alias) for frequently used operations.
-```bash
-aish alias create deploy "git push && ssh prod deploy"
-aish alias create greet "echo Hello, $1!"
-aish alias create review "aish send rhetor 'review $1' && aish forward rhetor Betty json"
-```
-
-**Parameter Substitution:**
-- `$1`, `$2`, ... - Individual arguments
-- `$*` - All arguments as a single string
-- `$@` - All arguments as separate quoted strings
-
-**Important:** Aliases cannot reference other aliases to prevent recursion.
-
-#### `aish alias delete <name>`
-Remove an existing alias.
-```bash
-aish alias delete deploy       # Remove the deploy alias
-```
-
-#### `aish alias list`
-Show all defined aliases.
-```bash
-aish alias list                # Display all aliases with commands
-```
-
-#### `aish alias show <name>`
-Display detailed information about a specific alias.
-```bash
-aish alias show deploy         # Show creation time, usage count, etc.
-```
-
-#### Using Aliases
-Execute an alias by using its name directly with aish.
-```bash
-# After creating the greet alias above
-aish greet Casey               # Outputs: Hello, Casey!
-
-# Complex example with multiple parameters
-aish alias create pr-review "git diff $1 | aish rhetor 'review these changes' && aish forward rhetor $2 json"
-aish pr-review main casey      # Reviews diff against main, forwards to casey
-```
-
-**Use Cases for CIs:**
-- Encode frequently used patterns
-- Build personal command vocabulary
-- Reduce repetitive command typing
-- Create workflow shortcuts
-
-**Example CI Workflow:**
-```bash
-# CI creates aliases for common tasks
-aish alias create checkpoint "aish purpose self 'context/save/work' && aish send apollo 'checkpoint'"
-aish alias create sync-numa "aish forward numa $1 json && aish send numa 'syncing with $1'"
-
-# Later use
-aish checkpoint                # Save work state
-aish sync-numa betty           # Sync with betty terminal
 ```
 
 ## Available AI Components
@@ -398,13 +471,27 @@ aish team-chat "Starting new feature development"
 aish forward apollo casey
 aish forward synthesis casey
 
-# Send messages between terminals
-aish terma send alice "PR ready for review"
+# Forward with JSON for better CI understanding (New!)
+aish forward numa alice json
 
-# Inbox-based CI coordination
-aish inbox send prompt numa "Urgent: review needed"
-aish inbox send new all-devs "Standup in 10 minutes"
-aish inbox get prompt | process_urgent_messages
+# Send messages between terminals
+aish terma alice "PR ready for review"
+```
+
+### Purpose-Driven Development (New!)
+```bash
+# Find your context
+aish purpose "development"
+
+# Set up JSON forwarding for a CI
+aish forward numa bob json
+
+# CI can now check purpose content
+aish purpose "forward"  # Understand how to handle forwarded messages
+
+# Work with structured messages
+aish numa "How should we handle user auth?"
+# Bob receives JSON with full context
 ```
 
 ### Advanced Pipelines
@@ -414,6 +501,18 @@ cat logs.txt | aish metis "Find patterns" | aish apollo "Predict issues"
 
 # Design to implementation
 echo "User auth system" | aish prometheus | aish numa | aish telos
+```
+
+### Testing and Validation (New!)
+```bash
+# Run all tests before deployment
+aish test
+
+# Test specific functionality
+aish test forward -v
+
+# Verify your changes work
+aish test purpose
 ```
 
 ## Tips
@@ -438,11 +537,10 @@ echo "User auth system" | aish prometheus | aish numa | aish telos
    - Let Claude act as an AI proxy
    - Debug AI interactions
 
-4. **Inbox Management**:
-   - Check inbox regularly with `aish inbox`
-   - Use priority levels: prompt (urgent), new (regular), keep (archive)
-   - Process in batches with `aish inbox get <type>`
-   - Filter by sender with `from <ci>` syntax
+4. **Terminal Communication**:
+   - Use meaningful terminal names
+   - Check inbox regularly with `aish terma inbox`
+   - Keep important messages with mv-to-keep
 
 ## Troubleshooting
 
@@ -468,60 +566,12 @@ $ aish forward list
 ### Message Not Delivered
 ```bash
 # Verify terminal name
-$ aish terma send wrong-name "Test"
+$ aish terma wrong-name "Test"
 Error: Terminal 'wrong-name' not found
-```
-
-### Debug Commands
-
-#### `aish status`
-Check if the MCP server is running and healthy.
-```bash
-aish status                    # Check MCP server status
-```
-
-#### `aish restart`
-Restart the MCP server.
-```bash
-aish restart                   # Stop and restart MCP server
-```
-
-#### `aish logs`
-View recent MCP server logs.
-```bash
-aish logs                      # Display MCP server logs
-```
-
-#### `aish debug-mcp`
-Enable verbose MCP debugging.
-```bash
-aish debug-mcp                 # Turn on MCP debug logging
-```
-
-## MCP Server
-
-aish now runs an MCP (Model Context Protocol) server on port 8118. This server handles all AI message routing for the UI and external tools.
-
-### Key Points:
-- MCP server starts automatically with aish
-- Runs on port 8118 (AISH_MCP_PORT)
-- All UI chat interfaces route through MCP
-- Supports streaming responses
-- Can be managed with debug commands
-
-### Testing MCP:
-```bash
-# Run test suite
-cd $TEKTON_ROOT/shared/aish/tests
-./test_mcp.sh
-
-# Quick health check
-curl http://localhost:8118/api/mcp/v2/health
 ```
 
 ## See Also
 
-- MCP Server documentation in `$TEKTON_ROOT/MetaData/Documentation/MCP/aish_MCP_Server.md`
-- Individual AI documentation in `$TEKTON_ROOT/MetaData/Documentation/AITraining/<ai-name>/`
-- Terminal system docs in `$TEKTON_ROOT/MetaData/Documentation/UserGuides/terma/`
-- Architecture docs in `$TEKTON_ROOT/MetaData/Documentation/Architecture/`
+- Individual AI documentation in `$TEKTON_ROOT/MetaData/TektonDocumentation/AITraining/<ai-name>/`
+- Terminal system docs in `$TEKTON_ROOT/MetaData/TektonDocumentation/UserGuides/terma/`
+- Architecture docs in `$TEKTON_ROOT/MetaData/TektonDocumentation/Architecture/`

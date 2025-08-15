@@ -93,6 +93,27 @@ def send_to_tool(tool_name: str, message: str, port: int) -> Optional[str]:
 
 ### 3. New aish Commands
 
+#### CI Terminal and Tool Commands
+
+```bash
+# Launch terminal programs with PTY
+aish ci-terminal -n <name> [-d <delimiter>] -- <command>
+aish ci-terminal --name claude-ci --delimiter "\n" -- claude
+
+# Launch non-terminal programs with stdin control
+aish ci-tool -n <name> [-d <delimiter>] -- <command>
+aish ci-tool --name processor --delimiter "\n\n" -- python script.py
+
+# Send messages with execution
+aish <ci-name> "message" -x [delimiter]
+aish <ci-name> "message" --execute [delimiter]
+```
+
+**Options:**
+- `-n`, `--name`: CI name for socket communication
+- `-d`, `--delimiter`: Default delimiter for auto-execution
+- `-x`, `--execute`: Append delimiter when sending message
+
 #### Tool Management Commands
 
 ```bash
@@ -134,7 +155,48 @@ aish session save <name>
 aish session delete <name>
 ```
 
-### 4. Enhanced List Command
+### 4. Message Protocol Extensions
+
+#### Execute Flag Support
+
+The message protocol is extended to support automatic command execution:
+
+```python
+# Standard message
+message = {
+    'from': 'sender_name',
+    'content': 'message content',
+    'type': 'message'
+}
+
+# Message with execution
+message = {
+    'from': 'sender_name',
+    'content': 'message content',
+    'type': 'message',
+    'execute': True,           # Add delimiter
+    'delimiter': '\n'          # Optional override
+}
+```
+
+#### Wrapper Behavior
+
+1. **CI Terminal (PTY wrapper)**:
+   - Stores default delimiter from `-d` flag
+   - Checks incoming messages for `execute` flag
+   - Appends delimiter: `os.write(master_fd, (content + delimiter).encode())`
+
+2. **CI Tool (Simple wrapper)**:
+   - Stores default delimiter from `-d` flag  
+   - Checks incoming messages for `execute` flag
+   - Appends delimiter: `process.stdin.write((content + delimiter).encode())`
+
+3. **Delimiter Priority**:
+   - Message `delimiter` field (highest priority)
+   - CI's configured delimiter (from `-d` flag)
+   - Default: `\n` (if `-x` used without delimiter)
+
+### 5. Enhanced List Command
 
 Update `shared/aish/src/commands/list.py`:
 

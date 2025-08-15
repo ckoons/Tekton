@@ -239,6 +239,92 @@ python test_generic_adapter.py
 python test_integration.py
 ```
 
+## CI Terminal and Tool Wrappers
+
+### Overview
+
+In addition to the high-level CI Tools system, aish provides lower-level wrappers for any program:
+
+- **`ci-terminal`**: PTY-based wrapper for terminal programs (Claude, bash, REPLs)
+- **`ci-tool`**: Simple wrapper for non-terminal programs (scripts, servers)
+
+### Delimiter Configuration
+
+Both wrappers support automatic command execution via delimiter configuration:
+
+```bash
+# Configure delimiter at launch
+aish ci-terminal -n claude-ci -d "\n" -- claude
+aish ci-tool -n processor -d "\n\n" -- python script.py
+
+# Send with automatic execution
+aish claude-ci "command" -x              # Uses configured delimiter
+aish processor "data" -x "\n"            # Override delimiter
+```
+
+### CI Terminal Usage
+
+```bash
+# Launch Claude with newline delimiter
+aish ci-terminal -n claude-ci -d "\n" -- claude &
+
+# Send commands that auto-execute
+aish claude-ci "Tell me about Python" -x
+aish claude-ci "Explain async/await" --execute
+
+# Send partial input (no execution)
+aish claude-ci "Tell me about"
+```
+
+### CI Tool Usage
+
+```bash
+# Launch Python script with double-newline delimiter  
+aish ci-tool -n analyzer -d "\n\n" -- python analyze.py &
+
+# Send commands with execution
+aish analyzer "START_BATCH" -x
+aish analyzer "PROCESS_FILE data.csv" -x "\n"
+```
+
+### Delimiter Options
+
+| Program Type | Common Delimiter | Notes |
+|-------------|-----------------|-------|
+| Unix shells | `\n` | Standard newline |
+| Windows programs | `\r\n` | Carriage return + newline |
+| Python REPL | `\n` or `\n\n` | Single for statements, double for blocks |
+| Claude/AI tools | `\n` | Usually Unix standard |
+| Custom protocols | Varies | Check tool documentation |
+
+### Background Execution
+
+Both wrappers support standard Unix background execution:
+
+```bash
+# Launch in background with &
+aish ci-terminal -n claude-ci -- claude &
+aish ci-tool -n server -- node app.js &
+
+# With output redirection
+aish ci-tool -n processor -- python script.py > output.log 2>&1 &
+aish ci-terminal -n bash-ci -- bash 2>&1 | tee session.log &
+```
+
+### Message Protocol Extension
+
+When using `-x` or `--execute`, the message protocol includes:
+
+```json
+{
+  "from": "sender_name",
+  "content": "message content",
+  "type": "message",
+  "execute": true,
+  "delimiter": "\n"
+}
+```
+
 ## Examples
 
 ### Code Review Bot

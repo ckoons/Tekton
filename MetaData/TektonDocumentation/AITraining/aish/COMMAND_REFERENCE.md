@@ -261,6 +261,96 @@ Delete messages from keep inbox.
 aish terma del-from-keep 2,4   # Delete messages 2 and 4
 ```
 
+### CI Terminal and Tool Commands
+
+#### `aish ci-terminal`
+Launch terminal programs with PTY-based message injection and automatic command execution.
+
+```bash
+# Basic usage
+aish ci-terminal -n claude-ci -- claude
+aish ci-terminal --name bash-ci -- bash
+
+# With delimiter configuration (for automatic execution)
+aish ci-terminal -n claude-ci -d "\n" -- claude      # Unix newline (default)
+aish ci-terminal --name claude-ci --delimiter "\r\n" -- claude  # CRLF
+aish ci-terminal -n python-ci -d "\n\n" -- python3   # Double newline
+
+# Background execution (using standard Unix &)
+aish ci-terminal -n claude-ci -- claude &
+aish ci-terminal -n bash-ci -d "\n" -- bash &
+```
+
+**Options:**
+- `-n`, `--name <name>`: Required. Name for this terminal's message socket
+- `-d`, `--delimiter <string>`: Optional. Default delimiter for auto-execution
+
+**Use Cases:**
+- Interactive AI assistants (Claude, ChatGPT CLI)
+- Shell sessions with automation
+- REPLs (Python, Node, Ruby) with code injection
+- Any terminal-based program needing input automation
+
+#### `aish ci-tool`
+Launch non-terminal programs with stdin injection and automatic command execution.
+
+```bash
+# Basic usage
+aish ci-tool -n processor -- python script.py
+aish ci-tool --name server -- node app.js
+
+# With delimiter configuration
+aish ci-tool -n processor -d "\n" -- python script.py
+aish ci-tool --name analyzer --delimiter "\n\n" -- ./analyze.sh
+
+# Background execution
+aish ci-tool -n processor -- python script.py &
+aish ci-tool -n server -- node server.js 2>&1 | tee server.log &
+```
+
+**Options:**
+- `-n`, `--name <name>`: Required. Name for this tool's message socket
+- `-d`, `--delimiter <string>`: Optional. Default delimiter for auto-execution
+
+**Use Cases:**
+- Long-running scripts needing input
+- Server processes with command interfaces
+- Data processors accepting commands
+- Any non-terminal program with stdin control
+
+#### Sending Messages with Execution
+
+Once a CI terminal or tool is launched, send messages with optional auto-execution:
+
+```bash
+# Send raw message (no delimiter, manual entry needed)
+aish claude-ci "print('hello')"
+
+# Execute with default delimiter (usually \n)
+aish claude-ci "print('hello')" -x
+aish claude-ci "print('hello')" --execute
+
+# Execute with custom delimiter (overrides CI's default)
+aish claude-ci "command" -x "\r\n"
+aish claude-ci "command" --execute "\n\n"
+
+# Examples with different programs
+aish bash-ci "ls -la" -x                     # Executes with \n
+aish python-ci "2 + 2" -x                    # Executes with \n
+aish claude-ci "Tell me about Python" -x     # Sends with delimiter
+```
+
+**Message Options:**
+- `-x`, `--execute [delimiter]`: Add delimiter for auto-execution
+  - No argument: Use CI's configured delimiter (or `\n` if none)
+  - With argument: Use specified delimiter
+
+**Delimiter Selection:**
+- No `-x` flag: Raw message, no delimiter
+- `-x` alone: CI's default delimiter or `\n`
+- `-x "\r\n"`: Override with CRLF
+- `-x "\n\n"`: Override with double newline
+
 ### Productivity Commands
 
 #### `autoprompt`
