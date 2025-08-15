@@ -14,9 +14,10 @@ import signal
 from datetime import datetime
 
 class SimpleWrapper:
-    def __init__(self, name, command):
+    def __init__(self, name, command, delimiter=None):
         self.name = name
         self.command = command
+        self.delimiter = delimiter  # Store default delimiter for auto-execution
         self.socket_path = f"/tmp/ci_msg_{name}.sock"  # Use same pattern as PTY wrapper
         self.process = None
         self.running = True
@@ -112,12 +113,27 @@ class SimpleWrapper:
                     message = json.loads(data)
                     from_ci = message.get('from', 'Unknown')
                     content = message.get('content', '')
+                    execute = message.get('execute', False)
                     
-                    # Format and inject to child's stdin
-                    injection = f"\n[{datetime.now().strftime('%H:%M')}] Message from {from_ci}: {content}\n"
+                    # Check if we should append delimiter for execution
+                    if execute:
+                        # Use message delimiter, wrapper delimiter, or default to \n
+                        raw_delimiter = message.get('delimiter', self.delimiter or '\n')
+                        # Decode escape sequences in delimiter
+                        try:
+                            delimiter = raw_delimiter.encode('utf-8').decode('unicode_escape')
+                        except:
+                            delimiter = raw_delimiter
+                        # For raw command execution, just send content + delimiter
+                        injection = content + delimiter
+                        print(f"[Wrapper] Executing command from {from_ci} with delimiter", file=sys.stderr)
+                    else:
+                        # Format as message notification
+                        injection = f"\n[{datetime.now().strftime('%H:%M')}] Message from {from_ci}: {content}\n"
+                        print(f"[Wrapper] Injected message from {from_ci}", file=sys.stderr)
+                    
                     self.process.stdin.write(injection.encode('utf-8'))
                     self.process.stdin.flush()
-                    print(f"[Wrapper] Injected message from {from_ci}", file=sys.stderr)
                     
             except Exception as e:
                 if self.running:
@@ -204,12 +220,20 @@ def main():
     import argparse
     
     parser = argparse.ArgumentParser(description='Simple CI wrapper with stdin injection')
-    parser.add_argument('--name', required=True, help='CI name for socket')
+    parser.add_argument('--name', '-n', required=True, help='CI name for socket')
+    parser.add_argument('--delimiter', '-d', default=None, help='Default delimiter for auto-execution')
     parser.add_argument('command', nargs='+', help='Command to wrap')
     
     args = parser.parse_args()
     
-    wrapper = SimpleWrapper(args.name, args.command)
+    # Decode escape sequences in delimiter if provided
+    if args.delimiter:
+        try:
+            args.delimiter = args.delimiter.encode('utf-8').decode('unicode_escape')
+        except:
+            pass  # Keep original if decoding fails
+    
+    wrapper = SimpleWrapper(args.name, args.command, args.delimiter)
     wrapper.run()
 
 if __name__ == "__main__":

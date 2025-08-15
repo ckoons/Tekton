@@ -39,12 +39,14 @@ def handle_ci_tool_command(args):
         print(f"Error: Simple wrapper not found at {wrapper_path}")
         return
     
-    # Extract name from arguments to set environment variable
+    # Extract name and delimiter from arguments
     name = None
+    delimiter = None
     for i, arg in enumerate(ci_tool_args):
-        if arg == '--name' and i + 1 < len(ci_tool_args):
+        if arg in ['--name', '-n'] and i + 1 < len(ci_tool_args):
             name = ci_tool_args[i + 1]
-            break
+        elif arg in ['--delimiter', '-d'] and i + 1 < len(ci_tool_args):
+            delimiter = ci_tool_args[i + 1]
     
     # Set TEKTON_CI_NAME environment variable if name was provided
     env = os.environ.copy()
@@ -67,20 +69,27 @@ def show_ci_tool_help():
     print("""CI Tool - Simple Process Wrapper with Message Injection
 
 Usage:
-  aish ci-tool --name <name> -- <command...>
+  aish ci-tool --name <name> [--delimiter <string>] -- <command...>
 
 Options:
-  --name <name>     Required. Name for this process's message socket
+  -n, --name <name>          Required. Name for this process's message socket
+  -d, --delimiter <string>   Optional. Default delimiter for auto-execution
 
 Examples:
   # Launch Python script with message injection
   aish ci-tool --name processor -- python data_processor.py
+  aish ci-tool -n processor -d "\\n" -- python data_processor.py
   
   # Launch Node.js application
   aish ci-tool --name server -- node server.js
+  aish ci-tool -n server --delimiter "\\n\\n" -- node server.js
   
   # Launch any command-line tool
   aish ci-tool --name analyzer -- ./analyze_data.sh
+  
+  # Background execution with output capture
+  aish ci-tool -n processor -- python script.py &
+  aish ci-tool -n server -- node server.js 2>&1 | tee server.log &
 
 Messaging:
   Once launched, messages can be injected into the process's stdin:

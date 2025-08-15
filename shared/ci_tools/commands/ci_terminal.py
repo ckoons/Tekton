@@ -31,12 +31,14 @@ def handle_ci_terminal_command(args):
         show_ci_terminal_help()
         return True
     
-    # Extract name from arguments to check uniqueness
+    # Extract name and delimiter from arguments
     name = None
+    delimiter = None
     for i, arg in enumerate(ci_terminal_args):
-        if arg == '--name' and i + 1 < len(ci_terminal_args):
+        if arg in ['--name', '-n'] and i + 1 < len(ci_terminal_args):
             name = ci_terminal_args[i + 1]
-            break
+        elif arg in ['--delimiter', '-d'] and i + 1 < len(ci_terminal_args):
+            delimiter = ci_terminal_args[i + 1]
     
     # Check name uniqueness if provided
     if name:
@@ -77,20 +79,26 @@ def show_ci_terminal_help():
     print("""CI Terminal - PTY-based Terminal Wrapper with Message Injection
 
 Usage:
-  aish ci-terminal --name <name> -- <command...>
+  aish ci-terminal --name <name> [--delimiter <string>] -- <command...>
 
 Options:
-  --name <name>     Required. Name for this terminal's message socket
+  -n, --name <name>          Required. Name for this terminal's message socket
+  -d, --delimiter <string>   Optional. Default delimiter for auto-execution
 
 Examples:
   # Launch Claude with message injection
   aish ci-terminal --name wilma-ci -- claude
+  aish ci-terminal -n claude-ci -d "\\n" -- claude
   
-  # Launch bash with message injection
+  # Launch bash with message injection  
   aish ci-terminal --name casey -- bash
+  aish ci-terminal -n bash-ci --delimiter "\\n" -- bash
   
-  # Launch Python REPL
-  aish ci-terminal --name python-ci -- python3
+  # Launch Python REPL with double newline delimiter
+  aish ci-terminal --name python-ci -d "\\n\\n" -- python3
+  
+  # Background execution
+  aish ci-terminal -n claude-ci -- claude &
 
 Messaging:
   Once launched, you can inject messages using:

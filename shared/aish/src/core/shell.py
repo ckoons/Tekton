@@ -309,7 +309,7 @@ MCP Server Management:
             'tool': []
         }
         
-        for ci in registry.list_all():
+        for ci in registry.get_all().values():
             ci_type = ci.get('type', 'unknown')
             if ci_type in by_type:
                 by_type[ci_type].append(ci)

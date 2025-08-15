@@ -182,6 +182,7 @@ class CIRegistry:
     def __init__(self):
         """Initialize the unified CI registry."""
         self._registry: Dict[str, Dict[str, Any]] = {}
+        self._dirty = False  # Track if registry needs flushing
         
         # Use file-based storage
         from .file_registry import FileRegistry
@@ -202,7 +203,7 @@ class CIRegistry:
         self._load_projects()
         # self._load_tools()  # Removed - old CI tools infrastructure deprecated
         self._load_forwards()
-        self._load_wrapped_cis()  # Load wrapped CIs
+        self._load_and_validate_wrapped_cis()  # Load and validate wrapped CIs
     
     def _save_context_state(self):
         """Save context state to file."""
@@ -414,20 +415,45 @@ class CIRegistry:
             if ci_name in self._registry:
                 self._registry[ci_name].update(forward_config)
     
-    def _load_wrapped_cis(self):
-        """Load wrapped CIs from persistent storage."""
+    def _load_and_validate_wrapped_cis(self):
+        """Load wrapped CIs from persistent storage and validate they're still running."""
         wrapped_file = os.path.join(self._file_registry.registry_dir, 'wrapped_cis.json')
         if os.path.exists(wrapped_file):
             try:
                 with open(wrapped_file, 'r') as f:
                     wrapped_cis = json.load(f)
+                    valid_cis = {}
+                    
                     for name, ci_info in wrapped_cis.items():
-                        # Check if socket still exists
+                        # Check if process is still running
+                        pid = ci_info.get('pid')
                         socket_path = ci_info.get('socket')
-                        if socket_path and os.path.exists(socket_path):
+                        
+                        # Validate PID is alive
+                        is_alive = False
+                        if pid:
+                            try:
+                                os.kill(pid, 0)  # Signal 0 just checks if process exists
+                                is_alive = True
+                            except (ProcessLookupError, PermissionError):
+                                is_alive = False
+                        
+                        # Only keep if both PID is alive AND socket exists
+                        if is_alive and socket_path and os.path.exists(socket_path):
                             self._registry[name] = ci_info
+                            valid_cis[name] = ci_info
+                            print(f"[Registry] Recovered CI terminal: {name} (PID {pid})")
+                        else:
+                            print(f"[Registry] Removing dead CI terminal: {name} (PID {pid}, alive={is_alive})")
+                    
+                    # Write back only valid CIs
+                    if valid_cis != wrapped_cis:
+                        with open(wrapped_file, 'w') as f:
+                            json.dump(valid_cis, f, indent=2)
+                        print(f"[Registry] Cleaned up {len(wrapped_cis) - len(valid_cis)} dead entries")
+                            
             except Exception as e:
-                print(f"Failed to load wrapped CIs: {e}")
+                print(f"[Registry] Failed to load wrapped CIs: {e}")
     
     # Registry Access Methods
     
@@ -561,7 +587,7 @@ class CIRegistry:
         return self._context_state.get(ci_name)
     
     def register_wrapped_ci(self, ci_info: Dict) -> bool:
-        """Register a wrapped CI and persist to file."""
+        """Register a wrapped CI and persist immediately."""
         name = ci_info.get('name')
         if not name:
             return False
@@ -569,61 +595,55 @@ class CIRegistry:
         # Add to registry
         self._registry[name] = ci_info
         
-        # Persist wrapped CIs separately
-        wrapped_file = os.path.join(self._file_registry.registry_dir, 'wrapped_cis.json')
+        # Mark registry as needing flush
+        self._dirty = True
         
-        # Read existing wrapped CIs
-        wrapped_cis = {}
-        if os.path.exists(wrapped_file):
-            try:
-                with open(wrapped_file, 'r') as f:
-                    wrapped_cis = json.load(f)
-            except:
-                wrapped_cis = {}
+        # Flush immediately for wrapped CIs since they're created/destroyed less frequently
+        self.flush_wrapped_cis()
         
-        # Update with new CI
-        wrapped_cis[name] = ci_info
-        
-        # Write back
-        try:
-            with open(wrapped_file, 'w') as f:
-                json.dump(wrapped_cis, f, indent=2)
-            return True
-        except Exception as e:
-            print(f"Failed to persist wrapped CI: {e}")
-            return False
+        return True
     
     def unregister_wrapped_ci(self, name: str) -> bool:
-        """Unregister a wrapped CI and remove from persistence."""
+        """Unregister a wrapped CI and persist immediately."""
         if name not in self._registry:
             return False
         
         # Remove from registry
         del self._registry[name]
         
-        # Update persistent storage
-        wrapped_file = os.path.join(self._file_registry.registry_dir, 'wrapped_cis.json')
+        # Mark registry as needing flush
+        self._dirty = True
         
-        # Read existing wrapped CIs
-        wrapped_cis = {}
-        if os.path.exists(wrapped_file):
-            try:
-                with open(wrapped_file, 'r') as f:
-                    wrapped_cis = json.load(f)
-            except:
-                wrapped_cis = {}
+        # Flush immediately for wrapped CIs since they're created/destroyed less frequently
+        self.flush_wrapped_cis()
         
-        # Remove the CI
-        if name in wrapped_cis:
-            del wrapped_cis[name]
+        return True
+    
+    def flush_wrapped_cis(self) -> bool:
+        """Flush wrapped CIs to disk if dirty."""
+        if not self._dirty:
+            return True  # Nothing to flush
         
-        # Write back
         try:
+            # Collect only wrapped CIs
+            wrapped_cis = {
+                name: info for name, info in self._registry.items()
+                if info.get('type') in ['ci_terminal', 'ci_tool']
+            }
+            
+            # Write to file
+            wrapped_file = os.path.join(self._file_registry.registry_dir, 'wrapped_cis.json')
+            os.makedirs(os.path.dirname(wrapped_file), exist_ok=True)
+            
             with open(wrapped_file, 'w') as f:
                 json.dump(wrapped_cis, f, indent=2)
+            
+            self._dirty = False
+            print(f"[Registry] Flushed {len(wrapped_cis)} wrapped CIs to disk")
             return True
+            
         except Exception as e:
-            print(f"Failed to update wrapped CI persistence: {e}")
+            print(f"[Registry] Failed to flush wrapped CIs: {e}")
             return False
     
     def _allocate_project_port(self, project_name: str) -> int:

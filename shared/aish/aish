@@ -322,7 +322,19 @@ def _handle_ai_command(args, shell, ai_names):
             import os
             sender_name = os.environ.get('USER', 'aish')
         
-        send_to_ci(component, input_data, sender_name=sender_name)
+        # Get execute flag from args if available
+        execute = False
+        delimiter = None
+        if hasattr(args, 'execute') and args.execute is not None:
+            execute = True
+            # Decode escape sequences in delimiter
+            try:
+                delimiter = args.execute.encode('utf-8').decode('unicode_escape')
+            except:
+                delimiter = args.execute
+        
+        send_to_ci(component, input_data, sender_name=sender_name, 
+                   execute=execute, delimiter=delimiter)
 
 
 @architecture_decision(
@@ -419,6 +431,14 @@ Environment variables:
         '--capture',
         action='store_true',
         help='Capture command output to .tekton/aish/captures/'
+    )
+    
+    parser.add_argument(
+        '-x', '--execute',
+        nargs='?',
+        const='\n',
+        default=None,
+        help='Execute message with delimiter (default: \\n)'
     )
     
     

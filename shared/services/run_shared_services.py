@@ -16,6 +16,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from services.orphan_cleanup_service import OrphanCleanupService
 from services.ai_config_sync import AIConfigSyncService
+from services.registry_flush_service import RegistryFlushService
 
 # Configure logging
 logging.basicConfig(
@@ -92,6 +93,10 @@ async def main():
                        help='Minimum age for orphan detection (default: 2.0 hours)')
     parser.add_argument('--ai-config-sync', action='store_true', default=True,
                        help='Enable AI config sync (default: enabled)')
+    parser.add_argument('--registry-flush', action='store_true', default=True,
+                       help='Enable registry flush service (default: enabled)')
+    parser.add_argument('--flush-interval', type=float, default=5.0,
+                       help='Minutes between registry flushes (default: 5.0)')
     parser.add_argument('--dry-run', action='store_true',
                        help='Run in dry-run mode (no actual changes)')
     
@@ -118,6 +123,17 @@ async def main():
             logger.warning("AI config sync service not available")
         except Exception as e:
             logger.warning(f"Could not initialize AI config sync: {e}")
+    
+    # Add registry flush service
+    if args.registry_flush:
+        try:
+            registry_flush = RegistryFlushService(
+                flush_interval=args.flush_interval * 60,  # Convert to seconds
+                validate_on_start=True
+            )
+            manager.add_service('registry_flush', registry_flush)
+        except Exception as e:
+            logger.warning(f"Could not initialize registry flush service: {e}")
     
     # Setup signal handlers
     def signal_handler(sig, frame):

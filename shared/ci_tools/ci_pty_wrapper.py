@@ -16,9 +16,10 @@ import signal
 from datetime import datetime
 
 class PTYWrapper:
-    def __init__(self, name, command):
+    def __init__(self, name, command, delimiter=None):
         self.name = name
         self.command = command
+        self.delimiter = delimiter  # Store default delimiter for auto-execution
         self.socket_path = f"/tmp/ci_msg_{name}.sock"
         self.master_fd = None
         self.child_pid = None
@@ -127,11 +128,26 @@ class PTYWrapper:
                     message = json.loads(data)
                     from_ci = message.get('from', 'Unknown')
                     content = message.get('content', '')
+                    execute = message.get('execute', False)
                     
-                    # Format and inject to PTY
-                    injection = f"\n[{datetime.now().strftime('%H:%M')}] Message from {from_ci}: {content}\n"
+                    # Check if we should append delimiter for execution
+                    if execute:
+                        # Use message delimiter, wrapper delimiter, or default to \n
+                        raw_delimiter = message.get('delimiter', self.delimiter or '\n')
+                        # Decode escape sequences in delimiter
+                        try:
+                            delimiter = raw_delimiter.encode('utf-8').decode('unicode_escape')
+                        except:
+                            delimiter = raw_delimiter
+                        # For raw command execution, just send content + delimiter
+                        injection = content + delimiter
+                        print(f"[PTY Wrapper] Executing command from {from_ci} with delimiter", file=sys.stderr)
+                    else:
+                        # Format as message notification
+                        injection = f"\n[{datetime.now().strftime('%H:%M')}] Message from {from_ci}: {content}\n"
+                        print(f"[PTY Wrapper] Injected message from {from_ci}", file=sys.stderr)
+                    
                     os.write(self.master_fd, injection.encode('utf-8'))
-                    print(f"[PTY Wrapper] Injected message from {from_ci}", file=sys.stderr)
                     
             except Exception as e:
                 if self.running:
@@ -259,10 +275,18 @@ def main():
     import argparse
     
     parser = argparse.ArgumentParser(description='PTY wrapper with message injection')
-    parser.add_argument('--name', required=True, help='CI name for socket')
+    parser.add_argument('--name', '-n', required=True, help='CI name for socket')
+    parser.add_argument('--delimiter', '-d', default=None, help='Default delimiter for auto-execution')
     parser.add_argument('command', nargs='+', help='Command to wrap')
     
     args = parser.parse_args()
+    
+    # Decode escape sequences in delimiter if provided
+    if args.delimiter:
+        try:
+            args.delimiter = args.delimiter.encode('utf-8').decode('unicode_escape')
+        except:
+            pass  # Keep original if decoding fails
     
     # Check for name uniqueness
     import sys
@@ -276,7 +300,7 @@ def main():
         print("Please use a unique name", file=sys.stderr)
         sys.exit(1)
     
-    wrapper = PTYWrapper(args.name, args.command)
+    wrapper = PTYWrapper(args.name, args.command, args.delimiter)
     wrapper.run()
 
 if __name__ == "__main__":

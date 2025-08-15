@@ -68,7 +68,8 @@ except ImportError:
     optimization_notes="Registry cached in memory, format check is O(1)",
     measured_impact="Adds negligible latency to message delivery"
 )
-def send_to_ci(ci_name: str, message: str, sender_name: Optional[str] = None) -> bool:
+def send_to_ci(ci_name: str, message: str, sender_name: Optional[str] = None, 
+               execute: bool = False, delimiter: Optional[str] = None) -> bool:
     """
     Send a message to any CI using the unified registry.
     
@@ -76,6 +77,8 @@ def send_to_ci(ci_name: str, message: str, sender_name: Optional[str] = None) ->
         ci_name: Name of the CI to send to
         message: Message to send
         sender_name: Optional name of the sender
+        execute: Whether to append delimiter for execution
+        delimiter: Optional delimiter to append
         
     Returns:
         bool: True if message was sent successfully
@@ -229,7 +232,9 @@ def send_to_ci(ci_name: str, message: str, sender_name: Optional[str] = None) ->
                 message_data = {
                     'from': sender_name,
                     'content': message,
-                    'type': 'message'
+                    'type': 'message',
+                    'execute': execute,
+                    'delimiter': delimiter
                 }
                 sock.send(json.dumps(message_data).encode('utf-8'))
                 sock.close()
