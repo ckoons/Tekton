@@ -1499,6 +1499,15 @@ const TEMPLATE_CONFIGS = {
         },
         purpose: "Development with Tekton integration"
     },
+    "github_projects": {
+        name: "GitHub Projects",
+        working_dir: "~/projects/github",
+        env: {
+            "TEKTON_ENABLED": "true",
+            "GIT_ENABLED": "true"
+        },
+        purpose: "Working on GitHub projects"
+    },
     "ai_workspace": {
         name: "AI Workspace",
         working_dir: "~/",
