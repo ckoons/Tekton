@@ -647,6 +647,106 @@ class CIRegistry:
             print(f"[Registry] Failed to flush wrapped CIs: {e}")
             return False
     
+    def set_forward_state(self, ci_name: str, model: str, args: str = "") -> bool:
+        """Set forward state for a CI (persistent)."""
+        forward_file = os.path.join(self._file_registry.registry_dir, 'forward_states.json')
+        
+        # Load existing states
+        states = {}
+        if os.path.exists(forward_file):
+            try:
+                with open(forward_file, 'r') as f:
+                    states = json.load(f)
+            except:
+                states = {}
+        
+        # Set new state
+        states[ci_name] = {
+            'model': model,
+            'args': args,
+            'started': datetime.now().isoformat(),
+            'active': True
+        }
+        
+        # Save states
+        try:
+            os.makedirs(os.path.dirname(forward_file), exist_ok=True)
+            with open(forward_file, 'w') as f:
+                json.dump(states, f, indent=2)
+            
+            # Also update in-memory registry if CI exists
+            if ci_name in self._registry:
+                self._registry[ci_name]['forwarded_to'] = model
+                self._registry[ci_name]['forward_args'] = args
+            
+            print(f"[Registry] Set forward state: {ci_name} → {model}")
+            return True
+        except Exception as e:
+            print(f"[Registry] Failed to set forward state: {e}")
+            return False
+    
+    def clear_forward_state(self, ci_name: str) -> bool:
+        """Clear forward state for a CI."""
+        forward_file = os.path.join(self._file_registry.registry_dir, 'forward_states.json')
+        
+        # Load existing states
+        states = {}
+        if os.path.exists(forward_file):
+            try:
+                with open(forward_file, 'r') as f:
+                    states = json.load(f)
+            except:
+                return False
+        
+        # Remove state
+        if ci_name in states:
+            del states[ci_name]
+            
+            # Save states
+            try:
+                with open(forward_file, 'w') as f:
+                    json.dump(states, f, indent=2)
+                
+                # Also update in-memory registry
+                if ci_name in self._registry:
+                    self._registry[ci_name].pop('forwarded_to', None)
+                    self._registry[ci_name].pop('forward_args', None)
+                
+                print(f"[Registry] Cleared forward state for {ci_name}")
+                return True
+            except Exception as e:
+                print(f"[Registry] Failed to clear forward state: {e}")
+                return False
+        
+        return True
+    
+    def get_forward_state(self, ci_name: str) -> Optional[Dict[str, Any]]:
+        """Get forward state for a CI."""
+        forward_file = os.path.join(self._file_registry.registry_dir, 'forward_states.json')
+        
+        if os.path.exists(forward_file):
+            try:
+                with open(forward_file, 'r') as f:
+                    states = json.load(f)
+                    return states.get(ci_name)
+            except:
+                pass
+        
+        return None
+    
+    def list_forward_states(self) -> Dict[str, Dict[str, Any]]:
+        """List all forward states."""
+        forward_file = os.path.join(self._file_registry.registry_dir, 'forward_states.json')
+        
+        if os.path.exists(forward_file):
+            try:
+                with open(forward_file, 'r') as f:
+                    return json.load(f)
+            except:
+                pass
+        
+        return {}
+    
     def _allocate_project_port(self, project_name: str) -> int:
         """Allocate a dynamic port for a project CI using OS allocation."""
         # Use a persistent file to track allocated ports

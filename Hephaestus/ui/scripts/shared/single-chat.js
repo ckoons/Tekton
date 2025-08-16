@@ -51,8 +51,9 @@ window.SingleChat = {
      * Send a message to the AI
      * @param {HTMLElement} containerEl - The chat messages container
      * @param {string} message - The message to send
+     * @param {object} metadata - Optional metadata (e.g., escalation info)
      */
-    async sendMessage(containerEl, message) {
+    async sendMessage(containerEl, message, metadata = {}) {
         if (!containerEl || !message || !message.trim()) {
             return;
         }
@@ -97,8 +98,18 @@ window.SingleChat = {
         }
         
         try {
-            // Send message to AI
-            const response = await window.AIChat.sendMessage(config.aiName, message);
+            // Check for escalation metadata
+            let response;
+            if (metadata.escalate) {
+                console.log(`[SingleChat] Escalating to ${metadata.escalate} instead of ${config.aiName}`);
+                // For now, still use the same AI but include escalation in message
+                // In future, this could route to a different endpoint
+                const escalatedMessage = `[Model: ${metadata.escalate}] ${message}`;
+                response = await window.AIChat.sendMessage(config.aiName, escalatedMessage);
+            } else {
+                // Normal message to AI
+                response = await window.AIChat.sendMessage(config.aiName, message);
+            }
             
             // Remove processing message
             if (window.AIChat && window.AIChat.hideProcessingMessage) {

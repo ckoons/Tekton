@@ -341,6 +341,25 @@ class AISpecialistWorker(ABC):
     )
     async def _handle_chat(self, message: Dict[str, Any]) -> Dict[str, Any]:
         """Handle chat message using the configured model."""
+        # Check if this CI is forwarded to Claude
+        from shared.ai.claude_handler import process_with_claude
+        ci_name = f"{self.component}-ci"
+        
+        # Try Claude first if forwarded
+        user_content = message.get('content', message.get('message', ''))
+        claude_response = await process_with_claude(ci_name, user_content)
+        
+        if claude_response:
+            # Claude handled it
+            return {
+                'type': 'response',
+                'ai_id': self.ai_id,
+                'content': claude_response,
+                'model': 'claude',
+                'forwarded': True
+            }
+        
+        # Not forwarded or Claude unavailable, use normal model
         if not self.model_ready:
             return {
                 'type': 'error',

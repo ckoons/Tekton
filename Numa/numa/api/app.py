@@ -21,6 +21,7 @@ from shared.env import TektonEnviron
 from shared.urls import hermes_url, rhetor_url, numa_url
 from shared.ai.simple_ai import ai_send
 from shared.workflow.endpoint_template import create_workflow_endpoint
+from shared.api.chat_command_endpoint import add_chat_command_endpoint
 from numa.core.numa_component import NumaComponent
 
 # Component instance
@@ -40,6 +41,9 @@ app = numa_component.create_app(startup_callback=startup_callback)
 # Include standardized workflow endpoint
 workflow_router = create_workflow_endpoint("numa")
 app.include_router(workflow_router)
+
+# Add chat command endpoint for [command] support
+add_chat_command_endpoint(app, "numa")
 
 class CompanionChatRequest(BaseModel):
     """Request model for companion chat"""
