@@ -442,7 +442,8 @@ class CIRegistry:
                         if is_alive and socket_path and os.path.exists(socket_path):
                             self._registry[name] = ci_info
                             valid_cis[name] = ci_info
-                            print(f"[Registry] Recovered CI terminal: {name} (PID {pid})")
+                            # Comment out to reduce noise
+                            # print(f"[Registry] Recovered CI terminal: {name} (PID {pid})")
                         else:
                             print(f"[Registry] Removing dead CI terminal: {name} (PID {pid}, alive={is_alive})")
                     

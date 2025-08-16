@@ -12,15 +12,53 @@ import json
 import select
 import signal
 from datetime import datetime
+from typing import Optional
+
+# Import OS injection module
+try:
+    # Try relative import first (when used as module)
+    from .os_injection import (
+        OSInjector, 
+        should_use_os_injection,
+        inject_message_with_delimiter,
+        get_injection_info
+    )
+    OS_INJECTION_AVAILABLE = True
+except ImportError:
+    try:
+        # Try absolute import (when run directly)
+        from os_injection import (
+            OSInjector, 
+            should_use_os_injection,
+            inject_message_with_delimiter,
+            get_injection_info
+        )
+        OS_INJECTION_AVAILABLE = True
+    except ImportError:
+        OS_INJECTION_AVAILABLE = False
 
 class SimpleWrapper:
-    def __init__(self, name, command, delimiter=None):
+    def __init__(self, name, command, delimiter=None, use_os_injection=None):
         self.name = name
         self.command = command
         self.delimiter = delimiter  # Store default delimiter for auto-execution
         self.socket_path = f"/tmp/ci_msg_{name}.sock"  # Use same pattern as PTY wrapper
         self.process = None
         self.running = True
+        
+        # Determine if we should use OS injection
+        if OS_INJECTION_AVAILABLE:
+            prog_name = command[0] if command else ''
+            self.use_os_injection = should_use_os_injection(prog_name, use_os_injection)
+            if self.use_os_injection:
+                self.injector = OSInjector()
+                if not self.injector.is_available():
+                    print(f"[Wrapper] OS injection requested but not available", file=sys.stderr)
+                    self.use_os_injection = False
+                else:
+                    print(f"[Wrapper] OS injection enabled for {prog_name}", file=sys.stderr)
+        else:
+            self.use_os_injection = False
         
     def setup_socket(self):
         """Set up Unix socket for receiving messages"""
@@ -114,6 +152,7 @@ class SimpleWrapper:
                     from_ci = message.get('from', 'Unknown')
                     content = message.get('content', '')
                     execute = message.get('execute', False)
+                    use_os_injection = message.get('os_injection', None)  # Allow per-message override
                     
                     # Check if we should append delimiter for execution
                     if execute:
@@ -124,16 +163,32 @@ class SimpleWrapper:
                             delimiter = raw_delimiter.encode('utf-8').decode('unicode_escape')
                         except:
                             delimiter = raw_delimiter
-                        # For raw command execution, just send content + delimiter
-                        injection = content + delimiter
-                        print(f"[Wrapper] Executing command from {from_ci} with delimiter", file=sys.stderr)
+                        
+                        # Determine injection method for this message
+                        should_inject = use_os_injection if use_os_injection is not None else self.use_os_injection
+                        
+                        if should_inject and OS_INJECTION_AVAILABLE:
+                            # Use OS-level injection
+                            if inject_message_with_delimiter(content, delimiter, True):
+                                print(f"[Wrapper] OS-injected command from {from_ci}", file=sys.stderr)
+                            else:
+                                # Fallback to stdin injection if OS injection fails
+                                print(f"[Wrapper] OS injection failed, using stdin", file=sys.stderr)
+                                injection = content + delimiter
+                                self.process.stdin.write(injection.encode('utf-8'))
+                                self.process.stdin.flush()
+                        else:
+                            # Use normal stdin injection
+                            injection = content + delimiter
+                            self.process.stdin.write(injection.encode('utf-8'))
+                            self.process.stdin.flush()
+                            print(f"[Wrapper] Stdin-injected command from {from_ci}", file=sys.stderr)
                     else:
-                        # Format as message notification
+                        # Format as message notification (always use stdin for notifications)
                         injection = f"\n[{datetime.now().strftime('%H:%M')}] Message from {from_ci}: {content}\n"
+                        self.process.stdin.write(injection.encode('utf-8'))
+                        self.process.stdin.flush()
                         print(f"[Wrapper] Injected message from {from_ci}", file=sys.stderr)
-                    
-                    self.process.stdin.write(injection.encode('utf-8'))
-                    self.process.stdin.flush()
                     
             except Exception as e:
                 if self.running:
@@ -217,14 +272,37 @@ class SimpleWrapper:
         print(f"[Wrapper] Cleaned up", file=sys.stderr)
 
 def main():
+    import sys
     import argparse
     
     parser = argparse.ArgumentParser(description='Simple CI wrapper with stdin injection')
-    parser.add_argument('--name', '-n', required=True, help='CI name for socket')
+    parser.add_argument('--name', '-n', help='CI name for socket')
     parser.add_argument('--delimiter', '-d', default=None, help='Default delimiter for auto-execution')
-    parser.add_argument('command', nargs='+', help='Command to wrap')
+    parser.add_argument('--os-injection', choices=['on', 'off', 'auto'], default='auto',
+                       help='OS-level keystroke injection mode (default: auto)')
+    parser.add_argument('--injection-info', action='store_true',
+                       help='Show OS injection capabilities and exit')
+    parser.add_argument('command', nargs='*', help='Command to wrap')
     
     args = parser.parse_args()
+    
+    # Show injection info if requested
+    if args.injection_info:
+        if OS_INJECTION_AVAILABLE:
+            info = get_injection_info()
+            print(f"OS Injection Available: {info['available']}")
+            print(f"Platform: {info['platform']}")
+            print(f"Method: {info['method']}")
+            print(f"Auto-detected TUI Programs: {', '.join(info['tui_programs'])}")
+        else:
+            print("OS injection module not available")
+        sys.exit(0)
+    
+    # Require command and name if not showing info
+    if not args.command:
+        parser.error("command is required unless using --injection-info")
+    if not args.name:
+        parser.error("--name/-n is required when running a command")
     
     # Decode escape sequences in delimiter if provided
     if args.delimiter:
@@ -233,7 +311,10 @@ def main():
         except:
             pass  # Keep original if decoding fails
     
-    wrapper = SimpleWrapper(args.name, args.command, args.delimiter)
+    # Parse OS injection preference
+    use_os_injection = None if args.os_injection == 'auto' else (args.os_injection == 'on')
+    
+    wrapper = SimpleWrapper(args.name, args.command, args.delimiter, use_os_injection)
     wrapper.run()
 
 if __name__ == "__main__":

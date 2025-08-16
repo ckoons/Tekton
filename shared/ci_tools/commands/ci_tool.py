@@ -39,14 +39,27 @@ def handle_ci_tool_command(args):
         print(f"Error: Simple wrapper not found at {wrapper_path}")
         return
     
-    # Extract name and delimiter from arguments
+    # Extract name, delimiter, and OS injection setting from arguments
     name = None
     delimiter = None
+    os_injection = None
+    injection_info = False
     for i, arg in enumerate(ci_tool_args):
         if arg in ['--name', '-n'] and i + 1 < len(ci_tool_args):
             name = ci_tool_args[i + 1]
         elif arg in ['--delimiter', '-d'] and i + 1 < len(ci_tool_args):
             delimiter = ci_tool_args[i + 1]
+        elif arg == '--os-injection' and i + 1 < len(ci_tool_args):
+            os_injection = ci_tool_args[i + 1]
+        elif arg == '--injection-info':
+            injection_info = True
+    
+    # If injection info requested, pass it through to the wrapper
+    if injection_info:
+        wrapper_path = Path(__file__).parent.parent / 'ci_simple_wrapper.py'
+        cmd = [sys.executable, str(wrapper_path), '--injection-info']
+        os.execvp(cmd[0], cmd)
+        return
     
     # Set TEKTON_CI_NAME environment variable if name was provided
     env = os.environ.copy()
@@ -69,23 +82,28 @@ def show_ci_tool_help():
     print("""CI Tool - Simple Process Wrapper with Message Injection
 
 Usage:
-  aish ci-tool --name <name> [--delimiter <string>] -- <command...>
+  aish ci-tool --name <name> [options] -- <command...>
 
 Options:
   -n, --name <name>          Required. Name for this process's message socket
   -d, --delimiter <string>   Optional. Default delimiter for auto-execution
+  --os-injection {on,off,auto}  OS-level keystroke injection (default: auto)
+  --injection-info          Show OS injection capabilities and exit
 
 Examples:
   # Launch Python script with message injection
   aish ci-tool --name processor -- python data_processor.py
   aish ci-tool -n processor -d "\\n" -- python data_processor.py
   
+  # Force OS injection for TUI programs
+  aish ci-tool --name editor --os-injection on -- vim script.py
+  
   # Launch Node.js application
   aish ci-tool --name server -- node server.js
   aish ci-tool -n server --delimiter "\\n\\n" -- node server.js
   
-  # Launch any command-line tool
-  aish ci-tool --name analyzer -- ./analyze_data.sh
+  # Check OS injection capabilities
+  aish ci-tool --injection-info
   
   # Background execution with output capture
   aish ci-tool -n processor -- python script.py &

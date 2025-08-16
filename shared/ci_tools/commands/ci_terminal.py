@@ -31,14 +31,27 @@ def handle_ci_terminal_command(args):
         show_ci_terminal_help()
         return True
     
-    # Extract name and delimiter from arguments
+    # Extract name, delimiter, and OS injection setting from arguments
     name = None
     delimiter = None
+    os_injection = None
+    injection_info = False
     for i, arg in enumerate(ci_terminal_args):
         if arg in ['--name', '-n'] and i + 1 < len(ci_terminal_args):
             name = ci_terminal_args[i + 1]
         elif arg in ['--delimiter', '-d'] and i + 1 < len(ci_terminal_args):
             delimiter = ci_terminal_args[i + 1]
+        elif arg == '--os-injection' and i + 1 < len(ci_terminal_args):
+            os_injection = ci_terminal_args[i + 1]
+        elif arg == '--injection-info':
+            injection_info = True
+    
+    # If injection info requested, pass it through to the wrapper
+    if injection_info:
+        wrapper_path = Path(__file__).parent.parent / 'ci_pty_wrapper.py'
+        cmd = [sys.executable, str(wrapper_path), '--injection-info']
+        os.execvp(cmd[0], cmd)
+        return
     
     # Check name uniqueness if provided
     if name:
@@ -79,23 +92,30 @@ def show_ci_terminal_help():
     print("""CI Terminal - PTY-based Terminal Wrapper with Message Injection
 
 Usage:
-  aish ci-terminal --name <name> [--delimiter <string>] -- <command...>
+  aish ci-terminal --name <name> [options] -- <command...>
 
 Options:
   -n, --name <name>          Required. Name for this terminal's message socket
   -d, --delimiter <string>   Optional. Default delimiter for auto-execution
+  --os-injection {on,off,auto}  OS-level keystroke injection (default: auto)
+  --injection-info          Show OS injection capabilities and exit
 
 Examples:
-  # Launch Claude with message injection
+  # Launch Claude with OS injection (auto-detected)
   aish ci-terminal --name wilma-ci -- claude
   aish ci-terminal -n claude-ci -d "\\n" -- claude
   
-  # Launch bash with message injection  
-  aish ci-terminal --name casey -- bash
-  aish ci-terminal -n bash-ci --delimiter "\\n" -- bash
+  # Force OS injection on for a program
+  aish ci-terminal -n vim-ci --os-injection on -- vim
+  
+  # Force OS injection off (use PTY only)
+  aish ci-terminal --name bash-ci --os-injection off -- bash
   
   # Launch Python REPL with double newline delimiter
   aish ci-terminal --name python-ci -d "\\n\\n" -- python3
+  
+  # Check OS injection capabilities
+  aish ci-terminal --injection-info
   
   # Background execution
   aish ci-terminal -n claude-ci -- claude &
