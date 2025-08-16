@@ -5,6 +5,58 @@
 <script src="/scripts/shared/single-chat.js"></script>
 <script src="/scripts/shared/team-chat.js"></script>
 
+<script>
+// Define global functions early for inline handlers
+window.metis_sendChat = function() {
+    const input = document.getElementById('metis-chat-input');
+    const message = input.value.trim();
+    
+    if (!message) return;
+    
+    // Determine which tab is active
+    const workflowRadio = document.getElementById('metis-tab-workflow');
+    const teamRadio = document.getElementById('metis-tab-team');
+    const workflowActive = workflowRadio ? workflowRadio.checked : false;
+    const teamActive = teamRadio ? teamRadio.checked : false;
+    
+    // If we're not on a chat tab, switch to workflow chat first
+    if (!workflowActive && !teamActive) {
+        if (workflowRadio) {
+            workflowRadio.checked = true;
+        }
+        // Small delay to let the CSS transition complete and ensure chat is initialized
+        setTimeout(() => {
+            const workflowChatEl = document.getElementById('metis-workflow-messages');
+            if (window.SingleChat && workflowChatEl) {
+                // Ensure it's initialized before sending
+                window.SingleChat.init(workflowChatEl, 'metis', 'chat-message');
+                window.SingleChat.sendMessage(workflowChatEl, message);
+            }
+            input.value = '';
+        }, 100);
+        return;
+    }
+    
+    // Normal chat behavior when already on a chat tab
+    if (workflowActive) {
+        // Use SingleChat for workflow AI
+        const workflowChatEl = document.getElementById('metis-workflow-messages');
+        if (window.SingleChat && workflowChatEl) {
+            window.SingleChat.sendMessage(workflowChatEl, message);
+        }
+    } else if (teamActive) {
+        // Use TeamChat for team broadcast
+        const teamChatEl = document.getElementById('metis-team-messages');
+        if (window.TeamChat && teamChatEl) {
+            window.TeamChat.sendMessage(teamChatEl, message);
+        }
+    }
+    
+    // Clear input
+    input.value = '';
+}
+</script>
+
 <!-- Hidden radio controls for CSS-only tab functionality -->
 <input type="radio" name="metis-tab" id="metis-tab-dashboard" checked style="display: none;">
 <input type="radio" name="metis-tab" id="metis-tab-task" style="display: none;">
@@ -1251,28 +1303,7 @@ function metis_initChats() {
     }
 }
 
-// Chat functions - Terma's exact pattern
-function metis_sendChat() {
-    const input = document.getElementById('metis-chat-input');
-    const message = input.value.trim();
-    if (!message) return;
-    
-    const workflowActive = document.getElementById('metis-tab-workflow').checked;
-    
-    if (workflowActive) {
-        const workflowChatEl = document.getElementById('metis-workflow-messages');
-        if (window.SingleChat && workflowChatEl) {
-            window.SingleChat.sendMessage(workflowChatEl, message);
-        }
-    } else {
-        const teamChatEl = document.getElementById('metis-team-messages');
-        if (window.TeamChat && teamChatEl) {
-            window.TeamChat.sendMessage(teamChatEl, message);
-        }
-    }
-    
-    input.value = '';
-}
+// Chat function already defined at top of file for inline handlers
 
 function metis_clearChat() {
     console.log('[METIS] Clearing chat');

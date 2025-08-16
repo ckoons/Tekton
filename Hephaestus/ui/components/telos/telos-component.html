@@ -1430,6 +1430,25 @@ window.telos_sendChat = function() {
     const activeTab = document.querySelector('.telos__tab--active');
     const tabId = activeTab ? activeTab.getAttribute('data-tab') : '';
     
+    // If we're not on a chat tab, switch to req chat first
+    if (tabId !== 'reqchat' && tabId !== 'teamchat') {
+        // Find and click the req chat tab
+        const reqChatTab = document.querySelector('.telos__tab[data-tab="reqchat"]');
+        if (reqChatTab) {
+            reqChatTab.click();
+            // Small delay to let the CSS transition complete
+            setTimeout(() => {
+                const reqChatEl = document.getElementById('reqchat-messages');
+                if (window.SingleChat && reqChatEl) {
+                    window.SingleChat.sendMessage(reqChatEl, message);
+                }
+                input.value = '';
+            }, 100);
+            return;
+        }
+    }
+    
+    // Normal chat behavior when already on a chat tab
     if (tabId === 'reqchat') {
         const reqChatEl = document.getElementById('reqchat-messages');
         if (window.SingleChat && reqChatEl) {

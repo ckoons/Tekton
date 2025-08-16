@@ -1564,6 +1564,25 @@ window.prometheus_sendChat = function() {
     const activeTab = document.querySelector('.prometheus__tab--active');
     const tabId = activeTab ? activeTab.getAttribute('data-tab') : '';
     
+    // If we're not on a chat tab, switch to planning chat first
+    if (tabId !== 'planningchat' && tabId !== 'teamchat') {
+        // Find and click the planning chat tab
+        const planningChatTab = document.querySelector('.prometheus__tab[data-tab="planningchat"]');
+        if (planningChatTab) {
+            planningChatTab.click();
+            // Small delay to let the CSS transition complete
+            setTimeout(() => {
+                const planningChatEl = document.getElementById('planningchat-messages');
+                if (window.SingleChat && planningChatEl) {
+                    window.SingleChat.sendMessage(planningChatEl, message);
+                }
+                input.value = '';
+            }, 100);
+            return false;
+        }
+    }
+    
+    // Normal chat behavior when already on a chat tab
     if (tabId === 'planningchat') {
         const planningChatEl = document.getElementById('planningchat-messages');
         if (window.SingleChat && planningChatEl) {

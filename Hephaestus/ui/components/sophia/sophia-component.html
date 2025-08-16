@@ -1867,29 +1867,41 @@ function sophia_initChats() {
 
 // CHAT SENDING FUNCTION - delegate to unified chat components
 window.sophia_sendChat = function() {
-    console.log('[SOPHIA] Send chat clicked');
     const input = document.getElementById('sophia-chat-input');
     const message = input.value.trim();
     if (!message) {
-        console.log('[SOPHIA] No message to send');
         return;
     }
     
     const activeTab = document.querySelector('.sophia__tab--active');
     const tabId = activeTab ? activeTab.getAttribute('data-tab') : '';
-    console.log('[SOPHIA] Active tab:', tabId);
     
+    // If we're not on a chat tab, switch to research chat first
+    if (tabId !== 'researchchat' && tabId !== 'teamchat') {
+        // Find and click the research chat tab
+        const researchChatTab = document.querySelector('.sophia__tab[data-tab="researchchat"]');
+        if (researchChatTab) {
+            researchChatTab.click();
+            // Small delay to let the CSS transition complete
+            setTimeout(() => {
+                const researchChatEl = document.getElementById('researchchat-messages');
+                if (window.SingleChat && researchChatEl) {
+                    window.SingleChat.sendMessage(researchChatEl, message);
+                }
+                input.value = '';
+            }, 100);
+            return;
+        }
+    }
+    
+    // Normal chat behavior when already on a chat tab
     if (tabId === 'researchchat') {
         const researchChatEl = document.getElementById('researchchat-messages');
-        console.log('[SOPHIA] Research chat element:', researchChatEl);
-        console.log('[SOPHIA] SingleChat available:', !!window.SingleChat);
         if (window.SingleChat && researchChatEl) {
             window.SingleChat.sendMessage(researchChatEl, message);
         }
     } else if (tabId === 'teamchat') {
         const teamChatEl = document.getElementById('teamchat-messages');
-        console.log('[SOPHIA] Team chat element:', teamChatEl);
-        console.log('[SOPHIA] TeamChat available:', !!window.TeamChat);
         if (window.TeamChat && teamChatEl) {
             window.TeamChat.sendMessage(teamChatEl, message);
         }

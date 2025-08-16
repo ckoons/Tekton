@@ -106,7 +106,7 @@
              data-tekton-panel-component="hermes"
              data-tekton-panel-active="false">
             <div class="hermes__chat" data-tekton-chat="container">
-                <div class="hermes__chat-messages" data-tekton-chat="messages" id="chat-messages" style="width: 100%; height: calc(100% - 0px);">
+                <div class="hermes__chat-messages" data-tekton-chat="messages" id="chat-messages" data-component-name="hermes" data-css-prefix="hermes" style="width: 100%; height: calc(100% - 0px);">
                     <!-- Chat messages will be added dynamically -->
                     <div class="hermes__message hermes__message--system">
                         <div class="hermes__message-content">
@@ -130,7 +130,7 @@
              data-tekton-panel-for="Team Chat"
              data-tekton-panel-component="hermes"
              data-tekton-panel-active="false">
-            <div id="teamchat-messages" class="hermes__chat-messages" data-tekton-chat="messages">
+            <div id="teamchat-messages" class="hermes__chat-messages" data-tekton-chat="messages" data-component-name="hermes" data-css-prefix="hermes">
                 <!-- Welcome message -->
                 <div class="hermes__message hermes__message--system">
                     <div class="hermes__message-content">
@@ -158,6 +158,7 @@
                     data-tekton-action-type="primary">Send</button>
         </div>
     </div>
+</div>
     
     <!-- Modal for component details (hidden by default) -->
     <div class="hermes__modal" id="detail-modal" style="display: none;"
@@ -1264,6 +1265,37 @@ function hermes_sendChat() {
     const chatRadio = document.getElementById('hermes-tab-chat');
     const teamchatRadio = document.getElementById('hermes-tab-teamchat');
     
+    // If we're not on a chat tab, switch to component chat first
+    if (!chatRadio.checked && !teamchatRadio.checked) {
+        console.log('[HERMES] Switching to chat tab from non-chat tab');
+        chatRadio.checked = true;
+        // Small delay to let the CSS transition complete
+        setTimeout(() => {
+            console.log('[HERMES] Looking for chat-messages element...');
+            const allElements = document.querySelectorAll('[id*="message"]');
+            console.log('[HERMES] All elements with "message" in ID:', allElements);
+            
+            const messageChatEl = document.getElementById('chat-messages');
+            console.log('[HERMES] Found chat-messages element:', messageChatEl);
+            console.log('[HERMES] Element attributes:', messageChatEl ? {
+                'data-component-name': messageChatEl.getAttribute('data-component-name'),
+                'data-css-prefix': messageChatEl.getAttribute('data-css-prefix'),
+                'className': messageChatEl.className
+            } : 'NULL');
+            
+            if (window.SingleChat && messageChatEl) {
+                console.log('[HERMES] Calling SingleChat.sendMessage');
+                // Don't re-init, just send the message
+                window.SingleChat.sendMessage(messageChatEl, message);
+            } else {
+                console.error('[HERMES] Cannot send - SingleChat:', !!window.SingleChat, 'Element:', !!messageChatEl);
+            }
+            input.value = '';
+        }, 100);
+        return;
+    }
+    
+    // Normal chat behavior when already on a chat tab
     if (chatRadio.checked) {
         const messageChatEl = document.getElementById('chat-messages');
         if (window.SingleChat && messageChatEl) {
@@ -1460,8 +1492,23 @@ function hermes_setupBasicChat() {
             chatInput.value = '';
             
             // Get active tab by checking which radio is checked
-            const chatActive = document.getElementById('hermes-tab-chat').checked;
-            const teamchatActive = document.getElementById('hermes-tab-teamchat').checked;
+            const chatRadio = document.getElementById('hermes-tab-chat');
+            const teamchatRadio = document.getElementById('hermes-tab-teamchat');
+            const chatActive = chatRadio.checked;
+            const teamchatActive = teamchatRadio.checked;
+            
+            // If we're not on a chat tab, switch to component chat first
+            if (!chatActive && !teamchatActive) {
+                console.log('[HERMES] Auto-switching to chat tab');
+                chatRadio.checked = true;
+                // Small delay to let the CSS transition complete
+                setTimeout(() => {
+                    // Now call sendMessage again after tab switch
+                    chatInput.value = messageText;
+                    sendMessage();
+                }, 100);
+                return;
+            }
             
             // Find the right message container based on active tab
             let messagesContainer;

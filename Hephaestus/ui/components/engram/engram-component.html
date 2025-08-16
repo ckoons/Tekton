@@ -2326,6 +2326,21 @@ window.engram_sendChat = function() {
     const chatRadio = document.getElementById('engram-tab-chat');
     const teamchatRadio = document.getElementById('engram-tab-teamchat');
     
+    // If we're not on a chat tab, switch to memory chat first
+    if (!chatRadio.checked && !teamchatRadio.checked) {
+        chatRadio.checked = true;
+        // Small delay to let the CSS transition complete
+        setTimeout(() => {
+            const memoryChatEl = document.getElementById('chat-messages');
+            if (window.SingleChat && memoryChatEl) {
+                window.SingleChat.sendMessage(memoryChatEl, message);
+            }
+            input.value = '';
+        }, 100);
+        return;
+    }
+    
+    // Normal chat behavior when already on a chat tab
     if (chatRadio.checked) {
         const memoryChatEl = document.getElementById('chat-messages');
         if (window.SingleChat && memoryChatEl) {
@@ -2339,7 +2354,7 @@ window.engram_sendChat = function() {
     }
     
     input.value = '';
-}
+};
 
 // Clear chat functionality - CSS-first aware
 function engram_clearChat() {

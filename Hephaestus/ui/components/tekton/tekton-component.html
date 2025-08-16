@@ -1906,8 +1906,25 @@ function tekton_sendChat() {
     const message = input.value.trim();
     if (!message) return;
     
+    const projectChatRadio = document.getElementById('tekton-tab-projectchat');
+    const teamChatRadio = document.getElementById('tekton-tab-teamchat');
+    const projectsChatRadio = document.getElementById('tekton-tab-projectschat');
+    
     const checkedRadio = document.querySelector('input[name="tekton-tab"]:checked');
-    if (!checkedRadio) return;
+    
+    // If we're not on any chat tab, switch to project chat first
+    if (!projectChatRadio.checked && !teamChatRadio.checked && !projectsChatRadio.checked) {
+        projectChatRadio.checked = true;
+        // Small delay to let the CSS transition complete
+        setTimeout(() => {
+            const projectChatEl = document.getElementById('projectchat-messages');
+            if (window.SingleChat && projectChatEl) {
+                window.SingleChat.sendMessage(projectChatEl, message);
+            }
+            input.value = '';
+        }, 100);
+        return;
+    }
     
     const chatType = checkedRadio.id.replace('tekton-tab-', '');
     

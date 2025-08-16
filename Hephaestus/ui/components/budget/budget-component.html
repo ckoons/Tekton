@@ -1555,16 +1555,16 @@ window.budget_switchTab = function(tabId) {
             window.budgetComponent.state.activeTab = tabId;
             
             // Update chat placeholder based on active tab
-            if (typeof window.budgetComponent.updateChatPlaceholder === 'function') {
+            if (window.budgetComponent && typeof window.budgetComponent.updateChatPlaceholder === 'function') {
                 window.budgetComponent.updateChatPlaceholder(tabId);
             }
             
             // Call component-specific methods if available
-            if (typeof window.budgetComponent.loadTabContent === 'function') {
+            if (window.budgetComponent && typeof window.budgetComponent.loadTabContent === 'function') {
                 window.budgetComponent.loadTabContent(tabId);
             }
             
-            if (typeof window.budgetComponent.saveComponentState === 'function') {
+            if (window.budgetComponent && typeof window.budgetComponent.saveComponentState === 'function') {
                 window.budgetComponent.saveComponentState();
             }
         }
@@ -2255,6 +2255,22 @@ function budget_sendChat() {
     const message = input.value.trim();
     const activeTab = document.querySelector('.budget__tab--active')?.dataset?.tab;
     
+    // If we're not on a chat tab, switch to budget chat first
+    if (activeTab !== 'budgetchat' && activeTab !== 'teamchat') {
+        // Switch to budget chat
+        budget_switchTab('budgetchat');
+        // Small delay to let the tab switch complete
+        setTimeout(() => {
+            const budgetChatEl = document.getElementById('budgetchat-messages');
+            if (window.SingleChat && budgetChatEl) {
+                window.SingleChat.sendMessage(budgetChatEl, message);
+            }
+            input.value = '';
+        }, 100);
+        return;
+    }
+    
+    // Normal chat behavior when already on a chat tab
     if (activeTab === 'budgetchat') {
         // Use SingleChat for budget AI
         const budgetChatEl = document.getElementById('budgetchat-messages');

@@ -1444,22 +1444,42 @@ function terma_initChats() {
     }
 }
 
-window.terma_sendChat = function() {
+function terma_sendChat() {
     const input = document.getElementById('terma-chat-input');
     const message = input.value.trim();
     
     if (!message) return;
     
     // Determine which tab is active
-    const companionActive = document.getElementById('terma-tab-companion').checked;
+    const companionRadio = document.getElementById('terma-tab-companion');
+    const teamRadio = document.getElementById('terma-tab-team');
+    const companionActive = companionRadio ? companionRadio.checked : false;
+    const teamActive = teamRadio ? teamRadio.checked : false;
     
+    // If we're not on a chat tab, switch to companion chat first
+    if (!companionActive && !teamActive) {
+        if (companionRadio) {
+            companionRadio.checked = true;
+        }
+        // Small delay to let the CSS transition complete
+        setTimeout(() => {
+            const companionChatEl = document.getElementById('terma-companion-messages');
+            if (window.SingleChat && companionChatEl) {
+                window.SingleChat.sendMessage(companionChatEl, message);
+            }
+            input.value = '';
+        }, 100);
+        return;
+    }
+    
+    // Normal chat behavior when already on a chat tab
     if (companionActive) {
         // Use SingleChat for companion AI
         const companionChatEl = document.getElementById('terma-companion-messages');
         if (window.SingleChat && companionChatEl) {
             window.SingleChat.sendMessage(companionChatEl, message);
         }
-    } else {
+    } else if (teamActive) {
         // Use TeamChat for team broadcast
         const teamChatEl = document.getElementById('terma-team-messages');
         if (window.TeamChat && teamChatEl) {

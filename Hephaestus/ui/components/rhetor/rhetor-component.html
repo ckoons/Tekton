@@ -786,7 +786,7 @@
     <!-- LLM Chat Tab -->
     <!-- @landmark Panel: LLM Chat - Direct LLM interaction interface -->
     <div id="llmchat-panel" class="rhetor__panel" data-tekton-chat="rhetor-llm" data-tekton-ai="rhetor-orchestrator" data-tekton-ai-ready="false">
-      <div id="llmchat-messages" class="rhetor__chat-messages" data-tekton-element="chat-messages">
+      <div id="llmchat-messages" class="rhetor__chat-messages" data-tekton-element="chat-messages" data-component-name="rhetor" data-css-prefix="rhetor">
         <div class="rhetor__message rhetor__message--system">
           <div class="rhetor__message-content">
             <div class="rhetor__message-text">
@@ -4694,6 +4694,21 @@ function rhetor_sendChat() {
     const llmChatActive = document.getElementById('tab-llmchat').checked;
     const teamChatActive = document.getElementById('tab-teamchat').checked;
     
+    // If we're not on a chat tab, switch to LLM chat (component chat) first
+    if (!llmChatActive && !teamChatActive) {
+        document.getElementById('tab-llmchat').checked = true;
+        // Small delay to let the CSS transition complete
+        setTimeout(() => {
+            const llmChatEl = document.getElementById('llmchat-messages');
+            if (window.SingleChat && llmChatEl) {
+                window.SingleChat.sendMessage(llmChatEl, message);
+            }
+            input.value = '';
+        }, 50);
+        return;
+    }
+    
+    // Normal chat behavior when already on a chat tab
     if (llmChatActive) {
         const llmChatEl = document.getElementById('llmchat-messages');
         if (window.SingleChat && llmChatEl) {

@@ -1472,14 +1472,33 @@ window.synthesis_sendChat = function() {
     if (!message) return;
     
     const workflowChatTab = document.querySelector('[data-tab="workflowchat"]');
+    const teamChatTab = document.querySelector('[data-tab="teamchat"]');
     const workflowChatActive = workflowChatTab && workflowChatTab.classList.contains('synthesis__tab--active');
+    const teamChatActive = teamChatTab && teamChatTab.classList.contains('synthesis__tab--active');
     
+    // If we're not on a chat tab, switch to workflow chat first
+    if (!workflowChatActive && !teamChatActive) {
+        if (workflowChatTab) {
+            workflowChatTab.click();
+            // Small delay to let the CSS transition complete
+            setTimeout(() => {
+                const workflowChatEl = document.getElementById('workflowchat-messages');
+                if (window.SingleChat && workflowChatEl) {
+                    window.SingleChat.sendMessage(workflowChatEl, message);
+                }
+                input.value = '';
+            }, 100);
+            return;
+        }
+    }
+    
+    // Normal chat behavior when already on a chat tab
     if (workflowChatActive) {
         const workflowChatEl = document.getElementById('workflowchat-messages');
         if (window.SingleChat && workflowChatEl) {
             window.SingleChat.sendMessage(workflowChatEl, message);
         }
-    } else {
+    } else if (teamChatActive) {
         const teamChatEl = document.getElementById('teamchat-messages');
         if (window.TeamChat && teamChatEl) {
             window.TeamChat.sendMessage(teamChatEl, message);

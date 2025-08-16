@@ -1408,14 +1408,34 @@ window.noesis_sendChat = function() {
     const message = input.value.trim();
     if (!message) return;
     
-    const discoveryActive = document.getElementById('noesis-tab-discovery').checked;
+    const discoveryRadio = document.getElementById('noesis-tab-discovery');
+    const teamRadio = document.getElementById('noesis-tab-team');
+    const discoveryActive = discoveryRadio ? discoveryRadio.checked : false;
+    const teamActive = teamRadio ? teamRadio.checked : false;
     
+    // If we're not on a chat tab, switch to discovery chat first
+    if (!discoveryActive && !teamActive) {
+        if (discoveryRadio) {
+            discoveryRadio.checked = true;
+        }
+        // Small delay to let the CSS transition complete
+        setTimeout(() => {
+            const discoveryChatEl = document.getElementById('noesis-discovery-messages');
+            if (window.SingleChat && discoveryChatEl) {
+                window.SingleChat.sendMessage(discoveryChatEl, message);
+            }
+            input.value = '';
+        }, 100);
+        return;
+    }
+    
+    // Normal chat behavior when already on a chat tab
     if (discoveryActive) {
         const discoveryChatEl = document.getElementById('noesis-discovery-messages');
         if (window.SingleChat && discoveryChatEl) {
             window.SingleChat.sendMessage(discoveryChatEl, message);
         }
-    } else {
+    } else if (teamActive) {
         const teamChatEl = document.getElementById('noesis-team-messages');
         if (window.TeamChat && teamChatEl) {
             window.TeamChat.sendMessage(teamChatEl, message);
@@ -1423,7 +1443,7 @@ window.noesis_sendChat = function() {
     }
     
     input.value = '';
-}
+};
 
 // Test functions for manual debugging
 window.noesis_testPattern = function() {

@@ -2411,14 +2411,34 @@ window.athena_sendChat = function() {
     const message = input.value.trim();
     if (!message) return;
     
-    const knowledgeChatActive = document.getElementById('athena-tab-chat').checked;
+    const knowledgeChatRadio = document.getElementById('athena-tab-chat');
+    const teamChatRadio = document.getElementById('athena-tab-teamchat');
+    const knowledgeChatActive = knowledgeChatRadio ? knowledgeChatRadio.checked : false;
+    const teamChatActive = teamChatRadio ? teamChatRadio.checked : false;
     
+    // If we're not on a chat tab, switch to knowledge chat first
+    if (!knowledgeChatActive && !teamChatActive) {
+        if (knowledgeChatRadio) {
+            knowledgeChatRadio.checked = true;
+        }
+        // Small delay to let the CSS transition complete
+        setTimeout(() => {
+            const knowledgeChatEl = document.getElementById('athena-chat-messages');
+            if (window.SingleChat && knowledgeChatEl) {
+                window.SingleChat.sendMessage(knowledgeChatEl, message);
+            }
+            input.value = '';
+        }, 100);
+        return;
+    }
+    
+    // Normal chat behavior when already on a chat tab
     if (knowledgeChatActive) {
         const knowledgeChatEl = document.getElementById('athena-chat-messages');
         if (window.SingleChat && knowledgeChatEl) {
             window.SingleChat.sendMessage(knowledgeChatEl, message);
         }
-    } else {
+    } else if (teamChatActive) {
         const teamChatEl = document.getElementById('athena-teamchat-messages');
         if (window.TeamChat && teamChatEl) {
             window.TeamChat.sendMessage(teamChatEl, message);

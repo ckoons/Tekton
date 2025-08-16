@@ -5,6 +5,58 @@
 <script src="/scripts/shared/single-chat.js"></script>
 <script src="/scripts/shared/team-chat.js"></script>
 
+<script>
+// Define global functions early for inline handlers
+window.harmonia_sendChat = function() {
+    const input = document.getElementById('harmonia-chat-input');
+    const message = input.value.trim();
+    
+    if (!message) return;
+    
+    // Determine which tab is active
+    const workflowRadio = document.getElementById('harmonia-tab-workflow');
+    const teamRadio = document.getElementById('harmonia-tab-team');
+    const workflowActive = workflowRadio ? workflowRadio.checked : false;
+    const teamActive = teamRadio ? teamRadio.checked : false;
+    
+    // If we're not on a chat tab, switch to workflow chat first
+    if (!workflowActive && !teamActive) {
+        if (workflowRadio) {
+            workflowRadio.checked = true;
+        }
+        // Small delay to let the CSS transition complete and ensure chat is initialized
+        setTimeout(() => {
+            const workflowChatEl = document.getElementById('harmonia-workflow-messages');
+            if (window.SingleChat && workflowChatEl) {
+                // Ensure it's initialized before sending
+                window.SingleChat.init(workflowChatEl, 'harmonia', 'chat-message');
+                window.SingleChat.sendMessage(workflowChatEl, message);
+            }
+            input.value = '';
+        }, 100);
+        return;
+    }
+    
+    // Normal chat behavior when already on a chat tab
+    if (workflowActive) {
+        // Use SingleChat for workflow AI
+        const workflowChatEl = document.getElementById('harmonia-workflow-messages');
+        if (window.SingleChat && workflowChatEl) {
+            window.SingleChat.sendMessage(workflowChatEl, message);
+        }
+    } else if (teamActive) {
+        // Use TeamChat for team broadcast
+        const teamChatEl = document.getElementById('harmonia-team-messages');
+        if (window.TeamChat && teamChatEl) {
+            window.TeamChat.sendMessage(teamChatEl, message);
+        }
+    }
+    
+    // Clear input
+    input.value = '';
+}
+</script>
+
 <!-- Hidden radio controls for CSS-only tab functionality -->
 <input type="radio" name="harmonia-tab" id="harmonia-tab-dashboard" checked style="display: none;">
 <input type="radio" name="harmonia-tab" id="harmonia-tab-workflows" style="display: none;">
@@ -2196,29 +2248,7 @@ function harmonia_initChats() {
     }
 }
 
-// Chat functions - delegate to unified chat components
-function harmonia_sendChat() {
-    const input = document.getElementById('harmonia-chat-input');
-    const message = input.value.trim();
-    if (!message) return;
-    
-    const workflowActive = document.getElementById('harmonia-tab-workflow').checked;
-    const teamActive = document.getElementById('harmonia-tab-team').checked;
-    
-    if (workflowActive) {
-        const workflowChatEl = document.getElementById('harmonia-workflow-messages');
-        if (window.SingleChat && workflowChatEl) {
-            window.SingleChat.sendMessage(workflowChatEl, message);
-        }
-    } else if (teamActive) {
-        const teamChatEl = document.getElementById('harmonia-team-messages');
-        if (window.TeamChat && teamChatEl) {
-            window.TeamChat.sendMessage(teamChatEl, message);
-        }
-    }
-    
-    input.value = '';
-}
+// Chat function already defined at top of file for inline handlers
 
 function harmonia_clearChat() {
     console.log('[HARMONIA] Clearing chat');

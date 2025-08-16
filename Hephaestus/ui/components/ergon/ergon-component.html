@@ -6,6 +6,58 @@
 <script src="/scripts/shared/single-chat.js"></script>
 <script src="/scripts/shared/team-chat.js"></script>
 
+<script>
+// Define global functions early for inline handlers
+window.ergon_sendChat = function() {
+    const input = document.getElementById('ergon-chat-input');
+    const message = input.value.trim();
+    
+    if (!message) return;
+    
+    // Determine which tab is active
+    const chatRadio = document.getElementById('ergon-tab-chat');
+    const teamchatRadio = document.getElementById('ergon-tab-teamchat');
+    const chatActive = chatRadio ? chatRadio.checked : false;
+    const teamActive = teamchatRadio ? teamchatRadio.checked : false;
+    
+    // If we're not on a chat tab, switch to tool chat first
+    if (!chatActive && !teamActive) {
+        if (chatRadio) {
+            chatRadio.checked = true;
+        }
+        // Small delay to let the CSS transition complete and ensure chat is initialized
+        setTimeout(() => {
+            const toolChatEl = document.getElementById('ergon-messages');
+            if (window.SingleChat && toolChatEl) {
+                // Ensure it's initialized before sending
+                window.SingleChat.init(toolChatEl, 'ergon', 'chat-message');
+                window.SingleChat.sendMessage(toolChatEl, message);
+            }
+            input.value = '';
+        }, 100);
+        return;
+    }
+    
+    // Normal chat behavior when already on a chat tab
+    if (chatActive) {
+        // Use SingleChat for tool AI
+        const toolChatEl = document.getElementById('ergon-messages');
+        if (window.SingleChat && toolChatEl) {
+            window.SingleChat.sendMessage(toolChatEl, message);
+        }
+    } else if (teamActive) {
+        // Use TeamChat for team broadcast
+        const teamChatEl = document.getElementById('awt-team-messages');
+        if (window.TeamChat && teamChatEl) {
+            window.TeamChat.sendMessage(teamChatEl, message);
+        }
+    }
+    
+    // Clear input
+    input.value = '';
+}
+</script>
+
 <!-- Hidden radio inputs for CSS-first tab functionality -->
 <!-- @landmark Navigation: CSS-first radio buttons for tab switching -->
 <input type="radio" name="ergon-tab" id="ergon-tab-development" checked style="display: none;">
@@ -1209,11 +1261,13 @@ function ergon_initChats() {
     const teamChatEl = document.getElementById('awt-team-messages');
     
     if (window.SingleChat && toolChatEl) {
-        window.SingleChat.init(toolChatEl, 'ergon', 'ergon');
+        window.SingleChat.init(toolChatEl, 'ergon', 'chat-message');
+        console.log('[Ergon] SingleChat initialized');
     }
     
     if (window.TeamChat && teamChatEl) {
-        window.TeamChat.init(teamChatEl, 'ergon', 'ergon');
+        window.TeamChat.init(teamChatEl, 'ergon', 'chat-message');
+        console.log('[Ergon] TeamChat initialized');
     }
     
     // Update main component AI ready state
@@ -1223,29 +1277,7 @@ function ergon_initChats() {
     }
 }
 
-// Chat functionality - delegate to unified chat components
-window.ergon_sendChat = function() {
-    const input = document.getElementById('ergon-chat-input');
-    const message = input.value.trim();
-    if (!message) return;
-    
-    const chatRadio = document.getElementById('ergon-tab-chat');
-    const teamchatRadio = document.getElementById('ergon-tab-teamchat');
-    
-    if (chatRadio.checked) {
-        const toolChatEl = document.getElementById('ergon-messages');
-        if (window.SingleChat && toolChatEl) {
-            window.SingleChat.sendMessage(toolChatEl, message);
-        }
-    } else if (teamchatRadio.checked) {
-        const teamChatEl = document.getElementById('awt-team-messages');
-        if (window.TeamChat && teamChatEl) {
-            window.TeamChat.sendMessage(teamChatEl, message);
-        }
-    }
-    
-    input.value = '';
-};
+// Chat function already defined at top of file for inline handlers
 
 // Load autonomy level
 function ergon_loadAutonomyLevel() {

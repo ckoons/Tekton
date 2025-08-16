@@ -804,14 +804,34 @@ function numa_sendChat() {
     const message = input.value.trim();
     if (!message) return;
     
-    const companionActive = document.getElementById('numa-tab-companion').checked;
+    const companionRadio = document.getElementById('numa-tab-companion');
+    const teamRadio = document.getElementById('numa-tab-team');
+    const companionActive = companionRadio ? companionRadio.checked : false;
+    const teamActive = teamRadio ? teamRadio.checked : false;
     
+    // If we're not on a chat tab, switch to companion chat first
+    if (!companionActive && !teamActive) {
+        if (companionRadio) {
+            companionRadio.checked = true;
+        }
+        // Small delay to let the CSS transition complete
+        setTimeout(() => {
+            const companionChatEl = document.getElementById('numa-companion-messages');
+            if (window.SingleChat && companionChatEl) {
+                window.SingleChat.sendMessage(companionChatEl, message);
+            }
+            input.value = '';
+        }, 100);
+        return;
+    }
+    
+    // Normal chat behavior when already on a chat tab
     if (companionActive) {
         const companionChatEl = document.getElementById('numa-companion-messages');
         if (window.SingleChat && companionChatEl) {
             window.SingleChat.sendMessage(companionChatEl, message);
         }
-    } else {
+    } else if (teamActive) {
         const teamChatEl = document.getElementById('numa-team-messages');
         if (window.TeamChat && teamChatEl) {
             window.TeamChat.sendMessage(teamChatEl, message);

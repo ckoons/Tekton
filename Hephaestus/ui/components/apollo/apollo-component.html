@@ -1176,19 +1176,39 @@
         }
     }
 
-    window.apollo_sendChat = function() {
+    function apollo_sendChat() {
         const input = document.getElementById('apollo-chat-input');
         const message = input.value.trim();
         if (!message) return;
         
-        const attentionActive = document.getElementById('apollo-tab-attention').checked;
+        const attentionRadio = document.getElementById('apollo-tab-attention');
+        const teamRadio = document.getElementById('apollo-tab-teamchat');
+        const attentionActive = attentionRadio ? attentionRadio.checked : false;
+        const teamActive = teamRadio ? teamRadio.checked : false;
         
+        // If we're not on a chat tab, switch to attention chat first
+        if (!attentionActive && !teamActive) {
+            if (attentionRadio) {
+                attentionRadio.checked = true;
+            }
+            // Small delay to let the CSS transition complete
+            setTimeout(() => {
+                const attentionChatEl = document.getElementById('attention-messages');
+                if (window.SingleChat && attentionChatEl) {
+                    window.SingleChat.sendMessage(attentionChatEl, message);
+                }
+                input.value = '';
+            }, 100);
+            return;
+        }
+        
+        // Normal chat behavior when already on a chat tab
         if (attentionActive) {
             const attentionChatEl = document.getElementById('attention-messages');
             if (window.SingleChat && attentionChatEl) {
                 window.SingleChat.sendMessage(attentionChatEl, message);
             }
-        } else {
+        } else if (teamActive) {
             const teamChatEl = document.getElementById('teamchat-messages');
             if (window.TeamChat && teamChatEl) {
                 window.TeamChat.sendMessage(teamChatEl, message);
@@ -1196,14 +1216,14 @@
         }
         
         input.value = '';
-    };
+    }
     
     // Add event handlers for chat
     const sendButton = document.getElementById('apollo-send-button');
     if (sendButton) {
         sendButton.addEventListener('click', function(e) {
             e.preventDefault();
-            window.apollo_sendChat();
+            apollo_sendChat();
         });
     }
     
@@ -1213,7 +1233,7 @@
         chatInput.addEventListener('keydown', function(e) {
             if (e.key === 'Enter' && !e.shiftKey) {
                 e.preventDefault();
-                window.apollo_sendChat();
+                apollo_sendChat();
             }
         });
     }
