@@ -2046,7 +2046,7 @@ async function loadProjectCIs() {
     }
 }
 
-function sendProjectsChat() {
+async function sendProjectsChat() {
     console.log('[TEKTON] Sending projects chat message');
     
     const chatInput = document.getElementById('tekton-chat-input');
@@ -2057,7 +2057,7 @@ function sendProjectsChat() {
         return;
     }
     
-    const message = chatInput.value.trim();
+    let message = chatInput.value.trim();
     const selectedProject = projectSelector.value;
     
     if (!message || !selectedProject) {
@@ -2072,23 +2072,78 @@ function sendProjectsChat() {
         return;
     }
     
-    // Add user message to chat
     const chatContainer = document.getElementById('projectschat-messages');
-    const userMessage = document.createElement('div');
-    userMessage.className = 'tekton__message tekton__message--user';
-    userMessage.innerHTML = `
-        <div class="tekton__message-content">
-            <div class="tekton__message-text">${message}</div>
-        </div>
-    `;
-    chatContainer.appendChild(userMessage);
+    
+    // Process commands first
+    if (window.processCommandsInMessage) {
+        const processed = await window.processCommandsInMessage(message, 'tekton');
+        
+        // Display command results if any
+        if (processed.hasCommands && processed.commandResults.length > 0) {
+            // Add user message first (with original message)
+            const userMessage = document.createElement('div');
+            userMessage.className = 'tekton__message tekton__message--user';
+            userMessage.innerHTML = `
+                <div class="tekton__message-content">
+                    <div class="tekton__message-text">${message}</div>
+                </div>
+            `;
+            chatContainer.appendChild(userMessage);
+            
+            // Display command results
+            for (const result of processed.commandResults) {
+                const commandResultDiv = document.createElement('div');
+                commandResultDiv.className = 'tekton__message tekton__message--system';
+                commandResultDiv.innerHTML = `
+                    <div class="tekton__message-content">
+                        <div class="tekton__message-text">
+                            <strong>System:</strong> <pre style="display: inline-block; margin: 0;">${window.SingleChat ? window.SingleChat.escapeHtml(result.output) : result.output}</pre>
+                        </div>
+                    </div>
+                `;
+                chatContainer.appendChild(commandResultDiv);
+            }
+            
+            // If no message remains after commands, we're done
+            if (!processed.message || !processed.message.trim()) {
+                chatInput.value = '';
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+                return;
+            }
+            
+            // Continue with the remaining message
+            message = processed.message;
+        } else {
+            // No commands, add user message normally
+            const userMessage = document.createElement('div');
+            userMessage.className = 'tekton__message tekton__message--user';
+            userMessage.innerHTML = `
+                <div class="tekton__message-content">
+                    <div class="tekton__message-text">${message}</div>
+                </div>
+            `;
+            chatContainer.appendChild(userMessage);
+        }
+    } else {
+        // No command processor available, add user message normally
+        const userMessage = document.createElement('div');
+        userMessage.className = 'tekton__message tekton__message--user';
+        userMessage.innerHTML = `
+            <div class="tekton__message-content">
+                <div class="tekton__message-text">${message}</div>
+            </div>
+        `;
+        chatContainer.appendChild(userMessage);
+    }
     
     // Clear input and scroll
     chatInput.value = '';
     chatContainer.scrollTop = chatContainer.scrollHeight;
     
-    // Send to backend
-    sendToProjectCI(selectedProject, message, projectCI);
+    // Send remaining message to backend if there is one
+    if (message && message.trim()) {
+        sendToProjectCI(selectedProject, message, projectCI);
+    }
 }
 
 async function sendToProjectCI(projectName, message, projectCI) {

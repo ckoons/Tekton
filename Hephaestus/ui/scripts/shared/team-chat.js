@@ -38,6 +38,24 @@ window.TeamChat = {
         const componentName = containerEl.getAttribute('data-component-name');
         const cssPrefix = containerEl.getAttribute('data-css-prefix');
         
+        // Process commands first
+        const processed = await window.processCommandsInMessage(message, componentName);
+        
+        // Display command results if any
+        if (processed.hasCommands && processed.commandResults.length > 0) {
+            for (const result of processed.commandResults) {
+                window.displayCommandResult(containerEl, result, cssPrefix);
+            }
+            
+            // If no message remains after commands, we're done
+            if (!processed.message || !processed.message.trim()) {
+                return;
+            }
+            
+            // Continue with the remaining message
+            message = processed.message;
+        }
+        
         // Get existing content (preserve welcome message)
         const existingContent = containerEl.innerHTML;
         

@@ -67,6 +67,24 @@ window.SingleChat = {
             return;
         }
         
+        // Process commands first
+        const processed = await window.processCommandsInMessage(message, componentName);
+        
+        // Display command results if any
+        if (processed.hasCommands && processed.commandResults.length > 0) {
+            for (const result of processed.commandResults) {
+                window.displayCommandResult(containerEl, result, cssPrefix);
+            }
+            
+            // If no message remains after commands, we're done
+            if (!processed.message || !processed.message.trim()) {
+                return;
+            }
+            
+            // Continue with the remaining message
+            message = processed.message;
+        }
+        
         // Get existing content (preserve welcome message)
         const existingContent = containerEl.innerHTML;
         
@@ -184,6 +202,159 @@ window.SingleChat = {
         div.textContent = text;
         return div.innerHTML;
     }
+};
+
+/**
+ * Process commands in a message and execute them
+ * @param {string} message - Raw message that may contain [commands]
+ * @param {string} componentName - Component context for execution
+ * @returns {Promise} - Object with processed message and command results
+ */
+window.processCommandsInMessage = async function(message, componentName) {
+    // Quick check - no brackets means no commands
+    if (!message.includes('[') || !message.includes(']')) {
+        return { 
+            message: message, 
+            hasCommands: false,
+            commandResults: []
+        };
+    }
+    
+    // Check if parser is available
+    if (!window.ChatCommandParser) {
+        console.warn('[processCommands] ChatCommandParser not loaded, skipping command processing');
+        return { 
+            message: message, 
+            hasCommands: false,
+            commandResults: []
+        };
+    }
+    
+    // Parse the message for commands
+    const parsed = ChatCommandParser.parse(message);
+    
+    if (!parsed.hasCommands) {
+        return {
+            message: message,
+            hasCommands: false,
+            commandResults: []
+        };
+    }
+    
+    console.log('[processCommands] Found commands:', parsed.commands);
+    
+    // Execute each command
+    const results = [];
+    for (const cmd of parsed.commands) {
+        // Check if command is safe
+        if (!ChatCommandParser.isSafeCommand(cmd)) {
+            results.push({
+                type: 'error',
+                output: `Command blocked for safety: ${cmd.raw}`
+            });
+            continue;
+        }
+        
+        // Execute command via backend
+        try {
+            const result = await executeCommand(cmd, componentName);
+            if (result) {
+                results.push(result);
+            }
+        } catch (error) {
+            console.error('[processCommands] Command failed:', error);
+            results.push({
+                type: 'error',
+                output: `Command failed: ${error.message}`
+            });
+        }
+    }
+    
+    return {
+        message: parsed.message,  // Message without commands
+        hasCommands: true,
+        commandResults: results
+    };
+};
+
+/**
+ * Execute a single command via backend
+ * @param {object} command - Parsed command object
+ * @param {string} componentName - Component context
+ * @returns {Promise} - Command result
+ */
+async function executeCommand(command, componentName) {
+    // Get component URL using tektonUrl
+    const baseUrl = typeof tektonUrl === 'function' 
+        ? tektonUrl(componentName, '') 
+        : `http://localhost:8000`;
+    
+    try {
+        const response = await fetch(`${baseUrl}/api/chat/command`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                type: command.type,
+                command: command.type === 'shell' || command.type === 'aish' 
+                    ? command.command 
+                    : command.raw,
+                context: { component: componentName }
+            })
+        });
+        
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}`);
+        }
+        
+        const result = await response.json();
+        return {
+            type: result.type || 'system',
+            output: result.output || 'Command completed'
+        };
+    } catch (error) {
+        console.error('[executeCommand] Failed:', error);
+        // Return command as-is for display
+        return {
+            type: 'system',
+            output: `[${command.raw}]`
+        };
+    }
+}
+
+/**
+ * Display command result in chat as system message
+ * @param {HTMLElement} containerEl - Chat container
+ * @param {object} result - Command result
+ * @param {string} cssPrefix - CSS prefix for styling
+ */
+window.displayCommandResult = function(containerEl, result, cssPrefix) {
+    const existingContent = containerEl.innerHTML;
+    
+    let systemMessageHtml;
+    if (cssPrefix === 'chat-message') {
+        // Terma style
+        systemMessageHtml = `
+            <div class="chat-message system-message">
+                <strong>System:</strong> <pre style="display: inline-block; margin: 0;">${window.SingleChat.escapeHtml(result.output)}</pre>
+            </div>
+        `;
+    } else {
+        // Component style
+        systemMessageHtml = `
+            <div class="${cssPrefix}__message ${cssPrefix}__message--system">
+                <div class="${cssPrefix}__message-content">
+                    <div class="${cssPrefix}__message-text">
+                        <strong>System:</strong> <pre style="display: inline-block; margin: 0;">${window.SingleChat.escapeHtml(result.output)}</pre>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+    
+    containerEl.innerHTML = existingContent + systemMessageHtml;
+    containerEl.scrollTop = containerEl.scrollHeight;
 };
 
 console.log('[SingleChat] Module loaded');
