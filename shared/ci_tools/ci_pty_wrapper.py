@@ -14,33 +14,9 @@ import json
 import select
 import signal
 from datetime import datetime
-from typing import Optional
-
-# Import OS injection module
-try:
-    # Try relative import first (when used as module)
-    from .os_injection import (
-        OSInjector, 
-        should_use_os_injection,
-        inject_message_with_delimiter,
-        get_injection_info
-    )
-    OS_INJECTION_AVAILABLE = True
-except ImportError:
-    try:
-        # Try absolute import (when run directly)
-        from os_injection import (
-            OSInjector, 
-            should_use_os_injection,
-            inject_message_with_delimiter,
-            get_injection_info
-        )
-        OS_INJECTION_AVAILABLE = True
-    except ImportError:
-        OS_INJECTION_AVAILABLE = False
 
 class PTYWrapper:
-    def __init__(self, name, command, delimiter=None, use_os_injection=None):
+    def __init__(self, name, command, delimiter=None):
         self.name = name
         self.command = command
         self.delimiter = delimiter  # Store default delimiter for auto-execution
@@ -49,25 +25,10 @@ class PTYWrapper:
         self.child_pid = None
         self.running = True
         
-        # Determine if we should use OS injection
-        if OS_INJECTION_AVAILABLE:
-            prog_name = command[0] if command else ''
-            self.use_os_injection = should_use_os_injection(prog_name, use_os_injection)
-            if self.use_os_injection:
-                self.injector = OSInjector()
-                if not self.injector.is_available():
-                    print(f"[PTY Wrapper] OS injection requested but not available", file=sys.stderr)
-                    self.use_os_injection = False
-                else:
-                    print(f"[PTY Wrapper] OS injection enabled for {prog_name}", file=sys.stderr)
-        else:
-            self.use_os_injection = False
-        
     def setup_socket(self):
         """Set up Unix socket for receiving messages"""
         # If socket exists, check for orphaned process
         if os.path.exists(self.socket_path):
-            # Try to find process that owns this socket
             try:
                 import subprocess
                 result = subprocess.run(['lsof', '-t', self.socket_path], 
@@ -86,7 +47,7 @@ class PTYWrapper:
                     
                     # Check if it's a CI wrapper for the same name
                     if ('ci_pty_wrapper' in cmdline or 'ci-tool' in cmdline) and self.name in cmdline:
-                        print(f"[PTY Wrapper] Found orphaned process {old_pid} for {self.name}, terminating...", file=sys.stderr)
+                        print(f"[PTY Wrapper] Found orphaned process {old_pid}, terminating...", file=sys.stderr)
                         os.kill(old_pid, signal.SIGTERM)
                         import time
                         time.sleep(0.5)
@@ -120,15 +81,6 @@ class PTYWrapper:
             sys.path.insert(0, str(Path(__file__).parent.parent.parent))
             from shared.aish.src.registry.ci_registry import get_registry
             
-            # Get window information
-            window_info = {}
-            try:
-                from window_detector import get_terminal_window_info
-                window_info = get_terminal_window_info()
-                print(f"[PTY Wrapper] Detected window info: {window_info}", file=sys.stderr)
-            except Exception as e:
-                print(f"[PTY Wrapper] Could not detect window info: {e}", file=sys.stderr)
-            
             registry = get_registry()
             ci_info = {
                 'name': self.name,
@@ -136,7 +88,6 @@ class PTYWrapper:
                 'socket': self.socket_path,
                 'working_directory': os.getcwd(),
                 'capabilities': ['messaging', 'pty_injection'],
-                'window_info': window_info,  # Store window information
                 'pid': os.getpid()
             }
             registry.register_wrapped_ci(ci_info)
@@ -145,7 +96,7 @@ class PTYWrapper:
             print(f"[PTY Wrapper] Failed to register: {e}", file=sys.stderr)
     
     def unregister_ci(self):
-        """Unregister this CI terminal from the registry."""
+        """Unregister this CI from the registry."""
         try:
             import sys
             from pathlib import Path
@@ -169,15 +120,24 @@ class PTYWrapper:
                 except socket.timeout:
                     continue
                 
-                data = conn.recv(4096).decode('utf-8')
-                conn.close()
+                try:
+                    data = conn.recv(4096).decode('utf-8')
+                    conn.close()
+                except Exception as e:
+                    print(f"[PTY Wrapper] Error receiving data: {e}", file=sys.stderr)
+                    conn.close()
+                    continue
                 
                 if data and self.master_fd:
-                    message = json.loads(data)
+                    try:
+                        message = json.loads(data)
+                    except json.JSONDecodeError as e:
+                        print(f"[PTY Wrapper] Invalid JSON: {e}", file=sys.stderr)
+                        continue
+                    
                     from_ci = message.get('from', 'Unknown')
                     content = message.get('content', '')
                     execute = message.get('execute', False)
-                    use_os_injection = message.get('os_injection', None)  # Allow per-message override
                     
                     # Check if we should append delimiter for execution
                     if execute:
@@ -188,47 +148,23 @@ class PTYWrapper:
                             delimiter = raw_delimiter.encode('utf-8').decode('unicode_escape')
                         except:
                             delimiter = raw_delimiter
-                        
-                        # Determine injection method for this message
-                        should_inject = use_os_injection if use_os_injection is not None else self.use_os_injection
-                        
-                        if should_inject and OS_INJECTION_AVAILABLE:
-                            # Get our window info from registry
-                            window_info = None
-                            try:
-                                import sys
-                                from pathlib import Path
-                                sys.path.insert(0, str(Path(__file__).parent.parent.parent))
-                                from shared.aish.src.registry.ci_registry import get_registry
-                                registry = get_registry()
-                                our_ci = registry.get_by_name(self.name)
-                                if our_ci:
-                                    window_info = our_ci.get('window_info')
-                            except Exception as e:
-                                print(f"[PTY Wrapper] Could not get window info: {e}", file=sys.stderr)
-                            
-                            # Use OS-level injection with window focusing
-                            if inject_message_with_delimiter(content, delimiter, True, window_info):
-                                print(f"[PTY Wrapper] OS-injected command from {from_ci}", file=sys.stderr)
-                            else:
-                                # Fallback to PTY injection if OS injection fails
-                                print(f"[PTY Wrapper] OS injection failed, using PTY", file=sys.stderr)
-                                injection = content + delimiter
-                                os.write(self.master_fd, injection.encode('utf-8'))
-                        else:
-                            # Use normal PTY injection
-                            injection = content + delimiter
-                            os.write(self.master_fd, injection.encode('utf-8'))
-                            print(f"[PTY Wrapper] PTY-injected command from {from_ci}", file=sys.stderr)
+                        # For raw command execution, just send content + delimiter
+                        injection = content + delimiter
+                        print(f"[PTY Wrapper] Executing command from {from_ci} with delimiter", file=sys.stderr)
                     else:
-                        # Format as message notification (always use PTY for notifications)
+                        # Format as message notification
                         injection = f"\n[{datetime.now().strftime('%H:%M')}] Message from {from_ci}: {content}\n"
-                        os.write(self.master_fd, injection.encode('utf-8'))
                         print(f"[PTY Wrapper] Injected message from {from_ci}", file=sys.stderr)
+                    
+                    os.write(self.master_fd, injection.encode('utf-8'))
                     
             except Exception as e:
                 if self.running:
-                    print(f"[PTY Wrapper] Socket error: {e}", file=sys.stderr)
+                    print(f"[PTY Wrapper] Socket listener error: {e}", file=sys.stderr)
+                    import traceback
+                    traceback.print_exc(file=sys.stderr)
+                    # Don't let the listener thread die - continue listening
+                    continue
     
     def run(self):
         """Run the wrapped command in a PTY"""
@@ -254,63 +190,60 @@ class PTYWrapper:
         if self.child_pid == 0:
             # Child process - execute the command
             os.execvp(self.command[0], self.command)
-        
-        # Parent process - handle I/O
-        print(f"[PTY Wrapper] Started child PID {self.child_pid}", file=sys.stderr)
-        
-        # Save terminal settings
-        old_tty = None
-        if sys.stdin.isatty():
-            old_tty = termios.tcgetattr(sys.stdin)
-            tty.setraw(sys.stdin.fileno())
-        
-        try:
-            while self.running:
-                # Select on stdin and master_fd
-                rfds, _, _ = select.select([sys.stdin, self.master_fd], [], [], 0.1)
-                
-                # Pass user input to PTY
-                if sys.stdin in rfds:
-                    data = os.read(sys.stdin.fileno(), 1024)
-                    if not data:
-                        break
-                    os.write(self.master_fd, data)
-                
-                # Pass PTY output to stdout
-                if self.master_fd in rfds:
-                    try:
-                        data = os.read(self.master_fd, 1024)
-                        if not data:
-                            break
-                        os.write(sys.stdout.fileno(), data)
-                    except OSError:
-                        break
-                
-                # Check if child exited
-                pid, status = os.waitpid(self.child_pid, os.WNOHANG)
-                if pid != 0:
-                    print(f"\n[PTY Wrapper] Child exited with status {status}", file=sys.stderr)
-                    break
-                    
-        except KeyboardInterrupt:
-            print("\n[PTY Wrapper] Interrupted", file=sys.stderr)
-        finally:
-            # Restore terminal
-            if old_tty:
-                termios.tcsetattr(sys.stdin, termios.TCSADRAIN, old_tty)
+        else:
+            # Parent process - handle I/O
+            print(f"[PTY Wrapper] Started child PID {self.child_pid}", file=sys.stderr)
             
-            self.cleanup()
+            # Save terminal settings
+            old_tty = termios.tcgetattr(sys.stdin)
+            try:
+                # Set terminal to raw mode for proper passthrough
+                tty.setraw(sys.stdin.fileno())
+                tty.setcbreak(sys.stdin.fileno())
+                
+                # I/O loop
+                while True:
+                    try:
+                        r, w, e = select.select([self.master_fd, sys.stdin], [], [], 0.1)
+                        
+                        if self.master_fd in r:
+                            try:
+                                data = os.read(self.master_fd, 10240)
+                                if data:
+                                    os.write(sys.stdout.fileno(), data)
+                                else:
+                                    # EOF from child
+                                    break
+                            except OSError:
+                                break
+                        
+                        if sys.stdin in r:
+                            data = os.read(sys.stdin.fileno(), 10240)
+                            if data:
+                                os.write(self.master_fd, data)
+                    except (KeyboardInterrupt, OSError):
+                        break
+                    
+                    # Check if child is still alive
+                    pid, status = os.waitpid(self.child_pid, os.WNOHANG)
+                    if pid != 0:
+                        print(f"\n[PTY Wrapper] Child process {self.child_pid} exited", file=sys.stderr)
+                        break
+                        
+            finally:
+                # Restore terminal settings
+                termios.tcsetattr(sys.stdin, termios.TCSAFLUSH, old_tty)
+                self.cleanup()
     
     def cleanup(self):
         """Clean up resources"""
         self.running = False
         
         # Terminate child process if still running
-        if self.child_pid and self.child_pid > 0:
+        if self.child_pid:
             try:
                 os.kill(self.child_pid, signal.SIGTERM)
                 print(f"[PTY Wrapper] Sent SIGTERM to child {self.child_pid}", file=sys.stderr)
-                # Give it a moment to exit cleanly
                 import time
                 time.sleep(0.5)
                 # Check if still running and force kill if needed
@@ -355,31 +288,15 @@ def main():
     parser = argparse.ArgumentParser(description='PTY wrapper with message injection')
     parser.add_argument('--name', '-n', help='CI name for socket')
     parser.add_argument('--delimiter', '-d', default=None, help='Default delimiter for auto-execution')
-    parser.add_argument('--os-injection', choices=['on', 'off', 'auto'], default='auto',
-                       help='OS-level keystroke injection mode (default: auto)')
-    parser.add_argument('--injection-info', action='store_true',
-                       help='Show OS injection capabilities and exit')
     parser.add_argument('command', nargs='*', help='Command to wrap')
     
     args = parser.parse_args()
     
-    # Show injection info if requested
-    if args.injection_info:
-        if OS_INJECTION_AVAILABLE:
-            info = get_injection_info()
-            print(f"OS Injection Available: {info['available']}")
-            print(f"Platform: {info['platform']}")
-            print(f"Method: {info['method']}")
-            print(f"Auto-detected TUI Programs: {', '.join(info['tui_programs'])}")
-        else:
-            print("OS injection module not available")
-        sys.exit(0)
-    
-    # Require command and name if not showing info
+    # Require command and name
     if not args.command:
-        parser.error("command is required unless using --injection-info")
+        parser.error("command is required")
     if not args.name:
-        parser.error("--name/-n is required when running a command")
+        parser.error("--name/-n is required")
     
     # Decode escape sequences in delimiter if provided
     if args.delimiter:
@@ -399,10 +316,7 @@ def main():
         print("Please use a unique name", file=sys.stderr)
         sys.exit(1)
     
-    # Parse OS injection preference
-    use_os_injection = None if args.os_injection == 'auto' else (args.os_injection == 'on')
-    
-    wrapper = PTYWrapper(args.name, args.command, args.delimiter, use_os_injection)
+    wrapper = PTYWrapper(args.name, args.command, args.delimiter)
     wrapper.run()
 
 if __name__ == "__main__":
