@@ -496,6 +496,9 @@
     
     <!-- No splash screen -->
 
+    <!-- Chat command parser - MUST load BEFORE minimal-loader -->
+    <script src="js/chat-command-parser.js"></script>
+    
     <!-- Load scripts -->
     <script src="scripts/minimal-loader.js"></script>
     <script src="scripts/ui-utils.js"></script>
@@ -512,8 +515,6 @@
     <script src="shared/modal-factory.js"></script>
     <script src="scripts/shared/ai-chat.js"></script>
     <script src="scripts/shared/streaming-team-chat.js"></script>
-    <!-- Chat command parser - first stage processor -->
-    <script src="js/chat-command-parser.js"></script>
     <script src="js/chat-core.js"></script>
     <script src="scripts/tekton-events.js"></script>
     <script src="scripts/test-connections.js"></script>

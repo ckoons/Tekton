@@ -45,12 +45,27 @@ window.ChatCommandParser = {
     parseCommand: function(cmdString) {
         cmdString = cmdString.trim();
         
+        // Check for output redirect syntax
+        let outputMode = 'user';  // Default: show to user
+        let originalCmd = cmdString;
+        
+        if (cmdString.endsWith(' >>')) {
+            // Execute, show to user AND send to AI
+            outputMode = 'both';
+            cmdString = cmdString.slice(0, -3).trim();
+        } else if (cmdString.endsWith(' >')) {
+            // Execute and send to AI only
+            outputMode = 'ai';
+            cmdString = cmdString.slice(0, -2).trim();
+        }
+        
         // aish commands
         if (cmdString.startsWith('aish ')) {
             return {
                 type: 'aish',
                 command: cmdString.slice(5).trim(),
-                raw: cmdString
+                output: outputMode,
+                raw: originalCmd
             };
         }
         
@@ -59,7 +74,8 @@ window.ChatCommandParser = {
             return {
                 type: 'shell',
                 command: cmdString.slice(6).trim(),
-                raw: cmdString
+                output: outputMode,
+                raw: originalCmd
             };
         }
         
@@ -70,7 +86,8 @@ window.ChatCommandParser = {
                 type: 'escalate',
                 model: 'claude',
                 args: parts.slice(1).join(' '),
-                raw: cmdString
+                output: outputMode,
+                raw: originalCmd
             };
         }
         
@@ -82,7 +99,8 @@ window.ChatCommandParser = {
                 type: 'escalate',
                 model: model,
                 args: parts.slice(1).join(' '),
-                raw: cmdString
+                output: outputMode,
+                raw: originalCmd
             };
         }
         
@@ -93,7 +111,8 @@ window.ChatCommandParser = {
                 type: 'escalate',
                 model: 'think',
                 args: parts.slice(1).join(' '),
-                raw: cmdString
+                output: outputMode,
+                raw: originalCmd
             };
         }
         
@@ -102,7 +121,8 @@ window.ChatCommandParser = {
             return {
                 type: 'system_prompt',
                 prompt: cmdString.slice(7).trim(),
-                raw: cmdString
+                output: outputMode,
+                raw: originalCmd
             };
         }
         
@@ -112,18 +132,20 @@ window.ChatCommandParser = {
                 type: 'parameter',
                 param: 'temperature',
                 value: cmdString.slice(5).trim(),
-                raw: cmdString
+                output: outputMode,
+                raw: originalCmd
             };
         }
         
         // Any command is allowed - we'll check against blacklist in isSafeCommand
         // This allows ALL commands like tree, echo, cat, etc.
-        console.log('[ChatCommandParser] Detected shell command:', cmdString);
+        console.log('[ChatCommandParser] Detected shell command:', cmdString, 'output:', outputMode);
         return {
             type: 'shell',
             command: cmdString,
+            output: outputMode,
             safe: false,  // Will be checked against blacklist
-            raw: cmdString
+            raw: originalCmd
         };
     },
     

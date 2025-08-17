@@ -185,7 +185,7 @@ window.MarkdownRenderer = {
     /**
      * Call backend for full markdown rendering
      */
-    async fullMarkdownBackend: function(text, componentName = 'hephaestus') {
+    fullMarkdownBackend: async function(text, componentName = 'hephaestus') {
         try {
             // Use tektonUrl if available, otherwise construct URL
             const baseUrl = typeof tektonUrl === 'function' 

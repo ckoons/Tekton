@@ -70,19 +70,34 @@ window.SingleChat = {
         // Process commands first
         const processed = await window.processCommandsInMessage(message, componentName);
         
-        // Display command results if any
+        // Handle command results based on output mode
         if (processed.hasCommands && processed.commandResults.length > 0) {
+            let aiMessage = '';  // Accumulate outputs to send to AI
+            
             for (const result of processed.commandResults) {
-                window.displayCommandResult(containerEl, result, cssPrefix);
+                const outputMode = result.outputMode || 'user';
+                
+                if (outputMode === 'user' || outputMode === 'both') {
+                    // Show to user
+                    window.displayCommandResult(containerEl, result, cssPrefix);
+                }
+                
+                if (outputMode === 'ai' || outputMode === 'both') {
+                    // Add to message for AI
+                    aiMessage += `Command output:\n${result.output}\n\n`;
+                }
             }
             
-            // If no message remains after commands, we're done
-            if (!processed.message || !processed.message.trim()) {
+            // If we have output for AI, append it to the message
+            if (aiMessage) {
+                message = processed.message ? `${processed.message}\n\n${aiMessage}` : aiMessage;
+            } else if (!processed.message || !processed.message.trim()) {
+                // No message and no AI output, we're done
                 return;
+            } else {
+                // Continue with the remaining message
+                message = processed.message;
             }
-            
-            // Continue with the remaining message
-            message = processed.message;
         }
         
         // Get existing content (preserve welcome message)
@@ -276,6 +291,8 @@ window.processCommandsInMessage = async function(message, componentName) {
         try {
             const result = await executeCommand(cmd, componentName);
             if (result) {
+                // Add output mode to result
+                result.outputMode = cmd.output || 'user';
                 results.push(result);
             }
         } catch (error) {

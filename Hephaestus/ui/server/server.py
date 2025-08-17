@@ -510,8 +510,12 @@ class TektonUIRequestHandler(SimpleHTTPRequestHandler):
     
     def do_POST(self):
         """Handle POST requests"""
+        # Check if this is a chat command request
+        if self.path == "/api/chat/command":
+            self.handle_chat_command()
+            return
         # Check if this is an API request that needs to be proxied
-        if self.path.startswith("/api/environment"):
+        elif self.path.startswith("/api/environment"):
             # Handle environment variable endpoints
             self.handle_environment_request("POST")
             return
@@ -529,6 +533,86 @@ class TektonUIRequestHandler(SimpleHTTPRequestHandler):
         
         # Handle any other POST requests with 404
         self.send_error(404, "Not Found")
+    
+    def handle_chat_command(self):
+        """Handle chat command execution requests"""
+        import subprocess
+        
+        try:
+            # Read request body
+            content_length = int(self.headers['Content-Length'])
+            post_data = self.rfile.read(content_length)
+            request_data = json.loads(post_data.decode('utf-8'))
+            
+            command_type = request_data.get('type', 'shell')
+            command = request_data.get('command', '')
+            context = request_data.get('context', {})
+            
+            # Basic safety check - reject obviously dangerous commands
+            dangerous_patterns = [
+                'rm -rf /', 'rm -rf ~', 'rm -rf *', 'sudo rm',
+                '> /dev/sd', 'dd if=/dev/zero', 'mkfs.', 
+                'format c:', 'del /f /s', ':(){:|:&};:',
+                'chmod -R 777 /', 'mv /* /dev/null'
+            ]
+            
+            for pattern in dangerous_patterns:
+                if pattern in command:
+                    response = {
+                        'type': 'error',
+                        'output': f'Command blocked for safety: {command}'
+                    }
+                    self.send_response(200)
+                    self.send_header('Content-Type', 'application/json')
+                    self.end_headers()
+                    self.wfile.write(json.dumps(response).encode())
+                    return
+            
+            # Execute command with timeout
+            try:
+                # Run command with 10 second timeout
+                result = subprocess.run(
+                    command,
+                    shell=True,
+                    capture_output=True,
+                    text=True,
+                    timeout=10,
+                    cwd=os.path.expanduser('~')
+                )
+                
+                output = result.stdout
+                if result.stderr:
+                    output += f"\nError: {result.stderr}"
+                
+                # Truncate if too long (25K chars)
+                if len(output) > 25000:
+                    output = output[:25000] + "\n... (output truncated at 25,000 characters)"
+                
+                response = {
+                    'type': 'system',
+                    'output': output or '(no output)'
+                }
+                
+            except subprocess.TimeoutExpired:
+                response = {
+                    'type': 'error',
+                    'output': 'Command timed out after 10 seconds'
+                }
+            except Exception as e:
+                response = {
+                    'type': 'error',
+                    'output': f'Command failed: {str(e)}'
+                }
+            
+            # Send response
+            self.send_response(200)
+            self.send_header('Content-Type', 'application/json')
+            self.end_headers()
+            self.wfile.write(json.dumps(response).encode())
+            
+        except Exception as e:
+            logger.error(f"Error handling chat command: {e}")
+            self.send_error(500, f"Internal error: {str(e)}")
     
     @integration_point("API gateway - proxies requests to Ergon, Hermes, and Rhetor backend services")
     def proxy_api_request(self, method):
