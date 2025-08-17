@@ -5,6 +5,9 @@
  */
 
 window.SingleChat = {
+    // Storage for command outputs that should be included with next message
+    pendingCommandOutputs: {},  // keyed by component name
+    
     // Component configuration mapping - using -ai suffix for AI specialists (42xxx ports)
     config: {
         'terma': { aiName: 'terma-ai', displayName: 'Terma' },
@@ -72,7 +75,8 @@ window.SingleChat = {
         
         // Handle command results based on output mode
         if (processed.hasCommands && processed.commandResults.length > 0) {
-            let aiMessage = '';  // Accumulate outputs to send to AI
+            let immediateAiMessage = '';  // For 'ai' mode only (send now)
+            let pendingAiMessage = '';    // For 'both' mode (save for later)
             
             for (const result of processed.commandResults) {
                 const outputMode = result.outputMode || 'user';
@@ -82,17 +86,28 @@ window.SingleChat = {
                     window.displayCommandResult(containerEl, result, cssPrefix);
                 }
                 
-                if (outputMode === 'ai' || outputMode === 'both') {
-                    // Add to message for AI
-                    aiMessage += `Command output:\n${result.output}\n\n`;
+                if (outputMode === 'ai') {
+                    // Send to AI immediately (output not shown to user)
+                    immediateAiMessage += `Command output:\n${result.output}\n\n`;
+                } else if (outputMode === 'both') {
+                    // Store for next message (output shown to user AND will go to AI)
+                    pendingAiMessage += `[Previous command output:\n${result.output}]\n\n`;
                 }
             }
             
-            // If we have output for AI, append it to the message
-            if (aiMessage) {
-                message = processed.message ? `${processed.message}\n\n${aiMessage}` : aiMessage;
+            // Store pending outputs for next message
+            if (pendingAiMessage) {
+                if (!this.pendingCommandOutputs[componentName]) {
+                    this.pendingCommandOutputs[componentName] = '';
+                }
+                this.pendingCommandOutputs[componentName] += pendingAiMessage;
+            }
+            
+            // Handle immediate AI message (for 'ai' mode only)
+            if (immediateAiMessage) {
+                message = processed.message ? `${processed.message}\n\n${immediateAiMessage}` : immediateAiMessage;
             } else if (!processed.message || !processed.message.trim()) {
-                // No message and no AI output, we're done
+                // No message and no immediate AI output, we're done
                 return;
             } else {
                 // Continue with the remaining message
@@ -103,20 +118,23 @@ window.SingleChat = {
         // Get existing content (preserve welcome message)
         const existingContent = containerEl.innerHTML;
         
+        // Store the original message for display (before adding pending outputs)
+        const displayMessage = processed.message || message;
+        
         // Add user message using innerHTML
         let userMessageHtml;
         if (cssPrefix === 'chat-message') {
             // Terma uses different CSS structure
             userMessageHtml = `
                 <div class="chat-message user-message">
-                    ${this.escapeHtml(message)}
+                    ${this.escapeHtml(displayMessage)}
                 </div>
             `;
         } else {
             userMessageHtml = `
                 <div class="${cssPrefix}__message ${cssPrefix}__message--user">
                     <div class="${cssPrefix}__message-content">
-                        <div class="${cssPrefix}__message-text">${this.escapeHtml(message)}</div>
+                        <div class="${cssPrefix}__message-text">${this.escapeHtml(displayMessage)}</div>
                     </div>
                 </div>
             `;
@@ -131,6 +149,13 @@ window.SingleChat = {
         }
         
         try {
+            // Check if we have pending command outputs to prepend
+            if (this.pendingCommandOutputs[componentName]) {
+                message = this.pendingCommandOutputs[componentName] + message;
+                // Clear the pending outputs after using them
+                delete this.pendingCommandOutputs[componentName];
+            }
+            
             // Check for escalation metadata
             let response;
             if (metadata.escalate) {
@@ -278,6 +303,31 @@ window.processCommandsInMessage = async function(message, componentName) {
     // Execute each command
     const results = [];
     for (const cmd of parsed.commands) {
+        // Add command to history (except clear)
+        if (window.CommandHistory && cmd.type !== 'clear') {
+            window.CommandHistory.add(cmd.command || cmd.raw);
+        }
+        // Handle special command types that don't go to backend
+        if (cmd.type === 'clear') {
+            // Clear the chat display
+            const container = document.querySelector(`[data-component-name="${componentName}"]`);
+            if (container) {
+                // Keep only the welcome message if it exists
+                const welcomeMsg = container.querySelector('.welcome-message, .system-message:first-child');
+                if (welcomeMsg) {
+                    container.innerHTML = welcomeMsg.outerHTML;
+                } else {
+                    container.innerHTML = '';
+                }
+            }
+            results.push({
+                type: 'system',
+                output: 'Chat cleared (context preserved)',
+                outputMode: 'user'
+            });
+            continue;
+        }
+        
         // Check if command is safe
         if (!ChatCommandParser.isSafeCommand(cmd)) {
             results.push({

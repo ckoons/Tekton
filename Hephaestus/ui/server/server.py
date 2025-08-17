@@ -125,6 +125,10 @@ class TektonUIRequestHandler(SimpleHTTPRequestHandler):
             # Handle profile endpoints
             self.handle_profile_request("GET")
             return
+        elif self.path == "/api/command-history":
+            # Handle command history endpoint
+            self.handle_command_history("GET")
+            return
         elif self.path.startswith("/api/"):
             self.proxy_api_request("GET")
             return
@@ -514,6 +518,10 @@ class TektonUIRequestHandler(SimpleHTTPRequestHandler):
         if self.path == "/api/chat/command":
             self.handle_chat_command()
             return
+        # Check if this is a command history request
+        elif self.path == "/api/command-history":
+            self.handle_command_history("POST")
+            return
         # Check if this is an API request that needs to be proxied
         elif self.path.startswith("/api/environment"):
             # Handle environment variable endpoints
@@ -533,6 +541,74 @@ class TektonUIRequestHandler(SimpleHTTPRequestHandler):
         
         # Handle any other POST requests with 404
         self.send_error(404, "Not Found")
+    
+    def do_DELETE(self):
+        """Handle DELETE requests"""
+        if self.path == "/api/command-history":
+            self.handle_command_history("DELETE")
+            return
+        
+        # Handle any other DELETE requests with 404
+        self.send_error(404, "Not Found")
+    
+    def handle_command_history(self, method):
+        """Handle command history operations"""
+        from pathlib import Path
+        
+        # Create history file path
+        history_dir = Path.home() / '.tekton'
+        history_file = history_dir / 'command_history'
+        
+        # Ensure directory exists
+        history_dir.mkdir(exist_ok=True)
+        
+        try:
+            if method == "GET":
+                # Read history file
+                history = []
+                if history_file.exists():
+                    with open(history_file, 'r') as f:
+                        history = [line.strip() for line in f if line.strip()]
+                
+                response = {
+                    'history': history,
+                    'file': str(history_file)
+                }
+                
+                self.send_response(200)
+                self.send_header('Content-Type', 'application/json')
+                self.end_headers()
+                self.wfile.write(json.dumps(response).encode())
+                
+            elif method == "POST":
+                # Append command to history
+                content_length = int(self.headers['Content-Length'])
+                post_data = self.rfile.read(content_length)
+                request_data = json.loads(post_data.decode('utf-8'))
+                
+                command = request_data.get('command', '').strip()
+                if command:
+                    with open(history_file, 'a') as f:
+                        f.write(command + '\n')
+                
+                self.send_response(200)
+                self.send_header('Content-Type', 'application/json')
+                self.end_headers()
+                self.wfile.write(json.dumps({'status': 'saved'}).encode())
+                
+            elif method == "DELETE":
+                # Clear history file
+                if history_file.exists():
+                    history_file.unlink()
+                
+                self.send_response(200)
+                self.send_header('Content-Type', 'application/json')
+                self.end_headers()
+                self.wfile.write(json.dumps({'status': 'cleared'}).encode())
+                
+        except Exception as e:
+            logger.error(f"Error handling command history: {e}")
+            self.send_error(500, f"Internal error: {str(e)}")
     
     def handle_chat_command(self):
         """Handle chat command execution requests"""

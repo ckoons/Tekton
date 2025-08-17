@@ -116,6 +116,15 @@ window.ChatCommandParser = {
             };
         }
         
+        // Clear command - clears chat display
+        if (cmdString === 'clear') {
+            return {
+                type: 'clear',
+                output: outputMode,
+                raw: originalCmd
+            };
+        }
+        
         // System prompt setting
         if (cmdString.startsWith('system:')) {
             return {
