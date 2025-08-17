@@ -613,6 +613,7 @@ class TektonUIRequestHandler(SimpleHTTPRequestHandler):
     def handle_chat_command(self):
         """Handle chat command execution requests"""
         import subprocess
+        from pathlib import Path
         
         try:
             # Read request body
@@ -624,6 +625,56 @@ class TektonUIRequestHandler(SimpleHTTPRequestHandler):
             command = request_data.get('command', '')
             context = request_data.get('context', {})
             
+            # Get current working directory from context or use home
+            cwd = context.get('cwd', os.path.expanduser('~'))
+            
+            # Handle cd command specially
+            if command.startswith('cd '):
+                # Extract the path
+                cd_path = command[3:].strip()
+                
+                # Handle special cases
+                if cd_path == '~' or cd_path == '':
+                    new_path = os.path.expanduser('~')
+                elif cd_path == '-':
+                    # TODO: Track previous directory
+                    new_path = cwd
+                elif cd_path.startswith('~'):
+                    new_path = os.path.expanduser(cd_path)
+                elif os.path.isabs(cd_path):
+                    new_path = cd_path
+                else:
+                    # Relative path
+                    new_path = os.path.join(cwd, cd_path)
+                
+                # Resolve and validate the path
+                try:
+                    new_path = os.path.realpath(new_path)
+                    if os.path.isdir(new_path):
+                        response = {
+                            'type': 'system',
+                            'output': f'Changed directory to: {new_path}',
+                            'cwd': new_path  # Return new working directory
+                        }
+                    else:
+                        response = {
+                            'type': 'error',
+                            'output': f'cd: no such file or directory: {cd_path}',
+                            'cwd': cwd  # Keep current directory
+                        }
+                except Exception as e:
+                    response = {
+                        'type': 'error',
+                        'output': f'cd: {str(e)}',
+                        'cwd': cwd
+                    }
+                
+                self.send_response(200)
+                self.send_header('Content-Type', 'application/json')
+                self.end_headers()
+                self.wfile.write(json.dumps(response).encode())
+                return
+            
             # Basic safety check - reject obviously dangerous commands
             dangerous_patterns = [
                 'rm -rf /', 'rm -rf ~', 'rm -rf *', 'sudo rm',
@@ -632,28 +683,30 @@ class TektonUIRequestHandler(SimpleHTTPRequestHandler):
                 'chmod -R 777 /', 'mv /* /dev/null'
             ]
             
-            for pattern in dangerous_patterns:
-                if pattern in command:
-                    response = {
-                        'type': 'error',
-                        'output': f'Command blocked for safety: {command}'
-                    }
-                    self.send_response(200)
-                    self.send_header('Content-Type', 'application/json')
-                    self.end_headers()
-                    self.wfile.write(json.dumps(response).encode())
-                    return
+            # Skip safety check for cd commands
+            if not (command.startswith('cd ') or command == 'cd'):
+                for pattern in dangerous_patterns:
+                    if pattern in command:
+                        response = {
+                            'type': 'error',
+                            'output': f'Command blocked for safety: {command}'
+                        }
+                        self.send_response(200)
+                        self.send_header('Content-Type', 'application/json')
+                        self.end_headers()
+                        self.wfile.write(json.dumps(response).encode())
+                        return
             
             # Execute command with timeout
             try:
-                # Run command with 10 second timeout
+                # Run command with 10 second timeout in the specified directory
                 result = subprocess.run(
                     command,
                     shell=True,
                     capture_output=True,
                     text=True,
                     timeout=10,
-                    cwd=os.path.expanduser('~')
+                    cwd=cwd  # Use the current working directory from context
                 )
                 
                 output = result.stdout
@@ -666,7 +719,8 @@ class TektonUIRequestHandler(SimpleHTTPRequestHandler):
                 
                 response = {
                     'type': 'system',
-                    'output': output or '(no output)'
+                    'output': output or '(no output)',
+                    'cwd': cwd  # Return current directory so client can track it
                 }
                 
             except subprocess.TimeoutExpired:

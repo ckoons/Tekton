@@ -8,6 +8,9 @@ window.SingleChat = {
     // Storage for command outputs that should be included with next message
     pendingCommandOutputs: {},  // keyed by component name
     
+    // Current working directory (shared across all chats)
+    currentWorkingDirectory: null,  // Will be set to home directory on first command
+    
     // Component configuration mapping - using -ai suffix for AI specialists (42xxx ports)
     config: {
         'terma': { aiName: 'terma-ai', displayName: 'Terma' },
@@ -328,14 +331,8 @@ window.processCommandsInMessage = async function(message, componentName) {
             continue;
         }
         
-        // Check if command is safe
-        if (!ChatCommandParser.isSafeCommand(cmd)) {
-            results.push({
-                type: 'error',
-                output: `Command blocked for safety: ${cmd.raw}`
-            });
-            continue;
-        }
+        // Safety check - but isSafeCommand now always returns true
+        // Server handles actual safety checking
         
         // Execute command via backend
         try {
@@ -368,10 +365,10 @@ window.processCommandsInMessage = async function(message, componentName) {
  * @returns {Promise} - Command result
  */
 async function executeCommand(command, componentName) {
-    // Get component URL using tektonUrl
-    const baseUrl = typeof tektonUrl === 'function' 
-        ? tektonUrl(componentName, '') 
-        : `http://localhost:8000`;
+    // Get Hephaestus URL for command execution (commands always go through UI server)
+    const baseUrl = typeof hephaestusUrl === 'function' 
+        ? hephaestusUrl('') 
+        : `http://localhost:${window.HEPHAESTUS_PORT || 8080}`;
     
     try {
         const response = await fetch(`${baseUrl}/api/chat/command`, {
@@ -384,7 +381,10 @@ async function executeCommand(command, componentName) {
                 command: command.type === 'shell' || command.type === 'aish' 
                     ? command.command 
                     : command.raw,
-                context: { component: componentName }
+                context: { 
+                    component: componentName,
+                    cwd: window.SingleChat.currentWorkingDirectory  // Send current directory
+                }
             })
         });
         
@@ -393,6 +393,12 @@ async function executeCommand(command, componentName) {
         }
         
         const result = await response.json();
+        
+        // Update current working directory if it changed
+        if (result.cwd) {
+            window.SingleChat.currentWorkingDirectory = result.cwd;
+        }
+        
         return {
             type: result.type || 'system',
             output: result.output || 'Command completed'

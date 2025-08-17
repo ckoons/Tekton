@@ -160,16 +160,35 @@ window.ChatCommandParser = {
     
     /**
      * Check if command is safe to execute
+     * NOTE: Safety check removed - server handles all safety
      * @param {object} command - Parsed command object
-     * @returns {boolean} - True if safe
+     * @returns {boolean} - Always returns true
      */
     isSafeCommand: function(command) {
+        // ALL commands are safe - server handles safety
+        return true;
+    },
+    
+    // Old safety check code - kept for reference but not used
+    _oldSafetyCheck: function(command) {
         if (command.type === 'aish') {
             // All aish commands are safe
             return true;
         }
         
+        if (command.type === 'clear') {
+            // Clear command is always safe
+            return true;
+        }
+        
         if (command.type === 'shell') {
+            // cd commands are always safe
+            console.log('[ChatCommandParser] Checking safety for:', command.command, 'type:', typeof command.command);
+            const cmd = command.command ? command.command.trim() : '';
+            if (cmd === 'cd' || cmd.startsWith('cd ')) {
+                console.log('[ChatCommandParser] cd command is safe');
+                return true;
+            }
             // Blacklist of dangerous patterns
             const dangerous = [
                 'rm -rf /',      // Remove root
