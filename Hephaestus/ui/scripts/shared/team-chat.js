@@ -100,15 +100,29 @@ window.TeamChat = {
                 // Build HTML for all responses
                 let responsesHtml = '';
                 
-                data.responses.forEach(resp => {
+                for (const resp of data.responses) {
                     // Extract sender name and format it
                     const sender = this.formatSenderName(resp.specialist_id || resp.socket_id);
+                    
+                    // Render markdown if available
+                    let renderedContent;
+                    if (window.MarkdownRenderer) {
+                        try {
+                            // Markdown renderer handles escaping internally
+                            renderedContent = await window.MarkdownRenderer.render(resp.content, componentName);
+                        } catch (e) {
+                            console.warn('[TeamChat] Markdown rendering failed, using plain text:', e);
+                            renderedContent = this.escapeHtml(resp.content);
+                        }
+                    } else {
+                        renderedContent = this.escapeHtml(resp.content);
+                    }
                     
                     if (cssPrefix === 'chat-message') {
                         // Terma uses different CSS structure
                         responsesHtml += `
                             <div class="chat-message ai-message">
-                                <strong>${sender}:</strong> ${this.escapeHtml(resp.content)}
+                                <strong>${sender}:</strong> <div class="markdown-content">${renderedContent}</div>
                             </div>
                         `;
                     } else {
@@ -116,13 +130,13 @@ window.TeamChat = {
                             <div class="${cssPrefix}__message ${cssPrefix}__message--ai">
                                 <div class="${cssPrefix}__message-content">
                                     <div class="${cssPrefix}__message-text">
-                                        <strong>${sender}:</strong> ${this.escapeHtml(resp.content)}
+                                        <strong>${sender}:</strong> <div class="markdown-content">${renderedContent}</div>
                                     </div>
                                 </div>
                             </div>
                         `;
                     }
-                });
+                }
                 
                 // Add all responses at once
                 containerEl.innerHTML = containerEl.innerHTML + responsesHtml;

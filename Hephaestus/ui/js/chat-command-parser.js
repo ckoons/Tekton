@@ -116,38 +116,15 @@ window.ChatCommandParser = {
             };
         }
         
-        // Safe shell commands (whitelist) - also handle with flags like 'ls -la'
-        const safeCommands = ['git', 'ls', 'ps', 'grep', 'pwd', 'date', 'whoami', 'tekton-status'];
-        const firstWord = cmdString.split(' ')[0];
-        
-        // Check if it's a safe command (including with flags)
-        if (safeCommands.includes(firstWord)) {
-            console.log('[ChatCommandParser] Detected safe shell command:', cmdString);
-            return {
-                type: 'shell',
-                command: cmdString,
-                safe: true,
-                raw: cmdString
-            };
-        }
-        
-        // Also handle explicit commands like 'ls -la' without the shell: prefix
-        // Check if the entire command starts with a safe command
-        for (const safeCmd of safeCommands) {
-            if (cmdString === safeCmd || cmdString.startsWith(safeCmd + ' ')) {
-                console.log('[ChatCommandParser] Detected safe shell command (pattern match):', cmdString);
-                return {
-                    type: 'shell',
-                    command: cmdString,
-                    safe: true,
-                    raw: cmdString
-                };
-            }
-        }
-        
-        // Unknown command - return null to skip
-        console.warn('[ChatCommandParser] Unknown command:', cmdString);
-        return null;
+        // Any command is allowed - we'll check against blacklist in isSafeCommand
+        // This allows ALL commands like tree, echo, cat, etc.
+        console.log('[ChatCommandParser] Detected shell command:', cmdString);
+        return {
+            type: 'shell',
+            command: cmdString,
+            safe: false,  // Will be checked against blacklist
+            raw: cmdString
+        };
     },
     
     /**
@@ -162,22 +139,39 @@ window.ChatCommandParser = {
         }
         
         if (command.type === 'shell') {
-            // Check for dangerous patterns
+            // Blacklist of dangerous patterns
             const dangerous = [
-                'rm -rf', 'sudo', '> /dev/', 'dd if=', 'mkfs',
-                '; rm', '&& rm', '| rm', 'format', 'del /f'
+                'rm -rf /',      // Remove root
+                'rm -rf ~',      // Remove home
+                'rm -rf *',      // Remove everything
+                'sudo rm',       // Sudo remove
+                '> /dev/sd',     // Overwrite disk
+                'dd if=/dev/zero of=/dev/', // Disk destroyer
+                'mkfs.',         // Format filesystem
+                '; rm -rf',      // Command injection remove
+                '&& rm -rf',     // Command chain remove
+                '| rm -rf',      // Pipe to remove
+                'format c:',     // Windows format
+                'del /f /s /q',  // Windows delete
+                ':(){:|:&};:',   // Fork bomb
+                'chmod -R 777 /', // Permission destroyer
+                'chown -R',      // Mass ownership change
+                '>()',           // Process substitution bombs
+                'mv /* /dev/null', // Move everything to null
+                'shred',         // Secure delete
+                'wipe',          // Secure wipe
             ];
             
             const cmdLower = command.command.toLowerCase();
             for (const pattern of dangerous) {
-                if (cmdLower.includes(pattern)) {
+                if (cmdLower.includes(pattern.toLowerCase())) {
                     console.error('[ChatCommandParser] Blocked dangerous command:', command.command);
                     return false;
                 }
             }
             
-            // Check if explicitly marked as safe
-            return command.safe === true;
+            // All other commands are allowed
+            return true;
         }
         
         // Escalation and parameter commands are always safe

@@ -275,6 +275,41 @@
           </div>
         </div>
         
+        <!-- Markdown Rendering Mode -->
+        <div class="settings__field"
+             data-tekton-field="markdown-render"
+             data-tekton-element="field">
+          <div class="settings__field-label"
+               data-tekton-element="field-label"
+               data-tekton-text="Chat Response Rendering">Chat Response Rendering</div>
+          <div class="settings__field-control"
+               data-tekton-element="field-control">
+            <select id="markdown-render-setting" class="settings__select"
+                    data-tekton-control="select"
+                    data-tekton-element="select-control"
+                    data-tekton-value="auto" data-tekton-select="render-mode"
+                    onchange="updateMarkdownRenderMode(this.value)">
+              <option value="auto" selected
+                      data-tekton-option="auto"
+                      data-tekton-text="Auto (Smart Detection)">Auto (Smart Detection)</option>
+              <option value="lightweight"
+                      data-tekton-option="lightweight"
+                      data-tekton-text="Lightweight (Fast)">Lightweight (Fast)</option>
+              <option value="full"
+                      data-tekton-option="full"
+                      data-tekton-text="Full (Tables & Complex)">Full (Tables & Complex)</option>
+              <option value="none"
+                      data-tekton-option="none"
+                      data-tekton-text="Plain Text (No Formatting)">Plain Text (No Formatting)</option>
+            </select>
+            <div class="settings__field-description"
+                 data-tekton-element="field-description"
+                 data-tekton-type="help-text">
+              Auto mode detects markdown complexity and chooses the best renderer. Lightweight is fast for simple formatting. Full supports tables and complex markdown.
+            </div>
+          </div>
+        </div>
+        
       </div>
     </div>
     
@@ -300,7 +335,8 @@ async function saveSettingsToBackend() {
       terminalScrollback: true,
       terminalScrollbackLines: 1000,
       chatHistoryEnabled: true,
-      maxChatHistoryEntries: 50
+      maxChatHistoryEntries: 50,
+      markdownRenderMode: document.getElementById('markdown-render-setting')?.value || 'auto'
     };
     
     // Set accent color based on preset
@@ -483,6 +519,43 @@ setTimeout(() => {
   
   applyTheme();
 }, 200);
+
+// Update markdown render mode
+function updateMarkdownRenderMode(mode) {
+  console.log('[Settings] Updating markdown render mode to:', mode);
+  
+  // Update the MarkdownRenderer if it's loaded
+  if (window.MarkdownRenderer) {
+    window.MarkdownRenderer.updateSettings({ renderMode: mode });
+  }
+  
+  // Save to localStorage for persistence
+  localStorage.setItem('tekton-markdown-mode', mode);
+  
+  // Show status message
+  const statusEl = document.querySelector('.settings__status');
+  if (statusEl) {
+    statusEl.textContent = `Render mode changed to ${mode}`;
+    setTimeout(() => {
+      statusEl.textContent = 'Changes applied instantly';
+    }, 2000);
+  }
+}
+
+// Load saved markdown mode on startup
+(function loadMarkdownSettings() {
+  const savedMode = localStorage.getItem('tekton-markdown-mode');
+  if (savedMode) {
+    const selectEl = document.getElementById('markdown-render-setting');
+    if (selectEl) {
+      selectEl.value = savedMode;
+    }
+    // Update MarkdownRenderer if it's loaded
+    if (window.MarkdownRenderer) {
+      window.MarkdownRenderer.updateSettings({ renderMode: savedMode });
+    }
+  }
+})();
 </script>
 
 <style>

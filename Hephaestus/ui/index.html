@@ -16,6 +16,7 @@
     <link rel="stylesheet" href="styles/telos/telos.css">
     <link rel="stylesheet" href="styles/home/home-component.css">
     <link rel="stylesheet" href="shared/modal-system.css">
+    <link rel="stylesheet" href="styles/markdown-content.css">
     
     <!-- Apply theme immediately -->
     <script>
@@ -29,6 +30,8 @@
     <script src="scripts/shared/diagnostic.js"></script>
     <!-- Tekton URL utilities - MUST load before components -->
     <script src="scripts/tekton-urls.js"></script>
+    <!-- Markdown renderer - load early for chat components -->
+    <script src="scripts/shared/markdown-renderer.js"></script>
     
     <!-- Component-specific styles -->
     <style>

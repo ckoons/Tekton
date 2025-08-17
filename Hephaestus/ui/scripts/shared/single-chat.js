@@ -134,13 +134,30 @@ window.SingleChat = {
                 window.AIChat.hideProcessingMessage(containerEl);
             }
             
-            // Add AI response
+            // Add AI response with markdown rendering
+            const responseText = response.content || response;
+            let renderedContent;
+            
+            // Use markdown renderer if available
+            if (window.MarkdownRenderer) {
+                try {
+                    // Markdown renderer handles escaping internally
+                    renderedContent = await window.MarkdownRenderer.render(responseText, componentName);
+                } catch (e) {
+                    console.warn('[SingleChat] Markdown rendering failed, using plain text:', e);
+                    renderedContent = this.escapeHtml(responseText);
+                }
+            } else {
+                // No markdown renderer, escape HTML
+                renderedContent = this.escapeHtml(responseText);
+            }
+            
             let aiMessageHtml;
             if (cssPrefix === 'chat-message') {
                 // Terma uses different CSS structure
                 aiMessageHtml = `
                     <div class="chat-message ai-message">
-                        <strong>${config.displayName}:</strong> ${this.escapeHtml(response.content || response)}
+                        <strong>${config.displayName}:</strong> <div class="markdown-content">${renderedContent}</div>
                     </div>
                 `;
             } else {
@@ -148,7 +165,7 @@ window.SingleChat = {
                     <div class="${cssPrefix}__message ${cssPrefix}__message--ai">
                         <div class="${cssPrefix}__message-content">
                             <div class="${cssPrefix}__message-text">
-                                <strong>${config.displayName}:</strong> ${this.escapeHtml(response.content || response)}
+                                <strong>${config.displayName}:</strong> <div class="markdown-content">${renderedContent}</div>
                             </div>
                         </div>
                     </div>

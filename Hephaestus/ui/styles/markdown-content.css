@@ -1,0 +1,163 @@
+/**
+ * Markdown Content Styling
+ * Styles for rendered markdown content in chat messages
+ */
+
+/* Container for markdown content */
+.markdown-content {
+    display: inline-block;
+    font-family: inherit;
+    line-height: 1.6;
+    word-wrap: break-word;
+    max-width: 100%;
+}
+
+/* Headers */
+.markdown-content h1 {
+    font-size: 1.5em;
+    margin: 1em 0 0.5em 0;
+    color: #FFA500;
+    border-bottom: 2px solid #FFA500;
+    padding-bottom: 0.3em;
+}
+
+.markdown-content h2 {
+    font-size: 1.3em;
+    margin: 0.8em 0 0.4em 0;
+    color: #FFA500;
+}
+
+.markdown-content h3 {
+    font-size: 1.1em;
+    margin: 0.6em 0 0.3em 0;
+    color: #FFD700;
+}
+
+.markdown-content h4,
+.markdown-content h5,
+.markdown-content h6 {
+    font-size: 1em;
+    margin: 0.5em 0 0.25em 0;
+    color: #FFD700;
+}
+
+/* Paragraphs */
+.markdown-content p {
+    margin: 0.5em 0;
+}
+
+/* Lists */
+.markdown-content ul,
+.markdown-content ol {
+    margin: 0.5em 0;
+    padding-left: 1.5em;
+}
+
+.markdown-content li {
+    margin: 0.25em 0;
+}
+
+/* Code */
+.markdown-content code {
+    background: var(--bg-tertiary, #2a2a3a);
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-family: 'Fira Code', 'Monaco', 'Consolas', monospace;
+    font-size: 0.9em;
+    color: #FFD700;
+}
+
+.markdown-content pre {
+    background: var(--bg-tertiary, #2a2a3a);
+    padding: 12px;
+    border-radius: 6px;
+    overflow-x: auto;
+    margin: 0.5em 0;
+    border-left: 3px solid #FFA500;
+}
+
+.markdown-content pre code {
+    background: none;
+    padding: 0;
+    color: var(--text-primary, #f0f0f0);
+}
+
+/* Blockquotes */
+.markdown-content blockquote {
+    border-left: 4px solid #FFA500;
+    padding-left: 1em;
+    margin: 0.5em 0;
+    color: var(--text-secondary, #b0b0b0);
+    font-style: italic;
+}
+
+/* Tables */
+.markdown-content table {
+    border-collapse: collapse;
+    margin: 1em 0;
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    display: block;
+}
+
+.markdown-content th {
+    background: var(--bg-tertiary, #2a2a3a);
+    border: 1px solid var(--border-color, #444444);
+    padding: 8px 12px;
+    text-align: left;
+    font-weight: 600;
+    color: #FFA500;
+}
+
+.markdown-content td {
+    border: 1px solid var(--border-color, #444444);
+    padding: 8px 12px;
+}
+
+.markdown-content tr:nth-child(even) {
+    background: rgba(255, 165, 0, 0.05);
+}
+
+/* Links */
+.markdown-content a {
+    color: #4DA6FF;
+    text-decoration: none;
+    border-bottom: 1px dotted #4DA6FF;
+}
+
+.markdown-content a:hover {
+    color: #FFA500;
+    border-bottom-color: #FFA500;
+}
+
+/* Horizontal rules */
+.markdown-content hr {
+    border: none;
+    border-top: 2px solid var(--border-color, #444444);
+    margin: 1em 0;
+}
+
+/* Strong and emphasis */
+.markdown-content strong {
+    font-weight: 600;
+    color: #FFD700;
+}
+
+.markdown-content em {
+    font-style: italic;
+}
+
+/* Task lists */
+.markdown-content input[type="checkbox"] {
+    margin-right: 0.5em;
+}
+
+/* Truncation indicator */
+.markdown-content .truncated {
+    color: #FFA500;
+    font-style: italic;
+    margin-top: 1em;
+    padding-top: 0.5em;
+    border-top: 1px dashed var(--border-color, #444444);
+}

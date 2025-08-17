@@ -172,9 +172,9 @@ class ChatCommandHandler:
             stdout_str = stdout.decode('utf-8', errors='replace').strip()
             stderr_str = stderr.decode('utf-8', errors='replace').strip()
             
-            # Truncate long output
-            if len(stdout_str) > 1000:
-                stdout_str = stdout_str[:1000] + "\n... (truncated)"
+            # Truncate long output (25K character limit)
+            if len(stdout_str) > 25000:
+                stdout_str = stdout_str[:25000] + "\n... (response truncated at 25,000 characters)"
             
             if process.returncode != 0:
                 return {
