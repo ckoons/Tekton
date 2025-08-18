@@ -202,15 +202,15 @@ class RhetorComponent(StandardComponentBase):
         
         # Initialize MCP Tools Integration with AI Registry
         try:
-            from rhetor.core.mcp.tools_integration_unified import (
-                MCPToolsIntegrationUnified,
+            from rhetor.core.mcp.tools_integration_simple import (
+                MCPToolsIntegrationSimple,
                 set_mcp_tools_integration
             )
             
             hermes_url = os.environ.get("HERMES_URL", "http://localhost:8001")
             
-            # Create unified MCP integration with AI Registry
-            self.mcp_integration = MCPToolsIntegrationUnified(hermes_url=hermes_url)
+            # Create simple MCP integration
+            self.mcp_integration = MCPToolsIntegrationSimple(hermes_url=hermes_url)
             set_mcp_tools_integration(self.mcp_integration)
             
             logger.info("MCP Tools Integration initialized with AI Registry")

@@ -64,7 +64,7 @@ async def send_message_to_specialist_stream(
     """
     try:
         # Try to use live integration if available
-        from .tools_integration_unified import get_mcp_tools_integration
+        from .tools_integration_simple import get_mcp_tools_integration
         integration = get_mcp_tools_integration()
         
         if integration:
@@ -300,7 +300,7 @@ async def orchestrate_team_chat_stream(
     """
     try:
         # Try to use live integration if available
-        from .tools_integration_unified import get_mcp_tools_integration
+        from .tools_integration_simple import get_mcp_tools_integration
         integration = get_mcp_tools_integration()
         
         conversation = []

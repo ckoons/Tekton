@@ -1292,7 +1292,7 @@ async def list_ai_specialists(
     """
     try:
         # Try to use live integration if available
-        from .tools_integration_unified import get_mcp_tools_integration
+        from .tools_integration_simple import get_mcp_tools_integration
         integration = get_mcp_tools_integration()
         
         if integration:
@@ -1422,7 +1422,7 @@ async def activate_ai_specialist(
     """
     try:
         # Try to use live integration if available
-        from .tools_integration_unified import get_mcp_tools_integration
+        from .tools_integration_simple import get_mcp_tools_integration
         integration = get_mcp_tools_integration()
         
         if integration:
@@ -1487,7 +1487,7 @@ async def send_message_to_specialist(
     """
     try:
         # Try to use live integration if available
-        from .tools_integration_unified import get_mcp_tools_integration
+        from .tools_integration_simple import get_mcp_tools_integration
         integration = get_mcp_tools_integration()
         
         if integration and integration.messaging_integration:
@@ -1565,7 +1565,7 @@ async def orchestrate_team_chat(
     """
     try:
         # Try to use live integration if available
-        from .tools_integration_unified import get_mcp_tools_integration
+        from .tools_integration_simple import get_mcp_tools_integration
         integration = get_mcp_tools_integration()
         
         if integration:
@@ -1682,7 +1682,7 @@ async def get_specialist_conversation_history(
     """
     try:
         # Try to use live integration if available
-        from .tools_integration_unified import get_mcp_tools_integration
+        from .tools_integration_simple import get_mcp_tools_integration
         integration = get_mcp_tools_integration()
         
         if integration:
@@ -1750,7 +1750,7 @@ async def configure_ai_orchestration(
     """
     try:
         # Try to use live integration if available
-        from .tools_integration_unified import get_mcp_tools_integration
+        from .tools_integration_simple import get_mcp_tools_integration
         integration = get_mcp_tools_integration()
         
         if integration:

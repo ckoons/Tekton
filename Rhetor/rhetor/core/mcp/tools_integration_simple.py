@@ -9,7 +9,11 @@ import logging
 from typing import Dict, List, Optional, Any
 from datetime import datetime
 
-from rhetor.core.ai_manager import AIManager
+try:
+    from rhetor.core.ai_manager import AIManager
+except ImportError:
+    AIManager = None
+    
 from shared.ai.simple_ai import ai_send
 
 from landmarks import (
@@ -42,7 +46,11 @@ class MCPToolsIntegrationSimple:
             hermes_url: URL of the Hermes message bus
         """
         self.hermes_url = hermes_url
-        self.ai_manager = AIManager()
+        if AIManager:
+            self.ai_manager = AIManager()
+        else:
+            self.ai_manager = None
+            logger.warning("AIManager not available - some features will be limited")
         logger.info("Initialized simplified MCP tools integration")
     
     async def list_specialists(self) -> List[Dict[str, Any]]:
@@ -51,6 +59,10 @@ class MCPToolsIntegrationSimple:
         Returns:
             List of specialist information
         """
+        if not self.ai_manager:
+            logger.warning("AIManager not available - returning empty specialist list")
+            return []
+            
         try:
             specialists = await self.ai_manager.list_available_ais(include_health=True)
             
@@ -81,6 +93,12 @@ class MCPToolsIntegrationSimple:
         Returns:
             Activation result
         """
+        if not self.ai_manager:
+            return {
+                "success": False,
+                "error": "AIManager not available"
+            }
+            
         try:
             # Check health first
             if not await self.ai_manager.check_ai_health(specialist_id):
@@ -116,6 +134,13 @@ class MCPToolsIntegrationSimple:
         Returns:
             Response from specialist with success status
         """
+        if not self.ai_manager:
+            return {
+                "success": False,
+                "error": "AIManager not available",
+                "ai_id": specialist_id
+            }
+            
         try:
             result = await self.ai_manager.send_to_ai(specialist_id, message)
             
@@ -142,6 +167,9 @@ class MCPToolsIntegrationSimple:
         Returns:
             Specialist info or None if not found
         """
+        if not self.ai_manager:
+            return None
+            
         try:
             component_id = specialist_id.replace('-ai', '')
             ai_info = self.ai_manager.get_ai_info(component_id)
@@ -256,6 +284,8 @@ Provide a unified response that combines the key insights."""
     
     def get_roster(self) -> Dict[str, Dict[str, Any]]:
         """Get current AI roster."""
+        if not self.ai_manager:
+            return {}
         return self.ai_manager.get_roster()
     
     async def find_specialist_for_task(self, task_description: str) -> Optional[str]:
@@ -267,6 +297,9 @@ Provide a unified response that combines the key insights."""
         Returns:
             Specialist ID or None
         """
+        if not self.ai_manager:
+            return None
+            
         # Simple keyword matching for now
         task_lower = task_description.lower()
         
@@ -288,7 +321,7 @@ Provide a unified response that combines the key insights."""
                     return ai_id
         
         # Default to numa-ai as general coordinator
-        if await self.ai_manager.check_ai_health('numa-ai'):
+        if self.ai_manager and await self.ai_manager.check_ai_health('numa-ai'):
             return 'numa-ai'
             
         return None
