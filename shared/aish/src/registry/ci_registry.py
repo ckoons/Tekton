@@ -556,6 +556,86 @@ class CIRegistry:
             
         return self._context_state[ci_name].get('last_output')
     
+    def set_next_prompt(self, ci_name: str, prompt: Optional[str]) -> bool:
+        """Apollo sets next_prompt for sunset/sunrise orchestration.
+        Thread-safe using file registry locking.
+        
+        Args:
+            ci_name: CI name
+            prompt: Either SUNSET_PROTOCOL message or --append-system-prompt command
+        """
+        ci_name = ci_name.lower()
+        if ci_name not in self._registry:
+            return False
+        
+        if ci_name not in self._context_state:
+            self._context_state[ci_name] = {}
+        
+        self._context_state[ci_name]['next_prompt'] = prompt
+        self._save_context_state()  # Uses FileRegistry with locks
+        return True
+
+    def get_next_prompt(self, ci_name: str) -> Optional[str]:
+        """Get the next_prompt for a CI.
+        Thread-safe read through file registry.
+        """
+        ci_name = ci_name.lower()
+        if ci_name not in self._context_state:
+            return None
+        return self._context_state[ci_name].get('next_prompt')
+
+    def clear_next_prompt(self, ci_name: str) -> bool:
+        """Clear next_prompt after use.
+        Thread-safe using file registry locking.
+        """
+        ci_name = ci_name.lower()
+        if ci_name not in self._context_state:
+            return False
+        
+        if 'next_prompt' in self._context_state[ci_name]:
+            self._context_state[ci_name]['next_prompt'] = None
+            self._save_context_state()
+            return True
+        return False
+
+    def set_sunrise_context(self, ci_name: str, context: str) -> bool:
+        """Store CI's sunset summary for sunrise use.
+        Thread-safe using file registry locking.
+        """
+        ci_name = ci_name.lower()
+        if ci_name not in self._registry:
+            return False
+        
+        if ci_name not in self._context_state:
+            self._context_state[ci_name] = {}
+        
+        self._context_state[ci_name]['sunrise_context'] = context
+        self._save_context_state()
+        return True
+
+    def get_sunrise_context(self, ci_name: str) -> Optional[str]:
+        """Get the sunrise_context for a CI.
+        Thread-safe read through file registry.
+        """
+        ci_name = ci_name.lower()
+        if ci_name not in self._context_state:
+            return None
+        return self._context_state[ci_name].get('sunrise_context')
+
+    def clear_sunrise_context(self, ci_name: str) -> bool:
+        """Clear sunrise_context after use.
+        Thread-safe using file registry locking.
+        """
+        ci_name = ci_name.lower()
+        if ci_name not in self._context_state:
+            return False
+        
+        if 'sunrise_context' in self._context_state[ci_name]:
+            self._context_state[ci_name]['sunrise_context'] = None
+            self._save_context_state()
+            return True
+        return False
+    
     @integration_point(
         title="AI Exchange Storage",
         description="Stores complete user message and AI response exchanges",
@@ -566,6 +646,8 @@ class CIRegistry:
     )
     def update_ci_last_output(self, ci_name: str, output: Union[str, Dict]) -> bool:
         """Store the CI's output when turn completes.
+        
+        NEW: Auto-detect sunset responses and copy to sunrise_context.
         
         Args:
             ci_name: Name of the CI
@@ -579,8 +661,51 @@ class CIRegistry:
             self._context_state[ci_name] = {}
             
         self._context_state[ci_name]['last_output'] = output
+        
+        # NEW: Auto-detect sunset response
+        if self._is_sunset_response(output):
+            # Auto-copy to sunrise_context
+            if isinstance(output, dict):
+                content = output.get('content', '')
+            else:
+                content = str(output)
+            self._context_state[ci_name]['sunrise_context'] = content
+        
         self._save_context_state()
         return True
+    
+    def _is_sunset_response(self, output: Union[str, Dict]) -> bool:
+        """Detect if output is a sunset protocol response.
+        
+        Looks for sunset indicators in the content.
+        """
+        # Extract content string
+        if isinstance(output, dict):
+            content = str(output.get('content', ''))
+            # Also check if user message had SUNSET_PROTOCOL
+            user_msg = str(output.get('user_message', ''))
+            if 'SUNSET_PROTOCOL' in user_msg:
+                return True
+        else:
+            content = str(output)
+        
+        # Check for sunset response indicators
+        content_lower = content.lower()
+        sunset_indicators = [
+            'current context',
+            'working on',
+            'key decisions',
+            'next steps',
+            'current approach',
+            'emotional state',
+            'task trajectory'
+        ]
+        
+        # Count matches
+        matches = sum(1 for indicator in sunset_indicators if indicator in content_lower)
+        
+        # If 3+ indicators present, likely a sunset response
+        return matches >= 3
     
     def get_ci_context_state(self, ci_name: str) -> Optional[Dict[str, Any]]:
         """Get the complete context state for a CI."""
