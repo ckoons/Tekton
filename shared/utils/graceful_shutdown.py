@@ -12,6 +12,11 @@ from datetime import datetime
 
 from landmarks import architecture_decision, integration_point, performance_boundary
 
+try:
+    from shared.urls import hermes_url as get_hermes_url
+except ImportError:
+    get_hermes_url = None
+
 logger = logging.getLogger(__name__)
 
 @architecture_decision(
@@ -24,10 +29,15 @@ logger = logging.getLogger(__name__)
 class GracefulShutdown:
     """Handles graceful shutdown for Tekton components"""
     
-    def __init__(self, component_name: str, port: int, hermes_url: str = "http://localhost:8001"):
+    def __init__(self, component_name: str, port: int, hermes_url: str = None):
         self.component_name = component_name
         self.port = port
-        self.hermes_url = hermes_url
+        if hermes_url:
+            self.hermes_url = hermes_url
+        elif get_hermes_url:
+            self.hermes_url = get_hermes_url("")
+        else:
+            self.hermes_url = "http://localhost:8001"
         self.shutdown_handlers: List[Callable] = []
         self.is_shutting_down = False
         self.shutdown_event = asyncio.Event()

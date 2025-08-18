@@ -9,6 +9,10 @@ import logging
 from typing import Dict, Any, Optional, List
 from datetime import datetime
 
+try:
+    from shared.urls import hermes_url as get_hermes_url
+except ImportError:
+    get_hermes_url = None
 
 logger = logging.getLogger(__name__)
 
@@ -16,8 +20,13 @@ logger = logging.getLogger(__name__)
 class HermesRegistration:
     """Handles component registration with Hermes"""
     
-    def __init__(self, hermes_url: str = "http://localhost:8001"):
-        self.hermes_url = hermes_url
+    def __init__(self, hermes_url: str = None):
+        if hermes_url:
+            self.hermes_url = hermes_url
+        elif get_hermes_url:
+            self.hermes_url = get_hermes_url("")
+        else:
+            self.hermes_url = "http://localhost:8001"
         self.registration_data: Optional[Dict[str, Any]] = None
         self.is_registered = False
         
@@ -146,7 +155,7 @@ async def register_with_hermes(
     port: int,
     version: str,
     capabilities: List[str],
-    hermes_url: str = "http://localhost:8001",
+    hermes_url: str = None,
     metadata: Optional[Dict[str, Any]] = None
 ) -> HermesRegistration:
     """Convenience function to register a component with Hermes"""

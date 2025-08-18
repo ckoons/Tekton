@@ -12,6 +12,11 @@ from typing import Dict, Any, Callable, Optional
 import psutil
 import os
 
+try:
+    from shared.urls import hermes_url as get_hermes_url
+except ImportError:
+    get_hermes_url = None
+
 logger = logging.getLogger(__name__)
 
 
@@ -190,7 +195,7 @@ async def quick_component_startup(
     component_name: str,
     port: int,
     register_func: Optional[Callable] = None,
-    hermes_url: str = "http://localhost:8001"
+    hermes_url: str = None
 ) -> None:
     """
     Quick startup helper for simple components.
@@ -208,6 +213,13 @@ async def quick_component_startup(
         # Register with Hermes if function provided
         if register_func:
             try:
+                # Determine Hermes URL
+                if hermes_url is None:
+                    if get_hermes_url:
+                        hermes_url = get_hermes_url("")
+                    else:
+                        hermes_url = "http://localhost:8001"
+                
                 await register_func(component_name, port, hermes_url)
                 logger.info(f"{component_name} registered with Hermes")
             except Exception as e:

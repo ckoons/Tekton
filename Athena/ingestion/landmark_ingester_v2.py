@@ -13,11 +13,15 @@ from typing import Dict, List, Any, Optional
 import httpx
 from datetime import datetime
 
+try:
+    from shared.urls import athena_url
+except ImportError:
+    athena_url = None
 
 # Paths
 TEKTON_ROOT = Path(__file__).parent.parent.parent
 LANDMARKS_DATA = TEKTON_ROOT / "landmarks" / "data"
-ATHENA_API = "http://localhost:8005/api/v1"
+ATHENA_API = athena_url("/api/v1") if athena_url else "http://localhost:8005/api/v1"
 
 
 class LandmarkIngesterV2:

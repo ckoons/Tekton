@@ -12,6 +12,11 @@ from harmonia.core.startup_instructions import StartUpInstructions
 from harmonia.core.workflow_startup import WorkflowEngineStartup
 from landmarks import architecture_decision, state_checkpoint, danger_zone
 
+try:
+    from shared.urls import hermes_url as get_hermes_url
+except ImportError:
+    get_hermes_url = None
+
 logger = logging.getLogger(__name__)
 
 @architecture_decision(
@@ -69,7 +74,10 @@ class HarmoniaComponent(StandardComponentBase):
                 self.startup_instructions = StartUpInstructions.from_file(str(instructions_file))
             else:
                 # Create default startup instructions
-                hermes_url = os.environ.get("HERMES_URL", "http://localhost:8001")
+                if get_hermes_url:
+                    hermes_url = os.environ.get("HERMES_URL", get_hermes_url(""))
+                else:
+                    hermes_url = os.environ.get("HERMES_URL", "http://localhost:8001")
                 log_level = os.environ.get("LOG_LEVEL", "INFO")
                 
                 self.startup_instructions = StartUpInstructions(
@@ -86,7 +94,7 @@ class HarmoniaComponent(StandardComponentBase):
             # Create minimal fallback instructions
             self.startup_instructions = StartUpInstructions(
                 data_directory=str(self.base_dir),
-                hermes_url="http://localhost:8001",
+                hermes_url=hermes_url,
                 log_level="INFO",
                 auto_register=False,
                 initialize_db=True,

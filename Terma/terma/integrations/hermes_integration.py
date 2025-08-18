@@ -9,6 +9,11 @@ from typing import Dict, Any, Optional, List, Callable, Awaitable
 from ..core.session_manager import SessionManager
 from ..utils.logging import setup_logging
 
+try:
+    from shared.urls import hermes_url
+except ImportError:
+    hermes_url = None
+
 logger = setup_logging()
 
 class HermesIntegration:
@@ -22,7 +27,12 @@ class HermesIntegration:
             session_manager: SessionManager instance to manage terminal sessions
             component_name: Name of this component
         """
-        self.api_url = api_url or "http://localhost:8000"
+        if api_url:
+            self.api_url = api_url
+        elif hermes_url:
+            self.api_url = hermes_url("")
+        else:
+            self.api_url = "http://localhost:8000"
         self.session_manager = session_manager
         self.component_name = component_name
         self.capabilities = self._get_capabilities()

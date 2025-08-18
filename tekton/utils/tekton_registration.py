@@ -57,6 +57,11 @@ from .tekton_errors import (
     ConfigurationError
 )
 
+try:
+    from shared.urls import hermes_url as get_hermes_url
+except ImportError:
+    get_hermes_url = None
+
 # Set up logger
 logger = logging.getLogger(__name__)
 
@@ -497,7 +502,10 @@ class TektonComponent:
                 port = get_component_port("hermes")
                 self.hermes_url = f"http://localhost:{port}"
             except Exception:
-                self.hermes_url = "http://localhost:8001"
+                if get_hermes_url:
+                    self.hermes_url = get_hermes_url("")
+                else:
+                    self.hermes_url = "http://localhost:8001"
         
         # Make sure the URL points to the base and not a specific endpoint
         if self.hermes_url.endswith('/api'):

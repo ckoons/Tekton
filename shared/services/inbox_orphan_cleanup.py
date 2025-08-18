@@ -13,6 +13,11 @@ from datetime import datetime, timedelta
 from typing import List, Set, Optional
 from pathlib import Path
 
+try:
+    from shared.urls import terma_url as get_terma_url
+except ImportError:
+    get_terma_url = None
+
 # Configure logging
 logger = logging.getLogger('inbox_orphan_cleanup')
 
@@ -20,7 +25,7 @@ class InboxOrphanCleaner:
     """Cleans up orphaned inbox files from terminated terminals."""
     
     def __init__(self, 
-                 terma_endpoint: str = 'http://localhost:8004',
+                 terma_endpoint: str = None,
                  tekton_root: Optional[str] = None):
         """
         Initialize the inbox orphan cleaner.
@@ -29,7 +34,12 @@ class InboxOrphanCleaner:
             terma_endpoint: URL of the Terma service
             tekton_root: Root directory of Tekton (defaults to env var)
         """
-        self.terma_endpoint = terma_endpoint
+        if terma_endpoint:
+            self.terma_endpoint = terma_endpoint
+        elif get_terma_url:
+            self.terma_endpoint = get_terma_url("")
+        else:
+            self.terma_endpoint = 'http://localhost:8004'
         self.tekton_root = tekton_root or os.environ.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
         self.inbox_dir = os.path.join(self.tekton_root, ".tekton", "terma")
         

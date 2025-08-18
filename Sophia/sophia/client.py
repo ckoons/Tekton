@@ -24,6 +24,12 @@ except ImportError:
     )
     logger = logging.getLogger("sophia.client")
 
+# Import shared URL builder
+try:
+    from shared.urls import sophia_url
+except ImportError:
+    sophia_url = None
+
 class SophiaClient:
     """
     Client for interacting with the Sophia API.
@@ -42,7 +48,12 @@ class SophiaClient:
         """
         # Use shared utilities to get configuration if available
         try:
-            self.base_url = base_url or get_config("SOPHIA_API_URL", "http://localhost:8006")
+            if base_url:
+                self.base_url = base_url
+            elif sophia_url:
+                self.base_url = sophia_url("")
+            else:
+                self.base_url = get_config("SOPHIA_API_URL", "http://localhost:8006")
             # Try to use tekton_http shared utility to create client
             self.client = create_http_client(
                 base_url=self.base_url,
@@ -57,7 +68,12 @@ class SophiaClient:
                 logger.info(f"Using tekton_http client with base URL: {self.base_url}")
         except ImportError:
             # Fallback to direct httpx usage
-            self.base_url = base_url or "http://localhost:8006"
+            if base_url:
+                self.base_url = base_url
+            elif sophia_url:
+                self.base_url = sophia_url("")
+            else:
+                self.base_url = "http://localhost:8006"
             self.client = httpx.AsyncClient(base_url=self.base_url, timeout=30.0)
             logger.info(f"Using httpx client with base URL: {self.base_url}")
         

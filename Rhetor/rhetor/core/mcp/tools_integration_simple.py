@@ -15,6 +15,7 @@ except ImportError:
     AIManager = None
     
 from shared.ai.simple_ai import ai_send
+from shared.urls import hermes_url
 
 from landmarks import (
     architecture_decision,
@@ -39,13 +40,13 @@ class MCPToolsIntegrationSimple:
     - Direct communication via simple_ai
     """
     
-    def __init__(self, hermes_url: str = "http://localhost:8001"):
+    def __init__(self, hermes_url_param: str = None):
         """Initialize the simplified MCP tools integration.
         
         Args:
-            hermes_url: URL of the Hermes message bus
+            hermes_url_param: URL of the Hermes message bus (defaults to shared.urls)
         """
-        self.hermes_url = hermes_url
+        self.hermes_url = hermes_url_param or hermes_url("")
         if AIManager:
             self.ai_manager = AIManager()
         else:

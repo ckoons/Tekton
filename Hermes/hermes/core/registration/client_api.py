@@ -12,6 +12,11 @@ import threading
 import requests
 from typing import Dict, List, Any, Optional, Callable, Union
 
+try:
+    from shared.urls import hermes_url as get_hermes_url
+except ImportError:
+    get_hermes_url = None
+
 # Configure logger
 logger = logging.getLogger(__name__)
 
@@ -30,7 +35,7 @@ class RegistrationClientAPI:
                 component_type: str,
                 endpoint: str,
                 capabilities: List[str],
-                api_endpoint: str = "http://localhost:8000/api",
+                api_endpoint: str = None,
                 metadata: Optional[Dict[str, Any]] = None,
                 heartbeat_interval: int = 60):
         """
@@ -53,7 +58,12 @@ class RegistrationClientAPI:
         self.component_type = component_type
         self.endpoint = endpoint
         self.capabilities = capabilities
-        self.api_endpoint = api_endpoint.rstrip("/")
+        if api_endpoint:
+            self.api_endpoint = api_endpoint.rstrip("/")
+        elif get_hermes_url:
+            self.api_endpoint = get_hermes_url("/api").rstrip("/")
+        else:
+            self.api_endpoint = "http://localhost:8000/api"
         self.metadata = metadata or {}
         self.heartbeat_interval = heartbeat_interval
         

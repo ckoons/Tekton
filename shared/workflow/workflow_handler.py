@@ -38,8 +38,33 @@ except ImportError:
         def get(key, default=None):
             return default
     
+    # Define port mapping for fallback
+    _COMPONENT_PORTS = {
+        'engram': 8000,
+        'hermes': 8001,
+        'ergon': 8002,
+        'rhetor': 8003,
+        'terma': 8004,
+        'athena': 8005,
+        'prometheus': 8006,
+        'harmonia': 8007,
+        'telos': 8008,
+        'synthesis': 8009,
+        'tekton-core': 8010,
+        'metis': 8011,
+        'apollo': 8012,
+        'budget': 8013,
+        'penia': 8013,
+        'sophia': 8014,
+        'noesis': 8015,
+        'numa': 8016,
+        'aish': 8017,
+        'hephaestus': 8080
+    }
+    
     def tekton_url(component, path=""):
-        return f"http://localhost:8000/{component}{path}"
+        port = _COMPONENT_PORTS.get(component, 8000)
+        return f"http://localhost:{port}{path}"
 
 logger = logging.getLogger(__name__)
 

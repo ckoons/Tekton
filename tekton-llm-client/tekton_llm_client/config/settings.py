@@ -16,6 +16,11 @@ from .environment import (
     get_env_list, get_env_dict
 )
 
+try:
+    from shared.urls import rhetor_url as get_rhetor_url
+except ImportError:
+    get_rhetor_url = None
+
 logger = logging.getLogger(__name__)
 
 class LLMSettings(BaseModel):
@@ -26,7 +31,10 @@ class LLMSettings(BaseModel):
     model: Optional[str] = Field(default=None, description="Default model for the provider")
     
     # Connection settings
-    rhetor_url: str = Field(default="http://localhost:8003", description="URL for the Rhetor service")
+    rhetor_url: str = Field(
+        default_factory=lambda: get_rhetor_url("") if get_rhetor_url else "http://localhost:8003",
+        description="URL for the Rhetor service"
+    )
     timeout: int = Field(default=120, description="Request timeout in seconds")
     max_retries: int = Field(default=3, description="Maximum number of retries for failed requests")
     retry_delay: int = Field(default=1000, description="Base delay between retries in milliseconds")

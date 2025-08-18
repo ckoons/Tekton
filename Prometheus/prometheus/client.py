@@ -50,8 +50,13 @@ class PrometheusClient:
                 prometheus_url = global_config.get_service_url('prometheus')
                 self.base_url = f"{prometheus_url}/api"
             except:
-                # Fallback if GlobalConfig not available
-                self.base_url = "http://localhost:8006/api"
+                # Try shared.urls next
+                try:
+                    from shared.urls import prometheus_url
+                    self.base_url = prometheus_url("/api")
+                except:
+                    # Fallback if neither available
+                    self.base_url = "http://localhost:8006/api"
         else:
             self.base_url = base_url
         
