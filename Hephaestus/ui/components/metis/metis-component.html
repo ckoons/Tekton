@@ -1336,8 +1336,8 @@ async function loadSprints(statusFilter = 'Ready-1:Metis') {
     console.log('[METIS] Loading sprints with status:', statusFilter);
     try {
         const url = statusFilter 
-            ? `http://localhost:8011/api/v1/sprints?status=${encodeURIComponent(statusFilter)}`
-            : 'http://localhost:8011/api/v1/sprints';
+            ? (window.metisUrl ? window.metisUrl(`/api/v1/sprints?status=${encodeURIComponent(statusFilter)}`) : `http://localhost:8011/api/v1/sprints?status=${encodeURIComponent(statusFilter)}`)
+            : (window.metisUrl ? window.metisUrl('/api/v1/sprints') : 'http://localhost:8011/api/v1/sprints');
             
         const response = await fetch(url);
         const data = await response.json();
@@ -1423,7 +1423,7 @@ function createSprintCard(sprint) {
 async function loadSprintTasks(sprintId) {
     console.log('[METIS] Loading tasks for sprint:', sprintId);
     try {
-        const response = await fetch(`http://localhost:8011/api/v1/sprints/${sprintId}`);
+        const response = await fetch(window.metisUrl ? window.metisUrl(`/api/v1/sprints/${sprintId}`) : `http://localhost:8011/api/v1/sprints/${sprintId}`);
         const data = await response.json();
         
         if (data.success) {
@@ -1621,7 +1621,7 @@ function metis_saveTask() {
         return;
     }
     
-    fetch(`http://localhost:8011/api/v1/sprints/${window.currentSprintId}/tasks`, {
+    fetch(window.metisUrl ? window.metisUrl(`/api/v1/sprints/${window.currentSprintId}/tasks`) : `http://localhost:8011/api/v1/sprints/${window.currentSprintId}/tasks`, {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(taskData)
@@ -1652,7 +1652,7 @@ function deleteTask(taskId) {
     console.log('[METIS] Deleting task:', taskId);
     if (!await TektonModal.confirm('Are you sure you want to delete this task?')) return;
     
-    fetch(`http://localhost:8011/api/v1/sprints/${window.currentSprintId}/tasks/${taskId}`, {
+    fetch(window.metisUrl ? window.metisUrl(`/api/v1/sprints/${window.currentSprintId}/tasks/${taskId}`) : `http://localhost:8011/api/v1/sprints/${window.currentSprintId}/tasks/${taskId}`, {
         method: 'DELETE'
     })
     .then(response => response.json())
@@ -1687,7 +1687,7 @@ function metis_addDependency() {
         return;
     }
     
-    fetch(`http://localhost:8011/api/v1/sprints/${window.currentSprintId}/dependencies`, {
+    fetch(window.metisUrl ? window.metisUrl(`/api/v1/sprints/${window.currentSprintId}/dependencies`) : `http://localhost:8011/api/v1/sprints/${window.currentSprintId}/dependencies`, {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(depData)
@@ -1709,7 +1709,7 @@ function metis_addDependency() {
 function removeDependency(taskId, dependsOnId) {
     console.log('[METIS] Removing dependency:', taskId, '->', dependsOnId);
     
-    fetch(`http://localhost:8011/api/v1/sprints/${window.currentSprintId}/dependencies`, {
+    fetch(window.metisUrl ? window.metisUrl(`/api/v1/sprints/${window.currentSprintId}/dependencies`) : `http://localhost:8011/api/v1/sprints/${window.currentSprintId}/dependencies`, {
         method: 'DELETE',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({
@@ -1740,7 +1740,7 @@ function metis_exportToHarmonia() {
         return;
     }
     
-    fetch(`http://localhost:8011/api/v1/sprints/${window.currentSprintId}/export`, {
+    fetch(window.metisUrl ? window.metisUrl(`/api/v1/sprints/${window.currentSprintId}/export`) : `http://localhost:8011/api/v1/sprints/${window.currentSprintId}/export`, {
         method: 'POST'
     })
     .then(response => response.json())
@@ -1760,7 +1760,7 @@ function metis_exportToHarmonia() {
 // Check for work on load
 function checkForWork() {
     console.log('[METIS] Checking for sprints ready for breakdown');
-    fetch('http://localhost:8011/api/v1/workflow', {
+    fetch(window.metisUrl ? window.metisUrl('/api/v1/workflow') : 'http://localhost:8011/api/v1/workflow', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({

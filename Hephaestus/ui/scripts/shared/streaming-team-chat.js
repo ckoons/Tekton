@@ -33,7 +33,8 @@ window.StreamingTeamChat = {
             params.append('targets', targetSpecialists.join(','));
         }
         
-        const url = `http://localhost:8003/api/v2/team-chat/stream?${params}`;
+        const baseUrl = window.rhetorUrl ? window.rhetorUrl('/api/v2/team-chat/stream') : 'http://localhost:8003/api/v2/team-chat/stream';
+        const url = `${baseUrl}?${params}`;
         
         // Create EventSource for SSE
         const eventSource = new EventSource(url);

@@ -110,7 +110,7 @@ window.NumaComponent = {
         
         try {
             // Use Rhetor's team chat endpoint
-            const response = await fetch('http://localhost:8003/api/team-chat', {
+            const response = await fetch(window.rhetorUrl ? window.rhetorUrl('/api/team-chat') : 'http://localhost:8003/api/team-chat', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

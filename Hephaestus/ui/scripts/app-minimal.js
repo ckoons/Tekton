@@ -139,7 +139,8 @@ let reconnectTimeout = null;
 
 function setupWebSocket() {
     try {
-        ws = new WebSocket('ws://localhost:8080/ws');
+        const wsUrl = window.hephaestusUrl ? window.hephaestusUrl('/ws').replace('http://', 'ws://').replace('https://', 'wss://') : 'ws://localhost:8080/ws';
+        ws = new WebSocket(wsUrl);
         
         ws.onopen = () => {
             console.log('[app-minimal] WebSocket connected');

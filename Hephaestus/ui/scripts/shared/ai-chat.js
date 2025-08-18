@@ -18,8 +18,8 @@ console.log('[FILE_TRACE] Loading: ai-chat.js');
 // source of truth (aish MCP server) rather than scattered endpoints.
 window.AIChat = {
     // Rhetor endpoints - simple proxy that works
-    teamChatUrl: 'http://localhost:8003/api/team-chat',
-    specialistUrl: 'http://localhost:8003/api/v1/ai/specialists',
+    teamChatUrl: window.rhetorUrl ? window.rhetorUrl('/api/team-chat') : 'http://localhost:8003/api/team-chat',
+    specialistUrl: window.rhetorUrl ? window.rhetorUrl('/api/v1/ai/specialists') : 'http://localhost:8003/api/v1/ai/specialists',
     
     // Processing message management
     processingIntervals: new Map(), // Track intervals by container ID

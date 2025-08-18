@@ -414,7 +414,7 @@ window.tektonTeamChat = {
   
   // Send message to Rhetor using SSE streaming
   sendToRhetorStream: function(message) {
-    const url = 'http://localhost:8003/api/mcp/v2/stream';
+    const url = window.rhetorUrl ? window.rhetorUrl('/api/mcp/v2/stream') : 'http://localhost:8003/api/mcp/v2/stream';
     
     // Show typing indicator
     const typingMessage = this.showTypingIndicator('rhetor');

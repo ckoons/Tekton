@@ -6,7 +6,7 @@
 class ConfidenceTracker {
     constructor() {
         // MCP endpoint
-        this.mcpEndpoint = 'http://localhost:8088/api/mcp/v2/execute';
+        this.mcpEndpoint = window.hephaestusUrl ? window.hephaestusUrl('/api/mcp/v2/execute').replace(':8080', ':8088') : 'http://localhost:8088/api/mcp/v2/execute';
         
         // Confidence data
         this.overallConfidence = 0;

@@ -2374,8 +2374,8 @@ async function loadSprints(statusFilter = 'Ready-2:Harmonia') {
     console.log('[HARMONIA] Loading sprints with status:', statusFilter);
     try {
         const url = statusFilter 
-            ? `http://localhost:8007/api/v1/sprints?status=${encodeURIComponent(statusFilter)}`
-            : 'http://localhost:8007/api/v1/sprints';
+            ? (window.harmoniaUrl ? window.harmoniaUrl(`/api/v1/sprints?status=${encodeURIComponent(statusFilter)}`) : `http://localhost:8007/api/v1/sprints?status=${encodeURIComponent(statusFilter)}`)
+            : (window.harmoniaUrl ? window.harmoniaUrl('/api/v1/sprints') : 'http://localhost:8007/api/v1/sprints');
             
         const response = await fetch(url);
         const data = await response.json();
@@ -2463,7 +2463,7 @@ function createSprintCard(sprint) {
 async function loadSprintTasksForWorkflow(sprintId) {
     console.log('[HARMONIA] Loading tasks for workflow builder:', sprintId);
     try {
-        const response = await fetch(`http://localhost:8007/api/v1/sprints/${sprintId}/tasks`);
+        const response = await fetch(window.harmoniaUrl ? window.harmoniaUrl(`/api/v1/sprints/${sprintId}/tasks`) : `http://localhost:8007/api/v1/sprints/${sprintId}/tasks`);
         const data = await response.json();
         
         if (data.success) {
@@ -2574,7 +2574,7 @@ function setupToolbar() {
 // Check for work
 function checkForWork() {
     console.log('[HARMONIA] Checking for sprints ready for orchestration');
-    fetch('http://localhost:8007/api/v1/workflow', {
+    fetch(window.harmoniaUrl ? window.harmoniaUrl('/api/v1/workflow') : 'http://localhost:8007/api/v1/workflow', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({
@@ -2791,7 +2791,7 @@ styleSheet.textContent = nodeStyles;
 document.head.appendChild(styleSheet);
 
 // Global functions for button handlers with backend API integration
-const HARMONIA_API_BASE = window.tektonUrl ? tektonUrl('harmonia', '/api/v1') : 'http://localhost:8007/api/v1';
+const HARMONIA_API_BASE = window.harmoniaUrl ? window.harmoniaUrl('/api/v1') : 'http://localhost:8007/api/v1';
 
 // Utility function to make API calls
 async function harmoniaApiCall(endpoint, method = 'GET', data = null) {
