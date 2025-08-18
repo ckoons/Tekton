@@ -195,12 +195,17 @@ class AIService:
                     print(f"Failed to queue for {ai_id}: {e}")
         return msg_ids
 
-    async def collect_responses(self, msg_ids: Dict[str, str], timeout: float = 30.0):
-        """Collect responses as they arrive"""
+    async def collect_responses(self, msg_ids: Dict[str, str], timeout: float = None):
+        """Collect responses as they arrive
+        
+        Args:
+            msg_ids: Dictionary of AI IDs to message IDs
+            timeout: Optional timeout in seconds (None = no timeout for Claude)
+        """
         start_time = time.time()
         remaining = set(msg_ids.keys())
         
-        while remaining and (time.time() - start_time) < timeout:
+        while remaining and (timeout is None or (time.time() - start_time) < timeout):
             for ai_id in list(remaining):
                 msg_id = msg_ids[ai_id]
                 response = self.get_response(ai_id, msg_id)

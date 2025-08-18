@@ -11,6 +11,10 @@ window.SingleChat = {
     // Current working directory (shared across all chats)
     currentWorkingDirectory: null,  // Will be set to home directory on first command
     
+    // Message buffers for async processing
+    messageBuffers: {},  // keyed by component name
+    processingFlags: {},  // track if AI is busy per component
+    
     // Component configuration mapping - using -ai suffix for AI specialists (42xxx ports)
     config: {
         'terma': { aiName: 'terma-ai', displayName: 'Terma' },
@@ -54,7 +58,7 @@ window.SingleChat = {
     },
     
     /**
-     * Send a message to the AI
+     * Send a message to the AI (async with buffering)
      * @param {HTMLElement} containerEl - The chat messages container
      * @param {string} message - The message to send
      * @param {object} metadata - Optional metadata (e.g., escalation info)
@@ -71,6 +75,11 @@ window.SingleChat = {
         if (!config) {
             console.error(`[SingleChat] No configuration found for component: ${componentName}`);
             return;
+        }
+        
+        // Initialize buffer if needed
+        if (!this.messageBuffers[componentName]) {
+            this.messageBuffers[componentName] = [];
         }
         
         // Process commands first
@@ -192,110 +201,144 @@ window.SingleChat = {
             containerEl.scrollTop = containerEl.scrollHeight;
         }
         
-        // Show processing message
-        if (window.AIChat && window.AIChat.showProcessingMessage) {
-            window.AIChat.showProcessingMessage(containerEl, "Processing", cssPrefix);
+        // If there's a message to send to AI, add it to the buffer
+        if (message && message.trim()) {
+            // Add to buffer with metadata
+            this.messageBuffers[componentName].push({
+                message: message,
+                metadata: metadata,
+                containerEl: containerEl,
+                cssPrefix: cssPrefix,
+                config: config
+            });
+            
+            // Process buffer if not already processing
+            if (!this.processingFlags[componentName]) {
+                this.processMessageBuffer(componentName);
+            }
         }
+    },
+    
+    /**
+     * Process queued messages asynchronously
+     * @param {string} componentName - The component name
+     */
+    async processMessageBuffer(componentName) {
+        // Mark as processing
+        this.processingFlags[componentName] = true;
         
-        try {
-            // Check if we have pending command outputs to prepend
-            if (this.pendingCommandOutputs[componentName]) {
-                message = this.pendingCommandOutputs[componentName] + message;
-                // Clear the pending outputs after using them
-                delete this.pendingCommandOutputs[componentName];
+        while (this.messageBuffers[componentName] && this.messageBuffers[componentName].length > 0) {
+            const messageData = this.messageBuffers[componentName].shift();
+            const { message, metadata, containerEl, cssPrefix, config } = messageData;
+            
+            // Show processing message
+            if (window.AIChat && window.AIChat.showProcessingMessage) {
+                window.AIChat.showProcessingMessage(containerEl, "Processing", cssPrefix);
             }
             
-            // Check for escalation metadata
-            let response;
-            if (metadata.escalate) {
-                console.log(`[SingleChat] Escalating to ${metadata.escalate} instead of ${config.aiName}`);
-                // For now, still use the same AI but include escalation in message
-                // In future, this could route to a different endpoint
-                const escalatedMessage = `[Model: ${metadata.escalate}] ${message}`;
-                response = await window.AIChat.sendMessage(config.aiName, escalatedMessage);
-            } else {
-                // Normal message to AI
-                response = await window.AIChat.sendMessage(config.aiName, message);
-            }
+            try {
+                let fullMessage = message;
+                
+                // Check if we have pending command outputs to prepend
+                if (this.pendingCommandOutputs[componentName]) {
+                    fullMessage = this.pendingCommandOutputs[componentName] + message;
+                    // Clear the pending outputs after using them
+                    delete this.pendingCommandOutputs[componentName];
+                }
+                
+                // Check for escalation metadata
+                let response;
+                if (metadata.escalate) {
+                    console.log(`[SingleChat] Escalating to ${metadata.escalate} instead of ${config.aiName}`);
+                    const escalatedMessage = `[Model: ${metadata.escalate}] ${fullMessage}`;
+                    response = await window.AIChat.sendMessage(config.aiName, escalatedMessage);
+                } else {
+                    // Normal message to AI
+                    response = await window.AIChat.sendMessage(config.aiName, fullMessage);
+                }
             
-            // Remove processing message
-            if (window.AIChat && window.AIChat.hideProcessingMessage) {
-                window.AIChat.hideProcessingMessage(containerEl);
-            }
-            
-            // Add AI response with markdown rendering
-            const responseText = response.content || response;
-            let renderedContent;
-            
-            // Use markdown renderer if available
-            if (window.MarkdownRenderer) {
-                try {
-                    // Markdown renderer handles escaping internally
-                    renderedContent = await window.MarkdownRenderer.render(responseText, componentName);
-                } catch (e) {
-                    console.warn('[SingleChat] Markdown rendering failed, using plain text:', e);
+                // Remove processing message
+                if (window.AIChat && window.AIChat.hideProcessingMessage) {
+                    window.AIChat.hideProcessingMessage(containerEl);
+                }
+                
+                // Add AI response with markdown rendering
+                const responseText = response.content || response;
+                let renderedContent;
+                
+                // Use markdown renderer if available
+                if (window.MarkdownRenderer) {
+                    try {
+                        // Markdown renderer handles escaping internally
+                        renderedContent = await window.MarkdownRenderer.render(responseText, componentName);
+                    } catch (e) {
+                        console.warn('[SingleChat] Markdown rendering failed, using plain text:', e);
+                        renderedContent = this.escapeHtml(responseText);
+                    }
+                } else {
+                    // No markdown renderer, escape HTML
                     renderedContent = this.escapeHtml(responseText);
                 }
-            } else {
-                // No markdown renderer, escape HTML
-                renderedContent = this.escapeHtml(responseText);
-            }
-            
-            let aiMessageHtml;
-            if (cssPrefix === 'chat-message') {
-                // Terma uses different CSS structure
-                aiMessageHtml = `
-                    <div class="chat-message ai-message">
-                        <strong>${config.displayName}:</strong> <div class="markdown-content">${renderedContent}</div>
-                    </div>
-                `;
-            } else {
-                aiMessageHtml = `
-                    <div class="${cssPrefix}__message ${cssPrefix}__message--ai">
-                        <div class="${cssPrefix}__message-content">
-                            <div class="${cssPrefix}__message-text">
-                                <strong>${config.displayName}:</strong> <div class="markdown-content">${renderedContent}</div>
+                
+                let aiMessageHtml;
+                if (cssPrefix === 'chat-message') {
+                    // Terma uses different CSS structure
+                    aiMessageHtml = `
+                        <div class="chat-message ai-message">
+                            <strong>${config.displayName}:</strong> <div class="markdown-content">${renderedContent}</div>
+                        </div>
+                    `;
+                } else {
+                    aiMessageHtml = `
+                        <div class="${cssPrefix}__message ${cssPrefix}__message--ai">
+                            <div class="${cssPrefix}__message-content">
+                                <div class="${cssPrefix}__message-text">
+                                    <strong>${config.displayName}:</strong> <div class="markdown-content">${renderedContent}</div>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                `;
-            }
-            
-            containerEl.innerHTML = containerEl.innerHTML + aiMessageHtml;
-            containerEl.scrollTop = containerEl.scrollHeight;
-            
-        } catch (error) {
-            // Remove processing message
-            if (window.AIChat && window.AIChat.hideProcessingMessage) {
-                window.AIChat.hideProcessingMessage(containerEl);
-            }
-            
-            console.error('[SingleChat] Error sending message:', error);
-            
-            // Show error message
-            let errorHtml;
-            if (cssPrefix === 'chat-message') {
-                // Terma uses different CSS structure
-                errorHtml = `
-                    <div class="chat-message system-message">
-                        <strong>System:</strong> Failed to connect to ${config.displayName} AI
-                    </div>
-                `;
-            } else {
-                errorHtml = `
-                    <div class="${cssPrefix}__message ${cssPrefix}__message--system">
-                        <div class="${cssPrefix}__message-content">
-                            <div class="${cssPrefix}__message-text">
-                                <strong>System:</strong> Failed to connect to ${config.displayName} AI
+                    `;
+                }
+                
+                containerEl.innerHTML = containerEl.innerHTML + aiMessageHtml;
+                containerEl.scrollTop = containerEl.scrollHeight;
+                
+            } catch (error) {
+                // Remove processing message
+                if (window.AIChat && window.AIChat.hideProcessingMessage) {
+                    window.AIChat.hideProcessingMessage(containerEl);
+                }
+                
+                console.error('[SingleChat] Error sending message:', error);
+                
+                // Show error message
+                let errorHtml;
+                if (cssPrefix === 'chat-message') {
+                    // Terma uses different CSS structure
+                    errorHtml = `
+                        <div class="chat-message system-message">
+                            <strong>System:</strong> Failed to connect to ${config.displayName} AI
+                        </div>
+                    `;
+                } else {
+                    errorHtml = `
+                        <div class="${cssPrefix}__message ${cssPrefix}__message--system">
+                            <div class="${cssPrefix}__message-content">
+                                <div class="${cssPrefix}__message-text">
+                                    <strong>System:</strong> Failed to connect to ${config.displayName} AI
+                                </div>
                             </div>
                         </div>
-                    </div>
-                `;
+                    `;
+                }
+                
+                containerEl.innerHTML = containerEl.innerHTML + errorHtml;
+                containerEl.scrollTop = containerEl.scrollHeight;
             }
-            
-            containerEl.innerHTML = containerEl.innerHTML + errorHtml;
-            containerEl.scrollTop = containerEl.scrollHeight;
         }
+        
+        // Mark as not processing
+        this.processingFlags[componentName] = false;
     },
     
     /**

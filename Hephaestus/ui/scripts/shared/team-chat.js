@@ -5,6 +5,10 @@
  */
 
 window.TeamChat = {
+    // Message buffers for async processing
+    messageBuffers: {},  // keyed by component name
+    processingFlags: {},  // track if team broadcast is in progress
+    
     /**
      * Initialize team chat for a component
      * @param {HTMLElement} containerEl - The chat messages container
@@ -26,7 +30,7 @@ window.TeamChat = {
     },
     
     /**
-     * Send a message to the team
+     * Send a message to the team (async with buffering)
      * @param {HTMLElement} containerEl - The chat messages container
      * @param {string} message - The message to send
      */
@@ -37,6 +41,11 @@ window.TeamChat = {
         
         const componentName = containerEl.getAttribute('data-component-name');
         const cssPrefix = containerEl.getAttribute('data-css-prefix');
+        
+        // Initialize buffer if needed
+        if (!this.messageBuffers[componentName]) {
+            this.messageBuffers[componentName] = [];
+        }
         
         // Process commands first
         const processed = await window.processCommandsInMessage(message, componentName);
@@ -81,22 +90,50 @@ window.TeamChat = {
         containerEl.innerHTML = existingContent + userMessageHtml;
         containerEl.scrollTop = containerEl.scrollHeight;
         
-        // Show processing message
-        if (window.AIChat && window.AIChat.showProcessingMessage) {
-            window.AIChat.showProcessingMessage(containerEl, "Broadcasting to team", cssPrefix);
-        }
-        
-        try {
-            // Send message to team
-            const data = await window.AIChat.teamChat(message, componentName);
+        // Add to buffer for async processing
+        if (message && message.trim()) {
+            this.messageBuffers[componentName].push({
+                message: message,
+                containerEl: containerEl,
+                cssPrefix: cssPrefix,
+                componentName: componentName
+            });
             
-            // Remove processing message
-            if (window.AIChat && window.AIChat.hideProcessingMessage) {
-                window.AIChat.hideProcessingMessage(containerEl);
+            // Process buffer if not already processing
+            if (!this.processingFlags[componentName]) {
+                this.processMessageBuffer(componentName);
+            }
+        }
+    },
+    
+    /**
+     * Process queued messages asynchronously
+     * @param {string} componentName - The component name
+     */
+    async processMessageBuffer(componentName) {
+        // Mark as processing
+        this.processingFlags[componentName] = true;
+        
+        while (this.messageBuffers[componentName] && this.messageBuffers[componentName].length > 0) {
+            const messageData = this.messageBuffers[componentName].shift();
+            const { message, containerEl, cssPrefix } = messageData;
+            
+            // Show processing message
+            if (window.AIChat && window.AIChat.showProcessingMessage) {
+                window.AIChat.showProcessingMessage(containerEl, "Broadcasting to team", cssPrefix);
             }
             
-            // Check for responses
-            if (data.responses && data.responses.length > 0) {
+            try {
+                // Send message to team
+                const data = await window.AIChat.teamChat(message, componentName);
+            
+                // Remove processing message
+                if (window.AIChat && window.AIChat.hideProcessingMessage) {
+                    window.AIChat.hideProcessingMessage(containerEl);
+                }
+                
+                // Check for responses
+                if (data.responses && data.responses.length > 0) {
                 // Build HTML for all responses
                 let responsesHtml = '';
                 
@@ -221,6 +258,10 @@ window.TeamChat = {
             containerEl.innerHTML = containerEl.innerHTML + errorHtml;
             containerEl.scrollTop = containerEl.scrollHeight;
         }
+        }
+        
+        // Mark as not processing
+        this.processingFlags[componentName] = false;
     },
     
     /**

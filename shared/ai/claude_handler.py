@@ -69,11 +69,9 @@ class ClaudeHandler:
                 stderr=asyncio.subprocess.PIPE
             )
             
-            # Send message and get response
-            stdout, stderr = await asyncio.wait_for(
-                process.communicate(input=message.encode()),
-                timeout=30.0  # 30 second timeout for Claude
-            )
+            # Send message and get response - NO TIMEOUT for Claude
+            # Claude can take 5+ minutes for complex tasks
+            stdout, stderr = await process.communicate(input=message.encode())
             
             if process.returncode != 0:
                 error_msg = stderr.decode('utf-8', errors='replace')
@@ -81,9 +79,6 @@ class ClaudeHandler:
             
             response = stdout.decode('utf-8', errors='replace').strip()
             return response or "Claude returned empty response"
-            
-        except asyncio.TimeoutError:
-            return "Claude timed out after 30 seconds"
         except FileNotFoundError:
             return "Claude not found. Please install Claude CLI."
         except Exception as e:
