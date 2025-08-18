@@ -516,6 +516,33 @@ class ContextManager:
         # Persist to storage
         await self._persist_context(context_id)
         
+        # NEW: Monitor stress for CI contexts
+        if role == 'assistant' and (
+            context_id.endswith('-ci') or 
+            context_id in ['apollo', 'athena', 'rhetor', 'numa', 'synthesis', 'metis', 
+                          'harmonia', 'noesis', 'engram', 'penia', 'hermes', 'ergon', 
+                          'sophia', 'telos', 'prometheus']
+        ):
+            try:
+                from .stress_monitor import get_stress_monitor
+                monitor = get_stress_monitor()
+                
+                # Analyze stress
+                analysis = await monitor.analyze_context_stress(
+                    context_id,
+                    context,
+                    output={'content': content, 'role': role}
+                )
+                
+                # Whisper to Apollo if needed
+                if monitor.should_whisper(analysis):
+                    await monitor.whisper_to_apollo(analysis)
+                    logger.debug(f"Stress monitor whispered about {context_id}: "
+                               f"stress={analysis['stress']:.2f}")
+            except Exception as e:
+                # Don't fail the context update if monitoring fails
+                logger.warning(f"Stress monitoring failed: {e}")
+        
         return context
     
     async def get_context_history(

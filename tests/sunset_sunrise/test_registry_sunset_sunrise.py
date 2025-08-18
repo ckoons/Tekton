@@ -13,7 +13,6 @@ from pathlib import Path
 
 # Add parent paths for imports
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))  # Get to Tekton root
-sys.path.insert(0, str(Path(__file__).parent))
 from shared.aish.src.registry.ci_registry import get_registry
 
 def test_basic_operations():

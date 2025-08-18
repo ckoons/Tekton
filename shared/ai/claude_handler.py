@@ -25,6 +25,8 @@ class ClaudeHandler:
         """
         Handle a message for a forwarded CI.
         
+        NEW: Checks for sunset/sunrise prompts first!
+        
         Args:
             ci_name: Name of the CI (e.g., 'numa-ci')
             message: Message to send to Claude
@@ -33,6 +35,47 @@ class ClaudeHandler:
             Claude's response
         """
         registry = get_registry()
+        
+        # SUNSET/SUNRISE CHECK - Priority over normal forwarding
+        next_prompt = registry.get_next_prompt(ci_name)
+        if next_prompt:
+            # Handle sunset protocol
+            if next_prompt.startswith('SUNSET_PROTOCOL'):
+                # Send sunset message directly
+                response = await self.execute_claude('claude --print', next_prompt, ci_name)
+                
+                # Store the response in last_output for auto-detection
+                registry.update_ci_last_output(ci_name, {
+                    'user_message': next_prompt,
+                    'content': response
+                })
+                
+                # Clear the next_prompt after use
+                registry.clear_next_prompt(ci_name)
+                
+                return response
+            
+            # Handle sunrise with system prompt injection
+            elif next_prompt.startswith('--append-system-prompt'):
+                # Extract the system prompt content
+                import re
+                match = re.search(r"--append-system-prompt\s+'([^']*)'", next_prompt)
+                if match:
+                    system_content = match.group(1)
+                    # Build Claude command with both the system prompt and continue
+                    claude_cmd = f"claude --print --continue --append-system-prompt '{system_content}'"
+                else:
+                    claude_cmd = f"claude --print {next_prompt}"
+                
+                response = await self.execute_claude(claude_cmd, message, ci_name)
+                
+                # Clear the next_prompt and sunrise_context after use
+                registry.clear_next_prompt(ci_name)
+                registry.clear_sunrise_context(ci_name)
+                
+                return response
+        
+        # Normal forwarding check
         forward_state = registry.get_forward_state(ci_name)
         
         if not forward_state or forward_state.get('model') != 'claude':
@@ -41,6 +84,11 @@ class ClaudeHandler:
             
         # Get Claude command from forward state
         claude_cmd = forward_state.get('args', 'claude --print')
+        
+        # For normal Claude forwarding, check if --continue should be added
+        if '--continue' not in claude_cmd and next_prompt is None:
+            # Add --continue for normal conversation flow
+            claude_cmd = claude_cmd.replace('--print', '--print --continue')
         
         # Execute Claude with the message
         return await self.execute_claude(claude_cmd, message, ci_name)

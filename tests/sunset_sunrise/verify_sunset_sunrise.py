@@ -8,7 +8,7 @@ import sys
 from pathlib import Path
 
 # Add paths for imports
-sys.path.insert(0, str(Path(__file__).parent.parent.parent))
+sys.path.insert(0, str(Path(__file__).parent.parent.parent))  # Get to Tekton root
 from shared.aish.src.registry.ci_registry import get_registry
 
 def main():
@@ -52,6 +52,7 @@ def main():
         registry.clear_sunrise_context(ci_name)
     
     print("\n✅ Test data cleaned up. Registry ready for production use.")
+    return 0  # Success
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

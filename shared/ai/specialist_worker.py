@@ -350,7 +350,16 @@ class AISpecialistWorker(ABC):
         claude_response = await process_with_claude(ci_name, user_content)
         
         if claude_response:
-            # Claude handled it
+            # Claude handled it - also update registry for monitoring
+            from shared.aish.src.registry.ci_registry import get_registry
+            registry = get_registry()
+            registry.update_ci_last_output(ci_name, {
+                'user_message': user_content,
+                'content': claude_response,
+                'timestamp': message.get('timestamp'),
+                'model': 'claude'
+            })
+            
             return {
                 'type': 'response',
                 'ai_id': self.ai_id,
@@ -413,6 +422,16 @@ class AISpecialistWorker(ABC):
                 self.model_name = original_model
                 if hasattr(self.model_adapter, 'model'):
                     self.model_adapter.model = original_model
+            
+            # Update registry for monitoring
+            from shared.aish.src.registry.ci_registry import get_registry
+            registry = get_registry()
+            registry.update_ci_last_output(ci_name, {
+                'user_message': user_content,
+                'content': response['content'],
+                'timestamp': message.get('timestamp'),
+                'model': response.get('model', detected_model)
+            })
             
             return {
                 'type': 'response',
