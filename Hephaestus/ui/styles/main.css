@@ -1,5 +1,30 @@
 /* Main CSS for Tekton UI */
 
+/* Command Autocomplete Dropdown */
+.autocomplete-dropdown {
+    position: absolute !important;
+    background: #2a2a2a !important;
+    border: 1px solid #444 !important;
+    border-radius: 4px !important;
+    max-height: 200px !important;
+    overflow-y: auto !important;
+    z-index: 10000 !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3) !important;
+    display: none;
+}
+
+.autocomplete-dropdown .autocomplete-item {
+    padding: 8px 12px !important;
+    cursor: pointer !important;
+    color: #fff !important;
+    background: transparent;
+    transition: background 0.2s;
+}
+
+.autocomplete-dropdown .autocomplete-item:hover {
+    background: #3a3a3a !important;
+}
+
 /* CSS Variables for theming */
 :root {
     /* These will be overridden by theme files */

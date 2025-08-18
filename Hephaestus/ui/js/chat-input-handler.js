@@ -60,15 +60,7 @@ window.ChatInputHandler = {
                 }
                 break;
                 
-            case 'Tab':
-                // Tab completion (future feature)
-                // For now, just prevent default tab behavior in chat inputs
-                if (input.value.includes('[') && !input.value.includes(']')) {
-                    e.preventDefault();
-                    // TODO: Implement file path completion
-                    console.log('[ChatInputHandler] Tab completion not yet implemented');
-                }
-                break;
+            // Tab handling removed - handled by command-autocomplete.js
                 
             case 'ArrowLeft':
             case 'ArrowRight':

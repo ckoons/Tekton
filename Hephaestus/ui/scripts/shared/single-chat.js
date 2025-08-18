@@ -78,6 +78,28 @@ window.SingleChat = {
         
         // Handle command results based on output mode
         if (processed.hasCommands && processed.commandResults.length > 0) {
+            // First, display the user's command
+            const existingContent = containerEl.innerHTML;
+            let userCommandHtml;
+            if (cssPrefix === 'chat-message') {
+                userCommandHtml = `
+                    <div class="chat-message user-message">
+                        ${this.escapeHtml(message)}
+                    </div>
+                `;
+            } else {
+                userCommandHtml = `
+                    <div class="${cssPrefix}__message ${cssPrefix}__message--user">
+                        <div class="${cssPrefix}__message-content">
+                            <div class="${cssPrefix}__message-text">${this.escapeHtml(message)}</div>
+                        </div>
+                    </div>
+                `;
+            }
+            containerEl.innerHTML = existingContent + userCommandHtml;
+            containerEl.scrollTop = containerEl.scrollHeight;
+            
+            // Then handle the command results
             let immediateAiMessage = '';  // For 'ai' mode only (send now)
             let pendingAiMessage = '';    // For 'both' mode (save for later)
             
@@ -118,33 +140,57 @@ window.SingleChat = {
             }
         }
         
-        // Get existing content (preserve welcome message)
-        const existingContent = containerEl.innerHTML;
-        
-        // Store the original message for display (before adding pending outputs)
-        const displayMessage = processed.message || message;
-        
-        // Add user message using innerHTML
-        let userMessageHtml;
-        if (cssPrefix === 'chat-message') {
-            // Terma uses different CSS structure
-            userMessageHtml = `
-                <div class="chat-message user-message">
-                    ${this.escapeHtml(displayMessage)}
-                </div>
-            `;
-        } else {
-            userMessageHtml = `
-                <div class="${cssPrefix}__message ${cssPrefix}__message--user">
-                    <div class="${cssPrefix}__message-content">
-                        <div class="${cssPrefix}__message-text">${this.escapeHtml(displayMessage)}</div>
+        // Only show user message if there's a non-command message to send to AI
+        if (processed.message && processed.message.trim()) {
+            // Get existing content (preserve welcome message)
+            const existingContent = containerEl.innerHTML;
+            
+            // Store the original message for display (before adding pending outputs)
+            const displayMessage = processed.message;
+            
+            // Add user message using innerHTML
+            let userMessageHtml;
+            if (cssPrefix === 'chat-message') {
+                // Terma uses different CSS structure
+                userMessageHtml = `
+                    <div class="chat-message user-message">
+                        ${this.escapeHtml(displayMessage)}
                     </div>
-                </div>
-            `;
+                `;
+            } else {
+                userMessageHtml = `
+                    <div class="${cssPrefix}__message ${cssPrefix}__message--user">
+                        <div class="${cssPrefix}__message-content">
+                            <div class="${cssPrefix}__message-text">${this.escapeHtml(displayMessage)}</div>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            containerEl.innerHTML = existingContent + userMessageHtml;
+            containerEl.scrollTop = containerEl.scrollHeight;
+        } else if (!processed.hasCommands) {
+            // If no commands and no message, still show what user typed
+            const existingContent = containerEl.innerHTML;
+            let userMessageHtml;
+            if (cssPrefix === 'chat-message') {
+                userMessageHtml = `
+                    <div class="chat-message user-message">
+                        ${this.escapeHtml(message)}
+                    </div>
+                `;
+            } else {
+                userMessageHtml = `
+                    <div class="${cssPrefix}__message ${cssPrefix}__message--user">
+                        <div class="${cssPrefix}__message-content">
+                            <div class="${cssPrefix}__message-text">${this.escapeHtml(message)}</div>
+                        </div>
+                    </div>
+                `;
+            }
+            containerEl.innerHTML = existingContent + userMessageHtml;
+            containerEl.scrollTop = containerEl.scrollHeight;
         }
-        
-        containerEl.innerHTML = existingContent + userMessageHtml;
-        containerEl.scrollTop = containerEl.scrollHeight;
         
         // Show processing message
         if (window.AIChat && window.AIChat.showProcessingMessage) {

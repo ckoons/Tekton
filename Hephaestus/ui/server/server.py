@@ -522,6 +522,10 @@ class TektonUIRequestHandler(SimpleHTTPRequestHandler):
         elif self.path == "/api/command-history":
             self.handle_command_history("POST")
             return
+        # Check if this is an autocomplete request
+        elif self.path == "/api/autocomplete":
+            self.handle_autocomplete()
+            return
         # Check if this is an API request that needs to be proxied
         elif self.path.startswith("/api/environment"):
             # Handle environment variable endpoints
@@ -550,6 +554,95 @@ class TektonUIRequestHandler(SimpleHTTPRequestHandler):
         
         # Handle any other DELETE requests with 404
         self.send_error(404, "Not Found")
+    
+    def handle_autocomplete(self):
+        """Handle autocomplete requests for file paths"""
+        import glob
+        from pathlib import Path
+        
+        try:
+            # Read request body
+            content_length = int(self.headers['Content-Length'])
+            post_data = self.rfile.read(content_length)
+            request_data = json.loads(post_data.decode('utf-8'))
+            
+            original_path = request_data.get('path', '')
+            partial_path = original_path
+            cwd = request_data.get('cwd', os.path.expanduser('~'))
+            
+            # Expand home directory for searching, but keep track of original format
+            if partial_path.startswith('~'):
+                partial_path = os.path.expanduser(partial_path)
+            elif not os.path.isabs(partial_path):
+                # Relative path
+                partial_path = os.path.join(cwd, partial_path)
+            
+            suggestions = []
+            
+            # Get directory and partial filename
+            if partial_path.endswith('/'):
+                # Complete directory contents
+                search_dir = partial_path
+                prefix = ''
+            else:
+                search_dir = os.path.dirname(partial_path) or cwd
+                prefix = os.path.basename(partial_path)
+            
+            # Expand and validate directory
+            search_dir = os.path.expanduser(search_dir)
+            if not os.path.exists(search_dir):
+                search_dir = cwd
+            
+            # Get completions
+            try:
+                pattern = os.path.join(search_dir, f"{prefix}*")
+                matches = glob.glob(pattern)
+                
+                logger.debug(f"Autocomplete - pattern: {pattern}, found {len(matches)} matches")
+                
+                for match in sorted(matches)[:20]:  # Limit to 20 suggestions
+                    # Always return the full path in the same format as input
+                    if original_path.startswith('~/'):
+                        # Keep tilde format
+                        home = os.path.expanduser('~')
+                        if match.startswith(home):
+                            suggestion = '~' + match[len(home):]
+                        else:
+                            suggestion = match
+                    elif original_path.startswith('/'):
+                        # Return full absolute path - THIS is the key fix
+                        suggestion = match
+                    elif original_path.startswith('../'):
+                        # Keep relative parent format
+                        suggestion = os.path.relpath(match, os.path.dirname(cwd))
+                    elif original_path.startswith('./'):
+                        # Keep relative current format
+                        suggestion = './' + os.path.relpath(match, cwd)
+                    else:
+                        # Simple relative path
+                        suggestion = os.path.relpath(match, cwd)
+                    
+                    # Add trailing slash for directories
+                    if os.path.isdir(match):
+                        suggestion += '/'
+                    
+                    suggestions.append(suggestion)
+                    
+            except Exception as e:
+                logger.debug(f"Autocomplete glob error: {e}")
+            
+            response = {
+                'suggestions': suggestions
+            }
+            
+            self.send_response(200)
+            self.send_header('Content-Type', 'application/json')
+            self.end_headers()
+            self.wfile.write(json.dumps(response).encode())
+            
+        except Exception as e:
+            logger.error(f"Error handling autocomplete: {e}")
+            self.send_error(500, f"Internal error: {str(e)}")
     
     def handle_command_history(self, method):
         """Handle command history operations"""
