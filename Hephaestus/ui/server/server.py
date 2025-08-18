@@ -598,8 +598,6 @@ class TektonUIRequestHandler(SimpleHTTPRequestHandler):
                 pattern = os.path.join(search_dir, f"{prefix}*")
                 matches = glob.glob(pattern)
                 
-                logger.debug(f"Autocomplete - pattern: {pattern}, found {len(matches)} matches")
-                
                 for match in sorted(matches)[:20]:  # Limit to 20 suggestions
                     # Always return the full path in the same format as input
                     if original_path.startswith('~/'):

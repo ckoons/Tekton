@@ -14,20 +14,16 @@ window.CommandAutocomplete = {
      * @param {HTMLInputElement} input - The input element
      */
     init(input) {
-        console.log('[CommandAutocomplete.init] Called with input:', input?.id || input?.placeholder || 'unknown');
         if (!input || input.hasAttribute('data-autocomplete-initialized')) {
-            console.log('[CommandAutocomplete.init] Skipping - already initialized or null');
             return;
         }
         
         input.setAttribute('data-autocomplete-initialized', 'true');
-        console.log('[CommandAutocomplete.init] Adding event listeners to:', input.id || input.placeholder);
         
         // Add event listeners
         input.addEventListener('keydown', (e) => this.handleKeyDown(e, input));
         input.addEventListener('input', () => this.hideDropdown());
         input.addEventListener('blur', () => setTimeout(() => this.hideDropdown(), 200));
-        console.log('[CommandAutocomplete.init] Successfully initialized');
     },
     
     /**
@@ -39,11 +35,6 @@ window.CommandAutocomplete = {
         const value = input.value;
         const cursorPos = input.selectionStart;
         
-        // Debug log for Tab key
-        if (e.key === 'Tab') {
-            console.log('[CommandAutocomplete] Tab pressed. Value:', value, 'Cursor:', cursorPos);
-        }
-        
         // Check if we're inside brackets
         const beforeCursor = value.substring(0, cursorPos);
         const afterCursor = value.substring(cursorPos);
@@ -51,19 +42,14 @@ window.CommandAutocomplete = {
         // Find the last opening bracket before cursor
         const lastOpenBracket = beforeCursor.lastIndexOf('[');
         if (lastOpenBracket === -1) {
-            if (e.key === 'Tab') {
-                console.log('[CommandAutocomplete] Not in command - no [ found');
-            }
             return; // Not in a command
         }
         
         // Check if there's a closing bracket after the opening one
         const textAfterBracket = value.substring(lastOpenBracket);
         const nextCloseBracket = textAfterBracket.indexOf(']');
-        console.log('[CommandAutocomplete] Bracket check - lastOpen:', lastOpenBracket, 'nextClose:', nextCloseBracket, 'cursor:', cursorPos);
         
         if (nextCloseBracket !== -1 && lastOpenBracket + nextCloseBracket < cursorPos) {
-            console.log('[CommandAutocomplete] Past the command, ignoring');
             return; // We're past the command
         }
         
@@ -72,7 +58,6 @@ window.CommandAutocomplete = {
         const commandText = beforeCursor.substring(commandStart);
         
         if (e.key === 'Tab') {
-            console.log('[CommandAutocomplete] Inside command. CommandText:', commandText);
             e.preventDefault();
             await this.handleTab(input, commandText, commandStart, cursorPos);
         } else if (e.key === 'Escape' && this.dropdown) {
@@ -91,28 +76,21 @@ window.CommandAutocomplete = {
      * Handle tab key for autocomplete
      */
     async handleTab(input, commandText, commandStart, cursorPos) {
-        console.log('[CommandAutocomplete] handleTab called. CommandText:', commandText);
-        
         // Parse what type of completion we need
         const parts = commandText.trim().split(/\s+/);
-        console.log('[CommandAutocomplete] Command parts:', parts);
         
         if (parts.length === 0 || commandText.trim() === '') {
             // Complete command names
-            console.log('[CommandAutocomplete] Showing command suggestions');
             this.showCommandSuggestions(input, commandStart);
         } else {
             // Complete file paths or arguments
             const lastPart = parts[parts.length - 1];
             const isPath = lastPart.includes('/') || parts[0] === 'cd' || parts[0] === 'ls';
-            console.log('[CommandAutocomplete] Last part:', lastPart, 'isPath:', isPath);
             
             if (isPath) {
-                console.log('[CommandAutocomplete] Showing path completions for:', lastPart);
                 await this.showPathCompletions(input, lastPart, commandStart, commandText);
             } else {
                 // Could add command-specific completions here
-                console.log('[CommandAutocomplete] Showing command suggestions (fallback)');
                 this.showCommandSuggestions(input, commandStart);
             }
         }
@@ -122,7 +100,6 @@ window.CommandAutocomplete = {
      * Show command suggestions
      */
     showCommandSuggestions(input, commandStart) {
-        console.log('[CommandAutocomplete.showCommandSuggestions] Called');
         const commonCommands = [
             'ls', 'cd', 'pwd', 'git status', 'git diff', 'git log',
             'echo', 'cat', 'grep', 'find', 'clear', 'tree',
@@ -131,7 +108,6 @@ window.CommandAutocomplete = {
         
         // Get what user has typed so far
         const typed = input.value.substring(commandStart, input.selectionStart).trim();
-        console.log('[CommandAutocomplete] User typed:', typed);
         
         // Filter commands that start with what was typed
         const matches = commonCommands.filter(cmd => cmd.startsWith(typed));
@@ -146,8 +122,6 @@ window.CommandAutocomplete = {
             input.value = beforeCmd + completion + (needsCloseBracket ? ']' : '') + afterCursor;
             const newPos = beforeCmd.length + completion.length;
             input.setSelectionRange(newPos, newPos);
-            
-            console.log('[CommandAutocomplete] Completed:', completion);
         } else if (matches.length > 1) {
             // Multiple matches - complete with first one for now
             const completion = matches[0];
@@ -158,8 +132,6 @@ window.CommandAutocomplete = {
             input.value = beforeCmd + completion + (needsCloseBracket ? ']' : '') + afterCursor;
             const newPos = beforeCmd.length + completion.length;
             input.setSelectionRange(newPos, newPos);
-            
-            console.log('[CommandAutocomplete] Multiple matches, used:', completion, 'from:', matches.join(', '));
         }
     },
     
@@ -170,14 +142,12 @@ window.CommandAutocomplete = {
         try {
             // Get current working directory
             const cwd = window.SingleChat.currentWorkingDirectory || '~';
-            console.log('[CommandAutocomplete] Current directory:', cwd);
             
             // Request completions from server
             const baseUrl = typeof hephaestusUrl === 'function' 
                 ? hephaestusUrl('') 
                 : `http://localhost:${window.HEPHAESTUS_PORT || 8080}`;
             
-            console.log('[CommandAutocomplete] Fetching from:', `${baseUrl}/api/autocomplete`);
             const response = await fetch(`${baseUrl}/api/autocomplete`, {
                 method: 'POST',
                 headers: {
@@ -190,10 +160,8 @@ window.CommandAutocomplete = {
                 })
             });
             
-            console.log('[CommandAutocomplete] Response status:', response.status);
             if (response.ok) {
                 const data = await response.json();
-                console.log('[CommandAutocomplete] Suggestions:', data);
                 if (data.suggestions && data.suggestions.length === 1) {
                     // Single suggestion - server now returns full path
                     const suggestion = data.suggestions[0];
@@ -213,12 +181,8 @@ window.CommandAutocomplete = {
                     // Position cursor after the completion (but before the closing bracket)
                     const newPos = beforeBracket.length + newCommand.length;
                     input.setSelectionRange(newPos, newPos);
-                    
-                    console.log('[CommandAutocomplete] Single suggestion completed:', suggestion);
                 } else if (data.suggestions && data.suggestions.length > 1) {
-                    // Multiple suggestions - show them inline as hint
-                    console.log('[CommandAutocomplete] Multiple matches:', data.suggestions.join(', '));
-                    // For now, just complete with the first one
+                    // Multiple suggestions - for now, just complete with the first one
                     const suggestion = data.suggestions[0];
                     const beforePath = fullCommand.substring(0, fullCommand.lastIndexOf(partialPath));
                     const newCommand = beforePath + suggestion;
@@ -230,12 +194,7 @@ window.CommandAutocomplete = {
                     
                     const newPos = beforeBracket.length + newCommand.length;
                     input.setSelectionRange(newPos, newPos);
-                } else {
-                    console.log('[CommandAutocomplete] No suggestions returned');
                 }
-            } else {
-                const error = await response.text();
-                console.error('[CommandAutocomplete] Server error:', error);
             }
         } catch (error) {
             console.error('[CommandAutocomplete] Failed to get completions:', error);
@@ -423,8 +382,6 @@ window.CommandAutocomplete = {
      * Initialize all chat inputs on the page and watch for new ones
      */
     initAll() {
-        console.log('[CommandAutocomplete] Initializing all inputs...');
-        
         // Find all existing chat input fields
         const inputs = document.querySelectorAll([
             'input[type="text"][placeholder*="message"]',
@@ -444,9 +401,7 @@ window.CommandAutocomplete = {
             'input[data-chat-input]'
         ].join(', '));
         
-        console.log('[CommandAutocomplete] Found', inputs.length, 'existing inputs');
         inputs.forEach(input => {
-            console.log('[CommandAutocomplete] Initializing:', input.placeholder || input.id || input.className);
             this.init(input);
         });
         
@@ -457,7 +412,6 @@ window.CommandAutocomplete = {
                     if (node.nodeType === 1) { // Element node
                         // Check if it's an input
                         if (node.tagName === 'INPUT' && this.isChatInput(node)) {
-                            console.log('[CommandAutocomplete] New input detected:', node.placeholder || node.id);
                             this.init(node);
                         }
                         // Check for inputs within the added node
@@ -465,7 +419,6 @@ window.CommandAutocomplete = {
                             const inputs = node.querySelectorAll('input[type="text"]');
                             inputs.forEach(input => {
                                 if (this.isChatInput(input)) {
-                                    console.log('[CommandAutocomplete] New input in component:', input.placeholder || input.id);
                                     this.init(input);
                                 }
                             });
@@ -479,8 +432,6 @@ window.CommandAutocomplete = {
             childList: true,
             subtree: true
         });
-        
-        console.log('[CommandAutocomplete] MutationObserver started');
     }
 };
 
@@ -493,5 +444,3 @@ if (document.readyState === 'loading') {
     // DOM already loaded
     window.CommandAutocomplete.initAll();
 }
-
-console.log('[CommandAutocomplete] Module loaded');
