@@ -62,7 +62,6 @@ window.ergon_sendChat = function() {
 <!-- @landmark Navigation: CSS-first radio buttons for tab switching -->
 <input type="radio" name="ergon-tab" id="ergon-tab-development" checked style="display: none;">
 <input type="radio" name="ergon-tab" id="ergon-tab-registry" style="display: none;">
-<input type="radio" name="ergon-tab" id="ergon-tab-analyzer" style="display: none;">
 <input type="radio" name="ergon-tab" id="ergon-tab-configurator" style="display: none;">
 <input type="radio" name="ergon-tab" id="ergon-tab-chat" style="display: none;">
 <input type="radio" name="ergon-tab" id="ergon-tab-teamchat" style="display: none;">
@@ -103,16 +102,6 @@ window.ergon_sendChat = function() {
                  data-tekton-nav-action="switch-tab"
                  data-tekton-trigger="click">
                 <span class="ergon__tab-label">Registry</span>
-            </label>
-            <label for="ergon-tab-analyzer" class="ergon__tab" data-tab="analyzer" 
-                 data-tekton-menu-item="Analyzer" 
-                 data-tekton-menu-component="ergon" 
-                 data-tekton-menu-panel="analyzer-panel" 
-                 data-tekton-nav-target="analyzer"
-                 data-tekton-nav-item="tab"
-                 data-tekton-nav-action="switch-tab"
-                 data-tekton-trigger="click">
-                <span class="ergon__tab-label">Analyzer</span>
             </label>
             <label for="ergon-tab-configurator" class="ergon__tab" data-tab="configurator" 
                  data-tekton-menu-item="Configurator" 
@@ -206,53 +195,6 @@ window.ergon_sendChat = function() {
             </div>
         </div>
         
-        <!-- Analyzer Tab -->
-        <!-- @landmark Panel: Analyzer - Analyze GitHub repositories for reusable components -->
-        <div id="analyzer-panel" class="ergon__panel" data-tekton-panel="analyzer" data-tekton-panel-for="Analyzer" data-tekton-panel-component="ergon" data-tekton-type="panel" data-tekton-zone="content-panel" data-tekton-state="inactive" data-tekton-visibility="hidden">
-            <div class="ergon__panel-header">
-                <h3 class="ergon__section-title">GitHub Repository Analyzer</h3>
-                <p class="ergon__section-description">Analyze GitHub repositories to identify reusable components and adaptation strategies.</p>
-                
-                <div class="ergon__analyzer-input" data-tekton-component="analyzer-input" data-tekton-type="form-container">
-                    <div class="ergon__input-group">
-                        <label for="repo-url" class="ergon__form-label">GitHub Repository URL:</label>
-                        <input type="text" id="repo-url" class="ergon__input-large" placeholder="https://github.com/user/repo" data-tekton-input="url" data-tekton-type="url-input" data-tekton-action="analyze-repo" data-tekton-state="empty">
-                    </div>
-                    
-                    <div class="ergon__input-group">
-                        <label for="local-path" class="ergon__form-label">Or Local Repository Path:</label>
-                        <input type="text" id="local-path" class="ergon__input-large" placeholder="/path/to/local/repository" data-tekton-input="path" data-tekton-type="path-input" data-tekton-action="analyze-local" data-tekton-state="empty">
-                    </div>
-                    
-                    <div class="ergon__analyzer-actions" data-tekton-component="analyzer-actions" data-tekton-type="action-container">
-                        <div class="ergon__analyzer-buttons" data-tekton-type="button-group">
-                            <button class="ergon__action-button ergon__action-button--orange" onclick="ergon_analyzeRepo('basic')" data-tekton-action="analyze" data-tekton-action-type="basic" data-tekton-trigger="click" data-tekton-target="analysis-results">
-                                <span class="ergon__button-label">Basic Analysis</span>
-                            </button>
-                            <button class="ergon__action-button ergon__action-button--magenta" onclick="ergon_analyzeRepo('architecture')" data-tekton-action="analyze" data-tekton-action-type="architecture" data-tekton-trigger="click" data-tekton-target="analysis-results">
-                                <span class="ergon__button-label">Architecture</span>
-                            </button>
-                            <button class="ergon__action-button ergon__action-button--gold" onclick="ergon_analyzeRepo('tekton')" data-tekton-action="analyze" data-tekton-action-type="tekton" data-tekton-trigger="click" data-tekton-target="analysis-results">
-                                <span class="ergon__button-label">Tekton Integration</span>
-                            </button>
-                            <button class="ergon__action-button ergon__action-button--pumpkin" onclick="ergon_analyzeRepo('companion')" data-tekton-action="analyze" data-tekton-action-type="companion" data-tekton-trigger="click" data-tekton-target="analysis-results" data-tekton-ai="companion-analysis">
-                                <span class="ergon__button-label">Companion Intelligence</span>
-                            </button>
-                            <button class="ergon__action-button ergon__action-button--teal" onclick="ergon_analyzeRepo('full')" data-tekton-action="analyze" data-tekton-action-type="full" data-tekton-trigger="click" data-tekton-target="analysis-results">
-                                <span class="ergon__button-label">Full Analysis</span>
-                            </button>
-                        </div>
-                        <button id="make-project-button" class="ergon__action-button ergon__action-button--success" onclick="ergon_createTektonProject()" data-tekton-action="create-project" data-tekton-action-type="primary" data-tekton-trigger="click" data-tekton-nav-action="switch-component" data-tekton-nav-target="tekton">
-                            <span class="ergon__button-label">Create Tekton Managed Project</span>
-                        </button>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="ergon__analysis-results" id="analysis-results" data-tekton-component="analysis-results" data-tekton-type="results-container" data-tekton-state="empty">
-                <!-- Analysis results will appear here -->
-            </div>
-        </div>
         
         <!-- Configurator Tab -->
         <!-- @landmark Panel: Configurator - Generate configurations and wrappers -->
@@ -308,7 +250,7 @@ window.ergon_sendChat = function() {
                     <div class="ergon__message-content" data-tekton-zone="message-content">
                         <div class="ergon__message-text" data-tekton-type="message-text">
                             <h3 class="ergon__message-title" data-tekton-type="message-title">Welcome to Ergon v2 AI Assistant</h3>
-                            <p data-tekton-type="message-paragraph">I'm your CI-in-the-Loop reuse specialist. I can help you find existing solutions, analyze repositories, generate configurations, and even automate entire development workflows. My current autonomy level is <strong data-tekton-ai="autonomy-indicator">Advisory</strong>.</p>
+                            <p data-tekton-type="message-paragraph">I'm your CI-in-the-Loop reuse specialist. I can help you find existing solutions, generate configurations, and even automate entire development workflows. My current autonomy level is <strong data-tekton-ai="autonomy-indicator">Advisory</strong>.</p>
                             <p data-tekton-type="message-paragraph">How can I assist you today?</p>
                         </div>
                     </div>
@@ -342,7 +284,7 @@ window.ergon_sendChat = function() {
             <input type="text" id="ergon-chat-input" class="ergon__chat-input" data-tekton-chat="input" 
                    data-tekton-input="chat-input"
                    data-tekton-input-type="chat"
-                   placeholder="Ask about solutions, analyze repos, or request automation..."
+                   placeholder="Ask about solutions or request automation..."
                    onkeydown="if(event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); ergon_sendChat(); }">
             <button id="ergon-send-button" class="ergon__send-button"
                     data-tekton-action="send-message" 
@@ -499,7 +441,6 @@ window.ergon_sendChat = function() {
     /* CSS-first navigation - radio button controls active state */
     #ergon-tab-development:checked ~ .ergon .ergon__tab[data-tab="development"],
     #ergon-tab-registry:checked ~ .ergon .ergon__tab[data-tab="registry"],
-    #ergon-tab-analyzer:checked ~ .ergon .ergon__tab[data-tab="analyzer"],
     #ergon-tab-configurator:checked ~ .ergon .ergon__tab[data-tab="configurator"],
     #ergon-tab-chat:checked ~ .ergon .ergon__tab[data-tab="chat"],
     #ergon-tab-teamchat:checked ~ .ergon .ergon__tab[data-tab="teamchat"] {
@@ -638,7 +579,6 @@ window.ergon_sendChat = function() {
     /* CSS-first panel visibility */
     #ergon-tab-development:checked ~ .ergon #development-panel,
     #ergon-tab-registry:checked ~ .ergon #registry-panel,
-    #ergon-tab-analyzer:checked ~ .ergon #analyzer-panel,
     #ergon-tab-configurator:checked ~ .ergon #configurator-panel,
     #ergon-tab-chat:checked ~ .ergon #ergon-panel,
     #ergon-tab-teamchat:checked ~ .ergon #awt-team-panel {
@@ -749,12 +689,6 @@ window.ergon_sendChat = function() {
         gap: 4px;
     }
     
-    /* Analyzer Styles */
-    .ergon__analyzer-input {
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
-    }
     
     .ergon__input-large {
         padding: 12px 16px;
@@ -779,9 +713,6 @@ window.ergon_sendChat = function() {
         cursor: pointer;
     }
     
-    .ergon__analysis-results {
-        padding: 1.5rem;
-    }
     
     /* Configurator Styles */
     .ergon__configurator-form {
@@ -1203,50 +1134,35 @@ window.ergon_sendChat = function() {
         background-color: #00ACC1;
     }
     
-    /* Analyzer Tab Updates */
     .ergon__input-group {
         margin-bottom: 1rem;
     }
     
-    .ergon__analyzer-actions {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin: 1.5rem 0;
-        gap: 1rem;
-    }
-    
-    .ergon__analyzer-buttons {
-        display: flex;
-        gap: 8px;
-        flex-wrap: wrap;
-    }
-    
-    /* Analysis Results Styles */
-    .ergon__analysis-section {
+    /* Results Styles */
+    .ergon__results-section {
         background-color: var(--bg-secondary, #252535);
         border-radius: 8px;
         padding: 1.5rem;
         margin-top: 1rem;
     }
     
-    .ergon__analysis-section h4 {
+    .ergon__results-section h4 {
         margin: 0 0 1rem 0;
         color: #00BCD4;
     }
     
-    .ergon__analysis-description {
+    .ergon__results-description {
         margin-bottom: 1rem;
         color: var(--text-secondary, #aaa);
         line-height: 1.6;
     }
     
-    .ergon__analysis-details {
+    .ergon__results-details {
         font-size: 0.95rem;
         line-height: 1.8;
     }
     
-    .ergon__analysis-details strong {
+    .ergon__results-details strong {
         color: var(--text-primary, #f0f0f0);
     }
 </style>
@@ -1753,230 +1669,6 @@ function ergon_createTektonProject() {
     }, 200);
 }
 
-// Repository analysis with different types
-function ergon_analyzeRepo(analysisType) {
-    const urlInput = document.getElementById('repo-url');
-    const pathInput = document.getElementById('local-path');
-    const resultsDiv = document.getElementById('analysis-results');
-    
-    const repoUrl = urlInput.value.trim();
-    const localPath = pathInput.value.trim();
-    
-    if (!repoUrl && !localPath) {
-        TektonModal.warning('Please enter either a GitHub repository URL or a local path');
-        return;
-    }
-    
-    // Show analysis type-specific message
-    const analysisMessages = {
-        basic: 'Performing basic analysis to understand uses and capabilities...',
-        architecture: 'Analyzing project architecture and dependencies...',
-        tekton: 'Evaluating Tekton integration possibilities...',
-        companion: 'Analyzing how Companion Intelligence could enhance this codebase...',
-        full: 'Performing comprehensive analysis...'
-    };
-    
-    resultsDiv.innerHTML = `<div class="ergon__loading-message" data-tekton-type="loading-indicator" data-tekton-state="loading"><div class="ergon__message-text" data-tekton-type="loading-text">${analysisMessages[analysisType]}</div></div>`;
-    
-    const apiUrl = window.ergonUrl ? window.ergonUrl('/api/v1/analyze') : '/api/v1/analyze';
-    
-    fetch(apiUrl, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            repository_url: repoUrl,
-            local_path: localPath,
-            analysis_type: analysisType
-        })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.status === 'not_implemented') {
-            // Show analysis type specific placeholder
-            const placeholders = {
-                basic: `
-                    <div class="ergon__analysis-section" data-tekton-component="analysis-section" data-tekton-type="analysis-result" data-tekton-analysis-type="basic">
-                        <h4 data-tekton-type="section-title">Basic Analysis</h4>
-                        <p class="ergon__analysis-description" data-tekton-type="analysis-description">
-                            This repository appears to be a web application framework with RESTful API capabilities.
-                            It could be compatible with Tekton's service-oriented architecture.
-                        </p>
-                        <div class="ergon__analysis-details" data-tekton-type="analysis-details" data-tekton-zone="details">
-                            <strong>Primary Language:</strong> JavaScript<br>
-                            <strong>Framework:</strong> Express.js<br>
-                            <strong>Use Cases:</strong> API development, microservices<br>
-                            <strong>Tekton Compatibility:</strong> High - could integrate as a service component
-                        </div>
-                    </div>
-                `,
-                architecture: `
-                    <div class="ergon__analysis-section" data-tekton-component="analysis-section" data-tekton-type="analysis-result" data-tekton-analysis-type="architecture">
-                        <h4 data-tekton-type="section-title">Architecture Analysis</h4>
-                        <p class="ergon__analysis-description" data-tekton-type="analysis-description">
-                            The project follows a modular MVC architecture with clear separation of concerns.
-                        </p>
-                        <div class="ergon__analysis-details" data-tekton-type="analysis-details" data-tekton-zone="details">
-                            <strong>Structure:</strong> MVC pattern with routes, controllers, and models<br>
-                            <strong>Dependencies:</strong> Express, MongoDB, JWT auth<br>
-                            <strong>Build System:</strong> NPM with webpack<br>
-                            <strong>Testing:</strong> Jest framework with 85% coverage
-                        </div>
-                    </div>
-                `,
-                tekton: `
-                    <div class="ergon__analysis-section" data-tekton-component="analysis-section" data-tekton-type="analysis-result" data-tekton-analysis-type="tekton">
-                        <h4 data-tekton-type="section-title">Tekton Integration Analysis</h4>
-                        <p class="ergon__analysis-description" data-tekton-type="analysis-description">
-                            Several components could be valuable additions to the Tekton ecosystem.
-                        </p>
-                        <div class="ergon__analysis-details" data-tekton-type="analysis-details" data-tekton-zone="details">
-                            <strong>Reusable Components:</strong><br>
-                            • Authentication middleware (JWT)<br>
-                            • Database abstraction layer<br>
-                            • API rate limiting module<br>
-                            <strong>Integration Strategy:</strong> Wrap as MCP service with Ergon configuration
-                        </div>
-                    </div>
-                `,
-                companion: `
-                    <div class="ergon__analysis-section" data-tekton-component="analysis-section" data-tekton-type="analysis-result" data-tekton-analysis-type="companion" data-tekton-ai="companion-analysis">
-                        <h4 data-tekton-type="section-title">Companion Intelligence Analysis</h4>
-                        <p class="ergon__analysis-description" data-tekton-type="analysis-description">
-                            This codebase would benefit significantly from having a dedicated Companion Intelligence.
-                        </p>
-                        <div class="ergon__analysis-details" data-tekton-type="analysis-details" data-tekton-zone="details">
-                            <strong>CI Benefits:</strong><br>
-                            • Deep codebase understanding and pattern recognition<br>
-                            • Automated documentation and code generation<br>
-                            • Intelligent refactoring suggestions<br>
-                            • Context-aware development assistance<br>
-                            <strong data-tekton-ai="recommendation">Recommendation:</strong> Bind a CI to accelerate development by 10x
-                        </div>
-                    </div>
-                `,
-                full: `
-                    <div class="ergon__analysis-section" data-tekton-component="analysis-section" data-tekton-type="analysis-result" data-tekton-analysis-type="full" data-tekton-ai="comprehensive-analysis">
-                        <h4 data-tekton-type="section-title">Comprehensive Analysis</h4>
-                        <p class="ergon__analysis-description" data-tekton-type="analysis-description">
-                            Full analysis of ${repoUrl || localPath} completed. This project shows strong potential for Tekton integration.
-                        </p>
-                        <div class="ergon__analysis-details" data-tekton-type="analysis-details" data-tekton-zone="details">
-                            <strong>Overview:</strong> Modern web API with modular architecture<br>
-                            <strong>Quality Score:</strong> 8.5/10<br>
-                            <strong>Reusability:</strong> High - well-structured components<br>
-                            <strong>Recommended Actions:</strong><br>
-                            1. Create Tekton Managed Project<br>
-                            2. Extract authentication module as MCP service<br>
-                            3. Configure database layer for Athena integration<br>
-                            <strong data-tekton-ai="opinion">CI Opinion:</strong> "This project exemplifies clean architecture principles that align well with Tekton's philosophy."
-                        </div>
-                    </div>
-                `
-            };
-            
-            resultsDiv.innerHTML = placeholders[analysisType];
-            resultsDiv.setAttribute('data-tekton-state', 'loaded');
-            return;
-        }
-        
-        // Handle real analysis results
-        let content = '';
-        
-        if (data.type && data.summary) {
-            content = `
-                <div class="ergon__analysis-section">
-                    <h4>${data.type}</h4>
-                    <p class="ergon__analysis-description">${data.summary}</p>
-                    <div class="ergon__analysis-details">
-            `;
-            
-            // Format based on analysis type
-            if (analysisType === 'basic' && data.components) {
-                content += `
-                    <strong>Languages:</strong> ${data.components.languages.join(', ')}<br>
-                    <strong>Frameworks:</strong> ${data.components.frameworks.join(', ')}<br>
-                    <strong>Dependencies:</strong> ${data.components.dependencies}<br>
-                    <strong>Files:</strong> ${data.components.files}
-                `;
-            } else if (analysisType === 'architecture' && data.architecture) {
-                content += `
-                    <strong>Pattern:</strong> ${data.architecture.pattern}<br>
-                    <strong>Components:</strong> ${data.architecture.components.join(', ')}<br>
-                    <strong>Integrations:</strong> ${data.architecture.integrations.join(', ')}<br>
-                    <strong>Data Flow:</strong> ${data.architecture.data_flow}
-                `;
-            } else if (analysisType === 'companion' && data.companion_benefits) {
-                content += `
-                    <strong>Automation Benefits:</strong><br>
-                `;
-                data.companion_benefits.automation.forEach(benefit => {
-                    content += `• ${benefit}<br>`;
-                });
-                content += `<br><strong>Training & Knowledge Sharing:</strong><br>`;
-                data.companion_benefits.training.forEach(benefit => {
-                    content += `• ${benefit}<br>`;
-                });
-                content += `<br><strong>Code Enhancement:</strong><br>`;
-                data.companion_benefits.enhancement.forEach(benefit => {
-                    content += `• ${benefit}<br>`;
-                });
-                content += `<br><strong>Integration Approach:</strong> ${data.companion_benefits.integration_approach}`;
-            } else if (analysisType === 'tekton' && data.tekton_compatibility) {
-                content += `
-                    <strong>Compatibility Score:</strong> ${data.tekton_compatibility.score}<br>
-                    <strong>Integration Points:</strong> ${data.tekton_compatibility.integration_points.join(', ')}<br>
-                    <strong>Recommended Approach:</strong> ${data.tekton_compatibility.recommended_approach}<br>
-                    <strong>Effort Estimate:</strong> ${data.tekton_compatibility.effort_estimate}
-                `;
-            } else if (analysisType === 'full' && data.results) {
-                content += `
-                    <strong>Basic Analysis:</strong> ${data.results.basic}<br>
-                    <strong>Architecture Analysis:</strong> ${data.results.architecture}<br>
-                    <strong>Tekton Analysis:</strong> ${data.results.tekton}<br>
-                    <strong>Reusability Score:</strong> ${data.results.reusability_score}<br>
-                    <strong>Recommendations:</strong><br>
-                `;
-                data.results.recommendations.forEach(rec => {
-                    content += `• ${rec}<br>`;
-                });
-            }
-            
-            content += `
-                    </div>
-                </div>
-            `;
-        } else if (data.error) {
-            // Handle error response
-            content = `
-                <div class="ergon__analysis-section">
-                    <h4>Analysis Error</h4>
-                    <p class="ergon__error-message">${data.error}</p>
-                </div>
-            `;
-        } else {
-            // Handle raw response from backend
-            content = `
-                <div class="ergon__analysis-section">
-                    <h4>${analysisType.charAt(0).toUpperCase() + analysisType.slice(1)} Analysis</h4>
-                    <p class="ergon__analysis-description">Analysis complete. The repository has been evaluated for ${analysisType} characteristics.</p>
-                    <div class="ergon__analysis-details">
-                        <p>The analysis results indicate this repository would benefit from Tekton integration.</p>
-                    </div>
-                </div>
-            `;
-        }
-        
-        resultsDiv.innerHTML = content;
-        resultsDiv.setAttribute('data-tekton-state', 'loaded');
-    })
-    .catch(err => {
-        console.error('[ERGON] Failed to analyze repository:', err);
-        resultsDiv.innerHTML = '<div class="ergon__error-message" data-tekton-type="error-state" data-tekton-status="error">Failed to analyze repository. Please try again.</div>';
-        resultsDiv.setAttribute('data-tekton-state', 'error');
-    });
-}
 
 // Show automate modal
 function ergon_showAutomateModal() {

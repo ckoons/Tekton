@@ -109,18 +109,16 @@ class ClaudeHandler:
             # Parse command into list
             cmd_parts = claude_cmd.split()
             
-            # Determine launch directory - check for parent CLAUDE.md
+            # Determine launch directory
             import os
             from pathlib import Path
             
             tekton_root = Path(os.environ.get('TEKTON_ROOT', '.'))
-            parent_dir = tekton_root.parent
             
-            # Check if parent directory has CLAUDE.md
-            if (parent_dir / 'CLAUDE.md').exists():
-                launch_dir = str(parent_dir)
-            else:
-                launch_dir = str(tekton_root)
+            # Always use TEKTON_ROOT as the launch directory
+            # This ensures each instance (Tekton, Coder-A/B/C) uses its own context
+            launch_dir = str(tekton_root)
+            
             
             # Create subprocess with specified working directory
             process = await asyncio.create_subprocess_exec(
@@ -137,6 +135,13 @@ class ClaudeHandler:
             
             if process.returncode != 0:
                 error_msg = stderr.decode('utf-8', errors='replace')
+                if not error_msg.strip():
+                    # If stderr is empty, check stdout for any output
+                    output = stdout.decode('utf-8', errors='replace').strip()
+                    if output:
+                        return f"Claude error (exit code {process.returncode}): {output}"
+                    else:
+                        return f"Claude error: Process exited with code {process.returncode} but no error message"
                 return f"Claude error: {error_msg}"
             
             response = stdout.decode('utf-8', errors='replace').strip()

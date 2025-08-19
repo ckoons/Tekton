@@ -93,6 +93,9 @@ from tekton.api import projects as projects_v2
 from tekton.api import sprints as sprints_api
 from tekton.api import sprints_file_endpoints
 
+# Import analyzer API
+from tekton.api import analyzer as analyzer_api
+
 # Create component instance (singleton)
 component = TektonCoreComponent()
 
@@ -172,6 +175,17 @@ async def startup_callback():
         logger.error(f"STARTUP CALLBACK: Sprint coordinator traceback: {traceback.format_exc()}")
         sprint_coordinator = None
         sprints_api.set_sprint_coordinator(None)
+    
+    # Initialize analyzer system
+    logger.info("STARTUP CALLBACK: Initializing analyzer system...")
+    try:
+        # Get GitHub token from environment if available
+        github_token = os.getenv('GITHUB_TOKEN')
+        analyzer_api.initialize_analyzer(github_token)
+        logger.info("STARTUP CALLBACK: Analyzer system initialized successfully")
+    except Exception as e:
+        logger.error(f"STARTUP CALLBACK: Failed to initialize analyzer system: {e}")
+        # Don't fail startup if analyzer fails
 
 # Create FastAPI application using component's create_app
 app = component.create_app(
@@ -609,6 +623,10 @@ app.include_router(sprints_api.router)
 
 # Mount sprint file endpoints (daily-log, handoff, sprint-plan)
 app.include_router(sprints_file_endpoints.router, prefix="/api/v1/sprints")
+
+# Mount analyzer API
+# Integration Point: Analyzer API Integration - Repository analysis functionality moved from Ergon
+app.include_router(analyzer_api.router)
 
 # Include standardized workflow endpoint
 if create_workflow_endpoint:
