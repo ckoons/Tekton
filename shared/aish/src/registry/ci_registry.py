@@ -849,6 +849,18 @@ class CIRegistry:
         """Get forward state for a CI."""
         forward_file = os.path.join(self._file_registry.registry_dir, 'forward_states.json')
         
+        # Ensure directory exists
+        os.makedirs(os.path.dirname(forward_file), exist_ok=True)
+        
+        # Create empty file if it doesn't exist
+        if not os.path.exists(forward_file):
+            try:
+                with open(forward_file, 'w') as f:
+                    json.dump({}, f)
+            except Exception as e:
+                print(f"[Registry] Failed to create forward_states.json: {e}")
+        
+        # Now read the file
         if os.path.exists(forward_file):
             try:
                 with open(forward_file, 'r') as f:
@@ -863,6 +875,18 @@ class CIRegistry:
         """List all forward states."""
         forward_file = os.path.join(self._file_registry.registry_dir, 'forward_states.json')
         
+        # Ensure directory exists
+        os.makedirs(os.path.dirname(forward_file), exist_ok=True)
+        
+        # Create empty file if it doesn't exist
+        if not os.path.exists(forward_file):
+            try:
+                with open(forward_file, 'w') as f:
+                    json.dump({}, f)
+            except Exception as e:
+                print(f"[Registry] Failed to create forward_states.json: {e}")
+        
+        # Now read the file
         if os.path.exists(forward_file):
             try:
                 with open(forward_file, 'r') as f:
