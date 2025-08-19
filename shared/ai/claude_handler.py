@@ -109,12 +109,26 @@ class ClaudeHandler:
             # Parse command into list
             cmd_parts = claude_cmd.split()
             
-            # Create subprocess
+            # Determine launch directory - check for parent CLAUDE.md
+            import os
+            from pathlib import Path
+            
+            tekton_root = Path(os.environ.get('TEKTON_ROOT', '.'))
+            parent_dir = tekton_root.parent
+            
+            # Check if parent directory has CLAUDE.md
+            if (parent_dir / 'CLAUDE.md').exists():
+                launch_dir = str(parent_dir)
+            else:
+                launch_dir = str(tekton_root)
+            
+            # Create subprocess with specified working directory
             process = await asyncio.create_subprocess_exec(
                 *cmd_parts,
                 stdin=asyncio.subprocess.PIPE,
                 stdout=asyncio.subprocess.PIPE,
-                stderr=asyncio.subprocess.PIPE
+                stderr=asyncio.subprocess.PIPE,
+                cwd=launch_dir  # Set working directory for Claude
             )
             
             # Send message and get response - NO TIMEOUT for Claude
