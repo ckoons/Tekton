@@ -11,8 +11,11 @@ import logging
 import os
 import re
 import json
+import aiohttp
+import asyncio
 from typing import Dict, Any, List, Optional
 from urllib.parse import urlparse
+from datetime import datetime
 
 logger = logging.getLogger(__name__)
 
@@ -28,7 +31,14 @@ class GitHubAnalyzer:
             github_token: GitHub personal access token for API access
         """
         self.github_token = github_token or os.getenv('GITHUB_TOKEN')
-        if not self.github_token:
+        self.api_base = "https://api.github.com"
+        self.headers = {
+            "Accept": "application/vnd.github.v3+json",
+            "User-Agent": "TektonCore-Analyzer"
+        }
+        if self.github_token:
+            self.headers["Authorization"] = f"token {self.github_token}"
+        else:
             logger.warning("No GitHub token provided - analysis will be limited to public repositories")
     
     def parse_github_url(self, url: str) -> Optional[Dict[str, str]]:
@@ -63,6 +73,33 @@ class GitHubAnalyzer:
             logger.error(f"Error parsing GitHub URL {url}: {str(e)}")
             return None
     
+    async def _fetch_github_api(self, endpoint: str) -> Optional[Dict[str, Any]]:
+        """
+        Fetch data from GitHub API.
+        
+        Args:
+            endpoint: API endpoint path
+            
+        Returns:
+            JSON response or None on error
+        """
+        url = f"{self.api_base}{endpoint}"
+        
+        try:
+            async with aiohttp.ClientSession() as session:
+                async with session.get(url, headers=self.headers) as response:
+                    if response.status == 200:
+                        return await response.json()
+                    elif response.status == 404:
+                        logger.warning(f"GitHub resource not found: {endpoint}")
+                        return None
+                    else:
+                        logger.error(f"GitHub API error {response.status}: {endpoint}")
+                        return None
+        except Exception as e:
+            logger.error(f"Error fetching from GitHub API: {str(e)}")
+            return None
+    
     async def analyze_repository_basic(self, repo_url: str) -> Dict[str, Any]:
         """
         Perform basic analysis of a GitHub repository.
@@ -78,226 +115,334 @@ class GitHubAnalyzer:
             return {"error": "Invalid GitHub URL"}
         
         try:
-            # Basic analysis without API calls for now
-            # In a full implementation, this would use GitHub API
+            # Fetch repository information
+            repo_data = await self._fetch_github_api(f"/repos/{parsed['owner']}/{parsed['repo']}")
+            
+            if not repo_data:
+                return {
+                    "error": "Could not fetch repository data",
+                    "repository": {
+                        "owner": parsed["owner"],
+                        "name": parsed["repo"],
+                        "url": repo_url
+                    }
+                }
+            
+            # Fetch languages
+            languages_data = await self._fetch_github_api(f"/repos/{parsed['owner']}/{parsed['repo']}/languages")
+            
+            # Fetch directory structure (contents of root)
+            contents_data = await self._fetch_github_api(f"/repos/{parsed['owner']}/{parsed['repo']}/contents")
+            
+            # Analyze files for frameworks and tools
+            framework_indicators = []
+            dependency_files = []
+            ci_cd_files = []
+            
+            if contents_data:
+                for item in contents_data:
+                    name = item.get('name', '').lower()
+                    
+                    # Check for dependency files
+                    if name in ['package.json', 'requirements.txt', 'cargo.toml', 'go.mod', 'pom.xml', 'build.gradle']:
+                        dependency_files.append(name)
+                        
+                        # Infer frameworks from dependency files
+                        if name == 'package.json':
+                            framework_indicators.append('Node.js/JavaScript')
+                        elif name == 'requirements.txt':
+                            framework_indicators.append('Python')
+                        elif name == 'cargo.toml':
+                            framework_indicators.append('Rust')
+                        elif name == 'go.mod':
+                            framework_indicators.append('Go')
+                        elif name in ['pom.xml', 'build.gradle']:
+                            framework_indicators.append('Java')
+                    
+                    # Check for CI/CD files
+                    if name in ['.travis.yml', '.circleci', 'jenkinsfile', '.gitlab-ci.yml']:
+                        ci_cd_files.append(name)
+                    
+                    # Check for GitHub Actions
+                    if name == '.github':
+                        ci_cd_files.append('GitHub Actions')
+                        
+                    # Check for Docker
+                    if name in ['dockerfile', 'docker-compose.yml', 'docker-compose.yaml']:
+                        framework_indicators.append('Docker')
+                        
+                    # Check for Kubernetes
+                    if name in ['k8s', 'kubernetes', 'helm']:
+                        framework_indicators.append('Kubernetes')
+            
+            # Build analysis result
             analysis = {
                 "repository": {
                     "owner": parsed["owner"],
                     "name": parsed["repo"],
-                    "url": repo_url
+                    "url": repo_url,
+                    "description": repo_data.get('description', ''),
+                    "stars": repo_data.get('stargazers_count', 0),
+                    "forks": repo_data.get('forks_count', 0),
+                    "language": repo_data.get('language', 'Unknown'),
+                    "created_at": repo_data.get('created_at', ''),
+                    "updated_at": repo_data.get('updated_at', ''),
+                    "topics": repo_data.get('topics', [])
                 },
                 "analysis_type": "basic",
-                "timestamp": "2025-08-19T00:00:00Z",
+                "timestamp": datetime.utcnow().isoformat() + 'Z',
                 "summary": {
-                    "primary_language": "Unknown",
-                    "languages_detected": [],
-                    "framework_indicators": [],
-                    "dependency_files": [],
-                    "ci_cd_files": []
+                    "primary_language": repo_data.get('language', 'Unknown'),
+                    "languages_detected": list(languages_data.keys()) if languages_data else [],
+                    "framework_indicators": list(set(framework_indicators)),
+                    "dependency_files": dependency_files,
+                    "ci_cd_files": ci_cd_files,
+                    "has_issues": repo_data.get('has_issues', False),
+                    "has_wiki": repo_data.get('has_wiki', False),
+                    "has_pages": repo_data.get('has_pages', False),
+                    "size_kb": repo_data.get('size', 0)
                 },
-                "recommendations": [
-                    "Repository analysis requires GitHub API access for detailed information",
-                    "Consider providing GitHub token for enhanced analysis capabilities"
-                ]
+                "recommendations": []
             }
+            
+            # Add recommendations based on analysis
+            if not framework_indicators:
+                analysis["recommendations"].append("Consider adding dependency management files")
+            
+            if not ci_cd_files:
+                analysis["recommendations"].append("Consider adding CI/CD pipeline with GitHub Actions")
+            
+            if 'Docker' not in framework_indicators:
+                analysis["recommendations"].append("Consider containerizing with Docker for Tekton deployment")
             
             return analysis
             
         except Exception as e:
-            logger.error(f"Error analyzing repository {repo_url}: {str(e)}")
+            logger.error(f"Error analyzing repository: {str(e)}")
             return {
                 "error": f"Analysis failed: {str(e)}",
-                "repository": parsed
+                "repository": {
+                    "owner": parsed["owner"],
+                    "name": parsed["repo"],
+                    "url": repo_url
+                }
             }
     
     async def analyze_repository_architecture(self, repo_url: str) -> Dict[str, Any]:
         """
-        Perform architectural analysis of a GitHub repository.
+        Perform architecture analysis of a GitHub repository.
         
         Args:
             repo_url: GitHub repository URL
             
         Returns:
-            Architecture analysis results
+            Analysis results dictionary
         """
-        parsed = self.parse_github_url(repo_url)
-        if not parsed:
-            return {"error": "Invalid GitHub URL"}
+        # Start with basic analysis
+        basic_analysis = await self.analyze_repository_basic(repo_url)
         
-        # Mock architecture analysis for now
-        return {
-            "repository": parsed,
-            "analysis_type": "architecture",
-            "timestamp": "2025-08-19T00:00:00Z",
-            "architecture": {
-                "patterns_detected": ["Microservices", "MVC", "Component-based"],
-                "structure_analysis": {
-                    "directories": [],
-                    "entry_points": [],
-                    "configuration_files": []
-                },
-                "dependencies": {
-                    "external_services": [],
-                    "databases": [],
-                    "frameworks": []
-                }
-            },
-            "tekton_compatibility": {
-                "score": 0.7,
-                "reasons": [
-                    "Standard project structure detected",
-                    "Common frameworks in use",
-                    "Good separation of concerns"
-                ],
-                "blockers": [],
-                "recommendations": [
-                    "Add Tekton configuration files",
-                    "Implement CI integration"
-                ]
-            }
+        if "error" in basic_analysis:
+            return basic_analysis
+        
+        # Enhance with architecture analysis
+        basic_analysis["analysis_type"] = "architecture"
+        
+        # Add architecture-specific insights
+        architecture_insights = {
+            "patterns_detected": [],
+            "design_principles": [],
+            "scalability_assessment": "Unknown"
         }
+        
+        # Detect patterns based on file structure
+        if basic_analysis["summary"].get("dependency_files"):
+            if "package.json" in basic_analysis["summary"]["dependency_files"]:
+                architecture_insights["patterns_detected"].append("JavaScript/Node.js application")
+                
+            if "requirements.txt" in basic_analysis["summary"]["dependency_files"]:
+                architecture_insights["patterns_detected"].append("Python application")
+        
+        if basic_analysis["summary"].get("ci_cd_files"):
+            architecture_insights["patterns_detected"].append("CI/CD enabled")
+            architecture_insights["design_principles"].append("Continuous Integration")
+        
+        if "Docker" in basic_analysis["summary"].get("framework_indicators", []):
+            architecture_insights["patterns_detected"].append("Containerized application")
+            architecture_insights["design_principles"].append("Container-based deployment")
+            architecture_insights["scalability_assessment"] = "Good - containerized"
+        
+        if "Kubernetes" in basic_analysis["summary"].get("framework_indicators", []):
+            architecture_insights["patterns_detected"].append("Kubernetes-ready")
+            architecture_insights["design_principles"].append("Cloud-native")
+            architecture_insights["scalability_assessment"] = "Excellent - Kubernetes-ready"
+        
+        basic_analysis["architecture"] = architecture_insights
+        
+        return basic_analysis
     
     async def analyze_repository_tekton(self, repo_url: str) -> Dict[str, Any]:
         """
-        Analyze repository for Tekton integration potential.
+        Perform Tekton integration analysis.
         
         Args:
             repo_url: GitHub repository URL
             
         Returns:
-            Tekton-specific analysis results
+            Analysis results dictionary
         """
-        parsed = self.parse_github_url(repo_url)
-        if not parsed:
-            return {"error": "Invalid GitHub URL"}
+        # Start with architecture analysis
+        arch_analysis = await self.analyze_repository_architecture(repo_url)
         
-        return {
-            "repository": parsed,
-            "analysis_type": "tekton",
-            "timestamp": "2025-08-19T00:00:00Z",
-            "tekton_integration": {
-                "compatibility_score": 0.8,
-                "components_detected": [],
-                "integration_opportunities": [
-                    "Add Tekton component definition",
-                    "Implement MCP server integration",
-                    "Create shared utilities integration"
-                ],
-                "blockers": [],
-                "estimated_effort": "Medium",
-                "recommended_approach": "Incremental integration"
-            },
-            "ci_integration": {
-                "existing_ci": "Unknown",
-                "tekton_ci_readiness": "Ready",
-                "suggested_components": ["Prometheus", "Rhetor", "Ergon"]
-            }
+        if "error" in arch_analysis:
+            return arch_analysis
+        
+        arch_analysis["analysis_type"] = "tekton"
+        
+        # Assess Tekton integration potential
+        tekton_assessment = {
+            "integration_score": 0,
+            "integration_difficulty": "Unknown",
+            "required_adaptations": [],
+            "benefits": [],
+            "recommended_ci_type": "gpt-oss:20b"
         }
+        
+        # Score based on existing capabilities
+        if "Docker" in arch_analysis["summary"].get("framework_indicators", []):
+            tekton_assessment["integration_score"] += 30
+            tekton_assessment["benefits"].append("Already containerized")
+        else:
+            tekton_assessment["required_adaptations"].append("Add Dockerfile")
+        
+        if "Kubernetes" in arch_analysis["summary"].get("framework_indicators", []):
+            tekton_assessment["integration_score"] += 30
+            tekton_assessment["benefits"].append("Kubernetes-ready")
+        
+        if arch_analysis["summary"].get("ci_cd_files"):
+            tekton_assessment["integration_score"] += 20
+            tekton_assessment["benefits"].append("Existing CI/CD can be migrated")
+        
+        # Determine difficulty
+        if tekton_assessment["integration_score"] >= 60:
+            tekton_assessment["integration_difficulty"] = "Easy"
+        elif tekton_assessment["integration_score"] >= 30:
+            tekton_assessment["integration_difficulty"] = "Moderate"
+        else:
+            tekton_assessment["integration_difficulty"] = "Complex"
+        
+        # Recommend CI based on project complexity
+        if arch_analysis["repository"].get("size_kb", 0) > 10000:
+            tekton_assessment["recommended_ci_type"] = "gpt-oss:120b"
+            
+        arch_analysis["tekton_integration"] = tekton_assessment
+        
+        return arch_analysis
     
     async def analyze_repository_companion(self, repo_url: str) -> Dict[str, Any]:
         """
-        Analyze repository for Companion Intelligence enhancement opportunities.
+        Perform Companion Intelligence analysis.
         
         Args:
             repo_url: GitHub repository URL
             
         Returns:
-            Companion Intelligence analysis results
+            Analysis results dictionary
         """
-        parsed = self.parse_github_url(repo_url)
-        if not parsed:
-            return {"error": "Invalid GitHub URL"}
+        # Start with Tekton analysis
+        tekton_analysis = await self.analyze_repository_tekton(repo_url)
         
-        return {
-            "repository": parsed,
-            "analysis_type": "companion",
-            "timestamp": "2025-08-19T00:00:00Z",
-            "companion_intelligence": {
-                "automation_opportunities": [
-                    "Code generation automation",
-                    "Testing automation",
-                    "Documentation generation"
-                ],
-                "ai_enhancement_potential": "High",
-                "suggested_integrations": [
-                    "Rhetor for team coordination",
-                    "Ergon for solution management",
-                    "Prometheus for planning"
-                ],
-                "productivity_multiplier": "5-10x estimated",
-                "implementation_phases": [
-                    "Phase 1: Basic CI integration",
-                    "Phase 2: Automated workflows",
-                    "Phase 3: Full companion intelligence"
-                ]
-            }
+        if "error" in tekton_analysis:
+            return tekton_analysis
+        
+        tekton_analysis["analysis_type"] = "companion"
+        
+        # Assess CI enhancement potential
+        ci_assessment = {
+            "ai_integration_potential": "Unknown",
+            "recommended_ci": "gpt-oss:20b",
+            "automation_opportunities": [],
+            "intelligence_features": []
         }
+        
+        # Assess based on project characteristics
+        primary_lang = tekton_analysis["summary"].get("primary_language", "").lower()
+        
+        if primary_lang in ["python", "javascript", "typescript", "go", "rust"]:
+            ci_assessment["ai_integration_potential"] = "High"
+            ci_assessment["automation_opportunities"].append(f"Automated {primary_lang} code generation")
+            ci_assessment["intelligence_features"].append("Code completion and suggestions")
+        
+        if tekton_analysis["summary"].get("dependency_files"):
+            ci_assessment["automation_opportunities"].append("Dependency management automation")
+            ci_assessment["intelligence_features"].append("Security vulnerability scanning")
+        
+        if tekton_analysis["summary"].get("ci_cd_files"):
+            ci_assessment["automation_opportunities"].append("CI/CD pipeline optimization")
+            ci_assessment["intelligence_features"].append("Build failure prediction")
+        
+        # Complex projects need smarter CI
+        if tekton_analysis["repository"].get("size_kb", 0) > 5000:
+            ci_assessment["recommended_ci"] = "gpt-oss:120b"
+            ci_assessment["intelligence_features"].append("Deep code analysis")
+        
+        # Add Claude as option for advanced features
+        ci_assessment["available_companions"] = [
+            "gpt-oss:20b (Fast, general purpose)",
+            "gpt-oss:120b (Smart, deep thinking)",
+            "claude (Advanced reasoning)",
+            "llama3.3:70b (Balanced)",
+            "llama3.2:3b (Lightweight)"
+        ]
+        
+        tekton_analysis["companion_intelligence"] = ci_assessment
+        
+        return tekton_analysis
     
     async def analyze_repository_full(self, repo_url: str) -> Dict[str, Any]:
         """
-        Perform comprehensive analysis combining all analysis types.
+        Perform full comprehensive analysis.
         
         Args:
             repo_url: GitHub repository URL
             
         Returns:
-            Full analysis results combining all analysis types
+            Analysis results dictionary
         """
-        try:
-            basic = await self.analyze_repository_basic(repo_url)
-            architecture = await self.analyze_repository_architecture(repo_url)
-            tekton = await self.analyze_repository_tekton(repo_url)
-            companion = await self.analyze_repository_companion(repo_url)
-            
-            return {
-                "analysis_type": "full",
-                "timestamp": "2025-08-19T00:00:00Z",
-                "repository": basic.get("repository", {}),
-                "basic_analysis": basic,
-                "architecture_analysis": architecture,
-                "tekton_analysis": tekton,
-                "companion_analysis": companion,
-                "overall_summary": {
-                    "tekton_readiness": "High",
-                    "integration_complexity": "Medium", 
-                    "expected_benefits": "Significant productivity gains",
-                    "next_steps": [
-                        "Set up Tekton environment",
-                        "Implement basic CI integration",
-                        "Add companion intelligence features"
-                    ]
-                }
-            }
-            
-        except Exception as e:
-            logger.error(f"Error in full repository analysis: {str(e)}")
-            return {"error": f"Full analysis failed: {str(e)}"}
+        # Get companion analysis (which includes everything)
+        full_analysis = await self.analyze_repository_companion(repo_url)
+        
+        if "error" in full_analysis:
+            return full_analysis
+        
+        full_analysis["analysis_type"] = "full"
+        
+        # Add comprehensive summary
+        full_analysis["comprehensive_summary"] = {
+            "overall_health": "Good" if full_analysis.get("tekton_integration", {}).get("integration_score", 0) >= 50 else "Needs improvement",
+            "readiness_for_tekton": full_analysis.get("tekton_integration", {}).get("integration_difficulty", "Unknown"),
+            "recommended_next_steps": []
+        }
+        
+        # Generate next steps
+        if "Docker" not in full_analysis["summary"].get("framework_indicators", []):
+            full_analysis["comprehensive_summary"]["recommended_next_steps"].append("Add Docker containerization")
+        
+        if not full_analysis["summary"].get("ci_cd_files"):
+            full_analysis["comprehensive_summary"]["recommended_next_steps"].append("Set up CI/CD pipeline")
+        
+        full_analysis["comprehensive_summary"]["recommended_next_steps"].append("Create Tekton project with recommended CI")
+        
+        return full_analysis
     
-    def validate_local_path(self, local_path: str) -> bool:
+    def validate_local_path(self, path: str) -> bool:
         """
-        Validate that a local path exists and appears to be a repository.
+        Validate that a local path exists and is a directory.
         
         Args:
-            local_path: Local filesystem path
+            path: Local directory path
             
         Returns:
-            True if path is valid, False otherwise
+            True if valid, False otherwise
         """
-        try:
-            if not os.path.exists(local_path):
-                return False
-            
-            if not os.path.isdir(local_path):
-                return False
-            
-            # Check for common repository indicators
-            indicators = ['.git', 'package.json', 'requirements.txt', 'Cargo.toml', 'pom.xml']
-            for indicator in indicators:
-                if os.path.exists(os.path.join(local_path, indicator)):
-                    return True
-            
-            return False
-            
-        except Exception as e:
-            logger.error(f"Error validating local path {local_path}: {str(e)}")
-            return False
+        expanded_path = os.path.expanduser(path)
+        return os.path.exists(expanded_path) and os.path.isdir(expanded_path)

@@ -221,6 +221,100 @@ async def create_project(request: CreateProjectRequest):
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@router.post("/check-git")
+async def check_git_repository(request: Dict[str, Any]):
+    """Check if a path is a git repository and get its status"""
+    import subprocess
+    
+    try:
+        path = request.get("path")
+        if not path:
+            raise HTTPException(status_code=400, detail="Path is required")
+        
+        # Expand the path
+        expanded_path = os.path.expanduser(path)
+        
+        # Check if path exists
+        if not os.path.exists(expanded_path):
+            return {
+                "is_git": False,
+                "exists": False,
+                "message": "Path does not exist"
+            }
+        
+        # Check if it's a git repository
+        try:
+            result = subprocess.run(
+                ["git", "rev-parse", "--is-inside-work-tree"],
+                cwd=expanded_path,
+                capture_output=True,
+                text=True,
+                timeout=5
+            )
+            is_git = result.returncode == 0
+        except Exception:
+            is_git = False
+        
+        if not is_git:
+            return {
+                "is_git": False,
+                "exists": True,
+                "message": "Not a git repository"
+            }
+        
+        # Get git remote info
+        remotes = {}
+        try:
+            result = subprocess.run(
+                ["git", "remote", "-v"],
+                cwd=expanded_path,
+                capture_output=True,
+                text=True,
+                timeout=5
+            )
+            if result.returncode == 0:
+                for line in result.stdout.strip().split('\n'):
+                    if line:
+                        parts = line.split()
+                        if len(parts) >= 2:
+                            remote_name = parts[0]
+                            remote_url = parts[1]
+                            if remote_name not in remotes:
+                                remotes[remote_name] = remote_url
+        except Exception:
+            pass
+        
+        # Get current branch
+        current_branch = None
+        try:
+            result = subprocess.run(
+                ["git", "branch", "--show-current"],
+                cwd=expanded_path,
+                capture_output=True,
+                text=True,
+                timeout=5
+            )
+            if result.returncode == 0:
+                current_branch = result.stdout.strip()
+        except Exception:
+            pass
+        
+        return {
+            "is_git": True,
+            "exists": True,
+            "remotes": remotes,
+            "current_branch": current_branch,
+            "has_origin": "origin" in remotes,
+            "has_upstream": "upstream" in remotes,
+            "origin_url": remotes.get("origin"),
+            "upstream_url": remotes.get("upstream")
+        }
+        
+    except Exception as e:
+        logger.error(f"Error checking git repository: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @router.post("/import", response_model=ProjectResponse)
 async def import_project(request: ImportProjectRequest):
     """Import an existing git project"""

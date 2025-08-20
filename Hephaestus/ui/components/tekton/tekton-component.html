@@ -10,7 +10,7 @@
 
 <!-- Hidden radio controls for CSS-only tab functionality -->
 <input type="radio" name="tekton-tab" id="tekton-tab-projects" checked style="display: none;">
-<input type="radio" name="tekton-tab" id="tekton-tab-new-project" style="display: none;">
+<input type="radio" name="tekton-tab" id="tekton-tab-github" style="display: none;">
 <input type="radio" name="tekton-tab" id="tekton-tab-sprints" style="display: none;">
 <input type="radio" name="tekton-tab" id="tekton-tab-merges" style="display: none;">
 <input type="radio" name="tekton-tab" id="tekton-tab-projectschat" style="display: none;">
@@ -44,12 +44,11 @@
                    data-tekton-menu-panel="projects-panel">
                 <span class="tekton__tab-label">Projects</span>
             </label>
-            <label for="tekton-tab-new-project" class="tekton__tab" data-tab="new-project"
-                   data-tekton-menu-item="New Project"
+            <label for="tekton-tab-github" class="tekton__tab" data-tab="github"
+                   data-tekton-menu-item="GitHub"
                    data-tekton-menu-component="tekton"
-                   data-tekton-menu-panel="new-project-panel"
-                   onclick="clearNewProjectFields()">
-                <span class="tekton__tab-label">GitHub Project</span>
+                   data-tekton-menu-panel="github-panel">
+                <span class="tekton__tab-label">GitHub</span>
             </label>
             <label for="tekton-tab-sprints" class="tekton__tab" data-tab="sprints"
                    data-tekton-menu-item="Sprints"
@@ -112,78 +111,111 @@
             </div>
         </div>
         
-        <!-- New Project Tab -->
-        <div id="new-project-panel" class="tekton__panel tekton__panel--new-project"
-             data-tekton-panel="new-project"
-             data-tekton-panel-for="New Project"
+        <!-- GitHub Tab (formerly Analyzer) -->
+        <div id="github-panel" class="tekton__panel tekton__panel--github"
+             data-tekton-panel="github"
+             data-tekton-panel-for="GitHub"
              data-tekton-panel-component="tekton"
-             data-tekton-tab-content="new-project">
-            <div class="tekton__new-project" data-tekton-element="new-project-container">
-                <h3 class="tekton__section-title" data-tekton-element="section-title">Create New Project</h3>
-                <div class="tekton__new-project-form" data-tekton-element="project-form">
-                    
+             data-tekton-tab-content="github">
+            <div class="tekton__github" data-tekton-element="github-container">
+                <h3 class="tekton__section-title" data-tekton-element="section-title">GitHub Project Analysis</h3>
+                
+                <!-- Analysis Input Section -->
+                <div class="tekton__github-input" data-tekton-element="github-input">
                     <div class="tekton__form-field" data-tekton-element="form-field">
-                        <label for="github-url" class="tekton__form-label">GitHub URL:</label>
-                        <input type="text" id="github-url" class="tekton__form-input" 
+                        <label for="analyze-url" class="tekton__form-label">Repository URL:</label>
+                        <input type="text" id="analyze-url" class="tekton__form-input" 
                                placeholder="https://github.com/user/repository"
-                               onchange="clearProjectFields()"
-                               oninput="clearProjectFields()"
-                               data-tekton-input="github-url"
+                               data-tekton-input="analyze-url"
                                data-tekton-input-type="url">
                     </div>
                     
                     <div class="tekton__form-field" data-tekton-element="form-field">
-                        <label for="local-directory" class="tekton__form-label">Local Directory:</label>
-                        <input type="text" id="local-directory" class="tekton__form-input" 
-                               placeholder="/path/to/local/clone"
-                               data-tekton-input="local-directory"
+                        <label for="analyze-local" class="tekton__form-label">Local Directory (optional):</label>
+                        <input type="text" id="analyze-local" class="tekton__form-input" 
+                               placeholder="/path/to/local/project"
+                               data-tekton-input="analyze-local"
                                data-tekton-input-type="path">
+                        <small class="tekton__field-hint">For local projects not yet in a repository</small>
                     </div>
                     
-                    <div class="tekton__form-field" data-tekton-element="form-field">
-                        <label for="forked-repository" class="tekton__form-label">Forked Repository:</label>
-                        <input type="text" id="forked-repository" class="tekton__form-input" 
-                               placeholder="https://github.com/your-username/repository"
-                               data-tekton-input="forked-repository"
-                               data-tekton-input-type="url">
+                    <!-- Analysis Type Buttons with Create New Project -->
+                    <div class="tekton__analysis-buttons" data-tekton-element="analysis-buttons">
+                        <div class="tekton__analysis-buttons-left">
+                            <button class="tekton__button tekton__button--basic" onclick="analyzeRepository('basic')"
+                                    data-tekton-action="analyze-basic"
+                                    title="Basic repository information including languages, frameworks, and structure">
+                                Basic Analysis
+                            </button>
+                            <button class="tekton__button tekton__button--architecture" onclick="analyzeRepository('architecture')"
+                                    data-tekton-action="analyze-architecture"
+                                    title="Architectural patterns, design principles, and code organization analysis">
+                                Architecture
+                            </button>
+                            <button class="tekton__button tekton__button--tekton" onclick="analyzeRepository('tekton')"
+                                    data-tekton-action="analyze-tekton"
+                                    title="Assessment of Tekton integration opportunities and compatibility">
+                                Tekton Compatibility
+                            </button>
+                            <button class="tekton__button tekton__button--companion" onclick="analyzeRepository('companion')"
+                                    data-tekton-action="analyze-companion"
+                                    title="Evaluation of Companion Intelligence enhancement potential">
+                                CI Assessment
+                            </button>
+                            <button class="tekton__button tekton__button--primary" onclick="analyzeRepository('full')"
+                                    data-tekton-action="analyze-full"
+                                    title="Comprehensive analysis combining all analysis types">
+                                Full Analysis
+                            </button>
+                        </div>
+                        <div class="tekton__analysis-buttons-right">
+                            <button class="tekton__button tekton__button--success" onclick="prepareCreateProject()"
+                                    data-tekton-action="create-project"
+                                    title="Create a new project from analysis">
+                                Create New Project
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Analysis Results Section -->
+                <div class="tekton__github-results" id="github-results" data-tekton-element="github-results" style="display: none;">
+                    <div class="tekton__github-summary" data-tekton-element="github-summary">
+                        <h4 class="tekton__subsection-title">Repository Summary</h4>
+                        <div id="repo-summary" class="tekton__summary-content">
+                            <!-- Summary will be populated dynamically -->
+                        </div>
                     </div>
                     
-                    <div class="tekton__form-field" data-tekton-element="form-field">
-                        <label for="upstream-repository" class="tekton__form-label">Upstream Repository:</label>
-                        <input type="text" id="upstream-repository" class="tekton__form-input" 
-                               placeholder="https://github.com/original-user/repository"
-                               data-tekton-input="upstream-repository"
-                               data-tekton-input-type="url">
+                    <div class="tekton__github-structure" data-tekton-element="github-structure">
+                        <h4 class="tekton__subsection-title">Project Structure</h4>
+                        <div id="repo-structure" class="tekton__structure-content">
+                            <!-- Structure will be populated dynamically -->
+                        </div>
                     </div>
                     
-                    <div class="tekton__form-field" data-tekton-element="form-field">
-                        <label for="companion-intelligence" class="tekton__form-label">Companion Intelligence - CI:</label>
-                        <select id="companion-intelligence" class="tekton__form-select"
-                                data-tekton-input="companion-intelligence"
-                                data-tekton-input-type="select" data-tekton-select="option">
-                            <option value="gpt-oss:20b">gpt-oss:20b (Default - Fast)</option>
-                            <option value="gpt-oss:120b">gpt-oss:120b (Smart - Deep Thinking)</option>
-                            <option value="llama3.3:70b">llama3.3:70b</option>
-                            <option value="llama3.2:3b">llama3.2:3b</option>
-                            <option value="llama3.1:8b">llama3.1:8b</option>
-                            <option value="qwen2.5:14b">qwen2.5:14b</option>
-                            <option value="claude-3-5-sonnet-20241022">Claude 3.5 Sonnet</option>
-                            <option value="gpt-4o">GPT-4o</option>
-                            <option value="gpt-4o-mini">GPT-4o Mini</option>
-                        </select>
+                    <div class="tekton__github-analysis" data-tekton-element="github-analysis">
+                        <h4 class="tekton__subsection-title">Tekton Compatibility</h4>
+                        <div id="repo-analysis" class="tekton__analysis-content">
+                            <!-- Analysis will be populated dynamically -->
+                        </div>
                     </div>
                     
-                    <div class="tekton__form-actions" data-tekton-element="form-actions">
-                        <button class="tekton__button tekton__button--secondary" onclick="cancelNewProject()"
-                                data-tekton-action="cancel-project"
-                                data-tekton-action-type="secondary">Cancel</button>
-                        <button class="tekton__button tekton__button--primary" onclick="prepareNewProject()"
-                                data-tekton-action="prepare-project"
-                                data-tekton-action-type="primary">Prepare</button>
-                        <button class="tekton__button tekton__button--success" id="create-project-btn" disabled onclick="createNewProject()"
-                                data-tekton-action="create-project"
-                                data-tekton-action-type="primary">Create</button>
+                    <!-- Create Project Button (appears after successful analysis) -->
+                    <div class="tekton__github-actions" data-tekton-element="github-actions" style="display: none;">
+                        <button class="tekton__button tekton__button--success" 
+                                onclick="showCreateProjectModal()"
+                                data-tekton-action="create-from-analysis"
+                                data-tekton-action-type="primary">
+                            Create Project
+                        </button>
                     </div>
+                </div>
+                
+                <!-- Loading Indicator -->
+                <div class="tekton__github-loading" id="github-loading" data-tekton-element="github-loading" style="display: none;">
+                    <div class="tekton__loading-spinner"></div>
+                    <p>Analyzing repository...</p>
                 </div>
             </div>
         </div>
@@ -1393,6 +1425,211 @@
         margin: 0 auto;
     }
     
+    /* GitHub Panel Styles */
+    .tekton__github {
+        padding: 20px;
+        height: 100%;
+        overflow-y: auto;
+    }
+    
+    .tekton__github-input {
+        margin-bottom: 30px;
+    }
+    
+    .tekton__input-group {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+    }
+    
+    .tekton__input-group .tekton__form-input {
+        flex: 1;
+    }
+    
+    .tekton__analysis-buttons {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+        margin-top: 20px;
+        padding-top: 20px;
+    }
+    
+    .tekton__analysis-buttons-left {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    
+    .tekton__analysis-buttons-right {
+        display: flex;
+        gap: 10px;
+    }
+    
+    /* Colorful button styles */
+    .tekton__button--basic {
+        background-color: #20B2AA !important;  /* Teal */
+        color: white !important;
+        border: 2px solid #20B2AA !important;
+    }
+    
+    .tekton__button--basic:hover {
+        background-color: #1A9A93 !important;
+        border-color: #1A9A93 !important;
+    }
+    
+    .tekton__button--architecture {
+        background-color: #FF8C00 !important;  /* Tangerine/Dark Orange */
+        color: white !important;
+        border: 2px solid #FF8C00 !important;
+    }
+    
+    .tekton__button--architecture:hover {
+        background-color: #E67E00 !important;
+        border-color: #E67E00 !important;
+    }
+    
+    .tekton__button--tekton {
+        background-color: #FFD700 !important;  /* Tekton Gold */
+        color: #1a1a2e !important;  /* Dark text for contrast */
+        border: 2px solid #FFD700 !important;
+    }
+    
+    .tekton__button--tekton:hover {
+        background-color: #FFC700 !important;
+        border-color: #FFC700 !important;
+    }
+    
+    .tekton__button--companion {
+        background-color: #9370DB !important;  /* Numa Purple (Medium Purple) */
+        color: white !important;
+        border: 2px solid #9370DB !important;
+    }
+    
+    .tekton__button--companion:hover {
+        background-color: #8060CC !important;
+        border-color: #8060CC !important;
+    }
+    
+    .tekton__field-hint {
+        display: block;
+        margin-top: 5px;
+        font-size: 0.85rem;
+        color: var(--text-tertiary, #808080);
+    }
+    
+    .tekton__github-results {
+        background-color: var(--bg-secondary, #252535);
+        border-radius: 8px;
+        padding: 20px;
+        margin-top: 20px;
+    }
+    
+    .tekton__github-summary,
+    .tekton__github-structure,
+    .tekton__github-analysis {
+        margin-bottom: 25px;
+        padding: 15px;
+        background-color: var(--bg-primary, #1a1a2e);
+        border-radius: 6px;
+    }
+    
+    .tekton__subsection-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-bottom: 15px;
+        color: #FFD700;
+    }
+    
+    .tekton__summary-item,
+    .tekton__analysis-item {
+        margin-bottom: 10px;
+        color: var(--text-secondary, #b0b0b0);
+    }
+    
+    .tekton__structure-tree pre {
+        background-color: var(--bg-tertiary, #2a2a3a);
+        padding: 10px;
+        border-radius: 4px;
+        overflow-x: auto;
+        font-family: 'Courier New', monospace;
+        font-size: 0.9rem;
+    }
+    
+    .tekton__github-actions {
+        text-align: center;
+        margin-top: 20px;
+        padding-top: 20px;
+        border-top: 1px solid var(--border-color, #3a3a4a);
+    }
+    
+    .tekton__github-loading {
+        text-align: center;
+        padding: 40px;
+    }
+    
+    .tekton__loading-spinner {
+        width: 40px;
+        height: 40px;
+        border: 4px solid var(--bg-tertiary, #2a2a3a);
+        border-top-color: #FFD700;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 20px;
+    }
+    
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+    
+    /* Modal enhancements */
+    .tekton__modal--create-project {
+        max-width: 600px;
+        width: 90%;
+    }
+    
+    .tekton__modal-footer {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        padding: 20px;
+        border-top: 1px solid var(--border-color, #3a3a4a);
+        margin-top: 20px;
+    }
+    
+    .tekton__modal-close {
+        background: none;
+        border: none;
+        font-size: 24px;
+        color: var(--text-secondary, #b0b0b0);
+        cursor: pointer;
+        padding: 0;
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .tekton__modal-close:hover {
+        color: var(--text-primary, #f0f0f0);
+    }
+    
+    .tekton__modal-summary {
+        background-color: var(--bg-tertiary, #2a2a3a);
+        padding: 15px;
+        border-radius: 6px;
+        color: var(--text-secondary, #b0b0b0);
+    }
+    
+    .tekton__modal-summary > div {
+        margin-bottom: 8px;
+    }
+    
+    .tekton__modal-summary > div:last-child {
+        margin-bottom: 0;
+    }
+    
     .tekton__form-title {
         margin-bottom: 20px;
         font-size: 1.3rem;
@@ -1486,7 +1723,7 @@
     }
     
     #tekton-tab-projects:checked ~ .tekton .tekton__panel--projects,
-    #tekton-tab-new-project:checked ~ .tekton .tekton__panel--new-project,
+    #tekton-tab-github:checked ~ .tekton .tekton__panel--github,
     #tekton-tab-sprints:checked ~ .tekton .tekton__panel--sprints,
     #tekton-tab-merges:checked ~ .tekton .tekton__panel--merges,
     #tekton-tab-projectschat:checked ~ .tekton #projectschat-panel,
@@ -1498,7 +1735,7 @@
     
     /* Active tab styling */
     #tekton-tab-projects:checked ~ .tekton .tekton__tab[data-tab="projects"],
-    #tekton-tab-new-project:checked ~ .tekton .tekton__tab[data-tab="new-project"],
+    #tekton-tab-github:checked ~ .tekton .tekton__tab[data-tab="github"],
     #tekton-tab-sprints:checked ~ .tekton .tekton__tab[data-tab="sprints"],
     #tekton-tab-merges:checked ~ .tekton .tekton__tab[data-tab="merges"],
     #tekton-tab-projectschat:checked ~ .tekton .tekton__tab[data-tab="projectschat"],
@@ -1510,16 +1747,19 @@
     
     /* Modal Styles */
     .tekton__modal-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background-color: rgba(0, 0, 0, 0.7);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 1000;
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        bottom: 0 !important;
+        width: 100vw !important;
+        height: 100vh !important;
+        background-color: rgba(0, 0, 0, 0.85) !important;
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
+        z-index: 999999 !important;
+        overflow: auto !important;
     }
     
     .tekton__modal {
@@ -2268,6 +2508,511 @@ function cancelNewProject() {
     document.getElementById('github-url').value = '';
     clearProjectFields();
     return false;
+}
+
+// GitHub Analyzer Functions
+let analyzedProjectData = null;
+
+async function analyzeRepository(analysisType = 'full') {
+    console.log('[TEKTON] Analyzing repository with type:', analysisType);
+    
+    const url = document.getElementById('analyze-url').value.trim();
+    const localPath = document.getElementById('analyze-local').value.trim();
+    
+    if (!url && !localPath) {
+        TektonModal.warning('Please enter a GitHub repository URL or local directory path');
+        return;
+    }
+    
+    // Validate GitHub URL if provided
+    if (url) {
+        const githubPattern = /^https:\/\/github\.com\/([^\/]+)\/([^\/]+?)(\.git)?$/;
+        if (!githubPattern.test(url)) {
+            TektonModal.error('Please enter a valid GitHub repository URL');
+            return;
+        }
+    }
+    
+    // Show loading indicator
+    document.getElementById('github-loading').style.display = 'block';
+    document.getElementById('github-results').style.display = 'none';
+    
+    try {
+        // Build request body
+        const requestBody = {
+            analysis_type: analysisType
+        };
+        
+        if (url) {
+            requestBody.repo_url = url;
+        }
+        if (localPath) {
+            requestBody.local_path = localPath;
+        }
+        
+        // Call the analyzer API with correct endpoint
+        const response = await fetch(tektonUrl('tekton-core', '/api/v1/analyzer/analyze'), {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(requestBody)
+        });
+        
+        if (!response.ok) {
+            throw new Error(`Analysis failed: ${response.statusText}`);
+        }
+        
+        const data = await response.json();
+        analyzedProjectData = data;
+        
+        // Display results
+        displayAnalysisResults(data);
+        
+        // Show results and hide loading
+        document.getElementById('github-loading').style.display = 'none';
+        document.getElementById('github-results').style.display = 'block';
+        
+        // Show Create Project button if analysis successful
+        if (data.status === 'success') {
+            document.getElementById('github-results').querySelector('.tekton__github-actions').style.display = 'block';
+        }
+        
+    } catch (error) {
+        console.error('[TEKTON] Analysis error:', error);
+        document.getElementById('github-loading').style.display = 'none';
+        TektonModal.error(`Analysis failed: ${error.message}`);
+    }
+}
+
+function displayAnalysisResults(data) {
+    console.log('[TEKTON] Displaying analysis results:', data);
+    
+    // Display repository summary
+    const summaryEl = document.getElementById('repo-summary');
+    if (data.repository) {
+        const info = data.repository;
+        summaryEl.innerHTML = `
+            <div class="tekton__summary-item">
+                <strong>Repository:</strong> ${info.name || 'Unknown'}
+            </div>
+            <div class="tekton__summary-item">
+                <strong>Owner:</strong> ${info.owner || 'Unknown'}
+            </div>
+            <div class="tekton__summary-item">
+                <strong>Language:</strong> ${info.language || 'Unknown'}
+            </div>
+            <div class="tekton__summary-item">
+                <strong>Stars:</strong> ${info.stars || 0}
+            </div>
+            <div class="tekton__summary-item">
+                <strong>Description:</strong> ${info.description || 'No description available'}
+            </div>
+            <div class="tekton__summary-item">
+                <strong>Analysis Type:</strong> ${data.analysis_type || 'Unknown'}
+            </div>
+        `;
+    } else {
+        summaryEl.innerHTML = '<p>Repository information not available</p>';
+    }
+    
+    // Display project structure and summary
+    const structureEl = document.getElementById('repo-structure');
+    let structureHtml = '<div class="tekton__structure-details">';
+    
+    // Show summary data if available
+    if (data.summary) {
+        const summary = data.summary;
+        
+        if (summary.languages_detected && summary.languages_detected.length > 0) {
+            structureHtml += `<div class="tekton__analysis-item"><strong>Languages Detected:</strong> ${summary.languages_detected.join(', ')}</div>`;
+        }
+        
+        if (summary.framework_indicators && summary.framework_indicators.length > 0) {
+            structureHtml += `<div class="tekton__analysis-item"><strong>Frameworks:</strong> ${summary.framework_indicators.join(', ')}</div>`;
+        }
+        
+        if (summary.dependency_files && summary.dependency_files.length > 0) {
+            structureHtml += `<div class="tekton__analysis-item"><strong>Dependency Files:</strong> ${summary.dependency_files.join(', ')}</div>`;
+        }
+        
+        if (summary.ci_cd_files && summary.ci_cd_files.length > 0) {
+            structureHtml += `<div class="tekton__analysis-item"><strong>CI/CD:</strong> ${summary.ci_cd_files.join(', ')}</div>`;
+        }
+        
+        if (summary.size_kb) {
+            structureHtml += `<div class="tekton__analysis-item"><strong>Repository Size:</strong> ${(summary.size_kb / 1024).toFixed(2)} MB</div>`;
+        }
+    }
+    
+    // Show architecture data if available
+    if (data.architecture) {
+        const arch = data.architecture;
+        
+        if (arch.patterns_detected && arch.patterns_detected.length > 0) {
+            structureHtml += `<div class="tekton__analysis-item"><strong>Patterns:</strong> ${arch.patterns_detected.join(', ')}</div>`;
+        }
+        
+        if (arch.design_principles && arch.design_principles.length > 0) {
+            structureHtml += `<div class="tekton__analysis-item"><strong>Design Principles:</strong> ${arch.design_principles.join(', ')}</div>`;
+        }
+        
+        if (arch.scalability_assessment) {
+            structureHtml += `<div class="tekton__analysis-item"><strong>Scalability:</strong> ${arch.scalability_assessment}</div>`;
+        }
+    }
+    
+    structureHtml += '</div>';
+    
+    if (structureHtml === '<div class="tekton__structure-details"></div>') {
+        structureEl.innerHTML = '<p>Run Architecture or Full analysis for detailed structure information</p>';
+    } else {
+        structureEl.innerHTML = structureHtml;
+    }
+    
+    // Display Tekton compatibility and CI recommendations
+    const analysisEl = document.getElementById('repo-analysis');
+    let analysisHtml = '<div class="tekton__analysis-details">';
+    
+    // Show Tekton integration data if available
+    if (data.tekton_integration) {
+        const tekton = data.tekton_integration;
+        
+        analysisHtml += `<div class="tekton__analysis-item"><strong>Integration Difficulty:</strong> ${tekton.integration_difficulty || 'Unknown'}</div>`;
+        analysisHtml += `<div class="tekton__analysis-item"><strong>Integration Score:</strong> ${tekton.integration_score || 0}/100</div>`;
+        
+        if (tekton.benefits && tekton.benefits.length > 0) {
+            analysisHtml += `<div class="tekton__analysis-item"><strong>Benefits:</strong> ${tekton.benefits.join(', ')}</div>`;
+        }
+        
+        if (tekton.required_adaptations && tekton.required_adaptations.length > 0) {
+            analysisHtml += `<div class="tekton__analysis-item"><strong>Required Adaptations:</strong> ${tekton.required_adaptations.join(', ')}</div>`;
+        }
+        
+        analysisHtml += `<div class="tekton__analysis-item"><strong>Recommended CI:</strong> ${tekton.recommended_ci_type || 'gpt-oss:20b'}</div>`;
+    }
+    
+    // Show Companion Intelligence data if available
+    if (data.companion_intelligence) {
+        const ci = data.companion_intelligence;
+        
+        analysisHtml += `<div class="tekton__analysis-item"><strong>AI Integration Potential:</strong> ${ci.ai_integration_potential || 'Unknown'}</div>`;
+        analysisHtml += `<div class="tekton__analysis-item"><strong>Recommended CI:</strong> ${ci.recommended_ci || 'gpt-oss:20b'}</div>`;
+        
+        if (ci.automation_opportunities && ci.automation_opportunities.length > 0) {
+            analysisHtml += `<div class="tekton__analysis-item"><strong>Automation Opportunities:</strong><br>${ci.automation_opportunities.map(o => '• ' + o).join('<br>')}</div>`;
+        }
+        
+        if (ci.intelligence_features && ci.intelligence_features.length > 0) {
+            analysisHtml += `<div class="tekton__analysis-item"><strong>Intelligence Features:</strong><br>${ci.intelligence_features.map(f => '• ' + f).join('<br>')}</div>`;
+        }
+    }
+    
+    // Show recommendations if available
+    if (data.recommendations && data.recommendations.length > 0) {
+        analysisHtml += `<div class="tekton__analysis-item"><strong>Recommendations:</strong><br>${data.recommendations.map(r => '• ' + r).join('<br>')}</div>`;
+    }
+    
+    analysisHtml += '</div>';
+    
+    if (analysisHtml === '<div class="tekton__analysis-details"></div>') {
+        analysisEl.innerHTML = '<p>Run Tekton or Companion analysis for compatibility information</p>';
+    } else {
+        analysisEl.innerHTML = analysisHtml;
+    }
+}
+
+// Emergency modal close (can be called from console)
+window.forceCloseAllModals = function() {
+    const modals = document.querySelectorAll('.tekton__modal-overlay');
+    modals.forEach(modal => {
+        modal.style.setProperty('display', 'none', 'important');
+        modal.style.setProperty('visibility', 'hidden', 'important');
+    });
+    document.onkeydown = null;
+    console.log('[TEKTON] Force closed all modals');
+};
+
+// Modal Functions
+function showCreateProjectModal() {
+    console.log('[TEKTON] Showing create project modal');
+    
+    // Double-check we actually want to show this
+    if (!analyzedProjectData) {
+        console.warn('[TEKTON] No analyzed project data available - not showing modal');
+        return;
+    }
+    
+    // Populate modal fields with analyzed data
+    const githubUrl = document.getElementById('analyze-url').value.trim();
+    document.getElementById('modal-github-url').value = githubUrl;
+    
+    // Generate local directory path from repo name
+    const repoName = analyzedProjectData.repository?.name || githubUrl.split('/').pop().replace('.git', '');
+    const localDir = `/Users/cskoons/projects/${repoName}`;
+    document.getElementById('modal-local-directory').value = localDir;
+    
+    // Set recommended CI if available
+    if (analyzedProjectData.analysis?.recommended_ci) {
+        const ciSelect = document.getElementById('modal-companion-intelligence');
+        ciSelect.value = analyzedProjectData.analysis.recommended_ci;
+    }
+    
+    // Show modal
+    const modal = document.getElementById('create-project-modal-overlay');
+    if (modal) {
+        // Remove important hiding first
+        modal.style.removeProperty('display');
+        modal.style.removeProperty('visibility');
+        // Then show
+        modal.style.display = 'flex';
+        modal.style.visibility = 'visible';
+        
+        // Add click handler for overlay (click outside to close)
+        modal.onclick = function(event) {
+            if (event.target === modal) {
+                closeCreateProjectModal();
+            }
+        };
+        
+        // Add escape key handler
+        document.onkeydown = function(event) {
+            if (event.key === 'Escape' || event.key === 'Esc') {
+                closeCreateProjectModal();
+            }
+        };
+    }
+}
+
+function closeCreateProjectModal() {
+    console.log('[TEKTON] Closing create project modal');
+    const modal = document.getElementById('create-project-modal-overlay');
+    if (modal) {
+        // Force hide with multiple methods
+        modal.style.display = 'none';
+        modal.style.visibility = 'hidden';
+        modal.style.setProperty('display', 'none', 'important');
+        modal.style.setProperty('visibility', 'hidden', 'important');
+        // Remove event handlers
+        modal.onclick = null;
+        document.onkeydown = null;
+    }
+    // Clear the analyzed data when closing
+    analyzedProjectData = null;
+    return false; // Prevent any default action
+}
+
+async function createProjectFromModal() {
+    console.log('[TEKTON] Creating project from modal');
+    
+    const githubUrl = document.getElementById('modal-github-url').value;
+    const localDirectory = document.getElementById('modal-local-directory').value;
+    const forkedRepository = document.getElementById('modal-forked-repository').value;
+    const upstreamRepository = document.getElementById('modal-upstream-repository').value;
+    const companionIntelligence = document.getElementById('modal-companion-intelligence').value;
+    
+    // Validate GitHub username if forked repository is specified
+    if (forkedRepository && forkedRepository.includes('github.com')) {
+        const githubUsername = await getGitHubUsername();
+        if (!githubUsername) {
+            TektonModal.error('Please set your GitHub username in Profile settings before creating a forked project');
+            return;
+        }
+    }
+    
+    if (!githubUrl || !localDirectory) {
+        TektonModal.error('GitHub URL and Local Directory are required');
+        return;
+    }
+    
+    try {
+        // Build request body
+        const requestBody = {
+            github_url: githubUrl,
+            local_directory: localDirectory,
+            companion_intelligence: companionIntelligence
+        };
+        
+        // Only include fork/upstream if they exist or are being created
+        if (upstreamRepository) {
+            requestBody.upstream_repository = upstreamRepository;
+        }
+        
+        // Don't include forked_repository if it's a URL that doesn't exist yet
+        // The backend will handle fork creation
+        if (forkedRepository && !forkedRepository.includes('github.com/' + (await getGitHubUsername()) + '/')) {
+            // Only include if it's not the user's fork (which doesn't exist yet)
+            requestBody.forked_repository = forkedRepository;
+        }
+        
+        if (analyzedProjectData) {
+            requestBody.analysis_data = analyzedProjectData;
+        }
+        
+        // Call the create project API
+        const response = await fetch(tektonUrl('tekton-core', '/api/projects'), {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(requestBody)
+        });
+        
+        if (!response.ok) {
+            throw new Error(`Project creation failed: ${response.statusText}`);
+        }
+        
+        const result = await response.json();
+        
+        // Close modal
+        closeCreateProjectModal();
+        
+        // Show success message
+        TektonModal.success(`Project "${result.project_name}" created successfully!`);
+        
+        // Switch to Projects tab to show the new project
+        document.getElementById('tekton-tab-projects').checked = true;
+        loadProjectsDashboard();
+        
+    } catch (error) {
+        console.error('[TEKTON] Project creation error:', error);
+        TektonModal.error(`Failed to create project: ${error.message}`);
+    }
+}
+
+// Prepare to create a new project based on what was analyzed
+async function prepareCreateProject() {
+    console.log('[TEKTON] Preparing to create new project');
+    
+    // First ensure the modal is hidden
+    const modal = document.getElementById('create-project-modal-overlay');
+    if (modal && modal.style.display !== 'none') {
+        modal.style.display = 'none';
+    }
+    
+    const githubUrl = document.getElementById('analyze-url').value.trim();
+    const localPath = document.getElementById('analyze-local').value.trim();
+    
+    // Check if we have any analysis data
+    if (!analyzedProjectData) {
+        // No analysis yet, do a basic analysis first
+        if (!githubUrl && !localPath) {
+            TektonModal.warning('Please enter a repository URL or local directory, then analyze it first');
+            return;
+        }
+        
+        try {
+            await analyzeRepository('basic');
+        } catch (error) {
+            console.error('[TEKTON] Analysis error:', error);
+            TektonModal.error(`Failed to analyze: ${error.message}`);
+            return;
+        }
+    }
+    
+    // Now prepare the modal based on what was analyzed
+    if (githubUrl) {
+        // Repository was analyzed - set up for fork workflow
+        prepareRepositoryProject(githubUrl);
+    } else if (localPath) {
+        // Local directory was analyzed - set up for local project
+        prepareLocalProject(localPath);
+    } else {
+        TektonModal.error('No repository or directory to create project from');
+    }
+}
+
+// Get GitHub username from profile
+async function getGitHubUsername() {
+    try {
+        const response = await fetch('/api/profile');
+        if (response.ok) {
+            const profileData = await response.json();
+            return profileData.socialAccounts?.github || '';
+        }
+    } catch (error) {
+        console.error('[TEKTON] Error fetching profile:', error);
+    }
+    return '';
+}
+
+// Prepare project from GitHub repository
+async function prepareRepositoryProject(githubUrl) {
+    console.log('[TEKTON] Preparing repository project:', githubUrl);
+    
+    // Get GitHub username from profile
+    const githubUsername = await getGitHubUsername();
+    
+    // Extract repo name for local directory
+    const repoName = githubUrl.split('/').pop().replace('.git', '');
+    const owner = githubUrl.split('/')[3];
+    const localDir = `/Users/cskoons/projects/${repoName}`;
+    
+    // Set modal fields for repository workflow
+    document.getElementById('modal-github-url').value = githubUrl;
+    document.getElementById('modal-local-directory').value = localDir;
+    
+    // Set fork as user's version (use profile username or leave blank)
+    const forkUrl = githubUsername ? `https://github.com/${githubUsername}/${repoName}` : '';
+    document.getElementById('modal-forked-repository').value = forkUrl;
+    
+    // Set upstream as the original repository
+    document.getElementById('modal-upstream-repository').value = githubUrl;
+    
+    // Show the modal
+    showCreateProjectModal();
+}
+
+// Prepare project from local directory
+async function prepareLocalProject(localPath) {
+    console.log('[TEKTON] Preparing local project:', localPath);
+    
+    try {
+        // Check if it's a git repository
+        const response = await fetch(tektonUrl('tekton-core', '/api/projects/check-git'), {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ path: localPath })
+        });
+        
+        const gitInfo = await response.json();
+        const projectName = localPath.split('/').pop();
+        
+        // Set modal fields for local workflow
+        document.getElementById('modal-local-directory').value = localPath;
+        
+        if (gitInfo.is_git_repo && gitInfo.remote_url) {
+            // It's already a git repo with remote - that becomes upstream
+            document.getElementById('modal-github-url').value = gitInfo.remote_url;
+            document.getElementById('modal-upstream-repository').value = gitInfo.remote_url;
+            
+            // Fork will be created
+            const githubUsername = await getGitHubUsername();
+            const forkUrl = githubUsername ? `https://github.com/${githubUsername}/${projectName}` : '';
+            document.getElementById('modal-forked-repository').value = forkUrl;
+        } else {
+            // Not a git repo or no remote - will need git init
+            document.getElementById('modal-github-url').value = '';
+            document.getElementById('modal-upstream-repository').value = '';
+            
+            // Fork will be created as new repo
+            const githubUsername = await getGitHubUsername();
+            const forkUrl = githubUsername ? `https://github.com/${githubUsername}/${projectName}` : '';
+            document.getElementById('modal-forked-repository').value = forkUrl;
+        }
+        
+        // Show the modal
+        showCreateProjectModal();
+        
+    } catch (error) {
+        console.error('[TEKTON] Error checking git status:', error);
+        // Still show modal even if git check fails
+        document.getElementById('modal-local-directory').value = localPath;
+        document.getElementById('modal-github-url').value = '';
+        showCreateProjectModal();
+    }
 }
 
 function clearNewProjectFields() {
@@ -3910,7 +4655,7 @@ async function removeProject(projectId, projectName) {
     }
     
     try {
-        const response = await fetch(tektonUrl('tekton-core', `/api/v1/projects/${projectId}`), {
+        const response = await fetch(tektonUrl('tekton-core', `/api/projects/${projectId}`), {
             method: 'DELETE'
         });
         
@@ -4138,6 +4883,25 @@ function tekton_protectHtmlPanel() {
 (function initializeTektonComponent() {
     console.log('[TEKTON] Initializing Tekton component');
     
+    // Force hide all modals on init
+    const createProjectModal = document.getElementById('create-project-modal-overlay');
+    if (createProjectModal) {
+        createProjectModal.style.setProperty('display', 'none', 'important');
+        createProjectModal.style.setProperty('visibility', 'hidden', 'important');
+        createProjectModal.onclick = null;
+        document.onkeydown = null;
+    }
+    
+    // Safety timeout - hide modal after 100ms if it somehow shows
+    setTimeout(() => {
+        const modal = document.getElementById('create-project-modal-overlay');
+        if (modal && (modal.style.display !== 'none' || modal.style.visibility !== 'hidden')) {
+            console.warn('[TEKTON] Modal was visible on load - force hiding');
+            modal.style.setProperty('display', 'none', 'important');
+            modal.style.setProperty('visibility', 'hidden', 'important');
+        }
+    }, 100);
+    
     // Set up tab switching listeners
     const radioButtons = document.querySelectorAll('input[name="tekton-tab"]');
     radioButtons.forEach(radio => {
@@ -4202,6 +4966,78 @@ tekton_initChats();
         <div class="tekton__error-modal-footer">
             <button class="tekton__button tekton__button--secondary" onclick="closeErrorModal()">Cancel</button>
             <button class="tekton__button tekton__button--primary" id="tekton-error-retry-btn" onclick="retryLastGitAction()" data-tekton-action="action">Retry</button>
+        </div>
+    </div>
+</div>
+
+<!-- Create Project Modal (hidden by default) -->
+<div class="tekton__modal-overlay" id="create-project-modal-overlay" style="display: none !important; visibility: hidden;">
+    <div class="tekton__modal tekton__modal--create-project">
+        <div class="tekton__modal-header">
+            <h3 class="tekton__modal-title">Create New Project</h3>
+            <button class="tekton__modal-close" onclick="closeCreateProjectModal(); return false;" aria-label="Close" style="cursor: pointer; z-index: 1000001;">×</button>
+        </div>
+        
+        <div class="tekton__modal-body">
+            <div class="tekton__modal-form">
+                <!-- GitHub URL (pre-populated from analyzer) -->
+                <div class="tekton__form-field">
+                    <label for="modal-github-url" class="tekton__form-label">GitHub URL:</label>
+                    <input type="text" id="modal-github-url" class="tekton__form-input" 
+                           placeholder="https://github.com/user/repository"
+                           readonly
+                           data-tekton-input="github-url">
+                </div>
+                
+                <!-- Local Directory (pre-populated) -->
+                <div class="tekton__form-field">
+                    <label for="modal-local-directory" class="tekton__form-label">Local Directory:</label>
+                    <input type="text" id="modal-local-directory" class="tekton__form-input" 
+                           placeholder="/path/to/local/clone"
+                           data-tekton-input="local-directory">
+                </div>
+                
+                <!-- Forked Repository -->
+                <div class="tekton__form-field">
+                    <label for="modal-forked-repository" class="tekton__form-label">Forked Repository (optional):</label>
+                    <input type="text" id="modal-forked-repository" class="tekton__form-input" 
+                           placeholder="https://github.com/your-username/repository"
+                           data-tekton-input="forked-repository">
+                </div>
+                
+                <!-- Upstream Repository -->
+                <div class="tekton__form-field">
+                    <label for="modal-upstream-repository" class="tekton__form-label">Upstream Repository (optional):</label>
+                    <input type="text" id="modal-upstream-repository" class="tekton__form-input" 
+                           placeholder="https://github.com/original-user/repository"
+                           data-tekton-input="upstream-repository">
+                </div>
+                
+                <!-- Companion Intelligence -->
+                <div class="tekton__form-field">
+                    <label for="modal-companion-intelligence" class="tekton__form-label">Companion Intelligence - CI:</label>
+                    <select id="modal-companion-intelligence" class="tekton__form-select"
+                            data-tekton-input="companion-intelligence">
+                        <option value="gpt-oss:20b">gpt-oss:20b (Default - Fast)</option>
+                        <option value="gpt-oss:120b">gpt-oss:120b (Smart - Deep Thinking)</option>
+                        <option value="claude">Claude (Anthropic)</option>
+                        <option value="llama3.3:70b">llama3.3:70b</option>
+                        <option value="llama3.2:3b">llama3.2:3b</option>
+                        <option value="llama3.1:8b">llama3.1:8b</option>
+                        <option value="qwen2.5:14b">qwen2.5:14b</option>
+                        <option value="claude-3-5-sonnet-20241022">Claude 3.5 Sonnet</option>
+                        <option value="gpt-4o">GPT-4o</option>
+                        <option value="gpt-4o-mini">GPT-4o Mini</option>
+                    </select>
+                </div>
+                
+                <!-- Project Summary removed per user request -->
+            </div>
+        </div>
+        
+        <div class="tekton__modal-footer">
+            <button class="tekton__button tekton__button--secondary" onclick="closeCreateProjectModal(); return false;">Cancel</button>
+            <button class="tekton__button tekton__button--success" onclick="createProjectFromModal()">Create Project</button>
         </div>
     </div>
 </div>
