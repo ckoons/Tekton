@@ -67,6 +67,40 @@ class TektonEnvironLock:
         # This allows subprocesses to detect they have the frozen environment
         env_dict['_TEKTON_ENV_FROZEN'] = '1'
         
+        # Construct and set PATH and PYTHONPATH using TEKTON_ROOT
+        tekton_root = env_dict.get('TEKTON_ROOT', '')
+        if tekton_root:
+            # Construct PATH - add Tekton directories to the beginning
+            current_path = env_dict.get('PATH', '')
+            tekton_paths = [
+                f"{tekton_root}/scripts",
+                f"{tekton_root}/shared/aish",
+                f"{tekton_root}/tekton-core/scripts/bin",
+                f"{tekton_root}/shared/ci_tools"
+            ]
+            # Only add paths that exist
+            existing_tekton_paths = [p for p in tekton_paths if Path(p).exists()]
+            if existing_tekton_paths:
+                new_path = ':'.join(existing_tekton_paths) + ':' + current_path
+                env_dict['PATH'] = new_path
+                logger.debug(f"Set PATH with Tekton directories: {':'.join(existing_tekton_paths)}")
+            
+            # Construct PYTHONPATH - add Tekton modules
+            current_pythonpath = env_dict.get('PYTHONPATH', '')
+            python_paths = [
+                tekton_root,
+                f"{tekton_root}/shared",
+                f"{tekton_root}/tekton"
+            ]
+            # Only add paths that exist
+            existing_python_paths = [p for p in python_paths if Path(p).exists()]
+            if existing_python_paths:
+                new_pythonpath = ':'.join(existing_python_paths)
+                if current_pythonpath:
+                    new_pythonpath = new_pythonpath + ':' + current_pythonpath
+                env_dict['PYTHONPATH'] = new_pythonpath
+                logger.debug(f"Set PYTHONPATH with Tekton modules: {':'.join(existing_python_paths)}")
+        
         # Update os.environ with the merged result
         os.environ.clear()
         os.environ.update(env_dict)
