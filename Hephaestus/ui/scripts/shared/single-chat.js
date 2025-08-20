@@ -109,8 +109,7 @@ window.SingleChat = {
             containerEl.scrollTop = containerEl.scrollHeight;
             
             // Then handle the command results
-            let immediateAiMessage = '';  // For 'ai' mode only (send now)
-            let pendingAiMessage = '';    // For 'both' mode (save for later)
+            let immediateAiMessage = '';  // For 'ai' and 'both' modes (send now)
             
             for (const result of processed.commandResults) {
                 const outputMode = result.outputMode || 'user';
@@ -124,20 +123,12 @@ window.SingleChat = {
                     // Send to AI immediately (output not shown to user)
                     immediateAiMessage += `Command output:\n${result.output}\n\n`;
                 } else if (outputMode === 'both') {
-                    // Store for next message (output shown to user AND will go to AI)
-                    pendingAiMessage += `[Previous command output:\n${result.output}]\n\n`;
+                    // Send to AI immediately WITH current message (output shown to user AND sent to AI)
+                    immediateAiMessage += `Command output:\n${result.output}\n\n`;
                 }
             }
             
-            // Store pending outputs for next message
-            if (pendingAiMessage) {
-                if (!this.pendingCommandOutputs[componentName]) {
-                    this.pendingCommandOutputs[componentName] = '';
-                }
-                this.pendingCommandOutputs[componentName] += pendingAiMessage;
-            }
-            
-            // Handle immediate AI message (for 'ai' mode only)
+            // Handle immediate AI message (for 'ai' and 'both' modes)
             if (immediateAiMessage) {
                 message = processed.message ? `${processed.message}\n\n${immediateAiMessage}` : immediateAiMessage;
             } else if (!processed.message || !processed.message.trim()) {
@@ -149,8 +140,9 @@ window.SingleChat = {
             }
         }
         
-        // Only show user message if there's a non-command message to send to AI
-        if (processed.message && processed.message.trim()) {
+        // Only show user message if NO commands were processed
+        // (If commands were processed, we already showed the original input above)
+        if (!processed.hasCommands && processed.message && processed.message.trim()) {
             // Get existing content (preserve welcome message)
             const existingContent = containerEl.innerHTML;
             
@@ -178,7 +170,7 @@ window.SingleChat = {
             
             containerEl.innerHTML = existingContent + userMessageHtml;
             containerEl.scrollTop = containerEl.scrollHeight;
-        } else if (!processed.hasCommands) {
+        } else if (!processed.hasCommands && !processed.message) {
             // If no commands and no message, still show what user typed
             const existingContent = containerEl.innerHTML;
             let userMessageHtml;
