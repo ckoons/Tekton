@@ -50,45 +50,89 @@ window.TeamChat = {
         // Process commands first
         const processed = await window.processCommandsInMessage(message, componentName);
         
-        // Display command results if any
+        // Handle command results if any
         if (processed.hasCommands && processed.commandResults.length > 0) {
-            for (const result of processed.commandResults) {
-                window.displayCommandResult(containerEl, result, cssPrefix);
-            }
-            
-            // If no message remains after commands, we're done
-            if (!processed.message || !processed.message.trim()) {
-                return;
-            }
-            
-            // Continue with the remaining message
-            message = processed.message;
-        }
-        
-        // Get existing content (preserve welcome message)
-        const existingContent = containerEl.innerHTML;
-        
-        // Add user message using innerHTML
-        let userMessageHtml;
-        if (cssPrefix === 'chat-message') {
-            // Terma uses different CSS structure
-            userMessageHtml = `
-                <div class="chat-message user-message">
-                    ${this.escapeHtml(message)}
-                </div>
-            `;
-        } else {
-            userMessageHtml = `
-                <div class="${cssPrefix}__message ${cssPrefix}__message--user">
-                    <div class="${cssPrefix}__message-content">
-                        <div class="${cssPrefix}__message-text">${this.escapeHtml(message)}</div>
+            // First, display the user's original command
+            const existingContent = containerEl.innerHTML;
+            let userCommandHtml;
+            if (cssPrefix === 'chat-message') {
+                userCommandHtml = `
+                    <div class="chat-message user-message">
+                        ${this.escapeHtml(message)}
                     </div>
-                </div>
-            `;
+                `;
+            } else {
+                userCommandHtml = `
+                    <div class="${cssPrefix}__message ${cssPrefix}__message--user">
+                        <div class="${cssPrefix}__message-content">
+                            <div class="${cssPrefix}__message-text">${this.escapeHtml(message)}</div>
+                        </div>
+                    </div>
+                `;
+            }
+            containerEl.innerHTML = existingContent + userCommandHtml;
+            containerEl.scrollTop = containerEl.scrollHeight;
+            
+            // Then handle the command results
+            let immediateAiMessage = '';  // For 'ai' and 'both' modes (send now)
+            
+            for (const result of processed.commandResults) {
+                const outputMode = result.outputMode || 'user';
+                
+                if (outputMode === 'user' || outputMode === 'both') {
+                    // Show to user
+                    window.displayCommandResult(containerEl, result, cssPrefix);
+                }
+                
+                if (outputMode === 'ai') {
+                    // Send to AI immediately (output not shown to user)
+                    immediateAiMessage += `Command output:\n${result.output}\n\n`;
+                } else if (outputMode === 'both') {
+                    // Send to AI immediately WITH current message (output shown to user AND sent to AI)
+                    immediateAiMessage += `Command output:\n${result.output}\n\n`;
+                }
+            }
+            
+            // Handle immediate AI message (for 'ai' and 'both' modes)
+            if (immediateAiMessage) {
+                message = processed.message ? `${processed.message}\n\n${immediateAiMessage}` : immediateAiMessage;
+            } else if (!processed.message || !processed.message.trim()) {
+                // No message and no immediate AI output, we're done
+                return;
+            } else {
+                // Continue with the remaining message
+                message = processed.message;
+            }
         }
         
-        containerEl.innerHTML = existingContent + userMessageHtml;
-        containerEl.scrollTop = containerEl.scrollHeight;
+        // Only show user message if NO commands were processed
+        // (If commands were processed, we already showed the original input above)
+        if (!processed.hasCommands && message && message.trim()) {
+            // Get existing content (preserve welcome message)
+            const existingContent = containerEl.innerHTML;
+            
+            // Add user message using innerHTML
+            let userMessageHtml;
+            if (cssPrefix === 'chat-message') {
+                // Terma uses different CSS structure
+                userMessageHtml = `
+                    <div class="chat-message user-message">
+                        ${this.escapeHtml(message)}
+                    </div>
+                `;
+            } else {
+                userMessageHtml = `
+                    <div class="${cssPrefix}__message ${cssPrefix}__message--user">
+                        <div class="${cssPrefix}__message-content">
+                            <div class="${cssPrefix}__message-text">${this.escapeHtml(message)}</div>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            containerEl.innerHTML = existingContent + userMessageHtml;
+            containerEl.scrollTop = containerEl.scrollHeight;
+        }
         
         // Add to buffer for async processing
         if (message && message.trim()) {
