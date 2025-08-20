@@ -1,178 +1,195 @@
-# Deployable_Units Sprint Plan
+# Sprint: Ergon Container Management
 
 ## Overview
-**Sprint Name**: Deployable_Units_Sprint  
-**Created**: 2025-08-14  
-**Status**: Active  
+Transform Ergon into a comprehensive container management platform with JSON-based registry, build system, and deployment capabilities using the Casey Method principles: simple, works, hard to screw up.
 
-## Proposal Details
+## Goals
+1. **Phase 0**: Clean up Ergon by moving Analyzer to TektonCore
+2. **Phase 1**: Build robust JSON registry for all deployable units  
+3. **Phase 2**: Implement Build system for container creation and testing
+
+## Phase 0: Infrastructure Cleanup [0% Complete]
+
+### Tasks
+- [ ] Move Analyzer functionality from Ergon to TektonCore
+- [ ] Remove Analyzer tab from Ergon UI
+- [ ] Update TektonCore to include Analyzer with Create Project integration
+- [ ] Test Analyzer functionality in TektonCore
+- [ ] Clean up Ergon navigation to prepare for Container focus
+- [ ] Update inter-component APIs for Analyzer handoff
+
+### Success Criteria
+- [ ] Analyzer fully functional in TektonCore
+- [ ] No Analyzer references remaining in Ergon
+- [ ] Ergon UI cleaned up and ready for container features
+- [ ] All existing functionality preserved
+
+### Blocked On
+- [ ] Nothing currently blocking
+
+## Phase 1: Build the Registry [0% Complete]
+
+### Core Registry Foundation
+- [ ] Design universal JSON schema for deployable units
+- [ ] Implement SQLite-based registry storage
+- [ ] Create core registry operations (store, retrieve, search, delete)
+- [ ] Build REST API endpoints (`/api/ergon/registry/*`)
+- [ ] Add JSON validation for base schema
+- [ ] Implement basic search and filtering
+
+### Registry Schema
+```json
 {
-  "name": "Deployable_Units",
-  "title": "\n                            Deployable Units\n                        ",
-  "description": "\n                        Ergon automates development, maintains a database of solutions, and should also manage and configure containers\n                    ",
-  "status": "sprint"
+  "id": "uuid_or_hash",
+  "type": "container|solution|tool|config",
+  "version": "semver",
+  "name": "human_readable_name", 
+  "created": "iso_timestamp",
+  "updated": "iso_timestamp",
+  "content": {
+    // type-specific JSON structure
+  }
 }
+```
 
-## Sprint Checklist
+### Core Operations
+- [ ] `store(json_object)` → returns ID
+- [ ] `retrieve(id)` → returns JSON object  
+- [ ] `search(type, name, filters)` → returns list
+- [ ] `list_types()` → returns available types
+- [ ] `delete(id)` → removes object
 
-### Phase 1: Planning
-- [ ] Review proposal requirements
-- [ ] Identify technical approach
-- [ ] Break down into tasks
+### UI Integration
+- [ ] Create Registry tab in Ergon
+- [ ] Browse all stored objects by type
+- [ ] Basic JSON editor with validation
+- [ ] Search and filter interface
 
-### Phase 2: Implementation
-- [ ] Core functionality
-- [ ] Integration points
-- [ ] Error handling
+### Success Criteria
+- [ ] Store and retrieve any JSON structure
+- [ ] Fast O(1) lookup by ID
+- [ ] Search by type, name, and content fields
+- [ ] UI shows stored objects clearly
+- [ ] Schema validation enforced
+- [ ] Foundation ready for container definitions
 
-### Phase 3: Testing
-- [ ] Unit tests
-- [ ] Integration tests
-- [ ] User acceptance
+### Blocked On
+- [ ] Waiting for Phase 0 completion
 
-### Phase 4: Documentation
-- [ ] Update component docs
-- [ ] API documentation
-- [ ] User guide
+## Phase 2: Build the Build System [0% Complete]
 
-## Success Criteria
-- All checklist items completed
-- Tests passing
-- Documentation updated
-Here's the complete updated SPRINT_PLAN.md content:
+### Build Tab Implementation
+- [ ] Create Build tab in Ergon UI
+- [ ] Component selection panel (browse Registry)
+- [ ] Build workspace (configure selected components)
+- [ ] Actions panel (sandbox, publish, export)
 
-``markdown
+### Component Selection Panel
+- [ ] Registry browser interface
+- [ ] Search and filter components
+- [ ] Component cards with details
+- [ ] "Add to Build" functionality
 
-Deployable Units Sprint Plan
+### Build Workspace  
+- [ ] Selected components list
+- [ ] Configuration panel for each component
+- [ ] Environment variables editor
+- [ ] Port mapping interface
+- [ ] Dependency ordering system
+- [ ] CI assignment dropdown
 
-Sprint Overview
-Sprint Goal: Build JSON-centric container management in Ergon - store, search, and manage deployable unit definitions
+### Build Settings
+- [ ] Deployable unit naming
+- [ ] Description editor
+- [ ] Container type selection
+- [ ] Tags and metadata
 
-Duration: Phased approach Components: Ergon (Registry enhancement, Container management) Sprint Type: Feature Sprint Status: Active Created: 2025-08-14 Updated: 2025-08-19
+### Sandbox Testing
+- [ ] Local testing environment
+- [ ] Resolve GitHub file references
+- [ ] Component startup orchestration
+- [ ] Log streaming to UI
+- [ ] Test endpoint provision
 
-Background
-Ergon manages JSON structures that define deployable units. Containers are one type of deployable unit that includes:
+### Publishing System
+- [ ] Generate deployable unit JSON
+- [ ] GitHub repository creation
+- [ ] Solution upload to GitHub
+- [ ] Registry entry with GitHub URL
+- [ ] Export to Docker format
 
-Multi-app stacks with configuration
-CI assignment for intelligence
-Build instructions for deployment
-Core Principle: Simple, works, hard to screw up
-Architecture Approach
-JSON-Centric Design
-Ergon Role: Manage JSON definitions, not actual containers
-Container Format: Tekton-native with --export docker capability
-Registry: Universal JSON store for all deployable unit types
-Federation Ready: JSON structures can sync between Tekton instances
-Base JSON Schema
-`json { "id": "uuid_or_hash", "type": "container|solution|tool|config", "version": "semver", "name": "human_readable_name", "created": "iso_timestamp", "updated": "iso_timestamp", "content": { / type-specific JSON structure / } } `
-Sprint Phases
-Phase 0: Infrastructure Prep
-Move Analyzer to TektonCore - Clean up Ergon UI for Containers tab
-[ ] Move analyzer functionality to TektonCore
-[ ] Remove analyzer tab from Ergon
-[ ] Prepare UI space for Containers tab
-Phase 1: Registry Foundation - CORE FOCUS
-Registry Specification
-Purpose: Simple JSON object store with ID-based retrieval and basic search
-Core Operations:
-store(json_object) → returns ID
-retrieve(id) → returns JSON object
-search(type=None, name=None, filters) → returns list of objects
-list_types() → returns available types
-delete(id) → removes object
-Implementation Deliverables:
-[ ] Registry database schema/structure (SQLite or file-based)
-[ ] Core storage operations (store, retrieve, search, delete)
-[ ] REST API endpoints (/api/ergon/registry/*)
-[ ] Basic UI integration (Registry tab shows all types)
-[ ] JSON validation for base schema
-Success Criteria:
-Store and retrieve any JSON structure
-Search by type and name
-UI can browse stored objects
-Foundation ready for container/solution/tool types
-Phase 2: Container JSON Definitions
-Define container-type JSON schema and management
-[ ] Container JSON schema design
-[ ] CI assignment mechanism
-[ ] Multi-app stack definition
-Phase 3: Apps/Tools/Config Management
-Define other deployable unit types and their relationships
-[ ] Solution type definitions
-[ ] Tool type definitions
-[ ] Config type definitions
-Phase 4: UI Integration
-Container tab with JSON editing/building capabilities
-[ ] Containers tab implementation
-[ ] JSON editor with validation
-[ ] Container creation workflow
-Future Phases:
-Phase 5: Sandbox testing
-Phase 6: Export capabilities (Docker format)
-Phase 7: Refactor/Refine capabilities
-Technical Requirements
-- No hardcoded ports/URLs (use TektonEnviron)
-Proper error handling and logging
-JSON validation and schema versioning
-Debug instrumentation following guidelines
-Simple database approach (optimize later)
-Success Criteria
-Phase 1 Registry Success:
-1. Store any JSON: Registry accepts and stores arbitrary JSON structures 2. Fast retrieval: O(1) lookup by ID 3. Basic search: Filter by type, name, and content fields 4. UI integration: Registry tab shows stored objects 5. Schema validation: Base schema enforced on all objects
----
-Updated 2025-08-19 with refined scope focusing on JSON-centric registry foundation ```
-Ergon Build Tab Workflow Specification
+### Success Criteria
+- [ ] Complete build workflow functional
+- [ ] Sandbox testing works reliably
+- [ ] Publishing to GitHub successful
+- [ ] Registry integration seamless
+- [ ] Export capabilities working
 
-Overview
-The Build tab enables users to create deployable units by combining components from the Registry, configuring them, testing locally, and publishing to GitHub.
+### Blocked On
+- [ ] Waiting for Phase 1 completion
 
-Build Tab UI Structure
-Component Selection Panel (Left)
-Registry Browser: Browse available components from Registry
-Search/Filter: Find components by type, name, tags
-Component Cards: Show name, description, type, GitHub source
-Add Button: Add selected component to build workspace
-Build Workspace (Center)
-Selected Components: List of components added to current build
-Configuration Panel: Configure each component (environment, ports, dependencies)
-Build Settings:
-- Deployable unit name - Description - CI assignment (optional) - Container type selection
-Actions Panel (Right)
-Sandbox Button: Test deployable unit locally
-Sandbox Output: Terminal/logs from testing
-Publish Button: Create GitHub repo and update Registry
-Export Options: Docker format, Tekton format
-User Workflow
-1. Component Selection
-`` User browses Registry → Finds useful components → Adds to build workspace `
-Actions:
-Browse Registry tab components
-Search by type: container|solution|app|config
-Filter by tags, author, update date
-Click "Add to Build" on component cards
-Result: Components appear in build workspace with default configuration
-2. Configuration
-` User configures each component → Sets environment variables → Defines dependencies `
-Configuration Options:
-Environment Variables: Key-value pairs for each component
-Port Mapping: Internal/external port assignments
-File Paths: Where component files are placed in container
-Dependencies: Startup order and inter-component connections
-CI Assignment: Which AI will manage this deployable unit
-3. Testing with Sandbox
-` User clicks Sandbox → Deployable unit runs locally → User verifies functionality `
-Sandbox Process:
-Resolve all GitHub file references to local files
-Create isolated test environment
-Start components in dependency order
-Stream logs/output to Sandbox Output panel
-Provide test endpoints/interfaces
-4. Publishing to GitHub
-` User clicks Publish → Creates GitHub repo → Updates local Registry → Makes solution discoverable ``
-Publish Process:
+## Technical Decisions
 
-Generate deployable unit JSON structure
-Create GitHub repository (if needed)
-Upload complete solution definition
-Add entry to local Registry with GitHub URL
-This transforms Ergon into a powerful solution development environment focused on composition, testing, and sharing.
+### Registry Storage
+- **SQLite database** for simplicity and reliability
+- **File-based fallback** for development
+- **JSON schema validation** at storage time
+- **UUID-based IDs** for global uniqueness
+
+### Build System Architecture  
+- **Component composition** over monolithic builds
+- **GitHub as source of truth** for shared components
+- **Local sandbox** for safe testing
+- **JSON-centric** configuration
+
+### Casey Method Principles
+- **Simple**: Clear operations, obvious workflows
+- **Works**: Reliable storage, predictable behavior  
+- **Hard to screw up**: Validation, safe defaults, clear errors
+
+## Out of Scope
+- Complex orchestration systems
+- Production deployment automation  
+- Advanced container networking
+- Kubernetes integration (future sprint)
+
+## Files to Create/Update
+
+### Phase 0
+```
+/tekton-core/tekton/analyzer/ (moved from Ergon)
+/Hephaestus/ui/components/tekton/analyzer-integration.html
+/Hephaestus/ui/components/ergon/ergon-component.html (remove analyzer)
+```
+
+### Phase 1  
+```
+/Ergon/ergon/registry/ (new directory)
+/Ergon/ergon/registry/storage.py
+/Ergon/ergon/registry/schema.py
+/Ergon/ergon/api/registry.py
+/Hephaestus/ui/components/ergon/registry-tab.html
+```
+
+### Phase 2
+```
+/Hephaestus/ui/components/ergon/build-tab.html
+/Ergon/ergon/build/ (new directory)
+/Ergon/ergon/build/workspace.py
+/Ergon/ergon/build/sandbox.py
+/Ergon/ergon/build/publisher.py
+```
+
+## Success Metrics
+- [ ] Ergon focused purely on container/deployment management
+- [ ] Registry stores and retrieves JSON reliably
+- [ ] Build system creates testable deployable units
+- [ ] Publishing workflow generates GitHub repositories
+- [ ] All components follow Casey Method principles
+
+## Future Integration
+This sprint sets the foundation for:
+- **Container CIs** from our Docker sprint
+- **Federated Tekton** registry synchronization
+- **Casey Method cookbooks** integration
+- **Multi-AI deployment** coordination
