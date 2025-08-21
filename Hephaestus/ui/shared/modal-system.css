@@ -3,10 +3,10 @@
 
 :root {
     /* Modal color scheme - dark theme with golden accent */
-    --modal-bg: var(--bg-primary, #1a1a2a);
+    --modal-bg: #1a1a2a; /* Direct dark background, no fallback to potentially white variables */
     --modal-border: #FFD700; /* Tekton golden accent */
     --modal-border-hover: #FFA500; /* Slightly orange on hover */
-    --modal-header-bg: var(--bg-secondary, #252535);
+    --modal-header-bg: #252535; /* Direct dark header background */
     --modal-backdrop: rgba(0, 0, 0, 0.7);
     --modal-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
     --modal-shadow-hover: 0 4px 8px rgba(255, 215, 0, 0.3);
@@ -16,7 +16,11 @@
     --modal-success-color: #4CAF50;
     --modal-error-color: #dc3545;
     --modal-warning-color: #FFA500;
-    --modal-info-color: var(--accent-color, #5a9fd4);
+    --modal-info-color: #5a9fd4;
+    
+    /* Text colors */
+    --modal-text-primary: #f0f0f0;
+    --modal-text-secondary: #d0d0d0;
 }
 
 /* Animation keyframes for smooth entry */
@@ -63,7 +67,8 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background: var(--modal-bg);
+    background: var(--modal-bg) !important;
+    color: var(--modal-text-primary) !important;
     border: 2px solid var(--modal-border);
     border-radius: 8px;
     box-shadow: var(--modal-shadow);
@@ -105,7 +110,8 @@
 /* Modal header */
 .tekton-modal-header {
     padding: 20px;
-    background: var(--modal-header-bg);
+    background: var(--modal-header-bg) !important;
+    color: var(--modal-text-primary) !important;
     border-bottom: 1px solid var(--border-color, #444444);
     border-radius: 6px 6px 0 0;
     display: flex;
@@ -117,7 +123,7 @@
     margin: 0;
     font-size: 1.3rem;
     font-weight: 600;
-    color: var(--text-primary, #f0f0f0);
+    color: var(--modal-text-primary) !important;
     display: flex;
     align-items: center;
     gap: 10px;
@@ -127,7 +133,7 @@
 .tekton-modal-close {
     background: transparent;
     border: none;
-    color: var(--text-secondary, #d0d0d0);
+    color: var(--modal-text-secondary);
     font-size: 1.5rem;
     cursor: pointer;
     padding: 0;
@@ -150,7 +156,8 @@
     padding: 20px;
     flex: 1;
     overflow-y: auto;
-    color: var(--text-primary, #f0f0f0);
+    background: var(--modal-bg) !important;
+    color: var(--modal-text-primary) !important;
 }
 
 .tekton-modal-message {
@@ -162,6 +169,7 @@
 /* Modal footer */
 .tekton-modal-footer {
     padding: 20px;
+    background: var(--modal-bg) !important;
     border-top: 1px solid var(--border-color, #444444);
     display: flex;
     gap: 12px;
@@ -177,30 +185,33 @@
     cursor: pointer;
     transition: all 0.2s ease;
     font-weight: 500;
+    /* Ensure no inherited styles affect buttons */
+    text-decoration: none !important;
+    outline: none;
 }
 
 .tekton-modal-btn--primary {
-    background-color: var(--modal-border);
-    color: #1a1a2a;
-    border-color: var(--modal-border);
+    background-color: var(--modal-border) !important;
+    color: #1a1a2a !important;
+    border-color: var(--modal-border) !important;
 }
 
 .tekton-modal-btn--primary:hover {
-    background-color: var(--modal-border-hover);
-    border-color: var(--modal-border-hover);
+    background-color: var(--modal-border-hover) !important;
+    border-color: var(--modal-border-hover) !important;
     box-shadow: 0 2px 8px rgba(255, 215, 0, 0.3);
 }
 
 .tekton-modal-btn--secondary {
-    background-color: transparent;
-    color: var(--text-primary, #f0f0f0);
-    border-color: var(--border-color, #444444);
+    background-color: var(--bg-tertiary, #333345) !important;
+    color: var(--modal-text-primary) !important;
+    border-color: var(--border-color, #444444) !important;
 }
 
 .tekton-modal-btn--secondary:hover {
-    background-color: var(--bg-tertiary, #333345);
-    border-color: var(--modal-border);
-    color: var(--modal-border);
+    background-color: var(--bg-secondary, #252535) !important;
+    border-color: var(--modal-border) !important;
+    color: var(--modal-border) !important;
 }
 
 /* Modal type variants - color accents */
@@ -293,7 +304,7 @@
 
 .tekton-modal-loading-text {
     margin-top: 16px;
-    color: var(--text-secondary, #d0d0d0);
+    color: var(--modal-text-secondary);
     font-size: 1rem;
 }
 

@@ -2807,28 +2807,34 @@ function aishUrl(path) {
     return `http://localhost:8199${path}`;
 }
 
-// TektonModal utility for showing messages
-const TektonModal = {
-    error: function(message) {
-        console.error('[TEKTON]', message);
-        alert('Error: ' + message);
-    },
-    warning: function(message) {
-        console.warn('[TEKTON]', message);
-        alert('Warning: ' + message);
-    },
-    success: function(message) {
-        console.log('[TEKTON]', message);
-        alert('Success: ' + message);
-    },
-    info: function(message) {
-        console.info('[TEKTON]', message);
-        alert('Info: ' + message);
-    },
-    confirm: async function(message, title = 'Confirm') {
-        return confirm(message);
-    }
-};
+// TektonModal utility - use the proper modal system from modal-factory.js
+// This is a fallback only if modal-factory.js hasn't loaded yet
+if (!window.TektonModal) {
+    window.TektonModal = {
+        error: function(message) {
+            console.error('[TEKTON]', message);
+            // Fallback to native alert only if modal system unavailable
+            alert('Error: ' + message);
+        },
+        warning: function(message) {
+            console.warn('[TEKTON]', message);
+            alert('Warning: ' + message);
+        },
+        success: function(message) {
+            console.log('[TEKTON]', message);
+            alert('Success: ' + message);
+        },
+        info: function(message) {
+            console.info('[TEKTON]', message);
+            alert('Info: ' + message);
+        },
+        confirm: async function(message, title = 'Confirm') {
+            return confirm(message);
+        }
+    };
+}
+// Keep a reference to the modal system
+const TektonModal = window.TektonModal;
 
 // Emergency modal close (can be called from console)
 window.forceCloseAllModals = function() {
