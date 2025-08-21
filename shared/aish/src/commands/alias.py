@@ -27,7 +27,7 @@ def print_info(msg):
 
 # Simple debug function
 def debug_log(component, msg, level="INFO"):
-    if os.environ.get('AISH_DEBUG'):
+    if TektonEnviron.get('AISH_DEBUG'):
         print(f"[DEBUG:{component}] {msg}", file=sys.stderr)
 
 def log_function(func):
@@ -44,7 +44,7 @@ def get_alias_dir() -> Path:
     """Get the alias storage directory"""
     tekton_root = TektonEnviron.get('TEKTON_ROOT')
     if not tekton_root:
-        tekton_root = os.environ.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
+        tekton_root = TektonEnviron.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
     alias_dir = Path(tekton_root) / ".tekton" / "aliases"
     return alias_dir
 
@@ -81,7 +81,7 @@ def save_alias(name: str, command: str, description: str = "") -> bool:
         "command": command,
         "description": description,
         "created_at": datetime.now().isoformat(),
-        "created_by": os.environ.get("USER", "unknown"),
+        "created_by": TektonEnviron.get("USER", "unknown"),
         "usage_count": 0,
         "last_used": None
     }

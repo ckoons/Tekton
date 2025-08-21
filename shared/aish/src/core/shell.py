@@ -368,19 +368,23 @@ MCP Server Management:
             
             # Start new MCP server
             from pathlib import Path
-            tekton_root = os.environ.get('TEKTON_ROOT', Path.home() / 'projects/github/Coder-A')
+            tekton_root = TektonEnviron.get('TEKTON_ROOT', str(Path.home() / 'projects/github/Coder-A'))
             mcp_script = Path(tekton_root) / 'shared' / 'aish' / 'aish-mcp'
             
             if mcp_script.exists():
                 env = os.environ.copy()
-                env['TEKTON_ROOT'] = str(tekton_root)
+                # Add all TektonEnviron variables to subprocess
+                for key in ['TEKTON_ROOT', 'AISH_MCP_PORT', 'AISH_PORT', 'AISH_DEBUG_MCP']:
+                    value = TektonEnviron.get(key)
+                    if value:
+                        env[key] = str(value)
                 
                 # Start MCP server
                 process = subprocess.Popen(
                     [sys.executable, str(mcp_script)],
                     env=env,
-                    stdout=subprocess.PIPE if os.environ.get('AISH_DEBUG_MCP') else subprocess.DEVNULL,
-                    stderr=subprocess.PIPE if os.environ.get('AISH_DEBUG_MCP') else subprocess.DEVNULL,
+                    stdout=subprocess.PIPE if TektonEnviron.get('AISH_DEBUG_MCP') else subprocess.DEVNULL,
+                    stderr=subprocess.PIPE if TektonEnviron.get('AISH_DEBUG_MCP') else subprocess.DEVNULL,
                     start_new_session=True
                 )
                 
@@ -394,7 +398,7 @@ MCP Server Management:
                     self._check_mcp_status()
                 else:
                     print("✗ MCP server failed to start")
-                    if os.environ.get('AISH_DEBUG_MCP'):
+                    if TektonEnviron.get('AISH_DEBUG_MCP'):
                         stdout, stderr = process.communicate()
                         if stderr:
                             print(f"Error: {stderr.decode()}")
@@ -444,7 +448,7 @@ MCP Server Management:
                 return
                 
             # For now, suggest using debug mode
-            if not os.environ.get('AISH_DEBUG_MCP'):
+            if not TektonEnviron.get('AISH_DEBUG_MCP'):
                 print("\nTo see MCP logs, restart aish with debug mode:")
                 print("  AISH_DEBUG_MCP=1 aish")
             else:
@@ -455,10 +459,12 @@ MCP Server Management:
     
     def _toggle_mcp_debug(self):
         """Toggle MCP debug mode"""
-        current = os.environ.get('AISH_DEBUG_MCP', '0')
+        current = TektonEnviron.get('AISH_DEBUG_MCP', '0')
         new_value = '0' if current == '1' else '1'
         
+        # Note: This only sets for current session, not persistent
         os.environ['AISH_DEBUG_MCP'] = new_value
+        # Could also update TektonEnviron if we want persistence
         
         if new_value == '1':
             print("✓ MCP debug mode enabled")

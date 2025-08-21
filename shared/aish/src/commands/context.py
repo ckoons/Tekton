@@ -6,6 +6,13 @@ Analyzes a Python file to show what classes and methods are available in scope.
 """
 
 import os
+import sys
+from pathlib import Path
+
+# Add parent paths for imports
+sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
+from shared.env import TektonEnviron
+
 from src.introspect import TektonInspector
 
 # Import landmarks with fallback
@@ -66,7 +73,7 @@ Shows:
         file_path = args[0]
     else:
         # Try to detect current file (could be enhanced with editor integration)
-        file_path = os.environ.get('CLAUDE_CURRENT_FILE')
+        file_path = TektonEnviron.get('CLAUDE_CURRENT_FILE')
         if not file_path:
             return "No file specified. Usage: aish context <file.py>"
     

@@ -16,11 +16,14 @@ src_path = aish_root / 'src'
 
 # Add paths
 sys.path.insert(0, str(src_path))
-sys.path.insert(0, os.environ.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Coder-A'))
 
-# Load environment
-from shared.env import TektonEnvironLock
+# Load environment first
+sys.path.insert(0, str(Path.home() / 'projects/github/Coder-A'))
+from shared.env import TektonEnviron, TektonEnvironLock
 TektonEnvironLock.load()
+
+# Now add TEKTON_ROOT using TektonEnviron
+sys.path.insert(0, TektonEnviron.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Coder-A'))
 
 # Import and run
 from mcp.app import start_mcp_server

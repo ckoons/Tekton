@@ -15,6 +15,10 @@ from typing import Dict, List, Any, Optional, Tuple
 from pathlib import Path
 import ast
 
+# Add parent paths for imports
+sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
+from shared.env import TektonEnviron
+
 # Import landmarks with fallback
 try:
     from landmarks import (
@@ -59,7 +63,7 @@ class TektonInspector:
     
     def _setup_tekton_paths(self):
         """Ensure Tekton modules are importable."""
-        tekton_root = os.environ.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Coder-A')
+        tekton_root = TektonEnviron.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Coder-A')
         paths_to_add = [
             os.path.join(tekton_root, 'shared'),
             os.path.join(tekton_root, 'shared', 'aish', 'src'),

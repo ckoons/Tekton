@@ -54,13 +54,14 @@ except ImportError:
             return func_or_class
         return decorator
 
+# Import TektonEnviron for configuration first
+sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
+from shared.env import TektonEnviron
+
 # Add TEKTON_ROOT to path if needed
-tekton_root = os.environ.get('TEKTON_ROOT')
+tekton_root = TektonEnviron.get('TEKTON_ROOT')
 if tekton_root and tekton_root not in sys.path:
     sys.path.insert(0, tekton_root)
-
-# Import TektonEnviron for configuration
-from shared.env import TektonEnviron
 from shared.urls import tekton_url
 
 # Import FastMCP utilities if available

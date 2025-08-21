@@ -5,11 +5,17 @@ Handles Greek Chorus, Terminals, and Project CIs through their endpoints.
 
 import json
 import os
+import sys
 import urllib.request
 import urllib.error
 import urllib.parse
 from datetime import datetime
+from pathlib import Path
 from typing import Optional
+
+# Add parent paths for imports
+sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
+from shared.env import TektonEnviron
 
 from shared.aish.src.registry.ci_registry import get_registry
 
@@ -223,7 +229,7 @@ def send_to_ci(ci_name: str, message: str, sender_name: Optional[str] = None,
             # Use provided sender_name or detect from environment
             if not sender_name:
                 # Detect if we're running as a CI ourselves using environment variable
-                ci_name_env = os.environ.get('TEKTON_CI_NAME')
+                ci_name_env = TektonEnviron.get('TEKTON_CI_NAME')
                 sender_name = f"aish ({ci_name_env})" if ci_name_env else 'aish'
             
             try:

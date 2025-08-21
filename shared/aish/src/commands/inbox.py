@@ -62,7 +62,7 @@ def print_info(msg):
 
 # Simple debug function
 def debug_log(component, msg, level="INFO"):
-    if os.environ.get('AISH_DEBUG'):
+    if TektonEnviron.get('AISH_DEBUG'):
         print(f"[DEBUG:{component}] {msg}", file=sys.stderr)
 
 def log_function(func):
@@ -102,7 +102,7 @@ def get_inbox_root() -> Path:
     """Get the root inbox directory"""
     tekton_root = TektonEnviron.get('TEKTON_ROOT')
     if not tekton_root:
-        tekton_root = os.environ.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
+        tekton_root = TektonEnviron.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
     inbox_root = Path(tekton_root) / ".tekton" / "inboxes"
     return inbox_root
 
@@ -239,12 +239,12 @@ def clear_inbox(ci_name: str, inbox_type: str, from_filter: Optional[str] = None
 def get_current_ci() -> str:
     """Get current CI name from environment"""
     # Try terma terminal name first
-    ci_name = os.environ.get('TERMA_TERMINAL_NAME')
+    ci_name = TektonEnviron.get('TERMA_TERMINAL_NAME')
     if ci_name:
         return ci_name
     
     # Fall back to system user
-    return os.environ.get('USER', 'unknown')
+    return TektonEnviron.get('USER', 'unknown')
 
 @log_function
 def parse_from_filter(args: List[str]) -> Tuple[List[str], Optional[str]]:
@@ -278,7 +278,7 @@ def handle_inbox_send(args: List[str]):
         return
     
     from_ci = get_current_ci()
-    purpose = os.environ.get('TERMA_PURPOSE', 'general')
+    purpose = TektonEnviron.get('TERMA_PURPOSE', 'general')
     
     message_data = create_message(from_ci, to_ci, message, purpose)
     

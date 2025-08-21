@@ -37,17 +37,18 @@ except ImportError:
             return func_or_class
         return decorator
 
+# Import and load TektonEnviron for configuration first
+sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
+from shared.env import TektonEnviron, TektonEnvironLock
+
 # Add TEKTON_ROOT to path if needed
-tekton_root = os.environ.get('TEKTON_ROOT')
+tekton_root = TektonEnviron.get('TEKTON_ROOT')
 if tekton_root and tekton_root not in sys.path:
     sys.path.insert(0, tekton_root)
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
-
-# Import and load TektonEnviron for configuration
-from shared.env import TektonEnviron, TektonEnvironLock
 # Load environment if running standalone
 if __name__ == "__main__":
     TektonEnvironLock.load()
@@ -143,16 +144,17 @@ def start_mcp_server():
     import os
     print(f"[MCP] Thread starting...", file=sys.stderr)
     
-    # Ensure we have the right paths
-    if os.environ.get('TEKTON_ROOT') and os.environ['TEKTON_ROOT'] not in sys.path:
-        sys.path.insert(0, os.environ['TEKTON_ROOT'])
-    
     # Ensure environment is loaded when running in thread
     try:
         from shared.env import TektonEnvironLock, TektonEnviron
         TektonEnvironLock.load()
     except Exception as e:
         print(f"[MCP] TektonEnvironLock.load() error: {e}", file=sys.stderr)
+    
+    # Ensure we have the right paths
+    tekton_root = TektonEnviron.get('TEKTON_ROOT')
+    if tekton_root and tekton_root not in sys.path:
+        sys.path.insert(0, tekton_root)
     
     # Get port from environment
     port = int(TektonEnviron.get("AISH_MCP_PORT", "3100"))
@@ -180,7 +182,7 @@ def start_mcp_server_thread():
     """
     Start MCP server in a background thread
     """
-    if os.environ.get('AISH_NO_MCP'):
+    if TektonEnviron.get('AISH_NO_MCP'):
         logger.info("AISH_NO_MCP set, skipping MCP server startup")
         return None
     
