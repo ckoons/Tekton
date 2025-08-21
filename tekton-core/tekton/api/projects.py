@@ -344,33 +344,105 @@ async def import_project(request: ImportProjectRequest):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.get("/{project_id}", response_model=ProjectWithStatusResponse)
+@router.get("/{project_id}", response_model=ProjectResponse)
 async def get_project(project_id: str):
-    """Get project details with git status"""
+    """Get project details"""
     try:
-        result = await project_manager.get_project_with_status(project_id)
+        # Handle special case for Tekton project
+        if project_id.lower() == 'tekton':
+            # Return Tekton project details
+            from shared.env import TektonEnviron
+            tekton_root = TektonEnviron.get('TEKTON_ROOT')
+            
+            return ProjectResponse(
+                id="tekton",
+                name="Tekton",
+                description="Multi-AI Engineering and Orchestration Platform",
+                state="active",
+                github_url="https://github.com/tektonai/tekton",
+                local_directory=tekton_root,
+                forked_repository=None,
+                upstream_repository=None,
+                companion_intelligence="gpt-oss:120b",
+                added_date=datetime.now().isoformat(),
+                is_tekton_self=True,
+                is_active=True,
+                metadata={"self_managing": True, "core_system": True}
+            )
         
-        project_data = result["project"]
-        return ProjectWithStatusResponse(
-            project=ProjectResponse(
-                id=project_data["id"],
-                name=project_data["name"],
-                description=project_data["description"],
-                state=project_data["state"],
-                github_url=project_data["github_url"],
-                local_directory=project_data["local_directory"],
-                forked_repository=project_data["forked_repository"],
-                upstream_repository=project_data["upstream_repository"],
-                companion_intelligence=project_data["companion_intelligence"],
-                added_date=project_data["added_date"],
-                is_tekton_self=project_data["is_tekton_self"],
-                metadata=project_data["metadata"]
-            ),
-            git_status=result["git_status"]
+        # For other projects, get from project manager
+        project = project_manager.registry.get_project(project_id)
+        if not project:
+            raise HTTPException(status_code=404, detail=f"Project {project_id} not found")
+        
+        # Check if working directory exists
+        is_active = True
+        if project.local_directory:
+            is_active = os.path.exists(project.local_directory)
+        
+        return ProjectResponse(
+            id=project.id,
+            name=project.name,
+            description=project.description,
+            state=project.state.value,
+            github_url=project.github_url,
+            local_directory=project.local_directory,
+            forked_repository=project.forked_repository,
+            upstream_repository=project.upstream_repository,
+            companion_intelligence=project.companion_intelligence,
+            added_date=project.added_date,
+            is_tekton_self=project.is_tekton_self,
+            is_active=is_active,
+            metadata=project.metadata
         )
-    except ValueError as e:
-        raise HTTPException(status_code=404, detail=str(e))
+    except HTTPException:
+        raise
     except Exception as e:
+        logger.error(f"Error getting project {project_id}: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/{project_id}/readme")
+async def get_project_readme(project_id: str):
+    """Get project README content"""
+    try:
+        # Handle special case for Tekton project
+        if project_id.lower() == 'tekton':
+            from shared.env import TektonEnviron
+            tekton_root = TektonEnviron.get('TEKTON_ROOT')
+            readme_path = os.path.join(tekton_root, 'README.md')
+            
+            if os.path.exists(readme_path):
+                with open(readme_path, 'r', encoding='utf-8') as f:
+                    content = f.read()
+                return {"content": content}
+            else:
+                return {"content": "# Tekton\n\nMulti-AI Engineering and Orchestration Platform"}
+        
+        # For other projects, get from project manager
+        project = project_manager.registry.get_project(project_id)
+        if not project:
+            raise HTTPException(status_code=404, detail=f"Project {project_id} not found")
+        
+        if not project.local_directory:
+            return {"content": f"# {project.name}\n\nNo local directory configured for this project."}
+        
+        # Look for README file in project directory
+        readme_files = ['README.md', 'readme.md', 'README.MD', 'README.txt', 'readme.txt']
+        for readme_name in readme_files:
+            readme_path = os.path.join(project.local_directory, readme_name)
+            if os.path.exists(readme_path):
+                with open(readme_path, 'r', encoding='utf-8') as f:
+                    content = f.read()
+                return {"content": content}
+        
+        # No README found
+        return {"content": f"# {project.name}\n\nNo README file found in project directory."}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error getting README for project {project_id}: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 

@@ -2861,9 +2861,9 @@ function showCreateProjectModal() {
     const githubUrl = document.getElementById('analyze-url').value.trim();
     document.getElementById('modal-github-url').value = githubUrl;
     
-    // Generate local directory path from repo name
+    // Generate local directory path from repo name - one level above TEKTON_ROOT
     const repoName = analyzedProjectData.repository?.name || githubUrl.split('/').pop().replace('.git', '');
-    const localDir = `/Users/cskoons/projects/${repoName}`;
+    const localDir = `/Users/cskoons/projects/github/${repoName}`;
     document.getElementById('modal-local-directory').value = localDir;
     
     // Set recommended CI if available
@@ -3121,7 +3121,21 @@ async function getGitHubUsername() {
         const response = await fetch('/api/profile');
         if (response.ok) {
             const profileData = await response.json();
-            return profileData.socialAccounts?.github || '';
+            let username = profileData.socialAccounts?.github || '';
+            
+            // Extract just the username if it's a full URL or has extra info
+            if (username.includes('github.com/')) {
+                // Extract from URL like https://github.com/username
+                username = username.split('github.com/')[1].split('/')[0];
+            } else if (username.includes('/')) {
+                // If it has a slash, take the first part
+                username = username.split('/')[0];
+            }
+            
+            // Clean up any .git extension or @ symbol
+            username = username.replace('.git', '').replace('@', '');
+            
+            return username;
         }
     } catch (error) {
         console.error('[TEKTON] Error fetching profile:', error);
@@ -3136,10 +3150,10 @@ async function prepareRepositoryProject(githubUrl) {
     // Get GitHub username from profile
     const githubUsername = await getGitHubUsername();
     
-    // Extract repo name for local directory
+    // Extract repo name for local directory - one level above TEKTON_ROOT
     const repoName = githubUrl.split('/').pop().replace('.git', '');
     const owner = githubUrl.split('/')[3];
-    const localDir = `/Users/cskoons/projects/${repoName}`;
+    const localDir = `/Users/cskoons/projects/github/${repoName}`;
     
     // Set modal fields for repository workflow
     document.getElementById('modal-github-url').value = githubUrl;
@@ -3437,6 +3451,9 @@ window.loadProjectsDashboard = async function loadProjectsDashboard() {
         
         // Create project cards
         data.projects.forEach(project => {
+            // Log project data for debugging
+            console.log(`[TEKTON] Creating card for project:`, project);
+            
             const projectCard = createProjectCard(project);
             projectsList.appendChild(projectCard);
         });
@@ -3642,10 +3659,10 @@ function createMergeCard(merge) {
 
 // Show project details in modal
 async function showProjectDetails(projectId, projectName) {
-    console.log(`[TEKTON] Showing details for project ${projectName}`);
+    console.log(`[TEKTON] Showing details for project ${projectName} (ID: ${projectId})`);
     
     try {
-        // Fetch project details including README
+        // Fetch project details
         const response = await fetch(tektonUrl('tekton-core', `/api/projects/${projectId}`));
         
         if (!response.ok) {
@@ -3653,6 +3670,9 @@ async function showProjectDetails(projectId, projectName) {
         }
         
         const project = await response.json();
+        
+        // Log the project data for debugging
+        console.log('[TEKTON] Project data received:', project);
         
         // Create modal for README editing
         showProjectDetailsModal(project);
@@ -4521,7 +4541,16 @@ async function refreshProjectStatus(projectId) {
 
 // Show project details modal with README editor
 function showProjectDetailsModal(project) {
-    console.log('[TEKTON] Showing project details for:', project.name);
+    // Ensure project has all required properties
+    const safeProject = {
+        id: project.id || 'unknown',
+        name: project.name || 'Unknown Project',
+        repo_url: project.repo_url || project.github_url || '',
+        default_branch: project.default_branch || 'main',
+        ...project
+    };
+    
+    console.log('[TEKTON] Showing project details for:', safeProject.name, 'with data:', safeProject);
     
     // Create modal overlay
     const modalOverlay = document.createElement('div');
@@ -4531,7 +4560,7 @@ function showProjectDetailsModal(project) {
     modalOverlay.innerHTML = `
         <div class="tekton__modal">
             <div class="tekton__modal-header">
-                <h3 class="tekton__modal-title">Project: ${project.name}</h3>
+                <h3 class="tekton__modal-title">Project: ${safeProject.name}</h3>
                 <button class="tekton__modal-close" onclick="closeProjectDetailsModal()">×</button>
             </div>
             <div class="tekton__modal-body">
@@ -4544,34 +4573,34 @@ function showProjectDetailsModal(project) {
                     <textarea id="project-readme-editor" class="tekton__editor">Loading README...</textarea>
                     <div class="tekton__modal-actions">
                         <button class="tekton__button tekton__button--secondary" onclick="resetProjectReadme()">Reset</button>
-                        <button class="tekton__button tekton__button--primary" onclick="saveProjectReadme('${project.id}')">Save README</button>
+                        <button class="tekton__button tekton__button--primary" onclick="saveProjectReadme('${safeProject.id}')">Save README</button>
                     </div>
                 </div>
                 <div id="project-metadata-panel" class="tekton__modal-panel" style="display: none;">
                     <div class="tekton__metadata-grid">
                         <div class="tekton__metadata-item">
                             <span class="tekton__metadata-label">Project ID:</span>
-                            <span class="tekton__metadata-value">${project.id}</span>
+                            <span class="tekton__metadata-value">${safeProject.id}</span>
                         </div>
                         <div class="tekton__metadata-item">
                             <span class="tekton__metadata-label">Repository:</span>
-                            <span class="tekton__metadata-value">${project.repo_url || 'Not set'}</span>
+                            <span class="tekton__metadata-value">${safeProject.repo_url || 'Not set'}</span>
                         </div>
                         <div class="tekton__metadata-item">
                             <span class="tekton__metadata-label">Active Sprints:</span>
-                            <span class="tekton__metadata-value">${project.active_sprints || 0}</span>
+                            <span class="tekton__metadata-value">${safeProject.active_sprints || 0}</span>
                         </div>
                         <div class="tekton__metadata-item">
                             <span class="tekton__metadata-label">Total Sprints:</span>
-                            <span class="tekton__metadata-value">${project.total_sprints || 0}</span>
+                            <span class="tekton__metadata-value">${safeProject.total_sprints || 0}</span>
                         </div>
                         <div class="tekton__metadata-item">
                             <span class="tekton__metadata-label">Created:</span>
-                            <span class="tekton__metadata-value">${project.created_at || 'Unknown'}</span>
+                            <span class="tekton__metadata-value">${safeProject.created_at || 'Unknown'}</span>
                         </div>
                         <div class="tekton__metadata-item">
                             <span class="tekton__metadata-label">Last Updated:</span>
-                            <span class="tekton__metadata-value">${project.updated_at || 'Unknown'}</span>
+                            <span class="tekton__metadata-value">${safeProject.updated_at || 'Unknown'}</span>
                         </div>
                     </div>
                 </div>
@@ -4579,19 +4608,19 @@ function showProjectDetailsModal(project) {
                     <div class="tekton__settings-form">
                         <div class="tekton__field">
                             <label class="tekton__label">Project Name:</label>
-                            <input type="text" class="tekton__input" value="${project.name}" id="project-name-input">
+                            <input type="text" class="tekton__input" value="${safeProject.name}" id="project-name-input">
                         </div>
                         <div class="tekton__field">
                             <label class="tekton__label">Repository URL:</label>
-                            <input type="text" class="tekton__input" value="${project.repo_url || ''}" id="project-repo-input">
+                            <input type="text" class="tekton__input" value="${safeProject.repo_url || ''}" id="project-repo-input">
                         </div>
                         <div class="tekton__field">
                             <label class="tekton__label">Default Branch:</label>
-                            <input type="text" class="tekton__input" value="${project.default_branch || 'main'}" id="project-branch-input">
+                            <input type="text" class="tekton__input" value="${safeProject.default_branch || 'main'}" id="project-branch-input">
                         </div>
                         <div class="tekton__modal-actions">
                             <button class="tekton__button tekton__button--secondary" onclick="closeProjectDetailsModal()">Cancel</button>
-                            <button class="tekton__button tekton__button--primary" onclick="saveProjectSettings('${project.id}')">Save Settings</button>
+                            <button class="tekton__button tekton__button--primary" onclick="saveProjectSettings('${safeProject.id}')">Save Settings</button>
                         </div>
                     </div>
                 </div>
@@ -4603,7 +4632,7 @@ function showProjectDetailsModal(project) {
     modalOverlay.style.display = 'flex';
     
     // Load README content
-    loadProjectReadme(project.id);
+    loadProjectReadme(safeProject.id);
 }
 
 // Close project details modal
@@ -4636,21 +4665,27 @@ function switchProjectTab(tab) {
 
 // Load project README
 async function loadProjectReadme(projectId) {
+    const editor = document.getElementById('project-readme-editor');
+    if (!editor) return;
+    
     try {
-        const response = await fetch(tektonUrl('tekton-core', `/projects/${projectId}/readme`));
-        const data = await response.json();
+        console.log(`[TEKTON] Loading README for project ${projectId}`);
         
-        const editor = document.getElementById('project-readme-editor');
-        if (editor) {
-            editor.value = data.content || '# Project README\n\nNo README content yet.';
-            editor.dataset.originalContent = editor.value;
+        // Use the API endpoint to fetch README
+        const response = await fetch(tektonUrl('tekton-core', `/api/projects/${projectId}/readme`));
+        
+        if (!response.ok) {
+            throw new Error(`Failed to fetch README: ${response.statusText}`);
         }
+        
+        const data = await response.json();
+        editor.value = data.content || '# Project README\n\nNo README content yet.';
+        editor.dataset.originalContent = editor.value;
+        
     } catch (error) {
         console.error('[TEKTON] Error loading README:', error);
-        const editor = document.getElementById('project-readme-editor');
-        if (editor) {
-            editor.value = '# Project README\n\nFailed to load README content.';
-        }
+        editor.value = '# Project README\n\nFailed to load README content.';
+        editor.dataset.originalContent = editor.value;
     }
 }
 
@@ -5238,12 +5273,12 @@ tekton_initChats();
                             data-tekton-input="companion-intelligence">
                         <option value="gpt-oss:20b">gpt-oss:20b (Default - Fast)</option>
                         <option value="gpt-oss:120b">gpt-oss:120b (Smart - Deep Thinking)</option>
-                        <option value="claude">Claude (Anthropic)</option>
+                        <option value="claude-opus-4-0">Claude Opus 4.0 (Anthropic)</option>
+                        <option value="claude-opus-4-1">Claude Opus 4.1 (Anthropic - Latest)</option>
                         <option value="llama3.3:70b">llama3.3:70b</option>
                         <option value="llama3.2:3b">llama3.2:3b</option>
                         <option value="llama3.1:8b">llama3.1:8b</option>
                         <option value="qwen2.5:14b">qwen2.5:14b</option>
-                        <option value="claude-3-5-sonnet-20241022">Claude 3.5 Sonnet</option>
                         <option value="gpt-4o">GPT-4o</option>
                         <option value="gpt-4o-mini">GPT-4o Mini</option>
                     </select>
