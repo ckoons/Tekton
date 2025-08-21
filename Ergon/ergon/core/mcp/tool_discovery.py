@@ -8,6 +8,8 @@ components and external MCP servers.
 import asyncio
 import json
 import logging
+import os
+from shared.env import TektonEnviron
 from typing import Dict, Any, List, Optional, Set
 from datetime import datetime
 from dataclasses import dataclass, field
@@ -101,20 +103,74 @@ class MCPToolDiscovery:
         self.discovery_running = False
         self._discovery_task = None
         
-        # Known Tekton MCP servers
-        self.known_servers = {
-            "hermes": {"url": "http://localhost:8010", "component": "hermes"},
-            "terma": {"url": "http://localhost:8011", "component": "terma"},
-            "athena": {"url": "http://localhost:8015", "component": "athena"},
-            "metis": {"url": "http://localhost:8016", "component": "metis"},
-            "prometheus": {"url": "http://localhost:8017", "component": "prometheus"},
-            "harmonia": {"url": "http://localhost:8018", "component": "harmonia"},
-            "synthesis": {"url": "http://localhost:8019", "component": "synthesis"},
-            "telos": {"url": "http://localhost:8021", "component": "telos"},
-            "rhetor": {"url": "http://localhost:8022", "component": "rhetor"},
-            "apollo": {"url": "http://localhost:8023", "component": "apollo"},
-            "sophia": {"url": "http://localhost:8026", "component": "sophia"},
+        # Import shared URLs
+        try:
+            from shared.urls import (
+                hermes_url, terma_url, athena_url, metis_url, 
+                prometheus_url, harmonia_url, synthesis_url, 
+                telos_url, rhetor_url, apollo_url, sophia_url
+            )
+            
+            # Known Tekton MCP servers with dynamic URLs
+            self.known_servers = {
+                "hermes": {"url": hermes_url(""), "component": "hermes"},
+                "terma": {"url": terma_url(""), "component": "terma"},
+                "athena": {"url": athena_url(""), "component": "athena"},
+                "metis": {"url": metis_url(""), "component": "metis"},
+                "prometheus": {"url": prometheus_url(""), "component": "prometheus"},
+                "harmonia": {"url": harmonia_url(""), "component": "harmonia"},
+                "synthesis": {"url": synthesis_url(""), "component": "synthesis"},
+                "telos": {"url": telos_url(""), "component": "telos"},
+                "rhetor": {"url": rhetor_url(""), "component": "rhetor"},
+                "apollo": {"url": apollo_url(""), "component": "apollo"},
+                "sophia": {"url": sophia_url(""), "component": "sophia"},
+            }
+        except ImportError:
+            # Fallback to environment-aware defaults if shared.urls not available
+            self.known_servers = self._get_fallback_servers()
+    
+    def _get_fallback_servers(self) -> Dict[str, Dict[str, str]]:
+        """Get fallback server URLs using environment variables."""
+        # Determine base port range from environment
+        base_port = 8000  # Default Tekton port range
+        
+        # Check for environment-specific ports
+        hermes_port = TektonEnviron.get("HERMES_PORT")
+        if hermes_port:
+            # If we have a specific port, determine the base range
+            port_num = int(hermes_port)
+            base_port = (port_num // 100) * 100  # Get the base (8000 or 8100)
+        
+        # Define component port offsets
+        port_offsets = {
+            "hermes": 1,
+            "terma": 15,  # Note: Terma actually uses port 15
+            "athena": 5,
+            "metis": 16,
+            "prometheus": 6,
+            "harmonia": 18,
+            "synthesis": 19,
+            "telos": 21,
+            "rhetor": 3,
+            "apollo": 23,
+            "sophia": 26,
         }
+        
+        # Build server URLs
+        servers = {}
+        for component, offset in port_offsets.items():
+            port = base_port + offset
+            # Check for component-specific port override
+            env_port = TektonEnviron.get(f"{component.upper()}_PORT")
+            if env_port:
+                port = int(env_port)
+            
+            servers[component] = {
+                "url": f"http://localhost:{port}",
+                "component": component
+            }
+        
+        return servers
         
     async def start_discovery(self):
         """Start the tool discovery process."""
@@ -334,6 +390,35 @@ class MCPToolDiscovery:
                  "component": self.servers[server_name].component}
             )
             
+    def refresh_server_urls(self):
+        """Refresh server URLs from environment in case they changed."""
+        try:
+            from shared.urls import (
+                hermes_url, terma_url, athena_url, metis_url, 
+                prometheus_url, harmonia_url, synthesis_url, 
+                telos_url, rhetor_url, apollo_url, sophia_url
+            )
+            
+            # Update with fresh URLs
+            self.known_servers = {
+                "hermes": {"url": hermes_url(""), "component": "hermes"},
+                "terma": {"url": terma_url(""), "component": "terma"},
+                "athena": {"url": athena_url(""), "component": "athena"},
+                "metis": {"url": metis_url(""), "component": "metis"},
+                "prometheus": {"url": prometheus_url(""), "component": "prometheus"},
+                "harmonia": {"url": harmonia_url(""), "component": "harmonia"},
+                "synthesis": {"url": synthesis_url(""), "component": "synthesis"},
+                "telos": {"url": telos_url(""), "component": "telos"},
+                "rhetor": {"url": rhetor_url(""), "component": "rhetor"},
+                "apollo": {"url": apollo_url(""), "component": "apollo"},
+                "sophia": {"url": sophia_url(""), "component": "sophia"},
+            }
+        except ImportError:
+            # Fallback to environment-aware defaults
+            self.known_servers = self._get_fallback_servers()
+            
+        logger.info(f"Refreshed server URLs for {len(self.known_servers)} servers")
+    
     def get_discovery_status(self) -> Dict[str, Any]:
         """Get current discovery status."""
         connected_servers = sum(1 for s in self.servers.values() if s.connected)
