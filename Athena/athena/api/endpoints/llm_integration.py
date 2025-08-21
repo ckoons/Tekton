@@ -45,9 +45,18 @@ router = APIRouter(tags=["llm"])
 template_registry = PromptTemplateRegistry()
 
 # Create LLM client
+try:
+    from shared.urls import rhetor_url
+    default_rhetor_url = rhetor_url("")
+except ImportError:
+    # Fallback if shared module not available
+    from shared.env import TektonEnviron
+    port = TektonEnviron.get("RHETOR_PORT", "8103")
+    default_rhetor_url = f"http://localhost:{port}"
+
 llm_client = TektonLLMClient(
     component_id="athena.knowledge",
-    rhetor_url=get_env("TEKTON_LLM_URL", "http://localhost:8003"),
+    rhetor_url=get_env("TEKTON_LLM_URL", default_rhetor_url),
     provider_id=get_env("TEKTON_LLM_PROVIDER", "anthropic"),
     model_id=get_env("TEKTON_LLM_MODEL", "claude-3-sonnet-20240229"),
     timeout=60,

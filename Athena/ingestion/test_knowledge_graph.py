@@ -6,7 +6,14 @@ Test script to verify Athena Knowledge Graph is working correctly
 import httpx
 import json
 
-BASE_URL = "http://localhost:8005/api/v1"
+try:
+    from shared.urls import athena_url
+    BASE_URL = athena_url("/api/v1")
+except ImportError:
+    # Fallback if shared module not available
+    import os
+    port = os.environ.get("ATHENA_PORT", "8105")
+    BASE_URL = f"http://localhost:{port}/api/v1"
 
 def test_endpoints():
     """Test various Athena endpoints"""

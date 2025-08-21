@@ -33,7 +33,14 @@ except ImportError:
             logger.info(f"Mock registering capability: {args} {kwargs}")
             return {"success": True, "id": "mock-id"}
 
-HERMES_URL = TektonEnviron.get("HERMES_URL", "http://localhost:8000")
+try:
+    from shared.urls import hermes_url, athena_url
+    HERMES_URL = TektonEnviron.get("HERMES_URL", hermes_url(""))
+    ATHENA_BASE_URL = TektonEnviron.get("ATHENA_URL", athena_url(""))
+except ImportError:
+    # Fallback if shared module not available
+    HERMES_URL = TektonEnviron.get("HERMES_URL", f"http://localhost:{TektonEnviron.get('HERMES_PORT', '8101')}")
+    ATHENA_BASE_URL = TektonEnviron.get("ATHENA_URL", f"http://localhost:{TektonEnviron.get('ATHENA_PORT', '8105')}")
 
 async def register_capabilities():
     """Register Athena capabilities with Hermes."""
@@ -44,7 +51,7 @@ async def register_capabilities():
         name="athena",
         description="Knowledge graph service with enhanced retrieval capabilities inspired by LightRAG",
         version="1.0.0",
-        base_url=TektonEnviron.get("ATHENA_URL", "http://localhost:8001")
+        base_url=ATHENA_BASE_URL
     )
     
     logger.info(f"Component registration: {component_response}")

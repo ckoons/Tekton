@@ -54,7 +54,16 @@ class HermesKnowledgeAdapter:
             auto_register: Whether to auto-register with Hermes
         """
         self.component_id = component_id
-        self.hermes_url = hermes_url or os.getenv("HERMES_URL", "http://localhost:8000")
+        # Use Tekton's centralized URL management
+        try:
+            from shared.urls import hermes_url as get_hermes_url
+            default_hermes = get_hermes_url("")
+        except ImportError:
+            # Fallback if shared module not available
+            port = TektonEnviron.get("HERMES_PORT", "8101")
+            default_hermes = f"http://localhost:{port}"
+        
+        self.hermes_url = hermes_url or os.getenv("HERMES_URL", default_hermes)
         self.auto_register = auto_register
         self.engine = None
         self.is_registered = False

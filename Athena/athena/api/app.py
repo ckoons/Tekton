@@ -7,6 +7,7 @@ Provides comprehensive knowledge graph functionality.
 
 import os
 from shared.env import TektonEnviron
+from shared.urls import hermes_url, rhetor_url
 import sys
 import logging
 import asyncio
@@ -185,8 +186,8 @@ async def discovery():
         ],
         capabilities=capabilities,
         dependencies={
-            "hermes": "http://localhost:8001",
-            "rhetor": "http://localhost:8003"
+            "hermes": hermes_url(""),
+            "rhetor": rhetor_url("")
         },
         metadata={
             **metadata,
