@@ -34,17 +34,36 @@ except ImportError:
             return func_or_class
         return decorator
 
-from shared.utils.env_config import get_component_config
-
-def get_component_port(component_name: str) -> int:
-    port_map = {'rhetor': 8003, 'hermes': 8001, 'apollo': 8012}
-    return port_map.get(component_name, 8000)
+# Use Tekton's centralized URL management
+from shared.urls import rhetor_url, hermes_url, apollo_url
 
 def get_component_url(component_name: str, protocol: str = "http") -> str:
-    port = get_component_port(component_name)
+    """Get component URL using Tekton's centralized URL management."""
     if protocol == "ws":
-        return f"ws://localhost:{port}"
-    return f"http://localhost:{port}"
+        # For WebSocket, we need to build it manually
+        if component_name == "rhetor":
+            base_url = rhetor_url("")
+        elif component_name == "hermes":
+            base_url = hermes_url("")
+        elif component_name == "apollo":
+            base_url = apollo_url("")
+        else:
+            # Fallback
+            base_url = f"http://localhost:8000"
+        
+        # Convert http to ws
+        return base_url.replace("http://", "ws://").replace("https://", "wss://")
+    
+    # For HTTP, use the URL builders directly
+    if component_name == "rhetor":
+        return rhetor_url("")
+    elif component_name == "hermes":
+        return hermes_url("")
+    elif component_name == "apollo":
+        return apollo_url("")
+    else:
+        # Fallback
+        return f"http://localhost:8000"
 
 # Configure logging
 logger = logging.getLogger(__name__)

@@ -62,9 +62,11 @@ try:
     def get_hermes_url() -> str:
         return hermes_url("")
 except ImportError:
-    # from tekton.utils.port_config import get_hermes_url
+    # Fallback - try to use environment variable if available
+    from shared.env import TektonEnviron
     def get_hermes_url() -> str:
-        return "http://localhost:8001"
+        port = TektonEnviron.get("HERMES_PORT", "8101")
+        return f"http://localhost:{port}"
 
 # Configure logging
 logger = logging.getLogger(__name__)
