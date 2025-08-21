@@ -1,1 +1,0 @@
-"""Example scripts for Tekton core functionality."""
