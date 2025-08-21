@@ -63,7 +63,8 @@ class RegistrationClientAPI:
         elif get_hermes_url:
             self.api_endpoint = get_hermes_url("/api").rstrip("/")
         else:
-            self.api_endpoint = "http://localhost:8000/api"
+            # Fallback to standard Tekton default port
+            self.api_endpoint = "http://localhost:8001/api"
         self.metadata = metadata or {}
         self.heartbeat_interval = heartbeat_interval
         

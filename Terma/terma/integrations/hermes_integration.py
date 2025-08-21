@@ -34,7 +34,7 @@ class HermesIntegration:
         elif hermes_url:
             self.api_url = hermes_url("")
         else:
-            self.api_url = "http://localhost:8000"
+            self.api_url = "http://localhost:8001"
         self.session_manager = session_manager
         self.component_name = component_name
         self.capabilities = self._get_capabilities()

@@ -6,13 +6,14 @@ Main entry point for Tekton Core API server.
 import os
 import sys
 
-# Add Tekton root to path if not already present using TektonEnviron
+# IMPORTANT: Add Tekton root to path FIRST to use main tekton library
+# This ensures we use /tekton/core/ not any local tekton/core/
 from shared.env import TektonEnviron
 tekton_root = TektonEnviron.get('TEKTON_ROOT')
 if tekton_root and tekton_root not in sys.path:
     sys.path.insert(0, tekton_root)
 elif not tekton_root:
-    # Fallback for development
+    # Fallback for development - go up to parent of tekton-core
     tekton_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..'))
     if tekton_root not in sys.path:
         sys.path.insert(0, tekton_root)
@@ -26,7 +27,7 @@ if __name__ == "__main__":
     
     # Use direct uvicorn.run() to ensure startup events work
     import uvicorn
-    from tekton.api.app import app
+    from tekton_api.api.app import app
     
     print(f"Starting Tekton Core on port {default_port}...")
     uvicorn.run(app, host="0.0.0.0", port=default_port)

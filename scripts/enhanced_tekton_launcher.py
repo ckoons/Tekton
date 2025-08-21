@@ -928,8 +928,8 @@ class EnhancedComponentLauncher:
         if normalized_name in module_components:
             # Use Python module execution with normalized name
             if normalized_name == "tekton_core":
-                # Special handling for tekton_core - use the original working approach
-                return [sys.executable, "-m", "tekton.api.app"]
+                # Special handling for tekton_core - use the new module name
+                return [sys.executable, "-m", "tekton_api.api.app"]
             else:
                 # Standard module execution
                 return [sys.executable, "-m", normalized_name]

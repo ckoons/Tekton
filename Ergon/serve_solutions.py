@@ -45,5 +45,5 @@ def get_solutions():
         })
 
 if __name__ == '__main__':
-    print("Serving solutions on http://localhost:8102/api/v1/solutions")
-    app.run(port=8102, debug=True)
+    print("Serving solutions on http://localhost:8002/api/v1/solutions")
+    app.run(port=8002, debug=True)

@@ -31,7 +31,7 @@ tekton-register unregister --component rhetor
 
 ```python
 import asyncio
-from tekton.utils.registration import (
+from tekton_api.utils.registration import (
     load_component_config,
     register_component,
     unregister_component,

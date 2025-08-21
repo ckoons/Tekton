@@ -431,7 +431,9 @@ class WorkflowMemory:
         # TODO: Implement more sophisticated pattern recognition
         
         for workflow in workflows:
-            pattern_key = workflow.pattern_type or "unknown"
+            # Extract pattern type from the pattern JSON if available
+            pattern_data = workflow.pattern if workflow.pattern else {}
+            pattern_key = pattern_data.get("type", "unknown")
             
             if pattern_key not in patterns:
                 patterns[pattern_key] = []

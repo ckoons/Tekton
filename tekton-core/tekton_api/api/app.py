@@ -15,13 +15,14 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 
-# Add Tekton root to path if not already present using TektonEnviron
+# IMPORTANT: Add Tekton root to path FIRST to use main tekton library
+# This ensures we use /tekton/core/ not any local tekton/core/
 from shared.env import TektonEnviron
 tekton_root = TektonEnviron.get('TEKTON_ROOT')
 if tekton_root and tekton_root not in sys.path:
     sys.path.insert(0, tekton_root)
 elif not tekton_root:
-    # Fallback for development
+    # Fallback for development - go up to parent of tekton-core
     tekton_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..'))
     if tekton_root not in sys.path:
         sys.path.insert(0, tekton_root)
@@ -87,14 +88,14 @@ from tekton.core.project_manager import ProjectManager
 from tekton.core.merge_coordinator import MergeCoordinator, MergeState
 
 # Import our new projects API
-from tekton.api import projects as projects_v2
+from tekton_api.api import projects as projects_v2
 
 # Import sprint management API
-from tekton.api import sprints as sprints_api
-from tekton.api import sprints_file_endpoints
+from tekton_api.api import sprints as sprints_api
+from tekton_api.api import sprints_file_endpoints
 
 # Import analyzer API
-from tekton.api import analyzer as analyzer_api
+from tekton_api.api import analyzer as analyzer_api
 
 # Create component instance (singleton)
 component = TektonCoreComponent()
@@ -147,7 +148,8 @@ async def startup_callback():
         # Ensure both paths are in sys.path for sprint components
         tekton_core_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
         if tekton_core_path not in sys.path:
-            sys.path.insert(0, tekton_core_path)
+            # Add AFTER main tekton library to avoid namespace collision
+            sys.path.append(tekton_core_path)
             logger.info(f"STARTUP CALLBACK: Added tekton-core path to sys.path: {tekton_core_path}")
         
         logger.info("STARTUP CALLBACK: About to import SprintCoordinator...")

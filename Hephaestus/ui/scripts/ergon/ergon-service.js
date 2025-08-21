@@ -10,7 +10,7 @@ console.log('[FILE_TRACE] Loading: ergon-service.js');
 class ErgonService {
     constructor() {
         this.initialized = false;
-        this.apiBase = window.ergonUrl ? window.ergonUrl('/api/v1') : 'http://localhost:8102/api/v1';
+        this.apiBase = window.ergonUrl ? window.ergonUrl('/api/v1') : 'http://localhost:8002/api/v1';
         this.pendingRequests = new Map();
         this.requestTimeouts = {};
         this.cache = {

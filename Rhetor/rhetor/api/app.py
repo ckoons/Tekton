@@ -6,6 +6,7 @@ and prompt engineering capabilities.
 """
 
 import os
+from shared.env import TektonEnviron
 import sys
 import asyncio
 import json
@@ -29,6 +30,7 @@ if tekton_root not in sys.path:
     sys.path.insert(0, tekton_root)
 
 # Import shared utilities
+from shared.urls import hermes_url
 from shared.utils.global_config import GlobalConfig
 from shared.utils.logging_setup import setup_component_logging
 from shared.utils.health_check import create_health_response
@@ -291,7 +293,7 @@ async def discovery():
         ],
         capabilities=component.get_capabilities() if component else [],
         dependencies={
-            "hermes": "http://localhost:8001"
+            "hermes": hermes_url("")
         },
         metadata=component.get_metadata() if component else {}
     )

@@ -20,7 +20,7 @@ from shared.utils.env_config import get_component_config
 
 logger = logging.getLogger(__name__)
 
-HERMES_API_URL = TektonEnviron.get("HERMES_API_URL", "http://localhost:8100")
+HERMES_API_URL = TektonEnviron.get("HERMES_API_URL", "http://localhost:8000")
 config = get_component_config()
 RHETOR_PORT = config.rhetor.port if hasattr(config, 'rhetor') else int(TektonEnviron.get("RHETOR_PORT"))
 

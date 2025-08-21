@@ -39,8 +39,8 @@ try:
     ATHENA_BASE_URL = TektonEnviron.get("ATHENA_URL", athena_url(""))
 except ImportError:
     # Fallback if shared module not available
-    HERMES_URL = TektonEnviron.get("HERMES_URL", f"http://localhost:{TektonEnviron.get('HERMES_PORT', '8101')}")
-    ATHENA_BASE_URL = TektonEnviron.get("ATHENA_URL", f"http://localhost:{TektonEnviron.get('ATHENA_PORT', '8105')}")
+    HERMES_URL = TektonEnviron.get("HERMES_URL", f"http://localhost:{TektonEnviron.get('HERMES_PORT', '8001')}")
+    ATHENA_BASE_URL = TektonEnviron.get("ATHENA_URL", f"http://localhost:{TektonEnviron.get('ATHENA_PORT', '8005')}")
 
 async def register_capabilities():
     """Register Athena capabilities with Hermes."""

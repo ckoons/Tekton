@@ -118,7 +118,8 @@ class LLMAdapter:
             from tekton_llm_client import Client as TektonClient
             
             # Use environment variable for the server URL
-            server_url = TektonEnviron.get("TEKTON_LLM_SERVER", "http://localhost:8000")
+            # Default to Rhetor's standard port for LLM services
+            server_url = TektonEnviron.get("TEKTON_LLM_SERVER", TektonEnviron.get("RHETOR_URL", "http://localhost:8003"))
             
             # Initialize the client
             self.client = TektonClient(server_url)

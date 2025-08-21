@@ -53,7 +53,7 @@ class SophiaClient:
             elif sophia_url:
                 self.base_url = sophia_url("")
             else:
-                self.base_url = get_config("SOPHIA_API_URL", "http://localhost:8006")
+                self.base_url = get_config("SOPHIA_API_URL", "http://localhost:8014")
             # Try to use tekton_http shared utility to create client
             self.client = create_http_client(
                 base_url=self.base_url,
@@ -73,7 +73,7 @@ class SophiaClient:
             elif sophia_url:
                 self.base_url = sophia_url("")
             else:
-                self.base_url = "http://localhost:8006"
+                self.base_url = "http://localhost:8014"
             self.client = httpx.AsyncClient(base_url=self.base_url, timeout=30.0)
             logger.info(f"Using httpx client with base URL: {self.base_url}")
         

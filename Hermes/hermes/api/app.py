@@ -181,7 +181,7 @@ def run_server():
     import uvicorn
     
     host = TektonEnviron.get("HOST", "0.0.0.0")
-    port_str = TektonEnviron.get("PORT", "8000")
+    port_str = TektonEnviron.get("HERMES_PORT", TektonEnviron.get("PORT", "8001"))
     port = int(port_str)
     debug = TektonEnviron.get("DEBUG", "False").lower() == "true"
     

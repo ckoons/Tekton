@@ -87,8 +87,8 @@ class RhetorInterface:
     def __init__(
         self, 
         base_url: Optional[str] = None,
-        retry_count: int = 3,
-        retry_delay: float = 1.0,
+        retry_count: int = 5,
+        retry_delay: float = 2.0,
         timeout: float = 10.0
     ):
         """
@@ -155,19 +155,21 @@ class RhetorInterface:
                     
                     return await response.json()
                     
-            except asyncio.TimeoutError:
+            except asyncio.TimeoutError as e:
                 logger.warning(f"Request to Rhetor API timed out (attempt {attempt + 1}/{self.retry_count})")
+                last_error = e
                 
             except Exception as e:
                 logger.warning(f"Error in request to Rhetor API (attempt {attempt + 1}/{self.retry_count}): {e}")
+                last_error = e
                 
             # Last attempt failed
             if attempt == self.retry_count - 1:
                 logger.error(f"Request to Rhetor API failed after {self.retry_count} attempts")
-                raise
+                raise last_error if 'last_error' in locals() else Exception("Request failed after all retries")
                 
-            # Wait before retrying
-            await asyncio.sleep(self.retry_delay)
+            # Wait before retrying (exponential backoff)
+            await asyncio.sleep(self.retry_delay * (attempt + 1))
     
     @api_contract(
         title="Get Active LLM Sessions",

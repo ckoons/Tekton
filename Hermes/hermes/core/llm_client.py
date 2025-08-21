@@ -7,6 +7,7 @@ all Tekton components.
 """
 
 import os
+from shared.env import TektonEnviron
 import json
 import logging
 import asyncio
@@ -53,12 +54,17 @@ class LLMClient:
             templates_directory: Path to prompt templates directory
         """
         # Get environment variables or set defaults
-        rhetor_port = get_env("RHETOR_PORT", "8003")
-        default_adapter_url = f"http://localhost:{rhetor_port}"
+        try:
+            from shared.urls import rhetor_url
+            default_adapter_url = rhetor_url("")
+        except ImportError:
+            # Fallback to standard Tekton default port
+            rhetor_port = TektonEnviron.get("RHETOR_PORT", "8003")
+            default_adapter_url = f"http://localhost:{rhetor_port}"
         
-        self.adapter_url = adapter_url or get_env("LLM_ADAPTER_URL", default_adapter_url)
-        self.provider = provider or get_env("LLM_PROVIDER", "anthropic")
-        self.model = model or get_env("LLM_MODEL", "claude-3-haiku-20240307")
+        self.adapter_url = adapter_url or TektonEnviron.get("LLM_ADAPTER_URL", default_adapter_url)
+        self.provider = provider or TektonEnviron.get("LLM_PROVIDER", "anthropic")
+        self.model = model or TektonEnviron.get("LLM_MODEL", "claude-3-haiku-20240307")
         
         # Initialize client settings
         self.client_settings = ClientSettings(
