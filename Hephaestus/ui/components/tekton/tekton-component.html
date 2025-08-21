@@ -3004,10 +3004,9 @@ async function createProjectFromModal() {
             requestBody.upstream_repository = upstreamRepository;
         }
         
-        // Don't include forked_repository if it's a URL that doesn't exist yet
-        // The backend will handle fork creation
-        if (forkedRepository && !forkedRepository.includes('github.com/' + (await getGitHubUsername()) + '/')) {
-            // Only include if it's not the user's fork (which doesn't exist yet)
+        // Include forked_repository if specified
+        // The backend will handle whether the fork exists or needs to be created
+        if (forkedRepository) {
             requestBody.forked_repository = forkedRepository;
         }
         
@@ -3312,10 +3311,13 @@ function prepareNewProject() {
             document.getElementById('local-directory').value = `$TEKTON_ROOT/../${repoName}`;
         });
     
-    // Set forked repo to use ckoons (your fork), matching the input URL format
-    const gitSuffix = githubUrl.endsWith('.git') ? '.git' : '';
-    document.getElementById('forked-repository').value = `https://github.com/ckoons/${repoName}${gitSuffix}`;
-    document.getElementById('upstream-repository').value = githubUrl;
+    // Get GitHub username from profile for fork URL
+    getGitHubUsername().then(githubUsername => {
+        const gitSuffix = githubUrl.endsWith('.git') ? '.git' : '';
+        const forkUrl = githubUsername ? `https://github.com/${githubUsername}/${repoName}${gitSuffix}` : '';
+        document.getElementById('forked-repository').value = forkUrl;
+        document.getElementById('upstream-repository').value = githubUrl;
+    });
     
     // Enable the Create button
     document.getElementById('create-project-btn').disabled = false;
