@@ -23,7 +23,7 @@ except ImportError:
     class TektonEnviron:
         @staticmethod
         def get(key, default=None):
-            return os.environ.get(key, default)
+            return TektonEnviron.get(key, default)
 
 # Import our components
 from .dev_sprint_monitor import DevSprintMonitor, DevSprint, CoderAssignment

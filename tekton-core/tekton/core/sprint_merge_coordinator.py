@@ -27,7 +27,7 @@ except ImportError:
     class TektonEnviron:
         @staticmethod
         def get(key, default=None):
-            return os.environ.get(key, default)
+            return TektonEnviron.get(key, default)
 
 # Import landmarks for architectural documentation
 try:

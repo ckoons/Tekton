@@ -386,8 +386,8 @@ class EnhancedComponentKiller:
             cleanup_performed = False
             
             # Clean up log files if specified
-            log_dir = os.environ.get('TEKTON_LOG_DIR', 
-                                    os.path.join(os.environ.get('TEKTON_ROOT', os.path.expanduser('~')), 
+            log_dir = TektonEnviron.get('TEKTON_LOG_DIR', 
+                                    os.path.join(TektonEnviron.get('TEKTON_ROOT', os.path.expanduser('~')), 
                                                 '.tekton', 'logs'))
             log_patterns = [
                 f"/tmp/{component_name}*.log",

@@ -15,7 +15,7 @@ import os
 from pathlib import Path
 
 # Add TEKTON_ROOT to path
-sys.path.insert(0, os.environ.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Coder-A'))
+sys.path.insert(0, TektonEnviron.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Coder-A'))
 from shared.env import TektonEnviron, TektonEnvironLock
 # Load environment to get correct port
 TektonEnvironLock.load()

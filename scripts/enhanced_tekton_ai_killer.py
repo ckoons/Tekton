@@ -46,7 +46,7 @@ class AIKiller:
             self.ai_port_base = int(TektonEnviron.get('TEKTON_AI_PORT_BASE', 45000))
         else:
             # Fallback to os.environ when running as subprocess
-            self.ai_port_base = int(os.environ.get('TEKTON_AI_PORT_BASE', 45000))
+            self.ai_port_base = int(TektonEnviron.get('TEKTON_AI_PORT_BASE', 45000))
         self.logger.info(f"AI killer initialized for port base: {self.ai_port_base}")
         
     def kill_ai_by_id(self, ai_id: str) -> bool:

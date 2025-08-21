@@ -15,7 +15,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from shared.env import TektonEnviron, TektonEnvironLock
 
 # Check if specific coder environment requested
-coder_env = os.environ.get('CODER_ENV')
+coder_env = TektonEnviron.get('CODER_ENV')
 if coder_env:
     # For different coder environments, we need to handle this at the launcher level
     # The original tekton launcher sets up the environment properly

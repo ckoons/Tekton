@@ -24,7 +24,7 @@ from collections import defaultdict
 VIOLATION_PATTERNS = [
     (re.compile(r'\bos\.environ\b'), 'os.environ'),
     (re.compile(r'\bos\.getenv\b'), 'os.getenv'),
-    (re.compile(r'\bos\.environ\.get\b'), 'os.environ.get'),
+    (re.compile(r'\bos\.environ\.get\b'), 'TektonEnviron.get'),
     (re.compile(r'\bos\.environ\['), 'os.environ[]'),
     (re.compile(r'\bos\.environb\b'), 'os.environb'),
 ]
@@ -157,7 +157,7 @@ class EnvUsageChecker:
         print("\n💡 To fix violations:")
         print("  1. Add to imports: from shared.env import TektonEnviron")
         print("  2. Replace:")
-        print("     os.environ.get('KEY', 'default')  →  TektonEnviron.get('KEY', 'default')")
+        print("     TektonEnviron.get('KEY', 'default')  →  TektonEnviron.get('KEY', 'default')")
         print("     os.environ['KEY']                 →  TektonEnviron.get('KEY')")
         print("     os.getenv('KEY')                  →  TektonEnviron.get('KEY')")
 

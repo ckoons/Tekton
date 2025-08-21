@@ -8,7 +8,7 @@ import pytest
 from pathlib import Path
 
 # Add Tekton root to path
-tekton_root = os.environ.get('TEKTON_ROOT', os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+tekton_root = TektonEnviron.get('TEKTON_ROOT', os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, tekton_root)
 
 from shared.env import TektonEnvironLock, TektonEnviron, TektonEnvironUpdate, _frozen_env, _is_loaded
