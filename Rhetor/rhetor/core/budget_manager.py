@@ -6,6 +6,7 @@ different LLM providers, enforces budget limits, and provides reporting capabili
 """
 
 import os
+from shared.env import TektonEnviron
 import json
 import logging
 import sqlite3
@@ -106,21 +107,21 @@ class BudgetManager:
         }
         
         # Load environment variables for policy configuration
-        self.default_policy = os.environ.get("RHETOR_BUDGET_POLICY", BudgetPolicy.WARN)
+        self.default_policy = TektonEnviron.get("RHETOR_BUDGET_POLICY", BudgetPolicy.WARN)
         
         # Initialize the database
         self._init_db()
         
         # Try to load the default budget limit if not already set
-        default_daily_limit = float(os.environ.get("RHETOR_BUDGET_DAILY_LIMIT", "0"))
+        default_daily_limit = float(TektonEnviron.get("RHETOR_BUDGET_DAILY_LIMIT", "0"))
         if default_daily_limit > 0:
             self._set_budget_if_not_exists(BudgetPeriod.DAILY, default_daily_limit)
             
-        default_weekly_limit = float(os.environ.get("RHETOR_BUDGET_WEEKLY_LIMIT", "0"))
+        default_weekly_limit = float(TektonEnviron.get("RHETOR_BUDGET_WEEKLY_LIMIT", "0"))
         if default_weekly_limit > 0:
             self._set_budget_if_not_exists(BudgetPeriod.WEEKLY, default_weekly_limit)
             
-        default_monthly_limit = float(os.environ.get("RHETOR_BUDGET_MONTHLY_LIMIT", "0"))
+        default_monthly_limit = float(TektonEnviron.get("RHETOR_BUDGET_MONTHLY_LIMIT", "0"))
         if default_monthly_limit > 0:
             self._set_budget_if_not_exists(BudgetPeriod.MONTHLY, default_monthly_limit)
     

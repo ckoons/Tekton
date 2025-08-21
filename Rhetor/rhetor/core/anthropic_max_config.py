@@ -6,6 +6,7 @@ enabling unlimited token usage for testing and development.
 """
 
 import os
+from shared.env import TektonEnviron
 import logging
 from typing import Dict, Any, Optional
 
@@ -32,7 +33,7 @@ class AnthropicMaxConfig:
     def _check_environment(self):
         """Check environment for Anthropic Max configuration."""
         # Check environment variable
-        max_env = os.environ.get("ANTHROPIC_MAX_ACCOUNT", "false").lower()
+        max_env = TektonEnviron.get("ANTHROPIC_MAX_ACCOUNT", "false").lower()
         self._enabled = max_env in ["true", "1", "yes", "on"]
         
         if self._enabled:
@@ -146,5 +147,5 @@ class AnthropicMaxConfig:
             "model_upgrades_active": self._enabled,
             "budget_limits_removed": self._enabled,
             "enhanced_rate_limits": self._enabled,
-            "environment_variable": os.environ.get("ANTHROPIC_MAX_ACCOUNT", "false")
+            "environment_variable": TektonEnviron.get("ANTHROPIC_MAX_ACCOUNT", "false")
         }

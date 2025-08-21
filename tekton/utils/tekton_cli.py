@@ -35,6 +35,7 @@ Usage:
 """
 
 import os
+from shared.env import TektonEnviron
 import sys
 import json
 import logging
@@ -110,7 +111,7 @@ def create_cli_parser(
         parser.add_argument(
             "--log-level",
             choices=[level.name for level in LogLevel],
-            default=os.environ.get("TEKTON_LOG_LEVEL", "INFO"),
+            default=TektonEnviron.get("TEKTON_LOG_LEVEL", "INFO"),
             help="Logging level"
         )
         
@@ -392,7 +393,7 @@ class TektonCLI:
             subparser.add_argument(
                 "--log-level",
                 choices=[level.name for level in LogLevel],
-                default=os.environ.get("TEKTON_LOG_LEVEL", "INFO"),
+                default=TektonEnviron.get("TEKTON_LOG_LEVEL", "INFO"),
                 help="Logging level"
             )
             

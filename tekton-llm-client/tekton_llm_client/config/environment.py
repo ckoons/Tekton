@@ -6,6 +6,7 @@ used by the Tekton LLM Client.
 """
 
 import os
+from shared.env import TektonEnviron
 import json
 import logging
 from typing import Dict, List, Any, Optional, Union, TypeVar, Type, cast
@@ -39,7 +40,7 @@ def get_env(
     if use_prefix and not key.startswith(ENV_PREFIX):
         key = f"{ENV_PREFIX}{key}"
         
-    value = os.environ.get(key)
+    value = TektonEnviron.get(key)
     
     if value is None:
         if required:

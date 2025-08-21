@@ -5,6 +5,7 @@ This module provides functions for discovering components in the Tekton ecosyste
 """
 
 import os
+from shared.env import TektonEnviron
 import logging
 from typing import Dict, List, Any, Optional
 
@@ -32,7 +33,7 @@ async def discover_component(
         ComponentNotFoundError: If the component is not found
         ComponentUnavailableError: If the Hermes API is unavailable
     """
-    hermes_url = hermes_url or os.environ.get("HERMES_URL", "http://localhost:8000/api")
+    hermes_url = hermes_url or TektonEnviron.get("HERMES_URL", "http://localhost:8000/api")
     
     try:
         import aiohttp
@@ -72,7 +73,7 @@ async def discover_components_by_type(
     Raises:
         ComponentUnavailableError: If the Hermes API is unavailable
     """
-    hermes_url = hermes_url or os.environ.get("HERMES_URL", "http://localhost:8000/api")
+    hermes_url = hermes_url or TektonEnviron.get("HERMES_URL", "http://localhost:8000/api")
     
     try:
         import aiohttp
@@ -111,7 +112,7 @@ async def discover_components_by_capability(
     Raises:
         ComponentUnavailableError: If the Hermes API is unavailable
     """
-    hermes_url = hermes_url or os.environ.get("HERMES_URL", "http://localhost:8000/api")
+    hermes_url = hermes_url or TektonEnviron.get("HERMES_URL", "http://localhost:8000/api")
     
     try:
         import aiohttp

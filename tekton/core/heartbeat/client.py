@@ -9,6 +9,7 @@ their connection to Hermes, including heartbeats and health metrics.
 import asyncio
 import logging
 import os
+from shared.env import TektonEnviron
 import signal
 import time
 from typing import Dict, List, Any, Optional, Callable
@@ -53,7 +54,7 @@ class ComponentHeartbeat:
         self.component_id = component_id
         self.component_name = component_name
         self.component_type = component_type
-        self.hermes_url = hermes_url or os.environ.get("HERMES_URL", "http://localhost:5000/api")
+        self.hermes_url = hermes_url or TektonEnviron.get("HERMES_URL", "http://localhost:5000/api")
         self.heartbeat_interval = heartbeat_interval
         self.capabilities = capabilities or []
         self.metadata = metadata or {}

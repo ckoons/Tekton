@@ -5,6 +5,7 @@ Core knowledge graph engine and management capabilities.
 """
 
 import os
+from shared.env import TektonEnviron
 import json
 import logging
 import asyncio
@@ -97,8 +98,8 @@ class KnowledgeEngine:
         else:
             # Use $TEKTON_DATA_DIR/athena by default
             self.data_path = os.path.join(
-                os.environ.get('TEKTON_DATA_DIR', 
-                              os.path.join(os.environ.get('TEKTON_ROOT', os.path.expanduser('~')), '.tekton', 'data')),
+                TektonEnviron.get('TEKTON_DATA_DIR', 
+                              os.path.join(TektonEnviron.get('TEKTON_ROOT', os.path.expanduser('~')), '.tekton', 'data')),
                 'athena'
             )
         self.is_initialized = False

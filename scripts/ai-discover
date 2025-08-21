@@ -10,6 +10,7 @@ import asyncio
 import json
 import sys
 import os
+from shared.env import TektonEnviron
 import time
 from typing import Optional, List, Dict, Any
 from pathlib import Path
@@ -22,7 +23,7 @@ tekton_root = script_dir.parent
 # Handle both direct execution and symlinked execution
 if 'Tekton' not in str(tekton_root):
     # If symlinked, find Tekton root from environment or default location
-    tekton_root = Path(os.environ.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton'))
+    tekton_root = Path(TektonEnviron.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton'))
 
 sys.path.insert(0, str(tekton_root))
 

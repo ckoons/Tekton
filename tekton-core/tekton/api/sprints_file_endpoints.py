@@ -8,6 +8,7 @@ Provides REST API endpoints for managing sprint files:
 """
 
 import os
+from shared.env import TektonEnviron
 from typing import Dict
 from fastapi import APIRouter, HTTPException
 from datetime import datetime
@@ -26,7 +27,7 @@ async def get_sprint_daily_log(sprint_name: str):
     
     try:
         # Get sprint directory path
-        tekton_root = os.environ.get("TEKTON_ROOT", os.getcwd())
+        tekton_root = TektonEnviron.get("TEKTON_ROOT", os.getcwd())
         sprint_dir = os.path.join(tekton_root, "MetaData", "DevelopmentSprints", sprint_name)
         daily_log_path = os.path.join(sprint_dir, "DAILY_LOG.md")
         
@@ -56,7 +57,7 @@ async def update_sprint_daily_log(sprint_name: str, request: Dict[str, str]):
         content = request.get("content", "")
         
         # Get sprint directory path
-        tekton_root = os.environ.get("TEKTON_ROOT", os.getcwd())
+        tekton_root = TektonEnviron.get("TEKTON_ROOT", os.getcwd())
         sprint_dir = os.path.join(tekton_root, "MetaData", "DevelopmentSprints", sprint_name)
         daily_log_path = os.path.join(sprint_dir, "DAILY_LOG.md")
         
@@ -84,7 +85,7 @@ async def get_sprint_handoff(sprint_name: str):
     
     try:
         # Get sprint directory path
-        tekton_root = os.environ.get("TEKTON_ROOT", os.getcwd())
+        tekton_root = TektonEnviron.get("TEKTON_ROOT", os.getcwd())
         sprint_dir = os.path.join(tekton_root, "MetaData", "DevelopmentSprints", sprint_name)
         handoff_path = os.path.join(sprint_dir, "HANDOFF.md")
         
@@ -114,7 +115,7 @@ async def update_sprint_handoff(sprint_name: str, request: Dict[str, str]):
         content = request.get("content", "")
         
         # Get sprint directory path
-        tekton_root = os.environ.get("TEKTON_ROOT", os.getcwd())
+        tekton_root = TektonEnviron.get("TEKTON_ROOT", os.getcwd())
         sprint_dir = os.path.join(tekton_root, "MetaData", "DevelopmentSprints", sprint_name)
         handoff_path = os.path.join(sprint_dir, "HANDOFF.md")
         
@@ -142,7 +143,7 @@ async def get_sprint_plan(sprint_name: str):
     
     try:
         # Get sprint directory path
-        tekton_root = os.environ.get("TEKTON_ROOT", os.getcwd())
+        tekton_root = TektonEnviron.get("TEKTON_ROOT", os.getcwd())
         sprint_dir = os.path.join(tekton_root, "MetaData", "DevelopmentSprints", sprint_name)
         sprint_plan_path = os.path.join(sprint_dir, "SPRINT_PLAN.md")
         
@@ -190,7 +191,7 @@ async def update_sprint_plan(sprint_name: str, request: Dict[str, str]):
         content = request.get("content", "")
         
         # Get sprint directory path
-        tekton_root = os.environ.get("TEKTON_ROOT", os.getcwd())
+        tekton_root = TektonEnviron.get("TEKTON_ROOT", os.getcwd())
         sprint_dir = os.path.join(tekton_root, "MetaData", "DevelopmentSprints", sprint_name)
         sprint_plan_path = os.path.join(sprint_dir, "SPRINT_PLAN.md")
         

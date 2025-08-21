@@ -9,7 +9,9 @@ registered with Hermes.
 import asyncio
 import json
 import logging
+import os
 from typing import Dict, List, Any, Optional, Union, Set
+from shared.env import TektonEnviron
 
 # Configure logging
 logger = logging.getLogger(__name__)
@@ -30,8 +32,7 @@ class ComponentDiscovery:
         Args:
             hermes_url: URL of the Hermes API
         """
-        import os
-        self.hermes_url = hermes_url or os.environ.get("HERMES_URL", "http://localhost:5000/api")
+        self.hermes_url = hermes_url or TektonEnviron.get("HERMES_URL", "http://localhost:5000/api")
         self._discovered_services: Dict[str, Dict[str, Any]] = {}
         self._capability_map: Dict[str, Set[str]] = {}
         

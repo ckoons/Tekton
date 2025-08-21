@@ -4,6 +4,7 @@ Basic usage example for Tekton LLM Client.
 """
 
 import os
+from shared.env import TektonEnviron
 import sys
 import asyncio
 import logging
@@ -28,7 +29,7 @@ async def basic_example():
     # Initialize the client
     client = TektonLLMClient(
         component_id="example-client",
-        rhetor_url=os.environ.get("RHETOR_URL", "http://localhost:8003")
+        rhetor_url=TektonEnviron.get("RHETOR_URL", "http://localhost:8003")
     )
     
     try:

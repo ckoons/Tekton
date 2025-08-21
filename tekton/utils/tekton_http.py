@@ -20,6 +20,7 @@ Usage:
 """
 
 import os
+from shared.env import TektonEnviron
 import json
 import asyncio
 import logging
@@ -495,8 +496,8 @@ def create_client_from_env(
     
     # Get port from environment variable
     port_var = f"{prefix}_PORT"
-    host = os.environ.get(f"{prefix}_HOST", "localhost")
-    port = os.environ.get(port_var, default_port)
+    host = TektonEnviron.get(f"{prefix}_HOST", "localhost")
+    port = TektonEnviron.get(port_var, default_port)
     
     if port is None:
         # Use standard port assignments if known
@@ -520,7 +521,7 @@ def create_client_from_env(
         raise ValueError(f"No port specified for {component_id} and no default available")
     
     # Get auth token if available
-    auth_token = os.environ.get(f"{prefix}_AUTH_TOKEN")
+    auth_token = TektonEnviron.get(f"{prefix}_AUTH_TOKEN")
     
     # Build base URL
     base_url = f"http://{host}:{port}"

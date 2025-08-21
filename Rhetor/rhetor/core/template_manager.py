@@ -5,6 +5,7 @@ categorization, and flexible variable interpolation.
 """
 
 import os
+from shared.env import TektonEnviron
 import json
 import yaml
 import logging
@@ -290,8 +291,8 @@ class TemplateManager:
         # Set default base directory if not provided
         if not base_dir:
             base_dir = os.path.join(
-                os.environ.get('TEKTON_DATA_DIR', 
-                              os.path.join(os.environ.get('TEKTON_ROOT', os.path.expanduser('~')), '.tekton', 'data')),
+                TektonEnviron.get('TEKTON_DATA_DIR', 
+                              os.path.join(TektonEnviron.get('TEKTON_ROOT', os.path.expanduser('~')), '.tekton', 'data')),
                 'rhetor', 'templates'
             )
         

@@ -115,7 +115,8 @@ class LandmarkSeismograph:
         try:
             # Try direct path first
             import os
-            tekton_root = os.environ.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
+from shared.env import TektonEnviron
+            tekton_root = TektonEnviron.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
             landmark_file = Path(tekton_root) / 'landmarks' / 'data' / 'registry.json'
             
             if landmark_file.exists():

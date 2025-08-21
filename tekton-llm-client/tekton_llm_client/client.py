@@ -3,6 +3,7 @@ Main client interface for interacting with Tekton LLM services.
 """
 
 import os
+from shared.env import TektonEnviron
 import json
 import logging
 import asyncio
@@ -56,13 +57,13 @@ class TektonLLMClient:
         """
         # Load settings from environment variables with defaults
         self.component_id = component_id
-        self.rhetor_url = rhetor_url or os.environ.get("RHETOR_URL", "http://localhost:8003")
-        self.provider_id = provider_id or os.environ.get("RHETOR_DEFAULT_PROVIDER", "anthropic")
-        self.model_id = model_id or os.environ.get("RHETOR_DEFAULT_MODEL", None)  # Will use provider's default if None
+        self.rhetor_url = rhetor_url or TektonEnviron.get("RHETOR_URL", "http://localhost:8003")
+        self.provider_id = provider_id or TektonEnviron.get("RHETOR_DEFAULT_PROVIDER", "anthropic")
+        self.model_id = model_id or TektonEnviron.get("RHETOR_DEFAULT_MODEL", None)  # Will use provider's default if None
         self.timeout = timeout
         self.max_retries = max_retries
         self.use_fallback = use_fallback
-        self.auth_token = auth_token or os.environ.get("RHETOR_AUTH_TOKEN")
+        self.auth_token = auth_token or TektonEnviron.get("RHETOR_AUTH_TOKEN")
         
         # Create HTTP session for reuse
         self.session = None

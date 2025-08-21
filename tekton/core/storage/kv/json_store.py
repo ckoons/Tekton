@@ -6,6 +6,7 @@ interface using JSON for persistence.
 """
 
 import os
+from shared.env import TektonEnviron
 import json
 import logging
 import asyncio
@@ -50,7 +51,7 @@ class JsonKVStore(BaseKVStorage):
         self.namespace = StorageNamespace(namespace)
         
         # Define data path
-        self.data_path = data_path or os.environ.get(
+        self.data_path = data_path or TektonEnviron.get(
             "TEKTON_KV_DB_PATH", 
             os.path.expanduser(f"~/.tekton/kv_stores/{namespace}")
         )

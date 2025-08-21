@@ -6,6 +6,7 @@ This module provides the adapter for X.AI's Grok models.
 """
 
 import os
+from shared.env import TektonEnviron
 import time
 import json
 import logging
@@ -29,7 +30,7 @@ class GrokAdapter(ModelAdapter):
             config: Configuration dictionary with at least 'api_key'
         """
         super().__init__(config)
-        self.api_key = config.get("api_key") or os.environ.get("GROK_API_KEY")
+        self.api_key = config.get("api_key") or TektonEnviron.get("GROK_API_KEY")
         self.model = config.get("model", "grok-beta")
         self.endpoint = config.get("endpoint", "https://api.x.ai/v1")
         self.client = None

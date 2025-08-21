@@ -6,6 +6,7 @@ with the Rhetor LLM Management System.
 """
 
 import os
+from shared.env import TektonEnviron
 import json
 import logging
 import asyncio
@@ -56,8 +57,8 @@ class RhetorClient:
             max_retries: Maximum number of retry attempts for operations
             retry_delay: Delay between retry attempts in seconds
         """
-        self.rhetor_url = rhetor_url or os.environ.get("RHETOR_URL", "http://localhost:8003")
-        self.component_id = component_id or os.environ.get("COMPONENT_ID", "component")
+        self.rhetor_url = rhetor_url or TektonEnviron.get("RHETOR_URL", "http://localhost:8003")
+        self.component_id = component_id or TektonEnviron.get("COMPONENT_ID", "component")
         self.default_context = default_context or f"{self.component_id}:default"
         self.auto_reconnect = auto_reconnect
         self.max_retries = max_retries

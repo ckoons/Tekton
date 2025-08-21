@@ -6,26 +6,27 @@ This module provides configuration defaults and constants for the models package
 """
 
 import os
+from shared.env import TektonEnviron
 from typing import Dict, Any, Optional
 
 # Default configurations for different model providers
 DEFAULT_CONFIGS = {
     "anthropic": {
-        "api_key": os.environ.get("ANTHROPIC_API_KEY", ""),
-        "model": os.environ.get("ANTHROPIC_MODEL", "claude-3-opus-20240229"),
+        "api_key": TektonEnviron.get("ANTHROPIC_API_KEY", ""),
+        "model": TektonEnviron.get("ANTHROPIC_MODEL", "claude-3-opus-20240229"),
         "max_tokens": 4096,
         "temperature": 0.7
     },
     "openai": {
-        "api_key": os.environ.get("OPENAI_API_KEY", ""),
-        "model": os.environ.get("OPENAI_MODEL", "gpt-4o"),
+        "api_key": TektonEnviron.get("OPENAI_API_KEY", ""),
+        "model": TektonEnviron.get("OPENAI_MODEL", "gpt-4o"),
         "embedding_model": "text-embedding-3-large",
         "max_tokens": 1000,
         "temperature": 0.7
     },
     "local": {
-        "endpoint": os.environ.get("LOCAL_MODEL_ENDPOINT", "http://localhost:11434"),
-        "model": os.environ.get("LOCAL_MODEL", "llama3"),
+        "endpoint": TektonEnviron.get("LOCAL_MODEL_ENDPOINT", "http://localhost:11434"),
+        "model": TektonEnviron.get("LOCAL_MODEL", "llama3"),
         "max_tokens": 1000,
         "temperature": 0.7
     }

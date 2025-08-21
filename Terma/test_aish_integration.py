@@ -3,6 +3,7 @@
 
 import sys
 import os
+from shared.env import TektonEnviron
 from pathlib import Path
 
 print("=== aish-Tekton Integration Test ===\n")
@@ -32,7 +33,7 @@ except Exception as e:
 
 # Test 3: Check environment
 print("\n3. Environment check:")
-print(f"   RHETOR_ENDPOINT: {os.environ.get('RHETOR_ENDPOINT', 'Not set (will use default)')}")
+print(f"   RHETOR_ENDPOINT: {TektonEnviron.get('RHETOR_ENDPOINT', 'Not set (will use default)')}")
 print(f"   Current directory: {os.getcwd()}")
 print(f"   Home directory: {os.path.expanduser('~')}")
 

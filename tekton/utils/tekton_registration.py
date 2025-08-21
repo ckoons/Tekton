@@ -38,6 +38,7 @@ Usage:
 """
 
 import os
+from shared.env import TektonEnviron
 import sys
 import json
 import asyncio
@@ -495,7 +496,7 @@ class TektonComponent:
         self.endpoint = endpoint
         
         # Process Hermes URL
-        self.hermes_url = hermes_url or os.environ.get("HERMES_URL")
+        self.hermes_url = hermes_url or TektonEnviron.get("HERMES_URL")
         if self.hermes_url is None:
             # Try standard port
             try:

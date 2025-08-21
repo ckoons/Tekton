@@ -7,11 +7,12 @@ to make it easier to use memory functions in the interactive Claude CLI.
 """
 
 import os
+from shared.env import TektonEnviron
 import asyncio
 from typing import Dict, List, Optional, Any, Union
 
 # Configure client ID
-client_id = os.environ.get("ENGRAM_CLIENT_ID", "claude")
+client_id = TektonEnviron.get("ENGRAM_CLIENT_ID", "claude")
 
 # Import core components
 from engram.core.memory import MemoryService

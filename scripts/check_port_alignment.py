@@ -12,6 +12,7 @@ script_path = os.path.realpath(__file__)
 tekton_root = os.path.dirname(os.path.dirname(script_path))
 sys.path.insert(0, tekton_root)
 
+from shared.env import TektonEnviron
 from shared.utils.env_config import get_component_config
 from shared.utils.ai_port_utils import get_ai_port
 
@@ -79,7 +80,7 @@ def main():
     print(f"Total AI components: {total_count}")
     print(f"Running: {running_count}")
     print(f"Not running: {total_count - running_count}")
-    print(f"\nPort formula: AI port = {os.environ.get('TEKTON_AI_PORT_BASE', '45000')} + (main_port - {os.environ.get('TEKTON_PORT_BASE', '8000')})")
+    print(f"\nPort formula: AI port = {TektonEnviron.get('TEKTON_AI_PORT_BASE', '45000')} + (main_port - {TektonEnviron.get('TEKTON_PORT_BASE', '8000')})")
 
 if __name__ == '__main__':
     main()

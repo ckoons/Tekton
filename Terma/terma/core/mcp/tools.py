@@ -9,6 +9,7 @@ import json
 import time
 import uuid
 import os
+from shared.env import TektonEnviron
 import psutil
 from typing import Dict, Any, List, Optional
 from datetime import datetime, timedelta
@@ -115,7 +116,7 @@ async def create_terminal_session(
         # Generate session details
         session_id = str(uuid.uuid4())[:8]
         session_name = session_name or f"terminal-{session_id}"
-        shell_command = shell_command or os.environ.get("SHELL", "/bin/bash")
+        shell_command = shell_command or TektonEnviron.get("SHELL", "/bin/bash")
         working_directory = working_directory or os.getcwd()
         
         # Mock terminal session creation
@@ -140,8 +141,8 @@ async def create_terminal_session(
             "TERM": "xterm-256color",
             "SHELL": shell_command,
             "PWD": working_directory,
-            "HOME": os.environ.get("HOME", "/home/user"),
-            "USER": os.environ.get("USER", "user")
+            "HOME": TektonEnviron.get("HOME", "/home/user"),
+            "USER": TektonEnviron.get("USER", "user")
         }
         session_config["environment"].update(default_env)
         

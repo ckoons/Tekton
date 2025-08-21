@@ -5,7 +5,9 @@ import logging
 import asyncio
 import aiohttp
 import requests
+import os
 from typing import Dict, Any, Optional, List, Callable, Awaitable
+from shared.env import TektonEnviron
 from ..core.session_manager import SessionManager
 from ..utils.logging import setup_logging
 
@@ -189,7 +191,7 @@ class HermesIntegration:
                 "version": "0.1.0",
                 "capabilities": self.capabilities,
                 "endpoints": {
-                    "api": f"http://localhost:{os.environ.get('TERMA_PORT', 8015)}/api"
+                    "api": f"http://localhost:{TektonEnviron.get('TERMA_PORT', 8015)}/api"
                 }
             }
             

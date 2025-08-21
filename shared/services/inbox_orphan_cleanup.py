@@ -5,6 +5,7 @@ Cleans up orphaned inbox files from terminated terminals.
 """
 
 import os
+from shared.env import TektonEnviron
 import json
 import logging
 import asyncio
@@ -40,7 +41,7 @@ class InboxOrphanCleaner:
             self.terma_endpoint = get_terma_url("")
         else:
             self.terma_endpoint = 'http://localhost:8004'
-        self.tekton_root = tekton_root or os.environ.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
+        self.tekton_root = tekton_root or TektonEnviron.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
         self.inbox_dir = os.path.join(self.tekton_root, ".tekton", "terma")
         
     async def get_active_terminals(self) -> List[dict]:

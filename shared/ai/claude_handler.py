@@ -111,9 +111,10 @@ class ClaudeHandler:
             
             # Determine launch directory
             import os
+from shared.env import TektonEnviron
             from pathlib import Path
             
-            tekton_root = Path(os.environ.get('TEKTON_ROOT', '.'))
+            tekton_root = Path(TektonEnviron.get('TEKTON_ROOT', '.'))
             
             # Always use TEKTON_ROOT as the launch directory
             # This ensures each instance (Tekton, Coder-A/B/C) uses its own context

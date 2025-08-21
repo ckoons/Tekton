@@ -5,6 +5,7 @@ components, with support for Engram integration, context windowing, and search c
 """
 
 import os
+from shared.env import TektonEnviron
 import logging
 import json
 import asyncio
@@ -362,11 +363,11 @@ class ContextManager:
         
         # Directory for local persistence
         default_context_dir = os.path.join(
-            os.environ.get('TEKTON_DATA_DIR', 
-                          os.path.join(os.environ.get('TEKTON_ROOT', os.path.expanduser('~')), '.tekton', 'data')),
+            TektonEnviron.get('TEKTON_DATA_DIR', 
+                          os.path.join(TektonEnviron.get('TEKTON_ROOT', os.path.expanduser('~')), '.tekton', 'data')),
             'rhetor', 'contexts'
         )
-        self.persistence_dir = os.environ.get("RHETOR_CONTEXT_DIR", default_context_dir)
+        self.persistence_dir = TektonEnviron.get("RHETOR_CONTEXT_DIR", default_context_dir)
         os.makedirs(self.persistence_dir, exist_ok=True)
         
         # Track loading stats to avoid excessive logging

@@ -9,6 +9,7 @@ import asyncio
 import json
 import sys
 import os
+from shared.env import TektonEnviron
 import logging
 from datetime import datetime
 
@@ -278,7 +279,7 @@ async def research_project_example(client):
 async def run_examples():
     """Run all examples."""
     # Create client
-    client = SophiaClient(base_url=os.environ.get("SOPHIA_URL", DEFAULT_SOPHIA_URL))
+    client = SophiaClient(base_url=TektonEnviron.get("SOPHIA_URL", DEFAULT_SOPHIA_URL))
     
     try:
         # Check if Sophia is available

@@ -5,6 +5,7 @@ Serves static files and proxies WebSocket connections to the Tekton backend
 """
 
 import os
+from shared.env import TektonEnviron
 import sys
 import json
 import argparse
@@ -79,7 +80,7 @@ class TektonUIRequestHandler(SimpleHTTPRequestHandler):
     # Configuration for API proxying - using environment variables
     ERGON_API_HOST = "localhost"
     global_config = GlobalConfig.get_instance()
-    ERGON_API_PORT = global_config.config.ergon.port if hasattr(global_config.config, 'ergon') else int(os.environ.get("ERGON_PORT"))
+    ERGON_API_PORT = global_config.config.ergon.port if hasattr(global_config.config, 'ergon') else int(TektonEnviron.get("ERGON_PORT"))
     
     # Add class variable to store the WebSocket server instance
     websocket_server = None
@@ -858,7 +859,7 @@ class TektonUIRequestHandler(SimpleHTTPRequestHandler):
                 try:
                     target_port = global_config.config.hermes.port
                 except (AttributeError, TypeError):
-                    target_port = int(os.environ.get("HERMES_PORT", 8001))
+                    target_port = int(TektonEnviron.get("HERMES_PORT", 8001))
                 target_path = self.path  # Keep the same path
             # Rhetor AI specialist endpoints - proxy to Rhetor service
             elif self.path.startswith("/api/ai/") or self.path.startswith("/api/v1/ai/"):
@@ -866,7 +867,7 @@ class TektonUIRequestHandler(SimpleHTTPRequestHandler):
                 try:
                     target_port = global_config.config.rhetor.port
                 except (AttributeError, TypeError):
-                    target_port = int(os.environ.get("RHETOR_PORT", 8003))
+                    target_port = int(TektonEnviron.get("RHETOR_PORT", 8003))
                 target_path = self.path  # Keep the same path
             else:
                 # Unknown API endpoint
@@ -1010,13 +1011,13 @@ class TektonUIRequestHandler(SimpleHTTPRequestHandler):
                 if hasattr(component_config, 'port'):
                     port_vars[env_var] = component_config.port
                 else:
-                    port_vars[env_var] = int(os.environ.get(env_var))
+                    port_vars[env_var] = int(TektonEnviron.get(env_var))
             else:
-                port_vars[env_var] = int(os.environ.get(env_var))
+                port_vars[env_var] = int(TektonEnviron.get(env_var))
         
         # Handle special cases
         if "CODEX_PORT" in os.environ:
-            port_vars["CODEX_PORT"] = int(os.environ.get("CODEX_PORT"))
+            port_vars["CODEX_PORT"] = int(TektonEnviron.get("CODEX_PORT"))
         
         # Send port configuration
         self.send_response(200)
@@ -1090,7 +1091,7 @@ class TektonUIRequestHandler(SimpleHTTPRequestHandler):
             import os
             
             # Get settings file path
-            tekton_root = os.environ.get('TEKTON_ROOT', os.path.expanduser('~'))
+            tekton_root = TektonEnviron.get('TEKTON_ROOT', os.path.expanduser('~'))
             settings_dir = os.path.join(tekton_root, '.tekton')
             settings_path = os.path.join(settings_dir, 'settings.json')
             
@@ -1178,7 +1179,7 @@ class TektonUIRequestHandler(SimpleHTTPRequestHandler):
             import os
             
             # Get profile file path
-            tekton_root = os.environ.get('TEKTON_ROOT', os.path.expanduser('~'))
+            tekton_root = TektonEnviron.get('TEKTON_ROOT', os.path.expanduser('~'))
             profile_dir = os.path.join(tekton_root, '.tekton')
             profile_path = os.path.join(profile_dir, 'profile.json')
             
@@ -1275,7 +1276,7 @@ class WebSocketServer:
     def __init__(self, port=None):
         # Use the same port as HTTP server for Single Port Architecture
         global_config = GlobalConfig.get_instance()
-        default_port = global_config.config.hephaestus.port if hasattr(global_config.config, 'hephaestus') else int(os.environ.get("HEPHAESTUS_PORT"))
+        default_port = global_config.config.hephaestus.port if hasattr(global_config.config, 'hephaestus') else int(TektonEnviron.get("HEPHAESTUS_PORT"))
         self.port = port or default_port
         self.clients = set()
         self.component_servers = {}

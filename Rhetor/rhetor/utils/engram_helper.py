@@ -5,6 +5,7 @@ the memory system for the Tekton ecosystem.
 """
 
 import os
+from shared.env import TektonEnviron
 import logging
 import json
 import asyncio
@@ -30,18 +31,18 @@ class EngramClient:
             engram_api_key: API key for authentication (if required)
             offline_mode: Whether to operate in offline mode
         """
-        self.engram_url = engram_url or os.environ.get(
+        self.engram_url = engram_url or TektonEnviron.get(
             "ENGRAM_URL", "http://localhost:8000"
         )
-        self.engram_api_key = engram_api_key or os.environ.get("ENGRAM_API_KEY")
+        self.engram_api_key = engram_api_key or TektonEnviron.get("ENGRAM_API_KEY")
         self.offline_mode = offline_mode
         self.session = None
         self.connected = False
         
         # Backup storage for offline mode
         self.backup_dir = os.path.join(
-            os.environ.get('TEKTON_DATA_DIR', 
-                          os.path.join(os.environ.get('TEKTON_ROOT', os.path.expanduser('~')), '.tekton', 'data')),
+            TektonEnviron.get('TEKTON_DATA_DIR', 
+                          os.path.join(TektonEnviron.get('TEKTON_ROOT', os.path.expanduser('~')), '.tekton', 'data')),
             'rhetor', 'engram_backup'
         )
         os.makedirs(self.backup_dir, exist_ok=True)
@@ -584,9 +585,9 @@ async def get_engram_client() -> EngramClient:
         Configured EngramClient
     """
     # Read configuration from environment
-    offline_mode = os.environ.get("RHETOR_ENGRAM_OFFLINE", "").lower() in ("true", "1", "yes")
-    engram_url = os.environ.get("ENGRAM_URL", "http://localhost:8000")
-    engram_api_key = os.environ.get("ENGRAM_API_KEY")
+    offline_mode = TektonEnviron.get("RHETOR_ENGRAM_OFFLINE", "").lower() in ("true", "1", "yes")
+    engram_url = TektonEnviron.get("ENGRAM_URL", "http://localhost:8000")
+    engram_api_key = TektonEnviron.get("ENGRAM_API_KEY")
     
     # Create client
     client = EngramClient(

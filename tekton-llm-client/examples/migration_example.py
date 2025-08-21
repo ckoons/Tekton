@@ -4,6 +4,7 @@ Migration example showing how to replace a custom LLM adapter with the Tekton LL
 """
 
 import os
+from shared.env import TektonEnviron
 import sys
 import asyncio
 import logging
@@ -28,7 +29,7 @@ class CustomLLMAdapter:
     
     def __init__(self, api_key=None, model=None):
         """Initialize the adapter."""
-        self.api_key = api_key or os.environ.get("ANTHROPIC_API_KEY")
+        self.api_key = api_key or TektonEnviron.get("ANTHROPIC_API_KEY")
         self.model = model or "claude-3-haiku-20240307"
         self.base_url = "https://api.anthropic.com/v1"
         
@@ -69,7 +70,7 @@ class MigratedComponent:
         """Initialize the component."""
         self.llm_client = TektonLLMClient(
             component_id="migrated-component",
-            rhetor_url=os.environ.get("RHETOR_URL", "http://localhost:8003"),
+            rhetor_url=TektonEnviron.get("RHETOR_URL", "http://localhost:8003"),
             provider_id="anthropic",
             model_id="claude-3-haiku-20240307"
         )

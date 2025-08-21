@@ -6,6 +6,7 @@ through the Hermes registration protocol and database services.
 """
 
 import os
+from shared.env import TektonEnviron
 import sys
 import asyncio
 import logging
@@ -86,7 +87,7 @@ class HermesKnowledgeAdapter:
         try:
             # Get component port from environment or use default
             config = get_component_config()
-            component_port = config.athena.port if hasattr(config, 'athena') else int(os.environ.get("ATHENA_PORT"))
+            component_port = config.athena.port if hasattr(config, 'athena') else int(TektonEnviron.get("ATHENA_PORT"))
             
             # Define the component information
             component_info = {

@@ -21,6 +21,7 @@ Options:
 """
 
 import os
+from shared.env import TektonEnviron
 import sys
 import asyncio
 import signal
@@ -72,7 +73,7 @@ except ImportError:
 
     # Try to import from Hermes directly
     try:
-        hermes_dir = os.environ.get("HERMES_DIR")
+        hermes_dir = TektonEnviron.get("HERMES_DIR")
         if hermes_dir and os.path.exists(hermes_dir):
             sys.path.insert(0, hermes_dir)
             
@@ -102,17 +103,17 @@ def parse_arguments():
     parser.add_argument(
         "--hermes-url",
         help="URL of the Hermes API",
-        default=os.environ.get("HERMES_URL", "http://localhost:8000/api")
+        default=TektonEnviron.get("HERMES_URL", "http://localhost:8000/api")
     )
     parser.add_argument(
         "--instructions-file",
         help="Path to startup instructions JSON file",
-        default=os.environ.get("STARTUP_INSTRUCTIONS_FILE")
+        default=TektonEnviron.get("STARTUP_INSTRUCTIONS_FILE")
     )
     parser.add_argument(
         "--endpoint",
         help=f"API endpoint for {COMPONENT_NAME}",
-        default=os.environ.get("{COMPONENT_UPPER}_API_ENDPOINT")
+        default=TektonEnviron.get("{COMPONENT_UPPER}_API_ENDPOINT")
     )
     
     return parser.parse_args()

@@ -5,6 +5,7 @@ Provides standardized templates for creating new components and
 fixing common issues like missing main functions.
 """
 import os
+from shared.env import TektonEnviron
 import logging
 from typing import Dict, Optional
 from pathlib import Path
@@ -55,7 +56,7 @@ if __name__ == "__main__":
     
     parser = argparse.ArgumentParser(description="{component_name.title()} API Server")
     parser.add_argument("--port", type=int,
-                       default=int(os.environ.get("{component_name.upper()}_PORT", {default_port})),
+                       default=int(TektonEnviron.get("{component_name.upper()}_PORT", {default_port})),
                        help="Port to run the server on")
     parser.add_argument("--host", type=str, default="0.0.0.0",
                        help="Host to bind the server to")

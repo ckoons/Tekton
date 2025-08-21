@@ -8,6 +8,7 @@ enabling structured logging and log aggregation across Tekton components.
 
 import logging
 import os
+from shared.env import TektonEnviron
 import sys
 import time
 from datetime import datetime
@@ -58,8 +59,8 @@ class LoggingAdapter:
         if log_file:
             self.log_file = Path(log_file)
         else:
-            log_dir = Path(os.environ.get('TEKTON_LOG_DIR', 
-                                          os.path.join(os.environ.get('TEKTON_ROOT', os.path.expanduser('~')), 
+            log_dir = Path(TektonEnviron.get('TEKTON_LOG_DIR', 
+                                          os.path.join(TektonEnviron.get('TEKTON_ROOT', os.path.expanduser('~')), 
                                                       '.tekton', 'logs')))
             log_dir.mkdir(parents=True, exist_ok=True)
             self.log_file = log_dir / f"engram_{client_id}.log"

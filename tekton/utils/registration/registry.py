@@ -3,6 +3,7 @@ Component registration with Hermes service registry.
 """
 
 import os
+from shared.env import TektonEnviron
 import json
 import logging
 import asyncio
@@ -27,7 +28,7 @@ class HermesRegistrationClient:
             hermes_url: URL of the Hermes API (defaults to http://localhost:8001/api)
         """
         self.component_id = component_id
-        self.hermes_url = hermes_url or os.environ.get("HERMES_URL", "http://localhost:8001/api")
+        self.hermes_url = hermes_url or TektonEnviron.get("HERMES_URL", "http://localhost:8001/api")
         self.session = None
         self.heartbeat_task = None
         self.running = False

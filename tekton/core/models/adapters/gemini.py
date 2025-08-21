@@ -6,6 +6,7 @@ This module provides the adapter for Google's Gemini models.
 """
 
 import os
+from shared.env import TektonEnviron
 import time
 import json
 import logging
@@ -29,7 +30,7 @@ class GeminiAdapter(ModelAdapter):
             config: Configuration dictionary with at least 'api_key'
         """
         super().__init__(config)
-        self.api_key = config.get("api_key") or os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY")
+        self.api_key = config.get("api_key") or TektonEnviron.get("GEMINI_API_KEY") or TektonEnviron.get("GOOGLE_API_KEY")
         self.model = config.get("model", "gemini-1.5-pro")
         self.endpoint = config.get("endpoint", "https://generativelanguage.googleapis.com/v1beta")
         self.client = None

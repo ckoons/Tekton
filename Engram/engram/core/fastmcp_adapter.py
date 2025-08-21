@@ -10,6 +10,7 @@ import asyncio
 import json
 import logging
 import os
+from shared.env import TektonEnviron
 from typing import Dict, List, Any, Optional, Union, Callable
 
 # Configure logging
@@ -78,7 +79,7 @@ class FastMCPAdapter:
         self.memory_manager = memory_manager
         
         # Set default client ID from environment or use "claude"
-        self.default_client_id = os.environ.get("ENGRAM_CLIENT_ID", "claude")
+        self.default_client_id = TektonEnviron.get("ENGRAM_CLIENT_ID", "claude")
         
         # Check if FastMCP is available
         if not fastmcp_available:

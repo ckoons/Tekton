@@ -7,6 +7,7 @@ Deletes files older than configured retention period from operational directorie
 """
 
 import os
+from shared.env import TektonEnviron
 import sys
 import time
 import json
@@ -35,7 +36,7 @@ class DeleteOldOperationalRecords:
             dry_run: If True, only log what would be deleted without actually deleting
         """
         self.dry_run = dry_run
-        self.tekton_root = os.environ.get('TEKTON_ROOT', '/opt/tekton')
+        self.tekton_root = TektonEnviron.get('TEKTON_ROOT', '/opt/tekton')
         self.config = self._load_config()
         self.stats = {
             'files_scanned': 0,
@@ -48,13 +49,13 @@ class DeleteOldOperationalRecords:
         """Load configuration from environment variables."""
         config = {
             # Global retention (days)
-            'retention_days': int(os.environ.get('TEKTON_DATA_RETENTION_DAYS', '2')),
+            'retention_days': int(TektonEnviron.get('TEKTON_DATA_RETENTION_DAYS', '2')),
             
             # Component-specific retention (days)
-            'landmark_retention': int(os.environ.get('TEKTON_LANDMARK_RETENTION_DAYS', '2')),
-            'registration_retention': int(os.environ.get('TEKTON_REGISTRATION_RETENTION_DAYS', '1')),
-            'message_retention': int(os.environ.get('TEKTON_MESSAGE_RETENTION_DAYS', '3')),
-            'ci_memory_retention': int(os.environ.get('TEKTON_CI_MEMORY_RETENTION_DAYS', '7')),
+            'landmark_retention': int(TektonEnviron.get('TEKTON_LANDMARK_RETENTION_DAYS', '2')),
+            'registration_retention': int(TektonEnviron.get('TEKTON_REGISTRATION_RETENTION_DAYS', '1')),
+            'message_retention': int(TektonEnviron.get('TEKTON_MESSAGE_RETENTION_DAYS', '3')),
+            'ci_memory_retention': int(TektonEnviron.get('TEKTON_CI_MEMORY_RETENTION_DAYS', '7')),
             
             # Paths to clean (relative to TEKTON_ROOT)
             'cleanup_paths': [

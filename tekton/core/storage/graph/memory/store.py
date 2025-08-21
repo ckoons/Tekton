@@ -3,6 +3,7 @@ In-memory graph store implementation.
 """
 
 import os
+from shared.env import TektonEnviron
 import logging
 from typing import Dict, Any, List, Optional, Set, Tuple, Union
 from datetime import datetime
@@ -43,7 +44,7 @@ class MemoryGraphStore(BaseGraphStorage):
         self.persist = persist
         
         # Define data path for persistence
-        self.data_path = data_path or os.environ.get(
+        self.data_path = data_path or TektonEnviron.get(
             "TEKTON_GRAPH_DB_PATH", 
             os.path.expanduser(f"~/.tekton/graph_stores/{namespace}")
         )

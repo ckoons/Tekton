@@ -12,6 +12,7 @@ Usage:
 """
 
 import os
+from shared.env import TektonEnviron
 import sys
 import logging
 from pathlib import Path
@@ -65,7 +66,7 @@ def initialize_tekton_environment(
                 print(f"[{component_name.upper()}] TektonEnvManager not available, using basic environment")
             
             # Check if environment is already loaded by C launcher
-            if os.environ.get('_TEKTON_ENV_FROZEN') == '1':
+            if TektonEnviron.get('_TEKTON_ENV_FROZEN') == '1':
                 print(f"[{component_name.upper()}] Using environment loaded by Tekton launcher")
             else:
                 print(f"[{component_name.upper()}] Warning: Environment not loaded by Tekton launcher")
@@ -95,7 +96,7 @@ def setup_component_logging(component_name: str, log_level_override: Optional[st
     if log_level_override:
         log_level = log_level_override.upper()
     else:
-        log_level = os.environ.get('TEKTON_LOG_LEVEL', 'INFO').upper()
+        log_level = TektonEnviron.get('TEKTON_LOG_LEVEL', 'INFO').upper()
     
     # Map log level strings to logging constants
     level_map = {
@@ -136,12 +137,12 @@ def log_component_environment(component_name: str, env_manager=None) -> None:
     try:
         # Log component port
         port_var = f"{component_name.upper()}_PORT"
-        port = os.environ.get(port_var)
+        port = TektonEnviron.get(port_var)
         if port:
             logger.info(f"Component port: {port}")
         
         # Log debug settings
-        debug_enabled = os.environ.get('TEKTON_DEBUG', 'false').lower() == 'true'
+        debug_enabled = TektonEnviron.get('TEKTON_DEBUG', 'false').lower() == 'true'
         if debug_enabled:
             logger.info("Debug mode enabled")
         
@@ -154,7 +155,7 @@ def log_component_environment(component_name: str, env_manager=None) -> None:
         ]
         
         for setting in key_settings:
-            value = os.environ.get(setting)
+            value = TektonEnviron.get(setting)
             if value:
                 logger.debug(f"{setting}: {value}")
                 
@@ -173,7 +174,7 @@ def get_component_port(component_name: str, default: Optional[int] = None) -> Op
         Port number or None if not found and no default
     """
     port_var = f"{component_name.upper()}_PORT"
-    port_str = os.environ.get(port_var)
+    port_str = TektonEnviron.get(port_var)
     
     if port_str:
         try:
@@ -190,7 +191,7 @@ def is_debug_enabled() -> bool:
     Returns:
         True if debug mode is enabled
     """
-    return os.environ.get('TEKTON_DEBUG', 'false').lower() == 'true'
+    return TektonEnviron.get('TEKTON_DEBUG', 'false').lower() == 'true'
 
 def get_tekton_setting(key: str, default: str = '') -> str:
     """
@@ -207,7 +208,7 @@ def get_tekton_setting(key: str, default: str = '') -> str:
     if not key.startswith('TEKTON_'):
         key = f'TEKTON_{key}'
     
-    return os.environ.get(key, default)
+    return TektonEnviron.get(key, default)
 
 def get_tekton_bool_setting(key: str, default: bool = False) -> bool:
     """

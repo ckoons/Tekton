@@ -6,6 +6,7 @@ It implements the Single Port Architecture pattern with path-based routing.
 """
 
 import os
+from shared.env import TektonEnviron
 import sys
 import asyncio
 import time
@@ -64,7 +65,7 @@ async def lifespan(app: FastAPI):
     
     # Get port configuration
     config = get_component_config()
-    port = config.prometheus.port if hasattr(config, 'prometheus') else int(os.environ.get("PROMETHEUS_PORT"))
+    port = config.prometheus.port if hasattr(config, 'prometheus') else int(TektonEnviron.get("PROMETHEUS_PORT"))
     
     # Register with Hermes
     hermes_registration = HermesRegistration()
@@ -160,7 +161,7 @@ def create_app() -> FastAPI:
     """
     # Get port configuration
     config = get_component_config()
-    port = config.prometheus.port if hasattr(config, 'prometheus') else int(os.environ.get("PROMETHEUS_PORT"))
+    port = config.prometheus.port if hasattr(config, 'prometheus') else int(TektonEnviron.get("PROMETHEUS_PORT"))
     
     # Create the FastAPI application with OpenAPI configuration
     app = FastAPI(
@@ -260,7 +261,7 @@ def create_app() -> FastAPI:
                 "status": "error",
                 "message": "Internal server error",
                 "error_code": "INTERNAL_SERVER_ERROR",
-                "details": str(exc) if os.environ.get("DEBUG", "false").lower() == "true" else None
+                "details": str(exc) if TektonEnviron.get("DEBUG", "false").lower() == "true" else None
             }
         )
     
@@ -329,6 +330,6 @@ if __name__ == "__main__":
     import uvicorn
     
     config = get_component_config()
-    port = config.prometheus.port if hasattr(config, 'prometheus') else int(os.environ.get("PROMETHEUS_PORT"))
+    port = config.prometheus.port if hasattr(config, 'prometheus') else int(TektonEnviron.get("PROMETHEUS_PORT"))
     
     uvicorn.run(app, host="0.0.0.0", port=port)

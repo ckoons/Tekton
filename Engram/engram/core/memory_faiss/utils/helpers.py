@@ -4,10 +4,11 @@ Helper utilities for memory operations
 """
 
 import os
+from shared.env import TektonEnviron
 from typing import Dict, List, Any, Optional, Union
 
 # Check if fallback mode is forced (set by environment variable)
-USE_FALLBACK = os.environ.get('ENGRAM_USE_FALLBACK', '').lower() in ('1', 'true', 'yes')
+USE_FALLBACK = TektonEnviron.get('ENGRAM_USE_FALLBACK', '').lower() in ('1', 'true', 'yes')
 
 def is_valid_namespace(
     namespace: str, 

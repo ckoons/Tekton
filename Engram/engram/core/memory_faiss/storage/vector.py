@@ -4,6 +4,7 @@ Vector storage implementation using FAISS
 """
 
 import os
+from shared.env import TektonEnviron
 import json
 from pathlib import Path
 from typing import Dict, List, Any, Optional, Union
@@ -15,7 +16,7 @@ from ..utils.logging import setup_logger
 logger = setup_logger("engram.memory.vector")
 
 # Check if fallback mode is forced
-USE_FALLBACK = os.environ.get('ENGRAM_USE_FALLBACK', '').lower() in ('1', 'true', 'yes')
+USE_FALLBACK = TektonEnviron.get('ENGRAM_USE_FALLBACK', '').lower() in ('1', 'true', 'yes')
 
 # Try to import vector database components (optional dependencies)
 HAS_VECTOR_DB = False

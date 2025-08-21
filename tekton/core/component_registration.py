@@ -9,6 +9,7 @@ import asyncio
 import json
 import logging
 import os
+from shared.env import TektonEnviron
 import socket
 import time
 from typing import Dict, List, Any, Optional, Union
@@ -45,7 +46,7 @@ class ComponentRegistration:
         """
         self.component_id = component_id
         self.component_name = component_name
-        self.hermes_url = hermes_url or os.environ.get("HERMES_URL", "http://localhost:5000/api")
+        self.hermes_url = hermes_url or TektonEnviron.get("HERMES_URL", "http://localhost:5000/api")
         self.version = version
         self.capabilities = capabilities or []
         self.metadata = metadata or {}

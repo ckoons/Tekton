@@ -5,6 +5,7 @@ This module provides the base client for Tekton components.
 """
 
 import os
+from shared.env import TektonEnviron
 import json
 import asyncio
 import logging
@@ -44,7 +45,7 @@ class ComponentClient:
             retry_policy: Policy for retrying capability invocations
         """
         self.component_id = component_id
-        self.hermes_url = hermes_url or os.environ.get("HERMES_URL", "http://localhost:8000/api")
+        self.hermes_url = hermes_url or TektonEnviron.get("HERMES_URL", "http://localhost:8000/api")
         self.security_context = security_context or SecurityContext()
         self.retry_policy = retry_policy or RetryPolicy()
         

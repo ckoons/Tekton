@@ -7,6 +7,7 @@ distribution and provides a pub/sub mechanism for component communication.
 """
 
 import os
+from shared.env import TektonEnviron
 import json
 import logging
 import asyncio
@@ -427,8 +428,8 @@ class MessageHandler:
         else:
             # Use $TEKTON_DATA_DIR/apollo/message_data by default
             default_data_dir = os.path.join(
-                os.environ.get('TEKTON_DATA_DIR', 
-                              os.path.join(os.environ.get('TEKTON_ROOT', os.path.expanduser('~')), '.tekton', 'data')),
+                TektonEnviron.get('TEKTON_DATA_DIR', 
+                              os.path.join(TektonEnviron.get('TEKTON_ROOT', os.path.expanduser('~')), '.tekton', 'data')),
                 'apollo', 'message_data'
             )
             self.data_dir = default_data_dir

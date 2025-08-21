@@ -32,6 +32,7 @@ Usage:
 """
 
 import os
+from shared.env import TektonEnviron
 import json
 import time
 import secrets
@@ -165,7 +166,7 @@ def create_token(
     
     # Get secret key from environment if not provided
     if secret_key is None:
-        secret_key = os.environ.get(DEFAULT_SECRET_ENV_VAR)
+        secret_key = TektonEnviron.get(DEFAULT_SECRET_ENV_VAR)
         if not secret_key:
             raise ConfigurationError(f"Secret key not provided and {DEFAULT_SECRET_ENV_VAR} not set")
     
@@ -230,7 +231,7 @@ def validate_token(
     
     # Get secret key from environment if not provided
     if secret_key is None:
-        secret_key = os.environ.get(DEFAULT_SECRET_ENV_VAR)
+        secret_key = TektonEnviron.get(DEFAULT_SECRET_ENV_VAR)
         if not secret_key:
             raise ConfigurationError(f"Secret key not provided and {DEFAULT_SECRET_ENV_VAR} not set")
     
@@ -379,7 +380,7 @@ class AuthManager:
         
         # Get secret key from environment if not provided
         if secret_key is None and auth_type != AuthType.NONE:
-            secret_key = os.environ.get(DEFAULT_SECRET_ENV_VAR)
+            secret_key = TektonEnviron.get(DEFAULT_SECRET_ENV_VAR)
             if not secret_key:
                 secret_key = secrets.token_hex(32)
                 logger.warning(
@@ -783,7 +784,7 @@ def get_secret_key() -> str:
     Raises:
         ConfigurationError: If secret key is not available
     """
-    secret_key = os.environ.get(DEFAULT_SECRET_ENV_VAR)
+    secret_key = TektonEnviron.get(DEFAULT_SECRET_ENV_VAR)
     if not secret_key:
         raise ConfigurationError(f"{DEFAULT_SECRET_ENV_VAR} environment variable not set")
     

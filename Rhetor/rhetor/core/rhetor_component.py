@@ -1,6 +1,7 @@
 """Rhetor component implementation using StandardComponentBase."""
 import logging
 import os
+from shared.env import TektonEnviron
 from typing import List, Dict, Any
 
 from shared.utils.standard_component import StandardComponentBase
@@ -207,7 +208,7 @@ class RhetorComponent(StandardComponentBase):
                 set_mcp_tools_integration
             )
             
-            hermes_url = os.environ.get("HERMES_URL", "http://localhost:8001")
+            hermes_url = TektonEnviron.get("HERMES_URL", "http://localhost:8001")
             
             # Create simple MCP integration
             self.mcp_integration = MCPToolsIntegrationSimple(hermes_url=hermes_url)

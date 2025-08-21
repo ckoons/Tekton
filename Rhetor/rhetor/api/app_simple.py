@@ -2,6 +2,7 @@
 Rhetor API - Now using enhanced version with real provider support
 """
 import os
+from shared.env import TektonEnviron
 import sys
 import logging
 
@@ -67,6 +68,6 @@ if __name__ == "__main__":
     from shared.utils.env_config import get_component_config
     
     config = get_component_config()
-    port = config.rhetor.port if hasattr(config, 'rhetor') else int(os.environ.get("RHETOR_PORT"))
+    port = config.rhetor.port if hasattr(config, 'rhetor') else int(TektonEnviron.get("RHETOR_PORT"))
     logger.info(f"Starting Rhetor on port {port}")
     uvicorn.run(app, host="0.0.0.0", port=port)

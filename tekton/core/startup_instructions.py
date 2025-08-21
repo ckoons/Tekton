@@ -8,6 +8,7 @@ initialization parameters to components during startup.
 
 import json
 import os
+from shared.env import TektonEnviron
 from datetime import datetime
 from typing import Dict, Any, List, Optional, Union
 
@@ -65,7 +66,7 @@ class StartUpInstructions:
         self.activation_mode = activation_mode
         self.activation_trigger = activation_trigger
         self.timeout = timeout
-        self.hermes_url = hermes_url or os.environ.get("HERMES_URL", "http://localhost:5000/api")
+        self.hermes_url = hermes_url or TektonEnviron.get("HERMES_URL", "http://localhost:5000/api")
         self.priority = max(1, min(10, priority))  # Clamp between 1 and 10
         
     def to_dict(self) -> Dict[str, Any]:

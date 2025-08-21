@@ -3,6 +3,7 @@ Command-line interface for component registration.
 """
 
 import os
+from shared.env import TektonEnviron
 import sys
 import yaml
 import json
@@ -267,7 +268,7 @@ async def main() -> int:
     
     # Set Hermes URL from environment or default
     if hasattr(args, "hermes_url") and args.hermes_url is None:
-        args.hermes_url = os.environ.get("HERMES_URL", "http://localhost:8001/api")
+        args.hermes_url = TektonEnviron.get("HERMES_URL", "http://localhost:8001/api")
     
     # Execute command
     if args.command == "register":

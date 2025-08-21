@@ -6,6 +6,7 @@ Provides comprehensive knowledge graph functionality.
 """
 
 import os
+from shared.env import TektonEnviron
 import sys
 import logging
 import asyncio
@@ -101,7 +102,7 @@ async def startup_callback():
         logger.warning(f"Failed to initialize MCP Bridge: {e}")
     
     # Auto-populate Athena if enabled
-    if os.environ.get('ATHENA_AUTO_POPULATE', 'true').lower() == 'true':
+    if TektonEnviron.get('ATHENA_AUTO_POPULATE', 'true').lower() == 'true':
         asyncio.create_task(populate_athena_delayed())
 
 # Create FastAPI application using component's create_app

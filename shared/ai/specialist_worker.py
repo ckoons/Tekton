@@ -14,6 +14,7 @@ Provides common functionality for all AI specialists including:
 - Ollama/Anthropic integration
 """
 import os
+from shared.env import TektonEnviron
 import sys
 import json
 import asyncio
@@ -154,8 +155,8 @@ class AISpecialistWorker(ABC):
         }
         
         # AI configuration
-        self.model_provider = os.environ.get('TEKTON_AI_PROVIDER', 'ollama')
-        self.model_name = os.environ.get(f'{component.upper()}_AI_MODEL', 
+        self.model_provider = TektonEnviron.get('TEKTON_AI_PROVIDER', 'ollama')
+        self.model_name = TektonEnviron.get(f'{component.upper()}_AI_MODEL', 
                                         self.get_default_model())
         
         # Initialize model manager
@@ -252,11 +253,11 @@ class AISpecialistWorker(ABC):
             
             # Add provider-specific configuration
             if self.model_provider.lower() in ['ollama', 'local']:
-                config['endpoint'] = os.environ.get('OLLAMA_ENDPOINT', 'http://localhost:11434')
+                config['endpoint'] = TektonEnviron.get('OLLAMA_ENDPOINT', 'http://localhost:11434')
             else:
                 # Get API key from environment
                 api_key_var = f"{self.model_provider.upper()}_API_KEY"
-                api_key = os.environ.get(api_key_var)
+                api_key = TektonEnviron.get(api_key_var)
                 if not api_key:
                     self.logger.error(f"API key not found: {api_key_var}")
                     return False

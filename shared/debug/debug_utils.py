@@ -14,6 +14,7 @@ Usage:
 """
 
 import os
+from shared.env import TektonEnviron
 import sys
 import json
 import logging
@@ -35,10 +36,10 @@ class LogLevel(Enum):
     OFF = 60      # Higher than any standard level to disable logging
 
 # Configure from environment
-TEKTON_DEBUG_ENABLED = os.environ.get("TEKTON_DEBUG", "false").lower() in ["true", "1", "yes"]
-TEKTON_LOG_LEVEL = os.environ.get("TEKTON_LOG_LEVEL", "INFO").upper()
-TEKTON_LOG_FILE = os.environ.get("TEKTON_LOG_FILE", "")
-TEKTON_LOG_FORMAT = os.environ.get("TEKTON_LOG_FORMAT", "text")  # "text" or "json"
+TEKTON_DEBUG_ENABLED = TektonEnviron.get("TEKTON_DEBUG", "false").lower() in ["true", "1", "yes"]
+TEKTON_LOG_LEVEL = TektonEnviron.get("TEKTON_LOG_LEVEL", "INFO").upper()
+TEKTON_LOG_FILE = TektonEnviron.get("TEKTON_LOG_FILE", "")
+TEKTON_LOG_FORMAT = TektonEnviron.get("TEKTON_LOG_FORMAT", "text")  # "text" or "json"
 
 class DebugLog:
     """Lightweight debug logging with minimal overhead when disabled"""

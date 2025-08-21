@@ -9,6 +9,7 @@ for tracking component health and managing reconnection.
 import asyncio
 import logging
 import os
+from shared.env import TektonEnviron
 import time
 from typing import Dict, Any, Optional, Set, List
 
@@ -47,7 +48,7 @@ class HeartbeatMonitor:
             collect_metrics: Whether to collect health metrics
             stagger_heartbeats: Whether to stagger heartbeats to prevent thundering herd
         """
-        self.hermes_url = hermes_url or os.environ.get("HERMES_URL", "http://localhost:5000/api")
+        self.hermes_url = hermes_url or TektonEnviron.get("HERMES_URL", "http://localhost:5000/api")
         self.default_interval = default_interval
         self.retry_interval = retry_interval
         self.max_retries = max_retries

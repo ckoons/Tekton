@@ -5,6 +5,7 @@ This module provides configuration management for MCP implementations.
 """
 
 import os
+from shared.env import TektonEnviron
 from typing import Optional, List, Dict, Any
 from pydantic import BaseModel, Field
 
@@ -56,25 +57,25 @@ class MCPConfig(BaseModel):
         
         # Get Hermes URL from config or environment
         hermes_port = getattr(config.hermes, "port", 8001) if hasattr(config, "hermes") else 8001
-        hermes_host = os.environ.get("HERMES_HOST", "localhost")
+        hermes_host = TektonEnviron.get("HERMES_HOST", "localhost")
         hermes_url = f"http://{hermes_host}:{hermes_port}"
         
         # Build MCP config
         return cls(
             component_name=component_name,
-            component_version=os.environ.get(f"{component_name.upper()}_VERSION", "0.1.0"),
-            component_description=os.environ.get(f"{component_name.upper()}_DESCRIPTION", ""),
-            hermes_url=os.environ.get("HERMES_URL", hermes_url),
-            hermes_timeout=int(os.environ.get("MCP_HERMES_TIMEOUT", "30")),
-            auto_register=os.environ.get("MCP_AUTO_REGISTER", "true").lower() == "true",
-            enable_default_tools=os.environ.get("MCP_ENABLE_DEFAULT_TOOLS", "true").lower() == "true",
-            tool_prefix=os.environ.get("MCP_TOOL_PREFIX"),
-            max_contexts=int(os.environ.get("MCP_MAX_CONTEXTS", "100")),
-            context_ttl=int(os.environ.get("MCP_CONTEXT_TTL")) if os.environ.get("MCP_CONTEXT_TTL") else None,
-            max_concurrent_tools=int(os.environ.get("MCP_MAX_CONCURRENT_TOOLS", "10")),
-            tool_timeout=int(os.environ.get("MCP_TOOL_TIMEOUT", "60")),
-            require_auth=os.environ.get("MCP_REQUIRE_AUTH", "false").lower() == "true",
-            allowed_origins=os.environ.get("MCP_ALLOWED_ORIGINS", "*").split(",")
+            component_version=TektonEnviron.get(f"{component_name.upper()}_VERSION", "0.1.0"),
+            component_description=TektonEnviron.get(f"{component_name.upper()}_DESCRIPTION", ""),
+            hermes_url=TektonEnviron.get("HERMES_URL", hermes_url),
+            hermes_timeout=int(TektonEnviron.get("MCP_HERMES_TIMEOUT", "30")),
+            auto_register=TektonEnviron.get("MCP_AUTO_REGISTER", "true").lower() == "true",
+            enable_default_tools=TektonEnviron.get("MCP_ENABLE_DEFAULT_TOOLS", "true").lower() == "true",
+            tool_prefix=TektonEnviron.get("MCP_TOOL_PREFIX"),
+            max_contexts=int(TektonEnviron.get("MCP_MAX_CONTEXTS", "100")),
+            context_ttl=int(TektonEnviron.get("MCP_CONTEXT_TTL")) if TektonEnviron.get("MCP_CONTEXT_TTL") else None,
+            max_concurrent_tools=int(TektonEnviron.get("MCP_MAX_CONCURRENT_TOOLS", "10")),
+            tool_timeout=int(TektonEnviron.get("MCP_TOOL_TIMEOUT", "60")),
+            require_auth=TektonEnviron.get("MCP_REQUIRE_AUTH", "false").lower() == "true",
+            allowed_origins=TektonEnviron.get("MCP_ALLOWED_ORIGINS", "*").split(",")
         )
     
     def get_tool_name(self, name: str) -> str:

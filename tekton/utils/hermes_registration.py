@@ -7,6 +7,7 @@ component capabilities registration.
 """
 
 import os
+from shared.env import TektonEnviron
 import sys
 import asyncio
 import signal
@@ -61,7 +62,7 @@ class HermesRegistrationClient:
         self.heartbeat_interval = heartbeat_interval
         
         # Process Hermes URL from environment if not provided
-        self.hermes_url = hermes_url or os.environ.get("HERMES_URL", "http://localhost:8000/api")
+        self.hermes_url = hermes_url or TektonEnviron.get("HERMES_URL", "http://localhost:8000/api")
         
         # Prepare metadata
         self.metadata = {

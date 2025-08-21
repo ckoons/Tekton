@@ -4,6 +4,7 @@ WebSocket client example for Tekton LLM Client.
 """
 
 import os
+from shared.env import TektonEnviron
 import sys
 import asyncio
 import logging
@@ -38,7 +39,7 @@ async def websocket_example():
     # Initialize the WebSocket client
     client = TektonLLMWebSocketClient(
         component_id="ws-example-client",
-        rhetor_url=os.environ.get("RHETOR_URL", "http://localhost:8003"),
+        rhetor_url=TektonEnviron.get("RHETOR_URL", "http://localhost:8003"),
         on_message=on_message,
         on_error=on_error,
         on_close=on_close

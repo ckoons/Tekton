@@ -1,6 +1,7 @@
 """Hephaestus component implementation using StandardComponentBase."""
 import logging
 import os
+from shared.env import TektonEnviron
 import asyncio
 import subprocess
 import threading
@@ -128,7 +129,7 @@ class HephaestusComponent(StandardComponentBase):
             # Set environment variables for MCP server
             env = os.environ.copy()
             env["MCP_PORT"] = str(self.mcp_port)
-            env["PYTHONPATH"] = f"{Path(__file__).parent.parent.parent}:{os.environ.get('PYTHONPATH', '')}"
+            env["PYTHONPATH"] = f"{Path(__file__).parent.parent.parent}:{TektonEnviron.get('PYTHONPATH', '')}"
             
             # Start MCP server process
             logger.info(f"Starting MCP DevTools server on port {self.mcp_port}")

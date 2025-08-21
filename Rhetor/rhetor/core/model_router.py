@@ -6,6 +6,7 @@ with budget awareness to control costs.
 """
 
 import os
+from shared.env import TektonEnviron
 import logging
 import json
 from typing import Dict, List, Any, Optional, Tuple
@@ -48,7 +49,7 @@ class ModelRouter:
         unified_config = config_dir / "tasks_unified.json"
         old_config = config_dir / "tasks.json"
         
-        config_file = os.environ.get("RHETOR_TASK_CONFIG")
+        config_file = TektonEnviron.get("RHETOR_TASK_CONFIG")
         if not config_file:
             # Prefer unified config if it exists
             if unified_config.exists():

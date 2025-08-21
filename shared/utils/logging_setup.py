@@ -15,6 +15,7 @@ Usage:
 """
 
 import os
+from shared.env import TektonEnviron
 import logging
 import sys
 from typing import Optional, List
@@ -48,11 +49,11 @@ def setup_component_logging(
     if log_level is None:
         # Check component-specific env var first
         env_var = f"{component_name.upper()}_LOG_LEVEL"
-        log_level = os.environ.get(env_var)
+        log_level = TektonEnviron.get(env_var)
         
         # Fall back to global Tekton log level
         if log_level is None:
-            log_level = os.environ.get("TEKTON_LOG_LEVEL", "INFO")
+            log_level = TektonEnviron.get("TEKTON_LOG_LEVEL", "INFO")
     
     # Use standard format if not provided
     if format_string is None:
@@ -60,8 +61,8 @@ def setup_component_logging(
         try:
             from shared.utils.tekton_log_formats import get_format_for_component, FORMATS
             # Check for environment variable override
-            format_type = os.environ.get(f"{component_name.upper()}_LOG_FORMAT") or \
-                         os.environ.get("TEKTON_LOG_FORMAT", "standard")
+            format_type = TektonEnviron.get(f"{component_name.upper()}_LOG_FORMAT") or \
+                         TektonEnviron.get("TEKTON_LOG_FORMAT", "standard")
             if format_type in FORMATS:
                 format_string = FORMATS[format_type]
             else:

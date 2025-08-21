@@ -3,6 +3,7 @@ FAISS vector store implementation.
 """
 
 import os
+from shared.env import TektonEnviron
 import pickle
 import logging
 import threading
@@ -63,7 +64,7 @@ class FAISSVectorStore(BaseVectorStorage):
         self.use_gpu = use_gpu
         
         # Define data path
-        self.data_path = data_path or os.environ.get(
+        self.data_path = data_path or TektonEnviron.get(
             "TEKTON_VECTOR_DB_PATH", 
             os.path.expanduser(f"~/.tekton/vector_stores/{namespace}")
         )

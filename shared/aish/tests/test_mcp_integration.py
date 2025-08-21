@@ -5,6 +5,7 @@ Tests the full flow with real components where possible.
 """
 
 import os
+from shared.env import TektonEnviron
 import sys
 import json
 import time
@@ -43,7 +44,7 @@ def client_with_temp_root(temp_tekton_root):
 def temp_tekton_root():
     """Create temporary TEKTON_ROOT for testing."""
     with tempfile.TemporaryDirectory() as temp_dir:
-        old_root = os.environ.get('TEKTON_ROOT')
+        old_root = TektonEnviron.get('TEKTON_ROOT')
         os.environ['TEKTON_ROOT'] = temp_dir
         
         # Reset registry singletons

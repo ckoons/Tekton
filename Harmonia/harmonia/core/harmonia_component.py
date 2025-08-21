@@ -1,6 +1,7 @@
 """Harmonia component implementation using StandardComponentBase."""
 import logging
 import os
+from shared.env import TektonEnviron
 from typing import List, Dict, Any, Optional
 from pathlib import Path
 
@@ -75,10 +76,10 @@ class HarmoniaComponent(StandardComponentBase):
             else:
                 # Create default startup instructions
                 if get_hermes_url:
-                    hermes_url = os.environ.get("HERMES_URL", get_hermes_url(""))
+                    hermes_url = TektonEnviron.get("HERMES_URL", get_hermes_url(""))
                 else:
-                    hermes_url = os.environ.get("HERMES_URL", "http://localhost:8001")
-                log_level = os.environ.get("LOG_LEVEL", "INFO")
+                    hermes_url = TektonEnviron.get("HERMES_URL", "http://localhost:8001")
+                log_level = TektonEnviron.get("LOG_LEVEL", "INFO")
                 
                 self.startup_instructions = StartUpInstructions(
                     data_directory=str(self.base_dir),

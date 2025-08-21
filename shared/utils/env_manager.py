@@ -22,6 +22,7 @@ Usage:
 """
 
 import os
+from shared.env import TektonEnviron
 import sys
 from pathlib import Path
 from typing import Dict, Optional, Any, List, Union
@@ -112,7 +113,7 @@ class TektonEnvManager:
             Dictionary of all environment variables after loading
         """
         # Check if environment is already frozen by C launcher
-        if os.environ.get('_TEKTON_ENV_FROZEN') == '1':
+        if TektonEnviron.get('_TEKTON_ENV_FROZEN') == '1':
             logger.debug("Environment already loaded by Tekton launcher, skipping reload")
             self._loaded_env = dict(os.environ)
             return dict(os.environ)
@@ -472,7 +473,7 @@ TEKTON_ERGON_AUTOMATION=true
             Port number or None if not found
         """
         env_var = f"{component.upper()}_PORT"
-        port_str = os.environ.get(env_var)
+        port_str = TektonEnviron.get(env_var)
         
         if port_str:
             try:
@@ -493,7 +494,7 @@ TEKTON_ERGON_AUTOMATION=true
         Returns:
             Boolean value
         """
-        value = os.environ.get(key, str(default)).lower()
+        value = TektonEnviron.get(key, str(default)).lower()
         return value in ('true', 'yes', '1', 'y', 't', 'on')
     
     def get_int(self, key: str, default: int = 0) -> int:
@@ -507,7 +508,7 @@ TEKTON_ERGON_AUTOMATION=true
         Returns:
             Integer value
         """
-        value = os.environ.get(key)
+        value = TektonEnviron.get(key)
         if value is None:
             return default
         
@@ -532,7 +533,7 @@ TEKTON_ERGON_AUTOMATION=true
         if default is None:
             default = []
         
-        value = os.environ.get(key)
+        value = TektonEnviron.get(key)
         if value is None:
             return default
         
@@ -659,4 +660,4 @@ def get_tekton_var(key: str, default: Any = None) -> Any:
     Returns:
         Environment variable value
     """
-    return os.environ.get(key, default)
+    return TektonEnviron.get(key, default)

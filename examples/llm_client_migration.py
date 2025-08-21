@@ -8,6 +8,7 @@ and configuration utilities.
 """
 
 import os
+from shared.env import TektonEnviron
 import sys
 import json
 import logging
@@ -55,7 +56,7 @@ async def before_migration():
         
         # Initialize custom client
         client = CustomLLMClient(
-            api_key=os.environ.get("LLM_API_KEY"),
+            api_key=TektonEnviron.get("LLM_API_KEY"),
             model="claude-3-haiku-20240307",
             temperature=0.7
         )

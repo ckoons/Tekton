@@ -6,6 +6,7 @@ service registry to make them available to other Tekton components.
 """
 
 import os
+from shared.env import TektonEnviron
 import asyncio
 import logging
 from typing import Dict, Any, List
@@ -32,7 +33,7 @@ except ImportError:
             logger.info(f"Mock registering capability: {args} {kwargs}")
             return {"success": True, "id": "mock-id"}
 
-HERMES_URL = os.environ.get("HERMES_URL", "http://localhost:8000")
+HERMES_URL = TektonEnviron.get("HERMES_URL", "http://localhost:8000")
 
 async def register_capabilities():
     """Register Athena capabilities with Hermes."""
@@ -43,7 +44,7 @@ async def register_capabilities():
         name="athena",
         description="Knowledge graph service with enhanced retrieval capabilities inspired by LightRAG",
         version="1.0.0",
-        base_url=os.environ.get("ATHENA_URL", "http://localhost:8001")
+        base_url=TektonEnviron.get("ATHENA_URL", "http://localhost:8001")
     )
     
     logger.info(f"Component registration: {component_response}")

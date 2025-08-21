@@ -5,6 +5,7 @@ Test inbox functionality directly
 
 import json
 import os
+from shared.env import TektonEnviron
 import time
 from pathlib import Path
 from collections import deque
@@ -15,7 +16,7 @@ def test_inbox():
     print("==========================")
     
     # Setup test data
-    tekton_root = os.environ.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
+    tekton_root = TektonEnviron.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
     inbox_dir = Path(tekton_root) / '.tekton' / 'terma'
     inbox_dir.mkdir(parents=True, exist_ok=True)
     

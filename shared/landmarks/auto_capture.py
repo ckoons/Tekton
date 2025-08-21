@@ -8,6 +8,7 @@ The code shouldn't know it's being watched.
 """
 
 import os
+from shared.env import TektonEnviron
 import sys
 import json
 import functools
@@ -23,7 +24,7 @@ class AutoLandmark:
     def __init__(self, registry_path: Optional[Path] = None):
         self.registry_path = registry_path or Path("/tmp/landmarks.json")
         self.landmarks = []
-        self.enabled = os.environ.get('LANDMARKS_ENABLED', '1') == '1'
+        self.enabled = TektonEnviron.get('LANDMARKS_ENABLED', '1') == '1'
     
     def emit(self, landmark_type: str, context: Dict[str, Any], 
              audience: str = 'local') -> None:
@@ -45,7 +46,7 @@ class AutoLandmark:
             'timestamp': datetime.now().isoformat(),
             'context': context,
             'audience': audience,
-            'instance_id': os.environ.get('TEKTON_INSTANCE_ID', 'local'),
+            'instance_id': TektonEnviron.get('TEKTON_INSTANCE_ID', 'local'),
             'stack': self._get_stack_context()
         }
         

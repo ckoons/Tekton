@@ -10,6 +10,7 @@ Tests:
 """
 
 import os
+from shared.env import TektonEnviron
 import sys
 import asyncio
 
@@ -36,9 +37,9 @@ def test_configuration():
     
     # Check environment variables
     print("\nEnvironment Variables:")
-    print(f"  TEKTON_VECTOR_DB: {os.environ.get('TEKTON_VECTOR_DB', 'not set')}")
-    print(f"  TEKTON_VECTOR_CPU_ONLY: {os.environ.get('TEKTON_VECTOR_CPU_ONLY', 'not set')}")
-    print(f"  TEKTON_VECTOR_GPU_ENABLED: {os.environ.get('TEKTON_VECTOR_GPU_ENABLED', 'not set')}")
+    print(f"  TEKTON_VECTOR_DB: {TektonEnviron.get('TEKTON_VECTOR_DB', 'not set')}")
+    print(f"  TEKTON_VECTOR_CPU_ONLY: {TektonEnviron.get('TEKTON_VECTOR_CPU_ONLY', 'not set')}")
+    print(f"  TEKTON_VECTOR_GPU_ENABLED: {TektonEnviron.get('TEKTON_VECTOR_GPU_ENABLED', 'not set')}")
 
 
 def test_auto_detection():
@@ -54,7 +55,7 @@ async def test_engram_init():
     print("\n=== Testing Engram Initialization ===")
     
     # Temporarily set to auto mode
-    original_db = os.environ.get('TEKTON_VECTOR_DB')
+    original_db = TektonEnviron.get('TEKTON_VECTOR_DB')
     os.environ['TEKTON_VECTOR_DB'] = 'auto'
     
     try:

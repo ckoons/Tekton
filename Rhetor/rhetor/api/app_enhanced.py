@@ -2,6 +2,7 @@
 Enhanced Rhetor API - Intelligent LLM Orchestrator with Context Management
 """
 import os
+from shared.env import TektonEnviron
 import sys
 import json
 import logging
@@ -289,23 +290,23 @@ async def initialize_providers():
         logger.warning(f"Ollama not available: {e}")
     
     # Check API key availability for other providers
-    if os.environ.get("ANTHROPIC_API_KEY"):
+    if TektonEnviron.get("ANTHROPIC_API_KEY"):
         PROVIDERS["anthropic"]["available"] = True
         logger.info("Anthropic API key found")
     
-    if os.environ.get("OPENAI_API_KEY"):
+    if TektonEnviron.get("OPENAI_API_KEY"):
         PROVIDERS["openai"]["available"] = True
         logger.info("OpenAI API key found")
         
-    if os.environ.get("GROQ_API_KEY"):
+    if TektonEnviron.get("GROQ_API_KEY"):
         PROVIDERS["groq"]["available"] = True
         logger.info("Groq API key found")
         
-    if os.environ.get("GOOGLE_GENERATIVE_AI_API_KEY"):
+    if TektonEnviron.get("GOOGLE_GENERATIVE_AI_API_KEY"):
         PROVIDERS["google"]["available"] = True
         logger.info("Google API key found")
         
-    if os.environ.get("OPEN_ROUTER_API_KEY"):
+    if TektonEnviron.get("OPEN_ROUTER_API_KEY"):
         PROVIDERS["openrouter"]["available"] = True
         logger.info("OpenRouter API key found")
 
@@ -479,7 +480,7 @@ async def complete_with_anthropic(message: str, model: str, system_prompt: Optio
         payload["system"] = system_prompt
         
     headers = {
-        "x-api-key": os.environ.get("ANTHROPIC_API_KEY"),
+        "x-api-key": TektonEnviron.get("ANTHROPIC_API_KEY"),
         "anthropic-version": "2023-06-01",
         "content-type": "application/json"
     }
@@ -531,11 +532,11 @@ async def complete_with_openai_compatible(
     headers = {"Content-Type": "application/json"}
     
     if provider_id == "openai":
-        headers["Authorization"] = f"Bearer {os.environ.get('OPENAI_API_KEY')}"
+        headers["Authorization"] = f"Bearer {TektonEnviron.get('OPENAI_API_KEY')}"
     elif provider_id == "groq":
-        headers["Authorization"] = f"Bearer {os.environ.get('GROQ_API_KEY')}"
+        headers["Authorization"] = f"Bearer {TektonEnviron.get('GROQ_API_KEY')}"
     elif provider_id == "openrouter":
-        headers["Authorization"] = f"Bearer {os.environ.get('OPEN_ROUTER_API_KEY')}"
+        headers["Authorization"] = f"Bearer {TektonEnviron.get('OPEN_ROUTER_API_KEY')}"
         headers["HTTP-Referer"] = "https://tekton.ai"  # OpenRouter requires this
     
     try:
@@ -569,7 +570,7 @@ async def complete_with_google(message: str, model: str, system_prompt: Optional
     
     payload = {"contents": contents}
     
-    api_key = os.environ.get("GOOGLE_GENERATIVE_AI_API_KEY")
+    api_key = TektonEnviron.get("GOOGLE_GENERATIVE_AI_API_KEY")
     url = f"{PROVIDERS['google']['base_url']}/models/{model}:generateContent?key={api_key}"
     
     try:
@@ -757,6 +758,6 @@ if __name__ == "__main__":
     from shared.utils.env_config import get_component_config
     
     config = get_component_config()
-    port = config.rhetor.port if hasattr(config, 'rhetor') else int(os.environ.get("RHETOR_PORT"))
+    port = config.rhetor.port if hasattr(config, 'rhetor') else int(TektonEnviron.get("RHETOR_PORT"))
     logger.info(f"Starting enhanced Rhetor on port {port}")
     uvicorn.run(app, host="0.0.0.0", port=port)

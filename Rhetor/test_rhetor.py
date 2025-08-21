@@ -6,6 +6,7 @@ This script sends a test message to the Rhetor API and prints the response.
 """
 
 import os
+from shared.env import TektonEnviron
 import sys
 import logging
 import asyncio
@@ -19,7 +20,7 @@ logging.basicConfig(
 )
 logger = logging.getLogger("rhetor.test")
 
-RHETOR_URL = os.environ.get("RHETOR_URL", "http://localhost:8003")
+RHETOR_URL = TektonEnviron.get("RHETOR_URL", "http://localhost:8003")
 
 async def test_providers():
     """Test retrieving available providers."""

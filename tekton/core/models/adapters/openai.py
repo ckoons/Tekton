@@ -6,6 +6,7 @@ This module provides the adapter for OpenAI models.
 """
 
 import os
+from shared.env import TektonEnviron
 import time
 import json
 import logging
@@ -29,7 +30,7 @@ class OpenAIAdapter(ModelAdapter):
             config: Configuration dictionary with at least 'api_key'
         """
         super().__init__(config)
-        self.api_key = config.get("api_key") or os.environ.get("OPENAI_API_KEY")
+        self.api_key = config.get("api_key") or TektonEnviron.get("OPENAI_API_KEY")
         self.model = config.get("model", "gpt-4o")
         self.embedding_model = config.get("embedding_model", "text-embedding-3-large")
         self.client = None

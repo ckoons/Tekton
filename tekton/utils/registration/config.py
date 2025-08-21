@@ -3,6 +3,7 @@ Configuration loading and validation for component registration.
 """
 
 import os
+from shared.env import TektonEnviron
 import yaml
 import logging
 from typing import Dict, Any, List, Optional
@@ -31,7 +32,7 @@ def find_config_file(component_id: str) -> Optional[str]:
         return f"{component_id}.yml"
     
     # Check in the config directory
-    tekton_dir = os.environ.get("TEKTON_ROOT")
+    tekton_dir = TektonEnviron.get("TEKTON_ROOT")
     if tekton_dir:
         # Check in Tekton config directory
         config_dir = os.path.join(tekton_dir, "config", "components")

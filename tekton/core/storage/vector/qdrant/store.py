@@ -3,6 +3,7 @@ Qdrant vector store implementation.
 """
 
 import os
+from shared.env import TektonEnviron
 import logging
 import hashlib
 import numpy as np
@@ -68,7 +69,7 @@ class QdrantVectorStore(BaseVectorStorage):
         self.use_disk = use_disk
         
         # Define data path
-        self.data_path = path or os.environ.get(
+        self.data_path = path or TektonEnviron.get(
             "TEKTON_VECTOR_DB_PATH", 
             os.path.expanduser(f"~/.tekton/qdrant/{namespace}")
         )

@@ -4,6 +4,7 @@ Detect Claude authentication method and billing type
 """
 
 import os
+from shared.env import TektonEnviron
 import subprocess
 import json
 import sys
@@ -21,7 +22,7 @@ def detect_claude_auth():
     }
     
     # 1. Check environment variable
-    api_key = os.environ.get('ANTHROPIC_API_KEY')
+    api_key = TektonEnviron.get('ANTHROPIC_API_KEY')
     if api_key:
         results["api_key_present"] = True
         results["api_key_source"] = "environment"
@@ -126,7 +127,7 @@ def test_claude_billing():
             print("✅ Claude responded successfully")
             # Note: The actual response won't tell us billing directly,
             # but successful response with API key means API billing
-            if os.environ.get('ANTHROPIC_API_KEY'):
+            if TektonEnviron.get('ANTHROPIC_API_KEY'):
                 print("📊 Using API billing (ANTHROPIC_API_KEY is set)")
             else:
                 print("📊 Likely using Claude Max (no API key in environment)")
@@ -145,7 +146,7 @@ def suggest_changes():
     print("How to switch authentication methods:")
     print("="*50)
     
-    if os.environ.get('ANTHROPIC_API_KEY'):
+    if TektonEnviron.get('ANTHROPIC_API_KEY'):
         print("\n📌 Currently using API Key")
         print("\nTo switch to Claude Max:")
         print("1. unset ANTHROPIC_API_KEY")

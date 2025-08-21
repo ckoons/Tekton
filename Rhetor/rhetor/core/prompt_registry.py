@@ -7,6 +7,7 @@ It integrates with the tekton-llm-client PromptTemplateRegistry for enhanced fea
 """
 
 import os
+from shared.env import TektonEnviron
 import json
 import yaml
 import logging
@@ -258,9 +259,9 @@ class PromptRegistry:
         """
         # Set default base directory if not provided
         if not base_dir:
-            tekton_root = os.environ.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
+            tekton_root = TektonEnviron.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
             base_dir = os.path.join(
-                os.environ.get('TEKTON_DATA_DIR', 
+                TektonEnviron.get('TEKTON_DATA_DIR', 
                               os.path.join(tekton_root, '.tekton', 'data')),
                 'rhetor', 'prompts'
             )

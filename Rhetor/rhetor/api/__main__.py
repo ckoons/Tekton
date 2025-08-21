@@ -1,6 +1,7 @@
 """Main entry point for running Rhetor API server."""
 import uvicorn
 import os
+from shared.env import TektonEnviron
 import sys
 
 # Add Tekton root to path for shared imports
@@ -13,7 +14,7 @@ from rhetor.api.app import app
 
 if __name__ == "__main__":
     config = get_component_config()
-    port = config.rhetor.port if hasattr(config, 'rhetor') else int(os.environ.get("RHETOR_PORT"))
+    port = config.rhetor.port if hasattr(config, 'rhetor') else int(TektonEnviron.get("RHETOR_PORT"))
     uvicorn.run(
         app,
         host="0.0.0.0",

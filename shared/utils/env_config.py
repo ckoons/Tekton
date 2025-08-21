@@ -5,6 +5,7 @@ Provides typed, validated configuration objects for each component
 using Pydantic models and the underlying env_manager.
 """
 import os
+from shared.env import TektonEnviron
 from typing import Optional, Dict, Any
 import logging
 from pydantic import BaseModel, Field, field_validator
@@ -25,9 +26,9 @@ class VectorDBConfig(BaseModel):
     def from_env(cls) -> 'VectorDBConfig':
         """Create VectorDBConfig from environment variables."""
         return cls(
-            vector_db=os.environ.get('TEKTON_VECTOR_DB', 'auto'),
-            cpu_only=os.environ.get('TEKTON_VECTOR_CPU_ONLY', 'false').lower() == 'true',
-            gpu_enabled=os.environ.get('TEKTON_VECTOR_GPU_ENABLED', 'true').lower() == 'true'
+            vector_db=TektonEnviron.get('TEKTON_VECTOR_DB', 'auto'),
+            cpu_only=TektonEnviron.get('TEKTON_VECTOR_CPU_ONLY', 'false').lower() == 'true',
+            gpu_enabled=TektonEnviron.get('TEKTON_VECTOR_GPU_ENABLED', 'true').lower() == 'true'
         )
 
 
@@ -57,7 +58,7 @@ class BaseComponentConfig(BaseModel):
         Raises:
             ValueError: If environment variable not found
         """
-        value = os.environ.get(key)
+        value = TektonEnviron.get(key)
         if value is None:
             raise ValueError(f"{key} not found in environment variables")
         
@@ -86,7 +87,7 @@ class BaseComponentConfig(BaseModel):
         Returns:
             Typed value or default
         """
-        value = os.environ.get(key)
+        value = TektonEnviron.get(key)
         if value is None:
             return default
         
@@ -489,7 +490,7 @@ class ComponentConfig:
         """Initialize component configuration."""
         self.env_manager = get_env_manager()
         # Only load environment if not already frozen by C launcher
-        if os.environ.get('_TEKTON_ENV_FROZEN') != '1':
+        if TektonEnviron.get('_TEKTON_ENV_FROZEN') != '1':
             self.env_manager.load_environment()
         
         # Load all component configs

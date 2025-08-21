@@ -3,6 +3,7 @@ WebSocket client for interacting with Tekton LLM services.
 """
 
 import os
+from shared.env import TektonEnviron
 import json
 import logging
 import asyncio
@@ -50,8 +51,8 @@ class TektonLLMWebSocketClient:
         self.component_id = component_id
         
         # Determine the WebSocket URL
-        http_url = rhetor_url or os.environ.get("RHETOR_URL", "http://localhost:8003")
-        ws_url = os.environ.get("RHETOR_WS_URL")
+        http_url = rhetor_url or TektonEnviron.get("RHETOR_URL", "http://localhost:8003")
+        ws_url = TektonEnviron.get("RHETOR_WS_URL")
         
         if not ws_url:
             # Convert HTTP URL to WebSocket URL
@@ -65,7 +66,7 @@ class TektonLLMWebSocketClient:
                 ws_url = ws_url.rstrip("/") + "/ws"
         
         self.ws_url = ws_url
-        self.auth_token = auth_token or os.environ.get("RHETOR_AUTH_TOKEN")
+        self.auth_token = auth_token or TektonEnviron.get("RHETOR_AUTH_TOKEN")
         self.reconnect_interval = reconnect_interval
         
         # Callbacks

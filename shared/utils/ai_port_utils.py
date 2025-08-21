@@ -5,10 +5,11 @@ Simple utilities for calculating AI specialist ports based on component ports.
 Uses configurable port bases from environment variables.
 """
 import os
+from shared.env import TektonEnviron
 
 # Get port bases from environment, with defaults for backwards compatibility
-TEKTON_PORT_BASE = int(os.environ.get('TEKTON_PORT_BASE', '8000'))
-TEKTON_AI_PORT_BASE = int(os.environ.get('TEKTON_AI_PORT_BASE', '45000'))
+TEKTON_PORT_BASE = int(TektonEnviron.get('TEKTON_PORT_BASE', '8000'))
+TEKTON_AI_PORT_BASE = int(TektonEnviron.get('TEKTON_AI_PORT_BASE', '45000'))
 
 
 def get_ai_port(component_port: int) -> int:
@@ -49,24 +50,24 @@ def get_component_port_from_ai(ai_port: int) -> int:
 
 # Component ports (will be read from env, but defaults here for reference)
 COMPONENT_PORTS = {
-    'engram': int(os.environ.get('ENGRAM_PORT', str(TEKTON_PORT_BASE + 0))),
-    'hermes': int(os.environ.get('HERMES_PORT', str(TEKTON_PORT_BASE + 1))),
-    'ergon': int(os.environ.get('ERGON_PORT', str(TEKTON_PORT_BASE + 2))),
-    'rhetor': int(os.environ.get('RHETOR_PORT', str(TEKTON_PORT_BASE + 3))),
-    'terma': int(os.environ.get('TERMA_PORT', str(TEKTON_PORT_BASE + 4))),
-    'athena': int(os.environ.get('ATHENA_PORT', str(TEKTON_PORT_BASE + 5))),
-    'prometheus': int(os.environ.get('PROMETHEUS_PORT', str(TEKTON_PORT_BASE + 6))),
-    'harmonia': int(os.environ.get('HARMONIA_PORT', str(TEKTON_PORT_BASE + 7))),
-    'telos': int(os.environ.get('TELOS_PORT', str(TEKTON_PORT_BASE + 8))),
-    'synthesis': int(os.environ.get('SYNTHESIS_PORT', str(TEKTON_PORT_BASE + 9))),
-    'tekton_core': int(os.environ.get('TEKTON_CORE_PORT', str(TEKTON_PORT_BASE + 10))),
-    'metis': int(os.environ.get('METIS_PORT', str(TEKTON_PORT_BASE + 11))),
-    'apollo': int(os.environ.get('APOLLO_PORT', str(TEKTON_PORT_BASE + 12))),
-    'penia': int(os.environ.get('PENIA_PORT', str(TEKTON_PORT_BASE + 13))),
-    'sophia': int(os.environ.get('SOPHIA_PORT', str(TEKTON_PORT_BASE + 14))),
-    'noesis': int(os.environ.get('NOESIS_PORT', str(TEKTON_PORT_BASE + 15))),
-    'numa': int(os.environ.get('NUMA_PORT', str(TEKTON_PORT_BASE + 16))),
-    'hephaestus': int(os.environ.get('HEPHAESTUS_PORT', str(TEKTON_PORT_BASE + 80))),
+    'engram': int(TektonEnviron.get('ENGRAM_PORT', str(TEKTON_PORT_BASE + 0))),
+    'hermes': int(TektonEnviron.get('HERMES_PORT', str(TEKTON_PORT_BASE + 1))),
+    'ergon': int(TektonEnviron.get('ERGON_PORT', str(TEKTON_PORT_BASE + 2))),
+    'rhetor': int(TektonEnviron.get('RHETOR_PORT', str(TEKTON_PORT_BASE + 3))),
+    'terma': int(TektonEnviron.get('TERMA_PORT', str(TEKTON_PORT_BASE + 4))),
+    'athena': int(TektonEnviron.get('ATHENA_PORT', str(TEKTON_PORT_BASE + 5))),
+    'prometheus': int(TektonEnviron.get('PROMETHEUS_PORT', str(TEKTON_PORT_BASE + 6))),
+    'harmonia': int(TektonEnviron.get('HARMONIA_PORT', str(TEKTON_PORT_BASE + 7))),
+    'telos': int(TektonEnviron.get('TELOS_PORT', str(TEKTON_PORT_BASE + 8))),
+    'synthesis': int(TektonEnviron.get('SYNTHESIS_PORT', str(TEKTON_PORT_BASE + 9))),
+    'tekton_core': int(TektonEnviron.get('TEKTON_CORE_PORT', str(TEKTON_PORT_BASE + 10))),
+    'metis': int(TektonEnviron.get('METIS_PORT', str(TEKTON_PORT_BASE + 11))),
+    'apollo': int(TektonEnviron.get('APOLLO_PORT', str(TEKTON_PORT_BASE + 12))),
+    'penia': int(TektonEnviron.get('PENIA_PORT', str(TEKTON_PORT_BASE + 13))),
+    'sophia': int(TektonEnviron.get('SOPHIA_PORT', str(TEKTON_PORT_BASE + 14))),
+    'noesis': int(TektonEnviron.get('NOESIS_PORT', str(TEKTON_PORT_BASE + 15))),
+    'numa': int(TektonEnviron.get('NUMA_PORT', str(TEKTON_PORT_BASE + 16))),
+    'hephaestus': int(TektonEnviron.get('HEPHAESTUS_PORT', str(TEKTON_PORT_BASE + 80))),
 }
 
 # Dynamic port mappings calculated from component ports
