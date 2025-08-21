@@ -2722,6 +2722,64 @@ function displayAnalysisResults(data) {
     }
 }
 
+// Helper function to build Tekton component URLs
+function tektonUrl(component, path) {
+    // Map component names to ports
+    const componentPorts = {
+        'tekton-core': 8110,
+        'hermes': 8101,
+        'athena': 8102,
+        'hephaestus': 8103,
+        'nexus': 8104,
+        'orchestrator': 8105,
+        'catalyst': 8106,
+        'aion': 8107,
+        'logoi': 8108,
+        'epimetheus': 8109,
+        'prometheus': 8111,
+        'catalyst-utils': 8112,
+        'eidos': 8113,
+        'nyx': 8114,
+        'charon': 8115,
+        'terma': 8116,
+        'rhetor': 8117,
+        'sophia': 8118,
+        'telos': 8119,
+        'synthesis': 8120
+    };
+    
+    const port = componentPorts[component] || 8110; // Default to tekton-core
+    return `http://localhost:${port}${path}`;
+}
+
+// Helper to get aish URL (for MCP endpoints)
+function aishUrl(path) {
+    return `http://localhost:8199${path}`;
+}
+
+// TektonModal utility for showing messages
+const TektonModal = {
+    error: function(message) {
+        console.error('[TEKTON]', message);
+        alert('Error: ' + message);
+    },
+    warning: function(message) {
+        console.warn('[TEKTON]', message);
+        alert('Warning: ' + message);
+    },
+    success: function(message) {
+        console.log('[TEKTON]', message);
+        alert('Success: ' + message);
+    },
+    info: function(message) {
+        console.info('[TEKTON]', message);
+        alert('Info: ' + message);
+    },
+    confirm: async function(message, title = 'Confirm') {
+        return confirm(message);
+    }
+};
+
 // Emergency modal close (can be called from console)
 window.forceCloseAllModals = function() {
     const modals = document.querySelectorAll('.tekton__modal-overlay');
@@ -2845,9 +2903,12 @@ async function createProjectFromModal() {
             requestBody.forked_repository = forkedRepository;
         }
         
-        if (analyzedProjectData) {
-            requestBody.analysis_data = analyzedProjectData;
+        // Add description from analysis if available
+        if (analyzedProjectData && analyzedProjectData.repository && analyzedProjectData.repository.description) {
+            requestBody.description = analyzedProjectData.repository.description;
         }
+        
+        console.log('[TEKTON] Creating project with request:', requestBody);
         
         // Call the create project API
         const response = await fetch(tektonUrl('tekton-core', '/api/projects'), {
@@ -2859,7 +2920,17 @@ async function createProjectFromModal() {
         });
         
         if (!response.ok) {
-            throw new Error(`Project creation failed: ${response.statusText}`);
+            // Try to get error details from response
+            let errorMessage = response.statusText;
+            try {
+                const errorData = await response.json();
+                if (errorData.detail) {
+                    errorMessage = errorData.detail;
+                }
+            } catch (e) {
+                // Couldn't parse error response
+            }
+            throw new Error(errorMessage);
         }
         
         const result = await response.json();
@@ -2868,7 +2939,7 @@ async function createProjectFromModal() {
         closeCreateProjectModal();
         
         // Show success message
-        TektonModal.success(`Project "${result.project_name}" created successfully!`);
+        TektonModal.success(`Project "${result.name || 'New Project'}" created successfully!`);
         
         // Switch to Projects tab to show the new project
         document.getElementById('tekton-tab-projects').checked = true;
