@@ -1597,6 +1597,56 @@
         margin-top: 20px;
     }
     
+    /* Modal loading overlay */
+    .tekton__modal-loading-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(26, 26, 42, 0.95);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+        border-radius: 8px;
+    }
+    
+    .tekton__loading-text {
+        color: #FFD700;
+        font-size: 14px;
+        margin-top: 20px;
+        font-weight: 500;
+    }
+    
+    .tekton__button--loading {
+        opacity: 0.7;
+        cursor: not-allowed;
+        position: relative;
+    }
+    
+    .tekton__button--loading::after {
+        content: '';
+        position: absolute;
+        width: 16px;
+        height: 16px;
+        margin: auto;
+        top: 0;
+        left: -25px;
+        bottom: 0;
+        right: 0;
+        border: 2px solid transparent;
+        border-top-color: #ffffff;
+        border-radius: 50%;
+        animation: button-loading-spinner 1s linear infinite;
+    }
+    
+    @keyframes button-loading-spinner {
+        from { transform: rotate(0turn); }
+        to { transform: rotate(1turn); }
+    }
+    
     .tekton__modal-close {
         background: none;
         border: none;
@@ -2863,6 +2913,36 @@ function closeCreateProjectModal() {
 async function createProjectFromModal() {
     console.log('[TEKTON] Creating project from modal');
     
+    // Get all the buttons to disable them during processing
+    const createBtn = document.querySelector('.tekton__modal-footer .tekton__button--success');
+    const cancelBtn = document.querySelector('.tekton__modal-footer .tekton__button--secondary');
+    const closeBtn = document.querySelector('.tekton__modal-close');
+    
+    // Store original button text
+    const originalBtnText = createBtn ? createBtn.textContent : 'Create Project';
+    
+    // Disable all buttons and show loading state
+    if (createBtn) {
+        createBtn.disabled = true;
+        createBtn.textContent = 'Creating Project...';
+        createBtn.classList.add('tekton__button--loading');
+    }
+    if (cancelBtn) cancelBtn.disabled = true;
+    if (closeBtn) closeBtn.disabled = true;
+    
+    // Add loading overlay to modal body
+    const modalBody = document.querySelector('.tekton__modal--create-project .tekton__modal-body');
+    const loadingOverlay = document.createElement('div');
+    loadingOverlay.className = 'tekton__modal-loading-overlay';
+    loadingOverlay.innerHTML = `
+        <div class="tekton__loading-spinner"></div>
+        <div class="tekton__loading-text">Creating project, please wait...</div>
+    `;
+    if (modalBody) {
+        modalBody.style.position = 'relative';
+        modalBody.appendChild(loadingOverlay);
+    }
+    
     const githubUrl = document.getElementById('modal-github-url').value;
     const localDirectory = document.getElementById('modal-local-directory').value;
     const forkedRepository = document.getElementById('modal-forked-repository').value;
@@ -2874,12 +2954,34 @@ async function createProjectFromModal() {
         const githubUsername = await getGitHubUsername();
         if (!githubUsername) {
             TektonModal.error('Please set your GitHub username in Profile settings before creating a forked project');
+            // Re-enable buttons on error
+            if (createBtn) {
+                createBtn.disabled = false;
+                createBtn.textContent = originalBtnText;
+                createBtn.classList.remove('tekton__button--loading');
+            }
+            if (cancelBtn) cancelBtn.disabled = false;
+            if (closeBtn) closeBtn.disabled = false;
+            if (loadingOverlay && loadingOverlay.parentNode) {
+                loadingOverlay.parentNode.removeChild(loadingOverlay);
+            }
             return;
         }
     }
     
     if (!githubUrl || !localDirectory) {
         TektonModal.error('GitHub URL and Local Directory are required');
+        // Re-enable buttons on error
+        if (createBtn) {
+            createBtn.disabled = false;
+            createBtn.textContent = originalBtnText;
+            createBtn.classList.remove('tekton__button--loading');
+        }
+        if (cancelBtn) cancelBtn.disabled = false;
+        if (closeBtn) closeBtn.disabled = false;
+        if (loadingOverlay && loadingOverlay.parentNode) {
+            loadingOverlay.parentNode.removeChild(loadingOverlay);
+        }
         return;
     }
     
@@ -2948,6 +3050,20 @@ async function createProjectFromModal() {
     } catch (error) {
         console.error('[TEKTON] Project creation error:', error);
         TektonModal.error(`Failed to create project: ${error.message}`);
+        
+        // Re-enable buttons on error
+        if (createBtn) {
+            createBtn.disabled = false;
+            createBtn.textContent = originalBtnText;
+            createBtn.classList.remove('tekton__button--loading');
+        }
+        if (cancelBtn) cancelBtn.disabled = false;
+        if (closeBtn) closeBtn.disabled = false;
+        
+        // Remove loading overlay
+        if (loadingOverlay && loadingOverlay.parentNode) {
+            loadingOverlay.parentNode.removeChild(loadingOverlay);
+        }
     }
 }
 
@@ -3524,7 +3640,7 @@ async function showProjectDetails(projectId, projectName) {
     
     try {
         // Fetch project details including README
-        const response = await fetch(tektonUrl('tekton-core', `/api/v1/projects/${projectId}`));
+        const response = await fetch(tektonUrl('tekton-core', `/api/projects/${projectId}`));
         
         if (!response.ok) {
             throw new Error(`Failed to fetch project details: ${response.statusText}`);
@@ -4639,14 +4755,39 @@ function closeProjectSprintsModal() {
 // Load sprints for a specific project
 async function loadProjectSprints(projectId) {
     try {
-        const response = await fetch(tektonUrl('tekton-core', `/projects/${projectId}/sprints`));
-        const data = await response.json();
+        // First, get the project details to get the project name
+        const projectResponse = await fetch(tektonUrl('tekton-core', `/api/projects/${projectId}`));
+        if (!projectResponse.ok) {
+            throw new Error('Failed to fetch project details');
+        }
+        const projectData = await projectResponse.json();
+        const projectName = projectData.name || projectId;
+        
+        // Get all sprints using the correct API endpoint
+        const response = await fetch(tektonUrl('tekton-core', '/api/sprints/status'));
+        if (!response.ok) {
+            throw new Error('Failed to fetch sprints');
+        }
+        
+        const result = await response.json();
+        const allSprints = result.sprints || [];
+        
+        // Filter sprints that belong to this project
+        // For Tekton project, we want all sprints since Tekton is the main project
+        const projectSprints = projectName.toLowerCase() === 'tekton' 
+            ? allSprints  // Show all sprints for Tekton project
+            : allSprints.filter(sprint => 
+                sprint.name && (
+                    sprint.name.toLowerCase().startsWith(projectName.toLowerCase() + '-') ||
+                    sprint.name.toLowerCase() === projectName.toLowerCase()
+                )
+            );
         
         const grid = document.getElementById('project-sprints-grid');
         if (!grid) return;
         
-        if (data.sprints && data.sprints.length > 0) {
-            grid.innerHTML = data.sprints.map(sprint => `
+        if (projectSprints.length > 0) {
+            grid.innerHTML = projectSprints.map(sprint => `
                 <div class="tekton__sprint-card tekton__sprint-card--${sprint.status.toLowerCase().replace(/\s+/g, '-')}">
                     <div class="tekton__sprint-header">
                         <h4 class="tekton__sprint-name">${sprint.name}</h4>
