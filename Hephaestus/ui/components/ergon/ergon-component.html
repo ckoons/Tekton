@@ -6,6 +6,9 @@
 <script src="/scripts/shared/single-chat.js"></script>
 <script src="/scripts/shared/team-chat.js"></script>
 
+<!-- Load Registry integration -->
+<script src="/scripts/ergon/registry-integration.js"></script>
+
 <script>
 // Define global functions early for inline handlers
 window.ergon_sendChat = function() {
@@ -56,6 +59,30 @@ window.ergon_sendChat = function() {
     // Clear input
     input.value = '';
 }
+
+// Initialize Registry when tab is clicked
+window.ergon_initRegistry = function() {
+    if (window.RegistryIntegration) {
+        const registry = new window.RegistryIntegration();
+        registry.initialize();
+        
+        // Load initial data
+        registry.loadSolutions();
+        registry.updateStatistics();
+    } else {
+        console.warn('[ERGON] Registry integration not loaded yet');
+    }
+}
+
+// Add click handler for Registry tab
+document.addEventListener('DOMContentLoaded', function() {
+    const registryTab = document.querySelector('label[for="ergon-tab-registry"]');
+    if (registryTab) {
+        registryTab.addEventListener('click', function() {
+            setTimeout(ergon_initRegistry, 100); // Small delay to ensure tab is switched
+        });
+    }
+});
 </script>
 
 <!-- Hidden radio inputs for CSS-first tab functionality -->
@@ -158,7 +185,27 @@ window.ergon_sendChat = function() {
         <!-- @landmark Panel: Registry - Browse and search reusable solutions -->
         <div id="registry-panel" class="ergon__panel" data-tekton-panel="registry" data-tekton-panel-for="Registry" data-tekton-panel-component="ergon" data-tekton-type="panel" data-tekton-zone="content-panel" data-tekton-state="inactive" data-tekton-visibility="hidden">
             <div class="ergon__panel-header">
-                <h3 class="ergon__section-title">Solution Registry</h3>
+                <div class="ergon__panel-header-top">
+                    <div class="ergon__header-left">
+                        <h3 class="ergon__section-title">Solution Registry</h3>
+                        <div class="ergon__header-stats">
+                            <span class="ergon__stat-item">
+                                <span class="ergon__stat-label">Total:</span>
+                                <span id="total-solutions" class="ergon__stat-value">0</span>
+                            </span>
+                            <span class="ergon__stat-item">
+                                <span class="ergon__stat-label">Compliant:</span>
+                                <span id="compliant-solutions" class="ergon__stat-value">0</span>
+                            </span>
+                        </div>
+                    </div>
+                    <button id="check-completed-projects" class="ergon__button ergon__button--primary" 
+                            data-tekton-action="check-projects" 
+                            data-tekton-trigger="click"
+                            data-tekton-target="import-status">
+                        Check Completed Projects
+                    </button>
+                </div>
                 <p class="ergon__section-description">Browse and search our catalog of reusable tools, agents, MCP servers, and workflows.</p>
                 
                 <!-- Search and Filters -->
@@ -186,11 +233,41 @@ window.ergon_sendChat = function() {
                     </select>
                 </div>
             </div>
-            
-            <div class="ergon__solution-grid" id="solution-grid" data-tekton-component="solution-grid" data-tekton-type="container" data-tekton-state="empty">
+
+            <!-- Solution Grid with Results -->
+            <div class="ergon__solution-grid" id="solution-grid" 
+                 data-tekton-component="solution-grid" 
+                 data-tekton-type="container" 
+                 data-tekton-zone="registry-list"
+                 data-tekton-state="empty">
+                
                 <!-- Solutions will be loaded here dynamically -->
-                <div class="ergon__empty-message" id="solutions-loading" data-tekton-type="empty-state" data-tekton-state="empty">
-                    <div class="ergon__message-text" data-tekton-type="empty-text">No solutions found in database.</div>
+                <!-- Example solution card structure: -->
+                <!--
+                <div class="ergon__solution-card" data-tekton-element="solution-card" data-solution-id="">
+                    <div class="ergon__solution-header">
+                        <h4 class="ergon__solution-name"></h4>
+                        <span class="ergon__solution-version"></span>
+                        <span class="ergon__solution-type"></span>
+                    </div>
+                    <div class="ergon__solution-meta">
+                        <span class="ergon__standards-badge" data-tekton-status="compliant">✓ Standards</span>
+                        <span class="ergon__lineage-info">Lineage: 0</span>
+                    </div>
+                    <div class="ergon__solution-actions">
+                        <button class="ergon__button ergon__button--test" data-tekton-action="test-solution">Test</button>
+                        <button class="ergon__button ergon__button--view" data-tekton-action="view-details">Details</button>
+                        <button class="ergon__button ergon__button--check" data-tekton-action="check-standards">Check</button>
+                    </div>
+                </div>
+                -->
+                
+                <div class="ergon__empty-message" id="solutions-loading" 
+                     data-tekton-type="empty-state" 
+                     data-tekton-state="empty">
+                    <div class="ergon__message-text" data-tekton-type="empty-text">
+                        No solutions found. Click "Check for Completed Projects" to import from TektonCore.
+                    </div>
                 </div>
             </div>
         </div>
@@ -687,6 +764,120 @@ window.ergon_sendChat = function() {
         display: flex;
         align-items: center;
         gap: 4px;
+    }
+    
+    /* Registry-specific styles */
+    .ergon__panel-header-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.5rem;
+    }
+    
+    .ergon__header-left {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+    }
+    
+    .ergon__header-stats {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+    }
+    
+    .ergon__status-text {
+        font-size: 0.9rem;
+        color: var(--text-secondary, #aaa);
+    }
+    
+    .ergon__standards-badge {
+        padding: 2px 8px;
+        border-radius: 4px;
+        font-size: 0.85rem;
+        font-weight: 500;
+    }
+    
+    .ergon__standards-badge[data-tekton-status="compliant"] {
+        background-color: rgba(76, 175, 80, 0.2);
+        color: #4CAF50;
+    }
+    
+    .ergon__standards-badge[data-tekton-status="non-compliant"] {
+        background-color: rgba(255, 152, 0, 0.2);
+        color: #FF9800;
+    }
+    
+    .ergon__lineage-info {
+        font-size: 0.85rem;
+        color: var(--text-secondary, #aaa);
+    }
+    
+    .ergon__solution-actions {
+        display: flex;
+        gap: 0.5rem;
+        margin-top: 1rem;
+    }
+    
+    .ergon__button {
+        padding: 6px 12px;
+        border: 1px solid var(--border-color, #444444);
+        border-radius: 4px;
+        background-color: var(--bg-tertiary, #333345);
+        color: var(--text-primary, #f0f0f0);
+        cursor: pointer;
+        font-size: 0.85rem;
+        transition: all 0.2s ease;
+    }
+    
+    .ergon__button:hover {
+        background-color: var(--bg-hover, #3d3d4d);
+        border-color: #00BCD4;
+    }
+    
+    .ergon__button--primary {
+        background-color: #00BCD4;
+        color: #1a1a2e;
+        border-color: #00BCD4;
+    }
+    
+    .ergon__button--primary:hover {
+        background-color: #00ACC1;
+    }
+    
+    .ergon__button--test {
+        border-color: #4CAF50;
+    }
+    
+    .ergon__button--test:hover {
+        background-color: rgba(76, 175, 80, 0.2);
+        color: #4CAF50;
+    }
+    
+    .ergon__stat-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.9rem;
+    }
+    
+    .ergon__stat-label {
+        font-size: 0.9rem;
+        color: var(--text-secondary, #aaa);
+    }
+    
+    .ergon__stat-value {
+        font-size: 1rem;
+        font-weight: 600;
+        color: #00BCD4;
+    }
+    
+    .ergon__solution-version {
+        padding: 2px 6px;
+        background-color: var(--bg-tertiary, #333345);
+        border-radius: 4px;
+        font-size: 0.8rem;
+        color: var(--text-secondary, #aaa);
     }
     
     
