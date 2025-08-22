@@ -1,0 +1,59 @@
+{
+  "workspace_id": "e9b6834a-b5d1-47f9-9420-a75936deab69",
+  "name": "New Composition",
+  "created_at": "2025-08-22T21:14:47.883212",
+  "updated_at": "2025-08-22T21:14:47.883571",
+  "status": "composing",
+  "ci_owner": "test-ci",
+  "collaborators": [],
+  "composition": {
+    "components": [
+      {
+        "registry_id": "parser-abc123",
+        "alias": "parser",
+        "config": {
+          "format": "json"
+        }
+      },
+      {
+        "registry_id": "analyzer-def456",
+        "alias": "analyzer",
+        "config": {
+          "model": "gpt-4"
+        }
+      }
+    ],
+    "connections": [
+      {
+        "from": "parser.output",
+        "to": "analyzer.input"
+      }
+    ],
+    "constraints": {
+      "max_memory": "2GB",
+      "requires_standards": true
+    }
+  },
+  "validation_results": null,
+  "test_results": null,
+  "chat_context": [],
+  "history": [
+    {
+      "timestamp": "2025-08-22T21:14:47.883212",
+      "action": "created",
+      "ci": "test-ci",
+      "details": {
+        "name": "New Composition"
+      }
+    },
+    {
+      "timestamp": "2025-08-22T21:14:47.883571",
+      "action": "composition_updated",
+      "ci": "test-ci",
+      "details": {
+        "components_count": 2,
+        "connections_count": 1
+      }
+    }
+  ]
+}

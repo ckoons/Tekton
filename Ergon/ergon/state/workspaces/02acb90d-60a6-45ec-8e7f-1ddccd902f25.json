@@ -1,0 +1,60 @@
+{
+  "workspace_id": "02acb90d-60a6-45ec-8e7f-1ddccd902f25",
+  "name": "API with database",
+  "created_at": "2025-08-22T21:12:15.330547",
+  "updated_at": "2025-08-22T21:12:15.330943",
+  "status": "composing",
+  "ci_owner": "test-ci",
+  "collaborators": [],
+  "composition": {
+    "components": [
+      {
+        "registry_id": "test-api-component",
+        "alias": "api",
+        "config": {
+          "port": 8080
+        }
+      },
+      {
+        "registry_id": "test-db-component",
+        "alias": "database",
+        "config": {
+          "type": "postgres"
+        }
+      }
+    ],
+    "connections": [
+      {
+        "from": "api.output",
+        "to": "database.input",
+        "protocol": "sql"
+      }
+    ],
+    "constraints": {
+      "max_memory": "2GB",
+      "environment": "development"
+    }
+  },
+  "validation_results": null,
+  "test_results": null,
+  "chat_context": [],
+  "history": [
+    {
+      "timestamp": "2025-08-22T21:12:15.330547",
+      "action": "created",
+      "ci": "test-ci",
+      "details": {
+        "name": "API with database"
+      }
+    },
+    {
+      "timestamp": "2025-08-22T21:12:15.330943",
+      "action": "composition_updated",
+      "ci": "test-ci",
+      "details": {
+        "components_count": 2,
+        "connections_count": 1
+      }
+    }
+  ]
+}

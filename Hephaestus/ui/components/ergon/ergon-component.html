@@ -10,6 +10,8 @@
 <script src="/scripts/ergon/registry-integration.js"></script>
 <!-- Load Sandbox integration -->
 <script src="/scripts/ergon/sandbox-integration.js"></script>
+<!-- Load Construct integration -->
+<script src="/scripts/ergon/construct-integration.js"></script>
 
 <script>
 // Define global functions early for inline handlers
@@ -91,7 +93,7 @@ document.addEventListener('DOMContentLoaded', function() {
 <!-- @landmark Navigation: CSS-first radio buttons for tab switching -->
 <input type="radio" name="ergon-tab" id="ergon-tab-development" checked style="display: none;">
 <input type="radio" name="ergon-tab" id="ergon-tab-registry" style="display: none;">
-<input type="radio" name="ergon-tab" id="ergon-tab-configurator" style="display: none;">
+<input type="radio" name="ergon-tab" id="ergon-tab-construct" style="display: none;">
 <input type="radio" name="ergon-tab" id="ergon-tab-chat" style="display: none;">
 <input type="radio" name="ergon-tab" id="ergon-tab-teamchat" style="display: none;">
 
@@ -132,15 +134,18 @@ document.addEventListener('DOMContentLoaded', function() {
                  data-tekton-trigger="click">
                 <span class="ergon__tab-label">Registry</span>
             </label>
-            <label for="ergon-tab-configurator" class="ergon__tab" data-tab="configurator" 
-                 data-tekton-menu-item="Configurator" 
+            <label for="ergon-tab-construct" class="ergon__tab" data-tab="construct" 
+                 data-tekton-menu-item="Construct" 
                  data-tekton-menu-component="ergon" 
-                 data-tekton-menu-panel="configurator-panel" 
-                 data-tekton-nav-target="configurator"
+                 data-tekton-menu-panel="construct-panel" 
+                 data-tekton-nav-target="construct"
                  data-tekton-nav-item="tab"
                  data-tekton-nav-action="switch-tab"
                  data-tekton-trigger="click">
-                <span class="ergon__tab-label">Configurator</span>
+                <svg class="ergon__tab-icon" viewBox="0 0 24 24" width="20" height="20">
+                    <path d="M18 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 14h-3v3h-2v-3H8v-2h3v-3h2v3h3v2z"/>
+                </svg>
+                <span class="ergon__tab-label">Construct</span>
             </label>
             <label for="ergon-tab-chat" class="ergon__tab" data-tekton-chat="tab" data-tab="chat" 
                  data-tekton-menu-item="Tool Chat" 
@@ -275,48 +280,66 @@ document.addEventListener('DOMContentLoaded', function() {
         </div>
         
         
-        <!-- Configurator Tab -->
-        <!-- @landmark Panel: Configurator - Generate configurations and wrappers -->
-        <div id="configurator-panel" class="ergon__panel" data-tekton-panel="configurator" data-tekton-panel-for="Configurator" data-tekton-panel-component="ergon" data-tekton-type="panel" data-tekton-zone="content-panel" data-tekton-state="inactive" data-tekton-visibility="hidden">
-            <div class="ergon__panel-header" style="padding-bottom: 0.5rem;">
-                <h3 class="ergon__section-title">Configuration Generator</h3>
-                <p class="ergon__section-description" style="margin-bottom: 0;">Generate wrappers, adapters, and configurations for existing solutions.</p>
+        <!-- Construct Tab -->
+        <!-- @landmark Panel: Construct - Build solutions from Registry components -->
+        <div id="construct-panel" class="ergon__panel" data-tekton-panel="construct" data-tekton-panel-for="Construct" data-tekton-panel-component="ergon" data-tekton-type="panel" data-tekton-zone="content-panel" data-tekton-state="inactive" data-tekton-visibility="hidden">
+            <div class="ergon__panel-header">
+                <h3 class="ergon__section-title">Solution Composer</h3>
+                <p class="ergon__section-description">Build new solutions by combining Registry components. CIs handle the complexity - you describe what you want.</p>
             </div>
             
-            <div class="ergon__configurator-form" style="padding-top: 0;" data-tekton-component="configurator-form" data-tekton-type="form-container">
-                <div class="ergon__form-group" style="margin-top: 0;">
-                    <label for="config-solution" class="ergon__form-label">Select Solution:</label>
-                    <select id="config-solution" class="ergon__form-select" data-tekton-select="solution" data-tekton-type="solution-select" data-tekton-action="load-config-options" data-tekton-target="config-parameters" data-tekton-state="empty">
-                        <option value="">-- Select a solution from registry --</option>
-                    </select>
+            <!-- Chat-first interface for Construct -->
+            <div class="ergon__construct-chat" data-tekton-construct="chat-interface">
+                <div class="ergon__chat-input-wrapper">
+                    <input type="text" 
+                           id="construct-chat-input" 
+                           class="ergon__chat-input" 
+                           placeholder="Describe what you want to build (e.g., 'Create a data pipeline with Parser and Analyzer')"
+                           data-tekton-input="construct-request">
+                    <button onclick="sendConstructRequest()" class="ergon__button ergon__button--primary">
+                        Build
+                    </button>
+                </div>
+            </div>
+            
+            
+            <!-- Workspace Display -->
+            <div class="ergon__construct-workspace" data-tekton-construct="workspace">
+                <div class="ergon__workspace-header">
+                    <h4>Current Composition</h4>
+                    <span id="workspace-status" class="ergon__status-badge">No active workspace</span>
                 </div>
                 
-                <div class="ergon__form-group">
-                    <label for="config-type" class="ergon__form-label">Configuration Type:</label>
-                    <select id="config-type" class="ergon__form-select" data-tekton-select="config-type" data-tekton-type="config-type-select" data-tekton-action="load-parameters" data-tekton-target="config-parameters" data-tekton-state="empty">
-                        <option value="">-- Select configuration type --</option>
-                        <option value="fastapi_wrapper">FastAPI Wrapper</option>
-                        <option value="mcp_adapter">MCP Adapter</option>
-                        <option value="docker_config">Docker Configuration</option>
-                        <option value="agent_config">Agent Configuration</option>
-                        <option value="workflow_template">Workflow Template</option>
-                    </select>
+                <!-- JSON State Display (for CIs and debugging) -->
+                <div class="ergon__json-state" id="construct-json-state">
+                    <pre class="ergon__code-block">{
+  "workspace_id": null,
+  "status": "ready",
+  "components": [],
+  "connections": []
+}</pre>
                 </div>
                 
-                <div class="ergon__form-group">
-                    <label class="ergon__form-label">Configuration Parameters:</label>
-                    <div id="config-parameters" class="ergon__config-parameters" data-tekton-component="config-parameters" data-tekton-type="parameter-container" data-tekton-state="empty">
-                        <!-- Dynamic parameters will appear here based on config type -->
+                <!-- Visual Composition Display -->
+                <div class="ergon__visual-composition" id="visual-composition">
+                    <!-- Components and connections will be visualized here -->
+                </div>
+                
+                <!-- CI Collaboration View -->
+                <div class="ergon__ci-collaboration">
+                    <h5>CI Activity</h5>
+                    <div id="ci-activity-log" class="ergon__activity-log">
+                        <!-- CI activities will stream here -->
                     </div>
                 </div>
-                
-                <button id="generate-config-button" class="ergon__action-button ergon__action-button--success" data-tekton-action="generate-config" data-tekton-action-type="primary" data-tekton-trigger="click" data-tekton-target="config-output" data-tekton-status="enabled">
-                    <span class="ergon__button-label">Generate Configuration</span>
-                </button>
             </div>
             
-            <div class="ergon__config-output" id="config-output" data-tekton-component="config-output" data-tekton-type="output-container" data-tekton-state="empty">
-                <!-- Generated configuration will appear here -->
+            <!-- Action Buttons -->
+            <div class="ergon__construct-actions">
+                <button onclick="validateComposition()" class="ergon__button">Validate</button>
+                <button onclick="testComposition()" class="ergon__button ergon__button--test">Test</button>
+                <button onclick="publishComposition()" class="ergon__button ergon__button--success">Publish</button>
+                <button onclick="clearWorkspace()" class="ergon__button ergon__button--secondary">Clear</button>
             </div>
         </div>
         
@@ -520,7 +543,7 @@ document.addEventListener('DOMContentLoaded', function() {
     /* CSS-first navigation - radio button controls active state */
     #ergon-tab-development:checked ~ .ergon .ergon__tab[data-tab="development"],
     #ergon-tab-registry:checked ~ .ergon .ergon__tab[data-tab="registry"],
-    #ergon-tab-configurator:checked ~ .ergon .ergon__tab[data-tab="configurator"],
+    #ergon-tab-construct:checked ~ .ergon .ergon__tab[data-tab="construct"],
     #ergon-tab-chat:checked ~ .ergon .ergon__tab[data-tab="chat"],
     #ergon-tab-teamchat:checked ~ .ergon .ergon__tab[data-tab="teamchat"] {
         border-bottom-color: #00BCD4; /* Ergon blue for active tab */

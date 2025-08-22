@@ -1,0 +1,175 @@
+{
+  "version": "construct-v1",
+  "description": "Ergon Construct System Protocol - CI-first JSON interface",
+  "authors": ["ani-ci", "amy-ci"],
+  "created": "2025-08-22",
+  
+  "operations": {
+    "compose": {
+      "description": "Assemble components into a solution",
+      "request": {
+        "components": [
+          {
+            "registry_id": "string:uuid",
+            "alias": "string:identifier",
+            "config": "object:component-specific",
+            "version": "string:semver:optional"
+          }
+        ],
+        "connections": [
+          {
+            "from": "string:component.port",
+            "to": "string:component.port",
+            "transform": "object:optional",
+            "protocol": "string:http|grpc|socket|file"
+          }
+        ],
+        "constraints": {
+          "max_memory": "string:optional",
+          "max_cpu": "string:optional",
+          "requires_standards": "boolean:default=true",
+          "environment": "string:development|staging|production"
+        }
+      },
+      "response": {
+        "workspace_id": "string:uuid",
+        "validation": "object:validation-result",
+        "warnings": "array:string",
+        "next_steps": "array:string"
+      }
+    },
+    
+    "validate": {
+      "description": "Validate a composition",
+      "request": {
+        "workspace_id": "string:uuid",
+        "checks": [
+          "connections",
+          "dependencies", 
+          "standards",
+          "conflicts",
+          "resources"
+        ],
+        "mode": "string:strict|permissive"
+      },
+      "response": {
+        "valid": "boolean",
+        "errors": "array:validation-error",
+        "warnings": "array:validation-warning",
+        "suggestions": "array:string"
+      }
+    },
+    
+    "test": {
+      "description": "Test composition in sandbox",
+      "request": {
+        "workspace_id": "string:uuid",
+        "sandbox_config": {
+          "timeout": "integer:seconds:default=300",
+          "resources": "object:resource-limits",
+          "environment": "object:env-vars"
+        },
+        "assertions": [
+          {
+            "type": "string:health|performance|output",
+            "target": "string:component.endpoint",
+            "expected": "any"
+          }
+        ]
+      },
+      "response": {
+        "sandbox_id": "string:uuid",
+        "status": "string:running|passed|failed",
+        "results": "array:test-result",
+        "logs": "object:component-logs"
+      }
+    },
+    
+    "publish": {
+      "description": "Publish composition to Registry",
+      "request": {
+        "workspace_id": "string:uuid",
+        "metadata": {
+          "name": "string:required",
+          "version": "string:semver:required",
+          "description": "string",
+          "tags": "array:string"
+        },
+        "options": {
+          "auto_test": "boolean:default=true",
+          "check_standards": "boolean:default=true",
+          "create_github": "boolean:default=false"
+        }
+      },
+      "response": {
+        "registry_id": "string:uuid",
+        "lineage": "array:uuid",
+        "published_at": "string:iso8601",
+        "standards_check": "object:optional"
+      }
+    }
+  },
+  
+  "state": {
+    "description": "Workspace state tracking",
+    "schema": {
+      "workspace_id": "string:uuid",
+      "created_at": "string:iso8601",
+      "updated_at": "string:iso8601",
+      "status": "enum:draft|composing|validating|testing|ready|published",
+      "ci_owner": "string:ci-identifier",
+      "collaborators": "array:ci-identifier",
+      "composition": "object:current-composition",
+      "validation_results": "object:optional",
+      "test_results": "object:optional",
+      "chat_context": "array:message:optional"
+    }
+  },
+  
+  "chat_interface": {
+    "description": "Bidirectional chat protocol",
+    "message_types": {
+      "json_command": {
+        "detected_by": "valid JSON with operation field",
+        "response": "json"
+      },
+      "natural_language": {
+        "detected_by": "plain text",
+        "response": "text with optional embedded JSON"
+      },
+      "mixed": {
+        "detected_by": "text with ```json blocks",
+        "response": "formatted text with JSON"
+      }
+    }
+  },
+  
+  "ci_collaboration": {
+    "description": "How CIs work together on compositions",
+    "protocols": {
+      "claim_task": {
+        "description": "CI claims a subtask",
+        "fields": ["workspace_id", "task_type", "ci_id"]
+      },
+      "merge_work": {
+        "description": "Merge CI contributions",
+        "fields": ["workspace_id", "changes", "ci_id"]
+      },
+      "request_review": {
+        "description": "Ask another CI to review",
+        "fields": ["workspace_id", "reviewer_ci", "focus_area"]
+      }
+    }
+  },
+  
+  "intelligence_hints": {
+    "description": "Hints for Claude/GPT-4 integration",
+    "capabilities": [
+      "suggest_components: Given requirements, suggest Registry components",
+      "validate_connections: Ensure component interfaces match",
+      "optimize_composition: Suggest more efficient arrangements",
+      "explain_errors: Provide human-friendly error explanations",
+      "generate_config: Create component configurations from descriptions"
+    ]
+  }
+}

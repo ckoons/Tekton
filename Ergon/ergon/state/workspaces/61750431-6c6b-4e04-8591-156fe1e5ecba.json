@@ -1,0 +1,27 @@
+{
+  "workspace_id": "61750431-6c6b-4e04-8591-156fe1e5ecba",
+  "name": "New Composition",
+  "created_at": "2025-08-22T21:14:42.480883",
+  "updated_at": "2025-08-22T21:14:42.480883",
+  "status": "draft",
+  "ci_owner": "ergon-ci",
+  "collaborators": [],
+  "composition": {
+    "components": [],
+    "connections": [],
+    "constraints": {}
+  },
+  "validation_results": null,
+  "test_results": null,
+  "chat_context": [],
+  "history": [
+    {
+      "timestamp": "2025-08-22T21:14:42.480883",
+      "action": "created",
+      "ci": "ergon-ci",
+      "details": {
+        "name": "New Composition"
+      }
+    }
+  ]
+}

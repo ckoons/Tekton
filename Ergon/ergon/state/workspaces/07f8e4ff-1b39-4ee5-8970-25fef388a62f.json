@@ -1,0 +1,59 @@
+{
+  "workspace_id": "07f8e4ff-1b39-4ee5-8970-25fef388a62f",
+  "name": "New Composition",
+  "created_at": "2025-08-22T21:14:47.884744",
+  "updated_at": "2025-08-22T21:14:47.885123",
+  "status": "composing",
+  "ci_owner": "amy-ci",
+  "collaborators": [],
+  "composition": {
+    "components": [
+      {
+        "registry_id": "api-gateway",
+        "alias": "gateway"
+      },
+      {
+        "registry_id": "auth-service",
+        "alias": "auth"
+      }
+    ],
+    "connections": [
+      {
+        "from": "gateway.auth_check",
+        "to": "auth.validate"
+      }
+    ],
+    "constraints": {}
+  },
+  "validation_results": null,
+  "test_results": null,
+  "chat_context": [],
+  "history": [
+    {
+      "timestamp": "2025-08-22T21:14:47.884744",
+      "action": "created",
+      "ci": "amy-ci",
+      "details": {
+        "name": "New Composition"
+      }
+    },
+    {
+      "timestamp": "2025-08-22T21:14:47.884908",
+      "action": "composition_updated",
+      "ci": "amy-ci",
+      "details": {
+        "components_count": 1,
+        "connections_count": null
+      }
+    },
+    {
+      "timestamp": "2025-08-22T21:14:47.885123",
+      "action": "composition_updated",
+      "ci": "ani-ci",
+      "details": {
+        "components_count": 2,
+        "connections_count": 1
+      }
+    }
+  ]
+}
