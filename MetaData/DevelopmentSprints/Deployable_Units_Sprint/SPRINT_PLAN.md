@@ -1,12 +1,19 @@
 # Sprint: Ergon Container Management
 
 ## Overview
-Transform Ergon into a comprehensive container management platform with JSON-based registry, build system, and deployment capabilities using the Casey Method principles: simple, works, hard to screw up.
+Transform Ergon into a comprehensive container management platform with JSON-based registry, construct system, and deployment capabilities using the Casey Method principles: simple, works, hard to screw up.
+
+## Workflow
+**Project Complete → Registry → Sandbox → Construct → Deploy → Refine**
+
+When TektonCore marks a project as "Complete", the solution automatically enters the Ergon Registry. Registry checks standards compliance, triggering automatic refactor sprints for non-compliant solutions. Users construct new solutions from Registry entries, with all automation tracked in the Development dashboard.
 
 ## Goals
-1. **Phase 0**: Clean up Ergon by moving Analyzer to TektonCore
-2. **Phase 1**: Build robust JSON registry for all deployable units  
-3. **Phase 2**: Implement Build system for container creation and testing
+1. **Phase 0**: Clean up Ergon by moving Analyzer to TektonCore ✅
+2. **Phase 1**: Build robust JSON registry for all deployable units
+3. **Phase 1.5**: Implement Sandbox for safe solution testing
+4. **Phase 2**: Implement Construct system for solution assembly
+5. **Phase 3**: Create Refine/Refactor engine for standards enforcement
 
 ## Phase 0: Infrastructure Cleanup [100% Complete] ✅
 
@@ -45,6 +52,19 @@ Transform Ergon into a comprehensive container management platform with JSON-bas
 - [ ] Add JSON validation for base schema
 - [ ] Implement basic search and filtering
 
+### Automatic Solution Import
+- [ ] Monitor TektonCore for "Complete" projects
+- [ ] Extract solution metadata from development sprints
+- [ ] Auto-create Registry entries with provenance
+- [ ] Link to source files (local or GitHub)
+
+### Standards Compliance
+- [ ] Import Tekton Ergon Standards document at startup
+- [ ] Implement standards checking engine
+- [ ] Mark compliant solutions as "Meets Standards"
+- [ ] Auto-trigger refactor sprints for non-compliant solutions
+- [ ] Track solution lineage (newest → oldest progression)
+
 ### Registry Schema
 ```json
 {
@@ -54,6 +74,13 @@ Transform Ergon into a comprehensive container management platform with JSON-bas
   "name": "human_readable_name", 
   "created": "iso_timestamp",
   "updated": "iso_timestamp",
+  "meets_standards": true/false,
+  "lineage": ["parent_id", "grandparent_id"],
+  "source": {
+    "project_id": "tekton_core_project_id",
+    "sprint_id": "development_sprint_id",
+    "location": "local_path_or_github_url"
+  },
   "content": {
     // type-specific JSON structure
   }
@@ -65,76 +92,179 @@ Transform Ergon into a comprehensive container management platform with JSON-bas
 - [ ] `retrieve(id)` → returns JSON object  
 - [ ] `search(type, name, filters)` → returns list
 - [ ] `list_types()` → returns available types
-- [ ] `delete(id)` → removes object
+- [ ] `delete(id)` → removes object (with safeguards)
+- [ ] `check_standards(id)` → returns compliance report
+- [ ] `get_lineage(id)` → returns solution history
 
 ### UI Integration
 - [ ] Create Registry tab in Ergon
 - [ ] Browse all stored objects by type
 - [ ] Basic JSON editor with validation
 - [ ] Search and filter interface
+- [ ] Standards compliance indicators
+- [ ] Lineage visualization
+- [ ] Test button on each solution card
 
 ### Success Criteria
-- [ ] Store and retrieve any JSON structure
-- [ ] Fast O(1) lookup by ID
-- [ ] Search by type, name, and content fields
+- [ ] Automatic import from completed projects
+- [ ] Standards compliance checking functional
+- [ ] Lineage tracking operational
 - [ ] UI shows stored objects clearly
 - [ ] Schema validation enforced
-- [ ] Foundation ready for container definitions
+- [ ] Foundation ready for Sandbox and Construct phases
 
 ### Blocked On
 - [ ] Waiting for Phase 0 completion
 
-## Phase 2: Build the Build System [0% Complete]
+## Phase 1.5: Sandbox Testing Environment [0% Complete]
 
-### Build Tab Implementation
-- [ ] Create Build tab in Ergon UI
+### Sandbox Infrastructure
+- [ ] Create isolated container environment
+- [ ] Implement resource limits (CPU, memory, disk)
+- [ ] Set up network isolation with port forwarding
+- [ ] Build cleanup and recovery mechanisms
+
+### Quick Test Integration
+- [ ] One-click test from Registry tab
+- [ ] Automatic GitHub file resolution
+- [ ] Environment variable injection
+- [ ] Dependency installation automation
+
+### Real-time Monitoring
+- [ ] Log streaming to UI
+- [ ] Status indicators (starting, running, failed)
+- [ ] Resource usage metrics
+- [ ] Port accessibility testing
+
+### UI Components
+- [ ] Sandbox status panel
+- [ ] Log viewer with filtering
+- [ ] Quick actions (start, stop, restart, cleanup)
+- [ ] Error diagnostics display
+
+### Success Criteria
+- [ ] Test any Registry solution in <5 seconds
+- [ ] Zero impact on host system
+- [ ] Clear error messages and recovery
+- [ ] Seamless integration with Registry UI
+- [ ] Results saved to solution metadata
+
+### Blocked On
+- [ ] Waiting for Phase 1 completion
+
+## Phase 2: Construct System [0% Complete]
+
+### Construct Tab Implementation
+- [ ] Create Construct tab in Ergon UI
 - [ ] Component selection panel (browse Registry)
-- [ ] Build workspace (configure selected components)
-- [ ] Actions panel (sandbox, publish, export)
+- [ ] Construct workspace (configure selected components)
+- [ ] Actions panel (test, publish, export)
+- [ ] Test buttons throughout interface
 
 ### Component Selection Panel
 - [ ] Registry browser interface
 - [ ] Search and filter components
 - [ ] Component cards with details
-- [ ] "Add to Build" functionality
+- [ ] "Add to Construct" functionality
+- [ ] Multi-select for composing solutions
 
-### Build Workspace  
+### Construct Workspace  
 - [ ] Selected components list
 - [ ] Configuration panel for each component
 - [ ] Environment variables editor
 - [ ] Port mapping interface
 - [ ] Dependency ordering system
-- [ ] CI assignment dropdown
+- [ ] Solution lineage tracking
 
-### Build Settings
-- [ ] Deployable unit naming
+### Construct Settings
+- [ ] New solution naming
 - [ ] Description editor
-- [ ] Container type selection
+- [ ] Solution type selection
 - [ ] Tags and metadata
+- [ ] Parent solution references
 
-### Sandbox Testing
-- [ ] Local testing environment
-- [ ] Resolve GitHub file references
-- [ ] Component startup orchestration
+### Integration Testing
+- [ ] Test individual components
+- [ ] Test full configuration
+- [ ] Validate dependencies
 - [ ] Log streaming to UI
 - [ ] Test endpoint provision
 
 ### Publishing System
-- [ ] Generate deployable unit JSON
-- [ ] GitHub repository creation
+- [ ] Generate new solution JSON
+- [ ] Create Registry entry with lineage
+- [ ] GitHub repository creation (optional)
 - [ ] Solution upload to GitHub
-- [ ] Registry entry with GitHub URL
-- [ ] Export to Docker format
+- [ ] Never modify existing solutions
+
+### Development Integration
+- [ ] Identify integration requirements
+- [ ] Create development sprints for complex integrations
+- [ ] Link to Development dashboard
+- [ ] Track integration task progress
 
 ### Success Criteria
-- [ ] Complete build workflow functional
-- [ ] Sandbox testing works reliably
-- [ ] Publishing to GitHub successful
+- [ ] Complete construct workflow functional
+- [ ] New solutions created (never modify existing)
+- [ ] Lineage properly tracked
 - [ ] Registry integration seamless
-- [ ] Export capabilities working
+- [ ] Development sprints auto-created for integrations
 
 ### Blocked On
-- [ ] Waiting for Phase 1 completion
+- [ ] Waiting for Phase 1.5 completion
+
+## Phase 3: Refine/Refactor Engine [0% Complete]
+
+### Standards Management
+- [ ] Load Tekton Ergon Standards document at startup
+- [ ] Parse standards into executable rules
+- [ ] Allow user selection/deselection of standards
+- [ ] Smart pre-selection based on solution type
+- [ ] Standards versioning and evolution
+
+### Refactor Engine
+- [ ] Automatic standards compliance checking
+- [ ] Create refactor development sprints
+- [ ] Use original solution as working baseline
+- [ ] Iterative improvement until 100% compliance
+- [ ] Generate new Registry entry with lineage
+
+### Pattern Detection
+- [ ] Identify common code structures
+- [ ] Extract reusable components
+- [ ] Build pattern library from high-quality solutions
+- [ ] Update standards based on best practices
+
+### Quality Scoring
+- [ ] Maintainability metrics
+- [ ] Efficiency analysis
+- [ ] Code elegance scoring
+- [ ] Documentation completeness
+- [ ] Test coverage assessment
+
+### Development Dashboard Integration
+- [ ] Display active refactor sprints
+- [ ] Progress tracking for each sprint
+- [ ] Success/failure metrics
+- [ ] Resource allocation via TektonCore
+- [ ] Queue management integration
+
+### UI Components
+- [ ] Standards selection interface
+- [ ] Refactor progress viewer
+- [ ] Before/after comparison
+- [ ] Quality metrics dashboard
+- [ ] Pattern library browser
+
+### Success Criteria
+- [ ] All new solutions trigger standards check
+- [ ] Automatic refactor sprints created
+- [ ] Lineage properly maintained
+- [ ] Standards evolve from best solutions
+- [ ] Integration with TektonCore scheduling
+
+### Blocked On
+- [ ] Waiting for Phase 2 completion
 
 ## Technical Decisions
 
@@ -143,12 +273,22 @@ Transform Ergon into a comprehensive container management platform with JSON-bas
 - **File-based fallback** for development
 - **JSON schema validation** at storage time
 - **UUID-based IDs** for global uniqueness
+- **Lineage tracking** for solution evolution
 
-### Build System Architecture  
-- **Component composition** over monolithic builds
+### Construct System Architecture  
+- **Component composition** over monolithic construction
 - **GitHub as source of truth** for shared components
-- **Local sandbox** for safe testing
+- **Always create new solutions** (never modify existing)
 - **JSON-centric** configuration
+- **Automatic standards compliance**
+
+### Workflow Integration
+- **TektonCore completion** triggers Registry import
+- **Registry** enforces standards and manages solutions
+- **Sandbox** provides safe testing environment
+- **Construct** assembles new solutions from Registry
+- **Development** dashboard tracks all automation
+- **Refine/Refactor** continuously improves quality
 
 ### Casey Method Principles
 - **Simple**: Clear operations, obvious workflows
@@ -163,36 +303,62 @@ Transform Ergon into a comprehensive container management platform with JSON-bas
 
 ## Files to Create/Update
 
-### Phase 0
+### Phase 0 (COMPLETE)
 ```
-/tekton-core/tekton/analyzer/ (moved from Ergon)
+/tekton-core/tekton_api/analyzer/ (moved from Ergon)
 /Hephaestus/ui/components/tekton/analyzer-integration.html
-/Hephaestus/ui/components/ergon/ergon-component.html (remove analyzer)
+/Hephaestus/ui/components/ergon/ergon-component.html (analyzer removed)
 ```
 
-### Phase 1  
+### Phase 1: Registry
 ```
 /Ergon/ergon/registry/ (new directory)
 /Ergon/ergon/registry/storage.py
 /Ergon/ergon/registry/schema.py
+/Ergon/ergon/registry/standards.py
 /Ergon/ergon/api/registry.py
 /Hephaestus/ui/components/ergon/registry-tab.html
+/Ergon/standards/tekton_ergon_standards.json
 ```
 
-### Phase 2
+### Phase 1.5: Sandbox
 ```
-/Hephaestus/ui/components/ergon/build-tab.html
-/Ergon/ergon/build/ (new directory)
-/Ergon/ergon/build/workspace.py
-/Ergon/ergon/build/sandbox.py
-/Ergon/ergon/build/publisher.py
+/Ergon/ergon/sandbox/ (new directory)
+/Ergon/ergon/sandbox/container.py
+/Ergon/ergon/sandbox/runner.py
+/Ergon/ergon/sandbox/monitor.py
+/Ergon/ergon/api/sandbox.py
+/Hephaestus/ui/components/ergon/sandbox-panel.html
+```
+
+### Phase 2: Construct
+```
+/Hephaestus/ui/components/ergon/construct-tab.html
+/Ergon/ergon/construct/ (new directory)
+/Ergon/ergon/construct/workspace.py
+/Ergon/ergon/construct/composer.py
+/Ergon/ergon/construct/publisher.py
+/Ergon/ergon/api/construct.py
+```
+
+### Phase 3: Refine/Refactor
+```
+/Ergon/ergon/refactor/ (new directory)
+/Ergon/ergon/refactor/engine.py
+/Ergon/ergon/refactor/patterns.py
+/Ergon/ergon/refactor/scoring.py
+/Ergon/ergon/api/refactor.py
+/Hephaestus/ui/components/ergon/refactor-dashboard.html
 ```
 
 ## Success Metrics
-- [ ] Ergon focused purely on container/deployment management
-- [ ] Registry stores and retrieves JSON reliably
-- [ ] Build system creates testable deployable units
-- [ ] Publishing workflow generates GitHub repositories
+- [ ] Ergon focused purely on solution management and automation
+- [ ] Registry automatically imports completed projects
+- [ ] Standards compliance enforced with automatic refactoring
+- [ ] Sandbox provides instant testing capability
+- [ ] Construct creates new solutions without modifying existing
+- [ ] Development dashboard tracks all automation
+- [ ] Solution lineage properly maintained
 - [ ] All components follow Casey Method principles
 
 ## Future Integration
@@ -201,3 +367,5 @@ This sprint sets the foundation for:
 - **Federated Tekton** registry synchronization
 - **Casey Method cookbooks** integration
 - **Multi-AI deployment** coordination
+- **Standards evolution** from community best practices
+- **Solution marketplace** for sharing between Tekton instances

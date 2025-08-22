@@ -64,6 +64,7 @@ from ergon.utils.tekton_integration import get_component_port, configure_for_sin
 from .a2a_endpoints import router as a2a_router
 from .mcp_endpoints import router as mcp_router
 from .fastmcp_endpoints import fastmcp_router, fastmcp_startup, fastmcp_shutdown
+from .registry import router as registry_router
 
 # Import ergon component
 from ..core.ergon_component import ErgonComponent
@@ -728,6 +729,9 @@ mount_standard_routers(app, routers)
 # Include A2A and MCP routers under v1
 routers.v1.include_router(a2a_router, prefix="/a2a", tags=["A2A"])
 routers.v1.include_router(mcp_router, prefix="/mcp", tags=["MCP"])
+
+# Include Registry router (note: registry has its own /api/ergon/registry prefix)
+app.include_router(registry_router)
 
 # Include FastMCP router at its special path
 app.include_router(fastmcp_router, prefix="/api/mcp/v2")  # Mount FastMCP router under /api/mcp/v2
