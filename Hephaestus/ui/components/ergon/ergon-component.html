@@ -142,9 +142,6 @@ document.addEventListener('DOMContentLoaded', function() {
                  data-tekton-nav-item="tab"
                  data-tekton-nav-action="switch-tab"
                  data-tekton-trigger="click">
-                <svg class="ergon__tab-icon" viewBox="0 0 24 24" width="20" height="20">
-                    <path d="M18 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 14h-3v3h-2v-3H8v-2h3v-3h2v3h3v2z"/>
-                </svg>
                 <span class="ergon__tab-label">Construct</span>
             </label>
             <label for="ergon-tab-chat" class="ergon__tab" data-tekton-chat="tab" data-tab="chat" 
@@ -681,7 +678,7 @@ document.addEventListener('DOMContentLoaded', function() {
     /* CSS-first panel visibility */
     #ergon-tab-development:checked ~ .ergon #development-panel,
     #ergon-tab-registry:checked ~ .ergon #registry-panel,
-    #ergon-tab-configurator:checked ~ .ergon #configurator-panel,
+    #ergon-tab-construct:checked ~ .ergon #construct-panel,
     #ergon-tab-chat:checked ~ .ergon #ergon-panel,
     #ergon-tab-teamchat:checked ~ .ergon #awt-team-panel {
         display: block;
