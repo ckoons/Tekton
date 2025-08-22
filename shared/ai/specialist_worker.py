@@ -230,6 +230,9 @@ class AISpecialistWorker(ABC):
     async def initialize_model(self):
         """Initialize the model adapter based on provider configuration."""
         try:
+            self.logger.info(f"Starting model initialization for {self.ai_id}")
+            self.logger.info(f"Provider: {self.model_provider}, Model: {self.model_name}")
+            
             # Map provider names to adapter classes
             adapter_map = {
                 'ollama': LocalModelAdapter,
@@ -246,6 +249,8 @@ class AISpecialistWorker(ABC):
                 self.logger.error(f"Unknown model provider: {self.model_provider}")
                 return False
             
+            self.logger.info(f"Using adapter class: {adapter_class.__name__}")
+            
             # Prepare configuration
             config = {
                 'model': self.model_name
@@ -254,6 +259,7 @@ class AISpecialistWorker(ABC):
             # Add provider-specific configuration
             if self.model_provider.lower() in ['ollama', 'local']:
                 config['endpoint'] = TektonEnviron.get('OLLAMA_ENDPOINT', 'http://localhost:11434')
+                self.logger.info(f"Ollama endpoint: {config['endpoint']}")
             else:
                 # Get API key from environment
                 api_key_var = f"{self.model_provider.upper()}_API_KEY"
@@ -263,6 +269,8 @@ class AISpecialistWorker(ABC):
                     return False
                 config['api_key'] = api_key
             
+            self.logger.info(f"Registering adapter with config: {config}")
+            
             # Register adapter with model manager
             success = await self.model_manager.register_adapter(
                 self.model_provider,
@@ -270,17 +278,20 @@ class AISpecialistWorker(ABC):
                 config
             )
             
+            self.logger.info(f"Registration result: {success}")
+            
             if success:
                 self.model_adapter = self.model_manager.adapters.get(self.model_provider)
                 self.model_ready = True
-                self.logger.info(f"Model initialized: {self.model_provider}:{self.model_name}")
+                self.logger.info(f"Model initialized successfully: {self.model_provider}:{self.model_name}")
+                self.logger.info(f"Model adapter type: {type(self.model_adapter)}")
                 return True
             else:
-                self.logger.error(f"Failed to initialize model adapter")
+                self.logger.error(f"Failed to initialize model adapter - registration returned False")
                 return False
                 
         except Exception as e:
-            self.logger.error(f"Error initializing model: {e}")
+            self.logger.error(f"Error initializing model: {e}", exc_info=True)
             return False
     
     @abstractmethod
@@ -371,11 +382,17 @@ class AISpecialistWorker(ABC):
         
         # Not forwarded or Claude unavailable, use normal model
         if not self.model_ready:
-            return {
-                'type': 'error',
-                'ai_id': self.ai_id,
-                'error': 'Model not initialized'
-            }
+            self.logger.warning(f"Model not ready for {self.ai_id}, attempting to reinitialize...")
+            # Try to reinitialize once
+            reinit_success = await self.initialize_model()
+            if not reinit_success:
+                self.logger.error(f"Reinitialization failed for {self.ai_id}")
+                return {
+                    'type': 'error',
+                    'ai_id': self.ai_id,
+                    'error': 'Model not initialized - Ollama may not be accessible'
+                }
+            self.logger.info(f"Reinitialization successful for {self.ai_id}")
         
         try:
             # Prepare messages for the model

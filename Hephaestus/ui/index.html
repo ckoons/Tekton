@@ -28,7 +28,9 @@
     <script src="scripts/debug-shim.js"></script>
     <!-- Diagnostic tools for debugging component issues -->
     <script src="scripts/shared/diagnostic.js"></script>
-    <!-- Tekton URL utilities - MUST load before components -->
+    <!-- Environment variables MUST load before URL utilities -->
+    <script src="scripts/env.js"></script>
+    <!-- Tekton URL utilities - depends on env.js for port variables -->
     <script src="scripts/tekton-urls.js"></script>
     <!-- Markdown renderer - load early for chat components -->
     <script src="scripts/shared/markdown-renderer.js"></script>
@@ -216,8 +218,7 @@
             background-color: rgba(255, 255, 255, 0.1);
         }
     </style>
-    <!-- Environment variables and configuration -->
-    <script src="scripts/env.js"></script>
+    <!-- Environment configuration (env.js already loaded above) -->
     <script src="scripts/tekton-environ.js"></script>
     <script src="scripts/debug-config.js"></script>
     <!-- Simple health monitoring for nav dots -->

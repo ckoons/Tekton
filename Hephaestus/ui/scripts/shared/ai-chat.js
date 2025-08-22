@@ -1,4 +1,9 @@
 console.log('[FILE_TRACE] Loading: ai-chat.js');
+console.log('[AI-CHAT DEBUG] window.rhetorUrl exists?', typeof window.rhetorUrl);
+console.log('[AI-CHAT DEBUG] window.RHETOR_PORT =', window.RHETOR_PORT);
+if (window.rhetorUrl) {
+    console.log('[AI-CHAT DEBUG] rhetorUrl test:', window.rhetorUrl('/test'));
+}
 /**
  * Shared AI Chat Module
  * 
@@ -18,6 +23,7 @@ console.log('[FILE_TRACE] Loading: ai-chat.js');
 // source of truth (aish MCP server) rather than scattered endpoints.
 window.AIChat = {
     // Rhetor endpoints - simple proxy that works
+    // Note: These are evaluated when the file loads, so window.rhetorUrl must exist
     teamChatUrl: window.rhetorUrl ? window.rhetorUrl('/api/team-chat') : 'http://localhost:8003/api/team-chat',
     specialistUrl: window.rhetorUrl ? window.rhetorUrl('/api/v1/ai/specialists') : 'http://localhost:8003/api/v1/ai/specialists',
     
@@ -109,7 +115,9 @@ window.AIChat = {
      */
     async sendMessage(aiName, message) {
         try {
-            const response = await fetch(`${this.specialistUrl}/${aiName}/message`, {
+            const url = `${this.specialistUrl}/${aiName}/message`;
+            console.log(`[AI-CHAT] Sending to ${aiName} at URL: ${url}`);
+            const response = await fetch(url, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

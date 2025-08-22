@@ -2,10 +2,25 @@
 
 ## Overview
 
-Ergon is the agent framework for the Tekton ecosystem. It enables the creation, management, and orchestration of specialized agents that can perform a wide range of tasks within and beyond the Tekton system.
+Ergon is the container management and solution registry platform for the Tekton ecosystem. It provides a comprehensive system for storing, testing, and composing deployable solutions with automated standards compliance and sandbox testing capabilities.
 
 ## Key Features
 
+### Registry System
+- JSON-based universal storage for deployable units
+- Automatic import from TektonCore completed projects
+- Standards compliance checking and scoring
+- Solution lineage tracking and versioning
+- Type-based organization (containers, solutions, tools, configs)
+
+### Sandbox Testing
+- Isolated testing environments for Registry solutions
+- Multiple provider support (sandbox-exec for macOS, Docker for full isolation)
+- Real-time output streaming
+- Resource limits and monitoring
+- One-click testing from Registry UI
+
+### Additional Capabilities
 - Agent creation and configuration
 - Tool registration and discovery
 - Workflow definition and execution

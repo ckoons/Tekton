@@ -198,6 +198,56 @@ class RegistryStorage:
             return self._row_to_dict(row)
         return None
     
+    def update(self, entry_id: str, json_object: Dict[str, Any]) -> bool:
+        """
+        Update an existing registry entry.
+        
+        Args:
+            entry_id: The ID of the object to update
+            json_object: The updated JSON object
+            
+        Returns:
+            True if updated successfully, False if not found
+        """
+        try:
+            # Ensure the ID matches
+            json_object['id'] = entry_id
+            json_object['updated'] = datetime.utcnow().isoformat()
+            
+            cursor = self.connection.cursor()
+            cursor.execute("""
+                UPDATE registry 
+                SET type = ?, version = ?, name = ?, created = ?, 
+                    updated = ?, meets_standards = ?, lineage = ?, 
+                    source = ?, content = ?
+                WHERE id = ?
+            """, (
+                json_object.get('type'),
+                json_object.get('version'),
+                json_object.get('name'),
+                json_object.get('created'),
+                json_object.get('updated'),
+                json_object.get('meets_standards', False),
+                json.dumps(json_object.get('lineage', [])),
+                json.dumps(json_object.get('source', {})),
+                json.dumps(json_object.get('content', {})),
+                entry_id
+            ))
+            
+            self.connection.commit()
+            
+            if cursor.rowcount > 0:
+                logger.info(f"Updated registry entry: {entry_id}")
+                return True
+            else:
+                logger.warning(f"Entry not found for update: {entry_id}")
+                return False
+                
+        except Exception as e:
+            logger.error(f"Failed to update registry entry: {e}")
+            self.connection.rollback()
+            raise
+    
     def search(self, 
                type: Optional[str] = None,
                name: Optional[str] = None,

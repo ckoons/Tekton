@@ -111,7 +111,7 @@ class ClaudeHandler:
             
             # Determine launch directory
             import os
-from shared.env import TektonEnviron
+            from shared.env import TektonEnviron
             from pathlib import Path
             
             tekton_root = Path(TektonEnviron.get('TEKTON_ROOT', '.'))
