@@ -302,9 +302,9 @@ Configure AI provider (defaults to ollama):
 TEKTON_AI_PROVIDER=ollama  # or anthropic
 ```
 
-AI specialists use `llama3.3:70b` by default. Override per component:
+AI specialists use `gpt-oss:20b` by default. Override per component:
 ```bash
-ATHENA_AI_MODEL=llama3.1:70b
+ATHENA_AI_MODEL=gpt-oss:20b
 RHETOR_AI_MODEL=qwen2.5-coder:32b
 ```
 

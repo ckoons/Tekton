@@ -10,7 +10,6 @@ from pathlib import Path
 # Add paths
 sys.path.insert(0, str(Path(__file__).parent))
 sys.path.insert(0, str(Path(__file__).parent.parent))
-os.environ.setdefault('TEKTON_ROOT', str(Path(__file__).parent.parent))
 
 from ergon.registry.storage import RegistryStorage
 

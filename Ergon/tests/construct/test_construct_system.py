@@ -16,9 +16,6 @@ ergon_path = Path(__file__).parent
 sys.path.insert(0, str(ergon_path))
 sys.path.insert(0, str(ergon_path.parent))  # For shared module
 
-# Set up environment if needed
-os.environ.setdefault('TEKTON_ROOT', str(ergon_path.parent))
-
 from ergon.construct.integration import get_construct_system
 
 

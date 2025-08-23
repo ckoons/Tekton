@@ -11,8 +11,9 @@ try:
     BASE_URL = athena_url("/api/v1")
 except ImportError:
     # Fallback if shared module not available
-    import os
-    port = os.environ.get("ATHENA_PORT", "8105")
+    from shared.env import TektonEnviron
+    env = TektonEnviron()
+    port = env.get_port("ATHENA_PORT", 8105)
     BASE_URL = f"http://localhost:{port}/api/v1"
 
 def test_endpoints():
