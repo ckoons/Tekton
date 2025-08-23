@@ -12,6 +12,50 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
 from shared.aish.src.registry.ci_registry import get_registry
 
 
+def resolve_model_alias(model: str) -> str:
+    """Resolve generic model names to specific model identifiers.
+    
+    Handles common aliases like 'claude', 'gpt4', etc.
+    """
+    model_lower = model.lower()
+    
+    # Claude aliases - Updated for Claude 4+
+    if model_lower in ['claude', 'claude-sonnet']:
+        return 'claude-3-5-sonnet-latest'
+    elif model_lower == 'claude-haiku':
+        return 'claude-3-5-haiku-latest'
+    elif model_lower in ['claude-opus', 'claude-best']:
+        return 'claude-opus-4-1-20250805'
+    elif 'claude-4' in model_lower:
+        # Handle claude-4-sonnet, claude-4-opus, etc.
+        return model  # Keep as-is, likely already specific
+    
+    # GPT aliases
+    elif model_lower in ['gpt4', 'gpt-4', 'openai']:
+        return 'gpt-4-turbo-preview'
+    elif model_lower in ['gpt3', 'gpt-3', 'gpt-3.5']:
+        return 'gpt-3.5-turbo'
+    elif model_lower == 'gpt4o':
+        return 'gpt-4o'
+    
+    # Local model aliases (size-based)
+    elif model_lower in ['small', 'fast']:
+        return 'gpt-oss:20b'
+    elif model_lower in ['medium', 'balanced']:
+        return 'gpt-oss:70b'
+    elif model_lower in ['large', 'reasoning', 'deep']:
+        return 'gpt-oss:120b'
+    
+    # Capability-based aliases
+    elif model_lower == 'code':
+        return 'codestral:22b'  # Assume available if user asks
+    elif model_lower == 'math':
+        return 'deepseek-r1:32b'  # Assume available if user asks
+    
+    # No alias found, return as-is
+    return model
+
+
 def handle_model_forward_command(args):
     """
     Handle 'aish forward <ci-name> <model>' commands for model switching
@@ -89,26 +133,16 @@ def set_claude_forward(ci_name, model, args):
         print("Use 'aish list' to see available CIs")
         return 1
     
-    # Determine Claude variant
-    if model == "claude":
-        claude_cmd = "claude --print"
-    elif model == "claude-opus":
-        claude_cmd = "claude --model claude-3-opus-20240229 --print"
-    elif model == "claude-sonnet":
-        claude_cmd = "claude --model claude-3-sonnet-20240229 --print"
-    elif model == "claude-haiku":
-        claude_cmd = "claude --model claude-3-haiku-20240307 --print"
-    else:
-        claude_cmd = f"claude --model {model} --print"
+    # Resolve the model alias to specific model
+    resolved_model = resolve_model_alias(model)
     
-    # Add any additional arguments
-    if args:
-        claude_cmd += f" {args}"
-    
-    # Set forward state in registry (persistent)
-    if registry.set_forward_state(ci_name, "claude", claude_cmd):
+    # Set forward state in registry with resolved model
+    if registry.set_forward_state(ci_name, resolved_model, args):
         print(f"✓ Forwarded {ci_name} to {model}")
-        print(f"  Command: {claude_cmd}")
+        if resolved_model != model:
+            print(f"  Resolved to: {resolved_model}")
+        if args:
+            print(f"  Additional args: {args}")
         print(f"  Use 'aish unforward {ci_name}' to return to default model")
         return 0
     else:
@@ -128,16 +162,16 @@ def set_model_forward(ci_name, model, args):
         print("Use 'aish list' to see available CIs")
         return 1
     
-    # Build model command
-    model_cmd = model
-    if args:
-        model_cmd += f" {args}"
+    # Resolve the model alias to specific model
+    resolved_model = resolve_model_alias(model)
     
-    # Set forward state in registry (persistent)
-    if registry.set_forward_state(ci_name, model, model_cmd):
+    # Set forward state in registry with resolved model
+    if registry.set_forward_state(ci_name, resolved_model, args):
         print(f"✓ Forwarded {ci_name} to {model}")
+        if resolved_model != model:
+            print(f"  Resolved to: {resolved_model}")
         if args:
-            print(f"  Arguments: {args}")
+            print(f"  Additional args: {args}")
         print(f"  Use 'aish unforward {ci_name}' to return to default model")
         return 0
     else:
@@ -191,9 +225,13 @@ def print_model_forward_usage():
     print("  aish forward list                        # Show all forwards")
     print("  aish unforward apollo-ci                 # Back to default")
     print()
-    print("Supported Models:")
-    print("  claude         - Claude with --print mode")
-    print("  claude-opus    - Claude 3 Opus")
-    print("  claude-sonnet  - Claude 3 Sonnet")
-    print("  claude-haiku   - Claude 3 Haiku")
-    print("  <custom>       - Any custom model command")
+    print("Supported Model Aliases:")
+    print("  claude         - Latest Claude Sonnet")
+    print("  claude-opus    - Claude Opus (best)")
+    print("  claude-haiku   - Claude Haiku (fast)")
+    print("  gpt4           - GPT-4 Turbo")
+    print("  small/fast     - Small local model (20B)")
+    print("  medium         - Medium local model (70B)")
+    print("  large/deep     - Large reasoning model (120B)")
+    print("  code           - Code-optimized model")
+    print("  <custom>       - Any specific model name")

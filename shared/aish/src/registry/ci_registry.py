@@ -846,7 +846,14 @@ class CIRegistry:
         return True
     
     def get_forward_state(self, ci_name: str) -> Optional[Dict[str, Any]]:
-        """Get forward state for a CI."""
+        """Get forward state for a CI with fuzzy matching.
+        
+        Matching rules:
+        1. Exact match always wins
+        2. Prefix matches allowed only if target >= search length  
+        3. Never match shorter strings
+        4. Return shortest match that's >= search length
+        """
         forward_file = os.path.join(self._file_registry.registry_dir, 'forward_states.json')
         
         # Ensure directory exists
@@ -865,7 +872,41 @@ class CIRegistry:
             try:
                 with open(forward_file, 'r') as f:
                     states = json.load(f)
-                    return states.get(ci_name)
+                    
+                    # First try exact match
+                    if ci_name in states:
+                        return states[ci_name]
+                    
+                    # Fuzzy matching with special CI suffix handling
+                    search_len = len(ci_name)
+                    candidates = []
+                    
+                    # Special handling for -ci suffix
+                    # If searching for 'ergon-ci', also consider 'ergon'
+                    # If searching for 'ergon', also consider 'ergon-ci'
+                    base_name = ci_name.replace('-ci', '')
+                    
+                    for key in states.keys():
+                        key_len = len(key)
+                        key_base = key.replace('-ci', '')
+                        
+                        # Rule 1: Exact base name match (ergon == ergon, ergon-ci == ergon)
+                        if base_name == key_base:
+                            candidates.append((key, key_len))
+                        # Rule 2: Prefix match only if key >= search length
+                        elif key_len >= search_len and key.startswith(ci_name):
+                            candidates.append((key, key_len))
+                        # Rule 3: Search is prefix of key
+                        elif key_len >= search_len and ci_name.startswith(key):
+                            candidates.append((key, key_len))
+                    
+                    # Return best match
+                    if candidates:
+                        # Prefer exact length, then shortest
+                        candidates.sort(key=lambda x: (abs(x[1] - search_len), x[1]))
+                        return states[candidates[0][0]]
+                    
+                    return None
             except:
                 pass
         

@@ -78,12 +78,40 @@ class ClaudeHandler:
         # Normal forwarding check
         forward_state = registry.get_forward_state(ci_name)
         
-        if not forward_state or forward_state.get('model') != 'claude':
+        if not forward_state:
+            return None
+            
+        # Check if model is a Claude variant
+        model = forward_state.get('model', '').lower()
+        is_claude = ('claude' in model or 
+                    'anthropic' in model or
+                    model in ['sonnet', 'opus', 'haiku'])
+        
+        if not is_claude:
             # Not forwarded to Claude, return None to use default
             return None
             
-        # Get Claude command from forward state
-        claude_cmd = forward_state.get('args', 'claude --print')
+        # Build Claude command based on model
+        model_name = forward_state.get('model', 'claude')
+        args = forward_state.get('args', '')
+        
+        # Map model names to Claude CLI arguments
+        if 'claude-3-5-sonnet' in model_name:
+            claude_cmd = 'claude --model claude-3-5-sonnet-latest --print'
+        elif 'claude-3-5-haiku' in model_name:
+            claude_cmd = 'claude --model claude-3-5-haiku-latest --print'
+        elif 'claude-opus-4' in model_name:
+            claude_cmd = 'claude --model claude-opus-4-1-20250805 --print'
+        elif args:
+            # Use provided args if any
+            claude_cmd = args
+        else:
+            # Default Claude command
+            claude_cmd = 'claude --print'
+        
+        # Add any additional args
+        if args and 'claude' not in args:
+            claude_cmd += f' {args}'
         
         # For normal Claude forwarding, check if --continue should be added
         if '--continue' not in claude_cmd and next_prompt is None:

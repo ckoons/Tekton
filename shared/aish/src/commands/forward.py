@@ -35,6 +35,12 @@ except ImportError:
 sys.path.insert(0, str(Path(__file__).parent.parent))
 from forwarding.forwarding_registry import ForwardingRegistry
 
+# Import model forward handler
+try:
+    from commands.model_forward import handle_model_forward_command
+except ImportError:
+    handle_model_forward_command = None
+
 
 @architecture_decision(
     title="AI Message Forwarding",
@@ -64,6 +70,25 @@ def handle_forward_command(args):
         return handle_unforward_command([ai_name])
     
     elif len(args) >= 2:
+        # Check if this is a model forward (second arg is a known model)
+        potential_model = args[1].lower()
+        model_indicators = ['claude', 'gpt', 'openai', 'anthropic', 'ollama', 
+                          'small', 'medium', 'large', 'fast', 'deep', 'reasoning',
+                          'code', 'math', 'sonnet', 'haiku', 'opus']
+        
+        # Check if any model indicator is in the second argument
+        is_model_forward = any(indicator in potential_model for indicator in model_indicators)
+        
+        # Also check for model patterns
+        if ':' in potential_model or '-' in potential_model:
+            # Likely a model name like gpt-oss:20b or claude-3-5-sonnet
+            is_model_forward = True
+        
+        if is_model_forward and handle_model_forward_command:
+            # Route to model forward handler
+            return handle_model_forward_command(args)
+        
+        # Otherwise handle as terminal forward
         # Check for json flag at any position
         json_mode = False
         clean_args = []
@@ -87,19 +112,25 @@ def handle_forward_command(args):
 
 def print_forward_usage():
     """Print usage information"""
-    print("Usage: aish forward <ai-name> <terminal-name> [json]")
+    print("Usage: aish forward <ai-name> <target> [options]")
     print("       aish forward list")
     print("       aish forward remove <ai-name>")
     print("")
-    print("Options:")
-    print("  json      Forward messages as structured JSON instead of plain text")
+    print("Target can be:")
+    print("  Terminal name (e.g., jill, alice)    - Forward to human terminal")
+    print("  Model name (e.g., claude, gpt4)      - Forward to AI model")
+    print("")
+    print("Model aliases:")
+    print("  claude, gpt4, openai                 - Major AI models")
+    print("  small, medium, large                 - Local model sizes")
+    print("  fast, reasoning, code                - Capability-based")
     print("")
     print("Examples:")
-    print("  aish forward apollo jill          # Forward apollo messages to jill")
-    print("  aish forward apollo jill json     # Forward as JSON with metadata")
-    print("  aish forward rhetor alice         # Forward rhetor messages to alice")
-    print("  aish forward list                 # Show active forwards")
-    print("  aish forward remove apollo        # Remove forwarding")
+    print("  aish forward apollo jill             # Forward to jill's terminal")
+    print("  aish forward ergon claude            # Use Claude for ergon")
+    print("  aish forward athena reasoning        # Use large model for athena")
+    print("  aish forward list                    # Show all forwards")
+    print("  aish forward remove apollo           # Remove forwarding")
 
 
 @state_checkpoint(
