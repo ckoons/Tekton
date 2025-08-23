@@ -7,12 +7,12 @@ tekton_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'
 if tekton_root not in sys.path:
     sys.path.insert(0, tekton_root)
 
+# Load Tekton environment properly
+from shared.env import TektonEnvironLock, TektonEnviron
+
 # Ensure TEKTON_ROOT is set if not already
 if 'TEKTON_ROOT' not in os.environ:
-    os.environ['TEKTON_ROOT'] = tekton_root
-
-# Load Tekton environment properly
-from shared.env import TektonEnvironLock
+    TektonEnviron.set('TEKTON_ROOT', tekton_root)
 TektonEnvironLock.load()
 
 from shared.utils.global_config import GlobalConfig

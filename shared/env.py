@@ -154,10 +154,22 @@ class TektonEnviron:
     @staticmethod
     def set(key: str, value: str) -> None:
         """
-        No-op setter that logs attempts to modify environment.
-        This helps identify code that tries to change environment.
+        Set an environment variable.
+        Updates both os.environ and the frozen environment if loaded.
+        
+        Args:
+            key: Environment variable name
+            value: Environment variable value
         """
-        logger.debug(f"Attempted environment change ignored: {key}={value}")
+        logger.debug(f"Setting environment variable: {key}={value}")
+        
+        # Update os.environ
+        os.environ[key] = value
+        
+        # Update frozen environment if it's been loaded
+        global _frozen_env
+        if _is_loaded:
+            _frozen_env[key] = value
     
     @staticmethod
     def is_loaded() -> bool:

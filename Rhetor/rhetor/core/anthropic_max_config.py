@@ -49,13 +49,13 @@ class AnthropicMaxConfig:
     def enable(self):
         """Enable Anthropic Max mode."""
         self._enabled = True
-        os.environ["ANTHROPIC_MAX_ACCOUNT"] = "true"
+        TektonEnviron.set("ANTHROPIC_MAX_ACCOUNT", "true")
         logger.info("Anthropic Max enabled via API")
         
     def disable(self):
         """Disable Anthropic Max mode."""
         self._enabled = False
-        os.environ["ANTHROPIC_MAX_ACCOUNT"] = "false"
+        TektonEnviron.set("ANTHROPIC_MAX_ACCOUNT", "false")
         logger.info("Anthropic Max disabled via API")
         
     def get_model_override(self, requested_model: str) -> str:

@@ -14,8 +14,9 @@ from datetime import datetime
 from pathlib import Path
 from contextlib import asynccontextmanager
 
-# Import shared workflow endpoint
+# Import shared workflow endpoint and environment management
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', '..', 'shared'))
+from env import TektonEnviron
 from workflow.endpoint_template import create_workflow_endpoint
 
 import uvicorn
@@ -954,16 +955,16 @@ def main():
     
     # Override environment variables with command line arguments if provided
     if args.client_id:
-        os.environ["ENGRAM_CLIENT_ID"] = args.client_id
+        TektonEnviron.set("ENGRAM_CLIENT_ID", args.client_id)
     
     if args.data_dir:
-        os.environ["ENGRAM_DATA_DIR"] = args.data_dir
+        TektonEnviron.set("ENGRAM_DATA_DIR", args.data_dir)
     
     if args.fallback:
-        os.environ["ENGRAM_USE_FALLBACK"] = "1"
+        TektonEnviron.set("ENGRAM_USE_FALLBACK", "1")
     
     if args.debug:
-        os.environ["ENGRAM_DEBUG"] = "1"
+        TektonEnviron.set("ENGRAM_DEBUG", "1")
         logging.getLogger().setLevel(logging.DEBUG)
     
     # Get GlobalConfig instance

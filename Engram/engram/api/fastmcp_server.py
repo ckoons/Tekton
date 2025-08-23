@@ -15,6 +15,10 @@ import sys
 from pathlib import Path
 from typing import Dict, List, Any, Optional, Union
 
+# Import TektonEnviron for environment management
+sys.path.insert(0, str(Path(__file__).parent.parent.parent / 'shared'))
+from env import TektonEnviron
+
 from fastapi import FastAPI, Body, HTTPException, Query, APIRouter, Header, Depends, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
@@ -378,8 +382,8 @@ def main():
         logging.getLogger().setLevel(logging.DEBUG)
     
     # Set environment variables for default client ID and data directory
-    os.environ["ENGRAM_CLIENT_ID"] = config["client_id"]
-    os.environ["ENGRAM_DATA_DIR"] = config["data_dir"]
+    TektonEnviron.set("ENGRAM_CLIENT_ID", config["client_id"])
+    TektonEnviron.set("ENGRAM_DATA_DIR", config["data_dir"])
     
     # Use MCP port from config or default to 8001 (different from HTTP server)
     mcp_port = config.get("mcp_port", 8001)

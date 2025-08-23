@@ -58,8 +58,8 @@ def cli(ctx, debug):
     ctx.ensure_object(dict)
     
     if debug:
-        os.environ["TEKTON_DEBUG"] = "true"
-        os.environ["TEKTON_LOG_LEVEL"] = "DEBUG"
+        TektonEnviron.set("TEKTON_DEBUG", "true")
+        TektonEnviron.set("TEKTON_LOG_LEVEL", "DEBUG")
         
     ctx.obj['DEBUG'] = debug
     debug_log.info("budget_cli", "CLI initialized")

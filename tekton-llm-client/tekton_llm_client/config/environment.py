@@ -211,7 +211,7 @@ def set_env(key: str, value: Any, use_prefix: bool = True) -> None:
     else:
         str_value = str(value)
         
-    os.environ[key] = str_value
+    TektonEnviron.set(key, str_value)
 
 def has_env(key: str, use_prefix: bool = True) -> bool:
     """

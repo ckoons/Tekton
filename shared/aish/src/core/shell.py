@@ -462,9 +462,8 @@ MCP Server Management:
         current = TektonEnviron.get('AISH_DEBUG_MCP', '0')
         new_value = '0' if current == '1' else '1'
         
-        # Note: This only sets for current session, not persistent
-        os.environ['AISH_DEBUG_MCP'] = new_value
-        # Could also update TektonEnviron if we want persistence
+        # Set using TektonEnviron for consistency
+        TektonEnviron.set('AISH_DEBUG_MCP', new_value)
         
         if new_value == '1':
             print("✓ MCP debug mode enabled")
