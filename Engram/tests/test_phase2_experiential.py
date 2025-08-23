@@ -14,7 +14,9 @@ from datetime import datetime
 # Setup paths
 sys.path.insert(0, str(Path(__file__).parent.parent))
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
-os.environ['TEKTON_ROOT'] = str(Path(__file__).parent.parent.parent)
+
+from shared.env import TektonEnviron
+TektonEnviron.set('TEKTON_ROOT', str(Path(__file__).parent.parent.parent))
 
 from engram.core.mcp.tools import (
     # Enhanced memory store

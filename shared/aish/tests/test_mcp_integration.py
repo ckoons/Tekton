@@ -20,7 +20,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 # Set up test environment
-os.environ['CI_TOOLS_PORT_MODE'] = 'dynamic'
+TektonEnviron.set('CI_TOOLS_PORT_MODE', 'dynamic')
 
 
 @pytest.fixture
@@ -45,7 +45,7 @@ def temp_tekton_root():
     """Create temporary TEKTON_ROOT for testing."""
     with tempfile.TemporaryDirectory() as temp_dir:
         old_root = TektonEnviron.get('TEKTON_ROOT')
-        os.environ['TEKTON_ROOT'] = temp_dir
+        TektonEnviron.set('TEKTON_ROOT', temp_dir)
         
         # Reset registry singletons
         import shared.aish.src.registry.ci_registry
@@ -78,7 +78,7 @@ def temp_tekton_root():
         
         # Restore old root
         if old_root:
-            os.environ['TEKTON_ROOT'] = old_root
+            TektonEnviron.set('TEKTON_ROOT', old_root)
 
 
 class TestMCPToolsIntegration:

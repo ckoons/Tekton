@@ -5,8 +5,9 @@ import os
 import sys
 
 # Set up environment
-os.environ['TEKTON_ROOT'] = '/Users/cskoons/projects/github/Coder-A'
-sys.path.insert(0, os.environ['TEKTON_ROOT'])
+from shared.env import TektonEnviron
+TektonEnviron.set('TEKTON_ROOT', '/Users/cskoons/projects/github/Coder-A')
+sys.path.insert(0, TektonEnviron.get('TEKTON_ROOT'))
 sys.path.insert(0, 'src')
 
 # Load environment

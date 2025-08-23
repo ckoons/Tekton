@@ -56,7 +56,7 @@ async def test_engram_init():
     
     # Temporarily set to auto mode
     original_db = TektonEnviron.get('TEKTON_VECTOR_DB')
-    os.environ['TEKTON_VECTOR_DB'] = 'auto'
+    TektonEnviron.set('TEKTON_VECTOR_DB', 'auto')
     
     try:
         # Import and check what Engram detects
@@ -74,7 +74,7 @@ async def test_engram_init():
     finally:
         # Restore original setting
         if original_db:
-            os.environ['TEKTON_VECTOR_DB'] = original_db
+            TektonEnviron.set('TEKTON_VECTOR_DB', original_db)
         else:
             os.environ.pop('TEKTON_VECTOR_DB', None)
 
@@ -84,7 +84,7 @@ async def test_faiss_operations():
     print("\n=== Testing FAISS Implementation ===")
     
     # Set to use FAISS specifically
-    os.environ['TEKTON_VECTOR_DB'] = 'faiss'
+    TektonEnviron.set('TEKTON_VECTOR_DB', 'faiss')
     
     try:
         from Engram.engram.core.memory.storage.vector_storage import VectorStorage

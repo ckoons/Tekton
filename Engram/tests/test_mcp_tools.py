@@ -20,8 +20,10 @@ from typing import Dict, Any
 sys.path.insert(0, str(Path(__file__).parent.parent))
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))  # Add Coder-C to path
 
+from shared.env import TektonEnviron
+
 # Set environment to avoid shared.env dependency
-os.environ['TEKTON_ROOT'] = str(Path(__file__).parent.parent.parent)
+TektonEnviron.set('TEKTON_ROOT', str(Path(__file__).parent.parent.parent))
 
 try:
     from engram.core.mcp.tools import (
