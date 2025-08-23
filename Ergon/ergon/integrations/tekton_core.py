@@ -53,8 +53,7 @@ except ImportError:
 logger = logging.getLogger(__name__)
 
 # TektonCore API endpoint (using environment-aware configuration)
-env = TektonEnviron()
-TEKTON_CORE_PORT = env.get_port('TEKTON_CORE_PORT', 8110)
+TEKTON_CORE_PORT = int(TektonEnviron.get('TEKTON_CORE_PORT', '8110'))
 TEKTON_CORE_URL = f"http://localhost:{TEKTON_CORE_PORT}"
 
 
@@ -78,7 +77,7 @@ class TektonCoreMonitor:
             registry_url: URL of the Ergon Registry API
             check_interval: Seconds between completion checks
         """
-        self.registry_url = registry_url or f"http://localhost:{env.get_port('ERGON_PORT', 8102)}/api/ergon/registry"
+        self.registry_url = registry_url or f"http://localhost:{TektonEnviron.get('ERGON_PORT', '8102')}/api/ergon/registry"
         self.check_interval = check_interval
         self.processed_projects = set()  # Track what we've already imported
         self._running = False
@@ -224,7 +223,7 @@ async def extract_sprint_metadata(project: Dict[str, Any]) -> Optional[Dict[str,
         project_name = project.get('name', '')
         if project_name:
             # Look in MetaData/DevelopmentSprints/
-            base_path = Path(env.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Coder-A'))
+            base_path = Path(TektonEnviron.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Coder-A'))
             sprint_dir = base_path / 'MetaData' / 'DevelopmentSprints' / f"{project_name}_Sprint"
     
     if sprint_dir and Path(sprint_dir).exists():
@@ -377,7 +376,7 @@ async def import_completed_project(project_id: str) -> Optional[str]:
             entry = prepare_registry_entry(project, metadata)
             
             # Submit to Registry
-            registry_url = f"http://localhost:{env.get_port('ERGON_PORT', 8102)}/api/ergon/registry"
+            registry_url = f"http://localhost:{TektonEnviron.get('ERGON_PORT', '8102')}/api/ergon/registry"
             response = await client.post(f"{registry_url}/store", json=entry)
             
             if response.status_code == 200:

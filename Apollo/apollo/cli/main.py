@@ -27,9 +27,9 @@ from rich.pretty import Pretty
 
 # Use Tekton's environment management for port configuration
 from shared.env import TektonEnviron
-env = TektonEnviron()
+
 def get_apollo_port() -> int:
-    return env.get_port("APOLLO_PORT", 8112)
+    return int(TektonEnviron.get("APOLLO_PORT", "8112"))
 from apollo.models.context import ContextHealth
 
 # Configure logging
