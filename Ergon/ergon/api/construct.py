@@ -120,6 +120,28 @@ async def suggest_components(request: SuggestRequest):
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@router.get("/questions")
+async def get_questions():
+    """Get the Construct guided dialog questions."""
+    try:
+        import json
+        from pathlib import Path
+        
+        # Load questions from JSON file
+        questions_path = Path(__file__).parent.parent / 'construct' / 'questions.json'
+        with open(questions_path, 'r') as f:
+            questions_data = json.load(f)
+        
+        return {
+            "status": "success",
+            "questions": questions_data
+        }
+        
+    except Exception as e:
+        logger.error(f"Error getting questions: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @router.get("/protocol")
 async def get_protocol():
     """Get the Construct protocol definition."""

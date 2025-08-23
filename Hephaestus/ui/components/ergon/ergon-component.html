@@ -44,9 +44,24 @@ window.ergon_sendChat = function() {
     // If we're on Construct tab, handle it specially
     if (constructActive) {
         console.log('[ERGON] Construct tab is active - processing for guided dialog');
+        console.log('[ERGON] ConstructDialog available:', !!window.ConstructDialog);
+        
         // Let the Construct guided dialog handle the input
         if (window.ConstructDialog && window.ConstructDialog.processResponse) {
+            console.log('[ERGON] Calling ConstructDialog.processResponse with:', message);
             window.ConstructDialog.processResponse(message);
+        } else {
+            console.error('[ERGON] ConstructDialog.processResponse not available!');
+            // Try to initialize if not ready
+            if (window.ConstructDialog && window.ConstructDialog.init) {
+                console.log('[ERGON] Attempting to initialize ConstructDialog first...');
+                window.ConstructDialog.init().then(() => {
+                    console.log('[ERGON] Initialized, now processing message');
+                    if (window.ConstructDialog.processResponse) {
+                        window.ConstructDialog.processResponse(message);
+                    }
+                });
+            }
         }
         input.value = '';
         return;
@@ -147,14 +162,41 @@ document.addEventListener('DOMContentLoaded', function() {
     // Add click handler for Construct tab
     const constructTab = document.querySelector('label[for="ergon-tab-construct"]');
     if (constructTab) {
-        constructTab.addEventListener('click', function() {
+        constructTab.addEventListener('click', async function() {
             console.log('[ERGON] Construct tab clicked - initializing guided dialog');
-            setTimeout(() => {
-                if (window.ConstructDialog && window.ConstructDialog.init) {
-                    window.ConstructDialog.init();
+            
+            // Small delay to ensure tab is switched
+            await new Promise(resolve => setTimeout(resolve, 100));
+            
+            if (window.ConstructDialog && window.ConstructDialog.init) {
+                console.log('[ERGON] ConstructDialog found, initializing...');
+                try {
+                    await window.ConstructDialog.init();
+                    console.log('[ERGON] ConstructDialog initialized successfully');
+                } catch (error) {
+                    console.error('[ERGON] ConstructDialog initialization failed:', error);
+                    // Show fallback message
+                    const questionList = document.getElementById('construct-question-list');
+                    if (questionList) {
+                        questionList.innerHTML = '<div class="ergon__error-message">Failed to load questions. Please check console for errors.</div>';
+                    }
                 }
-            }, 100); // Small delay to ensure tab is switched
+            } else {
+                console.error('[ERGON] ConstructDialog not found! Check if construct-guided-dialog.js is loaded');
+                // Try loading it manually
+                const script = document.createElement('script');
+                script.src = '/scripts/ergon/construct-guided-dialog.js';
+                script.onload = () => {
+                    console.log('[ERGON] Script loaded, initializing...');
+                    if (window.ConstructDialog && window.ConstructDialog.init) {
+                        window.ConstructDialog.init();
+                    }
+                };
+                document.head.appendChild(script);
+            }
         });
+    } else {
+        console.error('[ERGON] Construct tab label not found in DOM');
     }
 });
 </script>
@@ -1904,6 +1946,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 </style>
 
+<script src="/scripts/env.js"></script>
 <script src="/scripts/tekton-urls.js"></script>
 <script src="/scripts/shared/ai-chat.js"></script>
 <script src="/scripts/ergon-service.js"></script>

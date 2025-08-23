@@ -5,55 +5,24 @@
  */
 
 window.ConstructDialog = {
-    // Question definitions
-    questions: [
-        {
-            id: 'purpose',
-            question: 'What do you want to build?',
-            placeholder: 'Describe the solution you need...',
-            required: true,
-            parseKeys: ['purpose', 'goal', 'objective']
-        },
-        {
-            id: 'components',
-            question: 'Which Registry components should we use?',
-            placeholder: 'List components or let me suggest based on your purpose...',
-            required: false,
-            parseKeys: ['components', 'services', 'modules']
-        },
-        {
-            id: 'dataflow',
-            question: 'How should data flow through the system?',
-            placeholder: 'Describe inputs, processing, and outputs...',
-            required: false,
-            parseKeys: ['data', 'flow', 'pipeline', 'connections']
-        },
-        {
-            id: 'constraints',
-            question: 'Any specific constraints or requirements?',
-            placeholder: 'Performance, security, resource limits...',
-            required: false,
-            parseKeys: ['constraints', 'requirements', 'limits', 'performance']
-        },
-        {
-            id: 'testing',
-            question: 'What test scenarios should we verify?',
-            placeholder: 'Describe test cases or accept defaults...',
-            required: false,
-            parseKeys: ['test', 'verify', 'validate', 'scenarios']
-        }
-    ],
+    // Questions will be loaded from API
+    questions: [],
+    questionsData: null,
     
     // Current state
     currentQuestionIndex: 0,
     responses: {},
     workspace: {},
+    currentWorkspaceId: null,
     
     /**
      * Initialize the guided dialog
      */
-    init() {
+    async init() {
         console.log('[CONSTRUCT-DIALOG] Initializing guided dialog');
+        
+        // Load questions from API first
+        await this.loadQuestions();
         
         // Reset state
         this.currentQuestionIndex = 0;
@@ -73,6 +42,58 @@ window.ConstructDialog = {
         
         // Set up event handlers
         this.setupEventHandlers();
+    },
+    
+    /**
+     * Load questions from API
+     */
+    async loadQuestions() {
+        try {
+            console.log('[CONSTRUCT-DIALOG] Loading questions from API');
+            
+            const apiUrl = window.ergonUrl ? 
+                window.ergonUrl('/api/ergon/construct/questions') : 
+                'http://localhost:8102/api/ergon/construct/questions';
+            
+            console.log('[CONSTRUCT-DIALOG] Fetching from:', apiUrl);
+            
+            const response = await fetch(apiUrl);
+            if (!response.ok) {
+                throw new Error(`Failed to load questions: ${response.status} ${response.statusText}`);
+            }
+            
+            const data = await response.json();
+            
+            if (data.status === 'success' && data.questions) {
+                this.questionsData = data.questions;
+                this.questions = data.questions.questions || [];
+                console.log(`[CONSTRUCT-DIALOG] Loaded ${this.questions.length} questions`);
+                
+                // Apply smart defaults rules
+                this.smartDefaults = data.questions.smart_defaults || {};
+            } else {
+                throw new Error('Invalid questions data');
+            }
+            
+        } catch (error) {
+            console.error('[CONSTRUCT-DIALOG] Failed to load questions:', error);
+            
+            // Fallback to basic questions
+            this.questions = [
+                {
+                    id: 'purpose',
+                    question: 'What do you want to build?',
+                    placeholder: 'Describe the solution you need...',
+                    required: true
+                },
+                {
+                    id: 'components',
+                    question: 'Which components should we use?',
+                    placeholder: 'List components or say "suggest"...',
+                    required: false
+                }
+            ];
+        }
     },
     
     /**
@@ -144,7 +165,32 @@ window.ConstructDialog = {
     processResponse(message) {
         console.log('[CONSTRUCT-DIALOG] Processing response:', message);
         
+        // Check if questions are loaded
+        if (!this.questions || this.questions.length === 0) {
+            console.error('[CONSTRUCT-DIALOG] Questions not loaded yet!');
+            // Try to initialize first
+            this.init().then(() => {
+                console.log('[CONSTRUCT-DIALOG] Initialized, retrying response processing');
+                this.processResponseInternal(message);
+            }).catch(error => {
+                console.error('[CONSTRUCT-DIALOG] Failed to initialize:', error);
+            });
+            return;
+        }
+        
+        this.processResponseInternal(message);
+    },
+    
+    /**
+     * Internal method to process response after ensuring initialization
+     */
+    processResponseInternal(message) {
         const question = this.questions[this.currentQuestionIndex];
+        
+        if (!question) {
+            console.error('[CONSTRUCT-DIALOG] No question at index:', this.currentQuestionIndex);
+            return;
+        }
         
         // Store response
         this.responses[question.id] = message;
@@ -316,6 +362,11 @@ window.ConstructDialog = {
             const response = await this.sendToConstruct(JSON.stringify(request));
             console.log('[CONSTRUCT-DIALOG] Composition created:', response);
             
+            // Store workspace ID if returned
+            if (response.workspace_id) {
+                this.currentWorkspaceId = response.workspace_id;
+            }
+            
             // Show success and switch to action buttons
             this.showCompositionActions();
             
@@ -329,7 +380,11 @@ window.ConstructDialog = {
      * Send request to Construct system
      */
     async sendToConstruct(message) {
-        const apiUrl = window.ergonUrl ? window.ergonUrl('/api/v1/construct/process') : '/api/v1/construct/process';
+        const apiUrl = window.ergonUrl ? 
+            window.ergonUrl('/api/ergon/construct/process') : 
+            'http://localhost:8102/api/ergon/construct/process';
+        
+        console.log('[CONSTRUCT-DIALOG] Sending to:', apiUrl);
         
         const response = await fetch(apiUrl, {
             method: 'POST',
@@ -343,6 +398,7 @@ window.ConstructDialog = {
         });
         
         if (!response.ok) {
+            console.error('[CONSTRUCT-DIALOG] API error:', response.status, response.statusText);
             throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         }
         
@@ -380,7 +436,31 @@ window.ConstructDialog = {
      */
     async validate() {
         console.log('[CONSTRUCT-DIALOG] Validating composition');
-        // Implementation for validate
+        try {
+            const request = {
+                action: 'validate',
+                workspace_id: this.currentWorkspaceId,
+                checks: ['connections', 'dependencies', 'standards']
+            };
+            
+            const response = await this.sendToConstruct(JSON.stringify(request));
+            
+            // Show validation results
+            const display = document.getElementById('construct-current-question');
+            if (display) {
+                const valid = response.valid || response.status === 'success';
+                display.innerHTML = `
+                    <div class="construct-dialog__validation ${valid ? 'valid' : 'invalid'}">
+                        <h4>Validation ${valid ? 'Passed ✓' : 'Failed ✗'}</h4>
+                        ${response.errors ? `<div class="errors">Errors: ${response.errors.join(', ')}</div>` : ''}
+                        ${response.warnings ? `<div class="warnings">Warnings: ${response.warnings.join(', ')}</div>` : ''}
+                    </div>
+                `;
+            }
+        } catch (error) {
+            console.error('[CONSTRUCT-DIALOG] Validation failed:', error);
+            this.showError(`Validation failed: ${error.message}`);
+        }
     },
     
     /**
@@ -388,7 +468,34 @@ window.ConstructDialog = {
      */
     async test() {
         console.log('[CONSTRUCT-DIALOG] Testing composition');
-        // Implementation for test
+        try {
+            const request = {
+                action: 'test',
+                workspace_id: this.currentWorkspaceId,
+                sandbox_config: {
+                    timeout: 300,
+                    provider: this.responses.container === 'yes' ? 'docker' : 'sandbox-exec'
+                }
+            };
+            
+            const response = await this.sendToConstruct(JSON.stringify(request));
+            
+            // Show test results
+            const display = document.getElementById('construct-current-question');
+            if (display) {
+                display.innerHTML = `
+                    <div class="construct-dialog__test-results">
+                        <h4>Test Started</h4>
+                        <div>Sandbox ID: ${response.sandbox_id || 'pending'}</div>
+                        <div>Status: ${response.status}</div>
+                        <div class="test-output">Results will stream here...</div>
+                    </div>
+                `;
+            }
+        } catch (error) {
+            console.error('[CONSTRUCT-DIALOG] Test failed:', error);
+            this.showError(`Test failed: ${error.message}`);
+        }
     },
     
     /**
@@ -396,7 +503,35 @@ window.ConstructDialog = {
      */
     async publish() {
         console.log('[CONSTRUCT-DIALOG] Publishing composition');
-        // Implementation for publish
+        try {
+            const request = {
+                action: 'publish',
+                workspace_id: this.currentWorkspaceId,
+                metadata: {
+                    name: this.workspace.metadata?.name || 'Unnamed Solution',
+                    version: '1.0.0',
+                    description: this.responses.purpose || 'No description',
+                    tags: ['construct', 'composed']
+                }
+            };
+            
+            const response = await this.sendToConstruct(JSON.stringify(request));
+            
+            // Show publish results
+            const display = document.getElementById('construct-current-question');
+            if (display) {
+                display.innerHTML = `
+                    <div class="construct-dialog__publish-success">
+                        <h4>Published Successfully! 🎉</h4>
+                        <div>Registry ID: ${response.registry_id || 'unknown'}</div>
+                        <div>Your solution is now available in the Registry for reuse.</div>
+                    </div>
+                `;
+            }
+        } catch (error) {
+            console.error('[CONSTRUCT-DIALOG] Publish failed:', error);
+            this.showError(`Publish failed: ${error.message}`);
+        }
     },
     
     /**
@@ -404,8 +539,21 @@ window.ConstructDialog = {
      */
     revise() {
         console.log('[CONSTRUCT-DIALOG] Revising composition');
-        // Return to dialog for revisions
+        // Don't reset everything, just go back to questions
+        // Keep the responses and workspace intact
         this.showQuestion(0);
+        
+        // Show a message that we're in revision mode
+        const display = document.getElementById('construct-current-question');
+        if (display) {
+            const currentHtml = display.innerHTML;
+            display.innerHTML = `
+                <div class="construct-dialog__revision-mode">
+                    <strong>Revision Mode</strong> - Modify any answers below
+                </div>
+                ${currentHtml}
+            `;
+        }
     },
     
     /**
