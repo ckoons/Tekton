@@ -19,6 +19,14 @@ from dataclasses import dataclass, asdict
 import psutil
 import statistics
 
+# Add parent directory to sys.path to import shared modules first
+script_path = os.path.realpath(__file__)
+parent_dir = os.path.dirname(os.path.dirname(script_path))
+if parent_dir not in sys.path:
+    sys.path.insert(0, parent_dir)
+
+from shared.env import TektonEnviron
+
 # Try to import colorama for colored output
 try:
     from colorama import init, Fore, Style
@@ -63,8 +71,9 @@ def find_tekton_root():
         current_dir = parent
     
     # Fallback: check TEKTON_ROOT env variable
-    if 'TEKTON_ROOT' in os.environ:
-        return os.environ['TEKTON_ROOT']
+    tekton_root_env = TektonEnviron.get('TEKTON_ROOT')
+    if tekton_root_env:
+        return tekton_root_env
     
     raise RuntimeError("Could not find Tekton root directory. Please set TEKTON_ROOT environment variable.")
 
@@ -73,7 +82,6 @@ tekton_root = find_tekton_root()
 sys.path.insert(0, tekton_root)
 
 # Check if environment is loaded
-from shared.env import TektonEnviron
 from shared.urls import hermes_url
 
 if not TektonEnviron.is_loaded():

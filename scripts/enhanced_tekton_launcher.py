@@ -26,6 +26,14 @@ import threading
 import queue
 from pathlib import Path
 
+# Add parent directory to sys.path to import shared modules first
+script_path = os.path.realpath(__file__)
+parent_dir = os.path.dirname(os.path.dirname(script_path))
+if parent_dir not in sys.path:
+    sys.path.insert(0, parent_dir)
+
+from shared.env import TektonEnviron
+
 # Find the Tekton root directory by looking for a marker file
 def find_tekton_root():
     """Find the Tekton root directory by looking for marker files"""
@@ -50,8 +58,9 @@ def find_tekton_root():
         current_dir = parent
     
     # Fallback: check TEKTON_ROOT env variable
-    if 'TEKTON_ROOT' in os.environ:
-        return os.environ['TEKTON_ROOT']
+    tekton_root_env = TektonEnviron.get('TEKTON_ROOT')
+    if tekton_root_env:
+        return tekton_root_env
     
     raise RuntimeError("Could not find Tekton root directory. Please set TEKTON_ROOT environment variable.")
 
@@ -60,7 +69,6 @@ tekton_root = find_tekton_root()
 sys.path.insert(0, tekton_root)
 
 # Check if environment is loaded
-from shared.env import TektonEnviron
 if not TektonEnviron.is_loaded():
     # We're running as a subprocess with environment passed via env=
     # The environment is already correct, just not "loaded" in Python's memory

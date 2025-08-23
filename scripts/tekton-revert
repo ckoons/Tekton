@@ -22,6 +22,14 @@ from pathlib import Path
 from typing import List, Dict, Tuple, Optional
 from collections import defaultdict
 
+# Add parent directory to sys.path to import shared modules
+script_path = Path(__file__).resolve()
+parent_dir = script_path.parent.parent
+if str(parent_dir) not in sys.path:
+    sys.path.insert(0, str(parent_dir))
+
+from shared.env import TektonEnviron
+
 
 class TektonReverter:
     """Manages reverting uncommitted changes in Tekton repository."""
@@ -59,7 +67,7 @@ class TektonReverter:
                 
         # Check TEKTON_ROOT environment variable
         if 'TEKTON_ROOT' in os.environ:
-            tekton_root = Path(os.environ['TEKTON_ROOT'])
+            tekton_root = Path(TektonEnviron.get('TEKTON_ROOT'))
             if tekton_root.exists():
                 return tekton_root
                 
