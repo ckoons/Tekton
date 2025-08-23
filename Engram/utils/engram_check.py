@@ -334,14 +334,14 @@ def start_services(client_id: str = "default", data_dir: str = None, force_resta
                 engram_start_path = script_path
                 # Set environment variable for Hermes mode if not using dedicated script
                 if "engram_consolidated" in script_path:
-                    # Keep using os.environ for setting as this is for subprocess configuration
-                    os.environ["ENGRAM_MODE"] = "hermes"
+                    # Set mode for subprocess configuration
+                    TektonEnviron.set("ENGRAM_MODE", "hermes")
                 break
         else:
             # If none found, use a python module approach as last resort
             engram_start_path = sys.executable
-            # Keep using os.environ for setting as this is for subprocess configuration
-            os.environ["ENGRAM_MODE"] = "hermes"
+            # Set mode for subprocess configuration
+            TektonEnviron.set("ENGRAM_MODE", "hermes")
             print(f"{YELLOW}No Hermes script found, falling back to Python module{RESET}")
     else:
         # Try to find the standalone script in multiple locations
@@ -384,8 +384,8 @@ def start_services(client_id: str = "default", data_dir: str = None, force_resta
         ]
         
         # Add PYTHONPATH to ensure module can be found
-        # Keep using os.environ for setting as this is for subprocess configuration
-        os.environ["PYTHONPATH"] = f"{engram_root}:{TektonEnviron.get('PYTHONPATH', '')}"
+        # Set for subprocess configuration
+        TektonEnviron.set("PYTHONPATH", f"{engram_root}:{TektonEnviron.get('PYTHONPATH', '')}")
     else:
         # Using shell script
         cmd = [engram_start_path, "--client-id", client_id]
@@ -849,20 +849,20 @@ def main():
     
     # Set up environment based on arguments
     if args.hermes_url:
-        # Keep using os.environ for setting as this is for subprocess configuration
-        os.environ["HERMES_URL"] = args.hermes_url
+        # Set for subprocess configuration
+        TektonEnviron.set("HERMES_URL", args.hermes_url)
     
     if args.hermes:
-        # Keep using os.environ for setting as this is for subprocess configuration
-        os.environ["ENGRAM_MODE"] = "hermes"
+        # Set for subprocess configuration
+        TektonEnviron.set("ENGRAM_MODE", "hermes")
     elif args.standalone:
-        # Keep using os.environ for setting as this is for subprocess configuration
-        os.environ["ENGRAM_MODE"] = "standalone"
+        # Set for subprocess configuration
+        TektonEnviron.set("ENGRAM_MODE", "standalone")
     
     # Enable debug mode if requested
     if args.debug:
-        # Keep using os.environ for setting as this is for subprocess configuration
-        os.environ["ENGRAM_DEBUG"] = "1"
+        # Set for subprocess configuration
+        TektonEnviron.set("ENGRAM_DEBUG", "1")
     
     # Handle actions
     if args.stop:

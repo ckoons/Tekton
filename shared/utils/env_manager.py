@@ -97,7 +97,7 @@ class TektonEnvManager:
         
         # If TEKTON_ROOT environment variable is set, use it
         if 'TEKTON_ROOT' in os.environ:
-            tekton_root = Path(os.environ['TEKTON_ROOT'])
+            tekton_root = Path(TektonEnviron.get('TEKTON_ROOT'))
             if tekton_root.exists():
                 return tekton_root
         
@@ -122,18 +122,18 @@ class TektonEnvManager:
         self._original_env = dict(os.environ)
         
         # Always set TEKTON_ROOT to the detected Tekton root
-        os.environ['TEKTON_ROOT'] = str(self.tekton_root.absolute())
-        logger.debug(f"Set TEKTON_ROOT to: {os.environ['TEKTON_ROOT']}")
+        TektonEnviron.set('TEKTON_ROOT', str(self.tekton_root.absolute()))
+        logger.debug(f"Set TEKTON_ROOT to: {TektonEnviron.get('TEKTON_ROOT')}")
         
         # Set TEKTON_LOG_DIR if not already set
         if 'TEKTON_LOG_DIR' not in os.environ:
-            os.environ['TEKTON_LOG_DIR'] = os.path.join(os.environ['TEKTON_ROOT'], '.tekton', 'logs')
-            logger.debug(f"Set TEKTON_LOG_DIR to: {os.environ['TEKTON_LOG_DIR']}")
+            TektonEnviron.set('TEKTON_LOG_DIR', os.path.join(TektonEnviron.get('TEKTON_ROOT'), '.tekton', 'logs'))
+            logger.debug(f"Set TEKTON_LOG_DIR to: {TektonEnviron.get('TEKTON_LOG_DIR')}")
         
         # Set TEKTON_DATA_DIR if not already set
         if 'TEKTON_DATA_DIR' not in os.environ:
-            os.environ['TEKTON_DATA_DIR'] = os.path.join(os.environ['TEKTON_ROOT'], '.tekton', 'data')
-            logger.debug(f"Set TEKTON_DATA_DIR to: {os.environ['TEKTON_DATA_DIR']}")
+            TektonEnviron.set('TEKTON_DATA_DIR', os.path.join(TektonEnviron.get('TEKTON_ROOT'), '.tekton', 'data'))
+            logger.debug(f"Set TEKTON_DATA_DIR to: {TektonEnviron.get('TEKTON_DATA_DIR')}")
         
         # Load files in priority order (later files override earlier ones)
         env_files = [
@@ -192,7 +192,7 @@ class TektonEnvManager:
                             value = value[1:-1]
                         
                         # Set environment variable
-                        os.environ[key] = value
+                        TektonEnviron.set(key, value)
                     else:
                         logger.warning(f"Invalid line in {env_file}:{line_num}: {line}")
         except Exception as e:
@@ -314,7 +314,7 @@ class TektonEnvManager:
             else:
                 str_value = str(value)
             updated_lines.append(f"{key}={str_value}")
-            os.environ[key] = str_value
+            TektonEnviron.set(key, str_value)
         
         # Write updated file
         with open(env_file, 'w', encoding='utf-8') as f:

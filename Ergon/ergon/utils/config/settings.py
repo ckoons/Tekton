@@ -105,7 +105,7 @@ class Settings(BaseSettings):
     def __init__(self, **data):
         super().__init__(**data)
         # Set environment variable for Tekton vector store path
-        os.environ["TEKTON_VECTOR_DB_PATH"] = str(self.vector_db_path)
+        TektonEnviron.set("TEKTON_VECTOR_DB_PATH", str(self.vector_db_path))
     
     @property
     def has_openai(self) -> bool:
