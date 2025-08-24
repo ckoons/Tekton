@@ -120,7 +120,7 @@ except ImportError:
     protocol="HTTP REST",
     data_flow="Prompt/response cycles"
 )
-class AISpecialistWorker(ABC):
+class CISpecialistWorker(ABC):
     """Base class for AI specialist workers."""
     
     def __init__(self, 

@@ -15,7 +15,7 @@ from typing import Dict, Any, Optional, AsyncIterator
 from abc import ABC, abstractmethod
 
 # Import the base worker
-from .specialist_worker import AISpecialistWorker
+from .specialist_worker import CISpecialistWorker
 
 # Import landmarks
 try:
@@ -63,7 +63,7 @@ logger = logging.getLogger(__name__)
     protocol="HTTP streaming",
     data_flow="Prompt → Ollama stream=True → Chunks → Socket stream"
 )
-class StreamingAISpecialistWorker(AISpecialistWorker):
+class StreamingAISpecialistWorker(CISpecialistWorker):
     """Enhanced AI Specialist Worker with streaming support."""
     
     def __init__(self, *args, **kwargs):

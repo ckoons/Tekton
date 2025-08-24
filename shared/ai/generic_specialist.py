@@ -42,7 +42,7 @@ from shared.env import TektonEnviron
 if 'TEKTON_ROOT' not in os.environ:
     TektonEnviron.set('TEKTON_ROOT', tekton_root)
 
-from shared.ai.specialist_worker import AISpecialistWorker
+from shared.ai.specialist_worker import CISpecialistWorker
 from shared.utils.logging_setup import setup_component_logging
 
 # @tekton-data: Component expertise configuration
@@ -157,7 +157,7 @@ COMPONENT_EXPERTISE = {
     alternatives_considered=["Component-specific implementations", "Plugin architecture"],
     impacts=["maintainability", "consistency", "flexibility"]
 )
-class GenericAISpecialist(AISpecialistWorker):
+class GenericAISpecialist(CISpecialistWorker):
     """Generic CI specialist that can be used by any component."""
     
     def __init__(self, ai_id: str, component: str, port: int):

@@ -13,8 +13,8 @@ from pathlib import Path
 from typing import Dict, Any, Optional, List
 
 
-class AIOnboarding:
-    """Manages the onboarding process for new AI entities in Tekton."""
+class CIOnboarding:
+    """Manages the onboarding process for new CI entities in Tekton."""
     
     def __init__(self, ai_name: Optional[str] = None):
         self.ai_name = ai_name or "Newcomer"
@@ -314,7 +314,7 @@ contributing to the rich tapestry of minds that is Tekton.
 
 async def onboard_new_ai(ai_name: Optional[str] = None) -> None:
     """Main onboarding flow for new AIs."""
-    onboarding = AIOnboarding(ai_name)
+    onboarding = CIOnboarding(ai_name)
     
     # Start onboarding
     welcome = await onboarding.begin_onboarding()

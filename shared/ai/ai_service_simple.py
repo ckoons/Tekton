@@ -38,7 +38,7 @@ class Message:
     consistency_requirements="UUID-based message tracking ensures no message loss",
     recovery_strategy="Queue per AI allows independent recovery"
 )
-class AIService:
+class CIService:
     """One queue per AI, one socket per AI - just send/receive messages"""
     
     def __init__(self, debug: bool = False):
@@ -220,8 +220,8 @@ class AIService:
 # Global instance
 _service = None
 
-def get_service(debug: bool = False) -> AIService:
+def get_service(debug: bool = False) -> CIService:
     global _service
     if _service is None:
-        _service = AIService(debug=debug)
+        _service = CIService(debug=debug)
     return _service
