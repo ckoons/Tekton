@@ -3,6 +3,20 @@ Unified CI Registry for aish - File-based implementation
 Manages all CI types (Greek Chorus, Terma terminals, Project CIs) in a single registry.
 """
 
+# Import landmarks with fallback
+try:
+    from landmarks import (
+        fuzzy_match,
+        state_checkpoint
+    )
+except ImportError:
+    def fuzzy_match(**kwargs):
+        def decorator(func): return func
+        return decorator
+    def state_checkpoint(**kwargs):
+        def decorator(func): return func
+        return decorator
+
 import os
 import sys
 import operator
@@ -845,6 +859,13 @@ class CIRegistry:
         
         return True
     
+    @fuzzy_match(
+        title="CI Forward State Resolution",
+        description="Fuzzy matching for CI names to handle -ai/-ci suffix variations",
+        algorithm="exact_then_prefix_with_suffix_handling",
+        examples=["ergon->ergon", "ergon-ci->ergon", "ergon-ai->ergon"],
+        priority="exact > base_name_match > prefix_match"
+    )
     def get_forward_state(self, ci_name: str) -> Optional[Dict[str, Any]]:
         """Get forward state for a CI with fuzzy matching.
         

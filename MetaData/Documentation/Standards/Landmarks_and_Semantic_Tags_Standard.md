@@ -13,7 +13,7 @@ Landmarks and Semantic Tags are our two complementary systems for mapping the Te
 
 ## Landmarks (Code Layer)
 
-### The 6 Landmark Types
+### The Core Landmark Types
 
 #### 1. @architecture_decision
 **Purpose**: Document WHY architectural choices were made
@@ -106,6 +106,65 @@ class IntrospectionCache:
     pass
 ```
 
+### Advanced Landmark Patterns (New)
+
+#### 7. @ci_orchestrated
+**Purpose**: Mark components designed for CI orchestration
+```python
+@ci_orchestrated(
+    title="Construct Solution Builder",
+    description="Interactive solution composition guided by CI",
+    orchestrator="ergon-ai",
+    workflow=["discover", "analyze", "build", "test", "publish"],
+    ci_capabilities=["component_selection", "code_generation", "validation"]
+)
+class ConstructSystem:
+    pass
+```
+
+#### 8. @message_buffer
+**Purpose**: Document message buffering for async communication
+```python
+@message_buffer(
+    title="Single-Prompt Model Buffer",
+    description="Buffers messages for Claude/GPT models that process single prompts",
+    buffer_type="file_based",
+    location="/tmp/ci_buffers",
+    clearing_policy="on_read",
+    max_size="1MB"
+)
+def buffer_message(ci_name: str, message: str):
+    pass
+```
+
+#### 9. @fuzzy_match
+**Purpose**: Mark intelligent name resolution logic
+```python
+@fuzzy_match(
+    title="CI Name Resolution",
+    description="Matches CI names with fuzzy logic for flexible routing",
+    algorithm="prefix_match_with_suffix_handling",
+    examples=["ergon->ergon", "ergon-ci->ergon", "ergon->ergon-ci"],
+    priority="exact > prefix > suffix_variant"
+)
+def get_forward_state(self, ci_name: str):
+    pass
+```
+
+#### 10. @ci_collaboration
+**Purpose**: Document multi-CI coordination points
+```python
+@ci_collaboration(
+    title="Greek Chorus Coordination",
+    description="Multiple specialist CIs working together on complex tasks",
+    participants=["athena-ai", "rhetor-ai", "hermes-ai"],
+    coordination_method="message_passing",
+    synchronization="async_buffered"
+)
+async def coordinate_specialists(task: dict):
+    pass
+```
+
 ### Landmark Implementation Pattern
 
 Always include fallback for environments without landmarks:
@@ -116,7 +175,11 @@ try:
         architecture_decision,
         api_contract,
         integration_point,
-        performance_boundary
+        performance_boundary,
+        ci_orchestrated,
+        message_buffer,
+        fuzzy_match,
+        ci_collaboration
     )
 except ImportError:
     # Define no-op decorators when landmarks not available
@@ -129,7 +192,7 @@ except ImportError:
 
 ## Semantic Tags (UI Layer)
 
-### The 5 Tag Categories
+### The Core Tag Categories
 
 #### 1. Structure Tags
 **Purpose**: Define UI hierarchy and organization
@@ -180,6 +243,39 @@ except ImportError:
      data-tekton-visibility="visible">
 ```
 
+### Advanced Semantic Tags (New)
+
+#### 6. Solution Building Tags
+**Purpose**: Mark UI elements involved in solution composition
+```html
+<div data-tekton-construct="solution-builder"
+     data-tekton-construct-phase="discovery"
+     data-tekton-construct-ci="ergon-ai">
+    <div data-tekton-construct-questions="true"></div>
+    <div data-tekton-construct-workspace="active"></div>
+</div>
+```
+
+#### 7. CI Coordination Tags
+**Purpose**: Show multi-CI collaboration in UI
+```html
+<div data-tekton-ci-ensemble="greek-chorus"
+     data-tekton-ci-participants="athena,rhetor,hermes"
+     data-tekton-ci-coordination="active">
+    <div data-tekton-ci-messages="buffered"></div>
+</div>
+```
+
+#### 8. Registry Integration Tags
+**Purpose**: Connect UI to component registry
+```html
+<div data-tekton-registry="component-browser"
+     data-tekton-registry-action="search"
+     data-tekton-registry-filter="data-processing">
+    <div data-tekton-registry-results="true"></div>
+</div>
+```
+
 ### Semantic Tag Conventions
 
 1. **Always prefix with `data-tekton-`**
@@ -187,6 +283,7 @@ except ImportError:
 3. **Layer tags for rich context**
 4. **Update state tags dynamically**
 5. **Think about AI navigation paths**
+6. **Consider CI collaboration patterns**
 
 ## End of Sprint Checklist
 
@@ -199,6 +296,10 @@ Before completing any sprint, verify:
 - [ ] Identified component connections with `@integration_point`?
 - [ ] Flagged risky code sections with `@danger_zone`?
 - [ ] Marked state management with `@state_checkpoint`?
+- [ ] Tagged CI-driven components with `@ci_orchestrated`?
+- [ ] Documented message buffering with `@message_buffer`?
+- [ ] Marked fuzzy matching logic with `@fuzzy_match`?
+- [ ] Identified CI collaboration points with `@ci_collaboration`?
 
 ### UI Semantic Tags
 - [ ] Tagged all new components with structure tags?
@@ -206,247 +307,165 @@ Before completing any sprint, verify:
 - [ ] Marked interactive elements appropriately?
 - [ ] Connected AI features with integration tags?
 - [ ] Implemented dynamic state management tags?
+- [ ] Added solution building tags for Construct UI?
+- [ ] Marked CI coordination displays?
+- [ ] Connected Registry browsing elements?
 
 ### Quality Check
 - [ ] Can a CI navigate your code using landmarks?
 - [ ] Can a CI understand your UI using semantic tags?
 - [ ] Do your landmarks explain WHY, not just WHAT?
 - [ ] Are your semantic tags specific and descriptive?
+- [ ] Have you documented CI collaboration patterns?
 
-## Real Sprint Examples
+## New Pattern Examples
 
-### MCP Distributed Tekton Sprint
+### Ergon Construct Sprint
 ```python
-# Architecture decision at module level
-@architecture_decision(
-    title="MCP Server Architecture",
-    rationale="Consolidates all AI message routing through standard protocol"
+# CI orchestration for solution building
+@ci_orchestrated(
+    title="Construct Solution Composer",
+    description="CI-guided interactive solution building",
+    orchestrator="ergon-ai",
+    workflow=["requirements", "components", "configuration", "deployment"],
+    ci_capabilities=["analysis", "suggestion", "validation", "generation"]
 )
-class _MCPServerArchitecture:
-    pass
-
-# API contract for team chat
-@api_contract(
-    title="Team Chat Broadcast",
-    endpoint="/api/mcp/v2/tools/team-chat"
-)
-async def team_chat(request: Request):
-    pass
-```
-
-### TektonCore Automated Merge Sprint
-```python
-# Architecture decision for merge strategy
-@architecture_decision(
-    title="Dry-Run Merge Strategy",
-    description="Use git merge --no-commit to detect conflicts without corruption",
-    rationale="Allows safe conflict detection while keeping repository clean",
-    alternatives_considered=["Temporary branches", "Merge simulation"],
-    decided_by="Casey",
-    decision_date="2025-01-31"
-)
-async def dry_run_merge(self, branch_name: str):
-    pass
-
-# Danger zone for concurrent operations
-@danger_zone(
-    title="Concurrent Merge Operations",
-    description="Multiple merge operations can corrupt repository state",
-    risk_level="high",
-    risks=["repository corruption", "lost commits", "branch conflicts"],
-    mitigation="Queue-based processing, atomic operations, merge locks"
-)
-async def merge_branch(self, branch_name: str):
-    pass
-
-# API contract for merge endpoints
-@api_contract(
-    title="Dry-Run Merge API",
-    endpoint="/sprints/merge/dry-run",
-    method="POST",
-    request_schema={"merge_id": "str", "merge_name": "str"},
-    response_schema={"can_merge": "bool", "conflicts": "List[Dict]"}
-)
-async def dry_run_merge(request: DryRunMergeRequest):
-    pass
-```
-
-### Claude Code IDE Sprint
-```python
-# Performance boundary for caching
-@performance_boundary(
-    title="Cache Invalidation Check",
-    sla="<1ms validation time",
-    measured_impact="Saves ~40% context by preventing error spirals"
-)
-def _is_cache_valid(self):
-    pass
-
-# Architecture decision for eliminating guesswork
-@architecture_decision(
-    title="Claude Code IDE Introspection Engine",
-    rationale="CIs waste ~40% context on AttributeErrors from guessing"
-)
-class TektonInspector:
-    pass
-```
-
-### UI Component Example
-```html
-<!-- Properly tagged chat interface -->
-<div class="chat-container"
-     data-tekton-component="team-chat"
-     data-tekton-type="chat-interface"
-     data-tekton-ai="multi-specialist"
-     data-tekton-state="ready">
+class ConstructGuidedDialog:
+    """Interactive dialog for solution composition"""
     
-    <div data-tekton-chat-messages="true"
-         data-tekton-zone="message-area">
+    @message_buffer(
+        title="CI Message Queue",
+        description="Buffers messages from collaborating CIs",
+        buffer_type="memory",
+        clearing_policy="on_build"
+    )
+    def queue_ci_message(self, sender: str, message: str):
+        pass
+    
+    @ci_collaboration(
+        title="Component Discovery",
+        participants=["athena-ai", "ergon-ai"],
+        coordination_method="query_response"
+    )
+    async def discover_components(self, requirements: dict):
+        pass
+```
+
+### CI Message Buffering Implementation
+```python
+# Message buffering for single-prompt models
+@message_buffer(
+    title="Claude Message Buffer",
+    description="File-based buffer for Claude/GPT forwarded CIs",
+    buffer_type="file",
+    location="/tmp/ci_buffers",
+    format="{ci_name}.buffer"
+)
+def buffer_for_claude(ci_name: str, message: str):
+    """Buffer message for next Claude prompt"""
+    buffer_file = BUFFER_DIR / f"{ci_name}.buffer"
+    with open(buffer_file, 'a') as f:
+        f.write(f"{message}\n")
+```
+
+### Fuzzy Name Resolution
+```python
+# Intelligent CI name matching
+@fuzzy_match(
+    title="CI Name Resolution",
+    description="Flexible matching for CI routing",
+    algorithm="prefix_with_suffix_awareness",
+    examples={
+        "ergon": "matches ergon or ergon-ci based on availability",
+        "ergon-ci": "matches ergon if ergon-ci not found",
+        "ergon-ai": "exact match only"
+    }
+)
+def resolve_ci_name(search_name: str, available_names: list) -> str:
+    """Find best matching CI name"""
+    # Exact match first
+    if search_name in available_names:
+        return search_name
+    # Fuzzy matching logic...
+```
+
+### Greek Chorus Coordination
+```python
+# Multi-CI collaboration
+@ci_collaboration(
+    title="Greek Chorus Analysis",
+    description="Specialist CIs analyze problem from multiple angles",
+    participants=["athena-ai", "rhetor-ai", "apollo-ai", "hermes-ai"],
+    coordination_method="parallel_analysis",
+    aggregation="ergon-ai"
+)
+async def analyze_codebase(query: str) -> dict:
+    """Coordinate specialists for comprehensive analysis"""
+    responses = await gather_specialist_insights(query)
+    return synthesize_responses(responses)
+```
+
+### Construct UI Semantic Tags
+```html
+<!-- Solution builder with full CI integration -->
+<div class="construct-container"
+     data-tekton-component="construct"
+     data-tekton-construct="solution-builder"
+     data-tekton-construct-mode="guided"
+     data-tekton-ci="ergon-ai"
+     data-tekton-ci-state="engaged">
+    
+    <!-- Question flow -->
+    <div data-tekton-construct-questions="true"
+         data-tekton-construct-phase="requirements"
+         data-tekton-question-current="purpose">
+        <div data-tekton-question-id="purpose"></div>
     </div>
     
-    <input data-tekton-chat-input="true"
-           data-tekton-action="compose-message">
+    <!-- CI collaboration display -->
+    <div data-tekton-ci-ensemble="active"
+         data-tekton-ci-messages="3"
+         data-tekton-ci-buffer="populated">
+        <div data-tekton-ci-participant="athena-ai"></div>
+        <div data-tekton-ci-participant="rhetor-ai"></div>
+    </div>
     
-    <button data-tekton-action="send"
-            data-tekton-trigger="team-broadcast">
-        Send to Team
+    <!-- Build actions -->
+    <button data-tekton-action="build"
+            data-tekton-construct-action="compose"
+            data-tekton-ci-trigger="true">
+        Build Solution
     </button>
 </div>
 ```
 
-### Penia/Budget Component Sprint
+## CI-First Architecture Principles
+
+### Design for CI Orchestration
+When building new features, consider:
+1. **Can a CI drive this process?** Design for CI orchestration
+2. **How do CIs collaborate?** Plan message passing and coordination
+3. **What context does the CI need?** Provide rich landmarks
+4. **How does the UI show CI activity?** Use semantic tags
+
+### Message Flow Patterns
 ```python
-# Architecture decision for budget tracking
-@architecture_decision(
-    title="Real-time Budget Tracking Architecture",
-    description="Live budget monitoring with WebSocket updates",
-    rationale="Provides immediate cost visibility to prevent overruns",
-    alternatives_considered=["Polling-based updates", "Batch processing"],
-    impacts=["cost_management", "user_experience", "system_performance"],
-    decided_by="Casey",
-    decision_date="2025-07-31"
+# Document async message flows
+@integration_point(
+    title="CI Message Router",
+    description="Routes messages between CIs based on forwarding rules",
+    data_flow="sender_ci → router → buffer/direct → recipient_ci",
+    buffering="single_prompt_models",
+    direct="streaming_models"
 )
-class BudgetEngine:
-    pass
-
-# API contract for budget API
-@api_contract(
-    title="Budget Summary API",
-    endpoint="/api/v1/budgets/{budget_id}/summary",
-    method="GET",
-    request_schema={"period": "str"},
-    response_schema={"daily": "dict", "weekly": "dict", "monthly": "dict"},
-    performance_requirements="<100ms response time"
-)
-async def get_budget_summary(budget_id: str, period: str):
-    pass
-
-# Performance boundary for usage tracking
-@performance_boundary(
-    title="Usage Record Processing",
-    description="Process incoming usage records in real-time",
-    sla="<50ms per record",
-    optimization_notes="Batch database writes for efficiency",
-    measured_impact="Handles 1000+ records/second"
-)
-async def record_usage(self, usage_data: dict):
-    pass
 ```
 
-### Penia UI Semantic Tags
-```html
-<!-- Budget component with full semantic tagging -->
-<div class="budget" 
-     data-tekton-area="budget" 
-     data-tekton-component="budget" 
-     data-tekton-type="component-workspace" 
-     data-tekton-ai="budget-assistant" 
-     data-tekton-ai-ready="false">
-    
-    <!-- Menu navigation -->
-    <div class="budget__menu-bar" 
-         data-tekton-zone="menu" 
-         data-tekton-nav="component-menu">
-        <div class="budget__tab" 
-             data-tab="dashboard" 
-             data-tekton-menu-item="Dashboard"
-             data-tekton-menu-component="budget"
-             data-tekton-menu-active="true"
-             data-tekton-menu-panel="dashboard-panel"
-             data-tekton-nav-target="dashboard-panel">
-            <span class="budget__tab-label">Dashboard</span>
-        </div>
-    </div>
-    
-    <!-- Actions with proper tagging -->
-    <button class="budget__button budget__button--success" 
-            id="clear-alerts" 
-            onclick="budget_clearAlerts(); return false;" 
-            data-tekton-action="clear-alerts" 
-            data-tekton-action-type="success">
-        Clear All
-    </button>
-    
-    <!-- Filter controls -->
-    <div class="budget__filter-group">
-        <label class="budget__filter-label">Beginning:</label>
-        <input type="date" 
-               class="budget__input" 
-               id="start-date"
-               data-tekton-filter="start-date"
-               data-tekton-filter-type="date">
-    </div>
-</div>
-```
-
-### TektonCore Merge UI Example
-```html
-<!-- Sprint merge card with full tagging -->
-<div class="tekton__merge-card"
-     data-tekton-element="merge-card"
-     data-tekton-merge-id="${merge.id}"
-     data-tekton-status="${merge.status}"
-     data-tekton-priority="${merge.priority}">
-    
-    <div class="tekton__merge-header"
-         data-tekton-zone="header">
-        <h3 data-tekton-element="merge-name">${merge.name}</h3>
-        <span data-tekton-element="status-badge"
-              data-tekton-status="ready-for-merge">Ready</span>
-    </div>
-    
-    <div class="tekton__merge-actions"
-         data-tekton-zone="actions">
-        <button data-tekton-action="execute-merge"
-                data-tekton-merge-target="${merge.id}"
-                data-tekton-trigger="dry-run"
-                data-tekton-workflow="merge-check">
-            Execute
-        </button>
-    </div>
-</div>
-
-<!-- Conflict resolution modal -->
-<div class="tekton__modal-overlay"
-     data-tekton-modal="merge-conflict"
-     data-tekton-modal-type="decision"
-     data-tekton-conflict-type="content"
-     data-tekton-ai-ready="true">
-    
-    <div class="tekton__modal-actions"
-         data-tekton-zone="resolution-actions">
-        <button data-tekton-action="fix-conflict"
-                data-tekton-ai="conflict-resolver"
-                data-tekton-confidence="high">Fix</button>
-        <button data-tekton-action="consult-coder"
-                data-tekton-target="original-coder"
-                data-tekton-workflow="human-review">Consult</button>
-        <button data-tekton-action="redo-sprint"
-                data-tekton-priority="1"
-                data-tekton-workflow="sprint-recreation">Redo</button>
-    </div>
-</div>
-```
+### Solution Composition Pattern
+The Construct system exemplifies CI-first design:
+- CI guides the user through questions
+- CI analyzes responses and suggests components
+- CI generates configuration and glue code
+- CI coordinates testing and deployment
 
 ## Common Patterns
 
@@ -461,12 +480,23 @@ import sys
 
 # Landmark imports with fallback
 try:
-    from landmarks import architecture_decision, api_contract
+    from landmarks import (
+        architecture_decision, 
+        api_contract,
+        ci_orchestrated,
+        message_buffer
+    )
 except ImportError:
     def architecture_decision(**kwargs):
         def decorator(func): return func
         return decorator
     def api_contract(**kwargs):
+        def decorator(func): return func
+        return decorator
+    def ci_orchestrated(**kwargs):
+        def decorator(func): return func
+        return decorator
+    def message_buffer(**kwargs):
         def decorator(func): return func
         return decorator
 
@@ -484,7 +514,8 @@ class YourClass:
 <div class="component-root"
      data-tekton-component="component-name"
      data-tekton-type="component-type"
-     data-tekton-area="functional-area">
+     data-tekton-area="functional-area"
+     data-tekton-ci="associated-ci">
     
     <!-- Navigation -->
     <nav data-tekton-nav="component-nav">
@@ -496,8 +527,16 @@ class YourClass:
     
     <!-- Content -->
     <div data-tekton-zone="content"
-         data-tekton-state="active">
+         data-tekton-state="active"
+         data-tekton-ci-ready="true">
         <!-- Component content -->
+    </div>
+    
+    <!-- CI Integration -->
+    <div data-tekton-ci-interface="true"
+         data-tekton-ci-model="claude"
+         data-tekton-ci-buffer="enabled">
+        <!-- CI interaction area -->
     </div>
 </div>
 ```
@@ -509,6 +548,7 @@ class YourClass:
 3. **Human Understanding**: New developers/CIs immediately grasp system structure
 4. **Consistency**: Following these standards ensures predictable, maintainable code
 5. **Context Preservation**: Saves ~40% context by eliminating exploration/errors
+6. **CI Collaboration**: Enables multi-CI coordination and ensemble intelligence
 
 ## Summary
 
@@ -516,8 +556,14 @@ This document is our standard of practice. At the end of every sprint, use the c
 
 Remember Casey's wisdom: "Map First, Build Second" - but also "Update the Map When You Build!"
 
+The new CI-first patterns reflect our evolution toward Companion Intelligence:
+- Design for CI orchestration from the start
+- Document message flows and buffering strategies
+- Mark collaboration points clearly
+- Think about how CIs will work together
+
 ---
 
-*Last Updated: 2025-07-31*
-*Standard Version: 1.2*
-*Changes: Added Penia/Budget component examples for both landmarks and semantic tags*
+*Last Updated: 2025-08-24*
+*Standard Version: 2.0*
+*Changes: Added CI-first patterns, message buffering, fuzzy matching, and collaboration landmarks*

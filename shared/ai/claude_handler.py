@@ -10,11 +10,38 @@ from typing import Dict, Any, Optional
 from pathlib import Path
 import sys
 
+# Import landmarks with fallback
+try:
+    from landmarks import (
+        architecture_decision,
+        integration_point,
+        message_buffer
+    )
+except ImportError:
+    def architecture_decision(**kwargs):
+        def decorator(func): return func
+        return decorator
+    def integration_point(**kwargs):
+        def decorator(func): return func
+        return decorator
+    def message_buffer(**kwargs):
+        def decorator(func): return func
+        return decorator
+
 # Add parent paths
 sys.path.insert(0, str(Path(__file__).parent.parent))
 from aish.src.registry.ci_registry import get_registry
 
 
+@architecture_decision(
+    title="Claude Process Handler",
+    description="Manages Claude CLI processes for forwarded CIs",
+    rationale="Claude requires special handling as a single-prompt model",
+    alternatives_considered=["API integration", "Embedded model", "WebSocket bridge"],
+    impacts=["ci_forwarding", "message_buffering", "response_latency"],
+    decided_by="Casey",
+    decision_date="2025-08-24"
+)
 class ClaudeHandler:
     """Handles Claude process management for forwarded CIs"""
     

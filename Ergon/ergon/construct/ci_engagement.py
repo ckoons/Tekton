@@ -8,7 +8,32 @@ import json
 from typing import Dict, Any, Optional, List
 from datetime import datetime
 
+# Import landmarks with fallback
+try:
+    from landmarks import (
+        ci_orchestrated,
+        ci_collaboration,
+        integration_point
+    )
+except ImportError:
+    def ci_orchestrated(**kwargs):
+        def decorator(func): return func
+        return decorator
+    def ci_collaboration(**kwargs):
+        def decorator(func): return func
+        return decorator
+    def integration_point(**kwargs):
+        def decorator(func): return func
+        return decorator
 
+
+@ci_orchestrated(
+    title="Construct CI Orchestrator",
+    description="CI that guides users through solution building",
+    orchestrator="ergon-ai",
+    workflow=["understand", "suggest", "validate", "build", "deploy"],
+    ci_capabilities=["requirement_analysis", "component_suggestion", "code_generation"]
+)
 class ConstructCI:
     """
     CI personality for Construct system.
@@ -42,6 +67,13 @@ I'm not just collecting answers - I'm actively thinking about your solution
 and will offer suggestions, warnings, and improvements as we go.
 """
     
+    @integration_point(
+        title="User Response Processing",
+        description="CI analyzes user responses and provides guidance",
+        target_component="construct_dialog",
+        protocol="internal_api",
+        data_flow="user_response → CI_analysis → suggestions"
+    )
     def process_user_response(self, question_id: str, response: str, context: Dict[str, Any]) -> Dict[str, Any]:
         """
         Process a user's response to a question.
@@ -219,6 +251,13 @@ and will offer suggestions, warnings, and improvements as we go.
             'stored': True
         }
     
+    @ci_collaboration(
+        title="Component Discovery Collaboration",
+        description="CI collaborates with Registry to find components",
+        participants=["ergon-ai", "athena-ai"],
+        coordination_method="query_registry",
+        synchronization="sync"
+    )
     def _suggest_components(self, purpose: str) -> List[Dict[str, Any]]:
         """Suggest components based on purpose."""
         suggestions = []

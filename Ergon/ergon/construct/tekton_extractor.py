@@ -8,7 +8,30 @@ import json
 from pathlib import Path
 from typing import Dict, Any, List, Optional
 
+# Import landmarks with fallback
+try:
+    from landmarks import (
+        architecture_decision,
+        integration_point
+    )
+except ImportError:
+    def architecture_decision(**kwargs):
+        def decorator(func): return func
+        return decorator
+    def integration_point(**kwargs):
+        def decorator(func): return func
+        return decorator
 
+
+@architecture_decision(
+    title="Tekton Component Extraction",
+    description="Allow Tekton components to be packaged as reusable solutions",
+    rationale="Users want to leverage existing Tekton components in their solutions",
+    alternatives_considered=["Copy-paste code", "Git submodules", "Direct dependencies"],
+    impacts=["solution_reusability", "component_versioning", "registry_growth"],
+    decided_by="Casey",
+    decision_date="2025-08-24"
+)
 class TektonExtractor:
     """Extract Tekton components as solutions."""
     
@@ -77,6 +100,13 @@ class TektonExtractor:
             for comp_id, info in self.EXTRACTABLE_COMPONENTS.items()
         ]
     
+    @integration_point(
+        title="Component Extraction",
+        description="Extract Tekton component as Registry solution",
+        target_component="Registry",
+        protocol="solution_package",
+        data_flow="tekton_component → solution_definition → registry"
+    )
     def extract_component(self, component_id: str) -> Optional[Dict[str, Any]]:
         """
         Extract a Tekton component as a solution.

@@ -29,7 +29,8 @@ try:
         architecture_decision,
         api_contract,
         integration_point,
-        performance_boundary
+        performance_boundary,
+        message_buffer
     )
 except ImportError:
     # Define no-op decorators when landmarks not available
@@ -49,6 +50,11 @@ except ImportError:
         return decorator
     
     def performance_boundary(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+    
+    def message_buffer(**kwargs):
         def decorator(func_or_class):
             return func_or_class
         return decorator
@@ -87,6 +93,14 @@ def is_single_prompt_model(model: str) -> bool:
     return any(indicator in model_lower for indicator in single_prompt_indicators)
 
 
+@message_buffer(
+    title="CI Message Buffer Reader",
+    description="Reads and clears buffered messages for single-prompt models",
+    buffer_type="file",
+    location="/tmp/ci_buffers",
+    clearing_policy="on_read",
+    max_size="10MB"
+)
 def get_buffered_messages(ci_name: str, clear: bool = True) -> str:
     """Get buffered messages for a CI and optionally clear them.
     
