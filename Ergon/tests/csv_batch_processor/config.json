@@ -1,0 +1,57 @@
+{
+  "name": "csv_batch_processor",
+  "version": "1.0.0",
+  "type": "solution",
+  "description": "High-performance CSV batch processor for PostgreSQL",
+  "components": {
+    "chunker": {
+      "chunk_size_mb": 1024,
+      "parallel_chunks": 10,
+      "temp_dir": "/tmp/csv_chunks"
+    },
+    "processor": {
+      "workers": 10,
+      "batch_size": 10000,
+      "error_threshold": 0.01,
+      "validation": {
+        "enabled": true,
+        "schema_strict": false,
+        "null_handling": "skip"
+      }
+    },
+    "postgres": {
+      "host": "${POSTGRES_HOST}",
+      "port": 5432,
+      "database": "${POSTGRES_DB}",
+      "user": "${POSTGRES_USER}",
+      "password": "${POSTGRES_PASSWORD}",
+      "schema": "public",
+      "table": "${TARGET_TABLE}",
+      "copy_options": {
+        "delimiter": ",",
+        "null_string": "\\N",
+        "quote": "\"",
+        "escape": "\\",
+        "header": true
+      },
+      "connection_pool": {
+        "min": 2,
+        "max": 20
+      }
+    },
+    "monitoring": {
+      "metrics_enabled": true,
+      "log_level": "INFO",
+      "progress_reporting": true,
+      "alerts": {
+        "error_rate_threshold": 0.05,
+        "processing_time_max_minutes": 120
+      }
+    }
+  },
+  "performance": {
+    "memory_limit_gb": 16,
+    "cpu_cores": 10,
+    "io_threads": 4
+  }
+}

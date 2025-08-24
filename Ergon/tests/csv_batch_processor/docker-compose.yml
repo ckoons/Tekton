@@ -1,0 +1,72 @@
+version: '3.8'
+
+services:
+  csv_processor:
+    build: .
+    container_name: csv_batch_processor
+    environment:
+      - POSTGRES_HOST=postgres
+      - POSTGRES_DB=datawarehouse
+      - POSTGRES_USER=etl_user
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-changeme}
+      - TARGET_TABLE=csv_imports
+      - PARALLEL_JOBS=10
+    volumes:
+      - ./data/input:/data/input
+      - ./data/processed:/data/processed
+      - ./logs:/var/log/csv_processor
+    depends_on:
+      - postgres
+    networks:
+      - processing_network
+    deploy:
+      resources:
+        limits:
+          cpus: '10'
+          memory: 16G
+        reservations:
+          cpus: '4'
+          memory: 8G
+    command: ["/bin/bash", "orchestrator.sh"]
+
+  postgres:
+    image: postgres:15
+    container_name: csv_postgres
+    environment:
+      - POSTGRES_DB=datawarehouse
+      - POSTGRES_USER=etl_user
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-changeme}
+      - POSTGRES_INITDB_ARGS=--encoding=UTF-8
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5432:5432"
+    networks:
+      - processing_network
+    deploy:
+      resources:
+        limits:
+          cpus: '4'
+          memory: 8G
+    command: 
+      - postgres
+      - -c
+      - shared_buffers=2GB
+      - -c
+      - work_mem=256MB
+      - -c
+      - maintenance_work_mem=1GB
+      - -c
+      - effective_cache_size=12GB
+      - -c
+      - max_parallel_workers_per_gather=4
+      - -c
+      - max_parallel_workers=10
+
+volumes:
+  postgres_data:
+
+networks:
+  processing_network:
+    driver: bridge

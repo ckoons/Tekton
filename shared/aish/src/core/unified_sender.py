@@ -11,13 +11,17 @@ import urllib.error
 import urllib.parse
 from datetime import datetime
 from pathlib import Path
-from typing import Optional
+from typing import Optional, Dict, List
 
 # Add parent paths for imports
 sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
 from shared.env import TektonEnviron
 
 from shared.aish.src.registry.ci_registry import get_registry
+
+# Buffer file location for single-prompt models
+BUFFER_DIR = Path('/tmp/ci_buffers')
+BUFFER_DIR.mkdir(exist_ok=True)
 
 # Import landmarks with fallback
 try:
@@ -74,6 +78,52 @@ except ImportError:
     optimization_notes="Registry cached in memory, format check is O(1)",
     measured_impact="Adds negligible latency to message delivery"
 )
+def is_single_prompt_model(model: str) -> bool:
+    """Check if a model is single-prompt (like Claude) vs streaming."""
+    if not model:
+        return False
+    model_lower = model.lower()
+    single_prompt_indicators = ['claude', 'gpt', 'anthropic', 'openai']
+    return any(indicator in model_lower for indicator in single_prompt_indicators)
+
+
+def get_buffered_messages(ci_name: str, clear: bool = True) -> str:
+    """Get buffered messages for a CI and optionally clear them.
+    
+    Args:
+        ci_name: CI to get messages for
+        clear: Whether to clear the buffer after reading
+        
+    Returns:
+        Formatted string of buffered messages
+    """
+    buffer_file = BUFFER_DIR / f"{ci_name}.buffer"
+    
+    if not buffer_file.exists():
+        return ""
+    
+    try:
+        # Read messages
+        with open(buffer_file, 'r') as f:
+            messages = [line.strip() for line in f if line.strip()]
+        
+        if not messages:
+            return ""
+        
+        # Format messages
+        formatted = "\n\n[Messages from other CIs:]\n"
+        formatted += "\n".join(messages)
+        
+        # Clear if requested
+        if clear:
+            buffer_file.unlink()
+        
+        return formatted
+    except Exception as e:
+        print(f"Error reading buffer: {e}")
+        return ""
+
+
 def send_to_ci(ci_name: str, message: str, sender_name: Optional[str] = None, 
                execute: bool = False, delimiter: Optional[str] = None) -> bool:
     """
@@ -89,7 +139,34 @@ def send_to_ci(ci_name: str, message: str, sender_name: Optional[str] = None,
     Returns:
         bool: True if message was sent successfully
     """
-    # Check for forwarding FIRST - before trying to reach the component
+    # First check if CI is forwarded to a single-prompt model
+    registry = get_registry()
+    model_forward = registry.get_forward_state(ci_name)
+    
+    if model_forward and is_single_prompt_model(model_forward.get('model')):
+        # This CI is forwarded to Claude/GPT/etc - buffer the message instead
+        buffer_file = BUFFER_DIR / f"{ci_name}.buffer"
+        
+        # Format message with sender
+        if sender_name:
+            formatted_msg = f"{sender_name}: {message}"
+        else:
+            formatted_msg = message
+        
+        # Append to buffer file
+        with open(buffer_file, 'a') as f:
+            f.write(formatted_msg + '\n')
+        
+        # Count messages in buffer
+        with open(buffer_file, 'r') as f:
+            queue_size = sum(1 for line in f if line.strip())
+        
+        model_name = model_forward.get('model', 'unknown')
+        print(f"[Buffered for {ci_name} → {model_name}]")
+        print(f"Message buffered. Queue size: {queue_size}")
+        return True
+    
+    # Check for terminal forwarding
     from forwarding.forwarding_registry import ForwardingRegistry
     forwarding_registry = ForwardingRegistry()
     forward_config = forwarding_registry.get_forward_config(ci_name)

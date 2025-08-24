@@ -118,8 +118,19 @@ class ClaudeHandler:
             # Add --continue for normal conversation flow
             claude_cmd = claude_cmd.replace('--print', '--print --continue')
         
-        # Execute Claude with the message
-        return await self.execute_claude(claude_cmd, message, ci_name)
+        # Check for buffered messages from other CIs
+        from shared.aish.src.core.unified_sender import get_buffered_messages
+        buffered = get_buffered_messages(ci_name, clear=True)
+        
+        # Combine user message with buffered messages
+        if buffered:
+            combined_message = message + buffered
+            print(f"[Claude Handler] Injecting buffered messages for {ci_name}")
+        else:
+            combined_message = message
+        
+        # Execute Claude with the combined message
+        return await self.execute_claude(claude_cmd, combined_message, ci_name)
     
     async def execute_claude(self, claude_cmd: str, message: str, ci_name: str) -> str:
         """

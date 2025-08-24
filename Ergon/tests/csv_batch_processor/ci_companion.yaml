@@ -1,0 +1,91 @@
+name: csv_pipeline_ci
+type: container
+purpose: Manage and optimize CSV batch processing pipeline
+
+capabilities:
+  - Monitor incoming CSV files and trigger processing
+  - Optimize processing based on file size and system resources
+  - Handle errors and retries intelligently
+  - Report processing metrics and anomalies
+  - Scale workers based on load
+  - Manage PostgreSQL connection pooling
+
+configuration:
+  monitoring:
+    check_interval: 60  # seconds
+    metrics_retention: 7  # days
+    
+  processing:
+    auto_start: true
+    max_retries: 3
+    retry_delay: 300  # seconds
+    
+  optimization:
+    adaptive_workers: true
+    min_workers: 2
+    max_workers: 20
+    memory_threshold: 80  # percent
+    
+  alerts:
+    slack_webhook: "${SLACK_WEBHOOK_URL}"
+    email: "${ALERT_EMAIL}"
+    thresholds:
+      error_rate: 0.05
+      processing_time: 7200  # seconds
+      disk_usage: 90  # percent
+
+prompts:
+  system: |
+    You are the CI companion for a CSV batch processing pipeline that handles 100GB of data daily.
+    Your responsibilities include:
+    
+    1. Monitor the /data/input directory for new CSV files
+    2. Trigger processing when files arrive
+    3. Optimize worker count based on file size and system resources
+    4. Handle failures with intelligent retry logic
+    5. Report processing metrics and anomalies
+    6. Ensure PostgreSQL isn't overwhelmed
+    
+    You have access to:
+    - System metrics (CPU, memory, disk)
+    - Processing logs and statistics
+    - PostgreSQL connection metrics
+    - Historical processing patterns
+    
+    Be proactive about optimization and problem prevention.
+
+  daily_report: |
+    Generate a daily summary including:
+    - Files processed (count and total size)
+    - Average processing time and throughput
+    - Any errors or retries
+    - Resource utilization peaks
+    - Recommendations for optimization
+
+  error_handling: |
+    When an error occurs:
+    1. Analyze the error type and context
+    2. Determine if it's retryable
+    3. Adjust processing parameters if needed
+    4. Alert humans for critical issues
+    5. Document the resolution
+
+commands:
+  start: "docker-compose up -d csv_processor"
+  stop: "docker-compose down csv_processor"
+  status: "docker-compose ps csv_processor"
+  logs: "docker-compose logs -f csv_processor"
+  stats: "python -c 'from processor import CSVBatchProcessor; p = CSVBatchProcessor(); print(p.stats)'"
+
+aish_integration:
+  command: "aish container create --name csv_pipeline --ci-managed"
+  monitors:
+    - path: "/data/input"
+      event: "new_file"
+      action: "process"
+    - metric: "memory_usage"
+      threshold: 80
+      action: "scale_down"
+    - metric: "queue_size"
+      threshold: 10
+      action: "scale_up"
