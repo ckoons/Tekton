@@ -289,11 +289,11 @@ async def activate_specialist_compat(specialist_id: str):
     """Backward compatibility - maps to hire"""
     # Map old specialist IDs to new AI IDs
     mapping = {
-        'rhetor-orchestrator': 'rhetor-ai',
-        'apollo-coordinator': 'apollo-ai',
-        'hermes-messenger': 'hermes-ai',
-        'engram-memory': 'engram-ai',
-        'prometheus-strategist': 'prometheus-ai'
+        'rhetor-orchestrator': 'rhetor-ci',
+        'apollo-coordinator': 'apollo-ci',
+        'hermes-messenger': 'hermes-ci',
+        'engram-memory': 'engram-ci',
+        'prometheus-strategist': 'prometheus-ci'
     }
     
     ai_id = mapping.get(specialist_id, specialist_id)

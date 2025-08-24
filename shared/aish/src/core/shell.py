@@ -36,15 +36,15 @@ except ImportError:
         return decorator
 
 from parser.pipeline import PipelineParser
-from core.history import AIHistory
+from core.history import CIHistory
 
 # Add parent to path for shared imports
 sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
 from shared.env import TektonEnviron
 from shared.urls import tekton_url
 
-class AIShell:
-    """The AI Shell - orchestrates AI pipelines"""
+class CIShell:
+    """The CI Shell - orchestrates CI pipelines"""
     
     def __init__(self, rhetor_endpoint=None, debug=False, capture=False):
         self.capture = capture
@@ -58,7 +58,7 @@ class AIShell:
         self.parser = PipelineParser()
         tekton_root = TektonEnviron.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
         self.history_file = Path(tekton_root) / '.tekton' / 'aish' / '.aish_history'
-        self.ai_history = AIHistory()  # Conversation history tracker
+        self.ai_history = CIHistory()  # Conversation history tracker
         
         # Setup readline for interactive mode
         self._setup_readline()
@@ -79,7 +79,7 @@ class AIShell:
         atexit.register(save_history)
     
     def execute_command(self, command):
-        """Execute a single AI pipeline command"""
+        """Execute a single CI pipeline command"""
         try:
             # Parse the command
             pipeline = self.parser.parse(command)
@@ -105,7 +105,7 @@ class AIShell:
         return 0
     
     def execute_script(self, script_path):
-        """Execute an AI script file"""
+        """Execute an CI script file"""
         try:
             with open(script_path, 'r') as f:
                 # Skip shebang if present
@@ -129,8 +129,8 @@ class AIShell:
         return 0
     
     def interactive(self):
-        """Run interactive AI shell"""
-        print("aish - The AI Shell v0.1.0")
+        """Run interactive CI shell"""
+        print("aish - The CI Shell v0.1.0")
         print(f"Connected to Rhetor at: {self.rhetor_endpoint}")
         print("Type 'help' for help, 'exit' to quit")
         print()
@@ -145,7 +145,7 @@ class AIShell:
                     break
                 elif command == 'help':
                     self._show_help()
-                elif command == 'list-ais' or command == 'ais':
+                elif command == 'list-cis' or command == 'cis':
                     self._list_ais()
                 elif command == 'list' or command == 'commands':
                     self._show_help()
@@ -217,7 +217,7 @@ class AIShell:
             return f"Unsupported pipeline type: {pipeline_type}", {}
     
     def _execute_pipe_stages_with_tracking(self, stages):
-        """Execute pipeline stages and track AI responses."""
+        """Execute pipeline stages and track CI responses."""
         current_data = None
         responses = {}
         
@@ -230,7 +230,7 @@ class AIShell:
                 # Start of pipeline with echo
                 current_data = stage['content']
             elif stage['type'] == 'ai':
-                # Process through AI
+                # Process through CI
                 ai_name = stage['name']
                 
                 if current_data is not None:
@@ -261,11 +261,11 @@ class AIShell:
     def _show_help(self):
         """Display help information"""
         print("""
-AI Shell Commands:
-  echo "text" | ai_name    - Send text to an AI
-  ai1 | ai2 | ai3         - Pipeline AIs together  
-  team-chat "message"     - Broadcast to all AIs
-  list-ais, ais           - List available AI specialists
+CI Shell Commands:
+  echo "text" | ai_name    - Send text to an CI
+  ai1 | ai2 | ai3         - Pipeline CIs together  
+  team-chat "message"     - Broadcast to all CIs
+  list-cis, cis           - List available CI specialists
   list, commands          - Show this help (all commands)
   history                 - Show recent conversation history
   !number                 - Replay command from history (e.g., !1716)
@@ -278,7 +278,7 @@ Examples:
   apollo | athena > output.txt
   team-chat "what should we optimize?"
   !1716                   - Replay command number 1716
-  history                 - View recent AI conversations
+  history                 - View recent CI conversations
   
 History Management:
   aish-history            - View history (outside of shell)
@@ -292,8 +292,8 @@ MCP Server Management:
   /debug-mcp              - Toggle MCP debug mode
         """)
     
-    def _list_ais(self):
-        """List available AI specialists using unified registry"""
+    def _list_cis(self):
+        """List available CI specialists using unified registry"""
         from registry.ci_registry import get_registry
         
         print("Available CIs (Companion Intelligences):")
@@ -316,9 +316,9 @@ MCP Server Management:
         
         # Show Greek Chorus
         if by_type['greek']:
-            print("\nGreek Chorus AIs:")
+            print("\nGreek Chorus CIs:")
             for ci in sorted(by_type['greek'], key=lambda x: x['name']):
-                print(f"  {ci['name']:<15} - {ci.get('description', 'AI specialist')}")
+                print(f"  {ci['name']:<15} - {ci.get('description', 'CI specialist')}")
         
         # Show Terminals
         if by_type['terminal']:
@@ -352,7 +352,7 @@ MCP Server Management:
             print("-" * 60)
             print("Use !<number> to replay a command (e.g., !1716)")
         else:
-            print("No conversation history yet. Start chatting with AIs!")
+            print("No conversation history yet. Start chatting with CIs!")
     
     def _restart_mcp_server(self):
         """Restart the aish MCP server"""
@@ -450,7 +450,7 @@ MCP Server Management:
             # For now, suggest using debug mode
             if not TektonEnviron.get('AISH_DEBUG_MCP'):
                 print("\nTo see MCP logs, restart aish with debug mode:")
-                print("  AISH_DEBUG_MCP=1 aish")
+                print("  CISH_DEBUG_MCP=1 aish")
             else:
                 print("\nMCP debug mode is enabled - check terminal output")
                 
@@ -511,5 +511,5 @@ MCP Server Management:
 
 if __name__ == '__main__':
     # Test shell
-    shell = AIShell(debug=True)
+    shell = CIShell(debug=True)
     shell.interactive()

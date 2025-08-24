@@ -173,13 +173,13 @@ class LLMClient:
         
         # Map role to AI and port
         ai_map = {
-            'orchestration': ('rhetor-ai', 'localhost', 45003),
-            'code-analysis': ('apollo-ai', 'localhost', 45012),
-            'knowledge': ('athena-ai', 'localhost', 45005),
-            'general': ('numa-ai', 'localhost', 45016)
+            'orchestration': ('rhetor-ci', 'localhost', 45003),
+            'code-analysis': ('apollo-ci', 'localhost', 45012),
+            'knowledge': ('athena-ci', 'localhost', 45005),
+            'general': ('numa-ci', 'localhost', 45016)
         }
         
-        ai_id, host, port = ai_map.get(role, ('numa-ai', 'localhost', 45016))
+        ai_id, host, port = ai_map.get(role, ('numa-ci', 'localhost', 45016))
         
         # Send message using simple_ai
         try:

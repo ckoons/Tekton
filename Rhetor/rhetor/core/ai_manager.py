@@ -1,7 +1,7 @@
 """
-Simple AI Manager for Rhetor
+Simple CI Manager for Rhetor
 
-Reads AI configuration from component_config (ports from environment) and manages AI interactions.
+Reads CI configuration from component_config (ports from environment) and manages CI interactions.
 No complex discovery - just fixed ports and health checks.
 """
 import asyncio
@@ -18,33 +18,33 @@ from shared.ai.simple_ai import ai_send
 logger = logging.getLogger(__name__)
 
 
-class AIManager:
+class CIManager:
     """
-    Simple AI manager for Rhetor.
+    Simple CI manager for Rhetor.
     
     - Reads components from component_config (ports from environment)
-    - Calculates AI ports using standard formula
+    - Calculates CI ports using standard formula
     - Checks health by attempting connection
-    - Manages roster of active AIs
+    - Manages roster of active CIs
     """
     
     def __init__(self):
-        """Initialize AI manager with component config."""
+        """Initialize CI manager with component config."""
         self.config = get_component_config()
-        self.roster: Dict[str, Dict[str, Any]] = {}  # Active AIs Rhetor is using
+        self.roster: Dict[str, Dict[str, Any]] = {}  # Active CIs Rhetor is using
         self._health_cache: Dict[str, tuple[bool, float]] = {}  # (is_healthy, timestamp)
         self._cache_ttl = 30  # Cache health checks for 30 seconds
         
     def get_all_ai_components(self) -> List[str]:
-        """Get list of all components that have AI specialists."""
-        # All components can have AI specialists
+        """Get list of all components that have CI specialists."""
+        # All components can have CI specialists
         all_components = self.config.get_all_components()
         return [comp_id for comp_id in all_components.keys() 
-                if comp_id not in ['ui_devtools']]  # Exclude non-AI components
+                if comp_id not in ['ui_devtools']]  # Exclude non-CI components
     
     def get_ai_info(self, component_id: str) -> Dict[str, Any]:
         """
-        Get AI information for a component.
+        Get CI information for a component.
         
         Returns:
             Dict with ai_id, component, port, host
@@ -56,7 +56,7 @@ class AIManager:
         ai_port = get_ai_port(comp_info.port)
         
         return {
-            'ai_id': f"{component_id}-ai",
+            'ai_id': f"{component_id}-ci",
             'component': component_id,
             'name': comp_info.name,
             'port': ai_port,
@@ -68,9 +68,9 @@ class AIManager:
     
     async def check_ai_health(self, ai_id: str) -> bool:
         """
-        Check if an AI is healthy by attempting to connect.
+        Check if an CI is healthy by attempting to connect.
         
-        Uses cache to avoid hammering AIs with health checks.
+        Uses cache to avoid hammering CIs with health checks.
         """
         # Check cache first
         if ai_id in self._health_cache:
@@ -79,7 +79,7 @@ class AIManager:
                 return is_healthy
         
         # Extract component from ai_id
-        component_id = ai_id.replace('-ai', '')
+        component_id = ai_id.replace('-ci', '')
         
         try:
             ai_info = self.get_ai_info(component_id)
@@ -105,19 +105,19 @@ class AIManager:
             return True
             
         except Exception as e:
-            logger.debug(f"AI {ai_id} health check failed: {e}")
+            logger.debug(f"CI {ai_id} health check failed: {e}")
             self._health_cache[ai_id] = (False, datetime.now().timestamp())
             return False
     
     async def list_available_ais(self, include_health: bool = True) -> List[Dict[str, Any]]:
         """
-        List all available AI specialists.
+        List all available CI specialists.
         
         Args:
             include_health: Whether to check health status
             
         Returns:
-            List of AI info dicts
+            List of CI info dicts
         """
         ais = []
         
@@ -144,10 +144,10 @@ class AIManager:
     
     def hire_ai(self, ai_id: str, role: Optional[str] = None) -> Dict[str, Any]:
         """
-        Add an AI to Rhetor's active roster.
+        Add an CI to Rhetor's active roster.
         
         Args:
-            ai_id: AI specialist ID (e.g., 'apollo-ai')
+            ai_id: CI specialist ID (e.g., 'apollo-ci')
             role: Optional role assignment
             
         Returns:
@@ -156,7 +156,7 @@ class AIManager:
         if ai_id in self.roster:
             return self.roster[ai_id]
         
-        component_id = ai_id.replace('-ai', '')
+        component_id = ai_id.replace('-ci', '')
         ai_info = self.get_ai_info(component_id)
         
         roster_entry = {
@@ -173,40 +173,40 @@ class AIManager:
         }
         
         self.roster[ai_id] = roster_entry
-        logger.info(f"Hired AI specialist: {ai_id} for role: {roster_entry['role']}")
+        logger.info(f"Hired CI specialist: {ai_id} for role: {roster_entry['role']}")
         
         return roster_entry
     
     def fire_ai(self, ai_id: str) -> bool:
         """
-        Remove an AI from Rhetor's active roster.
+        Remove an CI from Rhetor's active roster.
         
         Returns:
             True if removed, False if not in roster
         """
         if ai_id in self.roster:
             del self.roster[ai_id]
-            logger.info(f"Fired AI specialist: {ai_id}")
+            logger.info(f"Fired CI specialist: {ai_id}")
             return True
         return False
     
     def get_roster(self) -> Dict[str, Dict[str, Any]]:
-        """Get current roster of hired AIs."""
+        """Get current roster of hired CIs."""
         return self.roster.copy()
     
     async def send_to_ai(self, ai_id: str, message: str) -> Dict[str, Any]:
         """
-        Send a message to an AI specialist.
+        Send a message to an CI specialist.
         
         Args:
-            ai_id: AI specialist ID
+            ai_id: CI specialist ID
             message: Message to send
             
         Returns:
             Response dict with success status and response/error
         """
         try:
-            component_id = ai_id.replace('-ai', '')
+            component_id = ai_id.replace('-ci', '')
             ai_info = self.get_ai_info(component_id)
             
             # Use simple_ai for communication
@@ -241,13 +241,13 @@ class AIManager:
     
     async def find_ai_for_role(self, role: str) -> Optional[str]:
         """
-        Find a healthy AI that can fulfill a role.
+        Find a healthy CI that can fulfill a role.
         
         Args:
             role: Role/category needed (e.g., 'ai', 'knowledge', 'planning')
             
         Returns:
-            AI ID if found, None otherwise
+            CI ID if found, None otherwise
         """
         # First check roster for assigned roles
         for ai_id, entry in self.roster.items():
@@ -258,7 +258,7 @@ class AIManager:
         for component_id in self.get_all_ai_components():
             comp_info = self.config.get_component(component_id)
             if comp_info.category == role:
-                ai_id = f"{component_id}-ai"
+                ai_id = f"{component_id}-ci"
                 if await self.check_ai_health(ai_id):
                     return ai_id
         

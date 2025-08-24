@@ -15,26 +15,26 @@ window.SingleChat = {
     messageBuffers: {},  // keyed by component name
     processingFlags: {},  // track if AI is busy per component
     
-    // Component configuration mapping - using -ai suffix for AI specialists (42xxx ports)
+    // Component configuration mapping - using -ci suffix for AI specialists (42xxx ports)
     config: {
-        'terma': { aiName: 'terma-ai', displayName: 'Terma' },
-        'budget': { aiName: 'penia-ai', displayName: 'Penia' },
-        'numa': { aiName: 'numa-ai', displayName: 'Numa' },
-        'athena': { aiName: 'athena-ai', displayName: 'Athena' },
-        'apollo': { aiName: 'apollo-ai', displayName: 'Apollo' },
-        'rhetor': { aiName: 'rhetor-ai', displayName: 'Rhetor' },
-        'hermes': { aiName: 'hermes-ai', displayName: 'Hermes' },
-        'sophia': { aiName: 'sophia-ai', displayName: 'Sophia' },
-        'noesis': { aiName: 'noesis-ai', displayName: 'Noesis' },
-        'metis': { aiName: 'metis-ai', displayName: 'Metis' },
-        'harmonia': { aiName: 'harmonia-ai', displayName: 'Harmonia' },
-        'prometheus': { aiName: 'prometheus-ai', displayName: 'Prometheus' },
-        'ergon': { aiName: 'ergon-ai', displayName: 'Ergon' },
-        'telos': { aiName: 'telos-ai', displayName: 'Telos' },
-        'synthesis': { aiName: 'synthesis-ai', displayName: 'Synthesis' },
-        'engram': { aiName: 'engram-ai', displayName: 'Engram' },
-        'codex': { aiName: 'codex-ai', displayName: 'Codex' },
-        'tekton': { aiName: 'tekton_core-ai', displayName: 'Tekton' } // tekton-core AI specialist
+        'terma': { aiName: 'terma-ci', displayName: 'Terma' },
+        'budget': { aiName: 'penia-ci', displayName: 'Penia' },
+        'numa': { aiName: 'numa-ci', displayName: 'Numa' },
+        'athena': { aiName: 'athena-ci', displayName: 'Athena' },
+        'apollo': { aiName: 'apollo-ci', displayName: 'Apollo' },
+        'rhetor': { aiName: 'rhetor-ci', displayName: 'Rhetor' },
+        'hermes': { aiName: 'hermes-ci', displayName: 'Hermes' },
+        'sophia': { aiName: 'sophia-ci', displayName: 'Sophia' },
+        'noesis': { aiName: 'noesis-ci', displayName: 'Noesis' },
+        'metis': { aiName: 'metis-ci', displayName: 'Metis' },
+        'harmonia': { aiName: 'harmonia-ci', displayName: 'Harmonia' },
+        'prometheus': { aiName: 'prometheus-ci', displayName: 'Prometheus' },
+        'ergon': { aiName: 'ergon-ci', displayName: 'Ergon' },
+        'telos': { aiName: 'telos-ci', displayName: 'Telos' },
+        'synthesis': { aiName: 'synthesis-ci', displayName: 'Synthesis' },
+        'engram': { aiName: 'engram-ci', displayName: 'Engram' },
+        'codex': { aiName: 'codex-ci', displayName: 'Codex' },
+        'tekton': { aiName: 'tekton_core-ci', displayName: 'Tekton' } // tekton-core AI specialist
     },
     
     /**
@@ -282,7 +282,7 @@ window.SingleChat = {
                     `;
                 } else {
                     aiMessageHtml = `
-                        <div class="${cssPrefix}__message ${cssPrefix}__message--ai">
+                        <div class="${cssPrefix}__message ${cssPrefix}__message--ci">
                             <div class="${cssPrefix}__message-content">
                                 <div class="${cssPrefix}__message-text">
                                     <strong>${config.displayName}:</strong> <div class="markdown-content">${renderedContent}</div>

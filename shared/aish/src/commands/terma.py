@@ -7,7 +7,7 @@ Handles commands like:
 - aish terma bob "message"
 - aish terma @planning "message"
 - aish terma broadcast "message"
-- aish terma training-for-ais
+- aish terma training-for-cis
 - aish terma error-report "message"
 """
 
@@ -55,7 +55,7 @@ TERMA_ENDPOINT = tekton_url('terma', '')
 
 @architecture_decision(
     title="Inter-Terminal Messaging",
-    description="Enables human-to-human and AI-to-human communication via terminal inboxes",
+    description="Enables human-to-human and CI-to-human communication via terminal inboxes",
     rationale="Terminal inboxes provide asynchronous communication between distributed team members",
     alternatives_considered=["Slack integration", "Email", "Direct terminal interrupts"],
     impacts=["collaboration", "workflow", "attention management"],
@@ -82,7 +82,7 @@ def handle_terma_command(args):
         print("\nNote: Inbox commands moved to 'aish inbox' - see 'aish inbox help'")
         print("\nDocumentation:")
         tekton_root = TektonEnviron.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
-        print(f"  AI Training: {tekton_root}/MetaData/TektonDocumentation/AITraining/terma/")
+        print(f"  CI Training: {tekton_root}/MetaData/TektonDocumentation/AITraining/terma/")
         print(f"  User Guides: {tekton_root}/MetaData/TektonDocumentation/UserGuides/terma/")
         return 0
     
@@ -91,7 +91,7 @@ def handle_terma_command(args):
         return terma_list_terminals()
     elif command == "whoami":
         return terma_whoami()
-    elif command == "training-for-ais":
+    elif command == "training-for-cis":
         return terma_training_info()
     elif command == "inbox":
         print("Inbox commands have moved to 'aish inbox'")
@@ -138,7 +138,7 @@ def print_usage():
     print("  @<purpose> 'message' - Send to terminals by purpose")
     print("  broadcast 'message'  - Send to all other terminals")
     print("  * 'message'          - Send to all including self")
-    print("  training-for-ais     - Get AI training docs location")
+    print("  training-for-cis     - Get CI training docs location")
     print("  error-report 'msg'   - Report an error or issue")
     print("\nNote: Inbox commands moved to 'aish inbox' - see 'aish inbox help'")
     print("\nExamples:")
@@ -216,7 +216,7 @@ def terma_whoami():
         return 1
 
 def terma_training_info():
-    """Show AI training documentation location."""
+    """Show CI training documentation location."""
     training_dir = TektonEnviron.get('TEKTON_AI_TRAINING')
     
     if not training_dir:
@@ -224,7 +224,7 @@ def terma_training_info():
         print("This terminal may not be launched through Terma")
         return 1
     
-    print(f"AI Training Documentation Directory: {training_dir}")
+    print(f"CI Training Documentation Directory: {training_dir}")
     print("\nTo explore available documentation:")
     print(f"  ls {training_dir}")
     print(f"  cat {training_dir}/README.md")
@@ -340,7 +340,7 @@ def terma_send_message_to_terminal(terminal_name, message):
         msg_data = {
             "from": {
                 "terma_id": "aish-forwarding",
-                "name": "AI Forwarding"
+                "name": "CI Forwarding"
             },
             "target": terminal_name,
             "message": message,

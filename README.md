@@ -318,7 +318,7 @@ AI specialists use a fixed port system based on component ports:
 All AI communication flows through the unified system:
 ```python
 from shared.ai.simple_ai import ai_send_sync
-response = ai_send_sync("hermes-ai", "How's the system health?", "localhost", 45000)
+response = ai_send_sync("hermes-ci", "How's the system health?", "localhost", 45000)
 ```
 
 ### Monitoring

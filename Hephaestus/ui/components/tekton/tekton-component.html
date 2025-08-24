@@ -2267,8 +2267,8 @@ async function loadProjectCIs() {
                 // For messaging, we need to use the correct AI name format
                 let aiName;
                 if (ci.name === 'numa') {
-                    // Numa needs the -ai suffix for messaging through AIChat
-                    aiName = 'numa-ai';
+                    // Numa needs the -ci suffix for messaging through AIChat
+                    aiName = 'numa-ci';
                 } else {
                     // Other project CIs already have the correct name format
                     aiName = ci.name;
@@ -2301,7 +2301,7 @@ async function loadProjectCIs() {
             projectCIs = [
                 {
                     project_name: "Tekton",
-                    ci_socket: "numa-ai",  // Use numa-ai for messaging
+                    ci_socket: "numa-ci",  // Use numa-ci for messaging
                     description: "Tekton project CI (numa)"
                 }
             ];

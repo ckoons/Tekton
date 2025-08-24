@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# @tekton-module: Enhanced AI Launcher for Tekton components
+# @tekton-module: Enhanced CI Launcher for Tekton components
 # @tekton-depends: registry_client, env_config, subprocess
 # @tekton-provides: ai-lifecycle-management, ai-launching, ai-monitoring
 # @tekton-version: 2.0.0
@@ -7,10 +7,10 @@
 # @tekton-cli: true
 
 """
-Enhanced Tekton AI Launcher
+Enhanced Tekton CI Launcher
 
-Manages AI specialists for Tekton components. Works with enhanced_tekton_launcher.py
-to provide AI lifecycle management.
+Manages CI specialists for Tekton components. Works with enhanced_tekton_launcher.py
+to provide CI lifecycle management.
 """
 import os
 import sys
@@ -72,16 +72,16 @@ sys.path.insert(0, tekton_root)
 from shared.utils.env_config import get_component_config
 from shared.utils.logging_setup import setup_component_logging
 
-# @tekton-constant: Components excluded from AI support
-# @tekton-rationale: These components don't benefit from AI assistance
+# @tekton-constant: Components excluded from CI support
+# @tekton-rationale: These components don't benefit from CI assistance
 AI_EXCLUDED_COMPONENTS = {'ui_dev_tools', 'ui-dev-tools', 'ui_devtools'}
 
 
-# @tekton-function: Calculate expected AI port from component main port
+# @tekton-function: Calculate expected CI port from component main port
 # @tekton-rationale: Deterministic port allocation prevents race conditions
 def get_expected_ai_port(main_port: int) -> int:
     """
-    Calculate expected AI port based on component's main port.
+    Calculate expected CI port based on component's main port.
     
     Uses port bases from environment configuration.
     
@@ -97,12 +97,12 @@ def get_expected_ai_port(main_port: int) -> int:
     return get_ai_port(main_port)
 
 
-# @tekton-class: Main AI launcher for managing specialist lifecycle
+# @tekton-class: Main CI launcher for managing specialist lifecycle
 # @tekton-singleton: false
 # @tekton-lifecycle: launcher
 @architecture_decision(
-    title="Centralized AI Launcher Architecture",
-    rationale="Single launcher manages all AI specialists for consistency and resource control",
+    title="Centralized CI Launcher Architecture",
+    rationale="Single launcher manages all CI specialists for consistency and resource control",
     alternatives_considered=["Component-embedded AIs", "Distributed launchers"],
     impacts=["centralized_control", "launch_performance", "monitoring_capability"]
 )
@@ -113,7 +113,7 @@ def get_expected_ai_port(main_port: int) -> int:
     consistency_requirements="Process handles and registry sync"
 )
 class AILauncher:
-    """Manages AI specialist launching."""
+    """Manages CI specialist launching."""
     
     def __init__(self, verbose: bool = False):
         self.verbose = verbose
@@ -126,7 +126,7 @@ class AILauncher:
         self.logger = setup_component_logging('ai_launcher', log_level)
     
     async def _wait_for_ai_direct(self, ai_id: str, port: int, timeout: int = 30) -> bool:
-        """Wait for AI to be ready by trying to connect directly."""
+        """Wait for CI to be ready by trying to connect directly."""
         import time
         import socket
         start = time.time()
@@ -163,20 +163,20 @@ class AILauncher:
     
     def get_ai_config(self, component: str) -> Optional[Dict[str, Any]]:
         """
-        Get AI configuration for a component dynamically.
+        Get CI configuration for a component dynamically.
         
         Args:
             component: Component name
             
         Returns:
-            AI configuration dict or None if component doesn't support AI
+            CI configuration dict or None if component doesn't support AI
         """
         # Normalize component name
         comp_lower = component.lower()
         
         # Check if excluded
         if comp_lower in AI_EXCLUDED_COMPONENTS:
-            self.logger.debug(f"Component {component} is excluded from AI support")
+            self.logger.debug(f"Component {component} is excluded from CI support")
             return None
         
         # Check if component exists in config
@@ -186,28 +186,28 @@ class AILauncher:
             self.logger.debug(f"Component {component} not found in configuration")
             return None
         
-        # Generate AI configuration
+        # Generate CI configuration
         component_title = component.replace('_', ' ').replace('-', ' ').title()
         
-        # Use the generic AI specialist for all components
+        # Use the generic CI specialist for all components
         module_path = 'shared.ai.generic_specialist'
         
-        self.logger.debug(f"Generated AI config for {component}: module={module_path}")
+        self.logger.debug(f"Generated CI config for {component}: module={module_path}")
         
         return {
-            'ai_id': f'{comp_lower}-ai',
+            'ai_id': f'{comp_lower}-ci',
             'description': f'AI specialist for {component_title}',
             'launch_module': module_path,
             'component_config': comp_config
         }
         
-    # @tekton-method: Launch AI specialist for component
+    # @tekton-method: Launch CI specialist for component
     # @tekton-async: true
     # @tekton-critical: true
     # @tekton-side-effects: process-creation, port-allocation
     @performance_boundary(
         title="AI Launch Sequence",
-        sla="<30s for AI readiness",
+        sla="<30s for CI readiness",
         optimization_notes="Parallel launch support, readiness checking"
     )
     @integration_point(
@@ -218,7 +218,7 @@ class AILauncher:
     )
     async def launch_ai(self, component: str) -> bool:
         """
-        Launch AI specialist for a component.
+        Launch CI specialist for a component.
         
         Args:
             component: Component name
@@ -226,10 +226,10 @@ class AILauncher:
         Returns:
             True if launched successfully
         """
-        # Get dynamic AI configuration
+        # Get dynamic CI configuration
         ai_config = self.get_ai_config(component)
         if not ai_config:
-            self.logger.error(f"Component '{component}' does not support AI specialists")
+            self.logger.error(f"Component '{component}' does not support CI specialists")
             return False
             
         ai_id = ai_config['ai_id']
@@ -252,17 +252,17 @@ class AILauncher:
             self.logger.info(f"Component {component} not properly configured")
             return False
         
-        # Calculate expected AI port based on component's main port
+        # Calculate expected CI port based on component's main port
         expected_ai_port = None
         component_config = getattr(self.config, component, None)
         if component_config and hasattr(component_config, 'port'):
             main_port = component_config.port
             expected_ai_port = get_expected_ai_port(main_port)
-            self.logger.debug(f"Component {component} main port: {main_port}, expected AI port: {expected_ai_port}")
+            self.logger.debug(f"Component {component} main port: {main_port}, expected CI port: {expected_ai_port}")
         else:
             self.logger.warning(f"Could not determine expected port for {component}")
         
-        # Allocate port for AI (will try to get the expected one)
+        # Allocate port for CI (will try to get the expected one)
         # Use fixed port calculation
         ai_port = expected_ai_port
         if not ai_port:
@@ -278,13 +278,13 @@ class AILauncher:
         else:
             self.logger.info(f"Allocated port {ai_port} for {ai_id}")
         
-        # Launch AI process
+        # Launch CI process
         try:
             cmd = [
                 sys.executable, '-m', ai_config['launch_module'],
                 '--port', str(ai_port),
                 '--component', component,
-                '--ai-id', ai_id
+                '--ci-id', ai_id
             ]
             
             if self.verbose:
@@ -305,7 +305,7 @@ class AILauncher:
             # No registry registration needed - using fixed ports
             self.logger.info(f"AI {ai_id} launched on fixed port {ai_port} (PID: {process.pid})")
             
-            # Wait for AI to be ready (skip for Hermes - it receives health checks, doesn't perform them)
+            # Wait for CI to be ready (skip for Hermes - it receives health checks, doesn't perform them)
             if component.lower() == 'hermes':
                 self.logger.info(f"Successfully launched {ai_id} (skipped readiness check for Hermes)")
                 return True
@@ -322,7 +322,7 @@ class AILauncher:
             self.logger.error(f"Failed to launch {ai_id}: {e}")
             return False
     
-    # @tekton-method: Kill AI specialist process
+    # @tekton-method: Kill CI specialist process
     # @tekton-critical: true
     # @tekton-cleanup: true
     @danger_zone(
@@ -332,7 +332,7 @@ class AILauncher:
         mitigation="Graceful termination with timeout and force kill"
     )
     def kill_ai(self, ai_id: str) -> bool:
-        """Kill a specific AI specialist."""
+        """Kill a specific CI specialist."""
         # Deregister from registry
         # No registry deregistration needed - using fixed ports
         
@@ -345,13 +345,13 @@ class AILauncher:
             except subprocess.TimeoutExpired:
                 process.kill()
             del self.launched_ais[ai_id]
-            self.logger.info(f"Killed AI {ai_id}")
+            self.logger.info(f"Killed CI {ai_id}")
             return True
             
         return False
     
     async def launch_multiple(self, components: List[str]):
-        """Launch multiple AI specialists."""
+        """Launch multiple CI specialists."""
         tasks = []
         
         for component in components:
@@ -372,21 +372,21 @@ class AILauncher:
                     except:
                         continue
                 
-                # Launch AI for each component
+                # Launch CI for each component
                 for comp in all_components:
                     tasks.append(self.launch_ai(comp))
             else:
                 tasks.append(self.launch_ai(component.lower()))
         
         if not tasks:
-            self.logger.warning("No AI specialists to launch")
+            self.logger.warning("No CI specialists to launch")
             return
         
         results = await asyncio.gather(*tasks, return_exceptions=True)
         
         # Report results
         launched = sum(1 for r in results if r is True)
-        self.logger.info(f"Launched {launched}/{len(results)} AI specialists")
+        self.logger.info(f"Launched {launched}/{len(results)} CI specialists")
     
     def cleanup(self):
         """Clean up all launched AIs."""
@@ -395,7 +395,7 @@ class AILauncher:
     
     def show_port_mapping(self):
         """Display expected port mapping for all components."""
-        self.logger.info("Expected AI Port Mapping:")
+        self.logger.info("Expected CI Port Mapping:")
         self.logger.info("=" * 50)
         
         components = []
@@ -424,7 +424,7 @@ class AILauncher:
 async def main():
     """Main entry point."""
     parser = argparse.ArgumentParser(
-        description='Launch AI specialists for Tekton components'
+        description='Launch CI specialists for Tekton components'
     )
     parser.add_argument(
         'components', 
@@ -454,7 +454,7 @@ async def main():
     
     args = parser.parse_args()
     
-    # AI is always enabled with fixed ports - no need to check
+    # CI is always enabled with fixed ports - no need to check
     
     launcher = AILauncher(verbose=args.verbose)
     

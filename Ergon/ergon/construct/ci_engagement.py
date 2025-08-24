@@ -30,7 +30,7 @@ except ImportError:
 @ci_orchestrated(
     title="Construct CI Orchestrator",
     description="CI that guides users through solution building",
-    orchestrator="ergon-ai",
+    orchestrator="ergon-ci",
     workflow=["understand", "suggest", "validate", "build", "deploy"],
     ci_capabilities=["requirement_analysis", "component_suggestion", "code_generation"]
 )
@@ -254,7 +254,7 @@ and will offer suggestions, warnings, and improvements as we go.
     @ci_collaboration(
         title="Component Discovery Collaboration",
         description="CI collaborates with Registry to find components",
-        participants=["ergon-ai", "athena-ai"],
+        participants=["ergon-ci", "athena-ci"],
         coordination_method="query_registry",
         synchronization="sync"
     )

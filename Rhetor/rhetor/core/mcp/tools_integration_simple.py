@@ -10,9 +10,9 @@ from typing import Dict, List, Optional, Any
 from datetime import datetime
 
 try:
-    from rhetor.core.ai_manager import AIManager
+    from rhetor.core.ai_manager import CIManager
 except ImportError:
-    AIManager = None
+    CIManager = None
     
 from shared.ai.simple_ai import ai_send
 from shared.urls import hermes_url
@@ -35,7 +35,7 @@ class MCPToolsIntegrationSimple:
     """
     Simplified MCP tools integration.
     
-    - Uses AIManager for all AI operations
+    - Uses CIManager for all AI operations
     - No complex discovery or routing
     - Direct communication via simple_ai
     """
@@ -47,11 +47,11 @@ class MCPToolsIntegrationSimple:
             hermes_url_param: URL of the Hermes message bus (defaults to shared.urls)
         """
         self.hermes_url = hermes_url_param or hermes_url("")
-        if AIManager:
-            self.ai_manager = AIManager()
+        if CIManager:
+            self.ai_manager = CIManager()
         else:
             self.ai_manager = None
-            logger.warning("AIManager not available - some features will be limited")
+            logger.warning("CIManager not available - some features will be limited")
         logger.info("Initialized simplified MCP tools integration")
     
     async def list_specialists(self) -> List[Dict[str, Any]]:
@@ -61,7 +61,7 @@ class MCPToolsIntegrationSimple:
             List of specialist information
         """
         if not self.ai_manager:
-            logger.warning("AIManager not available - returning empty specialist list")
+            logger.warning("CIManager not available - returning empty specialist list")
             return []
             
         try:
@@ -97,7 +97,7 @@ class MCPToolsIntegrationSimple:
         if not self.ai_manager:
             return {
                 "success": False,
-                "error": "AIManager not available"
+                "error": "CIManager not available"
             }
             
         try:
@@ -127,7 +127,7 @@ class MCPToolsIntegrationSimple:
         """Send a message to an AI specialist.
         
         Args:
-            specialist_id: ID of the specialist (e.g., 'athena-ai', 'apollo-ai')
+            specialist_id: ID of the specialist (e.g., 'athena-ci', 'apollo-ci')
             message: Message content
             context: Optional context (stored but not used yet)
             timeout: Response timeout in seconds
@@ -138,7 +138,7 @@ class MCPToolsIntegrationSimple:
         if not self.ai_manager:
             return {
                 "success": False,
-                "error": "AIManager not available",
+                "error": "CIManager not available",
                 "ai_id": specialist_id
             }
             
@@ -172,7 +172,7 @@ class MCPToolsIntegrationSimple:
             return None
             
         try:
-            component_id = specialist_id.replace('-ai', '')
+            component_id = specialist_id.replace('-ci', '')
             ai_info = self.ai_manager.get_ai_info(component_id)
             
             # Add health status
@@ -227,13 +227,13 @@ class MCPToolsIntegrationSimple:
         Args:
             specialists: List of specialist IDs
             message: Message to send
-            coordinator: Optional coordinator AI (defaults to numa-ai)
+            coordinator: Optional coordinator AI (defaults to numa-ci)
             
         Returns:
             Team chat results
         """
         if not coordinator:
-            coordinator = 'numa-ai'
+            coordinator = 'numa-ci'
             
         results = {
             'coordinator': coordinator,
@@ -321,9 +321,9 @@ Provide a unified response that combines the key insights."""
                 if ai_id:
                     return ai_id
         
-        # Default to numa-ai as general coordinator
-        if self.ai_manager and await self.ai_manager.check_ai_health('numa-ai'):
-            return 'numa-ai'
+        # Default to numa-ci as general coordinator
+        if self.ai_manager and await self.ai_manager.check_ai_health('numa-ci'):
+            return 'numa-ci'
             
         return None
 

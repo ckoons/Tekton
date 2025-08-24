@@ -434,12 +434,12 @@ class EnhancedComponentKiller:
             return False
     
     async def terminate_component_ai(self, component_name: str):
-        """Terminate AI specialist for a component if running"""
-        # Check if AI is enabled from Tekton config
-        # AI is always enabled with fixed ports - always try to terminate
+        """Terminate CI specialist for a component if running"""
+        # Check if CI is enabled from Tekton config
+        # CI is always enabled with fixed ports - always try to terminate
         
         try:
-            # Use the AI killer script with force flag
+            # Use the CI killer script with force flag
             cmd = [
                 sys.executable,
                 os.path.join(tekton_root, 'scripts', 'enhanced_tekton_ai_killer.py'),
@@ -447,7 +447,7 @@ class EnhancedComponentKiller:
                 component_name
             ]
             
-            self.log("Checking for AI specialist to terminate...", "info", component_name)
+            self.log("Checking for CI specialist to terminate...", "info", component_name)
             
             process = await asyncio.create_subprocess_exec(
                 *cmd,
@@ -461,8 +461,8 @@ class EnhancedComponentKiller:
             if process.returncode == 0 and "Terminated 1" in output:
                 self.log("AI specialist terminated", "success", component_name)
             else:
-                # AI wasn't running
-                self.log("No AI specialist was running", "info", component_name)
+                # CI wasn't running
+                self.log("No CI specialist was running", "info", component_name)
                 
         except Exception as e:
             self.log(f"AI termination error: {str(e)}", "warning", component_name)
@@ -532,7 +532,7 @@ class EnhancedComponentKiller:
                 
                 # Check if process is still running
                 if not self.get_detailed_process_info(port):
-                    # Kill associated AI if enabled
+                    # Kill associated CI if enabled
                     await self.terminate_component_ai(component_name)
                     
                     cleanup_performed = await self.cleanup_component_resources(component_name)
@@ -553,7 +553,7 @@ class EnhancedComponentKiller:
         self.log("Attempting graceful signal termination...", "info", component_name)
         success, message = await self.terminate_process_gracefully(process_info, component_name)
         if success:
-            # Kill associated AI if enabled
+            # Kill associated CI if enabled
             await self.terminate_component_ai(component_name)
             
             cleanup_performed = await self.cleanup_component_resources(component_name)
@@ -573,7 +573,7 @@ class EnhancedComponentKiller:
         success, message = await self.force_kill_process(process_info, component_name)
         
         if success:
-            # Kill associated AI if enabled
+            # Kill associated CI if enabled
             await self.terminate_component_ai(component_name)
         
         cleanup_performed = await self.cleanup_component_resources(component_name)
@@ -636,7 +636,7 @@ class EnhancedComponentKiller:
                 try:
                     cmdline = proc.info.get('cmdline', [])
                     if cmdline and 'ai_config_sync.py' in ' '.join(cmdline):
-                        self.log(f"Found AI config sync service (PID: {proc.pid})", "info")
+                        self.log(f"Found CI config sync service (PID: {proc.pid})", "info")
                         
                         if not self.dry_run:
                             try:
@@ -646,10 +646,10 @@ class EnhancedComponentKiller:
                                 self.log(f"Sync service didn't terminate gracefully, force killing", "warning")
                                 proc.kill()
                             
-                            self.log(f"Killed AI config sync service", "success")
+                            self.log(f"Killed CI config sync service", "success")
                             killed_count += 1
                         else:
-                            self.log(f"[DRY RUN] Would kill AI config sync service (PID: {proc.pid})", "info")
+                            self.log(f"[DRY RUN] Would kill CI config sync service (PID: {proc.pid})", "info")
                             
                 except (psutil.NoSuchProcess, psutil.AccessDenied):
                     continue
@@ -907,14 +907,14 @@ async def main():
         help="Kill UI DevTools MCP server only"
     )
     parser.add_argument(
-        "--ai",
+        "--ci",
         nargs='*',
-        help="Kill only AI specialists for components (optionally specify which)"
+        help="Kill only CI specialists for components (optionally specify which)"
     )
     parser.add_argument(
-        "--no-ai",
+        "--no-ci",
         action="store_true",
-        help="Don't kill AI specialists when killing components"
+        help="Don't kill CI specialists when killing components"
     )
     
     args = parser.parse_args()
@@ -940,31 +940,31 @@ async def main():
             return
         
         # Handle AI-only mode
-        if args.ai is not None:
-            # Kill only AI specialists
-            if args.ai == []:  # --ai with no arguments means all AIs
+        if args.ci is not None:
+            # Kill only CI specialists
+            if args.ai == []:  # --ci with no arguments means all AIs
                 # Get all running components to kill their AIs
                 components = killer.get_running_components()
                 ai_components = components
             else:
                 ai_components = [c.strip().lower() for c in args.ai]
             
-            # Use the AI killer directly
+            # Use the CI killer directly
             cmd = [
                 sys.executable,
                 os.path.join(tekton_root, 'scripts', 'enhanced_tekton_ai_killer.py'),
                 '-f'  # Force mode
             ] + ai_components
             
-            killer.log(f"Killing AI specialists only: {', '.join(ai_components)}", "info")
+            killer.log(f"Killing CI specialists only: {', '.join(ai_components)}", "info")
             
             proc = subprocess.run(cmd)
             return
         
-        # Handle --no-ai flag
-        if args.no_ai:
+        # Handle --no-ci flag
+        if args.no_ci:
             TektonEnviron.set('TEKTON_REGISTER_AI', 'false')
-            killer.log("AI killing disabled by --no-ai flag", "info")
+            killer.log("AI killing disabled by --no-ci flag", "info")
         
         # Nuclear option
         if args.nuclear:

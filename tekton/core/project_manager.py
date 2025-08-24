@@ -901,7 +901,7 @@ class ProjectManager:
             from shared.aish.src.registry.ci_registry import get_registry
             registry = get_registry()
             
-            ci_name = f"{project.name.lower()}-ai"
+            ci_name = f"{project.name.lower()}-ci"
             ci_info = registry.get_by_name(ci_name)
             
             if ci_info:
@@ -941,7 +941,7 @@ class ProjectManager:
             })
             
             # Get the allocated port
-            ci_info = registry.get_by_name(f"{project.name.lower()}-ai")
+            ci_info = registry.get_by_name(f"{project.name.lower()}-ci")
             if not ci_info:
                 logger.error(f"Failed to register project CI for {project.name}")
                 return False
@@ -957,7 +957,7 @@ class ProjectManager:
                 sys.executable, '-m', 'shared.ai.generic_specialist',
                 '--port', str(ai_port),
                 '--component', project.name.lower(),
-                '--ai-id', f"{project.name.lower()}-ai"
+                '--ci-id', f"{project.name.lower()}-ci"
             ]
             
             logger.info(f"Launching project CI for {project.name} on port {ai_port}")
@@ -973,7 +973,7 @@ class ProjectManager:
                 env={**os.environ, 'PYTHONPATH': tekton_root}
             )
             
-            logger.info(f"Project CI {project.name}-ai launched with PID {process.pid}")
+            logger.info(f"Project CI {project.name}-ci launched with PID {process.pid}")
             
             # Wait for CI to be ready (try connecting for up to 10 seconds)
             import time
@@ -984,12 +984,12 @@ class ProjectManager:
                     sock.settimeout(1)
                     sock.connect(('localhost', ai_port))
                     sock.close()
-                    logger.info(f"Project CI {project.name}-ai is ready on port {ai_port}")
+                    logger.info(f"Project CI {project.name}-ci is ready on port {ai_port}")
                     return True
                 except (socket.error, socket.timeout):
                     await asyncio.sleep(0.5)
             
-            logger.warning(f"Project CI {project.name}-ai launched but not responding after 10 seconds")
+            logger.warning(f"Project CI {project.name}-ci launched but not responding after 10 seconds")
             return False
             
         except Exception as e:

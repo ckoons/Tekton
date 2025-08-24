@@ -4,13 +4,13 @@ Simple AI Communication Interface - One Queue, One Socket, One AI
 
 Usage:
     # Async
-    response = await ai_send("apollo-ai", "hello", host="localhost", port=45012)
+    response = await ai_send("apollo-ci", "hello", host="localhost", port=45012)
     
     # Sync
-    response = ai_send_sync("apollo-ai", "hello", host="localhost", port=45012)
+    response = ai_send_sync("apollo-ci", "hello", host="localhost", port=45012)
     
     # If AI already registered
-    response = await ai_send("apollo-ai", "hello")
+    response = await ai_send("apollo-ci", "hello")
 """
 
 from typing import Optional
@@ -47,7 +47,7 @@ async def ai_send(ai_id: str, message: str, host: Optional[str] = None, port: Op
     Send message to AI and get response. Simple async interface.
     
     Args:
-        ai_id: The AI identifier (e.g., "apollo-ai" or "localhost:45012")
+        ai_id: The AI identifier (e.g., "apollo-ci" or "localhost:45012")
         message: The message to send
         host: Host if AI not registered (default: localhost)
         port: Port if AI not registered
@@ -121,7 +121,7 @@ def ai_send_sync(ai_id: str, message: str, host: Optional[str] = None, port: Opt
     Send message to AI and get response. Simple sync interface.
     
     Args:
-        ai_id: The AI identifier (e.g., "apollo-ai" or "localhost:45012")
+        ai_id: The AI identifier (e.g., "apollo-ci" or "localhost:45012")
         message: The message to send
         host: Host if AI not registered (default: localhost)
         port: Port if AI not registered
@@ -167,24 +167,24 @@ def ai_send_sync(ai_id: str, message: str, host: Optional[str] = None, port: Opt
 def _get_ai_id_from_port(port: int) -> Optional[str]:
     """Get AI ID from port number"""
     port_map = {
-        45000: "engram-ai",
-        45001: "hermes-ai",
-        45002: "ergon-ai",
-        45003: "rhetor-ai",
-        45004: "terma-ai",
-        45005: "athena-ai",
-        45006: "prometheus-ai",
-        45007: "harmonia-ai",
-        45008: "telos-ai",
-        45009: "synthesis-ai",
-        45010: "tekton_core-ai",
-        45011: "metis-ai",
-        45012: "apollo-ai",
-        45013: "penia-ai",
-        45014: "sophia-ai",
-        45015: "noesis-ai",
-        45016: "numa-ai",
-        45080: "hephaestus-ai",
+        45000: "engram-ci",
+        45001: "hermes-ci",
+        45002: "ergon-ci",
+        45003: "rhetor-ci",
+        45004: "terma-ci",
+        45005: "athena-ci",
+        45006: "prometheus-ci",
+        45007: "harmonia-ci",
+        45008: "telos-ci",
+        45009: "synthesis-ci",
+        45010: "tekton_core-ci",
+        45011: "metis-ci",
+        45012: "apollo-ci",
+        45013: "penia-ci",
+        45014: "sophia-ci",
+        45015: "noesis-ci",
+        45016: "numa-ci",
+        45080: "hephaestus-ci",
     }
     return port_map.get(port)
 
@@ -194,24 +194,24 @@ def register_all_ais():
     service = get_service()
     
     ais = [
-        ("engram-ai", "localhost", 45000),
-        ("hermes-ai", "localhost", 45001),
-        ("ergon-ai", "localhost", 45002),
-        ("rhetor-ai", "localhost", 45003),
-        ("terma-ai", "localhost", 45004),
-        ("athena-ai", "localhost", 45005),
-        ("prometheus-ai", "localhost", 45006),
-        ("harmonia-ai", "localhost", 45007),
-        ("telos-ai", "localhost", 45008),
-        ("synthesis-ai", "localhost", 45009),
-        ("tekton_core-ai", "localhost", 45010),
-        ("metis-ai", "localhost", 45011),
-        ("apollo-ai", "localhost", 45012),
-        ("penia-ai", "localhost", 45013),
-        ("sophia-ai", "localhost", 45014),
-        ("noesis-ai", "localhost", 45015),
-        ("numa-ai", "localhost", 45016),
-        ("hephaestus-ai", "localhost", 45080),
+        ("engram-ci", "localhost", 45000),
+        ("hermes-ci", "localhost", 45001),
+        ("ergon-ci", "localhost", 45002),
+        ("rhetor-ci", "localhost", 45003),
+        ("terma-ci", "localhost", 45004),
+        ("athena-ci", "localhost", 45005),
+        ("prometheus-ci", "localhost", 45006),
+        ("harmonia-ci", "localhost", 45007),
+        ("telos-ci", "localhost", 45008),
+        ("synthesis-ci", "localhost", 45009),
+        ("tekton_core-ci", "localhost", 45010),
+        ("metis-ci", "localhost", 45011),
+        ("apollo-ci", "localhost", 45012),
+        ("penia-ci", "localhost", 45013),
+        ("sophia-ci", "localhost", 45014),
+        ("noesis-ci", "localhost", 45015),
+        ("numa-ci", "localhost", 45016),
+        ("hephaestus-ci", "localhost", 45080),
     ]
     
     for ai_id, host, port in ais:

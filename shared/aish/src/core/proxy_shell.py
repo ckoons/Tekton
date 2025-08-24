@@ -20,7 +20,7 @@ from pathlib import Path
 
 from parser.pipeline import PipelineParser
 from message_handler import MessageHandler
-from core.history import AIHistory
+from core.history import CIHistory
 
 # Add parent to path for shared imports
 sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
@@ -49,7 +49,7 @@ class TransparentAishProxy:
         self.debug = debug
         self.parser = PipelineParser()
         self.handler = MessageHandler(self.rhetor_endpoint, debug=debug)
-        self.ai_history = AIHistory()
+        self.ai_history = CIHistory()
         
         # Shell configuration
         self.base_shell = base_shell or TektonEnviron.get("SHELL", "/bin/bash")

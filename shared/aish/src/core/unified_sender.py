@@ -273,7 +273,7 @@ def send_to_ci(ci_name: str, message: str, sender_name: Optional[str] = None,
                 if not port and 'endpoint' in ci:
                     port = int(ci['endpoint'].split(':')[-1])
             
-            # The CI name already has the correct format (e.g., 'numa-ai', 'claude-code-ai')
+            # The CI name already has the correct format (e.g., 'numa-ci', 'claude-code-ci')
             ai_name = ci_name
             
             try:

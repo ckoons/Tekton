@@ -43,7 +43,7 @@ def main():
             comp_config = getattr(config, attr_name)
             if hasattr(comp_config, 'port'):
                 main_port = comp_config.port
-                ai_id = f"{attr_name}-ai"
+                ai_id = f"{attr_name}-ci"
                 expected[ai_id] = {
                     'component': attr_name,
                     'main_port': main_port,

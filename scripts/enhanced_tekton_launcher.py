@@ -642,7 +642,7 @@ class EnhancedComponentLauncher:
                     component_name
                 )
                 
-                # Always launch AI - components and AIs are paired with fixed ports
+                # Always launch CI - components and AIs are paired with fixed ports
                 await self.launch_component_ai(component_name)
             else:
                 result.state = ComponentState.UNHEALTHY
@@ -1088,32 +1088,32 @@ class EnhancedComponentLauncher:
         return dict(sorted(groups.items()))
     
     async def launch_component_ai(self, component_name: str):
-        """Launch AI specialist for a component if configured"""
+        """Launch CI specialist for a component if configured"""
         try:
-            # Check if component is excluded from AI support
+            # Check if component is excluded from CI support
             if component_name.lower() in ['ui_dev_tools', 'ui-dev-tools', 'ui_devtools']:
-                self.log(f"Component does not support AI specialists", "info", component_name)
+                self.log(f"Component does not support CI specialists", "info", component_name)
                 return
             
-            self.log(f"AI support enabled, checking AI configuration...", "info", component_name)
+            self.log(f"AI support enabled, checking CI configuration...", "info", component_name)
             
-            # Use the AI launcher script
+            # Use the CI launcher script
             cmd = [
                 sys.executable,
                 os.path.join(self.tekton_root, 'scripts', 'enhanced_tekton_ai_launcher.py'),
                 component_name,
                 '-v',  # Verbose for better logging
-                '--no-cleanup'  # Don't kill the AI when script exits
+                '--no-cleanup'  # Don't kill the CI when script exits
             ]
             
-            self.log(f"Launching AI specialist...", "launch", component_name)
+            self.log(f"Launching CI specialist...", "launch", component_name)
             
-            # Run the AI launcher and capture output
+            # Run the CI launcher and capture output
             process = await asyncio.create_subprocess_exec(
                 *cmd,
                 stdout=asyncio.subprocess.PIPE,
                 stderr=asyncio.subprocess.STDOUT,  # Combine stdout and stderr
-                env=TektonEnviron.all()  # Pass frozen environment so AI launcher can read port variables
+                env=TektonEnviron.all()  # Pass frozen environment so CI launcher can read port variables
             )
             
             # Wait for it to complete and get output
@@ -1208,9 +1208,9 @@ async def main():
         help="Launch with full development environment (includes UI DevTools MCP)"
     )
     parser.add_argument(
-        "--ai",
+        "--ci",
         nargs='*',
-        help="Launch only AI specialists for components (optionally specify which)"
+        help="Launch only CI specialists for components (optionally specify which)"
     )
     parser.add_argument(
         "--no-populate-athena",
@@ -1261,26 +1261,26 @@ async def main():
                     print(f"✅ Cleared {cleared_count} log files for components being launched")
             
         # Handle AI-only mode
-        if args.ai is not None:
-            # Launch only AI specialists
-            if args.ai == []:  # --ai with no arguments means all AIs
+        if args.ci is not None:
+            # Launch only CI specialists
+            if args.ai == []:  # --ci with no arguments means all AIs
                 ai_components = components
             else:
                 ai_components = [c.strip().lower() for c in args.ai]
             
-            # Use the AI launcher directly
+            # Use the CI launcher directly
             ai_cmd = [
                 sys.executable,
                 os.path.join(tekton_root, 'scripts', 'enhanced_tekton_ai_launcher.py')
             ] + ai_components
             
-            launcher.log(f"Launching AI specialists only: {', '.join(ai_components)}", "info")
+            launcher.log(f"Launching CI specialists only: {', '.join(ai_components)}", "info")
             
             process = await asyncio.create_subprocess_exec(
                 *ai_cmd,
                 stdout=None,
                 stderr=None,
-                env=TektonEnviron.all()  # Pass frozen environment so AI launcher can read port variables
+                env=TektonEnviron.all()  # Pass frozen environment so CI launcher can read port variables
             )
             
             await process.wait()

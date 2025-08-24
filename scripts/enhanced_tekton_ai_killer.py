@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-Enhanced Tekton AI Killer
+Enhanced Tekton CI Killer
 
-Terminates AI specialists for Tekton components.
+Terminates CI specialists for Tekton components.
 """
 import os
 import sys
@@ -31,7 +31,7 @@ from shared.utils.logging_setup import setup_component_logging
 
 
 class AIKiller:
-    """Manages AI specialist termination."""
+    """Manages CI specialist termination."""
     
     def __init__(self, verbose: bool = False):
         self.verbose = verbose
@@ -41,7 +41,7 @@ class AIKiller:
         log_level = 'DEBUG' if verbose else 'INFO'
         self.logger = setup_component_logging('ai_killer', log_level)
         
-        # Get environment-specific AI port range using TektonEnviron
+        # Get environment-specific CI port range using TektonEnviron
         if TektonEnviron.is_loaded():
             self.ai_port_base = int(TektonEnviron.get('TEKTON_AI_PORT_BASE', 45000))
         else:
@@ -51,38 +51,38 @@ class AIKiller:
         
     def kill_ai_by_id(self, ai_id: str) -> bool:
         """
-        Kill an AI specialist by ID.
+        Kill an CI specialist by ID.
         
         Args:
-            ai_id: AI identifier
+            ai_id: CI identifier
             
         Returns:
             True if killed successfully
         """
-        # Find process by scanning for the AI id with generic_specialist
+        # Find process by scanning for the CI id with generic_specialist
         killed = False
         for proc in psutil.process_iter(['pid', 'name', 'cmdline']):
             try:
                 cmdline = proc.info.get('cmdline', [])
                 cmdline_str = ' '.join(cmdline) if cmdline else ''
                 
-                # Look for generic_specialist with this specific AI id
-                if 'generic_specialist' in cmdline_str and f'--ai-id {ai_id}' in cmdline_str:
+                # Look for generic_specialist with this specific CI id
+                if 'generic_specialist' in cmdline_str and f'--ci-id {ai_id}' in cmdline_str:
                     # Extract port from command line to check environment
                     port = self._extract_port_from_cmdline(cmdline)
                     if port and self._is_port_in_environment(port):
                         proc.terminate()
                         proc.wait(timeout=5)
-                        self.logger.info(f"Terminated AI {ai_id} on port {port} (PID: {proc.pid})")
+                        self.logger.info(f"Terminated CI {ai_id} on port {port} (PID: {proc.pid})")
                         killed = True
                     else:
-                        self.logger.debug(f"Skipping AI {ai_id} on port {port} - not in this environment (base: {self.ai_port_base})")
+                        self.logger.debug(f"Skipping CI {ai_id} on port {port} - not in this environment (base: {self.ai_port_base})")
             except psutil.NoSuchProcess:
                 pass  # Process already gone
             except psutil.TimeoutExpired:
                 try:
                     proc.kill()
-                    self.logger.info(f"Force killed AI {ai_id} (PID: {proc.pid})")
+                    self.logger.info(f"Force killed CI {ai_id} (PID: {proc.pid})")
                     killed = True
                 except Exception as e:
                     self.logger.error(f"Failed to kill process {proc.pid}: {e}")
@@ -102,14 +102,14 @@ class AIKiller:
         return None
     
     def _is_port_in_environment(self, port: int) -> bool:
-        """Check if port belongs to this environment's AI port range."""
-        # AI ports are typically TEKTON_AI_PORT_BASE + offset (0-99 range)
+        """Check if port belongs to this environment's CI port range."""
+        # CI ports are typically TEKTON_AI_PORT_BASE + offset (0-99 range)
         # Main Tekton: 45000-45099, Coder-C: 42000-42099
         return self.ai_port_base <= port < self.ai_port_base + 100
     
     def kill_ai_by_component(self, component: str) -> bool:
         """
-        Kill AI specialist for a component.
+        Kill CI specialist for a component.
         
         Args:
             component: Component name
@@ -117,12 +117,12 @@ class AIKiller:
         Returns:
             True if killed successfully
         """
-        ai_id = f"{component.lower()}-ai"
+        ai_id = f"{component.lower()}-ci"
         return self.kill_ai_by_id(ai_id)
     
     def kill_all_ais(self) -> int:
         """
-        Kill all AI specialists in this environment.
+        Kill all CI specialists in this environment.
         
         Returns:
             Number of AIs killed
@@ -135,13 +135,13 @@ class AIKiller:
                 cmdline = proc.info.get('cmdline', [])
                 cmdline_str = ' '.join(cmdline) if cmdline else ''
                 
-                if 'generic_specialist' in cmdline_str and '--ai-id' in cmdline_str:
+                if 'generic_specialist' in cmdline_str and '--ci-id' in cmdline_str:
                     # Extract port and check environment
                     port = self._extract_port_from_cmdline(cmdline)
                     if port and self._is_port_in_environment(port):
                         proc.terminate()
                         proc.wait(timeout=5)
-                        self.logger.info(f"Terminated AI on port {port} (PID: {proc.pid})")
+                        self.logger.info(f"Terminated CI on port {port} (PID: {proc.pid})")
                         killed_count += 1
                         
             except psutil.NoSuchProcess:
@@ -149,7 +149,7 @@ class AIKiller:
             except psutil.TimeoutExpired:
                 try:
                     proc.kill()
-                    self.logger.info(f"Force killed AI (PID: {proc.pid})")
+                    self.logger.info(f"Force killed CI (PID: {proc.pid})")
                     killed_count += 1
                 except Exception as e:
                     self.logger.error(f"Failed to kill process {proc.pid}: {e}")
@@ -160,10 +160,10 @@ class AIKiller:
     
     def kill_multiple(self, targets: List[str]) -> int:
         """
-        Kill multiple AI specialists.
+        Kill multiple CI specialists.
         
         Args:
-            targets: List of AI IDs or component names
+            targets: List of CI IDs or component names
             
         Returns:
             Number of AIs killed
@@ -174,14 +174,14 @@ class AIKiller:
             if target.lower() == 'all':
                 return self.kill_all_ais()
             
-            # Try as AI ID first
+            # Try as CI ID first
             if self.kill_ai_by_id(target):
                 killed_count += 1
             # Try as component name
             elif self.kill_ai_by_component(target):
                 killed_count += 1
             else:
-                self.logger.warning(f"Could not find AI for: {target}")
+                self.logger.warning(f"Could not find CI for: {target}")
         
         return killed_count
 
@@ -189,7 +189,7 @@ class AIKiller:
 def main():
     """Main entry point."""
     parser = argparse.ArgumentParser(
-        description='Terminate AI specialists for Tekton components'
+        description='Terminate CI specialists for Tekton components'
     )
     parser.add_argument(
         'targets',
@@ -214,7 +214,7 @@ def main():
     # Show what will be killed
     if not args.force and 'all' not in [t.lower() for t in args.targets]:
         print(f"Will attempt to terminate AIs for: {', '.join(args.targets)}")
-        print(f"Environment AI port base: {killer.ai_port_base}")
+        print(f"Environment CI port base: {killer.ai_port_base}")
         
         response = input("\nContinue? [y/N]: ")
         if response.lower() != 'y':
@@ -223,7 +223,7 @@ def main():
     
     # Kill AIs
     killed = killer.kill_multiple(args.targets)
-    print(f"Terminated {killed} AI specialist(s)")
+    print(f"Terminated {killed} CI specialist(s)")
 
 
 if __name__ == '__main__':

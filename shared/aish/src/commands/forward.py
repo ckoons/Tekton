@@ -1,5 +1,5 @@
 """
-AI forwarding command handler.
+CI forwarding command handler.
 """
 
 import os
@@ -43,11 +43,11 @@ except ImportError:
 
 
 @architecture_decision(
-    title="AI Message Forwarding",
-    description="Routes AI messages to human terminals for attention",
-    rationale="Enables human-in-the-loop AI interactions by forwarding messages to terminal inboxes",
-    alternatives_considered=["Direct AI-to-AI only", "Central message queue"],
-    impacts=["collaboration", "AI transparency", "human oversight"],
+    title="CI Message Forwarding",
+    description="Routes CI messages to human terminals for attention",
+    rationale="Enables human-in-the-loop CI interactions by forwarding messages to terminal inboxes",
+    alternatives_considered=["Direct CI-to-CI only", "Central message queue"],
+    impacts=["collaboration", "CI transparency", "human oversight"],
     decided_by="Casey",
     decision_date="2025-01-17"
 )
@@ -118,10 +118,10 @@ def print_forward_usage():
     print("")
     print("Target can be:")
     print("  Terminal name (e.g., jill, alice)    - Forward to human terminal")
-    print("  Model name (e.g., claude, gpt4)      - Forward to AI model")
+    print("  Model name (e.g., claude, gpt4)      - Forward to CI model")
     print("")
     print("Model aliases:")
-    print("  claude, gpt4, openai                 - Major AI models")
+    print("  claude, gpt4, openai                 - Major CI models")
     print("  small, medium, large                 - Local model sizes")
     print("  fast, reasoning, code                - Capability-based")
     print("")
@@ -135,20 +135,20 @@ def print_forward_usage():
 
 @state_checkpoint(
     title="Forward Registration",
-    description="Establishes AI-to-terminal message routing",
+    description="Establishes CI-to-terminal message routing",
     state_type="forwarding_rule",
-    validation="AI name validated, forwarding registered"
+    validation="CI name validated, forwarding registered"
 )
 def set_forward(registry, ai_name, terminal_name, json_mode=False):
     """Set up forwarding"""
-    # Validate AI name
+    # Validate CI name
     valid_ais = ['apollo', 'athena', 'rhetor', 'prometheus', 'synthesis', 
                  'metis', 'harmonia', 'numa', 'noesis', 'engram', 'penia',
                  'hermes', 'ergon', 'sophia', 'telos', 'hephaestus']
     
     if ai_name not in valid_ais:
-        print(f"Unknown AI: {ai_name}")
-        print(f"Valid AIs: {', '.join(valid_ais)}")
+        print(f"Unknown CI: {ai_name}")
+        print(f"Valid CIs: {', '.join(valid_ais)}")
         return 1
     
     # Set forwarding
@@ -168,7 +168,7 @@ def list_forwards(registry):
         print("No forwarding active")
         return 0
     
-    # Separate AI forwards and project forwards
+    # Separate CI forwards and project forwards
     ai_forwards = {}
     project_forwards = {}
     
@@ -187,9 +187,9 @@ def list_forwards(registry):
         else:
             ai_forwards[key] = {"terminal": terminal_name, "json_mode": json_mode}
     
-    # Show AI forwards
+    # Show CI forwards
     if ai_forwards:
-        print("Active AI Forwards:")
+        print("Active CI Forwards:")
         print("-" * 40)
         for ai_name, config in ai_forwards.items():
             terminal = config["terminal"]
@@ -212,7 +212,7 @@ def list_forwards(registry):
 
 @state_checkpoint(
     title="Forward Removal",
-    description="Removes AI-to-terminal message routing",
+    description="Removes CI-to-terminal message routing",
     state_type="forwarding_rule",
     validation="Forwarding rule removed from registry"
 )

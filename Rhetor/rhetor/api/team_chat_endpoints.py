@@ -1,7 +1,7 @@
 """Team Chat API endpoints for Rhetor.
 
 Implements the team chat functionality using the MCP Tools Integration.
-Connects to real Greek Chorus AIs for multi-AI collaboration.
+Connects to real Greek Chorus AIs for multi-CI collaboration.
 """
 
 import asyncio
@@ -61,7 +61,7 @@ async def team_chat(request: TeamChatRequest):
     Broadcast a message to all AI specialists and collect responses.
     
     This endpoint connects to real Greek Chorus AIs via the MCP tools integration
-    for multi-AI collaboration on answering questions or solving problems.
+    for multi-CI collaboration on answering questions or solving problems.
     """
     start_time = datetime.utcnow()
     request_id = f"team-chat-{start_time.timestamp()}"

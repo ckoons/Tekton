@@ -106,8 +106,8 @@ async def companion_chat(request: CompanionChatRequest):
         ai_host = TektonEnviron.get("NUMA_AI_HOST", "localhost")
         ai_port = int(TektonEnviron.get("NUMA_AI_PORT", "45016"))
         
-        # Send to numa-ai socket
-        ai_response = await ai_send("numa-ai", request.message, ai_host, ai_port)
+        # Send to numa-ci socket
+        ai_response = await ai_send("numa-ci", request.message, ai_host, ai_port)
         
         if ai_response and ai_response != "AI_NOT_RUNNING":
             response_text = ai_response

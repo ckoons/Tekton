@@ -127,7 +127,7 @@ class ComponentMetrics:
     dependencies_healthy: bool
     ready: bool = False  # From /ready endpoint
     capabilities: List[str] = None  # Component capabilities
-    ai_status: Optional[str] = None  # AI model name or None
+    ai_status: Optional[str] = None  # CI model name or None
     ai_health: Optional[str] = None  # green/yellow/red/none
     
     def __post_init__(self):
@@ -259,7 +259,7 @@ class EnhancedStatusChecker:
     
     def __init__(self, store_metrics: bool = True, timeout: float = 2.0, quick_mode: bool = False):
         self.config = get_component_config()
-        self.env_config = get_env_config()  # For AI port calculations
+        self.env_config = get_env_config()  # For CI port calculations
         
         # DEBUG: Log component ports from config
         logger.debug("=== Component Ports from Config ===")
@@ -270,7 +270,7 @@ class EnhancedStatusChecker:
         self.session = None
         self.timeout = timeout
         self.quick_mode = quick_mode
-        # AI registry removed - using fixed port calculations
+        # CI registry removed - using fixed port calculations
         self.model_display_names = self._load_model_display_names()
     
     def _load_model_display_names(self) -> Dict[str, str]:
@@ -461,7 +461,7 @@ class EnhancedStatusChecker:
             # Get capabilities
             metrics.capabilities = await self.get_component_capabilities(comp_name, comp_info.port)
         
-        # Check AI status
+        # Check CI status
         ai_info = await self.check_ai_status(comp_name)
         metrics.ai_status = ai_info['model']
         metrics.ai_health = ai_info['health']
@@ -472,18 +472,18 @@ class EnhancedStatusChecker:
         return metrics
     
     async def check_ai_status(self, component_name: str) -> Dict[str, str]:
-        """Check AI status for a component."""
-        # AI is always enabled with fixed ports
+        """Check CI status for a component."""
+        # CI is always enabled with fixed ports
         
-        # Calculate AI port from component port
+        # Calculate CI port from component port
         component_port = self.env_config.get_port(component_name.lower())
         if not component_port:
             return {'model': None, 'health': 'none'}
         
-        # Calculate AI port using configurable bases
+        # Calculate CI port using configurable bases
         from shared.utils.ai_port_utils import get_ai_port
         ai_port = get_ai_port(component_port)
-        ai_id = f"{component_name.lower()}-ai"
+        ai_id = f"{component_name.lower()}-ci"
         
         # Try to connect to AI
         try:
@@ -842,7 +842,7 @@ class EnhancedStatusChecker:
             }
             status_display = f"{status_symbols.get(metrics.status, '❓')} {metrics.status}"
             
-            # AI status - with color based on component health
+            # CI status - with color based on component health
             if metrics.ai_status:
                 # Color based on component status
                 if metrics.status == "healthy":
@@ -906,7 +906,7 @@ class EnhancedStatusChecker:
             }
             status_display = f"{status_symbols.get(metrics.status, '❓')} {metrics.status}"
             
-            # AI status - with color based on component health
+            # CI status - with color based on component health
             if metrics.ai_status:
                 # Color based on component status
                 if metrics.status == "healthy":

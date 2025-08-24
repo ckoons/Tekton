@@ -17,7 +17,7 @@ from typing import List, Dict, Optional, Tuple
 from shared.env import TektonEnviron
 
 
-class AIHistory:
+class CIHistory:
     """
     Manages conversation history for aish sessions.
     

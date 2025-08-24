@@ -42,24 +42,24 @@ socket_client = AISocketClient(default_timeout=30.0)
 
 # Port mapping (same as aish)
 AI_PORT_MAP = {
-    'noesis-ai': 45015,
-    'apollo-ai': 45007,
-    'athena-ai': 45017,
-    'sophia-ai': 45016,
-    'hermes-ai': 45001,
-    'engram-ai': 45008,
-    'prometheus-ai': 45010,
-    'metis-ai': 45009,
-    'harmonia-ai': 45006,
-    'synthesis-ai': 45018,
-    'telos-ai': 45019,
-    'ergon-ai': 45004,
-    'rhetor-ai': 45003,
-    'numa-ai': 45014,
-    'penia-ai': 45002,
-    'hephaestus-ai': 45005,
-    'terma-ai': 45020,
-    'tekton_core-ai': 45000
+    'noesis-ci': 45015,
+    'apollo-ci': 45007,
+    'athena-ci': 45017,
+    'sophia-ci': 45016,
+    'hermes-ci': 45001,
+    'engram-ci': 45008,
+    'prometheus-ci': 45010,
+    'metis-ci': 45009,
+    'harmonia-ci': 45006,
+    'synthesis-ci': 45018,
+    'telos-ci': 45019,
+    'ergon-ci': 45004,
+    'rhetor-ci': 45003,
+    'numa-ci': 45014,
+    'penia-ci': 45002,
+    'hephaestus-ci': 45005,
+    'terma-ci': 45020,
+    'tekton_core-ci': 45000
 }
 
 @router.post("/api/ai/proxy", response_model=AIMessageResponse)

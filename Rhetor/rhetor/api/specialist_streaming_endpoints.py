@@ -197,7 +197,7 @@ async def stream_team_chat(request: StreamingRequest):
 )
 @router.post("/{specialist_id}/stream")
 async def stream_specialist_chat(
-    specialist_id: str = Path(..., description="AI specialist ID (e.g., 'apollo-ai', 'athena-ai')"),
+    specialist_id: str = Path(..., description="AI specialist ID (e.g., 'apollo-ci', 'athena-ci')"),
     request: StreamingRequest = ...
 ):
     """
@@ -373,7 +373,7 @@ async def stream_specialist_chat_get(
     GET version of streaming endpoint for easier testing with curl.
     
     Example:
-        curl -N "http://localhost:8003/api/chat/apollo-ai/stream?message=Hello"
+        curl -N "http://localhost:8003/api/chat/apollo-ci/stream?message=Hello"
     """
     request = StreamingRequest(
         message=message,

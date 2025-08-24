@@ -1,7 +1,7 @@
 """
 TektonCore Merge Coordination System
 
-Manages intelligent merge coordination for multi-AI development workflows.
+Manages intelligent merge coordination for multi-CI development workflows.
 """
 
 import os

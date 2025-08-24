@@ -173,7 +173,7 @@ def list_projects(args: List[str]) -> bool:
                     else:
                         port_display = 'n/a'
             else:
-                ci_name = f"{project_name.lower()}-ai"
+                ci_name = f"{project_name.lower()}-ci"
                 project_ci = ci_registry.get_by_name(ci_name)
                 if project_ci:
                     port_display = str(project_ci.get('port', 'n/a'))
@@ -279,7 +279,7 @@ def forward_project(args: List[str]) -> bool:
     
     companion_ai = project.get('companion_ai', 'none')
     if project['name'] == 'Tekton':
-        companion_ai = 'numa-ai'
+        companion_ai = 'numa-ci'
     
     print(f"✓ Forwarded project '{project['name']}' (CI: {companion_ai}) to terminal '{terminal_name}'")
     print(f"\nMessages to 'project:{project['name']}' will now appear in this terminal")

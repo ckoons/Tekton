@@ -9,7 +9,7 @@ from fastapi import APIRouter, HTTPException, Query, Path
 from pydantic import BaseModel, Field
 import logging
 
-from rhetor.core.ai_manager import AIManager
+from rhetor.core.ai_manager import CIManager
 
 logger = logging.getLogger(__name__)
 
@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/v1/ai", tags=["ai-specialists"])
 
 # Global AI manager instance
-ai_manager = AIManager()
+ai_manager = CIManager()
 
 
 # Pydantic models
@@ -103,7 +103,7 @@ async def hire_specialist(
     """Hire an AI specialist to Rhetor's roster."""
     try:
         # Check if AI exists and is healthy
-        component_id = ai_id.replace('-ai', '')
+        component_id = ai_id.replace('-ci', '')
         ai_info = ai_manager.get_ai_info(component_id)
         
         if not await ai_manager.check_ai_health(ai_id):
@@ -173,7 +173,7 @@ async def find_ai_for_role(role: str = Path(..., description="Role/category need
     ai_id = await ai_manager.find_ai_for_role(role)
     
     if ai_id:
-        component_id = ai_id.replace('-ai', '')
+        component_id = ai_id.replace('-ci', '')
         ai_info = ai_manager.get_ai_info(component_id)
         return {
             "found": True,

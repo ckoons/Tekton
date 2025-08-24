@@ -172,8 +172,8 @@ async def discovery_chat(request: DiscoveryChatRequest):
         # Create a discovery-focused prompt
         prompt = f"[Discovery Query - Scope: {request.search_scope}] {request.query}"
         
-        # Send to noesis-ai on port 45015
-        ai_response = await ai_send("noesis-ai", prompt, "localhost", 45015)
+        # Send to noesis-ci on port 45015
+        ai_response = await ai_send("noesis-ci", prompt, "localhost", 45015)
         
         discoveries = []
         insights = []
@@ -263,7 +263,7 @@ async def team_chat(request: TeamChatRequest):
                 # Generate a discovery-oriented response using Noesis AI
                 from shared.ai.simple_ai import ai_send
                 ai_response = await ai_send(
-                    "noesis-ai", 
+                    "noesis-ci", 
                     f"Team chat message: {request.message}. Respond from Noesis discovery perspective.", 
                     "localhost", 
                     45015
@@ -302,7 +302,7 @@ async def get_status():
     try:
         # Check AI availability
         from shared.ai.simple_ai import ai_send
-        ai_response = await ai_send("noesis-ai", "health check", "localhost", 45015)
+        ai_response = await ai_send("noesis-ci", "health check", "localhost", 45015)
         ai_available = ai_response and ai_response != "AI_NOT_RUNNING"
         
         # Check component availability

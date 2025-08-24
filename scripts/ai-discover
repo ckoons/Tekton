@@ -64,7 +64,7 @@ async def list_ais(args):
             continue
             
         ai_port = get_ai_port(component_port)
-        ai_id = f"{component}-ai"
+        ai_id = f"{component}-ci"
         
         # Check if AI is running by trying to connect
         try:
@@ -210,7 +210,7 @@ async def watch_ais(args):
                     continue
                     
                 ai_port = get_ai_port(component_port)
-                ai_id = f"{component}-ai"
+                ai_id = f"{component}-ci"
                 
                 # Check if AI is running
                 try:
@@ -317,7 +317,7 @@ async def test_ai(args):
     if args.ai_id:
         # Test specific AI
         # Extract component name from ai_id
-        component = args.ai_id.replace('-ai', '')
+        component = args.ai_id.replace('-ci', '')
         component_port = config.get_port(component)
         if not component_port:
             print(f"Error: Component '{component}' not found")
@@ -452,7 +452,7 @@ async def test_ai(args):
                 continue
                 
             ai_port = get_ai_port(component_port)
-            ai_id = f"{component}-ai"
+            ai_id = f"{component}-ci"
             
             # Quick ping test to see if it's healthy
             try:
@@ -548,7 +548,7 @@ async def test_streaming(args):
     config = get_component_config()
     
     # Extract component name from ai_id
-    component = args.ai_id.replace('-ai', '')
+    component = args.ai_id.replace('-ci', '')
     component_port = config.get_port(component)
     if not component_port:
         print(f"Error: Component '{component}' not found")
@@ -600,7 +600,7 @@ async def benchmark_ais(args):
     
     if args.ai_ids:
         for ai_id in args.ai_ids:
-            component = ai_id.replace('-ai', '')
+            component = ai_id.replace('-ci', '')
             component_port = config.get_port(component)
             if component_port:
                 ai_port = get_ai_port(component_port)
@@ -624,7 +624,7 @@ async def benchmark_ais(args):
                 continue
                 
             ai_port = get_ai_port(component_port)
-            ai_id = f"{component}-ai"
+            ai_id = f"{component}-ci"
             
             # Quick test to see if healthy
             try:
@@ -786,7 +786,7 @@ async def route_test(args):
     print("Routing test not supported in simplified architecture.")
     print("All AIs use fixed ports based on their component ports.")
     print(f"\nTo send a message to a specific AI, use: ai-discover test <ai-id>")
-    print(f"Example: ai-discover test apollo-ai")
+    print(f"Example: ai-discover test apollo-ci")
 
 
 async def stats(args):
@@ -852,8 +852,8 @@ Examples:
   %(prog)s list                               # List all AIs
   %(prog)s list --role planning --status healthy   # Filter AIs
   %(prog)s watch                              # Watch AI status in real-time
-  %(prog)s test apollo-ai                     # Test specific AI
-  %(prog)s stream apollo-ai "Tell me a story" # Test streaming
+  %(prog)s test apollo-ci                     # Test specific AI
+  %(prog)s stream apollo-ci "Tell me a story" # Test streaming
   %(prog)s benchmark --iterations 10         # Benchmark all AIs
   %(prog)s route "analyze this code"         # Test routing engine
   %(prog)s stats                             # Show registry statistics

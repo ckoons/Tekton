@@ -72,17 +72,17 @@ COMPONENT_PORTS = {
 
 # Dynamic port mappings calculated from component ports
 AI_PORT_MAP = {
-    f'{name}-ai': get_ai_port(port) 
+    f'{name}-ci': get_ai_port(port) 
     for name, port in COMPONENT_PORTS.items()
 }
 
 
 def get_ai_port_by_name(ai_name: str) -> int:
     """
-    Get AI port by AI name (e.g., 'apollo-ai').
+    Get AI port by AI name (e.g., 'apollo-ci').
     
     Args:
-        ai_name: AI specialist name with -ai suffix
+        ai_name: AI specialist name with -ci suffix
         
     Returns:
         AI port number

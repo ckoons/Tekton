@@ -91,7 +91,7 @@ async def main():
                        help='Hours between orphan cleanup (default: 6.0)')
     parser.add_argument('--orphan-min-age', type=float, default=2.0,
                        help='Minimum age for orphan detection (default: 2.0 hours)')
-    parser.add_argument('--ai-config-sync', action='store_true', default=True,
+    parser.add_argument('--ci-config-sync', action='store_true', default=True,
                        help='Enable AI config sync (default: enabled)')
     parser.add_argument('--registry-flush', action='store_true', default=True,
                        help='Enable registry flush service (default: enabled)')

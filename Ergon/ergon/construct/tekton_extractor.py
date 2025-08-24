@@ -48,7 +48,7 @@ class TektonExtractor:
         },
         'rhetor': {
             'name': 'Rhetor Communication Hub',
-            'description': 'Multi-AI communication and coordination system',
+            'description': 'Multi-CI communication and coordination system',
             'capabilities': ['ai_communication', 'team_chat', 'message_routing'],
             'interfaces': {
                 'inputs': [{'name': 'message', 'type': 'text'}],

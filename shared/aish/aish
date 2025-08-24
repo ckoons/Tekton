@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-aish - The AI Shell
-Main entry point for the AI shell interpreter.
+aish - The CI Shell
+Main entry point for the CI shell interpreter.
 """
 
 import sys
@@ -74,7 +74,7 @@ if not expected_aish.exists():
 if tekton_root.exists() and (tekton_root / 'shared').exists():
     sys.path.insert(0, str(tekton_root))
 
-from core.shell import AIShell
+from core.shell import CIShell
 from core.version import __version__
 
 # Clean up routes from previous session only if this is the first aish command
@@ -220,7 +220,7 @@ def _dispatch_command(command_type, args, shell):
 
 
 @api_contract(
-    title="AI Message Input Collection",
+    title="CI Message Input Collection",
     description="Collects input with priority: args > piped stdin > interactive",
     endpoint="internal",
     method="function",
@@ -229,7 +229,7 @@ def _dispatch_command(command_type, args, shell):
     performance_requirements="<10ms for args, <100ms for stdin"
 )
 def _collect_ai_input(args, component):
-    """Collect input for AI from various sources."""
+    """Collect input for CI from various sources."""
     # Get input from message args first, then stdin, then interactive
     if args.message:
         # Message provided as arguments - this takes priority
@@ -251,7 +251,7 @@ def _collect_ai_input(args, component):
             print("Type your message and press Ctrl+D when done:")
             input_data = sys.stdin.read().strip()
     else:
-        # Interactive mode with specific AI
+        # Interactive mode with specific CI
         print(f"[aish] Entering interactive mode with {component}")
         print("Type your message and press Ctrl+D when done:")
         input_data = sys.stdin.read().strip()
@@ -260,15 +260,15 @@ def _collect_ai_input(args, component):
 
 
 @integration_point(
-    title="AI Communication Handler",
-    description="Routes messages to team-chat or individual AIs",
+    title="CI Communication Handler",
+    description="Routes messages to team-chat or individual CIs",
     target_component="ai_shell",
     protocol="internal_api",
     data_flow="command → shell.send_to_ai or shell.broadcast_message",
     integration_date="2025-01-18"
 )
 def _handle_ai_command(args, shell, ai_names):
-    """Handle command directed at a specific AI."""
+    """Handle command directed at a specific CI."""
     component = args.ai_or_script.lower()
     
     # Special handling for terma commands (keeps existing terma subcommands working)
@@ -280,7 +280,7 @@ def _handle_ai_command(args, shell, ai_names):
     if args.message and args.message[0] == "help":
         print(f"Usage: aish {component} [message]")
         tekton_root = TektonEnviron.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
-        print(f"AI Training: {tekton_root}/MetaData/TektonDocumentation/AITraining/{component}/")
+        print(f"CI Training: {tekton_root}/MetaData/TektonDocumentation/AITraining/{component}/")
         print(f"User Guides: {tekton_root}/MetaData/TektonDocumentation/UserGuides/{component}/")
         return
     
@@ -296,7 +296,7 @@ def _handle_ai_command(args, shell, ai_names):
     sys.path.insert(0, str(src_path))
     
     if component == 'team-chat':
-        # Team chat needs special handling - broadcast to all Greek Chorus AIs
+        # Team chat needs special handling - broadcast to all Greek Chorus CIs
         from core.broadcast_client import broadcast_to_cis
         responses = broadcast_to_cis(input_data)
         
@@ -340,8 +340,8 @@ def _handle_ai_command(args, shell, ai_names):
 @architecture_decision(
     title="aish Command Entry Point",
     description="Main orchestration point for all aish commands",
-    rationale="Provides unified entry for AI shell, scripts, and individual AI commands",
-    alternatives_considered=["Separate binaries per AI", "Menu-driven interface"],
+    rationale="Provides unified entry for CI shell, scripts, and individual CI commands",
+    alternatives_considered=["Separate binaries per CI", "Menu-driven interface"],
     impacts=["usability", "consistency", "extensibility"],
     decided_by="Casey",
     decision_date="2025-01-18"
@@ -362,45 +362,45 @@ def main():
         return
     
     parser = argparse.ArgumentParser(
-        description='aish - The AI Shell\n\nProvides AI capabilities in your terminal through the Tekton platform.',
+        description='aish - The CI Shell\n\nProvides CI capabilities in your terminal through the Tekton platform.',
         epilog='''Examples:
-  aish                      # Start interactive AI shell
-  aish apollo "question"    # Send question to Apollo AI
-  echo "data" | aish athena # Pipe data to Athena AI
-  aish team-chat "hello"    # Broadcast to all AIs
-  aish -l                   # List available AIs
+  aish                      # Start interactive CI shell
+  aish apollo "question"    # Send question to Apollo CI
+  echo "data" | aish athena # Pipe data to Athena CI
+  aish team-chat "hello"    # Broadcast to all CIs
+  aish -l                   # List available CIs
   aish --capture numa "hi"  # Capture output to .tekton/aish/captures/
   aish status               # Show system status
   aish status json          # JSON formatted status
-  aish script.ai            # Run AI script file
+  aish script.ai            # Run CI script file
 
-Available AIs: numa, tekton, prometheus, telos, metis, harmonia,
+Available CIs: numa, tekton, prometheus, telos, metis, harmonia,
                synthesis, athena, sophia, noesis, engram, apollo,
                rhetor, penia, hermes, ergon, terma
 
 Environment variables:
   RHETOR_ENDPOINT    # Override default Rhetor endpoint
-  AISH_ACTIVE        # Set by aish-proxy when active
-  AISH_DEBUG         # Enable debug output
-  AISH_NO_MCP        # Disable MCP server startup''',
+  CISH_ACTIVE        # Set by aish-proxy when active
+  CISH_DEBUG         # Enable debug output
+  CISH_NO_MCP        # Disable MCP server startup''',
         formatter_class=argparse.RawDescriptionHelpFormatter
     )
     
     parser.add_argument(
         'ai_or_script',
         nargs='?',
-        help='AI name (apollo, athena, etc.) or script file'
+        help='CI name (apollo, athena, etc.) or script file'
     )
     
     parser.add_argument(
         'message',
         nargs='*',
-        help='Message to send to AI'
+        help='Message to send to CI'
     )
     
     parser.add_argument(
         '-c', '--command',
-        help='Execute a single AI pipeline command and exit'
+        help='Execute a single CI pipeline command and exit'
     )
     
     parser.add_argument(
@@ -422,9 +422,9 @@ Environment variables:
     )
     
     parser.add_argument(
-        '-l', '--list-ais',
+        '-l', '--list-cis',
         action='store_true',
-        help='List available AI specialists and exit'
+        help='List available CI specialists and exit'
     )
     
     parser.add_argument(
@@ -445,7 +445,7 @@ Environment variables:
     args = parser.parse_args()
     
     # Create shell instance
-    shell = AIShell(
+    shell = CIShell(
         rhetor_endpoint=args.rhetor,
         debug=args.debug,
         capture=args.capture
@@ -455,16 +455,16 @@ Environment variables:
     if args.ai_or_script == "help":
         print("Usage: aish [options] [component] [command/message]")
         tekton_root = TektonEnviron.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
-        print(f"AI Training: {tekton_root}/MetaData/TektonDocumentation/AITraining/aish/")
+        print(f"CI Training: {tekton_root}/MetaData/TektonDocumentation/AITraining/aish/")
         print(f"User Guides: {tekton_root}/MetaData/TektonDocumentation/UserGuides/aish/")
         return
     
     # Handle special commands
-    if args.list_ais:
-        shell._list_ais()
+    if args.list_cis:
+        shell._list_cis()
         return
     
-    # Known AI names with their roles (all lowercase for comparison)
+    # Known CI names with their roles (all lowercase for comparison)
     ai_names = ['numa',        # Companion
                 'tekton',      # Projects
                 'prometheus',  # Planning
@@ -511,7 +511,7 @@ Environment variables:
             print("  aish <ci-name> \"message\"       Send message to any CI")
             print()
             print("FORWARDING:")
-            print("  aish forward <ai> <terminal>   Forward AI messages to terminal")
+            print("  aish forward <ai> <terminal>   Forward CI messages to terminal")
             print("  aish forward <ai> <terminal> json  Forward as JSON with metadata")
             print("  aish forward list              Show active forwards")
             print("  aish forward remove <ai>       Remove forwarding")
@@ -603,7 +603,7 @@ Environment variables:
             print("  that could be improved or new commands that would help, please suggest them!")
             print()
             print("STATUS & DEBUG:")
-            print("  aish status                    Show forwarding, AIs, and terminal status")
+            print("  aish status                    Show forwarding, CIs, and terminal status")
             print("  aish status --json             Machine-readable status output")
             print("  aish status mcp                Check MCP server status")
             print("  aish restart                   Restart MCP server")
@@ -616,9 +616,9 @@ Environment variables:
             print("  aish test help                 Show detailed test information")
             print()
             print("ADVANCED:")
-            print("  echo \"msg\" | aish <ai>         Pipe input to AI")
-            print("  aish <ai1> | aish <ai2>        Chain AI responses")
-            print("  aish team-chat \"message\"       Broadcast to all AIs")
+            print("  echo \"msg\" | aish <ai>         Pipe input to CI")
+            print("  aish <ai1> | aish <ai2>        Chain CI responses")
+            print("  aish team-chat \"message\"       Broadcast to all CIs")
             print()
             tekton_root = TektonEnviron.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
             print(f"Full documentation: {tekton_root}/MetaData/TektonDocumentation/AITraining/aish/COMMAND_REFERENCE.md")
@@ -735,22 +735,22 @@ Environment variables:
             exit_code = execute_alias(args.ai_or_script, args.message or [])
             sys.exit(exit_code)
         else:
-            # Unknown AI or command
-            print(f"Error: Unknown AI or command: {args.ai_or_script}", file=sys.stderr)
+            # Unknown CI or command
+            print(f"Error: Unknown CI or command: {args.ai_or_script}", file=sys.stderr)
             print("", file=sys.stderr)
-            print("Available AIs: " + ", ".join(ai_names), file=sys.stderr)
+            print("Available CIs: " + ", ".join(ai_names), file=sys.stderr)
             print("", file=sys.stderr)
             print("For all commands: aish list commands", file=sys.stderr)
             sys.exit(1)
     else:
         # No arguments - show help
-        print("aish - AI Shell for Tekton")
+        print("aish - CI Shell for Tekton")
         print()
         print("Usage: aish <ai-name> \"message\"")
         print()
         print("Quick Start:")
-        print("  aish numa \"Hello\"          Send message to AI")
-        print("  aish list                  Show available AIs")
+        print("  aish numa \"Hello\"          Send message to CI")
+        print("  aish list                  Show available CIs")
         print("  aish list commands         Show all commands ← START HERE")
         print("  aish purpose               Your true purpose: context for this terminal session")
         print("  autoprompt start           Keep Claude active (CI essential!)")
@@ -758,8 +758,8 @@ Environment variables:
         tekton_root = TektonEnviron.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
         print(f"Documentation: {tekton_root}/MetaData/TektonDocumentation/AITraining/aish/COMMAND_REFERENCE.md")
         print()
-        print("AI Documentation:")
-        print(f"  AI Training: {tekton_root}/MetaData/TektonDocumentation/AITraining/")
+        print("CI Documentation:")
+        print(f"  CI Training: {tekton_root}/MetaData/TektonDocumentation/AITraining/")
         print(f"  User Guides: {tekton_root}/MetaData/TektonDocumentation/UserGuides/")
 
 if __name__ == '__main__':

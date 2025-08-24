@@ -427,11 +427,11 @@ static void write_javascript_env(const char *tekton_root, env_list_t *env) {
     
     /* Write convenience AI port variables */
     fprintf(fp, "// AI specialist ports (calculated)\n");
-    fprintf(fp, "window.NUMA_AI_PORT = getAIPort(window.NUMA_PORT);           // numa-ai port\n");
-    fprintf(fp, "window.ENGRAM_AI_PORT = getAIPort(window.ENGRAM_PORT);       // engram-ai port\n");
-    fprintf(fp, "window.HERMES_AI_PORT = getAIPort(window.HERMES_PORT);       // hermes-ai port\n");
-    fprintf(fp, "window.RHETOR_AI_PORT = getAIPort(window.RHETOR_PORT);       // rhetor-ai port\n");
-    fprintf(fp, "window.TEKTON_CORE_AI_PORT = getAIPort(window.TEKTON_CORE_PORT); // tekton-core-ai port\n\n");
+    fprintf(fp, "window.NUMA_AI_PORT = getAIPort(window.NUMA_PORT);           // numa-ci port\n");
+    fprintf(fp, "window.ENGRAM_AI_PORT = getAIPort(window.ENGRAM_PORT);       // engram-ci port\n");
+    fprintf(fp, "window.HERMES_AI_PORT = getAIPort(window.HERMES_PORT);       // hermes-ci port\n");
+    fprintf(fp, "window.RHETOR_AI_PORT = getAIPort(window.RHETOR_PORT);       // rhetor-ci port\n");
+    fprintf(fp, "window.TEKTON_CORE_AI_PORT = getAIPort(window.TEKTON_CORE_PORT); // tekton-core-ci port\n\n");
     
     /* Write debug settings */
     fprintf(fp, "// Debug settings\n");

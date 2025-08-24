@@ -11,10 +11,10 @@ if (window.rhetorUrl) {
  * Based on the aish proxy pattern - AIs are just sockets!
  * 
  * Usage:
- *   AIChat.sendMessage('apollo-ai', 'Hello Apollo!')
+ *   AIChat.sendMessage('apollo-ci', 'Hello Apollo!')
  *     .then(response => console.log(response))
  *   
- *   AIChat.broadcastMessage('Team announcement', ['apollo-ai', 'athena-ai'])
+ *   AIChat.broadcastMessage('Team announcement', ['apollo-ci', 'athena-ci'])
  *     .then(responses => console.log(responses))
  */
 
@@ -109,7 +109,7 @@ window.AIChat = {
     
     /**
      * Send a message to a single AI specialist
-     * @param {string} aiName - The AI name (e.g., 'terma-ai', 'apollo-ai') 
+     * @param {string} aiName - The AI name (e.g., 'terma-ci', 'apollo-ci') 
      * @param {string} message - The message to send
      * @returns {Promise<Object>} The AI's response
      */
@@ -295,7 +295,7 @@ window.AIChat = {
      */
     async listAIs() {
         try {
-            const response = await fetch(aishUrl('/api/mcp/v2/tools/list-ais'), {
+            const response = await fetch(aishUrl('/api/mcp/v2/tools/list-cis'), {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

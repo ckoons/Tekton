@@ -481,7 +481,7 @@ class CIRegistry:
         return [ci for ci in self._registry.values() if ci.get('type') == ci_type]
     
     def get_by_name(self, name: str) -> Optional[Dict[str, Any]]:
-        """Get CI by name, handling both base names and -ai suffixes."""
+        """Get CI by name, handling both base names and -ci suffixes."""
         # Handle aliases first
         name = self.ALIASES.get(name, name)
         
@@ -491,8 +491,8 @@ class CIRegistry:
             if key.lower() == name.lower():
                 return value
         
-        # Handle base names and -ai suffix for Greek Chorus
-        base_name = name[:-3] if name.endswith('-ai') else name
+        # Handle base names and -ci suffix for Greek Chorus
+        base_name = name[:-3] if name.endswith('-ci') else name
         
         if base_name in self.GREEK_CHORUS:
             # Build the CI data with dynamic port
@@ -1023,7 +1023,7 @@ class CIRegistry:
             return
         
         # Regular projects get dynamic ports
-        ci_name = f"{project_name.lower()}-ai"
+        ci_name = f"{project_name.lower()}-ci"
         port = self._allocate_project_port(project_name)
         # For project CIs, the AI specialist runs directly on the allocated port
         # No need for separate ai_port
@@ -1055,7 +1055,7 @@ class CIRegistry:
                 self._registry['numa'].pop('project_id', None)
             return True
         
-        ci_name = f"{project_name.lower()}-ai"
+        ci_name = f"{project_name.lower()}-ci"
         if ci_name in self._registry:
             del self._registry[ci_name]
             self._deallocate_project_port(project_name)

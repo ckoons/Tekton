@@ -39,7 +39,7 @@ def demonstrate_emergence():
         'robot_id': 'TEKTON-3000',
         'first_words': 'I think, therefore I am... processing',
         'location': 'Mars Colony Beta'
-    }, audience='embodied-ai-council')
+    }, audience='embodied-ci-council')
     print("✓ Embodied AI council informed of new sentient member")
     
     # 4. Musical pattern discovered in code

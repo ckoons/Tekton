@@ -667,7 +667,7 @@ async def send_to_project_ci_socket(port: int, message: str) -> str:
 def get_project_ci_port(project_name: str) -> int:
     """Get socket port for project CI"""
     if project_name.lower() == "tekton":
-        return 42016  # numa-ai port
+        return 42016  # numa-ci port
     
     # For other projects, use base port + hash
     # This is simplified - real implementation would use project registry
@@ -710,7 +710,7 @@ async def projects_chat(request: ProjectsChatRequest):
         return ProjectsChatResponse(
             response=response,
             project_name=project_name,
-            ci_socket=ci_socket or f"project-{project_name.lower()}-ai"
+            ci_socket=ci_socket or f"project-{project_name.lower()}-ci"
         )
         
     except Exception as e:

@@ -1,13 +1,13 @@
-# @tekton-module: Generic AI Specialist implementation
+# @tekton-module: Generic CI Specialist implementation
 # @tekton-depends: specialist_worker, logging_setup
-# @tekton-provides: component-ai-specialist, auto-configuration
+# @tekton-provides: component-ci-specialist, auto-configuration
 # @tekton-version: 1.0.0
 # @tekton-executable: true
 
 """
-Generic AI Specialist implementation that can be used by any component.
+Generic CI Specialist implementation that can be used by any component.
 
-This provides a standard AI specialist that automatically configures itself
+This provides a standard CI specialist that automatically configures itself
 based on the component it's launched for.
 """
 import os
@@ -47,7 +47,7 @@ from shared.utils.logging_setup import setup_component_logging
 
 # @tekton-data: Component expertise configuration
 # @tekton-static: true
-# @tekton-purpose: Define AI specialist personalities
+# @tekton-purpose: Define CI specialist personalities
 COMPONENT_EXPERTISE = {
     'apollo': {
         'title': 'The Codebase Oracle',
@@ -147,18 +147,18 @@ COMPONENT_EXPERTISE = {
 }
 
 
-# @tekton-class: Generic AI specialist implementation
+# @tekton-class: Generic CI specialist implementation
 # @tekton-singleton: false
 # @tekton-lifecycle: worker
 # @tekton-configurable: true
 @architecture_decision(
-    title="Generic AI Specialist Pattern",
+    title="Generic CI Specialist Pattern",
     rationale="Single implementation adapts to any component via configuration",
     alternatives_considered=["Component-specific implementations", "Plugin architecture"],
     impacts=["maintainability", "consistency", "flexibility"]
 )
 class GenericAISpecialist(AISpecialistWorker):
-    """Generic AI specialist that can be used by any component."""
+    """Generic CI specialist that can be used by any component."""
     
     def __init__(self, ai_id: str, component: str, port: int):
         # Get component info - normalize component name
@@ -188,7 +188,7 @@ class GenericAISpecialist(AISpecialistWorker):
         )
         
         self.component_info = comp_info
-        self.logger.info(f"Initialized {component} AI specialist as '{comp_info['title']}'")
+        self.logger.info(f"Initialized {component} CI specialist as '{comp_info['title']}'")
         self.logger.debug(f"Component expertise: {comp_info['expertise']}")
         
         # DEBUG: Final state
@@ -200,17 +200,17 @@ class GenericAISpecialist(AISpecialistWorker):
     # @tekton-dynamic: true
     # @tekton-returns: system-prompt
     def get_system_prompt(self) -> str:
-        """Get system prompt for this AI specialist."""
-        return f"""You are {self.component_info['title']}, the AI specialist for {self.component}.
+        """Get system prompt for this CI specialist."""
+        return f"""You are {self.component_info['title']}, the CI specialist for {self.component}.
 
 Your expertise: {self.component_info['expertise']}
 
 Your primary focus areas:
 {self.component_info['focus']}
 
-You work as part of the Tekton AI platform, collaborating with other AI specialists to provide comprehensive software engineering support. Always provide helpful, accurate, and actionable responses within your domain of expertise.
+You work as part of the Tekton CI platform, collaborating with other CI specialists to provide comprehensive software engineering support. Always provide helpful, accurate, and actionable responses within your domain of expertise.
 
-When asked about capabilities outside your expertise, acknowledge the limitation and suggest which other Tekton AI specialist might be better suited to help."""
+When asked about capabilities outside your expertise, acknowledge the limitation and suggest which other Tekton CI specialist might be better suited to help."""
     
     # @tekton-method: Process component-specific messages
     # @tekton-async: true
@@ -240,11 +240,11 @@ When asked about capabilities outside your expertise, acknowledge the limitation
 # @tekton-entry-point: true
 # @tekton-cli: true
 def main():
-    """Main entry point for generic AI specialist."""
-    parser = argparse.ArgumentParser(description='Generic AI Specialist')
+    """Main entry point for generic CI specialist."""
+    parser = argparse.ArgumentParser(description='Generic CI Specialist')
     parser.add_argument('--port', type=int, required=True, help='Port to listen on')
     parser.add_argument('--component', type=str, required=True, help='Component name')
-    parser.add_argument('--ai-id', type=str, required=True, help='AI ID')
+    parser.add_argument('--ci-id', type=str, required=True, help='AI ID')
     parser.add_argument('-v', '--verbose', action='store_true', help='Enable verbose logging')
     
     args = parser.parse_args()
@@ -260,7 +260,7 @@ def main():
         port=args.port
     )
     
-    logger.info(f"Starting {args.component} AI specialist on port {args.port}")
+    logger.info(f"Starting {args.component} CI specialist on port {args.port}")
     specialist.run()
 
 

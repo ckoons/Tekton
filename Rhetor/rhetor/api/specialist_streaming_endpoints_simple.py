@@ -10,7 +10,7 @@ import json
 import logging
 import asyncio
 
-from rhetor.core.ai_manager import AIManager
+from rhetor.core.ai_manager import CIManager
 
 logger = logging.getLogger(__name__)
 
@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/v1/ai/stream", tags=["ai-streaming"])
 
 # Global AI manager instance
-ai_manager = AIManager()
+ai_manager = CIManager()
 
 
 async def stream_ai_response(ai_id: str, message: str) -> AsyncIterator[str]:
@@ -66,7 +66,7 @@ async def stream_chat(
     simulates streaming by chunking the response.
     """
     # Check if AI exists and is healthy
-    component_id = ai_id.replace('-ai', '')
+    component_id = ai_id.replace('-ci', '')
     try:
         ai_info = ai_manager.get_ai_info(component_id)
     except ValueError:
@@ -152,7 +152,7 @@ async def stream_health_checks():
             health_status = []
             
             for component_id in ai_manager.get_all_ai_components():
-                ai_id = f"{component_id}-ai"
+                ai_id = f"{component_id}-ci"
                 healthy = await ai_manager.check_ai_health(ai_id)
                 
                 health_status.append({

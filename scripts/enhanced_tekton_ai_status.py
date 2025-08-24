@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-Enhanced Tekton AI Status
+Enhanced Tekton CI Status
 
-Shows status of AI specialists for Tekton components.
+Shows status of CI specialists for Tekton components.
 """
 import os
 import sys
@@ -26,7 +26,7 @@ import socket
 
 
 class AIStatus:
-    """Manages AI specialist status reporting."""
+    """Manages CI specialist status reporting."""
     
     def __init__(self, verbose: bool = False):
         self.verbose = verbose
@@ -39,7 +39,7 @@ class AIStatus:
         # Load model display names
         self.model_display_names = self._load_model_display_names()
         
-        # Known AI components
+        # Known CI components
         self.ai_components = ['engram', 'hermes', 'ergon', 'rhetor', 'terma', 'athena',
                             'prometheus', 'harmonia', 'telos', 'synthesis', 'tekton_core',
                             'metis', 'apollo', 'penia', 'sophia', 'noesis', 'numa', 'hephaestus']
@@ -71,10 +71,10 @@ class AIStatus:
         
     async def check_ai_health(self, ai_id: str, socket_info: dict) -> str:
         """
-        Check if an AI is responding.
+        Check if an CI is responding.
         
         Args:
-            ai_id: AI identifier
+            ai_id: CI identifier
             socket_info: (host, port) tuple
             
         Returns:
@@ -127,7 +127,7 @@ class AIStatus:
             return {'cpu': 'N/A', 'memory': 'N/A', 'uptime': 'N/A'}
     
     async def get_ai_info(self, ai_id: str, socket_info: dict) -> Dict[str, str]:
-        """Get AI info including model."""
+        """Get CI info including model."""
         try:
             reader, writer = await asyncio.wait_for(
                 asyncio.open_connection(socket_info['host'], socket_info['port']),
@@ -159,11 +159,11 @@ class AIStatus:
         return {'model_provider': 'unknown', 'model_name': 'unknown'}
     
     async def get_ai_status(self) -> List[Dict]:
-        """Get status for all AI specialists."""
+        """Get status for all CI specialists."""
         status_data = []
         
         for component in self.ai_components:
-            ai_id = f"{component}-ai"
+            ai_id = f"{component}-ci"
             component_port = self.config.get_port(component)
             if not component_port:
                 continue
@@ -179,12 +179,12 @@ class AIStatus:
             else:
                 model = 'unknown'
             
-            # Get process info by searching for the AI process
+            # Get process info by searching for the CI process
             pid = None
             for proc in psutil.process_iter(['pid', 'cmdline']):
                 try:
                     cmdline = proc.info['cmdline']
-                    if cmdline and 'generic_specialist' in ' '.join(cmdline) and f'--ai-id {ai_id}' in ' '.join(cmdline):
+                    if cmdline and 'generic_specialist' in ' '.join(cmdline) and f'--ci-id {ai_id}' in ' '.join(cmdline):
                         pid = proc.info['pid']
                         break
                 except:
@@ -195,7 +195,7 @@ class AIStatus:
             # Format model name
             display_model = self._get_display_model_name(model)
             
-            # Only add if AI is running
+            # Only add if CI is running
             if health.startswith("✓") or self.verbose:
                 status_data.append({
                     'AI Specialist': ai_id,
@@ -210,16 +210,16 @@ class AIStatus:
         return status_data
     
     def get_component_ai_status(self) -> List[Dict]:
-        """Get AI enablement status for all components."""
+        """Get CI enablement status for all components."""
         from scripts.enhanced_tekton_ai_launcher import AI_COMPONENTS
         
         status_data = []
         
         for component, ai_config in AI_COMPONENTS.items():
-            # Check if AI is enabled for component
+            # Check if CI is enabled for component
             enabled = ai_config['config_check'](self.config)
             
-            # Check if AI is running by trying to connect
+            # Check if CI is running by trying to connect
             ai_id = ai_config['ai_id']
             component_port = self.config.get_port(component)
             running = False
@@ -246,8 +246,8 @@ class AIStatus:
         return status_data
     
     async def display_status(self, show_full: bool = False, components: Optional[List[str]] = None):
-        """Display AI status information."""
-        # Get AI status
+        """Display CI status information."""
+        # Get CI status
         ai_status = await self.get_ai_status()
         
         # Filter by components if specified
@@ -266,9 +266,9 @@ class AIStatus:
             headers = ['AI Specialist', 'Component', 'Model', 'Status', 'CPU', 'Memory', 'Uptime']
             print(tabulate(empty_data, headers=headers, tablefmt='fancy_grid'))
             
-            # Check global AI status
-            # AI is always enabled with fixed ports
-            print("\nNo AI specialists are currently running.")
+            # Check global CI status
+            # CI is always enabled with fixed ports
+            print("\nNo CI specialists are currently running.")
         
         # Show full details if requested
         if show_full and ai_status:
@@ -279,7 +279,7 @@ class AIStatus:
     async def _display_ai_details(self, ai_id: str):
         """Display detailed information for a specific AI."""
         # Extract component from ai_id
-        component = ai_id.replace('-ai', '')
+        component = ai_id.replace('-ci', '')
         component_port = self.config.get_port(component)
         if not component_port:
             print(f"\nComponent {component} not found")
@@ -288,7 +288,7 @@ class AIStatus:
         ai_port = (component_port - 8000) + 45000
         socket_info = {'host': 'localhost', 'port': ai_port}
         
-        # Check if AI is running
+        # Check if CI is running
         health = await self.check_ai_health(ai_id, socket_info)
         if not health.startswith("✓"):
             print(f"\n{ai_id} is not running")
@@ -302,7 +302,7 @@ class AIStatus:
         expertise = COMPONENT_EXPERTISE.get(component, {})  
         print(f"Description: {expertise.get('title', 'AI Specialist')}")
         
-        # Get AI details
+        # Get CI details
         details = await self.get_ai_info(ai_id, socket_info)
         model_name = self._get_display_model_name(details.get('model_name', 'unknown'))
         print(f"Model: {model_name} (via {details.get('model_provider', 'unknown').title()})")
@@ -321,13 +321,13 @@ class AIStatus:
 async def main():
     """Main entry point."""
     parser = argparse.ArgumentParser(
-        description='Show status of AI specialists for Tekton components',
+        description='Show status of CI specialists for Tekton components',
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  %(prog)s                    Show all AI specialists
-  %(prog)s -c rhetor          Show AI for Rhetor component  
-  %(prog)s -a rhetor-ai       Show specific AI by ID
+  %(prog)s                    Show all CI specialists
+  %(prog)s -c rhetor          Show CI for Rhetor component  
+  %(prog)s -a rhetor-ci       Show specific CI by ID
   %(prog)s -f                 Show full details for all AIs
   %(prog)s -c apollo -f       Show full details for Apollo AI
         """
@@ -335,10 +335,10 @@ Examples:
     
     # Component/AI selection (interchangeable)
     parser.add_argument(
-        '-c', '--component', '-a', '--ai',
+        '-c', '--component', '-i', '--ci',
         nargs='+',
         dest='components',
-        help='Show specific components or AI IDs'
+        help='Show specific components or CI IDs'
     )
     
     parser.add_argument(

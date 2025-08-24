@@ -2,7 +2,7 @@
 aish MCP Server - Exposes aish functionality via Model Context Protocol
 
 This server provides MCP endpoints for all aish commands, enabling:
-- Message sending to AIs
+- Message sending to CIs
 - Team chat/broadcast
 - Forward management
 - Project forwarding
@@ -92,8 +92,8 @@ forwarding_registry = ForwardingRegistry()
 # Module-level architecture decision
 @architecture_decision(
     title="MCP Server Architecture",
-    description="Single source of truth for AI routing through standard protocol",
-    rationale="Consolidates all AI message routing, eliminating duplicate HTTP endpoints across components",
+    description="Single source of truth for CI routing through standard protocol",
+    rationale="Consolidates all CI message routing, eliminating duplicate HTTP endpoints across components",
     alternatives_considered=["Direct HTTP endpoints per component", "WebSocket-only communication", "gRPC"],
     impacts=["ui_integration", "distributed_tekton", "ai_communication"],
     decided_by="Casey",
@@ -102,7 +102,7 @@ forwarding_registry = ForwardingRegistry()
 class _MCPServerArchitecture:
     """
     This marker class documents the architectural decision to use MCP
-    as the unified communication protocol for all AI interactions.
+    as the unified communication protocol for all CI interactions.
     """
     pass
 
@@ -122,7 +122,7 @@ if FastMCPServer:
     if MCPCapability:
         fastmcp_server.register_capability(MCPCapability(
             name="messaging",
-            description="AI messaging and team chat functionality"
+            description="CI messaging and team chat functionality"
         ))
         fastmcp_server.register_capability(MCPCapability(
             name="forwarding",
@@ -149,20 +149,20 @@ async def get_capabilities():
             "tools": {
                 # Messaging & Communication
                 "send-message": {
-                    "description": "Send a message to an AI",
+                    "description": "Send a message to an CI",
                     "parameters": {
                         "ai_name": {"type": "string", "required": True},
                         "message": {"type": "string", "required": True}
                     }
                 },
                 "team-chat": {
-                    "description": "Broadcast message to all AIs",
+                    "description": "Broadcast message to all CIs",
                     "parameters": {
                         "message": {"type": "string", "required": True}
                     }
                 },
                 "forward": {
-                    "description": "Manage AI message forwarding",
+                    "description": "Manage CI message forwarding",
                     "parameters": {
                         "action": {"type": "string", "enum": ["add", "remove", "list"], "required": True},
                         "ai_name": {"type": "string", "required": False},
@@ -178,8 +178,8 @@ async def get_capabilities():
                 },
                 
                 # CI Discovery & Information
-                "list-ais": {
-                    "description": "List available AI specialists",
+                "list-cis": {
+                    "description": "List available CI specialists",
                     "parameters": {}
                 },
                 "list-project-cis": {
@@ -320,8 +320,8 @@ async def get_capabilities():
 
 @mcp_router.post("/tools/send-message")
 @api_contract(
-    title="AI Message Routing",
-    description="Send message to specific AI specialist",
+    title="CI Message Routing",
+    description="Send message to specific CI specialist",
     endpoint="/api/mcp/v2/tools/send-message",
     method="POST",
     request_schema={"ai_name": "string", "message": "string", "stream": "boolean?"},
@@ -329,16 +329,16 @@ async def get_capabilities():
     performance_requirements="<500ms routing time"
 )
 @integration_point(
-    title="AI Shell Message Integration",
-    description="Routes messages through AIShell to appropriate AI specialist",
+    title="CI Shell Message Integration",
+    description="Routes messages through CIShell to appropriate CI specialist",
     target_component="AIShell",
     protocol="internal_api",
-    data_flow="MCP request → AIShell.send_to_ai → AI specialist → response",
+    data_flow="MCP request → CIShell.send_to_ai → CI specialist → response",
     integration_date="2025-01-18"
 )
 async def send_message(request: Request):
     """
-    Send a message to a specific AI with streaming response support
+    Send a message to a specific CI with streaming response support
     """
     data = await request.json()
     ai_name = data.get("ai_name")
@@ -397,23 +397,23 @@ async def send_message(request: Request):
 @mcp_router.post("/tools/team-chat")
 @api_contract(
     title="Team Chat Broadcast",
-    description="Broadcasts messages to all AI specialists",
+    description="Broadcasts messages to all CI specialists",
     endpoint="/api/mcp/v2/tools/team-chat",
     method="POST",
     request_schema={"message": "string"},
     response_schema={"responses": [{"specialist_id": "string", "content": "string", "socket_id": "string"}]},
-    performance_requirements="<2s for all AI responses"
+    performance_requirements="<2s for all CI responses"
 )
 @performance_boundary(
     title="Team Chat Performance",
-    description="Critical path for multi-AI coordination",
+    description="Critical path for multi-CI coordination",
     sla="<2s total response time",
-    optimization_notes="Parallel AI queries, formatted response caching",
+    optimization_notes="Parallel CI queries, formatted response caching",
     measured_impact="Enables real-time team collaboration"
 )
 async def team_chat(request: Request):
     """
-    Broadcast message to all AIs
+    Broadcast message to all CIs
     """
     data = await request.json()
     message = data.get("message")
@@ -449,7 +449,7 @@ async def team_chat(request: Request):
 @mcp_router.post("/tools/forward")
 async def manage_forward(request: Request):
     """
-    Manage AI message forwarding
+    Manage CI message forwarding
     """
     data = await request.json()
     action = data.get("action")
@@ -481,10 +481,10 @@ async def manage_forward(request: Request):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@mcp_router.post("/tools/list-ais")
+@mcp_router.post("/tools/list-cis")
 async def list_ais():
     """
-    List available AI specialists
+    List available CI specialists
     """
     try:
         # Get the list from unified registry
@@ -506,7 +506,7 @@ async def list_ais():
         
         return {"ais": ais}
     except Exception as e:
-        logger.error(f"Error listing AIs: {e}")
+        logger.error(f"Error listing CIs: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 
@@ -680,7 +680,7 @@ async def list_project_cis():
                     project_cis.append({
                         "name": "numa",
                         "project": "Tekton",
-                        "port": registry.get_ai_port('numa'),  # Get numa's AI port
+                        "port": registry.get_ai_port('numa'),  # Get numa's CI port
                         "type": "greek",  # numa is part of Greek Chorus
                         "description": "Tekton project CI (numa)"
                     })
