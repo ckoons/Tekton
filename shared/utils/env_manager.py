@@ -329,7 +329,7 @@ class TektonEnvManager:
         """
         template_content = '''#
 # .env.tekton
-#   This file is used to configure the Tekton Multi-AI Engineering Platform.
+#   This file is used to configure the Tekton Multi-CI Engineering Platform.
 #   You should not place any 'secrets' such as API keys or passwords in this file. 
 #   This file is uploaded to GitHub and is accessible to anyone who has access to the repository.
 #   You may configure all Tekton environment, profile and settings using this file that are not 'secret'

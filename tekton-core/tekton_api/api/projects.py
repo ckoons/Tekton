@@ -357,7 +357,7 @@ async def get_project(project_id: str):
             return ProjectResponse(
                 id="tekton",
                 name="Tekton",
-                description="Multi-AI Engineering and Orchestration Platform",
+                description="Multi-CI Engineering and Orchestration Platform",
                 state="active",
                 github_url="https://github.com/tektonai/tekton",
                 local_directory=tekton_root,
@@ -417,7 +417,7 @@ async def get_project_readme(project_id: str):
                     content = f.read()
                 return {"content": content}
             else:
-                return {"content": "# Tekton\n\nMulti-AI Engineering and Orchestration Platform"}
+                return {"content": "# Tekton\n\nMulti-CI Engineering and Orchestration Platform"}
         
         # For other projects, get from project manager
         project = project_manager.registry.get_project(project_id)

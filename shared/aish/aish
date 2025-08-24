@@ -477,10 +477,10 @@ Environment variables:
                 'noesis',      # Discovery
                 'engram',      # Memory
                 'apollo',      # Attention/Prediction
-                'rhetor',      # LLM/Prompt/Context
+                'rhetor',      # Prompt/Context
                 'penia',       # LLM Cost
-                'hermes',      # Messages/Data
-                'ergon',       # Agents/Tools/MCP
+                'hermes',      # Tekton/Federation
+                'ergon',       # Development/Solutions
                 'terma',       # Terminal
                 'hephaestus',  # UI/DevTools
                 'team-chat']   # Broadcast to all

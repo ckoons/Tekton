@@ -138,4 +138,4 @@ When launched via Terma, terminals automatically have:
 
 ---
 
-Part of the Tekton Multi-AI Engineering Platform
+Part of the Tekton Multi-CI Engineering Platform

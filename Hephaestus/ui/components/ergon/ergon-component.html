@@ -217,7 +217,7 @@ document.addEventListener('DOMContentLoaded', function() {
             <img src="/images/hexagon.jpg" alt="Tekton" class="ergon__icon">
             <h2 class="ergon__title">
                 <span class="ergon__title-main">Ergon</span>
-                <span class="ergon__title-sub">Automation/Tools</span>
+                <span class="ergon__title-sub">Automation/Solutions</span>
             </h2>
         </div>
     </div>
@@ -257,7 +257,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <span class="ergon__tab-label">Construct</span>
             </label>
             <label for="ergon-tab-chat" class="ergon__tab" data-tekton-chat="tab" data-tab="chat" 
-                 data-tekton-menu-item="Tool Chat" 
+                 data-tekton-menu-item="Solution Chat" 
                  data-tekton-menu-component="ergon" 
                  data-tekton-menu-panel="ergon-panel" 
                  data-tekton-nav-target="chat"
@@ -265,7 +265,7 @@ document.addEventListener('DOMContentLoaded', function() {
                  data-tekton-nav-action="switch-tab"
                  data-tekton-trigger="click"
                  data-tekton-ai="chat-tab">
-                <span class="ergon__tab-label">Tool Chat</span>
+                <span class="ergon__tab-label">Solution Chat</span>
             </label>
             <label for="ergon-tab-teamchat" class="ergon__tab" data-tekton-chat="tab" data-tab="teamchat" 
                  data-tekton-menu-item="Team Chat" 
@@ -446,9 +446,9 @@ document.addEventListener('DOMContentLoaded', function() {
             
         </div>
         
-        <!-- Tool Chat Tab -->
-        <!-- @landmark Panel: Tool Chat - Direct chat with Ergon AI assistant -->
-        <div id="ergon-panel" class="ergon__panel" data-tekton-panel="ergon" data-tekton-panel-for="Tool Chat" data-tekton-panel-component="ergon" data-tekton-type="panel" data-tekton-zone="content-panel" data-tekton-state="inactive" data-tekton-visibility="hidden" data-tekton-chat="panel" data-tekton-ai="chat-panel" data-tekton-ai-ready="true">
+        <!-- Solution Chat Tab -->
+        <!-- @landmark Panel: Solution Chat - Direct chat with Ergon AI assistant -->
+        <div id="ergon-panel" class="ergon__panel" data-tekton-panel="ergon" data-tekton-panel-for="Solution Chat" data-tekton-panel-component="ergon" data-tekton-type="panel" data-tekton-zone="content-panel" data-tekton-state="inactive" data-tekton-visibility="hidden" data-tekton-chat="panel" data-tekton-ai="chat-panel" data-tekton-ai-ready="true">
             <div id="ergon-messages" class="ergon__chat-messages" data-tekton-chat="messages" data-tekton-component="chat-messages" data-tekton-type="message-container" data-tekton-ai="message-area">
                 <!-- Welcome message -->
                 <div class="ergon__message ergon__message--system" data-tekton-chat="message" data-tekton-message-type="system" data-tekton-type="welcome-message">
@@ -2363,7 +2363,7 @@ function ergon_viewSprintDetails(sprintName) {
 function ergon_manageSprint(sprintName, autonomyLevel) {
     console.log(`[ERGON] Managing sprint ${sprintName} with ${autonomyLevel} autonomy`);
     
-    // Switch to Tool Chat tab
+    // Switch to Solution Chat tab
     const chatTab = document.getElementById('ergon-tab-chat');
     if (chatTab) {
         chatTab.checked = true;
@@ -2480,7 +2480,7 @@ function ergon_startAutomation() {
     // Close modal
     ergon_closeAutomateModal();
     
-    // Switch to Tool Chat tab to show progress
+    // Switch to Solution Chat tab to show progress
     document.getElementById('ergon-tab-chat').checked = true;
     
     // Add user message to chat

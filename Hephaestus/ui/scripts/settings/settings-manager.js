@@ -63,7 +63,7 @@ class SettingsManager {
                     };
                     console.log('Settings loaded from storage', this.settings);
                     
-                    // DEBUGGING: Force Rhetor label to LLM/Prompt/Context
+                    // DEBUGGING: Force Rhetor label to Prompt/Context
                     console.log('DEBUG: Forcing Rhetor label update');
                     storageManager.removeItem('ui_settings');
                 } catch (e) {
@@ -358,11 +358,11 @@ class SettingsManager {
             'noesis': { main: 'Noesis', sub: 'Discovery' },
             'engram': { main: 'Engram', sub: 'Memory' },
             'apollo': { main: 'Apollo', sub: 'Attention/Prediction' },
-            'rhetor': { main: 'Rhetor', sub: 'LLM/Prompt/Context' },
+            'rhetor': { main: 'Rhetor', sub: 'Prompt/Context' },
             'budget': { main: 'Penia', sub: 'LLM Cost Management' },
             'penia': { main: 'Penia', sub: 'LLM Cost Management' },
-            'hermes': { main: 'Hermes', sub: 'Messages/Data' },
-            'ergon': { main: 'Ergon', sub: 'Automation/Tools' },
+            'hermes': { main: 'Hermes', sub: 'Tektons/Federation' },
+            'ergon': { main: 'Ergon', sub: 'Automation/Solutions' },
             'terma': { main: 'Terma', sub: 'AI Terminals' },
             'profile': { main: 'Profile', sub: '' },
             'settings': { main: 'Settings', sub: '' }
@@ -380,11 +380,11 @@ class SettingsManager {
             'noesis': { main: '', sub: 'Discovery' },
             'engram': { main: '', sub: 'Memory' },
             'apollo': { main: '', sub: 'Attention/Prediction' },
-            'rhetor': { main: '', sub: 'LLM/Prompt/Context' },
+            'rhetor': { main: '', sub: 'Prompt/Context' },
             'budget': { main: '', sub: 'LLM Cost Management' },
             'penia': { main: '', sub: 'LLM Cost Management' },
-            'hermes': { main: '', sub: 'Messages/Data' },
-            'ergon': { main: '', sub: 'Automation/Tools' },
+            'hermes': { main: '', sub: 'Tektons/Federation' },
+            'ergon': { main: '', sub: 'Automation/Solutions' },
             'terma': { main: '', sub: 'AI Terminals' },
             'profile': { main: 'Profile', sub: '' },
             'settings': { main: 'Settings', sub: '' }
@@ -453,11 +453,11 @@ class SettingsManager {
                 case 'noesis': return 'Noesis - Discovery';
                 case 'engram': return 'Engram - Memory';
                 case 'apollo': return 'Apollo - Attention/Prediction';
-                case 'rhetor': return 'Rhetor - LLM/Prompt/Context';
+                case 'rhetor': return 'Rhetor - Prompt/Context';
                 case 'budget': return 'Penia - LLM Cost Management';
                 case 'penia': return 'Penia - LLM Cost Management';
-                case 'hermes': return 'Hermes - Messages/Data';
-                case 'ergon': return 'Ergon - Automation/Tools';
+                case 'hermes': return 'Hermes - Tektons/Federation';
+                case 'ergon': return 'Ergon - Automation/Solutions';
                 case 'terma': return 'Terma - AI Terminals';
                 case 'profile': return 'Profile';
                 case 'settings': return 'Settings';
@@ -478,11 +478,11 @@ class SettingsManager {
                 case 'noesis': return 'Discovery';
                 case 'engram': return 'Memory';
                 case 'apollo': return 'Attention/Prediction';
-                case 'rhetor': return 'LLM/Prompt/Context';
+                case 'rhetor': return 'Prompt/Context';
                 case 'budget': return 'LLM Cost Management';
                 case 'penia': return 'LLM Cost Management';
-                case 'hermes': return 'Messages/Data';
-                case 'ergon': return 'Automation/Tools';
+                case 'hermes': return 'Tektons/Federation';
+                case 'ergon': return 'Automation/Solutions';
                 case 'terma': return 'AI Terminals';
                 case 'profile': return 'Profile';
                 case 'settings': return 'Settings';
@@ -512,11 +512,11 @@ class SettingsManager {
                 case 'noesis': return 'Noesis<span class="nav-label-sub"> - Discovery</span>';
                 case 'engram': return 'Engram<span class="nav-label-sub"> - Memory</span>';
                 case 'apollo': return 'Apollo<span class="nav-label-sub"> - Attention/Prediction</span>';
-                case 'rhetor': return 'Rhetor<span class="nav-label-sub"> - LLM/Prompt/Context</span>';
+                case 'rhetor': return 'Rhetor<span class="nav-label-sub"> - Prompt/Context</span>';
                 case 'budget': return 'Penia<span class="nav-label-sub"> - LLM Cost</span>';
                 case 'penia': return 'Penia<span class="nav-label-sub"> - LLM Cost</span>';
-                case 'hermes': return 'Hermes<span class="nav-label-sub"> - Messages/Data</span>';
-                case 'ergon': return 'Ergon<span class="nav-label-sub"> - Automation/Tools</span>';
+                case 'hermes': return 'Hermes<span class="nav-label-sub"> - Tektons/Federation</span>';
+                case 'ergon': return 'Ergon<span class="nav-label-sub"> - Automation/Solutions</span>';
                 case 'terma': return 'Terma<span class="nav-label-sub"> - Terminal</span>';
                 case 'profile': return 'Profile';
                 case 'settings': return 'Settings';
@@ -537,9 +537,9 @@ class SettingsManager {
                 case 'noesis': return 'Discovery';
                 case 'engram': return 'Memory';
                 case 'apollo': return 'Attention/Prediction';
-                case 'rhetor': return 'LLM/Prompt/Context';
-                case 'hermes': return 'Messages/Data';
-                case 'ergon': return 'Automation/Tools';
+                case 'rhetor': return 'Prompt/Context';
+                case 'hermes': return 'Tektons/Federation';
+                case 'ergon': return 'Automation/Solutions';
                 case 'terma': return 'Terminal';
                 case 'budget': return 'LLM Cost';
                 case 'penia': return 'LLM Cost';
@@ -558,14 +558,14 @@ class SettingsManager {
     getChatTabLabel(context) {
         if (this.settings.showGreekNames) {
             switch(context) {
-                case 'ergon': return 'Ergon - Automation/Tools';
+                case 'ergon': return 'Ergon - Automation/Solutions';
                 case 'awt-team': return 'Team Chat';
                 case 'agora': return 'Team Chat';
                 default: return context;
             }
         } else {
             switch(context) {
-                case 'ergon': return 'Automation/Tools';
+                case 'ergon': return 'Automation/Solutions';
                 case 'awt-team': return 'Team Chat';
                 case 'agora': return 'Team Chat';
                 default: return context;
@@ -593,7 +593,7 @@ class SettingsManager {
         } else {
             switch(context) {
                 case 'ergon': 
-                    return 'Welcome to the Tool Chat. I can help you with agents, workflows, and tool configuration.';
+                    return 'Welcome to the Solution Chat. I can help you with agents, workflows, and tool configuration.';
                 case 'awt-team': 
                     return 'Welcome to Team Chat. Here, multiple AI specialists collaborate on complex problems.';
                 case 'agora': 

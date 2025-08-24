@@ -1,4 +1,4 @@
-# Tekton Multi-AI Engineering and Orchestration Platform
+# Tekton Multi-CI Engineering and Orchestration Platform
 
 <div align="center">
   <img src="images/icon.png" alt="Tekton Logo" width="800"/>

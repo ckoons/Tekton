@@ -13,7 +13,7 @@ const COMPONENT_CONFIGS = {
     'apollo': { specialist: 'apollo-assistant', description: 'Attention/Prediction' },
     'budget': { specialist: 'budget-assistant', description: 'LLM Cost Management' },
     'engram': { specialist: 'engram-assistant', description: 'Memory System' },
-    'rhetor': { specialist: 'rhetor-orchestrator', description: 'LLM/Prompt/Context' },
+    'rhetor': { specialist: 'rhetor-orchestrator', description: 'Prompt/Context' },
     'prometheus': { specialist: 'prometheus-assistant', description: 'Strategic Planning' },
     'metis': { specialist: 'metis-assistant', description: 'Task Decomposition' },
     'harmonia': { specialist: 'harmonia-assistant', description: 'Workflow Orchestration' },
