@@ -30,7 +30,7 @@ else:
 from shared.utils.logging_setup import setup_component_logging
 
 
-class AIKiller:
+class CIKiller:
     """Manages CI specialist termination."""
     
     def __init__(self, verbose: bool = False):
@@ -209,7 +209,7 @@ def main():
     
     args = parser.parse_args()
     
-    killer = AIKiller(verbose=args.verbose)
+    killer = CIKiller(verbose=args.verbose)
     
     # Show what will be killed
     if not args.force and 'all' not in [t.lower() for t in args.targets]:

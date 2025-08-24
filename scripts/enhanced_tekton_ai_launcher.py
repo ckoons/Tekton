@@ -112,7 +112,7 @@ def get_expected_ai_port(main_port: int) -> int:
     persistence=False,
     consistency_requirements="Process handles and registry sync"
 )
-class AILauncher:
+class CILauncher:
     """Manages CI specialist launching."""
     
     def __init__(self, verbose: bool = False):
@@ -456,7 +456,7 @@ async def main():
     
     # CI is always enabled with fixed ports - no need to check
     
-    launcher = AILauncher(verbose=args.verbose)
+    launcher = CILauncher(verbose=args.verbose)
     
     # Handle show-mapping option
     if args.show_mapping:

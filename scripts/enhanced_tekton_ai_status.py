@@ -25,7 +25,7 @@ from shared.utils.logging_setup import setup_component_logging
 import socket
 
 
-class AIStatus:
+class CIStatus:
     """Manages CI specialist status reporting."""
     
     def __init__(self, verbose: bool = False):
@@ -361,7 +361,7 @@ Examples:
     
     args = parser.parse_args()
     
-    status = AIStatus(verbose=args.verbose)
+    status = CIStatus(verbose=args.verbose)
     
     if args.json:
         data = {
