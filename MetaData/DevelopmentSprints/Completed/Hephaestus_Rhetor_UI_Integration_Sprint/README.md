@@ -1,10 +1,10 @@
 # Hephaestus-Rhetor UI Integration Sprint
 
-This sprint enables Rhetor AI specialists to power the chat interfaces in Hephaestus, providing each Tekton component with its own AI assistant.
+This sprint enables Rhetor CI specialists to power the chat interfaces in Hephaestus, providing each Tekton component with its own CI assistant.
 
 ## Sprint Overview
 
-- **Goal**: Connect Rhetor AI specialists to Hephaestus component chat interfaces
+- **Goal**: Connect Rhetor CI specialists to Hephaestus component chat interfaces
 - **Duration**: 7 days across 4 phases
 - **Key Deliverables**: 
   - AI-powered chat for all components
@@ -24,10 +24,10 @@ This sprint enables Rhetor AI specialists to power the chat interfaces in Hephae
 
 ## Key Features
 
-1. **Component AI Assistants**: Each Tekton component gets a dedicated AI specialist
+1. **Component CI Assistants**: Each Tekton component gets a dedicated CI specialist
 2. **Menu Bar Integration**: Full Rhetor API access from the menu bar
 3. **Chat Persistence**: Optional chat history saving per component
-4. **Streaming Support**: Real-time AI responses with typing indicators
+4. **Streaming Support**: Real-time CI responses with typing indicators
 
 ## Technical Highlights
 

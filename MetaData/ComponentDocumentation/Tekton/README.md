@@ -2,7 +2,7 @@
 
 ## Overview
 
-Tekton is an intelligent orchestration system that coordinates multiple AI models and resources to efficiently solve complex software engineering problems. As the central hub of the Tekton ecosystem, it manages component lifecycle, coordinates cross-component communication, and optimizes resource allocation across the system.
+Tekton is an intelligent orchestration system that coordinates multiple CI models and resources to efficiently solve complex software engineering problems. As the central hub of the Tekton ecosystem, it manages component lifecycle, coordinates cross-component communication, and optimizes resource allocation across the system.
 
 ## Key Features
 
@@ -12,7 +12,7 @@ Tekton is an intelligent orchestration system that coordinates multiple AI model
 - **Service Discovery**: Automatic discovery and registration of component services
 - **Resource Monitoring**: Tracks system resource usage and optimizes allocation
 - **Graceful Degradation**: Handles component failures with fallback mechanisms
-- **Intelligent Task Routing**: Routes tasks to the most appropriate AI model based on capabilities
+- **Intelligent Task Routing**: Routes tasks to the most appropriate CI model based on capabilities
 - **Memory Integration**: Maintains persistent context across different models and sessions
 - **Tiered Processing**: Uses the simplest model that can handle a given task
 - **Authentication & Authorization**: Secure access to component services
@@ -32,7 +32,7 @@ Tekton employs a modular architecture with the following core systems:
    - Graceful Degradation: Provides fallback mechanisms for failed components
    - Recovery Mechanisms: Attempts to recover failed components
 
-3. **Model Integration**: Coordinates AI model access
+3. **Model Integration**: Coordinates CI model access
    - Model Router: Directs requests to appropriate models
    - Capability Registry: Tracks model capabilities
    - Performance Tracker: Monitors model performance

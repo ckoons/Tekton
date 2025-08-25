@@ -10,7 +10,7 @@ Prometheus is the planning and preparation component of the Tekton ecosystem. It
 - **Task Management**: Define tasks with dependencies, constraints, and resource allocations
 - **Critical Path Analysis**: Calculate critical paths and identify bottlenecks in project execution
 - **Resource Allocation**: Define, manage, and optimize resource assignments and utilization
-- **LLM-Powered Plan Analysis**: Leverage AI for risk identification and optimization opportunities
+- **LLM-Powered Plan Analysis**: Leverage CI for risk identification and optimization opportunities
 - **Retrospective Analysis (Epimethius)**: Learn from completed projects through variance analysis and performance metrics
 - **Timeline Generation**: Visualize project timelines and dependencies through multiple formats
 - **Improvement Suggestions**: Generate data-driven recommendations for planning improvement

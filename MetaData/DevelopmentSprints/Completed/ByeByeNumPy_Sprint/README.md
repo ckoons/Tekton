@@ -4,7 +4,7 @@
 
 This Development Sprint focuses on eliminating NumPy/SciPy dependencies from Tekton components to resolve compatibility issues and improve system reliability. The sprint addresses NumPy 1.x/2.x compatibility conflicts that are preventing successful component launches, particularly affecting Ergon and Apollo.
 
-Tekton is an intelligent orchestration system that coordinates multiple AI models and resources to efficiently solve complex software engineering problems. This sprint ensures all components can launch successfully by removing problematic machine learning dependencies while preserving functionality through pure Python implementations.
+Tekton is an intelligent orchestration system that coordinates multiple CI models and resources to efficiently solve complex software engineering problems. This sprint ensures all components can launch successfully by removing problematic machine learning dependencies while preserving functionality through pure Python implementations.
 
 ## Sprint Documents
 

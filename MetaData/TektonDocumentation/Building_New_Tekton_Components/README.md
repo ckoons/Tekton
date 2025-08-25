@@ -54,7 +54,7 @@ A Tekton component is a self-contained service that:
 1. **[Component_Architecture_Guide.md](./Component_Architecture_Guide.md)** - Overall architecture and patterns
 2. **[Backend_Implementation_Guide.md](./Backend_Implementation_Guide.md)** - Backend API and business logic (includes MCP)
 3. **[UI_Implementation_Guide.md](./UI_Implementation_Guide.md)** - Hephaestus UI integration
-4. **[AI_Interface_Implementation_Guide.md](./AI_Interface_Implementation_Guide.md)** - Implementing AI interfaces and chat integration
+4. **[AI_Interface_Implementation_Guide.md](./AI_Interface_Implementation_Guide.md)** - Implementing CI interfaces and chat integration
 5. **[Component_Instrumentation_Guide.md](./Component_Instrumentation_Guide.md)** - How to add and maintain instrumentation metadata
 6. **[Instrumentation_Examples.md](./Instrumentation_Examples.md)** - Detailed examples for all file types
 7. **[Step_By_Step_Tutorial.md](./Step_By_Step_Tutorial.md)** - Complete walkthrough

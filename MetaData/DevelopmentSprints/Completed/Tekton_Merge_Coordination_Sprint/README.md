@@ -2,12 +2,12 @@
 
 ## Sprint Overview
 
-**Objective**: Implement an AI-powered merge coordination system that enables multiple AI workers to collaborate on code development with intelligent conflict resolution and minimal human intervention.
+**Objective**: Implement an AI-powered merge coordination system that enables multiple CI workers to collaborate on code development with intelligent conflict resolution and minimal human intervention.
 
 **Vision**: Create the world's first AI-native development workflow where:
 - Multiple Claude instances work independently on separate branches
 - Tekton-core acts as intelligent merge coordinator
-- AI consensus resolves most conflicts automatically
+- CI consensus resolves most conflicts automatically
 - Humans only make simple A/B decisions when needed
 - Workers learn from merge decisions to improve over time
 
@@ -17,7 +17,7 @@ This system transforms the traditional git workflow into an AI-orchestrated deve
 
 ```
 Traditional: Developer → Git → Manual Merge → Main
-AI-Native:   AI Workers → Git → AI Coordinator → AI Consensus → (Human A/B) → Main
+AI-Native:   CI Workers → Git → CI Coordinator → CI Consensus → (Human A/B) → Main
 ```
 
 ## Sprint Goals
@@ -25,7 +25,7 @@ AI-Native:   AI Workers → Git → AI Coordinator → AI Consensus → (Human A
 1. **Implement Merge Coordinator in tekton-core**
    - Monitor worker branches for merge readiness
    - Attempt automatic merges
-   - Orchestrate AI consensus for conflicts
+   - Orchestrate CI consensus for conflicts
    - Escalate to human when needed
 
 2. **Create aish Integration**
@@ -35,7 +35,7 @@ AI-Native:   AI Workers → Git → AI Coordinator → AI Consensus → (Human A
 
 3. **Build Human Decision Interface**
    - Simple A/B choice presentation
-   - Clear AI analysis and recommendations
+   - Clear CI analysis and recommendations
    - One-command resolution
 
 4. **Implement Learning System**
@@ -51,16 +51,16 @@ AI-Native:   AI Workers → Git → AI Coordinator → AI Consensus → (Human A
 - Manages merge queue and conflict resolution
 - Tracks merge history and patterns
 
-### 2. AI Consensus System
+### 2. CI Consensus System
 - Uses team-chat for conflict discussion
-- Synthesis AI creates unified solutions
+- Synthesis CI creates unified solutions
 - Confidence scoring for auto-merge decisions
 - Round limits to prevent endless debate
 
 ### 3. Human Escalation Interface
-- Clean A/B comparisons with AI analysis
+- Clean A/B comparisons with CI analysis
 - Pros/cons for each option
-- AI voting results and reasoning
+- CI voting results and reasoning
 - Single keystroke decisions
 
 ### 4. Worker Feedback Loop
@@ -71,21 +71,21 @@ AI-Native:   AI Workers → Git → AI Coordinator → AI Consensus → (Human A
 ## Success Criteria
 
 1. **Functional Requirements**
-   - [ ] Multiple AI workers can develop simultaneously
+   - [ ] Multiple CI workers can develop simultaneously
    - [ ] Clean merges happen automatically
-   - [ ] Conflicts trigger AI consensus rounds
+   - [ ] Conflicts trigger CI consensus rounds
    - [ ] Human escalation works smoothly
    - [ ] Workers receive learning feedback
 
 2. **Performance Metrics**
-   - [ ] 80%+ conflicts resolved by AI consensus
+   - [ ] 80%+ conflicts resolved by CI consensus
    - [ ] <2 minute average merge time
    - [ ] <5 minute human decision time
    - [ ] Zero lost code or corrupted merges
 
 3. **Learning Metrics**
    - [ ] Decreasing human escalations over time
-   - [ ] Improving AI consensus confidence
+   - [ ] Improving CI consensus confidence
    - [ ] Workers adapting to merge feedback
 
 ## Implementation Plan
@@ -96,15 +96,15 @@ AI-Native:   AI Workers → Git → AI Coordinator → AI Consensus → (Human A
 - [ ] Basic merge attempt logic
 - [ ] Conflict detection and parsing
 
-### Phase 2: AI Integration (Week 2)
+### Phase 2: CI Integration (Week 2)
 - [ ] Team-chat consensus protocol
-- [ ] Synthesis AI integration
+- [ ] Synthesis CI integration
 - [ ] Confidence scoring system
 - [ ] Round-based discussion limits
 
 ### Phase 3: Human Interface (Week 3)
 - [ ] A/B decision interface
-- [ ] AI analysis presentation
+- [ ] CI analysis presentation
 - [ ] Decision application system
 - [ ] Refactor task creation
 
@@ -125,7 +125,7 @@ AI-Native:   AI Workers → Git → AI Coordinator → AI Consensus → (Human A
 
 1. **Worker Identification**: How should we identify/authenticate different Claude workers?
 2. **Merge Frequency**: How often should the coordinator check for ready merges?
-3. **Conflict Threshold**: How many AI discussion rounds before human escalation?
+3. **Conflict Threshold**: How many CI discussion rounds before human escalation?
 4. **Branch Naming**: Stick with `sprint/worker_*` pattern or something else?
 5. **Human Interface**: Terminal-based A/B choice or web interface?
 6. **Learning Priorities**: What patterns are most important to capture?
@@ -133,14 +133,14 @@ AI-Native:   AI Workers → Git → AI Coordinator → AI Consensus → (Human A
 
 ## Why This is a Game Changer
 
-1. **Parallel AI Development**: Multiple Claudes working simultaneously without coordination overhead
-2. **Intelligent Merging**: AI understanding of code intent, not just syntax
+1. **Parallel CI Development**: Multiple Claudes working simultaneously without coordination overhead
+2. **Intelligent Merging**: CI understanding of code intent, not just syntax
 3. **Continuous Learning**: Every merge makes the system smarter
 4. **Human Amplification**: Humans make strategic decisions, AIs handle implementation
 5. **Audit Trail**: Complete history of development decisions and rationale
-6. **Scalability**: Add more AI workers without increasing complexity
+6. **Scalability**: Add more CI workers without increasing complexity
 
-This could fundamentally change how software is developed - from single-threaded human development to massively parallel AI development with intelligent coordination.
+This could fundamentally change how software is developed - from single-threaded human development to massively parallel CI development with intelligent coordination.
 
 ## Next Steps
 
@@ -152,4 +152,4 @@ This could fundamentally change how software is developed - from single-threaded
 
 ---
 
-*"The future of software development is not AI replacing humans, but AI teams coordinated by intelligent systems with human wisdom at key decision points."* - Tekton Merge Coordination Vision
+*"The future of software development is not CI replacing humans, but CI teams coordinated by intelligent systems with human wisdom at key decision points."* - Tekton Merge Coordination Vision

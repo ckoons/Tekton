@@ -1,40 +1,40 @@
-# AI Platform Integration Sprint
+# CI Platform Integration Sprint
 
 ## Quick Overview
 
-**Sprint Goal**: Integrate AI specialists throughout Tekton, creating a platform-wide AI ecosystem with Numa as the platform mentor and individual AI specialists for each component.
+**Sprint Goal**: Integrate CI specialists throughout Tekton, creating a platform-wide CI ecosystem with Numa as the platform mentor and individual CI specialists for each component.
 
 **Duration**: 2-3 weeks | **Priority**: High | **Status**: Planning
 
 ## What We're Building
 
 ### Core Components
-- **Numa (8016)**: Platform-wide AI mentor with access to all components
-- **Noesis (8015)**: Discovery AI (placeholder for future sprint)
+- **Numa (8016)**: Platform-wide CI mentor with access to all components
+- **Noesis (8015)**: Discovery CI (placeholder for future sprint)
 - **AI Management Utilities**: Launcher, killer, and status tools
 - **AI Health Monitoring**: Auto-recovery for unresponsive AIs
 
 ### Key Features
-- Environment-controlled AI lifecycle (`TEKTON_REGISTER_AI`)
-- Independent AI processes for isolation and fault tolerance
+- Environment-controlled CI lifecycle (`TEKTON_REGISTER_AI`)
+- Independent CI processes for isolation and fault tolerance
 - Socket-based communication via existing registry
-- Team Chat integration across all AI specialists
+- Team Chat integration across all CI specialists
 
 ## Quick Start Guide
 
-### Enable AI Support
+### Enable CI Support
 ```bash
 # In .tekton/.env.tekton
 export TEKTON_REGISTER_AI=true   # Enable AI
-export TEKTON_REGISTER_AI=false  # Disable AI (default)
+export TEKTON_REGISTER_AI=false  # Disable CI (default)
 ```
 
-### Check AI Status
+### Check CI Status
 ```bash
-# View all AI processes
+# View all CI processes
 ./EnhancedTools/tekton_ai_status.py
 
-# Launch AI manually (if needed)
+# Launch CI manually (if needed)
 ./EnhancedTools/tekton_ai_launcher.py
 
 # Terminate all AIs
@@ -44,7 +44,7 @@ export TEKTON_REGISTER_AI=false  # Disable AI (default)
 ## Architecture at a Glance
 
 ### Process Model
-- Each AI runs as an independent process
+- Each CI runs as an independent process
 - Communication via socket registry
 - Numa launches after all components, terminates first
 
@@ -56,14 +56,14 @@ export TEKTON_REGISTER_AI=false  # Disable AI (default)
 
 ### Component Integration
 ```
-Start: Component → Health Check → Register AI → AI Process
-Stop: Terminate AI → Deregister → Terminate Component
+Start: Component → Health Check → Register CI → CI Process
+Stop: Terminate CI → Deregister → Terminate Component
 ```
 
 ## Sprint Phases
 
 ### Phase 1: Foundation (Days 1-3)
-- Create AI management utilities
+- Create CI management utilities
 - Implement Numa and Noesis components
 - Update port assignments
 
@@ -72,8 +72,8 @@ Stop: Terminate AI → Deregister → Terminate Component
 - Implement health monitoring
 - Add lifecycle hooks
 
-### Phase 3: AI Implementation (Days 7-10)
-- Build base AI worker class
+### Phase 3: CI Implementation (Days 7-10)
+- Build base CI worker class
 - Implement component-specific AIs
 - Integrate with LLM services
 
@@ -89,8 +89,8 @@ Stop: Terminate AI → Deregister → Terminate Component
 
 ## Success Metrics
 
-- [ ] TEKTON_REGISTER_AI flag controls AI lifecycle
-- [ ] AI processes start/stop with components
+- [ ] TEKTON_REGISTER_AI flag controls CI lifecycle
+- [ ] CI processes start/stop with components
 - [ ] Numa launches after full stack, terminates first
 - [ ] Health monitoring detects and recovers unresponsive AIs
 - [ ] Team Chat works with multiple AIs
@@ -103,7 +103,7 @@ Stop: Terminate AI → Deregister → Terminate Component
 - `SprintPlan.md` - Detailed sprint plan
 - `ArchitecturalDecisions.md` - Design rationale
 - `ImplementationPlan.md` - Step-by-step guide
-- `ClaudeCodePrompt.md` - AI implementation prompt
+- `ClaudeCodePrompt.md` - CI implementation prompt
 
 ### Implementation
 - `EnhancedTools/tekton_ai_launcher.py`
@@ -112,8 +112,8 @@ Stop: Terminate AI → Deregister → Terminate Component
 - `shared_lib/AIRegistryClient.py`
 
 ### Components
-- `Numa/` - Platform AI mentor
-- `Noesis/` - Discovery AI (placeholder)
+- `Numa/` - Platform CI mentor
+- `Noesis/` - Discovery CI (placeholder)
 
 ## Team
 

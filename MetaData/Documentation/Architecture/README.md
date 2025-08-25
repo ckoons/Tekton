@@ -27,11 +27,11 @@ This directory contains the architectural documentation for the Tekton system. T
 - [Centralized Config](./CENTRALIZED_CONFIG.md): Configuration management patterns
 - [Port Management Guide](./PORT_MANAGEMENT_GUIDE.md): Port allocation and management
 
-### AI and Intelligence Architecture
-- [AI Orchestration Architecture](./AI_Orchestration_Architecture.md): AI specialist management and MCP tools orchestration
+### CI and Intelligence Architecture
+- [AI Orchestration Architecture](./AI_Orchestration_Architecture.md): CI specialist management and MCP tools orchestration
 - [LLM Integration Plan](./LLMIntegrationPlan.md): LLM integration architecture
-- [AI Registry](./AIRegistry.md): AI communication architecture and registry system
-- [Simple AI Communication](./SimpleAICommunication.md): Simplified "One Queue, One Socket, One AI" architecture
+- [AI Registry](./AIRegistry.md): CI communication architecture and registry system
+- [Simple CI Communication](./SimpleAICommunication.md): Simplified "One Queue, One Socket, One AI" architecture
 
 ### CI Tools Infrastructure
 - [CI Tools Infrastructure](./CI_Tools_Infrastructure.md): C-based launcher and message bus for CI tools

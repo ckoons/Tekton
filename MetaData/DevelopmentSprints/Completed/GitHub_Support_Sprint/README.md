@@ -4,7 +4,7 @@
 
 This document provides guidance for the GitHub Support Development Sprint. This sprint focuses on creating tools, utilities, and documentation to enhance Tekton's integration with GitHub, particularly for managing branches across multiple components during Development Sprints.
 
-Tekton is an intelligent orchestration system that coordinates multiple AI models and resources to efficiently solve complex software engineering problems. This Development Sprint aims to improve the developer experience by streamlining GitHub-related workflows.
+Tekton is an intelligent orchestration system that coordinates multiple CI models and resources to efficiently solve complex software engineering problems. This Development Sprint aims to improve the developer experience by streamlining GitHub-related workflows.
 
 ## Sprint Context
 

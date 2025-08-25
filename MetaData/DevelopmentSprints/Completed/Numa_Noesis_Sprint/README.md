@@ -3,7 +3,7 @@
 ## Sprint Overview
 
 This sprint implements two new core components for the Tekton ecosystem:
-- **Numa**: Platform AI Mentor (Port 8016) - Provides platform-wide guidance and oversight
+- **Numa**: Platform CI Mentor (Port 8016) - Provides platform-wide guidance and oversight
 - **Noesis**: Discovery System (Port 8015) - Pattern discovery and insight generation
 
 ## Sprint Status
@@ -45,7 +45,7 @@ This sprint implements two new core components for the Tekton ecosystem:
 
 ## Implementation Artifacts
 
-- `/Numa/` - Platform AI Mentor component
+- `/Numa/` - Platform CI Mentor component
 - `/Noesis/` - Discovery System component
 - `/shared/utils/env_config.py` - Updated with Numa/Noesis configs
 - `/Hephaestus/ui/components/numa/` - UI component files

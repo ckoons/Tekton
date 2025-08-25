@@ -6,7 +6,7 @@ Building Terma - an intelligent terminal interface that thinks in bash and speak
 
 ## Sprint Goals
 
-1. Create a terminal interface with Rhetor AI monitoring stdin/stdout
+1. Create a terminal interface with Rhetor CI monitoring stdin/stdout
 2. Implement natural language to bash command translation
 3. Add safety checks and confirmation for destructive operations
 4. Build stateful session management (pwd, env, aliases)
@@ -54,6 +54,6 @@ Where rhetor-wrap provides:
 
 ## Dependencies
 
-- Rhetor component for AI capabilities
+- Rhetor component for CI capabilities
 - Engram for pattern storage
 - Hermes for component communication

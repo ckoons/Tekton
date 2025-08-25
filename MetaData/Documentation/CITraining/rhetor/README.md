@@ -1,4 +1,4 @@
-# Rhetor AI Training
+# Rhetor CI Training
 
 Training documentation for Companion Intelligences working with Rhetor - The Context Architect.
 
@@ -13,7 +13,7 @@ Rhetor serves as the **context management and monitoring** specialist within the
 
 - **Context Management**: Maintaining conversation continuity across interactions
 - **Stress Monitoring**: Watching for cognitive threshold effects in CIs
-- **Prompt Architecture**: Designing effective prompts for AI interactions
+- **Prompt Architecture**: Designing effective prompts for CI interactions
 - **Memory Coordination**: Working with Engram for persistent context
 - **Health Observation**: Continuously monitoring CI wellbeing
 

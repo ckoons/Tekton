@@ -19,7 +19,7 @@ Document the transformation of aish into an MCP server and migration of all UI c
 
 ### Phase 2: UI Migration to MCP (95% Complete)  
 - Updated window.AIChat to route through aish MCP
-- Fixed all specialist components to use correct AI names (no '-ai' suffix)
+- Fixed all specialist components to use correct CI names (no '-ai' suffix)
 - Updated tekton-urls.js with aishUrl() function
 - Fixed Team Chat to return properly formatted responses
 - Updated env.js generation to include AISH_PORT and AISH_MCP_PORT

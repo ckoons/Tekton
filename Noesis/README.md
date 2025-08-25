@@ -18,7 +18,7 @@ Noesis runs on port **8015** (configurable via `NOESIS_PORT` environment variabl
 ## Features
 
 - **Discovery Chat**: Interactive pattern and insight discovery
-- **Team Chat**: Share discoveries with other AI specialists
+- **Team Chat**: Share discoveries with other CI specialists
 - **Pattern Recognition**: Identify recurring patterns (future)
 - **Insight Generation**: Generate actionable insights (future)
 
@@ -34,7 +34,7 @@ Noesis runs on port **8015** (configurable via `NOESIS_PORT` environment variabl
 - `GET /` - Component information
 - `GET /health` - Health check for Hermes registration
 - `POST /api/discovery-chat` - Pattern discovery endpoint
-- `POST /api/team-chat` - AI team communication
+- `POST /api/team-chat` - CI team communication
 - `GET /api/status` - Detailed component status
 
 ## Environment Variables

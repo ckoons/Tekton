@@ -4,7 +4,7 @@
 
 This Development Sprint focuses on comprehensive dependency optimization across all Tekton components to resolve version conflicts, eliminate redundant dependencies, and improve system reliability. The sprint addresses critical version conflicts (particularly Pydantic compatibility issues), massive dependency duplication, and establishes sustainable dependency management practices.
 
-Tekton is an intelligent orchestration system that coordinates multiple AI models and resources to efficiently solve complex software engineering problems. This sprint ensures all components can work together reliably by standardizing dependencies, eliminating conflicts, and reducing the overall dependency footprint by 60-70%.
+Tekton is an intelligent orchestration system that coordinates multiple CI models and resources to efficiently solve complex software engineering problems. This sprint ensures all components can work together reliably by standardizing dependencies, eliminating conflicts, and reducing the overall dependency footprint by 60-70%.
 
 ## Sprint Status
 

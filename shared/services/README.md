@@ -5,12 +5,12 @@ Background services that support the entire Tekton platform.
 ## Services
 
 ### 1. Orphan Process Cleanup Service
-Automatically detects and cleans up orphaned Tekton AI processes.
+Automatically detects and cleans up orphaned Tekton CI processes.
 
 **Features:**
 - Runs every 6 hours (configurable)
 - Only removes processes older than 2 hours
-- Cross-references with AI registry
+- Cross-references with CI registry
 - Safe termination (SIGTERM before SIGKILL)
 - Comprehensive logging
 
@@ -19,8 +19,8 @@ Automatically detects and cleans up orphaned Tekton AI processes.
 - `--orphan-min-age`: Minimum age before considering process orphaned (default: 2.0)
 - `--dry-run`: Only log what would be cleaned
 
-### 2. AI Config Sync Service
-Synchronizes AI configuration between config file and registry.
+### 2. CI Config Sync Service
+Synchronizes CI configuration between config file and registry.
 
 **Features:**
 - Monitors for update flags from Rhetor

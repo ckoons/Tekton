@@ -2,7 +2,7 @@
 
 ## Overview
 
-Rhetor is the LLM management system for the Tekton ecosystem. It handles prompt engineering, LLM selection, context management, and serves as the central interface for all AI interactions across components. Rhetor replaces the previous LLM Adapter component with a more comprehensive solution.
+Rhetor is the LLM management system for the Tekton ecosystem. It handles prompt engineering, LLM selection, context management, and serves as the central interface for all CI interactions across components. Rhetor replaces the previous LLM Adapter component with a more comprehensive solution.
 
 ## Key Features
 

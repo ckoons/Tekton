@@ -73,7 +73,7 @@ However, they cannot:
 **Functions**:
 - `validate_loading()` - Verify component loads properly
 - `check_communication()` - Test message passing
-- `verify_ai_integration()` - Confirm AI connections work
+- `verify_ai_integration()` - Confirm CI connections work
 - `test_lifecycle()` - Validate all component states
 
 **Key Features**:
@@ -91,13 +91,13 @@ Workflow:
 1. **ComponentGenerator** creates structure based on Apollo/Athena patterns
 2. **SemanticDesigner** plans tags for:
    - Project states (active, archived, paused)
-   - AI assignments (assigned, available, busy)
+   - CI assignments (assigned, available, busy)
    - Codebase connections
 3. **ComponentRegistrar** adds to navigation and routing
 4. **IntegrationValidator** ensures it works with Hermes (AI registry)
 
-### Example 2: AI Research Component
-User: "Create a component for AI research to augment Sophia"
+### Example 2: CI Research Component
+User: "Create a component for CI research to augment Sophia"
 
 Workflow:
 1. **ComponentGenerator** uses Sophia as template

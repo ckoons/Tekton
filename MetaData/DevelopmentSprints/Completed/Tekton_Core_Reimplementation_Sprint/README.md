@@ -35,7 +35,7 @@ Transform tekton-core into a visual project management hub where humans and AIs 
 ### Project Management
 - **One Hard Rule**: One Project = One Repo = One Working Tree
 - **Clone Creates New**: Each clone creates a new project bubble
-- **AI Assignment**: Every project gets a companion AI (Tekton's secret sauce)
+- **AI Assignment**: Every project gets a companion CI (Tekton's secret sauce)
 - **Upstream Tracking**: Pull updates from original repos
 
 ### Shipping Configuration
@@ -49,7 +49,7 @@ Tekton ships with just 2 bubbles:
 3. Enters GitHub URL
 4. System clones repo, creates fork, assigns AI
 5. New project bubble appears on dashboard
-6. User can now work on project with AI assistance
+6. User can now work on project with CI assistance
 
 ## Success Metrics
 

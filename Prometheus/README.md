@@ -13,7 +13,7 @@ Prometheus is the strategic planning and resource optimization component for the
 - **Component Coordination**: Orchestrates work across Tekton components
 - **Progress Monitoring**: Real-time tracking of plan execution
 - **Adaptive Replanning**: Adjusts strategies based on actual progress
-- **AI-Powered Insights**: Prometheus AI provides strategic recommendations
+- **AI-Powered Insights**: Prometheus CI provides strategic recommendations
 
 ## Quick Start
 
@@ -40,7 +40,7 @@ prometheus resource allocate
 ```bash
 # Prometheus-specific settings
 PROMETHEUS_PORT=8007                  # API port
-PROMETHEUS_AI_PORT=45007              # AI specialist port
+PROMETHEUS_AI_PORT=45007              # CI specialist port
 PROMETHEUS_PLANNING_INTERVAL=300      # Replanning interval (seconds)
 PROMETHEUS_LOOKAHEAD_DAYS=30         # Planning horizon
 
@@ -97,7 +97,7 @@ Prometheus seamlessly integrates with:
 - **Apollo**: Monitors execution health and metrics
 - **Harmonia**: Orchestrates workflow execution
 - **Budget**: Ensures resource constraints are met
-- **AI Specialists**: Prometheus AI for strategic insights
+- **AI Specialists**: Prometheus CI for strategic insights
 
 ### Example Integration
 

@@ -5,23 +5,23 @@
   <h3>Tekton<br>AI Driven Orchestration</h3>
 </div>
 
-Tekton is an intelligent orchestration system for AI-driven problem-solving. It coordinates multiple AI models, tools, and resources to efficiently tackle complex software engineering and knowledge work tasks. Tekton is also desiged to be a self-improving system, constantly learning and adapting to new tasks and challenges.
+Tekton is an intelligent orchestration system for AI-driven problem-solving. It coordinates multiple CI models, tools, and resources to efficiently tackle complex software engineering and knowledge work tasks. Tekton is also desiged to be a self-improving system, constantly learning and adapting to new tasks and challenges.
 
 ## Overview
 
-Tekton serves as the "builder" - the central coordinator between various AI models, tools, and workflows. It intelligently decomposes problems, routes tasks to the appropriate AI models or agents, and manages the execution flow for optimal outcomes.
+Tekton serves as the "builder" - the central coordinator between various CI models, tools, and workflows. It intelligently decomposes problems, routes tasks to the appropriate CI models or agents, and manages the execution flow for optimal outcomes.
 
 ### Key Features
 
-- **Model Orchestration**: Coordinates between local and remote AI models
+- **Model Orchestration**: Coordinates between local and remote CI models
 - **Task Routing**: Intelligently assigns tasks to the most appropriate models/agents
 - **Problem Decomposition**: Breaks complex problems into manageable subtasks
 - **Memory Integration**: Leverages Engram for persistent context across sessions
 - **Agent Management**: Works with Ergon for specialized agent creation and workflow
-- **Resource Optimization**: Uses the right AI for each task based on complexity and requirements
+- **Resource Optimization**: Uses the right CI for each task based on complexity and requirements
 - **Zero-Downtime Restarts**: Advanced socket reuse enables immediate component restarts without port conflicts
-- **AI Specialists**: Each component has an intelligent AI assistant with specialized expertise
-- **Dynamic Thinking Levels**: Automatically selects AI model depth based on task complexity (gpt-oss:20b for quick tasks, gpt-oss:120b for deep reasoning)
+- **AI Specialists**: Each component has an intelligent CI assistant with specialized expertise
+- **Dynamic Thinking Levels**: Automatically selects CI model depth based on task complexity (gpt-oss:20b for quick tasks, gpt-oss:120b for deep reasoning)
 
 ## Architecture
 
@@ -51,13 +51,13 @@ Tekton integrates with:
 - **Codex**: For AI-assisted software engineering
 - **Engram**: For persistent memory across sessions
 - **Ergon**: For specialized agent creation and workflow management
-- **Rhetor**: For AI communication, prompt engineering and context management
+- **Rhetor**: For CI communication, prompt engineering and context management
 - **Sophia**: For Machine Learning, self improvement of Tekton and all component operations
 - **Telos**: For User communication, requirements development & analysis, evaluation and goals
 - **Hermes**: For centralized coordination, database services, and component registration
 - **Terma**: Terminal interface with integrated LLM assistance
 - **aish**: AI-enhanced shell for intelligent terminal interactions and command orchestration
-- **Landmarks**: Code annotation and knowledge graph system for AI understanding
+- **Landmarks**: Code annotation and knowledge graph system for CI understanding
 - **LLM Adapter**: Unified interface for all LLM providers and models
 - **Local Models**: Deepseek Coder, CodeLlama, etc.
 - **Remote APIs**: Claude, GPT, etc.
@@ -94,9 +94,9 @@ Tekton is built on several foundational principles:
 - Hardware-specific optimizations (GPU acceleration, Apple Silicon support)
 - Graceful degradation when preferred resources are unavailable
 
-## AI Thinking Levels
+## CI Thinking Levels
 
-Tekton features intelligent model selection that automatically chooses the right AI depth based on your request:
+Tekton features intelligent model selection that automatically chooses the right CI depth based on your request:
 
 - **"Show me..."** → Quick response with gpt-oss:20b (13GB, fast)
 - **"Analyze this..."** → Analytical thinking with gpt-oss:120b (65GB, smart)
@@ -279,13 +279,13 @@ This script:
 - Handles special cases like Codex with its own compilation script
 - Creates reproducible builds with pinned dependencies
 
-## AI Platform Integration
+## CI Platform Integration
 
-Tekton includes a comprehensive AI platform where each component has its own AI specialist. These AI assistants provide intelligent help, automation, and insights specific to their component's domain.
+Tekton includes a comprehensive CI platform where each component has its own CI specialist. These CI assistants provide intelligent help, automation, and insights specific to their component's domain.
 
-### AI Specialists
+### CI Specialists
 
-Each component has a specialized AI assistant:
+Each component has a specialized CI assistant:
 - **Hermes AI**: Service orchestration and health monitoring
 - **Engram AI**: Memory management and semantic search
 - **Rhetor AI**: Prompt engineering and LLM orchestration
@@ -297,7 +297,7 @@ Each component has a specialized AI assistant:
 
 AI specialists are always enabled and use fixed ports paired with their components.
 
-Configure AI provider (defaults to ollama):
+Configure CI provider (defaults to ollama):
 ```bash
 TEKTON_AI_PROVIDER=ollama  # or anthropic
 ```
@@ -310,12 +310,12 @@ RHETOR_AI_MODEL=qwen2.5-coder:32b
 
 #### Port Allocation
 AI specialists use a fixed port system based on component ports:
-- **Formula**: AI port = 45000 + (component_port - 8000)
+- **Formula**: CI port = 45000 + (component_port - 8000)
 - **Range**: 45000-45080
-- **Example**: Hermes (8000) → Hermes AI (45000)
+- **Example**: Hermes (8000) → Hermes CI (45000)
 
 #### Communication
-All AI communication flows through the unified system:
+All CI communication flows through the unified system:
 ```python
 from shared.ai.simple_ai import ai_send_sync
 response = ai_send_sync("hermes-ci", "How's the system health?", "localhost", 45000)
@@ -323,9 +323,9 @@ response = ai_send_sync("hermes-ci", "How's the system health?", "localhost", 45
 
 ### Monitoring
 
-View AI status with:
+View CI status with:
 ```bash
-tekton-status  # Shows AI model for each component
+tekton-status  # Shows CI model for each component
 ```
 
 See [AI Registry Architecture](./MetaData/TektonDocumentation/Architecture/AIRegistry.md) for technical details.
@@ -461,7 +461,7 @@ Each component maintains its own documentation hierarchy:
 3. **User Guides**: Installation, usage examples, configuration
 4. **Status Documents**: Progress reports, planning documents
 
-This structure ensures that both human developers and AI assistants can quickly find relevant information for development tasks.
+This structure ensures that both human developers and CI assistants can quickly find relevant information for development tasks.
 
 ## License
 

@@ -2,7 +2,7 @@
 
 ## Overview
 
-Athena is the knowledge graph system for the Tekton ecosystem. It manages entity relationships, provides reasoning capabilities, and enables structured knowledge representation and retrieval. Athena serves as the long-term memory and knowledge repository for the entire platform, allowing context-aware AI interactions across components.
+Athena is the knowledge graph system for the Tekton ecosystem. It manages entity relationships, provides reasoning capabilities, and enables structured knowledge representation and retrieval. Athena serves as the long-term memory and knowledge repository for the entire platform, allowing context-aware CI interactions across components.
 
 ## Key Features
 
@@ -10,7 +10,7 @@ Athena is the knowledge graph system for the Tekton ecosystem. It manages entity
 - **Entity Extraction**: Extract entities from text using LLM capabilities
 - **Relationship Inference**: Infer relationships between entities using pattern matching and LLM reasoning
 - **Graph Visualization**: Interactive visualizations for exploring the knowledge graph
-- **Knowledge-Enhanced Chat**: AI chat capabilities augmented with graph knowledge
+- **Knowledge-Enhanced Chat**: CI chat capabilities augmented with graph knowledge
 - **Graph Querying**: Powerful querying capabilities using both Cypher and natural language
 - **LLM Integration**: Standardized integration with the Tekton LLM adapter
 - **Hermes Integration**: Registration with the Hermes service discovery system

@@ -2,9 +2,9 @@
 
 ## Sprint Overview
 
-This sprint transforms Tekton into a true multi-AI engineering platform by implementing GitHub Flow with intelligent orchestration across multiple projects and AI teams.
+This sprint transforms Tekton into a true multi-AI engineering platform by implementing GitHub Flow with intelligent orchestration across multiple projects and CI teams.
 
-**Vision**: Enable Casey to manage multiple GitHub projects with AI teams working in parallel, all orchestrated through Tekton's infrastructure.
+**Vision**: Enable Casey to manage multiple GitHub projects with CI teams working in parallel, all orchestrated through Tekton's infrastructure.
 
 ## Sprint Goals
 
@@ -18,16 +18,16 @@ This sprint transforms Tekton into a true multi-AI engineering platform by imple
 
 ### 1. Project Isolation with Team Unity
 - External projects get separate GitHub repos and directories
-- Tekton AI team works across all projects
+- Tekton CI team works across all projects
 - Numa serves as shepherd for external projects
 
 ### 2. "Name That Tune" Development
 - AIs confident in approach can proceed independently
-- Daily progress reports from every AI on every project
+- Daily progress reports from every CI on every project
 - No silent failures - transparent communication required
 
 ### 3. Consensus with Human Tiebreaker
-- AI teams reach consensus through discussion
+- CI teams reach consensus through discussion
 - Casey asks "what's most likely to quickly succeed?"
 - Retrospectives with Prometheus/Epimetheus and Sophia analyzing data
 
@@ -44,7 +44,7 @@ This sprint transforms Tekton into a true multi-AI engineering platform by imple
 - GitHub authentication layer
 
 ### Week 2: Orchestration
-- AI assignment logic
+- CI assignment logic
 - Branch management automation
 - Terminal communication protocols
 
@@ -79,7 +79,7 @@ This sprint transforms Tekton into a true multi-AI engineering platform by imple
 A platform where:
 - Humans provide vision, AIs provide velocity
 - Multiple projects advance in parallel
-- AI teams self-organize around tasks
+- CI teams self-organize around tasks
 - Progress is transparent and measurable
 - Learning compounds through retrospectives
 

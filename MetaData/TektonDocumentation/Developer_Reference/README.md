@@ -33,7 +33,7 @@ This directory contains technical reference materials, debugging guides, migrati
 - `IMPORT_TEST_RESULTS.md` - Import test results
 - `VENV_STRATEGY.md` - Virtual environment strategy
 - `TEKTON_LOGGING_SYSTEM.md` - Logging system reference
-- `AI_Orchestration_Tools_Reference.md` - AI orchestration tools reference
+- `AI_Orchestration_Tools_Reference.md` - CI orchestration tools reference
 - `SemanticTagQuickReference.md` - Semantic tag quick reference
 
 ### Historical Documents

@@ -1,10 +1,10 @@
 # Hephaestus Training System Sprint
 
 ## Overview
-The Hephaestus Training System introduces an AI specialist that embodies deep knowledge about the Hephaestus UI and its DevTools. This AI serves as an interactive guide for both human users and other AI agents learning to use Tekton's UI capabilities.
+The Hephaestus Training System introduces an CI specialist that embodies deep knowledge about the Hephaestus UI and its DevTools. This CI serves as an interactive guide for both human users and other CI agents learning to use Tekton's UI capabilities.
 
 ## Vision
-Every Tekton component should have an AI that "is the component" - an expert that understands not just the technical details but the philosophy, best practices, and common pitfalls. For Hephaestus, this means an AI that can:
+Every Tekton component should have an CI that "is the component" - an expert that understands not just the technical details but the philosophy, best practices, and common pitfalls. For Hephaestus, this means an CI that can:
 - Guide users through UI manipulation tasks
 - Diagnose problems with UI DevTools usage
 - Teach the fundamental architecture (Hephaestus UI at port 8080 contains all component areas)
@@ -12,13 +12,13 @@ Every Tekton component should have an AI that "is the component" - an expert tha
 - Provide task-specific recipes and examples
 
 ## Sprint Goals
-1. Create the Hephaestus AI Specialist that deeply understands:
+1. Create the Hephaestus CI Specialist that deeply understands:
    - Hephaestus UI architecture and layout
    - UI DevTools MCP capabilities and correct usage
    - Common UI manipulation patterns in Tekton
    - Best practices for simple, maintainable UI changes
 
-2. Integrate with existing Rhetor AI Specialist infrastructure
+2. Integrate with existing Rhetor CI Specialist infrastructure
 
 3. Provide multiple interaction methods:
    - Direct chat interface through Hermes
@@ -36,12 +36,12 @@ Every Tekton component should have an AI that "is the component" - an expert tha
 - Reduced errors from incorrect component/port assumptions
 - Clear guidance on finding and manipulating UI areas
 - Proactive prevention of framework installations
-- Seamless integration with existing AI specialist infrastructure
+- Seamless integration with existing CI specialist infrastructure
 
 ## Technical Approach
 
 ### Core Architecture
-- Leverage Rhetor's AI Specialist Manager
+- Leverage Rhetor's CI Specialist Manager
 - Use specialized prompts and knowledge base
 - Implement both synchronous and streaming responses
 - Provide code examples and interactive guidance
@@ -71,9 +71,9 @@ Every Tekton component should have an AI that "is the component" - an expert tha
 
 ## Benefits
 - **For Human Users**: Interactive, patient teacher for UI tasks
-- **For AI Agents**: Consistent, accurate guidance on Tekton UI patterns
+- **For CI Agents**: Consistent, accurate guidance on Tekton UI patterns
 - **For Tekton**: Reduced support burden, better adoption, consistent practices
 - **For Casey**: Less frustration from AIs trying to install React!
 
 ## Connection to Broader Vision
-This sprint exemplifies Tekton's philosophy: AI agents that embody deep component knowledge, creating a self-documenting, self-teaching system. As we build more component AIs, they form a distributed knowledge network where each AI is the authoritative expert on its domain.
+This sprint exemplifies Tekton's philosophy: CI agents that embody deep component knowledge, creating a self-documenting, self-teaching system. As we build more component AIs, they form a distributed knowledge network where each CI is the authoritative expert on its domain.

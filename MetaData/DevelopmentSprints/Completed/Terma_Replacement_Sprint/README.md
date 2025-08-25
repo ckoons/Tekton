@@ -14,7 +14,7 @@ Terma becomes the intelligent terminal management layer for Tekton, enabling bot
 2. **Simple Unix Philosophy**: Track terminals by PID, use signals for control
 3. **AI-Powered Shell**: aish as the intelligent shell wrapper
 4. **Clean Architecture**: Borrow successful patterns from Numa/Noesis
-5. **User & AI Friendly**: Both can request and manage terminals
+5. **User & CI Friendly**: Both can request and manage terminals
 
 ## What We're Building
 
@@ -34,7 +34,7 @@ Terma becomes the intelligent terminal management layer for Tekton, enabling bot
 ### aish Shell Enhancement
 - Refactor to be a true shell wrapper
 - Transparent command passthrough
-- AI pattern interception
+- CI pattern interception
 - Context preservation
 
 ## What We're NOT Building
@@ -66,7 +66,7 @@ Terma UI (Hephaestus) → Terma Service → Native Terminal App
 
 ### Phase 1: aish Shell Wrapper (Week 1)
 - Refactor aish as transparent shell wrapper
-- Command interception and AI routing
+- Command interception and CI routing
 - Subprocess and tool compatibility
 
 ### Phase 2: Terminal Launch Service (Week 2)
@@ -80,7 +80,7 @@ Terma UI (Hephaestus) → Terma Service → Native Terminal App
 - Terminal dashboard and controls
 
 ### Phase 4: Integration & Polish (Week 4)
-- AI terminal request API
+- CI terminal request API
 - Testing across terminal types
 - Documentation and examples
 

@@ -37,10 +37,10 @@ This sprint combines and refines the original **Tekton Core Reimplementation Spr
 5. **Enable Learning-Based Optimization** - Capture patterns to improve future coordination
 
 ### Business Value
-- **Increased Development Velocity**: Parallel AI development with reduced coordination overhead
+- **Increased Development Velocity**: Parallel CI development with reduced coordination overhead
 - **Reduced Human Overhead**: Automate routine merges, focus human attention on strategic decisions
 - **Improved Code Quality**: Systematic conflict resolution and learning from merge decisions
-- **Scalable Workflow**: Foundation for managing multiple projects and expanding AI team
+- **Scalable Workflow**: Foundation for managing multiple projects and expanding CI team
 - **Knowledge Capture**: Build institutional memory around successful development patterns
 
 ## Technical Architecture
@@ -211,7 +211,7 @@ tekton-dashboard/
 
 ## Future Enhancements
 
-### Advanced AI Integration
+### Advanced CI Integration
 - **Consensus Building**: AI-to-AI conflict resolution before human escalation
 - **Predictive Analytics**: Anticipate merge conflicts and project bottlenecks
 - **Adaptive Learning**: Dynamic adjustment of coordination strategies

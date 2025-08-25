@@ -55,7 +55,7 @@ This approach provides maximum flexibility while ensuring Tekton can integrate w
 
 For interoperability testing, the sprint will focus on these external MCP implementations:
 
-1. **Claude Desktop MCP**: Well-documented MCP implementation for testing AI assistant integration
+1. **Claude Desktop MCP**: Well-documented MCP implementation for testing CI assistant integration
 2. **Brave Search MCP Server**: Provides web search capabilities for testing information retrieval
 3. **GitHub MCP Servers**: For testing code repository integration
 4. **Other reference implementations**: As needed for comprehensive testing

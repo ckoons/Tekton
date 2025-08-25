@@ -17,11 +17,11 @@ Rhetor is Tekton's LLM orchestration and prompt management component, designed t
 - **Evaluation Framework**: Automated evaluation of LLM responses
 - **Fallback Mechanisms**: Graceful degradation when primary models are unavailable
 - **Single Port Architecture**: Unified API access through standardized endpoints
-- **AI Specialist Management** (Phase 3): Dedicated AI instances for specific domains
-- **MCP Tools Integration** (Phase 3): 30 tools for model, prompt, context, and AI orchestration
+- **AI Specialist Management** (Phase 3): Dedicated CI instances for specific domains
+- **MCP Tools Integration** (Phase 3): 30 tools for model, prompt, context, and CI orchestration
 - **Live Component Integration** (Phase 3): MCP tools interact with running components
 - **Real-Time Streaming** (Phase 4A): SSE-based streaming for long-running operations
-- **Dynamic Specialist Creation** (Phase 4B): Runtime creation of AI specialists from templates
+- **Dynamic Specialist Creation** (Phase 4B): Runtime creation of CI specialists from templates
 
 ## Architecture
 
@@ -204,11 +204,11 @@ print(f"Estimated cost: ${estimate['cost']}")
 print(f"Estimated tokens: {estimate['tokens']}")
 ```
 
-## AI Orchestration Features (Phase 3/4)
+## CI Orchestration Features (Phase 3/4)
 
-### AI Specialist Management
+### CI Specialist Management
 
-Rhetor now manages dedicated AI specialists for different domains:
+Rhetor now manages dedicated CI specialists for different domains:
 
 ```python
 # List available specialists
@@ -231,7 +231,7 @@ conversation = await client.orchestrate_team_chat(
 
 ### Dynamic Specialist Creation
 
-Create and customize AI specialists at runtime:
+Create and customize CI specialists at runtime:
 
 ```python
 # Create from template
@@ -268,7 +268,7 @@ Rhetor provides 30 MCP tools accessible via Hermes:
 - `rhetor.OptimizePrompt`
 - `rhetor.AnalyzePromptPerformance`
 
-#### AI Orchestration
+#### CI Orchestration
 - `rhetor.ListAISpecialists`
 - `rhetor.SendMessageToSpecialist`
 - `rhetor.OrchestrateTeamChat`

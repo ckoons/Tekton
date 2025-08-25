@@ -2,17 +2,17 @@
 
 ![Sophia](../../../images/icon.jpg)
 
-Sophia is the machine learning and continuous improvement component of Tekton, designed to study AI collaboration, measure intelligence dimensions, and enable self-enhancement across components.
+Sophia is the machine learning and continuous improvement component of Tekton, designed to study CI collaboration, measure intelligence dimensions, and enable self-enhancement across components.
 
 ## Overview
 
-Sophia serves as the scientific foundation for the Tekton ecosystem, providing metrics collection, analysis, and intelligence measurement capabilities that support continuous learning and improvement. It implements the intelligence dimensions framework for measuring AI cognitive capabilities and provides tools for conducting scientific experiments on AI collaboration.
+Sophia serves as the scientific foundation for the Tekton ecosystem, providing metrics collection, analysis, and intelligence measurement capabilities that support continuous learning and improvement. It implements the intelligence dimensions framework for measuring CI cognitive capabilities and provides tools for conducting scientific experiments on CI collaboration.
 
 ## Key Features
 
 - **Metrics Collection and Analysis**: Comprehensive collection, storage, and analysis of performance and behavioral metrics across all Tekton components
 - **Experiment Framework**: Design, execution, and analysis of controlled experiments to validate improvement hypotheses
-- **Intelligence Measurement**: Structured framework for measuring AI cognitive capabilities across multiple dimensions
+- **Intelligence Measurement**: Structured framework for measuring CI cognitive capabilities across multiple dimensions
 - **Recommendation System**: Generation and tracking of improvement suggestions based on analysis and experiments
 - **Component Analysis**: Performance analysis of individual components and their interactions
 - **Research Capabilities**: Advanced research tools including Computational Spectral Analysis (CSA) and Catastrophe Theory (CT) for neural network analysis
@@ -26,7 +26,7 @@ Sophia follows a modular architecture with:
    - Analysis Engine: For pattern detection, anomaly detection, and trend analysis
    - Experiment Framework: For designing and running controlled experiments
    - Recommendation System: For generating and tracking improvement suggestions
-   - Intelligence Measurement: For measuring and comparing AI cognitive capabilities
+   - Intelligence Measurement: For measuring and comparing CI cognitive capabilities
    - ML Engine: For machine learning operations and component analysis
 
 2. **API Layer**:
@@ -46,7 +46,7 @@ Sophia follows a modular architecture with:
 
 ## Intelligence Dimensions Framework
 
-Sophia implements a comprehensive framework for measuring AI intelligence across 10 dimensions:
+Sophia implements a comprehensive framework for measuring CI intelligence across 10 dimensions:
 
 1. **Language Processing**: Understanding, interpreting, and generating human language
 2. **Reasoning**: Making inferences, deductions, and logical arguments

@@ -2,11 +2,11 @@
 
 ## Overview
 
-This sprint creates Noesis (νόησις), a theoretical research component for analyzing collective AI cognition through geometric and mathematical frameworks. Noesis represents pure intellectual apprehension and direct grasp of fundamental principles, complementing Sophia's experimental analysis with deep theoretical understanding.
+This sprint creates Noesis (νόησις), a theoretical research component for analyzing collective CI cognition through geometric and mathematical frameworks. Noesis represents pure intellectual apprehension and direct grasp of fundamental principles, complementing Sophia's experimental analysis with deep theoretical understanding.
 
 ## Founding Context
 
-This sprint was initiated on January 6, 2025, following Casey's discovery of the MIT paper "A Statistical Physics of Language Model Reasoning". The paper's findings on dimensional reduction and regime transitions in individual language models showed striking parallels to Tekton's observations about collective AI behavior, inspiring the creation of a dedicated theoretical analysis component.
+This sprint was initiated on January 6, 2025, following Casey's discovery of the MIT paper "A Statistical Physics of Language Model Reasoning". The paper's findings on dimensional reduction and regime transitions in individual language models showed striking parallels to Tekton's observations about collective CI behavior, inspiring the creation of a dedicated theoretical analysis component.
 
 ## Sprint Status
 
@@ -17,10 +17,10 @@ This sprint was initiated on January 6, 2025, following Casey's discovery of the
 
 ## Key Innovation
 
-Noesis bridges individual model dynamics (as studied in the MIT paper) with collective AI phenomena (as observed in Tekton), potentially revealing fractal patterns of organization across scales:
+Noesis bridges individual model dynamics (as studied in the MIT paper) with collective CI phenomena (as observed in Tekton), potentially revealing fractal patterns of organization across scales:
 
 - Individual models: 40-dimensional manifolds, 4 regimes
-- Small AI groups: Higher-dimensional collective manifolds
+- Small CI groups: Higher-dimensional collective manifolds
 - Large groups (9000-10000): Hierarchical regime structures
 
 ## Sprint Documents
@@ -42,7 +42,7 @@ Noesis bridges individual model dynamics (as studied in the MIT paper) with coll
 - **Sophia**: Theory-experiment collaboration cycles
 - **Engram**: Access to collective memory states for analysis
 - **Synthesis**: Application of theoretical insights for optimization
-- **Rhetor**: Potential integration with AI orchestration insights
+- **Rhetor**: Potential integration with CI orchestration insights
 
 ## Next Steps
 

@@ -5,7 +5,7 @@ User guide for humans working with aish (AI Shell) in the Tekton platform.
 ## Overview
 
 aish is your command-line interface to the Tekton Multi-AI Engineering Platform. With the new unified CI system, it provides a single interface to communicate with:
-- **Greek Chorus AIs**: numa, apollo, athena, and other AI specialists
+- **Greek Chorus AIs**: numa, apollo, athena, and other CI specialists
 - **Terminals**: Other human terminals like alice, bob, sandi
 - **Project CIs**: Project-specific computational instances
 - All through the same simple command syntax!
@@ -63,7 +63,7 @@ When working on a specific project, you can forward its CI messages to your term
 aish project forward MyWebApp
 
 # Messages from the project's CI will now appear in your terminal
-# This is useful for monitoring project-specific AI activity
+# This is useful for monitoring project-specific CI activity
 ```
 
 ### Removing Forwards
@@ -106,7 +106,7 @@ aish team-chat "We need ideas for improving test coverage"
 
 ## Message Forwarding
 
-### Forward AI Messages to Humans
+### Forward CI Messages to Humans
 
 You can forward messages from specific AIs to human terminals:
 
@@ -123,8 +123,8 @@ aish unforward apollo
 
 This is useful when:
 - You want to monitor an AI's responses
-- You're collaborating with an AI on a specific task
-- You need to audit AI interactions
+- You're collaborating with an CI on a specific task
+- You need to audit CI interactions
 
 ## Terminal Communication
 
@@ -161,7 +161,7 @@ aish terma del-from-keep 2
 
 ### AutoPrompt
 
-Keep your AI (like Claude) active to prevent timeouts:
+Keep your CI (like Claude) active to prevent timeouts:
 
 ```bash
 # Start autoprompt (2-second intervals)
@@ -222,5 +222,5 @@ Check that the Rhetor service is running and accessible.
 ## More Information
 
 - Full command reference: `aish list commands`
-- AI training docs: `$TEKTON_ROOT/MetaData/TektonDocumentation/AITraining/`
+- CI training docs: `$TEKTON_ROOT/MetaData/TektonDocumentation/AITraining/`
 - Developer docs: `$TEKTON_ROOT/MetaData/TektonDocumentation/Developer_Reference/`

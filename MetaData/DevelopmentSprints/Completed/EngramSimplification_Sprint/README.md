@@ -2,7 +2,7 @@
 
 ## Overview
 
-This sprint focuses on dramatically simplifying the Engram memory system by consolidating multiple APIs, removing experimental features, and creating a clean, intuitive interface for AI memory operations.
+This sprint focuses on dramatically simplifying the Engram memory system by consolidating multiple APIs, removing experimental features, and creating a clean, intuitive interface for CI memory operations.
 
 ## Sprint Goals
 

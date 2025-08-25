@@ -2,13 +2,13 @@
 
 ## Overview
 
-Sophia is the machine learning and continuous improvement component for the Tekton ecosystem. It provides scientific measurement of AI intelligence across multiple dimensions, conducts controlled experiments for system optimization, and enables continuous self-improvement through data-driven insights and recommendations.
+Sophia is the machine learning and continuous improvement component for the Tekton ecosystem. It provides scientific measurement of CI intelligence across multiple dimensions, conducts controlled experiments for system optimization, and enables continuous self-improvement through data-driven insights and recommendations.
 
 ## Key Features
 
 - **Metrics Collection and Analysis**: Comprehensive collection, storage, and analysis of performance and behavioral metrics across all Tekton components
 - **Experiment Framework**: Design, execution, and analysis of controlled experiments to validate improvement hypotheses
-- **Intelligence Measurement**: Structured framework for measuring AI cognitive capabilities across multiple dimensions
+- **Intelligence Measurement**: Structured framework for measuring CI cognitive capabilities across multiple dimensions
 - **Recommendation System**: Generation and tracking of improvement suggestions based on analysis and experiments
 - **Component Analysis**: Performance analysis of individual components and their interactions
 - **Research Capabilities**: Advanced research tools including Computational Spectral Analysis (CSA) and Catastrophe Theory (CT) for neural network analysis
@@ -39,7 +39,7 @@ sophia intelligence measure --component rhetor
 ```bash
 # Sophia-specific settings
 SOPHIA_PORT=8009                      # API port
-SOPHIA_AI_PORT=45009                  # AI specialist port
+SOPHIA_AI_PORT=45009                  # CI specialist port
 SOPHIA_METRICS_RETENTION_DAYS=90      # Metrics retention period
 SOPHIA_EXPERIMENT_TIMEOUT=3600        # Experiment timeout (seconds)
 
@@ -109,7 +109,7 @@ Sophia seamlessly integrates with:
 - **Hermes**: Service registration and health monitoring
 - **Engram**: Stores historical data and intelligence profiles
 - **Prometheus**: Provides insights for strategic planning
-- **AI Specialists**: Sophia AI analyzes patterns and suggests improvements
+- **AI Specialists**: Sophia CI analyzes patterns and suggests improvements
 
 ### Example Integration
 
@@ -164,7 +164,7 @@ asyncio.run(main())
 
 ## Intelligence Dimensions
 
-Sophia measures AI intelligence across 10 key dimensions:
+Sophia measures CI intelligence across 10 key dimensions:
 
 1. **Language Processing** - Natural language understanding and generation
 2. **Reasoning** - Logical inference and deduction capabilities
@@ -439,7 +439,7 @@ Sophia registers with Hermes to participate in the Tekton ecosystem:
 - [Implementation Status](./IMPLEMENTATION_STATUS.md): Current implementation status
 - [MCP Integration](./MCP_INTEGRATION.md): Model Context Protocol integration with 16 tools and workflows
 - [Sophia Architecture](../docs/SOPHIA_ARCHITECTURE.md): Detailed architecture design
-- [Intelligence Dimensions](../docs/SOPHIA_INTELLIGENCE_DIMENSIONS.md): Framework for measuring AI intelligence
+- [Intelligence Dimensions](../docs/SOPHIA_INTELLIGENCE_DIMENSIONS.md): Framework for measuring CI intelligence
 - [LLM Integration](../docs/SOPHIA_LLM_INTEGRATION.md): Integration with language models
 - [Metrics Specification](../docs/SOPHIA_METRICS_SPECIFICATION.md): Metrics collection and analysis
 

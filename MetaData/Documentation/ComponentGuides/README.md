@@ -54,7 +54,7 @@ A Tekton component is a self-contained service that:
 1. **[Component_Architecture_Guide.md](./Component_Architecture_Guide.md)** - Overall architecture and patterns
 2. **[Backend_Implementation_Guide.md](./Backend_Implementation_Guide.md)** - Backend API and business logic (includes MCP)
 3. **[UI_Implementation_Guide.md](./UI_Implementation_Guide.md)** - Hephaestus UI integration
-4. **[AI_Interface_Implementation_Guide.md](./AI_Interface_Implementation_Guide.md)** - Implementing AI interfaces and chat integration
+4. **[AI_Interface_Implementation_Guide.md](./AI_Interface_Implementation_Guide.md)** - Implementing CI interfaces and chat integration
 5. **[Component_Instrumentation_Guide.md](./Component_Instrumentation_Guide.md)** - How to add and maintain instrumentation metadata
 6. **[Instrumentation_Examples.md](./Instrumentation_Examples.md)** - Detailed examples for all file types
 7. **[Step_By_Step_Tutorial.md](./Step_By_Step_Tutorial.md)** - Complete walkthrough
@@ -130,7 +130,7 @@ Components use ports 8000-8014 (with Hephaestus UI on 8080). When creating a new
 1. Read the [Component Architecture Guide](./Component_Architecture_Guide.md)
 2. Follow the [Step By Step Tutorial](./Step_By_Step_Tutorial.md)
 3. Use existing components (Apollo, Athena, Prometheus, Metis) as references
-   - Metis provides excellent examples of task management APIs, AI integration via MCP, and comprehensive UI patterns
+   - Metis provides excellent examples of task management APIs, CI integration via MCP, and comprehensive UI patterns
 4. Keep it simple, keep it working, keep moving forward
 
 ---

@@ -5,7 +5,7 @@ This package provides a standardized implementation of the Model Context Protoco
 ## Overview
 
 The shared MCP library makes it easy for Tekton components to:
-- Expose tools and capabilities to AI assistants
+- Expose tools and capabilities to CI assistants
 - Register with Hermes as the central MCP aggregator
 - Handle tool execution requests
 - Manage contexts and state

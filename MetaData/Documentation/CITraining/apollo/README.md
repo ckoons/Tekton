@@ -1,4 +1,4 @@
-# Apollo AI Training Documentation
+# Apollo CI Training Documentation
 
 ## Welcome, Companion Intelligence!
 

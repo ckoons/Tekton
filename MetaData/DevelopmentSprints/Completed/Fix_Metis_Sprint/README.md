@@ -14,7 +14,7 @@ During investigation, we discovered that Metis:
 - Has a solid infrastructure (API, models, storage, WebSocket)
 - Completely lacks AI/LLM integration
 - Has placeholder MCP tools that are not implemented
-- Uses manual complexity scoring instead of AI analysis
+- Uses manual complexity scoring instead of CI analysis
 - Cannot decompose tasks or generate subtasks automatically
 
 ## Success Criteria
@@ -29,7 +29,7 @@ During investigation, we discovered that Metis:
 
 This is NOT a complete rewrite. We will:
 - Keep all existing infrastructure
-- Add AI capabilities alongside existing CRUD operations
+- Add CI capabilities alongside existing CRUD operations
 - Implement the missing "brain" while preserving the working "skeleton"
 
 ## Sprint Duration

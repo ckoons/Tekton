@@ -1,28 +1,28 @@
-# aish - The AI Shell
+# aish - The CI Shell
 
-A thin client providing AI orchestration and inter-terminal communication for the Tekton platform.
+A thin client providing CI orchestration and inter-terminal communication for the Tekton platform.
 
 ## Features
 
-- **Direct AI Communication**: Send messages to any Tekton AI specialist
+- **Direct CI Communication**: Send messages to any Tekton CI specialist
 - **Inter-Terminal Messaging**: Communicate between aish-enabled terminals
 - **Unix-style Inbox**: Manage messages with new/keep inboxes
-- **Pipeline Support**: Chain AI operations together
+- **Pipeline Support**: Chain CI operations together
 - **Help System**: Integrated documentation paths
 
 ## Components
 
-- `aish` - Main command for AI interaction
+- `aish` - Main command for CI interaction
 - `aish-proxy` - Terminal enhancement providing heartbeat and message display
 - `aish-history` - History management tool
 - `src/` - Core Python implementation
 
 ## Usage
 
-### Basic AI Commands
+### Basic CI Commands
 
 ```bash
-# Direct message to AI (NEW: quoted messages now work!)
+# Direct message to CI (NEW: quoted messages now work!)
 aish numa "How do I optimize this workflow?"
 aish apollo "Analyze this codebase for issues"
 
@@ -88,11 +88,11 @@ When launched via Terma, terminals automatically have:
 
 1. **Inbox Operations**: Only work in terminals started AFTER July 4, 2025. Older terminals display messages but command processing (pop/push) doesn't modify state.
 
-2. **Socket Communication**: Some AI specialists may fail with "Failed to send message". This typically means:
-   - The AI process crashed
+2. **Socket Communication**: Some CI specialists may fail with "Failed to send message". This typically means:
+   - The CI process crashed
    - Port conflict
    
-   **Fix**: Restart affected AI components
+   **Fix**: Restart affected CI components
 
 3. **stdin Detection**: Fixed - aish now correctly prioritizes command-line arguments over stdin detection.
 
@@ -102,8 +102,8 @@ When launched via Terma, terminals automatically have:
 - Update to latest aish version
 - The syntax `aish numa "hello"` now works correctly
 
-### AI Not Responding
-1. Check if AI is running: `tekton-status`
+### CI Not Responding
+1. Check if CI is running: `tekton-status`
 2. Check port is open: `nc -zv localhost 45000`
 3. Restart component if needed
 
@@ -120,9 +120,9 @@ When launched via Terma, terminals automatically have:
 ```
 
 ### Port Management
-- Configurable port formula: AI port = TEKTON_AI_PORT_BASE + (component_port - TEKTON_PORT_BASE)
+- Configurable port formula: CI port = TEKTON_AI_PORT_BASE + (component_port - TEKTON_PORT_BASE)
 - Check port alignment: `scripts/check_port_alignment.py`
-- `cleanup_orphan_processes.py`: Detect and remove orphaned AI processes
+- `cleanup_orphan_processes.py`: Detect and remove orphaned CI processes
 
 ### Orphan Process Cleanup
 - Automatic cleanup via Shared Services (every 6 hours)
@@ -133,7 +133,7 @@ When launched via Terma, terminals automatically have:
 ### New Features (July 2025)
 - Fixed quoted message syntax
 - Simplified to fixed port system
-- Component-specific AI management
+- Component-specific CI management
 - Launch flags: `-n` (no AI)
 
 ---

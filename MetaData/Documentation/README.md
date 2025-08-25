@@ -36,14 +36,14 @@ Step-by-step guides for building new Tekton components. Essential for developmen
 Debugging, instrumentation, and development practices for both human and CI developers.
 
 ### AITraining
-Training documentation for AI components. Focus on core components:
+Training documentation for CI components. Focus on core components:
 - tekton-core - System orchestration
-- aish - AI shell and communication
+- aish - CI shell and communication
 - terma - Terminal management
 - numa, apollo, athena, rhetor - Primary specialists
 
 ### MCP
-Model Context Protocol documentation for AI tool integration.
+Model Context Protocol documentation for CI tool integration.
 
 ### UserGuides
 End-user documentation and quick start guides for new users and developers.

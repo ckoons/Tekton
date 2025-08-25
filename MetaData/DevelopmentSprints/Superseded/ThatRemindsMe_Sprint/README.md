@@ -6,10 +6,10 @@
 **Branch**: sprint/ThatRemindsMe
 
 ## Overview
-This sprint implements a persona-based AI instantiation system with progressive memory loading, enabling task-specific AI instances that maintain continuous identity while adaptively managing their context window.
+This sprint implements a persona-based CI instantiation system with progressive memory loading, enabling task-specific CI instances that maintain continuous identity while adaptively managing their context window.
 
 ## Sprint Objectives
-1. Create AI persona system with identity manifests
+1. Create CI persona system with identity manifests
 2. Implement progressive memory loading via MCP
 3. Enable "hiring" specific personas for specific tasks
 4. Allow AIs to manage their own memory retrieval
@@ -37,7 +37,7 @@ This sprint implements a persona-based AI instantiation system with progressive 
 - Atlas persona successfully created and stored
 - Progressive memory loading reduces initial context by >50%
 - Terma supports `--hire <persona> --task <task>` syntax
-- AI can retrieve relevant memories during task execution
+- CI can retrieve relevant memories during task execution
 - Identity remains consistent across sessions
 
 ## Primary Components
@@ -51,4 +51,4 @@ This sprint implements a persona-based AI instantiation system with progressive 
 - [Implementation Plan](ImplementationPlan.md)
 
 ## Notes for Implementation
-This sprint explores the frontier of AI identity and memory. The implementing Claude should feel free to propose innovative approaches to progressive memory loading and identity management while ensuring practical usability.
+This sprint explores the frontier of CI identity and memory. The implementing Claude should feel free to propose innovative approaches to progressive memory loading and identity management while ensuring practical usability.

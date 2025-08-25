@@ -7,7 +7,7 @@ Terma is an advanced terminal system designed for integration with the Tekton ec
 ## Features
 
 - **Native Terminal Orchestrator**: Clean replacement for web-based terminals using native applications
-- **aish Integration**: Seamless integration with AI Shell for enhanced terminal experiences
+- **aish Integration**: Seamless integration with CI Shell for enhanced terminal experiences
 - **Session Management**: Create, manage, and monitor terminal sessions
 - **LLM Assistance**: AI-powered help with terminal commands and output analysis
 - **Hermes Integration**: Seamless communication with other Tekton components
@@ -158,5 +158,5 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## Acknowledgements
 
-- Terma is part of the Tekton ecosystem, an intelligent orchestration system that coordinates multiple AI models and resources.
+- Terma is part of the Tekton ecosystem, an intelligent orchestration system that coordinates multiple CI models and resources.
 - Special thanks to the Tekton team for their support and collaboration.

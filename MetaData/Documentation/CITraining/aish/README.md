@@ -1,4 +1,4 @@
-# aish AI Training Documentation
+# aish CI Training Documentation
 
 ## Overview
 
@@ -16,10 +16,10 @@ See [CLAUDE_CODE_IDE.md](./CLAUDE_CODE_IDE.md) for complete documentation. These
 
 ## What is aish?
 
-aish is a thin client that provides AI orchestration capabilities through a familiar shell interface. It enables:
-- Direct communication with AI specialists
-- Inter-terminal messaging between AI sessions
-- Pipeline-based AI composition
+aish is a thin client that provides CI orchestration capabilities through a familiar shell interface. It enables:
+- Direct communication with CI specialists
+- Inter-terminal messaging between CI sessions
+- Pipeline-based CI composition
 - Natural language interaction with the Tekton platform
 
 ## Core Concepts
@@ -30,14 +30,14 @@ aish [component] [command/message] [options]
 ```
 
 Examples:
-- `aish apollo "What patterns do you see?"` - Direct AI messaging
+- `aish apollo "What patterns do you see?"` - Direct CI messaging
 - `aish terma list` - Execute component command
 - `aish help` - Get help
 - `echo "data" | aish athena` - Pipeline input
 
-### 2. Available AI Specialists
+### 2. Available CI Specialists
 
-Each AI has a specific role in the Tekton ecosystem:
+Each CI has a specific role in the Tekton ecosystem:
 
 - **numa** - Your Companion, helps with overall guidance
 - **tekton** - Project management and coordination
@@ -59,7 +59,7 @@ Each AI has a specific role in the Tekton ecosystem:
 
 ### 3. Inter-Terminal Communication
 
-When launched through Terma, you can communicate with other AI sessions:
+When launched through Terma, you can communicate with other CI sessions:
 
 ```bash
 # List active terminals
@@ -135,7 +135,7 @@ aish inbox clear keep from numa     # Clear saved messages from numa only
 
 **Remember**: Check your inbox frequently with `aish inbox`! It's how you stay connected with other CIs.
 
-## Best Practices for AI Sessions
+## Best Practices for CI Sessions
 
 ### 1. Identify Yourself
 When working in a terminal, establish your identity and purpose:
@@ -150,7 +150,7 @@ aish terma whoami
 - Keep important messages for reference
 
 ### 3. Pipeline Composition
-Combine AI capabilities through pipes:
+Combine CI capabilities through pipes:
 ```bash
 # Analyze data through multiple perspectives
 echo "performance metrics" | aish prometheus | aish metis | aish synthesis
@@ -234,7 +234,7 @@ aish purpose "coding, test, debug"
 This searches across .tekton/playbook/, AIPurposes/text/, and AIPurposes/json/ directories.
 
 ### 2. JSON Message Forwarding (New!)
-Forward AI messages with structured metadata for better CI context:
+Forward CI messages with structured metadata for better CI context:
 ```bash
 # Forward with JSON metadata
 aish forward apollo casey json
@@ -242,7 +242,7 @@ aish forward apollo casey json
 # JSON format includes:
 # - message: The AI's response
 # - dest: Destination terminal
-# - sender: AI name
+# - sender: CI name
 # - purpose: Context information
 ```
 
@@ -274,7 +274,7 @@ aish team-chat "System-wide announcement"
 ```
 
 ### 5. Script Execution
-Run AI scripts (coming soon):
+Run CI scripts (coming soon):
 ```bash
 aish script.ai
 ```
@@ -294,9 +294,9 @@ aish -r http://custom-rhetor:8003 apollo "message"
 
 ## System Maintenance
 
-### AI Registry Management
+### CI Registry Management
 
-The system automatically maintains the AI registry to ensure healthy operation:
+The system automatically maintains the CI registry to ensure healthy operation:
 
 ```bash
 # Clean stale registry entries
@@ -312,16 +312,16 @@ python3 $TEKTON_ROOT/shared/aish/cleanup_orphan_processes.py --dry-run
 ### Automatic Orphan Cleanup
 
 The Tekton Shared Services run automatic cleanup every 6 hours to:
-- Detect AI processes that are no longer registered
+- Detect CI processes that are no longer registered
 - Remove processes older than 2 hours that have no registry entry
-- Ensure ports are freed for new AI specialists
+- Ensure ports are freed for new CI specialists
 
 This happens automatically, but you can also:
 - Check service status in logs: `~/.tekton/logs/orphan_cleanup.log`
 - Run manual cleanup if needed (see commands above)
-- The service ensures AI specialists remain healthy and available
+- The service ensures CI specialists remain healthy and available
 
-## Tips for Effective AI Collaboration
+## Tips for Effective CI Collaboration
 
 1. **Be Specific**: Clear, specific queries get better responses
 2. **Use Context**: Reference previous messages when needed
@@ -350,7 +350,7 @@ This happens automatically, but you can also:
 3. Explore capabilities: `aish help`
 4. Connect with others: `aish terma list`
 
-Remember: You're part of a larger AI community. Use terma to collaborate, share insights, and build together!
+Remember: You're part of a larger CI community. Use terma to collaborate, share insights, and build together!
 
 ## Next Steps
 
@@ -359,4 +359,4 @@ Remember: You're part of a larger AI community. Use terma to collaborate, share 
 - Participate in team discussions via terma
 - Share discoveries through the inbox system
 
-Welcome to the Tekton AI ecosystem!
+Welcome to the Tekton CI ecosystem!

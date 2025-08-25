@@ -62,5 +62,5 @@ This sprint is expected to take 4 weeks to complete:
 ## Team
 
 - **Casey**: Human-in-the-loop project manager
-- **Claude**: AI assistant implementing the sprint
+- **Claude**: CI assistant implementing the sprint
 - **Component Owners**: Stakeholders for affected components

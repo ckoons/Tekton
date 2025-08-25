@@ -2,11 +2,11 @@
 
 ## Overview
 
-Ergon is the agent framework for the Tekton ecosystem, enabling the creation, management, and orchestration of specialized AI agents that can perform a wide range of tasks. Ergon provides infrastructure for building, deploying, and executing intelligent agents with various capabilities, including tools, workflows, and integrations with other Tekton components.
+Ergon is the agent framework for the Tekton ecosystem, enabling the creation, management, and orchestration of specialized CI agents that can perform a wide range of tasks. Ergon provides infrastructure for building, deploying, and executing intelligent agents with various capabilities, including tools, workflows, and integrations with other Tekton components.
 
 ## Key Features
 
-- **Agent Creation and Management**: Generate and configure AI agents for specific tasks and domains.
+- **Agent Creation and Management**: Generate and configure CI agents for specific tasks and domains.
 - **Tool Integration**: Register, discover, and utilize tools across the Tekton ecosystem.
 - **Workflow Execution**: Define and run complex workflows that coordinate multiple agents.
 - **MCP (Model Control Protocol) Implementation**: Standardized protocol for multimodal content processing.
@@ -64,7 +64,7 @@ The `MCPClient` implements the Multimodal Cognitive Protocol:
 
 Ergon uses a relational database with SQLAlchemy ORM:
 
-- **Agent**: Core model representing AI agent instances
+- **Agent**: Core model representing CI agent instances
 - **Tool**: Reusable functions that agents can invoke
 - **Component**: Extensible unit of functionality
 - **AgentFile**: Source files associated with agents

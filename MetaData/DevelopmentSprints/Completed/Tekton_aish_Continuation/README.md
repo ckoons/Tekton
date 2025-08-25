@@ -6,7 +6,7 @@ This sprint implements Tekton-side features needed for aish Phase 3 and 4, focus
 
 ## Sprint Goals
 
-1. **Add SSE Streaming to Rhetor** - Enable progressive AI responses
+1. **Add SSE Streaming to Rhetor** - Enable progressive CI responses
 2. **Fix Team Chat** - Resolve "No responses yet" issue
 3. **Complete MCP Tools** - Implement remaining NotImplementedError methods
 4. **Pipeline Context Support** - Enable memory passing between AIs
@@ -26,7 +26,7 @@ This sprint implements Tekton-side features needed for aish Phase 3 and 4, focus
 ## Key Deliverables
 
 ### 1. SSE Endpoints
-- `/api/chat/{specialist_id}/stream` - Stream individual AI responses
+- `/api/chat/{specialist_id}/stream` - Stream individual CI responses
 - `/api/team-chat/stream` - Stream team chat responses
 - Progressive token delivery from Ollama
 
@@ -41,7 +41,7 @@ This sprint implements Tekton-side features needed for aish Phase 3 and 4, focus
 - Streaming support in `SendMessageToSpecialist`
 
 ### 4. Pipeline Support
-- Context parameter in AI requests
+- Context parameter in CI requests
 - Memory hints for continuity
 - State passing between specialists
 

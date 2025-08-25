@@ -4,7 +4,7 @@ This directory contains the documentation and planning artifacts for the Tekton 
 
 ## Overview
 
-The Tekton Native Intelligence Sprint creates capabilities that emerge from intelligent orchestration across multiple AI components. Rather than integrating external tools, this sprint develops "intelligence that emerges from orchestration" - capabilities that are more powerful than the sum of their parts.
+The Tekton Native Intelligence Sprint creates capabilities that emerge from intelligent orchestration across multiple CI components. Rather than integrating external tools, this sprint develops "intelligence that emerges from orchestration" - capabilities that are more powerful than the sum of their parts.
 
 ## Key Documents
 
@@ -62,5 +62,5 @@ After completing this sprint, the following initiatives are recommended:
 
 1. **Advanced Orchestration Patterns**: Build more sophisticated workflow templates
 2. **User Interface Enhancement**: Create UIs for managing intelligent workflows
-3. **Third-Party AI Integration**: Extend orchestration to external AI services
+3. **Third-Party CI Integration**: Extend orchestration to external CI services
 4. **Enterprise Intelligence Features**: Advanced analytics and reporting capabilities

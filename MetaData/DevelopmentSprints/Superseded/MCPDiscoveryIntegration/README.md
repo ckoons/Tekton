@@ -4,7 +4,7 @@
 
 This development sprint focuses on implementing a comprehensive system for discovering, installing, and configuring Model Context Protocol (MCP) servers within the Tekton ecosystem, with particular integration into the Ergon component.
 
-MCP servers provide standardized interfaces for AI systems to interact with tools, services, and data sources. By creating a unified discovery and integration mechanism, we'll make it easier for users to find and utilize the growing ecosystem of MCP servers.
+MCP servers provide standardized interfaces for CI systems to interact with tools, services, and data sources. By creating a unified discovery and integration mechanism, we'll make it easier for users to find and utilize the growing ecosystem of MCP servers.
 
 ## Key Documents
 

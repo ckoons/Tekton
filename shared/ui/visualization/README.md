@@ -1,6 +1,6 @@
 # Tekton Shared Visualization Framework
 
-A unified visualization framework for the Tekton AI platform, providing consistent visualizations across Noesis, Sophia, and other components.
+A unified visualization framework for the Tekton CI platform, providing consistent visualizations across Noesis, Sophia, and other components.
 
 ## Overview
 
@@ -485,4 +485,4 @@ See [examples/](./examples/) directory for complete working examples.
 
 ## License
 
-Part of the Tekton AI Platform. See project root for license information.
+Part of the Tekton CI Platform. See project root for license information.

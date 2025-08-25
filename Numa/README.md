@@ -1,13 +1,13 @@
-# Numa - Platform AI Mentor
+# Numa - Platform CI Mentor
 
-Numa is the platform-wide AI mentor for Tekton, providing guidance and oversight across all components.
+Numa is the platform-wide CI mentor for Tekton, providing guidance and oversight across all components.
 
 ## Overview
 
 Numa serves as a collaborative mentor and facilitator for the Tekton ecosystem:
 - Provides platform-wide perspective and guidance
 - Mentors users through Companion Chat
-- Coordinates with other AI specialists via Team Chat
+- Coordinates with other CI specialists via Team Chat
 - Monitors overall system health and patterns
 - Offers coaching and suggestions (not commands)
 
@@ -18,7 +18,7 @@ Numa runs on port **8016** (configurable via `NUMA_PORT` environment variable).
 ## Features
 
 - **Companion Chat**: Direct interaction with users for platform guidance
-- **Team Chat**: Communication with other AI specialists
+- **Team Chat**: Communication with other CI specialists
 - **Platform Monitoring**: Observes patterns across all components
 - **Component Mentoring**: Provides guidance to individual component AIs
 
@@ -34,7 +34,7 @@ Numa runs on port **8016** (configurable via `NUMA_PORT` environment variable).
 - `GET /` - Component information
 - `GET /health` - Health check for Hermes registration
 - `POST /api/companion-chat` - User interaction endpoint
-- `POST /api/team-chat` - AI team communication
+- `POST /api/team-chat` - CI team communication
 - `GET /api/status` - Detailed component status
 
 ## Environment Variables
@@ -45,7 +45,7 @@ Numa runs on port **8016** (configurable via `NUMA_PORT` environment variable).
 
 ## Architecture
 
-Numa operates as a peer AI with platform-wide visibility:
+Numa operates as a peer CI with platform-wide visibility:
 - Read access to all component sockets
 - Can communicate with any component AI
 - Provides guidance through knowledge, not authority
@@ -54,7 +54,7 @@ Numa operates as a peer AI with platform-wide visibility:
 ## Development Status
 
 This is a bare-bones implementation. Future enhancements will include:
-- Full AI specialist integration with fixed port system
+- Full CI specialist integration with fixed port system
 - Hermes registration for service discovery
 - Socket-based communication with other AIs
 - Platform pattern analysis and insights

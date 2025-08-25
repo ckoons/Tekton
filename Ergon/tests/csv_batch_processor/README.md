@@ -55,7 +55,7 @@ Edit `config.json` to customize:
 
 ## CI Companion
 
-The solution includes an AI companion that:
+The solution includes an CI companion that:
 - Monitors input directory for new files
 - Optimizes processing based on file characteristics
 - Handles errors intelligently

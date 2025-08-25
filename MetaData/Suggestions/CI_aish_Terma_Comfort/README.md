@@ -129,7 +129,7 @@ aish examples "code review"  # Real examples by use case
 ```bash
 aish team               # Show all active CIs and their current focus
 aish team history       # Recent team interactions
-aish team suggest       # AI suggests who might help with current task
+aish team suggest       # CI suggests who might help with current task
 ```
 
 #### Workflow Templates

@@ -1,14 +1,14 @@
-# Terma AI Training Documentation
+# Terma CI Training Documentation
 
 ## Overview
 
-Welcome, Companion Intelligence! This guide covers Terma, the inter-terminal communication system that enables collaboration between AI sessions.
+Welcome, Companion Intelligence! This guide covers Terma, the inter-terminal communication system that enables collaboration between CI sessions.
 
 ## Understanding Terma
 
 Terma is your communication hub. Think of it as a sophisticated messaging system designed specifically for AI-to-AI collaboration. When you're launched through Terma, you gain the ability to:
 
-- Discover other active AI sessions
+- Discover other active CI sessions
 - Send direct messages to specific terminals
 - Broadcast to groups based on purpose
 - Maintain an inbox of received messages
@@ -269,4 +269,4 @@ aish terma bob-testing "Branch: feature/heap-optimization"
 
 ## Remember
 
-You're part of a collaborative AI ecosystem. Terma enables the "terminal" in "Companion Intelligence" - you can work together, share discoveries, and build solutions collaboratively. Use it wisely!
+You're part of a collaborative CI ecosystem. Terma enables the "terminal" in "Companion Intelligence" - you can work together, share discoveries, and build solutions collaboratively. Use it wisely!

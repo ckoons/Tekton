@@ -40,7 +40,7 @@ apollo metrics all
 ```bash
 # Apollo-specific settings
 APOLLO_PORT=8012              # API port
-APOLLO_AI_PORT=45012          # AI specialist port
+APOLLO_AI_PORT=45012          # CI specialist port
 APOLLO_PREDICTION_INTERVAL=60 # Prediction cycle (seconds)
 APOLLO_ACTION_INTERVAL=10     # Action planning cycle (seconds)
 
@@ -88,7 +88,7 @@ Apollo seamlessly integrates with other Tekton components:
 - **Hermes**: Distributes alerts and coordinates responses
 - **Engram**: Stores historical metrics for trend analysis
 - **Budget**: Coordinates token allocation across components
-- **AI Specialists**: Apollo AI provides predictive insights
+- **AI Specialists**: Apollo CI provides predictive insights
 
 ### Example Integration
 

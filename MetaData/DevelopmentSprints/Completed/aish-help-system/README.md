@@ -40,7 +40,7 @@ Changes span three files:
 ## Key Features
 
 ### 1. Unified Syntax
-- Direct AI messaging: `aish apollo "message"`
+- Direct CI messaging: `aish apollo "message"`
 - Component commands: `aish terma list`
 - Help integration: `aish apollo help`
 

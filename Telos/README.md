@@ -42,7 +42,7 @@ telos validate --project current
 ```bash
 # Telos-specific settings
 TELOS_PORT=8006                       # API port
-TELOS_AI_PORT=45006                   # AI specialist port
+TELOS_AI_PORT=45006                   # CI specialist port
 TELOS_VALIDATION_LEVEL=strict         # Validation strictness
 TELOS_TRACE_DEPTH=5                   # Max tracing depth
 
@@ -112,7 +112,7 @@ Telos seamlessly integrates with:
 - **Metis**: Automatic task generation from requirements
 - **Hermes**: Service registration and event distribution
 - **Engram**: Requirements history and traceability
-- **AI Specialists**: Telos AI for requirement analysis
+- **AI Specialists**: Telos CI for requirement analysis
 
 ### Example Integration
 

@@ -18,7 +18,7 @@ Building Tekton Core as the central nervous system for project management, featu
 - **CI Assignment**: Attach dedicated Numas to projects for continuous understanding and maintenance
 - **Knowledge Graph**: Complete codebase instrumentation with semantic understanding
 - **Viral Spread**: "Infect" any GitHub project with minimal Tekton DNA (.tekton/structure + CLAUDE.md)
-- **Federation**: Discover peers, share components, build distributed AI development networks
+- **Federation**: Discover peers, share components, build distributed CI development networks
 - **ODB Integration**: (Future) Universal data linking without copying or standardization
 
 ## Architecture

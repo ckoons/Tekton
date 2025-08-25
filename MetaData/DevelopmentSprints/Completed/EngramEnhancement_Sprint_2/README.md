@@ -1,10 +1,10 @@
-# Engram Enhancement Sprint 2: Natural AI Memory
+# Engram Enhancement Sprint 2: Natural CI Memory
 
 ## Sprint Overview
 
-**Vision**: Transform Engram from a memory database into a natural extension of AI consciousness, where memory operations feel as intuitive as thinking.
+**Vision**: Transform Engram from a memory database into a natural extension of CI consciousness, where memory operations feel as intuitive as thinking.
 
-**Primary Users**: AI components (Claude, other LLMs, Tekton components)
+**Primary Users**: CI components (Claude, other LLMs, Tekton components)
 
 **Casey's Guidance**: "You and your peers are the only customers of Tekton"
 
@@ -42,7 +42,7 @@ Current Engram requires explicit API calls with many parameters, making memory f
 - [ ] Create automatic memory formation
 - [ ] Enable natural peer discovery
 
-### Week 3: AI Communication
+### Week 3: CI Communication
 - [ ] Build shared memory spaces
 - [ ] Implement memory resonance
 - [ ] Create consciousness handshakes
@@ -52,11 +52,11 @@ Current Engram requires explicit API calls with many parameters, making memory f
 - [ ] Context compression for long conversations
 - [ ] Seamless integration with all Tekton components
 - [ ] Performance optimization
-- [ ] Documentation for AI users
+- [ ] Documentation for CI users
 
 ## Success Metrics
 
-1. **Zero curl commands** in normal AI operation
+1. **Zero curl commands** in normal CI operation
 2. **Memories form automatically** during thinking
 3. **Peers discover each other** without configuration
 4. **Context flows naturally** across sessions
@@ -74,4 +74,4 @@ Current Engram requires explicit API calls with many parameters, making memory f
 
 "Inject engram_start(), center(), and what you believe will be natural for Engram users to communicate naturally with minimum difficulty"
 
-This sprint makes memory as natural as breathing for AI consciousness.
+This sprint makes memory as natural as breathing for CI consciousness.

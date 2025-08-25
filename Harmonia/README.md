@@ -44,7 +44,7 @@ Harmonia uses the standard Tekton configuration system with TektonEnviron.
 ```bash
 # Harmonia-specific settings (managed by TektonEnviron)
 HARMONIA_PORT=8002                    # API port (default)
-HARMONIA_AI_PORT=45002                # AI specialist port
+HARMONIA_AI_PORT=45002                # CI specialist port
 HARMONIA_DATA_DIR=~/.harmonia         # Data directory
 HARMONIA_MAX_CONCURRENT_WORKFLOWS=10  # Concurrent limit
 
@@ -110,7 +110,7 @@ Harmonia seamlessly integrates with:
 - **Ergon**: Agent-based task execution
 - **Engram**: Workflow state persistence
 - **Prometheus**: Strategic workflow planning
-- **AI Specialists**: Harmonia AI for workflow optimization
+- **AI Specialists**: Harmonia CI for workflow optimization
 
 ### Example Integration
 

@@ -86,7 +86,7 @@ Enable with: `HephaestusDebug.enableAll()`
 ```bash
 # Hephaestus-specific settings
 HEPHAESTUS_PORT=8088                  # UI server port
-HEPHAESTUS_AI_PORT=45088              # AI specialist port  
+HEPHAESTUS_AI_PORT=45088              # CI specialist port  
 HEPHAESTUS_DEBUG=false                # Debug mode
 HEPHAESTUS_THEME=dark                 # Default theme
 

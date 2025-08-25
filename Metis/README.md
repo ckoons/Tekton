@@ -42,7 +42,7 @@ metis dependency add task-1 task-2
 ```bash
 # Metis-specific settings
 METIS_PORT=8010                      # API port
-METIS_AI_PORT=45010                  # AI specialist port
+METIS_AI_PORT=45010                  # CI specialist port
 METIS_BACKUP_PATH=metis_data.json    # Backup file path
 METIS_STORAGE_TYPE=memory            # Storage type (memory/persistent)
 
@@ -105,7 +105,7 @@ Metis seamlessly integrates with:
 - **Prometheus**: Provides task data for strategic planning
 - **Hermes**: Service registration and event distribution
 - **Harmonia**: Task execution in workflows
-- **AI Specialists**: Metis AI for intelligent task analysis
+- **AI Specialists**: Metis CI for intelligent task analysis
 
 ### Example Integration
 

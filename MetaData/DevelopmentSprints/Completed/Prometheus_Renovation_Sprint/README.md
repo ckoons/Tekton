@@ -24,7 +24,7 @@ This is a **template sprint** that should be copied and applied to each Tekton c
 - [ ] Apollo - Attention/prediction 
 - [ ] Athena - Knowledge management
 - [ ] Hermes - Message bus
-- [ ] Rhetor - AI orchestration
+- [ ] Rhetor - CI orchestration
 
 ### Priority 2 - User-Facing
 - [ ] Numa - Main orchestrator
@@ -50,7 +50,7 @@ This is a **template sprint** that should be copied and applied to each Tekton c
 3. **Ports**: No hardcoding - use environment
 4. **Testing**: Organized in tests/[component]/
 5. **UI**: Real data only, no mocks
-6. **MCP**: All AI communication through aish MCP
+6. **MCP**: All CI communication through aish MCP
 7. **Errors**: Consistent error handling
 8. **Logging**: Proper log levels and formatting
 
@@ -62,4 +62,4 @@ Each renovated component should:
 - Follow all standard patterns
 - Have updated documentation
 - Show real data in UI
-- Use aish MCP for AI communication
+- Use aish MCP for CI communication

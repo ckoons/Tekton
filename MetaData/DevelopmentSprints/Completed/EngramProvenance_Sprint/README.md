@@ -1,7 +1,7 @@
 # Engram Provenance Sprint
 
 ## Overview
-Implementing git-like provenance tracking for AI memories in Engram, enabling transparent collaborative cognition.
+Implementing git-like provenance tracking for CI memories in Engram, enabling transparent collaborative cognition.
 
 ## Sprint Goals
 1. Add provenance tracking to memory storage
