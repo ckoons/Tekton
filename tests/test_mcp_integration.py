@@ -39,12 +39,12 @@ async def test_send_message_to_specialist():
     # Test cases
     test_cases = [
         {
-            "specialist": "athena-ai",
+            "specialist": "athena-ci",
             "message": "Hello Athena, this is a test of the new MCP integration. What is wisdom?",
             "expected_type": "socket"
         },
         {
-            "specialist": "apollo-ai", 
+            "specialist": "apollo-ci", 
             "message": "Apollo, can you see the vision of our integrated AI platform?",
             "expected_type": "socket"
         },
@@ -106,7 +106,7 @@ async def test_error_handling():
     # Test non-existent specialist
     print("\n1. Testing non-existent specialist...")
     response = await integration.send_message_to_specialist(
-        "non-existent-ai",
+        "non-existent-ci",
         "This should fail"
     )
     
@@ -138,7 +138,7 @@ async def test_context_passing():
     print(f"Context: {json.dumps(context, indent=2)}")
     
     response = await integration.send_message_to_specialist(
-        "athena-ai",
+        "athena-ci",
         "Given our previous discussion, what should we focus on next?",
         context
     )

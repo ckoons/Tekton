@@ -7,25 +7,25 @@ import asyncio
 import sys
 sys.path.insert(0, '/Users/cskoons/projects/github/Tekton')
 
-from shared.ai.ai_service_simple import AIService
+from shared.ai.ai_service_simple import CIService
 
 async def test_with_real_ai():
     """Test with real AI connection"""
-    service = AIService(debug=True)
+    service = CIService(debug=True)
     
     # Connect to Apollo
     try:
         reader, writer = await asyncio.open_connection('localhost', 45012)
-        service.register_ai("apollo-ai", reader, writer)
+        service.register_ai("apollo-ci", reader, writer)
         
         # Test async send
-        msg_id = service.send_message_async("apollo-ai", "What is code quality?")
+        msg_id = service.send_message_async("apollo-ci", "What is code quality?")
         
         # Process the message
-        await service.process_one_message("apollo-ai", msg_id)
+        await service.process_one_message("apollo-ci", msg_id)
         
         # Get response
-        result = service.get_response("apollo-ai", msg_id)
+        result = service.get_response("apollo-ci", msg_id)
         if result and result['success']:
             response = result['response']
             print(f"Apollo response: {response[:100]}...")
@@ -45,13 +45,13 @@ async def test_with_real_ai():
 
 async def test_multiple_real_ais():
     """Test with multiple real AIs"""
-    service = AIService(debug=True)
+    service = CIService(debug=True)
     
     # List of AIs to test
     ais = [
-        ("apollo-ai", 45012),
-        ("numa-ai", 45016),
-        ("athena-ai", 45005)
+        ("apollo-ci", 45012),
+        ("numa-ci", 45016),
+        ("athena-ci", 45005)
     ]
     
     connections = []

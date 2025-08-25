@@ -12,7 +12,7 @@ from shared.ai.simple_ai import ai_send_sync
 def test_apollo_responds():
     """Test that Apollo AI responds to a message"""
     try:
-        response = ai_send_sync("apollo-ai", "hello", "localhost", 45012)
+        response = ai_send_sync("apollo-ci", "hello", "localhost", 45012)
         assert response is not None
         assert len(response) > 0
         print("✓ test_apollo_responds")
@@ -24,7 +24,7 @@ def test_apollo_responds():
 def test_numa_responds():
     """Test that Numa AI responds to a message"""
     try:
-        response = ai_send_sync("numa-ai", "hello", "localhost", 45016) 
+        response = ai_send_sync("numa-ci", "hello", "localhost", 45016) 
         assert response is not None
         assert len(response) > 0
         print("✓ test_numa_responds")
@@ -37,9 +37,9 @@ def test_multiple_calls_same_ai():
     """Test multiple calls to same AI work"""
     try:
         # Make 3 calls
-        response1 = ai_send_sync("apollo-ai", "first", "localhost", 45012)
-        response2 = ai_send_sync("apollo-ai", "second", "localhost", 45012)
-        response3 = ai_send_sync("apollo-ai", "third", "localhost", 45012)
+        response1 = ai_send_sync("apollo-ci", "first", "localhost", 45012)
+        response2 = ai_send_sync("apollo-ci", "second", "localhost", 45012)
+        response3 = ai_send_sync("apollo-ci", "third", "localhost", 45012)
         
         # All should have responses
         assert response1 is not None
@@ -55,7 +55,7 @@ def test_multiple_calls_same_ai():
 def test_invalid_ai_fails():
     """Test that invalid AI fails appropriately"""
     try:
-        response = ai_send_sync("fake-ai", "hello", "localhost", 99999)
+        response = ai_send_sync("fake-ci", "hello", "localhost", 99999)
         print("✗ test_invalid_ai_fails: Should have failed but didn't")
         return False
     except Exception:

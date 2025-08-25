@@ -117,7 +117,7 @@ def main():
     
     tester.test(
         "List available AIs",
-        'aish list-ais',
+        'aish list-cis',
         check_fn=check_list,
         timeout=10
     )
@@ -153,7 +153,7 @@ def main():
     
     tester.test(
         "Error handling - invalid AI",
-        'aish nonexistent-ai "test"',
+        'aish nonexistent-ci "test"',
         check_fn=check_error,
         timeout=10
     )

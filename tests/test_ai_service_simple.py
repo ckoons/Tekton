@@ -9,7 +9,7 @@ import json
 import sys
 sys.path.insert(0, '/Users/cskoons/projects/github/Tekton')
 
-from shared.ai.ai_service_simple import AIService
+from shared.ai.ai_service_simple import CIService
 
 # Mock socket for testing
 class MockSocket:
@@ -37,16 +37,16 @@ class MockSocket:
 
 def test_send_message_sync():
     """Test synchronous send and receive (without sockets)"""
-    service = AIService(debug=True)
+    service = CIService(debug=True)
     
     # Don't register sockets - sync method will simulate
     # Just register AI with no socket to create the queue
-    if "test-ai" not in service.queues:
-        service.queues["test-ai"] = {}
+    if "test-ci" not in service.queues:
+        service.queues["test-ci"] = {}
     
     # Send message and get response
     try:
-        response = service.send_message_sync("test-ai", "Hello AI")
+        response = service.send_message_sync("test-ci", "Hello AI")
         # Sync method returns mock response for testing
         assert "Mock response to: Hello AI" in response
         print("✓ test_send_message_sync")
@@ -57,21 +57,21 @@ def test_send_message_sync():
 
 def test_send_message_async():
     """Test async send (fire and forget)"""
-    service = AIService(debug=True)
+    service = CIService(debug=True)
     
     # Register AI (socket not used for this test)
-    service.register_ai("test-ai", None, None)
+    service.register_ai("test-ci", None, None)
     
     try:
         # Send async - should just return msg_id
-        msg_id = service.send_message_async("test-ai", "Test message")
+        msg_id = service.send_message_async("test-ci", "Test message")
         assert msg_id is not None
         assert len(msg_id) > 0
         
         # Check message is queued
-        assert "test-ai" in service.queues
-        assert msg_id in service.queues["test-ai"]
-        assert service.queues["test-ai"][msg_id].request == "Test message"
+        assert "test-ci" in service.queues
+        assert msg_id in service.queues["test-ci"]
+        assert service.queues["test-ci"][msg_id].request == "Test message"
         
         print("✓ test_send_message_async")
         return True
@@ -81,7 +81,7 @@ def test_send_message_async():
 
 def test_send_to_all():
     """Test sending to multiple AIs"""
-    service = AIService(debug=True)
+    service = CIService(debug=True)
     
     # Register multiple AIs
     ai_ids = ["ai-1", "ai-2", "ai-3"]
@@ -106,12 +106,12 @@ def test_send_to_all():
 
 async def test_collect_responses():
     """Test collecting responses as they arrive"""
-    service = AIService(debug=True)
+    service = CIService(debug=True)
     
     # Register AIs with mock sockets
     mocks = {
-        "fast-ai": MockSocket("fast-ai", "Fast response"),
-        "slow-ai": MockSocket("slow-ai", "Slow response")
+        "fast-ci": MockSocket("fast-ci", "Fast response"),
+        "slow-ci": MockSocket("slow-ci", "Slow response")
     }
     
     for ai_id, mock in mocks.items():
@@ -131,10 +131,10 @@ async def test_collect_responses():
         
         # Check we got both
         assert len(responses) == 2
-        assert responses["fast-ai"]["success"] == True
-        assert responses["fast-ai"]["response"] == "Fast response"
-        assert responses["slow-ai"]["success"] == True
-        assert responses["slow-ai"]["response"] == "Slow response"
+        assert responses["fast-ci"]["success"] == True
+        assert responses["fast-ci"]["response"] == "Fast response"
+        assert responses["slow-ci"]["success"] == True
+        assert responses["slow-ci"]["response"] == "Slow response"
         
         print("✓ test_collect_responses")
         return True
@@ -144,12 +144,12 @@ async def test_collect_responses():
 
 def test_error_handling():
     """Test error propagation"""
-    service = AIService(debug=True)
+    service = CIService(debug=True)
     
     try:
         # Try to send to unregistered AI
         try:
-            service.send_message_sync("unknown-ai", "test")
+            service.send_message_sync("unknown-ci", "test")
             print("✗ test_error_handling: Should have raised error")
             return False
         except ValueError as e:

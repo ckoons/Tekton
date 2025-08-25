@@ -27,9 +27,9 @@ async def test_get_specialist_conversation_history():
     mcp = MCPToolsIntegrationUnified()
     
     # Test 1: Get history for a specific specialist
-    print("\n1. Testing conversation history for apollo-ai...")
+    print("\n1. Testing conversation history for apollo-ci...")
     result = await mcp.get_specialist_conversation_history(
-        specialist_id="apollo-ai",
+        specialist_id="apollo-ci",
         limit=5
     )
     
@@ -46,7 +46,7 @@ async def test_get_specialist_conversation_history():
     # Test 2: Get history with specific context
     print("\n2. Testing with specific context ID...")
     result = await mcp.get_specialist_conversation_history(
-        specialist_id="athena-ai",
+        specialist_id="athena-ci",
         limit=3,
         context_id="test_context_123"
     )
@@ -75,7 +75,7 @@ async def test_configure_orchestration():
     config = {
         "routing_mode": "best_fit",
         "context_weight": 0.7,
-        "fallback_chain": ["apollo-ai", "athena-ai", "hermes-ai"],
+        "fallback_chain": ["apollo-ci", "athena-ci", "hermes-ci"],
         "load_threshold": 50
     }
     
@@ -97,7 +97,7 @@ async def test_configure_orchestration():
                 },
                 "action": {
                     "type": "route_to",
-                    "specialist": "apollo-ai"
+                    "specialist": "apollo-ci"
                 },
                 "priority": 10,
                 "description": "Route weather queries to Apollo"
@@ -109,7 +109,7 @@ async def test_configure_orchestration():
                 },
                 "action": {
                     "type": "prefer",
-                    "specialists": ["athena-ai", "minerva-ai"]
+                    "specialists": ["athena-ci", "minerva-ci"]
                 },
                 "priority": 5
             }
@@ -136,14 +136,14 @@ async def test_send_message_stream():
     
     mcp = MCPToolsIntegrationUnified()
     
-    print("\n1. Testing streaming from apollo-ai...")
+    print("\n1. Testing streaming from apollo-ci...")
     
     chunk_count = 0
     content_buffer = []
     
     try:
         async for chunk in mcp.send_message_to_specialist_stream(
-            specialist_id="apollo-ai",
+            specialist_id="apollo-ci",
             message="Tell me a short fact about the sun.",
             timeout=10.0
         ):
@@ -178,7 +178,7 @@ async def test_send_message_stream():
     print("\n\n2. Testing with non-existent specialist...")
     
     async for chunk in mcp.send_message_to_specialist_stream(
-        specialist_id="non-existent-ai",
+        specialist_id="non-existent-ci",
         message="Hello"
     ):
         if chunk['type'] == 'error':

@@ -49,7 +49,7 @@ def test_sync_direct_message():
     test_name = "test_sync_direct_message"
     try:
         # Test with apollo AI 
-        response = ai_send_sync("apollo-ai", "test message", "localhost", 45012)
+        response = ai_send_sync("apollo-ci", "test message", "localhost", 45012)
         if response and len(response) > 0:
             results.add_pass(test_name)
         else:
@@ -66,7 +66,7 @@ async def test_async_direct_message():
     test_name = "test_async_direct_message"
     try:
         # Test with numa AI
-        response = await ai_send("numa-ai", "test message", "localhost", 45016)
+        response = await ai_send("numa-ci", "test message", "localhost", 45016)
         if response and len(response) > 0:
             results.add_pass(test_name)
         else:
@@ -85,12 +85,12 @@ def test_service_registration():
         service = get_service()
         
         # Check if apollo is registered (use sockets instead of connections)
-        if "apollo-ai" in service.sockets:
+        if "apollo-ci" in service.sockets:
             results.add_pass(test_name)
         else:
             # Try to register it with mock socket
-            service.register_ai("apollo-ai", None, None)
-            if "apollo-ai" in service.sockets:
+            service.register_ai("apollo-ci", None, None)
+            if "apollo-ci" in service.sockets:
                 results.add_pass(test_name)
             else:
                 results.add_fail(test_name, "Failed to register AI")
@@ -104,10 +104,10 @@ def test_queue_management():
         service = get_service()
         
         # Queue a message
-        msg_id = service.send_request("apollo-ai", "test queue")
+        msg_id = service.send_request("apollo-ci", "test queue")
         
         # Check if message is in queue
-        if "apollo-ai" in service.queues and msg_id in service.queues["apollo-ai"]:
+        if "apollo-ci" in service.queues and msg_id in service.queues["apollo-ci"]:
             results.add_pass(test_name)
         else:
             results.add_fail(test_name, "Message not found in queue")
@@ -122,9 +122,9 @@ async def test_multiple_ai_communication():
         
         # Test with 3 AIs
         test_ais = [
-            ("apollo-ai", "localhost", 45012),
-            ("numa-ai", "localhost", 45016),
-            ("athena-ai", "localhost", 45005)
+            ("apollo-ci", "localhost", 45012),
+            ("numa-ci", "localhost", 45016),
+            ("athena-ci", "localhost", 45005)
         ]
         
         # Register all with mock sockets
@@ -156,13 +156,13 @@ def test_one_socket_per_ai():
         initial_count = len(service.sockets)
         
         # Register apollo once
-        if "apollo-ai" not in service.sockets:
-            service.register_ai("apollo-ai", None, None)
+        if "apollo-ci" not in service.sockets:
+            service.register_ai("apollo-ci", None, None)
         
         # Send multiple messages to same AI (will fail but that's ok for test)
         for i in range(3):
             try:
-                ai_send_sync("apollo-ai", f"test {i}", "localhost", 45012)
+                ai_send_sync("apollo-ci", f"test {i}", "localhost", 45012)
             except:
                 pass  # Expected to fail
         
@@ -207,7 +207,7 @@ def test_error_handling():
     try:
         # Try to send to non-existent AI
         try:
-            ai_send_sync("non-existent-ai", "test", "localhost", 99999)
+            ai_send_sync("non-existent-ci", "test", "localhost", 99999)
             results.add_fail(test_name, "Should have raised an exception")
         except Exception:
             # Expected to fail
