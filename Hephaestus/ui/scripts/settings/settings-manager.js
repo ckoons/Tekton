@@ -346,7 +346,7 @@ class SettingsManager {
         // Define the header configurations based on SHOW_GREEK_NAMES setting
         const headerConfigs = this.settings.showGreekNames ? {
             // When SHOW_GREEK_NAMES is true: show "Greek Name - Description"
-            'numa': { main: 'Numa', sub: 'Companion AI for Tekton Platform' },
+            'numa': { main: 'Numa', sub: 'Companion Intelligence (CI) of Tekton Platform' },
             'tekton': { main: 'Tekton', sub: 'Project Management' },
             'prometheus': { main: 'Prometheus', sub: 'Planning' },
             'telos': { main: 'Telos', sub: 'Requirements' },
@@ -368,7 +368,7 @@ class SettingsManager {
             'settings': { main: 'Settings', sub: '' }
         } : {
             // When SHOW_GREEK_NAMES is false: show only the functional description
-            'numa': { main: '', sub: 'Companion AI for Tekton Platform' },
+            'numa': { main: '', sub: 'Companion Intelligence (CI) of Tekton Platform' },
             'tekton': { main: '', sub: 'Project Management' },
             'prometheus': { main: '', sub: 'Planning' },
             'telos': { main: '', sub: 'Requirements' },
@@ -441,7 +441,7 @@ class SettingsManager {
         if (this.settings.showGreekNames) {
             // When SHOW_GREEK_NAMES is true: return "Greek Name - Description"
             switch(component) {
-                case 'numa': return 'Numa - Companion AI for Tekton Platform';
+                case 'numa': return 'Numa - Companion Intelligence (CI) of Tekton Platform';
                 case 'tekton': return 'Tekton - Project Management';
                 case 'prometheus': return 'Prometheus - Planning';
                 case 'telos': return 'Telos - Requirements';
@@ -466,7 +466,7 @@ class SettingsManager {
         } else {
             // When SHOW_GREEK_NAMES is false: return only the functional description
             switch(component) {
-                case 'numa': return 'Companion AI for Tekton Platform';
+                case 'numa': return 'Companion Intelligence (CI) of Tekton Platform';
                 case 'tekton': return 'Project Management';
                 case 'prometheus': return 'Planning';
                 case 'telos': return 'Requirements';
