@@ -280,7 +280,7 @@ def _handle_ai_command(args, shell, ai_names):
     if args.message and args.message[0] == "help":
         print(f"Usage: aish {component} [message]")
         tekton_root = TektonEnviron.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
-        print(f"CI Training: {tekton_root}/MetaData/TektonDocumentation/AITraining/{component}/")
+        print(f"CI Training: {tekton_root}/MetaData/TektonDocumentation/CITraining/{component}/")
         print(f"User Guides: {tekton_root}/MetaData/TektonDocumentation/UserGuides/{component}/")
         return
     
@@ -455,7 +455,7 @@ Environment variables:
     if args.ai_or_script == "help":
         print("Usage: aish [options] [component] [command/message]")
         tekton_root = TektonEnviron.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
-        print(f"CI Training: {tekton_root}/MetaData/TektonDocumentation/AITraining/aish/")
+        print(f"CI Training: {tekton_root}/MetaData/TektonDocumentation/CITraining/aish/")
         print(f"User Guides: {tekton_root}/MetaData/TektonDocumentation/UserGuides/aish/")
         return
     
@@ -621,7 +621,7 @@ Environment variables:
             print("  aish team-chat \"message\"       Broadcast to all CIs")
             print()
             tekton_root = TektonEnviron.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
-            print(f"Full documentation: {tekton_root}/MetaData/TektonDocumentation/AITraining/aish/COMMAND_REFERENCE.md")
+            print(f"Full documentation: {tekton_root}/MetaData/TektonDocumentation/CITraining/aish/COMMAND_REFERENCE.md")
             return
         else:
             # Use new unified list handler
@@ -756,10 +756,10 @@ Environment variables:
         print("  autoprompt start           Keep Claude active (CI essential!)")
         print()
         tekton_root = TektonEnviron.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
-        print(f"Documentation: {tekton_root}/MetaData/TektonDocumentation/AITraining/aish/COMMAND_REFERENCE.md")
+        print(f"Documentation: {tekton_root}/MetaData/TektonDocumentation/CITraining/aish/COMMAND_REFERENCE.md")
         print()
         print("CI Documentation:")
-        print(f"  CI Training: {tekton_root}/MetaData/TektonDocumentation/AITraining/")
+        print(f"  CI Training: {tekton_root}/MetaData/TektonDocumentation/CITraining/")
         print(f"  User Guides: {tekton_root}/MetaData/TektonDocumentation/UserGuides/")
 
 if __name__ == '__main__':

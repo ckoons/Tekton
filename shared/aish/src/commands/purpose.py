@@ -52,8 +52,8 @@ class PurposeCommand:
         if not self.tekton_root:
             raise RuntimeError("TEKTON_ROOT not set in environment")
         self.playbook_dir = Path(self.tekton_root) / ".tekton" / "playbook"
-        # Also check MetaData/Documentation/AIPurposes
-        self.ai_purposes_dir = Path(self.tekton_root) / "MetaData" / "Documentation" / "AIPurposes"
+        # Also check MetaData/Documentation/CIPurposes
+        self.ci_purposes_dir = Path(self.tekton_root) / "MetaData" / "Documentation" / "CIPurposes"
         # Use terma_url() instead of hardcoded URL
         self.terma_base_url = terma_url()
         
@@ -91,7 +91,7 @@ class PurposeCommand:
         # Show both playbook paths
         print(f"\nPlaybook locations:")
         print(f"  {self.playbook_dir}")
-        print(f"  {self.ai_purposes_dir}")
+        print(f"  {self.ci_purposes_dir}")
         
         # If running in the target terminal, export TEKTON_PURPOSE
         current_terminal = TektonEnviron.get('TERMA_TERMINAL_NAME', '')
@@ -171,10 +171,10 @@ class PurposeCommand:
                             if found_files:
                                 found = True
         
-        # Then check MetaData/Documentation/AIPurposes directory
-        if self.ai_purposes_dir.exists():
-            # Look in all subdirectories of AIPurposes
-            for subdir in self.ai_purposes_dir.iterdir():
+        # Then check MetaData/Documentation/CIPurposes directory
+        if self.ci_purposes_dir.exists():
+            # Look in all subdirectories of CIPurposes
+            for subdir in self.ci_purposes_dir.iterdir():
                 if subdir.is_dir():
                     # Look for matching files in this subdirectory
                     for item in subdir.iterdir():
@@ -399,8 +399,8 @@ class PurposeCommand:
         # Search locations in order
         search_locations = [
             (self.playbook_dir, "Local playbook"),
-            (Path(self.tekton_root) / "MetaData" / "Documentation" / "AIPurposes" / "text", "Shared text purposes"),
-            (Path(self.tekton_root) / "MetaData" / "Documentation" / "AIPurposes" / "json", "Shared JSON purposes")
+            (Path(self.tekton_root) / "MetaData" / "Documentation" / "CIPurposes" / "text", "Shared text purposes"),
+            (Path(self.tekton_root) / "MetaData" / "Documentation" / "CIPurposes" / "json", "Shared JSON purposes")
         ]
         
         print(f"=== {purpose.upper()} ===")

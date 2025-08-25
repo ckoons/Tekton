@@ -82,7 +82,7 @@ def handle_terma_command(args):
         print("\nNote: Inbox commands moved to 'aish inbox' - see 'aish inbox help'")
         print("\nDocumentation:")
         tekton_root = TektonEnviron.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
-        print(f"  CI Training: {tekton_root}/MetaData/TektonDocumentation/AITraining/terma/")
+        print(f"  CI Training: {tekton_root}/MetaData/TektonDocumentation/CITraining/terma/")
         print(f"  User Guides: {tekton_root}/MetaData/TektonDocumentation/UserGuides/terma/")
         return 0
     
