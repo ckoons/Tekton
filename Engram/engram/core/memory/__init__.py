@@ -3,7 +3,7 @@
 Memory Service - Core memory functionality for Engram
 
 This module provides memory storage and retrieval with namespace support, allowing
-AI to maintain different types of memories (conversations, thinking, longterm).
+CI to maintain different types of memories (conversations, thinking, longterm).
 """
 
 # Version and configuration

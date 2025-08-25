@@ -3,7 +3,7 @@
 Memory Service - Core memory functionality for Engram using FAISS for vector storage
 
 This module provides memory storage and retrieval with namespace support, allowing
-AI to maintain different types of memories (conversations, thinking, longterm).
+CI to maintain different types of memories (conversations, thinking, longterm).
 
 This module has been refactored into a more modular structure.
 It now serves as a compatibility layer that imports from the new structure.

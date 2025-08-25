@@ -81,7 +81,7 @@ noesis/core/theoretical/
 
 ```
 Raw Collective      Normalized         Manifold          Dynamics         Catastrophe       Universal
-AI Data        →    & Validated   →    Analysis     →    Analysis    →    Analysis     →   Principles
+CI Data        →    & Validated   →    Analysis     →    Analysis    →    Analysis     →   Principles
                     Data               (Geometry)        (Regimes)        (Transitions)    (Patterns)
 ```
 
