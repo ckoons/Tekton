@@ -33,7 +33,7 @@ from rhetor.core.mcp.capabilities import (
     LLMManagementCapability,
     PromptEngineeringCapability,
     ContextManagementCapability,
-    AIOrchestrationCapability
+    CIOrchestrationCapability
 )
 
 
@@ -68,7 +68,7 @@ fastmcp_server = FastMCPServer(
 fastmcp_server.register_capability(LLMManagementCapability())
 fastmcp_server.register_capability(PromptEngineeringCapability())
 fastmcp_server.register_capability(ContextManagementCapability())
-fastmcp_server.register_capability(AIOrchestrationCapability())
+fastmcp_server.register_capability(CIOrchestrationCapability())
 
 # Import the actual tool functions to populate tool lists
 from rhetor.core.mcp.tools import (

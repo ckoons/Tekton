@@ -9,7 +9,7 @@ from .capabilities import (
     LLMManagementCapability,
     PromptEngineeringCapability,
     ContextManagementCapability,
-    AIOrchestrationCapability
+    CIOrchestrationCapability
 )
 
 from .tools import (
@@ -26,7 +26,7 @@ def get_all_capabilities():
         LLMManagementCapability,
         PromptEngineeringCapability,
         ContextManagementCapability,
-        AIOrchestrationCapability
+        CIOrchestrationCapability
     ]
 
 

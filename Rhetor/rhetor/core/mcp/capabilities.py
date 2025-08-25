@@ -106,11 +106,11 @@ class ContextManagementCapability(MCPCapability):
         }
 
 
-class AIOrchestrationCapability(MCPCapability):
-    """Capability for AI specialist orchestration and management."""
+class CIOrchestrationCapability(MCPCapability):
+    """Capability for CI specialist orchestration and management."""
     
-    name: str = "ai_orchestration"
-    description: str = "Orchestrate and manage AI specialists for collaborative tasks"
+    name: str = "ci_orchestration"
+    description: str = "Orchestrate and manage CI specialists for collaborative tasks"
     version: str = "1.0.0"
     
     @classmethod
@@ -145,5 +145,5 @@ __all__ = [
     "LLMManagementCapability",
     "PromptEngineeringCapability",
     "ContextManagementCapability",
-    "AIOrchestrationCapability"
+    "CIOrchestrationCapability"
 ]

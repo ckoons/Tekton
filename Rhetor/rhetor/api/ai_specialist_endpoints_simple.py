@@ -21,8 +21,8 @@ ai_manager = CIManager()
 
 
 # Pydantic models
-class AISpecialist(BaseModel):
-    """AI Specialist information"""
+class CISpecialist(BaseModel):
+    """CI Specialist information"""
     ai_id: str
     component: str
     name: str
@@ -58,7 +58,7 @@ class MessageResponse(BaseModel):
     error: Optional[str] = None
 
 
-@router.get("/specialists", response_model=List[AISpecialist])
+@router.get("/specialists", response_model=List[CISpecialist])
 async def list_specialists(
     include_health: bool = Query(True, description="Include health status"),
     in_roster_only: bool = Query(False, description="Only show hired specialists"),
@@ -79,7 +79,7 @@ async def list_specialists(
             if category and ai['category'] != category:
                 continue
                 
-            filtered.append(AISpecialist(**ai))
+            filtered.append(CISpecialist(**ai))
         
         return filtered
         

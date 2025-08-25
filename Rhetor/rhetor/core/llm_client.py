@@ -26,8 +26,8 @@ from dataclasses import dataclass
 from typing import AsyncIterator
 
 @dataclass
-class AIResponse:
-    """Response from an AI specialist."""
+class CIResponse:
+    """Response from a CI specialist."""
     content: str
     ai_id: str
     model: str

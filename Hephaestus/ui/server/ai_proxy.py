@@ -22,15 +22,15 @@ from shared.ai.socket_client import AISocketClient, MessageType
 
 router = APIRouter()
 
-class AIMessageRequest(BaseModel):
-    """Request to send a message to an AI"""
+class CIMessageRequest(BaseModel):
+    """Request to send a message to a CI"""
     ai_name: str
     message: str
     host: Optional[str] = "localhost"
     port: Optional[int] = None
 
-class AIMessageResponse(BaseModel):
-    """Response from an AI"""
+class CIMessageResponse(BaseModel):
+    """Response from a CI"""
     success: bool
     content: Optional[str] = None
     error: Optional[str] = None
@@ -62,8 +62,8 @@ AI_PORT_MAP = {
     'tekton_core-ci': 45000
 }
 
-@router.post("/api/ai/proxy", response_model=AIMessageResponse)
-async def proxy_ai_message(request: AIMessageRequest):
+@router.post("/api/ai/proxy", response_model=CIMessageResponse)
+async def proxy_ai_message(request: CIMessageRequest):
     """
     Proxy a message to an AI specialist using socket communication.
     This follows the same pattern as aish.
@@ -89,20 +89,20 @@ async def proxy_ai_message(request: AIMessageRequest):
         )
         
         if response['success']:
-            return AIMessageResponse(
+            return CIMessageResponse(
                 success=True,
                 content=response.get('response', ''),
                 ai_id=response.get('ai_id', request.ai_name),
                 model=response.get('model')
             )
         else:
-            return AIMessageResponse(
+            return CIMessageResponse(
                 success=False,
                 error=response.get('error', 'Communication failed')
             )
             
     except Exception as e:
-        return AIMessageResponse(
+        return CIMessageResponse(
             success=False,
             error=str(e)
         )
