@@ -104,7 +104,7 @@ from engram.core import MemoryService
 @architecture_decision(
     title="Engram Memory System Architecture",
     description="Centralized memory management with vector search and emotional analysis",
-    rationale="Provides persistent memory storage with semantic search capabilities and emotional insights for enhanced AI interactions",
+    rationale="Provides persistent memory storage with semantic search capabilities and emotional insights for enhanced CI interactions",
     alternatives_considered=["Simple key-value storage", "File-based memory", "Database-only solution"],
     impacts=["ai_memory_context", "semantic_search", "emotional_analysis", "file_upload_support"],
     decided_by="Casey",

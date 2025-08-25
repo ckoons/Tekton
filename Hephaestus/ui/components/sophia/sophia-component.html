@@ -1,4 +1,4 @@
-<!-- Sophia Component - AI Intelligence Measurement & Continuous Improvement -->
+<!-- Sophia Component - CI Intelligence Measurement & Continuous Improvement -->
 
 <!-- Load chat dependencies -->
 <script src="/scripts/shared/ai-chat.js"></script>
@@ -416,7 +416,7 @@
                     <div class="sophia__message-content">
                         <div class="sophia__message-text">
                             <h3 class="sophia__message-title">AI Research Assistant</h3>
-                            <p>This chat provides assistance with AI research and intelligence measurement. Ask questions about:</p>
+                            <p>This chat provides assistance with CI research and intelligence measurement. Ask questions about:</p>
                             <ul>
                                 <li>Intelligence dimensions and measurements</li>
                                 <li>Experiment design and analysis</li>
@@ -490,7 +490,7 @@
                             </div>
                             <div class="sophia__protocol-details">
                                 <p><strong>Type:</strong> Theory Validation</p>
-                                <p><strong>Theory:</strong> Collective AI state space has intrinsic dimension ~6</p>
+                                <p><strong>Theory:</strong> Collective CI state space has intrinsic dimension ~6</p>
                                 <p><strong>Experiment:</strong> Multi-scale dimensionality measurement</p>
                                 <p><strong>Progress:</strong> 3/5 experiments completed</p>
                             </div>
@@ -1812,7 +1812,7 @@ window.sophia_switchTab = function(tabId) {
         const chatInput = sophiaContainer.querySelector('#sophia-chat-input');
         if (chatInput) {
             if (tabId === 'researchchat') {
-                chatInput.placeholder = 'Enter research questions or AI intelligence queries...';
+                chatInput.placeholder = 'Enter research questions or CI intelligence queries...';
             } else if (tabId === 'teamchat') {
                 chatInput.placeholder = 'Enter team chat message...';
             } else {
@@ -1968,7 +1968,7 @@ window.sophia_sendChat_original = function() {
         // Scroll to bottom
         messagesContainer.scrollTop = messagesContainer.scrollHeight;
         
-        // Use window.AIChat for real AI responses
+        // Use window.AIChat for real CI responses
         if (window.AIChat) {
             // Show loading indicator
             const loadingMessage = document.createElement('div');
@@ -1981,7 +1981,7 @@ window.sophia_sendChat_original = function() {
             messagesContainer.appendChild(loadingMessage);
             messagesContainer.scrollTop = messagesContainer.scrollHeight;
             
-            // Determine which AI to contact based on tab
+            // Determine which CI to contact based on tab
             if (tabId === 'researchchat') {
                 // Direct message to sophia
                 window.AIChat.sendMessage('sophia', message)
@@ -1989,7 +1989,7 @@ window.sophia_sendChat_original = function() {
                     // Remove loading message
                     messagesContainer.removeChild(loadingMessage);
                     
-                    // Add AI response
+                    // Add CI response
                     const aiMessage = document.createElement('div');
                     aiMessage.className = 'sophia__message sophia__message--ai';
                     aiMessage.innerHTML = `
@@ -2017,7 +2017,7 @@ window.sophia_sendChat_original = function() {
                     messagesContainer.appendChild(errorMessage);
                     messagesContainer.scrollTop = messagesContainer.scrollHeight;
                     
-                    console.error('[SOPHIA] AI Chat error:', error);
+                    console.error('[SOPHIA] CI Chat error:', error);
                 });
             } else if (tabId === 'teamchat') {
                 // Team chat - broadcast to all AIs
@@ -2079,7 +2079,7 @@ window.sophia_sendChat_original = function() {
             aiMessage.className = 'sophia__message sophia__message--ai';
             aiMessage.innerHTML = `
                 <div class="sophia__message-content">
-                    <div class="sophia__message-text">Sophia: AI Chat service is not available at the moment.</div>
+                    <div class="sophia__message-text">Sophia: CI Chat service is not available at the moment.</div>
                 </div>
             `;
             messagesContainer.appendChild(aiMessage);

@@ -388,7 +388,7 @@ class AthenaComponent {
                 if (chatMessages) {
                     this.addUserMessageToChatUI(chatMessages, `Execute query: ${queryText}`);
 
-                    // Simulate AI response
+                    // Simulate CI response
                     setTimeout(() => {
                         const response = 'The query was executed successfully. Found 15 matching relationships. Here are the results...';
                         this.addAIMessageToChatUI(chatMessages, response);
@@ -613,7 +613,7 @@ class AthenaComponent {
     }
 
     /**
-     * Add an AI message to the chat UI
+     * Add an CI message to the chat UI
      * @param {HTMLElement} messages - The messages container element
      * @param {string} message - The message text
      */

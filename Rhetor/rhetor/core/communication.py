@@ -1,6 +1,6 @@
 """Communication engine for Rhetor.
 
-This module provides tools for managing communication between AI components
+This module provides tools for managing communication between CI components
 and creating standardized message formats.
 """
 
@@ -15,7 +15,7 @@ import uuid
 logger = logging.getLogger(__name__)
 
 class Message:
-    """A standardized message format for AI communication."""
+    """A standardized message format for CI communication."""
     
     def __init__(
         self,
@@ -83,7 +83,7 @@ class Message:
 
 
 class Conversation:
-    """A conversation between AI components."""
+    """A conversation between CI components."""
     
     def __init__(
         self,
@@ -189,7 +189,7 @@ class Conversation:
 
 
 class CommunicationEngine:
-    """Engine for managing AI communication."""
+    """Engine for managing CI communication."""
     
     def __init__(self, component_name: str = "rhetor"):
         """Initialize the communication engine.

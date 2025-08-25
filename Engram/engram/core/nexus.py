@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-Nexus - Memory-enabled AI assistant interface for Engram
+Nexus - Memory-enabled CI assistant interface for Engram
 
-This module provides a standardized interface for memory-enabled AI assistants,
+This module provides a standardized interface for memory-enabled CI assistants,
 allowing seamless integration of memory capabilities with LLM interactions.
 """
 
@@ -23,7 +23,7 @@ logger = logging.getLogger("engram.nexus")
 
 class NexusInterface:
     """
-    Nexus interface for memory-enabled AI assistants.
+    Nexus interface for memory-enabled CI assistants.
     
     This class provides methods for enhancing LLM conversations with memory 
     capabilities, including:

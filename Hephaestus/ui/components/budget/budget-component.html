@@ -552,7 +552,7 @@
                     <div class="budget__message-content">
                         <div class="budget__message-text">
                             <h3 class="budget__message-title">Budget LLM Chat</h3>
-                            <p>Chat directly with an LLM about budget optimization, cost management, and usage planning for your AI resources.</p>
+                            <p>Chat directly with an LLM about budget optimization, cost management, and usage planning for your CI resources.</p>
                         </div>
                     </div>
                 </div>
@@ -1319,7 +1319,7 @@
         color: #4CAF50;
     }
     
-    /* AI messages */
+    /* CI messages */
     .budget__message--ai {
         background-color: rgba(52, 168, 83, 0.05);
         border-left: 3px solid #34A853;
@@ -2190,7 +2190,7 @@ async function budget_sendToAssistant(message, chatType, messagesContainer) {
             typingIndicator.remove();
         }
         
-        // Add AI response
+        // Add CI response
         messagesContainer.innerHTML += `
             <div class="budget__message budget__message--ai">
                 <div class="budget__message-content">

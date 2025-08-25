@@ -1,5 +1,5 @@
 [Unit]
-Description=Tekton Shared Services (Orphan Cleanup, AI Config Sync)
+Description=Tekton Shared Services (Orphan Cleanup, CI Config Sync)
 After=network.target
 
 [Service]

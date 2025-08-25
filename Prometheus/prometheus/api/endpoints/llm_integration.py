@@ -1014,7 +1014,7 @@ async def general_analysis(
     """
     try:
         # Create system prompt based on analysis type
-        system_prompt = f"You are an AI assistant that specializes in {analysis.analysis_type} analysis. "
+        system_prompt = f"You are an CI assistant that specializes in {analysis.analysis_type} analysis. "
         system_prompt += "Provide a thorough analysis of the content, focusing on key insights, main points, and recommendations."
         
         # Generate analysis using LLM adapter

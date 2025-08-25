@@ -124,7 +124,7 @@ class AnthropicMaxConfig:
         Get specialist configuration override for Max accounts.
         
         Args:
-            specialist_type: Type of AI specialist
+            specialist_type: Type of CI specialist
             
         Returns:
             Configuration overrides

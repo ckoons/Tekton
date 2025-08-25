@@ -1,5 +1,5 @@
 """
-Main entry point for Engram AI specialist when run as module.
+Main entry point for Engram CI specialist when run as module.
 """
 from .ai_specialist import main
 

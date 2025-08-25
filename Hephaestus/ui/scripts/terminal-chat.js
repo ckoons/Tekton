@@ -1,7 +1,7 @@
 /**
  * DEPRECATED: This file will be removed after CSS-first migration is verified
  * Terminal Chat Manager
- * Enhanced terminal with AI chat capabilities for Tekton
+ * Enhanced terminal with CI chat capabilities for Tekton
  */
 
 console.log('[FILE_TRACE] Loading: terminal-chat.js');
@@ -59,7 +59,7 @@ class TerminalChatManager {
         if (options.welcomeMessage) {
             this.addSystemMessage(options.welcomeMessage);
         } else {
-            this.addSystemMessage("Welcome to Tekton AI Terminal");
+            this.addSystemMessage("Welcome to Tekton CI Terminal");
         }
         
         // Set up observer to handle chat stream
@@ -83,7 +83,7 @@ class TerminalChatManager {
             mutations.forEach((mutation) => {
                 if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
                     mutation.addedNodes.forEach((node) => {
-                        // Check if this is an AI message
+                        // Check if this is an CI message
                         if (node.classList && node.classList.contains('ai-message')) {
                             // Add animation to make it look like it's streaming in
                             if (!node.classList.contains('animated')) {
@@ -114,8 +114,8 @@ class TerminalChatManager {
     }
     
     /**
-     * Add an AI message to the chat
-     * @param {string} text - AI message text
+     * Add an CI message to the chat
+     * @param {string} text - CI message text
      * @param {string} componentId - Component ID (for styling)
      */
     addAIMessage(text, componentId = null) {
@@ -163,7 +163,7 @@ class TerminalChatManager {
         const messageEl = document.createElement('div');
         messageEl.className = `chat-message ${type}-message`;
         
-        // Add component data attribute for AI messages to enable component-specific styling
+        // Add component data attribute for CI messages to enable component-specific styling
         if (type === 'ai' && componentId) {
             messageEl.setAttribute('data-component', componentId);
         }
@@ -174,7 +174,7 @@ class TerminalChatManager {
         
         let messageContent = '';
         
-        // Add header for user and AI messages
+        // Add header for user and CI messages
         if (type === 'user' || type === 'ai') {
             const sender = type === 'user' ? 'You' : componentId.charAt(0).toUpperCase() + componentId.slice(1);
             
@@ -470,11 +470,11 @@ class TerminalChatManager {
      */
     showWelcomeMessage(componentId) {
         // Default welcome message
-        let welcomeMessage = `Welcome to ${componentId.charAt(0).toUpperCase() + componentId.slice(1)} AI assistant`;
+        let welcomeMessage = `Welcome to ${componentId.charAt(0).toUpperCase() + componentId.slice(1)} CI assistant`;
         
         // Component-specific welcome messages
         const welcomeMessages = {
-            'ergon': 'Welcome to Ergon AI Assistant! I can help you with agent creation, configuration, and management.',
+            'ergon': 'Welcome to Ergon CI Assistant! I can help you with agent creation, configuration, and management.',
             'awt-team': 'Welcome to Advanced Workflow Tools! I can help you design, implement, and manage complex workflows.',
             'tekton': 'Welcome to Tekton Projects! I can help you manage your engineering projects and resources.',
             'prometheus': 'Welcome to Prometheus Planning! I can assist with schedule planning and roadmap development.',
@@ -518,7 +518,7 @@ class TerminalChatManager {
                 if (entry.type === 'user') {
                     this.addUserMessage(entry.text);
                 } else if (entry.type === 'ai') {
-                    // Use the active component ID for AI messages
+                    // Use the active component ID for CI messages
                     this.addAIMessage(entry.text, this.activeComponent);
                 } else if (entry.type === 'system') {
                     this.addSystemMessage(entry.text);

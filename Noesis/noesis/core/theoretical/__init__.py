@@ -1,6 +1,6 @@
 """
 Theoretical analysis framework for Noesis
-Mathematical models for understanding collective AI cognition
+Mathematical models for understanding collective CI cognition
 """
 
 from .base import MathematicalFramework, AnalysisResult

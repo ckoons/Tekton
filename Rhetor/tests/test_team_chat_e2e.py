@@ -2,9 +2,9 @@
 """End-to-end test for Team Chat functionality.
 
 This script tests the complete team chat flow:
-1. Creates AI sockets
+1. Creates CI sockets
 2. Sends a team chat message
-3. Simulates AI responses
+3. Simulates CI responses
 4. Verifies the team chat endpoint
 
 Usage:
@@ -34,8 +34,8 @@ async def test_team_chat_basic():
     registry = await get_socket_registry()
     print("✅ Registry initialized")
     
-    # Create test AI sockets
-    print("\n2️⃣ Creating AI sockets...")
+    # Create test CI sockets
+    print("\n2️⃣ Creating CI sockets...")
     apollo_id = await registry.create(
         model="claude-3-sonnet",
         prompt="You are Apollo, focused on prediction and analysis",
@@ -76,9 +76,9 @@ async def test_team_chat_basic():
                 print(f"📥 Request ID: {result['request_id']}")
                 print(f"⏱️  Elapsed time: {result['elapsed_time']:.2f}s")
                 
-                # Since we haven't implemented actual AI responses yet,
+                # Since we haven't implemented actual CI responses yet,
                 # we'll simulate them for testing
-                print("\n4️⃣ Simulating AI responses...")
+                print("\n4️⃣ Simulating CI responses...")
                 
                 # Add simulated responses to sockets
                 registry.sockets[apollo_id].message_queue.append({
@@ -94,7 +94,7 @@ async def test_team_chat_basic():
                 })
                 
                 # Send another request to collect responses
-                print("\n5️⃣ Collecting AI responses...")
+                print("\n5️⃣ Collecting CI responses...")
                 response2 = await client.post(
                     "http://localhost:8003/api/team-chat",
                     json={
@@ -204,7 +204,7 @@ async def main():
         
         print("\n\n🎉 All Team Chat E2E tests passed!")
         print("\nNext steps:")
-        print("1. Integrate with AI Specialist Manager for real AI responses")
+        print("1. Integrate with CI Specialist Manager for real CI responses")
         print("2. Implement synthesis and consensus moderation modes")
         print("3. Add Rhetor's moderation capabilities")
         

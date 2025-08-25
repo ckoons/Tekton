@@ -400,7 +400,7 @@ class TektonCoreConfig(BaseComponentConfig):
 
 
 class NumaConfig(BaseComponentConfig):
-    """Configuration for Numa platform AI mentor."""
+    """Configuration for Numa platform CI mentor."""
     
     port: int
     ai_enabled: bool = False
@@ -410,7 +410,7 @@ class NumaConfig(BaseComponentConfig):
     def from_env(cls) -> 'NumaConfig':
         return cls(
             port=cls._get_required_env('NUMA_PORT', 'int'),
-            ai_enabled=True,  # AI is always enabled with fixed ports
+            ai_enabled=True,  # CI is always enabled with fixed ports
             companion_enabled=cls._get_env_value('NUMA_COMPANION_ENABLED', True, 'bool')
         )
 
@@ -426,7 +426,7 @@ class NoesisConfig(BaseComponentConfig):
     def from_env(cls) -> 'NoesisConfig':
         return cls(
             port=cls._get_required_env('NOESIS_PORT', 'int'),
-            ai_enabled=True,  # AI is always enabled with fixed ports
+            ai_enabled=True,  # CI is always enabled with fixed ports
             discovery_mode=cls._get_env_value('NOESIS_DISCOVERY_MODE', 'placeholder', 'str')
         )
 
@@ -444,7 +444,7 @@ class TektonConfig(BaseModel):
     
     # Port configuration
     port_base: int = 8000  # Base port for Tekton components
-    ai_port_base: int = 45000  # Base port for AI specialists
+    ai_port_base: int = 45000  # Base port for CI specialists
     
     # UI settings
     show_greek_names: bool = True
@@ -548,7 +548,7 @@ class ComponentConfig:
             'athena': self.athena,
             'apollo': self.apollo,
             'budget': self.budget,
-            'penia': self.budget,  # Penia is the AI name for budget component
+            'penia': self.budget,  # Penia is the CI name for budget component
             'ergon': self.ergon,
             'harmonia': self.harmonia,
             'hephaestus': self.hephaestus,

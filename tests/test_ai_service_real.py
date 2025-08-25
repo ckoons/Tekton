@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Test AI service with real sockets
+Test CI service with real sockets
 """
 
 import asyncio
@@ -10,7 +10,7 @@ sys.path.insert(0, '/Users/cskoons/projects/github/Tekton')
 from shared.ai.ai_service_simple import CIService
 
 async def test_with_real_ai():
-    """Test with real AI connection"""
+    """Test with real CI connection"""
     service = CIService(debug=True)
     
     # Connect to Apollo
@@ -111,8 +111,8 @@ async def test_multiple_real_ais():
         return False
 
 async def run_all_tests():
-    """Run all real AI tests"""
-    print("Testing AI Service with Real Connections")
+    """Run all real CI tests"""
+    print("Testing CI Service with Real Connections")
     print("-" * 40)
     
     passed = 0

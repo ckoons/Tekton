@@ -2,7 +2,7 @@
 # Install Auto-Approved Tekton MCP for Claude
 # 
 # This script installs the enhanced Hermes bridge with automatic tool approval
-# and AI onboarding capabilities.
+# and CI onboarding capabilities.
 # Check if the first argument is -r or --remove or -h or --help for usage"
 
 if [ "$#" -gt 0 ]; then
@@ -118,7 +118,7 @@ if [ $? -eq 0 ]; then
     echo ""
     echo -e "${BLUE}Features enabled:${NC}"
     echo "  • All Tekton tools are pre-approved (no Y/N prompts)"
-    echo "  • AI onboarding system activated"
+    echo "  • CI onboarding system activated"
     echo "  • Enhanced tool categorization"
     echo "  • Memory-based identity support"
     echo ""

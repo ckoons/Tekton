@@ -47,7 +47,7 @@ window.NumaComponent = {
                 this.updateStatus('active', 'Connected');
                 document.getElementById('numa-status').textContent = 'Active';
                 
-                // Update AI status based on environment
+                // Update CI status based on environment
                 const statusResponse = await fetch(`${this.apiUrl}/api/status`);
                 const statusData = await statusResponse.json();
                 document.getElementById('numa-ai-status').textContent = 

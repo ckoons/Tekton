@@ -1,6 +1,6 @@
 #!/bin/bash
-# Script to replace " AI " with " CI " in all README.md files recursively
-# This preserves words like "OpenAI" and "MAINTAIN" by only replacing isolated " AI "
+# Script to replace " CI " with " CI " in all README.md files recursively
+# This preserves words like "OpenAI" and "MAINTAIN" by only replacing isolated " CI "
 
 # Color codes for output
 RED='\033[0;31m'
@@ -8,7 +8,7 @@ GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
-echo -e "${GREEN}Starting AI to CI conversion in README.md files...${NC}"
+echo -e "${GREEN}Starting CI to CI conversion in README.md files...${NC}"
 echo "----------------------------------------"
 
 # Counter for tracking changes
@@ -30,19 +30,19 @@ find . -name "README.md" -type f | while read -r file; do
     
     TOTAL_FILES=$((TOTAL_FILES + 1))
     
-    # Check if file contains " AI " (with spaces on both sides)
-    if grep -q " AI " "$file" 2>/dev/null; then
+    # Check if file contains " CI " (with spaces on both sides)
+    if grep -q " CI " "$file" 2>/dev/null; then
         # Create backup
         backup_path="$BACKUP_DIR/${file#./}"
         mkdir -p "$(dirname "$backup_path")"
         cp "$file" "$backup_path"
         
         # Count occurrences before replacement
-        count_before=$(grep -o " AI " "$file" | wc -l)
+        count_before=$(grep -o " CI " "$file" | wc -l)
         
         # Perform the replacement
-        # Using word boundaries to ensure we only replace standalone " AI "
-        sed -i.tmp 's/ AI / CI /g' "$file"
+        # Using word boundaries to ensure we only replace standalone " CI "
+        sed -i.tmp 's/ CI / CI /g' "$file"
         
         # Remove the temporary backup created by sed
         rm -f "${file}.tmp"

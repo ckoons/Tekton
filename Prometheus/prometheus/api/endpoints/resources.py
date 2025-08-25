@@ -472,7 +472,7 @@ async def get_resource_allocation(plan_id: str = Path(..., description="ID of th
 
 @architecture_decision(
     title="Coder Resource Management System",
-    description="File-based tracking of Coder AI assignments and capacity",
+    description="File-based tracking of Coder CI assignments and capacity",
     rationale="Simple, transparent resource allocation that CIs can read/update directly",
     alternatives_considered=["Database tracking", "In-memory only", "Hermes-based coordination"],
     impacts=["resource_allocation", "sprint_assignment", "capacity_planning"],
@@ -487,7 +487,7 @@ class _CoderResourceArchitecture:
 @router.get("/coders", response_model=StandardResponse)
 @api_contract(
     title="Get Coder Resources",
-    description="Retrieves all Coder AI resources and their current sprint assignments",
+    description="Retrieves all Coder CI resources and their current sprint assignments",
     endpoint="/api/v1/resources/coders",
     method="GET",
     response_schema={"coders": {"Coder-X": {"capacity": "int", "active": ["string"], "queue": ["string"]}}},
@@ -528,7 +528,7 @@ async def get_coder_details(coder_name: str):
 @router.put("/coders/{coder_name}/assign", response_model=StandardResponse)
 @api_contract(
     title="Assign Sprint to Coder",
-    description="Assigns a Development Sprint to a Coder AI for implementation",
+    description="Assigns a Development Sprint to a Coder CI for implementation",
     endpoint="/api/v1/resources/coders/{coder_name}/assign",
     method="PUT",
     request_schema={"sprint_name": "string", "project": "string"},

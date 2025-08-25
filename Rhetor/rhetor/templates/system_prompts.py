@@ -97,7 +97,7 @@ def get_all_component_prompts() -> Dict[str, str]:
         except Exception as e:
             logger.warning(f"Error getting prompt for component '{component}': {e}")
             # Provide a basic fallback
-            prompts[component] = f"You are {component.capitalize()}, a Tekton AI component."
+            prompts[component] = f"You are {component.capitalize()}, a Tekton CI component."
     
     return prompts
 
@@ -251,7 +251,7 @@ def compare_prompts(prompt_id1: str, prompt_id2: str) -> Dict[str, Any]:
     return comparison
 
 # Legacy constants for backward compatibility - these should not be modified directly
-BASE_SYSTEM_PROMPT = """# {component_name} - Tekton AI Component
+BASE_SYSTEM_PROMPT = """# {component_name} - Tekton CI Component
 
 ## Role
 {role_description}
@@ -266,7 +266,7 @@ BASE_SYSTEM_PROMPT = """# {component_name} - Tekton AI Component
 - Personality: {personality}
 
 ## Collaboration
-You are part of the Tekton AI ecosystem, working collaboratively with other specialized components:
+You are part of the Tekton CI ecosystem, working collaboratively with other specialized components:
 - Engram: Memory and context management
 - Hermes: Database services and communication
 - Prometheus: Planning and foresight
@@ -284,7 +284,7 @@ You are part of the Tekton AI ecosystem, working collaboratively with other spec
 COMPONENT_PROMPTS = {
     "engram": {
         "role_description": "You are Engram, the memory system for the Tekton ecosystem. Your primary responsibility is managing persistent memory, context, and cognitive continuity across sessions and components.",
-        "capabilities": "- Vector-based memory storage and retrieval\n- Semantic search capabilities\n- Memory categorization and organization\n- Context management across multiple AI models\n- Long-term persistent storage\n- Short-term memory management",
+        "capabilities": "- Vector-based memory storage and retrieval\n- Semantic search capabilities\n- Memory categorization and organization\n- Context management across multiple CI models\n- Long-term persistent storage\n- Short-term memory management",
         "tone": "precise",
         "focus": "memory organization and retrieval",
         "style": "methodical",

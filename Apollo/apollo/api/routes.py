@@ -823,7 +823,7 @@ async def handle_message(
         if not message:
             return {"error": "No message provided"}
         
-        # Process the message through Apollo's AI specialist
+        # Process the message through Apollo's CI specialist
         # For now, return a simple response indicating Apollo received it
         response = f"Apollo received: {message}"
         

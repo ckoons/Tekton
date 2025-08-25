@@ -39,9 +39,9 @@ logger.setLevel(getattr(logging, settings.log_level.value))
 
 class AgentRunner:
     """
-    Runner for executing AI agents.
+    Runner for executing CI agents.
     
-    This class is responsible for running existing AI agents and
+    This class is responsible for running existing CI agents and
     handling their interactions.
     """
     

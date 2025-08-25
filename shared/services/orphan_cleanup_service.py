@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Orphan Process Cleanup Service
-Runs periodically to clean up orphaned Tekton AI processes.
+Runs periodically to clean up orphaned Tekton CI processes.
 """
 
 import asyncio

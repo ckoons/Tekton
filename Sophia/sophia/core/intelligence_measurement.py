@@ -1,7 +1,7 @@
 """
 Intelligence Measurement Framework for Sophia.
 
-This module implements a framework for measuring AI cognitive capabilities
+This module implements a framework for measuring CI cognitive capabilities
 across multiple intelligence dimensions.
 """
 
@@ -907,7 +907,7 @@ class IntelligenceMeasurement:
     """
     Intelligence Measurement Framework for Sophia.
     
-    Provides a framework for measuring AI cognitive capabilities
+    Provides a framework for measuring CI cognitive capabilities
     across multiple intelligence dimensions.
     """
     

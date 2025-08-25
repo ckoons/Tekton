@@ -54,7 +54,7 @@ class JavaScriptGenerator:
         is_typescript = implementation_type.lower() == "typescript"
         language = "TypeScript" if is_typescript else "JavaScript"
         
-        system_prompt = f"""You are an expert {language} developer tasked with creating a tool for an AI agent system.
+        system_prompt = f"""You are an expert {language} developer tasked with creating a tool for an CI agent system.
 Your goal is to create a clean, well-documented {language} module that implements the requested functionality.
 
 Follow these guidelines:

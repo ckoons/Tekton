@@ -2,7 +2,7 @@
 Streaming-enabled MCP tools for Rhetor.
 
 This module contains enhanced versions of MCP tools that support real-time
-streaming of AI responses through Server-Sent Events (SSE).
+streaming of CI responses through Server-Sent Events (SSE).
 """
 
 import json
@@ -34,7 +34,7 @@ def streaming_tool(func):
 
 @mcp_tool(
     name="SendMessageToSpecialistStream",
-    description="Send a message to a specific AI specialist with streaming response",
+    description="Send a message to a specific CI specialist with streaming response",
     tags=["ai", "specialists", "messaging", "streaming", "real-time"],
     category="ai_orchestration"
 )
@@ -47,9 +47,9 @@ async def send_message_to_specialist_stream(
     _stream_callback: Optional[Callable] = None
 ) -> Dict[str, Any]:
     """
-    Send a message to a specific AI specialist with streaming response support.
+    Send a message to a specific CI specialist with streaming response support.
     
-    This enhanced version supports real-time streaming of AI responses through
+    This enhanced version supports real-time streaming of CI responses through
     Server-Sent Events (SSE), providing immediate feedback for long responses.
     
     Args:
@@ -268,7 +268,7 @@ async def send_message_to_specialist_stream(
 
 @mcp_tool(
     name="OrchestrateTeamChatStream", 
-    description="Orchestrate a team chat between multiple AI specialists with real-time streaming",
+    description="Orchestrate a team chat between multiple CI specialists with real-time streaming",
     tags=["ai", "specialists", "team", "orchestration", "streaming", "real-time"],
     category="ai_orchestration"
 )
@@ -282,7 +282,7 @@ async def orchestrate_team_chat_stream(
     _stream_callback: Optional[Callable] = None
 ) -> Dict[str, Any]:
     """
-    Orchestrate a team chat between multiple AI specialists with real-time streaming.
+    Orchestrate a team chat between multiple CI specialists with real-time streaming.
     
     This enhanced version streams the conversation as it happens, providing
     real-time visibility into the multi-specialist discussion.

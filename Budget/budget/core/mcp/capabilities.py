@@ -48,10 +48,10 @@ class BudgetManagementCapability(MCPCapability):
 
 
 class ModelRecommendationCapability(MCPCapability):
-    """Capability for AI model selection and optimization recommendations."""
+    """Capability for CI model selection and optimization recommendations."""
     
     name = "model_recommendations"
-    description = "Recommend optimal AI models based on budget and performance constraints"
+    description = "Recommend optimal CI models based on budget and performance constraints"
     version = "1.0.0"
     
     @classmethod

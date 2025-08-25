@@ -11,7 +11,7 @@ import numpy as np
 @dataclass
 class CollectiveState:
     """
-    Represents the state of a collective AI system at a point in time
+    Represents the state of a collective CI system at a point in time
     """
     timestamp: datetime
     n_agents: int

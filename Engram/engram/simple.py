@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Simple, clean memory interface for AI assistants.
+Simple, clean memory interface for CI assistants.
 
 Usage:
     from engram import Memory
@@ -46,7 +46,7 @@ class MemoryItem:
 
 class Memory:
     """
-    Simple memory interface for AI assistants.
+    Simple memory interface for CI assistants.
     
     Three methods:
     - store(): Save a thought

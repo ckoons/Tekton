@@ -5,9 +5,9 @@ if (window.rhetorUrl) {
     console.log('[AI-CHAT DEBUG] rhetorUrl test:', window.rhetorUrl('/test'));
 }
 /**
- * Shared AI Chat Module
+ * Shared CI Chat Module
  * 
- * Provides a unified interface for all Tekton UI components to communicate with AI specialists.
+ * Provides a unified interface for all Tekton UI components to communicate with CI specialists.
  * Based on the aish proxy pattern - AIs are just sockets!
  * 
  * Usage:
@@ -18,8 +18,8 @@ if (window.rhetorUrl) {
  *     .then(responses => console.log(responses))
  */
 
-// Landmark: Unified AI Chat Interface - All UI routes through aish MCP
-// This consolidation ensures all AI communication goes through a single
+// Landmark: Unified CI Chat Interface - All UI routes through aish MCP
+// This consolidation ensures all CI communication goes through a single
 // source of truth (aish MCP server) rather than scattered endpoints.
 window.AIChat = {
     // Rhetor endpoints - simple proxy that works
@@ -108,8 +108,8 @@ window.AIChat = {
     },
     
     /**
-     * Send a message to a single AI specialist
-     * @param {string} aiName - The AI name (e.g., 'terma-ci', 'apollo-ci') 
+     * Send a message to a single CI specialist
+     * @param {string} aiName - The CI name (e.g., 'terma-ci', 'apollo-ci') 
      * @param {string} message - The message to send
      * @returns {Promise<Object>} The AI's response
      */
@@ -202,7 +202,7 @@ window.AIChat = {
     
     /**
      * Send message with streaming response support
-     * @param {string} aiName - The AI name
+     * @param {string} aiName - The CI name
      * @param {string} message - The message to send
      * @param {function} onChunk - Callback for each chunk
      * @param {function} onComplete - Callback when streaming completes
@@ -290,7 +290,7 @@ window.AIChat = {
     },
     
     /**
-     * List available AI specialists
+     * List available CI specialists
      * @returns {Promise<Array>} List of available AIs
      */
     async listAIs() {
@@ -346,7 +346,7 @@ window.AIChat = {
     },
     
     /**
-     * Parse AI response for special formatting
+     * Parse CI response for special formatting
      * Looks for {blocks} to display specially
      */
     parseResponse(response) {

@@ -81,7 +81,7 @@ class TerminalConfig:
     working_dir: Optional[str] = None
     env: Dict[str, str] = field(default_factory=dict)
     shell_args: List[str] = field(default_factory=list)
-    purpose: Optional[str] = None  # AI context
+    purpose: Optional[str] = None  # CI context
     template: Optional[str] = None  # Template name
 
 
@@ -295,7 +295,7 @@ def get_terminal_roster() -> ActiveTerminalRoster:
 
 @architecture_decision(
     title="Native Terminal Integration with aish",
-    rationale="Use native terminal apps (Terminal.app, iTerm, etc.) enhanced with aish-proxy for AI capabilities",
+    rationale="Use native terminal apps (Terminal.app, iTerm, etc.) enhanced with aish-proxy for CI capabilities",
     alternatives_considered=["Custom terminal emulator", "Web-based terminal", "PTY manipulation"],
     impacts=["platform_compatibility", "user_experience", "maintenance"],
     decision_date="2025-07-02"
@@ -1047,7 +1047,7 @@ Examples:
     
     parser.add_argument(
         "--purpose", "-p",
-        help="Purpose/context for AI assistance"
+        help="Purpose/context for CI assistance"
     )
     
     parser.add_argument(

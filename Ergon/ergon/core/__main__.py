@@ -1,5 +1,5 @@
 """
-Main entry point for Ergon AI specialist when run as module.
+Main entry point for Ergon CI specialist when run as module.
 """
 import os
 import sys

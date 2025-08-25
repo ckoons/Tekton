@@ -18,7 +18,7 @@ class TestHelp(AishTest):
             return False
         
         # Check for expected content
-        expected = ["aish - AI Shell", "Usage:", "Quick Start:"]
+        expected = ["aish - CI Shell", "Usage:", "Quick Start:"]
         for text in expected:
             if text not in stdout:
                 self.error_message = f"Expected '{text}' in output"
@@ -146,7 +146,7 @@ def create_suite() -> TestSuite:
     
     suite.add_test(TestHelp("test_help", "Test aish help display"))
     suite.add_test(TestListCommands("test_list_commands", "Test command listing"))
-    suite.add_test(TestList("test_list", "Test AI component listing"))
+    suite.add_test(TestList("test_list", "Test CI component listing"))
     suite.add_test(TestWhoami("test_whoami", "Test terminal identification"))
     suite.add_test(TestStatus("test_status", "Test status display"))
     suite.add_test(TestStatusJson("test_status_json", "Test JSON status output"))

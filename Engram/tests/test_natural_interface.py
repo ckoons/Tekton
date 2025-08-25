@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Test the natural memory interface for AI users.
+Test the natural memory interface for CI users.
 """
 
 import asyncio
@@ -61,7 +61,7 @@ async def test_natural_flow():
     print(f"   ✓ Shared with: {result['audience']}")
     
     print("\n=== All tests passed! ===")
-    print("\nNatural memory interface is ready for AI users.")
+    print("\nNatural memory interface is ready for CI users.")
 
 if __name__ == "__main__":
     asyncio.run(test_natural_flow())

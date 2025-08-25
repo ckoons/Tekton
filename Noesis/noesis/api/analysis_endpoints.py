@@ -127,7 +127,7 @@ async def analyze_manifold(request: ManifoldAnalysisRequest):
     """
     Perform manifold analysis on collective states
     
-    Analyzes the geometric structure of collective AI states,
+    Analyzes the geometric structure of collective CI states,
     reduces dimensionality, and identifies key patterns.
     """
     try:
@@ -159,7 +159,7 @@ async def analyze_dynamics(request: DynamicsAnalysisRequest):
     Analyze dynamics using SLDS modeling
     
     Identifies cognitive regimes, transitions, and stability
-    in collective AI systems over time.
+    in collective CI systems over time.
     """
     try:
         result = await mcp_tools.identify_regime_dynamics(
@@ -233,7 +233,7 @@ async def analyze_synthesis(request: SynthesisAnalysisRequest):
     Extract universal principles across scales
     
     Identifies patterns that hold across different scales
-    and systems in collective AI behavior.
+    and systems in collective CI behavior.
     """
     try:
         result = await mcp_tools.extract_universal_principles(

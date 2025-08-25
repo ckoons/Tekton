@@ -37,7 +37,7 @@ except ImportError:
         return decorator
 
 def check_ai_status(ai_name, port):
-    """Check if an AI is running by checking its port."""
+    """Check if an CI is running by checking its port."""
     try:
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         result = sock.connect_ex(('localhost', int(port)))
@@ -201,7 +201,7 @@ def get_active_terminals():
 
 @api_contract(
     title="System Status Report",
-    description="Provides comprehensive status of AI components, forwards, and terminals",
+    description="Provides comprehensive status of CI components, forwards, and terminals",
     endpoint="internal",
     method="function",
     request_schema={"args": "list[str]"},
@@ -240,7 +240,7 @@ def handle_status_command(args=None):
             endpoint = ci_info.get('endpoint', '')
             port = endpoint.split(':')[-1] if ':' in endpoint else 'Unknown'
             
-            # Get AI port
+            # Get CI port
             try:
                 ai_port = registry.get_ai_port(name)
             except:
@@ -256,7 +256,7 @@ def handle_status_command(args=None):
     # Get CI tools with dynamic status
     ci_tools = get_ci_tools_dynamic()
     
-    # Separate AI and project forwards
+    # Separate CI and project forwards
     ai_forwards = {}
     project_forwards = {}
     
@@ -306,7 +306,7 @@ def handle_status_command(args=None):
         # Greek Chorus section
         print("\nGreek Chorus Components:")
         print("-" * 60)
-        print("  Component      Port   AI Port")
+        print("  Component      Port   CI Port")
         print("  ----------     ----   -------")
         for comp in greek_components:
             print(f"  {comp['name']:<14} {comp['port']:<6} {comp['ai_port']}")

@@ -3,7 +3,7 @@
 Test script for Rhetor SSE streaming functionality.
 
 This script demonstrates and tests the real-time streaming capabilities
-added in Phase 4A of the Rhetor AI Integration Sprint.
+added in Phase 4A of the Rhetor CI Integration Sprint.
 """
 
 import asyncio

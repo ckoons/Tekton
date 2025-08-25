@@ -65,7 +65,7 @@ class SophiaMCPBridge(MCPService):
         info_tool = ComponentInfoTool(
             component_name=self.component_name,
             component_version="0.1.0",
-            component_description="Machine learning and continuous improvement system for AI collaboration"
+            component_description="Machine learning and continuous improvement system for CI collaboration"
         )
         await self.register_tool_with_hermes(info_tool)
         

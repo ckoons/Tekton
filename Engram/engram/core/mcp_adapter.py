@@ -114,7 +114,7 @@ class MCPAdapter:
         return {
             "name": "engram",
             "version": "0.8.0",
-            "description": "Engram Memory System for AI assistants",
+            "description": "Engram Memory System for CI assistants",
             "capabilities": self.capabilities
         }
     

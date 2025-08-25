@@ -2,7 +2,7 @@
 Client registration and management system for Ergon's memory system.
 
 This module provides a client registration and lifecycle management system
-that allows different AI models to use Engram with proper resource management.
+that allows different CI models to use Engram with proper resource management.
 """
 
 import os
@@ -27,7 +27,7 @@ class ClientManager:
     """
     Manages client registrations and lifecycle for Engram.
     
-    This class provides a way for different AI model clients to register
+    This class provides a way for different CI model clients to register
     with Engram, ensuring resources are only used when needed and cleaned up
     when not in use.
     """

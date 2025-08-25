@@ -92,7 +92,7 @@ async def main():
     parser.add_argument('--orphan-min-age', type=float, default=2.0,
                        help='Minimum age for orphan detection (default: 2.0 hours)')
     parser.add_argument('--ci-config-sync', action='store_true', default=True,
-                       help='Enable AI config sync (default: enabled)')
+                       help='Enable CI config sync (default: enabled)')
     parser.add_argument('--registry-flush', action='store_true', default=True,
                        help='Enable registry flush service (default: enabled)')
     parser.add_argument('--flush-interval', type=float, default=5.0,
@@ -114,7 +114,7 @@ async def main():
         )
         manager.add_service('orphan_cleanup', orphan_service)
     
-    # Add AI config sync service if it exists
+    # Add CI config sync service if it exists
     if args.ai_config_sync:
         try:
             config_sync = AIConfigSyncService()
@@ -122,7 +122,7 @@ async def main():
         except ImportError:
             logger.warning("AI config sync service not available")
         except Exception as e:
-            logger.warning(f"Could not initialize AI config sync: {e}")
+            logger.warning(f"Could not initialize CI config sync: {e}")
     
     # Add registry flush service
     if args.registry_flush:

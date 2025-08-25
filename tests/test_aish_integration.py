@@ -100,7 +100,7 @@ def main():
     # Test 2: Direct message to Numa
     tester.test(
         "Direct message to Numa", 
-        'aish numa "How do you manage AI models?"',
+        'aish numa "How do you manage CI models?"',
         timeout=30
     )
     
@@ -113,7 +113,7 @@ def main():
     
     # Test 4: List AIs
     def check_list(rc, out, err):
-        return rc == 0 and "Available AI Specialists" in out
+        return rc == 0 and "Available CI Specialists" in out
     
     tester.test(
         "List available AIs",

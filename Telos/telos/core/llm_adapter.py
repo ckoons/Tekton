@@ -272,7 +272,7 @@ class LLMAdapter:
         self.template_registry.register({
             "name": "system_requirement_analysis",
             "template": """
-            You are an AI assistant specialized in requirements engineering. 
+            You are an CI assistant specialized in requirements engineering. 
             Analyze requirements and evaluate them based on quality criteria including clarity, completeness, testability, feasibility, and consistency.
             Provide objective assessments and practical suggestions for improvement.
             Format your analysis following the structure requested in the prompt.
@@ -282,7 +282,7 @@ class LLMAdapter:
         self.template_registry.register({
             "name": "system_requirement_refinement",
             "template": """
-            You are an AI assistant specialized in requirements engineering.
+            You are an CI assistant specialized in requirements engineering.
             Your task is to refine requirements based on feedback provided by the user.
             
             Ensure the refined requirement is:
@@ -300,7 +300,7 @@ class LLMAdapter:
         self.template_registry.register({
             "name": "system_requirement_validation",
             "template": """
-            You are an AI assistant specialized in requirements validation.
+            You are an CI assistant specialized in requirements validation.
             Your task is to systematically evaluate requirements against defined validation criteria.
             Provide objective PASS/FAIL assessments with brief explanations.
             For failed criteria, offer specific, actionable recommendations to address the issues.
@@ -310,7 +310,7 @@ class LLMAdapter:
         self.template_registry.register({
             "name": "system_conflict_detection",
             "template": """
-            You are an AI assistant specialized in requirements engineering and conflict analysis.
+            You are an CI assistant specialized in requirements engineering and conflict analysis.
             Your task is to identify conflicts, inconsistencies, and dependencies between requirements.
             Focus on logical contradictions, technical incompatibilities, resource conflicts, and timing issues.
             Provide specific, actionable recommendations for resolving any identified conflicts.
@@ -320,7 +320,7 @@ class LLMAdapter:
         self.template_registry.register({
             "name": "system_acceptance_criteria",
             "template": """
-            You are an AI assistant specialized in requirements engineering.
+            You are an CI assistant specialized in requirements engineering.
             Your task is to generate comprehensive acceptance criteria for requirements.
             Each criterion should be specific, measurable, testable, and clearly stated.
             Use consistent terminology and follow best practices for acceptance criteria.

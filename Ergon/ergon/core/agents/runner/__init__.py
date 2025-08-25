@@ -1,4 +1,4 @@
-"""Agent runner for executing AI agents."""
+"""Agent runner for executing CI agents."""
 
 from .base.runner import AgentRunner
 from .base.exceptions import AgentException

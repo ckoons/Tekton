@@ -1,7 +1,7 @@
 """
-Test script for AI Specialist functionality.
+Test script for CI Specialist functionality.
 
-This script tests the basic AI specialist features including:
+This script tests the basic CI specialist features including:
 - Specialist creation and activation
 - AI-to-AI messaging
 - Team chat orchestration
@@ -17,7 +17,7 @@ RHETOR_URL = "http://localhost:8003"
 RHETOR_WS_URL = "ws://localhost:8003/ws"
 
 async def test_list_specialists():
-    """Test listing AI specialists."""
+    """Test listing CI specialists."""
     print("\n=== Testing List Specialists ===")
     
     async with aiohttp.ClientSession() as session:
@@ -69,14 +69,14 @@ async def test_specialist_message(specialist_id: str, message: str):
                 return None
 
 async def test_websocket_specialist_chat():
-    """Test WebSocket communication with AI specialist."""
-    print("\n=== Testing WebSocket AI Specialist Chat ===")
+    """Test WebSocket communication with CI specialist."""
+    print("\n=== Testing WebSocket CI Specialist Chat ===")
     
     import websockets
     
     try:
         async with websockets.connect(RHETOR_WS_URL) as websocket:
-            # Send AI specialist request
+            # Send CI specialist request
             request = {
                 "type": "AI_SPECIALIST_REQUEST",
                 "source": "TEST",
@@ -89,7 +89,7 @@ async def test_websocket_specialist_chat():
             }
             
             await websocket.send(json.dumps(request))
-            print("✓ Sent AI specialist request via WebSocket")
+            print("✓ Sent CI specialist request via WebSocket")
             
             # Wait for response
             response = await websocket.recv()
@@ -110,9 +110,9 @@ async def test_team_chat():
     print("\n=== Testing Team Chat ===")
     
     payload = {
-        "topic": "Planning Tekton's AI integration strategy",
+        "topic": "Planning Tekton's CI integration strategy",
         "specialists": ["rhetor-orchestrator", "engram-memory"],
-        "initial_prompt": "How should we approach integrating AI specialists into Tekton?",
+        "initial_prompt": "How should we approach integrating CI specialists into Tekton?",
         "max_rounds": 2
     }
     
@@ -132,8 +132,8 @@ async def test_team_chat():
                 return None
 
 async def test_status_with_ai_specialists():
-    """Test status endpoint with AI specialist information."""
-    print("\n=== Testing Status with AI Specialists ===")
+    """Test status endpoint with CI specialist information."""
+    print("\n=== Testing Status with CI Specialists ===")
     
     import websockets
     
@@ -156,10 +156,10 @@ async def test_status_with_ai_specialists():
                 payload = data['payload']
                 print(f"✓ Rhetor status: {payload['message']}")
                 
-                # Check AI specialists
+                # Check CI specialists
                 if 'ai_specialists' in payload:
                     ai_status = payload['ai_specialists']
-                    print(f"✓ Active AI specialists: {ai_status.get('active_count', 0)}")
+                    print(f"✓ Active CI specialists: {ai_status.get('active_count', 0)}")
                     
                     for specialist in ai_status.get('specialists', []):
                         print(f"  - {specialist['id']}: {specialist['status']}")
@@ -200,7 +200,7 @@ async def main():
         # Test 4: Send message to specialist (Note: This will use simulated responses for now)
         await test_specialist_message(
             "rhetor-orchestrator",
-            "What is your role in managing AI specialists?"
+            "What is your role in managing CI specialists?"
         )
         
         # Test 5: WebSocket specialist chat

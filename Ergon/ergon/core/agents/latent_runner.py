@@ -2,7 +2,7 @@
 """
 Latent Reasoning Agent Runner for Ergon.
 
-This module provides a specialized runner for executing AI agents with
+This module provides a specialized runner for executing CI agents with
 latent space reasoning capabilities integrated with the Tekton framework.
 """
 

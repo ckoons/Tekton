@@ -61,7 +61,7 @@ class AnalysisResult:
 
 ```python
 class ManifoldAnalyzer(MathematicalFramework):
-    """Analyzes geometric structure of collective AI state spaces"""
+    """Analyzes geometric structure of collective CI state spaces"""
     
     def __init__(self, config: Optional[Dict[str, Any]] = None)
     async def analyze(self, data: np.ndarray, **kwargs) -> AnalysisResult

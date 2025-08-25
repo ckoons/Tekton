@@ -48,7 +48,7 @@ class ShellGenerator:
         Returns:
             Generated shell script code
         """
-        system_prompt = """You are an expert shell script developer tasked with creating a tool for an AI agent system.
+        system_prompt = """You are an expert shell script developer tasked with creating a tool for an CI agent system.
 Your goal is to create a clean, well-documented shell script that implements the requested functionality.
 
 Follow these guidelines:

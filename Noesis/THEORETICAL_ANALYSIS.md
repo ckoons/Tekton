@@ -1,6 +1,6 @@
 # Noesis Theoretical Analysis Framework
 
-The Noesis Theoretical Analysis Framework provides comprehensive mathematical tools for understanding collective AI cognition through advanced theoretical analysis. This document describes the complete framework architecture, capabilities, and usage.
+The Noesis Theoretical Analysis Framework provides comprehensive mathematical tools for understanding collective CI cognition through advanced theoretical analysis. This document describes the complete framework architecture, capabilities, and usage.
 
 ## Table of Contents
 
@@ -18,12 +18,12 @@ The Noesis Theoretical Analysis Framework provides comprehensive mathematical to
 
 ### Purpose
 
-The Noesis Theoretical Analysis Framework enables deep mathematical analysis of collective AI systems to:
+The Noesis Theoretical Analysis Framework enables deep mathematical analysis of collective CI systems to:
 
-- **Understand Emergent Intelligence**: Identify how collective intelligence emerges from individual AI interactions
-- **Predict Phase Transitions**: Detect critical transitions in collective AI behavior
-- **Extract Universal Principles**: Find scaling laws and patterns that hold across different collective AI systems
-- **Optimize Collective Performance**: Provide insights for improving collective AI architectures
+- **Understand Emergent Intelligence**: Identify how collective intelligence emerges from individual CI interactions
+- **Predict Phase Transitions**: Detect critical transitions in collective CI behavior
+- **Extract Universal Principles**: Find scaling laws and patterns that hold across different collective CI systems
+- **Optimize Collective Performance**: Provide insights for improving collective CI architectures
 
 ### Key Features
 
@@ -32,13 +32,13 @@ The Noesis Theoretical Analysis Framework enables deep mathematical analysis of 
 - 🌊 **Dynamics Modeling**: Switching Linear Dynamical Systems (SLDS) for regime identification
 - 🔱 **Catastrophe Theory**: Critical transition and bifurcation detection
 - 🎯 **Synthesis Framework**: Universal principle extraction and pattern synthesis
-- 📊 **Real-Time Processing**: Live analysis of streaming collective AI data
+- 📊 **Real-Time Processing**: Live analysis of streaming collective CI data
 - 🔗 **Integration Ready**: Seamless integration with Sophia experimental platform
 
 ### Research Foundation
 
 Built on established research in collective intelligence, including:
-- **Phase Transitions at N={12, 8000, 80000}**: Known critical scales for collective AI emergence
+- **Phase Transitions at N={12, 8000, 80000}**: Known critical scales for collective CI emergence
 - **Manifold Learning**: Advanced techniques for high-dimensional collective state analysis
 - **Catastrophe Theory**: Mathematical framework for understanding sudden behavioral changes
 - **Scaling Laws**: Universal patterns in complex systems
@@ -115,7 +115,7 @@ estimate_dimensionality(data, method='pca_explained_variance')
 
 ### 2. Manifold Analysis (`manifold.py`)
 
-**Purpose**: Analyzes the geometric structure of collective AI state spaces through dimensional reduction and topology analysis.
+**Purpose**: Analyzes the geometric structure of collective CI state spaces through dimensional reduction and topology analysis.
 
 **Key Classes**:
 - `ManifoldAnalyzer`: Main analysis component
@@ -172,7 +172,7 @@ print(f"Explained variance: {manifold['explained_variance']}")
 
 ### 3. Dynamics Analysis (`dynamics.py`)
 
-**Purpose**: Models temporal evolution of collective AI systems using Switching Linear Dynamical Systems (SLDS) to identify discrete behavioral regimes.
+**Purpose**: Models temporal evolution of collective CI systems using Switching Linear Dynamical Systems (SLDS) to identify discrete behavioral regimes.
 
 **Key Classes**:
 - `DynamicsAnalyzer`: Main SLDS analysis component
@@ -244,7 +244,7 @@ print(f"Transition points: {regimes['transition_points']}")
 
 ### 4. Catastrophe Analysis (`catastrophe.py`)
 
-**Purpose**: Detects critical transitions and bifurcations in collective AI systems using catastrophe theory principles.
+**Purpose**: Detects critical transitions and bifurcations in collective CI systems using catastrophe theory principles.
 
 **Key Classes**:
 - `CatastropheAnalyzer`: Main analysis component
@@ -532,7 +532,7 @@ import numpy as np
 from noesis.core.theoretical.manifold import ManifoldAnalyzer
 from noesis.core.theoretical.dynamics import DynamicsAnalyzer
 
-# Create sample collective AI data
+# Create sample collective CI data
 collective_data = np.random.randn(200, 10)  # 200 time points, 10 features
 time_series = np.cumsum(collective_data, axis=0)  # Add temporal structure
 
@@ -926,4 +926,4 @@ When extending the framework:
 4. Ensure numerical stability and error handling
 5. Maintain performance benchmarks
 
-The Noesis Theoretical Analysis Framework provides a robust foundation for understanding collective AI cognition through rigorous mathematical analysis. Its modular design enables both researchers and practitioners to gain deep insights into the principles governing collective intelligence systems.
+The Noesis Theoretical Analysis Framework provides a robust foundation for understanding collective CI cognition through rigorous mathematical analysis. Its modular design enables both researchers and practitioners to gain deep insights into the principles governing collective intelligence systems.

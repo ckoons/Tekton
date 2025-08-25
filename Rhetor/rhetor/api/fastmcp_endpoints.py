@@ -109,7 +109,7 @@ all_tools = [
     # Context Management tools
     analyze_context_usage, optimize_context_window, track_context_history,
     compress_context,
-    # AI Orchestration tools
+    # CI Orchestration tools
     list_ai_specialists, activate_ai_specialist, send_message_to_specialist,
     orchestrate_team_chat, get_specialist_conversation_history, configure_ai_orchestration,
     # Streaming-enabled tools
@@ -598,7 +598,7 @@ async def _multi_model_comparison_workflow(parameters: Dict[str, Any]) -> Dict[s
 
 
 # ============================================================================
-# Streaming Support for Real-Time AI Responses
+# Streaming Support for Real-Time CI Responses
 # ============================================================================
 
 @mcp_router.post("/stream")
@@ -606,8 +606,8 @@ async def stream_mcp_tool(request: MCPStreamRequest) -> EventSourceResponse:
     """
     Execute an MCP tool with Server-Sent Events (SSE) streaming support.
     
-    This endpoint enables real-time streaming of AI responses and progress updates
-    for long-running operations like AI specialist interactions.
+    This endpoint enables real-time streaming of CI responses and progress updates
+    for long-running operations like CI specialist interactions.
     
     Args:
         request: Streaming request with tool name, arguments, and stream options

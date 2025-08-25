@@ -448,7 +448,7 @@ class PurposeCommand:
 
 @architecture_decision(
     title="Purpose Command Router",
-    description="Enables context-aware AI through simple purpose commands",
+    description="Enables context-aware CI through simple purpose commands",
     rationale="Simple commands provide powerful context - terminals get roles, AIs get purpose content",
     alternatives_considered=["Separate commands for terminals vs content", "Complex query syntax"],
     impacts=["usability", "AI effectiveness", "knowledge management"],

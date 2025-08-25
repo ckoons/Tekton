@@ -2,7 +2,7 @@
 
 ## Overview
 
-This implementation connects the MCP (Model Context Protocol) tools to live Rhetor components, enabling real AI orchestration functionality instead of using mock data.
+This implementation connects the MCP (Model Context Protocol) tools to live Rhetor components, enabling real CI orchestration functionality instead of using mock data.
 
 ## Key Components
 
@@ -13,11 +13,11 @@ This implementation connects the MCP (Model Context Protocol) tools to live Rhet
 - Initializes Hermes message bus connection for inter-component messaging
 
 ### 2. **Updated MCP Tools** (tools.py)
-All AI orchestration tools now check for live integration:
+All CI orchestration tools now check for live integration:
 - `ListAISpecialists` - Queries actual specialist registry
-- `ActivateAISpecialist` - Activates real AI specialists
+- `ActivateAISpecialist` - Activates real CI specialists
 - `SendMessageToSpecialist` - Routes through live messaging system
-- `OrchestrateTeamChat` - Uses actual AI responses
+- `OrchestrateTeamChat` - Uses actual CI responses
 - `GetSpecialistConversationHistory` - Retrieves real conversation data
 - `ConfigureAIOrchestration` - Applies actual configuration changes
 
@@ -60,7 +60,7 @@ python /Users/cskoons/projects/github/Tekton/Rhetor/tests/test_mcp_integration.p
 ```
 
 This tests:
-1. Listing AI specialists
+1. Listing CI specialists
 2. Activating specialists
 3. Sending messages to specialists
 4. Orchestrating team chats
@@ -71,7 +71,7 @@ This tests:
 When using MCP tools via the API:
 
 ```python
-# List available AI specialists
+# List available CI specialists
 POST /api/mcp/v2/process
 {
     "tool": "ListAISpecialists",
@@ -95,8 +95,8 @@ POST /api/mcp/v2/process
 
 ## Next Steps
 
-1. **Streaming Support**: Implement real-time streaming for AI responses
+1. **Streaming Support**: Implement real-time streaming for CI responses
 2. **Enhanced Error Handling**: Add retry logic and graceful degradation
-3. **Performance Monitoring**: Add metrics for AI response times
+3. **Performance Monitoring**: Add metrics for CI response times
 4. **Dynamic Specialist Creation**: Allow creation of new specialists on demand
 5. **Advanced Orchestration**: Implement voting and consensus mechanisms

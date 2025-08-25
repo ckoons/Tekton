@@ -45,7 +45,7 @@ async def test_send_message_to_specialist():
         },
         {
             "specialist": "apollo-ci", 
-            "message": "Apollo, can you see the vision of our integrated AI platform?",
+            "message": "Apollo, can you see the vision of our integrated CI platform?",
             "expected_type": "socket"
         },
         {
@@ -116,9 +116,9 @@ async def test_error_handling():
         print("✗ Failed to handle non-existent specialist properly")
         print(f"Response: {response}")
     
-    # Test timeout scenario (if AI is not responding)
+    # Test timeout scenario (if CI is not responding)
     print("\n2. Testing timeout handling...")
-    # This would require a non-responsive AI to test properly
+    # This would require a non-responsive CI to test properly
     
     return True
 

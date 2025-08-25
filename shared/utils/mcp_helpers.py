@@ -41,11 +41,11 @@ except ImportError:
     title="MCP server creation",
     target_component="AI Agents",
     protocol="MCP",
-    data_flow="Component tools exposed to AI agents via Model Context Protocol"
+    data_flow="Component tools exposed to CI agents via Model Context Protocol"
 )
 @architecture_decision(
-    title="FastMCP for AI integration",
-    rationale="Use FastMCP to expose component capabilities as tools that AI agents can call",
+    title="FastMCP for CI integration",
+    rationale="Use FastMCP to expose component capabilities as tools that CI agents can call",
     alternatives_considered=["Custom protocol", "Direct API calls", "Function calling"],
     impacts=["ai_integration", "tool_discovery", "agent_capabilities"],
     decided_by="team"

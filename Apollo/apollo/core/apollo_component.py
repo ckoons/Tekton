@@ -44,7 +44,7 @@ logger = logging.getLogger(__name__)
 
 @architecture_decision(
     title="Apollo Component Architecture",
-    rationale="Modular conversational AI system with attention management, token budgeting, predictive capabilities, and protocol enforcement",
+    rationale="Modular conversational CI system with attention management, token budgeting, predictive capabilities, and protocol enforcement",
     alternatives_considered=["Monolithic chat manager", "Simple message router", "Stateless request handler"],
     decided_by="Casey"
 )

@@ -19,7 +19,7 @@ aish MCP: ✓ Running (v1.0.0) on port 8318
 Currently missing: engram, hermes, ergon, terma, penia, noesis, hephaestus, iris
 Should show ALL components with their status and ports:
 - Regular CI ports (83xx)
-- AI specialist ports (42xxx)
+- CI specialist ports (42xxx)
 
 ### 3. CI Tools Status
 ```
@@ -32,7 +32,7 @@ CI Tools:
 
 ### 4. Active Forwards (Enhanced)
 ```
-Active AI Forwards:
+Active CI Forwards:
 ------------------------------
   apollo     → Terminal: Casey (TTY: /dev/ttys001)
   iris       → Terminal: Casey (TTY: /dev/ttys002)
@@ -75,7 +75,7 @@ Recent Commands (last 10):
 
 1. **Component Detection**: 
    - Check `shared/aish/src/registry/ci_registry.py` for complete component list
-   - Verify both CI ports (83xx) and AI ports (42xxx)
+   - Verify both CI ports (83xx) and CI ports (42xxx)
 
 2. **Process Detection**:
    - Use `ps aux | grep` to find running processes

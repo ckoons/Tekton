@@ -3,7 +3,7 @@
 # Note: This is the largest dependency set (~6GB) due to PyTorch and models
 
 # Vector databases and search
-faiss-cpu>=1.7.4         # Facebook AI Similarity Search
+faiss-cpu>=1.7.4         # Facebook CI Similarity Search
 qdrant-client>=1.7.0     # Qdrant vector database client
 
 # ML frameworks and embeddings

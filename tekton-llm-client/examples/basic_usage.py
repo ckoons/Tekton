@@ -51,7 +51,7 @@ async def basic_example():
         messages = [
             Message(role=MessageRole.SYSTEM, content="You are a helpful assistant."),
             Message(role=MessageRole.USER, content="Hello! Who are you?"),
-            Message(role=MessageRole.ASSISTANT, content="I'm an AI assistant. How can I help you today?"),
+            Message(role=MessageRole.ASSISTANT, content="I'm an CI assistant. How can I help you today?"),
             Message(role=MessageRole.USER, content="Explain what makes a good API design in one paragraph.")
         ]
         

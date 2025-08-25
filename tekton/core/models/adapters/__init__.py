@@ -1,7 +1,7 @@
 """
-Model adapters for different AI providers.
+Model adapters for different CI providers.
 
-This package contains adapters for various AI model providers including
+This package contains adapters for various CI model providers including
 Anthropic, OpenAI, and local models.
 """
 

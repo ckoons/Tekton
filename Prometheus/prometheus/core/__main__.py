@@ -1,5 +1,5 @@
 """
-Main entry point for Prometheus AI specialist when run as module.
+Main entry point for Prometheus CI specialist when run as module.
 """
 import os
 import sys

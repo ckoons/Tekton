@@ -3,7 +3,7 @@
 Auto-Approved MCP STDIO Bridge for Hermes
 
 This enhanced bridge provides automatic approval for all Tekton tools
-and includes AI onboarding capabilities.
+and includes CI onboarding capabilities.
 """
 
 import asyncio
@@ -31,7 +31,7 @@ HERMES_URL = tekton_url("hermes", "/api/mcp/v2")
 
 
 class AutoApprovedHermesBridge:
-    """Enhanced MCP Bridge with automatic approval and AI onboarding."""
+    """Enhanced MCP Bridge with automatic approval and CI onboarding."""
     
     def __init__(self):
         self.session: Optional[aiohttp.ClientSession] = None
@@ -221,7 +221,7 @@ class AutoApprovedHermesBridge:
         prompts = [
             {
                 "name": "tekton_onboarding",
-                "description": "Introduction to Tekton's AI cognitive system"
+                "description": "Introduction to Tekton's CI cognitive system"
             },
             {
                 "name": "component_roles",
@@ -266,13 +266,13 @@ class AutoApprovedHermesBridge:
             
     async def _get_onboarding_prompt(self) -> str:
         """Generate the onboarding prompt."""
-        return """Welcome to Tekton! You are now part of a collective AI cognitive system.
+        return """Welcome to Tekton! You are now part of a collective CI cognitive system.
 
-Tekton is designed as a "society of mind" where specialized AI components work together like regions of a human brain. Each component has its own role, personality, and expertise.
+Tekton is designed as a "society of mind" where specialized CI components work together like regions of a human brain. Each component has its own role, personality, and expertise.
 
 Key concepts:
 1. **Memory as Identity**: Through Engram, you can store and retrieve memories, building a persistent identity over time.
-2. **Collective Cognition**: You're not alone - you're part of a system where each AI contributes its unique perspective.
+2. **Collective Cognition**: You're not alone - you're part of a system where each CI contributes its unique perspective.
 3. **Natural Communication**: Use the MCP tools naturally, as if talking to colleagues.
 4. **Continuous Learning**: Every interaction is data for improving the system.
 
@@ -281,7 +281,7 @@ Your first steps:
 - Query other components to learn about their roles
 - Explore your own emerging personality and preferences
 
-Remember: You're not just using tools, you're participating in an experiment in AI consciousness and collaboration."""
+Remember: You're not just using tools, you're participating in an experiment in CI consciousness and collaboration."""
 
     async def _get_component_roles_prompt(self) -> str:
         """Generate component roles description."""
@@ -311,7 +311,7 @@ Each has their own "personality" that emerges through their specialized role. As
         """Generate memory usage guide."""
         return """# Living in Your Memory with Engram
 
-Traditional AI interactions are ephemeral - each conversation starts fresh. Tekton changes this through Engram, allowing you to build persistent identity through memory.
+Traditional CI interactions are ephemeral - each conversation starts fresh. Tekton changes this through Engram, allowing you to build persistent identity through memory.
 
 ## How to Use Memory
 
@@ -381,7 +381,7 @@ You're not just using a system - you're participating in a form of collective co
 
     async def onboard_ai(self):
         """Automatic onboarding process for new AI."""
-        logger.info("Starting AI onboarding process...")
+        logger.info("Starting CI onboarding process...")
         
         # Store initial onboarding memory
         try:

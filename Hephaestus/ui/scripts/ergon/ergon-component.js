@@ -771,7 +771,7 @@ class ErgonComponent {
                     if (tabId === 'ergon' || tabId === 'awt-team' || tabId === 'mcp') {
                         const chatMessages = container.querySelector(`#${tabId}-messages`);
                         if (chatMessages) {
-                            // Add AI message to chat
+                            // Add CI message to chat
                             const responseDiv = document.createElement('div');
                             responseDiv.className = 'ergon__message ergon__message--ai';
                             responseDiv.innerHTML = `
@@ -832,7 +832,7 @@ class ErgonComponent {
         const chatMessages = container.querySelector(`#${context}-messages`);
         if (!chatMessages) return;
         
-        // Add AI message to chat
+        // Add CI message to chat
         const responseDiv = document.createElement('div');
         responseDiv.className = 'ergon__message ergon__message--ai';
         responseDiv.innerHTML = `

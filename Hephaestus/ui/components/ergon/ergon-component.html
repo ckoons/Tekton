@@ -447,14 +447,14 @@ document.addEventListener('DOMContentLoaded', function() {
         </div>
         
         <!-- Solution Chat Tab -->
-        <!-- @landmark Panel: Solution Chat - Direct chat with Ergon AI assistant -->
+        <!-- @landmark Panel: Solution Chat - Direct chat with Ergon CI assistant -->
         <div id="ergon-panel" class="ergon__panel" data-tekton-panel="ergon" data-tekton-panel-for="Solution Chat" data-tekton-panel-component="ergon" data-tekton-type="panel" data-tekton-zone="content-panel" data-tekton-state="inactive" data-tekton-visibility="hidden" data-tekton-chat="panel" data-tekton-ai="chat-panel" data-tekton-ai-ready="true">
             <div id="ergon-messages" class="ergon__chat-messages" data-tekton-chat="messages" data-tekton-component="chat-messages" data-tekton-type="message-container" data-tekton-ai="message-area">
                 <!-- Welcome message -->
                 <div class="ergon__message ergon__message--system" data-tekton-chat="message" data-tekton-message-type="system" data-tekton-type="welcome-message">
                     <div class="ergon__message-content" data-tekton-zone="message-content">
                         <div class="ergon__message-text" data-tekton-type="message-text">
-                            <h3 class="ergon__message-title" data-tekton-type="message-title">Welcome to Ergon v2 AI Assistant</h3>
+                            <h3 class="ergon__message-title" data-tekton-type="message-title">Welcome to Ergon v2 CI Assistant</h3>
                             <p data-tekton-type="message-paragraph">I'm your CI-in-the-Loop reuse specialist. I can help you find existing solutions, generate configurations, and even automate entire development workflows. My current autonomy level is <strong data-tekton-ai="autonomy-indicator">Advisory</strong>.</p>
                             <p data-tekton-type="message-paragraph">How can I assist you today?</p>
                         </div>
@@ -464,7 +464,7 @@ document.addEventListener('DOMContentLoaded', function() {
         </div>
         
         <!-- Team Chat Tab -->
-        <!-- @landmark Panel: Team Chat - Collaborate with all Tekton AI assistants -->
+        <!-- @landmark Panel: Team Chat - Collaborate with all Tekton CI assistants -->
         <div id="awt-team-panel" class="ergon__panel" data-tekton-panel="awt-team" data-tekton-panel-for="Team Chat" data-tekton-panel-component="ergon" data-tekton-type="panel" data-tekton-zone="content-panel" data-tekton-state="inactive" data-tekton-visibility="hidden" data-tekton-chat="panel" data-tekton-ai="team-chat-panel" data-tekton-ai-ready="true">
             <div id="awt-team-messages" class="ergon__chat-messages" data-tekton-chat="messages" data-tekton-component="team-messages" data-tekton-type="message-container" data-tekton-ai="team-message-area">
                 <!-- Welcome message -->
@@ -1966,7 +1966,7 @@ function ergon_initChats() {
         console.log('[Ergon] TeamChat initialized');
     }
     
-    // Update main component AI ready state
+    // Update main component CI ready state
     const ergonComponent = document.querySelector('[data-tekton-component="ergon"]');
     if (ergonComponent) {
         ergonComponent.setAttribute('data-tekton-ai-ready', 'true');

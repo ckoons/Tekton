@@ -339,7 +339,7 @@ class EnhancedTerminalChat {
                 // Team chat goes to multiple specialists
                 return ['agent-specialist', 'workflow-specialist', 'tool-specialist'];
             case 'agora':
-                // Agora goes to all AI components
+                // Agora goes to all CI components
                 return ['broadcast'];
             default:
                 return [contextId];
@@ -441,7 +441,7 @@ class EnhancedTerminalChat {
             const contentEl = el.querySelector('.message-text');
             if (!contentEl) return;
             
-            // Get sender for AI messages
+            // Get sender for CI messages
             let sender = null;
             if (type === 'ai') {
                 const senderMatch = contentEl.innerHTML.match(/<strong>([^<]+):<\/strong>/);
@@ -561,7 +561,7 @@ class EnhancedTerminalChat {
     }
     
     /**
-     * Add an AI message to the chat
+     * Add an CI message to the chat
      * @param {string} text - Message text
      * @param {string} sender - Sender ID or name
      */

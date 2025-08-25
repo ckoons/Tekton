@@ -395,7 +395,7 @@ class TelosComponent {
             // Send message via aish MCP
             this.sendChatMessage(message, this.state.activeTab)
                 .then(response => {
-                    // Add AI response to chat
+                    // Add CI response to chat
                     this.addAIMessageToChatUI(messagesContainer, response);
                 })
                 .catch(error => {
@@ -804,7 +804,7 @@ class TelosComponent {
     }
 
     /**
-     * Add an AI message to the chat UI
+     * Add an CI message to the chat UI
      * @param {HTMLElement} messages - The messages container element
      * @param {string} message - The message text
      */

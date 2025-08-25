@@ -137,9 +137,9 @@ class TektonEnviron {
     }
     
     /**
-     * Get AI port for a component
+     * Get CI port for a component
      * @param {string} component - Component name
-     * @returns {number} AI port number
+     * @returns {number} CI port number
      */
     getAIPort(component) {
         const componentPort = this.getPort(component);

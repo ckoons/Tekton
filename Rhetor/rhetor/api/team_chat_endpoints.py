@@ -58,7 +58,7 @@ class TeamChatResponse(BaseModel):
 @router.post("/team-chat", response_model=TeamChatResponse)
 async def team_chat(request: TeamChatRequest):
     """
-    Broadcast a message to all AI specialists and collect responses.
+    Broadcast a message to all CI specialists and collect responses.
     
     This endpoint connects to real Greek Chorus AIs via the MCP tools integration
     for multi-CI collaboration on answering questions or solving problems.
@@ -150,7 +150,7 @@ async def team_chat_stream(
     """
     Stream team chat responses using Server-Sent Events.
     
-    This endpoint allows real-time streaming of AI responses as they arrive
+    This endpoint allows real-time streaming of CI responses as they arrive
     from the Greek Chorus AIs.
     """
     async def event_generator():
@@ -292,7 +292,7 @@ async def list_team_sockets():
 
 @router.post("/team-chat/sockets/{socket_id}/reset")
 async def reset_team_socket(socket_id: str):
-    """Reset a specific AI specialist (clear context)."""
+    """Reset a specific CI specialist (clear context)."""
     try:
         # Get MCP tools integration
         integration = get_mcp_tools_integration()
@@ -312,7 +312,7 @@ async def reset_team_socket(socket_id: str):
         if not result["success"]:
             raise HTTPException(status_code=404, detail=f"Failed to reset AI: {result.get('error', 'Unknown error')}")
         
-        logger.info(f"Reset AI specialist: {socket_id}")
+        logger.info(f"Reset CI specialist: {socket_id}")
         
         return {
             "socket_id": socket_id,
@@ -323,7 +323,7 @@ async def reset_team_socket(socket_id: str):
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Error resetting AI specialist: {e}", exc_info=True)
+        logger.error(f"Error resetting CI specialist: {e}", exc_info=True)
         raise HTTPException(status_code=500, detail=str(e))
 
 
@@ -331,7 +331,7 @@ async def reset_team_socket(socket_id: str):
 
 
 async def _synthesize_responses(responses: List[Dict[str, Any]]) -> str:
-    """Synthesize multiple AI responses into a coherent summary."""
+    """Synthesize multiple CI responses into a coherent summary."""
     if not responses:
         return "No responses to synthesize."
     
@@ -356,7 +356,7 @@ async def _synthesize_responses(responses: List[Dict[str, Any]]) -> str:
 
 
 async def _analyze_consensus(responses: List[Dict[str, Any]]) -> Dict[str, Any]:
-    """Analyze consensus patterns in AI responses."""
+    """Analyze consensus patterns in CI responses."""
     if not responses:
         return {
             "total_responses": 0,

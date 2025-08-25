@@ -28,7 +28,7 @@ def create_agent(
     model: str = typer.Option(None, "--model", "-m", help="Model to use (defaults to settings)"),
     agent_type: str = typer.Option("standard", "--type", "-t", help="Type of agent to create (standard, github, mail, browser)"),
 ):
-    """Create a new AI agent with the given specifications."""
+    """Create a new CI agent with the given specifications."""
     try:
         from ergon.core.agents.generator import AgentGenerator, generate_agent
         from ergon.core.database.engine import get_db_session
@@ -66,7 +66,7 @@ def create_agent(
             # Generate agent data
             agent_data = generate_agent(
                 name=name,
-                description=description or f"An AI assistant named {name}",
+                description=description or f"An CI assistant named {name}",
                 model_name=model,
                 agent_type=agent_type
             )
@@ -201,7 +201,7 @@ def run_agent(
     timeout: Optional[int] = typer.Option(None, "--timeout", "-t", help="Timeout in seconds for agent execution"),
     timeout_action: str = typer.Option("log", "--timeout-action", "-a", help="Action on timeout: log, alarm, or kill"),
 ):
-    """Run an AI agent with the given input."""
+    """Run an CI agent with the given input."""
     try:
         from ergon.core.agents.runner import AgentRunner
         from ergon.core.database.models import AgentExecution, AgentMessage
@@ -316,7 +316,7 @@ def delete_agent(
     agent_identifier: str = typer.Argument(..., help="Name or ID of the agent to delete"),
     force: bool = typer.Option(False, "--force", "-f", help="Force deletion without confirmation"),
 ):
-    """Delete an AI agent and associated data."""
+    """Delete an CI agent and associated data."""
     try:
         from ergon.core.database.models import AgentFile, AgentTool, AgentExecution, AgentMessage
         

@@ -85,19 +85,19 @@ window.TeamChat = {
                 }
                 
                 if (outputMode === 'ai') {
-                    // Send to AI immediately (output not shown to user)
+                    // Send to CI immediately (output not shown to user)
                     immediateAiMessage += `Command output:\n${result.output}\n\n`;
                 } else if (outputMode === 'both') {
-                    // Send to AI immediately WITH current message (output shown to user AND sent to AI)
+                    // Send to CI immediately WITH current message (output shown to user AND sent to AI)
                     immediateAiMessage += `Command output:\n${result.output}\n\n`;
                 }
             }
             
-            // Handle immediate AI message (for 'ai' and 'both' modes)
+            // Handle immediate CI message (for 'ai' and 'both' modes)
             if (immediateAiMessage) {
                 message = processed.message ? `${processed.message}\n\n${immediateAiMessage}` : immediateAiMessage;
             } else if (!processed.message || !processed.message.trim()) {
-                // No message and no immediate AI output, we're done
+                // No message and no immediate CI output, we're done
                 return;
             } else {
                 // Continue with the remaining message
@@ -309,8 +309,8 @@ window.TeamChat = {
     },
     
     /**
-     * Format sender name from AI identifier
-     * @param {string} aiId - AI identifier (e.g., 'terma-ci', 'terma')
+     * Format sender name from CI identifier
+     * @param {string} aiId - CI identifier (e.g., 'terma-ci', 'terma')
      * @returns {string} Formatted name
      */
     formatSenderName(aiId) {

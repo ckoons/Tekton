@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 @architecture_decision(
     title="LLM orchestration service",
-    rationale="Centralize LLM interactions across Tekton with provider abstraction, budget management, and AI specialist routing",
+    rationale="Centralize LLM interactions across Tekton with provider abstraction, budget management, and CI specialist routing",
     alternatives=["Direct LLM API calls per component", "External LLM gateway", "Single provider lock-in"],
     decision_date="2024-01-05"
 )
@@ -102,12 +102,12 @@ class RhetorComponent(StandardComponentBase):
             self.model_router = ModelRouter(self.llm_client, budget_manager=self.budget_manager)
             logger.info("Model router initialized")
             
-            # AI specialist management is now handled by the AI Registry
-            logger.info("Using AI Registry for specialist management")
+            # CI specialist management is now handled by the CI Registry
+            logger.info("Using CI Registry for specialist management")
             
-            # AI messaging integration is deprecated - messaging now handled through AI Registry
+            # CI messaging integration is deprecated - messaging now handled through CI Registry
             self.ai_messaging_integration = None
-            logger.info("AI messaging handled through AI Registry")
+            logger.info("AI messaging handled through CI Registry")
             
             # Initialize prompt engine with template manager integration
             self.prompt_engine = PromptEngine(self.template_manager)
@@ -122,13 +122,13 @@ class RhetorComponent(StandardComponentBase):
     
     async def _component_specific_cleanup(self):
         """Cleanup Rhetor-specific resources."""
-        # Cleanup AI messaging integration
+        # Cleanup CI messaging integration
         if self.ai_messaging_integration:
             try:
                 await self.ai_messaging_integration.cleanup()
                 logger.info("AI messaging integration cleaned up")
             except Exception as e:
-                logger.warning(f"Error cleaning up AI messaging integration: {e}")
+                logger.warning(f"Error cleaning up CI messaging integration: {e}")
         
         # Cleanup context manager
         if self.context_manager:
@@ -201,7 +201,7 @@ class RhetorComponent(StandardComponentBase):
         except Exception as e:
             logger.warning(f"Failed to initialize MCP Bridge: {e}")
         
-        # Initialize MCP Tools Integration with AI Registry
+        # Initialize MCP Tools Integration with CI Registry
         try:
             from rhetor.core.mcp.tools_integration_simple import (
                 MCPToolsIntegrationSimple,
@@ -214,7 +214,7 @@ class RhetorComponent(StandardComponentBase):
             self.mcp_integration = MCPToolsIntegrationSimple(hermes_url=hermes_url)
             set_mcp_tools_integration(self.mcp_integration)
             
-            logger.info("MCP Tools Integration initialized with AI Registry")
+            logger.info("MCP Tools Integration initialized with CI Registry")
             
         except Exception as e:
             logger.warning(f"Failed to initialize MCP Tools Integration: {e}")

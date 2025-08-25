@@ -125,7 +125,7 @@ class LLMAdapter:
                 Message(
                     role=MessageRole.SYSTEM,
                     content=(
-                        "You are an AI assistant that enhances execution plans for Synthesis, "
+                        "You are an CI assistant that enhances execution plans for Synthesis, "
                         "Tekton's execution and integration engine. Your task is to analyze "
                         "the provided execution plan and make improvements by:\n"
                         "1. Adding error handling and retry logic where appropriate\n"
@@ -204,7 +204,7 @@ class LLMAdapter:
                 Message(
                     role=MessageRole.SYSTEM,
                     content=(
-                        "You are an AI assistant that analyzes execution results for Synthesis, "
+                        "You are an CI assistant that analyzes execution results for Synthesis, "
                         "Tekton's execution and integration engine. Your task is to analyze "
                         "the provided execution result against the original plan and provide insights by:\n"
                         "1. Identifying successful and failed steps\n"
@@ -294,7 +294,7 @@ class LLMAdapter:
                 Message(
                     role=MessageRole.SYSTEM,
                     content=(
-                        "You are an AI assistant that generates shell commands for Synthesis, "
+                        "You are an CI assistant that generates shell commands for Synthesis, "
                         "Tekton's execution and integration engine. Your task is to generate "
                         "a valid shell command based on the provided context and instruction. "
                         "Generate only the command itself without explanation or markdown formatting. "
@@ -360,7 +360,7 @@ class LLMAdapter:
                 Message(
                     role=MessageRole.SYSTEM,
                     content=(
-                        "You are an AI assistant that provides real-time analysis of execution data "
+                        "You are an CI assistant that provides real-time analysis of execution data "
                         "for Synthesis, Tekton's execution and integration engine. Your task is to "
                         "analyze the provided execution data and provide insights in a conversational "
                         "manner. Focus on explaining what's happening, highlighting important details, "

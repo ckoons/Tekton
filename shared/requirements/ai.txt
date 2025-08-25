@@ -10,7 +10,7 @@ litellm>=1.63.0          # Unified LLM interface
 tiktoken>=0.9.0          # Token counting for OpenAI models
 langchain>=0.1.0         # LLM application framework
 langchain-community>=0.0.10  # Community integrations for LangChain
-pydantic-ai>=0.0.35      # Pydantic-based AI utilities
+pydantic-ai>=0.0.35      # Pydantic-based CI utilities
 
 # Additional AI/ML utilities
 tenacity>=8.2.0          # Retry logic for API calls

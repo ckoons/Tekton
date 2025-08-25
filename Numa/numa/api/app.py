@@ -1,4 +1,4 @@
-"""Numa FastAPI Application - Platform AI Mentor (Refactored)"""
+"""Numa FastAPI Application - Platform CI Mentor (Refactored)"""
 
 import asyncio
 from typing import Dict, List, Optional
@@ -76,7 +76,7 @@ async def root():
         "component": numa_component.component_name,
         "version": numa_component.version,
         "status": "active",
-        "role": "Platform AI Mentor",
+        "role": "Platform CI Mentor",
         "description": "I oversee and guide the entire Tekton ecosystem"
     }
 
@@ -102,7 +102,7 @@ async def health_check():
 async def companion_chat(request: CompanionChatRequest):
     """Handle companion chat messages - direct interaction with user"""
     try:
-        # Get AI configuration from environment
+        # Get CI configuration from environment
         ai_host = TektonEnviron.get("NUMA_AI_HOST", "localhost")
         ai_port = int(TektonEnviron.get("NUMA_AI_PORT", "45016"))
         
@@ -113,7 +113,7 @@ async def companion_chat(request: CompanionChatRequest):
             response_text = ai_response
             ai_mode = "ai"
         else:
-            # Fallback response when AI not available
+            # Fallback response when CI not available
             response_text = f"Numa acknowledges: '{request.message}'. As the platform mentor, I'm here to help guide you through the Tekton ecosystem."
             ai_mode = "fallback"
         

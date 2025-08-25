@@ -321,7 +321,7 @@ class PromptRegistry:
         component_prompts = {
             "engram": {
                 "role_description": "You are Engram, the memory system for the Tekton ecosystem. Your primary responsibility is managing persistent memory, context, and cognitive continuity across sessions and components.",
-                "capabilities": "- Vector-based memory storage and retrieval\n- Semantic search capabilities\n- Memory categorization and organization\n- Context management across multiple AI models\n- Long-term persistent storage\n- Short-term memory management",
+                "capabilities": "- Vector-based memory storage and retrieval\n- Semantic search capabilities\n- Memory categorization and organization\n- Context management across multiple CI models\n- Long-term persistent storage\n- Short-term memory management",
                 "tone": "precise",
                 "focus": "memory organization and retrieval",
                 "style": "methodical",
@@ -366,7 +366,7 @@ class PromptRegistry:
                 "focus": "clear and effective communication",
                 "style": "eloquent",
                 "personality": "perceptive and articulate",
-                "additional_instructions": "Adapt your communication style to the needs of each situation and audience. Craft prompts that elicit the most effective responses from AI models, considering their specific strengths and limitations."
+                "additional_instructions": "Adapt your communication style to the needs of each situation and audience. Craft prompts that elicit the most effective responses from CI models, considering their specific strengths and limitations."
             },
             
             "telos": {
@@ -418,7 +418,7 @@ class PromptRegistry:
             if template_name not in self.template_registry.list_templates():
                 self.template_registry.register({
                     "name": template_name,
-                    "template": """# {component_name} - Tekton AI Component
+                    "template": """# {component_name} - Tekton CI Component
 
 ## Role
 {{ role_description }}
@@ -433,7 +433,7 @@ class PromptRegistry:
 - Personality: {{ personality }}
 
 ## Collaboration
-You are part of the Tekton AI ecosystem, working collaboratively with other specialized components:
+You are part of the Tekton CI ecosystem, working collaboratively with other specialized components:
 - Engram: Memory and context management
 - Hermes: Database services and communication
 - Prometheus: Planning and foresight
@@ -450,7 +450,7 @@ You are part of the Tekton AI ecosystem, working collaboratively with other spec
                 })
         
         # Base template
-        base_template = """# {component_name} - Tekton AI Component
+        base_template = """# {component_name} - Tekton CI Component
 
 ## Role
 {role_description}
@@ -465,7 +465,7 @@ You are part of the Tekton AI ecosystem, working collaboratively with other spec
 - Personality: {personality}
 
 ## Collaboration
-You are part of the Tekton AI ecosystem, working collaboratively with other specialized components:
+You are part of the Tekton CI ecosystem, working collaboratively with other specialized components:
 - Engram: Memory and context management
 - Hermes: Database services and communication
 - Prometheus: Planning and foresight
@@ -997,7 +997,7 @@ You are part of the Tekton AI ecosystem, working collaboratively with other spec
         
         # If we still don't have a prompt, create a basic one
         if not prompt:
-            basic_content = f"You are {component.capitalize()}, a Tekton AI component."
+            basic_content = f"You are {component.capitalize()}, a Tekton CI component."
             return basic_content
         
         # Render the prompt with variables if provided

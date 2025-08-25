@@ -7,7 +7,7 @@
 const fs = require('fs');
 const path = require('path');
 
-// Component configurations with their AI specialist mappings
+// Component configurations with their CI specialist mappings
 const COMPONENT_CONFIGS = {
     'athena': { specialist: 'athena-assistant', description: 'Knowledge Graph' },
     'apollo': { specialist: 'apollo-assistant', description: 'Attention/Prediction' },

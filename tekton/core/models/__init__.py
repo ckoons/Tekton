@@ -1,7 +1,7 @@
 """
-Models package for handling external AI model interactions.
+Models package for handling external CI model interactions.
 
-This package provides adapters and management for various AI model providers 
+This package provides adapters and management for various CI model providers 
 including Anthropic, OpenAI, and local models.
 """
 

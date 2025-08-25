@@ -180,7 +180,7 @@ class RhetorInterface:
     )
     async def get_active_sessions(self) -> List[Dict[str, Any]]:
         """
-        Get information about all active AI specialists as sessions from Rhetor.
+        Get information about all active CI specialists as sessions from Rhetor.
         
         Returns:
             List of session information dictionaries
@@ -222,7 +222,7 @@ class RhetorInterface:
     )
     async def get_session_metrics(self, context_id: str) -> Dict[str, Any]:
         """
-        Get detailed metrics for a specific AI specialist session.
+        Get detailed metrics for a specific CI specialist session.
         
         Args:
             context_id: Context/Specialist identifier
@@ -257,7 +257,7 @@ class RhetorInterface:
         max_tokens: Optional[int] = None
     ) -> bool:
         """
-        Request context compression for an AI specialist session.
+        Request context compression for an CI specialist session.
         Note: Compression not yet implemented in Rhetor.
         
         Args:
@@ -274,7 +274,7 @@ class RhetorInterface:
     
     async def reset_context(self, context_id: str) -> bool:
         """
-        Request a context reset for an AI specialist session.
+        Request a context reset for an CI specialist session.
         This is done by deactivating and reactivating the specialist.
         
         Args:
@@ -315,7 +315,7 @@ class RhetorInterface:
         priority: int = 5
     ) -> bool:
         """
-        Inject a system message into an AI specialist context.
+        Inject a system message into an CI specialist context.
         
         Args:
             context_id: Context/Specialist identifier

@@ -1,7 +1,7 @@
 """
-Simplified AI Specialist HTTP endpoints for Rhetor.
+Simplified CI Specialist HTTP endpoints for Rhetor.
 
-Uses the simple AI manager that reads from component_config (ports from environment).
+Uses the simple CI manager that reads from component_config (ports from environment).
 """
 
 from typing import Dict, List, Optional, Any
@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 # Create router
 router = APIRouter(prefix="/api/v1/ai", tags=["ai-specialists"])
 
-# Global AI manager instance
+# Global CI manager instance
 ai_manager = CIManager()
 
 
@@ -51,7 +51,7 @@ class MessageRequest(BaseModel):
 
 
 class MessageResponse(BaseModel):
-    """Response from AI message"""
+    """Response from CI message"""
     success: bool
     ai_id: str
     response: Optional[str] = None
@@ -64,7 +64,7 @@ async def list_specialists(
     in_roster_only: bool = Query(False, description="Only show hired specialists"),
     category: Optional[str] = Query(None, description="Filter by category")
 ):
-    """List all available AI specialists."""
+    """List all available CI specialists."""
     try:
         all_ais = await ai_manager.list_available_ais(include_health=include_health)
         
@@ -90,7 +90,7 @@ async def list_specialists(
 
 @router.get("/roster", response_model=List[RosterEntry])
 async def get_roster():
-    """Get Rhetor's current AI roster."""
+    """Get Rhetor's current CI roster."""
     roster = ai_manager.get_roster()
     return [RosterEntry(**entry) for entry in roster.values()]
 
@@ -100,9 +100,9 @@ async def hire_specialist(
     ai_id: str = Path(..., description="AI specialist ID"),
     role: Optional[str] = Query(None, description="Role assignment")
 ):
-    """Hire an AI specialist to Rhetor's roster."""
+    """Hire an CI specialist to Rhetor's roster."""
     try:
-        # Check if AI exists and is healthy
+        # Check if CI exists and is healthy
         component_id = ai_id.replace('-ci', '')
         ai_info = ai_manager.get_ai_info(component_id)
         
@@ -124,7 +124,7 @@ async def hire_specialist(
 
 @router.delete("/specialists/{ai_id}/fire")
 async def fire_specialist(ai_id: str = Path(..., description="AI specialist ID")):
-    """Remove an AI specialist from Rhetor's roster."""
+    """Remove an CI specialist from Rhetor's roster."""
     if ai_manager.fire_ai(ai_id):
         return {"message": f"Successfully fired {ai_id}"}
     else:
@@ -139,7 +139,7 @@ async def send_message(
     ai_id: str = Path(..., description="AI specialist ID"),
     request: MessageRequest = ...
 ):
-    """Send a message to an AI specialist."""
+    """Send a message to an CI specialist."""
     try:
         result = await ai_manager.send_to_ai(ai_id, request.message)
         return MessageResponse(**result)
@@ -153,7 +153,7 @@ async def send_message(
 
 @router.get("/specialists/{ai_id}/health")
 async def check_health(ai_id: str = Path(..., description="AI specialist ID")):
-    """Check health status of a specific AI specialist."""
+    """Check health status of a specific CI specialist."""
     try:
         healthy = await ai_manager.check_ai_health(ai_id)
         return {
@@ -169,7 +169,7 @@ async def check_health(ai_id: str = Path(..., description="AI specialist ID")):
 
 @router.get("/find/{role}")
 async def find_ai_for_role(role: str = Path(..., description="Role/category needed")):
-    """Find a healthy AI that can fulfill a specific role."""
+    """Find a healthy CI that can fulfill a specific role."""
     ai_id = await ai_manager.find_ai_for_role(role)
     
     if ai_id:
@@ -185,13 +185,13 @@ async def find_ai_for_role(role: str = Path(..., description="Role/category need
     else:
         return {
             "found": False,
-            "message": f"No healthy AI found for role: {role}"
+            "message": f"No healthy CI found for role: {role}"
         }
 
 
 @router.post("/roster/clear")
 async def clear_roster():
-    """Clear Rhetor's entire AI roster."""
+    """Clear Rhetor's entire CI roster."""
     roster = ai_manager.get_roster()
     count = len(roster)
     
@@ -203,6 +203,6 @@ async def clear_roster():
 
 @router.post("/cache/clear")
 async def clear_cache():
-    """Clear the AI health check cache."""
+    """Clear the CI health check cache."""
     ai_manager.clear_health_cache()
     return {"message": "Health cache cleared"}

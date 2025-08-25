@@ -424,7 +424,7 @@ async def import_requirement_as_task(
     title="AI Decomposition Integration",
     target_component="MCP Tools, LLM Service (Rhetor)",
     protocol="MCP Protocol, Internal API",
-    data_flow="Task -> AI Analysis -> Subtask Generation -> Task Manager"
+    data_flow="Task -> CI Analysis -> Subtask Generation -> Task Manager"
 )
 @danger_zone(
     title="Automated Task Decomposition",

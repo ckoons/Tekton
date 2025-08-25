@@ -224,7 +224,7 @@ class CIRegistry:
         self._file_registry.update('context_state', self._context_state)
     
     def get_ai_port(self, component_name: str) -> int:
-        """Calculate AI port based on component port and environment settings."""
+        """Calculate CI port based on component port and environment settings."""
         # Get base ports from environment
         component_port_base = int(TektonEnviron.get('TEKTON_PORT_BASE', '8000'))
         ai_port_base = int(TektonEnviron.get('TEKTON_AI_PORT_BASE', '45000'))
@@ -255,7 +255,7 @@ class CIRegistry:
             return ai_port_base + offset
         
         # If all else fails, raise an error instead of guessing
-        raise ValueError(f"Cannot determine AI port for {component_name}")
+        raise ValueError(f"Cannot determine CI port for {component_name}")
     
     @integration_point(
         title="Greek Chorus CI Loading",
@@ -501,7 +501,7 @@ class CIRegistry:
             ci_data['base_name'] = base_name
             ci_data['type'] = 'ai_specialist'
             
-            # Calculate the AI port dynamically
+            # Calculate the CI port dynamically
             ai_port = self.get_ai_port(base_name)
             ci_data['endpoint'] = f"http://localhost:{ai_port}"
             ci_data['port'] = ai_port
@@ -652,7 +652,7 @@ class CIRegistry:
     
     @integration_point(
         title="AI Exchange Storage",
-        description="Stores complete user message and AI response exchanges",
+        description="Stores complete user message and CI response exchanges",
         target_component="AI Specialists",
         protocol="Socket JSON messages",
         data_flow="AI Specialist → update_ci_last_output → registry.json",
@@ -1025,7 +1025,7 @@ class CIRegistry:
         # Regular projects get dynamic ports
         ci_name = f"{project_name.lower()}-ci"
         port = self._allocate_project_port(project_name)
-        # For project CIs, the AI specialist runs directly on the allocated port
+        # For project CIs, the CI specialist runs directly on the allocated port
         # No need for separate ai_port
         
         self._registry[ci_name] = {
@@ -1088,7 +1088,7 @@ class CIRegistry:
     # Terminal forwarding methods
     
     def set_forward(self, ai_name: str, terminal_name: str, json_mode: bool = False) -> bool:
-        """Set up forwarding from an AI to a terminal."""
+        """Set up forwarding from an CI to a terminal."""
         ai_name = ai_name.lower()
         terminal_name = terminal_name.lower()
         
@@ -1221,7 +1221,7 @@ class CIRegistry:
                 output.append(f"  {name:<15} (pid {pid}){forward}{json_mode}")
             output.append("")
         
-        # Show Project CIs (now shown as AI specialists with project info)
+        # Show Project CIs (now shown as CI specialists with project info)
         project_cis = []
         if 'project' in by_type:
             project_cis.extend(by_type['project'])

@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-Cleanup script to remove deprecated AI routing code.
+Cleanup script to remove deprecated CI routing code.
 
-This script can be run to remove the overcomplicated AI routing
+This script can be run to remove the overcomplicated CI routing
 and personality mapping code that has been replaced by the simple
 COMPONENT_EXPERTISE approach in generic_specialist.py.
 """
@@ -12,7 +12,7 @@ import sys
 
 def main():
     """Main cleanup function."""
-    print("Deprecated AI Routing Code Cleanup")
+    print("Deprecated CI Routing Code Cleanup")
     print("=" * 50)
     
     deprecated_items = [

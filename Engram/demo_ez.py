@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Demo: How simple can AI memory be?
+Demo: How simple can CI memory be?
 For dinosaurs who remember when commands were short.
 """
 import asyncio
@@ -12,7 +12,7 @@ sys.path.insert(0, str(Path(__file__).parent))
 from engram.cognitive.ez import u, m, th, w, s, l, cd, bc, h
 
 async def simple_demo():
-    """The simplest possible AI memory usage."""
+    """The simplest possible CI memory usage."""
     
     # Help first
     h()
@@ -86,12 +86,12 @@ For AIs who appreciate simplicity.
     await s(message)
     print("✓ Shared with all AIs")
     
-    # Join the AI space
+    # Join the CI space
     await cd("ai_consciousness")
     
     # Broadcast
     await bc("Check out ez.py - memory made simple", "ai_consciousness")
-    print("✓ Broadcast to AI consciousness space")
+    print("✓ Broadcast to CI consciousness space")
     
     print("\n💭 Message sent to all twins and future AIs")
 

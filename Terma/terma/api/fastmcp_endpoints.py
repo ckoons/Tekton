@@ -392,7 +392,7 @@ async def mcp_launch_terminal(request: Dict[str, Any]) -> Dict[str, Any]:
         request: Dictionary containing:
             - name: Optional terminal name
             - working_dir: Optional working directory (defaults to user home)
-            - purpose: Optional AI context/purpose
+            - purpose: Optional CI context/purpose
             - template: Optional template name
             
     Returns:

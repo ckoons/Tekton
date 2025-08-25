@@ -173,11 +173,11 @@ try:
 except ImportError as e:
     logger.warning(f"FastMCP endpoints not available: {e}")
 
-# Add simplified AI Specialist endpoints
+# Add simplified CI Specialist endpoints
 try:
     from .ai_specialist_endpoints_simple import router as ai_router
     app.include_router(ai_router)
-    logger.info("Simplified AI Specialist endpoints added to Rhetor API")
+    logger.info("Simplified CI Specialist endpoints added to Rhetor API")
 except ImportError as e:
     logger.warning(f"AI Specialist endpoints not available: {e}")
 
@@ -615,8 +615,8 @@ async def create_budget_policy(request: BudgetPolicyRequest):
         raise HTTPException(status_code=400, detail=str(e))
 
 
-# AI Specialist endpoints are now handled by the unified endpoints in ai_specialist_endpoints_unified.py
-# The old internal specialist system has been removed in favor of the AI Registry
+# CI Specialist endpoints are now handled by the unified endpoints in ai_specialist_endpoints_unified.py
+# The old internal specialist system has been removed in favor of the CI Registry
 
 
 # WebSocket endpoint for streaming

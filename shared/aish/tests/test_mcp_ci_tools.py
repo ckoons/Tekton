@@ -37,7 +37,7 @@ def mock_tools_registry():
             'type': 'tool',
             'base_type': 'claude-code',
             'port': 8400,
-            'description': 'Claude AI coding assistant',
+            'description': 'Claude CI coding assistant',
             'executable': 'claude-code',
             'capabilities': {'code_generation': True, 'debugging': True},
             'defined_by': 'system'
@@ -121,7 +121,7 @@ class TestCIToolsEndpoints:
             # Check first tool
             tool = data['tools'][0]
             assert tool['name'] == 'claude-code'
-            assert tool['description'] == 'Claude AI coding assistant'
+            assert tool['description'] == 'Claude CI coding assistant'
             assert tool['status'] == 'running'
             assert tool['port'] == 8400
             assert 'code_generation' in tool['capabilities']

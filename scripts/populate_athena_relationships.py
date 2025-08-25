@@ -112,7 +112,7 @@ COMPONENTS = {
         "type": "interface"
     },
     "Numa": {
-        "description": "Platform AI mentor providing guidance and oversight",
+        "description": "Platform CI mentor providing guidance and oversight",
         "capabilities": ["companion_chat", "team_chat", "platform_guidance"],
         "type": "ai"
     },

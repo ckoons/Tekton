@@ -1,7 +1,7 @@
 """
 Research data models for Sophia API.
 
-This module defines the Pydantic models for AI research-related API requests and responses.
+This module defines the Pydantic models for CI research-related API requests and responses.
 """
 
 from typing import Dict, List, Any, Optional

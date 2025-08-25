@@ -103,9 +103,9 @@ class AdaptationStrategy:
 
 @architecture_decision(
     title="Companion Intelligence Architecture",
-    description="CI-in-the-Loop development system binding AI with codebase understanding",
+    description="CI-in-the-Loop development system binding CI with codebase understanding",
     rationale="Enables CIs to become codebase experts, driving development with deep understanding",
-    alternatives_considered=["Generic AI assistants", "Rule-based systems", "Simple code completion"],
+    alternatives_considered=["Generic CI assistants", "Rule-based systems", "Simple code completion"],
     impacts=["development_workflow", "ai_autonomy", "code_quality"],
     decided_by="Casey Koons",
     decision_date="2024-02-01"
@@ -153,7 +153,7 @@ class CompanionIntelligence:
         description="Initial deep analysis to build CI understanding",
         sla="<60s for typical codebase",
         optimization_notes="Runs once on initialization, cached thereafter",
-        measured_impact="Enables informed AI assistance without repeated analysis"
+        measured_impact="Enables informed CI assistance without repeated analysis"
     )
     def _analyze_codebase(self):
         """Analyze codebase to build initial understanding"""

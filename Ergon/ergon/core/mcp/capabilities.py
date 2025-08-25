@@ -10,10 +10,10 @@ from tekton.mcp.fastmcp.schema import MCPCapability
 
 
 class AgentManagementCapability(MCPCapability):
-    """Capability for AI agent creation, management, and coordination."""
+    """Capability for CI agent creation, management, and coordination."""
     
     name = "agent_management"
-    description = "Create, manage, and coordinate AI agents for various tasks"
+    description = "Create, manage, and coordinate CI agents for various tasks"
     version = "1.0.0"
     
     @classmethod

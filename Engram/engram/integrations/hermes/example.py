@@ -27,7 +27,7 @@ async def demonstrate_memory_operations():
     print("\nAdding memories to different namespaces...")
     
     await memory.add(
-        content="This is a conversation with the user about AI technology.",
+        content="This is a conversation with the user about CI technology.",
         namespace="conversations",
         metadata={"source": "user", "topic": "AI"}
     )

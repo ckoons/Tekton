@@ -1,5 +1,5 @@
 """
-Main entry point for Numa AI specialist when run as module.
+Main entry point for Numa CI specialist when run as module.
 """
 from .ai_specialist import main
 

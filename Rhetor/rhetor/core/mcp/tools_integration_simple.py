@@ -1,7 +1,7 @@
 """
 Simplified MCP Tools Integration for Rhetor.
 
-Uses the simple AI manager instead of complex discovery service.
+Uses the simple CI manager instead of complex discovery service.
 """
 
 import json
@@ -28,14 +28,14 @@ logger = logging.getLogger(__name__)
 
 @architecture_decision(
     title="Simplified MCP Tools Integration",
-    rationale="Direct integration with fixed-port AI specialists via environment configuration",
+    rationale="Direct integration with fixed-port CI specialists via environment configuration",
     impacts=["Removes complex discovery", "Faster startup", "Simpler code"]
 )
 class MCPToolsIntegrationSimple:
     """
     Simplified MCP tools integration.
     
-    - Uses CIManager for all AI operations
+    - Uses CIManager for all CI operations
     - No complex discovery or routing
     - Direct communication via simple_ai
     """
@@ -55,7 +55,7 @@ class MCPToolsIntegrationSimple:
         logger.info("Initialized simplified MCP tools integration")
     
     async def list_specialists(self) -> List[Dict[str, Any]]:
-        """List all AI specialists.
+        """List all CI specialists.
         
         Returns:
             List of specialist information
@@ -86,7 +86,7 @@ class MCPToolsIntegrationSimple:
             return []
     
     async def activate_specialist(self, specialist_id: str) -> Dict[str, Any]:
-        """Activate an AI specialist (adds to roster).
+        """Activate an CI specialist (adds to roster).
         
         Args:
             specialist_id: ID of the specialist
@@ -124,7 +124,7 @@ class MCPToolsIntegrationSimple:
     async def send_message_to_specialist(self, specialist_id: str, message: str, 
                                        context: Optional[Dict[str, Any]] = None,
                                        timeout: float = 30.0) -> Dict[str, Any]:
-        """Send a message to an AI specialist.
+        """Send a message to an CI specialist.
         
         Args:
             specialist_id: ID of the specialist (e.g., 'athena-ci', 'apollo-ci')
@@ -163,7 +163,7 @@ class MCPToolsIntegrationSimple:
         """Get detailed information about a specialist.
         
         Args:
-            specialist_id: AI specialist ID
+            specialist_id: CI specialist ID
             
         Returns:
             Specialist info or None if not found
@@ -227,7 +227,7 @@ class MCPToolsIntegrationSimple:
         Args:
             specialists: List of specialist IDs
             message: Message to send
-            coordinator: Optional coordinator AI (defaults to numa-ci)
+            coordinator: Optional coordinator CI (defaults to numa-ci)
             
         Returns:
             Team chat results
@@ -284,7 +284,7 @@ Provide a unified response that combines the key insights."""
             return results
     
     def get_roster(self) -> Dict[str, Dict[str, Any]]:
-        """Get current AI roster."""
+        """Get current CI roster."""
         if not self.ai_manager:
             return {}
         return self.ai_manager.get_roster()

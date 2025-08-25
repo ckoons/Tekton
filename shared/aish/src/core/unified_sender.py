@@ -260,12 +260,12 @@ def send_to_ci(ci_name: str, message: str, sender_name: Optional[str] = None,
             data = json.dumps(msg_data).encode('utf-8')
             
         elif message_format == 'json_simple' and ci.get('type') == 'ai_specialist':
-            # Direct AI specialist communication
+            # Direct CI specialist communication
             from shared.ai.simple_ai import ai_send_sync
             
             # For project CIs, use ai_port; for Greek Chorus, extract from endpoint
             if ci.get('is_project_ci'):
-                # Project CIs have ai_port field for the AI specialist port
+                # Project CIs have ai_port field for the CI specialist port
                 port = ci.get('ai_port', ci.get('port'))
             else:
                 # Greek Chorus - extract port from endpoint or use port field
@@ -289,7 +289,7 @@ def send_to_ci(ci_name: str, message: str, sender_name: Optional[str] = None,
                 print(error_msg)
                 # Also log to stderr for debugging
                 import sys
-                print(f"Error sending to AI specialist {ai_name} on port {port}: {e}", file=sys.stderr)
+                print(f"Error sending to CI specialist {ai_name} on port {port}: {e}", file=sys.stderr)
                 # Still return True so MCP captures the error message
                 return True
                 

@@ -1,6 +1,6 @@
 # Noesis Theoretical Analysis - Usage Guide
 
-This guide provides practical examples and workflows for using the Noesis theoretical analysis framework to understand collective AI systems.
+This guide provides practical examples and workflows for using the Noesis theoretical analysis framework to understand collective CI systems.
 
 ## Quick Start
 
@@ -31,7 +31,7 @@ This guide provides practical examples and workflows for using the Noesis theore
 import numpy as np
 from noesis.core.theoretical.manifold import ManifoldAnalyzer
 
-# Create sample collective AI data
+# Create sample collective CI data
 # Simulate 100 time points of a 5-agent system with 3 features each
 collective_data = np.random.randn(100, 15)  # 5 agents × 3 features
 
@@ -49,9 +49,9 @@ print(f"Analysis confidence: {result.confidence:.3f}")
 
 ## Common Use Cases
 
-### 1. Understanding Collective AI Emergence
+### 1. Understanding Collective CI Emergence
 
-**Scenario**: You have data from a collective AI system and want to understand how intelligence emerges from individual agent interactions.
+**Scenario**: You have data from a collective CI system and want to understand how intelligence emerges from individual agent interactions.
 
 ```python
 import numpy as np
@@ -59,7 +59,7 @@ from noesis.core.theoretical.manifold import ManifoldAnalyzer
 from noesis.core.theoretical.synthesis import SynthesisAnalyzer
 
 async def analyze_emergence():
-    # Simulate collective AI data at different scales
+    # Simulate collective CI data at different scales
     
     # Small collective (12 agents - known phase transition point)
     small_collective = np.random.randn(200, 36)  # 12 agents × 3 features
@@ -139,14 +139,14 @@ await analyze_emergence()
 
 ### 2. Detecting Regime Changes in Collective Behavior
 
-**Scenario**: Your collective AI system shows different behavioral patterns over time, and you want to identify when transitions occur.
+**Scenario**: Your collective CI system shows different behavioral patterns over time, and you want to identify when transitions occur.
 
 ```python
 import numpy as np
 from noesis.core.theoretical.dynamics import DynamicsAnalyzer
 
 async def detect_regime_changes():
-    # Simulate collective AI time series with regime changes
+    # Simulate collective CI time series with regime changes
     np.random.seed(42)  # For reproducible results
     
     # Create data with 3 distinct regimes
@@ -222,7 +222,7 @@ result = await detect_regime_changes()
 
 ### 3. Predicting Critical Transitions
 
-**Scenario**: You want to detect early warning signals before your collective AI system undergoes a critical transition.
+**Scenario**: You want to detect early warning signals before your collective CI system undergoes a critical transition.
 
 ```python
 import numpy as np
@@ -331,7 +331,7 @@ result = await predict_critical_transitions()
 
 ### 4. Real-Time Streaming Analysis
 
-**Scenario**: You want to perform live theoretical analysis of your collective AI system as it operates.
+**Scenario**: You want to perform live theoretical analysis of your collective CI system as it operates.
 
 ```python
 import asyncio
@@ -816,4 +816,4 @@ def adaptive_dynamics_config(data):
         return {'n_regimes': 4, 'em_iterations': 50}
 ```
 
-This usage guide provides practical examples for leveraging the Noesis theoretical analysis framework to understand collective AI systems across different scales and scenarios.
+This usage guide provides practical examples for leveraging the Noesis theoretical analysis framework to understand collective CI systems across different scales and scenarios.

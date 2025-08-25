@@ -41,7 +41,7 @@ def documentation_page():
     with tab1:
         st.header("Preload Documentation")
         st.markdown("""
-        Preload documentation from popular AI frameworks and tools to enhance your agents' knowledge.
+        Preload documentation from popular CI frameworks and tools to enhance your agents' knowledge.
         Documentation is chunked and stored in a vector database for efficient semantic search.
         """)
         
@@ -63,7 +63,7 @@ def documentation_page():
             },
             "anthropic": {
                 "name": "Anthropic (Claude)",
-                "description": "Documentation for Claude AI models, including API, best practices, and examples",
+                "description": "Documentation for Claude CI models, including API, best practices, and examples",
                 "url": "https://docs.anthropic.com/claude/docs/",
                 "icon": "🧠",
                 "function": crawl_anthropic_docs

@@ -55,7 +55,7 @@ class ConstructQuestionsMCP:
         }
     
     def get_suggestions(self, question_id: str) -> Dict[str, Any]:
-        """Get AI suggestions for a question based on context."""
+        """Get CI suggestions for a question based on context."""
         question = next((q for q in self.questions if q['id'] == question_id), None)
         if not question:
             return {'error': 'Question not found'}

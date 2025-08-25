@@ -1,7 +1,7 @@
 """
-Simplified streaming endpoints for AI specialists.
+Simplified streaming endpoints for CI specialists.
 
-Uses the simple AI manager instead of discovery service.
+Uses the simple CI manager instead of discovery service.
 """
 from typing import Dict, List, Optional, AsyncIterator
 from fastapi import APIRouter, HTTPException, Query
@@ -17,13 +17,13 @@ logger = logging.getLogger(__name__)
 # Create router
 router = APIRouter(prefix="/api/v1/ai/stream", tags=["ai-streaming"])
 
-# Global AI manager instance
+# Global CI manager instance
 ai_manager = CIManager()
 
 
 async def stream_ai_response(ai_id: str, message: str) -> AsyncIterator[str]:
     """
-    Stream response from an AI specialist.
+    Stream response from an CI specialist.
     
     Note: Current AIs don't support true streaming, so this simulates it
     by sending the response in chunks.
@@ -60,12 +60,12 @@ async def stream_chat(
     simulate_streaming: bool = Query(True, description="Simulate streaming response")
 ):
     """
-    Stream chat response from an AI specialist.
+    Stream chat response from an CI specialist.
     
     Note: Since our AIs don't support true streaming yet, this endpoint
     simulates streaming by chunking the response.
     """
-    # Check if AI exists and is healthy
+    # Check if CI exists and is healthy
     component_id = ai_id.replace('-ci', '')
     try:
         ai_info = ai_manager.get_ai_info(component_id)
@@ -95,11 +95,11 @@ async def stream_chat(
 @router.get("/multi-stream")
 async def multi_stream_chat(
     message: str = Query(..., description="Message to broadcast"),
-    ai_ids: List[str] = Query(..., description="List of AI IDs to query"),
+    ai_ids: List[str] = Query(..., description="List of CI IDs to query"),
     parallel: bool = Query(True, description="Query AIs in parallel")
 ):
     """
-    Stream responses from multiple AI specialists.
+    Stream responses from multiple CI specialists.
     
     This can query multiple AIs either in parallel or sequentially.
     """
@@ -143,7 +143,7 @@ async def multi_stream_chat(
 @router.get("/health-stream")
 async def stream_health_checks():
     """
-    Stream real-time health status of all AI specialists.
+    Stream real-time health status of all CI specialists.
     
     Useful for monitoring dashboards.
     """

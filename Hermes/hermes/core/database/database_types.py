@@ -33,7 +33,7 @@ class DatabaseBackend(Enum):
     """Specific database backends supported for each type."""
     
     # Vector database backends
-    FAISS = "faiss"         # Facebook AI Similarity Search
+    FAISS = "faiss"         # Facebook CI Similarity Search
     QDRANT = "qdrant"       # Qdrant vector database
     CHROMADB = "chromadb"   # ChromaDB vector database
     LANCEDB = "lancedb"     # LanceDB vector database

@@ -1,5 +1,5 @@
 """
-FAISS Vector Adapter - High-performance vector database using Facebook AI Similarity Search.
+FAISS Vector Adapter - High-performance vector database using Facebook CI Similarity Search.
 
 This module provides a VectorDatabaseAdapter implementation that uses FAISS
 for fast and efficient similarity search with hardware acceleration.

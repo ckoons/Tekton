@@ -174,7 +174,7 @@ def show_context_details(registry, ci_name):
     else:
         print("Status: None")
     
-    # Show last exchange (user message + AI response)
+    # Show last exchange (user message + CI response)
     last_output = context_state.get('last_output')
     print("\n[Last Exchange]")
     if last_output:

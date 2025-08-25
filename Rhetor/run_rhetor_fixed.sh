@@ -111,7 +111,7 @@ for i in {1..30}; do
         echo -e "${GREEN}Rhetor started successfully on port $RHETOR_PORT${RESET}"
         echo -e "${GREEN}API available at: http://localhost:$RHETOR_PORT/api${RESET}"
         echo -e "${GREEN}WebSocket available at: ws://localhost:$RHETOR_PORT/ws${RESET}"
-        echo -e "${BLUE}Rhetor ready for AI model spawning${RESET}"
+        echo -e "${BLUE}Rhetor ready for CI model spawning${RESET}"
         break
     fi
     

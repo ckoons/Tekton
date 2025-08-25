@@ -1,5 +1,5 @@
 """
-Enhanced AI Specialist Worker with native streaming support.
+Enhanced CI Specialist Worker with native streaming support.
 
 This extends the base specialist worker to support native Ollama streaming
 for real-time progressive responses.
@@ -64,7 +64,7 @@ logger = logging.getLogger(__name__)
     data_flow="Prompt → Ollama stream=True → Chunks → Socket stream"
 )
 class StreamingAISpecialistWorker(CISpecialistWorker):
-    """Enhanced AI Specialist Worker with streaming support."""
+    """Enhanced CI Specialist Worker with streaming support."""
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

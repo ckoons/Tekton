@@ -26,8 +26,8 @@ Tekton uses a Single Port Architecture where each component exposes its services
 | Apollo         | 8012 | Local Attention/Prediction system         | `APOLLO_PORT`          |
 | Penia          | 8013 | Token/cost management system              | `PENIA_PORT`           |
 | Sophia         | 8014 | Machine learning system                   | `SOPHIA_PORT`          |
-| Noesis         | 8015 | Discovery AI system                       | `NOESIS_PORT`          |
-| Numa           | 8016 | Platform AI mentor                        | `NUMA_PORT`            |
+| Noesis         | 8015 | Discovery CI system                       | `NOESIS_PORT`          |
+| Numa           | 8016 | Platform CI mentor                        | `NUMA_PORT`            |
 
 ## Specialized Services
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Simple AI Communication Interface - One Queue, One Socket, One AI
+Simple CI Communication Interface - One Queue, One Socket, One AI
 
 Usage:
     # Async
@@ -9,7 +9,7 @@ Usage:
     # Sync
     response = ai_send_sync("apollo-ci", "hello", host="localhost", port=45012)
     
-    # If AI already registered
+    # If CI already registered
     response = await ai_send("apollo-ci", "hello")
 """
 
@@ -24,8 +24,8 @@ from landmarks import (
 
 # For async code
 @architecture_decision(
-    title="Unified AI Communication Interface",
-    rationale="Single entry point for all AI communication using 'One Queue, One Socket, One AI' principle",
+    title="Unified CI Communication Interface",
+    rationale="Single entry point for all CI communication using 'One Queue, One Socket, One AI' principle",
     alternatives_considered=["Multiple socket clients", "Connection pooling", "Direct socket access"],
     impacts=["simplicity", "maintainability", "consistency"],
     decided_by="Casey"
@@ -40,25 +40,25 @@ from landmarks import (
     title="AI Service Integration",
     target_component="ai_service_simple",
     protocol="Socket/NDJSON",
-    data_flow="Message queue → Direct socket → AI response"
+    data_flow="Message queue → Direct socket → CI response"
 )
 async def ai_send(ai_id: str, message: str, host: Optional[str] = None, port: Optional[int] = None) -> str:
     """
-    Send message to AI and get response. Simple async interface.
+    Send message to CI and get response. Simple async interface.
     
     Args:
-        ai_id: The AI identifier (e.g., "apollo-ci" or "localhost:45012")
+        ai_id: The CI identifier (e.g., "apollo-ci" or "localhost:45012")
         message: The message to send
-        host: Host if AI not registered (default: localhost)
-        port: Port if AI not registered
+        host: Host if CI not registered (default: localhost)
+        port: Port if CI not registered
         
     Returns:
         The AI's response as a string
         
     Raises:
-        ValueError: If AI not registered and no host/port provided
+        ValueError: If CI not registered and no host/port provided
         TimeoutError: If no response within timeout
-        Exception: If AI returns an error
+        Exception: If CI returns an error
     """
     import asyncio
     
@@ -71,7 +71,7 @@ async def ai_send(ai_id: str, message: str, host: Optional[str] = None, port: Op
             host = parts[0]
             try:
                 port = int(parts[1])
-                # Try to find the actual AI name from port
+                # Try to find the actual CI name from port
                 ai_id = _get_ai_id_from_port(port) or ai_id
             except:
                 pass
@@ -118,21 +118,21 @@ async def ai_send(ai_id: str, message: str, host: Optional[str] = None, port: Op
 # For sync code
 def ai_send_sync(ai_id: str, message: str, host: Optional[str] = None, port: Optional[int] = None) -> str:
     """
-    Send message to AI and get response. Simple sync interface.
+    Send message to CI and get response. Simple sync interface.
     
     Args:
-        ai_id: The AI identifier (e.g., "apollo-ci" or "localhost:45012")
+        ai_id: The CI identifier (e.g., "apollo-ci" or "localhost:45012")
         message: The message to send
-        host: Host if AI not registered (default: localhost)
-        port: Port if AI not registered
+        host: Host if CI not registered (default: localhost)
+        port: Port if CI not registered
         
     Returns:
         The AI's response as a string
         
     Raises:
-        ValueError: If AI not registered and no host/port provided
+        ValueError: If CI not registered and no host/port provided
         TimeoutError: If no response within timeout
-        Exception: If AI returns an error
+        Exception: If CI returns an error
     """
     import asyncio
     
@@ -143,7 +143,7 @@ def ai_send_sync(ai_id: str, message: str, host: Optional[str] = None, port: Opt
             host = parts[0]
             try:
                 port = int(parts[1])
-                # Try to find the actual AI name from port
+                # Try to find the actual CI name from port
                 ai_id = _get_ai_id_from_port(port) or ai_id
             except:
                 pass
@@ -163,9 +163,9 @@ def ai_send_sync(ai_id: str, message: str, host: Optional[str] = None, port: Opt
         # No event loop running, safe to use asyncio.run
         return asyncio.run(ai_send(ai_id, message, host, port))
 
-# Helper to map ports to AI IDs
+# Helper to map ports to CI IDs
 def _get_ai_id_from_port(port: int) -> Optional[str]:
-    """Get AI ID from port number"""
+    """Get CI ID from port number"""
     port_map = {
         45000: "engram-ci",
         45001: "hermes-ci",

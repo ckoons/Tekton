@@ -226,7 +226,7 @@ class BudgetComponent {
     }
     
     /**
-     * Add an AI message to the chat UI
+     * Add an CI message to the chat UI
      */
     addAIMessageToChatUI(messagesContainer, message) {
         if (!messagesContainer) return;

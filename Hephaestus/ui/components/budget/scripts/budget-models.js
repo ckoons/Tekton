@@ -515,7 +515,7 @@ class ChatData {
     }
     
     /**
-     * Add an AI message
+     * Add an CI message
      * @param {string} text - Message text
      * @returns {ChatData} Updated chat data
      */

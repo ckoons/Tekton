@@ -1,12 +1,12 @@
 """
-Pipeline parser for AI shell syntax
+Pipeline parser for CI shell syntax
 """
 
 import re
 from typing import List, Dict, Any
 
 class PipelineParser:
-    """Parse AI pipeline commands"""
+    """Parse CI pipeline commands"""
     
     def __init__(self):
         # Patterns for parsing
@@ -16,7 +16,7 @@ class PipelineParser:
     
     def parse(self, command: str) -> Dict[str, Any]:
         """
-        Parse an AI pipeline command
+        Parse an CI pipeline command
         
         Examples:
             echo "test" | apollo
@@ -79,7 +79,7 @@ class PipelineParser:
                 'input': parts[1].strip()
             }
         else:
-            # Check for direct AI command: ai_name "message"
+            # Check for direct CI command: ai_name "message"
             # Match patterns like: apollo "hello" or numa 'test message'
             match = re.match(r'^([a-zA-Z_]\w*)\s+["\'](.+)["\']$', command)
             if match:
@@ -113,7 +113,7 @@ class PipelineParser:
                     'type': 'echo',
                     'content': self._extract_echo_content(segment)
                 })
-            # Handle AI names
+            # Handle CI names
             elif self.ai_pattern.match(segment):
                 stages.append({
                     'type': 'ai',

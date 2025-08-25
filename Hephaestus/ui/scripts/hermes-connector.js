@@ -1,7 +1,7 @@
 /**
  * DEPRECATED: This file will be removed after CSS-first migration is verified
  * Hermes Connector
- * Establishes connection with Hermes message bus for AI communication
+ * Establishes connection with Hermes message bus for CI communication
  * Also handles connection to the LLM Adapter for terminal chat
  */
 

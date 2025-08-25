@@ -1,7 +1,7 @@
 """
 Specialist Streaming API endpoints for Rhetor.
 
-Provides SSE (Server-Sent Events) streaming for individual AI specialist interactions,
+Provides SSE (Server-Sent Events) streaming for individual CI specialist interactions,
 enabling real-time progressive responses with enhanced metadata.
 """
 
@@ -61,7 +61,7 @@ class StreamingRequest(BaseModel):
 @router.post("/team/stream")
 async def stream_team_chat(request: StreamingRequest):
     """
-    Stream responses from all available AI specialists simultaneously.
+    Stream responses from all available CI specialists simultaneously.
     
     This creates a real-time "Greek Chorus" effect with multiple AIs
     responding to the same prompt in parallel.
@@ -123,7 +123,7 @@ async def stream_team_chat(request: StreamingRequest):
                 
                 # Process completed tasks
                 for task in done:
-                    # Find which AI this task belongs to
+                    # Find which CI this task belongs to
                     ai_id = None
                     for aid, t in pending_tasks.items():
                         if t == task:
@@ -183,7 +183,7 @@ async def stream_team_chat(request: StreamingRequest):
     decided_by="Casey"
 )
 @integration_point(
-    title="Greek Chorus AI Streaming Integration",
+    title="Greek Chorus CI Streaming Integration",
     target_component="AI Specialists (ports 45000-50000)",
     protocol="SSE over HTTP with direct sockets",
     data_flow="Request → simple_ai → Direct Socket → Stream chunks → SSE Response"
@@ -201,7 +201,7 @@ async def stream_specialist_chat(
     request: StreamingRequest = ...
 ):
     """
-    Stream a chat response from a specific AI specialist.
+    Stream a chat response from a specific CI specialist.
     
     This endpoint provides real-time streaming responses with enhanced metadata including:
     - Token usage tracking
@@ -221,7 +221,7 @@ async def stream_specialist_chat(
         nonlocal total_tokens, chunk_count
         
         try:
-            # Discover AI specialist details
+            # Discover CI specialist details
             ai_info = await discovery_service.get_ai_info(specialist_id)
             if not ai_info:
                 yield {
@@ -233,7 +233,7 @@ async def stream_specialist_chat(
                 }
                 return
             
-            # Check if AI is healthy
+            # Check if CI is healthy
             if ai_info.get('status') != 'healthy':
                 yield {
                     "data": json.dumps({

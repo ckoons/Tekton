@@ -1,6 +1,6 @@
 """Prompt Engine for Rhetor.
 
-This module provides tools for creating, managing, and optimizing prompts for different AI models.
+This module provides tools for creating, managing, and optimizing prompts for different CI models.
 """
 
 import os
@@ -289,7 +289,7 @@ class PromptEngine:
         
         # Build the system prompt
         prompt = [
-            f"# {component_name.title()} - Tekton AI Component",
+            f"# {component_name.title()} - Tekton CI Component",
             f"\n## Role\n{role_description}",
             "\n## Capabilities"
         ]
@@ -314,7 +314,7 @@ class PromptEngine:
         
         # Add Tekton collaboration note
         prompt.append("\n## Collaboration")
-        prompt.append("You are part of the Tekton AI ecosystem, working collaboratively with other specialized components:")
+        prompt.append("You are part of the Tekton CI ecosystem, working collaboratively with other specialized components:")
         prompt.append("- Engram: Memory and context management")
         prompt.append("- Hermes: Database services and communication")
         prompt.append("- Prometheus: Planning and foresight")
@@ -371,7 +371,7 @@ class PromptEngine:
 
 
 class ContextManager:
-    """Manager for AI contexts across components."""
+    """Manager for CI contexts across components."""
     
     def __init__(self):
         """Initialize the context manager."""

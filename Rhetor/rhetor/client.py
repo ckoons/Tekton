@@ -159,7 +159,7 @@ class RhetorPromptClient(ComponentClient):
         examples: Optional[List[Dict[str, str]]] = None
     ) -> Dict[str, Any]:
         """
-        Create a new AI personality.
+        Create a new CI personality.
         
         Args:
             name: Name of the personality

@@ -10,7 +10,7 @@ from tekton.mcp.fastmcp.schema import MCPCapability
 
 
 class MLAnalysisCapability(MCPCapability):
-    """Capability for machine learning and AI analysis."""
+    """Capability for machine learning and CI analysis."""
     
     name: str = "ml_analysis"
     description: str = "Perform ML/AI analysis, pattern extraction, and predictive modeling"

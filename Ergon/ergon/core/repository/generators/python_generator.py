@@ -49,7 +49,7 @@ class PythonGenerator:
             Generated Python code
         """
         # Create prompt for the tool generation
-        system_prompt = """You are an expert Python developer tasked with creating a tool for an AI agent system.
+        system_prompt = """You are an expert Python developer tasked with creating a tool for an CI agent system.
 Your goal is to create a clean, well-documented Python module that implements the requested functionality.
 
 Follow these guidelines:

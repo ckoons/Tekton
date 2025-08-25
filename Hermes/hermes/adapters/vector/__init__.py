@@ -9,7 +9,7 @@ for various vector database backends.
 # During full Tekton stack integration testing, verify the following vector database
 # implementations and their dependencies:
 #
-# 1. FAISS (Facebook AI Similarity Search)
+# 1. FAISS (Facebook CI Similarity Search)
 #    - Requires: pip install faiss-cpu or faiss-gpu
 #    - Hardware acceleration with CUDA is recommended for production
 #    - Configuration in Tekton should specify dimensionality and index type

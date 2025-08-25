@@ -360,7 +360,7 @@ class DocumentationCrawler:
 
 
 async def crawl_pydantic_ai_docs(max_pages=200, max_depth=3, timeout=30, progress_callback=None):
-    """Crawl Pydantic AI documentation only."""
+    """Crawl Pydantic CI documentation only."""
     crawler = DocumentationCrawler(
         base_urls=["https://docs.pydantic.ai/latest/"],
         max_pages=max_pages

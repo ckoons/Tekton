@@ -1,7 +1,7 @@
 """
-AI Proxy endpoint for Hephaestus UI to communicate with AI specialists.
+AI Proxy endpoint for Hephaestus UI to communicate with CI specialists.
 
-This proxy allows the browser-based UI to communicate with AI specialists
+This proxy allows the browser-based UI to communicate with CI specialists
 that use socket connections, following the same pattern as aish.
 """
 
@@ -65,7 +65,7 @@ AI_PORT_MAP = {
 @router.post("/api/ai/proxy", response_model=CIMessageResponse)
 async def proxy_ai_message(request: CIMessageRequest):
     """
-    Proxy a message to an AI specialist using socket communication.
+    Proxy a message to an CI specialist using socket communication.
     This follows the same pattern as aish.
     """
     try:
@@ -77,7 +77,7 @@ async def proxy_ai_message(request: CIMessageRequest):
         if not port:
             raise HTTPException(
                 status_code=400, 
-                detail=f"Unknown AI specialist: {request.ai_name}"
+                detail=f"Unknown CI specialist: {request.ai_name}"
             )
         
         # Send message using the same socket client as aish
@@ -109,5 +109,5 @@ async def proxy_ai_message(request: CIMessageRequest):
 
 @router.get("/api/ai/proxy/health")
 async def proxy_health():
-    """Health check for AI proxy"""
+    """Health check for CI proxy"""
     return {"status": "healthy", "service": "ai-proxy"}

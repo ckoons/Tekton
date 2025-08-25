@@ -278,7 +278,7 @@ async def streaming_handler_example():
         handler = StreamHandler()
         
         # Print header for story
-        print("\n--- AI Short Story ---\n")
+        print("\n--- CI Short Story ---\n")
         
         # Stream and collect chunks with live output
         stream = client.generate_text(

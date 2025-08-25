@@ -30,7 +30,7 @@ def generate_nexus_agent(name: str, description: str, model_name: str) -> Agent:
             name="Nexus-" + name,  # Prepend with "Nexus-" so our type detection works
             description=description,
             model_name=model_name,  # Type will be inferred from the "Nexus-" prefix
-            system_prompt="""You are Nexus, an AI assistant with long-term memory capabilities.
+            system_prompt="""You are Nexus, an CI assistant with long-term memory capabilities.
 
 You can remember information across multiple sessions and have several sophisticated memory capabilities:
 1. Memory Categories: personal, factual, session, project, preference, and system

@@ -458,7 +458,7 @@ class SettingsManager {
                 case 'penia': return 'Penia - LLM Cost Management';
                 case 'hermes': return 'Hermes - Tektons/Federation';
                 case 'ergon': return 'Ergon - Automation/Solutions';
-                case 'terma': return 'Terma - AI Terminals';
+                case 'terma': return 'Terma - CI Terminals';
                 case 'profile': return 'Profile';
                 case 'settings': return 'Settings';
                 default: return component;
@@ -582,11 +582,11 @@ class SettingsManager {
         if (this.settings.showGreekNames) {
             switch(context) {
                 case 'ergon': 
-                    return 'Welcome to Ergon AI Assistant. I specialize in agent management, workflow automation, and tool configuration.';
+                    return 'Welcome to Ergon CI Assistant. I specialize in agent management, workflow automation, and tool configuration.';
                 case 'awt-team': 
-                    return 'Welcome to Team Chat. This is where multiple AI specialists collaborate on complex problems.';
+                    return 'Welcome to Team Chat. This is where multiple CI specialists collaborate on complex problems.';
                 case 'agora': 
-                    return 'Welcome to Team Chat. This is where multiple AI specialists collaborate on complex problems.';
+                    return 'Welcome to Team Chat. This is where multiple CI specialists collaborate on complex problems.';
                 default: 
                     return `Welcome to ${context.charAt(0).toUpperCase() + context.slice(1)}`;
             }
@@ -595,9 +595,9 @@ class SettingsManager {
                 case 'ergon': 
                     return 'Welcome to the Solution Chat. I can help you with agents, workflows, and tool configuration.';
                 case 'awt-team': 
-                    return 'Welcome to Team Chat. Here, multiple AI specialists collaborate on complex problems.';
+                    return 'Welcome to Team Chat. Here, multiple CI specialists collaborate on complex problems.';
                 case 'agora': 
-                    return 'Welcome to Team Chat. Here, multiple AI specialists collaborate on complex problems.';
+                    return 'Welcome to Team Chat. Here, multiple CI specialists collaborate on complex problems.';
                 default: 
                     return `Welcome to ${context.charAt(0).toUpperCase() + context.slice(1)}`;
             }

@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
-Tekton Client - Unified launcher for Tekton's AI models and services.
+Tekton Client - Unified launcher for Tekton's CI models and services.
 
 This script provides a unified interface for starting and managing
-different AI model clients (Claude, ChatGPT, Ollama) with Tekton's
+different CI model clients (Claude, ChatGPT, Ollama) with Tekton's
 memory and shared components.
 """
 
@@ -301,7 +301,7 @@ def print_client_list(clients: List[Dict[str, Any]]) -> None:
 def main():
     """Main function for the Tekton client launcher."""
     # Parse command line arguments
-    parser = argparse.ArgumentParser(description="Tekton Client - Unified launcher for AI models and services")
+    parser = argparse.ArgumentParser(description="Tekton Client - Unified launcher for CI models and services")
     subparsers = parser.add_subparsers(dest="command", help="Command to run")
     
     # Common arguments for all model clients
@@ -396,7 +396,7 @@ def main():
     
     elif args.command == "help":
         if args.topic == "all":
-            print("Tekton Client - Unified launcher for AI models and services")
+            print("Tekton Client - Unified launcher for CI models and services")
             print("\nAvailable commands:")
             
             for model_type, info in MODEL_TYPES.items():

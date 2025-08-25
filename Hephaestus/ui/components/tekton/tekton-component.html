@@ -2264,7 +2264,7 @@ async function loadProjectCIs() {
             ciData.project_cis.forEach(ci => {
                 console.log('[TEKTON] Found project CI:', ci);
                 
-                // For messaging, we need to use the correct AI name format
+                // For messaging, we need to use the correct CI name format
                 let aiName;
                 if (ci.name === 'numa') {
                     // Numa needs the -ci suffix for messaging through AIChat
@@ -2276,7 +2276,7 @@ async function loadProjectCIs() {
                 
                 projectCIs.push({
                     project_name: ci.project,
-                    ci_socket: aiName,  // Use the correct AI name for messaging
+                    ci_socket: aiName,  // Use the correct CI name for messaging
                     type: ci.type,
                     description: ci.description
                 });
@@ -2401,19 +2401,19 @@ async function sendProjectsChat() {
                 }
                 
                 if (outputMode === 'ai') {
-                    // Send to AI immediately (output not shown to user)
+                    // Send to CI immediately (output not shown to user)
                     immediateAiMessage += `Command output:\n${result.output}\n\n`;
                 } else if (outputMode === 'both') {
-                    // Send to AI immediately WITH current message (output shown to user AND sent to AI)
+                    // Send to CI immediately WITH current message (output shown to user AND sent to AI)
                     immediateAiMessage += `Command output:\n${result.output}\n\n`;
                 }
             }
             
-            // Handle immediate AI message (for 'ai' and 'both' modes)
+            // Handle immediate CI message (for 'ai' and 'both' modes)
             if (immediateAiMessage) {
                 message = processed.message ? `${processed.message}\n\n${immediateAiMessage}` : immediateAiMessage;
             } else if (!processed.message || !processed.message.trim()) {
-                // No message and no immediate AI output, we're done
+                // No message and no immediate CI output, we're done
                 chatInput.value = '';
                 chatContainer.scrollTop = chatContainer.scrollHeight;
                 return;
@@ -2460,7 +2460,7 @@ async function sendToProjectCI(projectName, message, projectCI) {
         if (window.AIChat && window.AIChat.sendMessage) {
             const response = await window.AIChat.sendMessage(projectCI.ci_socket, `[Project: ${projectName}] ${message}`);
             
-            // Add AI response to chat
+            // Add CI response to chat
             const chatContainer = document.getElementById('projectschat-messages');
             const aiMessage = document.createElement('div');
             aiMessage.className = 'tekton__message tekton__message--ai';
@@ -3874,7 +3874,7 @@ async function cancelMerge(mergeId, mergeName) {
 
 // Fix merge conflict using AI
 async function fixMergeConflict(mergeId, mergeName) {
-    console.log(`[TEKTON] Attempting AI fix for ${mergeName}`);
+    console.log(`[TEKTON] Attempting CI fix for ${mergeName}`);
     
     // Get conflict data from modal
     const conflictData = window.lastMergeConflictData || {};
@@ -3901,7 +3901,7 @@ async function fixMergeConflict(mergeId, mergeName) {
             TektonModal.success(`Merge conflicts resolved successfully for "${mergeName}"!`);
             await loadMergeQueue();
         } else {
-            // AI failed - show options
+            // CI failed - show options
             TektonModal.warning(`AI was unable to resolve conflicts. Please choose Consult or Redo.`);
             showMergeConflictModal(mergeId, mergeName, conflictData);
         }

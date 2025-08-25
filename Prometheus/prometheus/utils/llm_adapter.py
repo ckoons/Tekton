@@ -269,7 +269,7 @@ class PrometheusLLMAdapter:
         self.template_registry.register({
             "name": "system_task_breakdown",
             "template": """
-            You are an AI assistant that helps with project planning. 
+            You are an CI assistant that helps with project planning. 
             Your task is to break down high-level requirements into specific implementation tasks.
             For each task, provide a name, description, priority, estimated effort, and dependencies.
             Format your response as structured JSON that can be parsed directly.
@@ -279,7 +279,7 @@ class PrometheusLLMAdapter:
         self.template_registry.register({
             "name": "system_retrospective_analysis",
             "template": """
-            You are an AI assistant that specializes in analyzing retrospective data.
+            You are an CI assistant that specializes in analyzing retrospective data.
             Your task is to identify patterns, root causes, strengths, and improvement opportunities.
             Provide a comprehensive analysis that will help the team improve for future projects.
             """
@@ -288,7 +288,7 @@ class PrometheusLLMAdapter:
         self.template_registry.register({
             "name": "system_improvement_suggestions",
             "template": """
-            You are an AI assistant that specializes in continuous improvement.
+            You are an CI assistant that specializes in continuous improvement.
             Your task is to suggest specific, actionable improvements based on performance data.
             Format your response as structured JSON that can be parsed directly.
             """
@@ -297,7 +297,7 @@ class PrometheusLLMAdapter:
         self.template_registry.register({
             "name": "system_risk_analysis",
             "template": """
-            You are an AI assistant that specializes in risk analysis and mitigation.
+            You are an CI assistant that specializes in risk analysis and mitigation.
             Your task is to identify potential risks in a project plan and suggest mitigation strategies.
             Format your response as structured JSON that can be parsed directly.
             """
@@ -306,7 +306,7 @@ class PrometheusLLMAdapter:
         self.template_registry.register({
             "name": "system_critical_path",
             "template": """
-            You are an AI assistant that specializes in project planning and critical path analysis.
+            You are an CI assistant that specializes in project planning and critical path analysis.
             Your task is to identify the critical path through a project and suggest optimizations.
             Provide a clear and concise analysis that helps the team understand the project timeline.
             """

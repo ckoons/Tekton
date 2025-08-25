@@ -1,8 +1,8 @@
 """
-Unified LLM Client that uses the AI Registry instead of direct provider connections.
+Unified LLM Client that uses the CI Registry instead of direct provider connections.
 
 This replaces the old multi-provider LLM client with a unified approach
-that discovers and communicates with AI specialists via the registry.
+that discovers and communicates with CI specialists via the registry.
 """
 import os
 import logging
@@ -10,7 +10,7 @@ import asyncio
 from typing import Dict, List, Optional, Any, AsyncGenerator, Union
 from datetime import datetime
 
-# Import the new shared AI components
+# Import the new shared CI components
 import sys
 import os
 # Add Tekton root to path
@@ -48,31 +48,31 @@ logger = logging.getLogger(__name__)
 
 
 @architecture_decision(
-    title="Rhetor LLM Client Using Simple AI System",
-    rationale="Direct socket communication with fixed AI ports via simple_ai",
+    title="Rhetor LLM Client Using Simple CI System",
+    rationale="Direct socket communication with fixed CI ports via simple_ai",
     alternatives_considered=["Registry-based discovery", "Complex routing", "Connection pooling"],
     impacts=["simplicity", "reliability", "fixed_port_mapping"],
     decided_by="Casey"
 )
 @integration_point(
-    title="Direct AI Socket Communication",
+    title="Direct CI Socket Communication",
     target_component="AI Specialists (ports 45000-50000)",
     protocol="Direct socket via simple_ai",
-    data_flow="Request → simple_ai → Fixed Port Socket → AI Response"
+    data_flow="Request → simple_ai → Fixed Port Socket → CI Response"
 )
 @architecture_decision(
-    title="One Queue One Socket One AI Architecture",
-    rationale="Each AI has exactly one message queue and one socket connection",
+    title="One Queue One Socket One CI Architecture",
+    rationale="Each CI has exactly one message queue and one socket connection",
     alternatives_considered=["Connection pooling", "Load balancing", "Multiple queues"],
     impacts=["simplicity", "predictability", "maintainability"],
     decided_by="Casey"
 )
 class LLMClient:
     """
-    Drop-in replacement for the old LLMClient that uses the unified AI registry.
+    Drop-in replacement for the old LLMClient that uses the unified CI registry.
     
     This maintains the same API interface while routing all requests through
-    the AI Registry for dynamic specialist selection.
+    the CI Registry for dynamic specialist selection.
     """
     
     def __init__(self, default_provider=None, default_model=None):
@@ -105,14 +105,14 @@ class LLMClient:
             except Exception as e:
                 logger.warning(f"Failed to load templates: {e}")
         
-        logger.info("Initialized unified LLM client with AI Registry")
+        logger.info("Initialized unified LLM client with CI Registry")
     
     async def initialize(self):
         """Initialize the client and discover AIs."""
         try:
             # Discover available AIs
             ais = await self.registry.discover()
-            logger.info(f"Discovered {len(ais)} AI specialists")
+            logger.info(f"Discovered {len(ais)} CI specialists")
             
             # Create compatibility provider mapping
             self._create_provider_mapping()
@@ -143,13 +143,13 @@ class LLMClient:
         return list(self.providers.keys())
     
     def list_models(self, provider_id=None):
-        """List available models - returns AI specialists."""
+        """List available models - returns CI specialists."""
         # This is now async but kept sync for compatibility
         # Real implementation would need to handle this properly
         return ["registry-managed"]
     
     def get_model_info(self, model_id, provider_id=None):
-        """Get model information - returns AI info."""
+        """Get model information - returns CI info."""
         return {
             "id": model_id,
             "name": "AI Registry Managed Model",
@@ -160,7 +160,7 @@ class LLMClient:
     
     async def complete(self, prompt, model=None, provider_id=None, **kwargs):
         """
-        Complete a prompt using the unified AI client.
+        Complete a prompt using the unified CI client.
         
         Maps old provider/model selection to role-based routing.
         """
@@ -171,7 +171,7 @@ class LLMClient:
         temperature = kwargs.get('temperature', 0.7)
         max_tokens = kwargs.get('max_tokens', 4000)
         
-        # Map role to AI and port
+        # Map role to CI and port
         ai_map = {
             'orchestration': ('rhetor-ci', 'localhost', 45003),
             'code-analysis': ('apollo-ci', 'localhost', 45012),
@@ -213,7 +213,7 @@ class LLMClient:
     
     def _map_to_role(self, provider_id: Optional[str], model: Optional[str], 
                      task_type: Optional[str]) -> str:
-        """Map old provider/model/task to AI role."""
+        """Map old provider/model/task to CI role."""
         # Task type takes precedence
         if task_type:
             role_map = {

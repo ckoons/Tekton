@@ -87,7 +87,7 @@ async def test_individual_streaming(specialist_id: str = "apollo-ai", message: s
     print(f"Total content length: {len(''.join(total_content))} characters")
 
 
-async def test_team_streaming(message: str = "What makes a good AI assistant?"):
+async def test_team_streaming(message: str = "What makes a good CI assistant?"):
     """Test streaming from all specialists simultaneously."""
     print(f"\n=== Testing Team Streaming (Greek Chorus) ===")
     print(f"Message: {message}")

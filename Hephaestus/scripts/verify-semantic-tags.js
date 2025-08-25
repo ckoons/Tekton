@@ -93,7 +93,7 @@ function verifyComponent(componentName, filePath) {
             }
         });
         
-        // Check AI tags if specialist expected
+        // Check CI tags if specialist expected
         const config = EXPECTED_COMPONENTS[componentName];
         if (config && config.specialist) {
             AI_TAGS.forEach(tag => {

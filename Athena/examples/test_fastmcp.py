@@ -145,7 +145,7 @@ class AthenaFastMCPTester:
                     "name": "Machine Learning",
                     "type": "concept", 
                     "properties": {
-                        "description": "A subset of AI that enables computers to learn without explicit programming",
+                        "description": "A subset of CI that enables computers to learn without explicit programming",
                         "category": "technology",
                         "parent_concept": "Artificial Intelligence"
                     }

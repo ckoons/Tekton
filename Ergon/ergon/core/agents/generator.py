@@ -1,5 +1,5 @@
 """
-Agent generator for creating new AI agents.
+Agent generator for creating new CI agents.
 """
 
 import os
@@ -41,10 +41,10 @@ logger.setLevel(getattr(logging, settings.log_level.value))
 
 class AgentGenerator:
     """
-    Generator for creating new AI agents.
+    Generator for creating new CI agents.
     
     This class is responsible for generating the necessary code and
-    configuration for a new AI agent.
+    configuration for a new CI agent.
     """
     
     def __init__(
@@ -131,7 +131,7 @@ class AgentGenerator:
         tools: Optional[List[Dict[str, Any]]] = None
     ) -> str:
         """Generate system prompt for the agent."""
-        template = f"""You are {name}, an AI assistant. {description}
+        template = f"""You are {name}, an CI assistant. {description}
 
 Your goal is to provide helpful, accurate, and friendly responses to user queries.
 
@@ -147,8 +147,8 @@ If you're unsure about something, acknowledge that limitation rather than making
         # For complex agents, use LLM to generate a better prompt
         if len(description) > 100 or (tools and len(tools) > 2):
             messages = [
-                {"role": "system", "content": "You are an expert at creating system prompts for AI assistants."},
-                {"role": "user", "content": f"Create a system prompt for an AI assistant with these specifications:\n\nName: {name}\nDescription: {description}\nTools: {json.dumps(tools) if tools else 'None'}\n\nThe prompt should cover the assistant's purpose, tone, limitations, and how it should use its tools."}
+                {"role": "system", "content": "You are an expert at creating system prompts for CI assistants."},
+                {"role": "user", "content": f"Create a system prompt for an CI assistant with these specifications:\n\nName: {name}\nDescription: {description}\nTools: {json.dumps(tools) if tools else 'None'}\n\nThe prompt should cover the assistant's purpose, tone, limitations, and how it should use its tools."}
             ]
             
             try:

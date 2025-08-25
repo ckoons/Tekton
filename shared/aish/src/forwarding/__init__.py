@@ -1,1 +1,1 @@
-# Forwarding module for aish AI message routing
+# Forwarding module for aish CI message routing

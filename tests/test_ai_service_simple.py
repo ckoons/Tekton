@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Tests for simple AI service
+Tests for simple CI service
 Testing: send_message_sync, send_message_async, send_to_all, collect_responses
 """
 
@@ -40,7 +40,7 @@ def test_send_message_sync():
     service = CIService(debug=True)
     
     # Don't register sockets - sync method will simulate
-    # Just register AI with no socket to create the queue
+    # Just register CI with no socket to create the queue
     if "test-ci" not in service.queues:
         service.queues["test-ci"] = {}
     
@@ -59,7 +59,7 @@ def test_send_message_async():
     """Test async send (fire and forget)"""
     service = CIService(debug=True)
     
-    # Register AI (socket not used for this test)
+    # Register CI (socket not used for this test)
     service.register_ai("test-ci", None, None)
     
     try:
@@ -166,7 +166,7 @@ async def run_async_tests():
 
 def run_all_tests():
     """Run all tests"""
-    print("Testing AI Service Simple")
+    print("Testing CI Service Simple")
     print("-" * 40)
     
     # Sync tests

@@ -37,15 +37,15 @@ async def generate_main_file(
     """
     # Prepare prompt for the LLM
     messages = [
-        {"role": "system", "content": "You are an expert Python programmer specializing in Pydantic AI agents. Your task is to generate professional-grade Python code for an AI agent based on the requirements."},
-        {"role": "user", "content": f"""Create the main Python file for an AI assistant with these specifications:
+        {"role": "system", "content": "You are an expert Python programmer specializing in Pydantic CI agents. Your task is to generate professional-grade Python code for an CI agent based on the requirements."},
+        {"role": "user", "content": f"""Create the main Python file for an CI assistant with these specifications:
 
 Name: {name}
 Description: {description}
 Tools: {json.dumps(tools) if tools else 'None'}
 
 Requirements:
-1. Use the Pydantic AI framework for the implementation
+1. Use the Pydantic CI framework for the implementation
 2. Support both Claude and OpenAI models via environment variables
 3. Include a simple CLI for testing the agent
 4. Use proper error handling
@@ -85,14 +85,14 @@ async def generate_tools_file(
     """
     # Prepare prompt for the LLM
     messages = [
-        {"role": "system", "content": "You are an expert Python programmer specializing in Pydantic AI agent tools. Your task is to generate professional-grade Python code for an AI agent tools based on the requirements."},
-        {"role": "user", "content": f"""Create the tools implementation file for an AI assistant with these specifications:
+        {"role": "system", "content": "You are an expert Python programmer specializing in Pydantic CI agent tools. Your task is to generate professional-grade Python code for an CI agent tools based on the requirements."},
+        {"role": "user", "content": f"""Create the tools implementation file for an CI assistant with these specifications:
 
 Name: {name}
 Tools: {json.dumps(tools)}
 
 Requirements:
-1. Use the Pydantic AI framework for the implementation
+1. Use the Pydantic CI framework for the implementation
 2. Implement each tool with proper function signatures and type hints
 3. Include error handling for each tool
 4. Add comprehensive docstrings
@@ -130,8 +130,8 @@ async def generate_prompts_file(
     """
     # Prepare prompt for the LLM
     messages = [
-        {"role": "system", "content": "You are an expert at creating system prompts for AI assistants. Your task is to generate a prompts file containing well-crafted prompts for an AI agent."},
-        {"role": "user", "content": f"""Create a Python file containing system prompts for an AI assistant with these specifications:
+        {"role": "system", "content": "You are an expert at creating system prompts for CI assistants. Your task is to generate a prompts file containing well-crafted prompts for an CI agent."},
+        {"role": "user", "content": f"""Create a Python file containing system prompts for an CI assistant with these specifications:
 
 Name: {name}
 Description: {description}
@@ -172,14 +172,14 @@ async def generate_requirements_file(
     # Prepare prompt for the LLM
     messages = [
         {"role": "system", "content": "You are an expert at Python package management. Your task is to generate a requirements.txt file for a Python project."},
-        {"role": "user", "content": f"""Create a requirements.txt file for an AI assistant with these specifications:
+        {"role": "user", "content": f"""Create a requirements.txt file for an CI assistant with these specifications:
 
 Name: {name}
 Description: {description}
 Tools: {json.dumps(tools) if tools else 'None'}
 
 The file should include all necessary dependencies for the agent to function, including:
-1. Pydantic AI framework
+1. Pydantic CI framework
 2. Any libraries needed for the tools
 3. Appropriate version constraints
 
@@ -244,7 +244,7 @@ async def generate_readme_file(
     # Prepare prompt for the LLM
     messages = [
         {"role": "system", "content": "You are an expert at writing documentation. Your task is to generate a README.md file for a Python project."},
-        {"role": "user", "content": f"""Create a README.md file for an AI assistant with these specifications:
+        {"role": "user", "content": f"""Create a README.md file for an CI assistant with these specifications:
 
 Name: {name}
 Description: {description}

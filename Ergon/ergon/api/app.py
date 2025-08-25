@@ -582,11 +582,11 @@ async def terminal_message(
         # Add a system message based on the context
         system_message = "You are a helpful assistant."
         if request.context_id == "ergon":
-            system_message = "You are the Ergon AI assistant, specialized in agent creation, automation, and tool configuration for the Tekton system. Be concise and helpful."
+            system_message = "You are the Ergon CI assistant, specialized in agent creation, automation, and tool configuration for the Tekton system. Be concise and helpful."
         elif request.context_id == "awt-team":
             system_message = "You are the Advanced Workflow Team assistant for Tekton. You specialize in workflow automation, process design, and team collaboration. Be concise and helpful."
         elif request.context_id == "agora":
-            system_message = "You are Agora, a multi-component AI assistant for Tekton. You coordinate between different AI systems to solve complex problems. Be concise and helpful."
+            system_message = "You are Agora, a multi-component CI assistant for Tekton. You coordinate between different CI systems to solve complex problems. Be concise and helpful."
         
         messages.append({"role": "system", "content": system_message})
         
@@ -654,11 +654,11 @@ async def terminal_stream(
         # Add a system message based on the context
         system_message = "You are a helpful assistant."
         if request.context_id == "ergon":
-            system_message = "You are the Ergon AI assistant, specialized in agent creation, automation, and tool configuration for the Tekton system. Be concise and helpful."
+            system_message = "You are the Ergon CI assistant, specialized in agent creation, automation, and tool configuration for the Tekton system. Be concise and helpful."
         elif request.context_id == "awt-team":
             system_message = "You are the Advanced Workflow Team assistant for Tekton. You specialize in workflow automation, process design, and team collaboration. Be concise and helpful."
         elif request.context_id == "agora":
-            system_message = "You are Agora, a multi-component AI assistant for Tekton. You coordinate between different AI systems to solve complex problems. Be concise and helpful."
+            system_message = "You are Agora, a multi-component CI assistant for Tekton. You coordinate between different CI systems to solve complex problems. Be concise and helpful."
         
         messages.append({"role": "system", "content": system_message})
         

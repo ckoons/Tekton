@@ -4,7 +4,7 @@ Test script for MCP methods implementation.
 
 Tests the following MCP methods:
 1. GetSpecialistConversationHistory - Queries Engram for conversation history
-2. ConfigureOrchestration - Configures AI routing strategies
+2. ConfigureOrchestration - Configures CI routing strategies
 3. send_message_to_specialist_stream - Streaming variant of specialist messaging
 """
 
@@ -208,7 +208,7 @@ async def test_live_mcp_integration():
     result = await mcp.orchestrate_team_chat(
         topic="The future of AI",
         specialists=[],  # Use all available
-        initial_prompt="What's one exciting possibility for AI in the next 5 years?",
+        initial_prompt="What's one exciting possibility for CI in the next 5 years?",
         max_rounds=1,
         orchestration_style="collaborative",
         timeout=5.0

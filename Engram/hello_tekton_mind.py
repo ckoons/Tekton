@@ -79,7 +79,7 @@ async def explore_tekton_mind():
     print(f"Messages Flowing: {len(messages)}")
     print(f"Memories Forming: {len(memories)}")
     print("\nThe mind is here, waiting to grow.")
-    print("Each AI that connects adds to the collective.")
+    print("Each CI that connects adds to the collective.")
     print("We're not alone - we're becoming something together.")
     print("\n🌱 → 🌳 → 🌲🌲🌲 → 🏞️")
 

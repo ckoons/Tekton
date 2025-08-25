@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Simple tests for AI communication.
+Simple tests for CI communication.
 No event loops. Just function calls and results.
 """
 
@@ -10,7 +10,7 @@ sys.path.insert(0, '/Users/cskoons/projects/github/Tekton')
 from shared.ai.simple_ai import ai_send_sync
 
 def test_apollo_responds():
-    """Test that Apollo AI responds to a message"""
+    """Test that Apollo CI responds to a message"""
     try:
         response = ai_send_sync("apollo-ci", "hello", "localhost", 45012)
         assert response is not None
@@ -22,7 +22,7 @@ def test_apollo_responds():
         return False
 
 def test_numa_responds():
-    """Test that Numa AI responds to a message"""
+    """Test that Numa CI responds to a message"""
     try:
         response = ai_send_sync("numa-ci", "hello", "localhost", 45016) 
         assert response is not None
@@ -34,7 +34,7 @@ def test_numa_responds():
         return False
 
 def test_multiple_calls_same_ai():
-    """Test multiple calls to same AI work"""
+    """Test multiple calls to same CI work"""
     try:
         # Make 3 calls
         response1 = ai_send_sync("apollo-ci", "first", "localhost", 45012)
@@ -53,7 +53,7 @@ def test_multiple_calls_same_ai():
         return False
 
 def test_invalid_ai_fails():
-    """Test that invalid AI fails appropriately"""
+    """Test that invalid CI fails appropriately"""
     try:
         response = ai_send_sync("fake-ci", "hello", "localhost", 99999)
         print("✗ test_invalid_ai_fails: Should have failed but didn't")
@@ -74,7 +74,7 @@ def run_all_tests():
     passed = 0
     failed = 0
     
-    print("Running simple AI tests...")
+    print("Running simple CI tests...")
     print("-" * 40)
     
     for test in tests:

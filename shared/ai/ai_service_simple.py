@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Simple AI Service - Just message->ai->response
+Simple CI Service - Just message->ai->response
 No connection management, that's another layer's job
 """
 
@@ -25,8 +25,8 @@ class Message:
     error: Optional[str] = None
 
 @architecture_decision(
-    title="One Queue, One Socket, One AI Architecture",
-    rationale="Simplify AI communication by eliminating connection pooling and complex routing",
+    title="One Queue, One Socket, One CI Architecture",
+    rationale="Simplify CI communication by eliminating connection pooling and complex routing",
     alternatives_considered=["Connection pooling", "Multiple socket per AI", "Event-driven architecture"],
     impacts=["simplicity", "reliability", "maintainability"],
     decided_by="Casey"
@@ -36,10 +36,10 @@ class Message:
     state_type="runtime",
     persistence=False,
     consistency_requirements="UUID-based message tracking ensures no message loss",
-    recovery_strategy="Queue per AI allows independent recovery"
+    recovery_strategy="Queue per CI allows independent recovery"
 )
 class CIService:
-    """One queue per AI, one socket per AI - just send/receive messages"""
+    """One queue per AI, one socket per CI - just send/receive messages"""
     
     def __init__(self, debug: bool = False):
         self.debug = debug
@@ -47,7 +47,7 @@ class CIService:
         self.sockets: Dict[str, Any] = {}  # ai_id -> socket (reader, writer)
         
     def register_ai(self, ai_id: str, reader, writer):
-        """Register an AI with its socket"""
+        """Register an CI with its socket"""
         self.sockets[ai_id] = (reader, writer)
         if ai_id not in self.queues:
             self.queues[ai_id] = {}
@@ -199,7 +199,7 @@ class CIService:
         """Collect responses as they arrive
         
         Args:
-            msg_ids: Dictionary of AI IDs to message IDs
+            msg_ids: Dictionary of CI IDs to message IDs
             timeout: Optional timeout in seconds (None = no timeout for Claude)
         """
         start_time = time.time()

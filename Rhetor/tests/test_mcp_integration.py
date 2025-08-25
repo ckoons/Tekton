@@ -48,8 +48,8 @@ async def test_mcp_integration():
         except Exception as e:
             print(f"   ✗ Error: {e}")
         
-        # 4. Test AI Specialists listing
-        print("\n4. Testing AI Specialists Tool")
+        # 4. Test CI Specialists listing
+        print("\n4. Testing CI Specialists Tool")
         try:
             response = await client.post(
                 f"{base_url}/api/mcp/v2/process",

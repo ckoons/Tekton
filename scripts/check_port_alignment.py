@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Check AI port alignment with expected values.
+Check CI port alignment with expected values.
 Uses configurable port bases from environment.
 """
 import sys
@@ -17,7 +17,7 @@ from shared.utils.env_config import get_component_config
 from shared.utils.ai_port_utils import get_ai_port
 
 def get_expected_ai_port(main_port: int) -> int:
-    """Calculate expected AI port based on component's main port."""
+    """Calculate expected CI port based on component's main port."""
     return get_ai_port(main_port)
 
 def check_port_open(host: str, port: int) -> bool:
@@ -77,10 +77,10 @@ def main():
         print(f"{component:<15} {main_port:<12} {ai_port:<12} {status:<12}")
     
     print("=" * 70)
-    print(f"Total AI components: {total_count}")
+    print(f"Total CI components: {total_count}")
     print(f"Running: {running_count}")
     print(f"Not running: {total_count - running_count}")
-    print(f"\nPort formula: AI port = {TektonEnviron.get('TEKTON_AI_PORT_BASE', '45000')} + (main_port - {TektonEnviron.get('TEKTON_PORT_BASE', '8000')})")
+    print(f"\nPort formula: CI port = {TektonEnviron.get('TEKTON_AI_PORT_BASE', '45000')} + (main_port - {TektonEnviron.get('TEKTON_PORT_BASE', '8000')})")
 
 if __name__ == '__main__':
     main()

@@ -234,7 +234,7 @@
             <div class="chat-interface">
                 <div class="chat-messages" id="athena-chat-messages">
                     <div class="chat-message system-message">
-                        <strong>Athena:</strong> Hello! I'm Athena, your knowledge graph AI assistant. I specialize in understanding relationships, patterns, and connections across the Tekton system. How can I help you explore our knowledge today?
+                        <strong>Athena:</strong> Hello! I'm Athena, your knowledge graph CI assistant. I specialize in understanding relationships, patterns, and connections across the Tekton system. How can I help you explore our knowledge today?
                     </div>
                 </div>
             </div>
@@ -245,7 +245,7 @@
             <div class="chat-interface">
                 <div class="chat-messages" id="athena-teamchat-messages">
                     <div class="chat-message system-message">
-                        <strong>System:</strong> Team Chat allows Athena to coordinate with other AI specialists about knowledge graph insights.
+                        <strong>System:</strong> Team Chat allows Athena to coordinate with other CI specialists about knowledge graph insights.
                     </div>
                 </div>
             </div>
@@ -257,7 +257,7 @@
         <div class="athena__chat-input-container">
             <div class="athena__chat-prompt">></div>
             <input type="text" class="athena__chat-input" id="athena-chat-input"
-                   placeholder="Chat with Athena - your knowledge graph AI assistant"
+                   placeholder="Chat with Athena - your knowledge graph CI assistant"
                    onkeydown="if(event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); athena_sendChat(); }">
             <button class="athena__send-button" id="athena-send-button" onclick="athena_sendChat(); return false;">Send</button>
         </div>
@@ -609,7 +609,7 @@
     color: #4CAF50;
 }
 
-/* AI messages */
+/* CI messages */
 .chat-message.ai-message {
     background-color: rgba(123, 31, 162, 0.05);
     border-left: 3px solid #7B1FA2;

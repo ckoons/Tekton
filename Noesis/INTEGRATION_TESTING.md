@@ -79,10 +79,10 @@ python -m pytest test_end_to_end_workflows.py -v
 
 ### 1. Discovery to Validation Workflow
 
-**Scenario**: Analyze collective AI data, discover patterns, generate theory, validate experimentally
+**Scenario**: Analyze collective CI data, discover patterns, generate theory, validate experimentally
 
 **Steps**:
-1. Analyze collective AI data with manifold and dynamics analyzers
+1. Analyze collective CI data with manifold and dynamics analyzers
 2. Generate theoretical predictions based on discovered patterns
 3. Create theory validation protocol with Sophia
 4. Execute experiment in Sophia
@@ -109,7 +109,7 @@ python -m pytest test_end_to_end_workflows.py -v
 **Scenario**: Analyze systems at multiple scales, discover scaling laws, validate experimentally
 
 **Steps**:
-1. Generate multi-scale collective AI data (12 to 50,000 agents)
+1. Generate multi-scale collective CI data (12 to 50,000 agents)
 2. Perform synthesis analysis to discover scaling relationships
 3. Generate scaling law hypothesis (e.g., D(N) = a * N^β)
 4. Create validation experiments at intermediate scales
@@ -138,10 +138,10 @@ python -m pytest test_end_to_end_workflows.py -v
 
 ### Realistic Test Data Generation
 
-The tests use sophisticated mock data that simulates realistic collective AI behavior:
+The tests use sophisticated mock data that simulates realistic collective CI behavior:
 
 ```python
-# Example: Collective AI data with phase transitions
+# Example: Collective CI data with phase transitions
 collective_data = {
     "time_series": np.ndarray,     # Shape: (300, 500) - 300 timesteps, 500 features
     "collective_states": np.ndarray,  # Sampled states for manifold analysis

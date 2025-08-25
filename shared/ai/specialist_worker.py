@@ -1,13 +1,13 @@
-# @tekton-module: Base AI Specialist Worker framework
+# @tekton-module: Base CI Specialist Worker framework
 # @tekton-depends: asyncio, httpx, json, socket
 # @tekton-provides: ai-specialist-base, socket-server, llm-integration
 # @tekton-version: 1.0.0
 # @tekton-critical: true
 
 """
-Base AI Specialist Worker class for Tekton AI specialists.
+Base CI Specialist Worker class for Tekton CI specialists.
 
-Provides common functionality for all AI specialists including:
+Provides common functionality for all CI specialists including:
 - Socket communication
 - Health monitoring
 - Message handling
@@ -80,12 +80,12 @@ try:
     ci_registry = CIRegistry()
 except ImportError:
     ci_registry = None
-    logging.warning("CI Registry not available for storing AI exchanges")
+    logging.warning("CI Registry not available for storing CI exchanges")
 
 # Architecture decision marker for CI Registry integration
 @architecture_decision(
     title="AI Specialist CI Registry Integration",
-    description="All AI specialists automatically store exchanges in CI Registry",
+    description="All CI specialists automatically store exchanges in CI Registry",
     rationale="Enables Apollo to monitor performance/stress and Rhetor to inject context",
     alternatives_considered=["Per-specialist opt-in", "Separate storage mechanism", "Direct Apollo API calls"],
     impacts=["apollo_monitoring", "rhetor_context", "performance_tracking"],
@@ -104,13 +104,13 @@ except ImportError:
     logger = logging.getLogger(__name__)
 
 
-# @tekton-class: Abstract base for AI specialists
+# @tekton-class: Abstract base for CI specialists
 # @tekton-singleton: false
 # @tekton-lifecycle: worker
 # @tekton-abstract: true
 @architecture_decision(
     title="AI Specialist Worker Pattern",
-    rationale="Provide common framework for all AI specialists with socket communication and LLM integration",
+    rationale="Provide common framework for all CI specialists with socket communication and LLM integration",
     alternatives_considered=["Direct HTTP APIs", "gRPC services", "Message queues"],
     impacts=["consistency", "code_reuse", "socket_overhead"]
 )
@@ -121,7 +121,7 @@ except ImportError:
     data_flow="Prompt/response cycles"
 )
 class CISpecialistWorker(ABC):
-    """Base class for AI specialist workers."""
+    """Base class for CI specialist workers."""
     
     def __init__(self, 
                  ai_id: str,
@@ -129,11 +129,11 @@ class CISpecialistWorker(ABC):
                  port: int,
                  description: str = "AI Specialist"):
         """
-        Initialize AI Specialist Worker.
+        Initialize CI Specialist Worker.
         
         Args:
             ai_id: Unique identifier for the AI
-            component: Component name this AI belongs to
+            component: Component name this CI belongs to
             port: Port to listen on
             description: Human-readable description
         """
@@ -154,7 +154,7 @@ class CISpecialistWorker(ABC):
             'chat': self._handle_chat,
         }
         
-        # AI configuration
+        # CI configuration
         self.model_provider = TektonEnviron.get('TEKTON_AI_PROVIDER', 'ollama')
         self.model_name = TektonEnviron.get(f'{component.upper()}_AI_MODEL', 
                                         self.get_default_model())
@@ -168,7 +168,7 @@ class CISpecialistWorker(ABC):
         self.logger = logging.getLogger(f"{self.__class__.__name__}.{ai_id}")
         
     def get_default_model(self) -> str:
-        """Get default model for this AI specialist."""
+        """Get default model for this CI specialist."""
         return 'gpt-oss:20b'
     
     def detect_thinking_level(self, text: str) -> tuple[str, float, int]:
@@ -296,13 +296,13 @@ class CISpecialistWorker(ABC):
     
     @abstractmethod
     def get_system_prompt(self) -> str:
-        """Get system prompt for this AI specialist."""
+        """Get system prompt for this CI specialist."""
         pass
     
     @abstractmethod
     async def process_message(self, message: Dict[str, Any]) -> Dict[str, Any]:
         """
-        Process a message specific to this AI specialist.
+        Process a message specific to this CI specialist.
         
         Args:
             message: Incoming message
@@ -349,7 +349,7 @@ class CISpecialistWorker(ABC):
         description="Core chat handler with LLM integration",
         sla="<5s for typical prompts, <30s for complex analysis",
         optimization_notes="Streams responses when possible, caches model connection",
-        measured_impact="Primary performance bottleneck for AI specialists"
+        measured_impact="Primary performance bottleneck for CI specialists"
     )
     async def _handle_chat(self, message: Dict[str, Any]) -> Dict[str, Any]:
         """Handle chat message using the configured model."""
@@ -552,7 +552,7 @@ class CISpecialistWorker(ABC):
         consistency_requirements="Socket bound to port"
     )
     async def start(self):
-        """Start the AI specialist server."""
+        """Start the CI specialist server."""
         # Initialize model adapter
         model_initialized = await self.initialize_model()
         if not model_initialized:
@@ -581,7 +581,7 @@ class CISpecialistWorker(ABC):
             await self.server.serve_forever()
     
     def run(self):
-        """Run the AI specialist."""
+        """Run the CI specialist."""
         try:
             asyncio.run(self.start())
         except KeyboardInterrupt:

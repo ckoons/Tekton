@@ -1,7 +1,7 @@
 """
 Conversation history management for aish.
 
-Provides Unix-style history tracking with AI responses, supporting:
+Provides Unix-style history tracking with CI responses, supporting:
 - Simple text format like bash history
 - JSON export via jc-style conversion
 - Replay functionality
@@ -78,7 +78,7 @@ class CIHistory:
         
         Args:
             command: The command executed
-            responses: Dictionary of AI responses {ai_name: response}
+            responses: Dictionary of CI responses {ai_name: response}
             
         Returns:
             Command number assigned
@@ -275,7 +275,7 @@ class CIHistory:
     
     def add_exchange(self, ai_name: str, message: str, response: str):
         """
-        Add a single AI exchange to history.
+        Add a single CI exchange to history.
         
         Args:
             ai_name: Name of the AI

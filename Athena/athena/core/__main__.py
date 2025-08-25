@@ -1,5 +1,5 @@
 """
-Main entry point for Athena AI specialist when run as module.
+Main entry point for Athena CI specialist when run as module.
 """
 import os
 import sys

@@ -39,7 +39,7 @@ class ComponentType(enum.Enum):
     WORKFLOW = "workflow"
 
 class Agent(Base):
-    """Agent model representing an AI agent instance."""
+    """Agent model representing an CI agent instance."""
     __tablename__ = 'agents'
     
     id = Column(Integer, primary_key=True)

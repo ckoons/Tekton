@@ -1,7 +1,7 @@
 """
 Engram - Persistent Memory Traces Across Sessions
 
-A lightweight system providing AI with persistent memory traces,
+A lightweight system providing CI with persistent memory traces,
 enabling continuous conversation and growth across sessions.
 
 Simple usage:

@@ -56,7 +56,7 @@ class TektonExtractor:
             }
         },
         'aish': {
-            'name': 'AISH AI Shell',
+            'name': 'AISH CI Shell',
             'description': 'AI-powered shell for CI interaction',
             'capabilities': ['shell', 'ci_management', 'command_execution'],
             'interfaces': {
@@ -66,7 +66,7 @@ class TektonExtractor:
         },
         'hephaestus': {
             'name': 'Hephaestus UI Framework',
-            'description': 'Component-based UI system with AI integration',
+            'description': 'Component-based UI system with CI integration',
             'capabilities': ['ui_framework', 'component_system', 'ai_chat'],
             'interfaces': {
                 'inputs': [{'name': 'component_config', 'type': 'json'}],

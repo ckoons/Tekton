@@ -861,7 +861,7 @@ class TektonUIRequestHandler(SimpleHTTPRequestHandler):
                 except (AttributeError, TypeError):
                     target_port = int(TektonEnviron.get("HERMES_PORT", 8001))
                 target_path = self.path  # Keep the same path
-            # Rhetor AI specialist endpoints - proxy to Rhetor service
+            # Rhetor CI specialist endpoints - proxy to Rhetor service
             elif self.path.startswith("/api/ai/") or self.path.startswith("/api/v1/ai/"):
                 target_host = "localhost"
                 try:
@@ -1373,11 +1373,11 @@ class WebSocketServer:
             
             # Add context-specific information
             if context_id == "ergon":
-                simulated_response += "\n\nThis is a simulated response from the Ergon AI assistant. In a real implementation, I would help with agent creation, automation, and tool configuration."
+                simulated_response += "\n\nThis is a simulated response from the Ergon CI assistant. In a real implementation, I would help with agent creation, automation, and tool configuration."
             elif context_id == "awt-team":
                 simulated_response += "\n\nThis is a simulated response from the AWT Team assistant. In a real implementation, I would help with workflow automation and process design."
             elif context_id == "agora":
-                simulated_response += "\n\nThis is a simulated response from the Agora multi-component assistant. In a real implementation, I would coordinate between different AI systems."
+                simulated_response += "\n\nThis is a simulated response from the Agora multi-component assistant. In a real implementation, I would coordinate between different CI systems."
             
             # Handle streaming vs non-streaming
             if streaming:
@@ -1415,7 +1415,7 @@ class WebSocketServer:
                 }
                 await websocket.send(json.dumps(done_response))
             else:
-                # Create AI response (non-streaming)
+                # Create CI response (non-streaming)
                 ai_response = {
                     'type': 'RESPONSE',
                     'source': context_id,

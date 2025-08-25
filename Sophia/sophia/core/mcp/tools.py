@@ -1140,7 +1140,7 @@ class SophiaIntelligenceMeasurementTools:
                     "long_term_predictions": [
                         "Evolution toward collective ecosystem intelligence",
                         "Development of autonomous optimization capabilities",
-                        "Integration with external AI systems"
+                        "Integration with external CI systems"
                     ],
                     "breakthrough_indicators": [
                         "Cross-component problem solving without explicit coordination",
@@ -1172,7 +1172,7 @@ class SophiaIntelligenceMeasurementTools:
             "strategic_implications": [
                 "Intelligence becomes primary competitive advantage",
                 "System evolution accelerates with collective intelligence",
-                "New paradigms emerge for AI system design"
+                "New paradigms emerge for CI system design"
             ],
             "research_priorities": [
                 "Collective intelligence mechanisms",

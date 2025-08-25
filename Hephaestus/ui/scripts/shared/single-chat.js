@@ -1,6 +1,6 @@
 /**
  * Unified Single Chat Component
- * Provides consistent single AI chat functionality across all Tekton components
+ * Provides consistent single CI chat functionality across all Tekton components
  * Uses HTML injection pattern, CSS-first approach, no DOM manipulation
  */
 
@@ -13,9 +13,9 @@ window.SingleChat = {
     
     // Message buffers for async processing
     messageBuffers: {},  // keyed by component name
-    processingFlags: {},  // track if AI is busy per component
+    processingFlags: {},  // track if CI is busy per component
     
-    // Component configuration mapping - using -ci suffix for AI specialists (42xxx ports)
+    // Component configuration mapping - using -ci suffix for CI specialists (42xxx ports)
     config: {
         'terma': { aiName: 'terma-ci', displayName: 'Terma' },
         'budget': { aiName: 'penia-ci', displayName: 'Penia' },
@@ -34,7 +34,7 @@ window.SingleChat = {
         'synthesis': { aiName: 'synthesis-ci', displayName: 'Synthesis' },
         'engram': { aiName: 'engram-ci', displayName: 'Engram' },
         'codex': { aiName: 'codex-ci', displayName: 'Codex' },
-        'tekton': { aiName: 'tekton_core-ci', displayName: 'Tekton' } // tekton-core AI specialist
+        'tekton': { aiName: 'tekton_core-ci', displayName: 'Tekton' } // tekton-core CI specialist
     },
     
     /**
@@ -58,7 +58,7 @@ window.SingleChat = {
     },
     
     /**
-     * Send a message to the AI (async with buffering)
+     * Send a message to the CI (async with buffering)
      * @param {HTMLElement} containerEl - The chat messages container
      * @param {string} message - The message to send
      * @param {object} metadata - Optional metadata (e.g., escalation info)
@@ -120,19 +120,19 @@ window.SingleChat = {
                 }
                 
                 if (outputMode === 'ai') {
-                    // Send to AI immediately (output not shown to user)
+                    // Send to CI immediately (output not shown to user)
                     immediateAiMessage += `Command output:\n${result.output}\n\n`;
                 } else if (outputMode === 'both') {
-                    // Send to AI immediately WITH current message (output shown to user AND sent to AI)
+                    // Send to CI immediately WITH current message (output shown to user AND sent to AI)
                     immediateAiMessage += `Command output:\n${result.output}\n\n`;
                 }
             }
             
-            // Handle immediate AI message (for 'ai' and 'both' modes)
+            // Handle immediate CI message (for 'ai' and 'both' modes)
             if (immediateAiMessage) {
                 message = processed.message ? `${processed.message}\n\n${immediateAiMessage}` : immediateAiMessage;
             } else if (!processed.message || !processed.message.trim()) {
-                // No message and no immediate AI output, we're done
+                // No message and no immediate CI output, we're done
                 return;
             } else {
                 // Continue with the remaining message
@@ -254,7 +254,7 @@ window.SingleChat = {
                     window.AIChat.hideProcessingMessage(containerEl);
                 }
                 
-                // Add AI response with markdown rendering
+                // Add CI response with markdown rendering
                 const responseText = response.content || response;
                 let renderedContent;
                 

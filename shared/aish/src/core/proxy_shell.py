@@ -4,7 +4,7 @@ aish Transparent Proxy Shell
 The "inner-brain" enhancement that makes terminals smarter without changing the interface.
 
 Philosophy: Enhance don't change. Like middleware that sits invisibly between
-user and system, intercepting only when AI assistance is needed.
+user and system, intercepting only when CI assistance is needed.
 """
 
 import os
@@ -30,16 +30,16 @@ from shared.urls import tekton_url
 
 class TransparentAishProxy:
     """
-    Transparent shell proxy that enhances terminal with AI capabilities.
+    Transparent shell proxy that enhances terminal with CI capabilities.
     
     Acts as middleware between user and base shell:
-    - Intercepts AI pipeline commands (echo "test" | apollo)
+    - Intercepts CI pipeline commands (echo "test" | apollo)
     - Passes through everything else transparently (ls, git, npm, etc.)
     - Maintains full shell compatibility and TTY behavior
     """
     
     def __init__(self, rhetor_endpoint=None, debug=False, base_shell=None):
-        # Initialize AI components
+        # Initialize CI components
         if rhetor_endpoint:
             self.rhetor_endpoint = rhetor_endpoint
         else:
@@ -62,7 +62,7 @@ class TransparentAishProxy:
             "last_exit_code": 0
         }
         
-        # AI detection patterns
+        # CI detection patterns
         self.ai_patterns = self._compile_ai_patterns()
         
         if self.debug:
@@ -70,13 +70,13 @@ class TransparentAishProxy:
             print(f"[aish-proxy] Rhetor endpoint: {self.rhetor_endpoint}")
     
     def _compile_ai_patterns(self) -> List[re.Pattern]:
-        """Compile regex patterns that indicate AI command intent."""
+        """Compile regex patterns that indicate CI command intent."""
         patterns = [
-            # Explicit AI commands
+            # Explicit CI commands
             r"^ai:",
             r"^@ai\b",
             
-            # AI pipeline patterns (ai_name in pipe)
+            # CI pipeline patterns (ai_name in pipe)
             r"\|\s*(apollo|athena|rhetor|sophia|hermes|prometheus|telos|ergon|engram|numa|noesis)\b",
             r"\b(apollo|athena|rhetor|sophia|hermes|prometheus|telos|ergon|engram|numa|noesis)\s*\|",
             
@@ -90,7 +90,7 @@ class TransparentAishProxy:
             r"(please|could you|can you)\b.*\?",
             r"\?\s*$",  # Questions ending with ?
             
-            # Echo to AI pattern
+            # Echo to CI pattern
             r"echo\s+[\"'].*[\"']\s*\|\s*(apollo|athena|rhetor|sophia|hermes|prometheus|telos|ergon|engram|numa|noesis)"
         ]
         
@@ -98,9 +98,9 @@ class TransparentAishProxy:
     
     def should_intercept(self, command: str) -> bool:
         """
-        Determine if command should be handled by AI system or passed to shell.
+        Determine if command should be handled by CI system or passed to shell.
         
-        Returns True for AI commands, False for normal shell commands.
+        Returns True for CI commands, False for normal shell commands.
         """
         command = command.strip()
         
@@ -108,11 +108,11 @@ class TransparentAishProxy:
         if not command:
             return False
         
-        # Check against AI patterns
+        # Check against CI patterns
         for pattern in self.ai_patterns:
             if pattern.search(command):
                 if self.debug:
-                    print(f"[aish-proxy] AI pattern matched: {pattern.pattern}")
+                    print(f"[aish-proxy] CI pattern matched: {pattern.pattern}")
                 return True
         
         # Check for complex natural language (heuristic)
@@ -167,18 +167,18 @@ class TransparentAishProxy:
             return 1
     
     def execute_ai_command(self, command: str) -> int:
-        """Execute command through AI pipeline system."""
+        """Execute command through CI pipeline system."""
         try:
             if self.debug:
-                print(f"[aish-proxy] Processing AI command: {command}")
+                print(f"[aish-proxy] Processing CI command: {command}")
             
-            # Strip AI prefixes if present
+            # Strip CI prefixes if present
             if command.startswith("ai:"):
                 command = command[3:].strip()
             elif command.startswith("@ai"):
                 command = command[3:].strip()
             
-            # Parse and execute AI pipeline
+            # Parse and execute CI pipeline
             pipeline = self.parser.parse(command)
             
             if self.debug:
@@ -187,7 +187,7 @@ class TransparentAishProxy:
             # Execute pipeline and track responses
             result, responses = self._execute_ai_pipeline_with_tracking(pipeline)
             
-            # Add to AI history if we got responses
+            # Add to CI history if we got responses
             if responses:
                 self.ai_history.add_command(command, responses)
             
@@ -198,11 +198,11 @@ class TransparentAishProxy:
             return 0
             
         except Exception as e:
-            print(f"aish: AI command error: {e}", file=sys.stderr)
+            print(f"aish: CI command error: {e}", file=sys.stderr)
             return 1
     
     def _execute_ai_pipeline_with_tracking(self, pipeline):
-        """Execute AI pipeline and track responses (reuse existing logic)."""
+        """Execute CI pipeline and track responses (reuse existing logic)."""
         pipeline_type = pipeline.get('type')
         responses = {}
         
@@ -220,11 +220,11 @@ class TransparentAishProxy:
             return result, responses
             
         elif pipeline_type == 'simple':
-            result = f"Simple AI command: {pipeline['command']}"
+            result = f"Simple CI command: {pipeline['command']}"
             return result, {}
             
         else:
-            return f"Unsupported AI pipeline type: {pipeline_type}", {}
+            return f"Unsupported CI pipeline type: {pipeline_type}", {}
     
     def _execute_team_chat(self, message):
         """Execute team-chat broadcast."""
@@ -283,7 +283,7 @@ class TransparentAishProxy:
         Main command processing logic.
         
         The heart of the transparent proxy - decides whether to route
-        to AI system or pass through to shell.
+        to CI system or pass through to shell.
         """
         # Handle built-in commands first
         builtin_result = self.handle_builtin_commands(command)
@@ -344,7 +344,7 @@ aish Transparent Proxy - AI-Enhanced Shell
 
 The proxy automatically detects and routes commands:
 
-AI Commands (routed to Tekton AI system):
+AI Commands (routed to Tekton CI system):
   echo "analyze this code" | apollo
   team-chat "what should we optimize?"
   show me the git log
@@ -358,7 +358,7 @@ Shell Commands (passed through transparently):
 
 Built-in Commands:
   aish-help     - Show this help
-  aish-status   - Show AI system status
+  aish-status   - Show CI system status
   exit          - Exit aish proxy
 
 The proxy enhances your terminal without changing normal shell behavior.
@@ -366,14 +366,14 @@ All standard commands, pipes, redirections work exactly as before.
 """)
     
     def _show_status(self):
-        """Show status of AI system connection."""
+        """Show status of CI system connection."""
         print("aish Proxy Status:")
         print(f"  Base shell: {self.base_shell}")
         print(f"  Rhetor endpoint: {self.rhetor_endpoint}")
         print(f"  Working directory: {self.context['pwd']}")
         print(f"  Last exit code: {self.context['last_exit_code']}")
         
-        # Test AI connection
+        # Test CI connection
         try:
             # Discovery not supported in MessageHandler, using hardcoded list
             ai_names = ['engram', 'hermes', 'ergon', 'rhetor', 'terma', 'athena',
@@ -381,11 +381,11 @@ All standard commands, pipes, redirections work exactly as before.
                         'metis', 'apollo', 'penia', 'sophia', 'noesis', 'numa', 'hephaestus']
             ais = {name: {'id': name} for name in ai_names}
             if ais:
-                print(f"  AI specialists: {len(ais)} available")
+                print(f"  CI specialists: {len(ais)} available")
             else:
-                print("  AI specialists: None (check Rhetor connection)")
+                print("  CI specialists: None (check Rhetor connection)")
         except Exception as e:
-            print(f"  AI specialists: Connection error - {e}")
+            print(f"  CI specialists: Connection error - {e}")
 
 
 def main():

@@ -21,5 +21,5 @@ chmod +x ~/utils/tekton
 
 echo "Symlinks created successfully."
 echo "You can now run the following commands (if ~/utils is in your PATH):"
-echo "  - tekton_client - Launch individual AI clients with Tekton integration"
+echo "  - tekton_client - Launch individual CI clients with Tekton integration"
 echo "  - tekton - Unified Tekton suite launcher to start/stop all components"

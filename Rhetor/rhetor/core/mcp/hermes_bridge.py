@@ -71,7 +71,7 @@ class RhetorMCPBridge(MCPService):
         info_tool = ComponentInfoTool(
             component_name=self.component_name,
             component_version="0.2.0",
-            component_description="Central LLM management system providing unified AI model access"
+            component_description="Central LLM management system providing unified CI model access"
         )
         await self.register_tool_with_hermes(info_tool)
         

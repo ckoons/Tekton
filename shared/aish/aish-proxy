@@ -2,7 +2,7 @@
 """
 aish-proxy - AI-enhanced shell using safe shell hooks
 
-This provides AI capabilities through shell functions/aliases
+This provides CI capabilities through shell functions/aliases
 without any dangerous terminal manipulation.
 
 Usage:
@@ -475,7 +475,7 @@ def start_heartbeat_daemon():
 
 
 def create_shell_init(shell_name, aish_dir, rhetor_endpoint=None, debug=False):
-    """Create shell initialization for AI commands."""
+    """Create shell initialization for CI commands."""
     rhetor = rhetor_endpoint or "http://localhost:8003"
     
     # Base functions that work in both bash and zsh
@@ -488,7 +488,7 @@ export RHETOR_ENDPOINT="{rhetor}"
 # Ensure aish command is in PATH
 export PATH="{aish_dir}:$PATH"
 
-# That's it! The 'aish' command will handle all AI routing
+# That's it! The 'aish' command will handle all CI routing
 # Usage:
 #   aish apollo "query"
 #   echo "data" | aish athena
@@ -530,7 +530,7 @@ def main():
     
     parser = argparse.ArgumentParser(
         description='aish-proxy - Safe AI-enhanced shell',
-        epilog='Provides AI capabilities through shell functions'
+        epilog='Provides CI capabilities through shell functions'
     )
     
     parser.add_argument(

@@ -31,7 +31,7 @@ extras_require = {
 setup(
     name="engram",
     version=version,
-    description="Persistent Memory Traces for AI Assistants",
+    description="Persistent Memory Traces for CI Assistants",
     long_description=long_description,
     long_description_content_type="text/markdown",
     author="Casey Koons",

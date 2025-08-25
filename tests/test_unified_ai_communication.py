@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Test suite for unified AI communication system.
+Test suite for unified CI communication system.
 Tests the "one queue, one socket, one AI" architecture.
 """
 
@@ -48,16 +48,16 @@ def test_sync_direct_message():
     """Test synchronous direct message to a single AI"""
     test_name = "test_sync_direct_message"
     try:
-        # Test with apollo AI 
+        # Test with apollo CI 
         response = ai_send_sync("apollo-ci", "test message", "localhost", 45012)
         if response and len(response) > 0:
             results.add_pass(test_name)
         else:
             results.add_fail(test_name, "Empty response")
     except Exception as e:
-        # May fail if AI not running - that's ok
+        # May fail if CI not running - that's ok
         if "Could not connect" in str(e):
-            results.add_pass(test_name)  # Expected if AI not running
+            results.add_pass(test_name)  # Expected if CI not running
         else:
             results.add_fail(test_name, str(e))
 
@@ -72,9 +72,9 @@ async def test_async_direct_message():
         else:
             results.add_fail(test_name, "Empty response")
     except Exception as e:
-        # May fail if AI not running - that's ok
+        # May fail if CI not running - that's ok
         if "Could not connect" in str(e):
-            results.add_pass(test_name)  # Expected if AI not running
+            results.add_pass(test_name)  # Expected if CI not running
         else:
             results.add_fail(test_name, str(e))
 
@@ -159,7 +159,7 @@ def test_one_socket_per_ai():
         if "apollo-ci" not in service.sockets:
             service.register_ai("apollo-ci", None, None)
         
-        # Send multiple messages to same AI (will fail but that's ok for test)
+        # Send multiple messages to same CI (will fail but that's ok for test)
         for i in range(3):
             try:
                 ai_send_sync("apollo-ci", f"test {i}", "localhost", 45012)
@@ -248,7 +248,7 @@ async def test_response_collection():
 async def run_all_tests():
     """Run all tests"""
     print("="*60)
-    print("Unified AI Communication Test Suite")
+    print("Unified CI Communication Test Suite")
     print("Testing: One Queue, One Socket, One AI")
     print("="*60)
     print()
@@ -335,7 +335,7 @@ def list_tests():
 if __name__ == "__main__":
     import argparse
     
-    parser = argparse.ArgumentParser(description='Test unified AI communication')
+    parser = argparse.ArgumentParser(description='Test unified CI communication')
     parser.add_argument('test', nargs='?', help='Specific test to run (omit for all tests)')
     parser.add_argument('--list', '-l', action='store_true', help='List available tests')
     

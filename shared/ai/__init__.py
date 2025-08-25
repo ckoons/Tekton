@@ -1,8 +1,8 @@
 """
-Shared AI libraries for Tekton platform-wide AI integration.
+Shared CI libraries for Tekton platform-wide CI integration.
 
 This package provides:
-- simple_ai: Simple AI communication interface
+- simple_ai: Simple CI communication interface
 - CISpecialistWorker: Base class for CI specialists
 """
 

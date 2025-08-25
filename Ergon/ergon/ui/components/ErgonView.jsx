@@ -437,7 +437,7 @@ const ErgonView = () => {
                         </Typography>
                         
                         <Typography variant="body2" sx={{ mt: 1 }}>
-                          {agent.description || `${agent.name} is an AI assistant.`}
+                          {agent.description || `${agent.name} is an CI assistant.`}
                         </Typography>
                         
                         {agent.model_name && (
@@ -500,7 +500,7 @@ const ErgonView = () => {
                   rows={3}
                   value={newAgentForm.description}
                   onChange={(e) => setNewAgentForm({...newAgentForm, description: e.target.value})}
-                  placeholder="A helpful AI assistant"
+                  placeholder="A helpful CI assistant"
                 />
                 
                 <FormControl fullWidth>

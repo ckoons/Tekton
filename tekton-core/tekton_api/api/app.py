@@ -422,7 +422,7 @@ async def get_tekton_root():
 
 # Pydantic models for merge coordination
 class SubmitMergeRequest(BaseModel):
-    """Request to submit a new merge request for AI worker coordination."""
+    """Request to submit a new merge request for CI worker coordination."""
     project_id: str = Field(..., description="Project identifier")
     task_id: str = Field(..., description="Task identifier")
     ai_worker: str = Field(..., description="AI worker name submitting the merge")

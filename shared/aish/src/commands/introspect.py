@@ -70,7 +70,7 @@ Common Classes:
   AIShell       - Main shell interface
   MessageHandler - Message routing and forwarding
   TektonEnviron - Environment configuration
-  AIManager     - AI component management
+  AIManager     - CI component management
 
 CI Note: Use this liberally! Better to check than guess. If you notice
 patterns where you frequently need to check the same things, let us know

@@ -1,5 +1,5 @@
 """
-Main entry point for Hermes AI specialist when run as module.
+Main entry point for Hermes CI specialist when run as module.
 """
 import os
 import sys

@@ -1,5 +1,5 @@
 """
-Dynamics analysis for collective AI systems
+Dynamics analysis for collective CI systems
 Implements SLDS (Switching Linear Dynamical Systems) for regime identification
 """
 
@@ -61,7 +61,7 @@ class RegimeIdentification:
 
 class DynamicsAnalyzer(MathematicalFramework):
     """
-    Analyzes dynamical properties of collective AI systems
+    Analyzes dynamical properties of collective CI systems
     Uses SLDS to model regime switches and transitions
     """
     
@@ -81,7 +81,7 @@ class DynamicsAnalyzer(MathematicalFramework):
     
     async def analyze(self, data: np.ndarray, **kwargs) -> AnalysisResult:
         """
-        Analyze dynamics of collective AI system
+        Analyze dynamics of collective CI system
         
         Args:
             data: Time series data (n_timesteps, n_features)

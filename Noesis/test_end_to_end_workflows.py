@@ -60,10 +60,10 @@ class TestCompleteWorkflows:
     
     @pytest.fixture
     def collective_ai_data(self):
-        """Generate realistic collective AI data for testing"""
+        """Generate realistic collective CI data for testing"""
         np.random.seed(42)  # For reproducible tests
         
-        # Simulate collective AI system with:
+        # Simulate collective CI system with:
         # - 100 agents
         # - 5 features per agent (action, state, reward, communication, coordination)
         # - 300 time steps
@@ -108,8 +108,8 @@ class TestCompleteWorkflows:
     async def test_discovery_to_validation_workflow(self, noesis_component, sophia_bridge, collective_ai_data):
         """Test complete workflow from discovery of patterns to experimental validation"""
         
-        # Step 1: Analyze collective AI data to discover patterns
-        print("Step 1: Discovering patterns in collective AI data...")
+        # Step 1: Analyze collective CI data to discover patterns
+        print("Step 1: Discovering patterns in collective CI data...")
         
         # Mock manifold analysis discovering dimensional structure
         manifold_result = Mock()
@@ -426,8 +426,8 @@ class TestCompleteWorkflows:
     async def test_multi_scale_synthesis_to_scaling_experiments(self, noesis_component, sophia_bridge):
         """Test multi-scale analysis leading to scaling law experiments"""
         
-        # Step 1: Generate multi-scale collective AI data
-        print("Step 1: Generating multi-scale collective AI data...")
+        # Step 1: Generate multi-scale collective CI data
+        print("Step 1: Generating multi-scale collective CI data...")
         
         scales = {
             "nano_scale": {"n_agents": 12, "expected_dim": 3},    # Known critical point

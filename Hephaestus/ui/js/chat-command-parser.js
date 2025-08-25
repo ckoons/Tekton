@@ -54,7 +54,7 @@ window.ChatCommandParser = {
             outputMode = 'both';
             cmdString = cmdString.slice(0, -3).trim();
         } else if (cmdString.endsWith(' >')) {
-            // Execute and send to AI only
+            // Execute and send to CI only
             outputMode = 'ai';
             cmdString = cmdString.slice(0, -2).trim();
         }

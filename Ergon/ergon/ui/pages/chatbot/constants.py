@@ -55,7 +55,7 @@ custom_styles = """
 
 # Default welcome message for first-time users
 welcome_message = """
-👋 Welcome to Nexus! I'm your AI assistant for working with memory-enabled agents.
+👋 Welcome to Nexus! I'm your CI assistant for working with memory-enabled agents.
 
 You can start immediately by:
 - Just ask me about any task (e.g., "I need a mail agent" or "Help me browse the web")

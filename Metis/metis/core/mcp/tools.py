@@ -551,7 +551,7 @@ telos_integration_tools = []
 
 # MCP-enabled task manager class
 class MetisTaskManager:
-    """MCP-enabled task manager with AI capabilities."""
+    """MCP-enabled task manager with CI capabilities."""
     
     def __init__(self):
         self.task_manager = get_task_manager()

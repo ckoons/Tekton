@@ -87,7 +87,7 @@ async def websocket_example():
         messages = [
             {"role": "system", "content": "You are a helpful assistant."},
             {"role": "user", "content": "Hello! Who are you?"},
-            {"role": "assistant", "content": "I'm an AI assistant. How can I help you today?"},
+            {"role": "assistant", "content": "I'm an CI assistant. How can I help you today?"},
             {"role": "user", "content": "What's your favorite programming language?"}
         ]
         

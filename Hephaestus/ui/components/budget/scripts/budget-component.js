@@ -1294,10 +1294,10 @@ window.budgetComponent = (function() {
             stateManager.setLoading('chat', true);
             
             try {
-                // Send message to Penia AI via AIChat
+                // Send message to Penia CI via AIChat
                 if (window.AIChat) {
                     const response = await window.AIChat.sendMessage('penia', message);
-                    // Add AI response to chat
+                    // Add CI response to chat
                     stateManager.addAiChatMessage(response.content || 'No response received', chatType);
                 } else {
                     // AIChat not available

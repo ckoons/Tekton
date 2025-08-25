@@ -1,7 +1,7 @@
 """
 Research API endpoints for Sophia.
 
-This module defines the API endpoints for AI research capabilities in Sophia.
+This module defines the API endpoints for CI research capabilities in Sophia.
 """
 
 from typing import Dict, List, Any, Optional

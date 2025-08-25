@@ -2,7 +2,7 @@
 """
 AI Discovery Tool for Tekton Platform - Enhanced Version
 
-A comprehensive tool for discovering, monitoring, and managing AI specialists.
+A comprehensive tool for discovering, monitoring, and managing CI specialists.
 Features real-time status, performance metrics, and streaming capabilities.
 """
 import argparse
@@ -49,10 +49,10 @@ except ImportError:
 
 
 async def list_ais(args):
-    """List available AI specialists with enhanced information."""
+    """List available CI specialists with enhanced information."""
     config = get_component_config()
     
-    # Known AI components
+    # Known CI components
     ai_components = ['engram', 'hermes', 'ergon', 'rhetor', 'terma', 'athena',
                     'prometheus', 'harmonia', 'telos', 'synthesis', 'tekton_core',
                     'metis', 'apollo', 'penia', 'sophia', 'noesis', 'numa', 'hephaestus']
@@ -66,7 +66,7 @@ async def list_ais(args):
         ai_port = get_ai_port(component_port)
         ai_id = f"{component}-ci"
         
-        # Check if AI is running by trying to connect
+        # Check if CI is running by trying to connect
         try:
             reader, writer = await asyncio.wait_for(
                 asyncio.open_connection('localhost', ai_port),
@@ -106,7 +106,7 @@ async def list_ais(args):
             specialists.append(specialist)
             
         except Exception:
-            # AI not running or not responding
+            # CI not running or not responding
             if not args.status or args.status in ['unresponsive', 'unknown']:
                 specialists.append({
                     'id': ai_id,
@@ -169,7 +169,7 @@ async def list_ais(args):
     else:
         # Simple text output
         print(f"\n{'='*80}")
-        print(f"Available AI Specialists ({len(specialists)} found)")
+        print(f"Available CI Specialists ({len(specialists)} found)")
         print(f"{'='*80}\n")
         
         for spec in specialists:
@@ -187,7 +187,7 @@ async def list_ais(args):
 
 
 async def watch_ais(args):
-    """Watch AI status in real-time."""
+    """Watch CI status in real-time."""
     if not HAS_RICH:
         print("Error: 'rich' library required for watch mode. Install with: pip install rich")
         return
@@ -212,7 +212,7 @@ async def watch_ais(args):
                 ai_port = get_ai_port(component_port)
                 ai_id = f"{component}-ci"
                 
-                # Check if AI is running
+                # Check if CI is running
                 try:
                     reader, writer = await asyncio.wait_for(
                         asyncio.open_connection('localhost', ai_port),
@@ -311,7 +311,7 @@ async def watch_ais(args):
 
 
 async def test_ai(args):
-    """Test AI connections with detailed diagnostics."""
+    """Test CI connections with detailed diagnostics."""
     config = get_component_config()
     
     if args.ai_id:
@@ -584,7 +584,7 @@ async def test_streaming(args):
         
         print(response.get('content', 'No response'))
         print("-" * 60)
-        print(f"\nNote: Simple AI personalities don't support streaming")
+        print(f"\nNote: Simple CI personalities don't support streaming")
         
     except Exception as e:
         print(f"Error: {e}")
@@ -592,7 +592,7 @@ async def test_streaming(args):
 
 
 async def benchmark_ais(args):
-    """Benchmark AI response times and performance."""
+    """Benchmark CI response times and performance."""
     config = get_component_config()
     
     # Get AIs to benchmark
@@ -611,7 +611,7 @@ async def benchmark_ais(args):
                     'model': 'personality'
                 })
             else:
-                print(f"Warning: AI '{ai_id}' not found")
+                print(f"Warning: CI '{ai_id}' not found")
     else:
         # Benchmark all healthy AIs
         ai_components = ['engram', 'hermes', 'ergon', 'rhetor', 'terma', 'athena',
@@ -790,7 +790,7 @@ async def route_test(args):
 
 
 async def stats(args):
-    """Display AI statistics."""
+    """Display CI statistics."""
     config = get_component_config()
     ai_components = ['engram', 'hermes', 'ergon', 'rhetor', 'terma', 'athena',
                     'prometheus', 'harmonia', 'telos', 'synthesis', 'tekton_core',
@@ -845,13 +845,13 @@ async def stats(args):
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Enhanced AI Discovery Tool for Tekton Platform",
+        description="Enhanced CI Discovery Tool for Tekton Platform",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
   %(prog)s list                               # List all AIs
   %(prog)s list --role planning --status healthy   # Filter AIs
-  %(prog)s watch                              # Watch AI status in real-time
+  %(prog)s watch                              # Watch CI status in real-time
   %(prog)s test apollo-ci                     # Test specific AI
   %(prog)s stream apollo-ci "Tell me a story" # Test streaming
   %(prog)s benchmark --iterations 10         # Benchmark all AIs
@@ -880,11 +880,11 @@ Examples:
     list_parser.set_defaults(func=list_ais)
     
     # Watch command
-    watch_parser = subparsers.add_parser('watch', help='Watch AI status in real-time')
+    watch_parser = subparsers.add_parser('watch', help='Watch CI status in real-time')
     watch_parser.set_defaults(func=watch_ais)
     
     # Test command
-    test_parser = subparsers.add_parser('test', help='Test AI connections')
+    test_parser = subparsers.add_parser('test', help='Test CI connections')
     test_parser.add_argument('ai_id', nargs='?', help='AI to test (all if omitted)')
     test_parser.set_defaults(func=test_ai)
     
@@ -899,7 +899,7 @@ Examples:
     stream_parser.set_defaults(func=test_streaming)
     
     # Benchmark command
-    bench_parser = subparsers.add_parser('benchmark', help='Benchmark AI performance')
+    bench_parser = subparsers.add_parser('benchmark', help='Benchmark CI performance')
     bench_parser.add_argument('ai_ids', nargs='*', help='AIs to benchmark (all if omitted)')
     bench_parser.add_argument('--iterations', type=int, default=5,
                             help='Number of iterations per test')
@@ -919,12 +919,12 @@ Examples:
     stats_parser.set_defaults(func=stats)
     
     # Legacy commands for compatibility
-    info_parser = subparsers.add_parser('info', help='Get AI information (use list --json)')
+    info_parser = subparsers.add_parser('info', help='Get CI information (use list --json)')
     info_parser.add_argument('ai_id', help='AI identifier')
-    schema_parser = subparsers.add_parser('schema', help='Get AI schema (deprecated)')
+    schema_parser = subparsers.add_parser('schema', help='Get CI schema (deprecated)')
     schema_parser.add_argument('ai_id', help='AI identifier')
     manifest_parser = subparsers.add_parser('manifest', help='Get platform manifest (use stats)')
-    best_parser = subparsers.add_parser('best', help='Find best AI (use route)')
+    best_parser = subparsers.add_parser('best', help='Find best CI (use route)')
     best_parser.add_argument('role', help='Required role')
     
     args = parser.parse_args()
@@ -939,7 +939,7 @@ Examples:
         args.min_success_rate = 0.0
         args.func = list_ais
     elif args.command == 'schema':
-        print("Note: 'schema' is deprecated. AI interaction is standardized.")
+        print("Note: 'schema' is deprecated. CI interaction is standardized.")
         return
     elif args.command == 'manifest':
         print("Note: 'manifest' is deprecated. Use 'stats' instead.")

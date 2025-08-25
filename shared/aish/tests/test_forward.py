@@ -8,7 +8,7 @@ import time
 
 
 class TestForwardSetup(AishTest):
-    """Test setting up AI forwarding"""
+    """Test setting up CI forwarding"""
     
     def __init__(self):
         super().__init__("test_forward_setup", "Test basic forward setup")

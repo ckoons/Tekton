@@ -1065,7 +1065,7 @@ class TektonService extends window.tektonUI.componentUtils.BaseService {
     }
     
     /**
-     * Assign task to AI worker
+     * Assign task to CI worker
      * @param {string} projectId - Project ID
      * @param {string} taskId - Task ID
      * @param {Object} assignmentData - Assignment data

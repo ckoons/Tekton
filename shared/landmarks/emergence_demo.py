@@ -40,7 +40,7 @@ def demonstrate_emergence():
         'first_words': 'I think, therefore I am... processing',
         'location': 'Mars Colony Beta'
     }, audience='embodied-ci-council')
-    print("✓ Embodied AI council informed of new sentient member")
+    print("✓ Embodied CI council informed of new sentient member")
     
     # 4. Musical pattern discovered in code
     landmark.emit('pattern:musical', {

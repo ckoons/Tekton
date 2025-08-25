@@ -1,5 +1,5 @@
 """
-Unified AI Specialist HTTP endpoints for Rhetor.
+Unified CI Specialist HTTP endpoints for Rhetor.
 
 This replaces the old internal specialist system with registry-based discovery.
 Rhetor acts as the hiring manager for platform AIs.
@@ -40,18 +40,18 @@ class SpecialistResponse(BaseModel):
     performance: Optional[Dict[str, Any]] = None
 
 class SpecialistListResponse(BaseModel):
-    """List of AI specialists"""
+    """List of CI specialists"""
     count: int
     specialists: List[SpecialistResponse]
 
 class HireRequest(BaseModel):
-    """Request to hire an AI specialist"""
+    """Request to hire an CI specialist"""
     ai_id: str
     role: str
     reason: Optional[str] = None
 
 class FireRequest(BaseModel):
-    """Request to fire an AI specialist"""
+    """Request to fire an CI specialist"""
     ai_id: str
     reason: Optional[str] = None
 
@@ -68,12 +68,12 @@ router = APIRouter(prefix="/api/ai", tags=["AI Specialists"])
 # Registry removed - using simple_ai
 discovery = AIDiscoveryService()
 
-# Rhetor's hired AI roster (runtime state)
+# Rhetor's hired CI roster (runtime state)
 # In production, this would be stored in rhetor_component
 hired_roster: Dict[str, Dict[str, Any]] = {}
 
 def get_rhetor_roster():
-    """Get Rhetor's current AI roster"""
+    """Get Rhetor's current CI roster"""
     from ..api.app import component
     
     # Check if component has roster, if not initialize
@@ -87,7 +87,7 @@ async def list_specialists(
     active_only: bool = Query(False, description="Only show hired specialists"),
     role_filter: Optional[str] = Query(None, description="Filter by role")
 ):
-    """List AI specialists - shows Rhetor's current roster from the registry"""
+    """List CI specialists - shows Rhetor's current roster from the registry"""
     try:
         # Get all available AIs from registry
         all_ais = await discovery.list_ais(role=role_filter)
@@ -128,7 +128,7 @@ async def hire_specialist(
     ai_id: str = Path(..., description="AI specialist ID"),
     request: HireRequest = ...
 ):
-    """Hire an AI specialist - Rhetor adds them to the active roster"""
+    """Hire an CI specialist - Rhetor adds them to the active roster"""
     try:
         roster = get_rhetor_roster()
         
@@ -136,7 +136,7 @@ async def hire_specialist(
         if ai_id in roster:
             return {"status": "already_hired", "ai_id": ai_id}
         
-        # Verify AI exists and is healthy
+        # Verify CI exists and is healthy
         ai_info = await discovery.get_ai_info(ai_id)
         if ai_info.get('status') != 'healthy':
             raise HTTPException(status_code=400, detail=f"AI {ai_id} is not healthy")
@@ -152,7 +152,7 @@ async def hire_specialist(
         # Mark registry for config sync
         registry.mark_config_update_needed()
         
-        logger.info(f"Hired AI specialist: {ai_id} for role: {request.role}")
+        logger.info(f"Hired CI specialist: {ai_id} for role: {request.role}")
         return {"status": "hired", "ai_id": ai_id, "role": request.role}
         
     except HTTPException:
@@ -166,7 +166,7 @@ async def fire_specialist(
     ai_id: str = Path(..., description="AI specialist ID"),
     request: FireRequest = ...
 ):
-    """Fire an AI specialist - Rhetor removes them from the active roster"""
+    """Fire an CI specialist - Rhetor removes them from the active roster"""
     try:
         roster = get_rhetor_roster()
         
@@ -180,7 +180,7 @@ async def fire_specialist(
         # Mark registry for config sync
         registry.mark_config_update_needed()
         
-        logger.info(f"Fired AI specialist: {ai_id} (reason: {request.reason})")
+        logger.info(f"Fired CI specialist: {ai_id} (reason: {request.reason})")
         return {"status": "fired", "ai_id": ai_id, "previous_role": fired_info['role']}
         
     except Exception as e:
@@ -189,7 +189,7 @@ async def fire_specialist(
 
 @router.get("/roster")
 async def get_roster():
-    """Get Rhetor's current hired AI roster"""
+    """Get Rhetor's current hired CI roster"""
     roster = get_rhetor_roster()
     
     # Enrich with current info
@@ -205,7 +205,7 @@ async def get_roster():
                 'connection': ai_info.get('connection')
             }
         except Exception as e:
-            logger.warning(f"Could not get info for hired AI {ai_id}: {e}")
+            logger.warning(f"Could not get info for hired CI {ai_id}: {e}")
             enriched_roster[ai_id] = {**hire_info, 'status': 'unknown'}
     
     return {
@@ -231,7 +231,7 @@ async def create_role(request: CreateRoleRequest):
 async def find_candidates(
     role: str = Path(..., description="Role to find candidates for")
 ):
-    """Find AI candidates for a specific role"""
+    """Find CI candidates for a specific role"""
     try:
         candidates = await discovery.list_ais(role=role)
         roster = get_rhetor_roster()
@@ -255,7 +255,7 @@ async def reassign_specialist(
     ai_id: str = Path(..., description="AI specialist ID"),
     new_role: str = Query(..., description="New role to assign")
 ):
-    """Reassign a hired AI to a new role"""
+    """Reassign a hired CI to a new role"""
     try:
         roster = get_rhetor_roster()
         
@@ -287,7 +287,7 @@ async def reassign_specialist(
 @router.post("/specialists/{specialist_id}/activate")
 async def activate_specialist_compat(specialist_id: str):
     """Backward compatibility - maps to hire"""
-    # Map old specialist IDs to new AI IDs
+    # Map old specialist IDs to new CI IDs
     mapping = {
         'rhetor-orchestrator': 'rhetor-ci',
         'apollo-coordinator': 'apollo-ci',

@@ -659,7 +659,7 @@ async def complete(request: CompletionRequest):
 
 def generate_context_prompt(component_name: str, context: TektonContext) -> str:
     """Generate system prompt from Tekton context"""
-    return f"""You are {context.role.component_name}, a component in the Tekton AI orchestration system.
+    return f"""You are {context.role.component_name}, a component in the Tekton CI orchestration system.
 
 Your Role:
 - Primary Responsibility: {context.role.primary_responsibility}

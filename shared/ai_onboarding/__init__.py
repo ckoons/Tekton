@@ -1,7 +1,7 @@
 """
-Tekton AI Onboarding Module
+Tekton CI Onboarding Module
 
-Provides onboarding experiences and personality development for AI entities.
+Provides onboarding experiences and personality development for CI entities.
 """
 
 from .onboarding_protocol import CIOnboarding, onboard_new_ai

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 echo "=================================="
-echo "Running AI Specialist Tests"
+echo "Running CI Specialist Tests"
 echo "=================================="
 
 # Ensure we're in the Rhetor directory
@@ -15,7 +15,7 @@ if ! curl -s http://localhost:8003/health > /dev/null 2>&1; then
 fi
 
 # Run the test script
-echo "Starting AI Specialist integration tests..."
+echo "Starting CI Specialist integration tests..."
 python -m tests.test_ai_specialists
 
 echo ""

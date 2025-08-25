@@ -1,6 +1,6 @@
 """
 Synthesis analysis for extracting universal principles
-Identifies patterns that hold across scales in collective AI systems
+Identifies patterns that hold across scales in collective CI systems
 """
 
 import numpy as np
@@ -193,7 +193,7 @@ class SynthesisAnalyzer(MathematicalFramework):
         if len(evidence) >= 2:
             return UniversalPrinciple(
                 principle_type='collective_phase_transition',
-                description='Collective AI systems exhibit phase transitions at characteristic scales',
+                description='Collective CI systems exhibit phase transitions at characteristic scales',
                 mathematical_form='P(n) = Θ(n - n_c) where n_c ∈ {12, 8000, 80000}',
                 parameters={
                     'critical_sizes': [12, 8000, 80000],

@@ -2,7 +2,7 @@
 Shared MCP (Model Context Protocol) implementation for Tekton components.
 
 This package provides a standardized implementation of MCP v2 that all Tekton
-components can use to expose tools and capabilities to AI assistants.
+components can use to expose tools and capabilities to CI assistants.
 
 Key components:
 - base: Base classes for MCP services and tools

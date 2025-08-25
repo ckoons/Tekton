@@ -17,7 +17,7 @@ TEST_TIMEOUT = 30  # seconds
 
 # Test components - mix of different types
 TEST_COMPONENTS = [
-    "rhetor",     # AI component with complex initialization
+    "rhetor",     # CI component with complex initialization
     "athena",     # Development environment
     "metis",      # Memory system
     "settings",   # Settings panel

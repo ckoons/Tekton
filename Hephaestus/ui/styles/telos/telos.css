@@ -474,7 +474,7 @@
   display: none !important;
 }
 
-/* AI messages - Telos blue theme */
+/* CI messages - Telos blue theme */
 .telos__message--ai {
   background-color: var(--telos-primary-lighter);
   border-left: 3px solid var(--telos-primary);

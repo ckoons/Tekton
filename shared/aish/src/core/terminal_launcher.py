@@ -33,7 +33,7 @@ class TerminalConfig:
     working_dir: Optional[str] = None
     env: Dict[str, str] = field(default_factory=dict)
     shell_args: List[str] = field(default_factory=list)
-    purpose: Optional[str] = None  # AI context
+    purpose: Optional[str] = None  # CI context
     template: Optional[str] = None  # Template name
 
 
@@ -485,7 +485,7 @@ Examples:
     
     parser.add_argument(
         "--purpose", "-p",
-        help="Purpose/context for AI assistance"
+        help="Purpose/context for CI assistance"
     )
     
     parser.add_argument(

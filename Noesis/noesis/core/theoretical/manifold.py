@@ -1,5 +1,5 @@
 """
-Manifold analysis for collective AI cognition
+Manifold analysis for collective CI cognition
 Implements dimensional reduction and geometric structure identification
 """
 
@@ -60,7 +60,7 @@ class TrajectoryAnalysis:
 
 class ManifoldAnalyzer(MathematicalFramework):
     """
-    Analyzes the geometric structure of collective AI state spaces
+    Analyzes the geometric structure of collective CI state spaces
     Implements PCA-based manifold identification and trajectory analysis
     """
     

@@ -166,7 +166,7 @@ async def discovery_chat(request: DiscoveryChatRequest):
         if not noesis_component:
             raise HTTPException(status_code=503, detail="Noesis component not available")
         
-        # Check if AI is available
+        # Check if CI is available
         from shared.ai.simple_ai import ai_send
         
         # Create a discovery-focused prompt
@@ -179,7 +179,7 @@ async def discovery_chat(request: DiscoveryChatRequest):
         insights = []
         
         if ai_response and ai_response != "AI_NOT_RUNNING":
-            # Parse AI response for discoveries and insights
+            # Parse CI response for discoveries and insights
             discoveries = [ai_response]
             
             # Use theoretical framework for additional insights
@@ -196,10 +196,10 @@ async def discovery_chat(request: DiscoveryChatRequest):
                     
             mode = "ai_with_analysis"
         else:
-            # No fallback - require AI to be running
+            # No fallback - require CI to be running
             raise HTTPException(
                 status_code=503, 
-                detail="Noesis AI is not available. Please ensure the AI specialist is running on port 45015."
+                detail="Noesis CI is not available. Please ensure the CI specialist is running on port 45015."
             )
             
         response = DiscoveryChatResponse(
@@ -275,7 +275,7 @@ async def team_chat(request: TeamChatRequest):
                     noesis_response = f"Noesis discovery system analyzing: '{request.message}'"
                     
             except Exception as e:
-                logger.warning(f"Noesis AI response failed: {e}")
+                logger.warning(f"Noesis CI response failed: {e}")
                 noesis_response = f"Noesis acknowledging team message: '{request.message}'"
         else:
             noesis_response = f"Noesis system acknowledging: '{request.message}'"
@@ -300,7 +300,7 @@ async def team_chat(request: TeamChatRequest):
 async def get_status():
     """Get detailed status of Noesis"""
     try:
-        # Check AI availability
+        # Check CI availability
         from shared.ai.simple_ai import ai_send
         ai_response = await ai_send("noesis-ci", "health check", "localhost", 45015)
         ai_available = ai_response and ai_response != "AI_NOT_RUNNING"

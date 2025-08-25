@@ -10,7 +10,7 @@ console.log('[FILE_TRACE] Loading: ui-manager-core.js');
 class UIManagerCore {
     constructor() {
         this.components = {};
-        this.activeComponent = 'numa'; // Default to Numa - Platform AI Mentor
+        this.activeComponent = 'numa'; // Default to Numa - Platform CI Mentor
         this.activePanel = 'html'; // Default panel (html or settings) - terminal removed
         this.useShadowDOM = false; // Disabled Shadow DOM for direct HTML injection
 

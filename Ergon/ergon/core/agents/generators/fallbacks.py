@@ -39,7 +39,7 @@ def create_agent() -> Agent:
     Create and initialize the {name} agent.
     
     Returns:
-        Agent: Initialized Pydantic AI agent
+        Agent: Initialized Pydantic CI agent
     \"\"\"
     # Initialize model based on environment variable
     model_name = os.getenv("AGENT_MODEL", "{model_name}")
@@ -161,7 +161,7 @@ def generate_fallback_prompts_file(
     Returns:
         Fallback code as string
     """
-    system_prompt = f"""You are {name}, an AI assistant. {description}
+    system_prompt = f"""You are {name}, an CI assistant. {description}
 
 Your goal is to provide helpful, accurate, and friendly responses to user queries.
 

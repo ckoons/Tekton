@@ -30,7 +30,7 @@ console.log('[FILE_TRACE] Loading: rhetor-component.js');
       templateCount: 0,
       chatHistory: [],
       debugMode: false,
-      // AI Orchestration state
+      // CI Orchestration state
       specialists: [],
       sessions: [],
       orchestrationMode: 'active',
@@ -49,7 +49,7 @@ console.log('[FILE_TRACE] Loading: rhetor-component.js');
       statusIndicator: null,
       statusText: null,
       loadingIndicator: null,
-      // AI Orchestration elements
+      // CI Orchestration elements
       specialistsGrid: null,
       sessionsList: null,
       orchestrationForm: null,
@@ -146,7 +146,7 @@ console.log('[FILE_TRACE] Loading: rhetor-component.js');
         this.elements.sendButton = container.querySelector('#send-button');
         this.elements.statusIndicator = container.querySelector('.rhetor__status-indicator');
         this.elements.statusText = container.querySelector('.rhetor__status-text');
-        // AI Orchestration elements
+        // CI Orchestration elements
         this.elements.specialistsGrid = container.querySelector('#specialists-grid');
         this.elements.sessionsList = container.querySelector('#sessions-list');
         this.elements.orchestrationForm = container.querySelector('#orchestration-panel');
@@ -517,7 +517,7 @@ console.log('[FILE_TRACE] Loading: rhetor-component.js');
       console.log('[RHETOR] processLLMChatMessage called with:', message);
       this.info('processLLMChatMessage', 'Processing LLM chat message', { message });
       
-      // Update AI ready status
+      // Update CI ready status
       const llmchatPanel = document.querySelector('[data-tekton-chat="rhetor-llm"]');
       if (llmchatPanel) {
         llmchatPanel.setAttribute('data-tekton-ai-ready', 'true');
@@ -590,7 +590,7 @@ console.log('[FILE_TRACE] Loading: rhetor-component.js');
           typingIndicator.parentNode.removeChild(typingIndicator);
         }
         
-        // Add AI response
+        // Add CI response
         const aiMessage = document.createElement('div');
         aiMessage.className = 'rhetor__message rhetor__message--ai';
         aiMessage.innerHTML = `
@@ -626,7 +626,7 @@ console.log('[FILE_TRACE] Loading: rhetor-component.js');
         errorMessage.innerHTML = `
           <div class="rhetor__message-content">
             <div class="rhetor__message-text" style="color: #ff6b6b;">
-              Failed to connect to AI specialist. Please ensure the Rhetor service is running.
+              Failed to connect to CI specialist. Please ensure the Rhetor service is running.
               <br><small>${err.message}</small>
             </div>
           </div>
@@ -676,7 +676,7 @@ console.log('[FILE_TRACE] Loading: rhetor-component.js');
           const modelsData = await modelsResponse.json();
           console.log('[RHETOR] Models data:', modelsData);
           
-          // Get AI specialists from Rhetor
+          // Get CI specialists from Rhetor
           const specialistsResponse = await fetch('/api/rhetor/specialists');
           const specialistsData = await specialistsResponse.json();
           console.log('[RHETOR] Specialists data:', specialistsData);
@@ -775,10 +775,10 @@ console.log('[FILE_TRACE] Loading: rhetor-component.js');
     */
     
     /**
-     * Refresh AI specialists list
+     * Refresh CI specialists list
      */
     refreshSpecialists: function() {
-      this.info('refreshSpecialists', 'Refreshing AI specialists');
+      this.info('refreshSpecialists', 'Refreshing CI specialists');
       
       if (!this.elements.specialistsGrid) {
         this.error('refreshSpecialists', 'Cannot find specialists grid');
@@ -786,7 +786,7 @@ console.log('[FILE_TRACE] Loading: rhetor-component.js');
       }
       
       // Show loading state
-      this.elements.specialistsGrid.innerHTML = '<div class="rhetor__loading">Loading AI specialists...</div>';
+      this.elements.specialistsGrid.innerHTML = '<div class="rhetor__loading">Loading CI specialists...</div>';
       
       // Fetch specialists from backend
       fetch('/api/v1/ai/specialists')
@@ -803,13 +803,13 @@ console.log('[FILE_TRACE] Loading: rhetor-component.js');
     },
     
     /**
-     * Render AI specialists grid
+     * Render CI specialists grid
      */
     renderSpecialists: function() {
       if (!this.elements.specialistsGrid) return;
       
       if (this.state.specialists.length === 0) {
-        this.elements.specialistsGrid.innerHTML = '<div class="rhetor__empty-state">No AI specialists available</div>';
+        this.elements.specialistsGrid.innerHTML = '<div class="rhetor__empty-state">No CI specialists available</div>';
         return;
       }
       
@@ -975,7 +975,7 @@ console.log('[FILE_TRACE] Loading: rhetor-component.js');
       if (!this.elements.sessionsList) return;
       
       if (this.state.sessions.length === 0) {
-        this.elements.sessionsList.innerHTML = '<div class="rhetor__empty-state">No active AI sessions</div>';
+        this.elements.sessionsList.innerHTML = '<div class="rhetor__empty-state">No active CI sessions</div>';
         return;
       }
       
@@ -1007,7 +1007,7 @@ console.log('[FILE_TRACE] Loading: rhetor-component.js');
      * Create new session
      */
     createSession: function() {
-      this.info('createSession', 'Creating new AI session');
+      this.info('createSession', 'Creating new CI session');
       
       // TODO: Show session creation dialog
       this.showNotification('Session creation dialog coming soon', 'info');
@@ -1030,10 +1030,10 @@ console.log('[FILE_TRACE] Loading: rhetor-component.js');
     },
     
     /**
-     * Save AI configuration
+     * Save CI configuration
      */
     saveConfiguration: function() {
-      this.info('saveConfiguration', 'Saving AI configuration');
+      this.info('saveConfiguration', 'Saving CI configuration');
       
       const config = {
         anthropicMax: this.state.anthropicMax,
@@ -1202,22 +1202,22 @@ console.log('[FILE_TRACE] Loading: rhetor-component.js');
       
       switch (tabId) {
         case 'specialists':
-          this.elements.chatInput.placeholder = 'Enter command for AI specialist management...';
+          this.elements.chatInput.placeholder = 'Enter command for CI specialist management...';
           break;
         case 'orchestration':
           this.elements.chatInput.placeholder = 'Configure orchestration settings...';
           break;
         case 'sessions':
-          this.elements.chatInput.placeholder = 'Manage AI session...';
+          this.elements.chatInput.placeholder = 'Manage CI session...';
           break;
         case 'configuration':
-          this.elements.chatInput.placeholder = 'Update AI configuration...';
+          this.elements.chatInput.placeholder = 'Update CI configuration...';
           break;
         case 'llmchat':
-          this.elements.chatInput.placeholder = 'Chat with Rhetor AI orchestrator...';
+          this.elements.chatInput.placeholder = 'Chat with Rhetor CI orchestrator...';
           break;
         case 'teamchat':
-          this.elements.chatInput.placeholder = 'Type a message to the AI team...';
+          this.elements.chatInput.placeholder = 'Type a message to the CI team...';
           break;
         default:
           this.elements.chatInput.placeholder = 'Enter a command or message...';

@@ -1214,18 +1214,18 @@ async def complete_merge(merge_id: str):
     method="POST",
     request_schema={"merge_id": "str", "merge_name": "str", "conflict_data": "Dict"},
     response_schema={"success": "bool", "resolution": "Dict", "message": "str"},
-    description="Use AI to fix merge conflicts"
+    description="Use CI to fix merge conflicts"
 )
 @router.post("/merge/fix")
 async def fix_merge_conflicts(request: FixMergeRequest):
-    """Use AI to fix merge conflicts"""
+    """Use CI to fix merge conflicts"""
     
     if not sprint_coordinator:
         raise HTTPException(status_code=503, detail="Sprint coordinator not initialized")
     
     try:
-        # Simulate AI conflict resolution
-        await asyncio.sleep(2)  # Simulate AI processing
+        # Simulate CI conflict resolution
+        await asyncio.sleep(2)  # Simulate CI processing
         
         # TODO: Implement actual AI-powered conflict resolution
         return {
@@ -1237,7 +1237,7 @@ async def fix_merge_conflicts(request: FixMergeRequest):
                 "strategy": "AI-powered resolution",
                 "confidence": 0.95
             },
-            "message": "Conflicts resolved using AI assistance",
+            "message": "Conflicts resolved using CI assistance",
             "timestamp": datetime.now().isoformat()
         }
         

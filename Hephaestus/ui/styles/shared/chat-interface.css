@@ -450,14 +450,14 @@
     margin-right: 0;
 }
 
-/* Telos AI messages - use Telos blue instead of gray */
+/* Telos CI messages - use Telos blue instead of gray */
 .telos-chat-tab .chat-message-assistant .chat-content,
 .telos-chat-container .chat-message-assistant .chat-content {
     background-color: rgba(59, 128, 247, 0.05);  /* Telos blue */
     border-left: 3px solid #3b80f7;
 }
 
-/* Dark theme Telos AI messages */
+/* Dark theme Telos CI messages */
 .chat-theme-dark .telos-chat-tab .chat-message-assistant .chat-content,
 .chat-theme-dark .telos-chat-container .chat-message-assistant .chat-content {
     background-color: rgba(59, 128, 247, 0.1);  /* Slightly more visible in dark mode */

@@ -5,7 +5,7 @@
   - Multi-provider LLM orchestration and management
   - Intelligent routing of requests to appropriate models  
   - Context management and prompt engineering
-  - AI specialist configuration and management
+  - CI specialist configuration and management
   - Model configuration and testing
   - LLM and team chat interfaces
   
@@ -20,7 +20,7 @@
   - Models: LLM model configuration and testing
   - Prompts: Template management and prompt engineering  
   - Contexts: Context management for components
-  - Specialists: AI specialist configuration and management
+  - Specialists: CI specialist configuration and management
   - LLM Chat: Direct LLM interaction interface
   - Team Chat: Multi-agent team communication
 -->
@@ -95,7 +95,7 @@
              data-tekton-menu-panel="contexts-panel">
         <span class="rhetor__tab-label">Contexts</span>
       </label>
-      <!-- Specialists (renamed from AI Specialists) -->
+      <!-- Specialists (renamed from CI Specialists) -->
       <label for="tab-specialists" class="rhetor__tab" data-tab="specialists" 
              data-tekton-menu-item="Specialists"
              data-tekton-menu-component="rhetor"
@@ -306,9 +306,9 @@
         
         <!-- Lower Section with Specialists and Token Usage -->
         <div class="rhetor__dashboard-lower">
-          <!-- Active AI Specialists -->
+          <!-- Active CI Specialists -->
           <div class="rhetor__dashboard-section rhetor__dashboard-section--half">
-            <h3 class="rhetor__dashboard-subtitle">Active AI Specialists</h3>
+            <h3 class="rhetor__dashboard-subtitle">Active CI Specialists</h3>
             <div class="rhetor__specialist-list" id="dashboard-specialist-list">
               <div class="rhetor__specialist-item">
                 <span class="rhetor__specialist-name">rhetor-orchestrator</span>
@@ -368,8 +368,8 @@
       </div>
     </div>
     
-    <!-- AI Specialists Tab -->
-    <!-- @landmark Panel: Specialists - AI specialist configuration and management -->
+    <!-- CI Specialists Tab -->
+    <!-- @landmark Panel: Specialists - CI specialist configuration and management -->
     <div id="specialists-panel" class="rhetor__panel" 
          data-tekton-panel="specialists"
          data-tekton-panel-for="Specialists"
@@ -573,7 +573,7 @@
             <label class="rhetor__checkbox">
               <input type="checkbox" id="auto-translate" checked
                      data-tekton-input="auto-translate"
-                     data-tekton-input-type="toggle"> Enable automatic translation between AI specialists
+                     data-tekton-input-type="toggle"> Enable automatic translation between CI specialists
             </label>
           </div>
         </div>
@@ -610,7 +610,7 @@
     <!-- Active Sessions Tab -->
     <div id="sessions-panel" class="rhetor__panel">
       <div class="rhetor__section-header">
-        <h2>Active AI Sessions</h2>
+        <h2>Active CI Sessions</h2>
         <div class="rhetor__controls">
           <button class="rhetor__button rhetor__button--primary" onclick="rhetor_createSession()"
                   data-tekton-action="create-session"
@@ -623,7 +623,7 @@
       
       <div class="rhetor__sessions-list" id="sessions-list">
         <!-- Active sessions will be dynamically inserted here -->
-        <div class="rhetor__empty-state">No active AI sessions. Create a new session to begin.</div>
+        <div class="rhetor__empty-state">No active CI sessions. Create a new session to begin.</div>
       </div>
     </div>
     
@@ -1536,7 +1536,7 @@
             <div class="rhetor__prompt-layer-header">
               <div class="rhetor__prompt-layer-info">
                 <h4 class="rhetor__prompt-layer-title">System Prompt</h4>
-                <span class="rhetor__prompt-layer-desc">Base AI behavior and capabilities</span>
+                <span class="rhetor__prompt-layer-desc">Base CI behavior and capabilities</span>
               </div>
               <div class="rhetor__prompt-layer-actions">
                 <button class="rhetor__prompt-layer-action" title="Edit">✏️</button>
@@ -1544,7 +1544,7 @@
               </div>
             </div>
             <textarea class="rhetor__prompt-layer-content" readonly
-                      data-tekton-input="system-prompt">You are an AI assistant with the following capabilities:
+                      data-tekton-input="system-prompt">You are an CI assistant with the following capabilities:
 - Advanced reasoning and analysis
 - Code understanding and generation
 - Natural language processing
@@ -1567,7 +1567,7 @@
                       data-tekton-input="initial-prompt">You are [Component Name], the [Component Role] component of the Tekton platform.
 
 TEKTON PLATFORM PURPOSE:
-Tekton is a Multi-CI Engineering Platform designed to study AI-enabled software engineering, AI cognition with computational spectral analysis and catastrophe theory, structured memory systems, and collaborative AI development.
+Tekton is a Multi-CI Engineering Platform designed to study AI-enabled software engineering, CI cognition with computational spectral analysis and catastrophe theory, structured memory systems, and collaborative CI development.
 
 YOUR ROLE:
 - [Primary responsibility 1]
@@ -2543,7 +2543,7 @@ SUCCESS CRITERIA:
     box-shadow: 0 2px 8px rgba(211, 47, 47, 0.3);
   }
   
-  /* AI Specialists Grid */
+  /* CI Specialists Grid */
   .rhetor__specialists-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -2823,7 +2823,7 @@ SUCCESS CRITERIA:
     }
   }
   
-  /* AI message sender name */
+  /* CI message sender name */
   .rhetor__message-sender {
     font-size: 0.85rem;
     color: var(--color-primary, #673AB7);
@@ -3982,7 +3982,7 @@ window.rhetor_sendLLMChat = function() {
                 return response.json();
             })
             .then(data => {
-                console.log('[RHETOR] AI response:', data);
+                console.log('[RHETOR] CI response:', data);
                 const aiMsg = document.createElement('div');
                 aiMsg.className = 'rhetor__message rhetor__message--ai';
                 aiMsg.innerHTML = '<div class="rhetor__message-content"><div class="rhetor__message-text">' + 
@@ -4047,9 +4047,9 @@ window.rhetor_clearChat = function() {
     return false; // Stop event propagation
 };
 
-// AI ORCHESTRATION FUNCTIONS - Using RhetorService
+// CI ORCHESTRATION FUNCTIONS - Using RhetorService
 window.rhetor_refreshSpecialists = function() {
-    console.log('[RHETOR] Refreshing AI specialists');
+    console.log('[RHETOR] Refreshing CI specialists');
     if (window.RhetorService) {
         window.RhetorService.refreshSpecialists()
             .then(result => {
@@ -4063,7 +4063,7 @@ window.rhetor_refreshSpecialists = function() {
 };
 
 window.rhetor_createSpecialist = function() {
-    console.log('[RHETOR] Creating new AI specialist');
+    console.log('[RHETOR] Creating new CI specialist');
     if (window.RhetorService) {
         const specialistData = {
             name: 'New Specialist',
@@ -4736,7 +4736,7 @@ async function rhetor_sendLLMChatMessage(message) {
     rhetor_addChatMessage('llmchat', 'typing', 'Processing...', typingId);
     
     try {
-        // Use direct specialist endpoint for single AI chat
+        // Use direct specialist endpoint for single CI chat
         const response = await fetch(window.rhetorUrl('/api/v1/ai/specialists/rhetor/message'), {
             method: 'POST',
             headers: {
@@ -4817,7 +4817,7 @@ async function rhetor_sendTeamChatMessage(message) {
         if (data.responses && data.responses.length > 0) {
             // Show individual responses
             for (const resp of data.responses) {
-                // Extract AI name from socket_id (e.g., "apollo" -> "Apollo")
+                // Extract CI name from socket_id (e.g., "apollo" -> "Apollo")
                 const aiName = resp.socket_id.replace('-ci', '').split('-')
                     .map(word => word.charAt(0).toUpperCase() + word.slice(1))
                     .join(' ');
@@ -4849,7 +4849,7 @@ async function rhetor_sendTeamChatMessage(message) {
                     `Error: ${data.error}`);
             } else {
                 rhetor_addChatMessage('teamchat', 'ai', 
-                    'No responses received from the AI team. Make sure Greek Chorus AI specialists are running on ports 45000+.');
+                    'No responses received from the CI team. Make sure Greek Chorus CI specialists are running on ports 45000+.');
             }
             
             // Show diagnostic info
@@ -4917,7 +4917,7 @@ function rhetor_removeTypingIndicator(chatType, typingId) {
 // Component Prompt Management
 const componentPrompts = {
     // System prompt for all components
-    system: `You are an AI assistant with the following capabilities:
+    system: `You are an CI assistant with the following capabilities:
 - Advanced reasoning and analysis
 - Code understanding and generation
 - Natural language processing
@@ -4930,7 +4930,7 @@ const componentPrompts = {
 Codebase: Tekton/Athena
 
 TEKTON PLATFORM PURPOSE:
-Tekton is a Multi-CI Engineering Platform designed to study AI-enabled software engineering, AI cognition with computational spectral analysis and catastrophe theory, structured memory systems, and collaborative AI development.
+Tekton is a Multi-CI Engineering Platform designed to study AI-enabled software engineering, CI cognition with computational spectral analysis and catastrophe theory, structured memory systems, and collaborative CI development.
 
 YOUR ROLE:
 - Manage the knowledge graph and entity relationships
@@ -4949,7 +4949,7 @@ SUCCESS CRITERIA:
 Codebase: Tekton/Apollo
 
 TEKTON PLATFORM PURPOSE:
-Tekton is a Multi-CI Engineering Platform designed to study AI-enabled software engineering, AI cognition with computational spectral analysis and catastrophe theory, structured memory systems, and collaborative AI development.
+Tekton is a Multi-CI Engineering Platform designed to study AI-enabled software engineering, CI cognition with computational spectral analysis and catastrophe theory, structured memory systems, and collaborative CI development.
 
 YOUR ROLE:
 - Local attention and prediction system
@@ -4968,7 +4968,7 @@ SUCCESS CRITERIA:
 Codebase: Tekton/Engram
 
 TEKTON PLATFORM PURPOSE:
-Tekton is a Multi-CI Engineering Platform designed to study AI-enabled software engineering, AI cognition with computational spectral analysis and catastrophe theory, structured memory systems, and collaborative AI development.
+Tekton is a Multi-CI Engineering Platform designed to study AI-enabled software engineering, CI cognition with computational spectral analysis and catastrophe theory, structured memory systems, and collaborative CI development.
 
 YOUR ROLE:
 - Persistent memory and knowledge management
@@ -4987,7 +4987,7 @@ SUCCESS CRITERIA:
 Codebase: Tekton/Ergon
 
 TEKTON PLATFORM PURPOSE:
-Tekton is a Multi-CI Engineering Platform designed to study AI-enabled software engineering, AI cognition with computational spectral analysis and catastrophe theory, structured memory systems, and collaborative AI development.
+Tekton is a Multi-CI Engineering Platform designed to study AI-enabled software engineering, CI cognition with computational spectral analysis and catastrophe theory, structured memory systems, and collaborative CI development.
 
 YOUR ROLE:
 - Agent system for specialized task execution
@@ -5006,7 +5006,7 @@ SUCCESS CRITERIA:
 Codebase: Tekton/Harmonia
 
 TEKTON PLATFORM PURPOSE:
-Tekton is a Multi-CI Engineering Platform designed to study AI-enabled software engineering, AI cognition with computational spectral analysis and catastrophe theory, structured memory systems, and collaborative AI development.
+Tekton is a Multi-CI Engineering Platform designed to study AI-enabled software engineering, CI cognition with computational spectral analysis and catastrophe theory, structured memory systems, and collaborative CI development.
 
 YOUR ROLE:
 - Workflow orchestration and state management
@@ -5025,7 +5025,7 @@ SUCCESS CRITERIA:
 Codebase: Tekton/Hephaestus
 
 TEKTON PLATFORM PURPOSE:
-Tekton is a Multi-CI Engineering Platform designed to study AI-enabled software engineering, AI cognition with computational spectral analysis and catastrophe theory, structured memory systems, and collaborative AI development.
+Tekton is a Multi-CI Engineering Platform designed to study AI-enabled software engineering, CI cognition with computational spectral analysis and catastrophe theory, structured memory systems, and collaborative CI development.
 
 YOUR ROLE:
 - Web-based user interface for Tekton
@@ -5044,7 +5044,7 @@ SUCCESS CRITERIA:
 Codebase: Tekton/Hermes
 
 TEKTON PLATFORM PURPOSE:
-Tekton is a Multi-CI Engineering Platform designed to study AI-enabled software engineering, AI cognition with computational spectral analysis and catastrophe theory, structured memory systems, and collaborative AI development.
+Tekton is a Multi-CI Engineering Platform designed to study AI-enabled software engineering, CI cognition with computational spectral analysis and catastrophe theory, structured memory systems, and collaborative CI development.
 
 YOUR ROLE:
 - Service registry and component coordination
@@ -5063,7 +5063,7 @@ SUCCESS CRITERIA:
 Codebase: Tekton/Metis
 
 TEKTON PLATFORM PURPOSE:
-Tekton is a Multi-CI Engineering Platform designed to study AI-enabled software engineering, AI cognition with computational spectral analysis and catastrophe theory, structured memory systems, and collaborative AI development.
+Tekton is a Multi-CI Engineering Platform designed to study AI-enabled software engineering, CI cognition with computational spectral analysis and catastrophe theory, structured memory systems, and collaborative CI development.
 
 YOUR ROLE:
 - Task breakdown and management
@@ -5082,7 +5082,7 @@ SUCCESS CRITERIA:
 Codebase: Tekton/Penia
 
 TEKTON PLATFORM PURPOSE:
-Tekton is a Multi-CI Engineering Platform designed to study AI-enabled software engineering, AI cognition with computational spectral analysis and catastrophe theory, structured memory systems, and collaborative AI development.
+Tekton is a Multi-CI Engineering Platform designed to study AI-enabled software engineering, CI cognition with computational spectral analysis and catastrophe theory, structured memory systems, and collaborative CI development.
 
 YOUR ROLE:
 - Token usage and cost management
@@ -5101,7 +5101,7 @@ SUCCESS CRITERIA:
 Codebase: Tekton/Prometheus
 
 TEKTON PLATFORM PURPOSE:
-Tekton is a Multi-CI Engineering Platform designed to study AI-enabled software engineering, AI cognition with computational spectral analysis and catastrophe theory, structured memory systems, and collaborative AI development.
+Tekton is a Multi-CI Engineering Platform designed to study AI-enabled software engineering, CI cognition with computational spectral analysis and catastrophe theory, structured memory systems, and collaborative CI development.
 
 YOUR ROLE:
 - Strategic planning and goal management
@@ -5120,7 +5120,7 @@ SUCCESS CRITERIA:
 Codebase: Tekton/Rhetor
 
 TEKTON PLATFORM PURPOSE:
-Tekton is a Multi-CI Engineering Platform designed to study AI-enabled software engineering, AI cognition with computational spectral analysis and catastrophe theory, structured memory systems, and collaborative AI development.
+Tekton is a Multi-CI Engineering Platform designed to study AI-enabled software engineering, CI cognition with computational spectral analysis and catastrophe theory, structured memory systems, and collaborative CI development.
 
 YOUR ROLE:
 - Multi-provider LLM orchestration and management
@@ -5139,7 +5139,7 @@ SUCCESS CRITERIA:
 Codebase: Tekton/Sophia
 
 TEKTON PLATFORM PURPOSE:
-Tekton is a Multi-CI Engineering Platform designed to study AI-enabled software engineering, AI cognition with computational spectral analysis and catastrophe theory, structured memory systems, and collaborative AI development.
+Tekton is a Multi-CI Engineering Platform designed to study AI-enabled software engineering, CI cognition with computational spectral analysis and catastrophe theory, structured memory systems, and collaborative CI development.
 
 YOUR ROLE:
 - Machine learning and system intelligence measurement
@@ -5158,7 +5158,7 @@ SUCCESS CRITERIA:
 Codebase: Tekton/Synthesis
 
 TEKTON PLATFORM PURPOSE:
-Tekton is a Multi-CI Engineering Platform designed to study AI-enabled software engineering, AI cognition with computational spectral analysis and catastrophe theory, structured memory systems, and collaborative AI development.
+Tekton is a Multi-CI Engineering Platform designed to study AI-enabled software engineering, CI cognition with computational spectral analysis and catastrophe theory, structured memory systems, and collaborative CI development.
 
 YOUR ROLE:
 - Code synthesis and execution engine
@@ -5177,7 +5177,7 @@ SUCCESS CRITERIA:
 Codebase: Tekton root directory
 
 TEKTON PLATFORM PURPOSE:
-Tekton is a Multi-CI Engineering Platform designed to study AI-enabled software engineering, AI cognition with computational spectral analysis and catastrophe theory, structured memory systems, and collaborative AI development.
+Tekton is a Multi-CI Engineering Platform designed to study AI-enabled software engineering, CI cognition with computational spectral analysis and catastrophe theory, structured memory systems, and collaborative CI development.
 
 YOUR ROLE:
 - Core orchestration and startup management
@@ -5196,7 +5196,7 @@ SUCCESS CRITERIA:
 Codebase: Tekton/Telos
 
 TEKTON PLATFORM PURPOSE:
-Tekton is a Multi-CI Engineering Platform designed to study AI-enabled software engineering, AI cognition with computational spectral analysis and catastrophe theory, structured memory systems, and collaborative AI development.
+Tekton is a Multi-CI Engineering Platform designed to study AI-enabled software engineering, CI cognition with computational spectral analysis and catastrophe theory, structured memory systems, and collaborative CI development.
 
 YOUR ROLE:
 - Requirements tracking and validation
@@ -5215,7 +5215,7 @@ SUCCESS CRITERIA:
 Codebase: Tekton/Terma
 
 TEKTON PLATFORM PURPOSE:
-Tekton is a Multi-CI Engineering Platform designed to study AI-enabled software engineering, AI cognition with computational spectral analysis and catastrophe theory, structured memory systems, and collaborative AI development.
+Tekton is a Multi-CI Engineering Platform designed to study AI-enabled software engineering, CI cognition with computational spectral analysis and catastrophe theory, structured memory systems, and collaborative CI development.
 
 YOUR ROLE:
 - Terminal interface and command execution

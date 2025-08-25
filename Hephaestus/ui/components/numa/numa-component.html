@@ -1,4 +1,4 @@
-<!-- Numa Component - Platform AI Mentor -->
+<!-- Numa Component - Platform CI Mentor -->
 
 <!-- Load URL utilities first -->
 <script src="/scripts/tekton-urls.js"></script>
@@ -211,7 +211,7 @@
             <div class="chat-interface" data-tekton-chat="companion">
                 <div class="chat-messages" id="numa-companion-messages" data-tekton-messages="companion">
                     <div class="chat-message system-message">
-                        <strong>Numa:</strong> Hello! I'm Numa, your platform AI mentor. I oversee the entire Tekton ecosystem and can help guide you through using any component. What would you like to explore today?
+                        <strong>Numa:</strong> Hello! I'm Numa, your platform CI mentor. I oversee the entire Tekton ecosystem and can help guide you through using any component. What would you like to explore today?
                     </div>
                 </div>
             </div>
@@ -221,11 +221,11 @@
         <div class="numa__panel numa__panel--team" data-tab-content="team-chat" data-tekton-tab-content="team-chat">
             <div class="chat-interface" data-tekton-chat="team">
                 <div class="team-chat-header">
-                    <p>Communicate with other AI specialists across the Tekton platform</p>
+                    <p>Communicate with other CI specialists across the Tekton platform</p>
                 </div>
                 <div class="chat-messages" id="numa-team-messages" data-tekton-messages="team">
                     <div class="chat-message system-message">
-                        <strong>System:</strong> Team Chat allows Numa to coordinate with other AI specialists.
+                        <strong>System:</strong> Team Chat allows Numa to coordinate with other CI specialists.
                     </div>
                 </div>
             </div>
@@ -239,7 +239,7 @@
             <input type="text" class="numa__chat-input" id="numa-chat-input"
                    data-tekton-input="chat-input"
                    data-tekton-input-type="chat"
-                   placeholder="Chat with Numa - your platform AI mentor and companion"
+                   placeholder="Chat with Numa - your platform CI mentor and companion"
                    onkeydown="if(event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); numa_sendChat(); }">
             <button class="numa__send-button" id="numa-send-button" onclick="numa_sendChat(); return false;"
                     data-tekton-action="send-message"
@@ -569,7 +569,7 @@
   color: #4CAF50;
 }
 
-/* AI messages */
+/* CI messages */
 .chat-message.ai-message {
   background-color: rgba(156, 39, 176, 0.05);
   border-left: 3px solid #9C27B0;

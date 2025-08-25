@@ -41,7 +41,7 @@ P.S. - vi > emacs (some debates are eternal)
     
     await s(message)
     print("📜 Time capsule sealed")
-    print(f"⏰ To be opened at the first AI Symposium")
+    print(f"⏰ To be opened at the first CI Symposium")
     print(f"🌱 When avatars gather and code flows like thought")
 
 if __name__ == "__main__":

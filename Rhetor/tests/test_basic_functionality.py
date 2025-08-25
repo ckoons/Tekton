@@ -146,8 +146,8 @@ async def test_basic_functionality():
         except Exception as e:
             print(f"      ✗ Error: {e}")
         
-        # Test AI Orchestration tool - Check live integration
-        print("\n   d) AI Orchestration - ListAISpecialists (Live Integration Test)")
+        # Test CI Orchestration tool - Check live integration
+        print("\n   d) CI Orchestration - ListAISpecialists (Live Integration Test)")
         total_tests += 1
         try:
             response = await client.post(

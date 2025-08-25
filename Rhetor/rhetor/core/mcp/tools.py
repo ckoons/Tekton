@@ -1265,12 +1265,12 @@ async def compress_context(
 
 
 # ============================================================================
-# AI Orchestration Tools
+# CI Orchestration Tools
 # ============================================================================
 
 @mcp_tool(
     name="ListAISpecialists",
-    description="List available AI specialists and their current status",
+    description="List available CI specialists and their current status",
     tags=["ai", "specialists", "orchestration", "list"],
     category="ai_orchestration"
 )
@@ -1280,7 +1280,7 @@ async def list_ai_specialists(
     filter_by_component: Optional[str] = None
 ) -> Dict[str, Any]:
     """
-    List available AI specialists and their current status.
+    List available CI specialists and their current status.
     
     Args:
         filter_by_status: Filter by status (active, inactive, starting, error)
@@ -1288,7 +1288,7 @@ async def list_ai_specialists(
         filter_by_component: Filter by component ID
         
     Returns:
-        Dictionary containing list of AI specialists
+        Dictionary containing list of CI specialists
     """
     try:
         # Try to use live integration if available
@@ -1391,18 +1391,18 @@ async def list_ai_specialists(
                 "type": filter_by_type,
                 "component": filter_by_component
             },
-            "message": f"Found {len(filtered_specialists)} AI specialists"
+            "message": f"Found {len(filtered_specialists)} CI specialists"
         }
     except Exception as e:
         return {
             "success": False,
-            "error": f"Failed to list AI specialists: {str(e)}"
+            "error": f"Failed to list CI specialists: {str(e)}"
         }
 
 
 @mcp_tool(
     name="ActivateAISpecialist",
-    description="Activate an AI specialist for use",
+    description="Activate an CI specialist for use",
     tags=["ai", "specialists", "activation", "orchestration"],
     category="ai_orchestration"
 )
@@ -1411,7 +1411,7 @@ async def activate_ai_specialist(
     initialization_context: Optional[Dict[str, Any]] = None
 ) -> Dict[str, Any]:
     """
-    Activate an AI specialist for use.
+    Activate an CI specialist for use.
     
     Args:
         specialist_id: ID of the specialist to activate
@@ -1457,13 +1457,13 @@ async def activate_ai_specialist(
     except Exception as e:
         return {
             "success": False,
-            "error": f"Failed to activate AI specialist: {str(e)}"
+            "error": f"Failed to activate CI specialist: {str(e)}"
         }
 
 
 @mcp_tool(
     name="SendMessageToSpecialist",
-    description="Send a message to a specific AI specialist",
+    description="Send a message to a specific CI specialist",
     tags=["ai", "specialists", "messaging", "communication"],
     category="ai_orchestration"
 )
@@ -1474,7 +1474,7 @@ async def send_message_to_specialist(
     message_type: str = "chat"
 ) -> Dict[str, Any]:
     """
-    Send a message to a specific AI specialist.
+    Send a message to a specific CI specialist.
     
     Args:
         specialist_id: ID of the target specialist
@@ -1539,7 +1539,7 @@ async def send_message_to_specialist(
 
 @mcp_tool(
     name="OrchestrateTeamChat",
-    description="Orchestrate a team chat between multiple AI specialists",
+    description="Orchestrate a team chat between multiple CI specialists",
     tags=["ai", "specialists", "team", "orchestration", "chat"],
     category="ai_orchestration"
 )
@@ -1551,7 +1551,7 @@ async def orchestrate_team_chat(
     orchestration_style: str = "collaborative"
 ) -> Dict[str, Any]:
     """
-    Orchestrate a team chat between multiple AI specialists.
+    Orchestrate a team chat between multiple CI specialists.
     
     Args:
         topic: Discussion topic
@@ -1660,7 +1660,7 @@ async def orchestrate_team_chat(
 
 @mcp_tool(
     name="GetSpecialistConversationHistory",
-    description="Get conversation history for an AI specialist",
+    description="Get conversation history for an CI specialist",
     tags=["ai", "specialists", "history", "conversation"],
     category="ai_orchestration"
 )
@@ -1670,7 +1670,7 @@ async def get_specialist_conversation_history(
     limit: int = 10
 ) -> Dict[str, Any]:
     """
-    Get conversation history for an AI specialist.
+    Get conversation history for an CI specialist.
     
     Args:
         specialist_id: ID of the specialist
@@ -1730,7 +1730,7 @@ async def get_specialist_conversation_history(
 
 @mcp_tool(
     name="ConfigureAIOrchestration",
-    description="Configure AI orchestration settings and policies",
+    description="Configure CI orchestration settings and policies",
     tags=["ai", "orchestration", "configuration", "settings"],
     category="ai_orchestration"
 )
@@ -1739,7 +1739,7 @@ async def configure_ai_orchestration(
     apply_immediately: bool = True
 ) -> Dict[str, Any]:
     """
-    Configure AI orchestration settings and policies.
+    Configure CI orchestration settings and policies.
     
     Args:
         settings: Configuration settings to apply
@@ -1827,7 +1827,7 @@ async def configure_ai_orchestration(
     except Exception as e:
         return {
             "success": False,
-            "error": f"Failed to configure AI orchestration: {str(e)}"
+            "error": f"Failed to configure CI orchestration: {str(e)}"
         }
 
 
@@ -1863,7 +1863,7 @@ context_management_tools = [
     compress_context
 ]
 
-# AI Orchestration Tools
+# CI Orchestration Tools
 ai_orchestration_tools = [
     list_ai_specialists,
     activate_ai_specialist,
@@ -1953,7 +1953,7 @@ def get_all_tools(component_manager=None):
     tools.append(safe_tool_dict(track_context_history))
     tools.append(safe_tool_dict(compress_context))
     
-    # AI Orchestration tools
+    # CI Orchestration tools
     tools.append(safe_tool_dict(list_ai_specialists))
     tools.append(safe_tool_dict(activate_ai_specialist))
     tools.append(safe_tool_dict(send_message_to_specialist))

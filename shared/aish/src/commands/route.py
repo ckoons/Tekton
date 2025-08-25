@@ -36,7 +36,7 @@ except ImportError:
             return func
         return decorator
 
-# Known AI names (should match main aish file)
+# Known CI names (should match main aish file)
 KNOWN_AI_NAMES = [
     'numa', 'tekton', 'prometheus', 'telos', 'metis', 'harmonia',
     'synthesis', 'athena', 'sophia', 'noesis', 'engram', 'apollo',
@@ -210,8 +210,8 @@ def format_route_display(route: Dict[str, Any]) -> str:
 
 @architecture_decision(
     title="Intelligent Message Routing",
-    description="Named routes with purposes for multi-hop AI message pipelines",
-    rationale="Enables complex AI workflows with purpose-driven message transformation at each hop",
+    description="Named routes with purposes for multi-hop CI message pipelines",
+    rationale="Enables complex CI workflows with purpose-driven message transformation at each hop",
     alternatives_considered=["Direct messaging only", "Fixed pipelines", "Centralized router"],
     impacts=["AI composability", "workflow flexibility", "message traceability"],
     decided_by="Casey",
@@ -317,7 +317,7 @@ def handle_route_command() -> bool:
         route_name = args[1]
         
         # Check if this is a send operation
-        # If we have exactly 4 args and the last looks like a message (not an AI name)
+        # If we have exactly 4 args and the last looks like a message (not an CI name)
         if len(args) == 4 and not args[3] in KNOWN_AI_NAMES:
             # This is: route name <name> <dest> "message"
             dest = args[2]

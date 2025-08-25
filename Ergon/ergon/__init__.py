@@ -1,5 +1,5 @@
 """
-Ergon: A streamlined AI agent builder with minimal configuration.
+Ergon: A streamlined CI agent builder with minimal configuration.
 """
 
 __version__ = "0.1.0"

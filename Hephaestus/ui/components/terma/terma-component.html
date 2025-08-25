@@ -1,4 +1,4 @@
-<!-- Terma Component - Platform AI Mentor -->
+<!-- Terma Component - Platform CI Mentor -->
 
 <!-- Hidden radio controls for CSS-only tab functionality -->
 <input type="radio" name="terma-tab" id="terma-tab-dashboard" checked style="display: none;">
@@ -236,7 +236,7 @@
                      data-tekton-messages="team"
                      data-tekton-element="chat-messages">
                     <div class="chat-message system-message">
-                        <strong>System:</strong> Team Chat allows Terma to coordinate with other AI specialists.
+                        <strong>System:</strong> Team Chat allows Terma to coordinate with other CI specialists.
                     </div>
                 </div>
             </div>
@@ -254,7 +254,7 @@
                    data-tekton-input="chat-input"
                    data-tekton-input-type="chat"
                    data-tekton-input-component="terma"
-                   placeholder="Chat with Terma - your platform AI mentor and companion"
+                   placeholder="Chat with Terma - your platform CI mentor and companion"
                    onkeydown="if(event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); terma_sendChat(); }">
             <button class="terma__send-button" id="terma-send-button" onclick="terma_sendChat(); return false;"
                     data-tekton-action="send-message"
@@ -488,7 +488,7 @@
   color: #4CAF50;
 }
 
-/* AI messages */
+/* CI messages */
 .chat-message.ai-message {
   background-color: rgba(93, 64, 55, 0.05);
   border-left: 3px solid #5D4037;

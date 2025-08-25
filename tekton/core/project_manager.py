@@ -81,7 +81,7 @@ class GitRemotes:
 @state_checkpoint(
     title="TektonCore Project State",
     state_type="persistent",
-    description="Core project data model managing GitHub integration and AI companion settings",
+    description="Core project data model managing GitHub integration and CI companion settings",
     rationale="Centralized project state with name extraction hierarchy and git remote tracking"
 )
 @dataclass
@@ -98,8 +98,8 @@ class Project:
     forked_repository: Optional[str] = None  # Fork remote URL
     upstream_repository: Optional[str] = None  # Upstream remote URL
     
-    # AI and metadata
-    companion_intelligence: Optional[str] = None  # Selected AI model
+    # CI and metadata
+    companion_intelligence: Optional[str] = None  # Selected CI model
     created_at: str = field(default_factory=lambda: datetime.now().isoformat())
     updated_at: str = field(default_factory=lambda: datetime.now().isoformat())
     added_date: str = field(default_factory=lambda: datetime.now().isoformat())
@@ -882,7 +882,7 @@ class ProjectManager:
     
     async def launch_project_ci(self, project: Project) -> bool:
         """
-        Launch AI specialist for a project CI if not already running.
+        Launch CI specialist for a project CI if not already running.
         Uses the same infrastructure as Greek Chorus CIs but with dynamic ports.
         
         Args:
@@ -951,7 +951,7 @@ class ProjectManager:
                 logger.error(f"No port allocated for project CI {project.name}")
                 return False
             
-            # Launch the AI specialist process
+            # Launch the CI specialist process
             # Use generic specialist which can be run as a module
             cmd = [
                 sys.executable, '-m', 'shared.ai.generic_specialist',

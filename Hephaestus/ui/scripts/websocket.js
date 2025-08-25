@@ -167,7 +167,7 @@ class WebSocketManager {
                         setTimeout(() => {
                             const response = this.generateFakeResponse(userMessage, componentId, context);
                             
-                            // Create AI response message
+                            // Create CI response message
                             const responseMessage = {
                                 type: 'RESPONSE',
                                 source: componentId,
@@ -234,7 +234,7 @@ class WebSocketManager {
         
         // Check for special keywords in the message for more contextual responses
         if (message.toLowerCase().includes('hello') || message.toLowerCase().includes('hi')) {
-            return `Hello! I'm the ${componentId} AI assistant. How can I help you today?`;
+            return `Hello! I'm the ${componentId} CI assistant. How can I help you today?`;
         }
         
         if (message.toLowerCase().includes('help')) {
@@ -245,7 +245,7 @@ class WebSocketManager {
         const responses = {
             ergon: [
                 "I can help you create and manage agents for various tasks. Would you like me to explain the agent types?",
-                `The Ergon system manages AI agents that can perform tasks across different domains. Your message "${message}" is being processed.`,
+                `The Ergon system manages CI agents that can perform tasks across different domains. Your message "${message}" is being processed.`,
                 "I can help you set up workflows between agents or execute specific tasks. What would you like to accomplish?"
             ],
             'awt-team': [
@@ -419,7 +419,7 @@ class WebSocketManager {
             tektonUI.log("Handling response message", message);
         }
         
-        // Handle AI response to a message
+        // Handle CI response to a message
         if (payload.message !== undefined) {
             this.addToTerminal(payload.message, '#00bfff');
         } else if (payload.response !== undefined) {

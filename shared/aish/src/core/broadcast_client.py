@@ -44,7 +44,7 @@ except ImportError:
     description="Send messages to Greek Chorus AIs through Rhetor's socket endpoint",
     target_component="Rhetor",
     protocol="HTTP POST",
-    data_flow="rhetor_client → Rhetor /rhetor/socket → Greek Chorus AI → response",
+    data_flow="rhetor_client → Rhetor /rhetor/socket → Greek Chorus CI → response",
     integration_date="2025-01-25"
 )
 @api_contract(
@@ -54,14 +54,14 @@ except ImportError:
     method="POST",
     request_schema={"ai_name": "string", "message": "string"},
     response_schema={"response": "string", "message": "string", "content": "string"},
-    performance_requirements="<500ms for AI response"
+    performance_requirements="<500ms for CI response"
 )
 def send_to_rhetor(ai_name: str, message: str, rhetor_endpoint: str = None) -> Optional[str]:
     """
-    Send a message to a Greek Chorus AI via Rhetor.
+    Send a message to a Greek Chorus CI via Rhetor.
     
     Args:
-        ai_name: Name of the AI (e.g., 'numa', 'apollo')
+        ai_name: Name of the CI (e.g., 'numa', 'apollo')
         message: Message to send
         rhetor_endpoint: Optional Rhetor endpoint override
         
@@ -140,13 +140,13 @@ def send_to_rhetor(ai_name: str, message: str, rhetor_endpoint: str = None) -> O
     method="POST",
     request_schema={"message": "string"},
     response_schema={"responses": [{"specialist_id": "string", "content": "string"}]},
-    performance_requirements="<2s for all AI responses"
+    performance_requirements="<2s for all CI responses"
 )
 @performance_boundary(
     title="Team Chat Response Aggregation",
     description="Collects and formats responses from all Greek Chorus AIs",
     sla="<2s total response time",
-    optimization_notes="Rhetor handles parallel AI queries internally",
+    optimization_notes="Rhetor handles parallel CI queries internally",
     measured_impact="Enables real-time team collaboration"
 )
 def broadcast_to_cis(message: str, rhetor_endpoint: str = None) -> Dict[str, str]:

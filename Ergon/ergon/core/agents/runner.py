@@ -1,5 +1,5 @@
 """
-Agent runner for executing AI agents.
+Agent runner for executing CI agents.
 
 This module has been refactored into a more modular structure.
 It now serves as a compatibility layer that imports from the new structure.

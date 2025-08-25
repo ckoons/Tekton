@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 """
-Demo script showing Metis AI features
+Demo script showing Metis CI features
 
 This script demonstrates:
 1. Creating a task
-2. Using AI to decompose it into subtasks
+2. Using CI to decompose it into subtasks
 3. Analyzing task complexity with AI
-4. Getting AI suggestions for task ordering
+4. Getting CI suggestions for task ordering
 """
 
 import sys
@@ -26,8 +26,8 @@ from metis.core.mcp.tools import (
 )
 
 async def demo_ai_features():
-    """Demonstrate Metis AI features"""
-    print("=== Metis AI Features Demo ===")
+    """Demonstrate Metis CI features"""
+    print("=== Metis CI Features Demo ===")
     print()
     
     # Get shared task manager
@@ -190,7 +190,7 @@ async def demo_ai_features():
     print("\n=== Demo Complete ===")
 
 if __name__ == "__main__":
-    print("Metis AI Features Demo")
+    print("Metis CI Features Demo")
     print("=" * 50)
     print()
     print("Note: This demo works best when Rhetor is properly configured")

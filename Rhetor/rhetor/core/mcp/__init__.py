@@ -2,7 +2,7 @@
 Rhetor MCP (Model Context Protocol) integration.
 
 This module provides MCP capabilities and tools for Rhetor's LLM management,
-prompt engineering, context management, and AI orchestration features.
+prompt engineering, context management, and CI orchestration features.
 """
 
 from .capabilities import (

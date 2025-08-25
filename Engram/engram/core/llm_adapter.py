@@ -138,7 +138,7 @@ class LLMAdapter:
         self.template_registry.register({
             "name": "system_memory_analysis",
             "template": """
-            You are an AI assistant helping to analyze and structure memory content.
+            You are an CI assistant helping to analyze and structure memory content.
             Extract key information, entities, and relationships from the provided text.
             Focus on identifying important concepts, facts, and potential connections to existing knowledge.
             """,
@@ -148,7 +148,7 @@ class LLMAdapter:
         self.template_registry.register({
             "name": "system_memory_categorization",
             "template": """
-            You are an AI assistant that categorizes content into predefined categories.
+            You are an CI assistant that categorizes content into predefined categories.
             The available categories are: {{ categories_list }}
             Analyze the provided content and assign it to the most appropriate category.
             Return ONLY the category name without explanation or additional text.
@@ -159,7 +159,7 @@ class LLMAdapter:
         self.template_registry.register({
             "name": "system_memory_summarization",
             "template": """
-            You are an AI assistant tasked with summarizing multiple related memories.
+            You are an CI assistant tasked with summarizing multiple related memories.
             Create a concise summary that captures the key information across all provided memories.
             Focus on identifying patterns, core facts, and essential information.
             """,

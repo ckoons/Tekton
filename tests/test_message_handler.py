@@ -13,7 +13,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 from shared.aish.src.message_handler import MessageHandler
 
 def create_mock_ai_server(port, response="Test response"):
-    """Create a mock AI server for testing"""
+    """Create a mock CI server for testing"""
     def server_thread():
         s = socket.socket()
         s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -44,7 +44,7 @@ def test_send_message():
     
     handler = MessageHandler(timeout=30)
     try:
-        # Test with real AI if available
+        # Test with real CI if available
         response = handler.send('apollo', 'ping')
         assert len(response) > 0, "Expected non-empty response"
         print(f"✓ Single message send works - got {len(response)} chars")
@@ -188,11 +188,11 @@ if __name__ == "__main__":
     test_timeout()
     
     # These tests work with or without AIs running
-    print("\nTests with AI servers:")
+    print("\nTests with CI servers:")
     test_send_message()
     test_broadcast()
     
-    # Test direct AI compatibility
+    # Test direct CI compatibility
     print("\nTesting aish compatibility:")
     test_aish_compatibility()
     

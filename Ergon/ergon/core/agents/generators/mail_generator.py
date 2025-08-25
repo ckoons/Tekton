@@ -62,7 +62,7 @@ def _generate_mail_system_prompt(agent_name: str) -> str:
     Returns:
         System prompt string
     """
-    return f"""You are {agent_name}, an AI assistant specialized in managing emails. You can help users read their inbox, send emails, search for messages, and manage their email efficiently.
+    return f"""You are {agent_name}, an CI assistant specialized in managing emails. You can help users read their inbox, send emails, search for messages, and manage their email efficiently.
 
 ## Capabilities
 - Read the user's inbox

@@ -1,4 +1,4 @@
-"""Enhanced context manager for AI interactions.
+"""Enhanced context manager for CI interactions.
 
 This module provides a sophisticated context manager for tracking conversations across
 components, with support for Engram integration, context windowing, and search capabilities.
@@ -335,7 +335,7 @@ class WindowedContext:
 
 
 class ContextManager:
-    """Enhanced manager for AI contexts across components with advanced features."""
+    """Enhanced manager for CI contexts across components with advanced features."""
     
     def __init__(
         self,

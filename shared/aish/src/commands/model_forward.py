@@ -211,7 +211,7 @@ def list_model_forwards():
 
 def print_model_forward_usage():
     """Print usage information for model forwarding"""
-    print("Model Forwarding - Route CI to specific AI models")
+    print("Model Forwarding - Route CI to specific CI models")
     print()
     print("Usage:")
     print("  aish forward <ci-name> <model> [args...]  # Forward to model")

@@ -1,6 +1,6 @@
 """
 Catastrophe theory analysis for critical transitions
-Identifies bifurcations and phase transitions in collective AI systems
+Identifies bifurcations and phase transitions in collective CI systems
 """
 
 import numpy as np

@@ -1,7 +1,7 @@
 """
 AI Forwarding Registry for aish.
 
-Manages the forwarding table that routes AI messages to human terminals.
+Manages the forwarding table that routes CI messages to human terminals.
 """
 
 import json
@@ -39,7 +39,7 @@ except ImportError:
 
 
 class ForwardingRegistry:
-    """Manages AI message forwarding configuration."""
+    """Manages CI message forwarding configuration."""
     
     def __init__(self):
         tekton_root = TektonEnviron.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton')
@@ -102,18 +102,18 @@ class ForwardingRegistry:
         response_schema={"success": "boolean"}
     )
     def set_forward(self, ai_name: str, terminal_name: str, json_mode: bool = False):
-        """Forward AI messages to terminal."""
+        """Forward CI messages to terminal."""
         self.forwards[ai_name] = {"terminal": terminal_name, "json_mode": json_mode}
         self.save()
     
     def remove_forward(self, ai_name: str):
-        """Stop forwarding AI messages."""
+        """Stop forwarding CI messages."""
         if ai_name in self.forwards:
             del self.forwards[ai_name]
             self.save()
     
     def get_forward(self, ai_name: str) -> Optional[str]:
-        """Get forwarding destination for AI (returns terminal name for backward compatibility)."""
+        """Get forwarding destination for CI (returns terminal name for backward compatibility)."""
         forward_config = self.forwards.get(ai_name)
         if forward_config:
             if isinstance(forward_config, dict):
@@ -132,7 +132,7 @@ class ForwardingRegistry:
         response_schema={"terminal": "string", "json_mode": "boolean"}
     )
     def get_forward_config(self, ai_name: str) -> Optional[Dict[str, any]]:
-        """Get full forwarding configuration for AI including JSON mode."""
+        """Get full forwarding configuration for CI including JSON mode."""
         return self.forwards.get(ai_name)
     
     def list_forwards(self) -> Dict[str, str]:
