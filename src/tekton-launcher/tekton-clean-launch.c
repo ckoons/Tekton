@@ -414,19 +414,19 @@ static void write_javascript_env(const char *tekton_root, env_list_t *env) {
     fprintf(fp, "window.AISH_MCP_PORT = %s;    // aish MCP port\n\n", get_env_value(env, "AISH_MCP_PORT") ?: "8018");
     
     /* Write port base configuration */
-    fprintf(fp, "// Port base configuration for AI port calculation\n");
+    fprintf(fp, "// Port base configuration for CI port calculation\n");
     fprintf(fp, "window.TEKTON_PORT_BASE = %s;      // Component port base\n", get_env_value(env, "TEKTON_PORT_BASE") ?: "8000");
-    fprintf(fp, "window.TEKTON_AI_PORT_BASE = %s;   // AI port base\n\n", get_env_value(env, "TEKTON_AI_PORT_BASE") ?: "45000");
+    fprintf(fp, "window.TEKTON_AI_PORT_BASE = %s;   // CI port base\n\n", get_env_value(env, "TEKTON_AI_PORT_BASE") ?: "45000");
     
-    /* Write AI port calculation function */
-    fprintf(fp, "// Function to calculate AI port from component port\n");
+    /* Write CI port calculation function */
+    fprintf(fp, "// Function to calculate CI port from component port\n");
     fprintf(fp, "function getAIPort(componentPort) {\n");
-    fprintf(fp, "    // AI port = AI_BASE + (component_port - COMPONENT_BASE)\n");
+    fprintf(fp, "    // CI port = AI_BASE + (component_port - COMPONENT_BASE)\n");
     fprintf(fp, "    return window.TEKTON_AI_PORT_BASE + (componentPort - window.TEKTON_PORT_BASE);\n");
     fprintf(fp, "}\n\n");
     
-    /* Write convenience AI port variables */
-    fprintf(fp, "// AI specialist ports (calculated)\n");
+    /* Write convenience CI port variables */
+    fprintf(fp, "// CI specialist ports (calculated)\n");
     fprintf(fp, "window.NUMA_AI_PORT = getAIPort(window.NUMA_PORT);           // numa-ci port\n");
     fprintf(fp, "window.ENGRAM_AI_PORT = getAIPort(window.ENGRAM_PORT);       // engram-ci port\n");
     fprintf(fp, "window.HERMES_AI_PORT = getAIPort(window.HERMES_PORT);       // hermes-ci port\n");
