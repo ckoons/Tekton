@@ -2297,7 +2297,7 @@ async function loadProjectCIs() {
             const response = await fetch(tektonUrl('tekton-core', '/api/projects'));
             const data = await response.json();
             
-            // Reset with Tekton first (uses numa-ai)
+            // Reset with Tekton first (uses numa-ci)
             projectCIs = [
                 {
                     project_name: "Tekton",
@@ -2313,8 +2313,8 @@ async function loadProjectCIs() {
                 .forEach((project) => {
                     projectCIs.push({
                         project_name: project.name,
-                        ci_socket: `${project.name.toLowerCase()}-ai`,
-                        description: `Project AI for ${project.name}`
+                        ci_socket: `${project.name.toLowerCase()}-ci`,
+                        description: `Project CI for ${project.name}`
                     });
                 });
         }

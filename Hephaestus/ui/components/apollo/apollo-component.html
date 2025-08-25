@@ -568,7 +568,7 @@
                 
                 // Create cards for known CIs
                 Object.keys(ciTypes).forEach(ciKey => {
-                    const context = contexts.find(c => c.context_id === ciKey || c.context_id === `${ciKey}-ai`) || {};
+                    const context = contexts.find(c => c.context_id === ciKey || c.context_id === `${ciKey}-ci`) || {};
                     const card = createCICard(ciTypes[ciKey].name, ciTypes[ciKey].type, context);
                     grid.appendChild(card);
                 });
@@ -671,8 +671,8 @@
                 
                 // Create rows for each CI
                 Object.keys(ciInfo).forEach(ciKey => {
-                    const context = contexts.find(c => c.context_id === ciKey || c.context_id === `${ciKey}-ai`) || {};
-                    const prediction = predictions.find(p => p.context_id === ciKey || p.context_id === `${ciKey}-ai`) || {};
+                    const context = contexts.find(c => c.context_id === ciKey || c.context_id === `${ciKey}-ci`) || {};
+                    const prediction = predictions.find(p => p.context_id === ciKey || p.context_id === `${ciKey}-ci`) || {};
                     
                     const row = document.createElement('tr');
                     row.className = 'apollo__table-row';
@@ -874,7 +874,7 @@
                 
                 // Create action rows for each CI
                 Object.keys(ciInfo).forEach(ciKey => {
-                    const context = contexts.find(c => c.context_id === ciKey || c.context_id === `${ciKey}-ai`) || {};
+                    const context = contexts.find(c => c.context_id === ciKey || c.context_id === `${ciKey}-ci`) || {};
                     
                     const actionData = {
                         ci_name: ciInfo[ciKey].name,

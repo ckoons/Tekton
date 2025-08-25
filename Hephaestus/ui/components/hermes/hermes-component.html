@@ -1576,8 +1576,8 @@ function hermes_setupBasicChat() {
                             data.responses.forEach(resp => {
                                 const aiMessageElement = document.createElement('div');
                                 aiMessageElement.className = 'hermes__message hermes__message--ai';
-                                const sender = resp.socket_id.replace('-ai', '').charAt(0).toUpperCase() + 
-                                             resp.socket_id.replace('-ai', '').slice(1);
+                                const sender = resp.socket_id.replace('-ci', '').charAt(0).toUpperCase() + 
+                                             resp.socket_id.replace('-ci', '').slice(1);
                                 aiMessageElement.innerHTML = `
                                     <div class="hermes__message-content">
                                         <div class="hermes__message-text">

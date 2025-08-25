@@ -310,14 +310,14 @@ window.TeamChat = {
     
     /**
      * Format sender name from AI identifier
-     * @param {string} aiId - AI identifier (e.g., 'terma-ai', 'terma')
+     * @param {string} aiId - AI identifier (e.g., 'terma-ci', 'terma')
      * @returns {string} Formatted name
      */
     formatSenderName(aiId) {
         if (!aiId) return 'Unknown';
         
-        // Remove '-ai' suffix if present
-        const cleanId = aiId.replace(/-ai$/, '');
+        // Remove '-ci' suffix if present
+        const cleanId = aiId.replace(/-ci$/, '');
         
         // Capitalize first letter
         return cleanId.charAt(0).toUpperCase() + cleanId.slice(1);

@@ -1619,9 +1619,9 @@ window.synthesis_sendChat_original = function() {
                         // Handle multiple responses from team chat
                         if (data.responses && data.responses.length > 0) {
                             data.responses.forEach(resp => {
-                                // Extract sender name from socket_id (e.g., "apollo-ai" -> "Apollo")
-                                const sender = resp.socket_id.replace('-ai', '').charAt(0).toUpperCase() + 
-                                             resp.socket_id.replace('-ai', '').slice(1);
+                                // Extract sender name from socket_id (e.g., "apollo-ci" -> "Apollo")
+                                const sender = resp.socket_id.replace('-ci', '').charAt(0).toUpperCase() + 
+                                             resp.socket_id.replace('-ci', '').slice(1);
                                 
                                 // Create AI response message element
                                 const responseDiv = document.createElement('div');

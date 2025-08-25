@@ -4818,7 +4818,7 @@ async function rhetor_sendTeamChatMessage(message) {
             // Show individual responses
             for (const resp of data.responses) {
                 // Extract AI name from socket_id (e.g., "apollo" -> "Apollo")
-                const aiName = resp.socket_id.replace('-ai', '').split('-')
+                const aiName = resp.socket_id.replace('-ci', '').split('-')
                     .map(word => word.charAt(0).toUpperCase() + word.slice(1))
                     .join(' ');
                 // Clean up the response by removing "Received message message." prefix
