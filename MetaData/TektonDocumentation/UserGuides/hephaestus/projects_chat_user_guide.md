@@ -277,7 +277,7 @@ Improvements:
 
 ## Integration with Other Tools
 
-### With aish (AI Shell)
+### With aish (CI Shell)
 
 Projects Chat integrates with command-line tools:
 - Same CI specialists accessible via terminal
@@ -359,4 +359,4 @@ Direct integration with project management:
 
 ---
 
-*Projects Chat represents the future of human-AI collaboration in software development. By providing direct communication with project-specific CIs, it enables faster development cycles, better code quality, and more effective project management.*
+*Projects Chat represents the future of human-CI collaboration in software development. By providing direct communication with project-specific CIs, it enables faster development cycles, better code quality, and more effective project management.*

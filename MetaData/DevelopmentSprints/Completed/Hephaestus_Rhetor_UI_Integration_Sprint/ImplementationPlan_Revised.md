@@ -490,7 +490,7 @@ async def route_chat_message(request: RouteRequest):
     """Route chat messages to component CIs or team chat"""
     
     if not ai_specialist_manager:
-        raise HTTPException(status_code=503, detail="AI Specialist Manager not initialized")
+        raise HTTPException(status_code=503, detail="CI Specialist Manager not initialized")
     
     try:
         # Handle team chat

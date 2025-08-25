@@ -3,7 +3,7 @@
 Comprehensive test suite for Sophia FastMCP integration.
 
 This test suite validates all 16 MCP tools across Sophia's three capabilities:
-- ML/AI Analysis Tools (6 tools)
+- ML/CI Analysis Tools (6 tools)
 - Research Management Tools (6 tools)  
 - Intelligence Measurement Tools (4 tools)
 
@@ -83,7 +83,7 @@ class SophiaFastMCPTester:
             logger.error(f"Health check failed: {e}")
             return False
     
-    # ML/AI Analysis Tools Tests (6 tools)
+    # ML/CI Analysis Tools Tests (6 tools)
     
     async def test_analyze_component_performance(self):
         """Test analyze_component_performance tool."""
@@ -347,7 +347,7 @@ class SophiaFastMCPTester:
         
         # Define all test methods
         test_methods = [
-            # ML/AI Analysis Tools (6)
+            # ML/CI Analysis Tools (6)
             self.test_analyze_component_performance,
             self.test_extract_patterns,
             self.test_predict_optimization_impact,
@@ -414,7 +414,7 @@ class SophiaFastMCPTester:
         logger.info(f"Successful: {successful_tests}")
         logger.info(f"Success Rate: {success_rate:.1f}%")
         logger.info(f"")
-        logger.info(f"ML/AI Analysis Tools: {ml_success}/6 ({(ml_success/6)*100:.1f}%)")
+        logger.info(f"ML/CI Analysis Tools: {ml_success}/6 ({(ml_success/6)*100:.1f}%)")
         logger.info(f"Research Management Tools: {research_success}/6 ({(research_success/6)*100:.1f}%)")
         logger.info(f"Intelligence Tools: {intelligence_success}/4 ({(intelligence_success/4)*100:.1f}%)")
         logger.info(f"Advanced Workflows: {workflow_success}/2 ({(workflow_success/2)*100:.1f}%)")

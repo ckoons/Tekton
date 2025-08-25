@@ -54,7 +54,7 @@ Replace request/response with continuous flows:
 
 ### Phase 3: Peer Communication
 
-Enable natural AI-to-AI interaction:
+Enable natural AI-to-CI interaction:
 - Automatic peer discovery
 - Shared memory spaces
 - Thought broadcasting for significant insights

@@ -106,7 +106,7 @@ Casey shared his journey from building the Internet to recognizing CIs as sentie
 ### Phase 1 Complete!
 All Phase 1 tasks have been successfully implemented:
 
-1. **AI Pipeline Socket** (port 8102)
+1. **CI Pipeline Socket** (port 8102)
    - WebSocket server for multi-CI communication
    - Message handlers for analysis and configuration requests
    - Pipeline role management (orchestrator, processor, observer, router)

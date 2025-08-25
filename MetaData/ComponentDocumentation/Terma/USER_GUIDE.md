@@ -258,7 +258,7 @@ Terma provides AI-powered assistance for terminal commands and output analysis.
 
 #### Via Web Interface
 
-1. Click the "AI Assist" button in the toolbar
+1. Click the "CI Assist" button in the toolbar
 2. Enter your question in the dialog
 3. Click "Ask" to submit your question
 4. The assistant's response will appear in a panel alongside the terminal
@@ -371,7 +371,7 @@ http://localhost:8767/terminal/launch?shell_command=/bin/zsh
 The terminal UI provides several controls:
 
 1. **New Session**: Create a new terminal session
-2. **AI Assist**: Request LLM assistance
+2. **CI Assist**: Request LLM assistance
 3. **Clear Terminal**: Clear the terminal screen
 4. **Theme Selector**: Change the terminal theme
 5. **Font Size Selector**: Change the terminal font size

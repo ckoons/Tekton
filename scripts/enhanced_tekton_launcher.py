@@ -1095,7 +1095,7 @@ class EnhancedComponentLauncher:
                 self.log(f"Component does not support CI specialists", "info", component_name)
                 return
             
-            self.log(f"AI support enabled, checking CI configuration...", "info", component_name)
+            self.log(f"CI support enabled, checking CI configuration...", "info", component_name)
             
             # Use the CI launcher script
             cmd = [
@@ -1122,19 +1122,19 @@ class EnhancedComponentLauncher:
             
             if process.returncode == 0:
                 if "Successfully launched" in output:
-                    self.log(f"AI specialist launched successfully", "success", component_name)
+                    self.log(f"CI specialist launched successfully", "success", component_name)
                 elif "already running" in output:
-                    self.log(f"AI specialist already running", "info", component_name)
+                    self.log(f"CI specialist already running", "info", component_name)
                 else:
-                    self.log(f"AI launch completed (check ai_status for details)", "info", component_name)
+                    self.log(f"CI launch completed (check ai_status for details)", "info", component_name)
             else:
                 # Extract error message from output
                 error_lines = [line for line in output.split('\n') if 'error' in line.lower() or 'failed' in line.lower()]
                 error_msg = error_lines[0] if error_lines else "Check logs for details"
-                self.log(f"AI launch failed: {error_msg}", "warning", component_name)
+                self.log(f"CI launch failed: {error_msg}", "warning", component_name)
                 
         except Exception as e:
-            self.log(f"AI launch error: {str(e)}", "error", component_name)
+            self.log(f"CI launch error: {str(e)}", "error", component_name)
     
     
 

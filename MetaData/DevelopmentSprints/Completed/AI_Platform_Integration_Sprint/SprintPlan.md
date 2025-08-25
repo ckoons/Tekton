@@ -10,7 +10,7 @@
 ## Sprint Objectives
 
 1. Create shared CI management utilities (launcher, killer, status)
-2. Implement CI lifecycle management with TEKTON_REGISTER_AI flag
+2. Implement CI lifecycle management with TEKTON_REGISTER_CI flag
 3. Create Numa (Platform AI) and Noesis (Discovery) components
 4. Integrate CI socket registry with component lifecycle
 5. Implement CI health monitoring and auto-recovery
@@ -145,7 +145,7 @@ export TEKTON_REGISTER_AI=false  # Development mode
 
 ## Success Criteria
 
-1. ✓ TEKTON_REGISTER_AI flag controls CI lifecycle
+1. ✓ TEKTON_REGISTER_CI flag controls CI lifecycle
 2. ✓ CI processes start/stop with components
 3. ✓ Numa launches after full stack, terminates first
 4. ✓ Health monitoring detects and recovers unresponsive CIs
@@ -173,7 +173,7 @@ export TEKTON_REGISTER_AI=false  # Development mode
 ## Future Enhancements
 
 1. Advanced Numa coaching behaviors
-2. Inter-AI collaboration patterns
+2. Inter-CI collaboration patterns
 3. Context sharing between CIs
 4. CI performance analytics
 5. Dynamic CI scaling

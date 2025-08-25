@@ -1,6 +1,6 @@
 # Terma: Terminal Integration for Tekton
 
-Terma is an advanced terminal system designed for integration with the Tekton ecosystem. Terma v2.0 is a native terminal orchestrator that works seamlessly with aish (AI Shell) for enhanced terminal experiences.
+Terma is an advanced terminal system designed for integration with the Tekton ecosystem. Terma v2.0 is a native terminal orchestrator that works seamlessly with aish (CI Shell) for enhanced terminal experiences.
 
 ![Terma Terminal](./images/icon.jpg)
 

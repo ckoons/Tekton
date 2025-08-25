@@ -47,7 +47,7 @@ class TeamChatRequest(BaseModel):
 class TeamChatResponse(BaseModel):
     """Team chat response model."""
     request_id: str = Field(..., description="Unique request identifier")
-    responses: List[Dict[str, Any]] = Field(..., description="AI responses")
+    responses: List[Dict[str, Any]] = Field(..., description="CI responses")
     moderation_mode: str = Field(..., description="Moderation mode used")
     synthesis: Optional[str] = Field(None, description="Synthesized response (if applicable)")
     consensus: Optional[Dict[str, Any]] = Field(None, description="Consensus analysis (if applicable)")

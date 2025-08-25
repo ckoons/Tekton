@@ -163,7 +163,7 @@ PUT    /api/v1/autonomy/level         # Update autonomy level
 GET    /api/v1/autonomy/metrics       # Performance metrics
 ```
 
-### Socket API (AI Pipeline)
+### Socket API (CI Pipeline)
 
 ```python
 # WebSocket endpoint: ws://localhost:8102/ws

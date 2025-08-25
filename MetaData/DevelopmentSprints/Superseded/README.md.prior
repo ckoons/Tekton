@@ -20,7 +20,7 @@ All new code and significant modifications to existing code must include appropr
 
 A Development Sprint is a structured approach to implementing new features, addressing technical debt, and improving the Tekton ecosystem. Each sprint follows a defined process with clear roles, phases, and deliverables.
 
-Tekton is an intelligent orchestration system that coordinates multiple AI models and resources to efficiently solve complex software engineering problems. This Development Sprint process is designed to facilitate the continuous improvement of Tekton in a systematic and documented way.
+Tekton is an intelligent orchestration system that coordinates multiple CI models and resources to efficiently solve complex software engineering problems. This Development Sprint process is designed to facilitate the continuous improvement of Tekton in a systematic and documented way.
 
 ## Sprint Directory Structure
 

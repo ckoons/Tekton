@@ -1134,7 +1134,7 @@ class AIErrorHandler {
                 <p class="mycomponent__error-summary">${analysis.summary}</p>
                 
                 <div class="mycomponent__error-analysis">
-                    <h4>AI Analysis</h4>
+                    <h4>CI Analysis</h4>
                     <p>${analysis.explanation}</p>
                     
                     <h4>Suggested Solutions</h4>

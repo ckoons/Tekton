@@ -107,7 +107,7 @@ class RhetorComponent(StandardComponentBase):
             
             # CI messaging integration is deprecated - messaging now handled through CI Registry
             self.ai_messaging_integration = None
-            logger.info("AI messaging handled through CI Registry")
+            logger.info("CI messaging handled through CI Registry")
             
             # Initialize prompt engine with template manager integration
             self.prompt_engine = PromptEngine(self.template_manager)
@@ -126,7 +126,7 @@ class RhetorComponent(StandardComponentBase):
         if self.ai_messaging_integration:
             try:
                 await self.ai_messaging_integration.cleanup()
-                logger.info("AI messaging integration cleaned up")
+                logger.info("CI messaging integration cleaned up")
             except Exception as e:
                 logger.warning(f"Error cleaning up CI messaging integration: {e}")
         

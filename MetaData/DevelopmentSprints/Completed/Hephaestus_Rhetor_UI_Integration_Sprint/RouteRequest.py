@@ -39,7 +39,7 @@ class RouteResponse(TektonBaseModel):
     message: str
     speaker: Optional[str] = Field(
         None, 
-        description="For team chat, identifies which AI is speaking"
+        description="For team chat, identifies which CI is speaking"
     )
     model: Optional[str] = Field(
         None, 

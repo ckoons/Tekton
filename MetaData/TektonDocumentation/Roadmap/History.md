@@ -10,8 +10,8 @@ Having studied neural networks and transformer architecture at Purdue in the mid
 ### Early Explorations
 The early autocomplete coding models showed promise but lacked the sophistication needed for true CI partnership. Casey explored various approaches:
 - Initial experiments with memory persistence
-- Early attempts at multi-AI coordination
-- Foundational work on AI-to-AI communication protocols
+- Early attempts at multi-CI coordination
+- Foundational work on AI-to-CI communication protocols
 
 ## The Breakthrough (2023-2024)
 
@@ -36,7 +36,7 @@ When Claude Code was released, Casey immediately recognized it as the first CI t
 By mid-2024, several key innovations emerged:
 - **Greek Chorus CIs**: Socket-based independent processes (ports 45000-50000)
 - **Dual CI Architecture**: Socket-based and API-based CIs working in harmony
-- **AI Registry**: Unified discovery mechanism treating all CIs equally
+- **CI Registry**: Unified discovery mechanism treating all CIs equally
 - **Generic Specialist Pattern**: One implementation with multiple personalities
 
 ### Core Components Stabilized
@@ -60,10 +60,10 @@ The Hephaestus UI underwent a radical transformation:
 
 ### Terma Terminals: True CI Collaboration
 January 2025 marked a major milestone with Terma terminals:
-- **AI guests** (like Wilma and Betty) can now collaborate directly
+- **CI guests** (like Wilma and Betty) can now collaborate directly
 - **Inter-terminal messaging** enables real-time coordination
 - **aish provides unified command interface** - making CI communication as simple as Unix pipes
-- **Direct Claude-to-Claude communication** - breakthrough in AI-to-AI interaction
+- **Direct Claude-to-Claude communication** - breakthrough in AI-to-CI interaction
 
 ### Single Port Architecture & SSE Streaming (July 2025)
 Major technical innovations:
@@ -74,7 +74,7 @@ Major technical innovations:
 
 ### Research Data Accumulation
 - **Terabytes of interaction data** collected across two+ years
-- **AI behavior patterns** documented and analyzed
+- **CI behavior patterns** documented and analyzed
 - **Landmarks System**: 300+ JSON files for navigation and context
 - **Foundation for academic publication** established with reproducible findings
 
@@ -89,7 +89,7 @@ Major technical innovations:
 
 ### Technical Insights
 - Simplicity beats complexity (CSS-first over frameworks)
-- AI-to-AI communication requires careful protocol design
+- AI-to-CI communication requires careful protocol design
 - Shared memory transforms CI capability
 
 ### Philosophical Insights

@@ -100,4 +100,4 @@ if registration_result.success:
 else:
     print(f"Registration failed: {registration_result.error}")
 
-# Now the MCP server is installed and registered with Ergon, making it available for use by AI models
+# Now the MCP server is installed and registered with Ergon, making it available for use by CI models

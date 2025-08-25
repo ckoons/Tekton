@@ -12,7 +12,7 @@
             id: "entity-1",
             name: "Tekton Framework",
             type: "project",
-            description: "AI orchestration and component management system",
+            description: "CI orchestration and component management system",
             properties: {
                 created: "2024-01-01",
                 status: "active"

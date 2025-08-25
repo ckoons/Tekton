@@ -206,7 +206,7 @@ Numa: Starts after all components, stops before any component
 ## Future Considerations
 
 1. **Distributed CIs**: Could run on separate machines
-2. **AI Pooling**: Shared CIs for similar components
+2. **CI Pooling**: Shared CIs for similar components
 3. **Dynamic Scaling**: Spawn CIs based on load
 4. **Specialized Models**: Task-specific CI variants
 

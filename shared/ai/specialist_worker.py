@@ -84,7 +84,7 @@ except ImportError:
 
 # Architecture decision marker for CI Registry integration
 @architecture_decision(
-    title="AI Specialist CI Registry Integration",
+    title="CI Specialist CI Registry Integration",
     description="All CI specialists automatically store exchanges in CI Registry",
     rationale="Enables Apollo to monitor performance/stress and Rhetor to inject context",
     alternatives_considered=["Per-specialist opt-in", "Separate storage mechanism", "Direct Apollo API calls"],
@@ -109,7 +109,7 @@ except ImportError:
 # @tekton-lifecycle: worker
 # @tekton-abstract: true
 @architecture_decision(
-    title="AI Specialist Worker Pattern",
+    title="CI Specialist Worker Pattern",
     rationale="Provide common framework for all CI specialists with socket communication and LLM integration",
     alternatives_considered=["Direct HTTP APIs", "gRPC services", "Message queues"],
     impacts=["consistency", "code_reuse", "socket_overhead"]
@@ -127,7 +127,7 @@ class CISpecialistWorker(ABC):
                  ai_id: str,
                  component: str,
                  port: int,
-                 description: str = "AI Specialist"):
+                 description: str = "CI Specialist"):
         """
         Initialize CI Specialist Worker.
         
@@ -546,7 +546,7 @@ class CISpecialistWorker(ABC):
     # @tekton-async: true
     # @tekton-lifecycle: startup
     @state_checkpoint(
-        title="AI Specialist Server State",
+        title="CI Specialist Server State",
         state_type="runtime",
         persistence=False,
         consistency_requirements="Socket bound to port"

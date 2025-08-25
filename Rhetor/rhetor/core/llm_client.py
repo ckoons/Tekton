@@ -56,7 +56,7 @@ logger = logging.getLogger(__name__)
 )
 @integration_point(
     title="Direct CI Socket Communication",
-    target_component="AI Specialists (ports 45000-50000)",
+    target_component="CI Specialists (ports 45000-50000)",
     protocol="Direct socket via simple_ai",
     data_flow="Request → simple_ai → Fixed Port Socket → CI Response"
 )
@@ -152,7 +152,7 @@ class LLMClient:
         """Get model information - returns CI info."""
         return {
             "id": model_id,
-            "name": "AI Registry Managed Model",
+            "name": "CI Registry Managed Model",
             "provider": "unified",
             "context_window": 100000,
             "capabilities": ["chat", "completion"]

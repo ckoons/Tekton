@@ -412,16 +412,16 @@ async def import_requirement_as_task(
     response_model=Dict[str, Any],
     summary="Decompose task using AI",
     description="Break down a task into subtasks using AI-powered decomposition",
-    tags=["AI Features"]
+    tags=["CI Features"]
 )
 @api_contract(
-    title="AI Task Decomposition API",
+    title="CI Task Decomposition API",
     endpoint="/api/v1/tasks/{task_id}/decompose",
     method="POST",
     request_schema={"depth": "int", "max_subtasks": "int", "auto_create": "bool"}
 )
 @integration_point(
-    title="AI Decomposition Integration",
+    title="CI Decomposition Integration",
     target_component="MCP Tools, LLM Service (Rhetor)",
     protocol="MCP Protocol, Internal API",
     data_flow="Task -> CI Analysis -> Subtask Generation -> Task Manager"
@@ -462,7 +462,7 @@ async def decompose_task(
     response_model=Dict[str, Any],
     summary="Analyze task complexity using AI",
     description="Get AI-powered analysis of task complexity",
-    tags=["AI Features"]
+    tags=["CI Features"]
 )
 async def analyze_task_complexity(
     task_id: str = Path(..., title="The ID of the task to analyze"),
@@ -491,7 +491,7 @@ async def analyze_task_complexity(
     response_model=Dict[str, Any],
     summary="Suggest optimal task execution order",
     description="Get AI-powered suggestions for task execution order",
-    tags=["AI Features"]
+    tags=["CI Features"]
 )
 async def suggest_task_order(
     task_ids: Optional[List[str]] = Body(None, title="List of task IDs to order"),
@@ -554,7 +554,7 @@ async def add_telos_requirement_ref(
     response_model=Dict[str, Any],
     summary="Decompose task using AI",
     description="Break down a task into subtasks using AI-powered decomposition",
-    tags=["AI Features"]
+    tags=["CI Features"]
 )
 async def decompose_task(
     task_id: str = Path(..., title="The ID of the task to decompose"),
@@ -585,7 +585,7 @@ async def decompose_task(
     response_model=Dict[str, Any],
     summary="Analyze task complexity using AI",
     description="Get AI-powered analysis of task complexity",
-    tags=["AI Features"]
+    tags=["CI Features"]
 )
 async def analyze_task_complexity(
     task_id: str = Path(..., title="The ID of the task to analyze"),
@@ -614,7 +614,7 @@ async def analyze_task_complexity(
     response_model=Dict[str, Any],
     summary="Suggest optimal task execution order",
     description="Get AI-powered suggestions for task execution order",
-    tags=["AI Features"]
+    tags=["CI Features"]
 )
 async def suggest_task_order(
     task_ids: Optional[List[str]] = Body(None, title="List of task IDs to order"),

@@ -31,13 +31,13 @@ from landmarks import (
     decided_by="Casey"
 )
 @performance_boundary(
-    title="AI Message Exchange",
+    title="CI Message Exchange",
     sla="<30s timeout per message",
     optimization_notes="Direct socket connection with UUID-based message tracking",
     metrics={"default_timeout": "30s", "max_retries": 3}
 )
 @integration_point(
-    title="AI Service Integration",
+    title="CI Service Integration",
     target_component="ai_service_simple",
     protocol="Socket/NDJSON",
     data_flow="Message queue → Direct socket → CI response"

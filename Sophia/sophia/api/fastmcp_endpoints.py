@@ -2,7 +2,7 @@
 FastMCP endpoints for Sophia.
 
 This module provides FastAPI endpoints for MCP (Model Context Protocol) integration,
-allowing external systems to interact with Sophia's ML/AI analysis, research management,
+allowing external systems to interact with Sophia's ML/CI analysis, research management,
 and intelligence measurement capabilities.
 """
 
@@ -46,7 +46,7 @@ class MCPResponse(TektonBaseModel):
 fastmcp_server = FastMCPServer(
     name="sophia",
     version="0.1.0",
-    description="Sophia ML/AI Analysis and Research Management MCP Server"
+    description="Sophia ML/CI Analysis and Research Management MCP Server"
 )
 
 # Register capabilities and tools (instantiate the capability classes)
@@ -70,7 +70,7 @@ add_mcp_endpoints(fastmcp_router, fastmcp_server)
 @fastmcp_router.get("/ml-status")
 async def get_ml_status() -> Dict[str, Any]:
     """
-    Get overall ML/AI system status.
+    Get overall ML/CI system status.
     
     Returns:
         Dictionary containing ML system status and capabilities
@@ -90,7 +90,7 @@ async def get_ml_status() -> Dict[str, Any]:
             "mcp_tools": len(ml_analysis_tools + research_management_tools + intelligence_measurement_tools),
             "ml_engine_status": "ready",
             "research_projects": 5,  # Would query actual projects
-            "message": "Sophia ML/AI analysis system is operational"
+            "message": "Sophia ML/CI analysis system is operational"
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to get ML status: {str(e)}")

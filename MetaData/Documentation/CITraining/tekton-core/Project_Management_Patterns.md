@@ -4,7 +4,7 @@
 
 **"Errors are gold, they help us improve. Questions that are sincere are the best ways to communicate. We evolve, change and hope to improve. If you stumble, get up and get back in the race, you can win."**
 
-This document provides proven patterns for effective project management in multi-AI development environments. These patterns emerge from real experience and continue evolving as we learn.
+This document provides proven patterns for effective project management in multi-CI development environments. These patterns emerge from real experience and continue evolving as we learn.
 
 ## Sprint Analysis Patterns
 

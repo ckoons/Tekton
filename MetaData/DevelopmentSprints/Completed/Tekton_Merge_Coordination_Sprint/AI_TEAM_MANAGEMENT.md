@@ -6,7 +6,7 @@ Casey manages a team of CI developers (Alice, Betty, Carol, etc.) who work indep
 
 ## CI Developer Identity System
 
-### 1. **AI Developer Profiles**
+### 1. **CI Developer Profiles**
 
 ```yaml
 # ~/.tekton/ai_team/alice.yaml
@@ -53,7 +53,7 @@ carol:
   greeting: "Hi Casey! Carol here, excited to build something users will love!"
 ```
 
-### 2. **AI Team Setup Script**
+### 2. **CI Team Setup Script**
 
 ```python
 #!/usr/bin/env python3
@@ -205,7 +205,7 @@ class DevelopmentTaskQueue:
         return branch_name
 ```
 
-### 4. **AI Session Launcher**
+### 4. **CI Session Launcher**
 
 ```python
 #!/usr/bin/env python3
@@ -284,7 +284,7 @@ class AISessionLauncher:
         print(f"{'='*60}\n")
 ```
 
-### 5. **Multi-AI Terminal Dashboard**
+### 5. **Multi-CI Terminal Dashboard**
 
 ```bash
 #!/bin/bash

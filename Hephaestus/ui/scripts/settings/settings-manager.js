@@ -363,7 +363,7 @@ class SettingsManager {
             'penia': { main: 'Penia', sub: 'LLM Cost Management' },
             'hermes': { main: 'Hermes', sub: 'Tektons/Federation' },
             'ergon': { main: 'Ergon', sub: 'Automation/Solutions' },
-            'terma': { main: 'Terma', sub: 'AI Terminals' },
+            'terma': { main: 'Terma', sub: 'CI Terminals' },
             'profile': { main: 'Profile', sub: '' },
             'settings': { main: 'Settings', sub: '' }
         } : {
@@ -385,7 +385,7 @@ class SettingsManager {
             'penia': { main: '', sub: 'LLM Cost Management' },
             'hermes': { main: '', sub: 'Tektons/Federation' },
             'ergon': { main: '', sub: 'Automation/Solutions' },
-            'terma': { main: '', sub: 'AI Terminals' },
+            'terma': { main: '', sub: 'CI Terminals' },
             'profile': { main: 'Profile', sub: '' },
             'settings': { main: 'Settings', sub: '' }
         };
@@ -483,7 +483,7 @@ class SettingsManager {
                 case 'penia': return 'LLM Cost Management';
                 case 'hermes': return 'Tektons/Federation';
                 case 'ergon': return 'Automation/Solutions';
-                case 'terma': return 'AI Terminals';
+                case 'terma': return 'CI Terminals';
                 case 'profile': return 'Profile';
                 case 'settings': return 'Settings';
                 default: return component;

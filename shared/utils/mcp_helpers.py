@@ -39,7 +39,7 @@ except ImportError:
 
 @integration_point(
     title="MCP server creation",
-    target_component="AI Agents",
+    target_component="CI Agents",
     protocol="MCP",
     data_flow="Component tools exposed to CI agents via Model Context Protocol"
 )

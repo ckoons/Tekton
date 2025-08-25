@@ -18,7 +18,7 @@ This document provides a comprehensive handoff for the next Claude Code session 
    - Built `GenericAISpecialist` that adapts to any component
    - Each CI has a unique personality defined in `COMPONENT_EXPERTISE`
 
-3. **AI Lifecycle Integration**
+3. **CI Lifecycle Integration**
    - `enhanced_tekton_launcher.py --ai all` launches all CI specialists
    - `enhanced_tekton_ai_status.py` shows CI specialist status
    - `enhanced_tekton_status.py` displays CI models in main status
@@ -40,7 +40,7 @@ This document provides a comprehensive handoff for the next Claude Code session 
 ```
 Component (e.g., Numa) 
     ↓
-AI Specialist (numa-ai on port 45xxx)
+CI Specialist (numa-ai on port 45xxx)
     ↓
 Socket Protocol (JSON messages)
     ↓
@@ -76,7 +76,7 @@ async def test_ai_communication(port):
 ### 2. Team Chat Integration
 - Each CI should be accessible in its own chat interface
 - All CIs should be available in Team Chat
-- Test cross-AI communication patterns
+- Test cross-CI communication patterns
 
 ### 3. Concurrent Launch Testing
 - Verify no port conflicts when launching multiple CIs

@@ -472,7 +472,7 @@ ergon.provide_feedback(results, approval=True)
 
 ## Conclusion
 
-Ergon's CI-in-the-Loop approach represents the future of software development. By inverting the traditional human-AI relationship, we unlock exponential productivity gains while maintaining quality and flexibility. The system learns, adapts, and improves continuously, making each sprint more efficient than the last.
+Ergon's CI-in-the-Loop approach represents the future of software development. By inverting the traditional human-CI relationship, we unlock exponential productivity gains while maintaining quality and flexibility. The system learns, adapts, and improves continuously, making each sprint more efficient than the last.
 
 As Casey says: "The goal is to work myself out of a job." Ergon makes this vision a reality, not by replacing developers, but by amplifying their impact 50-fold through intelligent automation.
 

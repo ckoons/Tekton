@@ -142,7 +142,7 @@ Simple. Works. Hard to screw up.
 
 ## Future Direction: aish - The CI Shell
 
-Rhetor is evolving into `aish`, a full command-line shell for multi-AI distributed computing.
+Rhetor is evolving into `aish`, a full command-line shell for multi-CI distributed computing.
 
 ### Vision
 

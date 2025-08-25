@@ -45,7 +45,7 @@ window.synthesisComponent = {
             },
             {
                 id: 'ai-memory-enhancement',
-                name: 'AI Memory Enhancement',
+                name: 'CI Memory Enhancement',
                 status: 'Ready-3:Synthesis',
                 tasks: 12,
                 hours: 48,

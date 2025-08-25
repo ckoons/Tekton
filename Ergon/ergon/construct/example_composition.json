@@ -1,5 +1,5 @@
 {
-  "name": "AI Analysis Pipeline",
+  "name": "CI Analysis Pipeline",
   "version": "1.0.0",
   "description": "Combines parser, analyzer, and reporter components",
   "type": "solution",

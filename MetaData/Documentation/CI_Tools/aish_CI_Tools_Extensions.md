@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document details the specific extensions to aish (AI Shell) required to support CI Tools as first-class citizens in the Tekton ecosystem. These extensions maintain backward compatibility while adding powerful new capabilities for integrating tools like Claude Code, Cursor, and Continue.
+This document details the specific extensions to aish (CI Shell) required to support CI Tools as first-class citizens in the Tekton ecosystem. These extensions maintain backward compatibility while adding powerful new capabilities for integrating tools like Claude Code, Cursor, and Continue.
 
 ## Core Extensions
 

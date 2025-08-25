@@ -151,6 +151,6 @@ If CIs don't respond to chat messages:
 
 ## Related Documentation
 
-- [AI Discovery for Aish](./AIDiscoveryForAish.md)
-- [AI Registry Architecture](../Architecture/AIRegistryArchitecture.md)
+- [CI Discovery for Aish](./AIDiscoveryForAish.md)
+- [CI Registry Architecture](../Architecture/AIRegistryArchitecture.md)
 - [Unified CI Client Design](../Architecture/UnifiedAIClient.md)

@@ -275,7 +275,7 @@ The Terma interface provides terminal access:
    - Use tab completion
    - View command output
 
-2. **AI Integration**:
+2. **CI Integration**:
    - Use /ai commands for assistance
    - Get command suggestions
    - Translate natural language to commands

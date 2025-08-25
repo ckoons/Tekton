@@ -3,7 +3,7 @@
     {
       "id": "ergon",
       "name": "Ergon",
-      "description": "AI agent management and orchestration",
+      "description": "CI agent management and orchestration",
       "icon": "🤖",
       "defaultMode": "html",
       "capabilities": [
@@ -413,7 +413,7 @@
     {
       "id": "numa",
       "name": "Numa",
-      "description": "Platform AI Mentor",
+      "description": "Platform CI Mentor",
       "icon": "🌟",
       "defaultMode": "html",
       "capabilities": [

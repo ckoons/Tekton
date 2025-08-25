@@ -87,7 +87,7 @@ Terma UI (Hephaestus) → Terma Service → Native Terminal App
 ## Key Features
 
 1. **Terminal Templates**: Pre-configured launch profiles
-2. **AI Context Injection**: Pass purpose/context to aish
+2. **CI Context Injection**: Pass purpose/context to aish
 3. **Multi-Terminal Support**: Terminal.app, iTerm2, Warp, Claude Code
 4. **Cross-Platform**: macOS first, Linux compatible
 5. **Simple Management**: PID-based tracking and control

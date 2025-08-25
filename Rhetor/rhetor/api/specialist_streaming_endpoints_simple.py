@@ -70,12 +70,12 @@ async def stream_chat(
     try:
         ai_info = ai_manager.get_ai_info(component_id)
     except ValueError:
-        raise HTTPException(status_code=404, detail=f"AI specialist {ai_id} not found")
+        raise HTTPException(status_code=404, detail=f"CI specialist {ai_id} not found")
     
     if not await ai_manager.check_ai_health(ai_id):
         raise HTTPException(
             status_code=503,
-            detail=f"AI specialist {ai_id} is not healthy"
+            detail=f"CI specialist {ai_id} is not healthy"
         )
     
     if simulate_streaming:

@@ -132,7 +132,7 @@ async def test_context_passing():
     context = {
         "session_id": "test-123",
         "user": "Casey",
-        "previous_topic": "AI architecture"
+        "previous_topic": "CI architecture"
     }
     
     print(f"Context: {json.dumps(context, indent=2)}")

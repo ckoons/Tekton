@@ -172,7 +172,7 @@ async def route_message(request: RouteRequest):
 ## Out of Scope (Future Sprints)
 
 - Implementing CI assistants for components other than Rhetor
-- Advanced AI-to-AI communication protocols
+- Advanced AI-to-CI communication protocols
 - Cross-component context sharing
 - Voice/multimodal interfaces
 

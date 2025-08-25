@@ -52,7 +52,7 @@
 ## Current State
 
 ### Working Features
-1. **AI Specialist Management**: Creating, listing, and activating CI specialists
+1. **CI Specialist Management**: Creating, listing, and activating CI specialists
 2. **WebSocket Communication**: Real-time CI specialist chat through WebSocket
 3. **Team Chat Orchestration**: Multiple CI specialists can have coordinated discussions
 4. **Real CI Responses**: Specialists generate actual CI responses using configured LLMs
@@ -94,7 +94,7 @@ rhetor-orchestrator → Hermes Message Bus → metis-analyst (in Metis component
 3. **Implement proper Hermes message bus integration** for cross-component specialist communication
 
 ### Medium Priority
-1. **Verify AI-to-AI communication through Hermes** for cross-component scenarios
+1. **Verify AI-to-CI communication through Hermes** for cross-component scenarios
 2. **Add streaming support** for real-time CI responses in UI
 3. **Implement conversation persistence** and history
 

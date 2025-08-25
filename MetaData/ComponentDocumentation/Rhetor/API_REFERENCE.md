@@ -1127,7 +1127,7 @@ Server -> Client (Stream response):
 
 ## CI Socket Registry API
 
-The CI Socket Registry provides the foundation for team chat and multi-AI collaboration in Rhetor. It implements the Unix philosophy where "AIs are just sockets that read and write."
+The CI Socket Registry provides the foundation for team chat and multi-CI collaboration in Rhetor. It implements the Unix philosophy where "AIs are just sockets that read and write."
 
 For detailed Socket Registry API documentation, see: [AI_SOCKET_REGISTRY_API.md](./AI_SOCKET_REGISTRY_API.md)
 

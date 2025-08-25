@@ -1133,7 +1133,7 @@ class TermaTerminal extends HTMLElement {
         if (this.showAssistButton) {
             const assistButton = document.createElement('button');
             assistButton.className = 'terma-terminal-button';
-            assistButton.title = 'AI Assist';
+            assistButton.title = 'CI Assist';
             assistButton.innerHTML = '<svg>...</svg>'; // SVG icon
             assistButton.addEventListener('click', () => this.showLlmAssistPrompt());
             buttonsContainer.appendChild(assistButton);
@@ -1202,7 +1202,7 @@ class TermaTerminal extends HTMLElement {
             
             const llmTitle = document.createElement('div');
             llmTitle.className = 'terma-terminal-llm-title';
-            llmTitle.textContent = 'AI Assistant';
+            llmTitle.textContent = 'CI Assistant';
             llmHeader.appendChild(llmTitle);
             
             const llmClose = document.createElement('button');

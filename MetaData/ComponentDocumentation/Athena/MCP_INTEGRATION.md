@@ -227,7 +227,7 @@ relationship_result = await client.call_tool("create_relationship", {
     "target_entity_id": ml_result["entity_id"],
     "relationship_type": "contains",
     "properties": {
-        "description": "AI contains Machine Learning as a subfield"
+        "description": "CI contains Machine Learning as a subfield"
     }
 })
 

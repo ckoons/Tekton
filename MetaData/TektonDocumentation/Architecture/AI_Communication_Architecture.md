@@ -30,7 +30,7 @@ Tekton supports two distinct types of CI specialists with different communicatio
 
 // Response
 {
-  "content": "AI response here",
+  "content": "CI response here",
   "status": "success"
 }
 ```
@@ -63,7 +63,7 @@ All CIs register in the unified registry:
     "port": 45007,
     "component": "apollo",
     "metadata": {
-      "description": "AI specialist for Apollo",
+      "description": "CI specialist for Apollo",
       "pid": 32351
     },
     "connection": {

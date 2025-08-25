@@ -4,7 +4,7 @@
 
 ## Key Insight: Rhetor as CI Hiring Manager
 
-After examining the Rhetor UI and understanding the system better, Rhetor should be conceptualized as the "AI Hiring Manager" - it recruits, motivates, and manages CI specialists for specific tasks.
+After examining the Rhetor UI and understanding the system better, Rhetor should be conceptualized as the "CI Hiring Manager" - it recruits, motivates, and manages CI specialists for specific tasks.
 
 ## Context Architecture for AI/CI Restarts
 

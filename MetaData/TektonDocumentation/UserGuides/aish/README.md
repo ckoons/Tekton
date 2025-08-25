@@ -1,10 +1,10 @@
 # aish User Guide
 
-User guide for humans working with aish (AI Shell) in the Tekton platform.
+User guide for humans working with aish (CI Shell) in the Tekton platform.
 
 ## Overview
 
-aish is your command-line interface to the Tekton Multi-AI Engineering Platform. With the new unified CI system, it provides a single interface to communicate with:
+aish is your command-line interface to the Tekton Multi-CI Engineering Platform. With the new unified CI system, it provides a single interface to communicate with:
 - **Greek Chorus CIs**: numa, apollo, athena, and other CI specialists
 - **Terminals**: Other human terminals like alice, bob, sandi
 - **Project CIs**: Project-specific computational instances
@@ -80,7 +80,7 @@ With the unified CI system, you can communicate with any type of CI using the sa
 ### Direct Messaging
 
 ```bash
-# Greek Chorus CIs (AI specialists)
+# Greek Chorus CIs (CI specialists)
 aish athena "Explain the observer pattern"
 aish numa "Review this code for potential issues"
 aish apollo "What patterns do you see in these logs?"

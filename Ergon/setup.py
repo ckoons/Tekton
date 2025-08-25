@@ -25,7 +25,7 @@ except FileNotFoundError:
 setup(
     name="ergon",
     version="0.1.0",
-    author="AI Agent Team",
+    author="CI Agent Team",
     author_email="info@example.com",
     description="Ergon: Intelligent Tool, Agent, and Workflow Manager",
     long_description=long_description,

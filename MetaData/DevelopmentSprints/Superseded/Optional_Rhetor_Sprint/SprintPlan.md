@@ -12,7 +12,7 @@ The primary goals of this sprint are:
 
 1. **Production Readiness**: Implement security, monitoring, and observability features required for production deployment
 2. **Cross-Component Integration**: Enable full orchestration between Rhetor and other Tekton components (Apollo, Engram, Prometheus)
-3. **Advanced Orchestration**: Implement sophisticated multi-AI coordination patterns identified through real usage
+3. **Advanced Orchestration**: Implement sophisticated multi-CI coordination patterns identified through real usage
 
 ## Business Value
 
@@ -130,7 +130,7 @@ This sprint is planned to be completed in 2-3 phases based on prioritized needs:
 
 ### Phase 4C: Advanced Orchestration (Optional)
 - **Duration**: 3-4 days (if validated)
-- **Focus**: Complex multi-AI coordination patterns
+- **Focus**: Complex multi-CI coordination patterns
 - **Key Deliverables**:
   - Workflow engine for complex orchestration
   - Parallel specialist execution framework

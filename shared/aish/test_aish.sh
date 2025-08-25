@@ -46,7 +46,7 @@ fi
 
 # Test 6: Help command
 echo -n "Test 6 - Help command: "
-if ./aish help 2>&1 | grep -q "AI Training"; then
+if ./aish help 2>&1 | grep -q "CI Training"; then
     echo "✓ PASS"
 else
     echo "✗ FAIL"

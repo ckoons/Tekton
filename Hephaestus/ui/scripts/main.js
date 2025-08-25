@@ -223,7 +223,7 @@ document.addEventListener('DOMContentLoaded', function() {
             } else {
                 console.error('UI Manager not found!');
                 if (window.tektonUI) {
-                    tektonUI.showModal('Budget', '<div class="budget-panel"><h3>Resource Usage</h3><p>AI Credits: 2,450 / 5,000</p><p>Storage: 1.2 GB / 10 GB</p><p>API Calls: 325 / 1,000</p></div>');
+                    tektonUI.showModal('Budget', '<div class="budget-panel"><h3>Resource Usage</h3><p>CI Credits: 2,450 / 5,000</p><p>Storage: 1.2 GB / 10 GB</p><p>API Calls: 325 / 1,000</p></div>');
                 }
             }
             

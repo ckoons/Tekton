@@ -176,7 +176,7 @@ curl -X POST http://localhost:8088/api/mcp/v2/execute \
       "changes": [{
         "type": "html",
         "selector": "[data-tekton-section=\"footer\"]",
-        "content": "<span data-tekton-status=\"ai-connected\">AI Ready</span>",
+        "content": "<span data-tekton-status=\"ai-connected\">CI Ready</span>",
         "action": "append"
       }]
     }

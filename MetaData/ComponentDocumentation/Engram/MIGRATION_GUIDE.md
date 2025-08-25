@@ -171,7 +171,7 @@ The following experimental features have been removed:
 1. **Katra System** - Memory provenance tracking
 2. **Dream States** - Background memory processing  
 3. **Emotional Memory** - Emotion-tagged memories
-4. **Peer Awareness** - Multi-AI communication
+4. **Peer Awareness** - Multi-CI communication
 5. **Memory Streams** - Stream-based memory interface
 6. **Complex Context Management** - Auto-switching contexts
 

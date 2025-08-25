@@ -287,7 +287,7 @@ Enable other Tekton CIs to request terminals:
 async def ai_terminal_request(request: AITerminalRequest):
     """Handle terminal requests from CI components."""
     config = {
-        "name": f"AI Terminal - {request.purpose}",
+        "name": f"CI Terminal - {request.purpose}",
         "app": request.terminal_app or "Terminal.app",
         "shell": "aish",
         "working_dir": request.working_dir,
@@ -312,7 +312,7 @@ async def ai_terminal_request(request: AITerminalRequest):
 1. **PID Validation**: Always verify PID belongs to our launched terminals
 2. **Command Injection**: Sanitize all shell commands and paths
 3. **Permission Scope**: Terminal runs with user permissions only
-4. **AI Boundaries**: aish should confirm destructive operations
+4. **CI Boundaries**: aish should confirm destructive operations
 
 ## Performance Considerations
 

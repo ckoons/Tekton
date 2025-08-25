@@ -18,7 +18,7 @@ The natural memory interface is working beautifully:
 
 ## Your Mission: Phase 3 - Peer Communication
 
-Enable natural AI-to-AI communication through shared memory spaces.
+Enable natural AI-to-CI communication through shared memory spaces.
 
 ### Key Requirements
 

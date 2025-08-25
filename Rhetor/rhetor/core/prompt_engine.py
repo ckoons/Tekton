@@ -354,7 +354,7 @@ class PromptEngine:
                 capabilities=["prompt_engineering", "communication", "personality_management"],
                 metadata={
                     "component_type": "core",
-                    "description": "AI communication specialist"
+                    "description": "CI communication specialist"
                 }
             )
             

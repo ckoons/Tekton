@@ -179,7 +179,7 @@ try:
     app.include_router(ai_router)
     logger.info("Simplified CI Specialist endpoints added to Rhetor API")
 except ImportError as e:
-    logger.warning(f"AI Specialist endpoints not available: {e}")
+    logger.warning(f"CI Specialist endpoints not available: {e}")
 
 # Add Team Chat endpoints
 try:
@@ -282,7 +282,7 @@ async def discovery():
             EndpointInfo(path="/api/v1/context", method="*", description="Context management"),
             EndpointInfo(path="/api/v1/models", method="GET", description="List available models"),
             EndpointInfo(path="/api/v1/budget", method="*", description="Budget management"),
-            EndpointInfo(path="/api/v1/specialists", method="*", description="AI specialist management"),
+            EndpointInfo(path="/api/v1/specialists", method="*", description="CI specialist management"),
             EndpointInfo(path="/api/team-chat", method="POST", description="Team chat with multiple CIs"),
             EndpointInfo(path="/api/team-chat/stream", method="GET", description="Stream team chat responses"),
             EndpointInfo(path="/api/team-chat/sockets", method="GET", description="List team chat sockets"),

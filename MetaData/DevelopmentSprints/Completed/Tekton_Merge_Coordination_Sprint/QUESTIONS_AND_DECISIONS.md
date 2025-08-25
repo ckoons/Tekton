@@ -31,7 +31,7 @@ sprint/worker_a7f3b2c1_taskname  # Unique but less readable
 
 **Recommendation**: 30-second polling with option to configure
 
-### 3. **AI Consensus Round Limits**
+### 3. **CI Consensus Round Limits**
 
 **Trade-offs:**
 - More rounds = Better consensus possibility

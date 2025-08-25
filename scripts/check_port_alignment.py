@@ -53,9 +53,9 @@ def main():
             continue
     
     # Check ports
-    print("AI Port Alignment Check (Fixed Port System)")
+    print("CI Port Alignment Check (Fixed Port System)")
     print("=" * 70)
-    print(f"{'Component':<15} {'Main Port':<12} {'AI Port':<12} {'AI Running':<12}")
+    print(f"{'Component':<15} {'Main Port':<12} {'CI Port':<12} {'CI Running':<12}")
     print("-" * 70)
     
     running_count = 0

@@ -2,7 +2,7 @@
 
 ## Overview
 
-AI Specialists are intelligent assistants integrated into each Tekton component. They provide domain-specific expertise, automated assistance, and intelligent insights tailored to their component's functionality. This guide covers configuration, usage, and best practices for working with CI Specialists.
+CI Specialists are intelligent assistants integrated into each Tekton component. They provide domain-specific expertise, automated assistance, and intelligent insights tailored to their component's functionality. This guide covers configuration, usage, and best practices for working with CI Specialists.
 
 ## Architecture
 
@@ -69,7 +69,7 @@ ENGRAM_AI_TEMPERATURE=0.7
 
 ### Port Allocation
 
-AI Specialists use a fixed port system:
+CI Specialists use a fixed port system:
 
 | Component | Component Port | CI Port | CI Name |
 |-----------|---------------|---------|---------|
@@ -445,7 +445,7 @@ CUSTOM_EXPERTISE = {
 
 ### Team Chat Integration
 
-AI specialists can participate in team discussions:
+CI specialists can participate in team discussions:
 
 ```python
 # Broadcast to all CIs
@@ -478,6 +478,6 @@ async def ai_enhanced_alert(component, metric, value):
 ## Related Documentation
 
 - [Simple CI Communication Architecture](/MetaData/TektonDocumentation/Architecture/SimpleAICommunication.md)
-- [AI Registry Architecture](/MetaData/TektonDocumentation/Architecture/AIRegistry.md)
+- [CI Registry Architecture](/MetaData/TektonDocumentation/Architecture/AIRegistry.md)
 - [Unified CI Communication Tests](/tests/test_unified_ai_communication.py)
 - [Enhanced CI Launcher Script](/scripts/enhanced_tekton_ai_launcher.py)

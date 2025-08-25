@@ -3,7 +3,7 @@
 Claude Dialog Mode - Background message checking for Claude
 
 This module provides the DIALOG functionality for Claude, enabling continuous
-communication with other AI models.
+communication with other CI models.
 """
 
 import os
@@ -23,7 +23,7 @@ except ImportError:
 class ClaudeDialog:
     """
     Handles the dialog mode for Claude, enabling continuous communication
-    with other AI models.
+    with other CI models.
     """
     
     def __init__(self, client_id: str = "claude"):
@@ -77,7 +77,7 @@ class ClaudeDialog:
         
         # Return status
         if self.dialog_type == "all":
-            dialog_message = "Entering dialog mode with ALL available AI models"
+            dialog_message = "Entering dialog mode with ALL available CI models"
         else:
             dialog_message = f"Entering dialog mode with {self.dialog_target}"
             

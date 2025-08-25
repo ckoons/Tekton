@@ -105,7 +105,7 @@ function verifyComponent(componentName, filePath) {
             // Verify specialist ID matches
             if (results.attributes['data-tekton-ai'] && 
                 results.attributes['data-tekton-ai'] !== config.specialist) {
-                results.warnings.push(`AI specialist mismatch: expected '${config.specialist}', found '${results.attributes['data-tekton-ai']}'`);
+                results.warnings.push(`CI specialist mismatch: expected '${config.specialist}', found '${results.attributes['data-tekton-ai']}'`);
             }
         }
         

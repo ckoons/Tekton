@@ -26,7 +26,7 @@
 ### UI Updates
 - **window.AIChat**: Now routes all messages through aish MCP
 - **aishUrl() function**: Added to tekton-urls.js for MCP URL building
-- **AI Name Fixes**: All UI components use correct CI names without '-ai' suffix
+- **CI Name Fixes**: All UI components use correct CI names without '-ai' suffix
 
 ### Infrastructure Changes
 - **Port Configuration**: AISH_MCP_PORT (8118) exported to UI environment
@@ -34,7 +34,7 @@
 
 ## Breaking Changes
 
-1. **AI Names**: UI components must use base CI names without '-ai' suffix
+1. **CI Names**: UI components must use base CI names without '-ai' suffix
    - Before: `numa-ai`, `apollo-ai`, `athena-ai`
    - After: `numa`, `apollo`, `athena`
 

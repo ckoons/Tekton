@@ -14,7 +14,7 @@ Casey identified: "damn quotes, someone is not preserving on the parse"
 
 2. **Argparse configuration issue**:
    ```python
-   parser.add_argument('ai_or_script', nargs='?', help='AI name or script')
+   parser.add_argument('ai_or_script', nargs='?', help='CI name or script')
    parser.add_argument('message', nargs='*', help='Message to send')
    ```
 

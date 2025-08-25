@@ -129,7 +129,7 @@ class ContextCompressor:
 
 ### 4. Peer Communication Protocol
 
-Natural AI-to-AI communication:
+Natural AI-to-CI communication:
 
 ```python
 class PeerProtocol:

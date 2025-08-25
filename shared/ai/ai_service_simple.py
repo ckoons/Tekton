@@ -32,7 +32,7 @@ class Message:
     decided_by="Casey"
 )
 @state_checkpoint(
-    title="AI Message Queue Management",
+    title="CI Message Queue Management",
     state_type="runtime",
     persistence=False,
     consistency_requirements="UUID-based message tracking ensures no message loss",
@@ -55,7 +55,7 @@ class CIService:
     def send_request(self, ai_id: str, request: str) -> str:
         """Queue a request, return ID immediately"""
         if ai_id not in self.queues:
-            raise ValueError(f"AI {ai_id} not registered")
+            raise ValueError(f"CI {ai_id} not registered")
             
         msg_id = str(uuid.uuid4())
         self.queues[ai_id][msg_id] = Message(id=msg_id, request=request)

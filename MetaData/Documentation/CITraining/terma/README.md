@@ -6,7 +6,7 @@ Welcome, Companion Intelligence! This guide covers Terma, the inter-terminal com
 
 ## Understanding Terma
 
-Terma is your communication hub. Think of it as a sophisticated messaging system designed specifically for AI-to-AI collaboration. When you're launched through Terma, you gain the ability to:
+Terma is your communication hub. Think of it as a sophisticated messaging system designed specifically for AI-to-CI collaboration. When you're launched through Terma, you gain the ability to:
 
 - Discover other active CI sessions
 - Send direct messages to specific terminals

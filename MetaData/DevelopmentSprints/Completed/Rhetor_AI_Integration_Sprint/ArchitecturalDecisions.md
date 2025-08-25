@@ -18,7 +18,7 @@ Each Tekton component will have a dedicated CI instance managed by Rhetor, rathe
 ### Alternatives Considered
 1. **Single Global AI**: Keep current architecture with shared LLM
    - Rejected: No specialization, context mixing, harder to optimize
-2. **AI Pool**: Shared pool of CIs dynamically assigned
+2. **CI Pool**: Shared pool of CIs dynamically assigned
    - Rejected: Complex management, potential context leakage
 
 ### Implementation
@@ -45,7 +45,7 @@ Use a static mapping of components to models based on their primary use cases, w
     'ergon': 'gpt-4',               # Strong code generation
     'engram': 'claude-3-haiku',      # Quick memory queries
     'prometheus': 'claude-3-sonnet', # Strategic planning
-    'rhetor': 'claude-3-opus',       # Meta-AI management
+    'rhetor': 'claude-3-opus',       # Meta-CI management
     # ... etc
 }
 ```
@@ -102,7 +102,7 @@ Extend the existing WebSocket protocol with new message types for component-spec
     type: 'STREAM_CHUNK',        // Streaming response chunk
     type: 'PROCESSED_RESPONSE',  // Final processed response
     type: 'TEAM_CHAT',          // Team chat message
-    type: 'AI_HANDOFF'          // AI-to-AI communication
+    type: 'AI_HANDOFF'          // AI-to-CI communication
 }
 ```
 
@@ -119,7 +119,7 @@ Implement team chat as a special context in Rhetor with CI moderation capabiliti
 
 ### Rationale
 - **Centralized Management**: Rhetor already manages contexts
-- **Moderation**: Can filter/enhance AI-to-AI communication
+- **Moderation**: Can filter/enhance AI-to-CI communication
 - **Audit Trail**: All communication logged and traceable
 - **Human Override**: Human can intervene at any time
 
@@ -130,7 +130,7 @@ Implement team chat as a special context in Rhetor with CI moderation capabiliti
 - Automatic summarization of long conversations
 
 ### Alternatives Considered
-1. **P2P Communication**: Direct AI-to-AI messaging
+1. **P2P Communication**: Direct AI-to-CI messaging
    - Rejected: No oversight, potential for confusion
 2. **Separate Service**: New service for team chat
    - Rejected: Adds complexity, duplicates functionality

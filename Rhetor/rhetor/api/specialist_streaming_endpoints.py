@@ -184,7 +184,7 @@ async def stream_team_chat(request: StreamingRequest):
 )
 @integration_point(
     title="Greek Chorus CI Streaming Integration",
-    target_component="AI Specialists (ports 45000-50000)",
+    target_component="CI Specialists (ports 45000-50000)",
     protocol="SSE over HTTP with direct sockets",
     data_flow="Request → simple_ai → Direct Socket → Stream chunks → SSE Response"
 )
@@ -197,7 +197,7 @@ async def stream_team_chat(request: StreamingRequest):
 )
 @router.post("/{specialist_id}/stream")
 async def stream_specialist_chat(
-    specialist_id: str = Path(..., description="AI specialist ID (e.g., 'apollo-ci', 'athena-ci')"),
+    specialist_id: str = Path(..., description="CI specialist ID (e.g., 'apollo-ci', 'athena-ci')"),
     request: StreamingRequest = ...
 ):
     """
@@ -362,7 +362,7 @@ async def stream_specialist_chat(
 
 @router.get("/{specialist_id}/stream")
 async def stream_specialist_chat_get(
-    specialist_id: str = Path(..., description="AI specialist ID"),
+    specialist_id: str = Path(..., description="CI specialist ID"),
     message: str = Query(..., description="The message to send"),
     context_id: Optional[str] = Query(None, description="Context ID"),
     temperature: float = Query(0.7, ge=0.0, le=2.0),

@@ -459,13 +459,13 @@ class EnhancedComponentKiller:
             output = stdout.decode() if stdout else ""
             
             if process.returncode == 0 and "Terminated 1" in output:
-                self.log("AI specialist terminated", "success", component_name)
+                self.log("CI specialist terminated", "success", component_name)
             else:
                 # CI wasn't running
                 self.log("No CI specialist was running", "info", component_name)
                 
         except Exception as e:
-            self.log(f"AI termination error: {str(e)}", "warning", component_name)
+            self.log(f"CI termination error: {str(e)}", "warning", component_name)
             
     async def terminate_component_advanced(self, component_name: str) -> TerminationResult:
         """Advanced component termination with multiple strategies"""
@@ -964,7 +964,7 @@ async def main():
         # Handle --no-ci flag
         if args.no_ci:
             TektonEnviron.set('TEKTON_REGISTER_AI', 'false')
-            killer.log("AI killing disabled by --no-ci flag", "info")
+            killer.log("CI killing disabled by --no-ci flag", "info")
         
         # Nuclear option
         if args.nuclear:

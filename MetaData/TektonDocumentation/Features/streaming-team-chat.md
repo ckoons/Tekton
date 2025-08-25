@@ -111,7 +111,7 @@ Request body:
 {
     "type": "response",
     "specialist_id": "apollo-ai",
-    "content": "AI response text...",
+    "content": "CI response text...",
     "model": "llama3.3:70b",
     "elapsed_time": 0.523,
     "index": 1

@@ -451,7 +451,7 @@ class PurposeCommand:
     description="Enables context-aware CI through simple purpose commands",
     rationale="Simple commands provide powerful context - terminals get roles, CIs get purpose content",
     alternatives_considered=["Separate commands for terminals vs content", "Complex query syntax"],
-    impacts=["usability", "AI effectiveness", "knowledge management"],
+    impacts=["usability", "CI effectiveness", "knowledge management"],
     decided_by="Casey",
     decision_date="2025-01-24"
 )

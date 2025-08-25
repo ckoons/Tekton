@@ -213,7 +213,7 @@ def format_route_display(route: Dict[str, Any]) -> str:
     description="Named routes with purposes for multi-hop CI message pipelines",
     rationale="Enables complex CI workflows with purpose-driven message transformation at each hop",
     alternatives_considered=["Direct messaging only", "Fixed pipelines", "Centralized router"],
-    impacts=["AI composability", "workflow flexibility", "message traceability"],
+    impacts=["CI composability", "workflow flexibility", "message traceability"],
     decided_by="Casey",
     decision_date="2025-01-20"
 )

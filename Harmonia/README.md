@@ -110,7 +110,7 @@ Harmonia seamlessly integrates with:
 - **Ergon**: Agent-based task execution
 - **Engram**: Workflow state persistence
 - **Prometheus**: Strategic workflow planning
-- **AI Specialists**: Harmonia CI for workflow optimization
+- **CI Specialists**: Harmonia CI for workflow optimization
 
 ### Example Integration
 

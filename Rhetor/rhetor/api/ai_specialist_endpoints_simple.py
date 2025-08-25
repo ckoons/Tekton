@@ -97,7 +97,7 @@ async def get_roster():
 
 @router.post("/specialists/{ai_id}/hire", response_model=RosterEntry)
 async def hire_specialist(
-    ai_id: str = Path(..., description="AI specialist ID"),
+    ai_id: str = Path(..., description="CI specialist ID"),
     role: Optional[str] = Query(None, description="Role assignment")
 ):
     """Hire an CI specialist to Rhetor's roster."""
@@ -109,7 +109,7 @@ async def hire_specialist(
         if not await ai_manager.check_ai_health(ai_id):
             raise HTTPException(
                 status_code=503,
-                detail=f"AI specialist {ai_id} is not healthy"
+                detail=f"CI specialist {ai_id} is not healthy"
             )
         
         roster_entry = ai_manager.hire_ai(ai_id, role)
@@ -123,20 +123,20 @@ async def hire_specialist(
 
 
 @router.delete("/specialists/{ai_id}/fire")
-async def fire_specialist(ai_id: str = Path(..., description="AI specialist ID")):
+async def fire_specialist(ai_id: str = Path(..., description="CI specialist ID")):
     """Remove an CI specialist from Rhetor's roster."""
     if ai_manager.fire_ai(ai_id):
         return {"message": f"Successfully fired {ai_id}"}
     else:
         raise HTTPException(
             status_code=404,
-            detail=f"AI specialist {ai_id} not in roster"
+            detail=f"CI specialist {ai_id} not in roster"
         )
 
 
 @router.post("/specialists/{ai_id}/message", response_model=MessageResponse)
 async def send_message(
-    ai_id: str = Path(..., description="AI specialist ID"),
+    ai_id: str = Path(..., description="CI specialist ID"),
     request: MessageRequest = ...
 ):
     """Send a message to an CI specialist."""
@@ -152,7 +152,7 @@ async def send_message(
 
 
 @router.get("/specialists/{ai_id}/health")
-async def check_health(ai_id: str = Path(..., description="AI specialist ID")):
+async def check_health(ai_id: str = Path(..., description="CI specialist ID")):
     """Check health status of a specific CI specialist."""
     try:
         healthy = await ai_manager.check_ai_health(ai_id)

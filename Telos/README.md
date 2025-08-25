@@ -112,7 +112,7 @@ Telos seamlessly integrates with:
 - **Metis**: Automatic task generation from requirements
 - **Hermes**: Service registration and event distribution
 - **Engram**: Requirements history and traceability
-- **AI Specialists**: Telos CI for requirement analysis
+- **CI Specialists**: Telos CI for requirement analysis
 
 ### Example Integration
 

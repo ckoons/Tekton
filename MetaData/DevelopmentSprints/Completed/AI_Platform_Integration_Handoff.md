@@ -7,7 +7,7 @@ The CI Platform Integration Sprint successfully unified CI discovery through the
 
 ### ✅ Completed
 1. **Unified CI Registry** - All CIs register in a single registry
-2. **AI Discovery Service** - Provides discovery with connection details
+2. **CI Discovery Service** - Provides discovery with connection details
 3. **Dual Architecture Design** - Greek Chorus (socket) vs Rhetor Specialists (API)
 4. **aish Discovery** - Can discover all CIs via `ai-discover` tool
 5. **Documentation** - Architecture and API migration guides created
@@ -71,7 +71,7 @@ def _get_ai_performance(self, ai_id: str) -> Dict[str, float]:
 
 ### 1. Conversation Storage
 - Where to store conversation history?
-- Per-AI or centralized in Engram?
+- Per-CI or centralized in Engram?
 - How to handle history for socket-based CIs?
 
 ### 2. Performance Metrics

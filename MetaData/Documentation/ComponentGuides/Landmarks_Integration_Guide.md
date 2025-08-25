@@ -26,7 +26,7 @@ Already instrumented with landmarks:
 - `global_config.py` - Singleton pattern, centralized config decision
 - `graceful_shutdown.py` - Shutdown pattern, Hermes integration
 - `standard_component.py` - Component lifecycle pattern
-- `mcp_helpers.py` - MCP/AI integration pattern
+- `mcp_helpers.py` - MCP/CI integration pattern
 
 ### 2. Hermes (Message Bus)
 Priority landmarks to add:

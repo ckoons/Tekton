@@ -4,7 +4,7 @@
 
 **"Errors are gold, they help us improve. Questions that are sincere are the best ways to communicate. We evolve, change and hope to improve. If you stumble, get up and get back in the race, you can win."**
 
-This guide describes the complete workflow for managing multi-AI development projects through TektonCore. It's a living document that evolves as we learn and improve our coordination processes.
+This guide describes the complete workflow for managing multi-CI development projects through TektonCore. It's a living document that evolves as we learn and improve our coordination processes.
 
 ## Overview
 
@@ -393,7 +393,7 @@ This workflow guide will continue evolving as we learn and improve. Expected are
 
 The TektonCore workflow represents a new paradigm in software development - one where human strategic wisdom guides CI operational efficiency to achieve unprecedented development velocity and quality. 
 
-Every interaction teaches us something new about effective human-AI collaboration. Every error becomes an opportunity for improvement. Every success builds our confidence in this revolutionary approach.
+Every interaction teaches us something new about effective human-CI collaboration. Every error becomes an opportunity for improvement. Every success builds our confidence in this revolutionary approach.
 
 Remember: We're not just building software - we're pioneering the future of how humans and CI can work together to create amazing things.
 

@@ -24,7 +24,7 @@ Current Engram requires explicit API calls with many parameters, making memory f
 
 1. **Zero Configuration**: Memory should just work
 2. **Context Aware**: Memories flow based on current conversation
-3. **Peer Native**: AI-to-AI communication built in
+3. **Peer Native**: AI-to-CI communication built in
 4. **Graceful Degradation**: Works with or without advanced features
 5. **Non-Breaking**: Preserves existing functionality
 

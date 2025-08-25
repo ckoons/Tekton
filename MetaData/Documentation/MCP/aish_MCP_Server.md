@@ -81,7 +81,7 @@ Send a message to a specific AI.
 **Response (non-streaming):**
 ```json
 {
-  "response": "AI response text"
+  "response": "CI response text"
 }
 ```
 
@@ -305,7 +305,7 @@ await window.AIChat.sendMessage("myproject", "Hello"); // Project CI
 
 ## Important Notes
 
-1. **AI Names**: Use the base CI name without suffix (e.g., `numa` not `numa-ai`)
+1. **CI Names**: Use the base CI name without suffix (e.g., `numa` not `numa-ai`)
 2. **Port**: MCP server runs on AISH_MCP_PORT (8118), not AISH_PORT (8117)
 3. **Single Source**: All message routing goes through aish MCP
 4. **Error Handling**: Unknown CI names return 500 with "Unknown AI: [name]"

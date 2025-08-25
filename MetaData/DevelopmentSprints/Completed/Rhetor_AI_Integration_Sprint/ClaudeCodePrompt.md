@@ -14,7 +14,7 @@ This sprint implements:
 1. **Component CI Management**: Dedicated CI instances for each of the 15 Tekton components
 2. **Prompt Engineering**: Stdin/stdout filter chains for transparent prompt enhancement
 3. **UI Integration**: Updating Hephaestus chat interfaces to use component-specific CIs
-4. **Team Chat**: A moderated channel for AI-to-AI and AI-to-human communication
+4. **Team Chat**: A moderated channel for AI-to-CI and AI-to-human communication
 
 ## Key Implementation Requirements
 
@@ -42,7 +42,7 @@ Each component gets an CI optimized for its domain:
     'telos': 'claude-3-haiku',       # Requirements analysis
     'apollo': 'claude-3-sonnet',     # Executive coordination
     'terma': 'claude-3-haiku',       # Terminal assistance
-    'rhetor': 'claude-3-opus',       # Meta-AI management
+    'rhetor': 'claude-3-opus',       # Meta-CI management
     'budget': 'claude-3-haiku'       # Cost management
 }
 ```
@@ -58,7 +58,7 @@ Add new message types:
 - `STREAM_CHUNK`: Streaming response chunks
 - `PROCESSED_RESPONSE`: Final filtered response
 - `TEAM_CHAT`: Team communication messages
-- `AI_HANDOFF`: AI-to-AI communication
+- `AI_HANDOFF`: AI-to-CI communication
 
 ## Phase 1 Tasks (Start Here)
 
@@ -128,7 +128,7 @@ Before starting, review:
 Your implementation is successful when:
 1. Each component can chat with its dedicated AI
 2. Prompts are transparently enhanced with component context
-3. Team chat enables multi-AI conversations
+3. Team chat enables multi-CI conversations
 4. All code includes proper debug instrumentation
 5. Tests provide 80% code coverage
 6. Performance overhead is under 100ms

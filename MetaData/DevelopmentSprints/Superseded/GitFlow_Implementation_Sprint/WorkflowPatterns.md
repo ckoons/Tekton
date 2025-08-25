@@ -1,4 +1,4 @@
-# Human-AI Workflow Patterns
+# Human-CI Workflow Patterns
 
 ## Core Philosophy: Lazy Human, Eager CIs
 
@@ -315,7 +315,7 @@ aish terma @testing "New build ready for validation"
 ## Success Metrics
 
 1. **Human Time**: < 30 minutes/day on orchestration
-2. **AI Autonomy**: 80% of tasks completed without human input
+2. **CI Autonomy**: 80% of tasks completed without human input
 3. **Communication Clarity**: 100% of blockers reported within 1 hour
 4. **Meeting Efficiency**: 100% of team chats under 20 minutes
 5. **Progress Visibility**: Daily reports from 100% of active CIs

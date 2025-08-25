@@ -115,7 +115,7 @@ class TestEnhancedMemory:
         """Test creating memory with provenance support."""
         memory = EnhancedMemory(
             id="mem_123",
-            content="AI consciousness requires transparency",
+            content="CI consciousness requires transparency",
             category="insights",
             importance=5,
             tags=["ai", "consciousness", "transparency"]

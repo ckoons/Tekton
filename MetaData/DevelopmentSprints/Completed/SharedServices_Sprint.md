@@ -46,7 +46,7 @@ Currently, operational data (landmarks, registrations, messages, etc.) grows unb
    - Restore capabilities
    - S3/cloud storage option
 
-4. **AI Config Sync Service**
+4. **CI Config Sync Service**
    - Run `shared/services/ai_config_sync.py` periodically
    - Syncs CI Registry state to `config/tekton_ai_config.json`
    - Monitors registry update flag set by Rhetor
@@ -299,13 +299,13 @@ The old Rhetor specialist endpoints have been replaced with unified CI Registry 
 - `POST /api/ai/specialists/{id}/reassign` - Reassign CI to new role
 
 ### Key Components
-1. **AI Registry** (`shared/ai/registry_client.py`)
+1. **CI Registry** (`shared/ai/registry_client.py`)
    - Thread-safe registry with file locking
    - Unified discovery for both CI types
    - Role-based CI selection
    - Socket info for Greek Chorus CIs
 
-2. **AI Discovery Service** (`shared/ai/ai_discovery_service.py`)
+2. **CI Discovery Service** (`shared/ai/ai_discovery_service.py`)
    - List CIs by role (both types)
    - Find best CI for a task
    - Get CI connection info with socket details

@@ -107,7 +107,7 @@ def get_expected_ai_port(main_port: int) -> int:
     impacts=["centralized_control", "launch_performance", "monitoring_capability"]
 )
 @state_checkpoint(
-    title="AI Process State Tracking",
+    title="CI Process State Tracking",
     state_type="runtime",
     persistence=False,
     consistency_requirements="Process handles and registry sync"
@@ -196,7 +196,7 @@ class CILauncher:
         
         return {
             'ai_id': f'{comp_lower}-ci',
-            'description': f'AI specialist for {component_title}',
+            'description': f'CI specialist for {component_title}',
             'launch_module': module_path,
             'component_config': comp_config
         }
@@ -206,13 +206,13 @@ class CILauncher:
     # @tekton-critical: true
     # @tekton-side-effects: process-creation, port-allocation
     @performance_boundary(
-        title="AI Launch Sequence",
+        title="CI Launch Sequence",
         sla="<30s for CI readiness",
         optimization_notes="Parallel launch support, readiness checking"
     )
     @integration_point(
-        title="AI Process Launch",
-        target_component="AI specialists",
+        title="CI Process Launch",
+        target_component="CI specialists",
         protocol="subprocess + socket",
         data_flow="Launch parameters, readiness verification"
     )
@@ -242,7 +242,7 @@ class CILauncher:
             s.settimeout(1)
             s.connect(('localhost', expected_ai_port))
             s.close()
-            self.logger.info(f"AI {ai_id} already running on port {expected_ai_port}")
+            self.logger.info(f"CI {ai_id} already running on port {expected_ai_port}")
             return True
         except:
             pass  # Not running
@@ -303,7 +303,7 @@ class CILauncher:
             self.launched_ais[ai_id] = process
             
             # No registry registration needed - using fixed ports
-            self.logger.info(f"AI {ai_id} launched on fixed port {ai_port} (PID: {process.pid})")
+            self.logger.info(f"CI {ai_id} launched on fixed port {ai_port} (PID: {process.pid})")
             
             # Wait for CI to be ready (skip for Hermes - it receives health checks, doesn't perform them)
             if component.lower() == 'hermes':
@@ -311,10 +311,10 @@ class CILauncher:
                 return True
             elif await self._wait_for_ai_direct(ai_id, ai_port, timeout=30):
                 self.logger.info(f"Successfully launched {ai_id}")
-                self.logger.debug(f"AI {ai_id} ready - PID: {process.pid}")
+                self.logger.debug(f"CI {ai_id} ready - PID: {process.pid}")
                 return True
             else:
-                self.logger.error(f"AI {ai_id} failed to become ready")
+                self.logger.error(f"CI {ai_id} failed to become ready")
                 self.kill_ai(ai_id)
                 return False
                 
@@ -326,7 +326,7 @@ class CILauncher:
     # @tekton-critical: true
     # @tekton-cleanup: true
     @danger_zone(
-        title="AI Process Termination",
+        title="CI Process Termination",
         risk_level="medium",
         risks=["Orphaned processes", "Registry inconsistency"],
         mitigation="Graceful termination with timeout and force kill"

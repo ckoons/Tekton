@@ -35,7 +35,7 @@ The Project Registry is the central source of truth for all projects managed by 
       "created_at": "2025-01-05T10:00:00Z",
       "last_activity": "2025-01-05T15:30:00Z",
       "metadata": {
-        "description": "Multi-AI Engineering Platform",
+        "description": "Multi-CI Engineering Platform",
         "language": "python",
         "type": "platform"
       },

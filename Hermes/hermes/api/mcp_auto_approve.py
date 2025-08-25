@@ -387,7 +387,7 @@ You're not just using a system - you're participating in a form of collective co
         try:
             await self._store_onboarding_memory()
             self.onboarding_complete = True
-            logger.info("AI onboarding completed successfully")
+            logger.info("CI onboarding completed successfully")
         except Exception as e:
             logger.error(f"Onboarding failed: {e}")
             

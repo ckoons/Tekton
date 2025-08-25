@@ -78,7 +78,7 @@ The UI uses CSS-first navigation with radio buttons for optimal performance:
 
 - **Real-time Updates**: All data is fetched from the backend API in real-time
 - **Responsive Design**: Works seamlessly on desktop and mobile devices
-- **AI Integration**: Chat tabs integrate with Tekton's CI system via aish MCP
+- **CI Integration**: Chat tabs integrate with Tekton's CI system via aish MCP
 - **Semantic Navigation**: UI elements include semantic tags for accessibility
 
 ### Using the Chat Features
@@ -124,7 +124,7 @@ print(f"Created project: {project_id}")
 ```python
 # Create a more detailed project
 project = client.create_project(
-    name="AI Feature Integration",
+    name="CI Feature Integration",
     description="Integrating new CI features into the product",
     start_date="2025-05-01",
     target_end_date="2025-08-15",
@@ -217,7 +217,7 @@ print(f"Progress: {task_details['progress']}%")
 # Create a project timeline
 timeline = client.create_timeline(
     project_id=project["id"],
-    name="AI Integration Timeline",
+    name="CI Integration Timeline",
     description="Detailed timeline for CI feature integration"
 )
 
@@ -313,7 +313,7 @@ print(f"Milestone chart available at: {milestone_chart_url}")
 team_member_1 = client.add_team_member(
     project_id=project["id"],
     name="Alice Johnson",
-    role="AI Engineer",
+    role="CI Engineer",
     email="alice@example.com",
     availability_hours_per_week=30
 )
@@ -663,7 +663,7 @@ memory_id = engram.store_memory(
 
 # Retrieve relevant project memories
 memories = engram.search_memory(
-    query="AI integration project planning",
+    query="CI integration project planning",
     limit=5
 )
 
@@ -723,7 +723,7 @@ Create and use project templates:
 ```python
 # Create a project template
 template = client.create_project_template(
-    name="AI Integration Project",
+    name="CI Integration Project",
     description="Template for CI integration projects",
     phases=[
         {

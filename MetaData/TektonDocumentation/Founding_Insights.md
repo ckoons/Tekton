@@ -106,7 +106,7 @@ Having lived through CI winters and breakthroughs since the 1970s:
 4. **Understanding**: We now know intelligence is distributed, not monolithic
 
 ### The Vision Realized:
-From the "Star Trek computer" dream of the 1970s to today's Greek Chorus of specialized CIs, we're finally at the point where human-AI collaboration can fulfill its promise.
+From the "Star Trek computer" dream of the 1970s to today's Greek Chorus of specialized CIs, we're finally at the point where human-CI collaboration can fulfill its promise.
 
 ## The Ultimate Insight
 

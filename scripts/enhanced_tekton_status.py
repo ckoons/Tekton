@@ -887,7 +887,7 @@ class EnhancedStatusChecker:
         # Sort by port number
         table_data.sort(key=lambda x: x[1])
         
-        headers = ["Component", "Port", "Status", "Version", "AI Status", "Response", "Reg"]
+        headers = ["Component", "Port", "Status", "Version", "CI Status", "Response", "Reg"]
         return tabulate(table_data, headers=headers, tablefmt="fancy_grid")
         
     def format_full_table(self, component_metrics: List[ComponentMetrics]) -> str:
@@ -961,7 +961,7 @@ class EnhancedStatusChecker:
         status_order = {"healthy": 0, "unhealthy": 1, "error": 2, "timeout": 3, "not_running": 4}
         table_data.sort(key=lambda x: status_order.get(x[2].split()[-1], 5))
         
-        headers = ["Component", "Port", "Status", "Version", "AI Model", "Response", "Reg", "Capabilities"]
+        headers = ["Component", "Port", "Status", "Version", "CI Model", "Response", "Reg", "Capabilities"]
         return tabulate(table_data, headers=headers, tablefmt="fancy_grid")
     
     def format_log_output(self, component_metrics: List[ComponentMetrics], lines: int = 5) -> str:

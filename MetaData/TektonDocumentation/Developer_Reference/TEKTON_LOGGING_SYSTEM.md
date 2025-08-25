@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Tekton logging system provides a unified, consistent approach to logging across all components of the Tekton Multi-AI Engineering Platform. It ensures that all components produce logs in a standardized format, making debugging and monitoring easier across the distributed system.
+The Tekton logging system provides a unified, consistent approach to logging across all components of the Tekton Multi-CI Engineering Platform. It ensures that all components produce logs in a standardized format, making debugging and monitoring easier across the distributed system.
 
 ## Architecture
 

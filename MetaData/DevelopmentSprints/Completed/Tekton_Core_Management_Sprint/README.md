@@ -2,7 +2,7 @@
 
 ## Vision
 
-Transform tekton-core into a comprehensive project management and development coordination hub that enables seamless multi-AI development workflows with intelligent merge coordination and human strategic oversight.
+Transform tekton-core into a comprehensive project management and development coordination hub that enables seamless multi-CI development workflows with intelligent merge coordination and human strategic oversight.
 
 ## Core Philosophy
 
@@ -30,7 +30,7 @@ This sprint combines and refines the original **Tekton Core Reimplementation Spr
 ## Sprint Goals
 
 ### Primary Objectives
-1. **Formalize Multi-AI Project Management** - Build tools to manage the existing parallel development workflow
+1. **Formalize Multi-CI Project Management** - Build tools to manage the existing parallel development workflow
 2. **Implement Intelligent Merge Coordination** - Automate successful merges, streamline conflict resolution  
 3. **Create Visual Project Dashboard** - Provide clear oversight of active development efforts
 4. **Establish GitHub Integration** - Support both Tekton development and guest repository management
@@ -212,7 +212,7 @@ tekton-dashboard/
 ## Future Enhancements
 
 ### Advanced CI Integration
-- **Consensus Building**: AI-to-AI conflict resolution before human escalation
+- **Consensus Building**: AI-to-CI conflict resolution before human escalation
 - **Predictive Analytics**: Anticipate merge conflicts and project bottlenecks
 - **Adaptive Learning**: Dynamic adjustment of coordination strategies
 - **Cross-project Insights**: Share patterns across multiple repositories
@@ -241,7 +241,7 @@ tekton-dashboard/
 ## Resources
 
 - **Workflow Guide**: [TektonCore_Workflow_Guide.md](../../TektonDocumentation/Guides/TektonCore_Workflow_Guide.md)
-- **AI Training**: [AITraining/tekton-core/](../../TektonDocumentation/AITraining/tekton-core/)
+- **CI Training**: [AITraining/tekton-core/](../../TektonDocumentation/AITraining/tekton-core/)
 - **Technical Documentation**: [Architecture/TektonCoreArchitecture.md](../../TektonDocumentation/Architecture/TektonCoreArchitecture.md)
 - **Implementation Examples**: [Building_New_Tekton_Components/](../../TektonDocumentation/Building_New_Tekton_Components/)
 

@@ -4,10 +4,10 @@ This document outlines the sequenced development plan for Tekton based on analys
 
 ## Core Requirements Summary
 
-Tekton is an intelligent orchestration system that coordinates multiple AI models and resources to efficiently solve complex software engineering problems with the following key requirements:
+Tekton is an intelligent orchestration system that coordinates multiple CI models and resources to efficiently solve complex software engineering problems with the following key requirements:
 
-1. **Unified Interface**: Provide a seamless experience across different AI capabilities
-2. **Resource Optimization**: Intelligently route tasks to the most appropriate AI model
+1. **Unified Interface**: Provide a seamless experience across different CI capabilities
+2. **Resource Optimization**: Intelligently route tasks to the most appropriate CI model
 3. **Memory Persistence**: Maintain context and memory across models and sessions
 4. **Model Flexibility**: Support multiple local and remote models with graceful degradation
 5. **Component Communication**: Enable standardized cross-component messaging

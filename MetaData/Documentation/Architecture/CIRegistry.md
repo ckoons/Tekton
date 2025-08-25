@@ -46,7 +46,7 @@ ai_service_simple message queue
       ↓
 Direct socket connection (fixed port)
       ↓
-AI Specialist processes request
+CI Specialist processes request
       ↓
 Response via same socket
 ```
@@ -55,7 +55,7 @@ Response via same socket
 
 All CI ports are calculated using configurable bases:
 ```
-AI Port = TEKTON_AI_PORT_BASE + (Component Port - TEKTON_PORT_BASE)
+CI Port = TEKTON_AI_PORT_BASE + (Component Port - TEKTON_PORT_BASE)
 ```
 
 Examples with defaults (TEKTON_PORT_BASE=8000, TEKTON_AI_PORT_BASE=45000):
@@ -92,7 +92,7 @@ The system now features **dynamic model selection** based on keywords in your qu
 - **Problem solving**: gpt-oss:120b with focused parameters
 - **Deep thinking**: gpt-oss:120b with maximum reasoning
 
-See [AI Thinking Levels Documentation](./AI_Thinking_Levels.md) for details.
+See [CI Thinking Levels Documentation](./AI_Thinking_Levels.md) for details.
 
 Models can be configured per component:
 ```bash

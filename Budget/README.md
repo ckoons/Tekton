@@ -10,7 +10,7 @@ Budget is the centralized cost and resource management component for the Tekton 
 - **Cost Management**: Automated price tracking and cost calculation
 - **Budget Enforcement**: Flexible policies (IGNORE, WARN, SOFT_LIMIT, HARD_LIMIT)
 - **Usage Analytics**: Detailed reporting with visualization support
-- **AI Optimization**: Budget CI specialist for intelligent resource allocation
+- **CI Optimization**: Budget CI specialist for intelligent resource allocation
 - **Multi-Provider Support**: Works with OpenAI, Anthropic, Ollama, and more
 - **MCP Integration**: Standard protocol support for seamless component integration
 
@@ -93,7 +93,7 @@ Budget integrates seamlessly with:
 - **Apollo**: Provides token allocation for predictive planning
 - **Ergon**: Monitors agent execution costs
 - **Hermes**: Publishes budget events and alerts
-- **AI Specialists**: Budget CI provides optimization insights
+- **CI Specialists**: Budget CI provides optimization insights
 
 ### Example Integration
 

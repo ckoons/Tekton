@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-AI Discovery Tool for Tekton Platform - Enhanced Version
+CI Discovery Tool for Tekton Platform - Enhanced Version
 
 A comprehensive tool for discovering, monitoring, and managing CI specialists.
 Features real-time status, performance metrics, and streaming capabilities.
@@ -134,7 +134,7 @@ async def list_ais(args):
         print(json.dumps(data, indent=2))
     elif HAS_RICH and not args.simple:
         # Rich table output
-        table = Table(title=f"AI Specialists ({len(specialists)} found)")
+        table = Table(title=f"CI Specialists ({len(specialists)} found)")
         table.add_column("Status", style="cyan", width=8)
         table.add_column("ID", style="magenta")
         table.add_column("Name", style="yellow")
@@ -254,7 +254,7 @@ async def watch_ais(args):
                     total_unresponsive += 1
             
             # Create display
-            table = Table(title=f"AI Specialists Monitor - {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+            table = Table(title=f"CI Specialists Monitor - {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
             table.add_column("Status", style="cyan", width=8)
             table.add_column("ID", style="magenta")
             table.add_column("Port", justify="right")
@@ -480,7 +480,7 @@ async def test_ai(args):
                 pass
         
         if HAS_RICH and not args.simple:
-            table = Table(title="AI Connection Tests")
+            table = Table(title="CI Connection Tests")
             table.add_column("Status", width=6)
             table.add_column("ID", style="magenta")
             table.add_column("Port", justify="right")
@@ -720,8 +720,8 @@ async def benchmark_ais(args):
         print(json.dumps(results, indent=2))
     elif HAS_RICH and not args.simple:
         # Create comparison table
-        table = Table(title="AI Benchmark Results")
-        table.add_column("AI ID", style="magenta")
+        table = Table(title="CI Benchmark Results")
+        table.add_column("CI ID", style="magenta")
         table.add_column("Model", style="green")
         
         for test_name, _ in test_messages:
@@ -831,7 +831,7 @@ async def stats(args):
         print(json.dumps(stats, indent=2))
     else:
         print(f"\n{'='*60}")
-        print("AI Statistics")
+        print("CI Statistics")
         print(f"{'='*60}\n")
         
         print(f"Total Specialists: {stats['total_specialists']}")
@@ -885,12 +885,12 @@ Examples:
     
     # Test command
     test_parser = subparsers.add_parser('test', help='Test CI connections')
-    test_parser.add_argument('ai_id', nargs='?', help='AI to test (all if omitted)')
+    test_parser.add_argument('ai_id', nargs='?', help='CI to test (all if omitted)')
     test_parser.set_defaults(func=test_ai)
     
     # Stream command
     stream_parser = subparsers.add_parser('stream', help='Test streaming capabilities')
-    stream_parser.add_argument('ai_id', help='AI identifier')
+    stream_parser.add_argument('ai_id', help='CI identifier')
     stream_parser.add_argument('message', help='Message to send')
     stream_parser.add_argument('--temperature', type=float, default=0.7,
                              help='Temperature for response')
@@ -920,9 +920,9 @@ Examples:
     
     # Legacy commands for compatibility
     info_parser = subparsers.add_parser('info', help='Get CI information (use list --json)')
-    info_parser.add_argument('ai_id', help='AI identifier')
+    info_parser.add_argument('ai_id', help='CI identifier')
     schema_parser = subparsers.add_parser('schema', help='Get CI schema (deprecated)')
-    schema_parser.add_argument('ai_id', help='AI identifier')
+    schema_parser.add_argument('ai_id', help='CI identifier')
     manifest_parser = subparsers.add_parser('manifest', help='Get platform manifest (use stats)')
     best_parser = subparsers.add_parser('best', help='Find best CI (use route)')
     best_parser.add_argument('role', help='Required role')

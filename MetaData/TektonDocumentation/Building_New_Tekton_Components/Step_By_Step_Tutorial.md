@@ -1087,7 +1087,7 @@ if __name__ == "__main__":
 4. **No duplicate registration** - FastMCP handles basic tools like health_check automatically
 5. **Test both direct and through Hermes** - Ensure tools work in both scenarios
 6. **Live Component Integration** - Tools can now integrate with live component functionality
-7. **AI Orchestration Support** - Consider using Rhetor's CI orchestration MCP tools for complex workflows
+7. **CI Orchestration Support** - Consider using Rhetor's CI orchestration MCP tools for complex workflows
 8. **Streaming Support** - Use SSE endpoints for real-time progress updates on long-running tools
 
 #### Advanced MCP Features (From Rhetor Phase 3/4)
@@ -1147,7 +1147,7 @@ async def analyze_connection_health(component_id: str) -> dict:
                 "ai_analysis": result.get("result", {}).get("response", "No analysis available")
             }
     
-    return {"metrics": metrics, "ai_analysis": "AI service unavailable"}
+    return {"metrics": metrics, "ai_analysis": "CI service unavailable"}
 ```
 
 ##### Streaming Support for Long-Running Tools

@@ -4,7 +4,7 @@
 
 This document outlines the high-level plan for the Tekton Core Numa Development Sprint. It provides an overview of the goals, approach, and expected outcomes.
 
-Tekton is evolving from a Multi-AI Engineering Platform into a living ecosystem where software maintains itself through Companion Intelligence (CI). This Development Sprint focuses on building Tekton Core as the central orchestrator that can "infect" any project with self-awareness and maintenance capabilities.
+Tekton is evolving from a Multi-CI Engineering Platform into a living ecosystem where software maintains itself through Companion Intelligence (CI). This Development Sprint focuses on building Tekton Core as the central orchestrator that can "infect" any project with self-awareness and maintenance capabilities.
 
 ## Sprint Goals
 
@@ -86,7 +86,7 @@ This sprint delivers value by:
 
 ### Technical Approach
 
-- **Two-tier Menu System**: Mode selection (Projects/AI Team/Federation/Tools) with contextual actions
+- **Two-tier Menu System**: Mode selection (Projects/CI Team/Federation/Tools) with contextual actions
 - **Event-driven Architecture**: Projects emit events that CIs can respond to
 - **GraphQL API**: For knowledge graph queries across projects
 - **WebSocket Federation**: Real-time peer communication

@@ -47,7 +47,7 @@ We successfully completed Phase 0 cleanup of the Tekton CI platform, removing al
   - Apollo: Vision CI (port 9002)
   - Dionysus: Creative CI (port 9003)
   - Hephaestus: Builder CI (port 9004)
-- **AI Config Sync**: Background service maintaining registry consistency
+- **CI Config Sync**: Background service maintaining registry consistency
 
 ### Generic CI Specialist
 All CIs now use `/Tekton/shared/ai/specialist_worker.py` as base class:

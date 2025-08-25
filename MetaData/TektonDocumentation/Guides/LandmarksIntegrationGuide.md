@@ -297,7 +297,7 @@ Landmarks are automatically:
 - Included in CI context for better understanding
 - Searchable through specialized queries
 
-AI assistants can:
+CI assistants can:
 - Find code by landmark type or title
 - Understand component relationships
 - Navigate to specific functionality
@@ -316,4 +316,4 @@ Planned improvements:
 
 - [Landmarks README](/shared/landmarks/README.md)
 - [Athena Integration Guide](/MetaData/ComponentDocumentation/Athena/INTEGRATION_GUIDE.md)
-- [AI Specialists Guide](/MetaData/TektonDocumentation/Guides/AISpecialistsGuide.md)
+- [CI Specialists Guide](/MetaData/TektonDocumentation/Guides/AISpecialistsGuide.md)

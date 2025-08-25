@@ -36,7 +36,7 @@ for component in "${components[@]}"; do
     mkdir -p "/Users/cskoons/projects/github/Tekton/MetaData/TektonDocumentation/UserGuides/$component"
     
     # Create placeholder README files
-    echo "# $component AI Training" > "/Users/cskoons/projects/github/Tekton/MetaData/TektonDocumentation/AITraining/$component/README.md"
+    echo "# $component CI Training" > "/Users/cskoons/projects/github/Tekton/MetaData/TektonDocumentation/AITraining/$component/README.md"
     echo "" >> "/Users/cskoons/projects/github/Tekton/MetaData/TektonDocumentation/AITraining/$component/README.md"
     echo "Training documentation for Companion Intelligences working with $component." >> "/Users/cskoons/projects/github/Tekton/MetaData/TektonDocumentation/AITraining/$component/README.md"
     
@@ -46,7 +46,7 @@ for component in "${components[@]}"; do
 done
 
 # Create root README files
-echo "# AI Training Documentation" > /Users/cskoons/projects/github/Tekton/MetaData/TektonDocumentation/AITraining/README.md
+echo "# CI Training Documentation" > /Users/cskoons/projects/github/Tekton/MetaData/TektonDocumentation/AITraining/README.md
 echo "" >> /Users/cskoons/projects/github/Tekton/MetaData/TektonDocumentation/AITraining/README.md
 echo "This directory contains training materials for Companion Intelligences working with Tekton." >> /Users/cskoons/projects/github/Tekton/MetaData/TektonDocumentation/AITraining/README.md
 

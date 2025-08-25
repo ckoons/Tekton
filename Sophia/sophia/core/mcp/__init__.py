@@ -1,7 +1,7 @@
 """
 Sophia MCP (Model Context Protocol) integration.
 
-This module provides MCP capabilities and tools for Sophia's ML/AI analysis,
+This module provides MCP capabilities and tools for Sophia's ML/CI analysis,
 research management, and intelligence measurement features.
 """
 

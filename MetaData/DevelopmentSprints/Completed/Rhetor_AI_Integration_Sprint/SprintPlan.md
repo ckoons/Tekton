@@ -68,7 +68,7 @@ We will extend Rhetor with a Component CI Manager that creates and manages dedic
 1. **Component CI Registry**: Create CI instances with model configurations optimized for each component's domain
 2. **Filter Chain Architecture**: Implement stdin/stdout filters for prompt engineering and response processing
 3. **Enhanced Protocol**: Extend WebSocket protocol to support component-specific CI routing
-4. **Team Chat Channel**: Create a moderated channel for AI-to-AI and AI-to-human communication
+4. **Team Chat Channel**: Create a moderated channel for AI-to-CI and AI-to-human communication
 
 ## Code Quality Requirements
 
@@ -181,7 +181,7 @@ This sprint will be considered successful if:
 
 - Each Tekton component has a dedicated CI assistant accessible through its chat interface
 - Component CIs demonstrate specialized knowledge and behavior for their domains
-- Team chat enables effective AI-to-AI and AI-to-human communication
+- Team chat enables effective AI-to-CI and AI-to-human communication
 - All code follows the Debug Instrumentation Guidelines
 - Documentation is complete with integration examples
 - Tests pass with 80% coverage

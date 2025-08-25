@@ -1,7 +1,7 @@
 """
 MCP tools implementation for Sophia.
 
-This module implements all 16 MCP tools for Sophia's ML/AI analysis,
+This module implements all 16 MCP tools for Sophia's ML/CI analysis,
 research management, and intelligence measurement capabilities.
 """
 
@@ -15,7 +15,7 @@ from tekton.mcp.fastmcp.schema import MCPTool
 
 
 class SophiaMLAnalysisTools:
-    """ML/AI Analysis tools for Sophia (6 tools)."""
+    """ML/CI Analysis tools for Sophia (6 tools)."""
     
     @staticmethod
     def analyze_component_performance(
@@ -1191,7 +1191,7 @@ class SophiaIntelligenceMeasurementTools:
 
 # Tool registration and exports
 SOPHIA_MCP_TOOLS = [
-    # ML/AI Analysis Tools (6)
+    # ML/CI Analysis Tools (6)
     MCPTool(
         name="analyze_component_performance",
         description="Analyze performance characteristics of Tekton components using ML techniques",

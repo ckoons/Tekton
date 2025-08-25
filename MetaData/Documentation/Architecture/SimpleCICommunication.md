@@ -43,10 +43,10 @@ Simplified message handling for aish commands:
 
 ## Port Assignment Formula
 
-AI ports are deterministically calculated from component ports:
+CI ports are deterministically calculated from component ports:
 
 ```
-AI Port = 45000 + (Component Port - 8000)
+CI Port = 45000 + (Component Port - 8000)
 ```
 
 Examples:
@@ -66,7 +66,7 @@ simple_ai.ai_send()
     ↓
 Direct Socket Connection (localhost:45xxx)
     ↓
-AI Specialist
+CI Specialist
     ↓
 Response via same socket
 ```
@@ -143,7 +143,7 @@ try:
     response = ai_send_sync("apollo-ai", message, "localhost", 45012)
 except Exception as e:
     # Simple error - no fallback chains or retries
-    print(f"AI communication failed: {e}")
+    print(f"CI communication failed: {e}")
 ```
 
 ## CI Tools Integration

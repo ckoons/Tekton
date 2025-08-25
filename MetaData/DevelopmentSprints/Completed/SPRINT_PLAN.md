@@ -65,7 +65,7 @@ Transform Ergon from an agent builder into Tekton's CI-in-the-loop reusability e
 - [ ] Build pattern learning from Casey's actions
 - [ ] Create autonomy management (advisory to autonomous)
 - [ ] Add decision tracking and audit trails
-- [ ] Build CI orchestration for multi-AI workflows
+- [ ] Build CI orchestration for multi-CI workflows
 - [ ] Create Dev Sprint automation
 - [ ] Implement approval workflow system
 - [ ] Add metrics engine for tracking improvements

@@ -257,7 +257,7 @@ window.ComponentChat = {
     if (error.type === 'ai_unavailable') {
       // Show component-specific fallback
       ChatWidget.showMessage(
-        'AI assistant temporarily unavailable. ' +
+        'CI assistant temporarily unavailable. ' +
         'You can still use manual features.',
         'system'
       );

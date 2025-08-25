@@ -9,7 +9,7 @@ This sprint implements dedicated CI instances for each Tekton component, managed
 1. **Component CI Management**: Each Tekton component gets a dedicated CI assistant
 2. **Intelligent Model Selection**: Optimal model assignment based on component needs
 3. **Prompt Engineering Pipeline**: Transparent enhancement of prompts and responses
-4. **Team Chat**: AI-to-AI and AI-to-human collaboration channel
+4. **Team Chat**: AI-to-CI and AI-to-human collaboration channel
 
 ## Key Features
 
@@ -76,6 +76,6 @@ const chatInterface = createChatInterface(container, {
 
 - Each component has a functional CI assistant
 - Response times under 2 seconds
-- Team chat supports multi-AI conversations
+- Team chat supports multi-CI conversations
 - All code follows debug instrumentation guidelines
 - 80% test coverage achieved

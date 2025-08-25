@@ -222,7 +222,7 @@ class MessageType(Enum):
 ```json
 {
     "type": "message",
-    "content": "AI response",
+    "content": "CI response",
     "ai_id": "apollo-ai",
     "model": "llama3.3:70b",
     "elapsed_time": 2.5,

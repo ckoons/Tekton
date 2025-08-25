@@ -651,11 +651,11 @@ class CIRegistry:
         return False
     
     @integration_point(
-        title="AI Exchange Storage",
+        title="CI Exchange Storage",
         description="Stores complete user message and CI response exchanges",
-        target_component="AI Specialists",
+        target_component="CI Specialists",
         protocol="Socket JSON messages",
-        data_flow="AI Specialist → update_ci_last_output → registry.json",
+        data_flow="CI Specialist → update_ci_last_output → registry.json",
         integration_date="2025-07-30"
     )
     def update_ci_last_output(self, ci_name: str, output: Union[str, Dict]) -> bool:

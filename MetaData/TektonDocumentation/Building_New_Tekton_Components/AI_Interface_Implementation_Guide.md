@@ -169,7 +169,7 @@ async def analyze_data(
     }
 ```
 
-#### Advanced Tool with Multi-AI Integration
+#### Advanced Tool with Multi-CI Integration
 
 ```python
 @mcp.tool()
@@ -497,7 +497,7 @@ class AICommandPalette {
 <!-- CI Insights Panel -->
 <div class="mycomponent__ai-insights-panel">
     <div class="mycomponent__panel-header">
-        <h3>AI Insights</h3>
+        <h3>CI Insights</h3>
         <div class="mycomponent__insight-controls">
             <select id="insight-timeframe" onchange="updateInsightTimeframe()">
                 <option value="1h">Last Hour</option>
@@ -539,7 +539,7 @@ class AICommandPalette {
         
         <!-- Recommendations -->
         <div class="mycomponent__insight-card">
-            <h4>AI Recommendations</h4>
+            <h4>CI Recommendations</h4>
             <div class="mycomponent__recommendations" id="ai-recommendations">
                 <!-- Actionable recommendations -->
             </div>
@@ -883,7 +883,7 @@ if (AIFeatureFlags.isEnabled('enableNaturalCommands')) {
    - Check dependencies are available
    - Verify tool registration
 
-3. **AI Responses Too Slow**
+3. **CI Responses Too Slow**
    - Implement caching strategies
    - Use appropriate model selection
    - Consider async/streaming responses
@@ -901,7 +901,7 @@ Implementing CI interfaces in Tekton components involves:
 2. **MCP Tools** - Expose functionality for CI agents
 3. **Natural Language** - Enable conversational control
 4. **Smart UI Elements** - AI-powered interface components
-5. **Multi-AI Coordination** - Leverage multiple CI services
+5. **Multi-CI Coordination** - Leverage multiple CI services
 6. **Performance Optimization** - Cache and optimize CI calls
 7. **Progressive Enhancement** - Start simple, add complexity
 8. **Feedback Loops** - Continuously improve CI responses

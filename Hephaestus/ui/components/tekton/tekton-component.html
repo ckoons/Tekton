@@ -2746,7 +2746,7 @@ function displayAnalysisResults(data) {
     if (data.companion_intelligence) {
         const ci = data.companion_intelligence;
         
-        analysisHtml += `<div class="tekton__analysis-item"><strong>AI Integration Potential:</strong> ${ci.ai_integration_potential || 'Unknown'}</div>`;
+        analysisHtml += `<div class="tekton__analysis-item"><strong>CI Integration Potential:</strong> ${ci.ai_integration_potential || 'Unknown'}</div>`;
         analysisHtml += `<div class="tekton__analysis-item"><strong>Recommended CI:</strong> ${ci.recommended_ci || 'gpt-oss:20b'}</div>`;
         
         if (ci.automation_opportunities && ci.automation_opportunities.length > 0) {
@@ -3892,7 +3892,7 @@ async function fixMergeConflict(mergeId, mergeName) {
         });
         
         if (!response.ok) {
-            throw new Error(`AI fix failed: ${await response.text()}`);
+            throw new Error(`CI fix failed: ${await response.text()}`);
         }
         
         const result = await response.json();
@@ -3902,7 +3902,7 @@ async function fixMergeConflict(mergeId, mergeName) {
             await loadMergeQueue();
         } else {
             // CI failed - show options
-            TektonModal.warning(`AI was unable to resolve conflicts. Please choose Consult or Redo.`);
+            TektonModal.warning(`CI was unable to resolve conflicts. Please choose Consult or Redo.`);
             showMergeConflictModal(mergeId, mergeName, conflictData);
         }
         

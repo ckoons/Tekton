@@ -4,7 +4,7 @@
 
 **"Errors are gold, they help us improve. Questions that are sincere are the best ways to communicate. We evolve, change and hope to improve. If you stumble, get up and get back in the race, you can win."**
 
-Effective task assignment is the foundation of successful multi-AI coordination. This guide provides practical examples and patterns for assigning work to Claude sessions through the Terma terminal system.
+Effective task assignment is the foundation of successful multi-CI coordination. This guide provides practical examples and patterns for assigning work to Claude sessions through the Terma terminal system.
 
 ## Understanding the Assignment System
 

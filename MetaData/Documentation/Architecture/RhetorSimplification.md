@@ -27,7 +27,7 @@ We simplified Rhetor's CI management by removing the complex discovery service a
 
 ### 4. Simplified Streaming (`rhetor/api/specialist_streaming_endpoints_simple.py`)
 - Simulated streaming (since CIs don't stream yet)
-- Multi-AI queries
+- Multi-CI queries
 - Real-time health monitoring
 
 ## Benefits

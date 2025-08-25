@@ -85,9 +85,9 @@ class OrphanCleanupService:
     
     @service_boundary(
         title="Orphan cleanup service",
-        inputs=["System process list", "AI registry"],
+        inputs=["System process list", "CI registry"],
         outputs=["Terminated orphan processes", "Cleanup logs"],
-        dependencies=["psutil", "AI registry"]
+        dependencies=["psutil", "CI registry"]
     )
     async def start(self):
         """Start the orphan cleanup service."""

@@ -64,7 +64,7 @@ Tag all chat/communication areas:
    - Input field: `data-tekton-chat-input="true"`
    - Send button: `data-tekton-chat-send="true"`
 
-2. **AI Integration**
+2. **CI Integration**
    - Specialist assignment: `data-tekton-ai="[specialist-id]"`
    - Connection status: `data-tekton-ai-ready="false"` (updated dynamically)
 

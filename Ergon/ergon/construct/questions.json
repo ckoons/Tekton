@@ -21,7 +21,7 @@
       "id": "components",
       "order": 2,
       "question": "Which Registry components should we use, or should I suggest based on your purpose?",
-      "placeholder": "List components or say 'suggest' for AI recommendations...",
+      "placeholder": "List components or say 'suggest' for CI recommendations...",
       "required": false,
       "type": "component_selection",
       "parseKeys": ["components", "services", "modules", "using", "with"],

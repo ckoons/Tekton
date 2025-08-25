@@ -1,0 +1,347 @@
+{
+  "faiss": {
+    "db_name": "faiss",
+    "client_id": "test_faiss_1751380638",
+    "initialization": true,
+    "storage_operations": [
+      {
+        "index": 0,
+        "success": true,
+        "time": 0.08081817626953125,
+        "content_preview": "FAISS is a high-performance vector database optimi...",
+        "namespace": "tech_info"
+      },
+      {
+        "index": 1,
+        "success": true,
+        "time": 0.029022932052612305,
+        "content_preview": "ChromaDB provides feature-rich vector storage with...",
+        "namespace": "tech_info"
+      },
+      {
+        "index": 2,
+        "success": true,
+        "time": 0.029304027557373047,
+        "content_preview": "LanceDB is optimized for Apple Silicon with Metal ...",
+        "namespace": "tech_info"
+      },
+      {
+        "index": 3,
+        "success": true,
+        "time": 0.029727935791015625,
+        "content_preview": "Vector databases enable semantic search by storing...",
+        "namespace": "concepts"
+      },
+      {
+        "index": 4,
+        "success": true,
+        "time": 0.029180049896240234,
+        "content_preview": "Memory systems in AI can leverage vector similarit...",
+        "namespace": "concepts"
+      }
+    ],
+    "search_operations": [
+      {
+        "index": 0,
+        "query": "GPU acceleration performance",
+        "namespace": "tech_info",
+        "results_count": 0,
+        "time": 0.06491279602050781,
+        "results": []
+      },
+      {
+        "index": 1,
+        "query": "Apple Silicon Metal optimization",
+        "namespace": "tech_info",
+        "results_count": 0,
+        "time": 0.013334035873413086,
+        "results": []
+      },
+      {
+        "index": 2,
+        "query": "semantic search embeddings",
+        "namespace": "concepts",
+        "results_count": 0,
+        "time": 0.03931689262390137,
+        "results": []
+      },
+      {
+        "index": 3,
+        "query": "vector similarity retrieval",
+        "namespace": "concepts",
+        "results_count": 0,
+        "time": 0.013563871383666992,
+        "results": []
+      },
+      {
+        "index": 4,
+        "query": "ChromaDB features",
+        "namespace": "tech_info",
+        "results_count": 0,
+        "time": 0.03772997856140137,
+        "results": []
+      }
+    ],
+    "errors": [],
+    "performance": {
+      "initialization_time": 3.0281238555908203,
+      "total_search_time": 0.16885757446289062,
+      "avg_search_time": 0.033771514892578125,
+      "avg_storage_time": 0.03961062431335449
+    },
+    "total_memories_stored": 5,
+    "total_searches_performed": 0,
+    "namespaces": [
+      "conversations",
+      "thinking",
+      "longterm",
+      "projects",
+      "compartments",
+      "session"
+    ],
+    "storage_info": {
+      "storage_type": "VectorStorage",
+      "vector_available": true,
+      "client_id": "test_faiss_1751380638",
+      "data_dir": "/Users/cskoons/.engram",
+      "namespaces": [
+        "conversations",
+        "thinking",
+        "longterm",
+        "projects",
+        "compartments",
+        "session"
+      ]
+    }
+  },
+  "chromadb": {
+    "db_name": "chromadb",
+    "client_id": "test_chromadb_1751380644",
+    "initialization": true,
+    "storage_operations": [
+      {
+        "index": 0,
+        "success": true,
+        "time": 0.018143892288208008,
+        "content_preview": "FAISS is a high-performance vector database optimi...",
+        "namespace": "tech_info"
+      },
+      {
+        "index": 1,
+        "success": true,
+        "time": 0.011129140853881836,
+        "content_preview": "ChromaDB provides feature-rich vector storage with...",
+        "namespace": "tech_info"
+      },
+      {
+        "index": 2,
+        "success": true,
+        "time": 0.01137089729309082,
+        "content_preview": "LanceDB is optimized for Apple Silicon with Metal ...",
+        "namespace": "tech_info"
+      },
+      {
+        "index": 3,
+        "success": true,
+        "time": 0.01083993911743164,
+        "content_preview": "Vector databases enable semantic search by storing...",
+        "namespace": "concepts"
+      },
+      {
+        "index": 4,
+        "success": true,
+        "time": 0.009926319122314453,
+        "content_preview": "Memory systems in AI can leverage vector similarit...",
+        "namespace": "concepts"
+      }
+    ],
+    "search_operations": [
+      {
+        "index": 0,
+        "query": "GPU acceleration performance",
+        "namespace": "tech_info",
+        "results_count": 0,
+        "time": 0.021743059158325195,
+        "results": []
+      },
+      {
+        "index": 1,
+        "query": "Apple Silicon Metal optimization",
+        "namespace": "tech_info",
+        "results_count": 0,
+        "time": 0.012542963027954102,
+        "results": []
+      },
+      {
+        "index": 2,
+        "query": "semantic search embeddings",
+        "namespace": "concepts",
+        "results_count": 0,
+        "time": 0.01635003089904785,
+        "results": []
+      },
+      {
+        "index": 3,
+        "query": "vector similarity retrieval",
+        "namespace": "concepts",
+        "results_count": 0,
+        "time": 0.013029098510742188,
+        "results": []
+      },
+      {
+        "index": 4,
+        "query": "ChromaDB features",
+        "namespace": "tech_info",
+        "results_count": 0,
+        "time": 0.013471126556396484,
+        "results": []
+      }
+    ],
+    "errors": [],
+    "performance": {
+      "initialization_time": 4.849745750427246,
+      "total_search_time": 0.07713627815246582,
+      "avg_search_time": 0.015427255630493164,
+      "avg_storage_time": 0.012282037734985351
+    },
+    "total_memories_stored": 5,
+    "total_searches_performed": 0,
+    "namespaces": [
+      "conversations",
+      "thinking",
+      "longterm",
+      "projects",
+      "compartments",
+      "session"
+    ],
+    "storage_info": {
+      "storage_type": "VectorStorage",
+      "vector_available": true,
+      "client_id": "test_chromadb_1751380644",
+      "data_dir": "/Users/cskoons/.engram",
+      "namespaces": [
+        "conversations",
+        "thinking",
+        "longterm",
+        "projects",
+        "compartments",
+        "session"
+      ]
+    }
+  },
+  "lancedb": {
+    "db_name": "lancedb",
+    "client_id": "test_lancedb_1751380651",
+    "initialization": true,
+    "storage_operations": [
+      {
+        "index": 0,
+        "success": true,
+        "time": 0.014914751052856445,
+        "content_preview": "FAISS is a high-performance vector database optimi...",
+        "namespace": "tech_info"
+      },
+      {
+        "index": 1,
+        "success": true,
+        "time": 0.009207963943481445,
+        "content_preview": "ChromaDB provides feature-rich vector storage with...",
+        "namespace": "tech_info"
+      },
+      {
+        "index": 2,
+        "success": true,
+        "time": 0.009868144989013672,
+        "content_preview": "LanceDB is optimized for Apple Silicon with Metal ...",
+        "namespace": "tech_info"
+      },
+      {
+        "index": 3,
+        "success": true,
+        "time": 0.009758949279785156,
+        "content_preview": "Vector databases enable semantic search by storing...",
+        "namespace": "concepts"
+      },
+      {
+        "index": 4,
+        "success": true,
+        "time": 0.009437799453735352,
+        "content_preview": "Memory systems in AI can leverage vector similarit...",
+        "namespace": "concepts"
+      }
+    ],
+    "search_operations": [
+      {
+        "index": 0,
+        "query": "GPU acceleration performance",
+        "namespace": "tech_info",
+        "results_count": 0,
+        "time": 0.019384145736694336,
+        "results": []
+      },
+      {
+        "index": 1,
+        "query": "Apple Silicon Metal optimization",
+        "namespace": "tech_info",
+        "results_count": 0,
+        "time": 0.012424230575561523,
+        "results": []
+      },
+      {
+        "index": 2,
+        "query": "semantic search embeddings",
+        "namespace": "concepts",
+        "results_count": 0,
+        "time": 0.016134262084960938,
+        "results": []
+      },
+      {
+        "index": 3,
+        "query": "vector similarity retrieval",
+        "namespace": "concepts",
+        "results_count": 0,
+        "time": 0.012046098709106445,
+        "results": []
+      },
+      {
+        "index": 4,
+        "query": "ChromaDB features",
+        "namespace": "tech_info",
+        "results_count": 0,
+        "time": 0.01375579833984375,
+        "results": []
+      }
+    ],
+    "errors": [],
+    "performance": {
+      "initialization_time": 0.8780059814453125,
+      "total_search_time": 0.07374453544616699,
+      "avg_search_time": 0.014748907089233399,
+      "avg_storage_time": 0.010637521743774414
+    },
+    "total_memories_stored": 5,
+    "total_searches_performed": 0,
+    "namespaces": [
+      "conversations",
+      "thinking",
+      "longterm",
+      "projects",
+      "compartments",
+      "session"
+    ],
+    "storage_info": {
+      "storage_type": "VectorStorage",
+      "vector_available": true,
+      "client_id": "test_lancedb_1751380651",
+      "data_dir": "/Users/cskoons/.engram",
+      "namespaces": [
+        "conversations",
+        "thinking",
+        "longterm",
+        "projects",
+        "compartments",
+        "session"
+      ]
+    }
+  }
+}

@@ -165,7 +165,7 @@ async function chatWithAI() {
       content: 'What is your role in Tekton?'
     });
     
-    console.log('AI Response:', response.content);
+    console.log('CI Response:', response.content);
     
     client.close();
   } catch (error) {
@@ -281,7 +281,7 @@ async function chatFromBrowser() {
     content: 'Hello from the browser!'
   });
   
-  console.log('AI said:', response.content);
+  console.log('CI said:', response.content);
 }
 ```
 
@@ -351,7 +351,7 @@ async function chatWithSpecialist(specialistId, message) {
 <!DOCTYPE html>
 <html>
 <head>
-  <title>AI Chat Interface</title>
+  <title>CI Chat Interface</title>
 </head>
 <body>
   <div class="chat-container" data-tekton-chat="ai-interface">
@@ -602,7 +602,7 @@ async function chatWithSpecialist(specialistId, message) {
      "type": "info_response",
      "ai_id": "numa-ai",
      "component": "Numa",
-     "description": "AI specialist for Numa",
+     "description": "CI specialist for Numa",
      "model_provider": "ollama",
      "model_name": "llama3.3:70b",
      "system_prompt": "You are The Specialist Orchestrator...",

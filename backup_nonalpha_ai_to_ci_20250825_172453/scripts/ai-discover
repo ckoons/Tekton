@@ -1,0 +1,971 @@
+#!/usr/bin/env python3
+"""
+AI Discovery Tool for Tekton Platform - Enhanced Version
+
+A comprehensive tool for discovering, monitoring, and managing CI specialists.
+Features real-time status, performance metrics, and streaming capabilities.
+"""
+import argparse
+import asyncio
+import json
+import sys
+import os
+from shared.env import TektonEnviron
+import time
+from typing import Optional, List, Dict, Any
+from pathlib import Path
+from datetime import datetime
+
+# Add Tekton root to path - make it location-independent
+script_dir = Path(__file__).parent.absolute()
+tekton_root = script_dir.parent
+
+# Handle both direct execution and symlinked execution
+if 'Tekton' not in str(tekton_root):
+    # If symlinked, find Tekton root from environment or default location
+    tekton_root = Path(TektonEnviron.get('TEKTON_ROOT', '/Users/cskoons/projects/github/Tekton'))
+
+sys.path.insert(0, str(tekton_root))
+
+# Registry and routing removed - using fixed port discovery
+from shared.utils.env_config import get_component_config
+from shared.utils.ai_port_utils import get_ai_port
+import socket
+import json
+
+# Try to import rich for better output (optional)
+try:
+    from rich.console import Console
+    from rich.table import Table
+    from rich.live import Live
+    from rich.progress import Progress, SpinnerColumn, TextColumn
+    from rich.panel import Panel
+    from rich.syntax import Syntax
+    HAS_RICH = True
+    console = Console()
+except ImportError:
+    HAS_RICH = False
+    console = None
+
+
+async def list_ais(args):
+    """List available CI specialists with enhanced information."""
+    config = get_component_config()
+    
+    # Known CI components
+    ai_components = ['engram', 'hermes', 'ergon', 'rhetor', 'terma', 'athena',
+                    'prometheus', 'harmonia', 'telos', 'synthesis', 'tekton_core',
+                    'metis', 'apollo', 'penia', 'sophia', 'noesis', 'numa', 'hephaestus']
+    
+    specialists = []
+    for component in ai_components:
+        component_port = config.get_port(component)
+        if not component_port:
+            continue
+            
+        ai_port = get_ai_port(component_port)
+        ai_id = f"{component}-ci"
+        
+        # Check if CI is running by trying to connect
+        try:
+            reader, writer = await asyncio.wait_for(
+                asyncio.open_connection('localhost', ai_port),
+                timeout=1.0
+            )
+            
+            # Send ping to check status
+            writer.write(json.dumps({'type': 'ping'}).encode() + b'\n')
+            await writer.drain()
+            
+            # Read response
+            data = await asyncio.wait_for(reader.readline(), timeout=2.0)
+            response = json.loads(data.decode())
+            
+            writer.close()
+            await writer.wait_closed()
+            
+            # Create specialist info
+            specialist = {
+                'id': ai_id,
+                'name': component.title(),
+                'port': ai_port,
+                'status': 'healthy',
+                'model': 'personality',  # Simple personality responses
+                'success_rate': 1.0,
+                'avg_response_time': 0.1,
+                'capabilities': ['chat', 'personality'],
+                'component': component
+            }
+            
+            # Apply filters if any
+            if args.status and args.status != 'healthy':
+                continue
+            if args.min_success_rate and specialist['success_rate'] < args.min_success_rate:
+                continue
+                
+            specialists.append(specialist)
+            
+        except Exception:
+            # CI not running or not responding
+            if not args.status or args.status in ['unresponsive', 'unknown']:
+                specialists.append({
+                    'id': ai_id,
+                    'name': component.title(),
+                    'port': ai_port,
+                    'status': 'unresponsive',
+                    'model': 'unknown',
+                    'success_rate': 0.0,
+                    'avg_response_time': 0.0,
+                    'capabilities': [],
+                    'component': component
+                })
+    
+    if args.json:
+        # JSON output
+        data = {
+            "timestamp": datetime.now().isoformat(),
+            "total": len(specialists),
+            "filters": {
+                "status": args.status,
+                "min_success_rate": args.min_success_rate
+            },
+            "ais": specialists
+        }
+        print(json.dumps(data, indent=2))
+    elif HAS_RICH and not args.simple:
+        # Rich table output
+        table = Table(title=f"AI Specialists ({len(specialists)} found)")
+        table.add_column("Status", style="cyan", width=8)
+        table.add_column("ID", style="magenta")
+        table.add_column("Name", style="yellow")
+        table.add_column("Port", justify="right")
+        table.add_column("Model", style="green")
+        table.add_column("Success", justify="right")
+        table.add_column("Avg RT", justify="right")
+        table.add_column("Capabilities", style="dim")
+        
+        for spec in specialists:
+            status_icon = {
+                'healthy': "✅",
+                'degraded': "⚠️",
+                'unresponsive': "❌",
+                'unknown': "❓",
+                'starting': "🔄",
+                'stopping': "🛑"
+            }.get(spec['status'], "?")
+            
+            table.add_row(
+                status_icon,
+                spec['id'],
+                spec['name'],
+                str(spec['port']),
+                spec['model'][:15] + "..." if len(spec['model']) > 15 else spec['model'],
+                f"{spec['success_rate']*100:.1f}%",
+                f"{spec['avg_response_time']:.2f}s" if spec['avg_response_time'] > 0 else "N/A",
+                ", ".join(spec['capabilities'][:3]) + ("..." if len(spec['capabilities']) > 3 else "")
+            )
+        
+        console.print(table)
+    else:
+        # Simple text output
+        print(f"\n{'='*80}")
+        print(f"Available CI Specialists ({len(specialists)} found)")
+        print(f"{'='*80}\n")
+        
+        for spec in specialists:
+            status_icon = "✓" if spec['status'] == 'healthy' else "✗"
+            print(f"{status_icon} {spec['name']} ({spec['id']})")
+            print(f"   Port: {spec['port']}")
+            print(f"   Model: {spec['model']}")
+            print(f"   Status: {spec['status']}")
+            print(f"   Success Rate: {spec['success_rate']*100:.1f}%")
+            if spec['avg_response_time'] > 0:
+                print(f"   Avg Response: {spec['avg_response_time']:.3f}s")
+            if args.verbose:
+                print(f"   Capabilities: {', '.join(spec['capabilities'])}")
+            print()
+
+
+async def watch_ais(args):
+    """Watch CI status in real-time."""
+    if not HAS_RICH:
+        print("Error: 'rich' library required for watch mode. Install with: pip install rich")
+        return
+    
+    config = get_component_config()
+    ai_components = ['engram', 'hermes', 'ergon', 'rhetor', 'terma', 'athena',
+                    'prometheus', 'harmonia', 'telos', 'synthesis', 'tekton_core',
+                    'metis', 'apollo', 'penia', 'sophia', 'noesis', 'numa', 'hephaestus']
+    
+    with Live(refresh_per_second=1) as live:
+        while True:
+            # Discover CIs by checking ports
+            specialists = []
+            total_healthy = 0
+            total_unresponsive = 0
+            
+            for component in ai_components:
+                component_port = config.get_port(component)
+                if not component_port:
+                    continue
+                    
+                ai_port = get_ai_port(component_port)
+                ai_id = f"{component}-ci"
+                
+                # Check if CI is running
+                try:
+                    reader, writer = await asyncio.wait_for(
+                        asyncio.open_connection('localhost', ai_port),
+                        timeout=0.5
+                    )
+                    
+                    writer.write(json.dumps({'type': 'ping'}).encode() + b'\n')
+                    await writer.drain()
+                    
+                    data = await asyncio.wait_for(reader.readline(), timeout=1.0)
+                    response = json.loads(data.decode())
+                    
+                    writer.close()
+                    await writer.wait_closed()
+                    
+                    specialists.append({
+                        'id': ai_id,
+                        'port': ai_port,
+                        'model': 'personality',
+                        'status': 'healthy',
+                        'success_rate': 1.0,
+                        'avg_response_time': 0.1,
+                        'total_requests': 0,
+                        'last_seen': time.time()
+                    })
+                    total_healthy += 1
+                    
+                except Exception:
+                    specialists.append({
+                        'id': ai_id,
+                        'port': ai_port,
+                        'model': 'unknown',
+                        'status': 'unresponsive',
+                        'success_rate': 0.0,
+                        'avg_response_time': 0.0,
+                        'total_requests': 0,
+                        'last_seen': 0
+                    })
+                    total_unresponsive += 1
+            
+            # Create display
+            table = Table(title=f"AI Specialists Monitor - {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+            table.add_column("Status", style="cyan", width=8)
+            table.add_column("ID", style="magenta")
+            table.add_column("Port", justify="right")
+            table.add_column("Model", style="green")
+            table.add_column("Success", justify="right")
+            table.add_column("Avg RT", justify="right")
+            table.add_column("Requests", justify="right")
+            table.add_column("Last Seen", style="dim")
+            
+            for spec in specialists:
+                status_emoji = {
+                    'healthy': "✅",
+                    'degraded': "⚠️",
+                    'unresponsive': "❌",
+                    'unknown': "❓"
+                }.get(spec['status'], "?")
+                
+                # Format last seen
+                if spec['last_seen'] > 0:
+                    last_seen_delta = time.time() - spec['last_seen']
+                    if last_seen_delta < 60:
+                        last_seen = f"{int(last_seen_delta)}s ago"
+                    elif last_seen_delta < 3600:
+                        last_seen = f"{int(last_seen_delta/60)}m ago"
+                    else:
+                        last_seen = f"{int(last_seen_delta/3600)}h ago"
+                else:
+                    last_seen = "Never"
+                
+                table.add_row(
+                    status_emoji,
+                    spec['id'],
+                    str(spec['port']),
+                    spec['model'][:20] + "..." if len(spec['model']) > 20 else spec['model'],
+                    f"{spec['success_rate']*100:.1f}%",
+                    f"{spec['avg_response_time']:.2f}s" if spec['avg_response_time'] > 0 else "N/A",
+                    str(spec['total_requests']),
+                    last_seen
+                )
+            
+            # Add summary panel
+            summary = Panel(
+                f"Total CIs: {len(specialists)} | "
+                f"Healthy: {total_healthy} | "
+                f"Unresponsive: {total_unresponsive} | "
+                f"Overall Success: {(total_healthy/len(specialists)*100 if specialists else 0):.1f}%",
+                title="Summary"
+            )
+            
+            live.update(summary)
+            live.update(table)
+            
+            await asyncio.sleep(1)
+
+
+async def test_ai(args):
+    """Test CI connections with detailed diagnostics."""
+    config = get_component_config()
+    
+    if args.ai_id:
+        # Test specific AI
+        # Extract component name from ai_id
+        component = args.ai_id.replace('-ci', '')
+        component_port = config.get_port(component)
+        if not component_port:
+            print(f"Error: Component '{component}' not found")
+            return
+            
+        ai_port = get_ai_port(component_port)
+        spec = {
+            'id': args.ai_id,
+            'host': 'localhost',
+            'port': ai_port
+        }
+        
+        # Run multiple tests
+        results = []
+        test_messages = [
+            "ping",
+            "Hello, this is a test message.",
+            "What are your capabilities?"
+        ]
+        
+        if HAS_RICH and not args.simple:
+            with Progress(
+                SpinnerColumn(),
+                TextColumn("[progress.description]{task.description}"),
+                transient=True
+            ) as progress:
+                task = progress.add_task(f"Testing {spec.id}...", total=len(test_messages))
+                
+                for msg in test_messages:
+                    start = time.time()
+                    try:
+                        reader, writer = await asyncio.wait_for(
+                            asyncio.open_connection(spec['host'], spec['port']),
+                            timeout=5.0
+                        )
+                        
+                        writer.write(json.dumps({'content': msg}).encode() + b'\n')
+                        await writer.drain()
+                        
+                        data = await asyncio.wait_for(reader.readline(), timeout=5.0)
+                        response = json.loads(data.decode())
+                        
+                        writer.close()
+                        await writer.wait_closed()
+                        
+                        elapsed = time.time() - start
+                        results.append({
+                            "message": msg,
+                            "success": True,
+                            "elapsed": elapsed,
+                            "response": response.get('content', '')
+                        })
+                    except Exception as e:
+                        elapsed = time.time() - start
+                        results.append({
+                            "message": msg,
+                            "success": False,
+                            "elapsed": elapsed,
+                            "response": str(e)
+                        })
+                    
+                    progress.advance(task)
+        else:
+            print(f"Testing {spec['id']}...")
+            for msg in test_messages:
+                start = time.time()
+                try:
+                    reader, writer = await asyncio.wait_for(
+                        asyncio.open_connection(spec['host'], spec['port']),
+                        timeout=5.0
+                    )
+                    
+                    writer.write(json.dumps({'content': msg}).encode() + b'\n')
+                    await writer.drain()
+                    
+                    data = await asyncio.wait_for(reader.readline(), timeout=5.0)
+                    response = json.loads(data.decode())
+                    
+                    writer.close()
+                    await writer.wait_closed()
+                    
+                    elapsed = time.time() - start
+                    results.append({
+                        "message": msg,
+                        "success": True,
+                        "elapsed": elapsed,
+                        "response": response.get('content', '')
+                    })
+                except Exception as e:
+                    elapsed = time.time() - start
+                    results.append({
+                        "message": msg,
+                        "success": False,
+                        "elapsed": elapsed,
+                        "response": str(e)
+                    })
+        
+        # Display results
+        if args.json:
+            print(json.dumps({
+                "ai_id": spec['id'],
+                "host": spec['host'],
+                "port": spec['port'],
+                "test_results": results
+            }, indent=2))
+        else:
+            print(f"\n{'='*60}")
+            print(f"Test Results: {spec['id']}")
+            print(f"{'='*60}\n")
+            
+            success_count = sum(1 for r in results if r["success"])
+            print(f"Success Rate: {success_count}/{len(results)}")
+            print(f"Average Response Time: {sum(r['elapsed'] for r in results)/len(results):.3f}s\n")
+            
+            for result in results:
+                status = "✓" if result["success"] else "✗"
+                print(f"{status} Message: {result['message'][:50]}...")
+                print(f"  Time: {result['elapsed']:.3f}s")
+                if args.verbose:
+                    print(f"  Response: {str(result['response'])[:100]}...")
+                print()
+    else:
+        # Test all CIs
+        ai_components = ['engram', 'hermes', 'ergon', 'rhetor', 'terma', 'athena',
+                        'prometheus', 'harmonia', 'telos', 'synthesis', 'tekton_core',
+                        'metis', 'apollo', 'penia', 'sophia', 'noesis', 'numa', 'hephaestus']
+        
+        specialists = []
+        for component in ai_components:
+            component_port = config.get_port(component)
+            if not component_port:
+                continue
+                
+            ai_port = get_ai_port(component_port)
+            ai_id = f"{component}-ci"
+            
+            # Quick ping test to see if it's healthy
+            try:
+                reader, writer = await asyncio.wait_for(
+                    asyncio.open_connection('localhost', ai_port),
+                    timeout=0.5
+                )
+                
+                writer.write(json.dumps({'type': 'ping'}).encode() + b'\n')
+                await writer.drain()
+                
+                data = await asyncio.wait_for(reader.readline(), timeout=1.0)
+                response = json.loads(data.decode())
+                
+                writer.close()
+                await writer.wait_closed()
+                
+                specialists.append({
+                    'id': ai_id,
+                    'host': 'localhost',
+                    'port': ai_port
+                })
+            except Exception:
+                # Skip unhealthy CIs
+                pass
+        
+        if HAS_RICH and not args.simple:
+            table = Table(title="AI Connection Tests")
+            table.add_column("Status", width=6)
+            table.add_column("ID", style="magenta")
+            table.add_column("Port", justify="right")
+            table.add_column("Response Time", justify="right")
+            table.add_column("Result")
+            
+            for spec in specialists:
+                try:
+                    start = time.time()
+                    reader, writer = await asyncio.wait_for(
+                        asyncio.open_connection(spec['host'], spec['port']),
+                        timeout=2.0
+                    )
+                    
+                    writer.write(json.dumps({'type': 'ping'}).encode() + b'\n')
+                    await writer.drain()
+                    
+                    data = await asyncio.wait_for(reader.readline(), timeout=2.0)
+                    response = json.loads(data.decode())
+                    
+                    writer.close()
+                    await writer.wait_closed()
+                    
+                    elapsed = time.time() - start
+                    status = "✅"
+                    time_str = f"{elapsed*1000:.1f}ms"
+                    result = "OK"
+                except Exception as e:
+                    status = "❌"
+                    time_str = "N/A"
+                    result = str(e)[:30] + "..." if len(str(e)) > 30 else str(e)
+                
+                table.add_row(status, spec['id'], str(spec['port']), time_str, result)
+            
+            console.print(table)
+        else:
+            print("Testing all healthy CIs...")
+            for spec in specialists:
+                try:
+                    start = time.time()
+                    reader, writer = await asyncio.wait_for(
+                        asyncio.open_connection(spec['host'], spec['port']),
+                        timeout=2.0
+                    )
+                    
+                    writer.write(json.dumps({'type': 'ping'}).encode() + b'\n')
+                    await writer.drain()
+                    
+                    data = await asyncio.wait_for(reader.readline(), timeout=2.0)
+                    response = json.loads(data.decode())
+                    
+                    writer.close()
+                    await writer.wait_closed()
+                    
+                    elapsed = time.time() - start
+                    status = "✓"
+                    print(f"{status} {spec['id']:20} Port {spec['port']:5} {elapsed*1000:6.1f}ms")
+                except Exception as e:
+                    status = "✗"
+                    print(f"{status} {spec['id']:20} Port {spec['port']:5} Failed: {str(e)[:30]}")
+
+
+async def test_streaming(args):
+    """Test streaming capabilities of an AI."""
+    config = get_component_config()
+    
+    # Extract component name from ai_id
+    component = args.ai_id.replace('-ci', '')
+    component_port = config.get_port(component)
+    if not component_port:
+        print(f"Error: Component '{component}' not found")
+        return
+        
+    ai_port = get_ai_port(component_port)
+    spec = {
+        'id': args.ai_id,
+        'host': 'localhost',
+        'port': ai_port
+    }
+    
+    print(f"Testing streaming with {spec['id']}...")
+    print(f"Message: {args.message}\n")
+    print("Response:")
+    print("-" * 60)
+    
+    # Note: Our simple CIs don't support streaming, just send regular message
+    try:
+        reader, writer = await asyncio.wait_for(
+            asyncio.open_connection(spec['host'], spec['port']),
+            timeout=5.0
+        )
+        
+        writer.write(json.dumps({'content': args.message}).encode() + b'\n')
+        await writer.drain()
+        
+        data = await asyncio.wait_for(reader.readline(), timeout=30.0)
+        response = json.loads(data.decode())
+        
+        writer.close()
+        await writer.wait_closed()
+        
+        print(response.get('content', 'No response'))
+        print("-" * 60)
+        print(f"\nNote: Simple CI personalities don't support streaming")
+        
+    except Exception as e:
+        print(f"Error: {e}")
+        print("-" * 60)
+
+
+async def benchmark_ais(args):
+    """Benchmark CI response times and performance."""
+    config = get_component_config()
+    
+    # Get CIs to benchmark
+    specialists = []
+    
+    if args.ai_ids:
+        for ai_id in args.ai_ids:
+            component = ai_id.replace('-ci', '')
+            component_port = config.get_port(component)
+            if component_port:
+                ai_port = get_ai_port(component_port)
+                specialists.append({
+                    'id': ai_id,
+                    'host': 'localhost',
+                    'port': ai_port,
+                    'model': 'personality'
+                })
+            else:
+                print(f"Warning: CI '{ai_id}' not found")
+    else:
+        # Benchmark all healthy CIs
+        ai_components = ['engram', 'hermes', 'ergon', 'rhetor', 'terma', 'athena',
+                        'prometheus', 'harmonia', 'telos', 'synthesis', 'tekton_core',
+                        'metis', 'apollo', 'penia', 'sophia', 'noesis', 'numa', 'hephaestus']
+        
+        for component in ai_components:
+            component_port = config.get_port(component)
+            if not component_port:
+                continue
+                
+            ai_port = get_ai_port(component_port)
+            ai_id = f"{component}-ci"
+            
+            # Quick test to see if healthy
+            try:
+                reader, writer = await asyncio.wait_for(
+                    asyncio.open_connection('localhost', ai_port),
+                    timeout=0.5
+                )
+                writer.close()
+                await writer.wait_closed()
+                
+                specialists.append({
+                    'id': ai_id,
+                    'host': 'localhost',
+                    'port': ai_port,
+                    'model': 'personality'
+                })
+            except Exception:
+                pass
+    
+    if not specialists:
+        print("No CIs available for benchmarking")
+        return
+    
+    results = []
+    
+    # Test messages of varying complexity
+    test_messages = [
+        ("Simple", "Hello"),
+        ("Medium", "Explain the concept of recursion in programming."),
+        ("Complex", "Write a detailed analysis of the trade-offs between microservices and monolithic architectures.")
+    ]
+    
+    print(f"Benchmarking {len(specialists)} CIs with {args.iterations} iterations...")
+    
+    for spec in specialists:
+        spec_results = {
+            "ai_id": spec['id'],
+            "model": spec['model'],
+            "tests": {}
+        }
+        
+        for test_name, message in test_messages:
+            times = []
+            errors = 0
+            
+            for i in range(args.iterations):
+                start = time.time()
+                try:
+                    reader, writer = await asyncio.wait_for(
+                        asyncio.open_connection(spec['host'], spec['port']),
+                        timeout=30.0
+                    )
+                    
+                    writer.write(json.dumps({'content': message}).encode() + b'\n')
+                    await writer.drain()
+                    
+                    data = await asyncio.wait_for(reader.readline(), timeout=30.0)
+                    response = json.loads(data.decode())
+                    
+                    writer.close()
+                    await writer.wait_closed()
+                    
+                    elapsed = time.time() - start
+                    times.append(elapsed)
+                    
+                except Exception:
+                    errors += 1
+                
+                # Progress indicator
+                if not args.json:
+                    print(f"  {spec['id']} - {test_name}: {i+1}/{args.iterations}\r", end="")
+            
+            if times:
+                spec_results["tests"][test_name] = {
+                    "avg_time": sum(times) / len(times),
+                    "min_time": min(times),
+                    "max_time": max(times),
+                    "success_rate": len(times) / args.iterations,
+                    "errors": errors
+                }
+            else:
+                spec_results["tests"][test_name] = {
+                    "success_rate": 0,
+                    "errors": errors
+                }
+        
+        results.append(spec_results)
+        if not args.json:
+            print()  # New line after progress
+    
+    # Display results
+    if args.json:
+        print(json.dumps(results, indent=2))
+    elif HAS_RICH and not args.simple:
+        # Create comparison table
+        table = Table(title="AI Benchmark Results")
+        table.add_column("AI ID", style="magenta")
+        table.add_column("Model", style="green")
+        
+        for test_name, _ in test_messages:
+            table.add_column(f"{test_name}\n(avg/min/max)", justify="right")
+        
+        table.add_column("Overall\nSuccess", justify="right")
+        
+        for result in results:
+            row = [result["ai_id"], result["model"][:20] + "..." if len(result["model"]) > 20 else result["model"]]
+            
+            total_success = 0
+            total_attempts = 0
+            
+            for test_name, _ in test_messages:
+                if test_name in result["tests"]:
+                    test_data = result["tests"][test_name]
+                    if test_data["success_rate"] > 0:
+                        row.append(
+                            f"{test_data['avg_time']:.2f}s\n"
+                            f"{test_data['min_time']:.2f}s\n"
+                            f"{test_data['max_time']:.2f}s"
+                        )
+                    else:
+                        row.append("Failed")
+                    total_success += test_data["success_rate"] * args.iterations
+                    total_attempts += args.iterations
+                else:
+                    row.append("N/A")
+            
+            overall_success = (total_success / total_attempts * 100) if total_attempts > 0 else 0
+            row.append(f"{overall_success:.1f}%")
+            
+            table.add_row(*row)
+        
+        console.print(table)
+    else:
+        # Simple text output
+        print(f"\n{'='*80}")
+        print("Benchmark Results")
+        print(f"{'='*80}\n")
+        
+        for result in results:
+            print(f"{result['ai_id']} ({result['model']})")
+            for test_name, _ in test_messages:
+                if test_name in result["tests"]:
+                    test_data = result["tests"][test_name]
+                    if test_data["success_rate"] > 0:
+                        print(f"  {test_name}: avg={test_data['avg_time']:.3f}s, "
+                              f"min={test_data['min_time']:.3f}s, "
+                              f"max={test_data['max_time']:.3f}s, "
+                              f"success={test_data['success_rate']*100:.1f}%")
+                    else:
+                        print(f"  {test_name}: All attempts failed")
+            print()
+    
+    await registry.stop()
+
+
+async def route_test(args):
+    """Test routing engine with different scenarios."""
+    # Routing not supported with simple fixed-port system
+    print("Routing test not supported in simplified architecture.")
+    print("All CIs use fixed ports based on their component ports.")
+    print(f"\nTo send a message to a specific AI, use: ai-discover test <ai-id>")
+    print(f"Example: ai-discover test apollo-ci")
+
+
+async def stats(args):
+    """Display CI statistics."""
+    config = get_component_config()
+    ai_components = ['engram', 'hermes', 'ergon', 'rhetor', 'terma', 'athena',
+                    'prometheus', 'harmonia', 'telos', 'synthesis', 'tekton_core',
+                    'metis', 'apollo', 'penia', 'sophia', 'noesis', 'numa', 'hephaestus']
+    
+    total_ais = 0
+    healthy_ais = 0
+    
+    for component in ai_components:
+        component_port = config.get_port(component)
+        if not component_port:
+            continue
+            
+        total_ais += 1
+        ai_port = get_ai_port(component_port)
+        
+        # Quick health check
+        try:
+            reader, writer = await asyncio.wait_for(
+                asyncio.open_connection('localhost', ai_port),
+                timeout=0.5
+            )
+            writer.close()
+            await writer.wait_closed()
+            healthy_ais += 1
+        except Exception:
+            pass
+    
+    stats = {
+        "total_specialists": total_ais,
+        "healthy": healthy_ais,
+        "unresponsive": total_ais - healthy_ais,
+        "overall_health_rate": (healthy_ais / total_ais * 100) if total_ais > 0 else 0,
+        "last_update": datetime.now().isoformat()
+    }
+    
+    if args.json:
+        print(json.dumps(stats, indent=2))
+    else:
+        print(f"\n{'='*60}")
+        print("AI Statistics")
+        print(f"{'='*60}\n")
+        
+        print(f"Total Specialists: {stats['total_specialists']}")
+        print(f"Healthy: {stats['healthy']}")
+        print(f"Unresponsive: {stats['unresponsive']}")
+        print(f"Overall Health Rate: {stats['overall_health_rate']:.1f}%")
+        print(f"Last Update: {stats['last_update']}")
+        
+        print("\nNote: Statistics are based on real-time health checks")
+
+
+def main():
+    parser = argparse.ArgumentParser(
+        description="Enhanced CI Discovery Tool for Tekton Platform",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Examples:
+  %(prog)s list                               # List all CIs
+  %(prog)s list --role planning --status healthy   # Filter CIs
+  %(prog)s watch                              # Watch CI status in real-time
+  %(prog)s test apollo-ci                     # Test specific AI
+  %(prog)s stream apollo-ci "Tell me a story" # Test streaming
+  %(prog)s benchmark --iterations 10         # Benchmark all CIs
+  %(prog)s route "analyze this code"         # Test routing engine
+  %(prog)s stats                             # Show registry statistics
+        """
+    )
+    
+    parser.add_argument('--json', action='store_true',
+                       help='Output in JSON format')
+    parser.add_argument('--verbose', '-v', action='store_true',
+                       help='Verbose output')
+    parser.add_argument('--simple', action='store_true',
+                       help='Simple text output (no rich formatting)')
+    
+    subparsers = parser.add_subparsers(dest='command', help='Commands')
+    
+    # List command
+    list_parser = subparsers.add_parser('list', help='List available CIs')
+    list_parser.add_argument('--role', help='Filter by role')
+    list_parser.add_argument('--capability', help='Filter by capability')
+    list_parser.add_argument('--status', choices=['healthy', 'degraded', 'unresponsive', 'unknown'],
+                           help='Filter by status')
+    list_parser.add_argument('--min-success-rate', type=float, default=0.0,
+                           help='Minimum success rate (0-1)')
+    list_parser.set_defaults(func=list_ais)
+    
+    # Watch command
+    watch_parser = subparsers.add_parser('watch', help='Watch CI status in real-time')
+    watch_parser.set_defaults(func=watch_ais)
+    
+    # Test command
+    test_parser = subparsers.add_parser('test', help='Test CI connections')
+    test_parser.add_argument('ai_id', nargs='?', help='AI to test (all if omitted)')
+    test_parser.set_defaults(func=test_ai)
+    
+    # Stream command
+    stream_parser = subparsers.add_parser('stream', help='Test streaming capabilities')
+    stream_parser.add_argument('ai_id', help='AI identifier')
+    stream_parser.add_argument('message', help='Message to send')
+    stream_parser.add_argument('--temperature', type=float, default=0.7,
+                             help='Temperature for response')
+    stream_parser.add_argument('--max-tokens', type=int, default=1000,
+                             help='Maximum tokens in response')
+    stream_parser.set_defaults(func=test_streaming)
+    
+    # Benchmark command
+    bench_parser = subparsers.add_parser('benchmark', help='Benchmark CI performance')
+    bench_parser.add_argument('ai_ids', nargs='*', help='AIs to benchmark (all if omitted)')
+    bench_parser.add_argument('--iterations', type=int, default=5,
+                            help='Number of iterations per test')
+    bench_parser.set_defaults(func=benchmark_ais)
+    
+    # Route command
+    route_parser = subparsers.add_parser('route', help='Test routing engine')
+    route_parser.add_argument('message', help='Message to route')
+    route_parser.add_argument('--preferred', help='Preferred AI')
+    route_parser.add_argument('--capabilities', help='Required capabilities (comma-separated)')
+    route_parser.add_argument('--execute', action='store_true',
+                            help='Execute the routed request')
+    route_parser.set_defaults(func=route_test)
+    
+    # Stats command
+    stats_parser = subparsers.add_parser('stats', help='Show registry statistics')
+    stats_parser.set_defaults(func=stats)
+    
+    # Legacy commands for compatibility
+    info_parser = subparsers.add_parser('info', help='Get CI information (use list --json)')
+    info_parser.add_argument('ai_id', help='AI identifier')
+    schema_parser = subparsers.add_parser('schema', help='Get CI schema (deprecated)')
+    schema_parser.add_argument('ai_id', help='AI identifier')
+    manifest_parser = subparsers.add_parser('manifest', help='Get platform manifest (use stats)')
+    best_parser = subparsers.add_parser('best', help='Find best CI (use route)')
+    best_parser.add_argument('role', help='Required role')
+    
+    args = parser.parse_args()
+    
+    # Handle legacy commands
+    if args.command == 'info':
+        print("Note: 'info' is deprecated. Use 'list --json' with grep/jq instead.")
+        args.command = 'list'
+        args.role = None
+        args.capability = None
+        args.status = None
+        args.min_success_rate = 0.0
+        args.func = list_ais
+    elif args.command == 'schema':
+        print("Note: 'schema' is deprecated. CI interaction is standardized.")
+        return
+    elif args.command == 'manifest':
+        print("Note: 'manifest' is deprecated. Use 'stats' instead.")
+        args.command = 'stats'
+        args.func = stats
+    elif args.command == 'best':
+        print("Note: 'best' is deprecated. Use 'route' instead.")
+        return
+    
+    if not args.command:
+        parser.print_help()
+        sys.exit(1)
+    
+    # Run the async function
+    try:
+        asyncio.run(args.func(args))
+    except KeyboardInterrupt:
+        print("\nInterrupted by user")
+        sys.exit(0)
+    except Exception as e:
+        print(f"Error: {e}")
+        if args.verbose:
+            import traceback
+            traceback.print_exc()
+        sys.exit(1)
+
+
+if __name__ == '__main__':
+    main()

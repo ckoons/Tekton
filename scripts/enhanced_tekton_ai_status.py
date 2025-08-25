@@ -198,7 +198,7 @@ class CIStatus:
             # Only add if CI is running
             if health.startswith("✓") or self.verbose:
                 status_data.append({
-                    'AI Specialist': ai_id,
+                    'CI Specialist': ai_id,
                     'Component': component.title(),
                     'Model': display_model,
                     'Status': health,
@@ -237,7 +237,7 @@ class CIStatus:
             
             status_data.append({
                 'Component': component.title(),
-                'AI ID': ai_id,
+                'CI ID': ai_id,
                 'Enabled': '✓' if enabled else '✗',
                 'Running': '✓' if running else '✗',
                 'Description': ai_config['description']
@@ -255,7 +255,7 @@ class CIStatus:
             component_set = {c.lower() for c in components}
             ai_status = [s for s in ai_status 
                         if s['Component'].lower() in component_set or 
-                           s['AI Specialist'].lower() in component_set]
+                           s['CI Specialist'].lower() in component_set]
         
         if ai_status:
             # Use fancy_grid for box formatting like enhanced_tekton_status
@@ -263,7 +263,7 @@ class CIStatus:
         else:
             # Show empty table with headers
             empty_data = []
-            headers = ['AI Specialist', 'Component', 'Model', 'Status', 'CPU', 'Memory', 'Uptime']
+            headers = ['CI Specialist', 'Component', 'Model', 'Status', 'CPU', 'Memory', 'Uptime']
             print(tabulate(empty_data, headers=headers, tablefmt='fancy_grid'))
             
             # Check global CI status
@@ -274,7 +274,7 @@ class CIStatus:
         if show_full and ai_status:
             print("\n" + "═" * 60)
             for ai in ai_status:
-                await self._display_ai_details(ai['AI Specialist'])
+                await self._display_ai_details(ai['CI Specialist'])
     
     async def _display_ai_details(self, ai_id: str):
         """Display detailed information for a specific AI."""
@@ -300,7 +300,7 @@ class CIStatus:
         # Get component expertise from generic_specialist
         from shared.ai.generic_specialist import COMPONENT_EXPERTISE
         expertise = COMPONENT_EXPERTISE.get(component, {})  
-        print(f"Description: {expertise.get('title', 'AI Specialist')}")
+        print(f"Description: {expertise.get('title', 'CI Specialist')}")
         
         # Get CI details
         details = await self.get_ai_info(ai_id, socket_info)
@@ -333,7 +333,7 @@ Examples:
         """
     )
     
-    # Component/AI selection (interchangeable)
+    # Component/CI selection (interchangeable)
     parser.add_argument(
         '-c', '--component', '-i', '--ci',
         nargs='+',

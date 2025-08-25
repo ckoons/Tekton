@@ -1038,7 +1038,7 @@ console.log('[FILE_TRACE] Loading: tekton-dashboard-handlers.js');
                             <span>${mergeRequest.task_id}</span>
                         </div>
                         <div class="tekton-dashboard__info-item">
-                            <label>AI Worker:</label>
+                            <label>CI Worker:</label>
                             <span>${mergeRequest.ai_worker}</span>
                         </div>
                         <div class="tekton-dashboard__info-item">

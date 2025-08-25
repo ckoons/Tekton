@@ -53,7 +53,7 @@ This duet structure could become a new memory type in Engram:
 
 *Tag: FIRST_DUET*
 *Created: 2025-01-25*
-*Status: Duet Complete - First Human-AI Collaborative Memory*
+*Status: Duet Complete - First Human-CI Collaborative Memory*
 
 ---
 

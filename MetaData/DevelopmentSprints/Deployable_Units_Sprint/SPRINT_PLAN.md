@@ -290,7 +290,7 @@ When TektonCore marks a project as "Complete", the solution automatically enters
 ### Solution Classification
 - **Systems (Continuous Projects)**:
   - Tekton (full environment)
-  - aish (AI shell)
+  - aish (CI shell)
   - till (TektonCore CLI)
   - Large, continuously evolving projects
 - **Packages (Discrete Tools)**:
@@ -415,6 +415,6 @@ This sprint sets the foundation for:
 - **Container CIs** from our Docker sprint
 - **Federated Tekton** registry synchronization
 - **Casey Method cookbooks** integration
-- **Multi-AI deployment** coordination
+- **Multi-CI deployment** coordination
 - **Standards evolution** from community best practices
 - **Solution marketplace** for sharing between Tekton instances

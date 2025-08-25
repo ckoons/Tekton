@@ -252,7 +252,7 @@ async def get_theory_validation_protocols():
                 "status": "completed",
                 "iteration": 3,
                 "created_at": datetime.now().isoformat(),
-                "theory": "AI systems improve through feedback loops",
+                "theory": "CI systems improve through feedback loops",
                 "experiment_type": "longitudinal_analysis",
                 "hypothesis": "Performance improves over time with consistent feedback"
             }

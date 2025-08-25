@@ -1,0 +1,192 @@
+{
+  "version": "1.0.0",
+  "description": "Construct guided dialog questions for solution composition",
+  "mcp_accessible": true,
+  "questions": [
+    {
+      "id": "purpose",
+      "order": 1,
+      "question": "What do you want to build?",
+      "placeholder": "Describe the solution you need, its purpose, and main functionality...",
+      "required": true,
+      "type": "text",
+      "parseKeys": ["purpose", "goal", "objective", "functionality"],
+      "examples": [
+        "A data pipeline to process JSON and extract insights",
+        "An API gateway with authentication and rate limiting",
+        "A monitoring dashboard for system metrics"
+      ]
+    },
+    {
+      "id": "components",
+      "order": 2,
+      "question": "Which Registry components should we use, or should I suggest based on your purpose?",
+      "placeholder": "List components or say 'suggest' for AI recommendations...",
+      "required": false,
+      "type": "component_selection",
+      "parseKeys": ["components", "services", "modules", "using", "with"],
+      "ai_suggest": true,
+      "examples": [
+        "Use parser-abc123 and analyzer-def456",
+        "Suggest components for data processing",
+        "api-gateway, auth-service, rate-limiter"
+      ]
+    },
+    {
+      "id": "dataflow",
+      "order": 3,
+      "question": "How should data flow through the system? Describe inputs, processing steps, and outputs.",
+      "placeholder": "Describe the data pipeline: what comes in, how it's processed, what goes out...",
+      "required": false,
+      "type": "dataflow",
+      "parseKeys": ["input", "output", "flow", "pipeline", "process", "transform"],
+      "examples": [
+        "JSON input → parse → validate → transform → analyze → JSON output",
+        "HTTP requests → authenticate → route → process → response",
+        "Files → read → parse → enrich → store in database"
+      ]
+    },
+    {
+      "id": "deployment",
+      "order": 4,
+      "question": "How should this be deployed?",
+      "placeholder": "Choose: standalone, containerized, or distributed",
+      "required": false,
+      "type": "choice",
+      "options": ["standalone", "containerized", "distributed", "let_me_decide"],
+      "default": "containerized",
+      "parseKeys": ["deploy", "deployment", "run", "execute"],
+      "affects": ["container", "ci_type"]
+    },
+    {
+      "id": "container",
+      "order": 5,
+      "question": "Should I build a container around this solution? This provides isolation, portability, and easy deployment.",
+      "placeholder": "Yes (recommended) / No (development only) / Auto-decide based on complexity",
+      "required": false,
+      "type": "choice",
+      "options": ["yes", "no", "auto"],
+      "default": "auto",
+      "parseKeys": ["container", "docker", "isolation", "portable"],
+      "recommendation": "Containers are recommended for production deployments"
+    },
+    {
+      "id": "ci_association",
+      "order": 6,
+      "question": "Would you like a Companion Intelligence (CI) to manage this solution?",
+      "placeholder": "Choose CI type or 'none' for manual management...",
+      "required": false,
+      "type": "ci_selection",
+      "options": {
+        "ci-tool": "For standalone tools and utilities",
+        "ci-terminal": "For interactive/chat-based systems",
+        "container": "For containerized solutions with lifecycle management",
+        "none": "Manual management only"
+      },
+      "default": "auto",
+      "parseKeys": ["ci", "companion", "intelligence", "manage", "monitor"],
+      "aish_commands": {
+        "ci-tool": "aish ci-tool create --name {name} --purpose {purpose}",
+        "ci-terminal": "aish ci-terminal create --name {name} --interactive",
+        "container": "aish container create --name {name} --ci-managed"
+      }
+    },
+    {
+      "id": "constraints",
+      "order": 7,
+      "question": "Any specific constraints? (performance targets, resource limits, security requirements)",
+      "placeholder": "E.g., max 2GB RAM, <100ms latency, HIPAA compliant, high availability...",
+      "required": false,
+      "type": "constraints",
+      "parseKeys": ["memory", "cpu", "latency", "security", "compliance", "performance", "limit"],
+      "categories": {
+        "resources": ["memory", "cpu", "disk", "network"],
+        "performance": ["latency", "throughput", "concurrent_users"],
+        "security": ["encryption", "authentication", "authorization", "audit"],
+        "compliance": ["hipaa", "gdpr", "sox", "pci"]
+      }
+    },
+    {
+      "id": "testing",
+      "order": 8,
+      "question": "What test scenarios should we verify?",
+      "placeholder": "Describe test cases or accept defaults (unit, integration, performance)...",
+      "required": false,
+      "type": "testing",
+      "parseKeys": ["test", "verify", "validate", "benchmark", "scenarios"],
+      "default_tests": ["unit", "integration", "smoke"],
+      "optional_tests": ["performance", "security", "chaos", "load"]
+    },
+    {
+      "id": "monitoring",
+      "order": 9,
+      "question": "How should we monitor this solution?",
+      "placeholder": "Basic logging / Full observability / CI-managed monitoring",
+      "required": false,
+      "type": "choice",
+      "options": ["basic", "observability", "ci_managed"],
+      "default": "ci_managed",
+      "parseKeys": ["monitor", "log", "metric", "alert", "dashboard"],
+      "components": {
+        "basic": ["stdout", "file_logs"],
+        "observability": ["prometheus", "grafana", "jaeger", "elk"],
+        "ci_managed": ["ai_anomaly_detection", "predictive_alerts", "auto_remediation"]
+      }
+    },
+    {
+      "id": "evolution",
+      "order": 10,
+      "question": "How should this solution evolve over time?",
+      "placeholder": "Manual updates / CI-guided evolution / Fully autonomous",
+      "required": false,
+      "type": "choice",
+      "options": ["manual", "ci_guided", "autonomous"],
+      "default": "ci_guided",
+      "parseKeys": ["evolve", "update", "upgrade", "adapt", "scale"],
+      "description": {
+        "manual": "You control all updates and changes",
+        "ci_guided": "CI suggests improvements, you approve",
+        "autonomous": "CI automatically evolves based on usage patterns"
+      }
+    }
+  ],
+  "smart_defaults": {
+    "rules": [
+      {
+        "condition": {"deployment": "containerized"},
+        "suggest": {"container": "yes", "ci_association": "container"}
+      },
+      {
+        "condition": {"purpose_contains": ["interactive", "chat", "terminal"]},
+        "suggest": {"ci_association": "ci-terminal"}
+      },
+      {
+        "condition": {"purpose_contains": ["tool", "utility", "script"]},
+        "suggest": {"ci_association": "ci-tool"}
+      },
+      {
+        "condition": {"components_count": ">3"},
+        "suggest": {"container": "yes", "deployment": "containerized"}
+      }
+    ]
+  },
+  "mcp_interface": {
+    "tool_name": "ergon_construct_questions",
+    "description": "Get or answer Construct dialog questions",
+    "parameters": {
+      "action": {
+        "type": "string",
+        "enum": ["get_all", "get_next", "submit_answer", "get_suggestions"],
+        "description": "Action to perform with questions"
+      },
+      "question_id": {
+        "type": "string",
+        "description": "ID of specific question"
+      },
+      "answer": {
+        "type": "string",
+        "description": "Answer to submit for a question"
+      }
+    }
+  }
+}

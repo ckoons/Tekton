@@ -47,7 +47,7 @@ class CIKiller:
         else:
             # Fallback to os.environ when running as subprocess
             self.ai_port_base = int(TektonEnviron.get('TEKTON_AI_PORT_BASE', 45000))
-        self.logger.info(f"AI killer initialized for port base: {self.ai_port_base}")
+        self.logger.info(f"CI killer initialized for port base: {self.ai_port_base}")
         
     def kill_ai_by_id(self, ai_id: str) -> bool:
         """
@@ -194,7 +194,7 @@ def main():
     parser.add_argument(
         'targets',
         nargs='+',
-        help='AI IDs or component names to kill (or "all")'
+        help='CI IDs or component names to kill (or "all")'
     )
     parser.add_argument(
         '-v', '--verbose',

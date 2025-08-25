@@ -385,7 +385,7 @@ Display AI-generated insights in your component:
 ```html
 <div id="mycomponent-insights-panel" class="mycomponent__panel">
     <div class="mycomponent__panel-header">
-        <h2>AI Insights</h2>
+        <h2>CI Insights</h2>
         <button class="mycomponent__btn" onclick="mycomponent_refreshInsights()">
             Refresh
         </button>
@@ -424,7 +424,7 @@ Add a command bar for natural language input:
 2. **Progressive Disclosure** - Start simple, reveal CI features as needed
 3. **Feedback Loops** - Allow users to correct/improve CI responses
 4. **Transparency** - Show when CI is being used and why
-5. **Fallback Options** - Always provide non-AI alternatives
+5. **Fallback Options** - Always provide non-CI alternatives
 6. **Performance** - Cache CI responses when appropriate
 7. **Privacy** - Be clear about what data is sent to CI services
 

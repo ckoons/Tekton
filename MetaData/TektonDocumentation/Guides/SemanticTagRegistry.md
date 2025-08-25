@@ -271,7 +271,7 @@ curl -X POST http://localhost:8088/api/mcp/v2/execute \
 
 1. **Auto-Validation**: Script to validate semantic tags across all components
 2. **Tag Analytics**: Track which tags are most useful for debugging
-3. **AI Integration**: Use semantic tags for better CI understanding of UI
+3. **CI Integration**: Use semantic tags for better CI understanding of UI
 4. **Accessibility**: Leverage semantic tags for improved accessibility
 
 ### Extensibility

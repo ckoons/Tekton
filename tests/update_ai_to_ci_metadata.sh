@@ -1,6 +1,6 @@
 #!/bin/bash
-# Script to replace " AI " with " CI " in MetaData directory files
-# This preserves words like "OpenAI" and "MAINTAIN" by only replacing isolated " AI "
+# Script to replace " CI " with " CI " in MetaData directory files
+# This preserves words like "OpenAI" and "MAINTAIN" by only replacing isolated " CI "
 
 # Color codes for output
 RED='\033[0;31m'
@@ -8,7 +8,7 @@ GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
-echo -e "${GREEN}Starting AI to CI conversion in MetaData files...${NC}"
+echo -e "${GREEN}Starting CI to CI conversion in MetaData files...${NC}"
 echo "----------------------------------------"
 
 # Counter for tracking changes
@@ -30,19 +30,19 @@ find ./MetaData -type f \( -name "*.md" -o -name "*.txt" -o -name "*.rst" \) | w
     
     TOTAL_FILES=$((TOTAL_FILES + 1))
     
-    # Check if file contains " AI " (with spaces on both sides)
-    if grep -q " AI " "$file" 2>/dev/null; then
+    # Check if file contains " CI " (with spaces on both sides)
+    if grep -q " CI " "$file" 2>/dev/null; then
         # Create backup
         backup_path="$BACKUP_DIR/${file#./}"
         mkdir -p "$(dirname "$backup_path")"
         cp "$file" "$backup_path"
         
         # Count occurrences before replacement
-        count_before=$(grep -o " AI " "$file" | wc -l | tr -d ' ')
+        count_before=$(grep -o " CI " "$file" | wc -l | tr -d ' ')
         
         # Perform the replacement
-        # Replace " AI " with " CI "
-        sed -i.tmp 's/ AI / CI /g' "$file"
+        # Replace " CI " with " CI "
+        sed -i.tmp 's/ CI / CI /g' "$file"
         
         # Remove the temporary backup created by sed
         rm -f "${file}.tmp"
@@ -66,7 +66,7 @@ find ./MetaData -type f \( -name "*.md" -o -name "*.txt" \) | while read -r file
         continue
     fi
     
-    # Show lines containing " CI " (that were changed from " AI ")
+    # Show lines containing " CI " (that were changed from " CI ")
     if grep -q " CI " "$file" 2>/dev/null; then
         echo -e "\n${YELLOW}$file:${NC}"
         grep " CI " "$file" | head -2
@@ -79,5 +79,5 @@ echo ""
 echo "To review changes, you can:"
 echo "  1. Check the backup directory: $BACKUP_DIR"
 echo "  2. Use git diff to see all changes"
-echo "  3. Search for remaining ' AI ': grep -r ' AI ' ./MetaData --include='*.md' --include='*.txt'"
+echo "  3. Search for remaining ' CI ': grep -r ' CI ' ./MetaData --include='*.md' --include='*.txt'"
 echo "  4. Restore from backup if needed: cp -r $BACKUP_DIR/* ."

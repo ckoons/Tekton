@@ -69,7 +69,7 @@ async def test_ci_interaction():
                     question_id='ci_association'
                 )
                 if suggest_result.get('suggestions'):
-                    print(f"AI Suggestion: {suggest_result['suggestions'][0]}")
+                    print(f"CI Suggestion: {suggest_result['suggestions'][0]}")
     
     print("\n3. Building Final Workspace")
     print("-" * 40)

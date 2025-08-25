@@ -187,7 +187,7 @@ def show_context_details(registry, ci_name):
             print("-" * 60)
             
             ai_response = last_output.get('ai_response', {})
-            print("\nAI Response:")
+            print("\nCI Response:")
             print("-" * 60)
             print(ai_response.get('content', '(no content)'))
             print("-" * 60)

@@ -33,7 +33,7 @@ Implement quality-of-life improvements recommended by Claude/Cori to make Tekton
   ```
 
 - [ ] Create `aish status` command showing:
-  - Active forwards (AI and project)
+  - Active forwards (CI and project)
   - Available CIs and their states
   - Recent messages (last 5)
   - Active terminals

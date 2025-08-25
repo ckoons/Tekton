@@ -8,7 +8,7 @@ The GitFlow Implementation Sprint touches every Tekton component, transforming t
 
 ### 1. tekton-core (Port 8016) - The Conductor
 **Current**: Basic component coordination  
-**Becomes**: Multi-AI Engineering Platform Manager
+**Becomes**: Multi-CI Engineering Platform Manager
 
 **New Responsibilities**:
 - Project registry management
@@ -82,7 +82,7 @@ engram.transfer_insights(
 
 **New Features**:
 - Project-specific prompt templates
-- Multi-AI coordination messages
+- Multi-CI coordination messages
 - Context window optimization
 - Issue analysis capabilities
 

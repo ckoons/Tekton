@@ -19,7 +19,7 @@ The primary goals of this sprint are:
 
 This sprint delivers value by:
 
-- **AI Comprehension**: Future Claude sessions can understand the codebase structure instantly
+- **CI Comprehension**: Future Claude sessions can understand the codebase structure instantly
 - **Impact Analysis**: Changes can be traced through the entire system automatically
 - **Documentation Generation**: Auto-generate accurate documentation from metadata
 - **Refactoring Safety**: Understand all dependencies before making changes

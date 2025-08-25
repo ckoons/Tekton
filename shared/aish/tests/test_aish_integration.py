@@ -76,13 +76,13 @@ def test_help_system():
     # General help
     code, stdout, stderr = run_aish(['help'])
     assert code == 0, f"Help failed: {stderr}"
-    assert 'AI Training:' in stdout
+    assert 'CI Training:' in stdout
     print("✓ General help")
     
     # Component help
     code, stdout, stderr = run_aish(['numa', 'help'])
     assert code == 0, f"Component help failed: {stderr}"
-    assert 'AI Training:' in stdout
+    assert 'CI Training:' in stdout
     assert 'numa' in stdout
     print("✓ Component help")
 

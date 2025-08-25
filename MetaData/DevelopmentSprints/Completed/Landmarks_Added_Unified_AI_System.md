@@ -18,7 +18,7 @@ Added landmarks to the new unified CI system components to document architectura
   - Bidirectional message exchange with streaming
 
 #### Method: `send_message()`
-- **@performance_boundary**: "AI Socket Message Exchange"
+- **@performance_boundary**: "CI Socket Message Exchange"
   - SLA: <30s timeout per message
   - Uses connection pooling and exponential backoff retry
 
@@ -45,7 +45,7 @@ Added landmarks to the new unified CI system components to document architectura
   - Recovery: Reload from persistent storage on restart
 
 #### Method: `discover()`
-- **@performance_boundary**: "AI Discovery with Caching"
+- **@performance_boundary**: "CI Discovery with Caching"
   - SLA: <10ms for cached queries, <100ms for fresh queries
   - In-memory cache with 60s TTL
 

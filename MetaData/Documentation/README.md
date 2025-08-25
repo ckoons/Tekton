@@ -4,7 +4,7 @@ This is the streamlined documentation structure containing only actively maintai
 
 ## 🚀 Quick Starts
 - **[Planning Workflow Quick Start](UserGuides/PlanningWorkflowQuickStart.md)** - Transform ideas into code in 5 minutes
-- **[A2A Quick Start](UserGuides/A2A_Quick_Start.md)** - Get started with AI-to-AI communication
+- **[A2A Quick Start](UserGuides/A2A_Quick_Start.md)** - Get started with AI-to-CI communication
 - **[Engram Quickstart](UserGuides/Engram_Quickstart.md)** - Working with the engram system
 - **[Rhetor Quick Reference](UserGuides/Rhetor_Quick_Reference.md)** - Quick guide to Rhetor AI
 

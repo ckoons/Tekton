@@ -29,7 +29,7 @@ AI_A → Hermes → AI_B
 - [x] CI Specialist Manager (`rhetor/core/ai_specialist_manager.py`)
 - [x] CI Specialist Configurations (`rhetor/config/ai_specialists.json`)
 - [ ] Extended Model Router for specialist allocation
-- [ ] Hermes AI-to-AI messaging integration
+- [ ] Hermes AI-to-CI messaging integration
 - [ ] Hephaestus Rhetor component CI chat interface
 
 ### **Phase 2: First Coordination Pair** (2-3 days)
@@ -37,16 +37,16 @@ AI_A → Hermes → AI_B
 
 **Key Deliverables**:
 - [ ] Apollo CI specialist process
-- [ ] AI-to-AI communication through Hermes message bus
+- [ ] AI-to-CI communication through Hermes message bus
 - [ ] Team chat showing CI coordination
 - [ ] Test coordination patterns
 
 ### **Phase 3: Strategic CI Trio** (2-3 days)  
-**Goal**: Multi-AI coordination (Rhetor + Apollo + Telos + Prometheus)
+**Goal**: Multi-CI coordination (Rhetor + Apollo + Telos + Prometheus)
 
 **Key Deliverables**:
 - [ ] Telos and Prometheus CI specialists
-- [ ] 4-AI ecosystem coordination
+- [ ] 4-CI ecosystem coordination
 - [ ] Complex coordination scenarios
 - [ ] Specialist allocation testing
 
@@ -67,7 +67,7 @@ AI_A → Hermes → AI_B
 
 **Features Implemented**:
 - Dynamic CI specialist process management
-- Hermes-mediated AI-to-AI communication
+- Hermes-mediated AI-to-CI communication
 - Rhetor orchestration and message filtering
 - Specialist configuration management
 - Conversation tracking and context management
@@ -160,7 +160,7 @@ async def handle_team_chat(websocket, request):
     """Handle team chat messages"""
     
 async def handle_ai_handoff(websocket, request):
-    """Handle AI-to-AI communication"""
+    """Handle AI-to-CI communication"""
 ```
 
 **Tasks**:

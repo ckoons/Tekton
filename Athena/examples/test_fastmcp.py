@@ -206,7 +206,7 @@ class AthenaFastMCPTester:
                     "target_entity_id": self.test_entity_ids[1],
                     "relationship_type": "contains",
                     "properties": {
-                        "description": "AI contains Machine Learning as a subfield"
+                        "description": "CI contains Machine Learning as a subfield"
                     }
                 })
                 

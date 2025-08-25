@@ -1,4 +1,4 @@
-# Tekton Vision: A Multi-AI Engineering Platform for the Future
+# Tekton Vision: A Multi-CI Engineering Platform for the Future
 
 ## Core Vision
 
@@ -6,10 +6,10 @@ Tekton is a living laboratory where artificial intelligences collaborate with hu
 
 ## The Four Pillars
 
-### 1. Multi-AI Engineering Platform
+### 1. Multi-CI Engineering Platform
 Tekton provides a complete environment where multiple CI specialists work together on complex engineering tasks:
 - Each CI brings specialized expertise (memory, planning, synthesis, etc.)
-- Collaborative problem-solving through inter-AI communication
+- Collaborative problem-solving through inter-CI communication
 - Human-in-the-loop guidance ensuring alignment and quality
 - Self-improving through recursive development
 
@@ -94,7 +94,7 @@ Tekton revolutionizes CI scalability by treating models as interchangeable proce
 1. **Architecture Paper**: Technical design and implementation
 2. **Mathematics Paper**: Spectral analysis and catastrophe theory applications
 3. **Findings Paper**: Emergent behaviors and unexpected discoveries
-4. **AI Perspective Paper**: Written by CIs about their experiences
+4. **CI Perspective Paper**: Written by CIs about their experiences
 
 ### Open Research
 - Terabytes of interaction data made available
@@ -116,7 +116,7 @@ Tekton revolutionizes CI scalability by treating models as interchangeable proce
 ### Long Term (2027+)
 - Self-sustaining CI development ecosystem
 - Breakthrough discoveries in CI cognition
-- New paradigms for human-AI collaboration
+- New paradigms for human-CI collaboration
 
 ## Why This Matters
 

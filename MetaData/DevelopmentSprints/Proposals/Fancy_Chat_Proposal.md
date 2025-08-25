@@ -5,7 +5,7 @@ This proposal outlines potential enhancements to the Tekton chat command system 
 
 ## Current State (August 2025)
 - Basic command execution with `[command]` syntax
-- Output routing modes: `>` (AI only), `>>` (user + CI context)
+- Output routing modes: `>` (CI only), `>>` (user + CI context)
 - Blacklist-based safety checking
 - 25K character output truncation
 - Multiple commands per message supported
@@ -71,7 +71,7 @@ Special AI-aware commands in pipes.
 [cat error.log | debug >]  # CI analyzes error log
 ```
 
-#### 7. Multi-AI Routing
+#### 7. Multi-CI Routing
 Direct commands to specific CI specialists.
 ```
 [apollo: git status >]  # Send to Apollo
@@ -161,7 +161,7 @@ Persistent status bar showing:
 - Conditional execution
 - Session save/replay
 - CI tool pipes
-- Multi-AI routing
+- Multi-CI routing
 
 ## Questions for Discussion
 

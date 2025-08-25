@@ -32,7 +32,7 @@ components:
     startup_priority: 3
     dependencies: ["hermes", "engram"]
     
-  # AI and Intelligence
+  # CI and Intelligence
   rhetor:
     name: "Rhetor"
     description: "Multi-provider LLM orchestration and management"
@@ -65,7 +65,7 @@ components:
     
   numa:
     name: "Numa"
-    description: "Platform AI mentor providing guidance and oversight"
+    description: "Platform CI mentor providing guidance and oversight"
     category: "ai"
     startup_priority: 6  # Starts after all components for platform-wide view
     dependencies: ["hermes", "rhetor"]
@@ -79,7 +79,7 @@ components:
     name: "Noesis"
     description: "Discovery system for pattern recognition and insights"
     category: "ai"
-    startup_priority: 5  # Starts after core AI components
+    startup_priority: 5  # Starts after core CI components
     dependencies: ["hermes", "rhetor", "athena"]
     capabilities:
       - "discovery_chat"

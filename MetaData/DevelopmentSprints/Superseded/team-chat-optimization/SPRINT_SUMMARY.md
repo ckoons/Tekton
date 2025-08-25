@@ -34,7 +34,7 @@
 
 ## Key Discovery
 
-**AI processes weren't running!** That's why only 2 CIs responded. The optimizations are ready but need running CIs to demonstrate value.
+**CI processes weren't running!** That's why only 2 CIs responded. The optimizations are ready but need running CIs to demonstrate value.
 
 ## Final Design Clarification
 

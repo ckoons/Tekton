@@ -62,7 +62,7 @@ element.setAttribute('data-tekton-state', 'active')
 const ready = element.getAttribute('data-tekton-ai-ready') === 'true'
 ```
 
-## Component-AI Mapping
+## Component-CI Mapping
 - rhetor → rhetor-orchestrator
 - athena → athena-assistant
 - apollo → apollo-assistant

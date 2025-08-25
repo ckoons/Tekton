@@ -36,7 +36,7 @@ Rhetor is designed as a prompt engineering and LLM interaction management system
    - Provides template inheritance and composition
    - Handles template validation
 
-6. **AI Socket Registry**
+6. **CI Socket Registry**
    - Manages CI communication sockets following Unix philosophy
    - Provides team chat broadcast capabilities
    - Handles transparent message routing with headers
@@ -749,7 +749,7 @@ class TemplateManager:
 
 ## CI Socket Registry Architecture
 
-The CI Socket Registry implements the Unix philosophy where "AIs are just sockets that read and write." This architecture enables seamless multi-AI collaboration and team chat functionality.
+The CI Socket Registry implements the Unix philosophy where "AIs are just sockets that read and write." This architecture enables seamless multi-CI collaboration and team chat functionality.
 
 ### Design Principles
 

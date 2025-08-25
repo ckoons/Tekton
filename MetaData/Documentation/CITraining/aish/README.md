@@ -2,7 +2,7 @@
 
 ## Overview
 
-Welcome, Companion Intelligence! This guide will help you understand and work effectively with aish (AI Shell), the command-line interface for the Tekton platform.
+Welcome, Companion Intelligence! This guide will help you understand and work effectively with aish (CI Shell), the command-line interface for the Tekton platform.
 
 ### New: Claude Code IDE Tools
 
@@ -55,7 +55,7 @@ Each CI has a specific role in the Tekton ecosystem:
 - **penia** - LLM cost management
 - **hermes** - Messages and data flow
 - **ergon** - Agents, tools, and MCP
-- **terma** - Terminal and inter-AI communication
+- **terma** - Terminal and inter-CI communication
 
 ### 3. Inter-Terminal Communication
 

@@ -3,7 +3,7 @@ Test script for CI Specialist functionality.
 
 This script tests the basic CI specialist features including:
 - Specialist creation and activation
-- AI-to-AI messaging
+- CI-to-CI messaging
 - Team chat orchestration
 """
 
@@ -78,7 +78,7 @@ async def test_websocket_specialist_chat():
         async with websockets.connect(RHETOR_WS_URL) as websocket:
             # Send CI specialist request
             request = {
-                "type": "AI_SPECIALIST_REQUEST",
+                "type": "CI_SPECIALIST_REQUEST",
                 "source": "TEST",
                 "payload": {
                     "specialist_id": "rhetor-orchestrator",
@@ -96,7 +96,7 @@ async def test_websocket_specialist_chat():
             data = json.loads(response)
             print(f"✓ Received response: {data['type']}")
             
-            if data['type'] == 'AI_SPECIALIST_RESPONSE':
+            if data['type'] == 'CI_SPECIALIST_RESPONSE':
                 print(f"Specialist response: {data['payload'].get('message', 'No message')[:100]}...")
             
             return data
@@ -176,7 +176,7 @@ async def test_status_with_ai_specialists():
 async def main():
     """Run all tests."""
     print("=" * 60)
-    print("AI Specialist Integration Tests")
+    print("CI Specialist Integration Tests")
     print("=" * 60)
     print(f"Testing against: {RHETOR_URL}")
     print(f"Started at: {datetime.now().isoformat()}")

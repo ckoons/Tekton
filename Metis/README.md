@@ -105,7 +105,7 @@ Metis seamlessly integrates with:
 - **Prometheus**: Provides task data for strategic planning
 - **Hermes**: Service registration and event distribution
 - **Harmonia**: Task execution in workflows
-- **AI Specialists**: Metis CI for intelligent task analysis
+- **CI Specialists**: Metis CI for intelligent task analysis
 
 ### Example Integration
 

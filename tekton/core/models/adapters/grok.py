@@ -20,7 +20,7 @@ logger = logging.getLogger("tekton.models.adapters.grok")
 
 
 class GrokAdapter(ModelAdapter):
-    """Adapter for X.AI Grok models."""
+    """Adapter for X.CI Grok models."""
 
     def __init__(self, config=None):
         """

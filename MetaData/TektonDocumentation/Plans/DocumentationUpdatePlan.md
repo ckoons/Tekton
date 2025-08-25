@@ -41,7 +41,7 @@ This document outlines the comprehensive plan to update Tekton documentation to 
 - Include examples of CI specialist usage
 - Add troubleshooting section for common issues
 
-#### 2.3 aish (AI Shell)
+#### 2.3 aish (CI Shell)
 **Current State**: Has README but not integrated into main documentation
 **Action Items**:
 - Add aish to main README.md component list

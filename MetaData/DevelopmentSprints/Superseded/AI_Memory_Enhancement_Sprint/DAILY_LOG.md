@@ -53,7 +53,7 @@ Workflow orchestration complete. Requires validation of memory persistence, sear
    - Memory effectiveness metrics
    - Performance monitoring
 
-8. **AI Specialist Integration** (4h)
+8. **CI Specialist Integration** (4h)
    - Update all CI specialists
    - Implement memory hooks
    - Test memory sharing

@@ -294,7 +294,7 @@ aish analyzer "PROCESS_FILE data.csv" -x "\n"
 | Unix shells | `\n` | Standard newline |
 | Windows programs | `\r\n` | Carriage return + newline |
 | Python REPL | `\n` or `\n\n` | Single for statements, double for blocks |
-| Claude/AI tools | `\n` | Usually Unix standard |
+| Claude/CI tools | `\n` | Usually Unix standard |
 | Custom protocols | Varies | Check tool documentation |
 
 ### Background Execution

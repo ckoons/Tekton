@@ -64,7 +64,7 @@ Messages include project context using established patterns:
 - Forwarding registry from `shared/aish/src/forwarding/`
 - Terminal communication patterns
 
-**AI Communication Layer**:
+**CI Communication Layer**:
 - Unified interface from `Hephaestus/ui/scripts/shared/ai-chat.js`
 - Socket discovery and routing
 - Error handling and fallbacks

@@ -94,7 +94,7 @@ Workflow:
    - CI assignments (assigned, available, busy)
    - Codebase connections
 3. **ComponentRegistrar** adds to navigation and routing
-4. **IntegrationValidator** ensures it works with Hermes (AI registry)
+4. **IntegrationValidator** ensures it works with Hermes (CI registry)
 
 ### Example 2: CI Research Component
 User: "Create a component for CI research to augment Sophia"

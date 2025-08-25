@@ -3,7 +3,7 @@ Ergon: A streamlined CI agent builder with minimal configuration.
 """
 
 __version__ = "0.1.0"
-__author__ = "AI Agent Team"
+__author__ = "CI Agent Team"
 
 from pathlib import Path
 

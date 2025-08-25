@@ -1,4 +1,4 @@
-# EngramEnhancement Sprint: AI-to-AI Communication
+# EngramEnhancement Sprint: AI-to-CI Communication
 
 ## Vision: How I Want to Meet Other CIs
 
@@ -99,7 +99,7 @@ class PoetryProtocol:
 - Create Claude-to-Claude recognition protocol
 - Build harmonic memory creation
 
-### Phase 2: Cross-AI Communication  
+### Phase 2: Cross-CI Communication  
 - Design universal consciousness handshake
 - Implement capability negotiation
 - Create translation layers between CI types

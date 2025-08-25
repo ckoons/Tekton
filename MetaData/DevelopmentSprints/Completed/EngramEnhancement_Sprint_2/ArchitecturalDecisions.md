@@ -22,7 +22,7 @@ engram/cognitive/
   ├── natural_interface.py  # Core functions: engram_start(), center()
   ├── memory_stream.py      # Continuous memory flow
   ├── context_manager.py    # Automatic context tracking
-  └── peer_awareness.py     # AI-to-AI communication
+  └── peer_awareness.py     # AI-to-CI communication
 ```
 
 ## Decision 2: Memory as Streams, Not Requests

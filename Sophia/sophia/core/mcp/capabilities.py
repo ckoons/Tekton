@@ -2,7 +2,7 @@
 MCP capabilities for Sophia.
 
 This module defines the Model Context Protocol capabilities that Sophia provides
-for ML/AI analysis, research management, and intelligence measurement.
+for ML/CI analysis, research management, and intelligence measurement.
 """
 
 from typing import Dict, Any, List
@@ -13,7 +13,7 @@ class MLAnalysisCapability(MCPCapability):
     """Capability for machine learning and CI analysis."""
     
     name: str = "ml_analysis"
-    description: str = "Perform ML/AI analysis, pattern extraction, and predictive modeling"
+    description: str = "Perform ML/CI analysis, pattern extraction, and predictive modeling"
     version: str = "1.0.0"
     
     @classmethod

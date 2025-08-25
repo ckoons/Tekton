@@ -49,7 +49,7 @@ Launches a new terminal with aish integration.
 curl -X POST http://localhost:8004/api/mcp/v2/tools/launch_terminal \
   -H "Content-Type: application/json" \
   -d '{
-    "name": "AI Development Terminal",
+    "name": "CI Development Terminal",
     "template": "ai_workspace",
     "purpose": "Working on authentication feature"
   }'

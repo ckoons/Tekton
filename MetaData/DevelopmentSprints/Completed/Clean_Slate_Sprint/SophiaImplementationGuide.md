@@ -386,7 +386,7 @@ The HTML structure should follow the Athena component template exactly, with Sop
                 <div class="sophia__message sophia__message--system">
                     <div class="sophia__message-content">
                         <div class="sophia__message-text">
-                            <h3 class="sophia__message-title">AI Research Assistant</h3>
+                            <h3 class="sophia__message-title">CI Research Assistant</h3>
                             <p>This chat provides assistance with CI research and intelligence measurement. Ask questions about:</p>
                             <ul>
                                 <li>Intelligence dimensions and measurements</li>

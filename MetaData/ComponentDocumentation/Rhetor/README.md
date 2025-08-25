@@ -17,7 +17,7 @@ Rhetor is Tekton's LLM orchestration and prompt management component, designed t
 - **Evaluation Framework**: Automated evaluation of LLM responses
 - **Fallback Mechanisms**: Graceful degradation when primary models are unavailable
 - **Single Port Architecture**: Unified API access through standardized endpoints
-- **AI Specialist Management** (Phase 3): Dedicated CI instances for specific domains
+- **CI Specialist Management** (Phase 3): Dedicated CI instances for specific domains
 - **MCP Tools Integration** (Phase 3): 30 tools for model, prompt, context, and CI orchestration
 - **Live Component Integration** (Phase 3): MCP tools interact with running components
 - **Real-Time Streaming** (Phase 4A): SSE-based streaming for long-running operations

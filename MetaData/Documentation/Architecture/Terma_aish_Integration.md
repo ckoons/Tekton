@@ -6,7 +6,7 @@
 
 ## Overview
 
-This document describes the integration between Terma (Terminal Management) and aish (AI Shell) within the Tekton platform. The integration provides AI-enhanced terminal sessions with transparent command routing.
+This document describes the integration between Terma (Terminal Management) and aish (CI Shell) within the Tekton platform. The integration provides AI-enhanced terminal sessions with transparent command routing.
 
 ## Architecture
 
@@ -38,7 +38,7 @@ graph LR
     aish-proxy --> Shell[User's Shell]
     Shell --> aish[aish command]
     aish --> Rhetor
-    Rhetor --> AI[AI Specialists]
+    Rhetor --> AI[CI Specialists]
 ```
 
 ## Implementation Details
@@ -80,7 +80,7 @@ async def mcp_launch_terminal(request: Dict[str, Any]) -> Dict[str, Any]:
 {
     "name": "Terminal name",
     "working_dir": "/optional/path",
-    "purpose": "AI context/purpose",
+    "purpose": "CI context/purpose",
     "template": "template_name"
 }
 ```
@@ -129,7 +129,7 @@ python -m terma.core.terminal_launcher_impl launch
 ```bash
 curl -X POST http://localhost:8004/api/mcp/v2/tools/launch_terminal \
   -H "Content-Type: application/json" \
-  -d '{"name": "AI Terminal", "template": "ai_workspace"}'
+  -d '{"name": "CI Terminal", "template": "ai_workspace"}'
 ```
 
 ### In Terminal
@@ -178,7 +178,7 @@ The terminal launcher searches for aish-proxy in this order:
 
 1. **Wrong aish-proxy location**: Ensure Terma is restarted after integration
 2. **Port connection refused**: Verify Terma is running (`./run_terma.sh`)
-3. **AI routing issues**: Check Rhetor is running on port 8003
+3. **CI routing issues**: Check Rhetor is running on port 8003
 
 ### Debug Commands
 
@@ -197,4 +197,4 @@ env | grep -E "(AISH|TEKTON|RHETOR)"
 
 - [aish Architecture](/shared/aish/docs/ARCHITECTURE.md)
 - [Terma Component Guide](/MetaData/ComponentDocumentation/Terma.md)
-- [AI Communication Architecture](AI_Communication_Architecture.md)
+- [CI Communication Architecture](AI_Communication_Architecture.md)

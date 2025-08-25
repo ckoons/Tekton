@@ -28,7 +28,7 @@ This directory contains the architectural documentation for the Tekton system. T
 - [Port Management Guide](./PORT_MANAGEMENT_GUIDE.md): Port allocation and management
 
 ### CI and Intelligence Architecture
-- [AI Orchestration Architecture](./AI_Orchestration_Architecture.md): CI specialist management and MCP tools orchestration
+- [CI Orchestration Architecture](./AI_Orchestration_Architecture.md): CI specialist management and MCP tools orchestration
 - [LLM Integration Plan](./LLMIntegrationPlan.md): LLM integration architecture
 
 ### State Management

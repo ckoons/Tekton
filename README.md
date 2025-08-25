@@ -2,7 +2,7 @@
 
 <div align="center">
   <img src="images/icon.png" alt="Tekton Logo" width="800"/>
-  <h3>Tekton<br>AI Driven Orchestration</h3>
+  <h3>Tekton<br>CI Driven Orchestration</h3>
 </div>
 
 Tekton is an intelligent orchestration system for AI-driven problem-solving. It coordinates multiple CI models, tools, and resources to efficiently tackle complex software engineering and knowledge work tasks. Tekton is also desiged to be a self-improving system, constantly learning and adapting to new tasks and challenges.
@@ -20,7 +20,7 @@ Tekton serves as the "builder" - the central coordinator between various CI mode
 - **Agent Management**: Works with Ergon for specialized agent creation and workflow
 - **Resource Optimization**: Uses the right CI for each task based on complexity and requirements
 - **Zero-Downtime Restarts**: Advanced socket reuse enables immediate component restarts without port conflicts
-- **AI Specialists**: Each component has an intelligent CI assistant with specialized expertise
+- **CI Specialists**: Each component has an intelligent CI assistant with specialized expertise
 - **Dynamic Thinking Levels**: Automatically selects CI model depth based on task complexity (gpt-oss:20b for quick tasks, gpt-oss:120b for deep reasoning)
 
 ## Architecture
@@ -102,7 +102,7 @@ Tekton features intelligent model selection that automatically chooses the right
 - **"Analyze this..."** → Analytical thinking with gpt-oss:120b (65GB, smart)
 - **"Deeply think about..."** → Deep reasoning with maximum parameters
 
-Simply phrase your requests naturally and Tekton adapts. See [AI Thinking Levels Documentation](MetaData/Documentation/Architecture/AI_Thinking_Levels.md) for details.
+Simply phrase your requests naturally and Tekton adapts. See [CI Thinking Levels Documentation](MetaData/Documentation/Architecture/AI_Thinking_Levels.md) for details.
 
 ## Requirements
 
@@ -295,21 +295,21 @@ Each component has a specialized CI assistant:
 
 ### Configuration
 
-AI specialists are always enabled and use fixed ports paired with their components.
+CI specialists are always enabled and use fixed ports paired with their components.
 
 Configure CI provider (defaults to ollama):
 ```bash
 TEKTON_AI_PROVIDER=ollama  # or anthropic
 ```
 
-AI specialists use `gpt-oss:20b` by default. Override per component:
+CI specialists use `gpt-oss:20b` by default. Override per component:
 ```bash
 ATHENA_AI_MODEL=gpt-oss:20b
 RHETOR_AI_MODEL=qwen2.5-coder:32b
 ```
 
 #### Port Allocation
-AI specialists use a fixed port system based on component ports:
+CI specialists use a fixed port system based on component ports:
 - **Formula**: CI port = 45000 + (component_port - 8000)
 - **Range**: 45000-45080
 - **Example**: Hermes (8000) → Hermes CI (45000)
@@ -328,7 +328,7 @@ View CI status with:
 tekton-status  # Shows CI model for each component
 ```
 
-See [AI Registry Architecture](./MetaData/TektonDocumentation/Architecture/AIRegistry.md) for technical details.
+See [CI Registry Architecture](./MetaData/TektonDocumentation/Architecture/AIRegistry.md) for technical details.
 
 ## External Tool Registration
 

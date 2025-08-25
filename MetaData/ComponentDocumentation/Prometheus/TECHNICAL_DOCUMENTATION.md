@@ -317,7 +317,7 @@ Prometheus/ui/
 2. **Semantic Tags**: All UI elements include data-semantic-* attributes for accessibility and automation
 3. **Landmarks**: Key UI sections are marked with landmark comments for navigation
 4. **GlobalConfig Integration**: Uses window.tekton_url() for dynamic URL construction
-5. **AI Chat Integration**: Connects to Tekton's unified AIChat module via aish MCP
+5. **CI Chat Integration**: Connects to Tekton's unified AIChat module via aish MCP
 
 ### UI Features
 

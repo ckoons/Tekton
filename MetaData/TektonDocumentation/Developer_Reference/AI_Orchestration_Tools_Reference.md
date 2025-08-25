@@ -2,7 +2,7 @@
 
 ## Overview
 
-This quick reference provides a concise guide to the CI orchestration tools available in Tekton. The primary interface for CI interaction is now **aish** (AI Shell), which provides a simple, Unix-like command interface to all CI capabilities.
+This quick reference provides a concise guide to the CI orchestration tools available in Tekton. The primary interface for CI interaction is now **aish** (CI Shell), which provides a simple, Unix-like command interface to all CI capabilities.
 
 **Important Update (July 2025)**: aish is now the standard way to interact with CIs in Tekton. Individual CI commands (apollo, athena, etc.) are deprecated in favor of the unified `aish` command.
 
@@ -282,7 +282,7 @@ ws.send(JSON.stringify({
 
 ## Additional Resources
 
-- [AI Orchestration Architecture](../Architecture/AI_Orchestration_Architecture.md)
+- [CI Orchestration Architecture](../Architecture/AI_Orchestration_Architecture.md)
 - [MCP Implementation Guide](../DeveloperGuides/MCP_IMPLEMENTATION_GUIDE.md)
 - [Rhetor Technical Documentation](../../ComponentDocumentation/Rhetor/TECHNICAL_DOCUMENTATION.md)
 - [Building New Components Tutorial](../Building_New_Tekton_Components/Step_By_Step_Tutorial.md)

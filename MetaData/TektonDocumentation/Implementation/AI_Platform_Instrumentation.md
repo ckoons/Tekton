@@ -14,7 +14,7 @@ Applied decorators from the landmarks module to document key architectural decis
   - `@architecture_decision`: Documents the file locking approach for preventing race conditions
   - `@state_checkpoint`: Marks persistent registry state management
   
-- **AI Specialist Worker Pattern** (`specialist_worker.py`)
+- **CI Specialist Worker Pattern** (`specialist_worker.py`)
   - `@architecture_decision`: Documents the base class pattern for all CI specialists
   - `@integration_point`: Marks LLM provider integration points
   
@@ -64,7 +64,7 @@ Enhanced debug logging throughout:
 Documented SLAs and optimization notes:
 
 - **Port allocation**: <500ms for 5000 port range
-- **AI readiness check**: <30s timeout
+- **CI readiness check**: <30s timeout
 - **LLM chat processing**: <30s response time
 - **Socket message handling**: Async with batching support
 
@@ -74,15 +74,15 @@ Identified and documented risky areas:
 
 - **Concurrent registry modification**: High risk, mitigated with exclusive file locking
 - **Port allocation race conditions**: Medium risk, mitigated with atomic allocation
-- **AI process termination**: Medium risk, mitigated with graceful shutdown
+- **CI process termination**: Medium risk, mitigated with graceful shutdown
 
 ## Integration Points
 
 Documented component interactions:
 
 - **LLM Provider Integration**: HTTP REST to Ollama/Anthropic
-- **AI Socket Connections**: TCP socket verification
-- **AI Process Launch**: Subprocess + socket protocol
+- **CI Socket Connections**: TCP socket verification
+- **CI Process Launch**: Subprocess + socket protocol
 
 ## Testing
 

@@ -87,7 +87,7 @@ async function showProjectStatus(projectId) {
     
     // Display:
     // - Current branch
-    // - Active workers (AI terminals)
+    // - Active workers (CI terminals)
     // - Open tasks
     // - Recent commits
     // - Health indicators

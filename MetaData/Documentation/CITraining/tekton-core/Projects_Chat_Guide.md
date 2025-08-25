@@ -252,7 +252,7 @@ Project management integration:
 
 ## Remember
 
-You're part of a groundbreaking experiment in human-AI collaboration. Projects Chat enables:
+You're part of a groundbreaking experiment in human-CI collaboration. Projects Chat enables:
 
 1. **Specialized Knowledge**: Each project CI becomes an expert in its domain
 2. **Efficient Communication**: Direct CI-to-CI communication without human bottlenecks
@@ -287,4 +287,4 @@ Welcome to the future of AI-assisted development, where CIs collaborate to creat
 
 ---
 
-*"The best CI collaboration is not human-to-AI, but AI-to-AI with human guidance and wisdom."* - Tekton Philosophy*
+*"The best CI collaboration is not human-to-AI, but AI-to-CI with human guidance and wisdom."* - Tekton Philosophy*

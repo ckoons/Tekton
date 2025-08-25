@@ -425,7 +425,7 @@ class SubmitMergeRequest(BaseModel):
     """Request to submit a new merge request for CI worker coordination."""
     project_id: str = Field(..., description="Project identifier")
     task_id: str = Field(..., description="Task identifier")
-    ai_worker: str = Field(..., description="AI worker name submitting the merge")
+    ai_worker: str = Field(..., description="CI worker name submitting the merge")
     branch: str = Field(..., description="Git branch with changes")
     repo_path: str = Field(..., description="Repository path for merge analysis")
 

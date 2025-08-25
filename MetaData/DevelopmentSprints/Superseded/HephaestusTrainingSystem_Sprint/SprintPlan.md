@@ -39,7 +39,7 @@
 ```python
 # In rhetor/specialists/hephaestus_specialist.py
 class HephaestusSpecialist:
-    """AI that embodies Hephaestus UI knowledge"""
+    """CI that embodies Hephaestus UI knowledge"""
     
     expertise = [
         "hephaestus_ui_architecture",

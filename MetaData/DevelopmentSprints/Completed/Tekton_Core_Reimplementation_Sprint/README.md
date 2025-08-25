@@ -35,7 +35,7 @@ Transform tekton-core into a visual project management hub where humans and CIs 
 ### Project Management
 - **One Hard Rule**: One Project = One Repo = One Working Tree
 - **Clone Creates New**: Each clone creates a new project bubble
-- **AI Assignment**: Every project gets a companion CI (Tekton's secret sauce)
+- **CI Assignment**: Every project gets a companion CI (Tekton's secret sauce)
 - **Upstream Tracking**: Pull updates from original repos
 
 ### Shipping Configuration

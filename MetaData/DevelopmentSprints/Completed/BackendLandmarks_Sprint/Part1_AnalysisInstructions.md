@@ -39,7 +39,7 @@ Analyze in this order (core → periphery):
    - `Athena/` - Knowledge graph
    - State management patterns
 
-4. **AI Integration**
+4. **CI Integration**
    - `Prometheus/` - LLM management
    - `Sophia/` - Research system
    - MCP implementations

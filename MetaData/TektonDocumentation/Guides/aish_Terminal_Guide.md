@@ -5,7 +5,7 @@
 
 ## Overview
 
-aish (AI Shell) provides seamless CI integration in your terminal through the Tekton platform. This guide covers how to use aish in Tekton-managed terminals.
+aish (CI Shell) provides seamless CI integration in your terminal through the Tekton platform. This guide covers how to use aish in Tekton-managed terminals.
 
 ## Getting Started
 
@@ -54,7 +54,7 @@ echo "Write a haiku about coding" | aish apollo | aish athena
 # Broadcast to all CIs
 aish team-chat "Starting new development sprint"
 
-# Multi-AI collaboration
+# Multi-CI collaboration
 aish team-chat "Need help debugging authentication issue"
 ```
 
@@ -124,7 +124,7 @@ export AISH_DEBUG=1
 ### Shell Integration
 
 aish works transparently with your shell:
-- All non-AI commands pass through unchanged
+- All non-CI commands pass through unchanged
 - Shell aliases and functions work normally
 - Command history includes both shell and CI commands
 

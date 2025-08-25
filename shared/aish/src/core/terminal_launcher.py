@@ -407,7 +407,7 @@ class TerminalTemplates:
         ),
         
         "ai_workspace": TerminalConfig(
-            name="AI Workspace",
+            name="CI Workspace",
             purpose="AI-assisted development with full Tekton integration",
             env={
                 "TEKTON_AI_WORKSPACE": "true",

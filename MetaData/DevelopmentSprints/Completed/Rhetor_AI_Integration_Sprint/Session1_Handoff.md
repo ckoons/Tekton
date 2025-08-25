@@ -17,12 +17,12 @@
 ### Implementation Sequence
 1. **Phase 1**: Rhetor + Engram + Hermes communication foundation
 2. **Phase 2**: Rhetor ↔ Apollo coordination pair
-3. **Phase 3**: Add Telos + Prometheus (4-AI ecosystem)
+3. **Phase 3**: Add Telos + Prometheus (4-CI ecosystem)
 4. **Phase 4**: Add Hermes CI + dynamic specialist creation
 5. **Future**: Evaluate for full 15-component ecosystem
 
 ### Technical Approach
-- **AI Processes**: Independent processes (not subprocesses)
+- **CI Processes**: Independent processes (not subprocesses)
 - **Communication**: AI_A → Hermes → AI_B pattern
 - **Orchestration**: Rhetor monitors all, passes most unfiltered, occasionally translates
 - **Testing**: Anthropic Max account for cost-free development
@@ -47,7 +47,7 @@
    - Key classes: `SpecialistRouter`, `SpecialistTask`
 
 4. **`/Rhetor/rhetor/core/ai_messaging_integration.py`**
-   - Integration with Hermes A2A service for AI-to-AI communication
+   - Integration with Hermes A2A service for AI-to-CI communication
    - Manages conversations and team chat orchestration
    - Key class: `AIMessagingIntegration`
 
@@ -81,7 +81,7 @@
 - [x] Rhetor orchestration foundation
 - [x] Sprint documentation updates
 - [x] **Specialist Router** for dynamic CI allocation (`specialist_router.py`)
-- [x] **Hermes Integration** for AI-to-AI messaging (`ai_messaging_integration.py`)
+- [x] **Hermes Integration** for AI-to-CI messaging (`ai_messaging_integration.py`)
 - [x] **WebSocket Extensions** for CI specialist communication
 - [x] **API Endpoints** for CI specialist management (`ai_specialist_endpoints.py`)
 - [x] **Rhetor app.py Integration** with all CI components
@@ -128,7 +128,7 @@ The next Claude should start with:
 **Hephaestus Extensions Needed 🔄**:
 - [ ] Rhetor component CI chat interface
 - [ ] CI status indicators
-- [ ] Team chat component for multi-AI coordination
+- [ ] Team chat component for multi-CI coordination
 
 ### 3. Testing Strategy
 
@@ -183,7 +183,7 @@ Before continuing implementation, the next Claude should review:
 - [ ] Rhetor CI specialist can manage itself and coordinate with Engram
 - [ ] Message routing through Hermes works bidirectionally
 - [ ] Hephaestus Rhetor component shows CI chat interface
-- [ ] Basic team chat demonstrates AI-to-AI coordination
+- [ ] Basic team chat demonstrates AI-to-CI coordination
 - [ ] Foundation ready for Apollo integration in Phase 2
 
 ## Repository State

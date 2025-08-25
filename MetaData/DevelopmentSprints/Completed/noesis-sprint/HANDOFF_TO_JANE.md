@@ -96,7 +96,7 @@ From the sprint documentation, Noesis is inspired by "Statistical Physics of Lan
 ### My Recommendations
 
 1. **Start Small**: Implement basic pattern matching first
-   - Simple frequency analysis of inter-AI messages
+   - Simple frequency analysis of inter-CI messages
    - Identify common collaboration patterns
    - Build from there
 

@@ -12,7 +12,7 @@ This prompt guides Claude in implementing the Sophia component for the Tekton Cl
 
 ## Task Overview
 
-Implement the Sophia component (AI Intelligence Measurement & Continuous Improvement) following the Clean Slate architecture pattern. The component should include:
+Implement the Sophia component (CI Intelligence Measurement & Continuous Improvement) following the Clean Slate architecture pattern. The component should include:
 
 1. Component HTML structure with proper BEM naming
 2. CSS styling with BEM naming convention

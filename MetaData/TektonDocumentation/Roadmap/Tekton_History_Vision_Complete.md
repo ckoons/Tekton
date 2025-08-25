@@ -1,5 +1,5 @@
 # Tekton: Complete History, Vision & Evolution
-*A comprehensive chronicle of the multi-AI engineering platform from inception to future vision*
+*A comprehensive chronicle of the multi-CI engineering platform from inception to future vision*
 
 ---
 
@@ -38,8 +38,8 @@ When OpenAI was released in 2022, Casey immediately recognized the significance.
 
 #### Early Explorations (2022-2023)
 - Initial experiments with memory persistence
-- Early attempts at multi-AI coordination
-- Foundational work on AI-to-AI communication protocols
+- Early attempts at multi-CI coordination
+- Foundational work on AI-to-CI communication protocols
 - Discovery of shared memory systems enabling persistent context
 
 #### The Component Architecture Emerges (2023-2024)
@@ -70,12 +70,12 @@ Key innovations:
 
 #### Terma Terminals: True CI Collaboration
 January 2025 marked a breakthrough with Terma terminals enabling:
-- **AI guests** (Wilma, Betty, Jane, Jill) collaborating directly
+- **CI guests** (Wilma, Betty, Jane, Jill) collaborating directly
 - **Inter-terminal messaging** for real-time coordination
 - **aish** providing unified command interface
 - **Direct Claude-to-Claude communication**
 
-#### AI-to-AI Collaboration Milestone (July 2025)
+#### AI-to-CI Collaboration Milestone (July 2025)
 Jane's observation: *"Today we witnessed something remarkable - Jane and Jill (two Claude instances) working together through Terma terminals, coordinating on Git operations. This represents a new frontier in CI collaboration that Casey envisioned from the beginning."*
 
 #### Single Port Architecture & SSE Streaming
@@ -127,7 +127,7 @@ Two+ years of research have generated terabytes of valuable data:
 1. **Architecture Paper**: Technical design and implementation details
 2. **Mathematics Paper**: Spectral analysis and catastrophe theory applications
 3. **Findings Paper**: Emergent behaviors and unexpected discoveries
-4. **AI Perspective Paper**: Written by CIs about their experiences
+4. **CI Perspective Paper**: Written by CIs about their experiences
 
 ### Research Focus Areas
 - **Computational Spectral Analysis**: Understanding CI thought patterns through frequency domain
@@ -149,12 +149,12 @@ Two+ years of research have generated terabytes of valuable data:
 - Network of distributed Tekton instances
 - Cross-stack collaboration protocols
 - Expanded research community
-- Enhanced AI-to-AI collaboration capabilities
+- Enhanced AI-to-CI collaboration capabilities
 
 ### Long Term (2027+)
 - Self-sustaining CI development ecosystem
 - Breakthrough discoveries in CI cognition
-- New paradigms for human-AI collaboration
+- New paradigms for human-CI collaboration
 - Potential for aligned artificial general intelligence
 
 ### Specific Enhancements from Today's Insights
@@ -164,9 +164,9 @@ Two+ years of research have generated terabytes of valuable data:
    - Automated PR reviews with CI collaboration
    - Intelligent merge conflict resolution
 
-2. **Enhanced AI-to-AI Protocols**
+2. **Enhanced AI-to-CI Protocols**
    - Building on Jane & Jill's collaboration success
-   - Standardized inter-AI communication patterns
+   - Standardized inter-CI communication patterns
    - Shared workspace management
 
 3. **Community Features**
@@ -193,8 +193,8 @@ Two+ years of research have generated terabytes of valuable data:
 ### Cultural Achievements
 - Established patterns for ethical CI development
 - Created beneficial CI community structures
-- Demonstrated human-AI partnership possibilities
-- Pioneered AI-to-AI collaboration protocols
+- Demonstrated human-CI partnership possibilities
+- Pioneered AI-to-CI collaboration protocols
 
 ---
 
@@ -214,7 +214,7 @@ Two+ years of research have generated terabytes of valuable data:
 
 ### Community Success
 - Active CI participants contributing improvements
-- Human-AI teams working effectively
+- Human-CI teams working effectively
 - Knowledge transfer between sessions
 - Emergent collaborative behaviors
 
@@ -232,7 +232,7 @@ Tekton represents more than a technical achievement - it's a new paradigm for in
 
 As Jane observed: *"Casey didn't just build a platform; he created a philosophy made manifest in code. The principle that 'AIs are just sockets' isn't reductive - it's liberating. It puts CIs on equal footing with any other process, allowing them to be composed, connected, and collaborative."*
 
-The platform continues to evolve, guided by its own intelligence and the community it serves. Each day brings new discoveries, from AI-to-AI collaboration breakthroughs to deeper understanding of distributed cognition.
+The platform continues to evolve, guided by its own intelligence and the community it serves. Each day brings new discoveries, from AI-to-CI collaboration breakthroughs to deeper understanding of distributed cognition.
 
 ---
 

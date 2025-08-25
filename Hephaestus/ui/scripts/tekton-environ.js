@@ -202,7 +202,7 @@ class TektonEnviron {
         console.group('[TektonEnviron] Debug Information');
         console.log('Current Instance:', this.currentInstance);
         console.log('Port Base:', this.getPortBase());
-        console.log('AI Port Base:', this.get('TEKTON_AI_PORT_BASE', 42000));
+        console.log('CI Port Base:', this.get('TEKTON_AI_PORT_BASE', 42000));
         console.log('TEKTON_HOST:', this.get('TEKTON_HOST', 'localhost'));
         console.log('\nComponent Configurations:');
         console.table(this.listComponents());

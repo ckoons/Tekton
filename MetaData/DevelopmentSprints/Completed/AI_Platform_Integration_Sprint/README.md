@@ -11,8 +11,8 @@
 ### Core Components
 - **Numa (8016)**: Platform-wide CI mentor with access to all components
 - **Noesis (8015)**: Discovery CI (placeholder for future sprint)
-- **AI Management Utilities**: Launcher, killer, and status tools
-- **AI Health Monitoring**: Auto-recovery for unresponsive CIs
+- **CI Management Utilities**: Launcher, killer, and status tools
+- **CI Health Monitoring**: Auto-recovery for unresponsive CIs
 
 ### Key Features
 - Environment-controlled CI lifecycle (`TEKTON_REGISTER_AI`)
@@ -89,7 +89,7 @@ Stop: Terminate CI → Deregister → Terminate Component
 
 ## Success Metrics
 
-- [ ] TEKTON_REGISTER_AI flag controls CI lifecycle
+- [ ] TEKTON_REGISTER_CI flag controls CI lifecycle
 - [ ] CI processes start/stop with components
 - [ ] Numa launches after full stack, terminates first
 - [ ] Health monitoring detects and recovers unresponsive CIs

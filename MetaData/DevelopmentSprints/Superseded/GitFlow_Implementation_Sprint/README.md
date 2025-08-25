@@ -1,17 +1,17 @@
-# GitFlow Implementation Sprint: Multi-AI Engineering Platform
+# GitFlow Implementation Sprint: Multi-CI Engineering Platform
 
 ## Sprint Overview
 
-This sprint transforms Tekton into a true multi-AI engineering platform by implementing GitHub Flow with intelligent orchestration across multiple projects and CI teams.
+This sprint transforms Tekton into a true multi-CI engineering platform by implementing GitHub Flow with intelligent orchestration across multiple projects and CI teams.
 
 **Vision**: Enable Casey to manage multiple GitHub projects with CI teams working in parallel, all orchestrated through Tekton's infrastructure.
 
 ## Sprint Goals
 
-1. **Rewrite tekton-core** as the central orchestrator for multi-project, multi-AI development
+1. **Rewrite tekton-core** as the central orchestrator for multi-project, multi-CI development
 2. **Implement GitHub Flow** with AI-aware branch strategies and PR automation
 3. **Enable external project management** with isolated repos and working directories
-4. **Create human-AI asymmetry workflows** that leverage strengths of both
+4. **Create human-CI asymmetry workflows** that leverage strengths of both
 5. **Touch every Tekton component** to participate in the orchestration
 
 ## Key Innovations
@@ -49,7 +49,7 @@ This sprint transforms Tekton into a true multi-AI engineering platform by imple
 - Terminal communication protocols
 
 ### Week 3: Workflow Implementation
-- Human-AI asymmetry patterns
+- Human-CI asymmetry patterns
 - Team chat orchestration
 - Progress tracking dashboards
 
@@ -70,7 +70,7 @@ This sprint transforms Tekton into a true multi-AI engineering platform by imple
 
 - [SprintPlan.md](./SprintPlan.md) - Detailed timeline and milestones
 - [TektonCoreRewrite.md](./TektonCoreRewrite.md) - Component specifications
-- [WorkflowPatterns.md](./WorkflowPatterns.md) - Human-AI collaboration patterns
+- [WorkflowPatterns.md](./WorkflowPatterns.md) - Human-CI collaboration patterns
 - [ProofOfConcept.md](./ProofOfConcept.md) - First external project plan
 - [ComponentTouchpoints.md](./ComponentTouchpoints.md) - How each component participates
 

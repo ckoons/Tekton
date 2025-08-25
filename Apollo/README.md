@@ -88,7 +88,7 @@ Apollo seamlessly integrates with other Tekton components:
 - **Hermes**: Distributes alerts and coordinates responses
 - **Engram**: Stores historical metrics for trend analysis
 - **Budget**: Coordinates token allocation across components
-- **AI Specialists**: Apollo CI provides predictive insights
+- **CI Specialists**: Apollo CI provides predictive insights
 
 ### Example Integration
 

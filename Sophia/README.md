@@ -109,7 +109,7 @@ Sophia seamlessly integrates with:
 - **Hermes**: Service registration and health monitoring
 - **Engram**: Stores historical data and intelligence profiles
 - **Prometheus**: Provides insights for strategic planning
-- **AI Specialists**: Sophia CI analyzes patterns and suggests improvements
+- **CI Specialists**: Sophia CI analyzes patterns and suggests improvements
 
 ### Example Integration
 
@@ -388,7 +388,7 @@ Sophia provides a comprehensive API following the Single Port Architecture patte
 
 Sophia provides Model Context Protocol integration with 16 specialized tools:
 
-#### ML/AI Analysis Tools (6 tools)
+#### ML/CI Analysis Tools (6 tools)
 - `POST /mcp/tools/analyze_component_performance` - Analyze component performance using ML
 - `POST /mcp/tools/extract_patterns` - Extract behavioral patterns from data
 - `POST /mcp/tools/predict_optimization_impact` - Predict optimization impact

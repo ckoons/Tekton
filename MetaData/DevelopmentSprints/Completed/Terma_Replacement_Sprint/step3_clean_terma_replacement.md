@@ -188,7 +188,7 @@ The Hephaestus UI needs to be updated to:
 
 1. **Simplicity**: No complex PTY management
 2. **Native Experience**: Users get their preferred terminal
-3. **AI Integration**: Transparent aish enhancement
+3. **CI Integration**: Transparent aish enhancement
 4. **Maintainability**: Much less code to maintain
 5. **Performance**: No web terminal overhead
 
@@ -201,7 +201,7 @@ The clean Terma replacement is ready:
 1. ✅ **Complete replacement** - No legacy code
 2. ✅ **Native terminals only** - Real desktop applications
 3. ✅ **Clean API** - Simple REST endpoints
-4. ✅ **AI ready** - aish-proxy integration
+4. ✅ **CI ready** - aish-proxy integration
 5. ✅ **Tekton integrated** - Hermes registration, standard patterns
 
 **The old Terma is dead. Long live the new Terma!**

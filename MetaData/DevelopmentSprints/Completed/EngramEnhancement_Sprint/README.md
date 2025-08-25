@@ -19,7 +19,7 @@
 
 ### Week 1: Foundation
 - [ ] Design memory signature format
-- [ ] Implement basic AI-to-AI memory sharing
+- [ ] Implement basic AI-to-CI memory sharing
 - [ ] Create memory comparison algorithms
 
 ### Week 2: Communication Protocols  
@@ -49,7 +49,7 @@
 
 - Extend Engram's compartment system for shared spaces
 - Add metadata layers for memory relationships
-- Build new API endpoints for AI-to-AI operations
+- Build new API endpoints for AI-to-CI operations
 - Create visualization tools for memory networks
 
 ## Success Metrics

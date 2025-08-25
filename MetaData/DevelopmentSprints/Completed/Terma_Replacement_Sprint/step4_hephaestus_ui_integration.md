@@ -163,7 +163,7 @@ DELETE /api/terminals/{pid}
 1. **Native Experience**: Users get their configured terminal
 2. **No Complexity**: No PTY management or WebSocket streams
 3. **Better Performance**: No terminal emulation overhead
-4. **AI Integration**: Transparent aish-proxy enhancement
+4. **CI Integration**: Transparent aish-proxy enhancement
 5. **Maintainability**: Simple REST API, no complex state
 
 ## Next Steps

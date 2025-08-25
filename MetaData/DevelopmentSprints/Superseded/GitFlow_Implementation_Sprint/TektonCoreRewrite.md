@@ -2,7 +2,7 @@
 
 ## Component Overview
 
-tekton-core transforms from a simple component into the **Multi-AI Engineering Platform Manager** - the conductor of the CI orchestra.
+tekton-core transforms from a simple component into the **Multi-CI Engineering Platform Manager** - the conductor of the CI orchestra.
 
 ## Architecture
 
@@ -11,7 +11,7 @@ tekton-core transforms from a simple component into the **Multi-AI Engineering P
 ```python
 class TektonCore:
     """
-    Central orchestrator for multi-project, multi-AI development.
+    Central orchestrator for multi-project, multi-CI development.
     
     Responsibilities:
     1. Project Registry - Track all projects under management
@@ -245,7 +245,7 @@ class TermaIntegration:
         """Request progress update from terminal"""
 ```
 
-### With Rhetor (AI Communication)
+### With Rhetor (CI Communication)
 
 ```python
 class RhetorIntegration:
@@ -256,7 +256,7 @@ class RhetorIntegration:
         """Find best CI for task"""
         
     def coordinate_team(self, team_members, task):
-        """Orchestrate multi-AI collaboration"""
+        """Orchestrate multi-CI collaboration"""
 ```
 
 ### With Hermes (Service Discovery)

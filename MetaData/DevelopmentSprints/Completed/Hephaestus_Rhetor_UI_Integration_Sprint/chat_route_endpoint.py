@@ -17,21 +17,21 @@ async def route_chat_message(request: RouteRequest) -> RouteResponse:
     Route chat messages to component CIs or team chat.
     
     This endpoint handles the routing logic for the Hephaestus UI chat widget,
-    directing messages to the appropriate AI specialist based on the component
+    directing messages to the appropriate CI specialist based on the component
     or orchestrating team chat when requested.
     """
     
     if not ai_specialist_manager:
-        raise HTTPException(status_code=503, detail="AI Specialist Manager not initialized")
+        raise HTTPException(status_code=503, detail="CI Specialist Manager not initialized")
     
     try:
         # Handle team chat
         if request.component == "team":
-            # Use existing AI messaging integration for team chat
+            # Use existing CI messaging integration for team chat
             if not ai_messaging_integration:
                 raise HTTPException(
                     status_code=503, 
-                    detail="AI messaging integration not available for team chat"
+                    detail="CI messaging integration not available for team chat"
                 )
             
             # Get all active specialists for team chat
@@ -98,7 +98,7 @@ async def route_chat_message(request: RouteRequest) -> RouteResponse:
                 specialist_config = {
                     "id": specialist_id,
                     "name": f"{request.component.capitalize()} Assistant",
-                    "description": f"AI assistant for the {request.component.capitalize()} component",
+                    "description": f"CI assistant for the {request.component.capitalize()} component",
                     "model_preferences": {
                         "primary": "claude-3-5-haiku-20241022",  # Fast for component chats
                         "fallback": "llama3.3"  # Local fallback
@@ -108,7 +108,7 @@ async def route_chat_message(request: RouteRequest) -> RouteResponse:
                         "Helpful and concise",
                         "Context-aware"
                     ],
-                    "system_prompt": f"You are the AI assistant for the {request.component.capitalize()} component in Tekton. Help users understand and use {request.component} effectively."
+                    "system_prompt": f"You are the CI assistant for the {request.component.capitalize()} component in Tekton. Help users understand and use {request.component} effectively."
                 }
                 
                 # Create the specialist

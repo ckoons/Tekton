@@ -104,7 +104,7 @@ class TelosClient {
                             startDate: '2025-02-15',
                             endDate: '2025-05-30',
                             owner: 'Memory Team',
-                            stakeholders: ['AI Team', 'Dev Team']
+                            stakeholders: ['CI Team', 'Dev Team']
                         },
                         'hermes': {
                             id: 'hermes',

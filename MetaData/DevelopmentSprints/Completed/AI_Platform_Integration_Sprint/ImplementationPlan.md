@@ -71,7 +71,7 @@ class AIRegistryClient:
 **Location**: `EnhancedTools/tekton_ai_launcher.py`
 
 Responsibilities:
-- Check TEKTON_REGISTER_AI flag
+- Check TEKTON_REGISTER_CI flag
 - Launch CI processes for registered components
 - Update socket registry
 - Handle errors gracefully
@@ -365,12 +365,12 @@ Update:
 ### Common Issues
 
 **AIs not starting**:
-- Check TEKTON_REGISTER_AI flag
+- Check TEKTON_REGISTER_CI flag
 - Verify API keys configured
 - Check socket registry access
 - Review error logs
 
-**AI unresponsive**:
+**CI unresponsive**:
 - Check debug logs for activity
 - Verify socket connectivity
 - Manual restart if needed

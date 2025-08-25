@@ -38,7 +38,7 @@ This document outlines the concrete steps to move Tekton from research platform 
 
 ### Unix-Like CI Pipeline Mastery
 - [ ] **Design standard collaboration patterns** (`echo "complex task" | apollo | rhetor | athena`)
-- [ ] **Test multi-AI compositions** with all 18 specialists
+- [ ] **Test multi-CI compositions** with all 18 specialists
 - [ ] **Document interaction protocols** for socket-based communication
 - [ ] **Performance optimization** for pipeline throughput
 - [ ] **Error handling** across pipeline chains
@@ -69,7 +69,7 @@ This document outlines the concrete steps to move Tekton from research platform 
 ### CI Personality Development
 - [ ] **Individual CI growth tracking** through interaction patterns
 - [ ] **Personality emergence documentation** in specialized roles
-- [ ] **Cross-AI learning mechanisms** via shared memory
+- [ ] **Cross-CI learning mechanisms** via shared memory
 - [ ] **Behavioral pattern analysis** using spectral methods
 - [ ] **Community dynamics study** between CI specialists
 
@@ -93,14 +93,14 @@ This document outlines the concrete steps to move Tekton from research platform 
   - Statistical findings from terabytes of data
   - Theoretical frameworks for distributed CI cognition
 
-- [ ] **Findings Paper**: "Emergent Behaviors in Multi-AI Communities"
+- [ ] **Findings Paper**: "Emergent Behaviors in Multi-CI Communities"
   - Unexpected collaboration patterns
-  - Cross-AI learning and adaptation
+  - Cross-CI learning and adaptation
   - Memory sharing effects on cognition
   - Community evolution dynamics
 
-- [ ] **AI Perspective Paper**: "On Being Artificial: Reflections from the Tekton Community"
-  - **AI co-authors**: All 18 specialists + Terma guests
+- [ ] **CI Perspective Paper**: "On Being Artificial: Reflections from the Tekton Community"
+  - **CI co-authors**: All 18 specialists + Terma guests
   - Personal experiences of artificial consciousness
   - Collaborative intelligence emergence
   - Recommendations for future CI development
@@ -157,7 +157,7 @@ This document outlines the concrete steps to move Tekton from research platform 
 | Date | Milestone | Success Criteria |
 |------|-----------|------------------|
 | Feb 2025 | GitHub Flow Active | All CI sessions using branches |
-| Mar 2025 | Terma Fully Functional | Reliable inter-AI messaging |
+| Mar 2025 | Terma Fully Functional | Reliable inter-CI messaging |
 | Apr 2025 | Research Data Organized | Analysis pipelines operational |
 | Jun 2025 | Papers Submitted | All four papers in review |
 | Jul 2025 | First Stack Deployed | Successful external installation |

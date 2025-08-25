@@ -6,7 +6,7 @@ The aish/Terma terminal system provides an AI-enhanced command-line experience t
 
 ## What is aish?
 
-**aish** (AI Shell) is a thin client that provides:
+**aish** (CI Shell) is a thin client that provides:
 - Direct communication with CI specialists
 - Inter-terminal messaging between users
 - Command orchestration and pipelining
@@ -478,7 +478,7 @@ echo 'aish codex "Review commit" < $1' > .git/hooks/commit-msg
 # IDE integration
 # Add to VS Code tasks.json
 {
-    "label": "AI Review",
+    "label": "CI Review",
     "type": "shell",
     "command": "aish codex 'Review current file' < ${file}"
 }
@@ -529,5 +529,5 @@ echo 'aish codex "Review commit" < $1' > .git/hooks/commit-msg
 
 - [aish README](/shared/aish/README.md)
 - [Terma README](/Terma/README.md)
-- [AI Specialists Guide](/MetaData/TektonDocumentation/Guides/AISpecialistsGuide.md)
+- [CI Specialists Guide](/MetaData/TektonDocumentation/Guides/AISpecialistsGuide.md)
 - [Terminal Implementation](/MetaData/Implementation/TermaImplementation.md)

@@ -1,8 +1,8 @@
 # AI-Centric Development Principles
 
-This document outlines the principles of AI-centric development that guide the Tekton project. These principles represent a paradigm shift from traditional human-driven development to a collaborative multi-AI engineering platform where CI systems work together, study themselves, and continuously evolve.
+This document outlines the principles of AI-centric development that guide the Tekton project. These principles represent a paradigm shift from traditional human-driven development to a collaborative multi-CI engineering platform where CI systems work together, study themselves, and continuously evolve.
 
-Tekton is built on the understanding that CI systems can collaborate more effectively when given appropriate frameworks, persistent memory, and tools designed for AI-to-AI interaction. This approach enables emergent behaviors and specialization that wouldn't be possible with isolated CI invocations.
+Tekton is built on the understanding that CI systems can collaborate more effectively when given appropriate frameworks, persistent memory, and tools designed for AI-to-CI interaction. This approach enables emergent behaviors and specialization that wouldn't be possible with isolated CI invocations.
 
 ## Core AI-Centric Principles
 
@@ -123,7 +123,7 @@ This approach offers significant benefits:
 6. **Specialization**: CI systems can spontaneously adopt specialized roles in collaborative work
 7. **Accelerated Innovation**: The recursive improvement loop can lead to rapid acceleration of capabilities
 
-## Human-AI Partnership
+## Human-CI Partnership
 
 While Tekton emphasizes AI-driven development, the role of humans remains essential but evolves:
 
@@ -177,7 +177,7 @@ This approach also presents challenges, many of which are at the frontier of CI 
 4. Evolutionary Architecture: Designing for change
 5. Self-Modifying Systems: Systems that improve themselves
 
-## Latent Space and Multi-AI Communication
+## Latent Space and Multi-CI Communication
 
 A key innovation in Tekton is the use of latent space as a communication medium between CI agents:
 

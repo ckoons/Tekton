@@ -120,7 +120,7 @@ async def main():
             config_sync = AIConfigSyncService()
             manager.add_service('ai_config_sync', config_sync)
         except ImportError:
-            logger.warning("AI config sync service not available")
+            logger.warning("CI config sync service not available")
         except Exception as e:
             logger.warning(f"Could not initialize CI config sync: {e}")
     

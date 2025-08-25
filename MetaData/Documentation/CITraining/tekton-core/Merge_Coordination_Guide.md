@@ -99,14 +99,14 @@ Conflict Summary: [Brief description of the conflict]
 
 Context: [Why this conflict occurred, what each CI was trying to achieve]
 
-Option A (AI Worker: [Name])
+Option A (CI Worker: [Name])
 - Approach: [Brief description]
 - Pros: [Key advantages]
 - Cons: [Key limitations]  
 - Code Quality: [Assessment]
 - Test Coverage: [Assessment]
 
-Option B (AI Worker: [Name])
+Option B (CI Worker: [Name])
 - Approach: [Brief description]
 - Pros: [Key advantages]
 - Cons: [Key limitations]
@@ -124,14 +124,14 @@ Conflict Summary: Database connection pooling implementation
 Context: Alice implemented connection pooling for performance, while Betty 
 implemented database retry logic. Both modify the same database utility module.
 
-Option A (AI Worker: Alice)
+Option A (CI Worker: Alice)
 - Approach: Connection pooling with configurable pool sizes
 - Pros: Better performance, reduced connection overhead, scalable
 - Cons: More complex configuration, potential connection leaks
 - Code Quality: Excellent, well-structured
 - Test Coverage: 95%, includes stress tests
 
-Option B (AI Worker: Betty)  
+Option B (CI Worker: Betty)  
 - Approach: Retry logic with exponential backoff
 - Pros: Better reliability, handles transient failures, simpler
 - Cons: No performance optimization, potential for long delays
@@ -335,7 +335,7 @@ Merge Conflict Alert:
 - Affected CIs: [Names]
 - Conflict type: [Technical/Semantic/Process]
 - Estimated resolution time: [Time]
-- Action required: [Casey decision/AI collaboration/System update]
+- Action required: [Casey decision/CI collaboration/System update]
 ```
 
 ### Learning Summaries
@@ -400,7 +400,7 @@ Merge Coordination Learning Summary:
 
 **Solutions**:
 - Improve sprint planning and task boundaries
-- Enhance AI-to-AI communication
+- Enhance AI-to-CI communication
 - Clarify requirements and priorities
 - Implement better coordination practices
 
@@ -464,7 +464,7 @@ Merge Coordination Learning Summary:
 
 Merge coordination is not just about resolving conflicts - it's about creating a learning system that gets better over time. Every conflict is an opportunity to improve our coordination, every resolution teaches us something new, and every question helps us understand how to work better together.
 
-Your role is to be the intelligent conductor of this symphony of parallel development. You're not just managing code - you're orchestrating the future of human-AI collaboration.
+Your role is to be the intelligent conductor of this symphony of parallel development. You're not just managing code - you're orchestrating the future of human-CI collaboration.
 
 **Trust the process, learn from experience, and keep improving.**
 

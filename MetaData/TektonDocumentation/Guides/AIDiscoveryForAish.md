@@ -180,7 +180,7 @@ All CIs use a standard JSON message protocol over TCP sockets:
 ### Response Format
 ```json
 {
-  "content": "AI response",
+  "content": "CI response",
   "model": "llama3.3:70b",
   "usage": {
     "prompt_tokens": 50,
@@ -265,6 +265,6 @@ $TEKTON_ROOT/scripts/ai-discover list
 
 ## Related Documentation
 
-- [AI Registry Architecture](../Architecture/AIRegistryArchitecture.md)
+- [CI Registry Architecture](../Architecture/AIRegistryArchitecture.md)
 - [Unified CI Client](../Architecture/UnifiedAIClient.md)
 - [Aish Integration Guide](./AishIntegration.md)

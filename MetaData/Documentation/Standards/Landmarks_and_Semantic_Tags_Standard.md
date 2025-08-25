@@ -65,7 +65,7 @@ def _is_cache_valid(self, key: str):
 **Purpose**: Mark where components connect
 ```python
 @integration_point(
-    title="AI Shell Message Integration",
+    title="CI Shell Message Integration",
     description="Routes messages through AIShell to appropriate CI specialist",
     target_component="AIShell",
     protocol="internal_api",

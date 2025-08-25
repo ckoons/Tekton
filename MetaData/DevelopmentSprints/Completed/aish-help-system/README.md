@@ -4,7 +4,7 @@
 
 This sprint implements three integrated improvements to aish:
 1. **Unified syntax**: Fix the `aish [component] [command/message]` pattern
-2. **Message visibility**: In-memory two-inbox system for AI-to-AI communication
+2. **Message visibility**: In-memory two-inbox system for AI-to-CI communication
 3. **Help system**: Documentation path pattern for discoverability
 
 ## Sprint Status
@@ -21,12 +21,12 @@ Help commands return paths to documentation rather than help content:
 ```
 $ aish help
 Usage: aish [options] [ai] [message]
-AI Training: /Users/.../MetaData/TektonDocumentation/AITraining/aish/
+CI Training: /Users/.../MetaData/TektonDocumentation/AITraining/aish/
 User Guides: /Users/.../MetaData/TektonDocumentation/UserGuides/aish/
 
 $ aish terma help
 Usage: aish terma [command] [args]
-AI Training: /Users/.../MetaData/TektonDocumentation/AITraining/Terma/
+CI Training: /Users/.../MetaData/TektonDocumentation/AITraining/Terma/
 User Guides: /Users/.../MetaData/TektonDocumentation/UserGuides/Terma/
 ```
 
@@ -63,7 +63,7 @@ Changes span three files:
 
 This sprint establishes patterns that will serve Tekton for years:
 - Consistent command interface across all components
-- Natural AI-to-AI communication
+- Natural AI-to-CI communication
 - Equal treatment for humans and Companion Intelligences
 - Documentation can evolve without code changes
 - Simple, discoverable, and scalable

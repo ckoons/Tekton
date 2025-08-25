@@ -26,7 +26,7 @@ logger = logging.getLogger(__name__)
 
 # Pydantic models for requests/responses
 class SpecialistResponse(BaseModel):
-    """AI Specialist information from registry"""
+    """CI Specialist information from registry"""
     id: str
     name: str
     type: str  # role
@@ -62,7 +62,7 @@ class CreateRoleRequest(BaseModel):
     required_capabilities: List[str]
 
 # Create router
-router = APIRouter(prefix="/api/ai", tags=["AI Specialists"])
+router = APIRouter(prefix="/api/ai", tags=["CI Specialists"])
 
 # Initialize services
 # Registry removed - using simple_ai
@@ -125,7 +125,7 @@ async def list_specialists(
 
 @router.post("/specialists/{ai_id}/hire")
 async def hire_specialist(
-    ai_id: str = Path(..., description="AI specialist ID"),
+    ai_id: str = Path(..., description="CI specialist ID"),
     request: HireRequest = ...
 ):
     """Hire an CI specialist - Rhetor adds them to the active roster"""
@@ -139,7 +139,7 @@ async def hire_specialist(
         # Verify CI exists and is healthy
         ai_info = await discovery.get_ai_info(ai_id)
         if ai_info.get('status') != 'healthy':
-            raise HTTPException(status_code=400, detail=f"AI {ai_id} is not healthy")
+            raise HTTPException(status_code=400, detail=f"CI {ai_id} is not healthy")
         
         # Add to roster
         roster[ai_id] = {
@@ -163,7 +163,7 @@ async def hire_specialist(
 
 @router.post("/specialists/{ai_id}/fire")
 async def fire_specialist(
-    ai_id: str = Path(..., description="AI specialist ID"),
+    ai_id: str = Path(..., description="CI specialist ID"),
     request: FireRequest = ...
 ):
     """Fire an CI specialist - Rhetor removes them from the active roster"""
@@ -252,7 +252,7 @@ async def find_candidates(
 
 @router.post("/specialists/{ai_id}/reassign")
 async def reassign_specialist(
-    ai_id: str = Path(..., description="AI specialist ID"),
+    ai_id: str = Path(..., description="CI specialist ID"),
     new_role: str = Query(..., description="New role to assign")
 ):
     """Reassign a hired CI to a new role"""
@@ -260,7 +260,7 @@ async def reassign_specialist(
         roster = get_rhetor_roster()
         
         if ai_id not in roster:
-            raise HTTPException(status_code=404, detail=f"AI {ai_id} not in roster")
+            raise HTTPException(status_code=404, detail=f"CI {ai_id} not in roster")
         
         old_role = roster[ai_id]['role']
         roster[ai_id]['role'] = new_role

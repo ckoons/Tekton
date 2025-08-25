@@ -25,7 +25,7 @@ This document details the implementation steps for the expanded aish sprint incl
     if args.ai_or_script == "help":
         # General aish help
         print("Usage: aish [options] [component] [command/message]")
-        print("AI Training: /Users/cskoons/projects/github/Tekton/MetaData/TektonDocumentation/AITraining/aish/")
+        print("CI Training: /Users/cskoons/projects/github/Tekton/MetaData/TektonDocumentation/AITraining/aish/")
         print("User Guides: /Users/cskoons/projects/github/Tekton/MetaData/TektonDocumentation/UserGuides/aish/")
         return
     
@@ -46,7 +46,7 @@ This document details the implementation steps for the expanded aish sprint incl
         # Check for help command
         if args.message and args.message[0] == "help":
             print(f"Usage: aish {component} [message]")
-            print(f"AI Training: /Users/cskoons/projects/github/Tekton/MetaData/TektonDocumentation/AITraining/{component}/")
+            print(f"CI Training: /Users/cskoons/projects/github/Tekton/MetaData/TektonDocumentation/AITraining/{component}/")
             print(f"User Guides: /Users/cskoons/projects/github/Tekton/MetaData/TektonDocumentation/UserGuides/{component}/")
             return
         

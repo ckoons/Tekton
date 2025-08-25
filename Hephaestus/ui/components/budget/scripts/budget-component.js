@@ -1301,7 +1301,7 @@ window.budgetComponent = (function() {
                     stateManager.addAiChatMessage(response.content || 'No response received', chatType);
                 } else {
                     // AIChat not available
-                    stateManager.addAiChatMessage('AI Chat service not available', chatType);
+                    stateManager.addAiChatMessage('CI Chat service not available', chatType);
                 }
                 
                 // Clear loading state

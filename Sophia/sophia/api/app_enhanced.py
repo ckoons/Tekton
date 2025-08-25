@@ -42,7 +42,7 @@ except ImportError as e:
 # Create FastAPI app
 app = FastAPI(
     title="Sophia Machine Learning & Intelligence API",
-    description="AI intelligence measurement and self-improvement system",
+    description="CI intelligence measurement and self-improvement system",
     version="0.2.0"
 )
 

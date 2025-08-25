@@ -289,7 +289,7 @@ Test in:
 
 1. **Navigation Flow**: User can navigate between all components
 2. **Chat Persistence**: Chat history maintained during session
-3. **AI Communication**: Messages reach correct CI specialists
+3. **CI Communication**: Messages reach correct CI specialists
 4. **Team Chat Sync**: Same team chat across all components
 5. **WebSocket Stability**: Connections remain stable
 

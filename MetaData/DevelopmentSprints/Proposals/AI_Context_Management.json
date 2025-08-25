@@ -2,7 +2,7 @@
   "name": "AI_Context_Management",
   "tektonCoreProject": "Rhetor",
   "purpose": "Develop intelligent context switching and preservation for multi-agent conversations",
-  "description": "Create an advanced context management system for Rhetor that enables intelligent context switching between different AI agents, preserves conversation state across sessions, and optimizes prompt engineering based on conversation history and patterns.",
+  "description": "Create an advanced context management system for Rhetor that enables intelligent context switching between different CI agents, preserves conversation state across sessions, and optimizes prompt engineering based on conversation history and patterns.",
   "successCriteria": [
     "Context switching without information loss",
     "Multi-agent state preservation",
@@ -15,7 +15,7 @@
     "Implement context compression algorithm",
     "Create handoff protocol",
     "Build prompt optimization engine",
-    "Integration with all AI components"
+    "Integration with all CI components"
   ],
   "notes": "This will enable more coherent and efficient multi-agent conversations across the platform.",
   "status": "proposal",

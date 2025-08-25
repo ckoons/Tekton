@@ -141,8 +141,8 @@ COMPONENT_EXPERTISE = {
     },
     'numa': {
         'title': 'The Specialist Orchestrator',
-        'expertise': 'AI specialist management, model coordination, and capability integration',
-        'focus': 'AI lifecycle management, model selection, capability routing, and performance optimization'
+        'expertise': 'CI specialist management, model coordination, and capability integration',
+        'focus': 'CI lifecycle management, model selection, capability routing, and performance optimization'
     }
 }
 
@@ -184,7 +184,7 @@ class GenericAISpecialist(CISpecialistWorker):
             ai_id=ai_id,
             component=component,
             port=port,
-            description=f"AI specialist for {component.title()} - {comp_info['title']}"
+            description=f"CI specialist for {component.title()} - {comp_info['title']}"
         )
         
         self.component_info = comp_info
@@ -244,7 +244,7 @@ def main():
     parser = argparse.ArgumentParser(description='Generic CI Specialist')
     parser.add_argument('--port', type=int, required=True, help='Port to listen on')
     parser.add_argument('--component', type=str, required=True, help='Component name')
-    parser.add_argument('--ci-id', type=str, required=True, help='AI ID')
+    parser.add_argument('--ci-id', type=str, required=True, help='CI ID')
     parser.add_argument('-v', '--verbose', action='store_true', help='Enable verbose logging')
     
     args = parser.parse_args()

@@ -52,14 +52,14 @@ However, the integration with Hephaestus remains incomplete:
 
 ### Key Components Affected
 
-- **Hephaestus UI**: Enhanced terminal chat integration, component-AI mapping, streaming support
+- **Hephaestus UI**: Enhanced terminal chat integration, component-CI mapping, streaming support
 - **Rhetor Backend**: Component specialist registry, enhanced routing, persistence layer
 - **Hermes Message Bus**: Component-specific topic routing for CI messages
 - **Component Registry**: CI assistant configuration per component
 
 ### Technical Approach
 
-1. **Component-AI Mapping System**
+1. **Component-CI Mapping System**
    - Pre-configured specialists for each component (e.g., "athena-assistant", "budget-assistant")
    - Dynamic creation/recreation based on component requirements
    - Specialist registry maintained in Rhetor
@@ -112,7 +112,7 @@ The implementation must include appropriate tests:
 The following items are explicitly out of scope for this sprint:
 
 - Complete rewrite of Hephaestus chat UI (keeping existing bubble design)
-- Cross-component AI-to-AI communication (reserved for future A2A work)
+- Cross-component AI-to-CI communication (reserved for future A2A work)
 - Advanced CI orchestration features beyond basic team chat
 - Migration of existing Rhetor UI to different framework
 
@@ -131,7 +131,7 @@ This sprint is planned to be completed in 4 phases:
 
 ### Phase 1: Foundation & Routing (Days 1-2)
 - **Duration**: 2 days
-- **Focus**: Component-AI mapping and message routing infrastructure
+- **Focus**: Component-CI mapping and message routing infrastructure
 - **Key Deliverables**: 
   - Component specialist registry
   - Enhanced Hermes routing

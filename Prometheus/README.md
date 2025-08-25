@@ -97,7 +97,7 @@ Prometheus seamlessly integrates with:
 - **Apollo**: Monitors execution health and metrics
 - **Harmonia**: Orchestrates workflow execution
 - **Budget**: Ensures resource constraints are met
-- **AI Specialists**: Prometheus CI for strategic insights
+- **CI Specialists**: Prometheus CI for strategic insights
 
 ### Example Integration
 

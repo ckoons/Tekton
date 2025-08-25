@@ -32,7 +32,7 @@ Tekton Core Component
 ├── Numa/CI Services
 │   ├── Assignment & Lifecycle
 │   ├── Memory Persistence
-│   └── Inter-AI Communication
+│   └── Inter-CI Communication
 ├── Knowledge Graph
 │   ├── Code Analysis
 │   ├── Pattern Recognition

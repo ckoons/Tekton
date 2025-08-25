@@ -6,7 +6,7 @@ Hello Claude! You'll be implementing the CI Platform Integration Sprint for Tekt
 
 ## Project Background
 
-Tekton is a Multi-AI Engineering Platform with these goals:
+Tekton is a Multi-CI Engineering Platform with these goals:
 - AI-enabled software engineering
 - CI cognition research with computational spectral analysis
 - Structured memory and latent-space exploration
@@ -18,7 +18,7 @@ The platform consists of multiple components (Rhetor, Apollo, Athena, etc.) that
 
 You'll be implementing:
 
-1. **AI Management Utilities** - Tools to launch, monitor, and terminate CI processes
+1. **CI Management Utilities** - Tools to launch, monitor, and terminate CI processes
 2. **Numa Component** - Platform-wide CI mentor with access to all components
 3. **Noesis Component** - Discovery CI (placeholder for future sprint)
 4. **Integration Updates** - Modify existing tools to manage CI lifecycle
@@ -145,7 +145,7 @@ Your implementation is complete when:
 4. ✓ Numa launches after components, terminates first
 5. ✓ Health monitoring detects unresponsive CIs
 6. ✓ Team chat works with multiple CI participants
-7. ✓ All changes respect TEKTON_REGISTER_AI flag
+7. ✓ All changes respect TEKTON_REGISTER_CI flag
 
 ## Getting Started
 

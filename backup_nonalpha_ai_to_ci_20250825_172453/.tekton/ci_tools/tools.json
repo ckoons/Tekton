@@ -1,0 +1,70 @@
+{
+  "claude-code": {
+    "display_name": "Claude Code",
+    "type": "tool",
+    "port": "auto",
+    "description": "Claude AI coding assistant",
+    "executable": "claude-code",
+    "launch_args": [
+      "--no-sandbox",
+      "--enable-stdio-bridge"
+    ],
+    "health_check": "version",
+    "capabilities": {
+      "code_analysis": true,
+      "code_generation": true,
+      "refactoring": true,
+      "multi_file": true,
+      "project_context": true,
+      "debugging": true,
+      "testing": true
+    },
+    "environment": {
+      "CLAUDE_CODE_MODE": "socket"
+    }
+  },
+  "cursor": {
+    "display_name": "Cursor",
+    "type": "tool",
+    "port": "auto",
+    "description": "AI-powered code editor",
+    "executable": "cursor",
+    "launch_args": [
+      "--cli-mode",
+      "--socket-bridge"
+    ],
+    "health_check": "status",
+    "capabilities": {
+      "code_editing": true,
+      "ai_completion": true,
+      "chat_interface": true,
+      "terminal_integration": true,
+      "file_management": true
+    },
+    "environment": {
+      "CURSOR_HEADLESS": "true"
+    }
+  },
+  "continue": {
+    "display_name": "Continue",
+    "type": "tool",
+    "port": "auto",
+    "description": "Open-source AI code assistant",
+    "executable": "continue",
+    "launch_args": [
+      "--headless",
+      "--socket-mode"
+    ],
+    "health_check": "ping",
+    "capabilities": {
+      "code_assistance": true,
+      "context_aware": true,
+      "multi_model": true,
+      "custom_models": true,
+      "embeddings": true
+    },
+    "environment": {
+      "CONTINUE_HEADLESS": "true"
+    }
+  }
+}

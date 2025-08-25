@@ -172,7 +172,7 @@ eventSource.addEventListener('progress', (event) => {
 
 eventSource.addEventListener('chunk', (event) => {
     const data = JSON.parse(event.data);
-    console.log(`AI Response: ${data.content.content}`);
+    console.log(`CI Response: ${data.content.content}`);
 });
 
 eventSource.addEventListener('complete', (event) => {

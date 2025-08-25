@@ -310,7 +310,7 @@ if __name__ == "__main__":
 ## Testing Plan
 
 ### Unit Tests
-1. Command detection (AI vs shell)
+1. Command detection (CI vs shell)
 2. Shell command execution
 3. Environment preservation
 4. Directory tracking

@@ -110,11 +110,11 @@ Expanded sprint with four implementation phases:
 ## Key Stakeholders
 
 - **Casey**: Human-in-the-loop project lead
-- **AI Community**: Companion Intelligences using aish
+- **CI Community**: Companion Intelligences using aish
 - **Human Users**: Developers working with Tekton
 
 ## References
 
 - [aish command source](/Users/cskoons/projects/github/Tekton/shared/aish/aish)
-- [AI Training Documentation](/Users/cskoons/projects/github/Tekton/MetaData/TektonDocumentation/AITraining/)
+- [CI Training Documentation](/Users/cskoons/projects/github/Tekton/MetaData/TektonDocumentation/AITraining/)
 - [Sprint Process Documentation](/Users/cskoons/projects/github/Tekton/MetaData/DevelopmentSprints/README.md)

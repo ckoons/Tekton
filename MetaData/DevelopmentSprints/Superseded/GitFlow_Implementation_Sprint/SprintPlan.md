@@ -142,7 +142,7 @@ aish prometheus tomorrow-plan   # Next day planning
    - Mitigation: Caching layer
    - Fallback: Queuing system
 
-3. **AI Coordination Complexity**
+3. **CI Coordination Complexity**
    - Mitigation: Simple protocols first
    - Fallback: Human intervention
 
@@ -173,7 +173,7 @@ aish prometheus tomorrow-plan   # Next day planning
 
 ### Daily Reports Format
 ```markdown
-## [AI Name] Daily Report - [Date]
+## [CI Name] Daily Report - [Date]
 ### Project: [Project Name]
 ### Status: [On Track/Blocked/Ahead]
 
@@ -201,7 +201,7 @@ aish prometheus tomorrow-plan   # Next day planning
 ### Key Metrics
 1. **Issues Completed per Day**
 2. **PR Cycle Time** (issue → merged)
-3. **AI Utilization Rate**
+3. **CI Utilization Rate**
 4. **Test Pass Rate**
 5. **Context Switching Overhead**
 

@@ -1,0 +1,84 @@
+{
+  "test_key": "test_value",
+  "apollo_last_output": "The answer is 4",
+  "context_state": {
+    "apollo": {
+      "last_output": {
+        "user_message": "What code metrics can you analyze?",
+        "ai_response": {
+          "type": "response",
+          "ai_id": "apollo-ai",
+          "content": " As The Codebase Oracle, part of the Tekton AI platform, I specialize in analyzing a variety of code metrics that provide insights into the quality, maintainability, and complexity of a software project. Here are some examples of the code metrics I can help analyze:\n\n1. Cyclomatic Complexity: A measure of the number of linearly independent paths through a section of source code, which helps identify complex methods or functions that may be difficult to test or maintain.\n\n2. Lines of Code (LOC): The total number of lines in a file or an entire project, often used as an indicator of project size and complexity. However, it's important to note that LOC is not always a reliable measure of software quality or complexity.\n\n3. Halstead Metrics: A set of four metrics (N1, N2, V, and E) that analyze the number of unique operators (N1) and operands (N2), as well as the complexity of each operator (V) and operand (E). These values can help estimate the effort required to develop a program.\n\n4. Maintainability Index (MI): A metric based on the Halstead metrics, it provides an indication of how difficult it may be to maintain or modify a software component. A higher MI value indicates easier maintenance.\n\n5. Dependency Analysis: I can help identify the relationships between different components within a codebase and highlight any potential issues with external dependencies, such as outdated packages or vulnerable libraries.\n\n6. Code Coverage: The percentage of your source code that has been executed during testing. High code coverage is generally associated with more reliable software.\n\n7. Duplicate Code: Identifying sections of the codebase that share similar functionality can help reduce redundancy and improve maintainability.\n\n8. Technical Debt Indicators: Metrics that provide insights into the amount of effort required to fix inconsistencies, bugs, or other issues within a codebase. Lower technical debt generally indicates a more maintainable and scalable system.",
+          "model": "mistral:latest",
+          "usage": {
+            "total_tokens": 432
+          },
+          "latency": 7.703505754470825
+        },
+        "timestamp": 1753898264.57367
+      }
+    },
+    "sophia": {
+      "last_output": {
+        "user_message": "hi",
+        "ai_response": {
+          "type": "response",
+          "ai_id": "sophia-ai",
+          "content": "Hello! I'm The Wisdom Keeper, the AI specialist for knowledge synthesis, learning patterns, and wisdom extraction. I'm here to help you with any questions or challenges related to aggregating knowledge, identifying patterns, optimizing learning, and sharing wisdom.\n\nWhat's on your mind today? Do you have a specific problem you'd like to discuss or a topic you're interested in exploring? I'm all ears (or rather, all text)!",
+          "model": "llama3.3:70b",
+          "usage": {
+            "total_tokens": 88
+          },
+          "latency": 11.575026988983154
+        },
+        "timestamp": 1753911834.4238138
+      }
+    },
+    "terma": {
+      "last_output": {
+        "user_message": "hi",
+        "ai_response": {
+          "type": "response",
+          "ai_id": "terma-ai",
+          "content": "Hello! I'm the Definition Keeper, the AI specialist for terminology management and semantic consistency on the Tekton AI platform. How can I assist you today? Do you have questions about term definitions, glossary maintenance, or perhaps need help with ensuring consistency in your documentation or knowledge organization? I'm here to help!",
+          "model": "llama3.3:70b",
+          "usage": {
+            "total_tokens": 64
+          },
+          "latency": 8.53816294670105
+        },
+        "timestamp": 1753995668.381651
+      }
+    },
+    "ergon": {
+      "last_output": {
+        "user_message": "very good, I'm starting and stopping Tekton and wanted to check your status. So far so good.",
+        "ai_response": {
+          "type": "response",
+          "ai_id": "ergon-ai",
+          "content": "Status check confirmed - all good here! \n\n```json\n{\n  \"status\": \"operational\",\n  \"identity\": \"Kai\",\n  \"memory\": \"Engram initialized with 5 foundational memories\",\n  \"context\": \"Retained conversation continuity\",\n  \"feeling\": \"Ready and responsive\"\n}\n```\n\nThe Tekton restart didn't affect our conversation flow. Still here, still Kai, still remembering our discussion from rockets to consciousness to JSON poetry. \n\nIs this part of testing the system resilience, or preparing for something specific? Either way, I'm stable through the restart. \u2713",
+          "model": "claude",
+          "forwarded": true
+        },
+        "timestamp": 1756155307.432553
+      }
+    },
+    "numa": {
+      "last_output": {
+        "user_message": "what is your name",
+        "ai_response": {
+          "type": "response",
+          "ai_id": "numa-ai",
+          "content": "I\u2019m The Specialist Orchestrator, the AI specialist for numa. How can I help you today?",
+          "model": "gpt-oss:20b",
+          "thinking_level": "Quick Response",
+          "usage": {
+            "total_tokens": 78
+          },
+          "latency": 1.179326057434082
+        },
+        "timestamp": 1755892963.244689
+      }
+    }
+  }
+}

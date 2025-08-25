@@ -1452,7 +1452,7 @@ async def activate_ai_specialist(
         return {
             "success": True,
             "activation_result": activation_result,
-            "message": f"AI specialist {specialist_id} activated successfully"
+            "message": f"CI specialist {specialist_id} activated successfully"
         }
     except Exception as e:
         return {
@@ -1708,7 +1708,7 @@ async def get_specialist_conversation_history(
                 "content": f"Sample message {i+1} in conversation",
                 "timestamp": (datetime.now() - timedelta(minutes=i*5)).isoformat(),
                 "context": {
-                    "topic": "AI orchestration",
+                    "topic": "CI orchestration",
                     "task_type": "discussion"
                 }
             })
@@ -1822,7 +1822,7 @@ async def configure_ai_orchestration(
             "changes": changes,
             "apply_immediately": apply_immediately,
             "effective_time": datetime.now().isoformat() if apply_immediately else "on_next_restart",
-            "message": f"AI orchestration configuration updated successfully"
+            "message": f"CI orchestration configuration updated successfully"
         }
     except Exception as e:
         return {

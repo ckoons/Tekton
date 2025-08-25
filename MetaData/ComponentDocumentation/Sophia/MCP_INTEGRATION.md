@@ -1,12 +1,12 @@
 # Sophia MCP Integration
 
-This document describes the Model Context Protocol (MCP) integration for Sophia, Tekton's ML/AI analysis and continuous improvement component.
+This document describes the Model Context Protocol (MCP) integration for Sophia, Tekton's ML/CI analysis and continuous improvement component.
 
 ## Overview
 
 Sophia's MCP integration provides 16 specialized tools organized into 3 core capabilities:
 
-- **ML/AI Analysis Tools** (6 tools): Component performance analysis, pattern extraction, optimization prediction, experiment design, ecosystem trend analysis, and system evolution forecasting
+- **ML/CI Analysis Tools** (6 tools): Component performance analysis, pattern extraction, optimization prediction, experiment design, ecosystem trend analysis, and system evolution forecasting
 - **Research Management Tools** (6 tools): Research project creation, experiment lifecycle management, optimization validation, recommendation generation, progress tracking, and research synthesis
 - **Intelligence Measurement Tools** (4 tools): Component intelligence measurement, intelligence profile comparison, intelligence evolution tracking, and insight generation
 
@@ -30,7 +30,7 @@ Sophia uses the FastMCP framework for MCP integration, providing:
 
 ## Tool Categories
 
-### ML/AI Analysis Tools (6 tools)
+### ML/CI Analysis Tools (6 tools)
 
 #### 1. analyze_component_performance
 Analyzes performance characteristics of Tekton components using ML techniques.
@@ -309,7 +309,7 @@ Each capability can be configured in `sophia/core/mcp/capabilities.py`:
 ```python
 class MLAnalysisCapability(MCPCapability):
     name = "ml_analysis"
-    description = "Perform ML/AI analysis and predictive modeling"
+    description = "Perform ML/CI analysis and predictive modeling"
     version = "1.0.0"
     
     @classmethod

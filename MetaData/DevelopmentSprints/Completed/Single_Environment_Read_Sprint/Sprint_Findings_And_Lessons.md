@@ -4,7 +4,7 @@
 
 ### What Went Wrong
 
-1. **AI Over-Engineering**
+1. **CI Over-Engineering**
    - Created a complex 500+ line migration script when simple `sed` would have worked
    - Made incorrect assumptions about which os.environ uses should be preserved
    - Failed to read and understand existing code patterns
