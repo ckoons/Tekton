@@ -478,9 +478,9 @@ class TerminalLauncher:
         self.logger.info(f"Terminal name: {config.name}")
         self.logger.info(f"Terminal endpoint: {config.env['TERMA_ENDPOINT']}")
         
-        # Always include TEKTON_ROOT and TEKTON_AI_TRAINING
+        # Always include TEKTON_ROOT and TEKTON_CI_TRAINING
         config.env["TEKTON_ROOT"] = TektonEnviron.get("TEKTON_ROOT", "/Users/cskoons/projects/github/Tekton")
-        config.env["TEKTON_AI_TRAINING"] = os.path.join(config.env["TEKTON_ROOT"], "MetaData/TektonDocumentation/AITraining")
+        config.env["TEKTON_CI_TRAINING"] = os.path.join(config.env["TEKTON_ROOT"], "MetaData/TektonDocumentation/CITraining")
         self.logger.info(f"TEKTON_ROOT: {config.env['TEKTON_ROOT']}")
         
         # Auto-detect terminal if not specified
