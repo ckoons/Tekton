@@ -4,7 +4,7 @@
 
 This document outlines the high-level plan for the ByeByeNumPy Development Sprint. This sprint focuses on eliminating NumPy/SciPy dependencies from Tekton components to resolve compatibility issues and improve system reliability.
 
-Tekton is an intelligent orchestration system that coordinates multiple AI models and resources to efficiently solve complex software engineering problems. This Development Sprint focuses on dependency optimization and compatibility resolution across core components.
+Tekton is an intelligent orchestration system that coordinates multiple CI models and resources to efficiently solve complex software engineering problems. This Development Sprint focuses on dependency optimization and compatibility resolution across core components.
 
 ## Sprint Goals
 

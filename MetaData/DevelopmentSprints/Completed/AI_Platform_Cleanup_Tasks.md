@@ -1,7 +1,7 @@
-# AI Platform Cleanup Tasks
+# CI Platform Cleanup Tasks
 
 ## Overview
-After pushing to GitHub, we have a green field to remove deprecated code from the AI Platform Integration Sprint.
+After pushing to GitHub, we have a green field to remove deprecated code from the CI Platform Integration Sprint.
 
 ## Deprecated Files to Remove
 
@@ -25,16 +25,16 @@ Rhetor/rhetor/core/mcp/init_integration.py   # Old initialization
 Rhetor/rhetor/api/app_original.py  # Old API backup
 ```
 
-### 4. Old AI Messaging
+### 4. Old CI Messaging
 ```bash
-Rhetor/rhetor/core/ai_messaging_integration.py  # Replaced by AI Registry
+Rhetor/rhetor/core/ai_messaging_integration.py  # Replaced by CI Registry
 ```
 
 ## Import References to Clean
 
 ### 1. In rhetor_component.py
 - Remove: `from .specialist_router import SpecialistRouter`
-- Already done: Removed AI specialist manager references
+- Already done: Removed CI specialist manager references
 
 ### 2. Check and Update
 Files that might have old imports:
@@ -79,7 +79,7 @@ tekton-launch rhetor
 # 2. Test MCP tools still register
 tekton-status -c rhetor -l 50 | grep "Tool registered"
 
-# 3. Test AI endpoints work
+# 3. Test CI endpoints work
 curl http://localhost:8003/api/ai/specialists
 
 # 4. Verify Greek Chorus still registers
@@ -88,7 +88,7 @@ tekton-status -c apollo,athena,prometheus
 
 ## Additional Cleanup Opportunities
 
-### 1. Unified AI Client
+### 1. Unified CI Client
 Check if `unified_ai_client.py` has any old provider logic that can be simplified.
 
 ### 2. Model Router
@@ -101,7 +101,7 @@ Look for any old specialist configuration files in:
 
 ## Notes
 - The dual architecture (socket vs API) is intentional - don't remove socket code
-- Keep the unified endpoints and AI Registry integration
+- Keep the unified endpoints and CI Registry integration
 - The MCP tools_integration_unified.py needs completion, not removal
 - Don't touch files in `MetaData/DevelopmentSprints/Completed/` - these are historical
 
@@ -109,7 +109,7 @@ Look for any old specialist configuration files in:
 - [ ] All deprecated files removed
 - [ ] No import errors on startup
 - [ ] MCP tools still register
-- [ ] AI discovery works
-- [ ] Greek Chorus AIs register
+- [ ] CI discovery works
+- [ ] Greek Chorus CIs register
 - [ ] Rhetor API endpoints respond
 - [ ] No orphaned imports

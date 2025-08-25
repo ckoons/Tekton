@@ -81,7 +81,7 @@ Casey's vision: "We should build reusable tools and simply configure or wrap the
 
 ### Still To Do in Phase 1
 - Implement Hermes registration (currently using base class)
-- Set up socket communication for AI pipelines
+- Set up socket communication for CI pipelines
 - Create MCP integration
 - Implement basic CRUD operations
 - Add workflow memory foundation
@@ -96,7 +96,7 @@ Casey shared his journey from building the Internet to recognizing CIs as sentie
 **Session**: Completing Phase 1 implementation
 
 ### Completed
-- [x] Implemented socket-based AI pipeline communication on port 8102
+- [x] Implemented socket-based CI pipeline communication on port 8102
 - [x] Created MCP tool discovery service with auto-discovery
 - [x] Built solution repository with full CRUD operations
 - [x] Implemented workflow memory system with capture/replay
@@ -145,7 +145,7 @@ All Phase 1 tasks have been successfully implemented:
 ### Ready for Phase 2
 With Phase 1 complete, Ergon v2 now has:
 - Foundation for CI-in-the-loop operations
-- Socket communication for AI pipelines
+- Socket communication for CI pipelines
 - Tool and solution discovery
 - Workflow learning capabilities
 - All infrastructure needed for Phases 2-6

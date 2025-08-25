@@ -17,7 +17,7 @@ We've successfully laid the semantic tagging foundation for the entire Tekton UI
 ### 2. Rhetor Integration Success ✅
 - Fixed API routing (added /api/ai/* proxy to Rhetor)
 - Fixed specialist endpoint handlers
-- Rhetor chat now works with proper AI specialist
+- Rhetor chat now works with proper CI specialist
 - "Hello! I'm Rhetor's orchestrator..." confirms success
 
 ### 3. Documentation Infrastructure ✅

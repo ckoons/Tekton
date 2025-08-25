@@ -2,7 +2,7 @@
 
 ## Overview
 
-Add minimal GitFlow automation to support AI terminals working independently. This phase is optional and should only be implemented if the manual workflow from Phases 1-2 proves successful but needs efficiency improvements.
+Add minimal GitFlow automation to support CI terminals working independently. This phase is optional and should only be implemented if the manual workflow from Phases 1-2 proves successful but needs efficiency improvements.
 
 ## Timeline: Week 4 (If Desired)
 
@@ -49,14 +49,14 @@ curl -X POST http://localhost:8017/api/v1/gitflow/branch-created \
 echo "Created branch: $BRANCH_NAME"
 ```
 
-### Day 3-4: AI Terminal Prompts
+### Day 3-4: CI Terminal Prompts
 
 **Add GitFlow Prompts to aish**
 ```python
 # In aish terminal, add GitFlow awareness
 
 class GitFlowAssistant:
-    """Helps AI terminals follow GitFlow"""
+    """Helps CI terminals follow GitFlow"""
     
     def suggest_next_action(self, project_state):
         """Suggest next GitFlow step based on state"""
@@ -79,7 +79,7 @@ class GitFlowAssistant:
 
 **Integration with Terminal Sessions**
 ```bash
-# When AI starts work
+# When CI starts work
 aish tekton-core assign-issue 123 alice
 
 # tekton-core responds with
@@ -144,14 +144,14 @@ class IssueLifecycle:
 ### Day 7: Testing & Documentation
 
 **Test Scenarios**
-1. AI completes full GitFlow cycle
-2. Multiple AIs work on different features
+1. CI completes full GitFlow cycle
+2. Multiple CIs work on different features
 3. Handling of merge conflicts
 4. Recovery from test failures
 
-**Documentation for AIs**
+**Documentation for CIs**
 ```markdown
-# GitFlow Quick Reference for AI Terminals
+# GitFlow Quick Reference for CI Terminals
 
 ## Starting Work
 1. Get assigned an issue via tekton-core
@@ -212,15 +212,15 @@ gitflow:
 
 ### If Implemented
 - [ ] Helper scripts work reliably
-- [ ] AI terminals can complete full GitFlow
-- [ ] Clear prompts guide AI actions
+- [ ] CI terminals can complete full GitFlow
+- [ ] Clear prompts guide CI actions
 - [ ] No automation surprises
 - [ ] Human retains final control
 
 ### Decision Point
 Only implement Phase 3 if:
 1. Manual workflow is proven but tedious
-2. AIs request more structure
+2. CIs request more structure
 3. Clear patterns emerge from Phase 1-2
 4. Time and energy remain
 
@@ -228,7 +228,7 @@ Only implement Phase 3 if:
 
 If manual workflow is smooth enough:
 - Document best practices from Phase 1-2
-- Let AIs develop their own patterns
+- Let CIs develop their own patterns
 - Keep full human control
 - Save development time
 

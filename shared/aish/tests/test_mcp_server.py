@@ -70,7 +70,7 @@ class TestMCPServer:
             assert tool in tools, f"Missing tool: {tool}"
     
     def test_list_ais_endpoint(self):
-        """Test listing available AIs"""
+        """Test listing available CIs"""
         response = requests.post(
             f'{MCP_BASE_URL}/tools/list-ais',
             json={}
@@ -82,7 +82,7 @@ class TestMCPServer:
         assert isinstance(data['ais'], list)
         assert len(data['ais']) > 0
         
-        # Check some expected AIs
+        # Check some expected CIs
         ai_names = [ai['name'] for ai in data['ais']]
         expected_ais = ['numa', 'apollo', 'athena', 'hermes']
         for ai in expected_ais:
@@ -145,7 +145,7 @@ class TestMCPServer:
         assert 'responses' in data
         assert isinstance(data['responses'], list)
         
-        # Should have responses from multiple AIs
+        # Should have responses from multiple CIs
         if len(data['responses']) > 0:
             # Check response format
             for resp in data['responses']:

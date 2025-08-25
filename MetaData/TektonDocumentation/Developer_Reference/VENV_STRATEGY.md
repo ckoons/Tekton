@@ -16,7 +16,7 @@ uv pip install -r shared/requirements/web.txt
 uv pip install tekton-core tekton-llm-client fastmcp
 ```
 
-### 2. AI Environment (`tekton-ai`) 
+### 2. CI Environment (`tekton-ai`) 
 For components using LLM integrations:
 ```bash
 # Location: ~/venvs/tekton-ai/

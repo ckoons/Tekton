@@ -52,14 +52,14 @@ def test_capabilities():
         return False
 
 def test_list_ais():
-    """Test list AIs endpoint"""
-    print("\n=== Testing List AIs ===")
+    """Test list CIs endpoint"""
+    print("\n=== Testing List CIs ===")
     try:
         resp = requests.post(f"{BASE_URL}/tools/list-ais", json={})
         print(f"Status: {resp.status_code}")
         data = resp.json()
         ais = data.get('ais', [])
-        print(f"Found {len(ais)} AIs:")
+        print(f"Found {len(ais)} CIs:")
         for ai in ais[:5]:  # Show first 5
             print(f"  - {ai['name']} ({ai['status']})")
         return resp.status_code == 200

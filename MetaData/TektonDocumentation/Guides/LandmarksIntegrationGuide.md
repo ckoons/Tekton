@@ -2,11 +2,11 @@
 
 ## Overview
 
-Landmarks are a code annotation system in Tekton that helps AI assistants understand and navigate codebases more effectively. They serve as semantic markers that highlight important architectural decisions, integration points, and key functionality within the code.
+Landmarks are a code annotation system in Tekton that helps CI assistants understand and navigate codebases more effectively. They serve as semantic markers that highlight important architectural decisions, integration points, and key functionality within the code.
 
 ## What are Landmarks?
 
-Landmarks are decorators or comments that mark significant points in code, creating a knowledge graph that AI systems can use to:
+Landmarks are decorators or comments that mark significant points in code, creating a knowledge graph that CI systems can use to:
 - Understand architectural decisions and their rationale
 - Navigate complex codebases efficiently
 - Identify integration points between components
@@ -289,12 +289,12 @@ This checks for:
 - Consistent naming
 - Orphaned landmarks
 
-## Integration with AI Systems
+## Integration with CI Systems
 
 Landmarks are automatically:
 - Indexed by Athena for knowledge graph construction
-- Used by AI specialists for code navigation
-- Included in AI context for better understanding
+- Used by CI specialists for code navigation
+- Included in CI context for better understanding
 - Searchable through specialized queries
 
 AI assistants can:

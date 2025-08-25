@@ -4,7 +4,7 @@
 
 This document outlines the high-level plan for the DevToolsComponentImprovement Development Sprint. It provides an overview of the goals, approach, and expected outcomes.
 
-Tekton is an intelligent orchestration system that coordinates multiple AI models and resources to efficiently solve complex software engineering problems. This Development Sprint focuses on improving the UI DevTools to better handle dynamically loaded components and leverage the semantic instrumentation already in place.
+Tekton is an intelligent orchestration system that coordinates multiple CI models and resources to efficiently solve complex software engineering problems. This Development Sprint focuses on improving the UI DevTools to better handle dynamically loaded components and leverage the semantic instrumentation already in place.
 
 ## Sprint Goals
 

@@ -22,7 +22,7 @@ List all available CI tools and their status.
   "tools": [
     {
       "name": "claude-code",
-      "description": "Claude AI coding assistant",
+      "description": "Claude CI coding assistant",
       "type": "claude-code",
       "port": 8400,
       "status": "running",

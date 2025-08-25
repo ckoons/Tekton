@@ -2,7 +2,7 @@
 
 ## Overview
 
-This implementation ensures that Rhetor and all its child AI processes can be cleanly terminated with a single command. When Rhetor spawns AI model processes, they all belong to the same process group, allowing `tekton-kill` to terminate them all at once.
+This implementation ensures that Rhetor and all its child CI processes can be cleanly terminated with a single command. When Rhetor spawns CI model processes, they all belong to the same process group, allowing `tekton-kill` to terminate them all at once.
 
 ## Components
 
@@ -17,7 +17,7 @@ Key features:
 ### 2. Process Manager (`rhetor/core/process_manager.py`)
 
 Python-side process management:
-- Tracks all spawned AI model processes
+- Tracks all spawned CI model processes
 - Ensures children stay in the same process group
 - Handles graceful shutdown when Rhetor receives signals
 - Provides process statistics and monitoring
@@ -25,7 +25,7 @@ Python-side process management:
 ### 3. Model Spawner (`rhetor/core/model_spawner.py`)
 
 Example implementation showing how to:
-- Spawn individual AI models as child processes
+- Spawn individual CI models as child processes
 - Create pools of models for load balancing
 - Pass environment variables and configuration
 - Monitor resource usage of child processes
@@ -42,7 +42,7 @@ Example implementation showing how to:
 # The PGID is stored in ~/.tekton/pids/rhetor.pgid
 ```
 
-### Spawning AI Models from Rhetor
+### Spawning CI Models from Rhetor
 
 ```python
 from rhetor.core.model_spawner import AIModelSpawner
@@ -63,7 +63,7 @@ codellama_pool = spawner.spawn_model_pool("codellama", count=3)
 When `tekton-kill` runs:
 1. It reads the PGID from `~/.tekton/pids/rhetor.pgid`
 2. Sends SIGTERM to the entire process group: `kill -TERM -$PGID`
-3. All processes (Rhetor + all AI models) receive the signal
+3. All processes (Rhetor + all CI models) receive the signal
 4. Rhetor's ProcessManager handles graceful shutdown of children
 5. If any processes don't terminate gracefully, they're force killed
 
@@ -71,7 +71,7 @@ When `tekton-kill` runs:
 
 1. **Clean Termination**: One signal terminates everything
 2. **No Orphans**: Child processes can't outlive Rhetor
-3. **Graceful Shutdown**: AI models get a chance to clean up
+3. **Graceful Shutdown**: CI models get a chance to clean up
 4. **Resource Tracking**: Monitor all spawned processes
 5. **Scalable**: Works whether Rhetor spawns 1 or 100 child processes
 

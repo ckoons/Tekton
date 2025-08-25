@@ -35,7 +35,7 @@ Layer 3: UI polish, error handling, performance optimization
 
 ### Pattern 2: The Skill-Task Matrix
 
-**Context**: Matching tasks to AI worker specialties
+**Context**: Matching tasks to CI worker specialties
 **Pattern**: Create a matrix of tasks vs. required skills
 
 **Implementation**:
@@ -86,7 +86,7 @@ Low Priority: UI styling (low risk, well-understood)
 
 ### Pattern 4: The Gradual Handoff
 
-**Context**: Assigning complex tasks to AI workers
+**Context**: Assigning complex tasks to CI workers
 **Pattern**: Break complex tasks into progressive phases
 
 **Implementation**:
@@ -106,7 +106,7 @@ Phase 4: Integration testing, documentation
 ```
 
 **Benefits**:
-- Manageable complexity for AI workers
+- Manageable complexity for CI workers
 - Clear milestone checkpoints
 - Opportunity for course correction
 - Reduced risk of misunderstanding
@@ -114,7 +114,7 @@ Phase 4: Integration testing, documentation
 ### Pattern 5: The Buddy System
 
 **Context**: Coordinating interdependent tasks
-**Pattern**: Assign related tasks to AI workers who can collaborate
+**Pattern**: Assign related tasks to CI workers who can collaborate
 
 **Implementation**:
 ```
@@ -138,7 +138,7 @@ Coordination: Shared API contract document, daily sync
 
 ### Pattern 6: The Expertise Ladder
 
-**Context**: Developing AI worker skills over time
+**Context**: Developing CI worker skills over time
 **Pattern**: Gradually increase task complexity based on demonstrated competence
 
 **Implementation**:
@@ -337,7 +337,7 @@ Application: Bias towards performance in future similar conflicts
 
 **Implementation**:
 ```
-Gate 1: Code Review (peer AI review)
+Gate 1: Code Review (peer CI review)
 Gate 2: Automated Testing (unit, integration, performance)
 Gate 3: Integration Testing (system-wide compatibility)
 Gate 4: Documentation Review (completeness, accuracy)
@@ -359,7 +359,7 @@ Documentation: Complete, accurate, up-to-date
 
 ### Pattern 14: The Continuous Learning Assessment
 
-**Context**: Evaluating and improving AI worker capabilities
+**Context**: Evaluating and improving CI worker capabilities
 **Pattern**: Regular assessment of skills and growth areas
 
 **Implementation**:
@@ -409,8 +409,8 @@ Decision: Adopt, modify, or abandon based on results
 
 **Example Experiment**:
 ```
-Hypothesis: Pair programming between AIs will reduce conflicts
-Design: Two AI workers collaborate on next feature
+Hypothesis: Pair programming between CIs will reduce conflicts
+Design: Two CI workers collaborate on next feature
 Execution: Track conflicts, quality, and completion time
 Analysis: 60% fewer conflicts, 15% longer completion
 Decision: Adopt for complex/high-risk features

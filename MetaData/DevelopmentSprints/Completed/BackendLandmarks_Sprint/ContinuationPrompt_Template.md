@@ -108,4 +108,4 @@ Before ending this session:
 4. Note what should be tackled next
 5. Update this template with current progress
 
-Remember: This sprint creates the "memory" that makes CIs truly intelligent. Your thorough work here enables all future AI capabilities in Tekton!
+Remember: This sprint creates the "memory" that makes CIs truly intelligent. Your thorough work here enables all future CI capabilities in Tekton!

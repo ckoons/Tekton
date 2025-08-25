@@ -1,28 +1,28 @@
-# Rhetor AI Integration Sprint - Sprint Plan
+# Rhetor CI Integration Sprint - Sprint Plan
 
 ## Overview
 
-This document outlines the high-level plan for the Rhetor AI Integration Development Sprint. It provides an overview of the goals, approach, and expected outcomes.
+This document outlines the high-level plan for the Rhetor CI Integration Development Sprint. It provides an overview of the goals, approach, and expected outcomes.
 
-Tekton is an intelligent orchestration system that coordinates multiple AI models and resources to efficiently solve complex software engineering problems. This Development Sprint focuses on extending Rhetor to manage dedicated AI instances for each Tekton component and integrating these AIs with Hephaestus UI chat interfaces.
+Tekton is an intelligent orchestration system that coordinates multiple CI models and resources to efficiently solve complex software engineering problems. This Development Sprint focuses on extending Rhetor to manage dedicated CI instances for each Tekton component and integrating these CIs with Hephaestus UI chat interfaces.
 
 ## Sprint Goals
 
 The primary goals of this sprint are:
 
-1. **Component AI Management**: Implement dedicated AI instances for each Tekton component with intelligent model selection and assignment
+1. **Component CI Management**: Implement dedicated CI instances for each Tekton component with intelligent model selection and assignment
 2. **Prompt Engineering Pipeline**: Create stdin/stdout interception for transparent prompt enhancement and response processing
-3. **Hephaestus Integration**: Enable component-specific chat interfaces with AI personality and context management
-4. **Team Chat Moderation**: Implement Rhetor-moderated team chat where all component AIs can communicate with the human-in-the-loop
+3. **Hephaestus Integration**: Enable component-specific chat interfaces with CI personality and context management
+4. **Team Chat Moderation**: Implement Rhetor-moderated team chat where all component CIs can communicate with the human-in-the-loop
 
 ## Business Value
 
 This sprint delivers value by:
 
-- **Specialized AI Assistance**: Each component gets an AI optimized for its specific domain and tasks
+- **Specialized CI Assistance**: Each component gets an CI optimized for its specific domain and tasks
 - **Improved User Experience**: Natural, context-aware conversations with component-specific knowledge
 - **Resource Optimization**: Intelligent model selection based on task complexity and budget constraints
-- **Enhanced Collaboration**: Team chat enables cross-component AI collaboration with human oversight
+- **Enhanced Collaboration**: Team chat enables cross-component CI collaboration with human oversight
 
 ## Current State Assessment
 
@@ -45,13 +45,13 @@ Hephaestus UI provides:
 
 - All components share the same global LLM connection without specialization
 - No component-specific prompt engineering or context management
-- Limited AI personality differentiation between components
-- No cross-component AI communication channel
+- Limited CI personality differentiation between components
+- No cross-component CI communication channel
 - Manual model selection rather than intelligent assignment
 
 ## Proposed Approach
 
-We will extend Rhetor with a Component AI Manager that creates and manages dedicated AI instances for each Tekton component. These AIs will have:
+We will extend Rhetor with a Component CI Manager that creates and manages dedicated CI instances for each Tekton component. These CIs will have:
 - Component-specific model assignments based on task requirements
 - Transparent prompt engineering through filter chains
 - Persistent context management per component
@@ -61,13 +61,13 @@ We will extend Rhetor with a Component AI Manager that creates and manages dedic
 
 - **Rhetor**: New ComponentAIManager, filter system, enhanced WebSocket protocol
 - **Hephaestus**: Updated chat interfaces to use component-specific endpoints
-- **All Tekton Components**: Will receive dedicated AI assistants through their chat interfaces
+- **All Tekton Components**: Will receive dedicated CI assistants through their chat interfaces
 
 ### Technical Approach
 
-1. **Component AI Registry**: Create AI instances with model configurations optimized for each component's domain
+1. **Component CI Registry**: Create CI instances with model configurations optimized for each component's domain
 2. **Filter Chain Architecture**: Implement stdin/stdout filters for prompt engineering and response processing
-3. **Enhanced Protocol**: Extend WebSocket protocol to support component-specific AI routing
+3. **Enhanced Protocol**: Extend WebSocket protocol to support component-specific CI routing
 4. **Team Chat Channel**: Create a moderated channel for AI-to-AI and AI-to-human communication
 
 ## Code Quality Requirements
@@ -85,7 +85,7 @@ All code produced in this sprint **MUST** follow the [Debug Instrumentation Guid
 
 Code must be documented according to the following guidelines:
 
-- Component AI configurations with rationale for model selection
+- Component CI configurations with rationale for model selection
 - Filter chain documentation with examples
 - API contracts for new WebSocket message types
 - Integration guide for component developers
@@ -97,16 +97,16 @@ The implementation must include appropriate tests:
 - Unit tests for ComponentAIManager and filter chains
 - Integration tests for WebSocket protocol extensions
 - End-to-end tests for component chat interactions
-- Performance tests for concurrent AI instances
+- Performance tests for concurrent CI instances
 
 ## Out of Scope
 
 The following items are explicitly out of scope for this sprint:
 
 - Custom model fine-tuning or training
-- Voice or multimodal AI capabilities
-- External AI service integrations beyond current providers
-- Autonomous AI actions without human approval
+- Voice or multimodal CI capabilities
+- External CI service integrations beyond current providers
+- Autonomous CI actions without human approval
 
 ## Dependencies
 
@@ -121,11 +121,11 @@ This sprint has the following dependencies:
 
 This sprint is planned to be completed in 4 phases:
 
-### Phase 1: Component AI Management ✅ COMPLETED
+### Phase 1: Component CI Management ✅ COMPLETED
 - **Duration**: 2-3 days (Actual: 2 days)
 - **Focus**: Implement ComponentAIManager and model assignment logic
 - **Key Deliverables**: 
-  - ✅ ComponentAIManager class with AI instance creation
+  - ✅ ComponentAIManager class with CI instance creation
   - ✅ Model selection logic for each component
   - ✅ Basic filter chain infrastructure
 
@@ -139,25 +139,25 @@ This sprint is planned to be completed in 4 phases:
 
 ### Phase 3: MCP Tools Integration ✅ COMPLETED
 - **Duration**: 2-3 days (Actual: 3 days)
-- **Focus**: Create MCP tools for AI orchestration and integrate with live components
+- **Focus**: Create MCP tools for CI orchestration and integrate with live components
 - **Key Deliverables**:
-  - ✅ 24 MCP tools for model management, prompt engineering, context optimization, and AI orchestration
+  - ✅ 24 MCP tools for model management, prompt engineering, context optimization, and CI orchestration
   - ✅ Live integration with AISpecialistManager and AIMessagingIntegration
   - ✅ FastMCP server integration with proper coroutine handling
   - ✅ Cross-component messaging via Hermes
 
 ### Phase 4A: Real-Time Streaming Support ✅ COMPLETED
 - **Duration**: 1 day (Actual: 1 day)
-- **Focus**: Implement SSE streaming for real-time AI interactions
+- **Focus**: Implement SSE streaming for real-time CI interactions
 - **Key Deliverables**:
   - ✅ Server-Sent Events (SSE) endpoint at `/api/mcp/v2/stream`
   - ✅ Streaming-enabled MCP tools (SendMessageToSpecialistStream, OrchestrateTeamChatStream)
-  - ✅ Progress indicators for all AI orchestration tools
+  - ✅ Progress indicators for all CI orchestration tools
   - ✅ Client documentation and test scripts
 
 ### Phase 4B: Dynamic Specialist Creation ✅ COMPLETED
 - **Duration**: 1-2 days (Actual: 1 day)
-- **Focus**: Enable runtime creation and management of AI specialists
+- **Focus**: Enable runtime creation and management of CI specialists
 - **Key Deliverables**:
   - ✅ 8 pre-defined specialist templates (7 technical, 1 analytical)
   - ✅ 6 dynamic specialist MCP tools (List, Create, Clone, Modify, Deactivate, GetMetrics)
@@ -179,8 +179,8 @@ This sprint is planned to be completed in 4 phases:
 
 This sprint will be considered successful if:
 
-- Each Tekton component has a dedicated AI assistant accessible through its chat interface
-- Component AIs demonstrate specialized knowledge and behavior for their domains
+- Each Tekton component has a dedicated CI assistant accessible through its chat interface
+- Component CIs demonstrate specialized knowledge and behavior for their domains
 - Team chat enables effective AI-to-AI and AI-to-human communication
 - All code follows the Debug Instrumentation Guidelines
 - Documentation is complete with integration examples
@@ -190,8 +190,8 @@ This sprint will be considered successful if:
 ## Key Stakeholders
 
 - **Casey**: Human-in-the-loop project manager and Tekton architect
-- **Claude**: AI architect and implementation assistant
-- **Component Maintainers**: Will need to review AI assignments for their components
+- **Claude**: CI architect and implementation assistant
+- **Component Maintainers**: Will need to review CI assignments for their components
 
 ## References
 

@@ -3,12 +3,12 @@
 ## Overview
 Automated: Yes
 Autonomy Level: Co-Developer
-Bring [COMPONENT] up to current Tekton standards, remove technical debt, ensure real data in UI, and integrate with aish MCP for all AI communication.
+Bring [COMPONENT] up to current Tekton standards, remove technical debt, ensure real data in UI, and integrate with aish MCP for all CI communication.
 
 ## Goals
 1. **Standardize Code**: Follow all current patterns (TektonEnviron, no hardcoding)
 2. **Real UI Data**: Remove all mocks, connect to actual backend
-3. **MCP Integration**: Use aish MCP for AI communication
+3. **MCP Integration**: Use aish MCP for CI communication
 
 ## Phase 1: Assessment & Cleanup [0% Complete]
 
@@ -55,14 +55,14 @@ Bring [COMPONENT] up to current Tekton standards, remove technical debt, ensure 
 - [ ] Update API endpoints to standard format
 - [ ] Remove mock endpoints
 - [ ] Add proper error responses
-- [ ] Update to use aish MCP for AI calls
-- [ ] Remove direct HTTP AI calls
+- [ ] Update to use aish MCP for CI calls
+- [ ] Remove direct HTTP CI calls
 - [ ] Update API documentation
 - [ ] Verify all endpoints work
 
 ### Success Criteria
 - [ ] All endpoints return real data
-- [ ] AI communication through MCP
+- [ ] CI communication through MCP
 - [ ] API documentation current
 
 ### Blocked On

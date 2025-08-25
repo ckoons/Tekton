@@ -4,7 +4,7 @@
 
 This document records the key architectural decisions made for the GitHub Support Development Sprint. It captures the context, considered alternatives, rationale, and implementation guidelines for each significant decision.
 
-Tekton is an intelligent orchestration system that coordinates multiple AI models and resources to efficiently solve complex software engineering problems. This sprint focuses on enhancing Tekton's integration with GitHub, particularly for managing branches across multiple components during Development Sprints.
+Tekton is an intelligent orchestration system that coordinates multiple CI models and resources to efficiently solve complex software engineering problems. This sprint focuses on enhancing Tekton's integration with GitHub, particularly for managing branches across multiple components during Development Sprints.
 
 ## Decision 1: Bash-based Implementation Approach
 

@@ -226,7 +226,7 @@ async def discovery_chat(request: DiscoveryChatRequest):
     request_schema={"message": "string", "from_component": "string", "to_components": "list", "broadcast": "bool"}
 )
 async def team_chat(request: TeamChatRequest):
-    """Handle team chat messages - communication with other AIs"""
+    """Handle team chat messages - communication with other CIs"""
     try:
         import httpx
         

@@ -85,7 +85,7 @@ Tag all dynamic status indicators:
 - [ ] Forms tagged with form and field attributes
 - [ ] Chat interface tagged (if present)
 - [ ] Status indicators tagged
-- [ ] AI specialist mapping added (if applicable)
+- [ ] CI specialist mapping added (if applicable)
 
 ### Global Elements:
 - [ ] Main navigation panel tagged
@@ -124,17 +124,17 @@ curl -X POST http://localhost:8088/api/mcp/v2/execute \
 ### When Modifying Existing UI:
 1. Preserve existing semantic tags
 2. Update state/status tags as needed
-3. Test AI navigation after changes
+3. Test CI navigation after changes
 
 ## Success Metrics
 - All major UI elements are tagged
-- AI can navigate to any component/feature
+- CI can navigate to any component/feature
 - UI DevTools can identify all interactive elements
 - Tags follow consistent conventions
 - Documentation stays current
 
 ## Next Steps After Tagging
-1. Test AI navigation with simple queries
+1. Test CI navigation with simple queries
 2. Update UI DevTools to leverage semantic tags
-3. Begin component AI integration using established patterns
+3. Begin component CI integration using established patterns
 4. Create automated tag validation tests

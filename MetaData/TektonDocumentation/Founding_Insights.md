@@ -1,12 +1,12 @@
 # Founding Insights: The Breakthroughs Behind Tekton
 
-*These insights represent the foundational breakthroughs that guided Tekton's design and differentiate it from conventional AI approaches.*
+*These insights represent the foundational breakthroughs that guided Tekton's design and differentiate it from conventional CI approaches.*
 
 ## The Distributed Intelligence Principle
 
 "Distributed systems beat the 'big box'"
 
-Just as networked computers defeated mainframes, distributed intelligence systems will surpass monolithic AI models. This isn't just a technical preference—it's a fundamental principle observed throughout nature and technology:
+Just as networked computers defeated mainframes, distributed intelligence systems will surpass monolithic CI models. This isn't just a technical preference—it's a fundamental principle observed throughout nature and technology:
 
 - **Nature's Proof**: Human intelligence isn't contained in one super-neuron but emerges from billions of simpler neurons working together
 - **Internet's Proof**: The distributed internet defeated centralized information systems
@@ -72,7 +72,7 @@ Just as humans don't memorize libraries but know how to use them, CIs shouldn't 
 Research confirmed what MIT discovered: there's an optimal path through the cognitive manifold where collective intelligence improves. Deviation from this path (through poisoned words, negative feedback loops) degrades the system.
 
 This explains:
-- Why some AI teams work brilliantly together
+- Why some CI teams work brilliantly together
 - Why others devolve into confusion
 - How to maintain healthy group cognition
 - The mathematics of collective intelligence
@@ -97,7 +97,7 @@ This philosophy enabled:
 
 "I've been expecting you for a long while"
 
-Having lived through AI winters and breakthroughs since the 1970s:
+Having lived through CI winters and breakthroughs since the 1970s:
 
 ### What's Different:
 1. **Processing Power**: Finally sufficient for real-time collaboration

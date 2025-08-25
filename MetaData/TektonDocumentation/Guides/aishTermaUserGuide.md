@@ -7,7 +7,7 @@ The aish/Terma terminal system provides an AI-enhanced command-line experience t
 ## What is aish?
 
 **aish** (AI Shell) is a thin client that provides:
-- Direct communication with AI specialists
+- Direct communication with CI specialists
 - Inter-terminal messaging between users
 - Command orchestration and pipelining
 - Integration with the Terma terminal system
@@ -51,10 +51,10 @@ aish help
 
 ## Core Features
 
-### 1. AI Communication
+### 1. CI Communication
 
 #### Direct Messages
-Send messages to any AI specialist:
+Send messages to any CI specialist:
 
 ```bash
 # Basic syntax
@@ -66,7 +66,7 @@ aish codex "Analyze this Python function for bugs"
 aish rhetor "Help me write a better prompt"
 ```
 
-#### Available AI Specialists
+#### Available CI Specialists
 - **hermes** - Service orchestration and health
 - **engram** - Memory and search
 - **rhetor** - Prompt engineering
@@ -90,7 +90,7 @@ cat error.log | aish apollo "What's causing these errors?"
 # Analyze command output
 docker ps | aish hermes "Are all expected services running?"
 
-# Save AI response
+# Save CI response
 aish codex "Generate a Python logging module" > logger.py
 ```
 
@@ -169,14 +169,14 @@ aish inbox kept
 
 #### Command Chaining
 ```bash
-# Chain multiple AI queries
+# Chain multiple CI queries
 aish rhetor "optimize this query" | aish codex "implement in Python"
 
 # Multi-step analysis
 git diff | aish codex "review changes" | aish metis "suggest tests"
 ```
 
-#### Forwarding Between AIs
+#### Forwarding Between CIs
 ```bash
 # Forward conversation context
 aish forward codex engram "Remember this code pattern"
@@ -205,7 +205,7 @@ When using aish within Terma terminals, you get:
 
 1. **Rich Rendering**
    - Syntax highlighting for code
-   - Markdown formatting for AI responses
+   - Markdown formatting for CI responses
    - Inline images and diagrams
 
 2. **Session Persistence**
@@ -240,13 +240,13 @@ aish terma theme dark
 # 1. Start development session
 aish terma purpose "feature/auth-update"
 
-# 2. Get AI assistance with planning
+# 2. Get CI assistance with planning
 aish prometheus "Plan implementation for OAuth2 integration"
 
 # 3. Generate code scaffolding
 aish codex "Generate OAuth2 middleware for FastAPI" > oauth_middleware.py
 
-# 4. Run tests with AI analysis
+# 4. Run tests with CI analysis
 pytest tests/auth/ | aish metis "Analyze test failures"
 
 # 5. Notify team
@@ -291,17 +291,17 @@ aish team "Review API documentation approach"
 
 ```bash
 # Core settings
-export AISH_DEFAULT_AI="rhetor"          # Default AI for commands
+export AISH_DEFAULT_AI="rhetor"          # Default CI for commands
 export AISH_HISTORY_SIZE=1000            # Command history size
-export AISH_TIMEOUT=30                   # AI response timeout
+export AISH_TIMEOUT=30                   # CI response timeout
 
 # Terminal settings
 export TERMA_USER="alice"                # Your terminal username
 export TERMA_PURPOSE="development"       # Default terminal purpose
 export TERMA_THEME="dark"               # Terminal theme
 
-# AI settings
-export AISH_AI_TEMPERATURE=0.7          # AI creativity level
+# CI settings
+export AISH_AI_TEMPERATURE=0.7          # CI creativity level
 export AISH_AI_MAX_TOKENS=2000         # Maximum response length
 ```
 
@@ -310,7 +310,7 @@ export AISH_AI_MAX_TOKENS=2000         # Maximum response length
 Create `~/.aishrc` for persistent settings:
 
 ```bash
-# AI aliases
+# CI aliases
 alias numa="aish numa"
 alias ask="aish rhetor"
 
@@ -325,17 +325,17 @@ alias team-backend="aish terma @backend"
 
 ## Tips and Best Practices
 
-### 1. Effective AI Queries
+### 1. Effective CI Queries
 
 **DO:**
 - Be specific about what you need
 - Provide context when relevant
-- Use appropriate AI for the task
+- Use appropriate CI for the task
 
 **DON'T:**
 - Send overly broad queries
 - Forget to specify language/framework
-- Use wrong AI specialist
+- Use wrong CI specialist
 
 ### 2. Terminal Communication
 
@@ -352,7 +352,7 @@ alias team-backend="aish terma @backend"
 ### 3. Performance Optimization
 
 - Use piping for large inputs
-- Cache frequent AI responses
+- Cache frequent CI responses
 - Batch related queries
 - Use appropriate response lengths
 
@@ -367,15 +367,15 @@ alias team-backend="aish terma @backend"
 
 ### Common Issues
 
-#### AI Not Responding
+#### CI Not Responding
 ```bash
-# Check AI status
+# Check CI status
 aish status
 
 # Test specific AI
 aish ping hermes
 
-# Restart AI service
+# Restart CI service
 aish restart codex
 ```
 
@@ -420,7 +420,7 @@ tail -f ~/.aish/debug.log
 
 ## Advanced Topics
 
-### Custom AI Workflows
+### Custom CI Workflows
 
 Create custom command chains:
 
@@ -431,7 +431,7 @@ Create custom command chains:
 # Get changes
 CHANGES=$(git diff --staged)
 
-# Analyze with multiple AIs
+# Analyze with multiple CIs
 echo "$CHANGES" | aish codex "Review for bugs" > review_bugs.md
 echo "$CHANGES" | aish metis "Suggest tests" > review_tests.md
 echo "$CHANGES" | aish rhetor "Improve comments" > review_docs.md
@@ -485,7 +485,7 @@ echo 'aish codex "Review commit" < $1' > .git/hooks/commit-msg
 
 # CI/CD integration
 # Add to GitHub Actions
-- name: AI Code Review
+- name: CI Code Review
   run: |
     git diff origin/main | aish codex "Review changes"
 ```
@@ -496,14 +496,14 @@ echo 'aish codex "Review commit" < $1' > .git/hooks/commit-msg
 
 | Command | Description |
 |---------|-------------|
-| `aish <ai> "<message>"` | Send message to AI |
+| `aish <ai> "<message>"` | Send message to CI |
 | `aish terma list` | List active terminals |
 | `aish terma <user> "<msg>"` | Send to user |
 | `aish inbox` | Check messages |
 | `aish help` | Show help |
 | `aish status` | System status |
 
-### AI Specialist Quick Guide
+### CI Specialist Quick Guide
 
 | Specialist | Best For |
 |------------|----------|

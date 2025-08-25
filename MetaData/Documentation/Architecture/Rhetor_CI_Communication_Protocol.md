@@ -1,4 +1,4 @@
-# Rhetor AI Communication Protocol
+# Rhetor CI Communication Protocol
 
 ## Overview
 
@@ -10,19 +10,19 @@ AIs are just sockets. They read input, write output. Nothing more.
 ```python
 socket_id = rhetor.create(model="claude-3", prompt="Be helpful", context={})
 ```
-Creates new AI instance, returns socket identifier.
+Creates new CI instance, returns socket identifier.
 
 ### Read
 ```python
 messages = rhetor.read("apollo-123")      # Read from specific AI
-messages = rhetor.read("team-chat-all")   # Read from all AIs
+messages = rhetor.read("team-chat-all")   # Read from all CIs
 ```
 Reads automatically add source headers: `[team-chat-from-apollo-123] message`
 
 ### Write
 ```python
 rhetor.write("apollo-123", "Analyze this")     # Write to specific AI
-rhetor.write("team-chat-all", "Status report") # Write to all AIs
+rhetor.write("team-chat-all", "Status report") # Write to all CIs
 ```
 Writes automatically add destination headers: `[team-chat-to-apollo-123] message`
 
@@ -42,7 +42,7 @@ All sockets registered in Rhetor's central registry:
 ```python
 registry = {
     "rhetor": socket_0,          # Rhetor's own listening socket
-    "apollo-123": socket_1,      # AI instances
+    "apollo-123": socket_1,      # CI instances
     "athena-456": socket_2,
     "team-chat-all": broadcast,  # Special broadcast socket
 }
@@ -59,7 +59,7 @@ Messages wrapped with headers for routing:
 
 ## Pipeline Notation
 
-Express AI communication flows using Unix pipes:
+Express CI communication flows using Unix pipes:
 
 ### Simple Flows
 ```bash
@@ -99,11 +99,11 @@ cat *.ctx | rhetor | solution
 # User asks question
 rhetor.write("team-chat-all", "How to optimize the system?")
 
-# Each AI reads from their socket
+# Each CI reads from their socket
 apollo_msg = rhetor.read("apollo")     # "[team-chat-to-apollo-123] How to optimize?"
 athena_msg = rhetor.read("athena")     # "[team-chat-to-athena-456] How to optimize?"
 
-# AIs respond
+# CIs respond
 apollo_socket.write("Prediction: 30% improvement possible")
 athena_socket.write("Knowledge: See optimization patterns...")
 
@@ -125,7 +125,7 @@ synthesis > final.answer
 ## Implementation Notes
 
 1. **Sockets are just file descriptors** - Can be files, pipes, network sockets
-2. **Headers are transparent** - AIs only see message content, not headers
+2. **Headers are transparent** - CIs only see message content, not headers
 3. **Registry is the source of truth** - All socket lookups go through registry
 4. **No magic** - Just read, write, and process streams
 
@@ -140,13 +140,13 @@ synthesis > final.answer
 
 Simple. Works. Hard to screw up.
 
-## Future Direction: aish - The AI Shell
+## Future Direction: aish - The CI Shell
 
 Rhetor is evolving into `aish`, a full command-line shell for multi-AI distributed computing.
 
 ### Vision
 
-Just as `bash` orchestrates processes, `aish` will orchestrate AIs:
+Just as `bash` orchestrates processes, `aish` will orchestrate CIs:
 
 ```bash
 $ aish
@@ -164,15 +164,15 @@ aish> for ai in apollo athena; do
 **Interactive Shell**
 ```bash
 aish> echo "question" | apollo     # Simple pipeline
-aish> jobs                         # List running AI pipelines  
-aish> fg 1                         # Bring AI pipeline to foreground
+aish> jobs                         # List running CI pipelines  
+aish> fg 1                         # Bring CI pipeline to foreground
 aish> history | grep "optimize"    # Search command history
 ```
 
 **Script Execution**
 ```bash
 #!/usr/bin/aish
-# analyze.ai - executable AI script
+# analyze.ai - executable CI script
 input=$1
 $input | athena > knowledge.tmp &
 $input | apollo > prediction.tmp &
@@ -180,18 +180,18 @@ wait
 cat *.tmp | rhetor[synthesize]
 ```
 
-**Distributed AI Computing**
+**Distributed CI Computing**
 ```bash
-# Remote AI execution
+# Remote CI execution
 aish> echo "analyze" | ssh node1 apollo
 
 # Parallel distributed processing
 aish> scatter "big_problem.txt" | parallel --host nodes.txt apollo | gather
 
-# AI cluster management  
-aish> ps -ai                      # List all AI instances
+# CI cluster management  
+aish> ps -ai                      # List all CI instances
 aish> kill -RESET apollo-123      # Reset specific AI
-aish> nice -ai 10 sophia          # Lower AI priority
+aish> nice -ai 10 sophia          # Lower CI priority
 ```
 
 **Shell Integration**
@@ -208,9 +208,9 @@ aish> find . -name "*.py" | xargs -I {} sh -c 'echo {} | athena review'
 
 ### Why This Matters
 
-1. **Universal AI Interface** - Every Unix tool works with AIs
-2. **Distributed by Design** - AIs can run anywhere, like Unix processes
-3. **Composable** - Build complex AI systems from simple pipelines  
+1. **Universal CI Interface** - Every Unix tool works with CIs
+2. **Distributed by Design** - CIs can run anywhere, like Unix processes
+3. **Composable** - Build complex CI systems from simple pipelines  
 4. **Familiar** - 50 years of Unix knowledge applies immediately
 
 The command line that conquered computing will now orchestrate intelligence.

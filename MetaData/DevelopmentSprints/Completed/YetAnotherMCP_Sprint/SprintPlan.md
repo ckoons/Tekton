@@ -4,7 +4,7 @@
 
 This document outlines the high-level plan for the YetAnotherMCP_Sprint Development Sprint. It provides an overview of the goals, approach, and expected outcomes.
 
-Tekton is an intelligent orchestration system that coordinates multiple AI models and resources to efficiently solve complex software engineering problems. This Development Sprint focuses on standardizing and fixing the Model Context Protocol (MCP) implementation across all Tekton components, with Hermes serving as the central MCP aggregator.
+Tekton is an intelligent orchestration system that coordinates multiple CI models and resources to efficiently solve complex software engineering problems. This Development Sprint focuses on standardizing and fixing the Model Context Protocol (MCP) implementation across all Tekton components, with Hermes serving as the central MCP aggregator.
 
 ## Sprint Goals
 
@@ -19,7 +19,7 @@ The primary goals of this sprint are:
 
 This sprint delivers value by:
 
-- **Simplified Integration**: Claude and other AI assistants can connect to a single MCP endpoint for all Tekton capabilities
+- **Simplified Integration**: Claude and other CI assistants can connect to a single MCP endpoint for all Tekton capabilities
 - **Improved Reliability**: Standardized implementation eliminates inconsistencies and bugs
 - **Enhanced Discoverability**: Tools from all components are discoverable through a single interface
 - **Reduced Maintenance**: Shared code reduces duplication and makes future updates easier
@@ -164,7 +164,7 @@ This sprint will be considered successful if:
 ## Key Stakeholders
 
 - **Casey**: Human-in-the-loop project manager
-- **Claude**: AI pair programmer and implementation partner
+- **Claude**: CI pair programmer and implementation partner
 - **Component Maintainers**: Responsible for component-specific MCP implementation
 
 ## References

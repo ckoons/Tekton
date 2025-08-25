@@ -21,8 +21,8 @@ curl -s "${BASE_URL}/health" | jq .
 echo -e "\n2. Capabilities:"
 curl -s "${BASE_URL}/capabilities" | jq '.capabilities.tools | keys'
 
-# Test 3: List AIs
-echo -e "\n3. List AIs:"
+# Test 3: List CIs
+echo -e "\n3. List CIs:"
 curl -s -X POST "${BASE_URL}/tools/list-ais" \
   -H "Content-Type: application/json" \
   -d '{}' | jq '.ais[].name'

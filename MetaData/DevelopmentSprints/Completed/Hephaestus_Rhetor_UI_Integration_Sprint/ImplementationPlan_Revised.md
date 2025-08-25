@@ -42,7 +42,7 @@ window.ChatWidget = {
     if (!input) return;
     
     if (this.activeComponent === 'team') {
-      input.placeholder = 'Tekton Team Chat (All AIs)';
+      input.placeholder = 'Tekton Team Chat (All CIs)';
     } else {
       const componentTitle = this.activeComponent.charAt(0).toUpperCase() + 
                             this.activeComponent.slice(1);
@@ -128,7 +128,7 @@ window.ChatWidget = {
       const data = await response.json();
       this.hideTyping();
       
-      // Add AI response
+      // Add CI response
       const speaker = payload.component === 'team' ? 
         `Team-${data.speaker || 'Rhetor'}` : 
         this.capitalize(payload.component);
@@ -223,14 +223,14 @@ window.ChatWidget = {
   addWelcomeMessage: function() {
     const welcomeMessages = {
       rhetor: "Hello! I'm Rhetor, your LLM orchestration and prompt engineering assistant. How can I help you today?",
-      team: "Welcome to Tekton Team Chat! All AI assistants are here to collaborate. What would you like to discuss?",
+      team: "Welcome to Tekton Team Chat! All CI assistants are here to collaborate. What would you like to discuss?",
       apollo: "Greetings! I'm Apollo, ready to help with executive coordination and prediction.",
       engram: "Hello! I'm Engram, your memory and context management specialist.",
       // Add more components as needed
     };
     
     const message = welcomeMessages[this.activeComponent] || 
-      `Hello! I'm the ${this.capitalize(this.activeComponent)} AI assistant.`;
+      `Hello! I'm the ${this.capitalize(this.activeComponent)} CI assistant.`;
     
     const speaker = this.activeComponent === 'team' ? 'Team-Rhetor' : this.capitalize(this.activeComponent);
     this.addMessage('ai', message, speaker);
@@ -487,7 +487,7 @@ class RouteRequest(TektonBaseModel):
 
 @app.post("/chat/route")
 async def route_chat_message(request: RouteRequest):
-    """Route chat messages to component AIs or team chat"""
+    """Route chat messages to component CIs or team chat"""
     
     if not ai_specialist_manager:
         raise HTTPException(status_code=503, detail="AI Specialist Manager not initialized")
@@ -565,7 +565,7 @@ websocketManager.messageHandlers.COMPONENT_CHAT_RESPONSE = function(message) {
   if (window.ChatWidget) {
     window.ChatWidget.hideTyping();
     
-    // Add AI response
+    // Add CI response
     const speaker = payload.component === 'team' ? 
       `Team-${payload.speaker || 'Rhetor'}` : 
       window.ChatWidget.capitalize(payload.component);
@@ -636,7 +636,7 @@ window.rhetor_switchTab = function(tabId) {
 **File**: `/Rhetor/rhetor/core/team_chat_orchestrator.py`
 ```python
 class TeamChatOrchestrator:
-    """Orchestrates team chat with multiple AI specialists"""
+    """Orchestrates team chat with multiple CI specialists"""
     
     async def moderate_discussion(
         self,
@@ -696,14 +696,14 @@ Add to settings panel:
 
 ### Phase 2 Tests
 - [ ] Messages route to Rhetor
-- [ ] AI responses appear in chat
+- [ ] CI responses appear in chat
 - [ ] Typing indicator shows/hides
 - [ ] Error handling works
 
 ### Phase 3 Tests
 - [ ] Team chat mode activates
 - [ ] Speaker labels show correctly
-- [ ] Multiple AI responses display
+- [ ] Multiple CI responses display
 
 ### Phase 4 Tests
 - [ ] Chat history persists on refresh

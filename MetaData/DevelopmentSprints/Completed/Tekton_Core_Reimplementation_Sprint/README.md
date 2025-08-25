@@ -2,7 +2,7 @@
 
 ## Vision
 
-Transform tekton-core into a visual project management hub where humans and AIs collaborate on multiple GitHub projects through an intuitive dashboard interface.
+Transform tekton-core into a visual project management hub where humans and CIs collaborate on multiple GitHub projects through an intuitive dashboard interface.
 
 ## Core Concept
 

@@ -195,7 +195,7 @@ POST /metis/workflow
 ### Key Backend Endpoints:
 - GET /api/v1/tasks - List tasks
 - POST /api/v1/tasks - Create task
-- POST /api/v1/tasks/decompose - AI decomposition
+- POST /api/v1/tasks/decompose - CI decomposition
 - POST /api/v1/dependencies - Create dependency
 - GET /api/v1/dependencies/validate - Check cycles
 

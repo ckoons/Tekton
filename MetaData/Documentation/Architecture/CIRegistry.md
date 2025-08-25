@@ -1,35 +1,35 @@
-# AI Communication Architecture
+# CI Communication Architecture
 
 ## Overview
 
-Tekton's AI system uses a simplified "One Queue, One Socket, One AI" architecture. Each component can have an associated AI specialist that provides intelligent assistance through direct socket communication using fixed ports.
+Tekton's CI system uses a simplified "One Queue, One Socket, One AI" architecture. Each component can have an associated CI specialist that provides intelligent assistance through direct socket communication using fixed ports.
 
 **Important Update**: For CI tools integration (like Claude Code, Cursor, Continue), see the [CI Tools Infrastructure](CI_Tools_Infrastructure.md) documentation which describes the new C-based launcher and message bus system.
 
 ## Key Components
 
-### 1. Simple AI Interface (`shared/ai/simple_ai.py`)
+### 1. Simple CI Interface (`shared/ai/simple_ai.py`)
 
-The unified interface for all AI communication:
+The unified interface for all CI communication:
 
 - **Direct Communication**: Both sync (`ai_send_sync`) and async (`ai_send`) methods
-- **Configurable Ports**: AI port = TEKTON_AI_PORT_BASE + (component_port - TEKTON_PORT_BASE)
+- **Configurable Ports**: CI port = TEKTON_AI_PORT_BASE + (component_port - TEKTON_PORT_BASE)
 - **Message Tracking**: UUID-based message IDs for reliable request/response matching
 - **No Registry**: Direct host:port connections without registry files
 
-### 2. AI Service Simple (`shared/ai/ai_service_simple.py`)
+### 2. CI Service Simple (`shared/ai/ai_service_simple.py`)
 
-Core service managing AI communication:
+Core service managing CI communication:
 
-- **Queue Management**: One queue per AI for message handling
-- **Socket Connections**: Direct socket connections to AI specialists
-- **Auto-Registration**: 18 AIs automatically registered on service import
-- **Error Handling**: Graceful degradation when AIs are not running
+- **Queue Management**: One queue per CI for message handling
+- **Socket Connections**: Direct socket connections to CI specialists
+- **Auto-Registration**: 18 CIs automatically registered on service import
+- **Error Handling**: Graceful degradation when CIs are not running
 - **No Singletons**: Filesystem-based state management (see CI Tools Infrastructure)
 
-### 3. Generic AI Specialist (`shared/ai/generic_specialist.py`)
+### 3. Generic CI Specialist (`shared/ai/generic_specialist.py`)
 
-A configurable AI implementation that adapts to any component:
+A configurable CI implementation that adapts to any component:
 
 - Component-specific personalities and expertise
 - Unified implementation for all components
@@ -53,19 +53,19 @@ Response via same socket
 
 ## Fixed Port System
 
-All AI ports are calculated using configurable bases:
+All CI ports are calculated using configurable bases:
 ```
 AI Port = TEKTON_AI_PORT_BASE + (Component Port - TEKTON_PORT_BASE)
 ```
 
 Examples with defaults (TEKTON_PORT_BASE=8000, TEKTON_AI_PORT_BASE=45000):
-- Tekton (8000) → AI Port 45000
-- Hermes (8001) → AI Port 45001
-- Engram (8002) → AI Port 45002
+- Tekton (8000) → CI Port 45000
+- Hermes (8001) → CI Port 45001
+- Engram (8002) → CI Port 45002
 
-## Component AI Personalities
+## Component CI Personalities
 
-Each AI specialist has a unique personality defined in `COMPONENT_EXPERTISE`:
+Each CI specialist has a unique personality defined in `COMPONENT_EXPERTISE`:
 
 - **Hermes**: The Service Orchestrator
 - **Engram**: The Memory Curator
@@ -79,7 +79,7 @@ Each AI specialist has a unique personality defined in `COMPONENT_EXPERTISE`:
 
 ### Environment Variables
 
-- `TEKTON_REGISTER_AI`: Enable/disable AI support globally
+- `TEKTON_REGISTER_AI`: Enable/disable CI support globally
 - `TEKTON_AI_PROVIDER`: LLM provider (`ollama` or `anthropic`)
 - `<COMPONENT>_AI_MODEL`: Override model for specific component
 
@@ -124,9 +124,9 @@ print(response)
 
 ## Troubleshooting
 
-### AI Not Responding
+### CI Not Responding
 
-1. Check if AI process is running: `ps aux | grep component-ai`
+1. Check if CI process is running: `ps aux | grep component-ai`
 2. Verify port is open: `nc -zv localhost 45000`
 3. Check fixed port calculation matches expectation
 4. Ensure `TEKTON_REGISTER_AI=true` in `.env.tekton`
@@ -137,7 +137,7 @@ print(response)
 - Check component ports are correctly configured (8000-8080)
 - Use `scripts/check_port_alignment.py` to verify port mapping
 
-### Testing AI Service
+### Testing CI Service
 
 ```bash
 # Run test suite
@@ -148,17 +148,17 @@ python tests/test_unified_ai_communication.py
 
 ## Integration Points
 
-1. **Enhanced Launcher**: Automatically launches AI when component starts
-2. **Status Display**: Shows AI model and health in `tekton-status`
-3. **Socket Communication**: Direct AI interaction via socket protocol
-4. **aish Integration**: AI shell uses the unified system
+1. **Enhanced Launcher**: Automatically launches CI when component starts
+2. **Status Display**: Shows CI model and health in `tekton-status`
+3. **Socket Communication**: Direct CI interaction via socket protocol
+4. **aish Integration**: CI shell uses the unified system
 
 ## Best Practices
 
-1. Always use the generic AI specialist for new components
+1. Always use the generic CI specialist for new components
 2. Define component expertise in `COMPONENT_EXPERTISE` dict
 3. Use fixed port formula for consistency
-4. Monitor AI health through `tekton-status`
+4. Monitor CI health through `tekton-status`
 5. Use the simple_ai interface for all communication
 
 ## Migration from Registry System

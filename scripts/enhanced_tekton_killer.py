@@ -942,8 +942,8 @@ async def main():
         # Handle AI-only mode
         if args.ci is not None:
             # Kill only CI specialists
-            if args.ai == []:  # --ci with no arguments means all AIs
-                # Get all running components to kill their AIs
+            if args.ai == []:  # --ci with no arguments means all CIs
+                # Get all running components to kill their CIs
                 components = killer.get_running_components()
                 ai_components = components
             else:

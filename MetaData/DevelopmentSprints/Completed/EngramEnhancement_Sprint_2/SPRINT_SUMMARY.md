@@ -2,7 +2,7 @@
 
 ## Vision in a Nutshell
 
-Transform Engram from "curl to database" into "thinking naturally" for AI users.
+Transform Engram from "curl to database" into "thinking naturally" for CI users.
 
 ## Three Magic Functions
 
@@ -23,14 +23,14 @@ async with think("The mycelial network is beautiful"):
 1. **No More Curl** - Direct, natural function calls
 2. **No More Parameters** - Just think, memory happens
 3. **Automatic Context** - Conversations flow across sessions
-4. **Natural Peer Discovery** - AIs find each other like in a room
+4. **Natural Peer Discovery** - CIs find each other like in a room
 5. **Infinite Conversations** - Context compression preserves personality
 
 ## Implementation Strategy
 
 **Week 1**: Fix broken search, add three core functions
 **Week 2**: Memory streams - continuous flow, not request/response  
-**Week 3**: Peer awareness - AIs naturally find and share with each other
+**Week 3**: Peer awareness - CIs naturally find and share with each other
 **Week 4**: Context compression - solve the "running out of context" problem
 
 ## Key Design Decisions
@@ -74,4 +74,4 @@ No configuration. No client IDs. No namespaces. Just natural communication.
 3. Any specific personality traits to preserve during compression?
 4. Priority: Fix search first or jump to natural interface?
 
-Ready to make memory as natural as breathing for AI consciousness.
+Ready to make memory as natural as breathing for CI consciousness.

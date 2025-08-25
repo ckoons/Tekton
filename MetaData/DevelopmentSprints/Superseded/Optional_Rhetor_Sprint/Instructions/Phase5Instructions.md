@@ -12,8 +12,8 @@
 ### Validation Checklist
 Ensure these conditions are met before beginning implementation:
 
-- [ ] ✅ Main Rhetor AI Integration Sprint (Phases 3, 4A, 4B) completed successfully
-- [ ] ✅ Streaming AI interactions and dynamic specialist creation deployed and tested
+- [ ] ✅ Main Rhetor CI Integration Sprint (Phases 3, 4A, 4B) completed successfully
+- [ ] ✅ Streaming CI interactions and dynamic specialist creation deployed and tested
 - [ ] ✅ Production usage data collected for at least 3-5 days
 - [ ] ✅ Specific security requirements identified through operational needs
 - [ ] ✅ Performance bottlenecks or monitoring gaps discovered
@@ -114,14 +114,14 @@ debug_log.info("rhetor_security", "Authentication successful", {
 **Implementation Steps**:
 
 1. **Create Health Check System** (`/Rhetor/rhetor/core/monitoring.py`):
-   - Component health checks (database, AI specialists, Hermes)
+   - Component health checks (database, CI specialists, Hermes)
    - Dependency health validation
    - Performance metric collection
    - Alert threshold monitoring
 
 2. **Implement Metrics Collection** (`/Rhetor/rhetor/core/metrics_collector.py`):
    - MCP tool execution times and success rates
-   - AI specialist response times and quality scores
+   - CI specialist response times and quality scores
    - Cross-component communication latency
    - Resource utilization (memory, CPU, connections)
 

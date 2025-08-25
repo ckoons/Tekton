@@ -17,7 +17,7 @@ Transform Tekton to use MCP (Model Context Protocol) as the primary interface fo
 - [x] Create `/mcp/tools/team-chat` - wraps MessageHandler.broadcast()
 - [x] Create `/mcp/tools/forward` - wraps forward commands
 - [x] Create `/mcp/tools/project-forward` - wraps project forwards
-- [x] Create `/mcp/tools/list-ais` - returns available AIs
+- [x] Create `/mcp/tools/list-ais` - returns available CIs
 - [x] Create `/mcp/tools/terma/*` - all terma functionality
 - [x] Create `/mcp/tools/purpose` - purpose-based routing
 - [ ] Add authentication/security layer

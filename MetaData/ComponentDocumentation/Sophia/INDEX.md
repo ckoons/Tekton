@@ -4,7 +4,7 @@ Welcome to the Sophia documentation. This index provides links to all available 
 
 ## Overview
 
-Sophia is the machine learning and continuous improvement component of the Tekton ecosystem, designed to study AI collaboration, measure intelligence dimensions, and enable self-enhancement across components.
+Sophia is the machine learning and continuous improvement component of the Tekton ecosystem, designed to study CI collaboration, measure intelligence dimensions, and enable self-enhancement across components.
 
 ## Documentation
 
@@ -18,7 +18,7 @@ Sophia is the machine learning and continuous improvement component of the Tekto
 
 ## Key Concepts
 
-- **Intelligence Dimensions Framework**: A comprehensive framework for measuring AI cognitive capabilities across 10 dimensions
+- **Intelligence Dimensions Framework**: A comprehensive framework for measuring CI cognitive capabilities across 10 dimensions
 - **Experiment Framework**: Design, execution, and analysis of controlled experiments to validate improvement hypotheses
 - **Metrics Collection and Analysis**: Comprehensive collection, storage, and analysis of performance and behavioral metrics
 - **Recommendation System**: Generation and tracking of improvement suggestions based on analysis and experiments

@@ -13,7 +13,7 @@ This sprint implements dedicated CI instances for each Tekton component, managed
 
 ## Key Features
 
-### Component-Specific AIs
+### Component-Specific CIs
 - Budget AI: Financial analysis with Claude 3 Haiku (fast, efficient)
 - Athena AI: Knowledge management with Claude 3 Sonnet
 - Sophia AI: Research and learning with Claude 3 Opus
@@ -26,7 +26,7 @@ This sprint implements dedicated CI instances for each Tekton component, managed
 - **Transparent**: Components don't need to know about filtering
 
 ### Team Chat
-- All component AIs can communicate in a shared channel
+- All component CIs can communicate in a shared channel
 - Rhetor moderates the conversation
 - Human can participate and guide the discussion
 - Automatic summarization and action extraction

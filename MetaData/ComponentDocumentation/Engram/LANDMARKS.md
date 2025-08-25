@@ -99,7 +99,7 @@ LANCEDB      ✅      5/5      0/5        0        0.011s       0.015s
 ### **Tekton Integration Complete** (March 2025)
 - MCP (Model Context Protocol) integration
 - SSE (Server-Sent Events) streaming support
-- Greek Chorus AI communication
+- Greek Chorus CI communication
 - Hermes service integration (now using simple_ai for communication)
 
 ### **Memory System Overhaul** (February 2025)

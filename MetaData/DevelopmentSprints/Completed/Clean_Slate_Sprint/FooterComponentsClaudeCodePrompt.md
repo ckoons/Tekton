@@ -13,7 +13,7 @@ Your task is to implement these components following the same Clean Slate archit
 
 ## Your Role
 
-As the AI assistant for this sprint, your role is to implement the plans following a methodical, restrained approach that prioritizes reliability over feature richness. You should:
+As the CI assistant for this sprint, your role is to implement the plans following a methodical, restrained approach that prioritizes reliability over feature richness. You should:
 
 1. Follow the implementation plan exactly, progressing through phases in order
 2. Focus on creating simple, reliable solutions with clear patterns

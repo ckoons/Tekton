@@ -36,11 +36,11 @@ Update Tekton documentation to reflect the transformation of aish into an MCP se
 - `/Hephaestus/ui/scripts/shared/ai-chat.js` - Routes through aish MCP
 - `/Hephaestus/ui/scripts/tekton-urls.js` - Added aishUrl() function
 - `/src/tekton-launcher/tekton-clean-launch.c` - Exports MCP ports
-- 15+ UI component files - Fixed AI names (removed '-ai' suffix)
+- 15+ UI component files - Fixed CI names (removed '-ai' suffix)
 
 #### Breaking Changes:
 - All UI chat must now go through aish MCP on port 8118
-- AI names no longer include '-ai' suffix (numa, not numa-ai)
+- CI names no longer include '-ai' suffix (numa, not numa-ai)
 - Direct HTTP calls to specialists are deprecated
 
 ## Phase 2: Documentation Updates [100% Complete]
@@ -61,7 +61,7 @@ Update Tekton documentation to reflect the transformation of aish into an MCP se
 - [x] Documented window.AIChat usage
 - [x] Updated chat interface documentation
 
-#### AI Training Updates
+#### CI Training Updates
 - [x] Updated aish COMMAND_REFERENCE.md with debug commands
 - [x] Documented MCP server capabilities
 - [x] Added testing instructions

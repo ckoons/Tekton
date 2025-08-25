@@ -44,10 +44,10 @@ async def test_with_real_ai():
         return False
 
 async def test_multiple_real_ais():
-    """Test with multiple real AIs"""
+    """Test with multiple real CIs"""
     service = CIService(debug=True)
     
-    # List of AIs to test
+    # List of CIs to test
     ais = [
         ("apollo-ci", 45012),
         ("numa-ci", 45016),
@@ -57,7 +57,7 @@ async def test_multiple_real_ais():
     connections = []
     
     try:
-        # Connect to all AIs
+        # Connect to all CIs
         for ai_id, port in ais:
             try:
                 reader, writer = await asyncio.open_connection('localhost', port)
@@ -68,13 +68,13 @@ async def test_multiple_real_ais():
                 print(f"Failed to connect to {ai_id}: {e}")
         
         if len(connections) == 0:
-            print("No AIs connected")
+            print("No CIs connected")
             return False
         
         # Send to all
         ai_ids = [ai[0] for ai in ais[:len(connections)]]
         msg_ids = service.send_to_all("Hello from test", ai_ids)
-        print(f"Sent to {len(msg_ids)} AIs")
+        print(f"Sent to {len(msg_ids)} CIs")
         
         # Process all messages
         await service.process_messages()
@@ -124,7 +124,7 @@ async def run_all_tests():
     else:
         failed += 1
     
-    # Test 2: Multiple AIs
+    # Test 2: Multiple CIs
     if await test_multiple_real_ais():
         passed += 1
     else:

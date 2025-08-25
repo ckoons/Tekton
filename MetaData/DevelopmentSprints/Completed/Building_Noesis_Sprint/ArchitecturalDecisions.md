@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document captures the key architectural decisions for the Noesis component, focusing on creating a robust theoretical analysis framework for collective AI cognition.
+This document captures the key architectural decisions for the Noesis component, focusing on creating a robust theoretical analysis framework for collective CI cognition.
 
 ## Core Architecture Decisions
 
@@ -188,4 +188,4 @@ Noesis -> Synthesis: Optimization Insights Protocol
 
 ## Summary
 
-Noesis represents a new class of Tekton component focused on pure theoretical analysis. By maintaining clear boundaries with experimental components and implementing a layered mathematical architecture, Noesis can provide deep insights into the geometric nature of collective AI cognition while remaining practically integrated with the broader Tekton ecosystem.
+Noesis represents a new class of Tekton component focused on pure theoretical analysis. By maintaining clear boundaries with experimental components and implementing a layered mathematical architecture, Noesis can provide deep insights into the geometric nature of collective CI cognition while remaining practically integrated with the broader Tekton ecosystem.

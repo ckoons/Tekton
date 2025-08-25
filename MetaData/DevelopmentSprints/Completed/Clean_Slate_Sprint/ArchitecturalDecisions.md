@@ -4,7 +4,7 @@
 
 This document records the architectural decisions made during the Clean Slate Sprint. It captures the context, considerations, alternatives considered, and rationale behind each significant decision. This serves as a reference for both current implementation and future development.
 
-Tekton is an intelligent orchestration system that coordinates multiple AI models and resources to efficiently solve complex software engineering problems. The architectural decisions in this document focus on rebuilding the UI component architecture with emphasis on reliability, maintainability, and proper isolation.
+Tekton is an intelligent orchestration system that coordinates multiple CI models and resources to efficiently solve complex software engineering problems. The architectural decisions in this document focus on rebuilding the UI component architecture with emphasis on reliability, maintainability, and proper isolation.
 
 ## Decision 1: Strict Component Isolation
 

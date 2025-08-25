@@ -1,10 +1,10 @@
-# Dead Code Removal - Unified AI Interface Cleanup
+# Dead Code Removal - Unified CI Interface Cleanup
 
 ## Date: June 30, 2025
 
 ## Files Removed
 
-### 1. Duplicate AI Socket Registry
+### 1. Duplicate CI Socket Registry
 - **File**: `/Rhetor/rhetor/core/ai_socket_registry.py`
 - **Reason**: Duplicate implementation replaced by unified registry
 - **Used By**: Only test files

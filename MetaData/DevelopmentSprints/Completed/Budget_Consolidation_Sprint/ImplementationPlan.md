@@ -4,7 +4,7 @@
 
 This document outlines the detailed implementation plan for the Budget Consolidation Sprint. It breaks down the high-level goals into specific implementation tasks, defines the phasing, specifies testing requirements, and identifies documentation that must be updated.
 
-Tekton is an intelligent orchestration system that coordinates multiple AI models and resources to efficiently solve complex software engineering problems. This Implementation Plan focuses on consolidating the budget management functionality from Apollo and Rhetor into a unified Budget component with automated price tracking.
+Tekton is an intelligent orchestration system that coordinates multiple CI models and resources to efficiently solve complex software engineering problems. This Implementation Plan focuses on consolidating the budget management functionality from Apollo and Rhetor into a unified Budget component with automated price tracking.
 
 ## Debug Instrumentation Requirements
 

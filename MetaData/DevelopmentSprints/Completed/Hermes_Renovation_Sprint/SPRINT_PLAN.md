@@ -1,13 +1,13 @@
 # Sprint: Hermes Renovation
 
 ## Overview
-Bring Hermes up to current Tekton standards with CSS-first UI patterns, remove technical debt, ensure real data in UI (especially service registry and message monitoring), and integrate with aish MCP for all AI communication.
+Bring Hermes up to current Tekton standards with CSS-first UI patterns, remove technical debt, ensure real data in UI (especially service registry and message monitoring), and integrate with aish MCP for all CI communication.
 
 ## Goals
 1. **CSS-First UI**: Convert all onclick handlers to CSS-based interactions
 2. **Standardize Code**: Follow all current patterns (TektonEnviron, no hardcoding)
 3. **Real UI Data**: Remove all mocks, connect to actual backend
-4. **MCP Integration**: Use aish MCP for AI communication
+4. **MCP Integration**: Use aish MCP for CI communication
 
 ## Phase 1: Assessment & Cleanup [0% Complete]
 
@@ -55,8 +55,8 @@ Bring Hermes up to current Tekton standards with CSS-first UI patterns, remove t
 - [ ] Update API endpoints to standard format
 - [ ] Remove mock endpoints
 - [ ] Add proper error responses
-- [ ] Update to use aish MCP for AI calls
-- [ ] Remove direct HTTP AI calls
+- [ ] Update to use aish MCP for CI calls
+- [ ] Remove direct HTTP CI calls
 - [ ] Update API documentation
 - [ ] Verify all endpoints work
 - [ ] Ensure real service registry data
@@ -64,7 +64,7 @@ Bring Hermes up to current Tekton standards with CSS-first UI patterns, remove t
 
 ### Success Criteria
 - [ ] All endpoints return real data
-- [ ] AI communication through MCP
+- [ ] CI communication through MCP
 - [ ] API documentation current
 - [ ] Service registry shows actual Tekton services
 - [ ] Message monitor shows real inter-component messages

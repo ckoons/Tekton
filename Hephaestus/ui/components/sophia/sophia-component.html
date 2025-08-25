@@ -2020,7 +2020,7 @@ window.sophia_sendChat_original = function() {
                     console.error('[SOPHIA] CI Chat error:', error);
                 });
             } else if (tabId === 'teamchat') {
-                // Team chat - broadcast to all AIs
+                // Team chat - broadcast to all CIs
                 window.AIChat.teamChat(message, 'sophia')
                 .then(data => {
                     // Remove loading message

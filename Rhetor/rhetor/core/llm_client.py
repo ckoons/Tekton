@@ -108,9 +108,9 @@ class LLMClient:
         logger.info("Initialized unified LLM client with CI Registry")
     
     async def initialize(self):
-        """Initialize the client and discover AIs."""
+        """Initialize the client and discover CIs."""
         try:
-            # Discover available AIs
+            # Discover available CIs
             ais = await self.registry.discover()
             logger.info(f"Discovered {len(ais)} CI specialists")
             
@@ -118,7 +118,7 @@ class LLMClient:
             self._create_provider_mapping()
             
         except Exception as e:
-            logger.warning(f"Failed to discover AIs: {e}")
+            logger.warning(f"Failed to discover CIs: {e}")
     
     def _create_provider_mapping(self):
         """Create compatibility mapping for old provider names."""

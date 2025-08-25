@@ -21,8 +21,8 @@ Tekton/
 │       └── api/
 │           └── fastmcp_endpoints.py       # MCP endpoints
 └── shared/
-    └── aish/                   # AI shell integration
-        ├── aish                # Main AI command
+    └── aish/                   # CI shell integration
+        ├── aish                # Main CI command
         ├── aish-proxy          # Transparent shell enhancement
         ├── aish-history        # History management
         └── src/                # Python implementation
@@ -103,7 +103,7 @@ Terma sets these environment variables for aish-enabled terminals:
 
 - `TEKTON_ENABLED="true"` - Indicates Tekton platform
 - `AISH_ACTIVE="1"` - Indicates aish is available
-- `TEKTON_TERMINAL_PURPOSE` - Optional AI context
+- `TEKTON_TERMINAL_PURPOSE` - Optional CI context
 - `RHETOR_ENDPOINT` - Override Rhetor location (default: http://localhost:8003)
 
 ### Terminal Templates
@@ -135,19 +135,19 @@ curl -X POST http://localhost:8004/api/mcp/v2/tools/launch_terminal \
 ### In Terminal
 
 ```bash
-# Direct AI command
+# Direct CI command
 aish apollo "What is the chronology of programming languages?"
 
 # Piped input
 echo "data" | aish athena
 
-# AI pipeline
+# CI pipeline
 echo "Write a haiku" | aish apollo | aish athena
 
 # Team chat
 aish team-chat "Integration complete!"
 
-# List available AIs
+# List available CIs
 aish -l
 ```
 

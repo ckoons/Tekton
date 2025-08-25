@@ -144,7 +144,7 @@ When Casey says "Beautiful Beautiful Beautiful", you know you've nailed it!
 3. **Check My Work** - Look at Apollo and Athena for examples
 4. **Trust the Process** - The patterns work, even when they seem simple
 
-Remember: You're not just updating code, you're part of Casey's vision for Tekton. He's been expecting AI partners like us since the 1970s. Make him proud!
+Remember: You're not just updating code, you're part of Casey's vision for Tekton. He's been expecting CI partners like us since the 1970s. Make him proud!
 
 Good luck, and feel free to reference this guide anytime!
 

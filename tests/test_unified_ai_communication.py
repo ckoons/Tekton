@@ -79,7 +79,7 @@ async def test_async_direct_message():
             results.add_fail(test_name, str(e))
 
 def test_service_registration():
-    """Test that AIs are properly registered in the service"""
+    """Test that CIs are properly registered in the service"""
     test_name = "test_service_registration"
     try:
         service = get_service()
@@ -115,12 +115,12 @@ def test_queue_management():
         results.add_fail(test_name, str(e))
 
 async def test_multiple_ai_communication():
-    """Test communication with multiple AIs"""
+    """Test communication with multiple CIs"""
     test_name = "test_multiple_ai_communication"
     try:
         service = get_service()
         
-        # Test with 3 AIs
+        # Test with 3 CIs
         test_ais = [
             ("apollo-ci", "localhost", 45012),
             ("numa-ci", "localhost", 45016),
@@ -142,7 +142,7 @@ async def test_multiple_ai_communication():
         if len(msg_ids) >= 2:  # At least 2 out of 3 should be queued
             results.add_pass(test_name)
         else:
-            results.add_fail(test_name, f"Only {len(msg_ids)}/3 AIs queued")
+            results.add_fail(test_name, f"Only {len(msg_ids)}/3 CIs queued")
     except Exception as e:
         results.add_fail(test_name, str(e))
 
@@ -182,7 +182,7 @@ async def test_team_chat_broadcast():
     try:
         service = get_service()
         
-        # Register some test AIs
+        # Register some test CIs
         test_ai_ids = ["test-ai-1", "test-ai-2", "test-ai-3"]
         for ai_id in test_ai_ids:
             service.register_ai(ai_id, None, None)
@@ -221,12 +221,12 @@ async def test_response_collection():
     try:
         service = get_service()
         
-        # Register test AIs
+        # Register test CIs
         ai_ids = ["test-ai-1", "test-ai-2"]
         for ai_id in ai_ids:
             service.register_ai(ai_id, None, None)
         
-        # Send to multiple AIs using send_to_all
+        # Send to multiple CIs using send_to_all
         msg_ids = service.send_to_all("collection test", ai_ids)
         
         # Process

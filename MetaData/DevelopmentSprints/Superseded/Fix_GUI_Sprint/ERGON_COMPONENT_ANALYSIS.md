@@ -4,7 +4,7 @@ This document analyzes the Ergon component to prepare for implementing the Direc
 
 ## Component Structure
 
-The Ergon component is a complex AI agent management interface with multiple tabs, modals, and forms:
+The Ergon component is a complex CI agent management interface with multiple tabs, modals, and forms:
 
 ### Main Structure
 - Header with title and control buttons (refresh, settings)

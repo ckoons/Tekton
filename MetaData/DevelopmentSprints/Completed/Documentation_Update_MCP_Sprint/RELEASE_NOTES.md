@@ -6,9 +6,9 @@
 
 ### New Features
 - **MCP Server**: aish now runs an MCP (Model Context Protocol) server on port 8118
-- **Unified AI Interface**: All UI chat components now route through aish MCP
+- **Unified CI Interface**: All UI chat components now route through aish MCP
 - **Management Commands**: Added `aish status`, `aish restart`, `aish logs`, and `aish debug-mcp` commands
-- **Streaming Support**: MCP server supports Server-Sent Events for streaming AI responses
+- **Streaming Support**: MCP server supports Server-Sent Events for streaming CI responses
 - **Comprehensive Testing**: Full test suite for MCP endpoints
 
 ### API Changes
@@ -17,8 +17,8 @@
   - `/api/mcp/v2/capabilities` - MCP discovery
   - `/api/mcp/v2/tools/send-message` - Send message to specific AI
   - `/api/mcp/v2/tools/team-chat` - Broadcast to all team members
-  - `/api/mcp/v2/tools/list-ais` - List available AIs
-  - `/api/mcp/v2/tools/forward` - Manage AI forwarding
+  - `/api/mcp/v2/tools/list-ais` - List available CIs
+  - `/api/mcp/v2/tools/forward` - Manage CI forwarding
   - `/api/mcp/v2/tools/project-forward` - Project CI forwarding
   - `/api/mcp/v2/tools/purpose` - Terminal purpose management
   - `/api/mcp/v2/tools/terma-*` - Terminal communication
@@ -26,7 +26,7 @@
 ### UI Updates
 - **window.AIChat**: Now routes all messages through aish MCP
 - **aishUrl() function**: Added to tekton-urls.js for MCP URL building
-- **AI Name Fixes**: All UI components use correct AI names without '-ai' suffix
+- **AI Name Fixes**: All UI components use correct CI names without '-ai' suffix
 
 ### Infrastructure Changes
 - **Port Configuration**: AISH_MCP_PORT (8118) exported to UI environment
@@ -34,7 +34,7 @@
 
 ## Breaking Changes
 
-1. **AI Names**: UI components must use base AI names without '-ai' suffix
+1. **AI Names**: UI components must use base CI names without '-ai' suffix
    - Before: `numa-ai`, `apollo-ai`, `athena-ai`
    - After: `numa`, `apollo`, `athena`
 
@@ -50,7 +50,7 @@
 
 ### For UI Components
 
-1. Update AI names in your component:
+1. Update CI names in your component:
    ```javascript
    // Before
    window.AIChat.sendMessage('numa-ai', message);
@@ -59,7 +59,7 @@
    window.AIChat.sendMessage('numa', message);
    ```
 
-2. Ensure using window.AIChat for all AI communication:
+2. Ensure using window.AIChat for all CI communication:
    ```javascript
    // All messages now route through aish MCP
    const response = await window.AIChat.sendMessage('numa', message);

@@ -75,7 +75,7 @@ class TektonExtractor:
         },
         'engram': {
             'name': 'Engram Memory System',
-            'description': 'Persistent memory and context management for AIs',
+            'description': 'Persistent memory and context management for CIs',
             'capabilities': ['memory', 'context', 'persistence'],
             'interfaces': {
                 'inputs': [{'name': 'memory_key', 'type': 'string'}],

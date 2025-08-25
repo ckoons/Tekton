@@ -125,7 +125,7 @@ class CIKiller:
         Kill all CI specialists in this environment.
         
         Returns:
-            Number of AIs killed
+            Number of CIs killed
         """
         killed_count = 0
         
@@ -166,7 +166,7 @@ class CIKiller:
             targets: List of CI IDs or component names
             
         Returns:
-            Number of AIs killed
+            Number of CIs killed
         """
         killed_count = 0
         
@@ -213,7 +213,7 @@ def main():
     
     # Show what will be killed
     if not args.force and 'all' not in [t.lower() for t in args.targets]:
-        print(f"Will attempt to terminate AIs for: {', '.join(args.targets)}")
+        print(f"Will attempt to terminate CIs for: {', '.join(args.targets)}")
         print(f"Environment CI port base: {killer.ai_port_base}")
         
         response = input("\nContinue? [y/N]: ")
@@ -221,7 +221,7 @@ def main():
             print("Aborted.")
             sys.exit(0)
     
-    # Kill AIs
+    # Kill CIs
     killed = killer.kill_multiple(args.targets)
     print(f"Terminated {killed} CI specialist(s)")
 

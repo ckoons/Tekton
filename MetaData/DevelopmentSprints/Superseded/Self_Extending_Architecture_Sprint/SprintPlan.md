@@ -199,4 +199,4 @@ This sprint will be considered successful if:
 - Self-modifying code patterns
 - Casey's decades-persistent code examples
 - Biological system growth patterns
-- Safe AI development practices
+- Safe CI development practices

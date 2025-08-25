@@ -2,7 +2,7 @@
 
 ## Phase 1: Foundation (Week 1)
 
-### 1.1 Create Hephaestus AI Specialist
+### 1.1 Create Hephaestus CI Specialist
 - [ ] Define personality and expertise areas
 - [ ] Create system prompts that embody Hephaestus knowledge
 - [ ] Implement core conversation patterns
@@ -29,13 +29,13 @@
   - Cold storage: Full documentation
 
 ### 1.3 Integration Planning
-- [ ] Review Rhetor's AI Specialist infrastructure
+- [ ] Review Rhetor's CI Specialist infrastructure
 - [ ] Plan Hermes messaging integration
 - [ ] Design MCP endpoints for training queries
 
 ## Phase 2: Core Implementation (Week 2)
 
-### 2.1 AI Specialist Implementation
+### 2.1 CI Specialist Implementation
 ```python
 # In rhetor/specialists/hephaestus_specialist.py
 class HephaestusSpecialist:
@@ -113,7 +113,7 @@ async def diagnose_ui_problem(error_context: Dict) -> Dict:
 ## Phase 4: Integration & Polish (Week 4)
 
 ### 4.1 Hermes Integration
-- [ ] Register as AI specialist with Rhetor
+- [ ] Register as CI specialist with Rhetor
 - [ ] Set up message routing
 - [ ] Implement streaming responses
 - [ ] Add conversation persistence
@@ -132,8 +132,8 @@ async def diagnose_ui_problem(error_context: Dict) -> Dict:
 
 ## Deliverables
 
-1. **Hephaestus AI Specialist**
-   - Fully functional AI that understands Hephaestus deeply
+1. **Hephaestus CI Specialist**
+   - Fully functional CI that understands Hephaestus deeply
    - Integrated with Rhetor's specialist system
    - Available through Hermes messaging
 

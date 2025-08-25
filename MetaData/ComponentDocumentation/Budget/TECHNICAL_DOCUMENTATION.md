@@ -509,7 +509,7 @@ Planned future enhancements include:
 Current technical limitations include:
 
 1. **Limited Provider Coverage**: Not all LLM providers have complete pricing data
-2. **No AI-Generated Content Detection**: No differentiation between AI and human-generated content
+2. **No AI-Generated Content Detection**: No differentiation between CI and human-generated content
 3. **Basic Migration Tools**: Migration tools need enhancement for complex scenarios
 4. **Limited Historical Analysis**: Basic historical analysis capabilities
 5. **No Real-time Monitoring**: Dashboard updates are not real-time in the initial version

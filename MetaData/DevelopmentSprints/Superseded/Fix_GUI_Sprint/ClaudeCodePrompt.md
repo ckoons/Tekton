@@ -3,7 +3,7 @@
 ## Overview
 This document serves as the prompt for the fifth Claude Code session working on the Fix GUI Sprint. In previous sessions, we successfully implemented the Athena and Ergon components and refactored the UI manager into manageable chunks. Now we're ready to implement the Hermes component, which is the next in our roadmap.
 
-Tekton is an intelligent orchestration system that coordinates multiple AI models and resources to efficiently solve complex software engineering problems. This Development Sprint focuses on implementing reliable UI components following our standardized patterns.
+Tekton is an intelligent orchestration system that coordinates multiple CI models and resources to efficiently solve complex software engineering problems. This Development Sprint focuses on implementing reliable UI components following our standardized patterns.
 
 **IMPORTANT: The previous pragmatic refactoring in Session 4 was successful, and we now have working Athena and Ergon components with a maintainable UI architecture. Continue following the same direct HTML injection pattern for the Hermes component.**
 

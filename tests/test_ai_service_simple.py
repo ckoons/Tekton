@@ -80,10 +80,10 @@ def test_send_message_async():
         return False
 
 def test_send_to_all():
-    """Test sending to multiple AIs"""
+    """Test sending to multiple CIs"""
     service = CIService(debug=True)
     
-    # Register multiple AIs
+    # Register multiple CIs
     ai_ids = ["ai-1", "ai-2", "ai-3"]
     for ai_id in ai_ids:
         service.register_ai(ai_id, None, None)
@@ -108,7 +108,7 @@ async def test_collect_responses():
     """Test collecting responses as they arrive"""
     service = CIService(debug=True)
     
-    # Register AIs with mock sockets
+    # Register CIs with mock sockets
     mocks = {
         "fast-ci": MockSocket("fast-ci", "Fast response"),
         "slow-ci": MockSocket("slow-ci", "Slow response")

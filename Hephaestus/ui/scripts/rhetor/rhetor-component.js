@@ -693,7 +693,7 @@ console.log('[FILE_TRACE] Loading: rhetor-component.js');
         // Populate component status grid
         if (componentGrid) {
           const components = [
-            { name: 'Rhetor', status: 'active', metrics: ['42 req/min', '3 AIs active'] },
+            { name: 'Rhetor', status: 'active', metrics: ['42 req/min', '3 CIs active'] },
             { name: 'Hermes', status: 'active', metrics: ['WebSocket', '5 clients'] },
             { name: 'Athena', status: 'active', metrics: ['71 entities', 'Graph OK'] },
             { name: 'Apollo', status: 'active', metrics: ['Executing', '2 tasks'] },

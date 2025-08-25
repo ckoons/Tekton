@@ -4,7 +4,7 @@
 
 ### 1. Created Connection Pool (`shared/ai/connection_pool.py`)
 - Singleton pattern for global connection management
-- Maintains persistent socket connections to all AIs
+- Maintains persistent socket connections to all CIs
 - Automatic reconnection on failure
 - Health monitoring with periodic pings
 - Connection reuse across all Tekton components

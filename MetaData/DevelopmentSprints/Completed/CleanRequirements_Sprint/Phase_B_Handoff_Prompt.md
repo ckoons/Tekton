@@ -13,7 +13,7 @@ You're picking up work on the CleanRequirements Sprint Phase 2. Phase A is compl
 2. **Fixed Rhetor Process Management**:
    - Rhetor was resisting termination due to outdated signal handling
    - Created run_rhetor_fixed.sh with proper cross-platform signal handling
-   - Ready for future child AI process management
+   - Ready for future child CI process management
 
 3. **Documentation Cleanup**:
    - Moved 26 misplaced documentation files to MetaData
@@ -80,7 +80,7 @@ fastmcp>=1.0.0  # if using MCP
 
 ### Working with Casey
 - Casey has 50+ years of software engineering experience
-- He's teaching AI assistants proper software engineering
+- He's teaching CI assistants proper software engineering
 - Be clear about what you're doing and why
 - Create TODO lists for planning
 - Ask questions when uncertain

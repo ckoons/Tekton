@@ -1,37 +1,37 @@
-# AI Platform Integration Sprint Plan
+# CI Platform Integration Sprint Plan
 
 ## Sprint Overview
 
-**Sprint Name**: AI Platform Integration Sprint  
-**Sprint Goal**: Integrate AI specialists throughout Tekton, creating a platform-wide AI ecosystem with Numa as the platform mentor and individual AI specialists for each component.  
+**Sprint Name**: CI Platform Integration Sprint  
+**Sprint Goal**: Integrate CI specialists throughout Tekton, creating a platform-wide CI ecosystem with Numa as the platform mentor and individual CI specialists for each component.  
 **Duration**: 2-3 weeks  
 **Priority**: High  
 
 ## Sprint Objectives
 
-1. Create shared AI management utilities (launcher, killer, status)
-2. Implement AI lifecycle management with TEKTON_REGISTER_AI flag
+1. Create shared CI management utilities (launcher, killer, status)
+2. Implement CI lifecycle management with TEKTON_REGISTER_AI flag
 3. Create Numa (Platform AI) and Noesis (Discovery) components
-4. Integrate AI socket registry with component lifecycle
-5. Implement AI health monitoring and auto-recovery
+4. Integrate CI socket registry with component lifecycle
+5. Implement CI health monitoring and auto-recovery
 6. Update Rhetor UI to include Numa as the first tab
-7. Enable Team Chat across all component AIs
+7. Enable Team Chat across all component CIs
 
 ## Key Design Decisions
 
-### 1. AI Process Model
-- **Independent Processes**: Each AI runs as a separate process
+### 1. CI Process Model
+- **Independent Processes**: Each CI runs as a separate process
 - **Benefits**: Isolation, fault tolerance, resource management
 - **Communication**: Via socket registry (Unix philosophy)
 
 ### 2. Environment Control
 ```bash
-# Enable/disable AI registration
+# Enable/disable CI registration
 export TEKTON_REGISTER_AI=true   # Production mode
 export TEKTON_REGISTER_AI=false  # Development mode
 ```
 
-### 3. AI Monitoring Strategy
+### 3. CI Monitoring Strategy
 - Track "last spoke" timestamp
 - 5-minute timeout before health check
 - Send ESC character to check responsiveness
@@ -47,10 +47,10 @@ export TEKTON_REGISTER_AI=false  # Development mode
 
 ### Phase 1: Foundation (Days 1-3)
 
-1. **Create AI Utilities**
-   - `tekton_ai_launcher.py` - Launch AI processes
-   - `tekton_ai_killer.py` - Terminate AI processes
-   - `tekton_ai_status.py` - Check AI health
+1. **Create CI Utilities**
+   - `tekton_ai_launcher.py` - Launch CI processes
+   - `tekton_ai_killer.py` - Terminate CI processes
+   - `tekton_ai_status.py` - Check CI health
    - `AIRegistryClient` - Shared registry access
 
 2. **Update Port Assignments**
@@ -83,17 +83,17 @@ export TEKTON_REGISTER_AI=false  # Development mode
      - Call `tekton_ai_killer.py` before component shutdown
      - Kill Numa before other components
    - Modify `enhanced_tekton_status.py`
-     - Include AI status from registry
+     - Include CI status from registry
 
-2. **Implement AI Health Monitoring**
+2. **Implement CI Health Monitoring**
    - Last spoke timestamp tracking
    - ESC character health check
    - Auto-restart logic
    - Debug log parsing
 
-### Phase 3: AI Implementation (Days 7-10)
+### Phase 3: CI Implementation (Days 7-10)
 
-1. **Base AI Worker Class**
+1. **Base CI Worker Class**
    ```python
    class AISpecialistWorker:
        - Socket polling loop
@@ -102,12 +102,12 @@ export TEKTON_REGISTER_AI=false  # Development mode
        - Health reporting
    ```
 
-2. **Rhetor AI Specialist**
+2. **Rhetor CI Specialist**
    - Orchestrator role
    - Team chat moderation
    - Claude 4 Sonnet integration
 
-3. **Apollo AI Specialist**
+3. **Apollo CI Specialist**
    - Executive coordinator role
    - Strategic analysis
    - Claude 4 Sonnet integration
@@ -127,29 +127,29 @@ export TEKTON_REGISTER_AI=false  # Development mode
 2. **Rhetor UI Updates**
    - Add Numa to all relevant screens
    - Add Noesis placeholder
-   - Update team chat to show all AIs
+   - Update team chat to show all CIs
 
 ### Phase 5: Testing & Documentation (Days 13-14)
 
 1. **Testing**
-   - Unit tests for AI utilities
+   - Unit tests for CI utilities
    - Integration tests for lifecycle
    - End-to-end team chat test
    - Performance and timeout tests
 
 2. **Documentation**
-   - Update AI Socket Registry docs
-   - Create AI Lifecycle Guide
+   - Update CI Socket Registry docs
+   - Create CI Lifecycle Guide
    - Update component documentation
    - Create troubleshooting guide
 
 ## Success Criteria
 
-1. ✓ TEKTON_REGISTER_AI flag controls AI lifecycle
-2. ✓ AI processes start/stop with components
+1. ✓ TEKTON_REGISTER_AI flag controls CI lifecycle
+2. ✓ CI processes start/stop with components
 3. ✓ Numa launches after full stack, terminates first
-4. ✓ Health monitoring detects and recovers unresponsive AIs
-5. ✓ Team Chat works with multiple AIs
+4. ✓ Health monitoring detects and recovers unresponsive CIs
+5. ✓ Team Chat works with multiple CIs
 6. ✓ Numa appears as first UI tab
 7. ✓ All utilities have proper error handling
 
@@ -161,7 +161,7 @@ export TEKTON_REGISTER_AI=false  # Development mode
    - Budget tracking via Penia
 
 2. **Process Management Complexity**
-   - Start with 2-3 AIs (Rhetor, Apollo, Numa)
+   - Start with 2-3 CIs (Rhetor, Apollo, Numa)
    - Gradual rollout to all components
    - Clear logging and monitoring
 
@@ -174,9 +174,9 @@ export TEKTON_REGISTER_AI=false  # Development mode
 
 1. Advanced Numa coaching behaviors
 2. Inter-AI collaboration patterns
-3. Context sharing between AIs
-4. AI performance analytics
-5. Dynamic AI scaling
+3. Context sharing between CIs
+4. CI performance analytics
+5. Dynamic CI scaling
 
 ## Dependencies
 

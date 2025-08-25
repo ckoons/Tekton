@@ -332,7 +332,7 @@ if (chatInput && sendButton) {
 
 ## LLM Integration
 
-The component now integrates with the Hermes LLM connector to provide AI chat capabilities:
+The component now integrates with the Hermes LLM connector to provide CI chat capabilities:
 
 ```javascript
 // Use LLM integration if available

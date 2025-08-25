@@ -2,7 +2,7 @@
 
 ## Overview
 
-Phase 4A of the Rhetor AI Integration Sprint introduces real-time streaming support for AI responses using Server-Sent Events (SSE). This enables immediate feedback during long-running AI operations and provides progress indicators for better user experience.
+Phase 4A of the Rhetor CI Integration Sprint introduces real-time streaming support for CI responses using Server-Sent Events (SSE). This enables immediate feedback during long-running CI operations and provides progress indicators for better user experience.
 
 ## Features
 
@@ -12,8 +12,8 @@ Phase 4A of the Rhetor AI Integration Sprint introduces real-time streaming supp
 - **Benefits**: Immediate feedback, progress tracking, chunked responses
 
 ### 2. Streaming-Enabled Tools
-Currently, one AI orchestration tool supports streaming:
-- `SendMessageToSpecialistStream`: Stream AI specialist responses in real-time
+Currently, one CI orchestration tool supports streaming:
+- `SendMessageToSpecialistStream`: Stream CI specialist responses in real-time
 
 Note: Team Chat functionality is pending backend implementation. The UI currently shows a placeholder message when Team Chat is used.
 

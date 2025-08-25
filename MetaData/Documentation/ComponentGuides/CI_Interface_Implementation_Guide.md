@@ -1,16 +1,16 @@
-# AI Interface Implementation Guide
+# CI Interface Implementation Guide
 
 ## Overview
 
-This guide provides comprehensive instructions for implementing AI interfaces in Tekton components. Every Tekton component should leverage AI capabilities to enhance user experience, automate complex tasks, and provide intelligent insights.
+This guide provides comprehensive instructions for implementing CI interfaces in Tekton components. Every Tekton component should leverage CI capabilities to enhance user experience, automate complex tasks, and provide intelligent insights.
 
-**Important Update (June 2025)**: This guide has been updated to use the new unified AI system. All examples now use the real AI infrastructure in `/Tekton/shared/ai/` that connects to Greek Chorus AIs on ports 45000-50000.
+**Important Update (June 2025)**: This guide has been updated to use the new unified CI system. All examples now use the real CI infrastructure in `/Tekton/shared/ai/` that connects to Greek Chorus CIs on ports 45000-50000.
 
-## Core AI Integration Points
+## Core CI Integration Points
 
-### 1. Chat Interface (Primary AI Interaction)
+### 1. Chat Interface (Primary CI Interaction)
 
-The chat interface is the primary way users interact with AI in your component. It's provided by the Tekton LLM Client and integrates seamlessly with Hephaestus.
+The chat interface is the primary way users interact with CI in your component. It's provided by the Tekton LLM Client and integrates seamlessly with Hephaestus.
 
 #### Basic Setup
 
@@ -36,7 +36,7 @@ initializeAdvancedChat() {
         // Define multiple chat contexts
         contexts: {
             main: {
-                systemPrompt: `You are an AI assistant for MyComponent. 
+                systemPrompt: `You are an CI assistant for MyComponent. 
                               Help users with operations, answer questions, 
                               and provide guidance on best practices.`,
                 tools: ['analyze_data', 'execute_operation', 'get_status'],
@@ -75,9 +75,9 @@ initializeAdvancedChat() {
 }
 ```
 
-### 2. MCP Tools (Programmatic AI Access)
+### 2. MCP Tools (Programmatic CI Access)
 
-Expose your component's functionality as MCP tools that AI agents can discover and use.
+Expose your component's functionality as MCP tools that CI agents can discover and use.
 
 #### Basic Tool Implementation
 
@@ -97,7 +97,7 @@ async def analyze_data(
     include_recommendations: bool = True
 ) -> Dict[str, Any]:
     """
-    Analyze data using AI capabilities.
+    Analyze data using CI capabilities.
     
     This tool uses Rhetor's LLM capabilities to analyze data and provide insights.
     
@@ -113,10 +113,10 @@ async def analyze_data(
         >>> await analyze_data('{"sales": [100, 150, 120]}', "patterns")
         {"patterns": ["Upward trend with mid-period dip"], "insights": [...]}
     """
-    # Use simple AI system for analysis
+    # Use simple CI system for analysis
     from shared.ai.simple_ai import ai_send
     
-    # Apollo AI is best for code/data analysis on port 45012
+    # Apollo CI is best for code/data analysis on port 45012
     ai_id = "apollo-ai"
     host = "localhost"
     port = 45012
@@ -179,7 +179,7 @@ async def intelligent_optimization(
     optimization_level: str = "balanced"
 ) -> Dict[str, Any]:
     """
-    Perform intelligent optimization using multiple AI components.
+    Perform intelligent optimization using multiple CI components.
     
     This advanced tool coordinates between Engram (memory), Apollo (planning),
     and Sophia (research) to provide comprehensive optimization recommendations.
@@ -320,7 +320,7 @@ async def execute_natural_command(
         <input type="text" 
                class="mycomponent__ai-input"
                id="ai-command-input"
-               placeholder="Ask AI anything about MyComponent..."
+               placeholder="Ask CI anything about MyComponent..."
                autocomplete="off">
         <button class="mycomponent__ai-submit" onclick="submitAICommand()">
             <span>→</span>
@@ -331,7 +331,7 @@ async def execute_natural_command(
 ```
 
 ```javascript
-// AI Command Palette implementation
+// CI Command Palette implementation
 class AICommandPalette {
     constructor(component) {
         this.component = component;
@@ -342,7 +342,7 @@ class AICommandPalette {
     }
     
     setupEventListeners() {
-        // Real-time AI suggestions
+        // Real-time CI suggestions
         this.input.addEventListener('input', 
             this.debounce(this.getAISuggestions.bind(this), 300)
         );
@@ -401,7 +401,7 @@ class AICommandPalette {
             this.displaySuggestions(suggestions);
             
         } catch (error) {
-            console.error('Failed to get AI suggestions:', error);
+            console.error('Failed to get CI suggestions:', error);
         }
     }
     
@@ -491,10 +491,10 @@ class AICommandPalette {
 }
 ```
 
-### 2. AI Insights Panel
+### 2. CI Insights Panel
 
 ```html
-<!-- AI Insights Panel -->
+<!-- CI Insights Panel -->
 <div class="mycomponent__ai-insights-panel">
     <div class="mycomponent__panel-header">
         <h3>AI Insights</h3>
@@ -517,7 +517,7 @@ class AICommandPalette {
              id="live-insights">
             <h4>Live Analysis</h4>
             <div class="mycomponent__live-feed">
-                <!-- Real-time AI insights appear here -->
+                <!-- Real-time CI insights appear here -->
             </div>
         </div>
         
@@ -533,7 +533,7 @@ class AICommandPalette {
         <div class="mycomponent__insight-card">
             <h4>Predictions</h4>
             <div class="mycomponent__predictions" id="ai-predictions">
-                <!-- AI predictions -->
+                <!-- CI predictions -->
             </div>
         </div>
         
@@ -599,7 +599,7 @@ class ConfigurationAssistant {
             Object.assign(this.configData, aiResponse.extracted_values);
         }
         
-        // Add AI response to conversation
+        // Add CI response to conversation
         this.conversation.push({
             role: 'assistant',
             content: aiResponse.message,
@@ -634,7 +634,7 @@ class ConfigurationAssistant {
 
 ### 1. Context-Aware AI
 
-Always provide rich context to AI for better responses:
+Always provide rich context to CI for better responses:
 
 ```python
 @mcp.tool()
@@ -650,7 +650,7 @@ async def get_contextual_help(topic: str) -> Dict[str, Any]:
         "current_performance": await get_performance_metrics()
     }
     
-    # Use context for better AI responses
+    # Use context for better CI responses
     rhetor = mcp.get_dependency("rhetor")
     response = await rhetor.call_tool(
         "generate_contextual_help",
@@ -664,9 +664,9 @@ async def get_contextual_help(topic: str) -> Dict[str, Any]:
     return response
 ```
 
-### 2. Progressive AI Enhancement
+### 2. Progressive CI Enhancement
 
-Start with basic AI features and progressively enhance:
+Start with basic CI features and progressively enhance:
 
 ```javascript
 class ProgressiveAI {
@@ -723,9 +723,9 @@ class ProgressiveAI {
 }
 ```
 
-### 3. AI Feedback Loop
+### 3. CI Feedback Loop
 
-Implement feedback mechanisms to improve AI responses:
+Implement feedback mechanisms to improve CI responses:
 
 ```python
 @mcp.tool()
@@ -734,7 +734,7 @@ async def record_ai_feedback(
     feedback_type: str,  # helpful, not_helpful, wrong
     details: str = None
 ) -> Dict[str, Any]:
-    """Record user feedback on AI interactions."""
+    """Record user feedback on CI interactions."""
     
     # Store feedback in Engram
     engram = mcp.get_dependency("engram")
@@ -761,7 +761,7 @@ async def record_ai_feedback(
 
 ### 4. Performance Optimization
 
-Cache AI responses and use appropriate models:
+Cache CI responses and use appropriate models:
 
 ```python
 class AICache:
@@ -791,14 +791,14 @@ ai_cache = AICache(ttl=1800)  # 30 minute cache
 
 @mcp.tool()
 async def get_ai_analysis(data: str) -> Dict[str, Any]:
-    """Get AI analysis with intelligent caching."""
+    """Get CI analysis with intelligent caching."""
     
     cache_key = f"analysis_{hash(data)}"
     
     async def compute_analysis():
         from shared.ai.simple_ai import ai_send
         
-        # Use Apollo AI for analysis on port 45012
+        # Use Apollo CI for analysis on port 45012
         response = await ai_send("apollo-ai", data, "localhost", 45012)
         
         return await client.send_message(
@@ -810,9 +810,9 @@ async def get_ai_analysis(data: str) -> Dict[str, Any]:
     return await ai_cache.get_or_compute(cache_key, compute_analysis)
 ```
 
-## Testing AI Features
+## Testing CI Features
 
-### 1. Mock AI Responses for Testing
+### 1. Mock CI Responses for Testing
 
 ```python
 # test_ai_features.py
@@ -840,10 +840,10 @@ async def test_ai_analysis():
         assert result["results"]["analysis"] == "Mock analysis result"
 ```
 
-### 2. AI Feature Flags
+### 2. CI Feature Flags
 
 ```javascript
-// Enable/disable AI features for testing
+// Enable/disable CI features for testing
 class AIFeatureFlags {
     static flags = {
         enableNaturalCommands: true,
@@ -895,29 +895,29 @@ if (AIFeatureFlags.isEnabled('enableNaturalCommands')) {
 
 ## Summary
 
-Implementing AI interfaces in Tekton components involves:
+Implementing CI interfaces in Tekton components involves:
 
-1. **Chat Integration** - Primary user-facing AI interface
-2. **MCP Tools** - Expose functionality for AI agents
+1. **Chat Integration** - Primary user-facing CI interface
+2. **MCP Tools** - Expose functionality for CI agents
 3. **Natural Language** - Enable conversational control
 4. **Smart UI Elements** - AI-powered interface components
-5. **Multi-AI Coordination** - Leverage multiple AI services
-6. **Performance Optimization** - Cache and optimize AI calls
+5. **Multi-AI Coordination** - Leverage multiple CI services
+6. **Performance Optimization** - Cache and optimize CI calls
 7. **Progressive Enhancement** - Start simple, add complexity
-8. **Feedback Loops** - Continuously improve AI responses
+8. **Feedback Loops** - Continuously improve CI responses
 
-Remember: AI should enhance, not complicate. Keep the user experience simple while leveraging powerful AI capabilities behind the scenes.
+Remember: CI should enhance, not complicate. Keep the user experience simple while leveraging powerful CI capabilities behind the scenes.
 
-## Using the Unified AI System
+## Using the Unified CI System
 
-The examples in this guide now use the unified AI system located in `/Tekton/shared/ai/`. Key components:
+The examples in this guide now use the unified CI system located in `/Tekton/shared/ai/`. Key components:
 
 1. **AISocketClient** - Handles socket communication with streaming support
 2. **simple_ai** - Direct socket communication interface  
-3. **Fixed port mapping** - Deterministic AI port assignment (45000 + component offset)
-4. **Event System** - Real-time updates about AI availability
+3. **Fixed port mapping** - Deterministic CI port assignment (45000 + component offset)
+4. **Event System** - Real-time updates about CI availability
 
 For more details, see:
 - `/Tekton/shared/ai/socket_client.py` - Socket communication with streaming
-- `/Tekton/shared/ai/simple_ai.py` - Simple AI communication interface
+- `/Tekton/shared/ai/simple_ai.py` - Simple CI communication interface
 - `/Tekton/shared/ai/ai_service_simple.py` - Core message queue service

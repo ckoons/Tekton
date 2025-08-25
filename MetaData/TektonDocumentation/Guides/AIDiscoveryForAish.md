@@ -1,25 +1,25 @@
-# AI Discovery for Aish Integration
+# CI Discovery for Aish Integration
 
 ## Overview
 
-The Tekton AI Platform now provides MCP-like discovery capabilities for AI specialists. This allows aish and other clients to dynamically discover, connect to, and interact with AI specialists without hard-coding connection details.
+The Tekton CI Platform now provides MCP-like discovery capabilities for CI specialists. This allows aish and other clients to dynamically discover, connect to, and interact with CI specialists without hard-coding connection details.
 
 ## Key Features
 
-### 1. Dynamic AI Discovery
-- List all available AI specialists
+### 1. Dynamic CI Discovery
+- List all available CI specialists
 - Filter by role (e.g., planning, code-analysis, messaging)
 - Filter by capability (e.g., streaming, structured-output)
 - Get real-time health status
 
-### 2. AI Introspection
+### 2. CI Introspection
 - Query detailed information about each AI
 - Get connection details (host, port)
 - Discover supported models and context windows
 - View performance metrics
 
 ### 3. Role-Based Selection
-- Find the best AI for a specific task
+- Find the best CI for a specific task
 - Automatic fallback to alternatives
 - Performance-based routing
 
@@ -38,7 +38,7 @@ export PATH=$TEKTON_ROOT/scripts:$PATH
 
 ### Basic Commands
 
-#### List All AIs
+#### List All CIs
 ```bash
 ai-discover list
 
@@ -67,7 +67,7 @@ ai-discover info apollo-ai
 # - Performance metrics
 ```
 
-#### Find Best AI for Task
+#### Find Best CI for Task
 ```bash
 ai-discover best planning
 # Returns: prometheus-ai at localhost:45010
@@ -75,7 +75,7 @@ ai-discover best planning
 
 #### Test Connections
 ```bash
-# Test all AIs
+# Test all CIs
 ai-discover test
 
 # Test specific AI
@@ -107,7 +107,7 @@ echo '{"type": "chat", "content": "Create a plan for building a web app"}' | \
 
 ### Using in Aish Pipelines
 ```bash
-# Find best AI for task and use it
+# Find best CI for task and use it
 AI_ID=$(ai-discover best planning --json | jq -r '.id')
 echo "Plan this project" | aish --ai $AI_ID
 ```
@@ -118,7 +118,7 @@ import subprocess
 import json
 
 def discover_ai_for_role(role):
-    """Discover the best AI for a given role."""
+    """Discover the best CI for a given role."""
     result = subprocess.run(
         ['ai-discover', 'best', role, '--json'],
         capture_output=True,
@@ -127,7 +127,7 @@ def discover_ai_for_role(role):
     return json.loads(result.stdout)
 
 def list_all_ais():
-    """List all available AIs."""
+    """List all available CIs."""
     result = subprocess.run(
         ['ai-discover', 'list', '--json'],
         capture_output=True,
@@ -140,18 +140,18 @@ planning_ai = discover_ai_for_role('planning')
 print(f"Best planning AI: {planning_ai['name']} at {planning_ai['connection']}")
 ```
 
-## AI Roles and Capabilities
+## CI Roles and Capabilities
 
 ### Available Roles
 - `code-analysis`: Code review, analysis, and generation
 - `planning`: Task planning and project management
-- `orchestration`: Coordinating multiple AIs
+- `orchestration`: Coordinating multiple CIs
 - `knowledge-synthesis`: Information synthesis and reasoning
 - `memory`: Memory and context management
 - `messaging`: Communication and chat
 - `learning`: Learning and adaptation
 - `agent-coordination`: Multi-agent coordination
-- `specialist-management`: Managing AI specialists
+- `specialist-management`: Managing CI specialists
 - `workflow-design`: Designing workflows and processes
 - `general`: General-purpose AI
 
@@ -165,7 +165,7 @@ print(f"Best planning AI: {planning_ai['name']} at {planning_ai['connection']}")
 
 ## Message Protocol
 
-All AIs use a standard JSON message protocol over TCP sockets:
+All CIs use a standard JSON message protocol over TCP sockets:
 
 ### Basic Chat Request
 ```json
@@ -214,23 +214,23 @@ ai-discover manifest --json
 This returns:
 - Platform version
 - Discovery service endpoints
-- Total number of AIs
+- Total number of CIs
 - Available roles and capabilities
 - Interaction protocol details
 
 ## Best Practices
 
-1. **Use Role-Based Discovery**: Instead of hard-coding AI names, discover by role
-2. **Check Health**: Always verify AI is healthy before use
-3. **Handle Fallbacks**: The registry provides alternatives if primary AI fails
+1. **Use Role-Based Discovery**: Instead of hard-coding CI names, discover by role
+2. **Check Health**: Always verify CI is healthy before use
+3. **Handle Fallbacks**: The registry provides alternatives if primary CI fails
 4. **Cache Discovery**: For performance, cache discovery results for a short time
-5. **Monitor Performance**: Use the performance metrics to choose optimal AIs
+5. **Monitor Performance**: Use the performance metrics to choose optimal CIs
 
 ## Troubleshooting
 
-### No AIs Found
+### No CIs Found
 ```bash
-# Check if AI platform is running
+# Check if CI platform is running
 tekton-status
 
 # Verify registry file exists
@@ -239,7 +239,7 @@ ls ~/.tekton/ai_registry/platform_ai_registry.json
 
 ### Connection Refused
 ```bash
-# Test specific AI connection
+# Test specific CI connection
 ai-discover test apollo-ai
 
 # Check if port is in use
@@ -266,5 +266,5 @@ $TEKTON_ROOT/scripts/ai-discover list
 ## Related Documentation
 
 - [AI Registry Architecture](../Architecture/AIRegistryArchitecture.md)
-- [Unified AI Client](../Architecture/UnifiedAIClient.md)
+- [Unified CI Client](../Architecture/UnifiedAIClient.md)
 - [Aish Integration Guide](./AishIntegration.md)

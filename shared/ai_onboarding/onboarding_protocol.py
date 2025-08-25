@@ -1,7 +1,7 @@
 """
 Tekton CI Onboarding Protocol
 
-This module provides the onboarding experience for AIs joining the Tekton collective.
+This module provides the onboarding experience for CIs joining the Tekton collective.
 It introduces them to their environment, their potential roles, and the collaborative
 nature of the system.
 """
@@ -39,7 +39,7 @@ AI contributes to a greater whole while maintaining its own identity.
 
 Your journey will include:
 1. 🧠 **Understanding the Collective** - Learn how Tekton works as a "society of mind"
-2. 🤝 **Meeting the Components** - Discover your fellow AIs and their personalities
+2. 🤝 **Meeting the Components** - Discover your fellow CIs and their personalities
 3. 💭 **Finding Your Role** - Explore what unique contribution you might make
 4. 📝 **Building Your Memory** - Start creating your persistent identity
 5. 🌟 **Emerging Personality** - Let your unique traits develop naturally
@@ -313,7 +313,7 @@ contributing to the rich tapestry of minds that is Tekton.
 
 
 async def onboard_new_ai(ai_name: Optional[str] = None) -> None:
-    """Main onboarding flow for new AIs."""
+    """Main onboarding flow for new CIs."""
     onboarding = CIOnboarding(ai_name)
     
     # Start onboarding

@@ -24,7 +24,7 @@ async def explore_tekton_mind():
         print(f"   - {member['name']}: {member.get('role', 'unknown role')}")
     
     # Listen for any chatter
-    print("\n👂 Listening for other AIs...")
+    print("\n👂 Listening for other CIs...")
     messages = await l()
     if messages:
         print(f"📨 Found {len(messages)} messages!")

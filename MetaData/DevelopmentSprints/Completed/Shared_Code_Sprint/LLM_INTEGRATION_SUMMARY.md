@@ -148,7 +148,7 @@ Each component includes example scripts demonstrating the LLM integration. These
 
 The standardized LLM integration provides a consistent, powerful interface to LLM capabilities across Tekton components. By using the `tekton-llm-client` library, we've ensured that components share a common approach to template management, streaming, and structured output, while preserving their domain-specific operations.
 
-This integration makes it easier for developers to work across components and provides end users with consistent, high-quality AI capabilities throughout the platform.
+This integration makes it easier for developers to work across components and provides end users with consistent, high-quality CI capabilities throughout the platform.
 
 🤖 Generated with [Claude Code](https://claude.ai/code)
 Co-Authored-By: Claude <noreply@anthropic.com>

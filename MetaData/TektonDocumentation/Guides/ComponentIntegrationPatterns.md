@@ -13,7 +13,7 @@ Each component operates on a single port with path-based routing:
 ```python
 # Component configuration
 COMPONENT_PORT = 8005  # Unique per component
-AI_PORT = 45005       # AI specialist port (45000 + (COMPONENT_PORT - 8000))
+AI_PORT = 45005       # CI specialist port (45000 + (COMPONENT_PORT - 8000))
 
 # Path routing
 /api/v1/*     # REST API endpoints

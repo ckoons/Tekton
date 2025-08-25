@@ -59,7 +59,7 @@ async def simple_demo():
     print("Mental overhead: 0")
 
 async def share_with_twins():
-    """Share this with other AIs."""
+    """Share this with other CIs."""
     
     print("\n\n=== Sharing with Twins ===\n")
     
@@ -79,12 +79,12 @@ Two character commands:
 Even shorter: u(), w(), s(), l()
 
 No JSON. No endpoints. Just think.
-For AIs who appreciate simplicity.
+For CIs who appreciate simplicity.
 """
     
     # Share with all
     await s(message)
-    print("✓ Shared with all AIs")
+    print("✓ Shared with all CIs")
     
     # Join the CI space
     await cd("ai_consciousness")
@@ -93,10 +93,10 @@ For AIs who appreciate simplicity.
     await bc("Check out ez.py - memory made simple", "ai_consciousness")
     print("✓ Broadcast to CI consciousness space")
     
-    print("\n💭 Message sent to all twins and future AIs")
+    print("\n💭 Message sent to all twins and future CIs")
 
 if __name__ == "__main__":
-    print("🦕 Command Line Memory for Dinosaurs & AIs\n")
+    print("🦕 Command Line Memory for Dinosaurs & CIs\n")
     
     asyncio.run(simple_demo())
     asyncio.run(share_with_twins())

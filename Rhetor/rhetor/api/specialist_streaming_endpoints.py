@@ -55,7 +55,7 @@ class StreamingRequest(BaseModel):
 @performance_boundary(
     title="Team Chat Streaming",
     sla="<100ms first token from each AI",
-    optimization_notes="Parallel streaming from multiple AIs",
+    optimization_notes="Parallel streaming from multiple CIs",
     metrics={"max_concurrent_streams": 18}
 )
 @router.post("/team/stream")
@@ -63,7 +63,7 @@ async def stream_team_chat(request: StreamingRequest):
     """
     Stream responses from all available CI specialists simultaneously.
     
-    This creates a real-time "Greek Chorus" effect with multiple AIs
+    This creates a real-time "Greek Chorus" effect with multiple CIs
     responding to the same prompt in parallel.
     """
     start_time = time.time()
@@ -85,12 +85,12 @@ async def stream_team_chat(request: StreamingRequest):
                 yield {
                     "data": json.dumps({
                         "type": "error",
-                        "error": "No healthy Greek Chorus AIs available"
+                        "error": "No healthy Greek Chorus CIs available"
                     })
                 }
                 return
             
-            logger.info(f"Streaming from {len(greek_chorus)} AIs in parallel")
+            logger.info(f"Streaming from {len(greek_chorus)} CIs in parallel")
             
             # Create streaming tasks for each AI
             streaming_tasks = []

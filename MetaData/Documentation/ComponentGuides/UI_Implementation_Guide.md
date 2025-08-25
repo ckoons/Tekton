@@ -299,7 +299,7 @@ const MyComponentUI = {
         // Just ensure the container is ready
         const chatContainer = document.getElementById('mycomponent-chat-container');
         if (chatContainer && window.AIChat) {
-            // Chat interface uses aish MCP for all AI communication
+            // Chat interface uses aish MCP for all CI communication
             // Messages are routed through port 8118 (AISH_MCP_PORT)
         }
     },
@@ -411,7 +411,7 @@ function mycomponent_switchChat(chatType) {
     event.target.classList.add('mycomponent__chat-option--active');
     
     // Context switching handled by UI state
-    // All AI messages route through aish MCP
+    // All CI messages route through aish MCP
     
     MyComponentUI.state.currentChat = chatType;
 }
@@ -737,11 +737,11 @@ A navigation tab is automatically added to the LEFT PANEL when the component is 
 
 The chat interface is provided by `window.AIChat` and routes all messages through the aish MCP server on port 8118.
 
-## AI Interface Implementation Details
+## CI Interface Implementation Details
 
 ### Chat Interface Setup
 
-All AI communication goes through the aish MCP server. The window.AIChat interface provides access to all AI capabilities:
+All CI communication goes through the aish MCP server. The window.AIChat interface provides access to all CI capabilities:
 
 ```javascript
 // Advanced chat initialization with options
@@ -769,7 +769,7 @@ initializeChat() {
     
     if (window.AIChat) {
         // All chat messages route through aish MCP server
-        // Use window.AIChat.sendMessage(aiName, message) for AI communication
+        // Use window.AIChat.sendMessage(aiName, message) for CI communication
         this.chatInterface = window.AIChat;
     }
 }
@@ -787,7 +787,7 @@ handleChatMessage(message) {
 async handleToolCall(toolName, parameters) {
     console.log('Tool call:', toolName, parameters);
     
-    // All AI tool calls go through aish MCP
+    // All CI tool calls go through aish MCP
     // Example: Send message to specific AI
     const response = await window.AIChat.sendMessage(aiName, message);
     
@@ -820,7 +820,7 @@ async handleToolCall(toolName, parameters) {
 ```
 
 ```javascript
-// Smart command palette with AI suggestions
+// Smart command palette with CI suggestions
 class CommandPalette {
     constructor(component) {
         this.component = component;
@@ -882,10 +882,10 @@ class CommandPalette {
 }
 ```
 
-#### 2. AI Insights Dashboard
+#### 2. CI Insights Dashboard
 
 ```html
-<!-- AI insights dashboard -->
+<!-- CI insights dashboard -->
 <div class="mycomponent__ai-dashboard">
     <div class="mycomponent__ai-metrics">
         <div class="mycomponent__metric-card">
@@ -911,7 +911,7 @@ class CommandPalette {
         <button class="mycomponent__btn mycomponent__btn--ai" 
                 onclick="mycomponent_runAIAnalysis()">
             <span class="mycomponent__btn-icon">🤖</span>
-            Run AI Analysis
+            Run CI Analysis
         </button>
         <button class="mycomponent__btn mycomponent__btn--ai"
                 onclick="mycomponent_getRecommendations()">
@@ -964,10 +964,10 @@ class ConversationalForm {
         // Process with AI
         const response = await this.processFormInput(input);
         
-        // Add AI response
+        // Add CI response
         this.addMessage(response.message, 'ai');
         
-        // Update form fields based on AI extraction
+        // Update form fields based on CI extraction
         if (response.fields) {
             this.updateFormFields(response.fields);
         }
@@ -1001,7 +1001,7 @@ class ConversationalForm {
 ### WebSocket Integration for Real-time AI
 
 ```javascript
-// Enhanced WebSocket handling for AI features
+// Enhanced WebSocket handling for CI features
 class AIWebSocketHandler {
     constructor(component) {
         this.component = component;
@@ -1046,7 +1046,7 @@ class AIWebSocketHandler {
         // Show notification
         this.component.showNotification({
             type: 'insight',
-            title: 'New AI Insight',
+            title: 'New CI Insight',
             message: insight.summary
         });
     }
@@ -1081,7 +1081,7 @@ class AIWebSocketHandler {
 ### AI-Enhanced Error Handling
 
 ```javascript
-// Intelligent error handling with AI assistance
+// Intelligent error handling with CI assistance
 class AIErrorHandler {
     constructor(component) {
         this.component = component;
@@ -1099,7 +1099,7 @@ class AIErrorHandler {
             timestamp: new Date().toISOString()
         };
         
-        // Get AI analysis of the error
+        // Get CI analysis of the error
         const analysis = await this.analyzeError(errorInfo);
         
         // Display AI-enhanced error message
@@ -1116,7 +1116,7 @@ class AIErrorHandler {
             
             return await response.json();
         } catch (e) {
-            // Fallback if AI analysis fails
+            // Fallback if CI analysis fails
             return {
                 summary: errorInfo.message,
                 suggestions: ['Check the console for more details'],

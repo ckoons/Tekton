@@ -12,7 +12,7 @@
 - **Numa (8016)**: Platform-wide CI mentor with access to all components
 - **Noesis (8015)**: Discovery CI (placeholder for future sprint)
 - **AI Management Utilities**: Launcher, killer, and status tools
-- **AI Health Monitoring**: Auto-recovery for unresponsive AIs
+- **AI Health Monitoring**: Auto-recovery for unresponsive CIs
 
 ### Key Features
 - Environment-controlled CI lifecycle (`TEKTON_REGISTER_AI`)
@@ -37,7 +37,7 @@ export TEKTON_REGISTER_AI=false  # Disable CI (default)
 # Launch CI manually (if needed)
 ./EnhancedTools/tekton_ai_launcher.py
 
-# Terminate all AIs
+# Terminate all CIs
 ./EnhancedTools/tekton_ai_killer.py
 ```
 
@@ -74,12 +74,12 @@ Stop: Terminate CI → Deregister → Terminate Component
 
 ### Phase 3: CI Implementation (Days 7-10)
 - Build base CI worker class
-- Implement component-specific AIs
+- Implement component-specific CIs
 - Integrate with LLM services
 
 ### Phase 4: UI Integration (Days 11-12)
 - Add Numa as first navigation tab
-- Update Rhetor UI for all AIs
+- Update Rhetor UI for all CIs
 - Enable Team Chat visualization
 
 ### Phase 5: Testing & Documentation (Days 13-14)
@@ -92,8 +92,8 @@ Stop: Terminate CI → Deregister → Terminate Component
 - [ ] TEKTON_REGISTER_AI flag controls CI lifecycle
 - [ ] CI processes start/stop with components
 - [ ] Numa launches after full stack, terminates first
-- [ ] Health monitoring detects and recovers unresponsive AIs
-- [ ] Team Chat works with multiple AIs
+- [ ] Health monitoring detects and recovers unresponsive CIs
+- [ ] Team Chat works with multiple CIs
 - [ ] Numa appears as first UI tab
 - [ ] All utilities have proper error handling
 

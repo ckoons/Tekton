@@ -2,7 +2,7 @@
 
 ## Context
 
-You are assisting with implementing the MCP External Integration Sprint for Tekton, an intelligent orchestration system that coordinates multiple AI models and resources to efficiently solve complex software engineering problems. This sprint focuses on creating a universal adapter framework for external MCP services, building on the foundation established by the MCP Unified Integration Sprint.
+You are assisting with implementing the MCP External Integration Sprint for Tekton, an intelligent orchestration system that coordinates multiple CI models and resources to efficiently solve complex software engineering problems. This sprint focuses on creating a universal adapter framework for external MCP services, building on the foundation established by the MCP Unified Integration Sprint.
 
 Tekton's architecture includes multiple components, with Ergon serving as the nexus for agents, workflows, tools, and MCP integration. Hermes functions as the central registry and communication hub, providing database services. The current implementation has established a standardized MCP approach using FastMCP, but needs a flexible, future-proof way to integrate with external MCP services.
 

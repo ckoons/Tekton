@@ -1,6 +1,6 @@
 # Claude Code Prompt - Fix Metis Sprint
 
-You are about to implement AI capabilities for the Metis component in the Tekton ecosystem. Metis is currently a basic task management system that needs to become an intelligent task decomposition engine.
+You are about to implement CI capabilities for the Metis component in the Tekton ecosystem. Metis is currently a basic task management system that needs to become an intelligent task decomposition engine.
 
 ## Context
 
@@ -46,14 +46,14 @@ Transform Metis into an intelligent task decomposition system by:
 
 ### New Files:
 - `/metis/core/llm_adapter.py` - Connection to Rhetor
-- `/metis/core/task_decomposer.py` - AI decomposition engine
-- `/metis/core/complexity_analyzer.py` - AI complexity scoring
+- `/metis/core/task_decomposer.py` - CI decomposition engine
+- `/metis/core/complexity_analyzer.py` - CI complexity scoring
 - `/metis/prompt_templates/*.json` - Prompt templates
-- `/tests/ai/test_*.py` - Test suite for AI features
+- `/tests/ai/test_*.py` - Test suite for CI features
 
 ### Files to Update:
 - `/metis/core/mcp/tools.py` - Implement the tool handlers
-- `/metis/api/routes.py` - Add AI endpoints
+- `/metis/api/routes.py` - Add CI endpoints
 - `/metis/core/task_manager.py` - Add convenience methods
 
 ## Technical Requirements
@@ -62,7 +62,7 @@ Transform Metis into an intelligent task decomposition system by:
 2. **Prompt Templates**: Create JSON-based templates with variable substitution
 3. **Task Decomposition**: Support configurable depth (default 2, max 5)
 4. **Complexity Analysis**: Multi-factor scoring with explanations
-5. **Error Handling**: Graceful degradation if AI fails
+5. **Error Handling**: Graceful degradation if CI fails
 
 ## API Endpoints to Add
 
@@ -75,7 +75,7 @@ POST /api/v1/tasks/{task_id}/suggest-order
 ## MCP Tools to Implement
 
 1. `decompose_task` - Break down tasks into subtasks
-2. `analyze_task_complexity` - AI complexity scoring
+2. `analyze_task_complexity` - CI complexity scoring
 3. `suggest_task_order` - Optimal execution ordering
 4. `generate_subtasks` - Create subtasks from description
 5. `detect_dependencies` - Find task relationships
@@ -83,9 +83,9 @@ POST /api/v1/tasks/{task_id}/suggest-order
 ## Success Criteria
 
 1. Can decompose a high-level task into meaningful subtasks
-2. AI complexity scores are reasonable and explainable
+2. CI complexity scores are reasonable and explainable
 3. All existing tests still pass
-4. New AI features have test coverage
+4. New CI features have test coverage
 5. Example scripts demonstrate functionality
 6. No regression in existing features
 
@@ -120,7 +120,7 @@ Subtasks:
 - This is an enhancement, not a rewrite
 - Preserve all existing functionality
 - Focus on adding intelligence to task management
-- Make the AI features discoverable but not mandatory
+- Make the CI features discoverable but not mandatory
 - Ensure the system works even if Rhetor is unavailable
 
 ## Time Allocation
@@ -131,4 +131,4 @@ Subtasks:
 
 Total: 4-6 hours
 
-Begin by reviewing the existing Metis codebase to understand the current structure, then proceed with implementing the AI capabilities according to this plan.
+Begin by reviewing the existing Metis codebase to understand the current structure, then proceed with implementing the CI capabilities according to this plan.

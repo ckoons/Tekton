@@ -2,7 +2,7 @@
 
 ## Overview
 
-The `ci-tool` command enables any program (Claude Code, shell scripts, AI tools, etc.) to communicate with others using simple @ commands. Messages are routed through Unix sockets and appear naturally in the output.
+The `ci-tool` command enables any program (Claude Code, shell scripts, CI tools, etc.) to communicate with others using simple @ commands. Messages are routed through Unix sockets and appear naturally in the output.
 
 ## Quick Start
 
@@ -22,7 +22,7 @@ ci-tool --name Beth -- claude
 # Shell script that uses llama
 ci-tool --name henry --ci llama3.3:70b -- my-ai-script.sh
 
-# Python AI assistant
+# Python CI assistant
 ci-tool --name DataBot --ci gpt-4 -- python assistant.py
 
 # Any command - no CI hint needed

@@ -1,15 +1,15 @@
-# AI Specialists Guide
+# CI Specialists Guide
 
 ## Overview
 
-AI Specialists are intelligent assistants integrated into each Tekton component. They provide domain-specific expertise, automated assistance, and intelligent insights tailored to their component's functionality. This guide covers configuration, usage, and best practices for working with AI Specialists.
+AI Specialists are intelligent assistants integrated into each Tekton component. They provide domain-specific expertise, automated assistance, and intelligent insights tailored to their component's functionality. This guide covers configuration, usage, and best practices for working with CI Specialists.
 
 ## Architecture
 
 ### Core Components
 
 1. **Specialist Worker** (`shared/ai/specialist_worker.py`)
-   - Manages AI lifecycle and communication
+   - Manages CI lifecycle and communication
    - Handles socket-based messaging
    - Provides unified interface across all specialists
 
@@ -18,7 +18,7 @@ AI Specialists are intelligent assistants integrated into each Tekton component.
    - Implements domain-specific knowledge
    - Handles specialized queries and tasks
 
-3. **Simple AI Service** (`shared/ai/ai_service_simple.py`)
+3. **Simple CI Service** (`shared/ai/ai_service_simple.py`)
    - Manages message queues and routing
    - Provides both sync and async communication
    - Handles connection management
@@ -26,7 +26,7 @@ AI Specialists are intelligent assistants integrated into each Tekton component.
 ### Communication Flow
 
 ```
-User/Component → simple_ai → ai_service_simple → Socket → AI Specialist
+User/Component → simple_ai → ai_service_simple → Socket → CI Specialist
                                                      ↓
                                                 LLM Provider
 ```
@@ -38,16 +38,16 @@ User/Component → simple_ai → ai_service_simple → Socket → AI Specialist
 #### Global Settings
 
 ```bash
-# Enable/disable AI specialists (default: true)
+# Enable/disable CI specialists (default: true)
 TEKTON_REGISTER_AI=true
 
-# AI provider selection
+# CI provider selection
 TEKTON_AI_PROVIDER=ollama  # Options: ollama, anthropic
 
 # Default model for all specialists
 TEKTON_AI_MODEL=llama3.3:70b
 
-# Base port for AI services
+# Base port for CI services
 TEKTON_AI_PORT_BASE=45000
 
 # Component base port
@@ -71,7 +71,7 @@ ENGRAM_AI_TEMPERATURE=0.7
 
 AI Specialists use a fixed port system:
 
-| Component | Component Port | AI Port | AI Name |
+| Component | Component Port | CI Port | CI Name |
 |-----------|---------------|---------|---------|
 | Hermes | 8000 | 45000 | hermes-ai |
 | Athena | 8001 | 45001 | athena-ai |
@@ -99,7 +99,7 @@ AI Specialists use a fixed port system:
 ```python
 from shared.ai.simple_ai import ai_send_sync
 
-# Send a message to an AI specialist
+# Send a message to an CI specialist
 response = ai_send_sync(
     ai_name="hermes-ai",
     message="What's the current system health?",
@@ -134,7 +134,7 @@ result = await query_specialist()
 #### Using aish
 
 ```bash
-# Direct AI communication through aish
+# Direct CI communication through aish
 aish ai hermes "What services are currently running?"
 
 # Forward to specific AI
@@ -144,7 +144,7 @@ aish forward engram-ai "Find all references to authentication"
 #### Manual Launch
 
 ```bash
-# Launch a specific AI specialist
+# Launch a specific CI specialist
 python scripts/enhanced_tekton_ai_launcher.py hermes -v --no-cleanup
 
 # Launch with custom model
@@ -158,7 +158,7 @@ python scripts/enhanced_tekton_ai_launcher.py rhetor \
 ```python
 from shared.ai.ai_service_simple import get_service
 
-# Get the AI service instance
+# Get the CI service instance
 service = get_service()
 
 # Check service status
@@ -174,9 +174,9 @@ response = await service.send_and_wait(
 )
 ```
 
-## AI Personalities and Expertise
+## CI Personalities and Expertise
 
-Each AI specialist has a unique personality and domain expertise:
+Each CI specialist has a unique personality and domain expertise:
 
 ### Component Specialists
 
@@ -202,7 +202,7 @@ Each AI specialist has a unique personality and domain expertise:
 ```python
 from shared.ai.simple_ai import ai_send_sync
 
-# Query Hermes AI about system health
+# Query Hermes CI about system health
 health_report = ai_send_sync(
     "hermes-ai",
     "Generate a health report for all active components",
@@ -214,7 +214,7 @@ health_report = ai_send_sync(
 ### 2. Code Analysis
 
 ```python
-# Ask Codex AI to analyze code
+# Ask Codex CI to analyze code
 analysis = ai_send_sync(
     "codex-ai",
     "Analyze the security implications of the authentication module",
@@ -226,7 +226,7 @@ analysis = ai_send_sync(
 ### 3. Memory Search
 
 ```python
-# Use Engram AI for semantic search
+# Use Engram CI for semantic search
 results = ai_send_sync(
     "engram-ai",
     "Find all discussions about performance optimization",
@@ -251,13 +251,13 @@ workflow = ai_send_sync(
 
 ### Common Issues
 
-#### 1. AI Not Responding
+#### 1. CI Not Responding
 
 **Symptoms**: No response or connection refused
 
 **Solutions**:
 ```bash
-# Check if AI is running
+# Check if CI is running
 ps aux | grep -E "hermes-ai"
 
 # Check port availability
@@ -272,7 +272,7 @@ tail -f /tmp/hermes-ai.log
 
 #### 2. Wrong Model Loading
 
-**Symptoms**: AI using unexpected model
+**Symptoms**: CI using unexpected model
 
 **Solutions**:
 ```bash
@@ -309,16 +309,16 @@ print(f"Service running: {service is not None}")
 ### Debug Commands
 
 ```bash
-# View all AI processes
+# View all CI processes
 ps aux | grep -E "ai|specialist"
 
 # Check port alignment
 python scripts/check_port_alignment.py
 
-# Test AI communication
+# Test CI communication
 python tests/test_unified_ai_communication.py
 
-# Monitor AI logs
+# Monitor CI logs
 tail -f /tmp/*-ai.log
 ```
 
@@ -403,7 +403,7 @@ def query_with_fallback(ai_name, message, port):
 ### 4. Monitor Resource Usage
 
 ```bash
-# Check AI memory usage
+# Check CI memory usage
 ps aux | grep -E "ai|specialist" | awk '{print $2, $4, $11}'
 
 # Monitor GPU usage (if applicable)
@@ -417,7 +417,7 @@ ls -lah ~/.ollama/models/manifests/registry.ollama.ai/library/
 
 ### Custom Specialist Development
 
-Create specialized AI behaviors:
+Create specialized CI behaviors:
 
 ```python
 # In component's ai_config.py
@@ -448,14 +448,14 @@ CUSTOM_EXPERTISE = {
 AI specialists can participate in team discussions:
 
 ```python
-# Broadcast to all AIs
+# Broadcast to all CIs
 from shared.ai.simple_ai import ai_send_sync
 
 team_response = ai_send_sync(
     "team",  # Special identifier for team chat
     "What are the current system bottlenecks?",
     "localhost",
-    45000  # Any AI port works for team
+    45000  # Any CI port works for team
 )
 ```
 
@@ -477,7 +477,7 @@ async def ai_enhanced_alert(component, metric, value):
 
 ## Related Documentation
 
-- [Simple AI Communication Architecture](/MetaData/TektonDocumentation/Architecture/SimpleAICommunication.md)
+- [Simple CI Communication Architecture](/MetaData/TektonDocumentation/Architecture/SimpleAICommunication.md)
 - [AI Registry Architecture](/MetaData/TektonDocumentation/Architecture/AIRegistry.md)
-- [Unified AI Communication Tests](/tests/test_unified_ai_communication.py)
-- [Enhanced AI Launcher Script](/scripts/enhanced_tekton_ai_launcher.py)
+- [Unified CI Communication Tests](/tests/test_unified_ai_communication.py)
+- [Enhanced CI Launcher Script](/scripts/enhanced_tekton_ai_launcher.py)

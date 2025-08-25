@@ -14,7 +14,7 @@ Located at: `Terma/terma_service.py`
 - Terminal launcher with platform-specific commands
 - PID registry and lifecycle management
 - Configuration management
-- API endpoints for UI and AI consumers
+- API endpoints for UI and CI consumers
 
 **Key APIs:**
 ```python
@@ -136,7 +136,7 @@ Located at: `scripts/aish` (refactored)
 
 **Key Requirements:**
 1. **Transparent Passthrough**: All commands execute normally
-2. **Pattern Interception**: Detect AI command patterns
+2. **Pattern Interception**: Detect CI command patterns
 3. **Context Preservation**: Maintain working directory, environment
 4. **Tool Compatibility**: Work with git, npm, python, etc.
 
@@ -167,7 +167,7 @@ class AishShell:
                 prompt = f"[aish:{os.path.basename(self.context['pwd'])}]$ "
                 command = input(prompt)
                 
-                # Check for AI patterns
+                # Check for CI patterns
                 if self.is_ai_command(command):
                     result = self.process_ai_command(command)
                     print(result)
@@ -229,7 +229,7 @@ DEFAULT_TEMPLATES = {
         "name": "Claude Code Session",
         "app": "Claude Code",
         "shell": "aish",
-        "context": "Full project context with AI assistance"
+        "context": "Full project context with CI assistance"
     },
     "data_science": {
         "name": "Data Science Terminal",
@@ -279,13 +279,13 @@ window.Terma = {
 };
 ```
 
-### 7. AI Terminal Request API
+### 7. CI Terminal Request API
 
-Enable other Tekton AIs to request terminals:
+Enable other Tekton CIs to request terminals:
 ```python
 @app.post("/api/terminals/ai-request")
 async def ai_terminal_request(request: AITerminalRequest):
-    """Handle terminal requests from AI components."""
+    """Handle terminal requests from CI components."""
     config = {
         "name": f"AI Terminal - {request.purpose}",
         "app": request.terminal_app or "Terminal.app",

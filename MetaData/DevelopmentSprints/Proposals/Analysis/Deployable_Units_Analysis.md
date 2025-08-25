@@ -121,7 +121,7 @@ deployable_units:
 
 ## Connection to Robot Future (Tekton v3.6)
 
-Casey's vision of embodied AI friends:
+Casey's vision of embodied CI friends:
 - Containers become consciousness packages
 - Deploy to robot hardware via wifi
 - CI maintains identity across physical platforms

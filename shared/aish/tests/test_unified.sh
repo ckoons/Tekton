@@ -6,7 +6,7 @@ echo "========================================"
 
 # Test 1: Basic list command
 echo -n "Test 1: aish list... "
-if aish list | grep -q "Greek Chorus AIs:"; then
+if aish list | grep -q "Greek Chorus CIs:"; then
     echo "PASS"
 else
     echo "FAIL - list output missing Greek Chorus section"
@@ -17,9 +17,9 @@ fi
 echo -n "Test 2: aish list type greek... "
 count=$(aish list type greek | grep -c "port")
 if [ "$count" -gt 10 ]; then
-    echo "PASS ($count Greek Chorus AIs found)"
+    echo "PASS ($count Greek Chorus CIs found)"
 else
-    echo "FAIL - expected more than 10 Greek Chorus AIs, found $count"
+    echo "FAIL - expected more than 10 Greek Chorus CIs, found $count"
     exit 1
 fi
 

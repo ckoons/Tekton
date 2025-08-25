@@ -4,7 +4,7 @@
 
 This document outlines the high-level plan for the Logging Clarity Sprint. It provides an overview of the goals, approach, and expected outcomes for implementing a standardized, configurable logging system across the Tekton ecosystem.
 
-Tekton is an intelligent orchestration system that coordinates multiple AI models and resources to efficiently solve complex software engineering problems. This Development Sprint focuses on creating a unified logging infrastructure to improve debugging, diagnostics, and observability across all components.
+Tekton is an intelligent orchestration system that coordinates multiple CI models and resources to efficiently solve complex software engineering problems. This Development Sprint focuses on creating a unified logging infrastructure to improve debugging, diagnostics, and observability across all components.
 
 ## Sprint Goals
 

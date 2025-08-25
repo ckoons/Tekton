@@ -258,7 +258,7 @@ Implement Docker containerization with intelligent Container CIs, JSON manifest-
 - [ ] System remains simple and deterministic# Tekton Federation Development Sprint
 
 ## Overview
-Enable multiple Tekton stacks to discover, register, and communicate with each other as a federated network of AI systems.
+Enable multiple Tekton stacks to discover, register, and communicate with each other as a federated network of CI systems.
 
 ## Vision
 Treat entire Tekton stacks as CIs in the unified registry, enabling seamless cross-stack communication and resource sharing through MCP interfaces.
@@ -385,7 +385,7 @@ def send_to_ci(ci_name: str, message: str):
 1. **Scale** - Distribute work across multiple Tekton installations
 2. **Resilience** - Fallback to other stacks if one is down
 3. **Specialization** - Different stacks can focus on different domains
-4. **Collaboration** - Organizations can share AI capabilities
+4. **Collaboration** - Organizations can share CI capabilities
 5. **Testing** - Easy to spin up test Tekton stacks
 
 ## Security Considerations

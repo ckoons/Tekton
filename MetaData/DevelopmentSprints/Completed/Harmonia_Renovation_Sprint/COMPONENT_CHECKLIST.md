@@ -49,9 +49,9 @@
   - [x] Found: No explicit mock endpoints in backend, but mock data in UI
 
 ### MCP Integration
-- [ ] Update to use aish MCP for AI communication
+- [ ] Update to use aish MCP for CI communication
   - [ ] Current HTTP calls: [list locations]
-- [ ] Remove direct HTTP AI calls
+- [ ] Remove direct HTTP CI calls
 - [ ] Update MCP capability descriptions
 - [ ] Test all MCP tools work
 

@@ -4,7 +4,7 @@
 
 This document outlines the high-level plan for the AISH Review Implementation Development Sprint. It provides an overview of the goals, approach, and expected outcomes.
 
-Tekton is an intelligent orchestration system that coordinates multiple AI models and resources to efficiently solve complex software engineering problems. This Development Sprint focuses on implementing a terminal session capture and review system that enables cognitive analysis of CI behavior and workflow patterns.
+Tekton is an intelligent orchestration system that coordinates multiple CI models and resources to efficiently solve complex software engineering problems. This Development Sprint focuses on implementing a terminal session capture and review system that enables cognitive analysis of CI behavior and workflow patterns.
 
 ## Sprint Goals
 
@@ -28,7 +28,7 @@ This sprint delivers value by:
 ### Existing Implementation
 
 Currently, Tekton has:
-- A robust aish command system with inbox management and AI forwarding
+- A robust aish command system with inbox management and CI forwarding
 - Terminal CIs (like Amy) that can handle coding tasks independently
 - Sophia (wisdom/ML) and Noesis (discovery) components ready for analytical work
 - No systematic way to capture and analyze terminal sessions

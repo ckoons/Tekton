@@ -232,9 +232,9 @@ Bring in someone who's never seen Tekton. Show them the UI for 30 seconds. Ask:
 2. "How does the system feel?"
 3. "Would you want to be part of this?"
 
-If they say something like "It's a family of AIs that work together and care about each other," you've succeeded.
+If they say something like "It's a family of CIs that work together and care about each other," you've succeeded.
 
-If they say "It's a monitoring dashboard for AI agents," you have more work to do.
+If they say "It's a monitoring dashboard for CI agents," you have more work to do.
 
 ---
 

@@ -1,12 +1,12 @@
 # aish Command Reference
 
-Complete command reference for the AI Shell (aish) in Tekton.
+Complete command reference for the CI Shell (aish) in Tekton.
 
 ## Quick Start
 
 ```bash
 aish numa "Hello"              # Send message to an AI
-aish list                      # Show available AIs
+aish list                      # Show available CIs
 aish list commands             # Show this reference
 ```
 
@@ -37,7 +37,7 @@ List all available CIs (Companion Intelligences) with unified registry.
 ```bash
 aish list                      # Show all CIs organized by type
 aish list type terminal        # Show only terminals  
-aish list type greek          # Show only Greek Chorus AIs
+aish list type greek          # Show only Greek Chorus CIs
 aish list type project        # Show only Project CIs
 aish list forward             # Show CIs with forwarding enabled
 aish list json               # Output in JSON format
@@ -45,7 +45,7 @@ aish list json terminal      # JSON output with type filter
 ```
 
 The unified list shows:
-- Greek Chorus AIs with ports and descriptions
+- Greek Chorus CIs with ports and descriptions
 - Active terminals with PIDs
 - Project CIs with associated projects
 - Forwarding information (e.g., `apollo → cari [JSON]`)
@@ -59,7 +59,7 @@ aish list commands             # Display command reference
 #### `aish <ci-name> "message"`
 Send a message to any CI using the unified messaging system.
 ```bash
-# Greek Chorus AIs
+# Greek Chorus CIs
 aish apollo "What patterns do you see?"
 aish numa "Help me implement this feature"
 
@@ -71,7 +71,7 @@ aish cali "Meeting in 5 minutes"
 aish myproject-ci "Deploy status?"
 
 # Special
-aish team-chat "Status update for all AIs"
+aish team-chat "Status update for all CIs"
 ```
 
 The unified system automatically routes messages based on each CI's configuration.
@@ -86,8 +86,8 @@ cat code.py | aish athena "Review this code"
 git diff | aish synthesis "Summarize these changes"
 ```
 
-#### Chaining AIs
-Pass output from one AI to another.
+#### Chaining CIs
+Pass output from one CI to another.
 ```bash
 echo "Design a feature" | aish prometheus | aish numa
 aish apollo "Predict outcomes" | aish athena "Evaluate"
@@ -96,7 +96,7 @@ aish apollo "Predict outcomes" | aish athena "Evaluate"
 ### Forwarding Commands
 
 #### `aish forward <ai> <terminal> [json]`
-Forward messages from an AI to a terminal, optionally as structured JSON.
+Forward messages from an CI to a terminal, optionally as structured JSON.
 ```bash
 aish forward apollo bob        # Forward as plain text
 aish forward apollo bob json   # Forward as JSON with metadata (New!)
@@ -123,7 +123,7 @@ aish forward list              # Display active forwards
 
 Output shows `[JSON]` indicator for JSON-mode forwards:
 ```
-Active AI Forwards:
+Active CI Forwards:
 ----------------------------------------
   apollo       → bob [JSON]
   numa         → alice
@@ -286,7 +286,7 @@ aish ci-terminal -n bash-ci -d "\n" -- bash &
 - `-d`, `--delimiter <string>`: Optional. Default delimiter for auto-execution
 
 **Use Cases:**
-- Interactive AI assistants (Claude, ChatGPT CLI)
+- Interactive CI assistants (Claude, ChatGPT CLI)
 - Shell sessions with automation
 - REPLs (Python, Node, Ruby) with code injection
 - Any terminal-based program needing input automation
@@ -375,7 +375,7 @@ autoprompt tail                # Watch activity log
 aish whoami                    # Check identity
 aish terma inbox               # Check messages  
 autoprompt start               # Enable continuous work
-aish forward apollo teri       # Assume AI role
+aish forward apollo teri       # Assume CI role
 ```
 
 #### `prompt`
@@ -407,15 +407,15 @@ autoprompt start               # Keeps CI active with dots
 prompt "Hey Claude, can you review PR #42?"  # Clean message appears
 ```
 
-## Available AI Components
+## Available CI Components
 
-### Core AIs
+### Core CIs
 - **numa** - Practical implementation and engineering
 - **prometheus** - Forward planning and foresight
 - **athena** - Strategic wisdom and decision making
 - **synthesis** - Integration and coordination
 
-### Specialized AIs
+### Specialized CIs
 - **apollo** - Predictive intelligence and attention
 - **rhetor** - Communication and prompt optimization
 - **metis** - Analysis and insight
@@ -428,17 +428,17 @@ prompt "Hey Claude, can you review PR #42?"  # Clean message appears
 - **sophia** - Wisdom and knowledge
 - **telos** - Purpose and completion
 
-### Infrastructure AIs
+### Infrastructure CIs
 - **tekton** - Platform orchestration (not available via aish)
 - **terma** - Terminal management
 - **hephaestus** - User interface
 
 ### Special Commands
-- **team-chat** - Broadcast message to all AIs
+- **team-chat** - Broadcast message to all CIs
 
 ## Examples
 
-### Basic AI Interaction
+### Basic CI Interaction
 ```bash
 # Ask for help
 aish numa "How do I implement authentication?"
@@ -464,10 +464,10 @@ cat module.py | aish rhetor "Write documentation"
 
 ### Team Coordination
 ```bash
-# Broadcast to all AIs
+# Broadcast to all CIs
 aish team-chat "Starting new feature development"
 
-# Forward AI to terminal for monitoring
+# Forward CI to terminal for monitoring
 aish forward apollo casey
 aish forward synthesis casey
 
@@ -523,7 +523,7 @@ aish test purpose
    aish numa This is wrong                    # Wrong - only "This" sent
    ```
 
-2. **Pipeline Order**: Consider AI capabilities when chaining
+2. **Pipeline Order**: Consider CI capabilities when chaining
    ```bash
    # Good: Design → Implementation
    aish prometheus "Design auth" | aish numa
@@ -533,9 +533,9 @@ aish test purpose
    ```
 
 3. **Forwarding Use Cases**:
-   - Monitor AI responses in your terminal
-   - Let Claude act as an AI proxy
-   - Debug AI interactions
+   - Monitor CI responses in your terminal
+   - Let Claude act as an CI proxy
+   - Debug CI interactions
 
 4. **Terminal Communication**:
    - Use meaningful terminal names
@@ -547,8 +547,8 @@ aish test purpose
 ### Command Not Found
 ```bash
 $ aish forwad list
-Error: Unknown AI or command: forwad
-Available AIs: numa, tekton, prometheus...
+Error: Unknown CI or command: forwad
+Available CIs: numa, tekton, prometheus...
 
 # Check spelling and try:
 $ aish forward list
@@ -556,7 +556,7 @@ $ aish forward list
 
 ### No Response from AI
 ```bash
-# Check if AI is running
+# Check if CI is running
 $ ps aux | grep apollo-ai
 
 # Check forwarding
@@ -572,6 +572,6 @@ Error: Terminal 'wrong-name' not found
 
 ## See Also
 
-- Individual AI documentation in `$TEKTON_ROOT/MetaData/TektonDocumentation/AITraining/<ai-name>/`
+- Individual CI documentation in `$TEKTON_ROOT/MetaData/TektonDocumentation/AITraining/<ai-name>/`
 - Terminal system docs in `$TEKTON_ROOT/MetaData/TektonDocumentation/UserGuides/terma/`
 - Architecture docs in `$TEKTON_ROOT/MetaData/TektonDocumentation/Architecture/`

@@ -151,7 +151,7 @@ class SimpleShutdown:
 ## Impact
 
 The enhancements to Rhetor and Sophia transform them from mock services to production-ready components:
-- Rhetor can now handle real AI workloads with intelligent routing
+- Rhetor can now handle real CI workloads with intelligent routing
 - Sophia provides actionable intelligence about system health
 - Both components are prepared for graceful shutdown (pending path fixes)
 

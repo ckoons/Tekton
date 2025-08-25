@@ -111,12 +111,12 @@ def main():
         timeout=30
     )
     
-    # Test 4: List AIs
+    # Test 4: List CIs
     def check_list(rc, out, err):
         return rc == 0 and "Available CI Specialists" in out
     
     tester.test(
-        "List available AIs",
+        "List available CIs",
         'aish list-cis',
         check_fn=check_list,
         timeout=10

@@ -8,13 +8,13 @@ This guide explains how to integrate your component with the CI Registry system,
 
 - Understanding of Tekton component architecture
 - Familiarity with Python async programming
-- Basic knowledge of AI specialists
+- Basic knowledge of CI specialists
 
 ## Integration Steps
 
-### 1. AI Specialist Registration
+### 1. CI Specialist Registration
 
-Your AI specialist automatically registers with the CI Registry when using the base `AISpecialistWorker` class:
+Your CI specialist automatically registers with the CI Registry when using the base `AISpecialistWorker` class:
 
 ```python
 from shared.ai.specialist_worker import AISpecialistWorker
@@ -28,7 +28,7 @@ class YourAISpecialist(AISpecialistWorker):
 ### 2. Automatic Exchange Storage
 
 The base worker class handles exchange storage automatically:
-- User messages and AI responses are captured
+- User messages and CI responses are captured
 - Stored atomically in the CI Registry
 - Available for Apollo analysis and Rhetor enhancement
 
@@ -71,7 +71,7 @@ def get_system_prompt(self) -> str:
             return '\n'.join(context_parts)
     
     # Default system prompt
-    return f"You are {self.component} AI specialist..."
+    return f"You are {self.component} CI specialist..."
 ```
 
 ### 5. Performance Monitoring
@@ -106,7 +106,7 @@ Add project CIs to `$TEKTON_ROOT/.tekton/projects/projects.json`:
     {
       "name": "YourProject",
       "type": "project",
-      "description": "Project-specific AI assistant",
+      "description": "Project-specific CI assistant",
       "path": "/path/to/project",
       "ai_config": {
         "model": "llama3.3:70b",
@@ -181,7 +181,7 @@ aish list context apollo
 
 ### Issue: CI Not Appearing in Registry
 - Ensure component name follows convention
-- Check that AI specialist is running
+- Check that CI specialist is running
 - Verify port configuration
 
 ### Issue: Exchanges Not Stored

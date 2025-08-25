@@ -4,7 +4,7 @@ This document describes the FastMCP (Model Context Protocol) integration for Pro
 
 ## Overview
 
-Prometheus integrates with FastMCP to provide external systems (like Claude Code and other AI tools) with programmatic access to planning, retrospective analysis, resource management, and improvement recommendation capabilities. This integration enables AI systems to create project plans, analyze performance, optimize resources, and generate actionable insights.
+Prometheus integrates with FastMCP to provide external systems (like Claude Code and other CI tools) with programmatic access to planning, retrospective analysis, resource management, and improvement recommendation capabilities. This integration enables CI systems to create project plans, analyze performance, optimize resources, and generate actionable insights.
 
 ## Architecture
 
@@ -612,7 +612,7 @@ Example error response:
 
 ## Conclusion
 
-The Prometheus MCP integration provides a comprehensive and powerful interface for project planning, resource management, retrospective analysis, and continuous improvement. It enables seamless integration with AI tools and external systems while maintaining the robustness and sophistication of advanced project management capabilities.
+The Prometheus MCP integration provides a comprehensive and powerful interface for project planning, resource management, retrospective analysis, and continuous improvement. It enables seamless integration with CI tools and external systems while maintaining the robustness and sophistication of advanced project management capabilities.
 
 For more information, see:
 - [Prometheus API Reference](docs/api_reference.md)

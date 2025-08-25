@@ -13,7 +13,7 @@ The GitFlow Implementation Sprint touches every Tekton component, transforming t
 **New Responsibilities**:
 - Project registry management
 - GitHub integration hub
-- AI work assignment
+- CI work assignment
 - Progress tracking dashboard
 - Workflow orchestration
 
@@ -28,7 +28,7 @@ The GitFlow Implementation Sprint touches every Tekton component, transforming t
 
 **New Features**:
 - Cross-project message routing
-- AI availability broadcasting
+- CI availability broadcasting
 - Service health aggregation
 - Project-specific service discovery
 
@@ -37,7 +37,7 @@ The GitFlow Implementation Sprint touches every Tekton component, transforming t
 # Register project-specific services
 hermes.register_project_service("python-sdk", "test-runner")
 
-# Discover available AIs across projects
+# Discover available CIs across projects
 hermes.discover_available_ais(project="python-sdk")
 
 # Route messages with project context
@@ -94,7 +94,7 @@ rhetor.analyze_issue(
     project_context="python-sdk"
 )
 
-# Coordinate AI team discussion
+# Coordinate CI team discussion
 rhetor.facilitate_team_chat(
     participants=["apollo", "athena", "synthesis"],
     topic="Authentication architecture",
@@ -360,12 +360,12 @@ ergon.run_build(
 ```
 
 ### 14. Numa (Port 8016) - The Shepherd
-**Current**: Platform AI mentor  
+**Current**: Platform CI mentor  
 **Enhanced**: Project shepherd role
 
 **New Features**:
 - Project context maintenance
-- New AI onboarding
+- New CI onboarding
 - Cross-project knowledge transfer
 - Team mentorship
 
@@ -378,7 +378,7 @@ numa.initialize_project(
     team=["apollo", "athena", "synthesis"]
 )
 
-# Onboard new AI to project
+# Onboard new CI to project
 numa.onboard_ai(
     ai="sophia",
     project="python-sdk",
@@ -393,7 +393,7 @@ numa.project_summary(
 ```
 
 ### 15. Noesis (Port 8015) - The Discoverer
-**Current**: Discovery AI system  
+**Current**: Discovery CI system  
 **Enhanced**: Pattern discovery across projects
 
 **New Features**:
@@ -478,7 +478,7 @@ terma.route_message(
 **New Features**:
 - Project switcher UI
 - Cross-project metrics dashboard
-- AI assignment visualization
+- CI assignment visualization
 - Real-time progress tracking
 
 **Integration Points**:
@@ -490,7 +490,7 @@ terma.route_message(
     showAssignments={true}
 />
 
-// AI activity monitor
+// CI activity monitor
 <AIActivityMonitor
     terminals={activeTerminals}
     groupBy="project"

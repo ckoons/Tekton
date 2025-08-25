@@ -509,7 +509,7 @@ fi
 aish inbox send keep self "Completed: authentication module"
 
 INTEGRATION WITH FORWARDING:
-When AIs are forwarded to your terminal, messages appear in your 'new' inbox
+When CIs are forwarded to your terminal, messages appear in your 'new' inbox
 with full JSON structure including purpose context.
 """)
 

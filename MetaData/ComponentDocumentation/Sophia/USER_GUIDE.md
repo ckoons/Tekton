@@ -2,7 +2,7 @@
 
 ## Introduction
 
-Sophia is the intelligence analysis and measurement system for the Tekton ecosystem. It provides tools for evaluating LLM capabilities, detecting patterns in AI behavior, conducting experiments, and generating insights to improve AI systems. This guide will help you get started with Sophia and leverage its capabilities for your AI research and optimization needs.
+Sophia is the intelligence analysis and measurement system for the Tekton ecosystem. It provides tools for evaluating LLM capabilities, detecting patterns in CI behavior, conducting experiments, and generating insights to improve CI systems. This guide will help you get started with Sophia and leverage its capabilities for your CI research and optimization needs.
 
 ## Getting Started
 
@@ -88,7 +88,7 @@ print(f"Created experiment: {experiment['id']}")
 
 ## Understanding Intelligence Dimensions
 
-Sophia measures AI capabilities across 10 key dimensions:
+Sophia measures CI capabilities across 10 key dimensions:
 
 1. **Language Understanding**: Comprehension, contextual understanding, and semantic parsing
 2. **Reasoning**: Logical inference, deduction, problem-solving
@@ -188,7 +188,7 @@ for dimension, score in results['scores'].items():
 
 ## Pattern Detection and Analysis
 
-Sophia can detect patterns in AI behavior and outputs:
+Sophia can detect patterns in CI behavior and outputs:
 
 ```python
 # Detect patterns in model responses

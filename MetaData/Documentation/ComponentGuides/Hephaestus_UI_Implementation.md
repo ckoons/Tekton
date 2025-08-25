@@ -411,7 +411,7 @@ The Projects Chat feature serves as an excellent example of the documentation-fi
 
 #### 3. User and Training Documentation
 - **User guide**: Clear instructions for project selection and communication
-- **CI training**: How AIs use the system for project coordination
+- **CI training**: How CIs use the system for project coordination
 - **Troubleshooting**: Common issues and solutions
 
 #### 4. Key Implementation Patterns

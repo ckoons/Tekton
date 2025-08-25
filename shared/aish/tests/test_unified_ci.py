@@ -59,7 +59,7 @@ class TestUnifiedCIRegistry(unittest.TestCase):
     def test_text_formatting(self):
         """Test text output formatting."""
         output = self.registry.format_text_output()
-        self.assertIn('Greek Chorus AIs:', output)
+        self.assertIn('Greek Chorus CIs:', output)
         self.assertIn('numa', output)
         self.assertIn('(port 8316', output)
 

@@ -30,8 +30,8 @@
 - [ ] Remove mock endpoints
 
 ### MCP Integration
-- [ ] Update to use aish MCP for AI communication
-- [ ] Remove direct HTTP AI calls
+- [ ] Update to use aish MCP for CI communication
+- [ ] Remove direct HTTP CI calls
 - [ ] Update MCP capability descriptions
 - [ ] Test all MCP tools work
 

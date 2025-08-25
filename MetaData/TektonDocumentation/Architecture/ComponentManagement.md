@@ -33,7 +33,7 @@ Available categories:
 - `infrastructure` - Core system components
 - `memory` - Memory and storage systems
 - `knowledge` - Knowledge management
-- `ai` - AI and intelligence services
+- `ai` - CI and intelligence services
 - `planning` - Planning and requirements
 - `workflow` - Workflow management
 - `execution` - Code execution

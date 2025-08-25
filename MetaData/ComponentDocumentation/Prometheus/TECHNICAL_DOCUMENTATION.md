@@ -325,4 +325,4 @@ Prometheus/ui/
 - **Real-time Data**: Fetches data from backend APIs without mock data
 - **Responsive Design**: Works on desktop and mobile devices
 - **Error Handling**: Graceful error states with user-friendly messages
-- **Chat Integration**: Both planning-specific and team-wide AI chat capabilities
+- **Chat Integration**: Both planning-specific and team-wide CI chat capabilities

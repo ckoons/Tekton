@@ -16,7 +16,7 @@
 - Project registration (Tekton + external)
 - Repository configuration management
 - Working directory isolation
-- AI team assignment mapping
+- CI team assignment mapping
 ```
 
 #### Day 5-7: GitHub Integration Layer
@@ -25,11 +25,11 @@
 - [ ] Webhook handlers for issues/PRs
 - [ ] Branch protection rule management
 
-### Week 2: AI Orchestration & Communication
+### Week 2: CI Orchestration & Communication
 
 #### Day 8-9: Terminal Discovery & Assignment
 - [ ] Terma integration for terminal discovery
-- [ ] AI capability matching algorithm
+- [ ] CI capability matching algorithm
 - [ ] Load balancing logic
 - [ ] Conflict detection system
 
@@ -37,7 +37,7 @@
 ```bash
 # Implement assignment pipeline
 1. Issue analysis (complexity, type, requirements)
-2. AI expertise matching
+2. CI expertise matching
 3. Team formation for complex tasks
 4. Assignment notification via terma
 ```
@@ -64,7 +64,7 @@
 
 #### Day 19-21: PR Automation
 - [ ] PR template generation
-- [ ] AI authorship tracking
+- [ ] CI authorship tracking
 - [ ] Review assignment logic
 - [ ] Merge automation rules
 
@@ -79,7 +79,7 @@
 #### Day 24-25: Full Cycle Test
 - [ ] Create test issues in external project
 - [ ] Run complete GitHub Flow cycle
-- [ ] Monitor AI team coordination
+- [ ] Monitor CI team coordination
 - [ ] Collect performance metrics
 
 #### Day 26-28: Retrospective & Optimization
@@ -101,7 +101,7 @@ aish tekton-core blockers       # Any issues
 ### Evening Review (15 min)
 ```bash
 # Progress collection
-aish tekton-core daily-reports  # All AI reports
+aish tekton-core daily-reports  # All CI reports
 aish tekton-core pr-status      # Ready for review
 aish prometheus tomorrow-plan   # Next day planning
 ```
@@ -157,7 +157,7 @@ aish prometheus tomorrow-plan   # Next day planning
 ### Must Have (Week 2)
 - [ ] tekton-core managing projects
 - [ ] Basic GitHub integration
-- [ ] AI assignment working
+- [ ] CI assignment working
 
 ### Should Have (Week 3)
 - [ ] Automated GitHub Flow
@@ -206,11 +206,11 @@ aish prometheus tomorrow-plan   # Next day planning
 5. **Context Switching Overhead**
 
 ### Dashboard Requirements
-- Real-time AI activity
+- Real-time CI activity
 - Project health scores
 - Issue/PR pipeline
 - Resource utilization
 - Learning insights
 
 ---
-*"In 4 weeks, we'll transform how humans and AIs build software together."*
+*"In 4 weeks, we'll transform how humans and CIs build software together."*

@@ -6,7 +6,7 @@
 
 ## Executive Summary
 
-After analysis with Casey, we've clarified that team-chat should be an **orchestration pattern**, not a special socket. It simply broadcasts to all existing AI sockets and collects responses.
+After analysis with Casey, we've clarified that team-chat should be an **orchestration pattern**, not a special socket. It simply broadcasts to all existing CI sockets and collects responses.
 
 ## Core Design Principle
 
@@ -14,8 +14,8 @@ After analysis with Casey, we've clarified that team-chat should be an **orchest
 Team-Chat = Broadcast + Collect + Optional Facilitate
 ```
 
-- **NOT** a special AI or virtual socket
-- **IS** a coordinator that uses existing AI sockets
+- **NOT** a special CI or virtual socket
+- **IS** a coordinator that uses existing CI sockets
 - **Facilitator** (Rhetor/Terma) can summarize but initially just pass through
 
 ## Implementation Plan
@@ -26,8 +26,8 @@ Add these methods to `socket_registry.py`:
 
 ```python
 async def write_all(self, message: str, exclude: List[str] = None) -> Dict[str, bool]:
-    """Broadcast to all active AI sockets"""
-    # Send to each AI concurrently
+    """Broadcast to all active CI sockets"""
+    # Send to each CI concurrently
     # Return success/fail for each
 
 async def read_response_chunks(self) -> AsyncIterator[Dict[str, Any]]:
@@ -54,20 +54,20 @@ def send_team_chat(self, message):
 
 - No `team-chat` socket creation
 - No special socket_id handling
-- Just use existing AI sockets
+- Just use existing CI sockets
 
 ## Key Insights
 
 1. **Team-chat orchestrates, doesn't participate**
 2. **Responses stream as they arrive** (no waiting for all)
-3. **Attribution is automatic** (each response tagged with AI name)
+3. **Attribution is automatic** (each response tagged with CI name)
 4. **Facilitator summary is optional** (can add later)
 
 ## Current Issues This Solves
 
 - ❌ "Failed to broadcast message" - No more special socket
 - ❌ Complex socket registry logic - Just uses existing sockets
-- ❌ Team-chat only reaching one AI - Properly broadcasts to all
+- ❌ Team-chat only reaching one CI - Properly broadcasts to all
 - ✅ Clean, simple design that matches intent
 
 ## What's Already Done
@@ -82,7 +82,7 @@ def send_team_chat(self, message):
 1. Implement `write_all()` and `read_response_chunks()`
 2. Update `send_team_chat()` to use new methods
 3. Remove old team-chat socket creation code
-4. Test with running AI specialists
+4. Test with running CI specialists
 
 ## Testing
 
@@ -92,7 +92,7 @@ aish team-chat "Hello team"
 
 # Should see:
 Broadcasting to team...
-Sent to 18 AIs
+Sent to 18 CIs
 
 Team responses:
 ----------------------------------------

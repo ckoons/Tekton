@@ -1,10 +1,10 @@
-# Tekton AI Lifecycle Design
+# Tekton CI Lifecycle Design
 
 ## Overview
 
-Design for managing AI specialists across all Tekton components with proper lifecycle integration.
+Design for managing CI specialists across all Tekton components with proper lifecycle integration.
 
-**Status Update (July 2025)**: This design has been implemented using the unified AI system in `/Tekton/shared/ai/`. AI specialists now run on fixed ports (45000 + component_port - 8000) using the simple_ai communication system.
+**Status Update (July 2025)**: This design has been implemented using the unified CI system in `/Tekton/shared/ai/`. CI specialists now run on fixed ports (45000 + component_port - 8000) using the simple_ai communication system.
 
 ## Key Design Decisions
 
@@ -13,7 +13,7 @@ Design for managing AI specialists across all Tekton components with proper life
 - **Premium**: Claude 4 Opus (when available)
 - **Fallback**: Keep Claude 3 configs until sunset
 
-### 2. Platform-Wide AI Architecture
+### 2. Platform-Wide CI Architecture
 
 ```
 ┌─────────────────────────────────────────────────────────┐
@@ -23,11 +23,11 @@ Design for managing AI specialists across all Tekton components with proper life
                             │
         ┌───────────────────┴───────────────────┐
         │          RHETOR (Orchestrator)         │
-        │     Manages all component AIs          │
+        │     Manages all component CIs          │
         └───────────────────┬───────────────────┘
                             │
     ┌───────────────────────┴───────────────────────┐
-    │                Component AIs                    │
+    │                Component CIs                    │
     ├─────────────────┬──────────────┬──────────────┤
     │  Apollo         │  Athena      │  Hermes      │
     │  Engram         │  Prometheus  │  Harmonia    │
@@ -41,8 +41,8 @@ Design for managing AI specialists across all Tekton components with proper life
 
 ```bash
 # In .tekton/.env.tekton or environment
-TEKTON_REGISTER_AI=true    # Enable AI lifecycle management
-TEKTON_REGISTER_AI=false   # Skip AI registration (dev/test mode)
+TEKTON_REGISTER_AI=true    # Enable CI lifecycle management
+TEKTON_REGISTER_AI=false   # Skip CI registration (dev/test mode)
 ```
 
 ### 4. Lifecycle Integration Points
@@ -60,7 +60,7 @@ if os.environ.get('TEKTON_REGISTER_AI', 'false').lower() == 'true':
 ```python
 # After all components are running
 if ai_registration_enabled:
-    # AIs are auto-started with fixed ports
+    # CIs are auto-started with fixed ports
 ```
 
 #### C. Component Shutdown (enhanced_tekton_killer.py)
@@ -76,14 +76,14 @@ if ai_registration_enabled:
 ```python
 # Special handling for Rhetor shutdown
 if component_name == 'rhetor' and ai_registration_enabled:
-    # AI cleanup handled automatically
+    # CI cleanup handled automatically
 ```
 
 ## Implementation Architecture
 
-### 1. Simple AI Communication Module
+### 1. Simple CI Communication Module
 
-**IMPLEMENTED**: The simple AI system is now available at:
+**IMPLEMENTED**: The simple CI system is now available at:
 
 ```python
 # /Tekton/shared/ai/simple_ai.py
@@ -99,14 +99,14 @@ response = await ai_send("numa-ai", "Status report", "localhost", 45004)
 
 No registry needed - ports are calculated: `45000 + (component_port - 8000)`
 
-### 2. Component AI Configuration
+### 2. Component CI Configuration
 
-Each component gets an AI configuration:
+Each component gets an CI configuration:
 
 ```python
 # In component's config or generated
 def get_ai_config(component_name: str) -> dict:
-    """Get AI configuration for a component."""
+    """Get CI configuration for a component."""
     
     base_configs = {
         "apollo": {
@@ -126,7 +126,7 @@ def get_ai_config(component_name: str) -> dict:
             "model": "claude-3-5-sonnet-20241022",  # Consider Opus for platform AI
             "temperature": 0.5,
             "role": "Platform Overseer",
-            "prompt": "You are Numa, the platform AI overseeing all of Tekton..."
+            "prompt": "You are Numa, the platform CI overseeing all of Tekton..."
         }
     }
     
@@ -149,9 +149,9 @@ async def launch_component_with_ai(component_name: str, component_info: dict):
         
         # Register component AI
         ai_config = get_ai_config(component_name)
-        # AI automatically available on fixed port
+        # CI automatically available on fixed port
         
-        logger.info(f"Registered AI for {component_name}")
+        logger.info(f"Registered CI for {component_name}")
     
     return result
 
@@ -161,7 +161,7 @@ async def post_launch_numa():
         numa_config = get_ai_config("numa")
         numa_config["components"] = list(launched_components.keys())
         
-        # Numa AI automatically available on port 45004
+        # Numa CI automatically available on port 45004
         logger.info("Registered Numa platform AI")
 ```
 
@@ -170,12 +170,12 @@ async def post_launch_numa():
 ```python
 # In enhanced_tekton_status.py
 async def get_component_status_with_ai(component_name: str):
-    """Get component status including AI information."""
+    """Get component status including CI information."""
     
     status = await get_component_status(component_name)
     
     if ai_registration_enabled():
-        # Check if AI is running on fixed port
+        # Check if CI is running on fixed port
         ai_port = 45000 + (component_info.get('port', 8000) - 8000)
         ai_status = check_port_open('localhost', ai_port)
         status["ai_specialist"] = {
@@ -190,19 +190,19 @@ async def get_component_status_with_ai(component_name: str):
 
 ## Benefits
 
-1. **Flexible Development**: Toggle AI on/off easily
-2. **Clean Separation**: AI lifecycle separate from component lifecycle  
+1. **Flexible Development**: Toggle CI on/off easily
+2. **Clean Separation**: CI lifecycle separate from component lifecycle  
 3. **Resilient**: Works even if Rhetor is down (file-based fallback)
-4. **Observable**: AI status visible in component status
-5. **Scalable**: Easy to add new component AIs
+4. **Observable**: CI status visible in component status
+5. **Scalable**: Easy to add new component CIs
 
 ## Migration Path
 
 1. **Phase 1**: Implement registry client and environment flag
 2. **Phase 2**: Update launcher/killer scripts
-3. **Phase 3**: Add AI configs for each component
+3. **Phase 3**: Add CI configs for each component
 4. **Phase 4**: Implement Numa platform AI
-5. **Phase 5**: Update UI to show AI status
+5. **Phase 5**: Update UI to show CI status
 
 ## Testing Strategy
 
@@ -223,6 +223,6 @@ export TEKTON_REGISTER_AI=true
 ## Open Questions
 
 1. Should Numa have write access to all component sockets?
-2. Should component AIs auto-start with their components or on-demand?
-3. How should we handle AI quotas/budgets per component?
-4. Should AI registration be async or block component startup?
+2. Should component CIs auto-start with their components or on-demand?
+3. How should we handle CI quotas/budgets per component?
+4. Should CI registration be async or block component startup?

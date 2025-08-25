@@ -1,25 +1,25 @@
 # Tekton and aish Development Handoff
 
 ## Summary
-We successfully completed Phase 0 cleanup of the Tekton AI platform, removing all deprecated files and fixing critical issues in the shared services. The unified AI platform is now operational with all components using the generic AI specialist framework with the llama3.3:70b model.
+We successfully completed Phase 0 cleanup of the Tekton CI platform, removing all deprecated files and fixing critical issues in the shared services. The unified CI platform is now operational with all components using the generic CI specialist framework with the llama3.3:70b model.
 
 ## Completed Work
 
 ### Phase 0: Cleanup
 - ✅ Removed all deprecated files including:
   - Old specialist_router references
-  - Component-specific AI specialist files
+  - Component-specific CI specialist files
   - Files with .deprecated extensions
   - Stale specialist manager code
 - ✅ Fixed syntax errors from cleanup (try/except blocks, imports)
-- ✅ Killed old AI processes running deleted modules
+- ✅ Killed old CI processes running deleted modules
 
 ### Shared Services Fixes
 - ✅ Fixed TOCTOU race condition in port allocation
 - ✅ Added stale lock cleanup with 60-second timeout
 - ✅ Fixed Path import issues in launcher
-- ✅ Added AI config sync service to launcher/killer
-- ✅ Ensured all AIs use generic specialist with llama3.3:70b
+- ✅ Added CI config sync service to launcher/killer
+- ✅ Ensured all CIs use generic specialist with llama3.3:70b
 
 ### MCP Tools Integration
 - ✅ Removed dummy responses from MCP tools
@@ -30,10 +30,10 @@ We successfully completed Phase 0 cleanup of the Tekton AI platform, removing al
 
 ## Current Architecture
 
-### AI Registry
+### CI Registry
 - File-based registry at `~/.tekton/ai_registry/`
 - Dual architecture support:
-  - Greek Chorus AIs: Socket-based (ports 9001-9004)
+  - Greek Chorus CIs: Socket-based (ports 9001-9004)
   - Rhetor: API-based (port 8003)
 - Registry client with proper locking and timeout handling
 
@@ -42,16 +42,16 @@ We successfully completed Phase 0 cleanup of the Tekton AI platform, removing al
 - **Engram**: Memory service (port 8002)
 - **Rhetor**: API gateway (port 8003)
 - **Numa**: Resource monitor (port 8004)
-- **Greek Chorus AIs**: 
-  - Athena: Wisdom AI (port 9001)
-  - Apollo: Vision AI (port 9002)
-  - Dionysus: Creative AI (port 9003)
-  - Hephaestus: Builder AI (port 9004)
+- **Greek Chorus CIs**: 
+  - Athena: Wisdom CI (port 9001)
+  - Apollo: Vision CI (port 9002)
+  - Dionysus: Creative CI (port 9003)
+  - Hephaestus: Builder CI (port 9004)
 - **AI Config Sync**: Background service maintaining registry consistency
 
-### Generic AI Specialist
-All AIs now use `/Tekton/shared/ai/specialist_worker.py` as base class:
-- Socket server for Greek Chorus AIs
+### Generic CI Specialist
+All CIs now use `/Tekton/shared/ai/specialist_worker.py` as base class:
+- Socket server for Greek Chorus CIs
 - Ollama integration (default)
 - Anthropic integration via Rhetor
 - Standard message handlers (ping, health, info, chat)
@@ -60,11 +60,11 @@ All AIs now use `/Tekton/shared/ai/specialist_worker.py` as base class:
 
 1. **MCP Implementation** (HIGH PRIORITY)
    - Implement SendMessageToSpecialist for both socket and API communication
-   - Handle routing based on AI type (Greek Chorus vs Rhetor)
+   - Handle routing based on CI type (Greek Chorus vs Rhetor)
    - Add proper error handling and timeouts
 
 2. **Socket Parsing** (HIGH PRIORITY)
-   - Fix aish socket communication parsing for Greek Chorus AIs
+   - Fix aish socket communication parsing for Greek Chorus CIs
    - Current issue: Socket responses may not be properly parsed
    - Need to verify message format and delimiters
 
@@ -92,7 +92,7 @@ All AIs now use `/Tekton/shared/ai/specialist_worker.py` as base class:
 2. **ConfigureOrchestration**
    - Define orchestration settings schema
    - Implement configuration persistence
-   - Add dynamic AI routing rules
+   - Add dynamic CI routing rules
 
 3. **Error Recovery**
    - No retry logic implemented (per Casey's instruction)
@@ -110,5 +110,5 @@ All AIs now use `/Tekton/shared/ai/specialist_worker.py` as base class:
 ## Notes
 - Casey prefers no auto-restart (it hides problems)
 - Focus on making errors visible for debugging
-- All AIs should show "Llama3.3 70B" in status
+- All CIs should show "Llama3.3 70B" in status
 - Keep implementation simple and direct

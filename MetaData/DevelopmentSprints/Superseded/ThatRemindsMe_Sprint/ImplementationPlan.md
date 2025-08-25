@@ -1,7 +1,7 @@
 # Implementation Plan - ThatRemindsMe Sprint
 
 ## Overview
-This plan outlines the implementation approach for persona-based AI instantiation with progressive memory loading. The implementing Claude should refine based on deep analysis of Engram and Terma capabilities.
+This plan outlines the implementation approach for persona-based CI instantiation with progressive memory loading. The implementing Claude should refine based on deep analysis of Engram and Terma capabilities.
 
 ## Debug Instrumentation Requirements
 All new code MUST include debug instrumentation:
@@ -101,7 +101,7 @@ terma --hire Atlas --task debugging --context "env_manager issues"
 5. Loading feedback UI
 
 **Trigger Mechanisms**:
-- Explicit: AI says "I need to remember..."
+- Explicit: CI says "I need to remember..."
 - Implicit: Pattern matching on context
 - Suggested: System recommends memories
 - Temporal: Time-based relevance
@@ -155,7 +155,7 @@ Engram (Memory Storage)
 ```
 
 ### Memory Retrieval Flow
-1. AI recognizes need for memory
+1. CI recognizes need for memory
 2. Constructs natural language query
 3. MCP tool performs semantic search
 4. Relevance scoring and ranking
@@ -185,11 +185,11 @@ Engram (Memory Storage)
 6. Clear documentation exists
 
 ## Notes for Implementation
-This sprint pushes boundaries of AI identity and memory. The implementing Claude should:
+This sprint pushes boundaries of CI identity and memory. The implementing Claude should:
 1. Study Engram's current memory capabilities deeply
 2. Understand Terma's extension points
-3. Design for natural AI interaction
+3. Design for natural CI interaction
 4. Focus on the "that reminds me" moment
 5. Ensure Atlas feels like a continuous personality
 
-The goal is making AI identity portable and memory adaptive while maintaining the essence of who the AI is.
+The goal is making CI identity portable and memory adaptive while maintaining the essence of who the CI is.

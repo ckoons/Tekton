@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Model Context Protocol (MCP) v2 is a standardized protocol that allows AI assistants to interact with tools and services. In Tekton, MCP enables components to expose their functionality as tools that can be discovered and executed by AI assistants like Claude.
+The Model Context Protocol (MCP) v2 is a standardized protocol that allows CI assistants to interact with tools and services. In Tekton, MCP enables components to expose their functionality as tools that can be discovered and executed by CI assistants like Claude.
 
 ## Architecture
 
@@ -12,7 +12,7 @@ Tekton uses a centralized MCP architecture:
 
 ```
 ┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
-│   AI Assistant  │     │   AI Assistant  │     │   AI Assistant  │
+│   CI Assistant  │     │   CI Assistant  │     │   CI Assistant  │
 │    (Claude)     │     │   (Other LLM)   │     │    (Local)      │
 └────────┬────────┘     └────────┬────────┘     └────────┬────────┘
          │                       │                         │

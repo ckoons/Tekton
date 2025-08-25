@@ -9,7 +9,7 @@ You are implementing a comprehensive backend analysis and landmark system for Te
 
 ## Context
 
-Tekton is an AI orchestration system with multiple components (Hermes, Engram, Prometheus, etc.). Currently, each Claude session starts fresh with no memory of previous architectural decisions or system understanding. Your work will create a "memory system" that enables Companion Intelligences (CIs) like Numa to maintain context across sessions.
+Tekton is an CI orchestration system with multiple components (Hermes, Engram, Prometheus, etc.). Currently, each Claude session starts fresh with no memory of previous architectural decisions or system understanding. Your work will create a "memory system" that enables Companion Intelligences (CIs) like Numa to maintain context across sessions.
 
 ## Part 1: Backend Analysis (Start Here)
 
@@ -49,7 +49,7 @@ Tekton is an AI orchestration system with multiple components (Hermes, Engram, P
    - Core infrastructure (`shared/`, `config/`)
    - Communication layer (`Hermes/`)
    - Data layer (`Engram/`, `Athena/`)
-   - AI layer (`Prometheus/`, `Sophia/`)
+   - CI layer (`Prometheus/`, `Sophia/`)
    - Orchestration (`Apollo/`)
    - UI backend (`Hephaestus/`)
 

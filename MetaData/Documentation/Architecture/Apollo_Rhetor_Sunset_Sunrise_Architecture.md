@@ -82,7 +82,7 @@ The CI Registry maintains three key variables per CI:
 
 ### Sunset Protocol Message
 
-The model-agnostic coaching dialog that works for all AI models:
+The model-agnostic coaching dialog that works for all CI models:
 
 ```
 SUNSET_PROTOCOL: Please summarize your current context, including:

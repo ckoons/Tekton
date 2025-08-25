@@ -149,7 +149,7 @@ async def dry_run_merge(self, branch_name: str, target_branch: str = "main"):
 ### 1. Fix (AI-Powered)
 **Current**: Placeholder implementation
 **Future**: 
-- AI analyzes conflict patterns
+- CI analyzes conflict patterns
 - Suggests resolution based on code understanding
 - Applies fixes automatically when confidence is high
 

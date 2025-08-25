@@ -32,7 +32,7 @@
 - `/api/hermes/messages` - Message stream
 - `/api/hermes/connections` - Connection data
 - `/api/hermes/history` - Message history
-- `/api/hermes/chat` - AI chat (via aish MCP)
+- `/api/hermes/chat` - CI chat (via aish MCP)
 
 ## CSS-First Pattern
 ```html
@@ -62,7 +62,7 @@
 
 ## Dependencies
 - Hermes backend running on port 8020
-- aish MCP for AI features
+- aish MCP for CI features
 - Other Tekton components for registry
 - WebSocket for real-time messages
 

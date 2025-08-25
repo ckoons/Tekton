@@ -1,15 +1,15 @@
-# AI Platform Integration Sprint - Handoff Document
+# CI Platform Integration Sprint - Handoff Document
 
 ## Sprint Summary
-The AI Platform Integration Sprint successfully unified AI discovery through the AI Registry but revealed a dual communication architecture that needs completion.
+The CI Platform Integration Sprint successfully unified CI discovery through the CI Registry but revealed a dual communication architecture that needs completion.
 
 ## Current State
 
 ### ✅ Completed
-1. **Unified AI Registry** - All AIs register in a single registry
+1. **Unified CI Registry** - All CIs register in a single registry
 2. **AI Discovery Service** - Provides discovery with connection details
 3. **Dual Architecture Design** - Greek Chorus (socket) vs Rhetor Specialists (API)
-4. **aish Discovery** - Can discover all AIs via `ai-discover` tool
+4. **aish Discovery** - Can discover all CIs via `ai-discover` tool
 5. **Documentation** - Architecture and API migration guides created
 
 ### ⚠️ Partially Working
@@ -25,7 +25,7 @@ The AI Platform Integration Sprint successfully unified AI discovery through the
 ## Critical Issues to Fix
 
 ### 1. aish Socket Communication
-**Problem**: aish discovers AIs but can't communicate with Greek Chorus AIs
+**Problem**: aish discovers CIs but can't communicate with Greek Chorus CIs
 **Root Cause**: Not extracting connection info from ai-discover output
 **Fix Required**:
 ```python
@@ -47,7 +47,7 @@ async def send_message_to_specialist(self, specialist_id: str, message: str):
     ai_info = await self.discovery.get_ai_info(specialist_id)
     
     if 'connection' in ai_info:
-        # Greek Chorus AI - use socket
+        # Greek Chorus CI - use socket
         return await self._send_via_socket(ai_info, message)
     else:
         # Rhetor specialist - use API
@@ -63,7 +63,7 @@ def _get_ai_performance(self, ai_id: str) -> Dict[str, float]:
     # Should track: response times, success rates, total requests
 ```
 
-### 4. AI Health Monitoring
+### 4. CI Health Monitoring
 **File**: `shared/ai/health_monitor.py`
 **TODO**: Line 89 - Implement specialist health checks via socket ping
 
@@ -72,15 +72,15 @@ def _get_ai_performance(self, ai_id: str) -> Dict[str, float]:
 ### 1. Conversation Storage
 - Where to store conversation history?
 - Per-AI or centralized in Engram?
-- How to handle history for socket-based AIs?
+- How to handle history for socket-based CIs?
 
 ### 2. Performance Metrics
-- Should each AI track its own metrics?
+- Should each CI track its own metrics?
 - Central metrics collector needed?
 - Integration with monitoring systems?
 
 ### 3. Error Handling
-- Fallback when Greek Chorus AI is unreachable?
+- Fallback when Greek Chorus CI is unreachable?
 - Retry logic for socket connections?
 - Circuit breaker pattern?
 
@@ -88,7 +88,7 @@ def _get_ai_performance(self, ai_id: str) -> Dict[str, float]:
 
 ### 1. End-to-End Tests
 ```bash
-# Test Greek Chorus AI pipeline
+# Test Greek Chorus CI pipeline
 echo "test" | aish --ai apollo | aish --ai athena
 
 # Test mixed pipeline
@@ -115,7 +115,7 @@ mcp-client send-message apollo-ai "Hello"
 2. **Verify system stability**
    - Start all components
    - Test MCP tool registration
-   - Verify Greek Chorus AI registration
+   - Verify Greek Chorus CI registration
    - Test ai-discover functionality
 3. **Document findings**
    - Note any unexpected dependencies
@@ -168,7 +168,7 @@ mcp-client send-message apollo-ai "Hello"
 - `/Users/cskoons/projects/github/Tekton/scripts/AI_DISCOVER_USAGE.md`
 
 ## Success Criteria
-1. aish can communicate with all AI types
+1. aish can communicate with all CI types
 2. MCP tools function properly
 3. Performance metrics collected
 4. Error handling prevents cascading failures
@@ -182,7 +182,7 @@ mcp-client send-message apollo-ai "Hello"
 ### Architecture Notes
 - The dual architecture (socket vs API) is intentional and correct
 - Discovery is unified but communication is bifurcated
-- Greek Chorus AIs are high-performance independent processes
+- Greek Chorus CIs are high-performance independent processes
 - Rhetor specialists are managed and orchestrated
 - Both types coexist in the same registry
 

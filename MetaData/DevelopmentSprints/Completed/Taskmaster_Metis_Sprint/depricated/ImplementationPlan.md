@@ -4,7 +4,7 @@
 
 This document outlines the detailed implementation plan for the Metis Task Management Integration Development Sprint. It breaks down the high-level goals into specific implementation tasks, defines the phasing, specifies testing requirements, and identifies documentation that must be updated.
 
-Tekton is an intelligent orchestration system that coordinates multiple AI models and resources to efficiently solve complex software engineering problems. This Implementation Plan focuses on creating a new Metis component that provides structured task management, serving as an intermediary layer between requirements (Telos) and planning (Prometheus).
+Tekton is an intelligent orchestration system that coordinates multiple CI models and resources to efficiently solve complex software engineering problems. This Implementation Plan focuses on creating a new Metis component that provides structured task management, serving as an intermediary layer between requirements (Telos) and planning (Prometheus).
 
 ## Implementation Phases
 

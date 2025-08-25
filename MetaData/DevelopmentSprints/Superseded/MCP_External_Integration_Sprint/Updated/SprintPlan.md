@@ -4,7 +4,7 @@
 
 This document outlines the high-level plan for the MCP External Integration Development Sprint. It provides an overview of the goals, approach, and expected outcomes.
 
-Tekton is an intelligent orchestration system that coordinates multiple AI models and resources to efficiently solve complex software engineering problems. This development sprint focuses on creating a universal adapter framework for integrating external MCP services, building on the foundation established by the MCP Unified Integration Sprint.
+Tekton is an intelligent orchestration system that coordinates multiple CI models and resources to efficiently solve complex software engineering problems. This development sprint focuses on creating a universal adapter framework for integrating external MCP services, building on the foundation established by the MCP Unified Integration Sprint.
 
 ## Sprint Goals
 
@@ -25,7 +25,7 @@ This sprint delivers value by:
 - **Future-Proofing**: Maintain flexibility as MCP standards evolve without requiring architectural changes
 - **Reduced Development Effort**: Reuse existing MCP services rather than building capabilities from scratch
 - **Enhanced Security**: Properly sandbox external services with centralized permission management
-- **Integration Hub**: Position Tekton as a central hub for MCP-based AI orchestration
+- **Integration Hub**: Position Tekton as a central hub for MCP-based CI orchestration
 - **Compatibility**: Ensure Tekton works with the evolving MCP ecosystem
 
 ## Current State Assessment
@@ -44,7 +44,7 @@ The MCP Unified Integration Sprint established the core foundation for MCP in Te
 
 The external MCP ecosystem continues to evolve:
 
-1. **Claude Desktop MCP**: Mature implementation of the MCP standard for AI assistants
+1. **Claude Desktop MCP**: Mature implementation of the MCP standard for CI assistants
 2. **Brave Search MCP Server**: Well-documented implementation for web search capabilities
 3. **GitHub MCP Servers**: Multiple implementations with varying levels of maturity
 4. **Open-MCP**: Emerging standard for converting web APIs to MCP

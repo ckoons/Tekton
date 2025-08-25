@@ -52,7 +52,7 @@ This document captures key architectural decisions made during the Backend Landm
 
 ### Decision 005: Component Analysis Order
 **Date**: Part 1 Planning
-**Decision**: Analyze core → periphery (shared → Hermes → data → AI → UI)
+**Decision**: Analyze core → periphery (shared → Hermes → data → CI → UI)
 **Rationale**:
 - Dependencies flow outward
 - Understanding builds naturally

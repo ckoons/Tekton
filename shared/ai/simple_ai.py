@@ -188,9 +188,9 @@ def _get_ai_id_from_port(port: int) -> Optional[str]:
     }
     return port_map.get(port)
 
-# Pre-register all known AIs
+# Pre-register all known CIs
 def register_all_ais():
-    """Pre-register all known Tekton AIs"""
+    """Pre-register all known Tekton CIs"""
     service = get_service()
     
     ais = [

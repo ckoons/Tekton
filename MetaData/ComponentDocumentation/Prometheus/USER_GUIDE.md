@@ -78,7 +78,7 @@ The UI uses CSS-first navigation with radio buttons for optimal performance:
 
 - **Real-time Updates**: All data is fetched from the backend API in real-time
 - **Responsive Design**: Works seamlessly on desktop and mobile devices
-- **AI Integration**: Chat tabs integrate with Tekton's AI system via aish MCP
+- **AI Integration**: Chat tabs integrate with Tekton's CI system via aish MCP
 - **Semantic Navigation**: UI elements include semantic tags for accessibility
 
 ### Using the Chat Features
@@ -86,14 +86,14 @@ The UI uses CSS-first navigation with radio buttons for optimal performance:
 The Planning Chat and Team Chat tabs provide AI-powered assistance:
 
 ```javascript
-// Planning Chat - For project-specific AI assistance
+// Planning Chat - For project-specific CI assistance
 window.AIChat.sendMessage('prometheus', 'Help me plan a sprint')
 
 // Team Chat - For collaborative discussions
 window.AIChat.teamChat('Team update on project status', 'prometheus')
 ```
 
-Note: AI Chat features require the main Tekton UI environment to be running.
+Note: CI Chat features require the main Tekton UI environment to be running.
 
 ## Using the Client Library
 
@@ -125,7 +125,7 @@ print(f"Created project: {project_id}")
 # Create a more detailed project
 project = client.create_project(
     name="AI Feature Integration",
-    description="Integrating new AI features into the product",
+    description="Integrating new CI features into the product",
     start_date="2025-05-01",
     target_end_date="2025-08-15",
     metadata={
@@ -143,7 +143,7 @@ project = client.create_project(
 # Update project details
 client.update_project(
     project_id=project["id"],
-    name="Enhanced AI Feature Integration",
+    name="Enhanced CI Feature Integration",
     target_end_date="2025-08-30"  # Extending deadline
 )
 
@@ -164,8 +164,8 @@ print(f"Progress: {project_details['progress']}%")
 # Create a task
 task = client.create_task(
     project_id=project["id"],
-    name="Research Existing AI Solutions",
-    description="Evaluate available AI solutions for integration",
+    name="Research Existing CI Solutions",
+    description="Evaluate available CI solutions for integration",
     estimated_hours=20,
     priority="high",
     status="not_started",
@@ -176,7 +176,7 @@ task = client.create_task(
 subtask = client.create_task(
     project_id=project["id"],
     name="Document API Requirements",
-    description="Document API requirements for AI integration",
+    description="Document API requirements for CI integration",
     estimated_hours=8,
     priority="medium",
     status="not_started",
@@ -218,7 +218,7 @@ print(f"Progress: {task_details['progress']}%")
 timeline = client.create_timeline(
     project_id=project["id"],
     name="AI Integration Timeline",
-    description="Detailed timeline for AI feature integration"
+    description="Detailed timeline for CI feature integration"
 )
 
 # Add phases to the timeline
@@ -378,15 +378,15 @@ for recommendation in recommendations["recommendations"]:
 ```python
 # Define task dependencies
 client.add_task_dependency(
-    task_id=task["id"],  # "Research Existing AI Solutions"
+    task_id=task["id"],  # "Research Existing CI Solutions"
     depends_on_task_id=subtask["id"]  # "Document API Requirements"
 )
 
 # Create more tasks with dependencies
 implementation_task = client.create_task(
     project_id=project["id"],
-    name="Implement AI Integration",
-    description="Integrate AI solution with existing system",
+    name="Implement CI Integration",
+    description="Integrate CI solution with existing system",
     estimated_hours=60,
     priority="high",
     status="not_started"
@@ -399,8 +399,8 @@ client.add_task_dependency(
 
 testing_task = client.create_task(
     project_id=project["id"],
-    name="Test AI Integration",
-    description="Comprehensive testing of AI integration",
+    name="Test CI Integration",
+    description="Comprehensive testing of CI integration",
     estimated_hours=40,
     priority="high",
     status="not_started"
@@ -447,7 +447,7 @@ for opt in optimizations["suggestions"]:
 risk = client.add_project_risk(
     project_id=project["id"],
     name="API Integration Complexity",
-    description="The third-party AI API may be more complex than anticipated",
+    description="The third-party CI API may be more complex than anticipated",
     probability="medium",  # low, medium, high
     impact="high",         # low, medium, high
     mitigation_strategy="Allocate additional time for integration. Plan for early prototype testing."
@@ -724,7 +724,7 @@ Create and use project templates:
 # Create a project template
 template = client.create_project_template(
     name="AI Integration Project",
-    description="Template for AI integration projects",
+    description="Template for CI integration projects",
     phases=[
         {
             "name": "Research",
@@ -796,7 +796,7 @@ template = client.create_project_template(
 # Create project from template
 new_project = client.create_project_from_template(
     template_id=template["id"],
-    name="New AI Integration Project",
+    name="New CI Integration Project",
     start_date="2025-07-01"
 )
 ```

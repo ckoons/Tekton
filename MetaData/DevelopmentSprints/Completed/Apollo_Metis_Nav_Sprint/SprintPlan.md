@@ -4,7 +4,7 @@
 
 This document outlines the high-level plan for the Apollo & Metis Navigation Sprint. It provides an overview of the goals, approach, and expected outcomes for adding two new navigation tabs to the Tekton UI LEFT PANEL while ensuring UI integrity and space management.
 
-Tekton is an intelligent orchestration system that coordinates multiple AI models and resources to efficiently solve complex software engineering problems. This Development Sprint focuses on extending the navigation system to include two new components while maintaining UI usability.
+Tekton is an intelligent orchestration system that coordinates multiple CI models and resources to efficiently solve complex software engineering problems. This Development Sprint focuses on extending the navigation system to include two new components while maintaining UI usability.
 
 ## Sprint Goals
 
@@ -19,7 +19,7 @@ The primary goals of this sprint are:
 
 This sprint delivers value by:
 
-- **Expanding Tekton's Capabilities**: Providing UI access points for new AI orchestration components
+- **Expanding Tekton's Capabilities**: Providing UI access points for new CI orchestration components
 - **Improving Navigation**: Making the system's functional organization more clear and logical
 - **Enhancing Usability**: Maintaining UI integrity despite increasing complexity
 - **Supporting Future Development**: Enabling future implementation of Apollo and Metis components
@@ -147,7 +147,7 @@ This sprint will be considered successful if:
 ## Key Stakeholders
 
 - **Casey**: Human-in-the-loop project manager
-- **Claude Code**: AI assistant for implementation
+- **Claude Code**: CI assistant for implementation
 - **Future Developers**: Anyone who will implement Apollo and Metis components
 
 ## References

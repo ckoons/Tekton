@@ -1,6 +1,6 @@
 # Engram - Simple Memory for AI
 
-Engram provides persistent memory for AI assistants with just 3 methods.
+Engram provides persistent memory for CI assistants with just 3 methods.
 
 ## Installation
 

@@ -63,7 +63,7 @@ The current system already embraces several key philosophical principles:
 - **Shared Memory Foundation**: Infrastructure exists for memory sharing
 - **Component Specialization**: Clear separation of concerns
 
-### 2. Natural AI Memory Design Vision
+### 2. Natural CI Memory Design Vision
 Engram includes an ambitious design document (`NATURAL_AI_MEMORY_DESIGN.md`) proposing:
 - **Cognitive Layer**: Natural thinking/wondering/sharing primitives
 - **Memory Streams**: Continuous flow vs request/response

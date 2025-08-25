@@ -35,17 +35,17 @@ Embed help text directly in the aish command.
 - Hard to maintain
 - Limited formatting options
 
-#### Alternative 2: Dynamic Help from AI Specialists
+#### Alternative 2: Dynamic Help from CI Specialists
 
-Query each AI specialist for their help content.
+Query each CI specialist for their help content.
 
 **Pros:**
 - Rich, contextual help
-- AI specialists own their documentation
+- CI specialists own their documentation
 - Can provide examples based on context
 
 **Cons:**
-- Requires AI specialists to be running
+- Requires CI specialists to be running
 - Network latency
 - Complex implementation
 - Not available offline
@@ -70,7 +70,7 @@ Return paths to documentation directories.
 The documentation path pattern was chosen because:
 1. It keeps the aish command minimal and focused
 2. Documentation can be rich and evolve without code changes
-3. It treats humans and AIs as equal citizens
+3. It treats humans and CIs as equal citizens
 4. It's simple to implement and understand
 5. It scales naturally with new components
 
@@ -79,7 +79,7 @@ The documentation path pattern was chosen because:
 1. Help output format should be consistent:
    ```
    Usage: [usage information]
-   AI Training: [path to AI training docs]
+   CI Training: [path to CI training docs]
    User Guides: [path to user guides]
    ```
 
@@ -122,7 +122,7 @@ MetaData/TektonDocumentation/
 
 ### Rationale
 
-- Clear separation between AI and human documentation
+- Clear separation between CI and human documentation
 - Component names map directly to directories
 - Easy to navigate and discover
 - Supports future growth
@@ -131,7 +131,7 @@ MetaData/TektonDocumentation/
 
 ### Context
 
-Current aish has inconsistent command patterns and fails on direct AI messaging.
+Current aish has inconsistent command patterns and fails on direct CI messaging.
 
 ### Decision
 

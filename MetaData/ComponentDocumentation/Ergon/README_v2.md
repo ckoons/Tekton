@@ -49,7 +49,7 @@ Ergon v2 transforms software development through CI-in-the-Loop automation, achi
                             │
 ┌─────────────────────────────────────────────────────────┐
 │                  Socket API (8102)                      │
-│         AI Pipeline | REST API | WebSocket              │
+│         CI Pipeline | REST API | WebSocket              │
 └─────────────────────────────────────────────────────────┘
                             │
 ┌─────────────────────────────────────────────────────────┐

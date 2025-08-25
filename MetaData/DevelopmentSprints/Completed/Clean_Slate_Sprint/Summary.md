@@ -69,7 +69,7 @@ The Clean Slate Sprint was prepared with comprehensive documentation following t
    - Phase 2: Component Implementation
    - Phase 3: Validation and Documentation
 
-4. **[Claude Code Prompt](ClaudeCodePrompt.md)** - Detailed guide for AI assistants implementing the sprint, with specific guidelines for each phase and file.
+4. **[Claude Code Prompt](ClaudeCodePrompt.md)** - Detailed guide for CI assistants implementing the sprint, with specific guidelines for each phase and file.
 
 5. **[README.md](README.md)** - General guidance for the sprint, including working guidelines and checklists.
 

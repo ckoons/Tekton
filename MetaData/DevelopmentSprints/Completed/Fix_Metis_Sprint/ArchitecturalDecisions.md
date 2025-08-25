@@ -2,20 +2,20 @@
 
 ## Overview
 
-This document captures the key architectural decisions for adding AI capabilities to Metis while preserving its existing functionality.
+This document captures the key architectural decisions for adding CI capabilities to Metis while preserving its existing functionality.
 
 ## Decision 1: Integration Approach
 
-**Decision:** Add AI capabilities as a parallel system rather than replacing existing functionality
+**Decision:** Add CI capabilities as a parallel system rather than replacing existing functionality
 
 **Rationale:**
 - Minimizes risk of breaking working code
 - Allows gradual migration and testing
 - Preserves backward compatibility
-- Enables A/B testing of AI vs manual approaches
+- Enables A/B testing of CI vs manual approaches
 
 **Implementation:**
-- New modules in `/core/` for AI functionality
+- New modules in `/core/` for CI functionality
 - New endpoints under `/api/v1/tasks/{id}/ai/` namespace
 - Existing CRUD operations remain untouched
 
@@ -94,7 +94,7 @@ class MetisLLMAdapter:
 
 ## Decision 6: Complexity Analysis Model
 
-**Decision:** Use multi-factor AI analysis with explainable scoring
+**Decision:** Use multi-factor CI analysis with explainable scoring
 
 **Rationale:**
 - Provides transparency in scoring
@@ -114,20 +114,20 @@ class MetisLLMAdapter:
 **Decision:** Implement graceful degradation with fallback to manual operations
 
 **Rationale:**
-- Ensures system remains functional if AI fails
+- Ensures system remains functional if CI fails
 - Provides consistent user experience
 - Allows gradual rollout
 - Simplifies debugging
 
 **Implementation:**
-- Try AI approach first
+- Try CI approach first
 - Fall back to manual on error
 - Log failures for analysis
 - Return clear error messages
 
 ## Decision 8: Data Flow Architecture
 
-**Decision:** AI enhances existing data, doesn't replace it
+**Decision:** CI enhances existing data, doesn't replace it
 
 **Rationale:**
 - Preserves data integrity
@@ -137,14 +137,14 @@ class MetisLLMAdapter:
 
 **Flow:**
 1. User creates high-level task (existing flow)
-2. User triggers AI decomposition (new)
-3. AI generates subtasks (new)
+2. User triggers CI decomposition (new)
+3. CI generates subtasks (new)
 4. Subtasks stored using existing methods
 5. User can manually adjust (existing)
 
 ## Decision 9: Testing Strategy
 
-**Decision:** Implement parallel test suites for AI features
+**Decision:** Implement parallel test suites for CI features
 
 **Rationale:**
 - Doesn't disrupt existing tests
@@ -167,13 +167,13 @@ class MetisLLMAdapter:
 **Decision:** Implement async operations with result caching
 
 **Rationale:**
-- Prevents UI blocking during AI operations
+- Prevents UI blocking during CI operations
 - Reduces redundant LLM calls
 - Improves response times
 - Scales better under load
 
 **Implementation:**
-- All AI operations are async
+- All CI operations are async
 - Cache decomposition results by task hash
 - Background job queue for large decompositions
 - Progress indicators for long operations

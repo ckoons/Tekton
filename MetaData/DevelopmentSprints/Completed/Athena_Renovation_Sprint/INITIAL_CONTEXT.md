@@ -32,7 +32,7 @@ These need conversion to radio button pattern like Apollo.
 - `athena_sendChat()` (lines 998-1065) - Keep for chat functionality
 
 ### 3. Known Integration Points
-- Uses aish MCP for AI communication (window.AIChat calls)
+- Uses aish MCP for CI communication (window.AIChat calls)
 - Should connect to `http://localhost:8105/api/*` endpoints
 - Team Chat functionality uses aish MCP `/tools/team-chat`
 - Knowledge chat sends direct messages to 'athena' AI

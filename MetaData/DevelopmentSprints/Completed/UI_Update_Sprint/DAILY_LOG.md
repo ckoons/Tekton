@@ -94,7 +94,7 @@ Previous Status: None → Created
    - @landmark comments for major sections
    - data-tekton-* attributes throughout
    - Component, zone, panel, and action tags
-   - AI integration and state management tags
+   - CI integration and state management tags
 4. ✅ Created apollo-component.js service:
    - WebSocket support for real-time updates
    - Mock data loading for development

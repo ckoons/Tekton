@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document outlines how to implement AI-powered chat interfaces for all Tekton components in Hephaestus. Each component will have its own dedicated AI assistant accessible through a consistent chat interface in the right panel footer.
+This document outlines how to implement AI-powered chat interfaces for all Tekton components in Hephaestus. Each component will have its own dedicated CI assistant accessible through a consistent chat interface in the right panel footer.
 
 ## Architecture Overview
 
@@ -21,16 +21,16 @@ This document outlines how to implement AI-powered chat interfaces for all Tekto
 │  🔄 Synthesis   │  └─────────────────────────────────────┘  │
 │  🎯 Telos       │  ┌─────────────────────────────────────┐  │
 │  ⚙️ Ergon       │  │  FIXED CHAT FOOTER (Always Visible)  │  │
-│  🎨 Sophia      │  │  > Chat with [Component] AI ...      │  │
+│  🎨 Sophia      │  │  > Chat with [Component] CI ...      │  │
 │  🔥 Prometheus  │  └─────────────────────────────────────┘  │
 └─────────────────┴────────────────────────────────────────────┘
 ```
 
-## Component AI Assignments
+## Component CI Assignments
 
-Each component gets a dedicated AI assistant with specific expertise:
+Each component gets a dedicated CI assistant with specific expertise:
 
-| Component | AI Assistant ID | Primary Focus | Personality |
+| Component | CI Assistant ID | Primary Focus | Personality |
 |-----------|----------------|---------------|-------------|
 | Apollo | apollo-assistant | Executive coordination, predictions, planning | Professional, strategic, forward-thinking |
 | Athena | athena-assistant | Knowledge queries, entity relationships | Wise, analytical, precise |
@@ -109,7 +109,7 @@ Add to each component's CSS to ensure proper layout:
 
 ### 3. Component Context Injection
 
-Each component can provide context to their AI assistant:
+Each component can provide context to their CI assistant:
 
 ```javascript
 // Example: Apollo providing context to its AI
@@ -120,7 +120,7 @@ function initializeApolloChat() {
       component: 'apollo',
       currentView: 'predictions', // or 'planning', 'context', etc.
       activeData: {
-        // Any relevant data the AI should know about
+        // Any relevant data the CI should know about
         currentPredictions: getPredictionCount(),
         activeContexts: getActiveContexts()
       }
@@ -209,9 +209,9 @@ window.BudgetChat = {
 
 The chat input placeholder updates based on active component:
 
-- Apollo: "Ask Apollo AI about predictions or planning..."
-- Athena: "Query Athena AI about knowledge entities..."
-- Engram: "Chat with Engram AI about memories..."
+- Apollo: "Ask Apollo CI about predictions or planning..."
+- Athena: "Query Athena CI about knowledge entities..."
+- Engram: "Chat with Engram CI about memories..."
 - Budget: "Get cost optimization advice from Budget AI..."
 
 ### 2. Chat History Management
@@ -232,7 +232,7 @@ When switching between components:
 1. Current chat minimizes but preserves state
 2. New component's chat history loads
 3. Placeholder text updates
-4. AI context switches to new component
+4. CI context switches to new component
 
 ### 4. Team Chat Access
 
@@ -279,9 +279,9 @@ For each component integration:
 
 - [ ] Chat widget loads without errors
 - [ ] Placeholder text is component-specific
-- [ ] Messages route to correct AI assistant
+- [ ] Messages route to correct CI assistant
 - [ ] Chat history persists across refreshes
-- [ ] Component context is included in AI requests
+- [ ] Component context is included in CI requests
 - [ ] Team chat is accessible
 - [ ] Errors are handled gracefully
 - [ ] UI remains responsive during chat

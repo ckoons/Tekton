@@ -76,7 +76,7 @@ data-tekton-section    → Sub-areas within components
 
 ## Implementation Patterns
 
-### Pattern 1: Component AI Integration
+### Pattern 1: Component CI Integration
 
 **Step 1**: Tag the component container
 ```html
@@ -130,10 +130,10 @@ function switchComponent(componentName) {
 }
 ```
 
-### Pattern 3: AI Readiness Indicators
+### Pattern 3: CI Readiness Indicators
 
 ```javascript
-// Update AI connection status
+// Update CI connection status
 function updateAIStatus(component, ready) {
     const element = document.querySelector(`[data-tekton-component="${component}"]`);
     element?.setAttribute('data-tekton-ai-ready', ready ? 'true' : 'false');
@@ -250,7 +250,7 @@ Maintain parent-child relationships:
 **Issue**: Can't find element with semantic selector
 **Solution**: Verify tag spelling and use DevTools to inspect
 
-**Issue**: AI specialist not responding
+**Issue**: CI specialist not responding
 **Solution**: Check `data-tekton-ai` matches specialist ID in registry
 
 **Issue**: Navigation state not updating
@@ -279,6 +279,6 @@ Maintain parent-child relationships:
 
 ## Conclusion
 
-The semantic UI navigation system transforms Tekton's interface from an uncharted maze into a well-mapped city. Every element has an address, every component has a identity, and every AI knows exactly where it belongs.
+The semantic UI navigation system transforms Tekton's interface from an uncharted maze into a well-mapped city. Every element has an address, every component has a identity, and every CI knows exactly where it belongs.
 
 Remember: "Build the map, place the signs, update the map, open the roads."

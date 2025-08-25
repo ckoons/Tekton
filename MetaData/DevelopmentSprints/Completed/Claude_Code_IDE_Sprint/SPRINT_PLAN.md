@@ -110,7 +110,7 @@ MessageHandler (/shared/aish/src/message_handler.py)
 Methods:
   __init__(terminal_name: str)
   send(message: str, ai_name: str = None) -> dict
-    Send a message to an AI or terminal
+    Send a message to an CI or terminal
     Example: handler.send("hello", "numa")
   
   handle_forwarding(message: str) -> bool

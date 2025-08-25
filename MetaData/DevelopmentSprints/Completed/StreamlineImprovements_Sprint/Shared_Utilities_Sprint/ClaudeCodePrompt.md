@@ -2,7 +2,7 @@
 
 ## Context
 
-You are working on the Tekton project, an intelligent orchestration system for AI models. The previous session completed the CleanRequirements Sprint which created shared requirements and eliminated 60-70% dependency duplication.
+You are working on the Tekton project, an intelligent orchestration system for CI models. The previous session completed the CleanRequirements Sprint which created shared requirements and eliminated 60-70% dependency duplication.
 
 **Key People:**
 - Casey - The architect (50+ years experience) who designed Tekton and approves all changes

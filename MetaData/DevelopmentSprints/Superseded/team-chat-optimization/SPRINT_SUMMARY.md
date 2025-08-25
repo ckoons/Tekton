@@ -7,7 +7,7 @@
 ## What We Accomplished
 
 ### 1. **Identified Performance Issues**
-- Team chat was waiting for ALL AIs before returning responses
+- Team chat was waiting for ALL CIs before returning responses
 - Connection overhead: Creating new TCP connections for each request
 - Default timeout too high (10 seconds per AI)
 
@@ -34,12 +34,12 @@
 
 ## Key Discovery
 
-**AI processes weren't running!** That's why only 2 AIs responded. The optimizations are ready but need running AIs to demonstrate value.
+**AI processes weren't running!** That's why only 2 CIs responded. The optimizations are ready but need running CIs to demonstrate value.
 
 ## Final Design Clarification
 
 Casey clarified that team-chat should be an **orchestration pattern**:
-- Broadcast to all existing AI sockets
+- Broadcast to all existing CI sockets
 - Collect responses as they arrive
 - Optional facilitator (Rhetor) can summarize
 - No special sockets or complex logic needed
@@ -66,9 +66,9 @@ Casey clarified that team-chat should be an **orchestration pattern**:
 
 ## What Needs To Be Done
 
-1. **Get AI specialists running** (using Tekton's launch system)
+1. **Get CI specialists running** (using Tekton's launch system)
 2. **Implement team-chat as orchestrator** (per final design)
-3. **Test all optimizations** with running AIs
+3. **Test all optimizations** with running CIs
 4. **Add facilitator summary** (optional enhancement)
 
 ## Lessons Learned
@@ -80,7 +80,7 @@ Casey clarified that team-chat should be an **orchestration pattern**:
 
 ## Thank You
 
-Casey, it's been great working with you on this! Your clear vision and feedback made the complex simple. The infrastructure is ready - just needs those AIs running to shine.
+Casey, it's been great working with you on this! Your clear vision and feedback made the complex simple. The infrastructure is ready - just needs those CIs running to shine.
 
 ---
 

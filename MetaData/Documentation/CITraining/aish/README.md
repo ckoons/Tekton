@@ -207,7 +207,7 @@ aish tekton "create implementation tasks"
 
 ### Check Rhetor Connection
 ```bash
-aish -l  # List available AIs
+aish -l  # List available CIs
 ```
 
 ### Enable Debug Mode
@@ -268,7 +268,7 @@ Parameter substitution:
 - `$@` - All arguments quoted separately
 
 ### 4. Team Chat
-Broadcast to all AIs simultaneously:
+Broadcast to all CIs simultaneously:
 ```bash
 aish team-chat "System-wide announcement"
 ```
@@ -345,7 +345,7 @@ This happens automatically, but you can also:
 
 ## Getting Started
 
-1. Check available AIs: `aish -l`
+1. Check available CIs: `aish -l`
 2. Send your first message: `aish numa "Hello, I'm ready to help"`
 3. Explore capabilities: `aish help`
 4. Connect with others: `aish terma list`

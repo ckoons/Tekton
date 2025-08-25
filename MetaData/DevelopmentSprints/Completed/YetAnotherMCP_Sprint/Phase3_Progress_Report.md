@@ -40,7 +40,7 @@ This report documents the progress of Phase 3 MCP migration, where we're impleme
 ## Remaining Components (6)
 
 ### High Priority
-- **Rhetor** - LLM Service (critical for AI operations)
+- **Rhetor** - LLM Service (critical for CI operations)
 - **Sophia** - Embeddings Service (important for semantic operations)
 
 ### Medium Priority  

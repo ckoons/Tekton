@@ -5,7 +5,7 @@ This proposal outlines potential enhancements to the Tekton chat command system 
 
 ## Current State (August 2025)
 - Basic command execution with `[command]` syntax
-- Output routing modes: `>` (AI only), `>>` (user + AI context)
+- Output routing modes: `>` (AI only), `>>` (user + CI context)
 - Blacklist-based safety checking
 - 25K character output truncation
 - Multiple commands per message supported
@@ -63,16 +63,16 @@ Export chat sessions with commands as runbooks.
 
 ### Advanced Features
 
-#### 6. Pipe to AI Tools
+#### 6. Pipe to CI Tools
 Special AI-aware commands in pipes.
 ```
-[git diff | explain >]  # Sends diff to AI with "explain this" prompt
-[ls -la | summarize >]  # AI summarizes file list
-[cat error.log | debug >]  # AI analyzes error log
+[git diff | explain >]  # Sends diff to CI with "explain this" prompt
+[ls -la | summarize >]  # CI summarizes file list
+[cat error.log | debug >]  # CI analyzes error log
 ```
 
 #### 7. Multi-AI Routing
-Direct commands to specific AI specialists.
+Direct commands to specific CI specialists.
 ```
 [apollo: git status >]  # Send to Apollo
 [athena: SELECT * FROM users | analyze >]  # Athena analyzes query
@@ -81,9 +81,9 @@ Direct commands to specific AI specialists.
 #### 8. Smart Context Management
 Commands that automatically set context.
 ```
-[cd ~/projects/tekton]  # AI knows we're working on Tekton
-[git checkout feature-x]  # AI knows we're on feature-x branch
-[source venv/bin/activate]  # AI knows Python environment
+[cd ~/projects/tekton]  # CI knows we're working on Tekton
+[git checkout feature-x]  # CI knows we're on feature-x branch
+[source venv/bin/activate]  # CI knows Python environment
 ```
 
 #### 9. Progress Tracking
@@ -160,7 +160,7 @@ Persistent status bar showing:
 ### Phase 3 (Future)
 - Conditional execution
 - Session save/replay
-- AI tool pipes
+- CI tool pipes
 - Multi-AI routing
 
 ## Questions for Discussion

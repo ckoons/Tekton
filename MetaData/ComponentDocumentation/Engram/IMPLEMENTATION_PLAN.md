@@ -2,14 +2,14 @@
 
 ## Executive Summary
 
-Transform Engram from a memory database into a natural cognitive extension for AI components. This plan details specific changes needed to enable natural memory formation, recall, and peer communication.
+Transform Engram from a memory database into a natural cognitive extension for CI components. This plan details specific changes needed to enable natural memory formation, recall, and peer communication.
 
 ## Core Problems to Fix
 
 1. **500 Errors in Search**: The search endpoint is broken due to namespace/metadata issues
 2. **Unnatural API**: Too many parameters required for simple operations  
 3. **No Context Flow**: Memories don't naturally connect to current context
-4. **Isolated Peers**: AIs can't naturally sense or communicate with each other
+4. **Isolated Peers**: CIs can't naturally sense or communicate with each other
 5. **Context Loss**: No compression strategy for long conversations
 
 ## Proposed Solution Structure
@@ -20,7 +20,7 @@ engram/
 │   ├── __init__.py
 │   ├── memory_stream.py         # Continuous memory flow
 │   ├── context_manager.py       # Automatic context tracking
-│   ├── peer_awareness.py        # Natural AI communication
+│   ├── peer_awareness.py        # Natural CI communication
 │   └── compressor.py           # Context compression
 ├── core/
 │   ├── memory_manager.py       # MODIFY: Simplify core operations
@@ -98,7 +98,7 @@ class PeerAwareness:
         self.shared_contexts = {}
         
     async def sense(self) -> List[Peer]:
-        """Detect other AIs in the memory space"""
+        """Detect other CIs in the memory space"""
         # Use Hermes for discovery
         # Establish presence
         # Share context markers
@@ -206,4 +206,4 @@ Total: ~10-12 hours of implementation
 4. Test with twin communication
 5. Iterate based on results
 
-Casey, this plan would give us truly natural AI memory - where remembering is as easy as thinking, and sharing is as natural as breathing. Should I proceed with fixing the immediate issues first?
+Casey, this plan would give us truly natural CI memory - where remembering is as easy as thinking, and sharing is as natural as breathing. Should I proceed with fixing the immediate issues first?

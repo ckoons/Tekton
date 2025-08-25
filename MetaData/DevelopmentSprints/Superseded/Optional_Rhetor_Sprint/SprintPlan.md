@@ -2,9 +2,9 @@
 
 ## Overview
 
-This document outlines the high-level plan for the Optional Rhetor Sprint Development Sprint. It provides an overview of the goals, approach, and expected outcomes for production readiness and advanced orchestration features that were deferred from the main Rhetor AI Integration Sprint.
+This document outlines the high-level plan for the Optional Rhetor Sprint Development Sprint. It provides an overview of the goals, approach, and expected outcomes for production readiness and advanced orchestration features that were deferred from the main Rhetor CI Integration Sprint.
 
-Tekton is an intelligent orchestration system that coordinates multiple AI models and resources to efficiently solve complex software engineering problems. This Development Sprint focuses on production readiness, monitoring, and advanced orchestration patterns based on real-world usage experience.
+Tekton is an intelligent orchestration system that coordinates multiple CI models and resources to efficiently solve complex software engineering problems. This Development Sprint focuses on production readiness, monitoring, and advanced orchestration patterns based on real-world usage experience.
 
 ## Sprint Goals
 
@@ -19,17 +19,17 @@ The primary goals of this sprint are:
 This sprint delivers value by:
 
 - Enabling production deployment of Rhetor with enterprise-grade security and monitoring
-- Unlocking complex multi-component AI workflows across the entire Tekton ecosystem
-- Providing operational visibility and control over AI specialist networks
-- Enabling scalable, reliable AI orchestration for complex software engineering tasks
+- Unlocking complex multi-component CI workflows across the entire Tekton ecosystem
+- Providing operational visibility and control over CI specialist networks
+- Enabling scalable, reliable CI orchestration for complex software engineering tasks
 
 ## Current State Assessment
 
 ### Existing Implementation
 
-The main Rhetor AI Integration Sprint successfully delivered:
-- Functional MCP tools connected to live AI components
-- Real-time streaming support for AI interactions
+The main Rhetor CI Integration Sprint successfully delivered:
+- Functional MCP tools connected to live CI components
+- Real-time streaming support for CI interactions
 - Dynamic specialist creation and configuration
 - Robust FastMCP server integration with coroutine handling
 
@@ -101,7 +101,7 @@ The following items are explicitly out of scope for this sprint:
 
 This sprint has the following dependencies:
 
-- Completion of main Rhetor AI Integration Sprint (Phases 3, 4A, 4B)
+- Completion of main Rhetor CI Integration Sprint (Phases 3, 4A, 4B)
 - Production deployment and usage of Rhetor streaming and dynamic specialists
 - Collection of performance metrics and usage patterns
 - Identification of specific security, monitoring, or orchestration requirements
@@ -168,5 +168,5 @@ This sprint will be considered successful if:
 
 - [Debug Instrumentation Guidelines](/MetaData/TektonDocumentation/DeveloperGuides/Debugging/DebuggingInstrumentation.md)
 - [Rhetor Technical Documentation](/MetaData/ComponentDocumentation/Rhetor/)
-- [Main Rhetor AI Integration Sprint Documentation](../README.md)
+- [Main Rhetor CI Integration Sprint Documentation](../README.md)
 - [Tekton Architecture Documentation](/MetaData/TektonDocumentation/)

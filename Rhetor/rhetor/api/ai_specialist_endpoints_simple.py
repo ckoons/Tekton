@@ -198,7 +198,7 @@ async def clear_roster():
     for ai_id in list(roster.keys()):
         ai_manager.fire_ai(ai_id)
     
-    return {"message": f"Cleared {count} AIs from roster"}
+    return {"message": f"Cleared {count} CIs from roster"}
 
 
 @router.post("/cache/clear")

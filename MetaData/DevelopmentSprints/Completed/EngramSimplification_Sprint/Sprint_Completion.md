@@ -50,7 +50,7 @@ from engram import Memory
 mem = Memory()
 await mem.store("Engram is now simple")
 results = await mem.recall("simple")
-context = await mem.context("building AI memory")
+context = await mem.context("building CI memory")
 ```
 
 That's it. That's the entire API.

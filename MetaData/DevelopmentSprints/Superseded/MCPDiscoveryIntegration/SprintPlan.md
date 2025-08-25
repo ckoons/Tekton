@@ -11,7 +11,7 @@
 
 Model Context Protocol (MCP) servers act as a universal wrapper for AI-enabled applications, providing standardized interfaces for LLMs to interact with various tools and services. However, discovering, installing, and configuring these servers is currently a manual and fragmented process. There's no central registry or discovery mechanism that allows users to find MCP servers with specific capabilities or automate their installation.
 
-The Tekton ecosystem, particularly the Ergon component, is well-positioned to address this gap by implementing a comprehensive MCP server discovery and integration capability. This would enhance Tekton's utility as an orchestration system and make AI tooling more accessible.
+The Tekton ecosystem, particularly the Ergon component, is well-positioned to address this gap by implementing a comprehensive MCP server discovery and integration capability. This would enhance Tekton's utility as an orchestration system and make CI tooling more accessible.
 
 ## Goals
 

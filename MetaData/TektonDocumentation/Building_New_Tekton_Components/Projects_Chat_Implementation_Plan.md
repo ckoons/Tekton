@@ -267,7 +267,7 @@ async function sendToProjectCI(projectName, message, projectCI) {
         
         const data = await response.json();
         
-        // Add AI response to chat
+        // Add CI response to chat
         const chatContainer = document.getElementById('projectschat-messages');
         const aiMessage = document.createElement('div');
         aiMessage.className = 'tekton__message tekton__message--ai';

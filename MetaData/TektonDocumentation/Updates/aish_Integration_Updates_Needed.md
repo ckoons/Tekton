@@ -10,20 +10,20 @@
 **Location**: `TektonDocumentation/Building_New_Tekton_Components/`
 
 **Updates Needed**:
-- Add section showing aish as the primary AI interface
+- Add section showing aish as the primary CI interface
 - Update examples to use `aish <ai-name>` pattern
-- Remove references to individual AI commands (apollo, athena)
-- Add note that components should integrate with Rhetor for AI access
+- Remove references to individual CI commands (apollo, athena)
+- Add note that components should integrate with Rhetor for CI access
 
 ### 2. AIDiscoveryForAish.md
 
 **Location**: `TektonDocumentation/Guides/`
 
 **Updates Needed**:
-- Update to show `aish -l` for listing available AIs
-- Explain that aish discovers AIs through Rhetor
+- Update to show `aish -l` for listing available CIs
+- Explain that aish discovers CIs through Rhetor
 - Remove old discovery patterns
-- Add examples of dynamic AI discovery
+- Add examples of dynamic CI discovery
 
 ### 3. AI_DISCOVER_USAGE.md
 
@@ -63,10 +63,10 @@ These documents describe internal architecture and remain valid:
 
 ## Implementation Notes
 
-The key principle is that aish is now the user-facing interface for AI interaction, while the internal architecture (Rhetor, AI specialists, socket communication) remains unchanged. Documentation should reflect this separation of concerns:
+The key principle is that aish is now the user-facing interface for CI interaction, while the internal architecture (Rhetor, CI specialists, socket communication) remains unchanged. Documentation should reflect this separation of concerns:
 
 - **User-facing docs**: Focus on aish commands
 - **Developer docs**: Explain both aish and internal architecture
 - **API docs**: Show MCP/REST endpoints that support aish
 
-Individual AI commands (apollo, athena, etc.) are deprecated in favor of the unified `aish` command pattern.
+Individual CI commands (apollo, athena, etc.) are deprecated in favor of the unified `aish` command pattern.

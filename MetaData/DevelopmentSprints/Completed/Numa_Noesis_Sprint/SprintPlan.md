@@ -2,7 +2,7 @@
 
 ## Sprint Goal
 
-Implement Numa (Platform AI Mentor) and Noesis (Discovery System) as fully integrated Tekton components with proper UI, registration, and configuration management.
+Implement Numa (Platform CI Mentor) and Noesis (Discovery System) as fully integrated Tekton components with proper UI, registration, and configuration management.
 
 ## Sprint Scope
 
@@ -15,7 +15,7 @@ Implement Numa (Platform AI Mentor) and Noesis (Discovery System) as fully integ
 - Dark theme UI styling
 
 ### Out of Scope
-- Actual AI specialist implementation (TEKTON_REGISTER_AI=false)
+- Actual CI specialist implementation (TEKTON_REGISTER_AI=false)
 - Complex discovery algorithms for Noesis
 - Full mentoring logic for Numa
 - Database integration

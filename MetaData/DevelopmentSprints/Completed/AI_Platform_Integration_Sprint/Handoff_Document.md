@@ -1,31 +1,31 @@
-# AI Platform Integration Sprint - Handoff Document
+# CI Platform Integration Sprint - Handoff Document
 
 ## Sprint Overview
 
-This document provides a comprehensive handoff for the next Claude Code session to continue testing and finalize the AI Platform Integration Sprint.
+This document provides a comprehensive handoff for the next Claude Code session to continue testing and finalize the CI Platform Integration Sprint.
 
 ## Current State (as of 2025-06-28)
 
 ### What Has Been Completed
 
-1. **Thread-Safe AI Registry System**
+1. **Thread-Safe CI Registry System**
    - Implemented file locking with fcntl to prevent race conditions
    - All registry operations are now atomic
    - Located at: `/shared/ai/registry_client.py`
 
-2. **Generic AI Specialist Framework**
+2. **Generic CI Specialist Framework**
    - Created `AISpecialistWorker` base class
    - Built `GenericAISpecialist` that adapts to any component
-   - Each AI has a unique personality defined in `COMPONENT_EXPERTISE`
+   - Each CI has a unique personality defined in `COMPONENT_EXPERTISE`
 
 3. **AI Lifecycle Integration**
-   - `enhanced_tekton_launcher.py --ai all` launches all AI specialists
-   - `enhanced_tekton_ai_status.py` shows AI specialist status
-   - `enhanced_tekton_status.py` displays AI models in main status
+   - `enhanced_tekton_launcher.py --ai all` launches all CI specialists
+   - `enhanced_tekton_ai_status.py` shows CI specialist status
+   - `enhanced_tekton_status.py` displays CI models in main status
 
 4. **Critical Fixes Applied**
-   - Fixed Hermes AI launch (skips health check as Hermes receives, not performs them)
-   - Added TEKTON_ROOT setup to all AI specialists
+   - Fixed Hermes CI launch (skips health check as Hermes receives, not performs them)
+   - Added TEKTON_ROOT setup to all CI specialists
    - Resolved all race conditions with file locking
    - Changed default model from llama3.3:7b to llama3.3:70b
 
@@ -51,7 +51,7 @@ LLM Provider (Ollama or Anthropic via Rhetor)
 
 ### 1. Socket Communication Test
 ```python
-# Test that AI specialists respond to socket messages
+# Test that CI specialists respond to socket messages
 import asyncio
 import json
 
@@ -74,12 +74,12 @@ async def test_ai_communication(port):
 ```
 
 ### 2. Team Chat Integration
-- Each AI should be accessible in its own chat interface
-- All AIs should be available in Team Chat
+- Each CI should be accessible in its own chat interface
+- All CIs should be available in Team Chat
 - Test cross-AI communication patterns
 
 ### 3. Concurrent Launch Testing
-- Verify no port conflicts when launching multiple AIs
+- Verify no port conflicts when launching multiple CIs
 - Ensure registry remains consistent under load
 - Test the file locking mechanisms
 
@@ -99,26 +99,26 @@ async def test_ai_communication(port):
 
 ## Key Files and Locations
 
-### Core AI Infrastructure
+### Core CI Infrastructure
 - `/shared/ai/registry_client.py` - Thread-safe registry
-- `/shared/ai/specialist_worker.py` - Base AI class
+- `/shared/ai/specialist_worker.py` - Base CI class
 - `/shared/ai/generic_specialist.py` - Generic implementation
 
 ### Launch and Management Scripts
 - `/scripts/enhanced_tekton_launcher.py` - Main launcher (--ai flag)
 - `/scripts/enhanced_tekton_ai_launcher.py` - AI-specific launcher
-- `/scripts/enhanced_tekton_ai_status.py` - AI status viewer
-- `/scripts/enhanced_tekton_ai_killer.py` - AI termination
+- `/scripts/enhanced_tekton_ai_status.py` - CI status viewer
+- `/scripts/enhanced_tekton_ai_killer.py` - CI termination
 
 ### Configuration
 - Registry: `~/.tekton/ai_registry/platform_ai_registry.json`
-- Ports: 45000-50000 range for AI specialists
+- Ports: 45000-50000 range for CI specialists
 
 ## Testing Checklist
 
-- [ ] Launch all AI specialists with `--ai all`
+- [ ] Launch all CI specialists with `--ai all`
 - [ ] Verify all show "Llama3.3 70B" in status
-- [ ] Test socket communication to at least 3 AIs
+- [ ] Test socket communication to at least 3 CIs
 - [ ] Verify chat responses are component-appropriate
 - [ ] Test Team Chat integration
 - [ ] Stress test concurrent launches
@@ -128,19 +128,19 @@ async def test_ai_communication(port):
 ## Important Commands
 
 ```bash
-# Launch all AI specialists
+# Launch all CI specialists
 python3 scripts/enhanced_tekton_launcher.py --ai all
 
-# Check AI status
+# Check CI status
 python3 scripts/enhanced_tekton_ai_status.py
 
-# Check component status (includes AI info)
+# Check component status (includes CI info)
 python3 scripts/enhanced_tekton_status.py
 
 # Kill specific AI
 python3 scripts/enhanced_tekton_ai_killer.py numa-ai
 
-# Kill all AIs
+# Kill all CIs
 python3 scripts/enhanced_tekton_ai_killer.py --all
 ```
 
@@ -148,7 +148,7 @@ python3 scripts/enhanced_tekton_ai_killer.py --all
 
 1. **Thread Safety is Critical**: The original implementation had race conditions causing registry corruption. File locking with fcntl solved this.
 
-2. **Generic Implementation Works**: Instead of 19 separate AI implementations, one generic class with configuration works perfectly.
+2. **Generic Implementation Works**: Instead of 19 separate CI implementations, one generic class with configuration works perfectly.
 
 3. **Health Check Special Cases**: Hermes doesn't perform health checks, it receives them. Special handling required.
 
@@ -158,27 +158,27 @@ python3 scripts/enhanced_tekton_ai_killer.py --all
 
 ## Next Steps for Completion
 
-1. **Test Socket Communication**: Verify each AI responds appropriately
-2. **Integrate with Team Chat**: Ensure UI can communicate with AI specialists
-3. **Demo AI Capabilities**: Show practical examples of AI assistance
+1. **Test Socket Communication**: Verify each CI responds appropriately
+2. **Integrate with Team Chat**: Ensure UI can communicate with CI specialists
+3. **Demo CI Capabilities**: Show practical examples of CI assistance
 4. **Performance Testing**: Measure launch times and optimize if needed
 5. **Final Documentation**: Update any remaining docs with test results
 
 ## Success Criteria
 
 The sprint will be complete when:
-- All AI specialists can be launched and communicate via sockets
-- Each AI appears in its own chat interface
-- All AIs are accessible in Team Chat
+- All CI specialists can be launched and communicate via sockets
+- Each CI appears in its own chat interface
+- All CIs are accessible in Team Chat
 - No race conditions or port conflicts occur
 - Documentation is complete with examples
 
 ## Contact and Context
 
-This sprint was initiated to give every Tekton component an AI assistant. The implementation uses a socket-based architecture for real-time communication and integrates with Ollama for LLM capabilities.
+This sprint was initiated to give every Tekton component an CI assistant. The implementation uses a socket-based architecture for real-time communication and integrates with Ollama for LLM capabilities.
 
 For questions about the implementation, key decisions included:
 - Socket-based communication for real-time interaction
-- Generic AI implementation for maintainability  
+- Generic CI implementation for maintainability  
 - File-based registry with locking for simplicity
 - Integration with existing enhanced_tekton tools

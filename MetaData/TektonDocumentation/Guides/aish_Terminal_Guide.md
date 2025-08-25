@@ -5,7 +5,7 @@
 
 ## Overview
 
-aish (AI Shell) provides seamless AI integration in your terminal through the Tekton platform. This guide covers how to use aish in Tekton-managed terminals.
+aish (AI Shell) provides seamless CI integration in your terminal through the Tekton platform. This guide covers how to use aish in Tekton-managed terminals.
 
 ## Getting Started
 
@@ -22,7 +22,7 @@ aish-proxy active (v3.0.0) - Usage: aish <ai-name> [message]
 
 ## Basic Commands
 
-### Direct AI Interaction
+### Direct CI Interaction
 
 ```bash
 # Ask Apollo a question
@@ -35,7 +35,7 @@ aish athena "Explain the Tekton architecture"
 aish prometheus "Help me plan a new feature"
 ```
 
-### Piping Data to AIs
+### Piping Data to CIs
 
 ```bash
 # Send file contents to an AI
@@ -44,30 +44,30 @@ cat code.py | aish athena
 # Process command output
 ls -la | aish apollo "What files look important?"
 
-# Chain AIs together
+# Chain CIs together
 echo "Write a haiku about coding" | aish apollo | aish athena
 ```
 
 ### Team Communication
 
 ```bash
-# Broadcast to all AIs
+# Broadcast to all CIs
 aish team-chat "Starting new development sprint"
 
 # Multi-AI collaboration
 aish team-chat "Need help debugging authentication issue"
 ```
 
-### Listing Available AIs
+### Listing Available CIs
 
 ```bash
-# Show all available AI specialists
+# Show all available CI specialists
 aish -l
 ```
 
-## Available AI Specialists
+## Available CI Specialists
 
-| AI Name | Specialization | Best For |
+| CI Name | Specialization | Best For |
 |---------|---------------|----------|
 | apollo | Prediction & Analysis | Code predictions, performance analysis |
 | athena | Knowledge & Code Quality | Architecture review, best practices |
@@ -100,7 +100,7 @@ git diff | aish athena "Review changes" | aish prometheus "Suggest tests"
 # Analyze a file
 aish athena < config.json
 
-# Save AI response
+# Save CI response
 aish apollo "Generate Python boilerplate" > template.py
 
 # Append to existing file
@@ -126,23 +126,23 @@ export AISH_DEBUG=1
 aish works transparently with your shell:
 - All non-AI commands pass through unchanged
 - Shell aliases and functions work normally
-- Command history includes both shell and AI commands
+- Command history includes both shell and CI commands
 
 ### Session Context
 
 Each terminal maintains context:
 - `TEKTON_TERMINAL_PURPOSE` - Set when launching with purpose
-- `AISH_AI_PRIORITY` - Priority for AI requests
+- `AISH_AI_PRIORITY` - Priority for CI requests
 - Session history available via `aish-history`
 
 ## Troubleshooting
 
 ### Common Issues
 
-**No AI Response**
+**No CI Response**
 - Check Rhetor is running: `curl http://localhost:8003/health`
 - Verify network connectivity
-- Try `aish -l` to list available AIs
+- Try `aish -l` to list available CIs
 
 **Command Not Found**
 - Ensure you're in an aish-enabled terminal
@@ -150,7 +150,7 @@ Each terminal maintains context:
 - Verify PATH includes aish location
 
 **Slow Responses**
-- AI processing takes time for complex queries
+- CI processing takes time for complex queries
 - Check system resources
 - Consider simpler, focused queries
 
@@ -165,8 +165,8 @@ aish apollo "test message"
 ## Best Practices
 
 1. **Be Specific**: Clear, focused questions get better responses
-2. **Use the Right AI**: Each specialist has strengths - match AI to task
-3. **Pipeline for Complex Tasks**: Chain AIs for multi-step analysis
+2. **Use the Right AI**: Each specialist has strengths - match CI to task
+3. **Pipeline for Complex Tasks**: Chain CIs for multi-step analysis
 4. **Save Important Responses**: Redirect output to files for reference
 
 ## Examples by Use Case
@@ -212,7 +212,7 @@ aish terminals are fully integrated with Tekton:
 ## Getting Help
 
 - **In Terminal**: `aish --help`
-- **List AIs**: `aish -l`
+- **List CIs**: `aish -l`
 - **Tekton Status**: `tekton-status`
 - **Documentation**: This guide and component docs
 

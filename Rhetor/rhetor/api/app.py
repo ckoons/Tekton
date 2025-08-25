@@ -283,7 +283,7 @@ async def discovery():
             EndpointInfo(path="/api/v1/models", method="GET", description="List available models"),
             EndpointInfo(path="/api/v1/budget", method="*", description="Budget management"),
             EndpointInfo(path="/api/v1/specialists", method="*", description="AI specialist management"),
-            EndpointInfo(path="/api/team-chat", method="POST", description="Team chat with multiple AIs"),
+            EndpointInfo(path="/api/team-chat", method="POST", description="Team chat with multiple CIs"),
             EndpointInfo(path="/api/team-chat/stream", method="GET", description="Stream team chat responses"),
             EndpointInfo(path="/api/team-chat/sockets", method="GET", description="List team chat sockets"),
             EndpointInfo(path="/api/chat/{specialist_id}/stream", method="POST", description="Stream from individual specialist"),

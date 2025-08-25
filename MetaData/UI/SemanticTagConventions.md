@@ -1,11 +1,11 @@
 # Tekton UI Semantic Tag Conventions
 **Version**: 1.0
 **Created**: 2025-01-15
-**Purpose**: Define semantic HTML data attributes for AI navigation and UI DevTools
+**Purpose**: Define semantic HTML data attributes for CI navigation and UI DevTools
 
 ## Overview
 This document defines the `data-tekton-*` attribute conventions used throughout the Tekton UI to enable:
-- AI assistants to navigate and understand the UI structure
+- CI assistants to navigate and understand the UI structure
 - UI DevTools to identify and interact with components
 - Consistent patterns across all Tekton components
 
@@ -35,9 +35,9 @@ This document defines the `data-tekton-*` attribute conventions used throughout 
 - `data-tekton-chat-messages="true"` - Message display area
 - `data-tekton-chat-send="true"` - Send button
 
-### 6. AI Integration
-- `data-tekton-ai="[specialist-id]"` - AI specialist assignment
-- `data-tekton-ai-ready="true|false"` - AI connection status
+### 6. CI Integration
+- `data-tekton-ai="[specialist-id]"` - CI specialist assignment
+- `data-tekton-ai-ready="true|false"` - CI connection status
 - `data-tekton-ai-model="[model-name]"` - Active model indicator
 
 ### 7. Status and State
@@ -110,7 +110,7 @@ This document defines the `data-tekton-*` attribute conventions used throughout 
 2. **Be Consistent**: Follow the same patterns across all components
 3. **Layer Tags**: Use multiple attributes to provide rich context
 4. **Maintain State**: Keep state attributes updated dynamically
-5. **Think Navigation**: Consider how AI will traverse from element to element
+5. **Think Navigation**: Consider how CI will traverse from element to element
 
 ## Tag Hierarchy
 When multiple tags apply, use this priority order:
@@ -130,5 +130,5 @@ When multiple tags apply, use this priority order:
 This document should be updated when:
 - New UI patterns emerge
 - New component types are added
-- AI navigation requirements change
+- CI navigation requirements change
 - DevTools capabilities expand

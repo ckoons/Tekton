@@ -19,16 +19,16 @@ Bari, you're absolutely right! I apologize for the confusion. I see from the scr
 
 These are all correct and should be maintained!
 
-### 3. AI Integration - Confirmed
+### 3. CI Integration - Confirmed
 - Planning Chat → `window.AIChat.sendMessage('prometheus', message)`
 - Team Chat → `window.AIChat.teamChat(message, 'prometheus')`
-- The error message in the screenshot shows AI integration needs fixing
+- The error message in the screenshot shows CI integration needs fixing
 
 ### 4. Priority - Same Order
 1. CSS-first navigation
 2. Fix configuration (os.environ → GlobalConfig)
 3. Remove mocks and connect APIs
-4. Fix AI integration error shown in screenshot
+4. Fix CI integration error shown in screenshot
 5. Landmarks and semantic tags
 
 ### Time Estimate

@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document provides detailed guidance for implementing the Sophia component following the Clean Slate architecture. Sophia is Tekton's AI intelligence measurement and continuous improvement system, focusing on metrics collection, analysis, experimentation, and research.
+This document provides detailed guidance for implementing the Sophia component following the Clean Slate architecture. Sophia is Tekton's CI intelligence measurement and continuous improvement system, focusing on metrics collection, analysis, experimentation, and research.
 
 ## Implementation Approach
 
@@ -30,7 +30,7 @@ The following files need to be implemented:
 The HTML structure should follow the Athena component template exactly, with Sophia-specific content:
 
 ```html
-<!-- Sophia Component - AI Intelligence & Continuous Improvement -->
+<!-- Sophia Component - CI Intelligence & Continuous Improvement -->
 <div class="sophia">
     <!-- Component Header with Title -->
     <div class="sophia__header">
@@ -387,7 +387,7 @@ The HTML structure should follow the Athena component template exactly, with Sop
                     <div class="sophia__message-content">
                         <div class="sophia__message-text">
                             <h3 class="sophia__message-title">AI Research Assistant</h3>
-                            <p>This chat provides assistance with AI research and intelligence measurement. Ask questions about:</p>
+                            <p>This chat provides assistance with CI research and intelligence measurement. Ask questions about:</p>
                             <ul>
                                 <li>Intelligence dimensions and measurements</li>
                                 <li>Experiment design and analysis</li>
@@ -883,7 +883,7 @@ window.sophia_switchTab = function(tabId) {
         const chatInput = sophiaContainer.querySelector('#chat-input');
         if (chatInput) {
             if (tabId === 'researchchat') {
-                chatInput.placeholder = 'Enter research questions or AI intelligence queries...';
+                chatInput.placeholder = 'Enter research questions or CI intelligence queries...';
             } else if (tabId === 'teamchat') {
                 chatInput.placeholder = 'Enter team chat message...';
             }
@@ -1235,7 +1235,7 @@ class SophiaComponent {
             if (!chatInput) return;
             
             if (tabId === 'researchchat') {
-                chatInput.placeholder = 'Enter research questions or AI intelligence queries...';
+                chatInput.placeholder = 'Enter research questions or CI intelligence queries...';
             } else if (tabId === 'teamchat') {
                 chatInput.placeholder = 'Enter team chat message...';
             } else {
@@ -1269,7 +1269,7 @@ class SophiaComponent {
             // Simulate response for demo
             setTimeout(() => {
                 const responseText = activeTab === 'researchchat' 
-                    ? `Here's my analysis on your research question: "${message}". The AI intelligence measurements indicate...`
+                    ? `Here's my analysis on your research question: "${message}". The CI intelligence measurements indicate...`
                     : `Team member response to your message: "${message}"`;
                 
                 this.addChatMessage(responseText, activeTab, 'assistant');
@@ -1421,7 +1421,7 @@ Create the necessary service files that follow the pattern from Athena:
 2. **Intelligence Panel**: Intelligence dimension visualization and comparison
 3. **Experiments Panel**: Experiment management and results tracking
 4. **Recommendations Panel**: Improvement recommendations tracking
-5. **Research Chat**: AI research assistant for intelligence questions
+5. **Research Chat**: CI research assistant for intelligence questions
 6. **Team Chat**: Standard team chat functionality
 
 ## Critical Implementation Requirements

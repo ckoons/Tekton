@@ -414,4 +414,4 @@ For developers extending the system:
 
 ## Summary
 
-The CI Tools Integration successfully brings external coding assistants into Tekton while maintaining architectural principles. Tools are true CIs with full participation in the ecosystem, enabling powerful workflows and team collaboration between human developers and AI assistants.
+The CI Tools Integration successfully brings external coding assistants into Tekton while maintaining architectural principles. Tools are true CIs with full participation in the ecosystem, enabling powerful workflows and team collaboration between human developers and CI assistants.

@@ -442,7 +442,7 @@ Planned future enhancements for Synthesis include:
 - **Service Mesh Integration**: Integration with service mesh
 - **Legacy System Adapters**: Adapters for legacy systems
 
-### AI Capabilities
+### CI Capabilities
 
 - **Autonomous Execution**: Self-managing executions
 - **Adaptive Workflows**: Workflows that adapt based on results

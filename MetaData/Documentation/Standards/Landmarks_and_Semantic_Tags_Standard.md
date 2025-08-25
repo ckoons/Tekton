@@ -20,8 +20,8 @@ Landmarks and Semantic Tags are our two complementary systems for mapping the Te
 ```python
 @architecture_decision(
     title="MCP Server Architecture",
-    description="Single source of truth for AI routing through standard protocol",
-    rationale="Consolidates all AI message routing, eliminating duplicate HTTP endpoints",
+    description="Single source of truth for CI routing through standard protocol",
+    rationale="Consolidates all CI message routing, eliminating duplicate HTTP endpoints",
     alternatives_considered=["Direct HTTP endpoints", "WebSocket-only", "gRPC"],
     impacts=["ui_integration", "distributed_tekton", "ai_communication"],
     decided_by="Casey",
@@ -36,12 +36,12 @@ class MCPServer:
 ```python
 @api_contract(
     title="Team Chat Broadcast",
-    description="Broadcasts messages to all AI specialists",
+    description="Broadcasts messages to all CI specialists",
     endpoint="/api/mcp/v2/tools/team-chat",
     method="POST",
     request_schema={"message": "string"},
     response_schema={"responses": [{"specialist_id": "string", "content": "string"}]},
-    performance_requirements="<2s for all AI responses"
+    performance_requirements="<2s for all CI responses"
 )
 async def team_chat(request: Request):
     pass
@@ -66,10 +66,10 @@ def _is_cache_valid(self, key: str):
 ```python
 @integration_point(
     title="AI Shell Message Integration",
-    description="Routes messages through AIShell to appropriate AI specialist",
+    description="Routes messages through AIShell to appropriate CI specialist",
     target_component="AIShell",
     protocol="internal_api",
-    data_flow="MCP request → AIShell.send_to_ai → AI specialist → response",
+    data_flow="MCP request → AIShell.send_to_ai → CI specialist → response",
     integration_date="2025-01-18"
 )
 async def send_message(request: Request):
@@ -210,7 +210,7 @@ except ImportError:
 <button data-tekton-nav-item="aish"
         data-tekton-nav-target="aish-terminal"
         data-tekton-nav-action="switch-component">
-    AI Shell
+    CI Shell
 </button>
 ```
 
@@ -224,8 +224,8 @@ except ImportError:
 </button>
 ```
 
-#### 4. AI Integration Tags
-**Purpose**: Connect UI elements to AI capabilities
+#### 4. CI Integration Tags
+**Purpose**: Connect UI elements to CI capabilities
 ```html
 <div data-tekton-chat="numa-assistant"
      data-tekton-ai="numa"
@@ -282,7 +282,7 @@ except ImportError:
 2. **Use descriptive, specific values**
 3. **Layer tags for rich context**
 4. **Update state tags dynamically**
-5. **Think about AI navigation paths**
+5. **Think about CI navigation paths**
 6. **Consider CI collaboration patterns**
 
 ## End of Sprint Checklist
@@ -305,7 +305,7 @@ Before completing any sprint, verify:
 - [ ] Tagged all new components with structure tags?
 - [ ] Added navigation tags for new UI elements?
 - [ ] Marked interactive elements appropriately?
-- [ ] Connected AI features with integration tags?
+- [ ] Connected CI features with integration tags?
 - [ ] Implemented dynamic state management tags?
 - [ ] Added solution building tags for Construct UI?
 - [ ] Marked CI coordination displays?

@@ -1,8 +1,8 @@
-# AI Platform Instrumentation
+# CI Platform Instrumentation
 
 ## Overview
 
-The AI Platform has been fully instrumented with three complementary instrumentation systems as part of the AI Platform Integration Sprint.
+The CI Platform has been fully instrumented with three complementary instrumentation systems as part of the CI Platform Integration Sprint.
 
 ## Instrumentation Systems Applied
 
@@ -10,18 +10,18 @@ The AI Platform has been fully instrumented with three complementary instrumenta
 
 Applied decorators from the landmarks module to document key architectural decisions:
 
-- **Thread-safe AI Registry Architecture** (`registry_client.py`)
+- **Thread-safe CI Registry Architecture** (`registry_client.py`)
   - `@architecture_decision`: Documents the file locking approach for preventing race conditions
   - `@state_checkpoint`: Marks persistent registry state management
   
 - **AI Specialist Worker Pattern** (`specialist_worker.py`)
-  - `@architecture_decision`: Documents the base class pattern for all AI specialists
+  - `@architecture_decision`: Documents the base class pattern for all CI specialists
   - `@integration_point`: Marks LLM provider integration points
   
-- **Generic AI Specialist Pattern** (`generic_specialist.py`)
+- **Generic CI Specialist Pattern** (`generic_specialist.py`)
   - `@architecture_decision`: Documents the single implementation approach
   
-- **Centralized AI Launcher Architecture** (`enhanced_tekton_ai_launcher.py`)
+- **Centralized CI Launcher Architecture** (`enhanced_tekton_ai_launcher.py`)
   - `@architecture_decision`: Documents centralized launch management
   - `@state_checkpoint`: Marks process state tracking
 
@@ -55,7 +55,7 @@ Enhanced debug logging throughout:
 
 - Registry operations log state changes
 - Port allocation logs used ports
-- AI launch logs command details
+- CI launch logs command details
 - Client connections log active counts
 - Message processing logs types handled
 
@@ -91,7 +91,7 @@ All instrumented code was tested:
 - ✓ No syntax errors introduced
 - ✓ AIRegistryClient instantiates properly
 - ✓ All components remain healthy
-- ✓ AI specialists continue functioning
+- ✓ CI specialists continue functioning
 
 ## Benefits
 
@@ -105,7 +105,7 @@ The instrumentation provides:
 
 ## Next Steps
 
-The instrumented AI platform is now ready for:
+The instrumented CI platform is now ready for:
 - Knowledge graph extraction
 - Automated documentation generation
 - Performance monitoring integration

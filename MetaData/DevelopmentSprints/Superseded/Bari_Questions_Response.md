@@ -16,9 +16,9 @@ Hi Bari! Great questions. Here are the answers based on my experience with Apoll
 - Are you sure you're looking at Prometheus? Double-check the component name
 - If it's really Prometheus with 6 tabs, keep them all - Casey wants full functionality preserved
 
-## 3. AI Integration
+## 3. CI Integration
 **YES - Use the aish MCP pattern exactly!**
-- Planning Chat → Direct AI chat using `window.AIChat.sendMessage('prometheus', message)`
+- Planning Chat → Direct CI chat using `window.AIChat.sendMessage('prometheus', message)`
 - Team Chat → Team broadcast using `window.AIChat.teamChat(message, 'prometheus')`
 - Copy the pattern from Athena's chat implementation - it works perfectly
 - Make sure ai-chat.js is loaded in your component

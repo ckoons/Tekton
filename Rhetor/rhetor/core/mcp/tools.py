@@ -1569,7 +1569,7 @@ async def orchestrate_team_chat(
         integration = get_mcp_tools_integration()
         
         if integration:
-            # Use live orchestration with real Greek Chorus AIs
+            # Use live orchestration with real Greek Chorus CIs
             logger.info(f"Using live orchestration for team chat on topic: {topic}")
             return await integration.orchestrate_team_chat(
                 topic=topic,

@@ -51,7 +51,7 @@ logger = logging.getLogger(__name__)
 
 
 @architecture_decision(
-    title="Native Streaming Support for Greek Chorus AIs",
+    title="Native Streaming Support for Greek Chorus CIs",
     rationale="Enable real-time progressive responses with metadata for monitoring line of criticality",
     alternatives_considered=["Simulated chunking", "Batch responses", "WebSockets"],
     impacts=["latency", "user_experience", "observability"],

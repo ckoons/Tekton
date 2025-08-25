@@ -1,19 +1,19 @@
-# Landmarks Added to Unified AI System
+# Landmarks Added to Unified CI System
 
 ## Summary
-Added landmarks to the new unified AI system components to document architectural decisions, performance boundaries, and integration points.
+Added landmarks to the new unified CI system components to document architectural decisions, performance boundaries, and integration points.
 
 ## Files Instrumented
 
 ### 1. `/shared/ai/socket_client.py`
 
 #### Class: `AISocketClient`
-- **@architecture_decision**: "Unified AI Socket Client Architecture"
-  - Centralize all AI socket communication for consistent protocol handling
+- **@architecture_decision**: "Unified CI Socket Client Architecture"
+  - Centralize all CI socket communication for consistent protocol handling
   - Alternatives: Individual implementations, REST API only, gRPC
   
-- **@integration_point**: "Greek Chorus AI Integration"
-  - Target: Greek Chorus AIs (ports 45000-50000)
+- **@integration_point**: "Greek Chorus CI Integration"
+  - Target: Greek Chorus CIs (ports 45000-50000)
   - Protocol: Socket/NDJSON
   - Bidirectional message exchange with streaming
 
@@ -34,12 +34,12 @@ Added landmarks to the new unified AI system components to document architectura
 ### 2. `/shared/ai/unified_registry.py`
 
 #### Class: `UnifiedAIRegistry`
-- **@architecture_decision**: "Unified AI Registry Architecture"
-  - Single source of truth for all AI specialists
+- **@architecture_decision**: "Unified CI Registry Architecture"
+  - Single source of truth for all CI specialists
   - Event-driven updates and health monitoring
   - Alternatives: Distributed registries, Static config, Service mesh
   
-- **@state_checkpoint**: "Central AI Registry State"
+- **@state_checkpoint**: "Central CI Registry State"
   - Type: Singleton with persistence
   - Consistency: Eventually consistent with file locking
   - Recovery: Reload from persistent storage on restart
@@ -52,7 +52,7 @@ Added landmarks to the new unified AI system components to document architectura
 ### 3. `/shared/ai/routing_engine.py`
 
 #### Class: `RoutingEngine`
-- **@architecture_decision**: "Rule-Based AI Routing Engine"
+- **@architecture_decision**: "Rule-Based CI Routing Engine"
   - Intelligent routing based on context, capabilities, and performance
   - Alternatives: Random selection, Round-robin, Static mapping
   
@@ -73,7 +73,7 @@ Added landmarks to the new unified AI system components to document architectura
 
 #### Class: `LLMClient`
 - **@architecture_decision**: "Rhetor LLM Client Migration to Unified System"
-  - Eliminate duplicate implementations using shared AI infrastructure
+  - Eliminate duplicate implementations using shared CI infrastructure
   - Decided by: Casey
   - Impacts: Code reduction, consistency, maintenance
 

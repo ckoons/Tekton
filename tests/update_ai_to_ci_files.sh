@@ -37,17 +37,17 @@ process_file() {
     TOTAL_FILES=$((TOTAL_FILES + 1))
     
     # Check if file contains " CI " (with spaces on both sides)
-    if grep -q " CI " "$file" 2>/dev/null; then
+    if grep -q " AI " "$file" 2>/dev/null; then
         # Create backup maintaining directory structure
         backup_path="$BACKUP_DIR/${file#./}"
         mkdir -p "$(dirname "$backup_path")"
         cp "$file" "$backup_path"
         
         # Count occurrences before replacement
-        count_before=$(grep -o " CI " "$file" | wc -l | tr -d ' ')
+        count_before=$(grep -o " AI " "$file" | wc -l | tr -d ' ')
         
         # Perform the replacement
-        sed -i.tmp 's/ CI / CI /g' "$file"
+        sed -i.tmp 's/ AI / CI /g' "$file"
         
         # Remove the temporary backup created by sed
         rm -f "${file}.tmp"
@@ -61,7 +61,7 @@ process_file() {
 }
 
 # Main processing logic
-echo -e "${GREEN}Starting CI to CI conversion in specified files...${NC}"
+echo -e "${GREEN}Starting AI to CI conversion in specified files...${NC}"
 echo "----------------------------------------"
 
 # Check how the script was called

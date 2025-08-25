@@ -4,7 +4,7 @@
 
 This document records the architectural decisions made during the FastMCP Integration Development Sprint. It captures the context, considerations, alternatives considered, and rationale behind each significant decision. This serves as a reference for both current implementation and future development.
 
-Tekton is an intelligent orchestration system that coordinates multiple AI models and resources to efficiently solve complex software engineering problems. The architectural decisions in this document focus on integrating FastMCP with Tekton to enhance its MCP capabilities.
+Tekton is an intelligent orchestration system that coordinates multiple CI models and resources to efficiently solve complex software engineering problems. The architectural decisions in this document focus on integrating FastMCP with Tekton to enhance its MCP capabilities.
 
 ## Decision 1: Direct Replacement vs. Adaptation Layer
 
@@ -216,7 +216,7 @@ Implement a standardized pattern for leveraging FastMCP's client-side sampling a
 **Cons:**
 - Missing a powerful capability
 - Limited bidirectional communication
-- Reduced AI integration potential
+- Reduced CI integration potential
 
 #### Alternative 2: Component-Specific Sampling
 
@@ -235,7 +235,7 @@ Implement a standardized pattern for leveraging FastMCP's client-side sampling a
 - Consistent experience across components
 - Reusable code and patterns
 - Easier to document and maintain
-- Enables advanced AI workflows
+- Enables advanced CI workflows
 
 **Cons:**
 - Requires careful design
@@ -243,13 +243,13 @@ Implement a standardized pattern for leveraging FastMCP's client-side sampling a
 
 ### Decision Rationale
 
-A standardized sampling pattern (Alternative 3) provides the most value by enabling advanced AI workflows consistently across Tekton components. This approach leverages one of FastMCP's most powerful features while maintaining a consistent developer experience.
+A standardized sampling pattern (Alternative 3) provides the most value by enabling advanced CI workflows consistently across Tekton components. This approach leverages one of FastMCP's most powerful features while maintaining a consistent developer experience.
 
 ### Implications
 
 - Tekton will include utilities for client-side sampling
 - Components will have access to bidirectional LLM communication
-- AI integration capabilities will be enhanced
+- CI integration capabilities will be enhanced
 - Documentation will need to cover sampling patterns and best practices
 
 ### Implementation Guidelines

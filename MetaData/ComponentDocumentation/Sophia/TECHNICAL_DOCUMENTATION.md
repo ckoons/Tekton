@@ -170,7 +170,7 @@ Experiments are configured with:
 
 ### Intelligence Measurement
 
-The Intelligence Measurement engine implements the framework for measuring AI cognitive capabilities across multiple dimensions.
+The Intelligence Measurement engine implements the framework for measuring CI cognitive capabilities across multiple dimensions.
 
 #### Intelligence Dimensions
 
@@ -328,7 +328,7 @@ The engine implements:
 
 ## Intelligence Dimensions Framework
 
-The Intelligence Dimensions Framework is a key innovation in Sophia, providing a structured approach to measuring AI cognitive capabilities.
+The Intelligence Dimensions Framework is a key innovation in Sophia, providing a structured approach to measuring CI cognitive capabilities.
 
 ### Dimension Specification
 

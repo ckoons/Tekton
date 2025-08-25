@@ -2,7 +2,7 @@
 """
 Test script for the specialist streaming endpoints.
 
-This script tests the new SSE streaming functionality with real Greek Chorus AIs.
+This script tests the new SSE streaming functionality with real Greek Chorus CIs.
 """
 
 import asyncio
@@ -145,7 +145,7 @@ async def test_team_streaming(message: str = "What makes a good CI assistant?"):
                             elif data['type'] == 'team_complete':
                                 print("\n\n[Team Stream Complete]")
                                 summary = data.get('summary', {})
-                                print(f"Total AIs: {summary.get('total_ais', 0)}")
+                                print(f"Total CIs: {summary.get('total_ais', 0)}")
                                 print(f"Completed streams: {summary.get('completed_streams', 0)}")
                                 print(f"Total time: {summary.get('total_time', 0):.2f}s")
                             

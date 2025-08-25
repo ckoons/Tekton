@@ -158,7 +158,7 @@ Environment Variables: Key-value pairs for each component
 Port Mapping: Internal/external port assignments
 File Paths: Where component files are placed in container
 Dependencies: Startup order and inter-component connections
-CI Assignment: Which AI will manage this deployable unit
+CI Assignment: Which CI will manage this deployable unit
 3. Testing with Sandbox
 ` User clicks Sandbox → Deployable unit runs locally → User verifies functionality `
 Sandbox Process:

@@ -1,19 +1,19 @@
-# Tekton AI Discovery API Treaty
+# Tekton CI Discovery API Treaty
 
 ## Version 1.0.0
 
-This document defines the stable API contract between the Tekton AI Platform and clients like aish. This treaty guarantees interface stability and discovery mechanisms for AI specialists.
+This document defines the stable API contract between the Tekton CI Platform and clients like aish. This treaty guarantees interface stability and discovery mechanisms for CI specialists.
 
 ## Core Principles
 
 1. **Dynamic Discovery**: Clients MUST use discovery rather than hardcoded names
-2. **No Assumptions**: Clients MUST NOT assume specific AI names or ports
-3. **Graceful Degradation**: Clients SHOULD handle missing AIs gracefully
+2. **No Assumptions**: Clients MUST NOT assume specific CI names or ports
+3. **Graceful Degradation**: Clients SHOULD handle missing CIs gracefully
 4. **Metadata Driven**: All routing decisions based on discovered metadata
 
 ## Discovery Endpoints
 
-### 1. List All AI Specialists
+### 1. List All CI Specialists
 
 **Command Line:**
 ```bash
@@ -35,7 +35,7 @@ result = await discovery.list_ais(role="planning")
       "name": "string",         // Display name (e.g., "apollo")
       "component": "string",    // Component name (e.g., "apollo")
       "status": "string",       // "healthy" | "unhealthy" | "unknown"
-      "roles": ["string"],      // List of roles this AI can fulfill
+      "roles": ["string"],      // List of roles this CI can fulfill
       "capabilities": ["string"], // List of capabilities
       "model": "string",        // Model being used
       "context_window": int,    // Max context size
@@ -54,25 +54,25 @@ result = await discovery.list_ais(role="planning")
 }
 ```
 
-### 2. Get Specific AI Information
+### 2. Get Specific CI Information
 
 **Command Line:**
 ```bash
 ai-discover info AI_ID [--json]
 ```
 
-**Response:** Same as individual AI object above
+**Response:** Same as individual CI object above
 
-### 3. Find Best AI for Role
+### 3. Find Best CI for Role
 
 **Command Line:**
 ```bash
 ai-discover best ROLE [--json]
 ```
 
-**Response:** Single AI object with best match for role
+**Response:** Single CI object with best match for role
 
-### 4. Test AI Connection
+### 4. Test CI Connection
 
 **Command Line:**
 ```bash
@@ -90,7 +90,7 @@ ai-discover test [AI_ID] [--json]
 }
 ```
 
-### 5. Get AI Schema
+### 5. Get CI Schema
 
 **Command Line:**
 ```bash
@@ -108,7 +108,7 @@ ai-discover schema AI_ID [--json]
       "optional": ["temperature", "max_tokens", "system_prompt"]
     },
     "info": {
-      "description": "Get AI information",
+      "description": "Get CI information",
       "required": [],
       "optional": []
     }
@@ -125,7 +125,7 @@ ai-discover schema AI_ID [--json]
 
 ## Name Resolution Rules
 
-### 1. AI Identification
+### 1. CI Identification
 - **Primary ID**: Use the `id` field (e.g., "apollo-ai")
 - **Short Name**: The `name` field can be used for user-friendly display
 - **Component Name**: The `component` field indicates the Greek Chorus member
@@ -148,9 +148,9 @@ When a user types `echo "test" | apollo`, clients SHOULD:
 
 ## Role Definitions
 
-Standard roles that AIs may advertise:
+Standard roles that CIs may advertise:
 
-- `orchestration`: Coordinating multiple AIs and complex tasks
+- `orchestration`: Coordinating multiple CIs and complex tasks
 - `code-analysis`: Analyzing, reviewing, and understanding code  
 - `planning`: Task planning and project management
 - `knowledge-synthesis`: Information synthesis and reasoning
@@ -158,7 +158,7 @@ Standard roles that AIs may advertise:
 - `messaging`: Communication and chat
 - `learning`: Learning and adaptation
 - `agent-coordination`: Multi-agent coordination
-- `specialist-management`: Managing AI specialists
+- `specialist-management`: Managing CI specialists
 - `workflow-design`: Designing workflows and processes
 - `general`: General-purpose AI
 
@@ -262,7 +262,7 @@ class AIDiscoveryCache:
 
 ### 2. Fallback Behavior
 
-When an AI is unavailable, clients SHOULD:
+When an CI is unavailable, clients SHOULD:
 
 1. Try to discover updated list
 2. Use `ai-discover best ROLE` to find alternative
@@ -274,8 +274,8 @@ When an AI is unavailable, clients SHOULD:
 Provide helpful error messages:
 
 ```
-Error: AI 'apollo' not found.
-Available AIs: hermes, prometheus, athena
+Error: CI 'apollo' not found.
+Available CIs: hermes, prometheus, athena
 Try: ai-discover list
 ```
 
@@ -287,7 +287,7 @@ This API treaty guarantees:
 2. **Additive Only**: New fields may be added but won't break existing clients
 3. **Version Header**: Future versions will include version in responses
 4. **Deprecation Notice**: 3-month notice before removing features
-5. **Discovery First**: Changes to AI names/ports don't break clients using discovery
+5. **Discovery First**: Changes to CI names/ports don't break clients using discovery
 
 ## Migration Guide for aish
 

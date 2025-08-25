@@ -30,7 +30,7 @@ Successfully added 43 semantic tags to the Profile component, including:
 ### 1. Fully Instrumented (Ready for AI/CI) ✅
 | Component | Tags | Notes |
 |-----------|------|-------|
-| rhetor | 31 | Excellent example, includes AI integration tags |
+| rhetor | 31 | Excellent example, includes CI integration tags |
 | profile | 30 | Just completed, follows Rhetor patterns |
 
 ### 2. Partially Instrumented (Need Zones) ⚠️

@@ -118,4 +118,4 @@
 "Simple, works, hard to screw up" - Even applied to the most sophisticated component! 🎉
 
 ## Research Heritage Preserved
-Casey's groundbreaking work on multi-CI memory sharing that gave "Anthropic, Meta and OpenAI serious heartburn" has been successfully modernized while preserving every aspect of its sophisticated functionality. Engram stands as a testament to both advanced AI research and clean, maintainable code architecture.
+Casey's groundbreaking work on multi-CI memory sharing that gave "Anthropic, Meta and OpenAI serious heartburn" has been successfully modernized while preserving every aspect of its sophisticated functionality. Engram stands as a testament to both advanced CI research and clean, maintainable code architecture.

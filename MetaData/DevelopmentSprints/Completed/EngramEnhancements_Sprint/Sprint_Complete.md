@@ -2,7 +2,7 @@
 
 ## What We Built
 
-Enhanced Engram with cognitive features that make AI memory feel truly alive:
+Enhanced Engram with cognitive features that make CI memory feel truly alive:
 
 ### 1. Emotional Memory Tagging ❤️
 ```python
@@ -80,7 +80,7 @@ await dream(intensity=0.8)
 await organize("recursion_insight", "Finally understood recursion!")
 # Automatically filed under "Technical Knowledge" and "Learning & Discovery"
 
-# If multiple AIs discover similar insight
+# If multiple CIs discover similar insight
 fused = await auto_fuse([ai1_recursion, ai2_recursion, ai3_recursion])
 # Result: Consensus understanding with each AI's unique perspective preserved
 ```

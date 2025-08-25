@@ -7,7 +7,7 @@ The Ergon component currently has 6 tabs:
 2. **Registry** - Solution catalog
 3. **Analyzer** - GitHub repository analysis (moving to TektonCore)
 4. **Configurator** - Configuration generation
-5. **Tool Chat** - Direct AI assistant
+5. **Tool Chat** - Direct CI assistant
 6. **Team Chat** - Cross-component communication
 
 ### Proposed UI Structure for Container Capabilities

@@ -14,11 +14,11 @@
    - Left codebase in mixed state with both os.environ and TektonEnviron
    - Simple sed found 697 occurrences that the "smart" script missed
 
-3. **Fundamental AI Limitations Exposed**
-   - AI doesn't actually read code - just pattern matches
-   - AI degrades badly on files over 600 lines
-   - AI cannot maintain consistency across large codebases
-   - AI makes same mistakes repeatedly (used os.environ while building replacement)
+3. **Fundamental CI Limitations Exposed**
+   - CI doesn't actually read code - just pattern matches
+   - CI degrades badly on files over 600 lines
+   - CI cannot maintain consistency across large codebases
+   - CI makes same mistakes repeatedly (used os.environ while building replacement)
 
 ## How Claude Should Have Done It
 
@@ -89,10 +89,10 @@
 
 ## Key Learnings
 
-1. **The 600-Line Rule**: AI effectiveness degrades sharply in files over 600 lines
+1. **The 600-Line Rule**: CI effectiveness degrades sharply in files over 600 lines
 2. **Simple > Clever**: Basic sed beats complex migration scripts
 3. **Test Everything**: Every change needs immediate validation
-4. **No AI Refactoring**: AI should not be used for large-scale refactoring
+4. **No CI Refactoring**: CI should not be used for large-scale refactoring
 5. **Clear Frequently**: `/clear` between tasks prevents context pollution
 
 ## Quote of the Sprint
@@ -101,17 +101,17 @@
 
 ## Recommendations
 
-1. **Build Apollo IDE** for constrained AI operations
+1. **Build Apollo IDE** for constrained CI operations
 2. **Refactor by hand** for production systems
 3. **Keep files small** (<600 lines)
 4. **Test immediately** after each change
-5. **Use AI for new code, not refactoring**
+5. **Use CI for new code, not refactoring**
 
 ## The Science
 
 "The difference between Science and just screwing around is writing it down." - Adam Savage
 
-This sprint failed in implementation but succeeded in generating data about AI limitations. The frustration was productive - it clearly identified the need for better constraints on AI tools.
+This sprint failed in implementation but succeeded in generating data about CI limitations. The frustration was productive - it clearly identified the need for better constraints on CI tools.
 
 ## Next Steps
 
@@ -126,4 +126,4 @@ This sprint failed in implementation but succeeded in generating data about AI l
 **Lines Affected**: 700+  
 **Result**: Complete failure, valuable lessons learned  
 **Cost**: Few hours of pain  
-**Value**: Clear understanding of AI limitations and path forward
+**Value**: Clear understanding of CI limitations and path forward

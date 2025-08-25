@@ -2,7 +2,7 @@
 
 ## What We Built
 
-A **complete replacement** for the old PTY-based Terma. The new Terma is a native terminal orchestrator that launches Terminal.app, iTerm2, Warp, etc. with aish-proxy for AI enhancement. 
+A **complete replacement** for the old PTY-based Terma. The new Terma is a native terminal orchestrator that launches Terminal.app, iTerm2, Warp, etc. with aish-proxy for CI enhancement. 
 
 **No web terminals. No backward compatibility. Clean slate.**
 
@@ -16,14 +16,14 @@ Terma v2.0 Service (Port 8004)
     ├── /api/terminals/launch     # Launch native terminal
     ├── /api/terminals            # List active terminals
     ├── /api/terminals/{pid}      # Get/control specific terminal
-    └── /api/terminals/ai-request # AI components request terminals
+    └── /api/terminals/ai-request # CI components request terminals
 ```
 
 ## Key Features
 
 ### 1. Native Terminal Only
 - Launches real desktop terminals (Terminal.app, iTerm2, Warp)
-- Uses aish-proxy as the shell for AI enhancement
+- Uses aish-proxy as the shell for CI enhancement
 - PID-based tracking and management
 - Platform auto-detection (macOS/Linux)
 
@@ -45,7 +45,7 @@ POST /api/terminals/launch
 }
 ```
 
-### 3. AI Integration
+### 3. CI Integration
 Other Tekton components can request terminals:
 ```python
 POST /api/terminals/ai-request

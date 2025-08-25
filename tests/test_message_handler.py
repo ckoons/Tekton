@@ -61,12 +61,12 @@ def test_send_message():
         del handler.ports['test_ai']
 
 def test_broadcast():
-    """Test broadcasting to multiple AIs"""
+    """Test broadcasting to multiple CIs"""
     print("\nTesting broadcast...")
     
     handler = MessageHandler(timeout=5)  # Short timeout for broadcast test
     
-    # Test with real AIs if available
+    # Test with real CIs if available
     responses = handler.broadcast('ping')
     
     # Count successful responses
@@ -76,13 +76,13 @@ def test_broadcast():
     print(f"  Broadcast results: {success_count} success, {error_count} errors")
     
     if success_count > 0:
-        print(f"✓ Broadcast works - {success_count} AIs responded")
-        # Show which AIs responded
+        print(f"✓ Broadcast works - {success_count} CIs responded")
+        # Show which CIs responded
         for ai, resp in responses.items():
             if not resp.startswith('ERROR:'):
                 print(f"    - {ai}: responded with {len(resp)} chars")
     else:
-        print("ℹ️  No AIs available for broadcast test")
+        print("ℹ️  No CIs available for broadcast test")
         # Test with mocks
         handler.ports = {
             'mock1': 54321,
@@ -177,7 +177,7 @@ def test_aish_compatibility():
         else:
             print("✗ team-chat read returned no messages")
     else:
-        print("ℹ️  No AIs available for team chat test")
+        print("ℹ️  No CIs available for team chat test")
 
 if __name__ == "__main__":
     print("=== Testing Message Handler ===\n")
@@ -187,7 +187,7 @@ if __name__ == "__main__":
     test_unknown_ai()
     test_timeout()
     
-    # These tests work with or without AIs running
+    # These tests work with or without CIs running
     print("\nTests with CI servers:")
     test_send_message()
     test_broadcast()

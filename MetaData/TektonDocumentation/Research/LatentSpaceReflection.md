@@ -1,9 +1,9 @@
 # Tekton Latent Space Reflection Framework
-## Integrating Coconut-Style Reasoning in a Modular AI Architecture
+## Integrating Coconut-Style Reasoning in a Modular CI Architecture
 
 ## Executive Summary
 
-This document outlines a strategy for implementing continuous latent space reasoning (inspired by Meta's Coconut research) within the Tekton architecture. The proposed approach leverages Tekton's modular design while addressing the unique challenges of implementing iterative reasoning across diverse AI components.
+This document outlines a strategy for implementing continuous latent space reasoning (inspired by Meta's Coconut research) within the Tekton architecture. The proposed approach leverages Tekton's modular design while addressing the unique challenges of implementing iterative reasoning across diverse CI components.
 
 ## Core Concepts
 

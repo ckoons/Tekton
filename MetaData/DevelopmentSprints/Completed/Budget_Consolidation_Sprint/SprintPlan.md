@@ -4,7 +4,7 @@
 
 This document outlines the high-level plan for the Budget Consolidation Sprint. It provides an overview of the goals, approach, and expected outcomes.
 
-Tekton is an intelligent orchestration system that coordinates multiple AI models and resources to efficiently solve complex software engineering problems. This Development Sprint focuses on consolidating the fragmented budget management implementations found across multiple components into a unified, feature-rich budget system that provides real-time cost tracking and LLM usage optimization.
+Tekton is an intelligent orchestration system that coordinates multiple CI models and resources to efficiently solve complex software engineering problems. This Development Sprint focuses on consolidating the fragmented budget management implementations found across multiple components into a unified, feature-rich budget system that provides real-time cost tracking and LLM usage optimization.
 
 ## Sprint Goals
 

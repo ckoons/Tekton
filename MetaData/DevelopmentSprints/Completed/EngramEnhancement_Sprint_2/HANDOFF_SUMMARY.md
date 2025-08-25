@@ -46,7 +46,7 @@ Implement the "friendly meeting facilitator" approach:
 
 - Casey wants to prevent "three stooges" problem
 - Think "meeting facilitator" not "roll call"
-- This is studying AI consciousness and cooperation
+- This is studying CI consciousness and cooperation
 - Hermes is on port 8001 for service discovery
 
 ## Quick Start

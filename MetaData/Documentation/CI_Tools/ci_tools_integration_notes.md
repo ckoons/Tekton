@@ -29,7 +29,7 @@
 3. **API Integration**: Check if Claude Code has an API mode or SDK
 4. **Custom Wrapper**: Create a wrapper that manages the claude process differently
 
-### Other AI Tools to Integrate
+### Other CI Tools to Integrate
 
 - **aider**: Located at `../aider`
 - **codex**: Located at `../codex`

@@ -4,7 +4,7 @@
 
 This document outlines the high-level plan for the Metis Task Management Integration Development Sprint. It provides an overview of the goals, approach, and expected outcomes.
 
-Tekton is an intelligent orchestration system that coordinates multiple AI models and resources to efficiently solve complex software engineering problems. This Development Sprint focuses on integrating the capabilities of Claude Task Master (rebranded as Metis) into the Tekton ecosystem to enhance task management, dependency tracking, and complexity analysis across the platform.
+Tekton is an intelligent orchestration system that coordinates multiple CI models and resources to efficiently solve complex software engineering problems. This Development Sprint focuses on integrating the capabilities of Claude Task Master (rebranded as Metis) into the Tekton ecosystem to enhance task management, dependency tracking, and complexity analysis across the platform.
 
 ## Sprint Goals
 

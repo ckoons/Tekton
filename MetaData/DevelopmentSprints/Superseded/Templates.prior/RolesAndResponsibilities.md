@@ -7,8 +7,8 @@ This document details the roles and responsibilities within Tekton's Development
 Tekton Development Sprints involve three primary roles:
 
 1. **Casey** - Human-in-the-loop project manager
-2. **Architect Claude** - AI assistant focused on planning and architecture
-3. **Working Claude** - AI assistant(s) focused on implementation
+2. **Architect Claude** - CI assistant focused on planning and architecture
+3. **Working Claude** - CI assistant(s) focused on implementation
 
 Each role has distinct responsibilities that ensure the sprint progresses efficiently and produces high-quality results.
 

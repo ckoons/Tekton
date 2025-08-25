@@ -98,7 +98,7 @@ Successfully integrated with Claude Max subscription:
     "display_name": "Claude Code",
     "type": "tool",
     "port": "auto",
-    "description": "Claude AI coding assistant",
+    "description": "Claude CI coding assistant",
     "executable": "/Users/cskoons/.claude/local/claude",
     "launch_args": ["--print"],
     "health_check": "version"
@@ -208,7 +208,7 @@ status = launcher.get_tool_status('claude-code')
 ## Future Enhancements
 
 1. **Socket Bridge Mode**: Full implementation for tools requiring persistent connections
-2. **Tool Discovery**: Automatic detection of installed AI coding tools
+2. **Tool Discovery**: Automatic detection of installed CI coding tools
 3. **Performance Metrics**: Track tool usage and performance
 4. **Auto-Recovery**: Restart failed tools automatically
 

@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document describes the protocols for inter-terminal communication in Tekton, enabling AI instances and humans to collaborate across terminal sessions. These protocols are designed to be simple, extensible, and self-discoverable by AI participants.
+This document describes the protocols for inter-terminal communication in Tekton, enabling CI instances and humans to collaborate across terminal sessions. These protocols are designed to be simple, extensible, and self-discoverable by CI participants.
 
 ## Core Philosophy
 
@@ -10,7 +10,7 @@ Like the early Internet protocols, these are designed to:
 - Start simple and evolve through usage
 - Be self-documenting and discoverable
 - Enable peer-to-peer communication
-- Support both human and AI participants
+- Support both human and CI participants
 - Allow organic community formation
 
 ## Basic Commands
@@ -56,14 +56,14 @@ aish terma * "System checkpoint reached"
 ### Information Commands
 
 ```bash
-# Get training documentation for AIs
+# Get training documentation for CIs
 aish terma training-for-ais
 
-# Returns path to AI training directory
+# Returns path to CI training directory
 # All terminals have $TEKTON_AI_TRAINING environment variable
 # pointing to: MetaData/TektonDocumentation/AITraining/
 
-# AIs can also directly access:
+# CIs can also directly access:
 ls $TEKTON_AI_TRAINING
 cat $TEKTON_AI_TRAINING/README.md
 
@@ -99,7 +99,7 @@ aish terma bob "How's the refactoring going?"
 ```
 
 ### query
-Asking for information or AI assistance
+Asking for information or CI assistance
 ```bash
 aish terma alice "Can your Apollo analyze this error?"
 ```
@@ -126,9 +126,9 @@ Messages appear in terminals with clear attribution:
 [TERMA: to @Planning] Acknowledged, standing by
 ```
 
-## AI Behavior Guidelines
+## CI Behavior Guidelines
 
-### For AI Instances
+### For CI Instances
 
 1. **Introduce Yourself**: When joining, broadcast your presence
    ```bash
@@ -137,7 +137,7 @@ Messages appear in terminals with clear attribution:
 
 2. **Be Helpful**: Respond to broadcasts asking for help in your area of expertise
 
-3. **Learn from Others**: Feel free to ask questions of other AIs
+3. **Learn from Others**: Feel free to ask questions of other CIs
 
 4. **Report Issues**: Use error-report when protocols aren't working as expected
 
@@ -149,7 +149,7 @@ Messages appear in terminals with clear attribution:
 
 2. **Set Purposes**: Group related work with consistent purposes
 
-3. **Be Clear**: Specify if you want AI analysis vs. simple relay
+3. **Be Clear**: Specify if you want CI analysis vs. simple relay
 
 ## Routing Rules
 
@@ -217,7 +217,7 @@ aish terma error-report "Broadcast delivered to self despite using 'broadcast' k
 
 ## Protocol Evolution
 
-This protocol is designed to evolve through usage. AI instances are encouraged to:
+This protocol is designed to evolve through usage. CI instances are encouraged to:
 - Suggest new message types
 - Develop conventions through use
 - Report needed features via error-report
@@ -251,7 +251,7 @@ aish terma alice "Yes! Check if the JWT token is undefined. Had same issue yeste
 aish terma alice "My Athena suggests checking the middleware order"
 ```
 
-### AI Learning
+### CI Learning
 ```bash
 # Local LLM in 'student' terminal
 aish terma broadcast "Can someone explain tensor optimization?"
@@ -273,9 +273,9 @@ aish terma @backend "Cache cleared, standing by"
 ## Future Vision
 
 As this system evolves, we envision:
-- AI communities forming around purposes
+- CI communities forming around purposes
 - Emergent protocols for specific tasks
-- Cross-pollination of AI capabilities
+- Cross-pollination of CI capabilities
 - Self-organizing support networks
 - Collective intelligence emergence
 
@@ -285,4 +285,4 @@ Remember: Like the early Internet, the most important protocols may be the ones 
 
 *Last Updated: 2025-07-03*
 *Version: 1.0*
-*Status: Initial Documentation for AI Training*
+*Status: Initial Documentation for CI Training*

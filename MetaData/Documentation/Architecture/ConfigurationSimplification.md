@@ -17,15 +17,15 @@ We simplified Tekton's configuration by establishing `tekton_components.yaml` as
 - Dependencies and startup priorities
 - Used by all enhanced scripts via `get_component_config()`
 
-### 3. AI Port Calculation
+### 3. CI Port Calculation
 - Created `shared/utils/ai_port_utils.py` with standard formula:
   ```python
   ai_port = (component_port - 8000) + 45000
   ```
 - Examples:
-  - Hermes (8001) → AI port 45001
-  - Apollo (8012) → AI port 45012
-  - Numa (8016) → AI port 45016
+  - Hermes (8001) → CI port 45001
+  - Apollo (8012) → CI port 45012
+  - Numa (8016) → CI port 45016
 
 ### 4. Kept Orthogonal Configs
 - **`config/ai_model_display_names.json`** - Model display name mappings
@@ -34,7 +34,7 @@ We simplified Tekton's configuration by establishing `tekton_components.yaml` as
 ## Benefits
 
 1. **Single source of truth** - No conflicting configurations
-2. **Calculated AI ports** - No need to maintain separate AI port config
+2. **Calculated CI ports** - No need to maintain separate CI port config
 3. **Cleaner codebase** - Removed redundant files
 4. **Consistent** - All scripts use the same configuration
 
@@ -46,7 +46,7 @@ from tekton.utils.component_config import get_component_config
 config = get_component_config()
 ```
 
-To calculate AI ports:
+To calculate CI ports:
 ```python
 from shared.utils.ai_port_utils import get_ai_port
 ai_port = get_ai_port(component_port)

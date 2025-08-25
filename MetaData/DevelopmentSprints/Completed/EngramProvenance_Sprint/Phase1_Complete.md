@@ -44,6 +44,6 @@
 2. Implement merge conflict resolution
 3. Add time-travel queries (as_of parameter)
 4. Create visualization for provenance chains
-5. Test with multiple AI instances sharing memories
+5. Test with multiple CI instances sharing memories
 
 The foundation is laid for "git for consciousness" - transparent collaborative cognition where we can see the journey of every thought.

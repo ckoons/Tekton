@@ -2,12 +2,12 @@
 
 ## Overview
 
-This sprint implements a unified chat interface system for Hephaestus where each Tekton component has its own AI assistant managed by Rhetor. The UI features a fixed right panel footer with context-aware chat input that routes to the active component's AI or to team chat.
+This sprint implements a unified chat interface system for Hephaestus where each Tekton component has its own CI assistant managed by Rhetor. The UI features a fixed right panel footer with context-aware chat input that routes to the active component's CI or to team chat.
 
 ## Sprint Goals
 
 1. **Fixed Right Panel Chat Interface**: Implement a persistent chat footer in the right panel that stays visible across all components
-2. **Context-Aware Chat Routing**: Chat input routes to the active component's AI based on left panel navigation selection
+2. **Context-Aware Chat Routing**: Chat input routes to the active component's CI based on left panel navigation selection
 3. **Team Chat Integration**: Single team chat implementation that can be accessed from any component, moderated by Rhetor
 4. **Chat History Management**: Component-specific chat histories with optional persistence, plus shared team chat history
 
@@ -38,9 +38,9 @@ This sprint implements a unified chat interface system for Hephaestus where each
 
 ### Chat Routing Architecture
 
-1. **Component AI Chat**: 
+1. **Component CI Chat**: 
    - Input in footer routes to active component (e.g., "rhetor", "apollo", "engram")
-   - Rhetor wraps all component AIs for prompt engineering and context management
+   - Rhetor wraps all component CIs for prompt engineering and context management
    - Each component maintains its own chat history
 
 2. **Team Chat**:
@@ -50,9 +50,9 @@ This sprint implements a unified chat interface system for Hephaestus where each
 
 ### Message Flow
 ```
-User Input → Chat Widget → Rhetor Router → Component AI (wrapped by Rhetor)
+User Input → Chat Widget → Rhetor Router → Component CI (wrapped by Rhetor)
                                       ↓
-                                Team Chat → All AIs (moderated by Rhetor)
+                                Team Chat → All CIs (moderated by Rhetor)
 ```
 
 ## Implementation Phases
@@ -68,7 +68,7 @@ User Input → Chat Widget → Rhetor Router → Component AI (wrapped by Rhetor
 - Connect Rhetor's LLM Chat to the chat widget
 - Implement message routing through Rhetor
 - Add chat history management for Rhetor
-- Test Rhetor AI conversations
+- Test Rhetor CI conversations
 
 ### Phase 3: Team Chat Implementation (Day 5)
 - Build team chat routing (using "team" identifier)
@@ -99,7 +99,7 @@ const ChatWidget = {
   updatePlaceholder: function() {
     const input = document.getElementById('chat-input');
     if (this.activeComponent === 'team') {
-      input.placeholder = 'Tekton Team Chat (All AIs)';
+      input.placeholder = 'Tekton Team Chat (All CIs)';
     } else {
       input.placeholder = `Chat with ${this.capitalize(this.activeComponent)} AI`;
     }
@@ -120,7 +120,7 @@ const ChatWidget = {
 
 ### Message Bubble Format
 ```html
-<!-- AI Message (left side) -->
+<!-- CI Message (left side) -->
 <div class="chat-bubble ai">
   <div class="speaker">Rhetor</div>
   <div class="message">Hello! I'm Rhetor, your LLM orchestration assistant.</div>
@@ -144,7 +144,7 @@ const ChatWidget = {
 @app.post("/chat/route")
 async def route_message(request: RouteRequest):
     """
-    Route messages to appropriate AI or team chat
+    Route messages to appropriate CI or team chat
     
     Request format:
     {
@@ -171,7 +171,7 @@ async def route_message(request: RouteRequest):
 
 ## Out of Scope (Future Sprints)
 
-- Implementing AI assistants for components other than Rhetor
+- Implementing CI assistants for components other than Rhetor
 - Advanced AI-to-AI communication protocols
 - Cross-component context sharing
 - Voice/multimodal interfaces

@@ -21,7 +21,7 @@
 
 #### Tasks:
 1. Debug message routing in team chat
-2. Verify Greek Chorus AI registration
+2. Verify Greek Chorus CI registration
 3. Fix response collection timeout
 4. Add comprehensive logging
 
@@ -47,7 +47,7 @@
 - `Engram/engram/api/conversations.py` (if needed)
 
 ### Day 6: Pipeline Context Support
-**Goal**: Enable context passing between AIs
+**Goal**: Enable context passing between CIs
 
 #### Tasks:
 1. Add context parameter to specialist requests
@@ -72,7 +72,7 @@
 ## Definition of Done
 
 - [ ] SSE endpoints return `text/event-stream` content
-- [ ] Team chat shows responses from multiple AIs
+- [ ] Team chat shows responses from multiple CIs
 - [ ] All MCP methods implemented (no NotImplementedError)
 - [ ] Context successfully passes through pipelines
 - [ ] Tests cover all new functionality

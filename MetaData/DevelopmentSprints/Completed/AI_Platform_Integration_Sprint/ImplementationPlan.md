@@ -1,8 +1,8 @@
-# AI Platform Integration Sprint - Implementation Plan
+# CI Platform Integration Sprint - Implementation Plan
 
 ## Overview
 
-This document provides detailed, step-by-step implementation instructions for integrating AI specialists throughout the Tekton platform. Follow these steps sequentially for best results.
+This document provides detailed, step-by-step implementation instructions for integrating CI specialists throughout the Tekton platform. Follow these steps sequentially for best results.
 
 ## Pre-Implementation Checklist
 
@@ -18,7 +18,7 @@ This document provides detailed, step-by-step implementation instructions for in
 **Location**: `.tekton/.env.tekton`
 
 ```bash
-# Add AI control flag
+# Add CI control flag
 echo "export TEKTON_REGISTER_AI=false" >> .tekton/.env.tekton
 echo "export TEKTON_AI_DEBUG=false" >> .tekton/.env.tekton
 echo "export TEKTON_AI_AUTO_RESTART=true" >> .tekton/.env.tekton
@@ -30,19 +30,19 @@ echo "export TEKTON_AI_AUTO_RESTART=true" >> .tekton/.env.tekton
 
 Add entries:
 ```markdown
-| Numa     | 8016 | Platform AI Mentor    | All Component Access |
-| Noesis   | 8015 | Discovery AI          | Future Sprint        |
+| Numa     | 8016 | Platform CI Mentor    | All Component Access |
+| Noesis   | 8015 | Discovery CI          | Future Sprint        |
 ```
 
-### 1.3 Create AI Registry Client
+### 1.3 Create CI Registry Client
 
 **File**: `shared_lib/AIRegistryClient.py`
 
 Key features:
 - Async HTTP client for Rhetor API
 - File-based fallback mechanism
-- Register/deregister AI methods
-- Query AI status methods
+- Register/deregister CI methods
+- Query CI status methods
 - Health check integration
 
 ```python
@@ -64,7 +64,7 @@ class AIRegistryClient:
         pass
 ```
 
-### 1.4 Create AI Management Utilities
+### 1.4 Create CI Management Utilities
 
 #### tekton_ai_launcher.py
 
@@ -72,7 +72,7 @@ class AIRegistryClient:
 
 Responsibilities:
 - Check TEKTON_REGISTER_AI flag
-- Launch AI processes for registered components
+- Launch CI processes for registered components
 - Update socket registry
 - Handle errors gracefully
 
@@ -80,8 +80,8 @@ Key logic:
 ```python
 1. Read environment flag
 2. Get list of running components from enhanced_tekton_status
-3. For each component with AI support:
-   - Launch AI process
+3. For each component with CI support:
+   - Launch CI process
    - Register in socket registry
    - Log success/failure
 4. Launch Numa last (after all components)
@@ -92,7 +92,7 @@ Key logic:
 **Location**: `EnhancedTools/tekton_ai_killer.py`
 
 Responsibilities:
-- Terminate all AI processes
+- Terminate all CI processes
 - Deregister from socket registry
 - Clean shutdown sequence
 - Kill Numa first (before components)
@@ -102,10 +102,10 @@ Responsibilities:
 **Location**: `EnhancedTools/tekton_ai_status.py`
 
 Responsibilities:
-- Show all registered AIs
+- Show all registered CIs
 - Display health status
 - Show last activity time
-- Highlight unresponsive AIs
+- Highlight unresponsive CIs
 
 ### 1.5 Create Numa Component
 
@@ -157,7 +157,7 @@ Modifications:
 ```python
 # After all components are healthy
 if os.getenv('TEKTON_REGISTER_AI', 'false').lower() == 'true':
-    print("\n🤖 Launching AI Specialists...")
+    print("\n🤖 Launching CI Specialists...")
     subprocess.run([sys.executable, 'EnhancedTools/tekton_ai_launcher.py'])
 ```
 
@@ -178,7 +178,7 @@ Modifications:
 ```python
 # Before killing components
 if os.getenv('TEKTON_REGISTER_AI', 'false').lower() == 'true':
-    print("\n🤖 Terminating AI Specialists...")
+    print("\n🤖 Terminating CI Specialists...")
     subprocess.run([sys.executable, 'EnhancedTools/tekton_ai_killer.py'])
 ```
 
@@ -186,11 +186,11 @@ if os.getenv('TEKTON_REGISTER_AI', 'false').lower() == 'true':
 
 **File**: `EnhancedTools/enhanced_tekton_status.py`
 
-Add AI section:
+Add CI section:
 ```python
 # After component status
 if os.getenv('TEKTON_REGISTER_AI', 'false').lower() == 'true':
-    print("\n🤖 AI Specialist Status:")
+    print("\n🤖 CI Specialist Status:")
     subprocess.run([sys.executable, 'EnhancedTools/tekton_ai_status.py'])
 ```
 
@@ -202,7 +202,7 @@ Features:
 - Parse debug logs for activity
 - Track last spoke timestamps
 - Send ESC character after timeout
-- Auto-restart unresponsive AIs
+- Auto-restart unresponsive CIs
 - Log all health events
 
 Health check sequence:
@@ -216,9 +216,9 @@ Health check sequence:
      - Attempt restart if enabled
 ```
 
-## Phase 3: AI Implementation (Days 7-10)
+## Phase 3: CI Implementation (Days 7-10)
 
-### 3.1 Create Base AI Worker Class
+### 3.1 Create Base CI Worker Class
 
 **File**: `shared_lib/AISpecialistWorker.py`
 
@@ -244,7 +244,7 @@ class AISpecialistWorker:
         pass
 ```
 
-### 3.2 Implement Component AIs
+### 3.2 Implement Component CIs
 
 #### Rhetor AI
 - Orchestrator personality
@@ -284,7 +284,7 @@ Add Numa as first tab:
 ```javascript
 // Navigation order
 const navOrder = [
-    'numa',      // Platform AI (NEW - FIRST)
+    'numa',      // Platform CI (NEW - FIRST)
     'rhetor',    // Orchestrator
     'apollo',    // Executive
     // ... rest of components ...
@@ -301,8 +301,8 @@ Add Numa integration:
 
 ### 4.3 Update Team Chat Display
 
-Show AI participants:
-- Different styling for AI vs human
+Show CI participants:
+- Different styling for CI vs human
 - Activity indicators
 - Health status badges
 
@@ -311,7 +311,7 @@ Show AI participants:
 ### 5.1 Unit Tests
 
 Create tests for:
-- AI registry client
+- CI registry client
 - Management utilities
 - Health monitoring
 - Base worker class
@@ -319,10 +319,10 @@ Create tests for:
 ### 5.2 Integration Tests
 
 Test scenarios:
-- Full startup with AIs
+- Full startup with CIs
 - Component restart resilience
-- AI crash recovery
-- Team chat with multiple AIs
+- CI crash recovery
+- Team chat with multiple CIs
 
 ### 5.3 Performance Tests
 
@@ -335,7 +335,7 @@ Measure:
 ### 5.4 Documentation Updates
 
 Update:
-- AI Socket Registry Guide
+- CI Socket Registry Guide
 - Component documentation
 - Troubleshooting guide
 - API documentation
@@ -387,8 +387,8 @@ Update:
 1. Gather performance metrics
 2. Calculate API costs
 3. Document lessons learned
-4. Plan next AI features
-5. Consider additional AI specialists
+4. Plan next CI features
+5. Consider additional CI specialists
 
 ## Success Validation
 
@@ -399,10 +399,10 @@ Run through this checklist:
 - [ ] Numa terminates before components
 - [ ] Health monitoring detects issues
 - [ ] Auto-restart works correctly
-- [ ] Team chat includes all AIs
+- [ ] Team chat includes all CIs
 - [ ] UI shows Numa first
 - [ ] No performance regression
 - [ ] API costs acceptable
 - [ ] Documentation complete
 
-This implementation plan provides a clear path to successfully integrate AI specialists throughout the Tekton platform.
+This implementation plan provides a clear path to successfully integrate CI specialists throughout the Tekton platform.

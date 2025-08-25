@@ -47,18 +47,18 @@ class BranchMonitor:
             if "READY_TO_MERGE" in self.get_last_commit_message(branch):
                 ready.append(branch)
         
-        # Method 3: AI announcement via aish
+        # Method 3: CI announcement via aish
         inbox_ready = self.check_aish_announcements()
         ready.extend(inbox_ready)
         
         return list(set(ready))  # Deduplicate
 ```
 
-### 3. AI Consensus Protocol
+### 3. CI Consensus Protocol
 
 ```python
 class AIConsensusEngine:
-    """Orchestrate AI team consensus for conflicts"""
+    """Orchestrate CI team consensus for conflicts"""
     
     async def resolve_conflicts(self, conflicts):
         """Multi-round consensus building"""
@@ -81,7 +81,7 @@ class AIConsensusEngine:
         return None
     
     def format_conflict_query(self, conflicts, round_num):
-        """Format conflicts for AI discussion"""
+        """Format conflicts for CI discussion"""
         
         if round_num == 0:
             # First round - present raw conflicts
@@ -129,11 +129,11 @@ class HumanDecisionInterface:
         return self.parse_decisions(decisions)
     
     def format_comparison(self, conflict):
-        """Side-by-side comparison with AI analysis"""
+        """Side-by-side comparison with CI analysis"""
         
         return f"""
 AI Analysis:
-- {conflict.ai_preference} preferred by {conflict.ai_vote_count} AIs
+- {conflict.ai_preference} preferred by {conflict.ai_vote_count} CIs
 - Reasoning: {conflict.ai_reasoning}
 
 [A] Worker_1's approach:
@@ -206,7 +206,7 @@ if git log -1 --pretty=%B | grep -q "READY_TO_MERGE"; then
 fi
 ```
 
-### 3. With Worker AI Scripts
+### 3. With Worker CI Scripts
 
 ```python
 # In worker completion handler
@@ -236,7 +236,7 @@ merge_coordinator:
   check_interval: 30
   merge_timeout: 300
   
-  # AI Consensus
+  # CI Consensus
   max_ai_rounds: 3
   confidence_threshold: 0.85
   required_ai_votes: 3
@@ -285,7 +285,7 @@ class MergeCoordinatorTestSuite:
         })
         
     async def test_ai_consensus_success(self):
-        """Test successful AI consensus"""
+        """Test successful CI consensus"""
         # Test implementation
         
     async def test_human_escalation(self):
@@ -302,7 +302,7 @@ class MergeCoordinatorTestSuite:
 # Expected output:
 # ✓ Worker detection
 # ✓ Conflict identification  
-# ✓ AI consensus (2 rounds)
+# ✓ CI consensus (2 rounds)
 # ✓ Merge application
 # ✓ Learning system update
 ```
@@ -322,7 +322,7 @@ class MergeCoordinatorTestSuite:
                         └────────┬────────┘
                                  │
                         ┌────────▼────────┐
-                        │   AI Consensus  │
+                        │   CI Consensus  │
                         │  (team-chat)    │
                         └────────┬────────┘
                                  │
@@ -363,12 +363,12 @@ class MergeCoordinatorMetrics:
 ╠═══════════════════════════════════════╣
 ║ Active Workers:        {self.active_workers()}
 ║ Pending Merges:        {self.pending_count()}
-║ In AI Discussion:      {self.in_discussion()}
+║ In CI Discussion:      {self.in_discussion()}
 ║ Awaiting Human:        {self.human_queue()}
 ║                                       ║
 ║ Today's Stats:                        ║
 ║   Auto-merged:         {self.auto_today()}
-║   AI Consensus:        {self.ai_today()}
+║   CI Consensus:        {self.ai_today()}
 ║   Human Decisions:     {self.human_today()}
 ║   Avg Time:           {self.avg_time()}
 ║                                       ║

@@ -17,7 +17,7 @@ Projects Chat enables communication with project-specific Companion Intelligence
 - **Provider/Model flexibility** - Support Ollama and external API providers
 
 ### 3. Multi-Stack Coordination
-- **Multiple Tekton stacks** - Each with 18 AI specialists
+- **Multiple Tekton stacks** - Each with 18 CI specialists
 - **Claude Code forwarding** - CIs can be forwarded to human terminals
 - **Scaling economics** - $200/month for 80x-100x velocity
 
@@ -27,7 +27,7 @@ Projects Chat enables communication with project-specific Companion Intelligence
 
 ```
 Base Ports (Existing):
-- Tekton AIs: 42000-42080 (numa-ai: 42016)
+- Tekton CIs: 42000-42080 (numa-ai: 42016)
 
 Project CI Ports:
 - Range: 42100+ (TEKTON_PROJECT_CI_PORT_BASE + project_index)
@@ -95,7 +95,7 @@ Messages include project context using established patterns:
 # When project appears in Dashboard
 def create_project_ci(project_id, companion_intelligence):
     # 1. Assign next available port (42100+)
-    # 2. Start AI specialist with project context
+    # 2. Start CI specialist with project context
     # 3. Register socket in project CI registry
     # 4. Update project data structure
     pass
@@ -129,7 +129,7 @@ def terminate_project_ci(project_id):
 **Chat Panel**:
 - Same structure as Builder Chat
 - Context-aware message display
-- Project-specific AI responses
+- Project-specific CI responses
 
 ### JavaScript Integration
 
@@ -199,7 +199,7 @@ project_ci_registry = {
 Each Tekton stack maintains:
 - Independent project CI registry
 - Separate port ranges (configurable)
-- Isolated AI specialist pools
+- Isolated CI specialist pools
 
 ### Cross-Stack Communication
 
@@ -276,7 +276,7 @@ aish project unforward <project>
 
 **Decision**: Use base port + 100 for project CIs
 **Rationale**: 
-- Clear separation from core AI specialists
+- Clear separation from core CI specialists
 - Simple arithmetic for port calculation
 - Room for 1000+ projects
 - Configurable via environment

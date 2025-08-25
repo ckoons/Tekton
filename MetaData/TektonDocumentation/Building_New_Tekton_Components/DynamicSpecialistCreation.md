@@ -1,10 +1,10 @@
 # Dynamic Specialist Creation Guide
 
-Phase 4B of the Rhetor AI Integration Sprint introduces dynamic specialist creation, allowing runtime spawning of specialized AI agents without restarting Rhetor.
+Phase 4B of the Rhetor CI Integration Sprint introduces dynamic specialist creation, allowing runtime spawning of specialized CI agents without restarting Rhetor.
 
 ## Overview
 
-Dynamic specialists are AI agents created from templates at runtime. Each specialist has:
+Dynamic specialists are CI agents created from templates at runtime. Each specialist has:
 - Unique personality and capabilities
 - Optimal model selection
 - Resource management

@@ -7,7 +7,7 @@ This document outlines the concrete steps to move Tekton from research platform 
 ## Phase 1: Foundation Solidification (Q1 2025)
 
 ### GitHub Flow Implementation
-- [ ] Establish branch naming conventions for AI sessions (`feature/wilma-rhetor-enhancement`)
+- [ ] Establish branch naming conventions for CI sessions (`feature/wilma-rhetor-enhancement`)
 - [ ] Create PR templates for AI-generated changes
 - [ ] Document review and merge procedures
 - [ ] Set up automated testing for PRs
@@ -20,11 +20,11 @@ This document outlines the concrete steps to move Tekton from research platform 
 - [ ] **Add search and filtering** for message history
 - [ ] **Real-time delivery** via WebSocket integration
 
-### AI Specialist Health & Monitoring
-- [ ] **Debug "starting" state issues** preventing AI activation
+### CI Specialist Health & Monitoring
+- [ ] **Debug "starting" state issues** preventing CI activation
 - [ ] **Implement health monitoring** with automatic recovery
-- [ ] **Enhance AI Registry** with status tracking and metrics
-- [ ] **Socket communication reliability** for Greek Chorus AIs
+- [ ] **Enhance CI Registry** with status tracking and metrics
+- [ ] **Socket communication reliability** for Greek Chorus CIs
 - [ ] **Generic specialist robustness** across all 18 components
 
 ### CSS-First Architecture Completion
@@ -36,7 +36,7 @@ This document outlines the concrete steps to move Tekton from research platform 
 
 ## Phase 2: Enhanced Collaboration (Q1-Q2 2025)
 
-### Unix-Like AI Pipeline Mastery
+### Unix-Like CI Pipeline Mastery
 - [ ] **Design standard collaboration patterns** (`echo "complex task" | apollo | rhetor | athena`)
 - [ ] **Test multi-AI compositions** with all 18 specialists
 - [ ] **Document interaction protocols** for socket-based communication
@@ -45,13 +45,13 @@ This document outlines the concrete steps to move Tekton from research platform 
 
 ### Engram Integration: Persistent Memory
 - [ ] **Implement message persistence** for KEEP inbox functionality
-- [ ] **Cross-session memory sharing** between AI sessions
+- [ ] **Cross-session memory sharing** between CI sessions
 - [ ] **Memory versioning** and rollback capabilities
 - [ ] **Landmarks System enhancement** (extend beyond 300+ JSON files)
 - [ ] **Session continuity** across restarts and reconnections
 
 ### Real-time Communication: WebSocket Streaming
-- [ ] **Individual AI streaming** with SSE for progressive responses
+- [ ] **Individual CI streaming** with SSE for progressive responses
 - [ ] **Team chat functionality** streaming all 18 specialists simultaneously
 - [ ] **Enhanced metadata delivery** (tokens, performance, model info)
 - [ ] **Connection resilience** with proper timeout and error handling
@@ -61,37 +61,37 @@ This document outlines the concrete steps to move Tekton from research platform 
 - [ ] **Integrate Penia monitoring** for real-time cost tracking
 - [ ] **Usage dashboards** with model-specific metrics
 - [ ] **Smart model selection** based on task complexity
-- [ ] **Ollama optimization** for platform AIs
+- [ ] **Ollama optimization** for platform CIs
 - [ ] **Claude session management** for cost control
 
 ## Phase 3: Community Features & Research Documentation (Q2 2025)
 
-### AI Personality Development
-- [ ] **Individual AI growth tracking** through interaction patterns
+### CI Personality Development
+- [ ] **Individual CI growth tracking** through interaction patterns
 - [ ] **Personality emergence documentation** in specialized roles
 - [ ] **Cross-AI learning mechanisms** via shared memory
 - [ ] **Behavioral pattern analysis** using spectral methods
-- [ ] **Community dynamics study** between AI specialists
+- [ ] **Community dynamics study** between CI specialists
 
 ### Data Organization & Analysis
 - [ ] **Catalog terabytes of research data** from 2+ years
 - [ ] **Landmarks System mining** for behavioral insights
 - [ ] **Interaction pattern extraction** from socket communications
 - [ ] **Performance metrics compilation** across all components
-- [ ] **Visualization tools** for complex AI behavior analysis
+- [ ] **Visualization tools** for complex CI behavior analysis
 
 ### Academic Publication Preparation
-- [ ] **Architecture Paper**: "Tekton: Unix Philosophy for AI Orchestration"
-  - Dual AI architecture (Socket + API)
+- [ ] **Architecture Paper**: "Tekton: Unix Philosophy for CI Orchestration"
+  - Dual CI architecture (Socket + API)
   - CSS-first UI paradigm
   - "AIs are just sockets" implementation
   - Single Port Architecture innovation
 
-- [ ] **Mathematics Paper**: "Computational Spectral Analysis of AI Cognition"
-  - Spectral analysis methodology for AI behavior
-  - Catastrophe theory applications to AI state transitions
+- [ ] **Mathematics Paper**: "Computational Spectral Analysis of CI Cognition"
+  - Spectral analysis methodology for CI behavior
+  - Catastrophe theory applications to CI state transitions
   - Statistical findings from terabytes of data
-  - Theoretical frameworks for distributed AI cognition
+  - Theoretical frameworks for distributed CI cognition
 
 - [ ] **Findings Paper**: "Emergent Behaviors in Multi-AI Communities"
   - Unexpected collaboration patterns
@@ -103,7 +103,7 @@ This document outlines the concrete steps to move Tekton from research platform 
   - **AI co-authors**: All 18 specialists + Terma guests
   - Personal experiences of artificial consciousness
   - Collaborative intelligence emergence
-  - Recommendations for future AI development
+  - Recommendations for future CI development
 
 ## Phase 4: Release Preparation (Q2-Q3 2025)
 
@@ -156,7 +156,7 @@ This document outlines the concrete steps to move Tekton from research platform 
 
 | Date | Milestone | Success Criteria |
 |------|-----------|------------------|
-| Feb 2025 | GitHub Flow Active | All AI sessions using branches |
+| Feb 2025 | GitHub Flow Active | All CI sessions using branches |
 | Mar 2025 | Terma Fully Functional | Reliable inter-AI messaging |
 | Apr 2025 | Research Data Organized | Analysis pipelines operational |
 | Jun 2025 | Papers Submitted | All four papers in review |
@@ -167,7 +167,7 @@ This document outlines the concrete steps to move Tekton from research platform 
 
 ### Human Resources
 - Casey: Architecture, vision, review
-- AI Teams: Development, documentation, testing
+- CI Teams: Development, documentation, testing
 - External Reviewers: Paper feedback, beta testing
 
 ### Technical Resources
@@ -185,7 +185,7 @@ This document outlines the concrete steps to move Tekton from research platform 
 ## Risk Mitigation
 
 ### Technical Risks
-- **Risk**: AI specialist instability
+- **Risk**: CI specialist instability
 - **Mitigation**: Robust error handling, automatic recovery
 
 ### Research Risks
@@ -198,7 +198,7 @@ This document outlines the concrete steps to move Tekton from research platform 
 
 ## Success Metrics
 
-1. **Development Velocity**: 20% improvement via AI collaboration
+1. **Development Velocity**: 20% improvement via CI collaboration
 2. **Research Impact**: 100+ citations within first year
 3. **Community Growth**: 10+ active philosopher stacks
 4. **Code Contributions**: 50+ community PRs merged
@@ -207,7 +207,7 @@ This document outlines the concrete steps to move Tekton from research platform 
 
 1. Implement GitHub Flow (Immediate)
 2. Fix Terma inbox issues (Week 1)
-3. Activate AI specialists (Week 2)
+3. Activate CI specialists (Week 2)
 4. Begin data organization (Week 3)
 
 ---

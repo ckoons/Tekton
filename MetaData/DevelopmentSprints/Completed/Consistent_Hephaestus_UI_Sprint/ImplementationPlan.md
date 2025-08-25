@@ -162,7 +162,7 @@ Location: `/Hephaestus/ui/shared/team-chat.html`
       <input type="text" 
              class="component__chat-input" 
              id="team-chat-input"
-             placeholder="Message all AI specialists..."
+             placeholder="Message all CI specialists..."
              data-tekton-chat-input="team">
       <button class="component__chat-send" 
               onclick="sendTeamMessage(); return false;">
@@ -211,7 +211,7 @@ Update build script to include shared team chat in each component.
      data-tekton-panel-for="[Component] Chat">
   <div class="component__chat-container">
     <div class="component__chat-messages" id="specialist-chat-messages">
-      <!-- AI specialist responses here -->
+      <!-- CI specialist responses here -->
     </div>
     <div class="component__chat-input-container">
       <input type="text"
@@ -229,7 +229,7 @@ Update build script to include shared team chat in each component.
 </div>
 ```
 
-#### Step 3: Configure AI Endpoint
+#### Step 3: Configure CI Endpoint
 
 Each specialist chat needs configuration:
 ```javascript
@@ -289,7 +289,7 @@ Test in:
 
 1. **Navigation Flow**: User can navigate between all components
 2. **Chat Persistence**: Chat history maintained during session
-3. **AI Communication**: Messages reach correct AI specialists
+3. **AI Communication**: Messages reach correct CI specialists
 4. **Team Chat Sync**: Same team chat across all components
 5. **WebSocket Stability**: Connections remain stable
 

@@ -185,7 +185,7 @@ await fetch("/api/mcp/v2/tools/ci-tools/define", {
     name: "my-assistant",
     type: "generic", 
     executable: "/usr/bin/myai",
-    options: {description: "My AI assistant"}
+    options: {description: "My CI assistant"}
   })
 });
 

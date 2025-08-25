@@ -49,7 +49,7 @@ Hermes is the inter-component messaging and data routing hub for Tekton. It prov
 2. `/api/hermes/messages` - Real-time message stream
 3. `/api/hermes/connections` - Connection graph data
 4. `/api/hermes/history` - Message history queries
-5. `/api/hermes/chat` - AI chat endpoint (to be routed through aish MCP)
+5. `/api/hermes/chat` - CI chat endpoint (to be routed through aish MCP)
 
 ### Unique Challenges
 1. **Real-time Updates**: Message monitoring needs WebSocket or SSE
@@ -64,7 +64,7 @@ Hermes is the inter-component messaging and data routing hub for Tekton. It prov
 2. Implement CSS-first tab system
 3. Connect to real Hermes backend API
 4. Remove mock data placeholders
-5. Integrate with aish MCP for AI features
+5. Integrate with aish MCP for CI features
 6. Ensure message bus is actually working
 7. Test service registry with live components
 
@@ -73,7 +73,7 @@ Hermes is the inter-component messaging and data routing hub for Tekton. It prov
 - Service registry API must be functional
 - Message bus must be active
 - Other Tekton components for testing
-- aish MCP for AI integration
+- aish MCP for CI integration
 
 ## Recommendations
 1. Start with tab conversion (most visible change)

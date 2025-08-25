@@ -49,7 +49,7 @@ Noesis operates as a specialized discovery system:
 - Analyzes patterns across all components
 - Identifies optimization opportunities
 - Generates insights from system behavior
-- Shares discoveries with other AIs
+- Shares discoveries with other CIs
 
 ## Development Status
 

@@ -1,22 +1,22 @@
-# [DEPRECATED] Unified AI Interface Architecture
+# [DEPRECATED] Unified CI Interface Architecture
 
-> **⚠️ DEPRECATED**: This document describes the old complex unified AI system that has been replaced by the Simple AI Communication Architecture. See [SimpleAICommunication.md](./SimpleAICommunication.md) for the current architecture.
+> **⚠️ DEPRECATED**: This document describes the old complex unified CI system that has been replaced by the Simple CI Communication Architecture. See [SimpleAICommunication.md](./SimpleAICommunication.md) for the current architecture.
 >
 > **Status**: This architecture was replaced in July 2025 with a much simpler "One Queue, One Socket, One AI" approach using fixed ports and direct socket communication.
 
 ---
 
-# Unified AI Interface Architecture
+# Unified CI Interface Architecture
 
 ## Overview
 
-The Unified AI Interface provides a single, consistent way to discover, manage, and communicate with AI specialists across the Tekton platform. This document describes the new architecture that replaces multiple disparate implementations with a unified system.
+The Unified CI Interface provides a single, consistent way to discover, manage, and communicate with CI specialists across the Tekton platform. This document describes the new architecture that replaces multiple disparate implementations with a unified system.
 
 ## Key Components
 
 ### 1. Enhanced Socket Client (`shared/ai/socket_client.py`)
 
-The foundation of all AI communication, featuring:
+The foundation of all CI communication, featuring:
 
 - **Native Streaming Support**: Built-in streaming capabilities for progressive responses
 - **Async/Await First**: Primary async interface with sync wrappers for compatibility
@@ -43,7 +43,7 @@ async with client.persistent_connection(host, port) as conn:
 
 ### 2. Unified Registry (`shared/ai/unified_registry.py`)
 
-Central registry for all AI specialists with:
+Central registry for all CI specialists with:
 
 - **Event-Driven Architecture**: Real-time updates via event bus
 - **Health Monitoring**: Automatic background health checks
@@ -62,8 +62,8 @@ registry.on("status_changed", lambda data:
 )
 
 # Events emitted:
-# - registered: New AI registered
-# - deregistered: AI removed  
+# - registered: New CI registered
+# - deregistered: CI removed  
 # - status_changed: Health status changed
 # - discovered: Discovery completed
 # - metrics_updated: Performance metrics updated
@@ -74,15 +74,15 @@ registry.on("status_changed", lambda data:
 Smart routing with load balancing and fallback chains:
 
 - **Rule-Based Routing**: Define routing rules based on message content
-- **Capability Matching**: Route to AIs with required capabilities
-- **Load Balancing**: Distribute requests across multiple AIs
-- **Fallback Chains**: Automatic fallback to alternative AIs
-- **Team Routing**: Route to multiple AIs for collaborative work
+- **Capability Matching**: Route to CIs with required capabilities
+- **Load Balancing**: Distribute requests across multiple CIs
+- **Fallback Chains**: Automatic fallback to alternative CIs
+- **Team Routing**: Route to multiple CIs for collaborative work
 
 #### Example Rules:
 
 ```python
-# Route code analysis to specialized AIs
+# Route code analysis to specialized CIs
 code_rule = RoutingRule(
     name="code_analysis",
     condition=lambda ctx: "analyze" in ctx.get("message", "").lower(),
@@ -95,10 +95,10 @@ code_rule = RoutingRule(
 
 ### 4. Enhanced ai-discover Tool
 
-Comprehensive AI management tool with:
+Comprehensive CI management tool with:
 
 - **Real-time Monitoring**: `ai-discover watch` for live status updates
-- **Performance Testing**: Benchmark AIs with varying workloads
+- **Performance Testing**: Benchmark CIs with varying workloads
 - **Streaming Tests**: Verify streaming capabilities
 - **Routing Tests**: Test routing engine decisions
 - **Rich Output**: Beautiful tables and charts (when rich is installed)
@@ -106,7 +106,7 @@ Comprehensive AI management tool with:
 #### New Commands:
 
 ```bash
-# Watch AI status in real-time
+# Watch CI status in real-time
 ai-discover watch
 
 # Test streaming
@@ -126,13 +126,13 @@ ai-discover stats
 
 ### 1. Single Source of Truth
 
-- All AI registrations go through the unified registry
+- All CI registrations go through the unified registry
 - Consistent discovery across all components
 - No more duplicate or conflicting data
 
 ### 2. Performance Optimization
 
-- Health monitoring ensures requests go to healthy AIs
+- Health monitoring ensures requests go to healthy CIs
 - Load balancing distributes work evenly
 - Performance metrics enable smart routing decisions
 
@@ -235,19 +235,19 @@ class MessageType(Enum):
 
 ### Connection Pooling
 
-The socket client maintains connection pools for frequently accessed AIs, reducing connection overhead.
+The socket client maintains connection pools for frequently accessed CIs, reducing connection overhead.
 
 ### Caching
 
 - Discovery results cached for 60 seconds
-- AI status cached with TTL
+- CI status cached with TTL
 - Performance metrics use rolling windows
 
 ### Health Monitoring
 
 - Background health checks every 30 seconds
 - Automatic status updates based on response times
-- Graceful degradation for slow AIs
+- Graceful degradation for slow CIs
 
 ## Future Enhancements
 
@@ -276,17 +276,17 @@ The socket client maintains connection pools for frequently accessed AIs, reduci
    ```
    Solution: Ensure Tekton is in Python path or set TEKTON_ROOT
 
-2. **No AIs Found**
+2. **No CIs Found**
    ```
-   No suitable AI specialists available for routing
+   No suitable CI specialists available for routing
    ```
-   Solution: Check if AIs are running, use `ai-discover test`
+   Solution: Check if CIs are running, use `ai-discover test`
 
 3. **Timeout Errors**
    ```
    Timeout after 30s
    ```
-   Solution: Increase timeout or check AI health
+   Solution: Increase timeout or check CI health
 
 ### Debug Mode
 
@@ -310,4 +310,4 @@ See individual module documentation:
 
 ## Conclusion
 
-The Unified AI Interface provides a robust, scalable foundation for AI communication across the Tekton platform. With native streaming support, intelligent routing, and real-time monitoring, it enables powerful AI-driven applications while maintaining simplicity and backward compatibility.
+The Unified CI Interface provides a robust, scalable foundation for CI communication across the Tekton platform. With native streaming support, intelligent routing, and real-time monitoring, it enables powerful AI-driven applications while maintaining simplicity and backward compatibility.

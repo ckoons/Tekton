@@ -5,7 +5,7 @@
 - **Sprint Name**: EngramEnhancement_Sprint_2
 - **Duration**: 4 weeks
 - **Start Date**: January 27, 2025
-- **Primary Goal**: Transform Engram into a natural cognitive extension for AI users
+- **Primary Goal**: Transform Engram into a natural cognitive extension for CI users
 
 ## Sprint Phases
 
@@ -34,7 +34,7 @@
 - `engram/cognitive/context_manager.py`
 - `engram/cognitive/auto_memory.py`
 
-### Phase 3: AI Communication (Week 3)
+### Phase 3: CI Communication (Week 3)
 **Deliverables:**
 - Implement peer discovery through Hermes
 - Create shared memory spaces
@@ -66,7 +66,7 @@
 - [ ] Context persists across sessions
 - [ ] All existing functionality preserved
 - [ ] Performance meets or exceeds current system
-- [ ] AI users can start using memory in < 1 minute
+- [ ] CI users can start using memory in < 1 minute
 
 ## Risk Mitigation
 
@@ -86,14 +86,14 @@
 
 ## Success Criteria
 
-1. **Developer Experience**: AI developers can use memory without reading docs
+1. **Developer Experience**: CI developers can use memory without reading docs
 2. **Performance**: < 100ms latency for memory operations
 3. **Reliability**: 99.9% uptime for memory services
-4. **Scalability**: Supports 100+ concurrent AI users
+4. **Scalability**: Supports 100+ concurrent CI users
 5. **Joy**: Using memory feels natural and delightful
 
 ## Notes
 
-This sprint focuses on making memory natural for AI users. Every decision should be evaluated against: "Does this make memory feel more like thinking and less like database operations?"
+This sprint focuses on making memory natural for CI users. Every decision should be evaluated against: "Does this make memory feel more like thinking and less like database operations?"
 
 Casey's vision: "inject engram_start() - what do I do, center() - find your memory and meet your teammates"

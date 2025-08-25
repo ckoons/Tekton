@@ -4,7 +4,7 @@ This document describes the Model Context Protocol (MCP) integration for Telos, 
 
 ## Overview
 
-Telos implements FastMCP (Fast Model Context Protocol) to provide a standardized interface for requirements management, tracing, validation, and strategic planning operations. This integration allows external systems and AI models to interact with Telos's requirements management capabilities through a consistent, well-defined API.
+Telos implements FastMCP (Fast Model Context Protocol) to provide a standardized interface for requirements management, tracing, validation, and strategic planning operations. This integration allows external systems and CI models to interact with Telos's requirements management capabilities through a consistent, well-defined API.
 
 ## Architecture
 

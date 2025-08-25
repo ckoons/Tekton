@@ -2,7 +2,7 @@
 
 ## Context
 
-You are assisting with implementing the Tekton Native Intelligence Sprint for Tekton, an intelligent orchestration system that coordinates multiple AI models and resources to efficiently solve complex software engineering problems. This sprint focuses on creating sophisticated orchestration capabilities that leverage Tekton's unique multi-component architecture to generate emergent intelligence.
+You are assisting with implementing the Tekton Native Intelligence Sprint for Tekton, an intelligent orchestration system that coordinates multiple CI models and resources to efficiently solve complex software engineering problems. This sprint focuses on creating sophisticated orchestration capabilities that leverage Tekton's unique multi-component architecture to generate emergent intelligence.
 
 Tekton's architecture includes mature components with established patterns:
 - **Hermes**: Central hub with MCP tools (40+), A2A coordination, service registry, and database services

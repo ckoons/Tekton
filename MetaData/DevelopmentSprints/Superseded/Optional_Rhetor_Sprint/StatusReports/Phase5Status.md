@@ -65,7 +65,7 @@
 ## Next Steps
 
 ### Before Phase Can Begin
-1. ✅ Complete main Rhetor AI Integration Sprint (Phases 3, 4A, 4B)
+1. ✅ Complete main Rhetor CI Integration Sprint (Phases 3, 4A, 4B)
 2. ⏸️ Deploy streaming and dynamic specialist features to production/staging
 3. ⏸️ Collect baseline performance metrics and usage patterns
 4. ⏸️ Identify specific security, monitoring, and operational requirements

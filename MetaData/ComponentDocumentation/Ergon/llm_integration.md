@@ -2,7 +2,7 @@
 
 ## Overview
 
-Ergon integrates with Large Language Models (LLMs) through the standardized `tekton-llm-client` library, providing a unified interface for AI capabilities across agent orchestration, workflow planning, memory operations, and coordination tasks.
+Ergon integrates with Large Language Models (LLMs) through the standardized `tekton-llm-client` library, providing a unified interface for CI capabilities across agent orchestration, workflow planning, memory operations, and coordination tasks.
 
 ## Architecture
 

@@ -53,7 +53,7 @@
    git diff HEAD~1
    ```
 
-4. Use AI to analyze → Let Claude help investigate
+4. Use CI to analyze → Let Claude help investigate
    ```bash
    # In your terminal with Claude access
    # Paste the error and context
@@ -256,6 +256,6 @@ I'll help you analyze the code. Please share...
 - Document as you debug - future you will thank you
 - Binary search is powerful for "it worked before" bugs
 - Check the obvious first (is it running? right environment?)
-- Use AI assistants throughout investigation
+- Use CI assistants throughout investigation
 - Casey's wisdom: "The bug is usually in the last place you changed"
 - The whisper pattern with Claude is especially powerful for complex bugs

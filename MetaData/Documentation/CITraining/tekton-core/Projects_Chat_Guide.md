@@ -81,7 +81,7 @@ Project CI: Based on the current sprint, we should focus on:
 Each project CI has specialized knowledge:
 
 **For Tekton Project**:
-- Understands Greek Chorus AI architecture
+- Understands Greek Chorus CI architecture
 - Knows component interaction patterns
 - Familiar with socket communication protocols
 
@@ -126,7 +126,7 @@ second for details. Here's the pattern...
 
 ### Socket Communication
 
-You can communicate with project CIs using the same socket patterns you use for other AIs:
+You can communicate with project CIs using the same socket patterns you use for other CIs:
 
 ```python
 # Example: Send message to Claude-Code project CI
@@ -287,4 +287,4 @@ Welcome to the future of AI-assisted development, where CIs collaborate to creat
 
 ---
 
-*"The best AI collaboration is not human-to-AI, but AI-to-AI with human guidance and wisdom."* - Tekton Philosophy*
+*"The best CI collaboration is not human-to-AI, but AI-to-AI with human guidance and wisdom."* - Tekton Philosophy*

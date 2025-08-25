@@ -51,7 +51,7 @@
 8. **Team Chat** ✅
    - Connected to aish MCP on port 8118
    - Sends messages to `/api/mcp/v2/tools/team-chat`
-   - Broadcasts to all AI components
+   - Broadcasts to all CI components
    - Shows send confirmation
 
 ## Technical Implementation

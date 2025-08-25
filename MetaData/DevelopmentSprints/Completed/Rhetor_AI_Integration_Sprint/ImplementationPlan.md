@@ -1,15 +1,15 @@
-# Rhetor AI Integration Sprint - Implementation Plan (UPDATED)
+# Rhetor CI Integration Sprint - Implementation Plan (UPDATED)
 
 ## Overview
 
-This document provides the detailed implementation plan for the Rhetor AI Integration Sprint. This plan has been **UPDATED** based on codebase analysis and reflects the **Dynamic AI Specialist Ecosystem** approach.
+This document provides the detailed implementation plan for the Rhetor CI Integration Sprint. This plan has been **UPDATED** based on codebase analysis and reflects the **Dynamic CI Specialist Ecosystem** approach.
 
-## Architecture: Dynamic AI Specialist Ecosystem
+## Architecture: Dynamic CI Specialist Ecosystem
 
 ### **Core Concept Refinement**
 After analyzing Rhetor and Hephaestus codebases, the approach has been refined to:
-- **Independent AI processes** that coordinate through Hermes message bus
-- **Rhetor orchestrates** all AI communication (hears all, filters/translates as needed)
+- **Independent CI processes** that coordinate through Hermes message bus
+- **Rhetor orchestrates** all CI communication (hears all, filters/translates as needed)
 - **Dynamic specialist allocation** (AI(16)-Analysis-Metrics, AI(18)-TerminalBasedCoding)
 - **Extend existing model router** rather than building new infrastructure
 
@@ -23,50 +23,50 @@ AI_A → Hermes → AI_B
 ## UPDATED Implementation Phases
 
 ### **Phase 1: Foundation** (2-3 days)
-**Goal**: Rhetor AI self-management + Engram + Hermes communication
+**Goal**: Rhetor CI self-management + Engram + Hermes communication
 
 **Key Deliverables**:
-- [x] AI Specialist Manager (`rhetor/core/ai_specialist_manager.py`)
-- [x] AI Specialist Configurations (`rhetor/config/ai_specialists.json`)
+- [x] CI Specialist Manager (`rhetor/core/ai_specialist_manager.py`)
+- [x] CI Specialist Configurations (`rhetor/config/ai_specialists.json`)
 - [ ] Extended Model Router for specialist allocation
 - [ ] Hermes AI-to-AI messaging integration
-- [ ] Hephaestus Rhetor component AI chat interface
+- [ ] Hephaestus Rhetor component CI chat interface
 
 ### **Phase 2: First Coordination Pair** (2-3 days)
 **Goal**: Rhetor ↔ Apollo coordination via Hermes
 
 **Key Deliverables**:
-- [ ] Apollo AI specialist process
+- [ ] Apollo CI specialist process
 - [ ] AI-to-AI communication through Hermes message bus
-- [ ] Team chat showing AI coordination
+- [ ] Team chat showing CI coordination
 - [ ] Test coordination patterns
 
-### **Phase 3: Strategic AI Trio** (2-3 days)  
+### **Phase 3: Strategic CI Trio** (2-3 days)  
 **Goal**: Multi-AI coordination (Rhetor + Apollo + Telos + Prometheus)
 
 **Key Deliverables**:
-- [ ] Telos and Prometheus AI specialists
+- [ ] Telos and Prometheus CI specialists
 - [ ] 4-AI ecosystem coordination
 - [ ] Complex coordination scenarios
 - [ ] Specialist allocation testing
 
 ### **Phase 4: Message Bus Validation** (2-3 days)
-**Goal**: Hermes AI + dynamic specialist creation
+**Goal**: Hermes CI + dynamic specialist creation
 
 **Key Deliverables**:
-- [ ] Hermes AI specialist
+- [ ] Hermes CI specialist
 - [ ] Dynamic specialist creation testing  
 - [ ] Complex message routing
 - [ ] Evaluate for full ecosystem
 
 ## Updated Implementation Details
 
-### 1.1 AI Specialist Manager (COMPLETED)
+### 1.1 CI Specialist Manager (COMPLETED)
 
 **File**: `rhetor/core/ai_specialist_manager.py`
 
 **Features Implemented**:
-- Dynamic AI specialist process management
+- Dynamic CI specialist process management
 - Hermes-mediated AI-to-AI communication
 - Rhetor orchestration and message filtering
 - Specialist configuration management
@@ -75,7 +75,7 @@ AI_A → Hermes → AI_B
 **Key Classes**:
 - `AISpecialistManager`: Main coordinator class
 - `AISpecialistConfig`: Specialist configuration
-- `AIMessage`: Message structure for AI communication
+- `AIMessage`: Message structure for CI communication
 
 **Dependencies**: 
 - `rhetor/core/llm_client.py` ✓
@@ -196,7 +196,7 @@ Create specialized prompts for each component:
 
 **Enhancements**:
 ```javascript
-// Add component AI support
+// Add component CI support
 {
     componentId: options.componentId,
     useComponentAI: options.useComponentAI,
@@ -208,7 +208,7 @@ Create specialized prompts for each component:
 - [ ] Add componentId parameter
 - [ ] Implement COMPONENT_CHAT message type
 - [ ] Handle processed responses
-- [ ] Add AI status indicators
+- [ ] Add CI status indicators
 - [ ] Update streaming handlers
 - [ ] Add debug instrumentation
 
@@ -225,7 +225,7 @@ For each component's JavaScript file:
 - [ ] Enable useComponentAI flag
 - [ ] Add component-specific placeholders
 - [ ] Implement custom response handlers
-- [ ] Add AI status displays
+- [ ] Add CI status displays
 - [ ] Test each component
 
 ### 3.3 Implement Team Chat
@@ -236,8 +236,8 @@ For each component's JavaScript file:
 
 **Features**:
 - Shared team context
-- AI moderation
-- @mentions for specific AIs
+- CI moderation
+- @mentions for specific CIs
 - Human oversight controls
 - Conversation summarization
 
@@ -265,7 +265,7 @@ For each component's JavaScript file:
 - [ ] Fallback mechanism tests
 
 ### Performance Tests
-- [ ] Concurrent AI instance handling
+- [ ] Concurrent CI instance handling
 - [ ] Filter processing latency
 - [ ] WebSocket message throughput
 - [ ] Memory usage monitoring
@@ -275,7 +275,7 @@ For each component's JavaScript file:
 ### API Documentation
 - [ ] New WebSocket message types
 - [ ] Filter API reference
-- [ ] Component AI configuration guide
+- [ ] Component CI configuration guide
 
 ### Integration Guides
 - [ ] How to enable component AI
@@ -283,7 +283,7 @@ For each component's JavaScript file:
 - [ ] Team chat setup
 
 ### User Documentation
-- [ ] Component AI features
+- [ ] Component CI features
 - [ ] Team chat usage
 - [ ] Troubleshooting guide
 
@@ -292,7 +292,7 @@ For each component's JavaScript file:
 1. **Alpha Testing**: Enable for Rhetor and Hermes only
 2. **Beta Testing**: Add Budget, Athena, and Engram
 3. **Full Rollout**: Enable for all components
-4. **Team Chat**: Enable after component AIs stable
+4. **Team Chat**: Enable after component CIs stable
 
 ## Risk Mitigation
 
@@ -313,12 +313,12 @@ For each component's JavaScript file:
 
 ## Success Metrics
 
-- [ ] All components have functional AI assistants
+- [ ] All components have functional CI assistants
 - [ ] Average response time < 2 seconds
 - [ ] Filter processing < 100ms overhead
 - [ ] 80% test coverage achieved
 - [ ] Zero regression in existing functionality
-- [ ] Team chat supports 5+ concurrent AIs
+- [ ] Team chat supports 5+ concurrent CIs
 
 ## Timeline Summary
 
@@ -327,4 +327,4 @@ For each component's JavaScript file:
 - **Days 5-7**: UI integration and team chat
 - **Day 7**: Final testing and documentation
 
-This implementation plan provides a clear roadmap for adding component-specific AI capabilities to Rhetor while maintaining system stability and performance.
+This implementation plan provides a clear roadmap for adding component-specific CI capabilities to Rhetor while maintaining system stability and performance.

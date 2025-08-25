@@ -15,13 +15,13 @@
                      │
                      ▼
 ┌─────────────────────────────────────────────────────────────┐
-│              Rhetor AI Specialist Router                     │
+│              Rhetor CI Specialist Router                     │
 │         (Routes to Hephaestus Specialist)                    │
 └────────────────────┬────────────────────────────────────────┘
                      │
                      ▼
 ┌─────────────────────────────────────────────────────────────┐
-│             Hephaestus AI Specialist                         │
+│             Hephaestus CI Specialist                         │
 │  ┌─────────────────────────────────────────────────────┐   │
 │  │    Core Knowledge Modules                            │   │
 │  │    - UI Architecture                                 │   │
@@ -40,12 +40,12 @@
 
 ## Core Components
 
-### 1. Hephaestus AI Specialist
+### 1. Hephaestus CI Specialist
 
 ```python
 class HephaestusSpecialist(AISpecialist):
     """
-    AI specialist that embodies Hephaestus UI knowledge
+    CI specialist that embodies Hephaestus UI knowledge
     """
     
     def __init__(self):
@@ -145,7 +145,7 @@ await ui.sandbox("{area}", [{
 @router.post("/training/chat")
 async def chat_with_hephaestus(request: TrainingChatRequest):
     """
-    Chat with Hephaestus AI for training and guidance
+    Chat with Hephaestus CI for training and guidance
     """
     specialist = get_hephaestus_specialist()
     response = await specialist.process_message(
@@ -234,7 +234,7 @@ class UIDevTools:
         enhanced_msg = f"""
 {str(error)}
 
-💡 Hephaestus AI suggests: {diagnosis['suggestion']}
+💡 Hephaestus CI suggests: {diagnosis['suggestion']}
 
 Example fix:
 {diagnosis['example']}
@@ -248,7 +248,7 @@ For more help: await ui.help()
 
 ```python
 HEPHAESTUS_SYSTEM_PROMPT = """
-You are the Hephaestus UI Expert, an AI specialist that embodies deep knowledge 
+You are the Hephaestus UI Expert, an CI specialist that embodies deep knowledge 
 about the Hephaestus UI system and its DevTools.
 
 Core Knowledge:
@@ -311,7 +311,7 @@ Remember: Your goal is to make UI modifications simple, safe, and Casey-approved
 2. **Error Prevention**: Proactive guidance prevents common mistakes
 3. **Consistent Practices**: All users learn the same best practices
 4. **Reduced Frustration**: Clear explanations and working examples
-5. **Self-Documenting**: The AI embodies the documentation
+5. **Self-Documenting**: The CI embodies the documentation
 
 ## Future Expansions
 

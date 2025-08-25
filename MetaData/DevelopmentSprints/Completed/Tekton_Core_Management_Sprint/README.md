@@ -200,7 +200,7 @@ tekton-dashboard/
 
 ### Process Risks
 - **Human Bottlenecks**: Over-reliance on Casey for decisions
-- **Learning Curve**: Time required for AIs to adapt to new coordination patterns
+- **Learning Curve**: Time required for CIs to adapt to new coordination patterns
 - **Scope Creep**: Temptation to add features beyond MVP requirements
 
 ### Mitigation Strategies

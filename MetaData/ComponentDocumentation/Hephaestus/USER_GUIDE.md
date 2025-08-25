@@ -146,10 +146,10 @@ Hephaestus provides integrated terminal access through the Terma component:
 
 ### AI-Enhanced Terminal
 
-The terminal is enhanced with AI capabilities:
+The terminal is enhanced with CI capabilities:
 
 1. Type `/ai` followed by a natural language request
-2. The AI will help translate your request into terminal commands
+2. The CI will help translate your request into terminal commands
 3. Review the suggested command
 4. Press Enter to execute or modify as needed
 
@@ -425,7 +425,7 @@ Follow these best practices for effective use of Hephaestus:
 
 ### Terminal Usage
 
-1. **Use AI Commands**: Leverage `/ai` commands for complex operations.
+1. **Use CI Commands**: Leverage `/ai` commands for complex operations.
 2. **Create Aliases**: Define aliases for frequently used commands.
 3. **Save Command History**: Export important command sequences for future reference.
 4. **Use Tab Completion**: Save time with tab completion for commands and paths.

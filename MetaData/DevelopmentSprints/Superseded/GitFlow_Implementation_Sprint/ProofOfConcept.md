@@ -191,7 +191,7 @@ Casey: "Looks good. Merge it."
 
 ### Must Achieve
 - [ ] Complete GitHub Flow cycle (issue → merge)
-- [ ] Multiple AIs collaborate successfully
+- [ ] Multiple CIs collaborate successfully
 - [ ] Daily reports collected automatically
 - [ ] No manual intervention required (except final approval)
 
@@ -199,7 +199,7 @@ Casey: "Looks good. Merge it."
 - [ ] < 3 days from issue to merge
 - [ ] Zero merge conflicts
 - [ ] All tests passing before PR
-- [ ] Clear audit trail of AI actions
+- [ ] Clear audit trail of CI actions
 
 ### Stretch Goals
 - [ ] Automatic documentation generation
@@ -222,7 +222,7 @@ Casey: "Looks good. Merge it."
 
 ### Week 3: Parallel Development
 1. Create 3-5 issues
-2. Assign to different AI teams
+2. Assign to different CI teams
 3. Test parallel branch development
 4. Validate conflict resolution
 
@@ -269,7 +269,7 @@ ai_team:
 ## Expected Challenges
 
 ### 1. Context Isolation
-- **Challenge**: AIs need Tekton context + SDK context
+- **Challenge**: CIs need Tekton context + SDK context
 - **Solution**: Numa maintains bridging context
 
 ### 2. Dependency Management
@@ -283,7 +283,7 @@ ai_team:
 ## Learning Objectives
 
 1. **Validate multi-project workflow**
-2. **Test AI context switching**
+2. **Test CI context switching**
 3. **Prove external repo isolation**
 4. **Measure orchestration overhead**
 5. **Identify optimization opportunities**
@@ -296,4 +296,4 @@ ai_team:
 4. **Example Projects** - Test tutorial management
 
 ---
-*"The Python SDK proves we can build anything, anywhere, with AI teams."*
+*"The Python SDK proves we can build anything, anywhere, with CI teams."*

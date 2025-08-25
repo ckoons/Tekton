@@ -103,7 +103,7 @@ def get_expected_ai_port(main_port: int) -> int:
 @architecture_decision(
     title="Centralized CI Launcher Architecture",
     rationale="Single launcher manages all CI specialists for consistency and resource control",
-    alternatives_considered=["Component-embedded AIs", "Distributed launchers"],
+    alternatives_considered=["Component-embedded CIs", "Distributed launchers"],
     impacts=["centralized_control", "launch_performance", "monitoring_capability"]
 )
 @state_checkpoint(
@@ -118,7 +118,7 @@ class CILauncher:
     def __init__(self, verbose: bool = False):
         self.verbose = verbose
         self.config = get_component_config()
-        # Registry client removed - AIs use fixed ports
+        # Registry client removed - CIs use fixed ports
         self.launched_ais: Dict[str, subprocess.Popen] = {}
         
         # Setup logging
@@ -389,7 +389,7 @@ class CILauncher:
         self.logger.info(f"Launched {launched}/{len(results)} CI specialists")
     
     def cleanup(self):
-        """Clean up all launched AIs."""
+        """Clean up all launched CIs."""
         for ai_id in list(self.launched_ais.keys()):
             self.kill_ai(ai_id)
     
@@ -429,7 +429,7 @@ async def main():
     parser.add_argument(
         'components', 
         nargs='*',  # Changed to * to make optional when using --show-mapping
-        help='Components to launch AIs for (or "all")'
+        help='Components to launch CIs for (or "all")'
     )
     parser.add_argument(
         '-v', '--verbose',
@@ -439,12 +439,12 @@ async def main():
     parser.add_argument(
         '--no-wait',
         action='store_true',
-        help='Don\'t wait for AIs to be ready'
+        help='Don\'t wait for CIs to be ready'
     )
     parser.add_argument(
         '--no-cleanup',
         action='store_true',
-        help='Don\'t clean up launched AIs on exit (for use by enhanced_tekton_launcher)'
+        help='Don\'t clean up launched CIs on exit (for use by enhanced_tekton_launcher)'
     )
     parser.add_argument(
         '--show-mapping',

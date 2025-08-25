@@ -841,7 +841,7 @@ async def model_with_fallback():
             print(f"Fallback model error: {e}")
     
     # Default response if all models fail
-    return "Tekton is an AI orchestration system. (Generated offline due to model unavailability)"
+    return "Tekton is an CI orchestration system. (Generated offline due to model unavailability)"
 ```
 
 ## Agent Integration
@@ -1792,6 +1792,6 @@ if __name__ == "__main__":
 
 ## Conclusion
 
-Integrating with Tekton provides your component with a rich ecosystem of services, standardized communication patterns, and robust lifecycle management. By following the best practices outlined in this guide, you can create components that seamlessly work with the Tekton orchestration system and contribute to a unified AI development environment.
+Integrating with Tekton provides your component with a rich ecosystem of services, standardized communication patterns, and robust lifecycle management. By following the best practices outlined in this guide, you can create components that seamlessly work with the Tekton orchestration system and contribute to a unified CI development environment.
 
 For more information, see the API Reference and Technical Documentation.

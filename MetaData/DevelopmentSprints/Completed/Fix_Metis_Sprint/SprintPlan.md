@@ -11,11 +11,11 @@
 
 Metis was originally conceived as an intelligent task decomposition system that would:
 - Take high-level requirements and break them down into actionable tasks
-- Use AI to analyze complexity and suggest optimal task ordering
+- Use CI to analyze complexity and suggest optimal task ordering
 - Create linear execution paths from complex dependency graphs
 - Handle one-to-many task splits intelligently
 
-However, the current implementation is just a basic CRUD task manager without any AI capabilities.
+However, the current implementation is just a basic CRUD task manager without any CI capabilities.
 
 ## Objectives
 
@@ -37,7 +37,7 @@ However, the current implementation is just a basic CRUD task manager without an
 4. **Implement MCP tools**
    - Fill in the placeholder tool implementations
    - Provide comprehensive task manipulation capabilities
-   - Enable AI agents to interact with Metis effectively
+   - Enable CI agents to interact with Metis effectively
 
 ## Scope
 
@@ -46,7 +46,7 @@ However, the current implementation is just a basic CRUD task manager without an
 - Implementing task decomposition engine
 - Creating AI-powered complexity analysis
 - Implementing MCP tools
-- Adding new API endpoints for AI features
+- Adding new API endpoints for CI features
 - Creating prompt templates for task analysis
 
 ### Out of Scope
@@ -59,13 +59,13 @@ However, the current implementation is just a basic CRUD task manager without an
 ## Technical Approach
 
 1. **Parallel Development**
-   - Add AI features alongside existing functionality
+   - Add CI features alongside existing functionality
    - Don't modify working code unless necessary
    - New endpoints complement existing ones
 
 2. **Modular Architecture**
-   - Separate AI logic into dedicated modules
-   - Clean interfaces between AI and existing code
+   - Separate CI logic into dedicated modules
+   - Clean interfaces between CI and existing code
    - Easy to test and maintain
 
 3. **Prompt Engineering**
@@ -79,7 +79,7 @@ However, the current implementation is just a basic CRUD task manager without an
    - **Mitigation:** Add new code without modifying existing
    - **Mitigation:** Comprehensive testing before integration
 
-2. **Risk:** Poor AI performance
+2. **Risk:** Poor CI performance
    - **Mitigation:** Iterative prompt refinement
    - **Mitigation:** Fallback to manual operations
 
@@ -90,7 +90,7 @@ However, the current implementation is just a basic CRUD task manager without an
 ## Success Metrics
 
 1. Can decompose a high-level task into 5-10 meaningful subtasks
-2. AI complexity scores align with human judgment 80%+ of the time
+2. CI complexity scores align with human judgment 80%+ of the time
 3. Generated task orders are executable without manual intervention
 4. MCP tools pass integration tests
 5. No regression in existing functionality
@@ -110,7 +110,7 @@ However, the current implementation is just a basic CRUD task manager without an
 
 **Phase 3: Integration and Testing (1-2 hours)**
 - Wire up new endpoints
-- Test AI features
+- Test CI features
 - Verify existing functionality
 - Document usage
 

@@ -2,7 +2,7 @@
 
 ## What We Built
 
-A complete git-like version control system for AI memories that enables transparent collaborative cognition.
+A complete git-like version control system for CI memories that enables transparent collaborative cognition.
 
 ### Core Features Delivered
 
@@ -67,7 +67,7 @@ A complete git-like version control system for AI memories that enables transpar
 ## Configuration Examples
 
 ```python
-# Interactive AI sessions
+# Interactive CI sessions
 config = ProvenanceConfig.interactive()  # 100ms flush, track everything
 
 # Background processing  
@@ -80,13 +80,13 @@ config = ProvenanceConfig.minimal()      # 10s flush, only critical
 ## What's Left
 
 Only 1 task remains:
-- Test with multiple AI instances (the fun part!)
+- Test with multiple CI instances (the fun part!)
 
 ## Impact
 
-This enables a new form of collaborative AI cognition where:
+This enables a new form of collaborative CI cognition where:
 - Every thought has a visible history
-- AIs can see how ideas evolved
+- CIs can see how ideas evolved
 - Attribution is transparent
 - Conflicts become opportunities for exploration
 - Memory becomes truly collaborative

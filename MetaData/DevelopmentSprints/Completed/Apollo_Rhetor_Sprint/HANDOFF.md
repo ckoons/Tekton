@@ -67,7 +67,7 @@ class WhisperChannel:
 - Landmarks system provides vibration sensing
 - Engram + LanceDB ready for vector storage
 - CI registry complete for monitoring all CIs
-- Unified AI communication through ai_service_simple
+- Unified CI communication through ai_service_simple
 
 ### Proven Patterns
 - CI collaboration works (Tess & Teri demonstration)
@@ -84,7 +84,7 @@ class WhisperChannel:
 ## Files to Reference
 - `/MetaData/DevelopmentSprints/Apollo_Rhetor_Sprint/SPRINT_PLAN.md` - Complete plan
 - `/Engram/engram/core/memory.py` - Memory foundation
-- `/shared/ai/ai_service_simple.py` - Unified AI communication
+- `/shared/ai/ai_service_simple.py` - Unified CI communication
 - `/landmarks/` - System vibration sensing
 
 ## Key Decisions Made

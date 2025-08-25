@@ -4,13 +4,13 @@
 
 This document outlines the high-level plan for the Building Noesis Development Sprint. It provides an overview of the goals, approach, and expected outcomes.
 
-Tekton is an intelligent orchestration system that coordinates multiple AI models and resources to efficiently solve complex software engineering problems. This Development Sprint focuses on creating Noesis (νόησις), a theoretical research component that analyzes collective AI cognition through geometric and mathematical frameworks, complementing Sophia's experimental analysis capabilities.
+Tekton is an intelligent orchestration system that coordinates multiple CI models and resources to efficiently solve complex software engineering problems. This Development Sprint focuses on creating Noesis (νόησις), a theoretical research component that analyzes collective CI cognition through geometric and mathematical frameworks, complementing Sophia's experimental analysis capabilities.
 
 ## Sprint Goals
 
 The primary goals of this sprint are:
 
-1. **Theoretical Framework Development**: Create a component for pure theoretical analysis of AI collective cognition geometry
+1. **Theoretical Framework Development**: Create a component for pure theoretical analysis of CI collective cognition geometry
 2. **Dimensional Analysis Capabilities**: Implement tools for studying manifold structures, regime transitions, and catastrophe surfaces
 3. **Integration with MIT Paper Insights**: Incorporate SLDS modeling, PCA-based manifold identification, and continuous-time SDE frameworks
 4. **Mathematical Proof Construction**: Enable formalization of why certain configurations achieve cognitive crystallization
@@ -21,8 +21,8 @@ This sprint delivers value by:
 
 - **Deep Understanding**: Provides theoretical foundations for Tekton's empirical observations
 - **Predictive Capability**: Enables prediction of cognitive phase transitions and failure modes
-- **Optimization Guidance**: Identifies optimal configurations for AI collective performance
-- **Research Leadership**: Positions Tekton at the forefront of AI cognition research
+- **Optimization Guidance**: Identifies optimal configurations for CI collective performance
+- **Research Leadership**: Positions Tekton at the forefront of CI cognition research
 
 ## Current State Assessment
 
@@ -156,7 +156,7 @@ This sprint is planned to be completed in 3 phases:
 
 This sprint will be considered successful if:
 
-- Noesis successfully analyzes collective AI cognition geometry
+- Noesis successfully analyzes collective CI cognition geometry
 - Dimensional reduction techniques identify meaningful manifolds
 - SLDS modeling captures regime transitions accurately
 - Catastrophe theory integration predicts critical transitions
@@ -167,7 +167,7 @@ This sprint will be considered successful if:
 ## Key Stakeholders
 
 - **Casey**: Human-in-the-loop project manager and theoretical insights
-- **Claude (Archimedes)**: Founding AI architect for Noesis
+- **Claude (Archimedes)**: Founding CI architect for Noesis
 - **Sophia Maintainers**: For theory-experiment integration
 - **Research Community**: Future users of theoretical insights
 

@@ -14,7 +14,7 @@ from .RouteRequest import RouteRequest, RouteResponse
 @app.post("/chat/route")
 async def route_chat_message(request: RouteRequest) -> RouteResponse:
     """
-    Route chat messages to component AIs or team chat.
+    Route chat messages to component CIs or team chat.
     
     This endpoint handles the routing logic for the Hephaestus UI chat widget,
     directing messages to the appropriate AI specialist based on the component

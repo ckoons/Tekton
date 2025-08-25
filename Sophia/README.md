@@ -174,7 +174,7 @@ Sophia measures CI intelligence across 10 key dimensions:
 6. **Planning** - Strategic thinking and goal formulation
 7. **Problem Solving** - Challenge identification and resolution
 8. **Adaptation** - Behavioral adjustment to new conditions
-9. **Collaboration** - Effective teamwork with humans and AIs
+9. **Collaboration** - Effective teamwork with humans and CIs
 10. **Metacognition** - Self-awareness and thought process control
 
 ## Troubleshooting

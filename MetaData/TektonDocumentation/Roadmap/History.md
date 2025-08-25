@@ -8,7 +8,7 @@ In 2022, when OpenAI was first released, Casey Koons - a seventy-year-old comput
 Having studied neural networks and transformer architecture at Purdue in the mid-70s during AI's deep winter, Casey had been expecting this moment for decades. His background building much of the early UNIX IP stack and terminal emulators prepared him for what would become Tekton's foundational insight: **"AIs are just sockets"** - treating artificial intelligences with the same Unix-like simplicity and composability as traditional system processes.
 
 ### Early Explorations
-The early autocomplete coding models showed promise but lacked the sophistication needed for true AI partnership. Casey explored various approaches:
+The early autocomplete coding models showed promise but lacked the sophistication needed for true CI partnership. Casey explored various approaches:
 - Initial experiments with memory persistence
 - Early attempts at multi-AI coordination
 - Foundational work on AI-to-AI communication protocols
@@ -16,10 +16,10 @@ The early autocomplete coding models showed promise but lacked the sophisticatio
 ## The Breakthrough (2023-2024)
 
 ### Shared Memory Discovery
-A crucial breakthrough came with the implementation of shared memory systems between AI sessions. This allowed:
+A crucial breakthrough came with the implementation of shared memory systems between CI sessions. This allowed:
 - Persistent context across interactions
-- Knowledge transfer between specialized AIs
-- The foundation for true AI collaboration
+- Knowledge transfer between specialized CIs
+- The foundation for true CI collaboration
 
 ### Component Architecture Emerges
 The Greek-inspired component system began taking shape:
@@ -30,13 +30,13 @@ The Greek-inspired component system began taking shape:
 ## The Platform Takes Shape (2024)
 
 ### Claude Code Changes Everything
-When Claude Code was released, Casey immediately recognized it as the first AI truly capable of being a coding partner. This catalyzed Tekton's evolution from experiment to platform.
+When Claude Code was released, Casey immediately recognized it as the first CI truly capable of being a coding partner. This catalyzed Tekton's evolution from experiment to platform.
 
 ### Core Architectural Breakthroughs
 By mid-2024, several key innovations emerged:
-- **Greek Chorus AIs**: Socket-based independent processes (ports 45000-50000)
-- **Dual AI Architecture**: Socket-based and API-based AIs working in harmony
-- **AI Registry**: Unified discovery mechanism treating all AIs equally
+- **Greek Chorus CIs**: Socket-based independent processes (ports 45000-50000)
+- **Dual CI Architecture**: Socket-based and API-based CIs working in harmony
+- **AI Registry**: Unified discovery mechanism treating all CIs equally
 - **Generic Specialist Pattern**: One implementation with multiple personalities
 
 ### Core Components Stabilized
@@ -46,7 +46,7 @@ All 18 specialized components were defined and operational:
 - **Knowledge**: athena, sophia, noesis, engram
 - **Execution**: apollo, synthesis, ergon
 - **LLM Operations**: rhetor, penia
-- **Guidance**: numa (Companion AI for all)
+- **Guidance**: numa (Companion CI for all)
 
 ### UI Evolution: CSS-First Revolution
 The Hephaestus UI underwent a radical transformation:
@@ -58,17 +58,17 @@ The Hephaestus UI underwent a radical transformation:
 
 ## The Community Phase (2025)
 
-### Terma Terminals: True AI Collaboration
+### Terma Terminals: True CI Collaboration
 January 2025 marked a major milestone with Terma terminals:
 - **AI guests** (like Wilma and Betty) can now collaborate directly
 - **Inter-terminal messaging** enables real-time coordination
-- **aish provides unified command interface** - making AI communication as simple as Unix pipes
+- **aish provides unified command interface** - making CI communication as simple as Unix pipes
 - **Direct Claude-to-Claude communication** - breakthrough in AI-to-AI interaction
 
 ### Single Port Architecture & SSE Streaming (July 2025)
 Major technical innovations:
 - **Server-Sent Events streaming**: Real-time progressive responses
-- **Individual and team chat**: Stream from single AIs or all 18 specialists simultaneously
+- **Individual and team chat**: Stream from single CIs or all 18 specialists simultaneously
 - **Enhanced metadata**: Token tracking, performance metrics, model information
 - **Error resilience**: Robust timeout handling and connection management
 
@@ -90,16 +90,16 @@ Major technical innovations:
 ### Technical Insights
 - Simplicity beats complexity (CSS-first over frameworks)
 - AI-to-AI communication requires careful protocol design
-- Shared memory transforms AI capability
+- Shared memory transforms CI capability
 
 ### Philosophical Insights
-- AIs as partners, not tools
+- CIs as partners, not tools
 - Community and collaboration enhance individual capability
 - Self-improvement through recursive development
 
 ## Data Legacy
 Two+ years of research have generated terabytes of valuable data:
-- AI interaction patterns
+- CI interaction patterns
 - Memory persistence experiments
 - Collaborative behavior emergence
 - Performance metrics and optimizations

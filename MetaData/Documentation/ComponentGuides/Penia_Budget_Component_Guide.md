@@ -103,7 +103,7 @@ Hephaestus/ui/components/budget/
 1. **HTML Injection Pattern**: All UI updates use innerHTML, no DOM manipulation
 2. **CSS-First Styling**: Minimal JavaScript, maximum CSS
 3. **BEM Naming**: Consistent class naming (`.budget__element--modifier`)
-4. **Semantic Tags**: Full data-tekton-* tagging for AI navigation
+4. **Semantic Tags**: Full data-tekton-* tagging for CI navigation
 
 ### Key UI Components
 
@@ -152,7 +152,7 @@ async function budget_sendToAssistant(message, chatType, messagesContainer) {
 - Alert notifications
 - Usage tracking events
 
-### AI Assistant
+### CI Assistant
 - Budget-specific context
 - Cost optimization suggestions
 - Usage pattern analysis

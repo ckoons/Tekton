@@ -17,7 +17,7 @@ data-tekton-nav-item="[component-name]"
 data-tekton-nav-target="[destination]"
 ```
 
-### AI Integration
+### CI Integration
 ```html
 data-tekton-ai="[specialist-id]"
 data-tekton-ai-ready="true|false"
@@ -57,7 +57,7 @@ document.querySelectorAll('[data-tekton-chat]')
 element.setAttribute('data-tekton-state', 'active')
 ```
 
-### Check AI Ready
+### Check CI Ready
 ```javascript
 const ready = element.getAttribute('data-tekton-ai-ready') === 'true'
 ```

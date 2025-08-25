@@ -3,7 +3,7 @@
 ## Overview
 
 Telos integrates with Large Language Models (LLMs) to enhance requirements management workflows through the Tekton LLM Client. 
-This integration allows Telos to leverage AI capabilities for requirements analysis, refinement, validation, 
+This integration allows Telos to leverage CI capabilities for requirements analysis, refinement, validation, 
 traceability, and more.
 
 ## Features

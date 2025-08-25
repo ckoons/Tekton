@@ -4,7 +4,7 @@
 
 This document provides a retrospective analysis of the [Sprint Name] Development Sprint. It reflects on what went well, what could be improved, lessons learned, and recommendations for future sprints.
 
-Tekton is an intelligent orchestration system that coordinates multiple AI models and resources to efficiently solve complex software engineering problems. This Development Sprint focused on [brief description of the focus area].
+Tekton is an intelligent orchestration system that coordinates multiple CI models and resources to efficiently solve complex software engineering problems. This Development Sprint focused on [brief description of the focus area].
 
 ## Sprint Summary
 

@@ -1,8 +1,8 @@
-# Unified AI Interface - Cleanup Summary
+# Unified CI Interface - Cleanup Summary
 
 ## What We Accomplished
 
-### 1. Built Best-in-Class Unified AI System
+### 1. Built Best-in-Class Unified CI System
 
 #### Enhanced Socket Client (`socket_client.py`)
 - ✅ Native streaming support with async iterators
@@ -20,8 +20,8 @@
 
 #### Intelligent Routing (`routing_engine.py`)
 - ✅ Rule-based routing with fallback chains
-- ✅ Load balancing across healthy AIs
-- ✅ Capability-based AI selection
+- ✅ Load balancing across healthy CIs
+- ✅ Capability-based CI selection
 - ✅ Team routing for collaborative work
 
 #### Enhanced ai-discover Tool
@@ -51,7 +51,7 @@
 
 #### Registry Migration:
 - ✅ Created migration script (`migrate_registry.py`)
-- ✅ Successfully migrated 18 AIs to unified registry
+- ✅ Successfully migrated 18 CIs to unified registry
 - ✅ Preserved all existing configurations
 
 #### Test Suite:
@@ -102,7 +102,7 @@ ai-discover benchmark
 
 ## Benefits Achieved
 
-1. **Single Source of Truth** - One registry for all AI information
+1. **Single Source of Truth** - One registry for all CI information
 2. **Reliability** - Automatic health monitoring and failover
 3. **Performance** - Load balancing and performance tracking
 4. **Visibility** - Real-time monitoring and statistics
@@ -111,7 +111,7 @@ ai-discover benchmark
 
 ## Next Steps
 
-1. **Enable Streaming in Greek Chorus AIs** - The client supports it, AIs need to implement it
+1. **Enable Streaming in Greek Chorus CIs** - The client supports it, CIs need to implement it
 2. **Add Engram Backend** - For persistent registry storage
 3. **WebSocket Support** - For browser-based clients
 4. **Advanced Analytics** - ML-based routing optimization
@@ -120,11 +120,11 @@ ai-discover benchmark
 
 - [x] aish basic commands work
 - [x] Team chat functions correctly
-- [x] ai-discover list shows all AIs
+- [x] ai-discover list shows all CIs
 - [x] ai-discover test verifies connections
 - [x] All aish tests pass
 - [x] Documentation is updated
 
 ## Conclusion
 
-The Unified AI Interface is now fully operational across both Tekton and aish. The system provides a robust, scalable foundation for AI communication with native streaming support, intelligent routing, and real-time monitoring. All legacy code has been cleaned up while maintaining full backward compatibility.
+The Unified CI Interface is now fully operational across both Tekton and aish. The system provides a robust, scalable foundation for CI communication with native streaming support, intelligent routing, and real-time monitoring. All legacy code has been cleaned up while maintaining full backward compatibility.

@@ -225,7 +225,7 @@ All tests designed for CI context (send messages to self, check own inbox).
 ## Related Documentation
 
 - [aish Command Reference](../AITraining/aish/COMMAND_REFERENCE.md)
-- [Terma AI Training](../AITraining/terma/README.md)
+- [Terma CI Training](../AITraining/terma/README.md)
 - [Landmarks and Semantic Tags Standard](../Standards/Landmarks_and_Semantic_Tags_Standard.md)
 - [Terma-aish Integration](Terma_aish_Integration.md)
 

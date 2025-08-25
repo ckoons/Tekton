@@ -2,7 +2,7 @@
 
 ## Context
 
-You are continuing the **MCP Unified Integration Sprint** for the Tekton AI orchestration system. This sprint implements FastMCP (Model Context Protocol) integration across all Tekton components to enable seamless AI tool integration.
+You are continuing the **MCP Unified Integration Sprint** for the Tekton CI orchestration system. This sprint implements FastMCP (Model Context Protocol) integration across all Tekton components to enable seamless CI tool integration.
 
 ## Current Status: 11/16 Components Complete (68.75%)
 

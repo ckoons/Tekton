@@ -2,7 +2,7 @@
 Unified CI Specialist HTTP endpoints for Rhetor.
 
 This replaces the old internal specialist system with registry-based discovery.
-Rhetor acts as the hiring manager for platform AIs.
+Rhetor acts as the hiring manager for platform CIs.
 """
 
 from typing import Dict, List, Optional, Any
@@ -89,7 +89,7 @@ async def list_specialists(
 ):
     """List CI specialists - shows Rhetor's current roster from the registry"""
     try:
-        # Get all available AIs from registry
+        # Get all available CIs from registry
         all_ais = await discovery.list_ais(role=role_filter)
         roster = get_rhetor_roster()
         

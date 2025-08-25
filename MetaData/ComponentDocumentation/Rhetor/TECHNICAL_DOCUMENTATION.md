@@ -37,7 +37,7 @@ Rhetor is designed as a prompt engineering and LLM interaction management system
    - Handles template validation
 
 6. **AI Socket Registry**
-   - Manages AI communication sockets following Unix philosophy
+   - Manages CI communication sockets following Unix philosophy
    - Provides team chat broadcast capabilities
    - Handles transparent message routing with headers
    - Maintains socket persistence via Engram
@@ -747,14 +747,14 @@ class TemplateManager:
             json.dump(template.to_dict(), f)
 ```
 
-## AI Socket Registry Architecture
+## CI Socket Registry Architecture
 
-The AI Socket Registry implements the Unix philosophy where "AIs are just sockets that read and write." This architecture enables seamless multi-AI collaboration and team chat functionality.
+The CI Socket Registry implements the Unix philosophy where "AIs are just sockets that read and write." This architecture enables seamless multi-AI collaboration and team chat functionality.
 
 ### Design Principles
 
 1. **Simplicity**: Sockets are just dictionaries with read/write operations
-2. **Transparency**: Headers are metadata, invisible to AIs
+2. **Transparency**: Headers are metadata, invisible to CIs
 3. **Persistence**: Socket state survives restarts via Engram
 4. **Unix-like**: Everything is a stream, fail silently with logging
 
@@ -764,7 +764,7 @@ The AI Socket Registry implements the Unix philosophy where "AIs are just socket
 @dataclass
 class AISocket:
     socket_id: str              # Unique identifier
-    model: str                  # AI model (e.g., "claude-3")
+    model: str                  # CI model (e.g., "claude-3")
     prompt: str                 # System prompt
     context: Dict[str, Any]     # Socket context
     created_at: str             # ISO timestamp
@@ -811,10 +811,10 @@ Messages are wrapped with transparent headers:
 1. **Write Operation**: 
    - User writes: "Hello AI"
    - Socket receives: "[team-chat-to-apollo-123] Hello AI"
-   - AI sees: "Hello AI"
+   - CI sees: "Hello AI"
 
 2. **Read Operation**:
-   - AI writes: "My response"
+   - CI writes: "My response"
    - Registry adds: "[team-chat-from-apollo-123] My response"
    - User sees full message with source
 
@@ -858,7 +858,7 @@ The socket registry enables Rhetor's team chat moderation modes:
 1. **Pass-through**: Stream all responses immediately
 2. **Synthesis**: Collect and summarize responses  
 3. **Consensus**: Group by agreement patterns
-4. **Directed**: Call on specific AIs
+4. **Directed**: Call on specific CIs
 
 ### Performance Considerations
 

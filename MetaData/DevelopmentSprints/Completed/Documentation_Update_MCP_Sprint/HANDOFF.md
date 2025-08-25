@@ -18,7 +18,7 @@ All documentation for the MCP Distributed Tekton Sprint has been created and upd
 
 1. aish MCP server running on port 8118
 2. All UI components using window.AIChat
-3. AI names without '-ai' suffix
+3. CI names without '-ai' suffix
 4. New debug commands for MCP management
 
 ## Documents Updated
@@ -48,7 +48,7 @@ ff1de52 - ok
 ## Key Documentation Points
 
 1. **Breaking Changes Documented**:
-   - AI names must not include '-ai' suffix
+   - CI names must not include '-ai' suffix
    - All UI chat routes through aish MCP on port 8118
    - Direct HTTP calls to specialists deprecated
 

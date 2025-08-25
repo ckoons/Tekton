@@ -4,13 +4,13 @@
 
 This document outlines the high-level plan for the Hephaestus-Rhetor UI Integration Development Sprint. It provides an overview of the goals, approach, and expected outcomes.
 
-Tekton is an intelligent orchestration system that coordinates multiple AI models and resources to efficiently solve complex software engineering problems. This Development Sprint focuses on enabling Rhetor AI specialists to power the right panel chat interfaces in Hephaestus and enhancing the Rhetor menu bar component to expose full API capabilities.
+Tekton is an intelligent orchestration system that coordinates multiple CI models and resources to efficiently solve complex software engineering problems. This Development Sprint focuses on enabling Rhetor CI specialists to power the right panel chat interfaces in Hephaestus and enhancing the Rhetor menu bar component to expose full API capabilities.
 
 ## Sprint Goals
 
 The primary goals of this sprint are:
 
-1. **Enable AI-Powered Component Chats**: Connect Rhetor AI specialists to power the right panel chat interfaces for all Tekton components in Hephaestus
+1. **Enable AI-Powered Component Chats**: Connect Rhetor CI specialists to power the right panel chat interfaces for all Tekton components in Hephaestus
 2. **Enhance Menu Bar Integration**: Expand the Rhetor menu bar component to expose full specialist management and orchestration capabilities
 3. **Implement Persistent Chat Options**: Add configurable chat history persistence with component-level settings
 
@@ -18,27 +18,27 @@ The primary goals of this sprint are:
 
 This sprint delivers value by:
 
-- **Unified AI Experience**: Every Tekton component will have its own AI assistant accessible through a consistent chat interface
-- **Improved Developer Productivity**: Direct AI assistance within each component's context reduces context switching
-- **Enhanced Orchestration**: Menu bar access to Rhetor capabilities enables quick AI orchestration across components
+- **Unified CI Experience**: Every Tekton component will have its own CI assistant accessible through a consistent chat interface
+- **Improved Developer Productivity**: Direct CI assistance within each component's context reduces context switching
+- **Enhanced Orchestration**: Menu bar access to Rhetor capabilities enables quick CI orchestration across components
 - **Flexible History Management**: Users can choose to preserve or discard chat histories based on their workflow
 
 ## Current State Assessment
 
 ### Existing Implementation
 
-The Rhetor AI Integration Sprint successfully implemented:
-- 6 pre-configured AI specialists with distinct roles and personalities
+The Rhetor CI Integration Sprint successfully implemented:
+- 6 pre-configured CI specialists with distinct roles and personalities
 - Dynamic specialist creation from 8 templates
 - Real-time streaming support via Server-Sent Events (SSE)
 - WebSocket bidirectional communication
-- MCP tools for AI orchestration
+- MCP tools for CI orchestration
 - Internal specialist-to-specialist communication
 
 However, the integration with Hephaestus remains incomplete:
-- Component chat tabs exist but aren't connected to AI specialists
+- Component chat tabs exist but aren't connected to CI specialists
 - The Rhetor menu bar component has limited functionality
-- No cross-component AI routing infrastructure
+- No cross-component CI routing infrastructure
 - Chat histories are not persisted
 
 ### Pain Points
@@ -54,8 +54,8 @@ However, the integration with Hephaestus remains incomplete:
 
 - **Hephaestus UI**: Enhanced terminal chat integration, component-AI mapping, streaming support
 - **Rhetor Backend**: Component specialist registry, enhanced routing, persistence layer
-- **Hermes Message Bus**: Component-specific topic routing for AI messages
-- **Component Registry**: AI assistant configuration per component
+- **Hermes Message Bus**: Component-specific topic routing for CI messages
+- **Component Registry**: CI assistant configuration per component
 
 ### Technical Approach
 
@@ -113,14 +113,14 @@ The following items are explicitly out of scope for this sprint:
 
 - Complete rewrite of Hephaestus chat UI (keeping existing bubble design)
 - Cross-component AI-to-AI communication (reserved for future A2A work)
-- Advanced AI orchestration features beyond basic team chat
+- Advanced CI orchestration features beyond basic team chat
 - Migration of existing Rhetor UI to different framework
 
 ## Dependencies
 
 This sprint has the following dependencies:
 
-- Rhetor AI Integration Sprint completion (DONE)
+- Rhetor CI Integration Sprint completion (DONE)
 - Hermes message bus operational
 - Component registry system functional
 - Ollama models available locally
@@ -139,9 +139,9 @@ This sprint is planned to be completed in 4 phases:
 
 ### Phase 2: Right Panel Integration (Days 3-4)
 - **Duration**: 2 days
-- **Focus**: Connect AI specialists to component chat interfaces
+- **Focus**: Connect CI specialists to component chat interfaces
 - **Key Deliverables**:
-  - Component AI chat service
+  - Component CI chat service
   - Terminal chat enhancement
   - Streaming support integration
 
@@ -188,7 +188,7 @@ Based on component requirements and available models:
 | Risk | Impact | Likelihood | Mitigation |
 |------|--------|------------|------------|
 | WebSocket connection complexity | High | Medium | Use existing Hermes infrastructure, implement reconnection logic |
-| Performance with multiple AI chats | Medium | High | Implement message queuing, use streaming for better UX |
+| Performance with multiple CI chats | Medium | High | Implement message queuing, use streaming for better UX |
 | Model availability/cost | Medium | Medium | Provide Ollama fallbacks for all specialists |
 | Chat history storage limits | Low | Medium | Implement size limits and rotation policies |
 
@@ -196,7 +196,7 @@ Based on component requirements and available models:
 
 This sprint will be considered successful if:
 
-- All Tekton components have functional AI chat interfaces in right panel
+- All Tekton components have functional CI chat interfaces in right panel
 - Rhetor menu bar provides access to key specialist management features
 - Chat histories can be optionally preserved across sessions
 - Streaming responses work smoothly with typing indicators
@@ -212,7 +212,7 @@ This sprint will be considered successful if:
 
 ## References
 
-- [Rhetor AI Integration Sprint](/MetaData/DevelopmentSprints/Rhetor_AI_Integration_Sprint/)
+- [Rhetor CI Integration Sprint](/MetaData/DevelopmentSprints/Rhetor_AI_Integration_Sprint/)
 - [Hephaestus Component Implementation Guide](/MetaData/ComponentDocumentation/Hephaestus/ComponentImplementationGuide.md)
 - [MCP Implementation Guide](/MetaData/TektonDocumentation/DeveloperGuides/MCP_IMPLEMENTATION_GUIDE.md)
 - [Debug Instrumentation Guidelines](/MetaData/TektonDocumentation/DeveloperGuides/Debugging/DebuggingInstrumentation.md)

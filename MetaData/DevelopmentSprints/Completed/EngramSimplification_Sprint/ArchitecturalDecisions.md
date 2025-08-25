@@ -11,7 +11,7 @@ Consolidate all memory operations into a single `Memory` class with exactly thre
 
 ### Rationale
 - Current 5+ APIs cause confusion and maintenance overhead
-- AI assistants need simplicity, not flexibility
+- CI assistants need simplicity, not flexibility
 - Three methods cover 100% of actual usage patterns observed
 
 ### Consequences
@@ -55,7 +55,7 @@ All logging and debug output hidden unless `ENGRAM_DEBUG=true` is set.
 
 ### Rationale
 - Current implementation produces 40+ lines of output for simple operations
-- AI assistants need results, not process descriptions
+- CI assistants need results, not process descriptions
 - Debug info should be available but not intrusive
 
 ### Consequences
@@ -80,7 +80,7 @@ Keep the underlying storage abstraction but hide it behind the simple API. Suppo
 
 ### Rationale
 - Storage layer actually works well
-- Vector search is natural for AI assistants
+- Vector search is natural for CI assistants
 - Flexibility in storage backends is valuable
 
 ### Consequences
@@ -134,7 +134,7 @@ Provide intelligent defaults for all operations:
 ### Rationale
 - Reduces boilerplate code
 - Makes the 5-line usage example possible
-- AI assistants shouldn't worry about bookkeeping
+- CI assistants shouldn't worry about bookkeeping
 
 ### Consequences
 - **Positive**: Extremely simple to use

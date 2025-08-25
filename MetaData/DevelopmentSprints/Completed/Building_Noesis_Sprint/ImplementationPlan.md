@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document provides the detailed implementation plan for transforming Noesis from a basic discovery system into Tekton's theoretical research component for analyzing collective AI cognition through mathematical frameworks.
+This document provides the detailed implementation plan for transforming Noesis from a basic discovery system into Tekton's theoretical research component for analyzing collective CI cognition through mathematical frameworks.
 
 ## Current State Analysis
 

@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document provides the detailed implementation plan for integrating Rhetor AI specialists with Hephaestus UI components. It breaks down each phase into specific tasks with clear technical requirements.
+This document provides the detailed implementation plan for integrating Rhetor CI specialists with Hephaestus UI components. It breaks down each phase into specific tasks with clear technical requirements.
 
 ## Phase 1: Foundation & Routing (Days 1-2)
 
@@ -28,7 +28,7 @@ class ComponentSpecialistRegistry:
 
 **Tasks**:
 - [ ] Create ComponentSpecialistRegistry class
-- [ ] Load component AI configurations from registry
+- [ ] Load component CI configurations from registry
 - [ ] Implement specialist creation with model selection
 - [ ] Add lifecycle management (recreate on config change)
 - [ ] Add debug instrumentation per guidelines
@@ -38,7 +38,7 @@ class ComponentSpecialistRegistry:
 **Location**: `Hermes/hermes/core/message_bus.py`
 
 ```python
-# Add component-specific AI routing
+# Add component-specific CI routing
 AI_CHAT_TOPIC_PATTERN = "ai.chat.{component_id}"
 
 async def route_ai_message(self, component_id: str, message: dict):
@@ -47,7 +47,7 @@ async def route_ai_message(self, component_id: str, message: dict):
 ```
 
 **Tasks**:
-- [ ] Add AI chat topic pattern
+- [ ] Add CI chat topic pattern
 - [ ] Implement component-aware routing
 - [ ] Add message validation
 - [ ] Update subscription handling
@@ -75,7 +75,7 @@ async def component_chat(component_id: str, request: ChatRequest):
 
 ## Phase 2: Right Panel Integration (Days 3-4)
 
-### 2.1 Component AI Chat Service
+### 2.1 Component CI Chat Service
 
 **Location**: `Hephaestus/ui/scripts/component-ai-chat.js`
 
@@ -124,7 +124,7 @@ class ComponentAIChat {
 **Location**: `Hephaestus/ui/scripts/terminal-chat-enhanced.js`
 
 ```javascript
-// Extend existing terminal chat for AI integration
+// Extend existing terminal chat for CI integration
 class AITerminalChat extends TerminalChat {
     constructor(container, componentId) {
         super(container);
@@ -175,7 +175,7 @@ class AITerminalChat extends TerminalChat {
 ```
 
 **Tasks**:
-- [ ] Update all component entries with AI config
+- [ ] Update all component entries with CI config
 - [ ] Define specialist IDs
 - [ ] Set model preferences
 - [ ] Create system prompts
@@ -293,7 +293,7 @@ const chatSettings = {
 
 ```python
 async def test_component_chat_integration():
-    """Test full chat flow from UI to AI response"""
+    """Test full chat flow from UI to CI response"""
     # Start Hephaestus and Rhetor
     # Send chat message to component
     # Verify specialist response
@@ -316,7 +316,7 @@ async def test_component_chat_integration():
 **Documentation Updates**:
 1. Update Hephaestus user guide
 2. Update Rhetor integration guide
-3. Create component AI assistant guide
+3. Create component CI assistant guide
 4. Update API documentation
 5. Create troubleshooting guide
 
@@ -357,7 +357,7 @@ async def test_component_chat_integration():
 
 ## Success Metrics
 
-- All components have working AI chat
+- All components have working CI chat
 - Response time < 2s for first token
 - Streaming works smoothly
 - Settings persist correctly

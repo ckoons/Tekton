@@ -75,7 +75,7 @@ Create/edit the following files:
    - Intelligence: Intelligence dimensions visualization and comparison
    - Experiments: Experiment management and tracking
    - Recommendations: Improvement recommendations tracking
-   - Research Chat: AI research assistant
+   - Research Chat: CI research assistant
    - Team Chat: Shared team communication
 
 2. **Visual Theme**:

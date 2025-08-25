@@ -12,7 +12,7 @@ The Tekton documentation is generally well-maintained and aligned with the codeb
 
 Key findings:
 - Single Port Architecture is fully implemented but some old port references remain
-- AI Registry is working but contains deprecated personality mappings
+- CI Registry is working but contains deprecated personality mappings
 - New components (Numa, Noesis) lack comprehensive documentation
 - UI DevTools V2 represents a major advancement not fully documented
 
@@ -63,7 +63,7 @@ These documents contain mostly accurate information but need updates:
 - **`API/MCP_Endpoints.md`** - Needs single port path updates
 - **`Implementation/PlatformInstrumentation.md`** - Port references outdated
 
-### AI Registry Documentation
+### CI Registry Documentation
 - **`Architecture/AIRegistry.md`** - Contains deprecated personality references
 - **`config/tekton_ai_config.json`** - Needs cleanup of personality mappings
 - **`Architecture/UnifiedAIInterface.md`** - Old routing patterns mentioned
@@ -117,7 +117,7 @@ New components and features needing documentation:
 ### New Components
 1. **Numa (Port 8016)**
    - Need: Complete implementation guide
-   - Need: AI training documentation
+   - Need: CI training documentation
    - Need: User guide for platform mentoring
 
 2. **Noesis (Port 8015)**

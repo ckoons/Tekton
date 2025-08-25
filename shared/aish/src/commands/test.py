@@ -125,5 +125,5 @@ def print_test_help():
     print("  0 - All tests passed")
     print("  1 - One or more tests failed")
     print()
-    print("Note: Some tests may skip if required services (terma, AIs)")
+    print("Note: Some tests may skip if required services (terma, CIs)")
     print("      are not running. This is normal and expected.")

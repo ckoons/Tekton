@@ -4,7 +4,7 @@
 
 This document records the architectural decisions made during the A2A v2 Protocol Update Sprint. It captures the context, considerations, alternatives considered, and rationale behind each significant decision. This serves as a reference for both current implementation and future development.
 
-Tekton is an intelligent orchestration system that coordinates multiple AI models and resources to efficiently solve complex software engineering problems. The architectural decisions in this document focus on modernizing Tekton's agent-to-agent communication to align with the A2A Protocol v0.2.1 specification.
+Tekton is an intelligent orchestration system that coordinates multiple CI models and resources to efficiently solve complex software engineering problems. The architectural decisions in this document focus on modernizing Tekton's agent-to-agent communication to align with the A2A Protocol v0.2.1 specification.
 
 ## Decision 1: Full Implementation of JSON-RPC 2.0 Protocol
 

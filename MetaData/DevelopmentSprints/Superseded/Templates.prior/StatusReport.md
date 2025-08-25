@@ -4,7 +4,7 @@
 
 This document provides a status report for Phase [X] of the [Sprint Name] Development Sprint. It summarizes the work completed, current progress, challenges encountered, and next steps.
 
-Tekton is an intelligent orchestration system that coordinates multiple AI models and resources to efficiently solve complex software engineering problems. This phase focused on [brief description of the phase focus].
+Tekton is an intelligent orchestration system that coordinates multiple CI models and resources to efficiently solve complex software engineering problems. This phase focused on [brief description of the phase focus].
 
 ## Summary of Completed Work
 

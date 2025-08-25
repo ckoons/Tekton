@@ -1,14 +1,14 @@
-# AI Socket Communication Guide
+# CI Socket Communication Guide
 
 ## Overview
 
-This guide shows how to communicate with Tekton AI specialists from HTML/JavaScript using the socket-based protocol.
+This guide shows how to communicate with Tekton CI specialists from HTML/JavaScript using the socket-based protocol.
 
-**Updated July 2025**: This guide now references the unified AI system in `/Tekton/shared/ai/` that provides the `AISocketClient` for direct communication with Greek Chorus AIs on ports 45000-50000. SSE (Server-Sent Events) streaming is now fully functional for both individual and team chat.
+**Updated July 2025**: This guide now references the unified CI system in `/Tekton/shared/ai/` that provides the `AISocketClient` for direct communication with Greek Chorus CIs on ports 45000-50000. SSE (Server-Sent Events) streaming is now fully functional for both individual and team chat.
 
 ## Socket Communication Protocol
 
-Each AI specialist listens on a TCP socket (ports 45000-50000) and communicates via JSON messages.
+Each CI specialist listens on a TCP socket (ports 45000-50000) and communicates via JSON messages.
 
 ### Message Format
 
@@ -31,7 +31,7 @@ Since browsers cannot directly connect to TCP sockets, you need a proxy or use t
 **NEW (July 2025)**: Use Rhetor's SSE streaming endpoints for real-time communication:
 
 ```javascript
-// Individual AI Chat with Streaming
+// Individual CI Chat with Streaming
 async function streamChatWithAI(specialistId, message) {
   const response = await fetch(`http://localhost:8003/api/chat/${specialistId}/stream?message=${encodeURIComponent(message)}`, {
     method: 'GET',
@@ -64,7 +64,7 @@ async function streamChatWithAI(specialistId, message) {
   }
 }
 
-// Team Chat with Multiple AIs
+// Team Chat with Multiple CIs
 async function streamTeamChat(message) {
   const response = await fetch('http://localhost:8003/api/chat/team/stream', {
     method: 'POST',
@@ -92,7 +92,7 @@ async function streamTeamChat(message) {
         if (data.type === 'team_chunk') {
           console.log(`${data.specialist_name}: ${data.content}`);
         } else if (data.type === 'team_complete') {
-          console.log('All AIs responded:', data.summary);
+          console.log('All CIs responded:', data.summary);
           return;
         }
       }
@@ -121,7 +121,7 @@ class AISocketClient {
       this.client = new net.Socket();
       
       this.client.connect(this.port, 'localhost', () => {
-        console.log(`Connected to AI on port ${this.port}`);
+        console.log(`Connected to CI on port ${this.port}`);
         resolve();
       });
       
@@ -308,7 +308,7 @@ async function chatWithAI(message) {
   return data.content;
 }
 
-// Team chat with all AIs
+// Team chat with all CIs
 async function teamChat(message) {
   const response = await fetch('http://localhost:8003/api/team-chat', {
     method: 'POST',
@@ -326,7 +326,7 @@ async function teamChat(message) {
   return data.responses;
 }
 
-// Send to specific AI specialist
+// Send to specific CI specialist
 async function chatWithSpecialist(specialistId, message) {
   const response = await fetch('http://localhost:8003/api/ai/chat', {
     method: 'POST',
@@ -364,12 +364,12 @@ async function chatWithSpecialist(specialistId, message) {
         <option value="numa-ai">Numa - Specialist Orchestrator</option>
         <option value="athena-ai">Athena - Knowledge Weaver</option>
         <option value="apollo-ai">Apollo - Codebase Oracle</option>
-        <option value="team-chat">Team Chat (All AIs)</option>
+        <option value="team-chat">Team Chat (All CIs)</option>
       </select>
       
       <input type="text" 
              id="chat-input" 
-             placeholder="Ask the AI specialist..."
+             placeholder="Ask the CI specialist..."
              onkeypress="if(event.key==='Enter') sendMessage()">
       
       <button onclick="sendMessage()">Send</button>
@@ -401,7 +401,7 @@ async function chatWithSpecialist(specialistId, message) {
           // Team chat
           const result = await teamChat(message);
           
-          // Show responses from all AIs
+          // Show responses from all CIs
           for (const [ai, resp] of Object.entries(result)) {
             messagesDiv.innerHTML += `
               <div class="message ai-message">
@@ -410,7 +410,7 @@ async function chatWithSpecialist(specialistId, message) {
             `;
           }
         } else {
-          // Single AI chat
+          // Single CI chat
           response = await chatWithAI(aiSelector.value, message);
           
           messagesDiv.innerHTML += `
@@ -457,7 +457,7 @@ async function chatWithSpecialist(specialistId, message) {
         return data.content;
       }
       
-      // For specific AI specialist, use the AI specialist endpoint
+      // For specific CI specialist, use the CI specialist endpoint
       const response = await fetch('http://localhost:8003/api/ai/chat', {
         method: 'POST',
         headers: {
@@ -595,7 +595,7 @@ async function chatWithSpecialist(specialistId, message) {
    }
    ```
 
-3. **info** - AI information
+3. **info** - CI information
    ```json
    Request:  {"type": "info"}
    Response: {
@@ -622,18 +622,18 @@ async function chatWithSpecialist(specialistId, message) {
 
 ## Best Practices
 
-1. **Always handle errors** - AI might be unavailable or slow
+1. **Always handle errors** - CI might be unavailable or slow
 2. **Set timeouts** - Don't wait forever for responses
-3. **Show loading states** - AI responses can take time
+3. **Show loading states** - CI responses can take time
 4. **Cache connections** - Reuse socket connections when possible
 5. **Use Rhetor API** - It handles routing and provides better browser compatibility
 
 ## Testing
 
-To test AI communication:
+To test CI communication:
 
 ```bash
-# 1. Check AI is running
+# 1. Check CI is running
 python3 scripts/enhanced_tekton_ai_status.py
 
 # 2. Test with netcat (direct socket)
@@ -656,7 +656,7 @@ curl -X POST http://localhost:8003/api/team-chat \
     "timeout": 10.0
   }'
 
-# 5. Test specific AI specialist
+# 5. Test specific CI specialist
 curl -X POST http://localhost:8003/api/ai/chat \
   -H "Content-Type: application/json" \
   -d '{
@@ -667,7 +667,7 @@ curl -X POST http://localhost:8003/api/ai/chat \
 
 ## Troubleshooting
 
-1. **Connection refused** - AI not running, check with `tekton-status`
-2. **Timeout** - AI might be processing, increase timeout
+1. **Connection refused** - CI not running, check with `tekton-status`
+2. **Timeout** - CI might be processing, increase timeout
 3. **Invalid JSON** - Ensure proper JSON formatting
 4. **CORS errors** - Configure Rhetor to allow browser origins

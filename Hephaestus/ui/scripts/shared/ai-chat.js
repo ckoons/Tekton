@@ -8,7 +8,7 @@ if (window.rhetorUrl) {
  * Shared CI Chat Module
  * 
  * Provides a unified interface for all Tekton UI components to communicate with CI specialists.
- * Based on the aish proxy pattern - AIs are just sockets!
+ * Based on the aish proxy pattern - CIs are just sockets!
  * 
  * Usage:
  *   AIChat.sendMessage('apollo-ci', 'Hello Apollo!')
@@ -152,7 +152,7 @@ window.AIChat = {
      * Send team chat message
      * @param {string} message - The message to send
      * @param {string} fromComponent - Which component is sending (e.g., 'rhetor', 'numa')
-     * @param {Array<string>} targetAIs - Optional list of specific AIs (empty = all)
+     * @param {Array<string>} targetAIs - Optional list of specific CIs (empty = all)
      * @returns {Promise<Object>} Team chat response
      */
     async teamChat(message, fromComponent = 'ui', targetAIs = []) {
@@ -291,7 +291,7 @@ window.AIChat = {
     
     /**
      * List available CI specialists
-     * @returns {Promise<Array>} List of available AIs
+     * @returns {Promise<Array>} List of available CIs
      */
     async listAIs() {
         try {
@@ -304,13 +304,13 @@ window.AIChat = {
             });
             
             if (!response.ok) {
-                throw new Error(`Failed to list AIs: ${response.statusText}`);
+                throw new Error(`Failed to list CIs: ${response.statusText}`);
             }
             
             const data = await response.json();
             return data.ais || [];
         } catch (error) {
-            console.error('Failed to list AIs:', error);
+            console.error('Failed to list CIs:', error);
             throw error;
         }
     },

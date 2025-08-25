@@ -2,12 +2,12 @@
 
 ## Sprint Context
 
-You are working on the **Optional Rhetor Sprint**, a deferred Development Sprint that implements production readiness and advanced orchestration features for the Rhetor AI orchestration system.
+You are working on the **Optional Rhetor Sprint**, a deferred Development Sprint that implements production readiness and advanced orchestration features for the Rhetor CI orchestration system.
 
 ## Prerequisites
 
 This sprint can only begin after:
-1. ✅ Main Rhetor AI Integration Sprint completed (Phases 3, 4A, 4B)
+1. ✅ Main Rhetor CI Integration Sprint completed (Phases 3, 4A, 4B)
 2. ✅ Real-world usage data collected from streaming and dynamic specialist features
 3. ✅ Production requirements identified through actual deployment needs
 4. ✅ Performance metrics and usage patterns analyzed
@@ -38,7 +38,7 @@ Implement evidence-based production features:
 
 Building on the successful main sprint:
 - ✅ Live MCP tools connected to AISpecialistManager
-- ✅ Real-time streaming AI interactions via SSE
+- ✅ Real-time streaming CI interactions via SSE
 - ✅ Dynamic specialist creation and configuration
 - ✅ Robust FastMCP server with coroutine handling
 - ✅ 22 functional MCP tools across 4 capability domains

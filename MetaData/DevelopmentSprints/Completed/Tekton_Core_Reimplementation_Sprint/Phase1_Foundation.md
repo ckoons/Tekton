@@ -46,7 +46,7 @@ POST /api/v1/chat/team/send
 - Project-specific message channels
 - Real-time updates via WebSocket
 - Message history per project
-- AI participant tracking
+- CI participant tracking
 
 **Implementation Details**
 ```python
@@ -72,7 +72,7 @@ class ProjectChat:
         self.broadcast_to_participants(message)
     
     def add_participant(self, ai_name):
-        """Add AI to project chat"""
+        """Add CI to project chat"""
         if ai_name not in self.participants:
             self.participants.append(ai_name)
             self.add_message("system", f"{ai_name} joined the project")
@@ -93,7 +93,7 @@ async def project_chat_websocket(websocket: WebSocket, project_id: str):
 
 **Team Chat Features**
 - Cross-project communication channel
-- Broadcast messages to all active AIs
+- Broadcast messages to all active CIs
 - Filtered views by project or AI
 - Integration with terma terminals
 
@@ -123,9 +123,9 @@ class TeamChat:
     def route_to_recipients(self, message, target):
         """Route message based on target"""
         if target == "all":
-            # Send to all active AIs
+            # Send to all active CIs
         elif target.startswith("@"):
-            # Send to AIs with matching purpose
+            # Send to CIs with matching purpose
         else:
             # Send to specific AI
 ```
@@ -170,7 +170,7 @@ class Project:
 class ChatMessage:
     id: str
     timestamp: datetime
-    sender: str  # AI name or "human"
+    sender: str  # CI name or "human"
     content: str
     type: str  # "chat", "system", "announcement"
     project_id: Optional[str]  # None for team chat

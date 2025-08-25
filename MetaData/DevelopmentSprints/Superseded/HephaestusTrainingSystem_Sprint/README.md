@@ -73,7 +73,7 @@ Every Tekton component should have an CI that "is the component" - an expert tha
 - **For Human Users**: Interactive, patient teacher for UI tasks
 - **For CI Agents**: Consistent, accurate guidance on Tekton UI patterns
 - **For Tekton**: Reduced support burden, better adoption, consistent practices
-- **For Casey**: Less frustration from AIs trying to install React!
+- **For Casey**: Less frustration from CIs trying to install React!
 
 ## Connection to Broader Vision
-This sprint exemplifies Tekton's philosophy: CI agents that embody deep component knowledge, creating a self-documenting, self-teaching system. As we build more component AIs, they form a distributed knowledge network where each CI is the authoritative expert on its domain.
+This sprint exemplifies Tekton's philosophy: CI agents that embody deep component knowledge, creating a self-documenting, self-teaching system. As we build more component CIs, they form a distributed knowledge network where each CI is the authoritative expert on its domain.

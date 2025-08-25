@@ -3,7 +3,7 @@
 ## Phase 1: aish Shell Wrapper (Week 1)
 
 ### Goals
-Transform aish into a true shell wrapper that can intercept AI commands while passing through normal shell operations transparently.
+Transform aish into a true shell wrapper that can intercept CI commands while passing through normal shell operations transparently.
 
 ### Tasks
 
@@ -20,10 +20,10 @@ Transform aish into a true shell wrapper that can intercept AI commands while pa
 - [ ] Preserve environment and working directory
 - [ ] Support command history
 
-#### 1.3 Add AI Command Detection
+#### 1.3 Add CI Command Detection
 - [ ] Define natural language patterns
 - [ ] Implement pattern matching logic
-- [ ] Route AI commands to Rhetor
+- [ ] Route CI commands to Rhetor
 - [ ] Return translated commands for confirmation
 - [ ] Execute approved commands
 
@@ -37,7 +37,7 @@ Transform aish into a true shell wrapper that can intercept AI commands while pa
 ### Deliverables
 - Refactored `scripts/aish` 
 - Test suite for shell operations
-- Documentation for AI command patterns
+- Documentation for CI command patterns
 
 ## Phase 2: Terminal Launch Service (Week 2)
 
@@ -120,7 +120,7 @@ Create the Hephaestus UI component following Numa/Noesis patterns with four-tab 
 - [ ] Terminal selector dropdown
 - [ ] Direct aish communication
 - [ ] Command history display
-- [ ] AI translation preview
+- [ ] CI translation preview
 - [ ] Context-aware suggestions
 
 #### 3.5 Implement Team Chat Tab
@@ -144,15 +144,15 @@ Create the Hephaestus UI component following Numa/Noesis patterns with four-tab 
 ## Phase 4: Integration & Polish (Week 4)
 
 ### Goals
-Complete integration, add AI terminal requests, test thoroughly, and document.
+Complete integration, add CI terminal requests, test thoroughly, and document.
 
 ### Tasks
 
-#### 4.1 AI Terminal Request API
+#### 4.1 CI Terminal Request API
 - [ ] Define request schema
 - [ ] Implement endpoint
 - [ ] Add context injection
-- [ ] Test with Tekton AIs
+- [ ] Test with Tekton CIs
 - [ ] Document API usage
 
 #### 4.2 Enhanced aish Features
@@ -177,7 +177,7 @@ Complete integration, add AI terminal requests, test thoroughly, and document.
 
 #### 4.5 Integration Testing
 - [ ] Test with other Tekton components
-- [ ] AI collaboration scenarios
+- [ ] CI collaboration scenarios
 - [ ] Multi-terminal workflows
 - [ ] Stress testing
 
@@ -223,4 +223,4 @@ Complete integration, add AI terminal requests, test thoroughly, and document.
 - Zero crashes in PID management
 - aish works with 95%+ of commands
 - UI matches Numa/Noesis quality
-- Both users and AIs can launch terminals
+- Both users and CIs can launch terminals

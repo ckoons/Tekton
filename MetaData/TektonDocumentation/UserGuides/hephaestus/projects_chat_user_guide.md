@@ -42,7 +42,7 @@ Projects Chat is a powerful feature in the Tekton Hephaestus UI that allows you 
 ### 1. Project Selection
 
 **Default Project**: Tekton (always available)
-- The Tekton project uses the Numa AI specialist
+- The Tekton project uses the Numa CI specialist
 - Provides general platform guidance and oversight
 
 **Other Projects**: Listed alphabetically
@@ -83,7 +83,7 @@ Project CI: Based on current progress, I recommend:
 Each project CI has specialized knowledge:
 
 **For Tekton Project**:
-- Understands Greek Chorus AI architecture
+- Understands Greek Chorus CI architecture
 - Knows component interaction patterns
 - Familiar with socket communication protocols
 - Can help with platform-level decisions
@@ -280,7 +280,7 @@ Improvements:
 ### With aish (AI Shell)
 
 Projects Chat integrates with command-line tools:
-- Same AI specialists accessible via terminal
+- Same CI specialists accessible via terminal
 - Context preserved across interfaces
 - Consistent communication patterns
 
@@ -345,7 +345,7 @@ Direct integration with project management:
 **Documentation**:
 - Technical documentation in `/MetaData/ComponentDocumentation/`
 - Architecture guides in `/MetaData/TektonDocumentation/Architecture/`
-- AI training materials in `/MetaData/TektonDocumentation/AITraining/`
+- CI training materials in `/MetaData/TektonDocumentation/AITraining/`
 
 **Community**:
 - Team chat for general questions
@@ -359,4 +359,4 @@ Direct integration with project management:
 
 ---
 
-*Projects Chat represents the future of human-AI collaboration in software development. By providing direct communication with project-specific AIs, it enables faster development cycles, better code quality, and more effective project management.*
+*Projects Chat represents the future of human-AI collaboration in software development. By providing direct communication with project-specific CIs, it enables faster development cycles, better code quality, and more effective project management.*

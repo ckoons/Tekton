@@ -102,7 +102,7 @@ This Claude Code session successfully completed the FastMCP integration for **Pr
 ## Next Session Recommendations
 
 ### Priority 1: Continue with Rhetor
-**Rhetor** is the next logical component to implement as it handles LLM/prompt/context management and is fundamental to AI interactions.
+**Rhetor** is the next logical component to implement as it handles LLM/prompt/context management and is fundamental to CI interactions.
 
 **Expected Scope for Rhetor:**
 - LLM model management and selection

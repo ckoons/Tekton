@@ -3,7 +3,7 @@
 ## When to Use
 - Messages aren't appearing where expected
 - Testing if forwarding is working
-- Verifying AI communication paths
+- Verifying CI communication paths
 - Debugging "no response" issues
 
 ## Prerequisites
@@ -26,7 +26,7 @@
    ```bash
    # Get your terminal name
    aish whoami
-   # Forward an AI to yourself  
+   # Forward an CI to yourself  
    aish forward apollo $(aish whoami)
    # Send test message
    aish apollo "test message"
@@ -38,7 +38,7 @@
    aish status
    ```
    Look for:
-   - ✓ marks for running AIs
+   - ✓ marks for running CIs
    - Forward arrows showing routing
    - Active terminals list
 
@@ -46,7 +46,7 @@
    - If message appeared: Forwarding works, issue is elsewhere
    - If no message: Continue to step 5
    
-5. Debug specific AI → Test direct communication
+5. Debug specific CI → Test direct communication
    ```bash
    # Unforward first
    aish unforward apollo
@@ -59,11 +59,11 @@
 ## Common Issues
 
 - **Error**: No response from AI
-  - **Fix**: Check if AI is running
+  - **Fix**: Check if CI is running
   - **Command**: `aish status | grep apollo`
   
 - **Error**: "Failed to send message to X"
-  - **Fix**: AI might be down, check Rhetor
+  - **Fix**: CI might be down, check Rhetor
   - **Command**: `tekton status rhetor`
 
 - **Error**: Messages going to wrong terminal
@@ -87,7 +87,7 @@ aish unforward numa
 aish numa "complex problem needing insight"
 aish forward numa $(aish whoami)
 ```
-This sends the message through Tekton AI for enhancement before returning.
+This sends the message through Tekton CI for enhancement before returning.
 
 ## Next Workflows
 - If still broken: [Component Not Responding workflow]
@@ -109,13 +109,13 @@ $ aish numa "test"
 [Terminal displays the numa response]
 
 $ aish status
-Active AI Forwards:
+Active CI Forwards:
   ✓ numa         → Casey_Gemini_Terminal
   ✓ apollo       → Casey_Terminal
 ```
 
 ## Notes
 - Forwarding persists across sessions (stored in registry)
-- Multiple terminals can receive same AI (broadcast pattern)
+- Multiple terminals can receive same CI (broadcast pattern)
 - The "tee" pattern is powerful for CI enhancement
 - Always verify with `aish whoami` first

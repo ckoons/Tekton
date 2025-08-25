@@ -220,7 +220,7 @@ console.log('Memory delta:', endMemory - startMemory)
 - [ ] Performance acceptable: < 100ms interactions
 - [ ] Works in target browsers: Test Chrome, Firefox, Safari
 
-## AI Integration for UI Development
+## CI Integration for UI Development
 ```bash
 # Use Claude in terminal for React help
 # After /compact if needed

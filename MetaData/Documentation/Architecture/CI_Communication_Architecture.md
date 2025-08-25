@@ -1,17 +1,17 @@
-# Tekton AI Communication Architecture
+# Tekton CI Communication Architecture
 
 ## Overview
-Tekton supports two distinct types of AI specialists with different communication protocols, unified through the AI Registry for discovery but requiring different interaction methods. **Updated July 2025**: SSE (Server-Sent Events) streaming is now fully functional for real-time communication with both individual and team chat.
+Tekton supports two distinct types of CI specialists with different communication protocols, unified through the CI Registry for discovery but requiring different interaction methods. **Updated July 2025**: SSE (Server-Sent Events) streaming is now fully functional for real-time communication with both individual and team chat.
 
-## AI Types
+## CI Types
 
-### 1. Greek Chorus AIs (Independent)
+### 1. Greek Chorus CIs (Independent)
 **Characteristics:**
 - Run as independent processes on dedicated socket ports
 - Port range: 45000-50000
 - Direct TCP socket communication
 - JSON message protocol
-- Auto-register with AI Registry for discovery
+- Auto-register with CI Registry for discovery
 - High performance, low latency
 
 **Examples:**
@@ -55,8 +55,8 @@ Tekton supports two distinct types of AI specialists with different communicatio
 
 ## Unified Discovery
 
-### AI Registry (`shared/ai/registry_client.py`)
-All AIs register in the unified registry:
+### CI Registry (`shared/ai/registry_client.py`)
+All CIs register in the unified registry:
 ```json
 {
   "apollo-ai": {
@@ -75,9 +75,9 @@ All AIs register in the unified registry:
 }
 ```
 
-### AI Discovery Service (`shared/ai/ai_discovery_service.py`)
+### CI Discovery Service (`shared/ai/ai_discovery_service.py`)
 Provides unified discovery interface:
-- Lists all AIs regardless of type
+- Lists all CIs regardless of type
 - Includes connection information
 - Role-based filtering
 - Performance metrics
@@ -85,22 +85,22 @@ Provides unified discovery interface:
 ## Client Integration
 
 ### aish Tool
-The `aish` tool automatically handles both AI types:
+The `aish` tool automatically handles both CI types:
 
 ```python
 def _get_ai_info(self, name: str) -> Optional[Dict[str, Any]]:
-    """Get full AI info including connection details"""
+    """Get full CI info including connection details"""
 
 def _write_via_socket(self, socket_id: str, ai_info: Dict, message: str) -> bool:
-    """Direct socket communication for Greek Chorus AIs"""
+    """Direct socket communication for Greek Chorus CIs"""
 
 def _write_via_team_chat(self, socket_id: str, ai_name: str, message: str) -> bool:
     """HTTP API communication for Rhetor specialists"""
 ```
 
 **Smart Routing Logic:**
-1. Discover AI through registry
-2. Check if AI has socket connection info
+1. Discover CI through registry
+2. Check if CI has socket connection info
 3. Route to appropriate communication method:
    - Socket info present → Direct TCP socket
    - No socket info → Rhetor API
@@ -111,7 +111,7 @@ def _write_via_team_chat(self, socket_id: str, ai_name: str, message: str) -> bo
 # Discovery works for both types
 aish -l
 
-# Greek Chorus AI (direct socket)
+# Greek Chorus CI (direct socket)
 echo "Analyze code" | aish --ai apollo
 
 # Rhetor specialist (HTTP API)  
@@ -129,7 +129,7 @@ curl -X POST -H "Content-Type: application/json" \
 
 ## Benefits of Dual Architecture
 
-### Greek Chorus AIs (Socket-based)
+### Greek Chorus CIs (Socket-based)
 - **Performance**: Direct TCP, no HTTP overhead
 - **Independence**: Can run without Rhetor
 - **Scalability**: Dedicated processes per AI
@@ -150,14 +150,14 @@ curl -X POST -H "Content-Type: application/json" \
 
 ## Implementation Notes
 
-### For AI Developers
-- Greek Chorus AIs must implement socket server with JSON protocol
-- Register with AI Registry on startup
+### For CI Developers
+- Greek Chorus CIs must implement socket server with JSON protocol
+- Register with CI Registry on startup
 - Provide health check endpoints
 
 ### For Client Developers
-- Use AI Discovery Service for unified AI listing
-- Check connection type in AI info before communicating
+- Use CI Discovery Service for unified CI listing
+- Check connection type in CI info before communicating
 - Implement both socket and HTTP communication methods
 
 ### Port Management
@@ -165,4 +165,4 @@ curl -X POST -H "Content-Type: application/json" \
 - Rhetor: 8003 (HTTP API)
 - Discovery: Registry file + discovery service
 
-This architecture provides the best of both worlds: high-performance direct communication for independent AIs and managed orchestration for complex workflows.
+This architecture provides the best of both worlds: high-performance direct communication for independent CIs and managed orchestration for complex workflows.

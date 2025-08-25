@@ -19,7 +19,7 @@ The project has made excellent progress. So far, we have:
 
 ## Your Role
 
-As the AI assistant for this sprint, your role is to implement the Prometheus component following a methodical, restrained approach that prioritizes reliability over feature richness. You should:
+As the CI assistant for this sprint, your role is to implement the Prometheus component following a methodical, restrained approach that prioritizes reliability over feature richness. You should:
 
 1. Follow the implementation plan exactly, using Athena as the reference
 2. Focus on creating simple, reliable solutions with clear patterns

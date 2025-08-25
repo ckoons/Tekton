@@ -4,7 +4,7 @@
 
 This document records the architectural decisions made during the Tekton Native Intelligence Development Sprint. It captures the context, considerations, alternatives considered, and rationale behind each significant decision. This serves as a reference for both current implementation and future development.
 
-Tekton is an intelligent orchestration system that coordinates multiple AI models and resources to efficiently solve complex software engineering problems. The architectural decisions in this document focus on creating emergent intelligence through sophisticated component orchestration.
+Tekton is an intelligent orchestration system that coordinates multiple CI models and resources to efficiently solve complex software engineering problems. The architectural decisions in this document focus on creating emergent intelligence through sophisticated component orchestration.
 
 ## Decision 1: Hermes as Central Orchestration Intelligence Hub
 
@@ -235,7 +235,7 @@ Build entirely new components focused on intelligence tasks.
 - Clean separation from existing functionality
 - Dedicated focus on intelligence capabilities
 - No impact on existing component stability
-- Could implement advanced AI techniques
+- Could implement advanced CI techniques
 
 **Cons:**
 - Doesn't leverage existing component capabilities
@@ -384,7 +384,7 @@ Architecture must support horizontal scaling of intelligence capabilities.
 Areas identified for future enhancement but deferred for this sprint:
 
 - **Advanced Machine Learning**: More sophisticated learning algorithms for workflow optimization
-- **External AI Integration**: Orchestration of external AI services and models
+- **External CI Integration**: Orchestration of external CI services and models
 - **User Interface Intelligence**: AI-powered user interface adaptation and optimization
 - **Enterprise Analytics**: Advanced analytics and reporting for intelligence capabilities
 - **Cross-Tenant Intelligence**: Learning and optimization across multiple Tekton deployments

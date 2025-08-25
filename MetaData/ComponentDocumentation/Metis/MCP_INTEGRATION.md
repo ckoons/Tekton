@@ -4,7 +4,7 @@ This document describes the FastMCP (Model Context Protocol) integration for Met
 
 ## Overview
 
-Metis integrates with FastMCP to provide external systems (like Claude Code and other AI tools) with programmatic access to task management capabilities. This integration allows AI systems to create, read, update, and delete tasks, manage dependencies, analyze complexity, and execute workflows.
+Metis integrates with FastMCP to provide external systems (like Claude Code and other CI tools) with programmatic access to task management capabilities. This integration allows CI systems to create, read, update, and delete tasks, manage dependencies, analyze complexity, and execute workflows.
 
 ## Architecture
 
@@ -493,7 +493,7 @@ logging.getLogger("tekton.mcp").setLevel(logging.DEBUG)
 
 ## Conclusion
 
-The Metis MCP integration provides a comprehensive and flexible interface for task management operations, enabling seamless integration with AI tools and external systems while maintaining the robustness and reliability of the core task management functionality.
+The Metis MCP integration provides a comprehensive and flexible interface for task management operations, enabling seamless integration with CI tools and external systems while maintaining the robustness and reliability of the core task management functionality.
 
 For more information, see:
 - [Metis API Reference](docs/api_reference.md)

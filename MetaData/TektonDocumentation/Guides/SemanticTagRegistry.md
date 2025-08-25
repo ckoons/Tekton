@@ -98,7 +98,7 @@ Every Tekton component MUST include these core semantic tags:
 | `data-tekton-action` | Button/action type | `clear-chat`, `refresh`, `save` |
 | `data-tekton-action-type` | Action category | `primary`, `secondary`, `danger` |
 | `data-tekton-chat-input` | Chat input type | `specialist`, `team` |
-| `data-tekton-ai` | Connected AI | `rhetor-ai`, `apollo-ai` |
+| `data-tekton-ai` | Connected CI | `rhetor-ai`, `apollo-ai` |
 
 ### 5. State and Status Tags
 
@@ -106,7 +106,7 @@ Every Tekton component MUST include these core semantic tags:
 |-----|---------|---------|
 | `data-tekton-status` | Component status | `active`, `loading`, `error` |
 | `data-tekton-state` | Current state | `active`, `inactive`, `disabled` |
-| `data-tekton-ai-ready` | AI connection state | `true`, `false` |
+| `data-tekton-ai-ready` | CI connection state | `true`, `false` |
 | `data-tekton-menu-active` | Active menu item | `true`, `false` |
 
 ### 6. Data and Content Tags
@@ -271,7 +271,7 @@ curl -X POST http://localhost:8088/api/mcp/v2/execute \
 
 1. **Auto-Validation**: Script to validate semantic tags across all components
 2. **Tag Analytics**: Track which tags are most useful for debugging
-3. **AI Integration**: Use semantic tags for better AI understanding of UI
+3. **AI Integration**: Use semantic tags for better CI understanding of UI
 4. **Accessibility**: Leverage semantic tags for improved accessibility
 
 ### Extensibility

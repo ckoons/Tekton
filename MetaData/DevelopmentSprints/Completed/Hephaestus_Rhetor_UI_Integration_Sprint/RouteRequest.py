@@ -2,7 +2,7 @@
 Route Request Model for Rhetor Chat Routing
 
 This file defines the request model for the new /chat/route endpoint
-that will handle routing messages to component AIs or team chat.
+that will handle routing messages to component CIs or team chat.
 """
 
 from typing import Optional
@@ -51,5 +51,5 @@ class RouteResponse(TektonBaseModel):
     )
     participants: Optional[list[str]] = Field(
         None, 
-        description="For team chat, list of participating AIs"
+        description="For team chat, list of participating CIs"
     )

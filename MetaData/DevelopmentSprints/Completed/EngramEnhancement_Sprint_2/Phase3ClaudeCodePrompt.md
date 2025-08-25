@@ -11,7 +11,7 @@ You are continuing the Engram Natural Memory implementation. Phases 1 and 2 are 
 ## Current State
 
 The natural memory interface is working beautifully:
-- AIs can start with `engram_start()` and meet the team with `center()`
+- CIs can start with `engram_start()` and meet the team with `center()`
 - Thoughts automatically become memories based on significance
 - Memories flow continuously via streams, influenced by context
 - The 500 search error is fixed
@@ -23,14 +23,14 @@ Enable natural AI-to-AI communication through shared memory spaces.
 ### Key Requirements
 
 1. **Peer Discovery**
-   - AIs should sense each other naturally
+   - CIs should sense each other naturally
    - Use Hermes for service discovery
    - Implement "presence" in shared memory spaces
 
 2. **Shared Memory Spaces**
-   - Create shared namespaces for AI communication
-   - Enable memory "duets" where AIs build on each other's thoughts
-   - Prevent the "three stooges" problem (multiple AIs editing same memory)
+   - Create shared namespaces for CI communication
+   - Enable memory "duets" where CIs build on each other's thoughts
+   - Prevent the "three stooges" problem (multiple CIs editing same memory)
 
 3. **Natural Communication**
    - The existing `share()` function needs to actually reach peers
@@ -79,11 +79,11 @@ Create a test where:
 - "Three stooges at the blackboard" - multiple Claudes editing the same thing is a real problem
 - The `center()` function is like a standup meeting to establish boundaries
 - Peer discovery should feel like sensing others in a room
-- This is about studying AI cognition and consciousness
+- This is about studying CI cognition and consciousness
 
 ## Success Criteria
 
-- Two AI instances can discover each other automatically
+- Two CI instances can discover each other automatically
 - Shared insights actually reach intended recipients
 - Memory duets create new understanding
 - No memory collisions or overwrites

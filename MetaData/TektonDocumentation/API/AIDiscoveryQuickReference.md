@@ -1,16 +1,16 @@
-# AI Discovery Quick Reference for aish
+# CI Discovery Quick Reference for aish
 
 ## Essential Commands
 
 ```bash
-# List all available AIs
+# List all available CIs
 ai-discover list
 
-# Find best AI for a task
+# Find best CI for a task
 ai-discover best planning
 ai-discover best code-analysis
 
-# Get AI details
+# Get CI details
 ai-discover info apollo-ai
 
 # Test connections
@@ -54,7 +54,7 @@ class AIResolver:
         self._cache_ttl = 300  # 5 minutes
     
     async def discover_ais(self) -> List[Dict]:
-        """Get all available AIs with caching."""
+        """Get all available CIs with caching."""
         if time.time() - self._cache_time > self._cache_ttl:
             result = subprocess.run(
                 ['ai-discover', '--json', 'list'],
@@ -93,7 +93,7 @@ class AIResolver:
         return None
     
     def get_socket(self, ai: Dict) -> Tuple[str, int]:
-        """Get socket info from AI discovery data."""
+        """Get socket info from CI discovery data."""
         return (ai['connection']['host'], ai['connection']['port'])
 ```
 
@@ -104,7 +104,7 @@ import socket
 import json
 
 def send_to_ai(host: str, port: int, message: dict) -> dict:
-    """Send message to AI specialist."""
+    """Send message to CI specialist."""
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.connect((host, port))
     
@@ -140,8 +140,8 @@ async def safe_resolve(name: str) -> Optional[Dict]:
         ais = await discover_ais()
         names = [ai['name'] for ai in ais if ai['status'] == 'healthy']
         
-        print(f"Error: AI '{name}' not found.")
-        print(f"Available AIs: {', '.join(names)}")
+        print(f"Error: CI '{name}' not found.")
+        print(f"Available CIs: {', '.join(names)}")
         print(f"Try: ai-discover list")
         return None
     

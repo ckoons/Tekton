@@ -259,8 +259,8 @@ class CIRegistry:
     
     @integration_point(
         title="Greek Chorus CI Loading",
-        description="Loads all Greek Chorus AIs from static configuration",
-        target_component="Greek Chorus AIs",
+        description="Loads all Greek Chorus CIs from static configuration",
+        target_component="Greek Chorus CIs",
         protocol="Static Configuration",
         data_flow="GREEK_CHORUS dict → registry entries with ports and endpoints",
         integration_date="2025-01-25"

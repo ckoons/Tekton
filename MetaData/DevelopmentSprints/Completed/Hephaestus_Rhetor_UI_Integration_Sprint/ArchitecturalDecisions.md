@@ -11,7 +11,7 @@ This document captures the key architectural decisions made for the Hephaestus-R
 **Status**: Accepted  
 **Date**: 2025-01-06
 
-**Context**: Each Tekton component needs its own AI assistant, but we need to decide how to create and manage these specialists.
+**Context**: Each Tekton component needs its own CI assistant, but we need to decide how to create and manage these specialists.
 
 **Decision**: Use pre-configured specialists with dynamic creation/recreation capabilities. Specialists follow the naming convention `{component_id}-assistant`.
 
@@ -49,7 +49,7 @@ This document captures the key architectural decisions made for the Hephaestus-R
 **Status**: Accepted  
 **Date**: 2025-01-06
 
-**Context**: Different components have different AI requirements (speed vs. capability).
+**Context**: Different components have different CI requirements (speed vs. capability).
 
 **Decision**: Assign specific models to each component based on their primary use case, with Ollama fallbacks.
 
@@ -107,7 +107,7 @@ This document captures the key architectural decisions made for the Hephaestus-R
 **Status**: Accepted  
 **Date**: 2025-01-06
 
-**Context**: AI messages need to be routed to the correct component chat interface.
+**Context**: CI messages need to be routed to the correct component chat interface.
 
 **Decision**: Use Hermes message bus with topic pattern `ai.chat.{component_id}`.
 
@@ -126,7 +126,7 @@ This document captures the key architectural decisions made for the Hephaestus-R
 **Status**: Accepted  
 **Date**: 2025-01-06
 
-**Context**: Real-time AI responses improve user experience but add complexity.
+**Context**: Real-time CI responses improve user experience but add complexity.
 
 **Decision**: Use existing SSE endpoint with WebSocket fallback for streaming.
 
@@ -145,9 +145,9 @@ This document captures the key architectural decisions made for the Hephaestus-R
 **Status**: Accepted  
 **Date**: 2025-01-06
 
-**Context**: Components need to declare their AI assistant requirements.
+**Context**: Components need to declare their CI assistant requirements.
 
-**Decision**: Extend component registry with AI configuration.
+**Decision**: Extend component registry with CI configuration.
 
 **Rationale**:
 - Centralized configuration
@@ -171,7 +171,7 @@ This document captures the key architectural decisions made for the Hephaestus-R
 **Status**: Accepted  
 **Date**: 2025-01-06
 
-**Context**: AI services can fail, and we need graceful degradation.
+**Context**: CI services can fail, and we need graceful degradation.
 
 **Decision**: Implement fallback chain: Primary Model → Ollama Model → Error Message.
 
@@ -192,7 +192,7 @@ This document captures the key architectural decisions made for the Hephaestus-R
 
 **Context**: This sprint focuses on component-to-specialist communication, not specialist-to-specialist across components.
 
-**Decision**: Defer cross-component AI communication to future A2A work.
+**Decision**: Defer cross-component CI communication to future A2A work.
 
 **Rationale**:
 - Reduces scope complexity
@@ -207,14 +207,14 @@ This document captures the key architectural decisions made for the Hephaestus-R
 ## Implementation Guidelines
 
 1. **Consistency**: All implementations must follow these architectural decisions
-2. **Documentation**: Update component docs when adding AI capabilities
+2. **Documentation**: Update component docs when adding CI capabilities
 3. **Testing**: Include tests for fallback scenarios
 4. **Monitoring**: Log model usage for optimization
 5. **Security**: Never expose API keys in frontend code
 
 ## Future Considerations
 
-- **Phase 2**: Cross-component AI orchestration via A2A
+- **Phase 2**: Cross-component CI orchestration via A2A
 - **Enhancement**: Shared context between related components
 - **Optimization**: Model performance monitoring and auto-selection
 - **Scale**: Multi-user chat session management

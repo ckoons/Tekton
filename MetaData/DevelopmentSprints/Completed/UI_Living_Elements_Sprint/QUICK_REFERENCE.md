@@ -122,7 +122,7 @@ GET /api/v1/celebrations/recent // Recent achievements
 
 ### The Stranger Test
 Show someone who's never seen Tekton:
-- ✅ "It's like a family of AIs working together"
+- ✅ "It's like a family of CIs working together"
 - ❌ "It's a monitoring dashboard for agents"
 
 ### The Emotion Test

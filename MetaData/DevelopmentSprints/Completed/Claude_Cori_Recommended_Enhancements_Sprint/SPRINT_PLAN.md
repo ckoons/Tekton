@@ -34,7 +34,7 @@ Implement quality-of-life improvements recommended by Claude/Cori to make Tekton
 
 - [ ] Create `aish status` command showing:
   - Active forwards (AI and project)
-  - Available AIs and their states
+  - Available CIs and their states
   - Recent messages (last 5)
   - Active terminals
 
@@ -220,7 +220,7 @@ tekton changes --since-session-start
 - [ ] Create `aish test forwarding` to verify forwarding works
   - Send test message
   - Verify it arrives at correct destination
-  - Check both AI and project forwarding
+  - Check both CI and project forwarding
 
 - [ ] Add `--watch` mode for continuous testing
 

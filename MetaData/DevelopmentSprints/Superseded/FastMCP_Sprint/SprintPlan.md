@@ -4,7 +4,7 @@
 
 This document outlines the high-level plan for the FastMCP Integration Development Sprint. It provides an overview of the goals, approach, and expected outcomes.
 
-Tekton is an intelligent orchestration system that coordinates multiple AI models and resources to efficiently solve complex software engineering problems. This Development Sprint focuses on integrating FastMCP, a modern Pythonic framework for the Model Context Protocol (MCP), with Tekton to enhance its tool and agent capabilities.
+Tekton is an intelligent orchestration system that coordinates multiple CI models and resources to efficiently solve complex software engineering problems. This Development Sprint focuses on integrating FastMCP, a modern Pythonic framework for the Model Context Protocol (MCP), with Tekton to enhance its tool and agent capabilities.
 
 ## Sprint Goals
 
@@ -19,7 +19,7 @@ The primary goals of this sprint are:
 This sprint delivers value by:
 
 - **Reducing Development Time**: FastMCP's declarative approach reduces boilerplate code needed for tool definition by 60-80%
-- **Enhancing AI Capabilities**: Better integration with Claude Code means more powerful AI-driven development workflows
+- **Enhancing CI Capabilities**: Better integration with Claude Code means more powerful AI-driven development workflows
 - **Improving User Experience**: FastMCP's simplified tooling makes Tekton components more accessible to users
 - **Enabling Composability**: Components built with FastMCP can be easily combined, mounted, and reused
 

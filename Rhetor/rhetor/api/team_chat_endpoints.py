@@ -1,7 +1,7 @@
 """Team Chat API endpoints for Rhetor.
 
 Implements the team chat functionality using the MCP Tools Integration.
-Connects to real Greek Chorus AIs for multi-CI collaboration.
+Connects to real Greek Chorus CIs for multi-CI collaboration.
 """
 
 import asyncio
@@ -25,7 +25,7 @@ router = APIRouter(prefix="/api", tags=["team-chat"])
 
 class TeamChatRequest(BaseModel):
     """Team chat request model."""
-    message: str = Field(..., description="The message to broadcast to all AIs")
+    message: str = Field(..., description="The message to broadcast to all CIs")
     moderation_mode: Optional[str] = Field(
         "pass_through", 
         description="Moderation mode: pass_through, synthesis, consensus, directed"
@@ -60,14 +60,14 @@ async def team_chat(request: TeamChatRequest):
     """
     Broadcast a message to all CI specialists and collect responses.
     
-    This endpoint connects to real Greek Chorus AIs via the MCP tools integration
+    This endpoint connects to real Greek Chorus CIs via the MCP tools integration
     for multi-CI collaboration on answering questions or solving problems.
     """
     start_time = datetime.utcnow()
     request_id = f"team-chat-{start_time.timestamp()}"
     
     logger.info(f"Team chat request {request_id}: {request.message[:100]}...")
-    logger.info(f"Moderation mode: {request.moderation_mode}, Target AIs: {request.target_sockets}")
+    logger.info(f"Moderation mode: {request.moderation_mode}, Target CIs: {request.target_sockets}")
     
     try:
         # Get MCP tools integration
@@ -79,10 +79,10 @@ async def team_chat(request: TeamChatRequest):
             set_mcp_tools_integration(integration)
             logger.info("Initialized MCP tools integration for team chat")
         
-        # Use orchestrate_team_chat to connect to real Greek Chorus AIs
+        # Use orchestrate_team_chat to connect to real Greek Chorus CIs
         topic = request.metadata.get("topic", "General Discussion") if request.metadata else "General Discussion"
         
-        logger.info("Calling orchestrate_team_chat with real Greek Chorus AIs")
+        logger.info("Calling orchestrate_team_chat with real Greek Chorus CIs")
         result = await integration.orchestrate_team_chat(
             topic=topic,
             specialists=request.target_sockets or [],  # Empty list means all available
@@ -151,7 +151,7 @@ async def team_chat_stream(
     Stream team chat responses using Server-Sent Events.
     
     This endpoint allows real-time streaming of CI responses as they arrive
-    from the Greek Chorus AIs.
+    from the Greek Chorus CIs.
     """
     async def event_generator():
         try:
@@ -250,7 +250,7 @@ async def team_chat_stream(
 
 @router.get("/team-chat/sockets")
 async def list_team_sockets():
-    """List all Greek Chorus AIs available for team chat."""
+    """List all Greek Chorus CIs available for team chat."""
     try:
         # Get MCP tools integration
         integration = get_mcp_tools_integration()
@@ -262,7 +262,7 @@ async def list_team_sockets():
         # List all specialists
         all_specialists = await integration.list_specialists()
         
-        # Filter for Greek Chorus AIs (those with socket connections)
+        # Filter for Greek Chorus CIs (those with socket connections)
         team_sockets = []
         for spec in all_specialists:
             if 'connection' in spec and spec['connection'].get('port'):
@@ -277,7 +277,7 @@ async def list_team_sockets():
                         "capabilities": spec.get('capabilities', [])
                     })
         
-        logger.info(f"Found {len(team_sockets)} Greek Chorus AIs for team chat")
+        logger.info(f"Found {len(team_sockets)} Greek Chorus CIs for team chat")
         
         return {
             "sockets": team_sockets,

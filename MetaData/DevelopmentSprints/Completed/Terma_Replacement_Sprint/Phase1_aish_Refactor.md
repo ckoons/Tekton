@@ -2,15 +2,15 @@
 
 ## Objective
 
-Transform aish from its current implementation into a true shell wrapper that can intercept AI commands while transparently passing through normal shell operations.
+Transform aish from its current implementation into a true shell wrapper that can intercept CI commands while transparently passing through normal shell operations.
 
 ## Current State Analysis
 
 ### What aish Currently Does
-- Acts as a command-line interface to query Tekton AIs
-- Pipes input to AI specialists via HTTP/socket connections
-- Returns AI responses to stdout
-- Supports various flags for AI selection and output formatting
+- Acts as a command-line interface to query Tekton CIs
+- Pipes input to CI specialists via HTTP/socket connections
+- Returns CI responses to stdout
+- Supports various flags for CI selection and output formatting
 
 ### What aish Needs to Become
 - A full shell wrapper (like fish or zsh)
@@ -27,7 +27,7 @@ Transform aish from its current implementation into a true shell wrapper that ca
 #!/usr/bin/env python3
 """
 aish - AI-enhanced Shell
-A transparent shell wrapper with AI capabilities
+A transparent shell wrapper with CI capabilities
 """
 
 import os
@@ -54,7 +54,7 @@ class AishShell:
         self.setup_readline()
     
     def _load_ai_patterns(self) -> List[re.Pattern]:
-        """Load patterns that trigger AI interpretation."""
+        """Load patterns that trigger CI interpretation."""
         patterns = [
             r"^(show me|tell me|what is|what are|find)",
             r"^(how do i|how to|help me)",
@@ -86,7 +86,7 @@ class AishShell:
 ```python
 def is_ai_command(self, command: str) -> bool:
     """Detect if command should be routed to AI."""
-    # Check explicit AI trigger
+    # Check explicit CI trigger
     if command.startswith("ai:") or command.startswith("@ai"):
         return True
     
@@ -116,7 +116,7 @@ def process_command(self, command: str) -> int:
     elif command.strip().startswith("cd "):
         return self.handle_cd(command)
     
-    # Route to AI or shell
+    # Route to CI or shell
     if self.is_ai_command(command):
         return self.handle_ai_command(command)
     else:
@@ -168,22 +168,22 @@ def sync_pwd(self):
             os.chdir(new_pwd)
 ```
 
-### 4. AI Command Handling
+### 4. CI Command Handling
 
 ```python
 def handle_ai_command(self, command: str) -> int:
-    """Route command to AI for interpretation."""
-    # Strip AI prefix if present
+    """Route command to CI for interpretation."""
+    # Strip CI prefix if present
     if command.startswith("ai:"):
         command = command[3:].strip()
     elif command.startswith("@ai"):
         command = command[3:].strip()
     
-    # Get AI response
+    # Get CI response
     response = self.query_ai(command)
     
     if response.get("type") == "command":
-        # AI suggested a command
+        # CI suggested a command
         suggested = response.get("command")
         explanation = response.get("explanation", "")
         
@@ -205,8 +205,8 @@ def handle_ai_command(self, command: str) -> int:
         return 0
 
 def query_ai(self, prompt: str) -> Dict:
-    """Query Tekton AI for assistance."""
-    # This will integrate with existing aish AI connection logic
+    """Query Tekton CI for assistance."""
+    # This will integrate with existing aish CI connection logic
     # For now, placeholder
     import requests
     
@@ -219,7 +219,7 @@ def query_ai(self, prompt: str) -> Dict:
         User request: {prompt}
         """
         
-        # Query appropriate AI (Rhetor, local specialist, etc.)
+        # Query appropriate CI (Rhetor, local specialist, etc.)
         # This reuses existing aish connection logic
         response = self._send_to_ai(enhanced_prompt)
         return response
@@ -323,7 +323,7 @@ if __name__ == "__main__":
 4. Signal handling
 5. Tool compatibility (git, npm, etc.)
 
-### AI Integration Tests
+### CI Integration Tests
 1. Natural language interpretation
 2. Command suggestion accuracy
 3. Context awareness

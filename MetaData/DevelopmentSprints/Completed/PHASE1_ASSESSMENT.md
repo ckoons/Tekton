@@ -113,5 +113,5 @@ Additional onclick handlers:
 
 ## Questions for Casey/Team
 1. Should Apollo actually track other Tekton components' sessions or its own internal sessions?
-2. What real data should the Token Budget display - actual AI API usage?
+2. What real data should the Token Budget display - actual CI API usage?
 3. For Team Chat - should this connect to aish MCP at port 8118?

@@ -11,7 +11,7 @@
 ### Rhetor Process Management Fix
 - Fixed Rhetor's resistance to termination
 - Created cross-platform launch script (run_rhetor_fixed.sh)
-- Implemented proper signal handling for future child AI processes
+- Implemented proper signal handling for future child CI processes
 - Documented in MetaData/ComponentDocumentation/Rhetor/PROCESS_GROUP_IMPLEMENTATION.md
 
 ### Documentation Cleanup

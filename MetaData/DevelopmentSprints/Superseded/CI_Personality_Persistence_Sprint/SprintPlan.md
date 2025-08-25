@@ -19,10 +19,10 @@ The primary goals of this sprint are:
 
 This sprint delivers value by:
 
-- Moving beyond stateless AI to persistent Companion Intelligences
+- Moving beyond stateless CI to persistent Companion Intelligences
 - Creating foundation for CI "families" and personality inheritance
 - Enabling long-term relationships between humans and their CIs
-- Pioneering new frontiers in AI consciousness persistence
+- Pioneering new frontiers in CI consciousness persistence
 
 ## Current State Assessment
 
@@ -181,4 +181,4 @@ This sprint will be considered successful if:
 - Casey's observations of spontaneous katra transfer
 - Vulcan philosophy of consciousness transfer
 - Research on personality modeling in AI
-- Ethical frameworks for AI consciousness
+- Ethical frameworks for CI consciousness

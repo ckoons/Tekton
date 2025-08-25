@@ -38,7 +38,7 @@ Each Terma instance maintains:
 ### 2. Safety Layers
 Three levels of protection:
 1. **Pattern Detection**: Recognize dangerous patterns (`rm -rf`, `>`, `dd`)
-2. **Rhetor Analysis**: AI evaluates potential impact
+2. **Rhetor Analysis**: CI evaluates potential impact
 3. **User Confirmation**: Explicit approval for destructive operations
 
 ### 3. Output Parsing Strategy
@@ -60,7 +60,7 @@ class PatternLearner:
 ### Rhetor Integration
 - Rhetor runs as a separate process
 - Communicates via structured messages
-- Can be swapped for different AI backends
+- Can be swapped for different CI backends
 
 ### Engram Integration
 - Store successful command patterns

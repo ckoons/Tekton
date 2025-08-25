@@ -9,12 +9,12 @@ This sprint implements Tekton-side features needed for aish Phase 3 and 4, focus
 1. **Add SSE Streaming to Rhetor** - Enable progressive CI responses
 2. **Fix Team Chat** - Resolve "No responses yet" issue
 3. **Complete MCP Tools** - Implement remaining NotImplementedError methods
-4. **Pipeline Context Support** - Enable memory passing between AIs
+4. **Pipeline Context Support** - Enable memory passing between CIs
 
 ## Success Criteria
 
 - [ ] SSE endpoints working with progressive token streaming
-- [ ] Team chat successfully broadcasts to all AIs
+- [ ] Team chat successfully broadcasts to all CIs
 - [ ] MCP tools fully implemented
 - [ ] Context can be passed between pipeline stages
 - [ ] All tests passing
@@ -31,7 +31,7 @@ This sprint implements Tekton-side features needed for aish Phase 3 and 4, focus
 - Progressive token delivery from Ollama
 
 ### 2. Team Chat Fix
-- Debug message routing to Greek Chorus AIs
+- Debug message routing to Greek Chorus CIs
 - Fix response collection mechanism
 - Add proper timeout handling
 
@@ -47,7 +47,7 @@ This sprint implements Tekton-side features needed for aish Phase 3 and 4, focus
 
 ## Technical Context
 
-- Greek Chorus AIs: Ports 45000+ (socket-based)
+- Greek Chorus CIs: Ports 45000+ (socket-based)
 - Rhetor API: Port 8003 (HTTP/REST)
 - MCP Tools: `Rhetor/rhetor/core/mcp/tools_integration_unified.py`
 - Current issue: Team chat not reaching specialists
@@ -56,7 +56,7 @@ This sprint implements Tekton-side features needed for aish Phase 3 and 4, focus
 
 - Ollama with streaming support
 - Engram service for history storage
-- All Greek Chorus AIs running
+- All Greek Chorus CIs running
 
 ## Next Sprint
 

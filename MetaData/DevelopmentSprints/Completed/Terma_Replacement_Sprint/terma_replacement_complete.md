@@ -2,21 +2,21 @@
 
 ## Executive Summary
 
-Successfully completed a full replacement of Terma, transforming it from a web-based terminal emulator into a native terminal orchestrator. The new system launches real desktop terminals (Terminal.app, iTerm2, Warp) with transparent AI enhancement through aish-proxy.
+Successfully completed a full replacement of Terma, transforming it from a web-based terminal emulator into a native terminal orchestrator. The new system launches real desktop terminals (Terminal.app, iTerm2, Warp) with transparent CI enhancement through aish-proxy.
 
-**Key Achievement**: Users now get their native terminal experience enhanced with AI capabilities, following the "enhance don't change" philosophy.
+**Key Achievement**: Users now get their native terminal experience enhanced with CI capabilities, following the "enhance don't change" philosophy.
 
 ## What We Built
 
-### 1. Transparent AI Shell Proxy (aish-proxy)
-- **Purpose**: Middleware that intercepts AI commands while passing shell commands unchanged
-- **Pattern Detection**: 15/15 test cases passing for AI vs shell command routing
+### 1. Transparent CI Shell Proxy (aish-proxy)
+- **Purpose**: Middleware that intercepts CI commands while passing shell commands unchanged
+- **Pattern Detection**: 15/15 test cases passing for CI vs shell command routing
 - **Location**: `/Users/cskoons/projects/github/aish/src/core/proxy_shell.py`
 - **Entry Point**: `/Users/cskoons/projects/github/aish/aish-proxy`
 
 ### 2. Native Terminal Launcher
 - **Platform Detection**: Auto-detects Terminal.app, iTerm2, Warp on macOS
-- **Template System**: Pre-configured environments (development, AI workspace, data science)
+- **Template System**: Pre-configured environments (development, CI workspace, data science)
 - **Location**: `/Users/cskoons/projects/github/aish/src/core/terminal_launcher.py`
 - **CLI Tool**: `/Users/cskoons/projects/github/aish/aish-terminal`
 
@@ -41,7 +41,7 @@ User → Hephaestus UI → Terma Service (8004) → Terminal Launcher
                                               ↓
                                          aish-proxy
                                               ↓
-                                    AI System ← → Base Shell
+                                    CI System ← → Base Shell
 ```
 
 ## Key Design Decisions
@@ -59,7 +59,7 @@ User → Hephaestus UI → Terma Service (8004) → Terminal Launcher
 ### 3. Transparent Enhancement
 - aish-proxy as middleware pattern
 - Shell commands pass through unchanged
-- AI commands intercepted and processed
+- CI commands intercepted and processed
 
 ### 4. Simple Unix Philosophy
 - PID-based process tracking
@@ -76,7 +76,7 @@ User → Hephaestus UI → Terma Service (8004) → Terminal Launcher
 ### Day 2-3: Core Implementation
 - Built TransparentAishProxy class
 - Created TerminalLauncher with platform detection
-- Developed pattern matching for AI commands
+- Developed pattern matching for CI commands
 
 ### Day 4: Service Development
 - Built clean Terma v2 service
@@ -135,7 +135,7 @@ python tests/test_terma_v2_api.py
 1. **User Experience**
    - Native terminal performance
    - Familiar terminal applications
-   - Transparent AI enhancement
+   - Transparent CI enhancement
 
 2. **Simplicity**
    - No PTY complexity
@@ -187,12 +187,12 @@ curl -X POST http://localhost:8004/api/terminals/launch \
 The Terma replacement successfully achieves all sprint goals:
 
 - ✅ Complete rewrite as native terminal orchestrator
-- ✅ aish-proxy provides transparent AI enhancement
+- ✅ aish-proxy provides transparent CI enhancement
 - ✅ No web terminals - only native applications
 - ✅ Clean integration with Tekton ecosystem
 - ✅ Follows "enhance don't change" philosophy
 
-The new Terma is simpler, more reliable, and provides a better user experience by leveraging native terminal applications while adding AI capabilities transparently.
+The new Terma is simpler, more reliable, and provides a better user experience by leveraging native terminal applications while adding CI capabilities transparently.
 
 ---
 

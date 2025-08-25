@@ -8,7 +8,7 @@ This document captures the key architectural decisions for the Optional Rhetor S
 
 The Optional Rhetor Sprint builds upon the successful foundation of:
 - Live MCP tools integrated with AISpecialistManager
-- Real-time streaming AI interactions
+- Real-time streaming CI interactions
 - Dynamic specialist creation and configuration
 - Robust FastMCP server architecture
 
@@ -40,7 +40,7 @@ The Optional Rhetor Sprint builds upon the successful foundation of:
 
 **Decision**: Implement layered security with API key authentication, role-based authorization, and audit logging.
 
-**Context**: Production deployment requires enterprise-grade security for AI orchestration.
+**Context**: Production deployment requires enterprise-grade security for CI orchestration.
 
 **Options Considered**:
 1. No authentication (development only)
@@ -49,7 +49,7 @@ The Optional Rhetor Sprint builds upon the successful foundation of:
 4. Layered approach with API keys, RBAC, and audit trails
 
 **Decision Rationale**:
-- Option 4 provides appropriate security for AI orchestration without over-complexity
+- Option 4 provides appropriate security for CI orchestration without over-complexity
 - API keys enable service-to-service authentication
 - RBAC supports different user types (admin, user, service)
 - Audit logging ensures compliance and debugging capability
@@ -64,7 +64,7 @@ The Optional Rhetor Sprint builds upon the successful foundation of:
 
 **Decision**: Implement comprehensive monitoring with health checks, performance metrics, and operational dashboards.
 
-**Context**: Production AI orchestration requires visibility into system performance and specialist behavior.
+**Context**: Production CI orchestration requires visibility into system performance and specialist behavior.
 
 **Options Considered**:
 1. Basic logging only
@@ -191,7 +191,7 @@ These architectural decisions prioritize:
 ## Implementation Dependencies
 
 These decisions depend on:
-- Completion of main Rhetor AI Integration Sprint
+- Completion of main Rhetor CI Integration Sprint
 - Production metrics and usage pattern analysis
 - Identification of specific security and performance requirements
 - Validation of cross-component integration needs
@@ -202,11 +202,11 @@ Key areas for future architectural decisions:
 - Specific workflow engine selection (if advanced orchestration is validated)
 - Database scaling strategy (SQLite vs PostgreSQL transition)
 - External system integration patterns (CI/CD, monitoring, etc.)
-- Advanced AI coordination algorithms (if complex patterns emerge)
+- Advanced CI coordination algorithms (if complex patterns emerge)
 
 ## References
 
-- [Main Rhetor AI Integration Sprint Architecture](../README.md)
+- [Main Rhetor CI Integration Sprint Architecture](../README.md)
 - [Tekton Architecture Documentation](/MetaData/TektonDocumentation/)
 - [Debug Instrumentation Guidelines](/MetaData/TektonDocumentation/DeveloperGuides/Debugging/DebuggingInstrumentation.md)
 - [Hermes Message Bus Documentation](/MetaData/ComponentDocumentation/Hermes/)

@@ -4,7 +4,7 @@
 
 This document outlines the high-level plan for the Consistent Hephaestus UI Development Sprint. It provides an overview of the goals, approach, and expected outcomes.
 
-Tekton is an intelligent orchestration system that coordinates multiple AI models and resources to efficiently solve complex software engineering problems. This Development Sprint focuses on standardizing the Hephaestus UI framework across all components and implementing consistent chat interfaces throughout the system.
+Tekton is an intelligent orchestration system that coordinates multiple CI models and resources to efficiently solve complex software engineering problems. This Development Sprint focuses on standardizing the Hephaestus UI framework across all components and implementing consistent chat interfaces throughout the system.
 
 ## Sprint Goals
 
@@ -21,7 +21,7 @@ This sprint delivers value by:
 - **Improved Reliability**: Eliminating JavaScript-based navigation reduces failure points and race conditions
 - **Enhanced User Experience**: Instant tab switching and consistent behavior across all components
 - **Better Maintainability**: Standardized patterns make the codebase easier to understand and modify
-- **Unified Communication**: Consistent chat interfaces enable seamless AI collaboration across the platform
+- **Unified Communication**: Consistent chat interfaces enable seamless CI collaboration across the platform
 - **Developer Efficiency**: CSS-first approach reduces debugging time and simplifies component development
 
 ## Current State Assessment
@@ -54,7 +54,7 @@ The Hephaestus UI currently has a split personality:
 - **Navigation Inconsistency**: Users experience different behaviors across components
 - **JavaScript Fragility**: onclick handlers can fail, leaving components in broken states
 - **Maintenance Burden**: Two different patterns require developers to context-switch
-- **Limited AI Interaction**: Most components lack proper chat interfaces for AI assistance
+- **Limited CI Interaction**: Most components lack proper chat interfaces for CI assistance
 - **Debugging Difficulty**: Inconsistent patterns make troubleshooting harder
 
 ## Proposed Approach
@@ -128,7 +128,7 @@ This sprint has the following dependencies:
 - Rhetor component as the reference implementation
 - Existing Team Chat implementation
 - WebSocket infrastructure for chat functionality
-- Current AI specialist endpoints
+- Current CI specialist endpoints
 
 ## Timeline and Phases
 

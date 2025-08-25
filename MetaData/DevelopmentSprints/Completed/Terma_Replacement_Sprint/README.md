@@ -6,7 +6,7 @@ Complete rewrite of Terma as a **Terminal Orchestrator** that launches and manag
 
 ## Vision
 
-Terma becomes the intelligent terminal management layer for Tekton, enabling both users and AIs to spawn, configure, and manage native terminal sessions with AI-powered shell capabilities through aish.
+Terma becomes the intelligent terminal management layer for Tekton, enabling both users and CIs to spawn, configure, and manage native terminal sessions with AI-powered shell capabilities through aish.
 
 ## Core Principles
 
@@ -49,7 +49,7 @@ Terma becomes the intelligent terminal management layer for Tekton, enabling bot
 1. Launch native terminals with single click
 2. aish available in all spawned terminals
 3. Track and manage terminals by PID
-4. Both users and AIs can spawn terminals
+4. Both users and CIs can spawn terminals
 5. Clean, simple UI following Numa/Noesis patterns
 
 ## Architecture

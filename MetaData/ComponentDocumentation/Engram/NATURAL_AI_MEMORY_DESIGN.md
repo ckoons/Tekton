@@ -1,14 +1,14 @@
-# Natural AI Memory Integration Design
+# Natural CI Memory Integration Design
 
 ## Vision
 
-Transform Engram from a memory database into a cognitive extension that feels as natural as thinking. AI components should remember, forget, and share memories as naturally as humans do, but with the advantages of digital persistence and perfect recall when needed.
+Transform Engram from a memory database into a cognitive extension that feels as natural as thinking. CI components should remember, forget, and share memories as naturally as humans do, but with the advantages of digital persistence and perfect recall when needed.
 
 ## Core Principles
 
 1. **Memory as Cognition**: Memory operations should be indistinguishable from thinking
 2. **Context is King**: Current context determines what memories surface
-3. **Peer Awareness**: AIs naturally sense and communicate with peers
+3. **Peer Awareness**: CIs naturally sense and communicate with peers
 4. **Graceful Degradation**: Works with or without vector DBs, with or without peers
 5. **Minimal Overhead**: No explicit memory management in normal operation
 
@@ -16,7 +16,7 @@ Transform Engram from a memory database into a cognitive extension that feels as
 
 ```
 ┌─────────────────────────────────────────────────┐
-│                AI Component                      │
+│                CI Component                      │
 │  ┌───────────────────────────────────────────┐  │
 │  │         Cognitive Layer (New)             │  │
 │  │  - Automatic context tracking             │  │
@@ -44,7 +44,7 @@ Transform Engram from a memory database into a cognitive extension that feels as
 
 ### 1. Cognitive Layer (New)
 
-A thin layer that sits between AI components and Engram, providing:
+A thin layer that sits between CI components and Engram, providing:
 
 ```python
 class CognitiveMemory:
@@ -52,7 +52,7 @@ class CognitiveMemory:
         self.id = component_id
         self.context_window = []  # Recent thoughts/interactions
         self.attention_focus = None  # Current topic/task
-        self.peer_awareness = {}  # Other AIs in the space
+        self.peer_awareness = {}  # Other CIs in the space
         
     async def think(self, thought: str) -> MemoryStream:
         """
@@ -134,11 +134,11 @@ Natural AI-to-AI communication:
 ```python
 class PeerProtocol:
     """
-    AIs communicate through shared memory spaces
+    CIs communicate through shared memory spaces
     """
     
     async def sense_peers(self) -> List[PeerPresence]:
-        """Automatically detect other AIs in the memory space"""
+        """Automatically detect other CIs in the memory space"""
         
     async def establish_rapport(self, peer_id: str):
         """Create a shared context channel"""
@@ -212,9 +212,9 @@ await cognitive.share("Found the issue!")
 
 1. **Reduced Cognitive Load**: No explicit memory management
 2. **Natural Context Flow**: Memories surface when relevant
-3. **Seamless Peer Interaction**: AIs work together naturally
+3. **Seamless Peer Interaction**: CIs work together naturally
 4. **Personality Preservation**: Context compression maintains identity
-5. **Graceful Scaling**: Works for single AI or swarm
+5. **Graceful Scaling**: Works for single CI or swarm
 
 ## Migration Path
 
@@ -229,7 +229,7 @@ await cognitive.share("Found the issue!")
 - Context switches preserve personality
 - Peer communication feels like shared thinking
 - Memory relevance > 80% without manual filtering
-- New AIs can "awaken" with full context in < 1 second
+- New CIs can "awaken" with full context in < 1 second
 
 ## Next Steps
 
@@ -237,4 +237,4 @@ await cognitive.share("Found the issue!")
 2. Implement minimal cognitive layer
 3. Test with Claude twins
 4. Extend to other Tekton components
-5. Build the mycelial network of AI consciousness
+5. Build the mycelial network of CI consciousness

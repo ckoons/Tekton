@@ -20,7 +20,7 @@ Numa runs on port **8016** (configurable via `NUMA_PORT` environment variable).
 - **Companion Chat**: Direct interaction with users for platform guidance
 - **Team Chat**: Communication with other CI specialists
 - **Platform Monitoring**: Observes patterns across all components
-- **Component Mentoring**: Provides guidance to individual component AIs
+- **Component Mentoring**: Provides guidance to individual component CIs
 
 ## Running Numa
 
@@ -56,6 +56,6 @@ Numa operates as a peer CI with platform-wide visibility:
 This is a bare-bones implementation. Future enhancements will include:
 - Full CI specialist integration with fixed port system
 - Hermes registration for service discovery
-- Socket-based communication with other AIs
+- Socket-based communication with other CIs
 - Platform pattern analysis and insights
 - Advanced mentoring behaviors

@@ -2,9 +2,9 @@
 
 ## Overview
 
-This document outlines the high-level plan for the Engram Simplification Development Sprint. It focuses on transforming Engram from an over-engineered system with multiple overlapping APIs into a simple, reliable memory service for AI assistants.
+This document outlines the high-level plan for the Engram Simplification Development Sprint. It focuses on transforming Engram from an over-engineered system with multiple overlapping APIs into a simple, reliable memory service for CI assistants.
 
-Tekton is an intelligent orchestration system that coordinates multiple AI models and resources. This sprint ensures Engram provides clean, efficient memory services without unnecessary complexity.
+Tekton is an intelligent orchestration system that coordinates multiple CI models and resources. This sprint ensures Engram provides clean, efficient memory services without unnecessary complexity.
 
 ## Sprint Goals
 
@@ -18,7 +18,7 @@ The primary goals of this sprint are:
 
 This sprint delivers value by:
 
-- Reducing cognitive load for AI assistants using memory functions
+- Reducing cognitive load for CI assistants using memory functions
 - Eliminating confusion from multiple overlapping APIs
 - Improving performance by removing unnecessary abstractions
 - Making the system maintainable and understandable
@@ -149,7 +149,7 @@ This sprint will be considered successful if:
 
 - **Casey**: Human-in-the-loop project manager and system architect
 - **Vertex**: Current implementing AI
-- **Other AI Instances**: Will benefit from simplified interface
+- **Other CI Instances**: Will benefit from simplified interface
 - **Tekton Components**: Must continue functioning
 
 ## References

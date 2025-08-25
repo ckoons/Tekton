@@ -1,10 +1,10 @@
-# AI Team Management System
+# CI Team Management System
 
-## The Vision: Human Tech Lead, AI Development Team
+## The Vision: Human Tech Lead, CI Development Team
 
-Casey manages a team of AI developers (Alice, Betty, Carol, etc.) who work independently on tasks while Tekton handles all the merge complexity.
+Casey manages a team of CI developers (Alice, Betty, Carol, etc.) who work independently on tasks while Tekton handles all the merge complexity.
 
-## AI Developer Identity System
+## CI Developer Identity System
 
 ### 1. **AI Developer Profiles**
 
@@ -65,14 +65,14 @@ import subprocess
 from pathlib import Path
 
 class AITeamManager:
-    """Setup and manage AI development team"""
+    """Setup and manage CI development team"""
     
     def __init__(self):
         self.team_config_dir = Path.home() / ".tekton" / "ai_team"
         self.team_config_dir.mkdir(parents=True, exist_ok=True)
         
     def setup_developer(self, name: str, config: dict):
-        """Setup a single AI developer environment"""
+        """Setup a single CI developer environment"""
         
         print(f"\n🤖 Setting up {name}...")
         
@@ -104,18 +104,18 @@ class AITeamManager:
         print(f"   ✓ {name} ready at {work_dir}")
         
     def setup_team(self):
-        """Setup all AI developers"""
+        """Setup all CI developers"""
         
         # Load team configuration
         team_config = self.load_team_config()
         
-        print("🚀 Setting up Tekton AI Development Team")
+        print("🚀 Setting up Tekton CI Development Team")
         print("=" * 50)
         
         for name, config in team_config.items():
             self.setup_developer(name, config)
         
-        print("\n✅ AI Team Setup Complete!")
+        print("\n✅ CI Team Setup Complete!")
         print("\nYour team:")
         for name, config in team_config.items():
             print(f"  • {name}: {config['home_directory']}")
@@ -132,7 +132,7 @@ if __name__ == "__main__":
 # tekton_core/services/dev_task_queue.py
 
 class DevelopmentTaskQueue:
-    """Manage development tasks for AI team"""
+    """Manage development tasks for CI team"""
     
     def __init__(self):
         self.queue_file = Path.home() / ".tekton" / "dev_task_queue.json"
@@ -160,7 +160,7 @@ class DevelopmentTaskQueue:
         return task_entry
     
     def get_next_task(self, ai_name=None, skills=None):
-        """Get next appropriate task for an AI developer"""
+        """Get next appropriate task for an CI developer"""
         
         queue = self.load_queue()
         
@@ -170,7 +170,7 @@ class DevelopmentTaskQueue:
         if not available:
             return None
         
-        # Match based on AI skills if provided
+        # Match based on CI skills if provided
         if skills:
             # Prefer tasks matching AI's specialties
             matched = [t for t in available 
@@ -186,7 +186,7 @@ class DevelopmentTaskQueue:
         return available[0]
     
     def assign_task(self, task_id, ai_name):
-        """Assign a task to an AI developer"""
+        """Assign a task to an CI developer"""
         
         queue = self.load_queue()
         
@@ -212,12 +212,12 @@ class DevelopmentTaskQueue:
 # scripts/start_ai_session.py
 
 class AISessionLauncher:
-    """Launch AI development session with identity and task"""
+    """Launch CI development session with identity and task"""
     
     def start_session(self, ai_name):
         """Start a development session for an AI"""
         
-        # Load AI config
+        # Load CI config
         config = self.load_ai_config(ai_name)
         
         # Get next task
@@ -290,7 +290,7 @@ class AISessionLauncher:
 #!/bin/bash
 # scripts/ai_team_dashboard.sh
 
-# Launch tmux session with AI team
+# Launch tmux session with CI team
 tmux new-session -d -s ai-team
 
 # Create panes for each AI
@@ -304,7 +304,7 @@ tmux select-pane -t ai-team:0.1 -T "Betty"
 tmux select-pane -t ai-team:0.2 -T "Carol"
 tmux select-pane -t ai-team:0.3 -T "Coordinator"
 
-# Start AI sessions in each pane
+# Start CI sessions in each pane
 tmux send-keys -t ai-team:0.0 "cd ~/projects/github/Tekton-alice && python3 ~/tekton/scripts/start_ai_session.py alice" C-m
 tmux send-keys -t ai-team:0.1 "cd ~/projects/github/Tekton-betty && python3 ~/tekton/scripts/start_ai_session.py betty" C-m
 tmux send-keys -t ai-team:0.2 "cd ~/projects/github/Tekton-carol && python3 ~/tekton/scripts/start_ai_session.py carol" C-m
@@ -316,7 +316,7 @@ tmux attach-session -t ai-team
 
 ## Workflow Example
 
-### Morning Standup with AI Team
+### Morning Standup with CI Team
 
 ```
 Casey: Good morning team! Let's see what's on deck today.
@@ -346,7 +346,7 @@ stress tests for concurrent merges?
 [Carol's Terminal]
 Hi Casey! Carol here, excited to build something users will love!
 
-Today's task: Design status dashboard for AI team coordination
+Today's task: Design status dashboard for CI team coordination
 Priority: Medium
 Branch: sprint/carol-feature-5e7f3a22
 
@@ -362,11 +362,11 @@ status, and team health. Want me to sketch some ASCII mockups first?
 
 3. **Skill-Based Task Assignment**: Alice gets architecture tasks, Betty gets testing, Carol gets UI
 
-4. **Parallel Focus**: Casey can guide each AI individually while merge coordinator handles integration
+4. **Parallel Focus**: Casey can guide each CI individually while merge coordinator handles integration
 
-5. **Clear Context**: Each AI maintains their own workspace and context
+5. **Clear Context**: Each CI maintains their own workspace and context
 
-6. **Team Dynamics**: The AIs can even reference each other ("I'll coordinate with Betty on testing requirements")
+6. **Team Dynamics**: The CIs can even reference each other ("I'll coordinate with Betty on testing requirements")
 
 ## The Beautiful Part
 

@@ -150,4 +150,4 @@ apollo token-budget [id] 512   # Adjust token budget for LLM
 
 ## 9. Summary
 
-Apollo provides **anticipatory governance** over every LLM within Tekton, enabling reliable, safe, and coherent AI interactions. By **decoupling context and behavior management from the models themselves**, Apollo acts as a lightweight **frontal lobe**, protecting system integrity while enabling high performance and interpretability across Tekton’s modular AI components.
+Apollo provides **anticipatory governance** over every LLM within Tekton, enabling reliable, safe, and coherent CI interactions. By **decoupling context and behavior management from the models themselves**, Apollo acts as a lightweight **frontal lobe**, protecting system integrity while enabling high performance and interpretability across Tekton’s modular CI components.

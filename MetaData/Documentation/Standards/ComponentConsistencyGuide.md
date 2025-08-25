@@ -345,7 +345,7 @@ Before marking a component as "consistent", verify:
 **Solution**: Verify CSS variable usage and BEM class names
 
 **Issue**: Chat doesn't connect
-**Solution**: Check WebSocket configuration and AI endpoint
+**Solution**: Check WebSocket configuration and CI endpoint
 
 ## Anti-Patterns to Avoid
 

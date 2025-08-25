@@ -125,7 +125,7 @@ Create a new agent.
   "name": "code_assistant",
   "description": "Code assistant for Python development",
   "model_name": "claude-3-sonnet-20240229",
-  "system_prompt": "You are code_assistant, an AI assistant...",
+  "system_prompt": "You are code_assistant, an CI assistant...",
   "created_at": "2025-04-28T14:35:00.000Z",
   "updated_at": "2025-04-28T14:35:00.000Z"
 }
@@ -145,7 +145,7 @@ Get agent by ID.
   "name": "code_assistant",
   "description": "Code assistant for Python development",
   "model_name": "claude-3-sonnet-20240229",
-  "system_prompt": "You are code_assistant, an AI assistant...",
+  "system_prompt": "You are code_assistant, an CI assistant...",
   "created_at": "2025-04-28T14:35:00.000Z",
   "updated_at": "2025-04-28T14:35:00.000Z"
 }

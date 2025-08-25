@@ -74,7 +74,7 @@ The `tekton-status.py` script now uses the centralized configuration:
 - **infrastructure**: Core system components (tekton_core, hermes)
 - **memory**: Memory and storage (engram)
 - **knowledge**: Knowledge management (athena)
-- **ai**: AI and intelligence (rhetor, sophia, apollo)
+- **ai**: CI and intelligence (rhetor, sophia, apollo)
 - **planning**: Planning and requirements (prometheus, telos, metis)
 - **workflow**: Workflow management (harmonia)
 - **execution**: Code execution (synthesis, ergon)

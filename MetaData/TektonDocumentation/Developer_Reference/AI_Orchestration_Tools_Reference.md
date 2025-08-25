@@ -1,23 +1,23 @@
-# AI Orchestration Tools Quick Reference
+# CI Orchestration Tools Quick Reference
 
 ## Overview
 
-This quick reference provides a concise guide to the AI orchestration tools available in Tekton. The primary interface for AI interaction is now **aish** (AI Shell), which provides a simple, Unix-like command interface to all AI capabilities.
+This quick reference provides a concise guide to the CI orchestration tools available in Tekton. The primary interface for CI interaction is now **aish** (AI Shell), which provides a simple, Unix-like command interface to all CI capabilities.
 
-**Important Update (July 2025)**: aish is now the standard way to interact with AIs in Tekton. Individual AI commands (apollo, athena, etc.) are deprecated in favor of the unified `aish` command.
+**Important Update (July 2025)**: aish is now the standard way to interact with CIs in Tekton. Individual CI commands (apollo, athena, etc.) are deprecated in favor of the unified `aish` command.
 
 ## Primary Tool: aish
 
 ### Basic Usage
 
 ```bash
-# Direct AI interaction
+# Direct CI interaction
 aish <ai-name> "message"
 
 # Piped input
 echo "data" | aish <ai-name>
 
-# List available AIs
+# List available CIs
 aish -l
 
 # Team chat
@@ -61,11 +61,11 @@ While aish is the primary user interface, the MCP tools below are still availabl
 | `TrackContextHistory` | Track context changes over time | `conversation_id` |
 | `CompressContext` | Compress context to save tokens | `context`, `compression_level` |
 
-### 👥 AI Specialist Tools (6 tools)
+### 👥 CI Specialist Tools (6 tools)
 
 | Tool | Description | Key Parameters |
 |------|-------------|----------------|
-| `ListAISpecialists` | List all available AI specialists | `filter_active` |
+| `ListAISpecialists` | List all available CI specialists | `filter_active` |
 | `ActivateAISpecialist` | Activate a specialist for use | `specialist_id` |
 | `SendMessageToSpecialist` | Send messages to specialists | `specialist_id`, `message`, `message_type` |
 | `OrchestrateTeamChat` | Orchestrate multi-specialist conversations | `specialist_ids`, `topic`, `max_rounds` |
@@ -223,7 +223,7 @@ response = await client.post(
 ```python
 from rhetor.core.mcp.tools_integration import MCPToolsIntegrationUnified
 
-# Uses the new unified AI system
+# Uses the new unified CI system
 integration = MCPToolsIntegrationUnified()
 result = await integration.list_ai_specialists(filter_active=True)
 ```

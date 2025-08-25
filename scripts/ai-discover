@@ -199,7 +199,7 @@ async def watch_ais(args):
     
     with Live(refresh_per_second=1) as live:
         while True:
-            # Discover AIs by checking ports
+            # Discover CIs by checking ports
             specialists = []
             total_healthy = 0
             total_unresponsive = 0
@@ -297,7 +297,7 @@ async def watch_ais(args):
             
             # Add summary panel
             summary = Panel(
-                f"Total AIs: {len(specialists)} | "
+                f"Total CIs: {len(specialists)} | "
                 f"Healthy: {total_healthy} | "
                 f"Unresponsive: {total_unresponsive} | "
                 f"Overall Success: {(total_healthy/len(specialists)*100 if specialists else 0):.1f}%",
@@ -440,7 +440,7 @@ async def test_ai(args):
                     print(f"  Response: {str(result['response'])[:100]}...")
                 print()
     else:
-        # Test all AIs
+        # Test all CIs
         ai_components = ['engram', 'hermes', 'ergon', 'rhetor', 'terma', 'athena',
                         'prometheus', 'harmonia', 'telos', 'synthesis', 'tekton_core',
                         'metis', 'apollo', 'penia', 'sophia', 'noesis', 'numa', 'hephaestus']
@@ -476,7 +476,7 @@ async def test_ai(args):
                     'port': ai_port
                 })
             except Exception:
-                # Skip unhealthy AIs
+                # Skip unhealthy CIs
                 pass
         
         if HAS_RICH and not args.simple:
@@ -517,7 +517,7 @@ async def test_ai(args):
             
             console.print(table)
         else:
-            print("Testing all healthy AIs...")
+            print("Testing all healthy CIs...")
             for spec in specialists:
                 try:
                     start = time.time()
@@ -566,7 +566,7 @@ async def test_streaming(args):
     print("Response:")
     print("-" * 60)
     
-    # Note: Our simple AIs don't support streaming, just send regular message
+    # Note: Our simple CIs don't support streaming, just send regular message
     try:
         reader, writer = await asyncio.wait_for(
             asyncio.open_connection(spec['host'], spec['port']),
@@ -595,7 +595,7 @@ async def benchmark_ais(args):
     """Benchmark CI response times and performance."""
     config = get_component_config()
     
-    # Get AIs to benchmark
+    # Get CIs to benchmark
     specialists = []
     
     if args.ai_ids:
@@ -613,7 +613,7 @@ async def benchmark_ais(args):
             else:
                 print(f"Warning: CI '{ai_id}' not found")
     else:
-        # Benchmark all healthy AIs
+        # Benchmark all healthy CIs
         ai_components = ['engram', 'hermes', 'ergon', 'rhetor', 'terma', 'athena',
                         'prometheus', 'harmonia', 'telos', 'synthesis', 'tekton_core',
                         'metis', 'apollo', 'penia', 'sophia', 'noesis', 'numa', 'hephaestus']
@@ -645,7 +645,7 @@ async def benchmark_ais(args):
                 pass
     
     if not specialists:
-        print("No AIs available for benchmarking")
+        print("No CIs available for benchmarking")
         return
     
     results = []
@@ -657,7 +657,7 @@ async def benchmark_ais(args):
         ("Complex", "Write a detailed analysis of the trade-offs between microservices and monolithic architectures.")
     ]
     
-    print(f"Benchmarking {len(specialists)} AIs with {args.iterations} iterations...")
+    print(f"Benchmarking {len(specialists)} CIs with {args.iterations} iterations...")
     
     for spec in specialists:
         spec_results = {
@@ -784,7 +784,7 @@ async def route_test(args):
     """Test routing engine with different scenarios."""
     # Routing not supported with simple fixed-port system
     print("Routing test not supported in simplified architecture.")
-    print("All AIs use fixed ports based on their component ports.")
+    print("All CIs use fixed ports based on their component ports.")
     print(f"\nTo send a message to a specific AI, use: ai-discover test <ai-id>")
     print(f"Example: ai-discover test apollo-ci")
 
@@ -849,12 +849,12 @@ def main():
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  %(prog)s list                               # List all AIs
-  %(prog)s list --role planning --status healthy   # Filter AIs
+  %(prog)s list                               # List all CIs
+  %(prog)s list --role planning --status healthy   # Filter CIs
   %(prog)s watch                              # Watch CI status in real-time
   %(prog)s test apollo-ci                     # Test specific AI
   %(prog)s stream apollo-ci "Tell me a story" # Test streaming
-  %(prog)s benchmark --iterations 10         # Benchmark all AIs
+  %(prog)s benchmark --iterations 10         # Benchmark all CIs
   %(prog)s route "analyze this code"         # Test routing engine
   %(prog)s stats                             # Show registry statistics
         """
@@ -870,7 +870,7 @@ Examples:
     subparsers = parser.add_subparsers(dest='command', help='Commands')
     
     # List command
-    list_parser = subparsers.add_parser('list', help='List available AIs')
+    list_parser = subparsers.add_parser('list', help='List available CIs')
     list_parser.add_argument('--role', help='Filter by role')
     list_parser.add_argument('--capability', help='Filter by capability')
     list_parser.add_argument('--status', choices=['healthy', 'degraded', 'unresponsive', 'unknown'],

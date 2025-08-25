@@ -21,9 +21,9 @@ The primary goals of this sprint are:
 This sprint delivers value by:
 
 - **Revolutionary Development Model**: First platform where code ships with its own maintenance intelligence
-- **Viral Adoption Path**: Projects can gain AI capabilities with minimal integration effort
+- **Viral Adoption Path**: Projects can gain CI capabilities with minimal integration effort
 - **Distributed Innovation**: Federation enables collaborative evolution across organizations
-- **Persistent AI Relationships**: CIs maintain context and growth across sessions, solving the "reset problem"
+- **Persistent CI Relationships**: CIs maintain context and growth across sessions, solving the "reset problem"
 - **Future-Proof Architecture**: Preparing for 2026 when all software ships with embedded CI
 
 ## Current State Assessment

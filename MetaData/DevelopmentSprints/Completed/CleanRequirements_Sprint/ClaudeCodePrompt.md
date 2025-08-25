@@ -4,7 +4,7 @@
 
 This document serves as the initial prompt for a Claude Code session working on the CleanRequirements Development Sprint for the Tekton project. This sprint focuses on comprehensive dependency optimization to resolve critical version conflicts, eliminate massive dependency duplication, and establish sustainable dependency management practices.
 
-Tekton is an intelligent orchestration system that coordinates multiple AI models and resources to efficiently solve complex software engineering problems. This Development Sprint focuses on dependency optimization that will reduce the overall dependency footprint by 60-70% while resolving system-breaking compatibility issues.
+Tekton is an intelligent orchestration system that coordinates multiple CI models and resources to efficiently solve complex software engineering problems. This Development Sprint focuses on dependency optimization that will reduce the overall dependency footprint by 60-70% while resolving system-breaking compatibility issues.
 
 ## Sprint Context
 

@@ -4,7 +4,7 @@
 
 This document outlines the high-level plan for the Instrument UI For DevTools Development Sprint. It provides an overview of the goals, approach, and expected outcomes.
 
-Tekton is an intelligent orchestration system that coordinates multiple AI models and resources to efficiently solve complex software engineering problems. This Development Sprint focuses on making the Hephaestus UI fully instrumented for effective DevTools usage.
+Tekton is an intelligent orchestration system that coordinates multiple CI models and resources to efficiently solve complex software engineering problems. This Development Sprint focuses on making the Hephaestus UI fully instrumented for effective DevTools usage.
 
 ## Sprint Goals
 
@@ -61,7 +61,7 @@ data-tekton-state="[state]"              # Dynamic states
 
 All UI components in `/Hephaestus/ui/components/`:
 
-**Greek AI Components**:
+**Greek CI Components**:
 - Apollo, Athena, Engram, Sophia, Rhetor, Hermes, Harmonia, Metis, Prometheus, Synthesis
 
 **Framework Components**:
@@ -177,7 +177,7 @@ This sprint will be considered successful if:
 ## Key Stakeholders
 
 - **Casey**: Human-in-the-loop project manager and approver
-- **Future Developers**: Both human and AI who will use the instrumented UI
+- **Future Developers**: Both human and CI who will use the instrumented UI
 - **DevOps Team**: Who will use DevTools for UI debugging
 
 ## References

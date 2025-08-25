@@ -5,7 +5,7 @@ User guide for humans working with aish (AI Shell) in the Tekton platform.
 ## Overview
 
 aish is your command-line interface to the Tekton Multi-AI Engineering Platform. With the new unified CI system, it provides a single interface to communicate with:
-- **Greek Chorus AIs**: numa, apollo, athena, and other CI specialists
+- **Greek Chorus CIs**: numa, apollo, athena, and other CI specialists
 - **Terminals**: Other human terminals like alice, bob, sandi
 - **Project CIs**: Project-specific computational instances
 - All through the same simple command syntax!
@@ -80,7 +80,7 @@ With the unified CI system, you can communicate with any type of CI using the sa
 ### Direct Messaging
 
 ```bash
-# Greek Chorus AIs (AI specialists)
+# Greek Chorus CIs (AI specialists)
 aish athena "Explain the observer pattern"
 aish numa "Review this code for potential issues"
 aish apollo "What patterns do you see in these logs?"
@@ -98,7 +98,7 @@ All use the same simple syntax - the system automatically routes messages based 
 
 ### Team Chat
 
-Broadcast messages to all AIs simultaneously:
+Broadcast messages to all CIs simultaneously:
 
 ```bash
 aish team-chat "We need ideas for improving test coverage"
@@ -108,7 +108,7 @@ aish team-chat "We need ideas for improving test coverage"
 
 ### Forward CI Messages to Humans
 
-You can forward messages from specific AIs to human terminals:
+You can forward messages from specific CIs to human terminals:
 
 ```bash
 # Forward Apollo's messages to Alice's terminal

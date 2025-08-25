@@ -1,9 +1,9 @@
-# Unified AI Interface - Quick Reference
+# Unified CI Interface - Quick Reference
 
 ## What Changed?
 
 ### ✅ NEW: Unified System
-- Single registry for all AI discovery
+- Single registry for all CI discovery
 - Automatic health monitoring
 - Performance tracking
 - Event-driven updates
@@ -104,7 +104,7 @@ apollo | athena | sophia
 
 ## Key Benefits
 
-1. **Reliability**: Automatic failover to healthy AIs
+1. **Reliability**: Automatic failover to healthy CIs
 2. **Performance**: Load balancing and smart routing
 3. **Visibility**: Real-time monitoring and metrics
 4. **Simplicity**: One system for everything

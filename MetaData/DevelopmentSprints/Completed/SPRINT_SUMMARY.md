@@ -28,7 +28,7 @@ The Apollo component renovation sprint was successfully completed on January 20,
    - Protocols: Actual protocol definitions with severity indicators
    - Forecasting: Real predictions with confidence levels
    - Actions: Live recommendations or "All Systems Optimal"
-   - Team Chat: Connected to aish MCP for AI communication
+   - Team Chat: Connected to aish MCP for CI communication
 
 3. **Visual Design Excellence**
    - Component-specific colors (Athena=Purple, Rhetor=Red, etc.)
@@ -70,7 +70,7 @@ This sprint established reusable patterns for:
 3. Component color theming
 4. Event-driven data loading
 5. Semantic HTML with data attributes
-6. MCP integration for AI communication
+6. MCP integration for CI communication
 
 ## Impact
 Apollo now serves as:

@@ -2,7 +2,7 @@
 
 ## System Overview
 
-tekton-core becomes a visual project management hub with integrated chat and GitHub workflow management, designed for both human visual interaction and AI programmatic access.
+tekton-core becomes a visual project management hub with integrated chat and GitHub workflow management, designed for both human visual interaction and CI programmatic access.
 
 ## Architecture Principles
 
@@ -70,7 +70,7 @@ class ProjectManager:
         # Clone repository
         # Create fork if external
         # Initialize project structure
-        # Assign AI companion
+        # Assign CI companion
         # Register in storage
     
     def clone_project(self, source_project_id, new_config):

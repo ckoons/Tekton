@@ -191,12 +191,12 @@ UI components follow these principles:
 </div>
 ```
 
-## AI Interface Implementation
+## CI Interface Implementation
 
 ### Overview
-Every Tekton component integrates AI capabilities through two primary interfaces:
+Every Tekton component integrates CI capabilities through two primary interfaces:
 1. **Chat Interface** - Natural language interaction via Hephaestus UI
-2. **MCP Tools** - Programmatic AI access for component operations
+2. **MCP Tools** - Programmatic CI access for component operations
 
 ### Chat Interface Integration
 
@@ -247,7 +247,7 @@ function mycomponent_switchChat(chatType) {
 
 ### MCP Tool Integration for AI
 
-Components expose their functionality as MCP tools that AI agents can discover and use:
+Components expose their functionality as MCP tools that CI agents can discover and use:
 
 ```python
 # mycomponent/api/mcp_endpoints.py
@@ -260,7 +260,7 @@ mcp = FastMCP("mycomponent", dependencies=["engram", "rhetor"])
 @mcp.tool()
 async def analyze_data(data: str, analysis_type: str = "summary") -> Dict[str, Any]:
     """
-    Analyze data using AI capabilities.
+    Analyze data using CI capabilities.
     
     Args:
         data: The data to analyze
@@ -269,7 +269,7 @@ async def analyze_data(data: str, analysis_type: str = "summary") -> Dict[str, A
     Returns:
         Analysis results including insights and recommendations
     """
-    # Use Rhetor for AI analysis
+    # Use Rhetor for CI analysis
     rhetor_client = mcp.get_dependency("rhetor")
     
     prompt = f"Analyze the following data for {analysis_type}: {data}"
@@ -331,7 +331,7 @@ async def execute_natural_command(command: str) -> Dict[str, Any]:
 ```
 
 #### 2. Intelligent Monitoring
-Use AI to detect anomalies and patterns:
+Use CI to detect anomalies and patterns:
 
 ```python
 @mcp.tool()
@@ -377,9 +377,9 @@ async def configure_via_chat(conversation_id: str) -> Dict[str, Any]:
     pass
 ```
 
-### UI Components for AI Integration
+### UI Components for CI Integration
 
-#### 1. AI Insights Panel
+#### 1. CI Insights Panel
 Display AI-generated insights in your component:
 
 ```html
@@ -403,7 +403,7 @@ Display AI-generated insights in your component:
 </div>
 ```
 
-#### 2. AI Command Bar
+#### 2. CI Command Bar
 Add a command bar for natural language input:
 
 ```html
@@ -418,23 +418,23 @@ Add a command bar for natural language input:
 </div>
 ```
 
-### Best Practices for AI Integration
+### Best Practices for CI Integration
 
-1. **Context Awareness** - Provide rich context to AI for better responses
-2. **Progressive Disclosure** - Start simple, reveal AI features as needed
-3. **Feedback Loops** - Allow users to correct/improve AI responses
-4. **Transparency** - Show when AI is being used and why
+1. **Context Awareness** - Provide rich context to CI for better responses
+2. **Progressive Disclosure** - Start simple, reveal CI features as needed
+3. **Feedback Loops** - Allow users to correct/improve CI responses
+4. **Transparency** - Show when CI is being used and why
 5. **Fallback Options** - Always provide non-AI alternatives
-6. **Performance** - Cache AI responses when appropriate
-7. **Privacy** - Be clear about what data is sent to AI services
+6. **Performance** - Cache CI responses when appropriate
+7. **Privacy** - Be clear about what data is sent to CI services
 
-### Common AI Integration Patterns
+### Common CI Integration Patterns
 
 #### 1. AI-Assisted Debugging
 ```python
 @mcp.tool()
 async def debug_with_ai(error_context: Dict[str, Any]) -> Dict[str, Any]:
-    """Help debug issues using AI analysis of error patterns."""
+    """Help debug issues using CI analysis of error patterns."""
     # Analyze error patterns, suggest fixes
 ```
 
@@ -443,7 +443,7 @@ async def debug_with_ai(error_context: Dict[str, Any]) -> Dict[str, Any]:
 @mcp.tool()
 async def predict_resource_needs(historical_data: List[Dict]) -> Dict[str, Any]:
     """Predict future resource requirements based on patterns."""
-    # Use AI to forecast needs
+    # Use CI to forecast needs
 ```
 
 #### 3. Natural Language Queries
@@ -454,22 +454,22 @@ async def query_in_natural_language(query: str) -> Any:
     # Convert NL to structured queries
 ```
 
-### Integration with Other Tekton AI Components
+### Integration with Other Tekton CI Components
 
-Your component can leverage other Tekton AI components:
+Your component can leverage other Tekton CI components:
 
 - **Rhetor** - LLM management and prompt optimization
 - **Engram** - Memory and pattern recognition
 - **Apollo** - Planning and action coordination
 - **Athena** - Knowledge graph queries
-- **Sophia** - Advanced AI research and optimization
+- **Sophia** - Advanced CI research and optimization
 
 Example integration:
 ```python
-# Using multiple AI components together
+# Using multiple CI components together
 @mcp.tool()
 async def intelligent_optimization() -> Dict[str, Any]:
-    """Optimize component using multiple AI services."""
+    """Optimize component using multiple CI services."""
     
     # Get historical patterns from Engram
     patterns = await mcp.get_dependency("engram").call_tool(

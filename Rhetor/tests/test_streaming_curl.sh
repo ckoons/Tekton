@@ -12,7 +12,7 @@ curl -N -X GET "http://localhost:8003/api/chat/apollo-ai/stream?message=Tell%20m
 echo ""
 echo ""
 echo "=== Testing Team Streaming (POST) ==="
-echo "Streaming from all Greek Chorus AIs..."
+echo "Streaming from all Greek Chorus CIs..."
 echo ""
 
 # Test team streaming

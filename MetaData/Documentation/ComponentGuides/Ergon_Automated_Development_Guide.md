@@ -18,7 +18,7 @@ Ergon v2 represents a paradigm shift in software development automation. Rather 
 
 ### What is CI-in-the-Loop?
 
-CI-in-the-Loop inverts the traditional Human-in-the-Loop model. Instead of AI assisting humans, the Companion Intelligence (CI) drives development while optionally consulting humans for critical decisions. This approach:
+CI-in-the-Loop inverts the traditional Human-in-the-Loop model. Instead of CI assisting humans, the Companion Intelligence (CI) drives development while optionally consulting humans for critical decisions. This approach:
 
 - **Automates Casey's Expertise**: Captures and replicates development patterns
 - **Learns Continuously**: Improves through workflow pattern recognition
@@ -38,7 +38,7 @@ Ergon's philosophy emphasizes empowerment over control:
 
 ### The 50x Productivity Vision
 
-Current state: 100x manual coding productivity with AI assistance
+Current state: 100x manual coding productivity with CI assistance
 Target state: 5000x productivity through CI-in-the-Loop automation
 
 This is achieved through:
@@ -308,7 +308,7 @@ Ergon Integration Map:
 ### Communication Protocol
 
 ```python
-# Socket-based AI pipeline (port 8102)
+# Socket-based CI pipeline (port 8102)
 async def handle_ai_message(message):
     if message.type == "analyze_requirement":
         solution = await find_best_solution(message.requirement)

@@ -642,7 +642,7 @@ class EnhancedComponentLauncher:
                     component_name
                 )
                 
-                # Always launch CI - components and AIs are paired with fixed ports
+                # Always launch CI - components and CIs are paired with fixed ports
                 await self.launch_component_ai(component_name)
             else:
                 result.state = ComponentState.UNHEALTHY
@@ -1263,7 +1263,7 @@ async def main():
         # Handle AI-only mode
         if args.ci is not None:
             # Launch only CI specialists
-            if args.ai == []:  # --ci with no arguments means all AIs
+            if args.ai == []:  # --ci with no arguments means all CIs
                 ai_components = components
             else:
                 ai_components = [c.strip().lower() for c in args.ai]

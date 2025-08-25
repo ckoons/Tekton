@@ -328,7 +328,7 @@ Examples:
   %(prog)s                    Show all CI specialists
   %(prog)s -c rhetor          Show CI for Rhetor component  
   %(prog)s -a rhetor-ci       Show specific CI by ID
-  %(prog)s -f                 Show full details for all AIs
+  %(prog)s -f                 Show full details for all CIs
   %(prog)s -c apollo -f       Show full details for Apollo AI
         """
     )

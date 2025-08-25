@@ -4,7 +4,7 @@
 
 This document outlines the high-level plan for the Tekton Native Intelligence Development Sprint. It provides an overview of the goals, approach, and expected outcomes.
 
-Tekton is an intelligent orchestration system that coordinates multiple AI models and resources to efficiently solve complex software engineering problems. This Development Sprint focuses on creating sophisticated orchestration capabilities that leverage Tekton's unique multi-component architecture to generate emergent intelligence.
+Tekton is an intelligent orchestration system that coordinates multiple CI models and resources to efficiently solve complex software engineering problems. This Development Sprint focuses on creating sophisticated orchestration capabilities that leverage Tekton's unique multi-component architecture to generate emergent intelligence.
 
 ## Sprint Goals
 
@@ -22,7 +22,7 @@ This sprint delivers value by:
 - **Creating Unique Competitive Advantage**: Capabilities that literally cannot be replicated outside Tekton's architecture
 - **Exponential Capability Enhancement**: Intelligence that emerges from orchestration, making the whole greater than the sum of parts
 - **Self-Improving System**: Workflows and tools that become more intelligent over time through learning and adaptation
-- **Sophisticated Problem Solving**: Multi-modal approaches to complex challenges using coordinated AI components
+- **Sophisticated Problem Solving**: Multi-modal approaches to complex challenges using coordinated CI components
 - **Context Preservation**: Maintaining intelligent state across complex multi-session workflows
 - **Optimal Resource Utilization**: Intelligent cost and performance optimization across all components
 

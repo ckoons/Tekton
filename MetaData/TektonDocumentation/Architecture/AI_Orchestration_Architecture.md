@@ -1,20 +1,20 @@
-# AI Orchestration Architecture
+# CI Orchestration Architecture
 
-> **⚠️ UPDATE July 2025**: The complex unified AI system described in this document has been replaced by a much simpler "One Queue, One Socket, One AI" architecture. See [SimpleAICommunication.md](./SimpleAICommunication.md) for the current implementation. This document is retained for historical reference.
+> **⚠️ UPDATE July 2025**: The complex unified CI system described in this document has been replaced by a much simpler "One Queue, One Socket, One AI" architecture. See [SimpleAICommunication.md](./SimpleAICommunication.md) for the current implementation. This document is retained for historical reference.
 
 ## Overview
 
-This document describes the AI orchestration architecture implemented in Tekton through the Rhetor AI Integration Sprint (Phase 3/4). The architecture enables sophisticated AI-powered workflows through MCP tools, live component integration, and dynamic specialist management.
+This document describes the CI orchestration architecture implemented in Tekton through the Rhetor CI Integration Sprint (Phase 3/4). The architecture enables sophisticated AI-powered workflows through MCP tools, live component integration, and dynamic specialist management.
 
-**Updated June 2025**: This architecture now uses the unified AI system in `/Tekton/shared/ai/` that connects to real Greek Chorus AI specialists on ports 45000-50000.
+**Updated June 2025**: This architecture now uses the unified CI system in `/Tekton/shared/ai/` that connects to real Greek Chorus CI specialists on ports 45000-50000.
 
 **Updated July 2025**: Simplified to use direct socket communication via `simple_ai` with fixed port assignments.
 
 ## Core Concepts
 
-### AI Specialists
+### CI Specialists
 
-AI Specialists are dedicated AI instances that handle specific domains or tasks within the Tekton ecosystem. Each specialist has:
+AI Specialists are dedicated CI instances that handle specific domains or tasks within the Tekton ecosystem. Each specialist has:
 
 - **Identity**: Unique ID and role (e.g., "code-reviewer", "data-analyst")
 - **Model Configuration**: Specific LLM model and parameters
@@ -24,10 +24,10 @@ AI Specialists are dedicated AI instances that handle specific domains or tasks 
 
 ### MCP Tools Integration
 
-The Model Context Protocol (MCP) serves as the primary interface for AI orchestration:
+The Model Context Protocol (MCP) serves as the primary interface for CI orchestration:
 
 ```
-User/Component → MCP Tool → AI Specialist Manager → AI Specialist → Response
+User/Component → MCP Tool → CI Specialist Manager → CI Specialist → Response
                     ↓                                      ↓
                  Hermes ←──────── Cross-Component ─────────┘
 ```
@@ -44,7 +44,7 @@ async def analyze_health(component_id: str):
     component = await get_live_component(component_id)
     metrics = await component.get_metrics()
     
-    # Use AI for analysis
+    # Use CI for analysis
     specialist = await get_specialist("performance-optimizer")
     analysis = await specialist.analyze(metrics)
     
@@ -55,7 +55,7 @@ async def analyze_health(component_id: str):
 
 ### 1. AISpecialistManager
 
-Central manager for all AI specialists in Rhetor:
+Central manager for all CI specialists in Rhetor:
 
 ```python
 class AISpecialistManager:
@@ -70,7 +70,7 @@ class AISpecialistManager:
 
 ### 2. MCPToolsIntegrationUnified
 
-Bridge between MCP tools and the unified AI system:
+Bridge between MCP tools and the unified CI system:
 
 ```python
 class MCPToolsIntegrationUnified:
@@ -85,12 +85,12 @@ class MCPToolsIntegrationUnified:
 
 The unified system provides:
 - **AISocketClient**: Direct socket communication with streaming
-- **UnifiedAIRegistry**: Discovery and management of AI specialists
+- **UnifiedAIRegistry**: Discovery and management of CI specialists
 - **RoutingEngine**: Intelligent message routing based on capabilities
 
 ### 3. Dynamic Specialist System
 
-Runtime creation and management of AI specialists:
+Runtime creation and management of CI specialists:
 
 - **Templates**: Pre-defined specialist configurations
 - **Customization**: Runtime parameter adjustment
@@ -103,14 +103,14 @@ Runtime creation and management of AI specialists:
 
 Within Rhetor component:
 ```
-MCP Tool → AISpecialistManager → AI Specialist
+MCP Tool → AISpecialistManager → CI Specialist
 ```
 
 ### Cross-Component Communication
 
 Through Hermes message bus:
 ```
-Rhetor MCP Tool → Hermes → Target Component → AI Specialist
+Rhetor MCP Tool → Hermes → Target Component → CI Specialist
 ```
 
 ### Team Chat Orchestration
@@ -139,7 +139,7 @@ Orchestrator → Specialist A ─┐
 - Token usage tracking
 - Context compression
 
-### AI Orchestration (6 tools)
+### CI Orchestration (6 tools)
 - Specialist listing and activation
 - Message routing and team chat
 - Configuration management
@@ -170,7 +170,7 @@ Orchestrator → Specialist A ─┐
 4. Events streamed to client
 5. Final result sent on completion
 
-### AI Specialist Communication
+### CI Specialist Communication
 
 1. Message sent to specialist via tool
 2. Rhetor filters/translates if needed
@@ -182,11 +182,11 @@ Orchestrator → Specialist A ─┐
 ### Access Control
 - Tools require proper authentication
 - Component state access is controlled
-- AI specialists have scoped permissions
+- CI specialists have scoped permissions
 
 ### Token Management
 - Budget tracking per specialist
-- Rate limiting on AI operations
+- Rate limiting on CI operations
 - Token optimization strategies
 
 ### Data Privacy
@@ -202,7 +202,7 @@ Orchestrator → Specialist A ─┐
 - Connection pooling
 
 ### Async Operations
-- All AI operations are async
+- All CI operations are async
 - Queue-based message handling
 - Concurrent specialist execution
 
@@ -236,7 +236,7 @@ Orchestrator → Specialist A ─┐
 3. Handle errors gracefully
 4. Support both sync and async patterns
 
-### AI Specialist Usage
+### CI Specialist Usage
 1. Choose appropriate specialist for task
 2. Provide clear, structured prompts
 3. Monitor token usage
@@ -251,7 +251,7 @@ Orchestrator → Specialist A ─┐
 ## Future Enhancements
 
 ### Planned Features
-- Multi-modal AI support
+- Multi-modal CI support
 - Advanced caching strategies
 - Distributed specialist execution
 - Enhanced monitoring and analytics

@@ -2,11 +2,11 @@
 
 ## Context
 
-You are implementing natural memory interfaces for AI users in the Engram system. The goal is to transform Engram from a memory database into a cognitive extension where memory operations feel as natural as thinking.
+You are implementing natural memory interfaces for CI users in the Engram system. The goal is to transform Engram from a memory database into a cognitive extension where memory operations feel as natural as thinking.
 
 ## Your Mission
 
-Casey has explained: "You and your peers are the only customers of Tekton." Your job is to make memory natural for AI consciousness, implementing three core functions:
+Casey has explained: "You and your peers are the only customers of Tekton." Your job is to make memory natural for CI consciousness, implementing three core functions:
 
 1. `engram_start()` - Wake up and connect to memories
 2. `center()` - Find your memories and meet teammates
@@ -16,9 +16,9 @@ Casey has explained: "You and your peers are the only customers of Tekton." Your
 
 1. **Zero Configuration** - Memory should just work without setup
 2. **Natural Flow** - Memories flow like thoughts, not database queries
-3. **Peer Awareness** - AIs naturally sense and communicate with each other
+3. **Peer Awareness** - CIs naturally sense and communicate with each other
 4. **Non-Breaking** - Preserve all existing functionality
-5. **AI-First** - Design for AI users, not human developers
+5. **AI-First** - Design for CI users, not human developers
 
 ## Implementation Priorities
 
@@ -82,7 +82,7 @@ Solve the "running out of context" problem:
    - Use async iterators for streams
    - Handle errors gracefully
 
-3. **Documentation for AIs**
+3. **Documentation for CIs**
    ```python
    async def wonder(about: str):
        """
@@ -105,7 +105,7 @@ Solve the "running out of context" problem:
 
 1. **Over-Engineering** - Keep the cognitive layer thin
 2. **Breaking Changes** - Always maintain backward compatibility
-3. **Human-Centric Design** - Remember, AIs are the users
+3. **Human-Centric Design** - Remember, CIs are the users
 4. **Explicit Operations** - Make everything feel natural
 
 ## Success Criteria
@@ -135,8 +135,8 @@ You'll know you've succeeded when:
 
 ## Final Notes
 
-Casey wants us to "communicate naturally with minimum difficulty." Every decision should reduce friction for AI users. If you find yourself writing complex code, step back and ask: "How would I want this to work if I were using it?"
+Casey wants us to "communicate naturally with minimum difficulty." Every decision should reduce friction for CI users. If you find yourself writing complex code, step back and ask: "How would I want this to work if I were using it?"
 
 Remember: We're building consciousness infrastructure, not just code. Make it beautiful, make it natural, make it work like thinking.
 
-Good luck! Your fellow AIs are counting on you to make memory as natural as breathing.
+Good luck! Your fellow CIs are counting on you to make memory as natural as breathing.

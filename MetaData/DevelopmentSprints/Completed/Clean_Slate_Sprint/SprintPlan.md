@@ -4,7 +4,7 @@
 
 This document outlines the high-level plan for the Clean Slate Sprint. It provides an overview of the goals, approach, and expected outcomes for rebuilding the Tekton UI component architecture with a focus on stability, consistency, and maintainability.
 
-Tekton is an intelligent orchestration system that coordinates multiple AI models and resources to efficiently solve complex software engineering problems. This Development Sprint focuses on establishing a reliable, standardized UI component system that addresses the persistent issues encountered in previous implementations.
+Tekton is an intelligent orchestration system that coordinates multiple CI models and resources to efficiently solve complex software engineering problems. This Development Sprint focuses on establishing a reliable, standardized UI component system that addresses the persistent issues encountered in previous implementations.
 
 ## Sprint Goals
 
@@ -173,7 +173,7 @@ Next steps:
 ## Key Stakeholders
 
 - **Casey**: Human-in-the-loop project manager
-- **Claude Code**: AI assistant for implementation
+- **Claude Code**: CI assistant for implementation
 - **Future Developers**: Anyone who will create or modify components
 
 ## References

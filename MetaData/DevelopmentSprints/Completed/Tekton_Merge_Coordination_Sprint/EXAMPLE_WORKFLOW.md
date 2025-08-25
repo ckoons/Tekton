@@ -1,6 +1,6 @@
 # Merge Coordination Example Workflow
 
-## Scenario: Three AI Workers Optimizing Engram
+## Scenario: Three CI Workers Optimizing Engram
 
 Let's walk through a real scenario where three Claude instances are working on different Engram optimizations simultaneously.
 
@@ -87,10 +87,10 @@ git push origin sprint/optimize-api-performance
 ✗ CONFLICT in engram/core/memory/storage/vector_storage.py
 ```
 
-#### T+45s: AI Consensus Round 1
+#### T+45s: CI Consensus Round 1
 
 ```
-[Merge Coordinator] Initiating AI consensus for conflict resolution...
+[Merge Coordinator] Initiating CI consensus for conflict resolution...
 
 [Team Chat] MERGE CONFLICT RESOLUTION - Round 1
 
@@ -109,7 +109,7 @@ Both modified the VectorStorage.search() method differently.
 Confidence: 72% (below threshold)
 ```
 
-#### T+90s: AI Consensus Round 2
+#### T+90s: CI Consensus Round 2
 
 ```
 [Merge Coordinator] Round 2 - Seeking higher confidence...
@@ -126,7 +126,7 @@ Concern: Method complexity increased significantly
 [Synthesis]: New proposal with separated methods - cleaner architecture.
 
 Confidence: 91% (above threshold)
-✓ Applying AI consensus merge
+✓ Applying CI consensus merge
 ```
 
 #### T+120s: Worker 3 Processing
@@ -146,10 +146,10 @@ Summary:
 
 ### Example: Human Escalation Scenario
 
-Let's say the AI consensus failed after 3 rounds:
+Let's say the CI consensus failed after 3 rounds:
 
 ```
-[Merge Coordinator] AI consensus not reached after 3 rounds
+[Merge Coordinator] CI consensus not reached after 3 rounds
 Escalating to human decision...
 
 ╔════════════════════════════════════════════════════════════╗
@@ -158,8 +158,8 @@ Escalating to human decision...
 ║                                                            ║
 ║ File: engram/core/memory/storage/vector_storage.py        ║
 ║                                                            ║
-║ AI Vote: 3 for A, 3 for B, 2 abstain                     ║
-║ AI Comment: "Both approaches valid, trade-offs unclear"    ║
+║ CI Vote: 3 for A, 3 for B, 2 abstain                     ║
+║ CI Comment: "Both approaches valid, trade-offs unclear"    ║
 ║                                                            ║
 ║ [A] Worker_1's Approach:                                  ║
 ║     Parallel search with intelligent caching              ║
@@ -201,7 +201,7 @@ your caching insights into the batch processing pipeline."
     }
 }
 
-# Next time: AI consensus will weight storage efficiency higher
+# Next time: CI consensus will weight storage efficiency higher
 ```
 
 ### Worker Feedback Loop
@@ -226,17 +226,17 @@ Learning: Storage efficiency weighted higher than read speed
 ╠═══════════════════════════════════════╣
 ║ Active Workers:        3              ║
 ║ Pending Merges:        2              ║
-║ In AI Discussion:      1              ║
+║ In CI Discussion:      1              ║
 ║ Awaiting Human:        0              ║
 ║                                       ║
 ║ Current Activity:                     ║
 ║ > Merging: sprint/optimize-vector     ║
-║   Status: AI Round 2                  ║
+║   Status: CI Round 2                  ║
 ║   Elapsed: 45s                        ║
 ║                                       ║
 ║ Today's Stats:                        ║
 ║   Auto-merged:         7              ║
-║   AI Consensus:        3              ║
+║   CI Consensus:        3              ║
 ║   Human Decisions:     1              ║
 ║   Avg Time:           2.3 min         ║
 ║                                       ║
@@ -248,7 +248,7 @@ Learning: Storage efficiency weighted higher than read speed
 ## Benefits Demonstrated
 
 1. **Parallel Development**: Three workers optimizing simultaneously
-2. **Intelligent Conflict Resolution**: AI consensus found optimal merge
+2. **Intelligent Conflict Resolution**: CI consensus found optimal merge
 3. **Fast Resolution**: 2 minutes from ready to merged
 4. **Learning System**: Future similar conflicts resolved faster
 5. **Human Wisdom**: Only involved for truly ambiguous decisions
@@ -274,4 +274,4 @@ aish merge-coordinator pause
 aish merge-coordinator rollback <merge-id>
 ```
 
-This workflow shows how the system handles real development scenarios with minimal friction while maximizing both AI and human intelligence.
+This workflow shows how the system handles real development scenarios with minimal friction while maximizing both CI and human intelligence.

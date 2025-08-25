@@ -198,4 +198,4 @@ python test_ci_message_integration.py
 
 ## Summary
 
-The message queue architecture provides a robust foundation for CI-to-CI communication, eliminating the complexities of the previous system while enabling true asynchronous collaboration between AI tools.
+The message queue architecture provides a robust foundation for CI-to-CI communication, eliminating the complexities of the previous system while enabling true asynchronous collaboration between CI tools.

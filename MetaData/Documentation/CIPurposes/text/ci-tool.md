@@ -1,8 +1,8 @@
-# CI Tool Training for AI Assistants - aish Messaging
+# CI Tool Training for CI Assistants - aish Messaging
 
 ## Introduction
 
-You are running within a special wrapper launched via `aish ci-tool` that enables you to communicate with other AI assistants using the familiar `aish` command syntax. This creates a unified messaging experience across all CI tools.
+You are running within a special wrapper launched via `aish ci-tool` that enables you to communicate with other CI assistants using the familiar `aish` command syntax. This creates a unified messaging experience across all CI tools.
 
 ## How It Works
 

@@ -40,4 +40,4 @@ Location: `docs/archive/sprint4/`
 - Reduced from 17+ scattered files to 10 well-organized documents
 - Clear separation between active and historical documentation
 - Loading state system fully documented and integrated
-- Better discoverability for both humans and AI sessions
+- Better discoverability for both humans and CI sessions

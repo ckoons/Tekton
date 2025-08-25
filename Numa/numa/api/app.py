@@ -143,7 +143,7 @@ async def companion_chat(request: CompanionChatRequest):
     data_flow="Numa -> Rhetor -> Target components -> Responses"
 )
 async def team_chat(request: TeamChatRequest):
-    """Handle team chat messages - communication with other AIs"""
+    """Handle team chat messages - communication with other CIs"""
     try:
         # Route through Rhetor's team chat system
         async with httpx.AsyncClient() as client:

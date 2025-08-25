@@ -57,6 +57,6 @@ memory = await memory.retrieve("insight", show_provenance=True)  # Loads on dema
 
 1. **Atomic operations** for fork/merge (in progress)
 2. **Storage adapter** implementation for different backends
-3. **Multi-instance testing** with real AI peers
+3. **Multi-instance testing** with real CI peers
 
 The integration maintains full backward compatibility while adding powerful provenance tracking that doesn't impact performance for simple operations.

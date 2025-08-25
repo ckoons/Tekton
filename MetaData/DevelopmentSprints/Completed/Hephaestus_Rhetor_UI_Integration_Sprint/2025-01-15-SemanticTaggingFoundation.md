@@ -32,10 +32,10 @@ Systematically tagged ALL component containers:
 - ✅ Sophia - `data-tekton-ai="sophia-assistant"`
 - ✅ Ergon - `data-tekton-ai="ergon-assistant"`
 - ✅ Telos - `data-tekton-ai="telos-assistant"`
-- ✅ Hermes, Codex, Terma, Settings, Profile (no AI specialists)
+- ✅ Hermes, Codex, Terma, Settings, Profile (no CI specialists)
 
 ### Phase 4: Rhetor Integration (The First Road)
-Successfully integrated Rhetor with its AI specialist:
+Successfully integrated Rhetor with its CI specialist:
 1. Fixed API routing (Hephaestus → Rhetor proxy)
 2. Fixed specialist endpoint handlers
 3. Implemented proper system prompt passing
@@ -50,7 +50,7 @@ Successfully integrated Rhetor with its AI specialist:
 4. **Component Registry**: `/Rhetor/rhetor/core/component_specialists.py`
 5. **Verification Tools**: `/Hephaestus/scripts/verify-semantic-tags.js`
 
-### Working Pattern for AI Integration:
+### Working Pattern for CI Integration:
 ```javascript
 // 1. Find the component using semantic tags
 [data-tekton-component="athena"]
@@ -91,7 +91,7 @@ Successfully integrated Rhetor with its AI specialist:
 You're inheriting:
 - A fully tagged navigation system
 - All components with semantic markers
-- One working AI integration (Rhetor)
+- One working CI integration (Rhetor)
 - Clear documentation and patterns
 
 Your mission:
@@ -109,7 +109,7 @@ Remember Casey's wisdom: "Build the map, place the signs, then open the road."
 data-tekton-area        → Major functional area
 data-tekton-component   → Component identifier
 data-tekton-type       → Element type (workspace, nav, etc)
-data-tekton-ai         → AI specialist assignment
+data-tekton-ai         → CI specialist assignment
 data-tekton-ai-ready   → Connection status
 data-tekton-chat       → Chat interface marker
 data-tekton-action     → Interactive elements

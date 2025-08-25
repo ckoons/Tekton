@@ -404,7 +404,7 @@ Components with Greek names should subtly incorporate classical design elements:
 
 ### Chat Interfaces
 - User messages: Right-aligned with subtle background
-- AI messages: Left-aligned with border accent
+- CI messages: Left-aligned with border accent
 - Thinking states: Dashed border with pulsing animation
 
 ### Terminal/Code Blocks

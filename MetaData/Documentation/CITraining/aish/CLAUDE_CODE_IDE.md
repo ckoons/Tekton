@@ -26,13 +26,13 @@ See all methods and signatures for any class.
 $ aish introspect AIShell
 AIShell class (/shared/aish/src/core/shell.py)
 
-The AI Shell - orchestrates AI pipelines
+The CI Shell - orchestrates CI pipelines
 
 Methods:
   broadcast_message(message: Any) -> None
-    Broadcast message to all AIs (team-chat).
+    Broadcast message to all CIs (team-chat).
   send_to_ai(ai_name: Any, message: Any) -> None
-    Send message directly to AI via Rhetor.
+    Send message directly to CI via Rhetor.
   # ... more methods
 ```
 

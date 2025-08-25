@@ -12,7 +12,7 @@ Ergon is the agent framework for the Tekton ecosystem, enabling the creation, ma
 - [User Guide](USER_GUIDE.md) - Detailed usage instructions and examples
 
 ### Architecture
-- Agent Framework - Creation and execution of specialized AI agents
+- Agent Framework - Creation and execution of specialized CI agents
 - Tool System - Registration, discovery, and execution of agent tools
 - Memory Integration - Integration with Tekton's memory system
 - Workflow Engine - Definition and execution of agent workflows

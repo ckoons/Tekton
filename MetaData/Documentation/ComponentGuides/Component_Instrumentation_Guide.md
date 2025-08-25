@@ -2,7 +2,7 @@
 
 ## Overview
 
-This guide explains how to instrument Tekton components with metadata annotations that enable knowledge graph construction and improved AI understanding. All new components and updates to existing components MUST include proper instrumentation.
+This guide explains how to instrument Tekton components with metadata annotations that enable knowledge graph construction and improved CI understanding. All new components and updates to existing components MUST include proper instrumentation.
 
 ## Core Principles
 

@@ -79,7 +79,7 @@ Added descriptive landmark comments to all major sections:
 
 1. **Developer Navigation**: Landmarks make it easy to find specific sections in the 2190+ line file
 2. **Feature Discovery**: Semantic tags clearly identify what each element does
-3. **AI Understanding**: Enhanced metadata helps AI assistants understand component structure
+3. **AI Understanding**: Enhanced metadata helps CI assistants understand component structure
 4. **Testing Support**: Semantic tags provide stable selectors for automated testing
 5. **Documentation**: Tags serve as inline documentation of component features
 

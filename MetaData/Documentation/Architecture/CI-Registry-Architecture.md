@@ -4,9 +4,9 @@
 
 The CI Registry is the central coordination system for all Conversational Interfaces (CIs) in the Tekton ecosystem. It manages three types of CIs:
 
-1. **Greek Chorus CIs** - The foundational AI specialists (Apollo, Rhetor, Athena, etc.)
+1. **Greek Chorus CIs** - The foundational CI specialists (Apollo, Rhetor, Athena, etc.)
 2. **Terminal CIs** - User-facing terminal interfaces managed by Terma
-3. **Project CIs** - Project-specific AI assistants
+3. **Project CIs** - Project-specific CI assistants
 
 ## Architecture Components
 
@@ -86,10 +86,10 @@ Both Apollo and Rhetor track:
 - **User Satisfaction** - Inferred from conversation flow
 - **CI Stress** - When CIs are struggling with complex queries
 
-## AI Specialist Integration
+## CI Specialist Integration
 
 ### Worker Process Updates
-Every AI specialist automatically stores exchanges:
+Every CI specialist automatically stores exchanges:
 
 ```python
 # In specialist_worker.py after each response
@@ -122,7 +122,7 @@ aish list context apollo
 ```
 Shows full exchange including:
 - Complete user message
-- Full AI response
+- Full CI response
 - Model used
 - Token count
 - Response latency
@@ -130,7 +130,7 @@ Shows full exchange including:
 
 ## Integration Points
 
-### 1. AI Specialists
+### 1. CI Specialists
 - Auto-register in CI registry on startup
 - Store every exchange automatically
 - Respect injected context from Rhetor

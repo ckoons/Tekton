@@ -2,16 +2,16 @@
 
 ## Overview
 
-This document outlines the plan for implementing a minimal help system for the aish command. The system provides documentation paths for both AI Training and User Guides, maintaining equal treatment for humans and Companion Intelligences.
+This document outlines the plan for implementing a minimal help system for the aish command. The system provides documentation paths for both CI Training and User Guides, maintaining equal treatment for humans and Companion Intelligences.
 
-Tekton is an intelligent orchestration system that coordinates multiple AI models and resources. This sprint focuses on creating a foundational help pattern that can serve the platform for years to come.
+Tekton is an intelligent orchestration system that coordinates multiple CI models and resources. This sprint focuses on creating a foundational help pattern that can serve the platform for years to come.
 
 ## Sprint Goals
 
 1. **Fix aish syntax**: Implement unified `aish [component] [command/message]` pattern
-2. **Enable AI message visibility**: In-memory two-inbox system for inter-terminal messages
+2. **Enable CI message visibility**: In-memory two-inbox system for inter-terminal messages
 3. **Implement help command recognition**: Add logic to aish to recognize help requests
-4. **Return documentation paths**: Display paths to AI Training and User Guides
+4. **Return documentation paths**: Display paths to CI Training and User Guides
 5. **Create documentation structure**: Establish directory hierarchy for component docs
 
 ## Business Value
@@ -30,13 +30,13 @@ This sprint delivers value by:
 - aish currently has `-h/--help` for command-line usage
 - No component-specific help system exists
 - Documentation is scattered across the codebase
-- AI Training documentation exists but isn't easily discoverable
+- CI Training documentation exists but isn't easily discoverable
 
 ### Pain Points
 
 - New users (human or AI) don't know where to find documentation
 - No standardized way to get component-specific help
-- Help information is not equally accessible to humans and AIs
+- Help information is not equally accessible to humans and CIs
 
 ## Proposed Approach
 
@@ -71,7 +71,7 @@ All implementation will be contained within the aish command itself. No other co
 ## Out of Scope
 
 - Complex help text generation
-- Dynamic content from AI specialists
+- Dynamic content from CI specialists
 - Modification of other components
 - Rich formatting or interactive help
 
@@ -81,8 +81,8 @@ Expanded sprint with four implementation phases:
 
 ### Phase 1: Fix aish Syntax (30 minutes)
 - Implement unified router in aish command
-- Fix direct AI messaging (no synthetic pipelines)
-- Test with all AI components
+- Fix direct CI messaging (no synthetic pipelines)
+- Test with all CI components
 
 ### Phase 2: Fix Message Display (15 minutes)
 - Update aish-proxy to write to /dev/tty

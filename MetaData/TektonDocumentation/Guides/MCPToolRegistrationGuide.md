@@ -11,7 +11,7 @@ MCP (Model Context Protocol) provides:
 - Unified execution interface across components
 - Type-safe parameter validation
 - Automatic documentation generation
-- Integration with AI specialists and LLMs
+- Integration with CI specialists and LLMs
 
 ## Tool Registration Methods
 
@@ -354,24 +354,24 @@ class ToolProvider:
         })
 ```
 
-### AI Specialist Integration
+### CI Specialist Integration
 
-Make tools available to AI specialists:
+Make tools available to CI specialists:
 
 ```python
 from shared.ai.simple_ai import ai_send_sync
 
-# Register tool for AI use
+# Register tool for CI use
 @mcp_tool(
     name="weather_forecast",
     description="Get weather forecast for a location",
-    ai_enabled=True  # Flag for AI availability
+    ai_enabled=True  # Flag for CI availability
 )
 def get_weather(location: str, days: int = 7) -> dict:
     # Implementation
     return {"location": location, "forecast": "sunny"}
 
-# AI can now use the tool
+# CI can now use the tool
 response = ai_send_sync(
     "sophia-ai",
     "What's the weather forecast for Paris?",

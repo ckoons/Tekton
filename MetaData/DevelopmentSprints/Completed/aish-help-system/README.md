@@ -49,7 +49,7 @@ Changes span three files:
 - No disk persistence (session-based)
 - Future Engram integration ready
 
-### 3. Message Visibility for AIs
+### 3. Message Visibility for CIs
 - `aish terma inbox` - View new messages
 - `aish terma inbox keep` - View saved messages
 - `aish terma inbox read N` - Move message to keep

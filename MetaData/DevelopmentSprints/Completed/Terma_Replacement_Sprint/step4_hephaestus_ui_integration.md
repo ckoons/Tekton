@@ -11,9 +11,9 @@ Replaced the old web terminal UI in Hephaestus with a **native terminal launcher
 - **Template Grid**: Visual selection of pre-configured templates
   - Default: Basic aish terminal
   - Development: Tekton dev environment
-  - AI Workspace: AI-assisted development
+  - CI Workspace: AI-assisted development
   - Data Science: Jupyter/Python setup
-- **Purpose Input**: Optional context for AI assistance
+- **Purpose Input**: Optional context for CI assistance
 - **Launch Button**: Creates new native terminal with selected configuration
 
 ### 2. Active Terminals Tab
@@ -29,7 +29,7 @@ Replaced the old web terminal UI in Hephaestus with a **native terminal launcher
 - **Auto-refresh**: Updates every 5 seconds
 
 ### 3. Footer Status Bar
-- **aish-proxy status**: Shows if AI enhancement is available
+- **aish-proxy status**: Shows if CI enhancement is available
 - **Platform detection**: Displays operating system
 
 ## Implementation Details
@@ -128,7 +128,7 @@ DELETE /api/terminals/{pid}
    - Visual feedback with border/background
 
 3. **Add Purpose** (optional)
-   - Provides context for AI assistance
+   - Provides context for CI assistance
    - Passed to aish-proxy environment
 
 4. **Launch Terminal**
@@ -175,7 +175,7 @@ The Terma replacement is now complete:
 3. ✅ Step 3: Clean Terma v2 service
 4. ✅ Step 4: Hephaestus UI integration
 
-The system is ready for use. Users can now launch native terminals with AI enhancement directly from the Tekton UI.
+The system is ready for use. Users can now launch native terminals with CI enhancement directly from the Tekton UI.
 
 ## Technical Notes
 

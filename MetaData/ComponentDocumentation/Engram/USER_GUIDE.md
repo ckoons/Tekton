@@ -95,7 +95,7 @@ Common memory types include:
 curl -X POST http://localhost:8003/api/memories \
   -H "Content-Type: application/json" \
   -d '{
-    "content": "Tekton is an intelligent orchestration system for AI models.",
+    "content": "Tekton is an intelligent orchestration system for CI models.",
     "memory_type": "knowledge",
     "tags": ["tekton", "overview"]
   }'
@@ -109,7 +109,7 @@ async def store_memory_example():
     client = EngramClient("http://localhost:8003")
     
     memory_id = await client.store_memory(
-        content="Tekton is an intelligent orchestration system for AI models.",
+        content="Tekton is an intelligent orchestration system for CI models.",
         memory_type="knowledge",
         tags=["tekton", "overview"]
     )
@@ -120,7 +120,7 @@ async def store_memory_example():
 #### Using the CLI:
 ```bash
 python -m engram.cli store \
-  --content "Tekton is an intelligent orchestration system for AI models." \
+  --content "Tekton is an intelligent orchestration system for CI models." \
   --type knowledge \
   --tags tekton,overview
 ```
@@ -134,7 +134,7 @@ curl -X POST http://localhost:8003/api/memories \
   -d '{
     "content": {
       "title": "Tekton Overview",
-      "description": "Intelligent orchestration system for AI models",
+      "description": "Intelligent orchestration system for CI models",
       "components": ["Engram", "Hermes", "Athena"],
       "version": "1.0.0"
     },
@@ -153,7 +153,7 @@ async def store_structured_memory_example():
     
     content = {
         "title": "Tekton Overview",
-        "description": "Intelligent orchestration system for AI models",
+        "description": "Intelligent orchestration system for CI models",
         "components": ["Engram", "Hermes", "Athena"],
         "version": "1.0.0"
     }

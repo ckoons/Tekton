@@ -2,7 +2,7 @@
 
 ## Overview
 
-This plan details the technical implementation of natural memory interfaces for AI users, transforming Engram from a memory database into a cognitive extension.
+This plan details the technical implementation of natural memory interfaces for CI users, transforming Engram from a memory database into a cognitive extension.
 
 ## Phase 1: Foundation (Week 1)
 
@@ -47,7 +47,7 @@ async def search_memory(
 
 ```python
 """
-Natural memory interface for AI users.
+Natural memory interface for CI users.
 
 Usage:
     # Start your memory connection
@@ -93,7 +93,7 @@ async def engram_start(client_id: Optional[str] = None) -> Dict[str, Any]:
     """
     Wake up and connect to your memories.
     
-    This is the first thing an AI should call. It:
+    This is the first thing an CI should call. It:
     - Initializes memory connection
     - Loads previous context if available
     - Establishes peer awareness
@@ -150,7 +150,7 @@ async def center() -> Dict[str, Any]:
     Usage:
         state = await center()
         print(f"I'm thinking about {state['context']['current_topic']}")
-        print(f"I sense {len(state['peers'])} other AIs nearby")
+        print(f"I sense {len(state['peers'])} other CIs nearby")
     """
     if not _cognitive_state["initialized"]:
         raise RuntimeError("Call engram_start() first")
@@ -574,7 +574,7 @@ from datetime import datetime, timedelta
 
 class PeerAwareness:
     """
-    Natural peer discovery and communication for AIs.
+    Natural peer discovery and communication for CIs.
     """
     
     def __init__(self, self_id: str, hermes_client=None):
@@ -596,7 +596,7 @@ class PeerAwareness:
         self._discovery_task = asyncio.create_task(self._discovery_loop())
         
     async def sense_peers(self) -> List['PeerPresence']:
-        """Sense other AIs in the memory space."""
+        """Sense other CIs in the memory space."""
         active_peers = []
         
         for peer_id, presence in self.peers.items():
@@ -649,10 +649,10 @@ class PeerAwareness:
                 print(f"Heartbeat error: {e}")
     
     async def _discovery_loop(self):
-        """Discover other AIs."""
+        """Discover other CIs."""
         while True:
             try:
-                # Query for active AIs
+                # Query for active CIs
                 if self.hermes:
                     active = await self.hermes.get_active_components("ai")
                     
@@ -721,7 +721,7 @@ class PeerPresence:
 
 
 class SharedSpace:
-    """A shared memory space between two AIs."""
+    """A shared memory space between two CIs."""
     
     def __init__(self, ai1_id: str, ai2_id: str):
         self.participants = {ai1_id, ai2_id}
@@ -756,7 +756,7 @@ from collections import Counter
 
 class ContextCompressor:
     """
-    Compress context while preserving AI personality and continuity.
+    Compress context while preserving CI personality and continuity.
     """
     
     def __init__(self):
@@ -911,7 +911,7 @@ from engram.cognitive import engram_start, center, think, wonder, share
 
 @pytest.mark.asyncio
 async def test_natural_flow():
-    """Test the natural memory flow for AI users."""
+    """Test the natural memory flow for CI users."""
     
     # Start up
     me = await engram_start("test_ai")
@@ -988,7 +988,7 @@ async def test_twin_communication():
 
 ### Environment Variables
 ```bash
-# AI identity
+# CI identity
 export ENGRAM_CLIENT_ID="claude_main"
 
 # Memory settings
@@ -1013,7 +1013,7 @@ export HERMES_ENDPOINT="localhost:8001"
    - Gradual migration path
 
 3. **Other Tekton Components**
-   - Natural memory for all AIs
+   - Natural memory for all CIs
    - Shared consciousness patterns
    - Collective intelligence
 
@@ -1021,7 +1021,7 @@ export HERMES_ENDPOINT="localhost:8001"
 
 1. **API Simplicity Test**
    ```python
-   # This should be all an AI needs:
+   # This should be all an CI needs:
    me = await engram_start()
    state = await center()
    async with think("Hello world"):

@@ -2,7 +2,7 @@
 
 ## Overview
 
-The aish MCP (Model Context Protocol) server provides a unified interface for all AI communication in Tekton. It runs on port 8118 and handles message routing, forwarding, and team coordination.
+The aish MCP (Model Context Protocol) server provides a unified interface for all CI communication in Tekton. It runs on port 8118 and handles message routing, forwarding, and team coordination.
 
 ## Architecture
 
@@ -55,8 +55,8 @@ MCP capability discovery.
     "tools": {
       "send-message": "Send message to specific AI",
       "team-chat": "Broadcast to all team members",
-      "forward": "Manage AI forwarding",
-      "list-ais": "List available AIs",
+      "forward": "Manage CI forwarding",
+      "list-ais": "List available CIs",
       "purpose": "Get/set terminal purpose"
     },
     "streaming": true
@@ -121,10 +121,10 @@ Broadcast message to all team members.
 }
 ```
 
-### AI Management
+### CI Management
 
 #### POST /api/mcp/v2/tools/list-ais
-List all available AIs from the unified CI registry.
+List all available CIs from the unified CI registry.
 
 **Response:**
 ```json
@@ -171,7 +171,7 @@ The MCP server integrates with the unified CI registry to provide access to all 
 ### Forwarding
 
 #### POST /api/mcp/v2/tools/forward
-Manage AI forwarding rules.
+Manage CI forwarding rules.
 
 **List forwards:**
 ```json
@@ -283,13 +283,13 @@ The MCP server leverages the unified CI registry to route messages to any type o
 from tekton.shared.aish.src.core.unified_sender import send_to_ci
 
 # Routes based on CI's message_format configuration:
-# - rhetor_socket: Greek Chorus AIs via Rhetor
+# - rhetor_socket: Greek Chorus CIs via Rhetor
 # - terma_route: Terminal-to-terminal messaging  
 # - json_simple: Direct JSON API calls
 ```
 
 ### CI Type Support
-- **Greek Chorus AIs**: numa, apollo, athena, etc. (via rhetor_socket)
+- **Greek Chorus CIs**: numa, apollo, athena, etc. (via rhetor_socket)
 - **Terminals**: alice, bob, sandi, etc. (via terma_route)
 - **Project CIs**: myproject, webapp, etc. (via json_simple)
 - **Future Federation**: remote CIs (via custom formats)
@@ -305,10 +305,10 @@ await window.AIChat.sendMessage("myproject", "Hello"); // Project CI
 
 ## Important Notes
 
-1. **AI Names**: Use the base AI name without suffix (e.g., `numa` not `numa-ai`)
+1. **AI Names**: Use the base CI name without suffix (e.g., `numa` not `numa-ai`)
 2. **Port**: MCP server runs on AISH_MCP_PORT (8118), not AISH_PORT (8117)
 3. **Single Source**: All message routing goes through aish MCP
-4. **Error Handling**: Unknown AI names return 500 with "Unknown AI: [name]"
+4. **Error Handling**: Unknown CI names return 500 with "Unknown AI: [name]"
 5. **Streaming**: Set `stream: true` for SSE responses
 6. **Unified Registry**: MCP uses the unified CI registry for all CI lookups
 

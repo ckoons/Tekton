@@ -787,7 +787,7 @@ if __name__ == "__main__":
 
 ### Step 7: Create MCP Integration (Modern FastMCP Approach)
 
-With the completion of the YetAnotherMCP Sprint and Rhetor AI Integration Sprint Phase 3/4, Tekton now uses a standardized FastMCP implementation with advanced AI orchestration capabilities. Here's how to add MCP tools to your component:
+With the completion of the YetAnotherMCP Sprint and Rhetor CI Integration Sprint Phase 3/4, Tekton now uses a standardized FastMCP implementation with advanced CI orchestration capabilities. Here's how to add MCP tools to your component:
 
 #### Create MCP Tools Module
 
@@ -1087,7 +1087,7 @@ if __name__ == "__main__":
 4. **No duplicate registration** - FastMCP handles basic tools like health_check automatically
 5. **Test both direct and through Hermes** - Ensure tools work in both scenarios
 6. **Live Component Integration** - Tools can now integrate with live component functionality
-7. **AI Orchestration Support** - Consider using Rhetor's AI orchestration MCP tools for complex workflows
+7. **AI Orchestration Support** - Consider using Rhetor's CI orchestration MCP tools for complex workflows
 8. **Streaming Support** - Use SSE endpoints for real-time progress updates on long-running tools
 
 #### Advanced MCP Features (From Rhetor Phase 3/4)
@@ -1113,19 +1113,19 @@ async def get_live_status() -> dict:
     return {"status": "not_initialized"}
 ```
 
-##### AI Orchestration Integration
+##### CI Orchestration Integration
 
-Components can leverage Rhetor's AI orchestration capabilities:
+Components can leverage Rhetor's CI orchestration capabilities:
 
 ```python
 # Example: Create an AI-assisted tool
-@mcp.tool(description="Analyze connection health with AI assistance")
+@mcp.tool(description="Analyze connection health with CI assistance")
 async def analyze_connection_health(component_id: str) -> dict:
-    """Use AI to analyze connection health patterns."""
+    """Use CI to analyze connection health patterns."""
     # Get connection data
     metrics = await get_connection_metrics(component_id)
     
-    # Use Rhetor's AI orchestration via Hermes
+    # Use Rhetor's CI orchestration via Hermes
     import httpx
     async with httpx.AsyncClient() as client:
         # Call Rhetor's SendMessageToSpecialist tool

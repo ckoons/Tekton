@@ -19,7 +19,7 @@ This document describes the landmarks added to capture the architectural decisio
 ```python
 @architecture_decision(
     title="Native Terminal Integration with aish",
-    rationale="Use native terminal apps (Terminal.app, iTerm, etc.) enhanced with aish-proxy for AI capabilities",
+    rationale="Use native terminal apps (Terminal.app, iTerm, etc.) enhanced with aish-proxy for CI capabilities",
     alternatives_considered=["Custom terminal emulator", "Web-based terminal", "PTY manipulation"],
     impacts=["platform_compatibility", "user_experience", "maintenance"],
     decision_date="2025-07-02"
@@ -136,4 +136,4 @@ As the integration evolves, additional landmarks should be added for:
 - Session persistence and recovery features
 - Any new architectural decisions or integration points
 
-Remember: Landmarks capture the "why" and "how" of the system for future developers and AI assistants!
+Remember: Landmarks capture the "why" and "how" of the system for future developers and CI assistants!

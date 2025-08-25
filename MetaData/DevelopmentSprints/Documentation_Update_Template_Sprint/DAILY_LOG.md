@@ -38,7 +38,7 @@ Component: [name]
 - [ ] Fixed code examples in [docs]
 
 ### In Progress
-- [ ] Updating AI training docs
+- [ ] Updating CI training docs
 
 ### Issues Found
 - [ ] Outdated example in: [location]
@@ -48,7 +48,7 @@ Component: [name]
 - [Any decisions about what to document]
 
 ### Next Session Focus
-- Complete AI training updates
+- Complete CI training updates
 - Start quick reference updates
 
 ---

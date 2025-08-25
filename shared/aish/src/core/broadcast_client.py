@@ -1,6 +1,6 @@
 """
 Broadcast client for sending messages to multiple CIs.
-Supports broadcasting to all Greek Chorus AIs or specific CI groups.
+Supports broadcasting to all Greek Chorus CIs or specific CI groups.
 """
 
 import json
@@ -41,7 +41,7 @@ except ImportError:
 
 @integration_point(
     title="Rhetor Direct Message Integration",
-    description="Send messages to Greek Chorus AIs through Rhetor's socket endpoint",
+    description="Send messages to Greek Chorus CIs through Rhetor's socket endpoint",
     target_component="Rhetor",
     protocol="HTTP POST",
     data_flow="rhetor_client → Rhetor /rhetor/socket → Greek Chorus CI → response",
@@ -127,10 +127,10 @@ def send_to_rhetor(ai_name: str, message: str, rhetor_endpoint: str = None) -> O
 
 @integration_point(
     title="Rhetor Team Chat Integration",
-    description="Broadcast messages to all Greek Chorus AIs",
+    description="Broadcast messages to all Greek Chorus CIs",
     target_component="Rhetor",
     protocol="HTTP POST",
-    data_flow="rhetor_client → Rhetor /rhetor/team-chat → All Greek Chorus AIs → aggregated responses",
+    data_flow="rhetor_client → Rhetor /rhetor/team-chat → All Greek Chorus CIs → aggregated responses",
     integration_date="2025-01-25"
 )
 @api_contract(
@@ -144,7 +144,7 @@ def send_to_rhetor(ai_name: str, message: str, rhetor_endpoint: str = None) -> O
 )
 @performance_boundary(
     title="Team Chat Response Aggregation",
-    description="Collects and formats responses from all Greek Chorus AIs",
+    description="Collects and formats responses from all Greek Chorus CIs",
     sla="<2s total response time",
     optimization_notes="Rhetor handles parallel CI queries internally",
     measured_impact="Enables real-time team collaboration"

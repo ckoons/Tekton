@@ -1,14 +1,14 @@
-# Unified AI Communication Architecture
+# Unified CI Communication Architecture
 
 ## Overview
 
-**July 2025** - Tekton now implements a unified "One Queue, One Socket, One AI" communication architecture that simplifies and standardizes all AI interactions across the platform.
+**July 2025** - Tekton now implements a unified "One Queue, One Socket, One AI" communication architecture that simplifies and standardizes all CI interactions across the platform.
 
 ## Architecture Principle
 
 ### "One Queue, One Socket, One AI"
 
-Every AI has exactly:
+Every CI has exactly:
 - **One message queue** for request/response tracking
 - **One socket connection** for communication
 - **One unified interface** for access
@@ -39,7 +39,7 @@ response = await ai_send("apollo-ai", "Hello", "localhost", 45012)
 from shared.ai.ai_service_simple import get_service
 
 service = get_service()
-# Service has 18 AI queues pre-registered
+# Service has 18 CI queues pre-registered
 # Manages message routing and socket connections
 ```
 
@@ -53,16 +53,16 @@ service = get_service()
 ### ✅ Simplified Architecture
 - Removed complex connection pooling
 - Eliminated multiple communication pathways
-- Single point of truth for AI communication
+- Single point of truth for CI communication
 
 ### ✅ Reliable Messaging
 - UUID-based message tracking
 - Proper error handling and propagation
-- Graceful degradation when AIs unavailable
+- Graceful degradation when CIs unavailable
 
 ### ✅ Developer Experience
 - Consistent API across sync/async contexts
-- Auto-registration of all 18 Tekton AIs
+- Auto-registration of all 18 Tekton CIs
 - Clear error messages and debugging tools
 
 ### ✅ Test Coverage
@@ -77,17 +77,17 @@ All test suites passing:
 1. **Request**: Component calls `ai_send_sync()` or `ai_send()`
 2. **Queue**: Message assigned UUID and queued for target AI
 3. **Process**: Service sends message through AI's socket
-4. **Response**: AI response received and matched to request UUID
+4. **Response**: CI response received and matched to request UUID
 5. **Return**: Response returned to calling component
 
 ### Auto-Registration
 ```python
-# 18 AIs automatically registered on import:
+# 18 CIs automatically registered on import:
 ais = [
     ("engram-ai", "localhost", 45000),
     ("hermes-ai", "localhost", 45001),
     ("ergon-ai", "localhost", 45002),
-    # ... all 18 AIs
+    # ... all 18 CIs
 ]
 ```
 
@@ -161,7 +161,7 @@ print(f"Queues: {len(service.queues)}, Sockets: {len(service.sockets)}")
 4. **Deprecate legacy `ai_service.py`** after full migration
 
 ### Monitoring
-- All 18 AIs auto-registered and ready
+- All 18 CIs auto-registered and ready
 - Test coverage validates architecture reliability
 - Error handling provides clear diagnostics
 

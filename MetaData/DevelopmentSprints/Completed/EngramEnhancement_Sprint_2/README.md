@@ -10,7 +10,7 @@
 
 ## Core Problem
 
-Current Engram requires explicit API calls with many parameters, making memory feel like database operations rather than natural cognition. AIs need to `curl` and manage client IDs, namespaces, and metadata instead of just thinking and remembering.
+Current Engram requires explicit API calls with many parameters, making memory feel like database operations rather than natural cognition. CIs need to `curl` and manage client IDs, namespaces, and metadata instead of just thinking and remembering.
 
 ## Solution: Natural Memory Interface
 

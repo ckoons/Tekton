@@ -3,7 +3,7 @@
 ## Overview
 This document records the architectural decisions made during the Fix GUI Sprint Development Sprint. It captures the context, considerations, alternatives considered, and rationale behind each significant decision. This serves as a reference for both current implementation and future development.
 
-Tekton is an intelligent orchestration system that coordinates multiple AI models and resources to efficiently solve complex software engineering problems. The architectural decisions in this document focus on simplifying and standardizing the Hephaestus UI architecture to create a more reliable component integration system.
+Tekton is an intelligent orchestration system that coordinates multiple CI models and resources to efficiently solve complex software engineering problems. The architectural decisions in this document focus on simplifying and standardizing the Hephaestus UI architecture to create a more reliable component integration system.
 
 ## Decision 1: Simplify Panel System Architecture
 
@@ -88,7 +88,7 @@ The terminal functionality is currently mixed with the HTML UI components, causi
 Some components (like Athena) are being forced into "terminal mode" when they should be using HTML interfaces. The terminal functionality is useful but needs to be properly separated.
 
 ### Decision
-Use Terma as a dedicated terminal for AI tools, separate from the main component rendering system.
+Use Terma as a dedicated terminal for CI tools, separate from the main component rendering system.
 
 ### Alternatives Considered
 1. **Remove terminal functionality:** Focus only on HTML interfaces

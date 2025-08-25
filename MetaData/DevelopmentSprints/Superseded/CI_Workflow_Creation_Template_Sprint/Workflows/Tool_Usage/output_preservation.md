@@ -1,9 +1,9 @@
 # Workflow: Output Preservation
 
 ## When to Use
-- Need to save important AI responses
+- Need to save important CI responses
 - Debugging requires reviewing past outputs  
-- Building documentation from AI conversations
+- Building documentation from CI conversations
 - Collecting examples for training/testing
 
 ## Prerequisites
@@ -94,7 +94,7 @@ aish --capture team-chat "architectural review needed"
 
 ## Success Verification
 - [ ] Capture file exists: `ls -la $TEKTON_ROOT/.tekton/aish/captures/last_output.txt`
-- [ ] Content is complete: Check for timestamp, AI name, full response
+- [ ] Content is complete: Check for timestamp, CI name, full response
 - [ ] Symlink updated: `last_output.txt` points to most recent
 
 ## Integration Tips
@@ -103,7 +103,7 @@ aish --capture team-chat "architectural review needed"
 ```bash
 # Add important captures to version control
 git add .tekton/aish/captures/architecture_decision_*.txt
-git commit -m "Captured AI architecture discussions"
+git commit -m "Captured CI architecture discussions"
 ```
 
 ### With Documentation
@@ -145,7 +145,7 @@ Message forwarding in Tekton allows...
 ```
 
 ## Notes
-- Captures include timestamp, AI name, message, and response
+- Captures include timestamp, CI name, message, and response
 - The `last_output.txt` symlink always points to most recent
 - Captures persist across sessions and environments
 - Consider periodic cleanup of old captures

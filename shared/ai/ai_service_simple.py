@@ -185,7 +185,7 @@ class CIService:
         return self.send_request(ai_id, message)
 
     def send_to_all(self, message: str, ai_ids: list) -> Dict[str, str]:
-        """Send message to multiple AIs, return dict of msg_ids"""
+        """Send message to multiple CIs, return dict of msg_ids"""
         msg_ids = {}
         for ai_id in ai_ids:
             try:

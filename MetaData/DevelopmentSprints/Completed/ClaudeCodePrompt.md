@@ -2,7 +2,7 @@
 
 ## Context
 
-You are assisting with implementing the MCP Unified Integration Sprint for Tekton, an intelligent orchestration system that coordinates multiple AI models and resources to efficiently solve complex software engineering problems. This sprint consolidates previously planned FastMCP_Sprint and MCP_Integration_Sprint efforts into a comprehensive MCP implementation across Tekton components.
+You are assisting with implementing the MCP Unified Integration Sprint for Tekton, an intelligent orchestration system that coordinates multiple CI models and resources to efficiently solve complex software engineering problems. This sprint consolidates previously planned FastMCP_Sprint and MCP_Integration_Sprint efforts into a comprehensive MCP implementation across Tekton components.
 
 Tekton's architecture consists of multiple components including Hermes (communication hub), Ergon (agent and tool management), Rhetor (LLM management), and others. The current MCP implementation has issues with component registration, service initialization, and request routing that need to be fixed.
 

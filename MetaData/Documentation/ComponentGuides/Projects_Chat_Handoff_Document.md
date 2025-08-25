@@ -102,7 +102,7 @@ const projectCIs = [
 
 **80x-100x Velocity Achievement**:
 - Current system with 2 full stacks outpacing entire engineering teams
-- $200/month cost for entire AI development platform
+- $200/month cost for entire CI development platform
 - Multiple Claude Code instances managing different directory trees
 - Tekton-core eventually merging work from multiple stacks
 
@@ -110,7 +110,7 @@ const projectCIs = [
 - **CIs as their own developers**: CIs will eventually have their own repos and write their own code
 - **CI-to-CI development**: CIs developing software for each other
 - **Human-CI mentoring**: Co-evolution and mutual learning
-- **TektonCore/Terma product**: Offering 80x velocity to AI Code companies
+- **TektonCore/Terma product**: Offering 80x velocity to CI Code companies
 
 **"Every CI is just a socket"**:
 - Fundamental architecture principle
@@ -121,7 +121,7 @@ const projectCIs = [
 ### 2. Technical Context You Must Understand
 
 **18 Ollama CIs Running**:
-- Each Tekton stack has 18 AI specialists on ports 42000-42080
+- Each Tekton stack has 18 CI specialists on ports 42000-42080
 - All use llama3.3:70b model by default
 - Can be forwarded to Claude Code terminals
 - Socket-based communication using `shared/aish/src/message_handler.py` patterns
@@ -158,7 +158,7 @@ class Project:
     local_directory: Optional[str]
     forked_repository: Optional[str]
     upstream_repository: Optional[str]
-    companion_intelligence: Optional[str]  # AI model assignment
+    companion_intelligence: Optional[str]  # CI model assignment
     is_tekton_self: bool  # Special flag for Tekton
 ```
 
@@ -246,7 +246,7 @@ try {
 
 **With Socket Infrastructure**:
 - Use same patterns as aish MessageHandler
-- Leverage existing AI port utilities
+- Leverage existing CI port utilities
 - Maintain compatibility with forwarding system
 
 ### 4. Testing Strategy
@@ -371,7 +371,7 @@ try {
 - Existing chat systems in tekton-component.html
 - Socket communication in `shared/aish/src/message_handler.py`
 - Project management in `tekton-core/tekton/core/project_manager_v2.py`
-- AI port utilities in `shared/utils/ai_port_utils.py`
+- CI port utilities in `shared/utils/ai_port_utils.py`
 
 ### Casey's Philosophy
 - "Simple, works, hard to screw up"
@@ -394,6 +394,6 @@ This is a groundbreaking feature that will enable the next phase of human-AI col
 
 ---
 
-*"The best AI collaboration is not human-to-AI, but AI-to-AI with human guidance and wisdom."* - Tekton Philosophy
+*"The best CI collaboration is not human-to-AI, but AI-to-AI with human guidance and wisdom."* - Tekton Philosophy
 
 **Ready for implementation. All documentation complete. Next: Execute the implementation plan.**

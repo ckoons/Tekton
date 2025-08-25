@@ -4,7 +4,7 @@
 
 This document outlines the high-level plan for the MCP External Integration Development Sprint. It provides an overview of the goals, approach, and expected outcomes.
 
-Tekton is an intelligent orchestration system that coordinates multiple AI models and resources to efficiently solve complex software engineering problems. This Development Sprint focuses on integrating external MCP servers into the Tekton ecosystem, building on the foundation established by the MCP Unified Integration Sprint.
+Tekton is an intelligent orchestration system that coordinates multiple CI models and resources to efficiently solve complex software engineering problems. This Development Sprint focuses on integrating external MCP servers into the Tekton ecosystem, building on the foundation established by the MCP Unified Integration Sprint.
 
 ## Sprint Goals
 
@@ -24,7 +24,7 @@ This sprint delivers value by:
 - **Simplifying Integration**: Standard patterns for connecting to external services
 - **Enhancing Workflow Automation**: Pipedream integration enables complex automation workflows
 - **Improving Developer Experience**: Seamless discovery and use of external tools
-- **Enabling Ecosystem Growth**: Positioning Tekton as a hub for MCP-based AI orchestration
+- **Enabling Ecosystem Growth**: Positioning Tekton as a hub for MCP-based CI orchestration
 
 ## Current State Assessment
 

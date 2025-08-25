@@ -1,7 +1,7 @@
-# Rhetor AI Specialist API Migration Guide
+# Rhetor CI Specialist API Migration Guide
 
 ## Overview
-The internal AI specialist management system has been replaced with a unified AI Registry system. This guide documents the API changes.
+The internal CI specialist management system has been replaced with a unified CI Registry system. This guide documents the API changes.
 
 ## Old System (Removed)
 The old system used internal specialist management with these endpoints:
@@ -11,9 +11,9 @@ The old system used internal specialist management with these endpoints:
 - `GET /api/v1/specialists/{id}`
 
 ## New Unified System
-All AI management now goes through the AI Registry with these endpoints:
+All CI management now goes through the CI Registry with these endpoints:
 
-### List AIs
+### List CIs
 ```bash
 GET /api/ai/specialists
 ```
@@ -50,9 +50,9 @@ Body:
 ```bash
 GET /api/ai/roster
 ```
-Returns Rhetor's currently hired AIs with enriched information.
+Returns Rhetor's currently hired CIs with enriched information.
 
-### Reassign AI Role
+### Reassign CI Role
 ```bash
 POST /api/ai/specialists/{ai_id}/reassign?new_role=planning
 ```
@@ -61,7 +61,7 @@ POST /api/ai/specialists/{ai_id}/reassign?new_role=planning
 ```bash
 GET /api/ai/candidates/{role}
 ```
-Find AIs that can fulfill a specific role.
+Find CIs that can fulfill a specific role.
 
 ## Client Updates
 
@@ -72,29 +72,29 @@ Apollo's `rhetor.py` interface has been updated:
 - `/api/v1/specialists/{id}/start` → `/api/ai/specialists/{id}/hire`
 
 ### aish
-The `aish` tool now uses the AI Discovery Service with smart routing:
+The `aish` tool now uses the CI Discovery Service with smart routing:
 ```bash
-# List all AIs (discovers both Greek Chorus and Rhetor specialists)
+# List all CIs (discovers both Greek Chorus and Rhetor specialists)
 aish -l
 
-# Use Greek Chorus AI (direct socket communication)
+# Use Greek Chorus CI (direct socket communication)
 echo "Hello" | aish --ai apollo
 
 # Use Rhetor specialist (HTTP API communication)
 echo "Hello" | aish --ai rhetor-ai
 
-# Let discovery find best AI (auto-routes to appropriate communication method)
+# Let discovery find best CI (auto-routes to appropriate communication method)
 echo "Write Python code" | aish
 ```
 
 **Communication Methods**:
-- **Greek Chorus AIs**: Direct TCP socket (ports 45000-50000)
+- **Greek Chorus CIs**: Direct TCP socket (ports 45000-50000)
 - **Rhetor Specialists**: HTTP API via `/api/ai/specialists`
-- **aish**: Automatically detects AI type and uses correct protocol
+- **aish**: Automatically detects CI type and uses correct protocol
 
 ## MCP Tools
 MCP tools now use the unified integration:
-- `ListAISpecialists` - Uses AI Registry
+- `ListAISpecialists` - Uses CI Registry
 - `ActivateAISpecialist` - Maps to hire/fire
 - `SendMessageToSpecialist` - Uses Registry for discovery
 
@@ -106,4 +106,4 @@ A compatibility endpoint maps old specialist IDs:
 - etc.
 
 ## Configuration
-AI configuration is now in `config/tekton_ai_config.json` and synced by the AI Config Sync Service.
+AI configuration is now in `config/tekton_ai_config.json` and synced by the CI Config Sync Service.

@@ -51,8 +51,8 @@ git diff [start_commit]..HEAD --name-only | grep -E "^(numa|apollo|athena|rhetor
 - [ ] Document new instrumentation patterns
 - [ ] Update testing approaches
 
-#### AI Training Updates
-- [ ] Update training docs for modified AIs
+#### CI Training Updates
+- [ ] Update training docs for modified CIs
 - [ ] Document new capabilities added
 - [ ] Update command references
 

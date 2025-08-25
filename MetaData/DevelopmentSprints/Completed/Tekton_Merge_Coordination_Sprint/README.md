@@ -136,7 +136,7 @@ AI-Native:   CI Workers → Git → CI Coordinator → CI Consensus → (Human A
 1. **Parallel CI Development**: Multiple Claudes working simultaneously without coordination overhead
 2. **Intelligent Merging**: CI understanding of code intent, not just syntax
 3. **Continuous Learning**: Every merge makes the system smarter
-4. **Human Amplification**: Humans make strategic decisions, AIs handle implementation
+4. **Human Amplification**: Humans make strategic decisions, CIs handle implementation
 5. **Audit Trail**: Complete history of development decisions and rationale
 6. **Scalability**: Add more CI workers without increasing complexity
 

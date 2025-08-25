@@ -3,7 +3,7 @@
 ## Overview
 This document outlines the high-level plan for the Fix GUI Sprint Development Sprint. It provides an overview of the goals, approach, and expected outcomes, with recent updates reflecting discovered infrastructure issues.
 
-Tekton is an intelligent orchestration system that coordinates multiple AI models and resources to efficiently solve complex software engineering problems. This Development Sprint focuses on simplifying and standardizing the Hephaestus UI architecture to create a more reliable component integration system.
+Tekton is an intelligent orchestration system that coordinates multiple CI models and resources to efficiently solve complex software engineering problems. This Development Sprint focuses on simplifying and standardizing the Hephaestus UI architecture to create a more reliable component integration system.
 
 ## Sprint Goals
 

@@ -12,7 +12,7 @@ This sprint implements a persona-based CI instantiation system with progressive 
 1. Create CI persona system with identity manifests
 2. Implement progressive memory loading via MCP
 3. Enable "hiring" specific personas for specific tasks
-4. Allow AIs to manage their own memory retrieval
+4. Allow CIs to manage their own memory retrieval
 5. Maintain identity continuity across sessions
 
 ## Current Progress

@@ -22,7 +22,7 @@ This sprint transforms Tekton into a true multi-AI engineering platform by imple
 - Numa serves as shepherd for external projects
 
 ### 2. "Name That Tune" Development
-- AIs confident in approach can proceed independently
+- CIs confident in approach can proceed independently
 - Daily progress reports from every CI on every project
 - No silent failures - transparent communication required
 
@@ -61,7 +61,7 @@ This sprint transforms Tekton into a true multi-AI engineering platform by imple
 ## Success Metrics
 
 1. **Component Health**: 50% → 90% in 2 weeks
-2. **Parallel Development**: 5+ AIs working simultaneously
+2. **Parallel Development**: 5+ CIs working simultaneously
 3. **Project Management**: Successfully manage Tekton + 1 external project
 4. **Daily Reports**: 100% compliance with progress reporting
 5. **PR Success**: 90% of AI-generated PRs pass review
@@ -77,11 +77,11 @@ This sprint transforms Tekton into a true multi-AI engineering platform by imple
 ## The Future We're Building
 
 A platform where:
-- Humans provide vision, AIs provide velocity
+- Humans provide vision, CIs provide velocity
 - Multiple projects advance in parallel
 - CI teams self-organize around tasks
 - Progress is transparent and measurable
 - Learning compounds through retrospectives
 
 ---
-*"We're not just building software, we're building a new way for humans and AIs to create together."* - Casey's Vision
+*"We're not just building software, we're building a new way for humans and CIs to create together."* - Casey's Vision

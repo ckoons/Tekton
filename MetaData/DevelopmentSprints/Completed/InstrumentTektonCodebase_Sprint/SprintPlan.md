@@ -4,7 +4,7 @@
 
 This document outlines the high-level plan for the InstrumentTektonCodebase Development Sprint. It provides an overview of the goals, approach, and expected outcomes.
 
-Tekton is an intelligent orchestration system that coordinates multiple AI models and resources to efficiently solve complex software engineering problems. This Development Sprint focuses on adding comprehensive metadata annotations throughout the entire codebase to enable future knowledge graph construction and improved AI understanding.
+Tekton is an intelligent orchestration system that coordinates multiple CI models and resources to efficiently solve complex software engineering problems. This Development Sprint focuses on adding comprehensive metadata annotations throughout the entire codebase to enable future knowledge graph construction and improved CI understanding.
 
 ## Sprint Goals
 
@@ -13,7 +13,7 @@ The primary goals of this sprint are:
 1. **Annotate Core Components**: Add semantic metadata to all major components, services, and utilities
 2. **Document Data Flows**: Instrument data structures, transformations, and flow patterns
 3. **Map Dependencies**: Create a comprehensive dependency and interaction map through annotations
-4. **Enable AI Navigation**: Make the codebase fully navigable and understandable by AI tools
+4. **Enable CI Navigation**: Make the codebase fully navigable and understandable by CI tools
 
 ## Business Value
 
@@ -29,7 +29,7 @@ This sprint delivers value by:
 
 ### Existing Implementation
 
-Currently, only the UI components have semantic instrumentation (data-tekton-* tags). The backend Python code, JavaScript services, and configuration files lack systematic metadata annotations. This makes it difficult for AI tools to understand:
+Currently, only the UI components have semantic instrumentation (data-tekton-* tags). The backend Python code, JavaScript services, and configuration files lack systematic metadata annotations. This makes it difficult for CI tools to understand:
 - Component relationships and dependencies
 - Data flow through the system
 - API contracts and interfaces
@@ -40,7 +40,7 @@ Currently, only the UI components have semantic instrumentation (data-tekton-* t
 - No standardized way to document component purposes and relationships
 - Difficult to trace data flows through multiple services
 - Dependencies are implicit rather than explicit
-- AI tools must infer relationships rather than read them
+- CI tools must infer relationships rather than read them
 - No machine-readable API documentation
 
 ## Proposed Approach

@@ -4,7 +4,7 @@
 
 This document outlines the detailed implementation plan for the GoodLaunch Development Sprint. It breaks down the high-level goals into specific implementation tasks, defines the phasing, specifies testing requirements, and identifies documentation that must be updated.
 
-Tekton is an intelligent orchestration system that coordinates multiple AI models and resources to efficiently solve complex software engineering problems. This Implementation Plan focuses on component reliability, launch system robustness, and lifecycle management.
+Tekton is an intelligent orchestration system that coordinates multiple CI models and resources to efficiently solve complex software engineering problems. This Implementation Plan focuses on component reliability, launch system robustness, and lifecycle management.
 
 ## Debug Instrumentation Requirements
 

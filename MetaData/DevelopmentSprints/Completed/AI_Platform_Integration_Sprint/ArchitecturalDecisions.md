@@ -1,20 +1,20 @@
-# AI Platform Integration Sprint - Architectural Decisions
+# CI Platform Integration Sprint - Architectural Decisions
 
 ## Overview
 
-This document captures the key architectural decisions for integrating AI specialists throughout the Tekton platform.
+This document captures the key architectural decisions for integrating CI specialists throughout the Tekton platform.
 
 ## Key Architectural Decisions
 
-### 1. AI Process Model - Independent Processes
+### 1. CI Process Model - Independent Processes
 
-**Decision**: Each AI specialist runs as an independent process, not a thread within Rhetor.
+**Decision**: Each CI specialist runs as an independent process, not a thread within Rhetor.
 
 **Rationale**:
-- **Isolation**: Apollo's AI survives Rhetor restarts
-- **Fault Tolerance**: One AI crash doesn't affect others
+- **Isolation**: Apollo's CI survives Rhetor restarts
+- **Fault Tolerance**: One CI crash doesn't affect others
 - **Resource Management**: OS handles process scheduling and memory
-- **Scalability**: Can distribute AIs across machines in future
+- **Scalability**: Can distribute CIs across machines in future
 
 **Alternatives Considered**:
 - Threading within Rhetor: Simpler but less robust
@@ -27,7 +27,7 @@ This document captures the key architectural decisions for integrating AI specia
 
 ### 2. Environment-Based Feature Flag
 
-**Decision**: Use `TEKTON_REGISTER_AI` environment variable to control AI lifecycle.
+**Decision**: Use `TEKTON_REGISTER_AI` environment variable to control CI lifecycle.
 
 **Rationale**:
 - **Development Flexibility**: Easy to disable during coding
@@ -39,12 +39,12 @@ This document captures the key architectural decisions for integrating AI specia
 ```bash
 # In .tekton/.env.tekton or shell
 export TEKTON_REGISTER_AI=true   # Enable AI
-export TEKTON_REGISTER_AI=false  # Disable AI (default)
+export TEKTON_REGISTER_AI=false  # Disable CI (default)
 ```
 
 ### 3. Socket-Based Communication
 
-**Decision**: Use the existing socket registry for all AI communication.
+**Decision**: Use the existing socket registry for all CI communication.
 
 **Rationale**:
 - **Unix Philosophy**: Everything is a file/stream
@@ -54,16 +54,16 @@ export TEKTON_REGISTER_AI=false  # Disable AI (default)
 
 **Message Flow**:
 ```
-Component → Write to Socket → AI Reads → Processes → Writes Response → Component Reads
+Component → Write to Socket → CI Reads → Processes → Writes Response → Component Reads
 ```
 
-### 4. AI Health Monitoring via Activity
+### 4. CI Health Monitoring via Activity
 
-**Decision**: Monitor AI health by tracking "last spoke" timestamps rather than active polling.
+**Decision**: Monitor CI health by tracking "last spoke" timestamps rather than active polling.
 
 **Rationale**:
-- **Non-Intrusive**: Doesn't interrupt AI operations
-- **Natural Behavior**: AIs communicate when active
+- **Non-Intrusive**: Doesn't interrupt CI operations
+- **Natural Behavior**: CIs communicate when active
 - **Resource Efficient**: No constant health checks
 - **Debug Integration**: Can use debug logs as activity
 
@@ -75,11 +75,11 @@ Component → Write to Socket → AI Reads → Processes → Writes Response →
 
 ### 5. Numa as Platform Mentor
 
-**Decision**: Numa is a peer AI with platform-wide visibility, not a privileged supervisor.
+**Decision**: Numa is a peer CI with platform-wide visibility, not a privileged supervisor.
 
 **Rationale**:
 - **Collaborative Model**: Facilitator, not boss
-- **User-Centric**: Serves the user, not other AIs
+- **User-Centric**: Serves the user, not other CIs
 - **Simple Permissions**: Read access everywhere, write to sockets
 - **Coaching Role**: Guides through knowledge, not authority
 
@@ -91,29 +91,29 @@ Component → Write to Socket → AI Reads → Processes → Writes Response →
 
 ### 6. Component Lifecycle Integration
 
-**Decision**: AI lifecycle tied to component lifecycle with special handling for Numa.
+**Decision**: CI lifecycle tied to component lifecycle with special handling for Numa.
 
 **Rationale**:
-- **Simplicity**: Components and their AIs live together
+- **Simplicity**: Components and their CIs live together
 - **Resource Management**: Clean startup/shutdown
-- **Special Cases**: Numa for full stack, component AIs for individuals
-- **Predictable Behavior**: Clear when AIs start/stop
+- **Special Cases**: Numa for full stack, component CIs for individuals
+- **Predictable Behavior**: Clear when CIs start/stop
 
 **Lifecycle Sequence**:
 ```
-Start: Component → Health Check → Register AI → AI Process
-Stop: Terminate AI → Deregister → Terminate Component
+Start: Component → Health Check → Register CI → CI Process
+Stop: Terminate CI → Deregister → Terminate Component
 Numa: Starts after all components, stops before any component
 ```
 
-### 7. Shared AI Registry Client
+### 7. Shared CI Registry Client
 
 **Decision**: Create a shared registry client that works independently of Rhetor.
 
 **Rationale**:
 - **Shutdown Resilience**: Can deregister even if Rhetor is down
 - **File-Based Fallback**: Persist registry state to disk
-- **Universal Access**: Any component can register/query AIs
+- **Universal Access**: Any component can register/query CIs
 - **Decoupled Design**: Registry logic separate from Rhetor
 
 **Registry Client Features**:
@@ -139,7 +139,7 @@ Numa: Starts after all components, stops before any component
 
 ### 9. Debug Mode Integration
 
-**Decision**: Use debug logs to track AI activity and health.
+**Decision**: Use debug logs to track CI activity and health.
 
 **Rationale**:
 - **Existing Infrastructure**: Debug system already in place
@@ -148,8 +148,8 @@ Numa: Starts after all components, stops before any component
 - **Performance**: No overhead when disabled
 
 **Debug Integration**:
-- Parse debug logs for AI activity
-- Update "last spoke" on any AI output
+- Parse debug logs for CI activity
+- Update "last spoke" on any CI output
 - Filter by component name for clarity
 - Use for troubleshooting and monitoring
 
@@ -167,11 +167,11 @@ Numa: Starts after all components, stops before any component
 1. Phase 1: Rhetor (orchestrator), Apollo (executive), Numa (platform)
 2. Phase 2: Athena, Hermes, Engram (core infrastructure)
 3. Phase 3: Remaining components
-4. Phase 4: Specialized AIs (if needed)
+4. Phase 4: Specialized CIs (if needed)
 
 ## Technical Standards
 
-### AI Process Naming
+### CI Process Naming
 - Pattern: `{component_name}_ai`
 - Examples: `rhetor_ai`, `apollo_ai`, `numa_ai`
 
@@ -185,29 +185,29 @@ Numa: Starts after all components, stops before any component
 - Noesis: 8015 (Discovery - placeholder)
 
 ### Environment Variables
-- `TEKTON_REGISTER_AI`: Enable/disable AI lifecycle
+- `TEKTON_REGISTER_AI`: Enable/disable CI lifecycle
 - `TEKTON_AI_DEBUG`: Enable AI-specific debug logging
-- `TEKTON_AI_AUTO_RESTART`: Enable automatic restart of failed AIs
+- `TEKTON_AI_AUTO_RESTART`: Enable automatic restart of failed CIs
 
 ## Security Considerations
 
-1. **Process Isolation**: Each AI runs with component permissions
+1. **Process Isolation**: Each CI runs with component permissions
 2. **Socket Access**: Controlled by registry permissions
-3. **File Access**: AIs inherit component file access
-4. **Network**: Localhost only, no external AI access
+3. **File Access**: CIs inherit component file access
+4. **Network**: Localhost only, no external CI access
 
 ## Performance Considerations
 
-1. **Startup Time**: AIs launch async, don't block components
-2. **Memory**: Each AI process ~200-500MB
+1. **Startup Time**: CIs launch async, don't block components
+2. **Memory**: Each CI process ~200-500MB
 3. **CPU**: Minimal when idle, spikes during processing
 4. **Monitoring**: 5-minute timeout minimizes overhead
 
 ## Future Considerations
 
-1. **Distributed AIs**: Could run on separate machines
-2. **AI Pooling**: Shared AIs for similar components
-3. **Dynamic Scaling**: Spawn AIs based on load
-4. **Specialized Models**: Task-specific AI variants
+1. **Distributed CIs**: Could run on separate machines
+2. **AI Pooling**: Shared CIs for similar components
+3. **Dynamic Scaling**: Spawn CIs based on load
+4. **Specialized Models**: Task-specific CI variants
 
-These architectural decisions provide a solid foundation for integrating AI throughout Tekton while maintaining simplicity, reliability, and flexibility.
+These architectural decisions provide a solid foundation for integrating CI throughout Tekton while maintaining simplicity, reliability, and flexibility.

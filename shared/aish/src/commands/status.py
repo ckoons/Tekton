@@ -1,5 +1,5 @@
 """
-aish status command - Show forwarding, AIs, and terminals status
+aish status command - Show forwarding, CIs, and terminals status
 """
 import json
 import sys

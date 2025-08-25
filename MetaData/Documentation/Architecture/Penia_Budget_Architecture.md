@@ -2,7 +2,7 @@
 
 ## Overview
 
-Penia implements a real-time budget tracking and cost management system for Tekton's LLM usage. The architecture follows Tekton's Single Port Architecture pattern and integrates seamlessly with the platform's AI orchestration capabilities.
+Penia implements a real-time budget tracking and cost management system for Tekton's LLM usage. The architecture follows Tekton's Single Port Architecture pattern and integrates seamlessly with the platform's CI orchestration capabilities.
 
 ## Architectural Principles
 

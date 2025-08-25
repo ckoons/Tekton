@@ -162,8 +162,8 @@ POST /chat/completions
   "messages": [
     {"role": "system", "content": "You are a helpful assistant."},
     {"role": "user", "content": "Hello, who are you?"},
-    {"role": "assistant", "content": "I'm an AI assistant created to help answer questions and provide information."},
-    {"role": "user", "content": "Can you explain how AI works?"}
+    {"role": "assistant", "content": "I'm an CI assistant created to help answer questions and provide information."},
+    {"role": "user", "content": "Can you explain how CI works?"}
   ],
   "model": "gpt-4",
   "provider": "openai",
@@ -1068,7 +1068,7 @@ Server -> Client (Stream response):
 ```json
 {
   "type": "content_chunk",
-  "text": ", an AI assistant created by Anthropic",
+  "text": ", an CI assistant created by Anthropic",
   "index": 1
 }
 ```
@@ -1125,19 +1125,19 @@ Server -> Client (Stream response):
 }
 ```
 
-## AI Socket Registry API
+## CI Socket Registry API
 
-The AI Socket Registry provides the foundation for team chat and multi-AI collaboration in Rhetor. It implements the Unix philosophy where "AIs are just sockets that read and write."
+The CI Socket Registry provides the foundation for team chat and multi-AI collaboration in Rhetor. It implements the Unix philosophy where "AIs are just sockets that read and write."
 
 For detailed Socket Registry API documentation, see: [AI_SOCKET_REGISTRY_API.md](./AI_SOCKET_REGISTRY_API.md)
 
 ### Key Features
 
-- **Socket Management**: Create, read, write, delete, and reset AI sockets
-- **Team Chat**: Broadcast messages to all AI participants
+- **Socket Management**: Create, read, write, delete, and reset CI sockets
+- **Team Chat**: Broadcast messages to all CI participants
 - **Header Routing**: Automatic message routing with transparent headers
 - **Persistence**: Socket state survives Rhetor restarts via Engram
-- **Health Monitoring**: Track and manage unresponsive AIs
+- **Health Monitoring**: Track and manage unresponsive CIs
 
 ### Quick Example
 
@@ -1147,11 +1147,11 @@ from rhetor.core.ai_socket_registry import get_socket_registry
 # Initialize and use the registry
 registry = await get_socket_registry()
 
-# Create AI sockets
+# Create CI sockets
 apollo_id = await registry.create("claude-3", "You are Apollo", {"role": "predictor"})
 athena_id = await registry.create("gpt-4", "You are Athena", {"role": "knowledge"})
 
-# Broadcast to all AIs
+# Broadcast to all CIs
 await registry.write("team-chat-all", "How can we improve our system?")
 
 # Collect responses

@@ -25,7 +25,7 @@ async def stream_ai_response(ai_id: str, message: str) -> AsyncIterator[str]:
     """
     Stream response from an CI specialist.
     
-    Note: Current AIs don't support true streaming, so this simulates it
+    Note: Current CIs don't support true streaming, so this simulates it
     by sending the response in chunks.
     """
     try:
@@ -62,7 +62,7 @@ async def stream_chat(
     """
     Stream chat response from an CI specialist.
     
-    Note: Since our AIs don't support true streaming yet, this endpoint
+    Note: Since our CIs don't support true streaming yet, this endpoint
     simulates streaming by chunking the response.
     """
     # Check if CI exists and is healthy
@@ -96,16 +96,16 @@ async def stream_chat(
 async def multi_stream_chat(
     message: str = Query(..., description="Message to broadcast"),
     ai_ids: List[str] = Query(..., description="List of CI IDs to query"),
-    parallel: bool = Query(True, description="Query AIs in parallel")
+    parallel: bool = Query(True, description="Query CIs in parallel")
 ):
     """
     Stream responses from multiple CI specialists.
     
-    This can query multiple AIs either in parallel or sequentially.
+    This can query multiple CIs either in parallel or sequentially.
     """
     async def multi_stream():
         if parallel:
-            # Query all AIs in parallel
+            # Query all CIs in parallel
             tasks = []
             for ai_id in ai_ids:
                 tasks.append(ai_manager.send_to_ai(ai_id, message))
@@ -122,7 +122,7 @@ async def multi_stream_chat(
                 else:
                     yield f"data: {json.dumps({'ai_id': ai_id, 'error': result['error']})}\n\n"
         else:
-            # Query AIs sequentially
+            # Query CIs sequentially
             for ai_id in ai_ids:
                 result = await ai_manager.send_to_ai(ai_id, message)
                 

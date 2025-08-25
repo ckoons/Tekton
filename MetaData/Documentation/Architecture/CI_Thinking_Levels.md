@@ -1,8 +1,8 @@
-# AI Thinking Levels and Dynamic Model Selection
+# CI Thinking Levels and Dynamic Model Selection
 
 ## Overview
 
-Tekton's AI system now features intelligent, keyword-based model selection that automatically chooses the appropriate model based on the complexity and nature of your request. This system uses the gpt-oss models as the primary choice, with automatic fallback to other available models when needed.
+Tekton's CI system now features intelligent, keyword-based model selection that automatically chooses the appropriate model based on the complexity and nature of your request. This system uses the gpt-oss models as the primary choice, with automatic fallback to other available models when needed.
 
 ## Default Model
 
@@ -87,11 +87,11 @@ The system automatically detects keywords in your message and selects the approp
 
 ## Technical Implementation
 
-The model selection logic is implemented in `/shared/ai/specialist_worker.py` in the `detect_thinking_level()` method. Each AI specialist inherits this capability, allowing all Tekton AIs to dynamically adjust their thinking level.
+The model selection logic is implemented in `/shared/ai/specialist_worker.py` in the `detect_thinking_level()` method. Each CI specialist inherits this capability, allowing all Tekton CIs to dynamically adjust their thinking level.
 
 ### Response Metadata
 
-When an AI responds, it includes metadata about the thinking level used:
+When an CI responds, it includes metadata about the thinking level used:
 - `model`: The actual model used (e.g., "gpt-oss:120b")
 - `thinking_level`: Human-readable level (e.g., "Deep Reasoning")
 - `temperature`: The temperature setting used

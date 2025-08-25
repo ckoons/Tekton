@@ -2,7 +2,7 @@
 
 ## Introduction
 
-Tekton is an intelligent orchestration system that coordinates multiple AI models and resources to efficiently solve complex software engineering problems. This guide will help you understand how to use Tekton effectively for your development workflow.
+Tekton is an intelligent orchestration system that coordinates multiple CI models and resources to efficiently solve complex software engineering problems. This guide will help you understand how to use Tekton effectively for your development workflow.
 
 ## Getting Started
 
@@ -140,13 +140,13 @@ You can also configure Tekton through JSON configuration files:
 
 ## Tekton Components
 
-Tekton consists of several core components that work together to provide an integrated AI orchestration system:
+Tekton consists of several core components that work together to provide an integrated CI orchestration system:
 
 ### Core Components
 
 - **Engram**: Persistent memory system for storing and retrieving context
 - **Hermes**: Service registry and messaging system for component communication
-- **Rhetor**: LLM management system for coordinating AI model access
+- **Rhetor**: LLM management system for coordinating CI model access
 - **Ergon**: Agent system for executing tasks and tools
 - **Hephaestus**: UI system for user interaction
 

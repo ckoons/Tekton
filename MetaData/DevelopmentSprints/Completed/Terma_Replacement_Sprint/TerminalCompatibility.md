@@ -62,7 +62,7 @@ open -a Warp -n --args --new-window --execute "aish"
 - Block-based interface
 
 **Special Considerations**:
-- Already has AI features (complement, not compete)
+- Already has CI features (complement, not compete)
 - May need special aish mode
 - Supports custom themes
 
@@ -76,13 +76,13 @@ open -a Warp -n --args --new-window --execute "aish"
 
 **Features**:
 - Integrated development environment
-- AI pair programming
+- CI pair programming
 - Context awareness
 
 **Integration Strategy**:
 - Detect if running inside Claude Code
 - Provide context to Claude Code's AI
-- Seamless handoff between AIs
+- Seamless handoff between CIs
 
 ### Alacritty
 

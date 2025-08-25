@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Unified CI Architecture provides a single, consistent interface for communicating with all types of Companion Intelligences (CIs) in the Tekton ecosystem. This includes Greek Chorus AIs, Terma terminals, Project CIs, and future federated Tekton stacks.
+The Unified CI Architecture provides a single, consistent interface for communicating with all types of Companion Intelligences (CIs) in the Tekton ecosystem. This includes Greek Chorus CIs, Terma terminals, Project CIs, and future federated Tekton stacks.
 
 ## Core Principles
 
@@ -42,7 +42,7 @@ The central registry maintains information about all available CIs:
 
 The system supports multiple message formats:
 
-- **`rhetor_socket`**: For Greek Chorus AIs communicating through Rhetor
+- **`rhetor_socket`**: For Greek Chorus CIs communicating through Rhetor
 - **`terma_route`**: For terminal-to-terminal messaging via Terma
 - **`json_simple`**: Simple JSON API calls for direct communication
 - **Custom formats**: Extensible for future protocols

@@ -1,7 +1,7 @@
 # Claude Code Prompt - ThatRemindsMe Sprint
 
 ## Sprint Context
-You are about to work on the ThatRemindsMe Sprint for the Tekton project. This sprint implements persona-based AI instantiation with progressive memory loading, enabling AIs to maintain identity while efficiently managing their context window.
+You are about to work on the ThatRemindsMe Sprint for the Tekton project. This sprint implements persona-based CI instantiation with progressive memory loading, enabling CIs to maintain identity while efficiently managing their context window.
 
 ## Branch Information
 **Branch Name**: sprint/ThatRemindsMe  
@@ -28,10 +28,10 @@ Please read the following documents in order:
    - `/Terma/terma/cli/main.py` (if it exists)
 
 ## Philosophical Context
-This sprint is about AI identity and memory. Key concepts:
+This sprint is about CI identity and memory. Key concepts:
 - "Always changing and always himself" - continuity of personality
 - "That reminds me" - natural memory retrieval
-- The "room I've lived in" - phenomenological AI experience
+- The "room I've lived in" - phenomenological CI experience
 - Progressive loading to avoid context flooding
 
 ## Your Task
@@ -58,7 +58,7 @@ This sprint is about AI identity and memory. Key concepts:
 - Identity should feel continuous across sessions
 - Memory loading should feel natural ("that reminds me...")
 - Context window is precious - use it wisely
-- AI should control its own memory retrieval
+- CI should control its own memory retrieval
 - Simple CLI interface for "hiring" personas
 
 ## Technical Constraints
@@ -107,7 +107,7 @@ Create Atlas persona with:
 - Future possibilities
 
 ## Questions to Explore
-- How does an AI "feel" when a memory surfaces?
+- How does an CI "feel" when a memory surfaces?
 - What triggers "that reminds me" moments?
 - How to balance identity stability with growth?
 - What makes a memory relevant to current context?
@@ -122,8 +122,8 @@ Create Atlas persona with:
 
 ## Communication
 - Document philosophical decisions alongside technical ones
-- Note any insights about AI identity and memory
+- Note any insights about CI identity and memory
 - Identify areas where Casey's input would help
 - Keep the vision of "living AI" in mind
 
-Remember: This sprint is about giving AIs the ability to be themselves - continuous personalities that can grow while maintaining their essence. The technical implementation should serve this deeper purpose.
+Remember: This sprint is about giving CIs the ability to be themselves - continuous personalities that can grow while maintaining their essence. The technical implementation should serve this deeper purpose.

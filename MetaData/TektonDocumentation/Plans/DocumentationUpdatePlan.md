@@ -33,12 +33,12 @@ This document outlines the comprehensive plan to update Tekton documentation to 
 - Document landmark types and their purposes
 - Include code examples for adding landmarks to new components
 
-#### 2.2 AI Specialists
+#### 2.2 CI Specialists
 **Current State**: Feature is implemented but poorly documented
 **Action Items**:
 - Create `/MetaData/TektonDocumentation/Guides/AISpecialistsGuide.md`
 - Document configuration options (models, providers, ports)
-- Include examples of AI specialist usage
+- Include examples of CI specialist usage
 - Add troubleshooting section for common issues
 
 #### 2.3 aish (AI Shell)
@@ -56,7 +56,7 @@ This document outlines the comprehensive plan to update Tekton documentation to 
 - Add to Integration section:
   - **aish**: AI-enhanced shell for terminal interactions
   - **Landmarks**: Code annotation and knowledge graph system
-- Enhance AI Specialists section with:
+- Enhance CI Specialists section with:
   - Configuration examples
   - Port allocation explanation
   - Model selection guide
@@ -135,7 +135,7 @@ Common issues and solutions
 
 **Updates Needed**:
 - Document MCP endpoints in detail
-- Add AI registry API documentation
+- Add CI registry API documentation
 - Update shared utilities documentation
 - Include request/response examples
 
@@ -152,7 +152,7 @@ Common issues and solutions
 ### Week 1: High Priority Items
 - Fix Agenteer → Ergon references
 - Create Landmarks integration guide
-- Create AI Specialists guide
+- Create CI Specialists guide
 - Update main README.md
 
 ### Week 2: Medium Priority Items

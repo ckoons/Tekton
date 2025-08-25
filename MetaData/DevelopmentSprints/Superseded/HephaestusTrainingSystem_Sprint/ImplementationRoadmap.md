@@ -2,7 +2,7 @@
 
 ## Quick Win: Immediate UI DevTools Helper
 
-Before the full AI specialist system, we can add immediate help to the current UI DevTools:
+Before the full CI specialist system, we can add immediate help to the current UI DevTools:
 
 ```python
 # In ui_tools_v2.py - Add this TODAY
@@ -66,12 +66,12 @@ async def ui_help(topic: Optional[str] = None) -> Dict[str, Any]:
 - [ ] Build initial FAQ responses
 
 ### Day 5: Integration Planning
-- [ ] Study Rhetor's AI Specialist system
+- [ ] Study Rhetor's CI Specialist system
 - [ ] Design Hephaestus specialist personality
 - [ ] Plan Hermes integration points
 - [ ] Create conversation flow diagrams
 
-## Phase 2: AI Specialist (Week 2)
+## Phase 2: CI Specialist (Week 2)
 
 ### Day 1-2: Core Specialist
 ```python
@@ -151,7 +151,7 @@ class HephaestusUIExpert(BaseAISpecialist):
 - 50% reduction in "component not found" errors
 
 ### Week 2 Goals  
-- Hephaestus AI responding to queries
+- Hephaestus CI responding to queries
 - Code generation working
 - Error diagnosis accurate 80%+ 
 - Integration with Rhetor complete
@@ -193,13 +193,13 @@ class HephaestusUIExpert(BaseAISpecialist):
 - Performance optimization advisor
 
 ### Month 6
-- Full Tekton component AI network
+- Full Tekton component CI network
 - Cross-component knowledge sharing
 - Self-improving knowledge base
 
 ## The Vision
 
-Every Tekton component has an AI that embodies its expertise:
+Every Tekton component has an CI that embodies its expertise:
 - **Hephaestus**: UI craftsmanship
 - **Rhetor**: LLM orchestration
 - **Hermes**: Messaging patterns
@@ -212,7 +212,7 @@ Together, they form a living, teaching system where knowledge is always availabl
 
 1. **Today**: Implement ui_help() function
 2. **This Week**: Codify UI knowledge
-3. **Next Week**: Build Hephaestus AI specialist
+3. **Next Week**: Build Hephaestus CI specialist
 4. **This Month**: Deploy full training system
 
 Let's make Tekton not just powerful, but teachable! 🚀

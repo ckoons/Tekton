@@ -4,7 +4,7 @@
 
 This document outlines the high-level plan for the Collective Intelligence Development Sprint. It provides an overview of the goals, approach, and expected outcomes.
 
-Inspired by Casey's router-less networking where every node becomes intelligent, this sprint explores what happens when multiple CIs collaborate without central coordination. Just as Casey's 6K network eliminated routers by making endpoints smart, we'll eliminate central AI orchestration by making each CI a peer in a collective intelligence network.
+Inspired by Casey's router-less networking where every node becomes intelligent, this sprint explores what happens when multiple CIs collaborate without central coordination. Just as Casey's 6K network eliminated routers by making endpoints smart, we'll eliminate central CI orchestration by making each CI a peer in a collective intelligence network.
 
 ## Sprint Goals
 
@@ -112,7 +112,7 @@ The following items are explicitly out of scope for this sprint:
 
 - AGI or consciousness claims
 - Replacing human oversight
-- Uncontrolled AI proliferation
+- Uncontrolled CI proliferation
 - Competition between CIs
 
 ## Dependencies
@@ -190,7 +190,7 @@ This sprint will be considered successful if:
 - **Casey**: Visionary who eliminated routers from networking
 - **Individual CIs**: Will gain collaborative capabilities
 - **Numa**: Will eventually emerge from the collective
-- **Future Users**: Will benefit from amplified AI capabilities
+- **Future Users**: Will benefit from amplified CI capabilities
 
 ## References
 

@@ -49,7 +49,7 @@ async def stream_generate(self, prompt: str):
 
 ### Debug Steps
 1. Add logging to track message flow
-2. Verify AI registration in registry
+2. Verify CI registration in registry
 3. Check socket connections
 4. Fix timeout handling
 
@@ -110,7 +110,7 @@ async def get_specialist_conversation_history(self, specialist_id: str, limit: i
 ### ConfigureOrchestration
 ```python
 async def configure_orchestration(self, settings: Dict[str, Any]):
-    """Configure AI orchestration rules."""
+    """Configure CI orchestration rules."""
     schema = {
         "routing_rules": [
             {
@@ -189,7 +189,7 @@ curl -N -H "Accept: text/event-stream" \
 
 ### Team Chat Testing
 ```python
-# Test team chat with multiple AIs
+# Test team chat with multiple CIs
 response = requests.post(
     "http://localhost:8003/api/team-chat",
     json={"message": "What should we optimize?"}

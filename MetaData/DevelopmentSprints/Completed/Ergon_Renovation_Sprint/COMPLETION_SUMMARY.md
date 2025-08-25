@@ -71,9 +71,9 @@
 11. **Added error handling and loading states**
 
 ### Unique Aspects of Ergon
-- **Agent Management**: Create and manage AI agents for various tasks
+- **Agent Management**: Create and manage CI agents for various tasks
 - **Tools Configuration**: Enable/disable tools that agents can use
-- **MCP Connections**: Manage Model Context Protocol connections to various AI providers
+- **MCP Connections**: Manage Model Context Protocol connections to various CI providers
 - **Memory Management**: Control agent memory and context retention
 - **Dual Chat**: Both direct Tool Chat and Team Chat capabilities
 

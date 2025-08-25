@@ -19,9 +19,9 @@ The Tekton Rhetor UI Team Chat and individual LLM Chat were not working due to s
    - Error: `NameError: name 'completed_streams' is not defined`
 
 3. **Ollama Service Not Running**
-   - Greek Chorus AIs were trying to connect to Ollama
+   - Greek Chorus CIs were trying to connect to Ollama
    - Ollama had been shut down earlier to stop fan spinning
-   - All AIs returned "Ollama connection error: All connection attempts failed"
+   - All CIs returned "Ollama connection error: All connection attempts failed"
 
 ## Fixes Applied
 
@@ -52,11 +52,11 @@ completed_count = len(streaming_tasks) - len(pending_tasks)
 open -a Ollama  # Restart Ollama application
 ```
 
-**Action**: Restarted Ollama to enable Greek Chorus AI connectivity.
+**Action**: Restarted Ollama to enable Greek Chorus CI connectivity.
 
 ## Verification Results
 
-### ✅ Individual AI Chat Test
+### ✅ Individual CI Chat Test
 ```bash
 curl -N -H "Accept: text/event-stream" \
   "http://localhost:8003/api/chat/apollo-ai/stream?message=Hello"
@@ -74,14 +74,14 @@ curl -X POST -H "Content-Type: application/json" \
   "http://localhost:8003/api/chat/team/stream"
 ```
 
-**Result**: ✅ **Working** - Multiple AI responses received
-- Successfully connected to Greek Chorus AIs
+**Result**: ✅ **Working** - Multiple CI responses received
+- Successfully connected to Greek Chorus CIs
 - Received responses from multiple specialists in parallel
 - Proper SSE streaming format maintained
 
-### ✅ Greek Chorus AI Status
-**Before Fix**: All 18 AIs reporting "Ollama connection error"
-**After Fix**: All 18 AIs responding successfully with proper content
+### ✅ Greek Chorus CI Status
+**Before Fix**: All 18 CIs reporting "Ollama connection error"
+**After Fix**: All 18 CIs responding successfully with proper content
 
 ## Technical Details
 
@@ -112,7 +112,7 @@ Team chats use this structure:
 
 ### Performance Metrics
 - **Individual Chat**: ~16s response time (large model)
-- **Team Chat**: All 18 AIs respond in parallel
+- **Team Chat**: All 18 CIs respond in parallel
 - **SSE Latency**: <100ms first token (when Ollama ready)
 
 ## Architecture Impact
@@ -120,15 +120,15 @@ Team chats use this structure:
 ### ✅ What's Working Now:
 1. **SSE Streaming Infrastructure**: Fully functional
 2. **Route Handling**: Clean, no conflicts
-3. **Greek Chorus Integration**: All 18 AIs responding
+3. **Greek Chorus Integration**: All 18 CIs responding
 4. **Error Handling**: Proper timeout and error management
 5. **Metadata Tracking**: Enhanced metadata in streams
 
 ### 🔧 Components Involved:
 - `rhetor/api/specialist_streaming_endpoints.py` - SSE endpoint definitions
-- `shared/ai/socket_client.py` - AI communication protocol  
-- `shared/ai/ai_discovery_service.py` - AI service discovery
-- Greek Chorus AIs (ports 45000-45016) - Individual specialists
+- `shared/ai/socket_client.py` - CI communication protocol  
+- `shared/ai/ai_discovery_service.py` - CI service discovery
+- Greek Chorus CIs (ports 45000-45016) - Individual specialists
 
 ## Future Maintenance
 
@@ -140,7 +140,7 @@ Team chats use this structure:
 
 ### Monitoring Points:
 - Rhetor logs: `/Users/cskoons/projects/github/Tekton/.tekton/logs/rhetor.log`
-- Greek Chorus AI processes: `ps aux | grep component-ai`
+- Greek Chorus CI processes: `ps aux | grep component-ai`
 - Ollama status: `curl http://localhost:11434/api/tags`
 
 ## Documentation Updates Needed

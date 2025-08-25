@@ -4,7 +4,7 @@
 
 This document outlines the high-level plan for the GitHub Support Development Sprint. It provides an overview of the goals, approach, and expected outcomes.
 
-Tekton is an intelligent orchestration system that coordinates multiple AI models and resources to efficiently solve complex software engineering problems. This Development Sprint focuses on enhancing Tekton's integration with GitHub and improving the branch management experience for Development Sprints.
+Tekton is an intelligent orchestration system that coordinates multiple CI models and resources to efficiently solve complex software engineering problems. This Development Sprint focuses on enhancing Tekton's integration with GitHub and improving the branch management experience for Development Sprints.
 
 ## Sprint Goals
 
@@ -136,8 +136,8 @@ This sprint will be considered successful if:
 ## Key Stakeholders
 
 - **Casey**: Human-in-the-loop project manager
-- **Architect Claude**: AI assistant focused on planning and architecture
-- **Working Claude**: AI assistant focused on implementation
+- **Architect Claude**: CI assistant focused on planning and architecture
+- **Working Claude**: CI assistant focused on implementation
 
 ## References
 

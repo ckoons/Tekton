@@ -4,7 +4,7 @@
 
 This document outlines the high-level plan for the MCP Unified Integration Development Sprint. It provides an overview of the goals, approach, and expected outcomes.
 
-Tekton is an intelligent orchestration system that coordinates multiple AI models and resources to efficiently solve complex software engineering problems. This Development Sprint consolidates the previously planned FastMCP_Sprint and MCP_Integration_Sprint into a cohesive, streamlined approach for implementing a robust MCP foundation across the Tekton ecosystem.
+Tekton is an intelligent orchestration system that coordinates multiple CI models and resources to efficiently solve complex software engineering problems. This Development Sprint consolidates the previously planned FastMCP_Sprint and MCP_Integration_Sprint into a cohesive, streamlined approach for implementing a robust MCP foundation across the Tekton ecosystem.
 
 ## Sprint Goals
 

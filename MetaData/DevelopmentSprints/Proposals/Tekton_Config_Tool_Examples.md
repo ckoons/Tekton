@@ -115,7 +115,7 @@
   "health": "operational",
   "holds": 1,
   "public_info": {
-    "use_case": "Personal AI development environment",
+    "use_case": "Personal CI development environment",
     "feedback": "Engram memory improvements working well"
   }
 }

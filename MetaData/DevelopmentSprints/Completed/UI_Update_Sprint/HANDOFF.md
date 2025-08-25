@@ -27,7 +27,7 @@
   - Added @landmark comments for major sections
   - Added data-tekton-action tags to all interactive elements
   - Added data-tekton-state tags for state management
-  - Added data-tekton-ai tags for AI integration points
+  - Added data-tekton-ai tags for CI integration points
   - Enhanced navigation element tagging
 - Fixed penia.log WebSocket error (missing datetime import)
 
@@ -102,7 +102,7 @@ This sprint successfully completed both Phase 1 (Hermes UI Update) and Phase 2 (
 - [x] Component registers with Hermes
 - [x] All API endpoints respond correctly
 - [x] All interactive elements have proper semantic tags
-- [x] AI integration points properly tagged
+- [x] CI integration points properly tagged
 - [x] State management tags implemented
 - [x] Navigation elements enhanced with proper tagging
 

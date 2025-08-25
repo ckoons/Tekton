@@ -2,7 +2,7 @@
 
 ## Overview
 
-This guide provides step-by-step instructions for implementing the chat routing functionality to connect Hephaestus UI with Rhetor's AI capabilities.
+This guide provides step-by-step instructions for implementing the chat routing functionality to connect Hephaestus UI with Rhetor's CI capabilities.
 
 ## Implementation Steps
 
@@ -136,10 +136,10 @@ python -m http.server 8080
 - [ ] Chat widget appears in right panel footer
 - [ ] Placeholder text updates when switching components
 - [ ] Messages are sent to Rhetor successfully
-- [ ] AI responses appear in the chat
+- [ ] CI responses appear in the chat
 - [ ] Team chat mode works when selected
 - [ ] Chat history persists for each component
-- [ ] Typing indicator shows during AI response
+- [ ] Typing indicator shows during CI response
 - [ ] Error messages display appropriately
 
 ## Troubleshooting
@@ -154,8 +154,8 @@ python -m http.server 8080
 - Verify CORS is enabled in Rhetor
 - Check network tab for failed requests
 
-### No AI responses
-- Verify AI specialist manager is initialized in Rhetor
+### No CI responses
+- Verify CI specialist manager is initialized in Rhetor
 - Check Rhetor logs for errors
 - Ensure at least one LLM provider is configured
 

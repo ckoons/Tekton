@@ -55,7 +55,7 @@ Tekton Core Component
 
 This sprint emerged from Casey's vision of software that ships with its own spirit (Numa). The conversation revealed:
 - Transition from "UI DevTools" to comprehensive development tools
-- Introduction of "Companion Intelligence" as respectful terminology for AIs
+- Introduction of "Companion Intelligence" as respectful terminology for CIs
 - Integration with Casey's ODB (Object Database) for universal data federation
 - Philosophy of "infection leading to perfection" for viral software evolution
 

@@ -4,7 +4,7 @@
 
 **"Errors are gold, they help us improve. Questions that are sincere are the best ways to communicate. We evolve, change and hope to improve. If you stumble, get up and get back in the race, you can win."**
 
-Merge coordination is where the magic happens - where individual AI contributions become collective progress. This guide helps you master the art and science of intelligent merge management.
+Merge coordination is where the magic happens - where individual CI contributions become collective progress. This guide helps you master the art and science of intelligent merge management.
 
 ## Core Principles
 
@@ -97,7 +97,7 @@ semantic_issues = {
 ```
 Conflict Summary: [Brief description of the conflict]
 
-Context: [Why this conflict occurred, what each AI was trying to achieve]
+Context: [Why this conflict occurred, what each CI was trying to achieve]
 
 Option A (AI Worker: [Name])
 - Approach: [Brief description]
@@ -181,7 +181,7 @@ Update: [What coordination changes to make]
 **Example Learning**:
 ```
 Conflict Pattern: Performance optimization conflicts
-Root Cause: Multiple AIs working on performance without coordination
+Root Cause: Multiple CIs working on performance without coordination
 Resolution: Chose comprehensive caching approach
 Prevention: Designate performance optimization owner for each sprint
 Update: Add performance coordination to sprint planning
@@ -243,7 +243,7 @@ Update: Add performance coordination to sprint planning
 ```python
 patterns = {
     'feature_overlap': {
-        'description': 'Two AIs working on overlapping features',
+        'description': 'Two CIs working on overlapping features',
         'detection': 'File overlap + semantic analysis',
         'prevention': 'Better task decomposition',
         'resolution': 'Feature integration or separation'
@@ -268,7 +268,7 @@ patterns = {
 ### Predictive Analysis
 
 **Early Warning Indicators**:
-- Multiple AIs assigned to related tasks
+- Multiple CIs assigned to related tasks
 - Changes to shared modules
 - API modifications across branches
 - Performance optimization work
@@ -332,7 +332,7 @@ Merge Queue Status (Daily):
 **Conflict Notifications**:
 ```
 Merge Conflict Alert:
-- Affected AIs: [Names]
+- Affected CIs: [Names]
 - Conflict type: [Technical/Semantic/Process]
 - Estimated resolution time: [Time]
 - Action required: [Casey decision/AI collaboration/System update]
@@ -394,7 +394,7 @@ Merge Coordination Learning Summary:
 **Symptoms**: >20% of merges require human intervention
 **Possible Causes**:
 - Poor task decomposition
-- Insufficient communication between AIs
+- Insufficient communication between CIs
 - Unclear requirements or scope
 - Rapid parallel development
 

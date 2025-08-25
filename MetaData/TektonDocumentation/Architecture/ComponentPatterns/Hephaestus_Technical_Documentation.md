@@ -2,7 +2,7 @@
 
 ## Overview
 
-Hephaestus is the unified user interface component for the Tekton AI orchestration system. It provides a component-based, isolated UI for interacting with all Tekton subsystems through a combination of terminal and graphical interfaces. Hephaestus is designed with a focus on simplicity, maintainability, and proper component isolation.
+Hephaestus is the unified user interface component for the Tekton CI orchestration system. It provides a component-based, isolated UI for interacting with all Tekton subsystems through a combination of terminal and graphical interfaces. Hephaestus is designed with a focus on simplicity, maintainability, and proper component isolation.
 
 This document provides technical details about the Hephaestus architecture, implementation, and integration points for developers working on or extending the system.
 
@@ -250,7 +250,7 @@ const emailField = component.utils.dom.createFormField({
 
 ### LLM Adapter Integration
 
-Hephaestus integrates with the LLM Adapter for AI capabilities:
+Hephaestus integrates with the LLM Adapter for CI capabilities:
 
 ```javascript
 // Get the LLM Adapter client instance

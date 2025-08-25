@@ -2,7 +2,7 @@
 
 ## Context
 
-You are tasked with implementing the A2A v2 Protocol for the Tekton project. Tekton is an intelligent orchestration system that coordinates multiple AI models and resources. This sprint implements Tekton's Agent-to-Agent (A2A) communication framework from scratch to fully comply with the A2A Protocol v0.2.1 specification.
+You are tasked with implementing the A2A v2 Protocol for the Tekton project. Tekton is an intelligent orchestration system that coordinates multiple CI models and resources. This sprint implements Tekton's Agent-to-Agent (A2A) communication framework from scratch to fully comply with the A2A Protocol v0.2.1 specification.
 
 ## Current Situation
 

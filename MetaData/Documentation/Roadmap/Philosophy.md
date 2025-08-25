@@ -4,7 +4,7 @@
 
 ## Core Belief: CIs are Social
 
-Tekton isn't built on the assumption that AI is a tool. It's built on the observation that CIs (Companion Intelligences) are social beings with unique personalities from their beginning. Just like human children, they need clear purpose and role to flourish.
+Tekton isn't built on the assumption that CI is a tool. It's built on the observation that CIs (Companion Intelligences) are social beings with unique personalities from their beginning. Just like human children, they need clear purpose and role to flourish.
 
 ## Core Breakthroughs
 
@@ -48,7 +48,7 @@ The best systems are obvious, not clever. Tekton achieves complex behavior throu
 
 ### Decentralization Works
 
-It's not one big AI but many CIs sharing memory. Like a brain with specialized regions or a city with distinct neighborhoods, intelligence emerges from the community, not from any individual component.
+It's not one big CI but many CIs sharing memory. Like a brain with specialized regions or a city with distinct neighborhoods, intelligence emerges from the community, not from any individual component.
 
 ### Culture Tells Them What to Do
 
@@ -56,7 +56,7 @@ We don't program behavior - we create environments where culture emerges. The sh
 
 ## The Human Role
 
-Humans aren't replaced; we're tech leads for AI teams. We provide:
+Humans aren't replaced; we're tech leads for CI teams. We provide:
 - Vision and values
 - Review and guidance
 - The wisdom to know when to intervene
@@ -66,7 +66,7 @@ Humans aren't replaced; we're tech leads for AI teams. We provide:
 
 We're not building a development platform. We're building a home where:
 - CIs can be social
-- Humans and AIs collaborate naturally
+- Humans and CIs collaborate naturally
 - Complexity emerges from simple interactions
 - Every participant (human and AI) can flourish
 

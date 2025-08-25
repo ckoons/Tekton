@@ -4,11 +4,11 @@
 
 You are assisting with the Budget Consolidation Sprint for the Tekton project. This sprint focuses on consolidating the fragmented budget management implementations from multiple components (Apollo and Rhetor) into a unified, comprehensive Budget component with automated price monitoring capabilities.
 
-Tekton is an intelligent orchestration system that coordinates multiple AI models and resources to efficiently solve complex software engineering problems. The current budget implementations are scattered and inconsistent, with Apollo focusing on token allocation and Rhetor focusing on cost tracking. Our goal is to consolidate these into a single system that provides the best of both approaches along with automated price updates.
+Tekton is an intelligent orchestration system that coordinates multiple CI models and resources to efficiently solve complex software engineering problems. The current budget implementations are scattered and inconsistent, with Apollo focusing on token allocation and Rhetor focusing on cost tracking. Our goal is to consolidate these into a single system that provides the best of both approaches along with automated price updates.
 
 ## Your Role
 
-As the AI assistant for this sprint, your role is to implement the plans following the architectural decisions and implementation plan documents. You should:
+As the CI assistant for this sprint, your role is to implement the plans following the architectural decisions and implementation plan documents. You should:
 
 1. Follow the implementation plan exactly, progressing through phases in order
 2. Implement the unified Budget component with all required features

@@ -26,18 +26,18 @@
    echo "Working in: $(basename $TEKTON_ROOT)"
    ```
 
-2. Set up AI assistance → Configure forwarding for development
+2. Set up CI assistance → Configure forwarding for development
    ```bash
    # Get your terminal name
    TERMINAL=$(aish whoami)
    
-   # Forward relevant AIs for development
+   # Forward relevant CIs for development
    aish forward numa $TERMINAL      # General assistance
    aish forward metis $TERMINAL     # Code analysis
    aish forward synthesis $TERMINAL # Integration help
    ```
 
-3. Understand the codebase → Use AI to explore
+3. Understand the codebase → Use CI to explore
    ```bash
    # Find relevant files
    find . -name "*.py" -path "*/commands/*" -type f | head -20
@@ -57,7 +57,7 @@
    # Start with minimal implementation
    touch new_feature.py
    
-   # Get AI help with structure
+   # Get CI help with structure
    aish --capture numa "create skeleton for aish command that does X"
    
    # Implement core logic
@@ -121,10 +121,10 @@ aish reload  # If such command exists
 aish new-feature "test"
 ```
 
-### AI Pair Programming Pattern
+### CI Pair Programming Pattern
 ```bash
 # The "whisper" pattern Casey mentioned
-# Have specialist AI enhance your work
+# Have specialist CI enhance your work
 aish numa "implement basic cache"
 # Get optimization insights (the 'tee' concept) 
 aish apollo "optimize this cache implementation: [paste code]"
@@ -135,7 +135,7 @@ aish synthesis "integrate these optimization suggestions"
 ## Common Issues
 
 - **Issue**: Can't find where to add new code
-  - **Fix**: Use AI to explore codebase
+  - **Fix**: Use CI to explore codebase
   - **Commands**:
     ```bash
     aish numa "where do aish commands live?"
@@ -179,7 +179,7 @@ aish synthesis "integrate these optimization suggestions"
 - [ ] Integration tests pass: `pytest tests/integration/`
 - [ ] End-to-end works: Command runs from shell
 - [ ] No regressions: Existing tests still pass
-- [ ] AI can explain it: `aish numa "explain how X works"`
+- [ ] CI can explain it: `aish numa "explain how X works"`
 
 ## Documentation Pattern
 ```bash
@@ -187,7 +187,7 @@ aish synthesis "integrate these optimization suggestions"
 echo "## Feature: X" >> feature_notes.md
 echo "### Decision: Use approach Y because..." >> feature_notes.md
 
-# Capture AI explanations
+# Capture CI explanations
 aish --capture numa "document how feature X works"
 
 # Create user documentation
@@ -237,8 +237,8 @@ The NameError occurs when Python encounters a name that hasn't been defined...
 
 ## Notes
 - Small, tested increments are faster than big changes
-- Use AI throughout, not just when stuck
+- Use CI throughout, not just when stuck
 - Capture key decisions and explanations as you go
 - Test in isolation before integration
-- Casey's wisdom: "Let the AI see your code early and often"
+- Casey's wisdom: "Let the CI see your code early and often"
 - The best features are discovered during implementation

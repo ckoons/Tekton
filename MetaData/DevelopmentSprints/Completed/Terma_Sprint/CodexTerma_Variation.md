@@ -4,7 +4,7 @@
 Building the coding orchestra (Codex) and terminal intelligence (Terma) components for Tekton.
 
 ## Vision
-- **Codex**: Multi-agent coding system with specialized AI personalities
+- **Codex**: Multi-agent coding system with specialized CI personalities
 - **Terma**: Intelligent terminal interface with system awareness
 - **Integration**: Both components use Rhetor as universal translator
 

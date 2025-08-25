@@ -1,14 +1,14 @@
-# AI Forwarding Feature
+# CI Forwarding Feature
 
 ## Overview
 
-Enable human terminals to receive AI messages by adding a simple forwarding table. This allows Claude (or any human) to act as an intelligent proxy for AI components without API charges.
+Enable human terminals to receive CI messages by adding a simple forwarding table. This allows Claude (or any human) to act as an intelligent proxy for CI components without API charges.
 
 ## The Simple Concept
 
 ```
 Message for apollo → Check forward table → If forwarded, send to human mailbox
-                                       → If not forwarded, send to AI socket
+                                       → If not forwarded, send to CI socket
 ```
 
 ## Implementation
@@ -21,7 +21,7 @@ aish forward apollo jill        # Forward apollo's mail to jill's terminal
 aish forward rhetor jill        # Forward rhetor's mail to jill's terminal
 
 # Remove forwarding  
-aish unforward apollo           # Stop forwarding, return to AI socket
+aish unforward apollo           # Stop forwarding, return to CI socket
 
 # Check forwarding status
 aish forward list               # Show all active forwards
@@ -62,7 +62,7 @@ class SocketRegistry:
         self.forwarding_table = self.load_forwarding_table()
     
     def load_forwarding_table(self):
-        """Load AI forwarding configuration"""
+        """Load CI forwarding configuration"""
         forwarding_file = Path.home() / '.tekton' / 'aish' / 'forwarding.json'
         
         if forwarding_file.exists():
@@ -89,12 +89,12 @@ class SocketRegistry:
             json.dump(data, f, indent=2)
     
     def set_forward(self, ai_name, terminal_name):
-        """Forward AI messages to terminal"""
+        """Forward CI messages to terminal"""
         self.forwarding_table[ai_name] = terminal_name
         self.save_forwarding_table()
     
     def remove_forward(self, ai_name):
-        """Stop forwarding AI messages"""
+        """Stop forwarding CI messages"""
         if ai_name in self.forwarding_table:
             del self.forwarding_table[ai_name]
             self.save_forwarding_table()
@@ -102,14 +102,14 @@ class SocketRegistry:
     def send_message_to_ai(self, ai_name, message):
         """Main message routing with forwarding support"""
         
-        # Check if AI is forwarded to a human terminal
+        # Check if CI is forwarded to a human terminal
         if ai_name in self.forwarding_table:
             terminal_name = self.forwarding_table[ai_name]
             
             # Format message for human inbox
             formatted_message = f"[{ai_name}] {message['sender']}: {message['content']}"
             
-            # Send to terminal inbox instead of AI socket
+            # Send to terminal inbox instead of CI socket
             self.send_to_terminal_inbox(terminal_name, {
                 'for_ai': ai_name,
                 'from': message['sender'],
@@ -120,7 +120,7 @@ class SocketRegistry:
             
             return True
         
-        # Normal AI routing (existing code)
+        # Normal CI routing (existing code)
         return self.send_to_ai_socket(ai_name, message)
     
     def send_to_terminal_inbox(self, terminal_name, message):
@@ -184,14 +184,14 @@ def print_forward_usage():
 
 def set_forward(registry, ai_name, terminal_name):
     """Set up forwarding"""
-    # Validate AI name
+    # Validate CI name
     valid_ais = ['apollo', 'athena', 'rhetor', 'prometheus', 'synthesis', 
                  'metis', 'harmonia', 'numa', 'noesis', 'engram', 'penia',
                  'hermes', 'ergon', 'sophia', 'telos']
     
     if ai_name not in valid_ais:
         print(f"Unknown AI: {ai_name}")
-        print(f"Valid AIs: {', '.join(valid_ais)}")
+        print(f"Valid CIs: {', '.join(valid_ais)}")
         return 1
     
     # Set forwarding
@@ -204,10 +204,10 @@ def list_forwards(registry):
     forwards = registry.forwarding_table
     
     if not forwards:
-        print("No AI forwarding active")
+        print("No CI forwarding active")
         return 0
     
-    print("Active AI Forwards:")
+    print("Active CI Forwards:")
     print("-" * 30)
     for ai_name, terminal_name in forwards.items():
         print(f"  {ai_name:<12} → {terminal_name}")
@@ -221,7 +221,7 @@ def list_forwards(registry):
 
 ```python
 """
-Remove AI forwarding.
+Remove CI forwarding.
 """
 
 from registry.socket_registry import SocketRegistry
@@ -267,7 +267,7 @@ def handle_unforward_command(args):
 
 ## Usage Examples
 
-### Set Up Claude as AI Proxy
+### Set Up Claude as CI Proxy
 
 ```bash
 # Claude starts in terminal "jill"
@@ -292,7 +292,7 @@ aish athena "rhetor: For better prompts, try this pattern..."
 aish forward list
 
 # Output:
-# Active AI Forwards:
+# Active CI Forwards:
 # apollo     → jill
 # rhetor     → jill
 # prometheus → alice
@@ -310,13 +310,13 @@ aish unforward apollo
 1. **Zero API Costs** - Use Claude terminal sessions instead of paid APIs
 2. **Simple Implementation** - Just routing table changes
 3. **Transparent** - Senders don't know messages are forwarded
-4. **Flexible** - Forward any AI to any terminal
+4. **Flexible** - Forward any CI to any terminal
 5. **Reversible** - Easy to turn forwarding on/off
 
 ## Technical Notes
 
 - Forwarding table persists across aish restarts
-- Multiple AIs can forward to same terminal
+- Multiple CIs can forward to same terminal
 - Terminal must be active to receive forwarded messages
 - Integrates with existing terma inbox system
 - No changes to senders - they still use `aish apollo "message"`

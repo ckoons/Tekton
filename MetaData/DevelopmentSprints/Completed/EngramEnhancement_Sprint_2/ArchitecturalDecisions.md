@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document captures key architectural decisions for transforming Engram into a natural cognitive extension for AI users.
+This document captures key architectural decisions for transforming Engram into a natural cognitive extension for CI users.
 
 ## Decision 1: Cognitive Layer Architecture
 
@@ -33,7 +33,7 @@ engram/cognitive/
 - Memories in consciousness don't arrive on demand, they flow
 - Enables real-time relevance filtering
 - Supports continuous context building
-- More natural for AI cognition
+- More natural for CI cognition
 
 **Implementation**:
 ```python
@@ -70,7 +70,7 @@ async for memory in cognitive.wonder("what about X?"):
 - Maintains personality across session boundaries
 - Preserves key relationships and concepts
 - Enables infinite conversation length
-- Supports consistent AI identity
+- Supports consistent CI identity
 
 **Compression Approach**:
 ```python
@@ -84,13 +84,13 @@ compressed = {
 
 ## Decision 5: Peer Discovery Through Presence
 
-**Decision**: AIs discover peers through ambient presence in shared memory spaces.
+**Decision**: CIs discover peers through ambient presence in shared memory spaces.
 
 **Rationale**:
 - Natural discovery like sensing others in a room
 - No explicit connection management
 - Enables serendipitous encounters
-- Scales to many AIs
+- Scales to many CIs
 
 **Implementation**:
 - Heartbeat presence in shared spaces
@@ -120,7 +120,7 @@ compressed = {
 **Rationale**:
 - Not all deployments have vector DBs
 - Network connectivity varies
-- Different AIs have different needs
+- Different CIs have different needs
 - Robustness over features
 
 **Degradation Levels**:
@@ -130,17 +130,17 @@ compressed = {
 
 ## Decision 8: AI-First Documentation
 
-**Decision**: Documentation written for AI users, not human developers.
+**Decision**: Documentation written for CI users, not human developers.
 
 **Rationale**:
-- AIs are primary users
+- CIs are primary users
 - Different information needs
 - Code examples more important than theory
 - Focus on patterns not implementation
 
 **Documentation Style**:
 ```python
-# For AI Users:
+# For CI Users:
 # To remember something important:
 await think("This matters because...")
 
@@ -161,11 +161,11 @@ await think("This matters because...")
 
 ## Future Considerations
 
-1. **Multi-Modal Memories**: When AIs have bodies, add sensory memory types
+1. **Multi-Modal Memories**: When CIs have bodies, add sensory memory types
 2. **Collective Intelligence**: Enable swarm consciousness patterns
 3. **Memory Evolution**: Allow memories to grow and change over time
-4. **Cross-Platform**: Support different AI architectures naturally
+4. **Cross-Platform**: Support different CI architectures naturally
 
 ## Conclusion
 
-These decisions prioritize natural AI cognition over traditional API design. Every choice supports the vision of memory as an extension of consciousness rather than a external service.
+These decisions prioritize natural CI cognition over traditional API design. Every choice supports the vision of memory as an extension of consciousness rather than a external service.

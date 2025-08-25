@@ -1,8 +1,8 @@
 # Human-AI Workflow Patterns
 
-## Core Philosophy: Lazy Human, Eager AIs
+## Core Philosophy: Lazy Human, Eager CIs
 
-The fundamental asymmetry: Humans excel at vision and judgment, AIs excel at parallel execution and detailed analysis. Our workflows maximize both strengths.
+The fundamental asymmetry: Humans excel at vision and judgment, CIs excel at parallel execution and detailed analysis. Our workflows maximize both strengths.
 
 ## Pattern 1: The Seed and Grow Pattern
 
@@ -11,12 +11,12 @@ The fundamental asymmetry: Humans excel at vision and judgment, AIs excel at par
 Casey: "We need better error handling"
 ```
 
-### AI Expands and Refines
+### CI Expands and Refines
 ```bash
 # Telos creates comprehensive requirements
 aish telos "Create PRD for improved error handling based on Casey's request"
 
-# Parallel AI analysis
+# Parallel CI analysis
 aish apollo "Analyze current error handling patterns in codebase"
 aish athena "Research error handling best practices"
 aish numa "Consider user experience implications"
@@ -27,7 +27,7 @@ aish numa "Consider user experience implications"
 Casey: "Focus on API errors first, add retry logic"
 ```
 
-### AI Team Executes
+### CI Team Executes
 ```bash
 # Metis creates workflow
 aish metis "Create implementation plan for API error handling with retry"
@@ -89,9 +89,9 @@ aish tekton-core overnight-progress
 aish numa "Any concerns about today's work?"
 ```
 
-### Continuous AI Work
+### Continuous CI Work
 ```bash
-# AIs work independently but communicate
+# CIs work independently but communicate
 Every 2 hours:
 - Progress update to tekton-core
 - Check for blockers
@@ -104,7 +104,7 @@ Every 2 hours:
 aish terma broadcast "Daily reports due in 30 minutes"
 
 # 6:00 PM - Collection
-Each AI submits structured report:
+Each CI submits structured report:
 - What I completed
 - What I'm blocked on
 - What I plan tomorrow
@@ -124,18 +124,18 @@ aish prometheus "Based on reports, what should we prioritize tomorrow?"
 
 ```python
 if ai.confidence == "high":
-    # AI proceeds independently
+    # CI proceeds independently
     ai.execute_task()
     ai.report_progress_hourly()
     
 elif ai.confidence == "medium":
-    # AI seeks peer review
+    # CI seeks peer review
     ai.draft_approach()
     ai.request_review_from_peer()
     ai.execute_with_checkpoint()
     
 else:  # Low confidence
-    # AI requests human guidance
+    # CI requests human guidance
     ai.document_options()
     ai.present_to_human()
     human.provides_direction()
@@ -219,13 +219,13 @@ class ContextManagementPattern:
             apollo.continue_with_summary()
 ```
 
-### Handoff Between AIs
+### Handoff Between CIs
 ```bash
-# AI 1 completes work
+# CI 1 completes work
 aish apollo "Completed analysis. Saving context to Engram."
 aish engram "Store analysis context with key 'dashboard-perf-analysis'"
 
-# AI 2 picks up
+# CI 2 picks up
 aish synthesis "Load context 'dashboard-perf-analysis' from Engram"
 aish synthesis "Continuing implementation based on Apollo's analysis"
 ```
@@ -241,8 +241,8 @@ aish numa "Initialize context for tekton-python-sdk project"
 # Numa builds mental model
 aish numa "Analyze project structure and create onboarding guide"
 
-# Numa guides other AIs
-When new AI joins project:
+# Numa guides other CIs
+When new CI joins project:
 - Numa provides context
 - Numa suggests starting points
 - Numa monitors progress
@@ -279,10 +279,10 @@ aish terma casey "Understood, proceeding with option 2"
 
 ### Purpose-Based Routing
 ```bash
-# To all planning AIs
+# To all planning CIs
 aish terma @planning "Sprint planning in 10 minutes"
 
-# To all testing AIs
+# To all testing CIs
 aish terma @testing "New build ready for validation"
 ```
 
@@ -290,20 +290,20 @@ aish terma @testing "New build ready for validation"
 
 ### 1. Silent Failure
 ```bash
-# BAD: AI encounters error and stops without reporting
-# GOOD: AI immediately reports blockers
+# BAD: CI encounters error and stops without reporting
+# GOOD: CI immediately reports blockers
 ```
 
 ### 2. Context Hoarding
 ```bash
-# BAD: AI fills context window without handoff
-# GOOD: AI proactively manages context with Engram
+# BAD: CI fills context window without handoff
+# GOOD: CI proactively manages context with Engram
 ```
 
 ### 3. Unclear Confidence
 ```bash
-# BAD: AI proceeds with medium confidence silently
-# GOOD: AI explicitly states confidence and acts accordingly
+# BAD: CI proceeds with medium confidence silently
+# GOOD: CI explicitly states confidence and acts accordingly
 ```
 
 ### 4. Meeting Overrun
@@ -318,7 +318,7 @@ aish terma @testing "New build ready for validation"
 2. **AI Autonomy**: 80% of tasks completed without human input
 3. **Communication Clarity**: 100% of blockers reported within 1 hour
 4. **Meeting Efficiency**: 100% of team chats under 20 minutes
-5. **Progress Visibility**: Daily reports from 100% of active AIs
+5. **Progress Visibility**: Daily reports from 100% of active CIs
 
 ---
-*"The best workflow is one where humans think and AIs do."*
+*"The best workflow is one where humans think and CIs do."*

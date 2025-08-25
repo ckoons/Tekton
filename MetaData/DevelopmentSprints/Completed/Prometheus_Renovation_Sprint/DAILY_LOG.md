@@ -36,7 +36,7 @@
 - [x] Phase 1: Fixed hardcoded URL in prometheus-ui.js
 - [x] Phase 2: Replaced all os.environ usage with GlobalConfig
 - [x] Phase 3: Connected UI to real backend APIs
-- [x] Phase 4: Fixed AI Chat integration
+- [x] Phase 4: Fixed CI Chat integration
 - [x] Phase 4: Added chat prompt color styling
 - [x] Phase 4: Added landmarks and semantic tags
 - [x] Updated component documentation
@@ -45,7 +45,7 @@
 - Successfully implemented 6-tab navigation (Planning, Timeline, Resources, Analysis, Planning Chat, Team Chat)
 - Removed all hardcoded configuration in favor of GlobalConfig
 - UI now fetches real data from backend APIs
-- Chat integration gracefully handles when AI system is not available
+- Chat integration gracefully handles when CI system is not available
 - All UI elements have proper semantic tags for accessibility
 
 ### Lessons Learned

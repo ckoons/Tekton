@@ -7,7 +7,7 @@ This guide provides detailed information on integrating Terma with other Tekton 
 Terma is designed to integrate seamlessly with the Tekton ecosystem through:
 
 1. **Hermes Integration**: Service registration and discovery
-2. **LLM Adapter**: Integration with AI services
+2. **LLM Adapter**: Integration with CI services
 3. **Hephaestus UI**: Web component integration
 4. **HTTP API**: REST API for programmatic access
 5. **WebSocket API**: Real-time communication
@@ -83,7 +83,7 @@ async def subscribe_to_events():
 
 ### LLM Adapter Integration
 
-Terma integrates with Tekton's LLM Adapter for AI assistance capabilities:
+Terma integrates with Tekton's LLM Adapter for CI assistance capabilities:
 
 ```python
 from tekton_llm_client import TektonLLMClient

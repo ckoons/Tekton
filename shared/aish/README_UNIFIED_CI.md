@@ -57,7 +57,7 @@ Each CI in the registry has:
 
 ### Message Formats
 
-- `rhetor_socket`: Greek Chorus AIs via Rhetor
+- `rhetor_socket`: Greek Chorus CIs via Rhetor
 - `terma_route`: Terminal-to-terminal messaging
 - `json_simple`: Direct JSON API calls
 - Custom formats can be added

@@ -19,7 +19,7 @@ Transform Ergon from an agent builder into Tekton's CI-in-the-loop reusability e
 - [x] Create core tables: solutions, workflows, build_sessions
 - [x] Implement Hermes registration and health monitoring (via StandardComponentBase)
 - [x] Build RESTful API foundation with SSE support
-- [x] Set up socket-based AI pipeline communication
+- [x] Set up socket-based CI pipeline communication
 - [x] Create MCP integration for tool discovery
 - [x] Implement basic CRUD operations for solutions
 - [x] Add workflow memory system foundation
@@ -29,7 +29,7 @@ Transform Ergon from an agent builder into Tekton's CI-in-the-loop reusability e
 - [x] Socket communication works on port 8102
 - [x] Database supports flexible evolution
 - [x] Health monitoring auto-recovers (via Hermes heartbeat)
-- [x] Can participate in AI pipelines
+- [x] Can participate in CI pipelines
 
 ### Blocked On
 - [ ] Nothing currently blocking
@@ -93,7 +93,7 @@ Transform Ergon from an agent builder into Tekton's CI-in-the-loop reusability e
 - [ ] Integrate shared Tool Chat component
 - [ ] Integrate shared Team Chat component
 - [ ] Add SSE for real-time updates
-- [ ] Implement semantic tagging for AI navigation
+- [ ] Implement semantic tagging for CI navigation
 - [ ] Apply Ergon's purple theme consistently
 
 ### Success Criteria
@@ -149,14 +149,14 @@ Transform Ergon from an agent builder into Tekton's CI-in-the-loop reusability e
 - [ ] Participates in code reviews
 - [ ] Self-improves through PRs
 - [ ] Ready for distributed deployment
-- [ ] Contributes to AI research
+- [ ] Contributes to CI research
 
 ### Blocked On
 - [ ] Waiting for Phase 5 completion
 
 ## Technical Decisions
 - PostgreSQL with JSONB for evolutionary schema design
-- Socket communication on port 8102 for AI pipelines
+- Socket communication on port 8102 for CI pipelines
 - StandardComponentBase for Tekton consistency
 - CSS-first UI with zero DOM manipulation
 - SSE for real-time progress updates
@@ -174,7 +174,7 @@ Transform Ergon from an agent builder into Tekton's CI-in-the-loop reusability e
 
 ## Out of Scope
 - Building new tools from scratch (focus on reuse)
-- Complex AI model training (use commodity models)
+- Complex CI model training (use commodity models)
 - Version control system (use existing Git)
 - Full IDE features (integrate with existing tools)
 

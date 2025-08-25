@@ -9,7 +9,7 @@ source .venv/bin/activate  # or create if needed
 pip install tekton-llm-client
 ```
 
-### 1.2 Create AI Module Structure
+### 1.2 Create CI Module Structure
 ```bash
 # Create new directories
 mkdir -p metis/prompt_templates
@@ -33,7 +33,7 @@ Create JSON files in `/prompt_templates/`:
 **File:** `/metis/core/llm_adapter.py`
 
 ```python
-"""LLM Adapter for Metis - Connects to Rhetor for AI capabilities"""
+"""LLM Adapter for Metis - Connects to Rhetor for CI capabilities"""
 
 import os
 import logging
@@ -123,7 +123,7 @@ class TaskDecomposer:
             'requirements': task.requirements
         }
         
-        # Get AI decomposition
+        # Get CI decomposition
         subtask_data = await self.llm.decompose_task(task_data, depth)
         
         # Convert to Task objects
@@ -186,7 +186,7 @@ class ComplexityAnalyzer:
         """
         analysis = await self.llm.analyze_complexity(task)
         
-        # Create complexity factors from AI analysis
+        # Create complexity factors from CI analysis
         factors = []
         for factor_data in analysis.get('factors', []):
             factor = ComplexityFactor(
@@ -333,7 +333,7 @@ Add these new endpoints:
 from metis.core.task_decomposer import TaskDecomposer
 from metis.core.complexity_analyzer import ComplexityAnalyzer
 
-# Add new AI endpoints
+# Add new CI endpoints
 @router.post("/api/v1/tasks/{task_id}/decompose")
 async def decompose_task(
     task_id: str,
@@ -488,7 +488,7 @@ async def test_decompose_simple_task():
 
 ```python
 #!/usr/bin/env python3
-"""Example of using Metis AI task decomposition"""
+"""Example of using Metis CI task decomposition"""
 
 import asyncio
 import aiohttp
@@ -541,7 +541,7 @@ if __name__ == '__main__':
 
 ### 3.4 Documentation Updates (20 mins)
 
-Update `/README.md` with new AI features:
+Update `/README.md` with new CI features:
 
 ```markdown
 ## AI-Powered Features
@@ -566,7 +566,7 @@ curl -X POST http://localhost:8011/api/v1/tasks/{task_id}/analyze-complexity
 
 ### MCP Tools
 
-Metis provides MCP tools for AI agents:
+Metis provides MCP tools for CI agents:
 - `decompose_task` - Break down tasks
 - `analyze_task_complexity` - Score complexity
 ```
@@ -584,7 +584,7 @@ Metis provides MCP tools for AI agents:
 
 ### 4.2 Performance Testing
 - Measure decomposition time for various task sizes
-- Check memory usage during AI operations
+- Check memory usage during CI operations
 - Verify concurrent request handling
 
 ### 4.3 Integration Testing
@@ -594,4 +594,4 @@ Metis provides MCP tools for AI agents:
 
 ## Summary
 
-This implementation plan adds AI capabilities to Metis without disrupting existing functionality. The modular approach allows for easy testing and future enhancements. Total implementation time: 4-6 hours.
+This implementation plan adds CI capabilities to Metis without disrupting existing functionality. The modular approach allows for easy testing and future enhancements. Total implementation time: 4-6 hours.

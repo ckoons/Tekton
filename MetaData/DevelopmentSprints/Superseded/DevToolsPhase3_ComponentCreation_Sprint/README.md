@@ -85,7 +85,7 @@ However, they cannot:
 ## Use Cases
 
 ### Example 1: Project Manager Component
-User: "Create a component to manage projects and assign AIs to codebases"
+User: "Create a component to manage projects and assign CIs to codebases"
 
 Workflow:
 1. **ComponentGenerator** creates structure based on Apollo/Athena patterns

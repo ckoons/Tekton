@@ -21,7 +21,7 @@ Launches a new terminal with aish integration.
 {
     "name": "Terminal name",           // Optional, defaults to "aish Terminal"
     "working_dir": "/path/to/dir",     // Optional, defaults to user's home
-    "purpose": "Development task",      // Optional, AI context
+    "purpose": "Development task",      // Optional, CI context
     "template": "ai_workspace"          // Optional, terminal template
 }
 ```
@@ -194,8 +194,8 @@ Common status codes:
 
 All terminals launched through these endpoints automatically have aish integration enabled, providing:
 
-- AI command routing via `aish <ai-name> "message"`
-- Pipeline support for AI chaining
+- CI command routing via `aish <ai-name> "message"`
+- Pipeline support for CI chaining
 - Team chat capabilities
 - Transparent shell enhancement
 

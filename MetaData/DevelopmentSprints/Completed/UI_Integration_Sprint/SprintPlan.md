@@ -4,7 +4,7 @@
 
 This document outlines the high-level plan for the UI Integration Development Sprint. It provides an overview of the goals, approach, and expected outcomes.
 
-Tekton is an intelligent orchestration system that coordinates multiple AI models and resources to efficiently solve complex software engineering problems. This Development Sprint focuses on creating seamless UI integration between Rhetor and all other Tekton components using the newly established landmarks, knowledge graph, and UI DevTools infrastructure.
+Tekton is an intelligent orchestration system that coordinates multiple CI models and resources to efficiently solve complex software engineering problems. This Development Sprint focuses on creating seamless UI integration between Rhetor and all other Tekton components using the newly established landmarks, knowledge graph, and UI DevTools infrastructure.
 
 ## Sprint Goals
 

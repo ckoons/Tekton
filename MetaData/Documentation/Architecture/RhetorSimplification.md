@@ -2,31 +2,31 @@
 
 ## Overview
 
-We simplified Rhetor's AI management by removing the complex discovery service and using direct configuration from `tekton_components.yaml`.
+We simplified Rhetor's CI management by removing the complex discovery service and using direct configuration from `tekton_components.yaml`.
 
 ## Changes Made
 
-### 1. Created Simple AI Manager (`rhetor/core/ai_manager.py`)
+### 1. Created Simple CI Manager (`rhetor/core/ai_manager.py`)
 - Reads components directly from `tekton_components.yaml`
-- Calculates AI ports using standard formula: `ai_port = (component_port - 8000) + 45000`
+- Calculates CI ports using standard formula: `ai_port = (component_port - 8000) + 45000`
 - Simple health checks by attempting socket connection
-- Manages "roster" of active AIs
+- Manages "roster" of active CIs
 
 ### 2. Simplified Endpoints (`rhetor/api/ai_specialist_endpoints_simple.py`)
-- `/api/v1/ai/specialists` - List all AI specialists
-- `/api/v1/ai/roster` - Manage hired AIs
+- `/api/v1/ai/specialists` - List all CI specialists
+- `/api/v1/ai/roster` - Manage hired CIs
 - `/api/v1/ai/specialists/{ai_id}/hire` - Add to roster
 - `/api/v1/ai/specialists/{ai_id}/fire` - Remove from roster
 - `/api/v1/ai/specialists/{ai_id}/message` - Send messages
-- `/api/v1/ai/find/{role}` - Find AI by role/category
+- `/api/v1/ai/find/{role}` - Find CI by role/category
 
 ### 3. Simplified MCP Integration (`rhetor/core/mcp/tools_integration_simple.py`)
-- Direct AI communication via `simple_ai`
+- Direct CI communication via `simple_ai`
 - Team chat coordination
 - Simple role-based routing
 
 ### 4. Simplified Streaming (`rhetor/api/specialist_streaming_endpoints_simple.py`)
-- Simulated streaming (since AIs don't stream yet)
+- Simulated streaming (since CIs don't stream yet)
 - Multi-AI queries
 - Real-time health monitoring
 
@@ -58,8 +58,8 @@ We simplified Rhetor's AI management by removing the complex discovery service a
 
 ## Testing
 
-The simplified AI manager was tested successfully:
-- Lists all 18 AI specialists
+The simplified CI manager was tested successfully:
+- Lists all 18 CI specialists
 - Calculates correct ports
 - Health checks work
 - Roster management works

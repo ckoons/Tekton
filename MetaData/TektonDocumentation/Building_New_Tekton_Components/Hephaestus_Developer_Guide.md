@@ -2,7 +2,7 @@
 
 ## Introduction
 
-This guide provides detailed instructions for developers who want to create new components or extend existing components in the Hephaestus UI system. Hephaestus is the unified UI component for the Tekton AI orchestration system, designed with a focus on maintainability, isolation, and consistent user experience.
+This guide provides detailed instructions for developers who want to create new components or extend existing components in the Hephaestus UI system. Hephaestus is the unified UI component for the Tekton CI orchestration system, designed with a focus on maintainability, isolation, and consistent user experience.
 
 ## Prerequisites
 

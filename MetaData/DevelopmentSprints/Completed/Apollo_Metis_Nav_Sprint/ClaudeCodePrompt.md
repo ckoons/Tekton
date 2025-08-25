@@ -2,7 +2,7 @@
 
 ## Project Context
 
-You are assisting with the Apollo & Metis Navigation Sprint for the Tekton project. Tekton is an intelligent orchestration system that coordinates multiple AI models and resources to efficiently solve complex software engineering problems.
+You are assisting with the Apollo & Metis Navigation Sprint for the Tekton project. Tekton is an intelligent orchestration system that coordinates multiple CI models and resources to efficiently solve complex software engineering problems.
 
 This sprint focuses on extending the Tekton UI by adding two new navigation tabs to the LEFT PANEL:
 1. Apollo - Attention/Prediction (positioned between Engram and Rhetor)

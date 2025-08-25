@@ -3,7 +3,7 @@
 ## Overview
 This document outlines the revised implementation plan for the Fix GUI Sprint, using a direct HTML injection approach for component rendering. This methodical, component-by-component approach will ensure more reliable component integration with clear checkpoints for approval.
 
-Tekton is an intelligent orchestration system that coordinates multiple AI models and resources to efficiently solve complex software engineering problems. This Implementation Plan focuses on simplifying and standardizing the Hephaestus UI architecture to create a more reliable component integration system.
+Tekton is an intelligent orchestration system that coordinates multiple CI models and resources to efficiently solve complex software engineering problems. This Implementation Plan focuses on simplifying and standardizing the Hephaestus UI architecture to create a more reliable component integration system.
 
 ## Key Architectural Change: Direct HTML Injection
 

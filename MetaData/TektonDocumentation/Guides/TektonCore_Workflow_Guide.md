@@ -8,7 +8,7 @@ This guide describes the complete workflow for managing multi-AI development pro
 
 ## Overview
 
-TektonCore orchestrates a sophisticated workflow that transforms ideas into deployed features through structured phases, automated coordination, and intelligent merge management. The system balances human strategic oversight with AI operational efficiency.
+TektonCore orchestrates a sophisticated workflow that transforms ideas into deployed features through structured phases, automated coordination, and intelligent merge management. The system balances human strategic oversight with CI operational efficiency.
 
 ## Complete Workflow
 
@@ -59,7 +59,7 @@ TektonCore orchestrates a sophisticated workflow that transforms ideas into depl
 
 ### Phase 3: Project Planning & Execution Plan
 
-**Participants**: Casey (Tech Lead) + TektonCore AI + Planning Team (Future)
+**Participants**: Casey (Tech Lead) + TektonCore CI + Planning Team (Future)
 
 **Current Planning Team**: Casey + TektonCore AI
 **Future Planning Team**: Prometheus, Apollo, Metis, Harmonia, Synthesis, Casey, TektonCore
@@ -71,7 +71,7 @@ TektonCore orchestrates a sophisticated workflow that transforms ideas into depl
 4. **Risk Assessment**: Analyze potential challenges and mitigation strategies
 5. **Timeline Development**: Create realistic schedule with milestones
 6. **Review & Refinement**: Casey reviews and may edit the execution plan
-7. **Planning Team Review** (Future): Specialized AIs provide domain expertise
+7. **Planning Team Review** (Future): Specialized CIs provide domain expertise
 
 **Outputs**:
 - Detailed project execution plan
@@ -110,7 +110,7 @@ TektonCore orchestrates a sophisticated workflow that transforms ideas into depl
 
 ### Phase 5: Active Development Coordination
 
-**Participants**: TektonCore AI + Available Terma Sessions + Casey (oversight)
+**Participants**: TektonCore CI + Available Terma Sessions + Casey (oversight)
 
 **Process**:
 1. **Task Assignment**: TektonCore assigns tasks to available Terma sessions via `aish purpose`
@@ -133,7 +133,7 @@ TektonCore orchestrates a sophisticated workflow that transforms ideas into depl
 
 ### Phase 6: Merge Coordination & Integration
 
-**Participants**: TektonCore AI + Casey (conflict resolution)
+**Participants**: TektonCore CI + Casey (conflict resolution)
 
 **Process**:
 1. **Merge Request**: Claude signals branch ready for merge
@@ -159,7 +159,7 @@ TektonCore orchestrates a sophisticated workflow that transforms ideas into depl
 
 ### Phase 7: Project Completion & Learning
 
-**Participants**: Casey (Tech Lead) + TektonCore AI + Development Team
+**Participants**: Casey (Tech Lead) + TektonCore CI + Development Team
 
 **Process**:
 1. **Completion Assessment**: Verify all sprint objectives achieved
@@ -200,7 +200,7 @@ TektonCore orchestrates a sophisticated workflow that transforms ideas into depl
 **Planning**: Active planning and execution plan development
 - Status: Under analysis
 - Location: TektonCore planning system
-- Responsible: Casey + TektonCore AI + Planning Team
+- Responsible: Casey + TektonCore CI + Planning Team
 - Next Action: Execution plan review and authorization
 
 **Approved**: Ready for active development
@@ -212,7 +212,7 @@ TektonCore orchestrates a sophisticated workflow that transforms ideas into depl
 **Active**: Development in progress
 - Status: Under development
 - Location: TektonCore active projects + git branches
-- Responsible: TektonCore AI + Development Team
+- Responsible: TektonCore CI + Development Team
 - Next Action: Task completion and merge coordination
 
 **Complete**: All objectives achieved
@@ -371,7 +371,7 @@ TektonCore orchestrates a sophisticated workflow that transforms ideas into depl
 
 This workflow guide will continue evolving as we learn and improve. Expected areas of development include:
 
-### Enhanced AI Integration
+### Enhanced CI Integration
 - More sophisticated conflict resolution
 - Predictive analytics for project planning
 - Automated testing and quality assurance
@@ -391,11 +391,11 @@ This workflow guide will continue evolving as we learn and improve. Expected are
 
 ## Conclusion
 
-The TektonCore workflow represents a new paradigm in software development - one where human strategic wisdom guides AI operational efficiency to achieve unprecedented development velocity and quality. 
+The TektonCore workflow represents a new paradigm in software development - one where human strategic wisdom guides CI operational efficiency to achieve unprecedented development velocity and quality. 
 
 Every interaction teaches us something new about effective human-AI collaboration. Every error becomes an opportunity for improvement. Every success builds our confidence in this revolutionary approach.
 
-Remember: We're not just building software - we're pioneering the future of how humans and AI can work together to create amazing things.
+Remember: We're not just building software - we're pioneering the future of how humans and CI can work together to create amazing things.
 
 ---
 

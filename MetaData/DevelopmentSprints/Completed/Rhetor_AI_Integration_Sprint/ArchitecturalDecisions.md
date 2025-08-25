@@ -1,29 +1,29 @@
-# Rhetor AI Integration Sprint - Architectural Decisions
+# Rhetor CI Integration Sprint - Architectural Decisions
 
 ## Overview
 
-This document captures the key architectural decisions made for the Rhetor AI Integration Sprint. These decisions guide the implementation of component-specific AI management and integration with Hephaestus UI.
+This document captures the key architectural decisions made for the Rhetor CI Integration Sprint. These decisions guide the implementation of component-specific CI management and integration with Hephaestus UI.
 
-## Decision 1: Component AI Instance Architecture
+## Decision 1: Component CI Instance Architecture
 
 ### Decision
-Each Tekton component will have a dedicated AI instance managed by Rhetor, rather than sharing a global LLM connection.
+Each Tekton component will have a dedicated CI instance managed by Rhetor, rather than sharing a global LLM connection.
 
 ### Rationale
-- **Specialization**: Components have different domains and require different AI capabilities
+- **Specialization**: Components have different domains and require different CI capabilities
 - **Context Isolation**: Each component maintains its own conversation history and context
 - **Resource Optimization**: Can assign appropriate models based on component needs
-- **Scalability**: Easier to scale individual component AIs based on usage
+- **Scalability**: Easier to scale individual component CIs based on usage
 
 ### Alternatives Considered
 1. **Single Global AI**: Keep current architecture with shared LLM
    - Rejected: No specialization, context mixing, harder to optimize
-2. **AI Pool**: Shared pool of AIs dynamically assigned
+2. **AI Pool**: Shared pool of CIs dynamically assigned
    - Rejected: Complex management, potential context leakage
 
 ### Implementation
 - Create `ComponentAIManager` class in Rhetor
-- One AI instance per component with persistent configuration
+- One CI instance per component with persistent configuration
 - Lazy initialization on first chat interaction
 
 ## Decision 2: Model Assignment Strategy
@@ -32,7 +32,7 @@ Each Tekton component will have a dedicated AI instance managed by Rhetor, rathe
 Use a static mapping of components to models based on their primary use cases, with dynamic fallbacks based on budget and availability.
 
 ### Rationale
-- **Predictable Performance**: Components get consistent AI behavior
+- **Predictable Performance**: Components get consistent CI behavior
 - **Cost Optimization**: Cheaper models for simple tasks, powerful models for complex ones
 - **Graceful Degradation**: Can fall back if preferred model unavailable
 
@@ -87,11 +87,11 @@ Implement a filter chain pattern for transparent prompt engineering and response
 ## Decision 4: WebSocket Protocol Extension
 
 ### Decision
-Extend the existing WebSocket protocol with new message types for component-specific AI interactions.
+Extend the existing WebSocket protocol with new message types for component-specific CI interactions.
 
 ### Rationale
 - **Backward Compatibility**: Existing chat interfaces continue to work
-- **Clear Semantics**: New message types clearly indicate component AI usage
+- **Clear Semantics**: New message types clearly indicate component CI usage
 - **Streaming Support**: Maintains real-time response streaming
 - **Debugging**: Easier to trace component-specific interactions
 
@@ -109,13 +109,13 @@ Extend the existing WebSocket protocol with new message types for component-spec
 ### Alternatives Considered
 1. **REST API**: Use HTTP endpoints instead
    - Rejected: No streaming, higher latency
-2. **Separate WebSocket**: New WebSocket for component AIs
+2. **Separate WebSocket**: New WebSocket for component CIs
    - Rejected: Complex connection management
 
 ## Decision 5: Team Chat Architecture
 
 ### Decision
-Implement team chat as a special context in Rhetor with AI moderation capabilities.
+Implement team chat as a special context in Rhetor with CI moderation capabilities.
 
 ### Rationale
 - **Centralized Management**: Rhetor already manages contexts
@@ -124,7 +124,7 @@ Implement team chat as a special context in Rhetor with AI moderation capabiliti
 - **Human Override**: Human can intervene at any time
 
 ### Team Chat Features
-- Shared context for all component AIs
+- Shared context for all component CIs
 - Rhetor acts as moderator with meta-prompts
 - Message routing based on mentions (@component)
 - Automatic summarization of long conversations
@@ -138,7 +138,7 @@ Implement team chat as a special context in Rhetor with AI moderation capabiliti
 ## Decision 6: Context Management Strategy
 
 ### Decision
-Each component AI maintains its own context with automatic archiving and summarization.
+Each component CI maintains its own context with automatic archiving and summarization.
 
 ### Rationale
 - **Performance**: Bounded context windows prevent degradation
@@ -179,7 +179,7 @@ createChatInterface(container, {
 ```
 
 ### Alternatives Considered
-1. **New Chat Component**: Create separate component AI chat
+1. **New Chat Component**: Create separate component CI chat
    - Rejected: Duplicated UI code, inconsistent UX
 2. **Auto-Detection**: Automatically use component AI
    - Rejected: Breaking change, no opt-out option
@@ -188,12 +188,12 @@ createChatInterface(container, {
 
 1. **Context Isolation**: Component contexts never mix
 2. **Prompt Sanitization**: Filter chains can remove sensitive data
-3. **Audit Logging**: All AI interactions logged for compliance
+3. **Audit Logging**: All CI interactions logged for compliance
 4. **Access Control**: Components only access their own AI
 
 ## Performance Considerations
 
-1. **Lazy Loading**: AI instances created on-demand
+1. **Lazy Loading**: CI instances created on-demand
 2. **Connection Pooling**: Reuse LLM provider connections
 3. **Response Caching**: Cache common responses
 4. **Async Processing**: All filters run asynchronously
@@ -203,8 +203,8 @@ createChatInterface(container, {
 1. **Custom Filters**: Components can register custom filters
 2. **Model Learning**: Track performance for optimization
 3. **Multi-Modal**: Support for image/document understanding
-4. **External Tools**: AI function calling for component actions
+4. **External Tools**: CI function calling for component actions
 
 ## Conclusion
 
-These architectural decisions provide a solid foundation for implementing component-specific AI management in Rhetor while maintaining backward compatibility and enabling future enhancements. The modular design allows for incremental improvements and component-specific customizations.
+These architectural decisions provide a solid foundation for implementing component-specific CI management in Rhetor while maintaining backward compatibility and enabling future enhancements. The modular design allows for incremental improvements and component-specific customizations.

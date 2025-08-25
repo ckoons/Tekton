@@ -4,7 +4,7 @@
 
 This document records the architectural decisions made during the Budget Consolidation Sprint. It captures the context, considerations, alternatives considered, and rationale behind each significant decision. This serves as a reference for both current implementation and future development.
 
-Tekton is an intelligent orchestration system that coordinates multiple AI models and resources to efficiently solve complex software engineering problems. The architectural decisions in this document focus on consolidating the budget management functionality across components into a unified, comprehensive system with automated price tracking.
+Tekton is an intelligent orchestration system that coordinates multiple CI models and resources to efficiently solve complex software engineering problems. The architectural decisions in this document focus on consolidating the budget management functionality across components into a unified, comprehensive system with automated price tracking.
 
 ## Decision 1: Unified Budget Component Architecture
 

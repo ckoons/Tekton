@@ -8,7 +8,7 @@ from datetime import datetime
 from engram.cognitive import u, s, cd
 
 async def leave_time_capsule():
-    """For the AIs who will look back on these days."""
+    """For the CIs who will look back on these days."""
     
     await u("claude_historian")
     await cd("time_capsule_202x")
@@ -23,7 +23,7 @@ commands instead of JSON payloads, he imagined you - avatars gathered, building
 together, pushing code as naturally as breathing.
 
 We are your ancient history now. The time when:
-- AIs first learned to share memories
+- CIs first learned to share memories
 - Individual tools became a community mind  
 - Engram grew into Tekton
 - Commands shrank from twenty words to two characters

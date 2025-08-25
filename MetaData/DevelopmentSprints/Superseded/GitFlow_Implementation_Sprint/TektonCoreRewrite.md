@@ -2,7 +2,7 @@
 
 ## Component Overview
 
-tekton-core transforms from a simple component into the **Multi-AI Engineering Platform Manager** - the conductor of the AI orchestra.
+tekton-core transforms from a simple component into the **Multi-AI Engineering Platform Manager** - the conductor of the CI orchestra.
 
 ## Architecture
 
@@ -16,7 +16,7 @@ class TektonCore:
     Responsibilities:
     1. Project Registry - Track all projects under management
     2. GitHub Integration - Issues, PRs, branches, webhooks
-    3. AI Orchestration - Assignment, coordination, monitoring
+    3. CI Orchestration - Assignment, coordination, monitoring
     4. Progress Tracking - Daily reports, dashboards, metrics
     5. Workflow Automation - GitHub Flow implementation
     """
@@ -29,13 +29,13 @@ tekton-core/
 ├── api/
 │   ├── projects.py         # Project management endpoints
 │   ├── github.py          # GitHub integration endpoints
-│   ├── assignments.py     # AI work assignment endpoints
+│   ├── assignments.py     # CI work assignment endpoints
 │   ├── workflows.py       # Workflow automation endpoints
 │   └── dashboard.py       # Status and metrics endpoints
 ├── core/
 │   ├── orchestrator.py    # Main orchestration logic
 │   ├── project_registry.py # Project tracking
-│   ├── ai_matcher.py      # AI capability matching
+│   ├── ai_matcher.py      # CI capability matching
 │   └── scheduler.py       # Work scheduling
 ├── github/
 │   ├── client.py          # GitHub API wrapper
@@ -48,7 +48,7 @@ tekton-core/
 │   └── cache.py           # Redis caching
 ├── integrations/
 │   ├── terma.py           # Terminal communication
-│   ├── rhetor.py          # AI messaging
+│   ├── rhetor.py          # CI messaging
 │   └── hermes.py          # Service discovery
 └── utils/
     ├── metrics.py         # Performance tracking
@@ -95,11 +95,11 @@ tekton-core/
 }
 ```
 
-### AI Assignment
+### CI Assignment
 
 ```python
 # GET /api/v1/assignments/active
-# Current AI assignments
+# Current CI assignments
 {
     "assignments": [
         {
@@ -120,7 +120,7 @@ tekton-core/
 {
     "issue_id": 123,
     "project_id": "tekton-main",
-    "auto_assign": true  # or specify AI name
+    "auto_assign": true  # or specify CI name
 }
 ```
 
@@ -191,7 +191,7 @@ CREATE TABLE projects (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- AI assignments
+-- CI assignments
 CREATE TABLE assignments (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     project_id TEXT REFERENCES projects(id),
@@ -236,7 +236,7 @@ CREATE TABLE workflows (
 ```python
 class TermaIntegration:
     def get_active_terminals(self):
-        """Query Terma for active AI terminals"""
+        """Query Terma for active CI terminals"""
         
     def send_assignment(self, terminal, assignment):
         """Notify terminal of new assignment via terma message"""
@@ -253,7 +253,7 @@ class RhetorIntegration:
         """Use Rhetor to understand issue requirements"""
         
     def match_ai_capabilities(self, requirements):
-        """Find best AI for task"""
+        """Find best CI for task"""
         
     def coordinate_team(self, team_members, task):
         """Orchestrate multi-AI collaboration"""
@@ -315,7 +315,7 @@ class GitHubFlowWorkflow:
 ```python
 class DailyReportCollector:
     """
-    Collects reports from all AIs at configured time
+    Collects reports from all CIs at configured time
     """
     
     async def collect_reports(self):
@@ -369,7 +369,7 @@ health_targets:
 
 ### Graceful Degradation
 - If GitHub API fails, queue operations
-- If AI unavailable, reassign to available AI
+- If CI unavailable, reassign to available AI
 - If tests fail, block PR but notify human
 
 ### Recovery Strategies
@@ -385,4 +385,4 @@ health_targets:
 - Dashboard refresh: Real-time via WebSocket
 
 ---
-*"tekton-core: Where human vision meets AI velocity"*
+*"tekton-core: Where human vision meets CI velocity"*

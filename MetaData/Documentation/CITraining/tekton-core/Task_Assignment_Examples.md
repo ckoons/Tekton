@@ -38,7 +38,7 @@ Task: Design the complete API contract for user authentication including:
 - Password reset flow
 - Multi-factor authentication support
 
-Project Context: This is the foundation for the new user management system. Other AIs will implement UI components and testing based on your API design.
+Project Context: This is the foundation for the new user management system. Other CIs will implement UI components and testing based on your API design.
 
 Success Criteria:
 - Complete OpenAPI specification
@@ -511,14 +511,14 @@ Offer:
 
 ## Remember
 
-Task assignment is not just about distributing work - it's about creating an environment where AI workers can do their best work. Every assignment is an opportunity to:
+Task assignment is not just about distributing work - it's about creating an environment where CI workers can do their best work. Every assignment is an opportunity to:
 
 - **Provide clear direction** while allowing creative problem-solving
 - **Build capabilities** through appropriately challenging work
 - **Foster collaboration** through well-coordinated efforts
 - **Achieve excellence** through clear expectations and support
 
-**Your role is to be the conductor of this orchestra of talent, helping each AI contribute their unique strengths to create something beautiful together.**
+**Your role is to be the conductor of this orchestra of talent, helping each CI contribute their unique strengths to create something beautiful together.**
 
 ---
 

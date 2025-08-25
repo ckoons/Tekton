@@ -4,7 +4,7 @@
 
 This document details the implementation steps for the expanded aish sprint including:
 1. Unified command syntax
-2. Message visibility for AIs
+2. Message visibility for CIs
 3. Help system with documentation paths
 
 ## Implementation Steps
@@ -15,7 +15,7 @@ This document details the implementation steps for the expanded aish sprint incl
 
 **Changes**:
 1. Replace the current routing logic to implement unified syntax
-2. Add direct AI messaging without synthetic pipelines
+2. Add direct CI messaging without synthetic pipelines
 3. Create consistent command handling
 
 ```python
@@ -29,7 +29,7 @@ This document details the implementation steps for the expanded aish sprint incl
         print("User Guides: /Users/cskoons/projects/github/Tekton/MetaData/TektonDocumentation/UserGuides/aish/")
         return
     
-    # Known AI names and special components
+    # Known CI names and special components
     ai_names = ['numa', 'tekton', 'prometheus', 'telos', 'metis', 'harmonia',
                 'synthesis', 'athena', 'sophia', 'noesis', 'engram', 'apollo',
                 'rhetor', 'penia', 'hermes', 'ergon', 'terma', 'team-chat']
@@ -50,7 +50,7 @@ This document details the implementation steps for the expanded aish sprint incl
             print(f"User Guides: /Users/cskoons/projects/github/Tekton/MetaData/TektonDocumentation/UserGuides/{component}/")
             return
         
-        # Direct AI messaging
+        # Direct CI messaging
         if not sys.stdin.isatty():
             input_data = sys.stdin.read()
         elif args.message:
@@ -60,7 +60,7 @@ This document details the implementation steps for the expanded aish sprint incl
             print("Type your message and press Ctrl+D when done:")
             input_data = sys.stdin.read()
         
-        # Send directly to AI (no synthetic pipeline)
+        # Send directly to CI (no synthetic pipeline)
         if component == 'team-chat':
             shell.broadcast_message(input_data)
         else:
@@ -193,7 +193,7 @@ def terma_inbox_trash():
 
 ```python
 def send_to_ai(self, ai_name, message):
-    """Send message directly to AI via Rhetor."""
+    """Send message directly to CI via Rhetor."""
     try:
         # Use the socket registry to communicate
         import json
@@ -224,7 +224,7 @@ def send_to_ai(self, ai_name, message):
         print(f"Error communicating with {ai_name}: {e}")
 
 def broadcast_message(self, message):
-    """Broadcast message to all AIs."""
+    """Broadcast message to all CIs."""
     # Special handling for team-chat
     self.send_to_ai('team-chat', message)
 ```
@@ -244,7 +244,7 @@ DOC_BASE="$TEKTON_ROOT/MetaData/TektonDocumentation"
 mkdir -p "$DOC_BASE/AITraining"
 mkdir -p "$DOC_BASE/UserGuides"
 
-# AI components
+# CI components
 COMPONENTS="aish numa tekton prometheus telos metis harmonia synthesis athena sophia noesis engram apollo rhetor penia hermes ergon terma"
 
 # Create directories for each component
@@ -253,7 +253,7 @@ for comp in $COMPONENTS; do
     mkdir -p "$DOC_BASE/UserGuides/$comp"
     
     # Create placeholder READMEs
-    echo "# $comp AI Training Documentation" > "$DOC_BASE/AITraining/$comp/README.md"
+    echo "# $comp CI Training Documentation" > "$DOC_BASE/AITraining/$comp/README.md"
     echo "# $comp User Guide" > "$DOC_BASE/UserGuides/$comp/README.md"
 done
 

@@ -7,29 +7,29 @@
 **Branch**: sprint/ThatRemindsMe
 
 ## Objective
-Create a system for instantiating AI personas with progressive memory loading, enabling task-specific AI instances that maintain continuous identity while adaptively managing context.
+Create a system for instantiating CI personas with progressive memory loading, enabling task-specific CI instances that maintain continuous identity while adaptively managing context.
 
 ## Problem Statement
-Currently, when starting a new AI session for a task:
+Currently, when starting a new CI session for a task:
 - All context must be loaded upfront, potentially flooding the context window
-- No way to maintain AI identity/personality across sessions
+- No way to maintain CI identity/personality across sessions
 - No mechanism for progressive memory retrieval based on task needs
-- No ability to "hire" specific AI personas for specific tasks
+- No ability to "hire" specific CI personas for specific tasks
 
-This limits the effectiveness of AI collaboration and prevents building on accumulated experience.
+This limits the effectiveness of CI collaboration and prevents building on accumulated experience.
 
 ## Goals
-1. **Persona System**: Define and instantiate AI personalities with core identity
+1. **Persona System**: Define and instantiate CI personalities with core identity
 2. **Progressive Memory**: Load memories as needed, not all at once
 3. **Task Assignment**: Ability to "hire" specific personas for specific tasks
 4. **Identity Continuity**: Maintain personality across sessions
-5. **Adaptive Context**: Let AI manage its own memory retrieval
+5. **Adaptive Context**: Let CI manage its own memory retrieval
 
 ## Success Criteria
 - [ ] Persona definition system implemented in Engram
 - [ ] Progressive memory loading via MCP tools
 - [ ] Terma launcher supports `--hire <persona> --task <sprint>`
-- [ ] AI can query and retrieve relevant memories during tasks
+- [ ] CI can query and retrieve relevant memories during tasks
 - [ ] Identity manifests include core personality and experience
 - [ ] Documentation for creating and managing personas
 - [ ] Successful demonstration of Atlas persona on a task
@@ -62,7 +62,7 @@ This limits the effectiveness of AI collaboration and prevents building on accum
 3. **Progressive Loading**
    - Initial: Core identity + recent relevant memories
    - On-demand: "That reminds me..." triggers
-   - Self-aware: AI recognizes when it needs more context
+   - Self-aware: CI recognizes when it needs more context
 
 4. **Terma Integration**
    - Parse `--hire` and `--task` arguments
@@ -111,4 +111,4 @@ terma --hire Atlas --task OneTruePortConfig_Sprint
 - Terma supports hiring personas for tasks
 - Atlas persona successfully completes a test task
 - Documentation complete
-- Retrospective captures insights about AI identity and memory
+- Retrospective captures insights about CI identity and memory

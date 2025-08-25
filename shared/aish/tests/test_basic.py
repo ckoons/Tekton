@@ -62,7 +62,7 @@ class TestList(AishTest):
             self.error_message = "Missing CI components header"
             return False
         
-        # Check for some known AIs
+        # Check for some known CIs
         expected_ais = ["numa", "apollo", "athena"]
         for ai in expected_ais:
             if ai not in stdout.lower():

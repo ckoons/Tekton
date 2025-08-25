@@ -30,7 +30,7 @@ Apollo currently has 8 tabs using onclick handlers:
 These need conversion to radio button pattern like Settings component.
 
 ### 2. Known Integration Points
-- Uses aish MCP for AI communication (needs verification)
+- Uses aish MCP for CI communication (needs verification)
 - Should connect to `http://localhost:8112/api/*` endpoints
 - Team Chat functionality should use aish MCP `/tools/team-chat`
 

@@ -2,12 +2,12 @@
 
 ## Overview
 
-This document describes how to configure the Rhetor AI Integration Sprint to use your Anthropic Max account for testing, avoiding API charges while developing and testing the component AI features.
+This document describes how to configure the Rhetor CI Integration Sprint to use your Anthropic Max account for testing, avoiding API charges while developing and testing the component CI features.
 
 ## Anthropic Max Benefits for Testing
 
 1. **No API Charges**: Use Claude models without per-token costs
-2. **Higher Rate Limits**: Better for testing multiple component AIs
+2. **Higher Rate Limits**: Better for testing multiple component CIs
 3. **All Claude Models**: Access to Haiku, Sonnet, and Opus
 4. **Ideal for Development**: Perfect for iterative testing
 
@@ -155,7 +155,7 @@ def __init__(self, db_path: Optional[str] = None, period: BudgetPeriod = BudgetP
 
 ### Phase 1: Individual Component Testing
 
-Test each component AI individually:
+Test each component CI individually:
 
 ```bash
 # Set test environment
@@ -171,14 +171,14 @@ python scripts/test_component_ai.py --component athena
 # ... etc
 ```
 
-### Phase 2: Concurrent AI Testing
+### Phase 2: Concurrent CI Testing
 
-Test multiple AIs simultaneously:
+Test multiple CIs simultaneously:
 
 ```python
 # scripts/test_concurrent_ais.py
 async def test_concurrent_ais():
-    """Test multiple component AIs concurrently"""
+    """Test multiple component CIs concurrently"""
     components = ['budget', 'athena', 'ergon', 'prometheus', 'sophia']
     
     tasks = []
@@ -187,28 +187,28 @@ async def test_concurrent_ais():
         tasks.append(task)
     
     results = await asyncio.gather(*tasks)
-    print(f"Tested {len(results)} component AIs concurrently")
+    print(f"Tested {len(results)} component CIs concurrently")
 ```
 
 ### Phase 3: Team Chat Testing
 
-Test the team chat with multiple AIs:
+Test the team chat with multiple CIs:
 
 ```python
 # scripts/test_team_chat.py
 async def test_team_chat():
-    """Test team chat with multiple AIs"""
+    """Test team chat with multiple CIs"""
     # Initialize team chat
     team_chat = await create_team_chat_session()
     
-    # Add component AIs
+    # Add component CIs
     await team_chat.add_participant('budget')
     await team_chat.add_participant('athena')
     await team_chat.add_participant('prometheus')
     
     # Send a collaborative request
     response = await team_chat.send_message(
-        "Team, we need to plan the Q2 budget for AI services. "
+        "Team, we need to plan the Q2 budget for CI services. "
         "@budget analyze current costs, @athena provide usage patterns, "
         "@prometheus suggest optimization strategies."
     )
@@ -250,7 +250,7 @@ PERFORMANCE_METRICS = {
 2. **Stress Testing**: Run concurrent requests to find bottlenecks
 3. **Long Conversations**: Test context window limits without budget concerns
 4. **A/B Testing**: Compare different models for the same component
-5. **Team Chat Load**: Test with all 15 AIs in team chat simultaneously
+5. **Team Chat Load**: Test with all 15 CIs in team chat simultaneously
 
 ## Transitioning to Production
 
@@ -267,10 +267,10 @@ When ready for production:
 - [ ] Anthropic Max API key configured
 - [ ] Test mode enabled in environment
 - [ ] Budget enforcement disabled
-- [ ] All component AIs using Anthropic models
+- [ ] All component CIs using Anthropic models
 - [ ] Performance monitoring enabled
 - [ ] Usage logging active
-- [ ] Team chat tested with multiple AIs
+- [ ] Team chat tested with multiple CIs
 - [ ] Stress testing completed
 - [ ] Documentation updated with findings
 
@@ -294,4 +294,4 @@ python run_all_tests.py --use-max-account
 tail -f ~/.tekton/logs/rhetor.log | grep "ComponentAI"
 ```
 
-This configuration allows comprehensive testing of the Rhetor AI Integration Sprint using your Anthropic Max account without incurring API charges.
+This configuration allows comprehensive testing of the Rhetor CI Integration Sprint using your Anthropic Max account without incurring API charges.

@@ -179,7 +179,7 @@ HephaestusDebug.enable('fileTrace')  // Just file traces
 - Try incognito/private mode
 - Check for browser extensions blocking storage
 
-## For AI Assistants (Claude)
+## For CI Assistants (Claude)
 
 When debugging Hephaestus UI issues:
 

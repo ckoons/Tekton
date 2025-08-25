@@ -2,7 +2,7 @@
 
 ## System Architecture
 
-Hephaestus is the unified UI component of the Tekton AI orchestration system. This document provides a high-level overview of the architecture, component relationships, and data flow patterns.
+Hephaestus is the unified UI component of the Tekton CI orchestration system. This document provides a high-level overview of the architecture, component relationships, and data flow patterns.
 
 ## Architectural Layers
 

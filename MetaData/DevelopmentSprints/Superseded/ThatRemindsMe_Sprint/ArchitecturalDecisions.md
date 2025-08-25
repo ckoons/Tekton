@@ -1,7 +1,7 @@
 # Architectural Decisions - ThatRemindsMe Sprint
 
 ## Overview
-This document outlines key architectural decisions for implementing persona-based AI instantiation with progressive memory loading. These decisions balance innovation with practical implementation.
+This document outlines key architectural decisions for implementing persona-based CI instantiation with progressive memory loading. These decisions balance innovation with practical implementation.
 
 ## Decision 1: Persona Identity Storage
 
@@ -36,7 +36,7 @@ Store persona manifests in Engram using a structured format that captures core i
 Loading all memories floods context window and reduces available space for current task.
 
 ### Decision
-Implement lazy-loading memory system where AI can request memories based on relevance and need.
+Implement lazy-loading memory system where CI can request memories based on relevance and need.
 
 ### Alternatives Considered
 1. **Preload Everything**: Load all memories upfront
@@ -47,7 +47,7 @@ Implement lazy-loading memory system where AI can request memories based on rele
    - Pros: Predictable context usage
    - Cons: May miss relevant memories
 
-3. **On-Demand Retrieval**: AI requests memories as needed
+3. **On-Demand Retrieval**: CI requests memories as needed
    - Pros: Efficient context use, relevant loading
    - Cons: Requires sophisticated retrieval
 
@@ -68,7 +68,7 @@ Natural language memory retrieval with semantic search capabilities.
 ### Alternatives Considered
 1. **Structured Queries**: SQL-like memory access
    - Pros: Precise control
-   - Cons: Unnatural for AI interaction
+   - Cons: Unnatural for CI interaction
 
 2. **Keyword Search**: Simple text matching
    - Pros: Easy to implement

@@ -233,7 +233,7 @@ class AutoApprovedHermesBridge:
             },
             {
                 "name": "collaboration_guide",
-                "description": "How Tekton AIs collaborate as a collective being"
+                "description": "How Tekton CIs collaborate as a collective being"
             }
         ]
         return {"prompts": prompts}

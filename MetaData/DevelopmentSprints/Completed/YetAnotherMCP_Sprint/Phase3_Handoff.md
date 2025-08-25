@@ -1,7 +1,7 @@
 # YetAnotherMCP Sprint - Phase 3 Handoff
 
 ## Sprint Overview
-We are implementing MCP (Model Context Protocol) v2 support across all Tekton components to enable AI assistants to interact with component functionality through standardized tools.
+We are implementing MCP (Model Context Protocol) v2 support across all Tekton components to enable CI assistants to interact with component functionality through standardized tools.
 
 ## Current Status
 

@@ -738,7 +738,7 @@ A navigation tab is automatically added to the LEFT PANEL when the component is 
 
 The chat interface is provided by `tekton-llm-client.js` and automatically integrates with your component when initialized.
 
-## AI Interface Implementation Details
+## CI Interface Implementation Details
 
 ### Chat Interface Setup
 
@@ -819,7 +819,7 @@ async handleToolCall(toolName, parameters) {
 ```
 
 ```javascript
-// Smart command palette with AI suggestions
+// Smart command palette with CI suggestions
 class CommandPalette {
     constructor(component) {
         this.component = component;
@@ -881,10 +881,10 @@ class CommandPalette {
 }
 ```
 
-#### 2. AI Insights Dashboard
+#### 2. CI Insights Dashboard
 
 ```html
-<!-- AI insights dashboard -->
+<!-- CI insights dashboard -->
 <div class="mycomponent__ai-dashboard">
     <div class="mycomponent__ai-metrics">
         <div class="mycomponent__metric-card">
@@ -910,7 +910,7 @@ class CommandPalette {
         <button class="mycomponent__btn mycomponent__btn--ai" 
                 onclick="mycomponent_runAIAnalysis()">
             <span class="mycomponent__btn-icon">🤖</span>
-            Run AI Analysis
+            Run CI Analysis
         </button>
         <button class="mycomponent__btn mycomponent__btn--ai"
                 onclick="mycomponent_getRecommendations()">
@@ -963,10 +963,10 @@ class ConversationalForm {
         // Process with AI
         const response = await this.processFormInput(input);
         
-        // Add AI response
+        // Add CI response
         this.addMessage(response.message, 'ai');
         
-        // Update form fields based on AI extraction
+        // Update form fields based on CI extraction
         if (response.fields) {
             this.updateFormFields(response.fields);
         }
@@ -1000,7 +1000,7 @@ class ConversationalForm {
 ### WebSocket Integration for Real-time AI
 
 ```javascript
-// Enhanced WebSocket handling for AI features
+// Enhanced WebSocket handling for CI features
 class AIWebSocketHandler {
     constructor(component) {
         this.component = component;
@@ -1045,7 +1045,7 @@ class AIWebSocketHandler {
         // Show notification
         this.component.showNotification({
             type: 'insight',
-            title: 'New AI Insight',
+            title: 'New CI Insight',
             message: insight.summary
         });
     }
@@ -1080,7 +1080,7 @@ class AIWebSocketHandler {
 ### AI-Enhanced Error Handling
 
 ```javascript
-// Intelligent error handling with AI assistance
+// Intelligent error handling with CI assistance
 class AIErrorHandler {
     constructor(component) {
         this.component = component;
@@ -1098,7 +1098,7 @@ class AIErrorHandler {
             timestamp: new Date().toISOString()
         };
         
-        // Get AI analysis of the error
+        // Get CI analysis of the error
         const analysis = await this.analyzeError(errorInfo);
         
         // Display AI-enhanced error message
@@ -1115,7 +1115,7 @@ class AIErrorHandler {
             
             return await response.json();
         } catch (e) {
-            // Fallback if AI analysis fails
+            // Fallback if CI analysis fails
             return {
                 summary: errorInfo.message,
                 suggestions: ['Check the console for more details'],

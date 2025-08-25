@@ -2,7 +2,7 @@
 
 ## Overview
 
-The streaming team chat feature allows AI responses to be returned as they arrive, rather than waiting for all AIs to complete. This provides much better user experience and faster perceived performance.
+The streaming team chat feature allows CI responses to be returned as they arrive, rather than waiting for all CIs to complete. This provides much better user experience and faster perceived performance.
 
 ## Architecture
 
@@ -11,9 +11,9 @@ The streaming team chat feature allows AI responses to be returned as they arriv
 **New Endpoint**: `/api/v2/team-chat/stream`
 
 - Uses Server-Sent Events (SSE) for real-time streaming
-- Each AI response is sent immediately when received
-- Configurable timeout per AI (default 2 seconds)
-- Supports targeting specific AIs or broadcasting to all
+- Each CI response is sent immediately when received
+- Configurable timeout per CI (default 2 seconds)
+- Supports targeting specific CIs or broadcasting to all
 
 ### Client-Side (JavaScript)
 
@@ -106,7 +106,7 @@ Request body:
 }
 ```
 
-2. **message** - AI response
+2. **message** - CI response
 ```json
 {
     "type": "response",
@@ -133,7 +133,7 @@ Request body:
 
 ### Old Team Chat (Wait for All)
 ```
-Send → Wait for ALL AIs → Return all responses
+Send → Wait for ALL CIs → Return all responses
         ↓
       2-10 seconds (depends on slowest AI)
 ```
@@ -171,14 +171,14 @@ The streaming team chat works seamlessly with the connection pool:
 ## Troubleshooting
 
 ### No Responses
-- Check if AI specialists are running: `tekton-status`
+- Check if CI specialists are running: `tekton-status`
 - Verify Rhetor is running: `curl http://localhost:8003/health`
 - Check individual AI: `curl http://localhost:8003/api/team-chat/sockets`
 
 ### Slow Responses
 - Reduce timeout: `timeout_per_ai: 1.0`
 - Check Ollama performance: `ollama ps`
-- Consider running fewer AIs if system is overloaded
+- Consider running fewer CIs if system is overloaded
 
 ### Testing
 
@@ -190,7 +190,7 @@ Test scripts available:
 
 1. **WebSocket Support** - For bidirectional communication
 2. **Response Aggregation** - Combine similar responses
-3. **Smart Routing** - Send to most relevant AIs only
+3. **Smart Routing** - Send to most relevant CIs only
 4. **Caching** - Cache common responses
 
 ---

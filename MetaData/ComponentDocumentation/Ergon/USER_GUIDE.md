@@ -2,7 +2,7 @@
 
 ## Introduction
 
-Ergon is the agent framework for the Tekton ecosystem, enabling users to create, manage, and execute intelligent AI agents for various tasks. This user guide will help you get started with Ergon and explore its capabilities.
+Ergon is the agent framework for the Tekton ecosystem, enabling users to create, manage, and execute intelligent CI agents for various tasks. This user guide will help you get started with Ergon and explore its capabilities.
 
 ## Getting Started
 

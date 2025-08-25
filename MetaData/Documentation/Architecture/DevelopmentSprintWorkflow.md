@@ -25,7 +25,7 @@ Whether it's a hotfix, a new feature, documentation update, or retrospective act
    - Retrospectives and continuous improvement
 
 3. **Metis** - Task Architecture & Management
-   - Decomposes sprints into manageable tasks with AI assistance
+   - Decomposes sprints into manageable tasks with CI assistance
    - Comprehensive task lifecycle management (CRUD operations)
    - Manages task dependencies and relationships
    - Estimates complexity and effort hours

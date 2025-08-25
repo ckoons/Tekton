@@ -149,7 +149,7 @@ tekton-generate component --name MyComponent --type service
 - Pre-configured landmarks and semantic tags
 - Includes test suites and documentation
 - Automatic Hermes registration
-- AI specialist template
+- CI specialist template
 
 **Benefits**:] component development, ensures consistency
 

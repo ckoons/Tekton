@@ -36,12 +36,12 @@
    ```
    Look for "running" or "active" states
 
-3. Verify AI components → Ensure AI services are responsive
+3. Verify CI components → Ensure CI services are responsive
    ```bash
    aish status
    ```
    Look for:
-   - ✓ marks indicating running AIs
+   - ✓ marks indicating running CIs
    - Correct port assignments
    - No port conflicts
 
@@ -138,7 +138,7 @@ aish status --json > /tmp/aish_health_$(date +%s).json
 ## Success Verification
 - [ ] All components show "running": `tekton status | grep -c running`
 - [ ] No port conflicts: `tekton status --json | jq '.issues'`
-- [ ] AI responding quickly: Time an AI ping < 2 seconds
+- [ ] CI responding quickly: Time an CI ping < 2 seconds
 - [ ] System load reasonable: Load average < number of CPUs
 
 ## Quick Reference Card

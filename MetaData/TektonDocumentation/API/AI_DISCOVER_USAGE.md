@@ -2,13 +2,13 @@
 
 ## Overview
 
-The `ai-discover` tool has been significantly enhanced as part of the Unified AI Interface. It now provides comprehensive AI discovery, monitoring, testing, and management capabilities.
+The `ai-discover` tool has been significantly enhanced as part of the Unified CI Interface. It now provides comprehensive CI discovery, monitoring, testing, and management capabilities.
 
 ## New Features (Enhanced Version)
 
 ### Real-time Monitoring
 ```bash
-# Watch AI status in real-time with live updates
+# Watch CI status in real-time with live updates
 ai-discover watch
 ```
 
@@ -20,10 +20,10 @@ ai-discover stream apollo-ai "Tell me a story"
 
 ### Performance Benchmarking
 ```bash
-# Benchmark AI response times
+# Benchmark CI response times
 ai-discover benchmark --iterations 10
 
-# Benchmark specific AIs
+# Benchmark specific CIs
 ai-discover benchmark apollo-ai athena-ai --iterations 5
 ```
 
@@ -71,7 +71,7 @@ The following commands still work but show deprecation notices:
 
 ### 1. Daily Operations
 ```bash
-# Check AI health
+# Check CI health
 ai-discover list --status healthy
 
 # Monitor in real-time
@@ -83,7 +83,7 @@ ai-discover watch
 # Test specific AI
 ai-discover test apollo-ai -v
 
-# Test all AIs
+# Test all CIs
 ai-discover test
 
 # Check streaming
@@ -92,10 +92,10 @@ ai-discover stream apollo-ai "Hello"
 
 ### 3. Performance Analysis
 ```bash
-# Benchmark all healthy AIs
+# Benchmark all healthy CIs
 ai-discover benchmark
 
-# Compare specific AIs
+# Compare specific CIs
 ai-discover benchmark apollo-ai athena-ai minerva-ai
 ```
 
@@ -104,7 +104,7 @@ ai-discover benchmark apollo-ai athena-ai minerva-ai
 # Test routing decisions
 ai-discover route "analyze code" --capabilities code_analysis
 
-# Verify AI is reachable
+# Verify CI is reachable
 ai-discover test apollo-ai --json
 ```
 
@@ -139,7 +139,7 @@ ai-discover benchmark --json
 
 ### Scripting
 ```bash
-# Get all healthy AIs as JSON array
+# Get all healthy CIs as JSON array
 healthy_ais=$(ai-discover list --status healthy --json | jq -r '.ais[].id')
 
 # Test each healthy AI
@@ -180,7 +180,7 @@ ai-discover list --json | jq '.ais[] | select(.id == "apollo-ai")'
 
 ## Troubleshooting
 
-### No AIs Found
+### No CIs Found
 ```bash
 # Check if registry is populated
 ls -la ~/.tekton/ai_registry/
@@ -200,6 +200,6 @@ cd $TEKTON_ROOT && scripts/ai-discover list
 
 ## See Also
 
-- [Unified AI Interface Architecture](../Architecture/UnifiedAIInterface.md)
+- [Unified CI Interface Architecture](../Architecture/UnifiedAIInterface.md)
 - [Socket Client API](../../../shared/ai/socket_client.py)
 - [Unified Registry API](../../../shared/ai/unified_registry.py)

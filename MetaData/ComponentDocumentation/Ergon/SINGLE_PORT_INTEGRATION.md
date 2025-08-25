@@ -173,7 +173,7 @@ logger.info(f"Ergon API configured with port {port_config['port']}")
 # Create FastAPI app with appropriate path structure
 app = FastAPI(
     title="Ergon API",
-    description="REST API for the Ergon AI agent builder and A2A/MCP services",
+    description="REST API for the Ergon CI agent builder and A2A/MCP services",
     version="0.1.0"
 )
 

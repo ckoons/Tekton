@@ -20,7 +20,7 @@ The existing CI registry will be extended to support a new CI type:
 
 ```
 CI Types:
-├── greek     # Greek Chorus AIs (apollo, athena, etc.)
+├── greek     # Greek Chorus CIs (apollo, athena, etc.)
 ├── terminal  # Terminal sessions (cali, iris, etc.)
 ├── project   # Project-specific CIs
 └── tool      # CI coding tools (claude-code, cursor, etc.)
@@ -122,7 +122,7 @@ CI_TOOLS = {
     'claude-code': {
         'type': 'tool',
         'port': 8400,
-        'description': 'Claude AI coding assistant',
+        'description': 'Claude CI coding assistant',
         'executable': 'claude-code',
         'capabilities': ['analysis', 'generation', 'refactoring']
     },

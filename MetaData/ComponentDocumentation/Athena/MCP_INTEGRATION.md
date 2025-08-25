@@ -4,7 +4,7 @@ This document describes the Model Context Protocol (MCP) integration for Athena,
 
 ## Overview
 
-Athena implements FastMCP (Fast Model Context Protocol) to provide a standardized interface for knowledge graph management, entity operations, semantic querying, and graph visualization. This integration allows external systems and AI models to interact with Athena's knowledge graph capabilities through a consistent, well-defined API.
+Athena implements FastMCP (Fast Model Context Protocol) to provide a standardized interface for knowledge graph management, entity operations, semantic querying, and graph visualization. This integration allows external systems and CI models to interact with Athena's knowledge graph capabilities through a consistent, well-defined API.
 
 ## Architecture
 
@@ -216,7 +216,7 @@ ml_result = await client.call_tool("create_entity", {
     "name": "Machine Learning", 
     "type": "concept",
     "properties": {
-        "description": "A subset of AI that enables computers to learn",
+        "description": "A subset of CI that enables computers to learn",
         "category": "technology"
     }
 })
@@ -253,7 +253,7 @@ semantic_result = await client.call_tool("semantic_search", {
 
 # Complex graph query
 query_result = await client.call_tool("query_knowledge_graph", {
-    "query": "Find all concepts related to AI with high importance",
+    "query": "Find all concepts related to CI with high importance",
     "query_type": "semantic",
     "parameters": {
         "importance_threshold": 0.8,
@@ -490,6 +490,6 @@ For issues related to Athena FastMCP integration:
 
 ## Conclusion
 
-Athena FastMCP integration provides a powerful, standardized interface for knowledge graph operations within the Tekton ecosystem. The comprehensive tool set, flexible storage backends, and seamless integration capabilities make it an essential component for knowledge management, semantic analysis, and graph-based AI applications.
+Athena FastMCP integration provides a powerful, standardized interface for knowledge graph operations within the Tekton ecosystem. The comprehensive tool set, flexible storage backends, and seamless integration capabilities make it an essential component for knowledge management, semantic analysis, and graph-based CI applications.
 
-The integrated implementation approach ensures optimal performance while maintaining compatibility with the broader Tekton architecture, enabling sophisticated knowledge-driven applications and AI system integrations.
+The integrated implementation approach ensures optimal performance while maintaining compatibility with the broader Tekton architecture, enabling sophisticated knowledge-driven applications and CI system integrations.
